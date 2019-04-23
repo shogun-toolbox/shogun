@@ -46,18 +46,18 @@
 using namespace shogun;
 using namespace Eigen;
 
-CGaussianProcessMachine::CGaussianProcessMachine()
+GaussianProcessMachine::GaussianProcessMachine()
 {
 	init();
 }
 
-CGaussianProcessMachine::CGaussianProcessMachine(CInference* method)
+GaussianProcessMachine::GaussianProcessMachine(std::shared_ptr<Inference> method)
 {
 	init();
 	set_inference_method(method);
 }
 
-void CGaussianProcessMachine::init()
+void GaussianProcessMachine::init()
 {
 	m_method=NULL;
 	m_compute_variance = false;
@@ -67,19 +67,19 @@ void CGaussianProcessMachine::init()
 	SG_ADD(&m_compute_variance, "compute_variance", "Whether predictive variance is computed in predictions");
 }
 
-CGaussianProcessMachine::~CGaussianProcessMachine()
+GaussianProcessMachine::~GaussianProcessMachine()
 {
-	SG_UNREF(m_method);
+
 }
 
-SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data)
+SGVector<float64_t> GaussianProcessMachine::get_posterior_means(std::shared_ptr<Features> data)
 {
 	require(m_method, "Inference method should not be NULL");
 
-	CFeatures* feat;
+	std::shared_ptr<Features> feat;
 
-	CSingleSparseInference* sparse_method=
-		dynamic_cast<CSingleSparseInference *>(m_method);
+	auto sparse_method=
+		std::dynamic_pointer_cast<SingleSparseInference>(m_method);
 	// use inducing features for sparse inference method
 	if (sparse_method)
 	{
@@ -90,9 +90,9 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 		feat=m_method->get_features();
 
 	// get kernel and compute kernel matrix: K(feat, data)*scale^2
-	CKernel* training_kernel=m_method->get_kernel();
-	CKernel* kernel = training_kernel->clone()->as<CKernel>();
-	SG_UNREF(training_kernel);
+	auto training_kernel=m_method->get_kernel();
+	auto kernel = std::dynamic_pointer_cast<Kernel>(training_kernel->clone());
+
 
 	kernel->init(feat, data);
 
@@ -101,21 +101,21 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 	Map<MatrixXd> eigen_Ks(k_trts.matrix, k_trts.num_rows, k_trts.num_cols);
 
 	// compute Ks=Ks*scale^2
-	eigen_Ks*=CMath::sq(m_method->get_scale());
+	eigen_Ks*=Math::sq(m_method->get_scale());
 
 	// cleanup
-	SG_UNREF(feat);
-	SG_UNREF(kernel);
+
+
 
 	// get alpha and create eigen representation of it
 	SGVector<float64_t> alpha=m_method->get_alpha();
 	Map<VectorXd> eigen_alpha(alpha.vector, alpha.vlen);
 
 	// get mean and create eigen representation of it
-	CMeanFunction* mean_function=m_method->get_mean();
+	auto mean_function=m_method->get_mean();
 	SGVector<float64_t> mean=mean_function->get_mean_vector(data);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
-	SG_UNREF(mean_function);
+
 
 	const index_t C=alpha.vlen/k_trts.num_rows;
 	const index_t n=k_trts.num_rows;
@@ -131,16 +131,16 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
-		CFeatures* data)
+SGVector<float64_t> GaussianProcessMachine::get_posterior_variances(
+		std::shared_ptr<Features> data)
 {
 	require(m_method, "Inference method should not be NULL");
 
-	CFeatures* feat;
+	std::shared_ptr<Features> feat;
 
 	bool is_sparse=false;
-	CSingleSparseInference* sparse_method=
-		dynamic_cast<CSingleSparseInference *>(m_method);
+	auto sparse_method=
+		std::dynamic_pointer_cast<SingleSparseInference>(m_method);
 	// use inducing features for sparse inference method
 	if (sparse_method)
 	{
@@ -152,9 +152,9 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 		feat=m_method->get_features();
 
 	// get kernel and compute kernel matrix: K(data, data)*scale^2
-	CKernel* training_kernel=m_method->get_kernel();
-	CKernel* kernel = training_kernel->clone()->as<CKernel>();
-	SG_UNREF(training_kernel);
+	auto training_kernel=m_method->get_kernel();
+	auto kernel = std::dynamic_pointer_cast<Kernel>(training_kernel->clone());
+
 	kernel->init(data, data);
 
 	// get kernel matrix and create eigen representation of it
@@ -162,7 +162,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	Map<VectorXd> eigen_Kss_diag(k_tsts.vector, k_tsts.vlen);
 
 	// compute Kss=Kss*scale^2
-	eigen_Kss_diag*=CMath::sq(m_method->get_scale());
+	eigen_Kss_diag*=Math::sq(m_method->get_scale());
 
 	// compute kernel matrix: K(feat, data)*scale^2
 	kernel->init(feat, data);
@@ -172,11 +172,11 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	Map<MatrixXd> eigen_Ks(k_trts.matrix, k_trts.num_rows, k_trts.num_cols);
 
 	// compute Ks=Ks*scale^2
-	eigen_Ks*=CMath::sq(m_method->get_scale());
+	eigen_Ks*=Math::sq(m_method->get_scale());
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(feat);
+
+
 
 	// get shogun representation of cholesky and create eigen representation
 	SGMatrix<float64_t> L=m_method->get_cholesky();

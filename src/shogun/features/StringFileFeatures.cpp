@@ -3,24 +3,23 @@
 namespace shogun
 {
 
-template <class ST> CStringFileFeatures<ST>::CStringFileFeatures() : CStringFeatures<ST>(), file(NULL)
+template <class ST> StringFileFeatures<ST>::StringFileFeatures() : StringFeatures<ST>(), file(NULL)
 {
 }
 
-template <class ST> CStringFileFeatures<ST>::CStringFileFeatures(const char* fname, EAlphabet alpha)
-: CStringFeatures<ST>(alpha)
+template <class ST> StringFileFeatures<ST>::StringFileFeatures(const char* fname, EAlphabet alpha)
+: StringFeatures<ST>(alpha)
 {
-	file = new CMemoryMappedFile<ST>(fname);
+	file = std::make_shared<MemoryMappedFile<ST>>(fname);
 	fetch_meta_info_from_file();
 }
 
-template <class ST> CStringFileFeatures<ST>::~CStringFileFeatures()
+template <class ST> StringFileFeatures<ST>::~StringFileFeatures()
 {
-	SG_UNREF(file);
-	CStringFileFeatures<ST>::cleanup();
+	StringFileFeatures<ST>::cleanup();
 }
 
-template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_t& offs, int32_t& line_nr, uint64_t file_length)
+template <class ST> ST* StringFileFeatures<ST>::get_line(uint64_t& len, uint64_t& offs, int32_t& line_nr, uint64_t file_length)
 {
 	ST* s = file->get_map();
 	for (uint64_t i=offs; i<file_length; i++)
@@ -37,9 +36,9 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 		}
 		else
 		{
-			if (!CStringFeatures<ST>::alphabet->is_valid((uint8_t) c))
+			if (!StringFeatures<ST>::alphabet->is_valid((uint8_t) c))
 			{
-				CStringFileFeatures<ST>::cleanup();
+				StringFileFeatures<ST>::cleanup();
 				error("Invalid character ({}) in line {}", c, line_nr);
 			}
 		}
@@ -50,37 +49,35 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 	return NULL;
 }
 
-template <class ST> void CStringFileFeatures<ST>::cleanup()
+template <class ST> void StringFileFeatures<ST>::cleanup()
 {
-	CStringFeatures<ST>::features.clear();
-	CStringFeatures<ST>::symbol_mask_table = SGVector<ST>();
+	StringFeatures<ST>::features.clear();
+	StringFeatures<ST>::symbol_mask_table = SGVector<ST>();
 
 	/* start with a fresh alphabet, but instead of emptying the histogram
-	 * create a new object (to leave the alphabet object alone if it is used
-	 * by others)
-	 */
-	CAlphabet* alpha=new CAlphabet(CStringFeatures<ST>::alphabet->get_alphabet());
-	SG_UNREF(CStringFeatures<ST>::alphabet);
-	CStringFeatures<ST>::alphabet=alpha;
-	SG_REF(CStringFeatures<ST>::alphabet);
+	* create a new object (to leave the alphabet object alone if it is used
+	* by others)
+	*/
+	auto alpha=std::make_shared<Alphabet>(StringFeatures<ST>::alphabet->get_alphabet());
+	StringFeatures<ST>::alphabet=alpha;
 }
 
-template <class ST> void CStringFileFeatures<ST>::cleanup_feature_vector(int32_t num)
+template <class ST> void StringFileFeatures<ST>::cleanup_feature_vector(int32_t num)
 {
 	error("Cleaning single feature vector not"
 			"supported by StringFileFeatures");
 }
 
-template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int32_t granularity)
+template <class ST> void StringFileFeatures<ST>::fetch_meta_info_from_file(int32_t granularity)
 {
-	CStringFileFeatures<ST>::cleanup();
+	StringFileFeatures<ST>::cleanup();
 	uint64_t file_size=file->get_size();
 	ASSERT(granularity>=1)
-	ASSERT(CStringFeatures<ST>::alphabet)
+	ASSERT(StringFeatures<ST>::alphabet)
 
 	int64_t buffer_size=granularity;
-	CStringFeatures<ST>::features.clear();
-	CStringFeatures<ST>::features.resize(buffer_size);
+	StringFeatures<ST>::features.clear();
+	StringFeatures<ST>::features.resize(buffer_size);
 
 	uint64_t offs=0;
 	uint64_t len=0;
@@ -94,38 +91,38 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 		{
 			if (num_vectors > buffer_size)
 			{
-				CStringFeatures<ST>::features.resize(buffer_size+granularity);
+				StringFeatures<ST>::features.resize(buffer_size+granularity);
 				buffer_size+=granularity;
 			}
 
-			CStringFeatures<ST>::features[num_vectors-1]=SGVector<ST>(line, len, false);
+			StringFeatures<ST>::features[num_vectors-1]=SGVector<ST>(line, len, false);
 		}
 		else
 			break;
 	}
 
-	io::info("number of strings:{}", CStringFeatures<ST>::get_num_vectors());
-	io::info("maximum string length:{}", CStringFeatures<ST>::get_max_vector_length());
-	io::info("max_value_in_histogram:{}", CStringFeatures<ST>::alphabet->get_max_value_in_histogram());
-	io::info("num_symbols_in_histogram:{}", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram());
+	io::info("number of strings:{}", StringFeatures<ST>::get_num_vectors());
+	io::info("maximum string length:{}", StringFeatures<ST>::get_max_vector_length());
+	io::info("max_value_in_histogram:{}", StringFeatures<ST>::alphabet->get_max_value_in_histogram());
+	io::info("num_symbols_in_histogram:{}", StringFeatures<ST>::alphabet->get_num_symbols_in_histogram());
 
-	if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
-		CStringFileFeatures<ST>::cleanup();
+	if (!StringFeatures<ST>::alphabet->check_alphabet_size() || !StringFeatures<ST>::alphabet->check_alphabet())
+		StringFileFeatures<ST>::cleanup();
 
-	CStringFeatures<ST>::features.resize(num_vectors);
+	StringFeatures<ST>::features.resize(num_vectors);
 }
 
-template class CStringFileFeatures<bool>;
-template class CStringFileFeatures<char>;
-template class CStringFileFeatures<int8_t>;
-template class CStringFileFeatures<uint8_t>;
-template class CStringFileFeatures<int16_t>;
-template class CStringFileFeatures<uint16_t>;
-template class CStringFileFeatures<int32_t>;
-template class CStringFileFeatures<uint32_t>;
-template class CStringFileFeatures<int64_t>;
-template class CStringFileFeatures<uint64_t>;
-template class CStringFileFeatures<float32_t>;
-template class CStringFileFeatures<float64_t>;
-template class CStringFileFeatures<floatmax_t>;
+template class StringFileFeatures<bool>;
+template class StringFileFeatures<char>;
+template class StringFileFeatures<int8_t>;
+template class StringFileFeatures<uint8_t>;
+template class StringFileFeatures<int16_t>;
+template class StringFileFeatures<uint16_t>;
+template class StringFileFeatures<int32_t>;
+template class StringFileFeatures<uint32_t>;
+template class StringFileFeatures<int64_t>;
+template class StringFileFeatures<uint64_t>;
+template class StringFileFeatures<float32_t>;
+template class StringFileFeatures<float64_t>;
+template class StringFileFeatures<floatmax_t>;
 }

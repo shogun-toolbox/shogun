@@ -37,16 +37,12 @@
 using namespace shogun;
 using namespace internal;
 
-Block::Block(CFeatures* feats, index_t index, index_t size) : m_feats(feats)
+Block::Block(std::shared_ptr<Features> feats, index_t index, index_t size) : m_feats(feats)
 {
 	require(m_feats!=nullptr, "Underlying feature object cannot be null!");
 
-	// increase the refcount of the underlying feature object
-	// we want this object to be alive till the last block is free'd
-	SG_REF(m_feats);
-
 	// create a shallow copy and subset current block separately
-	CFeatures* block=feats->shallow_subset_copy();
+	auto block=m_feats->shallow_subset_copy();
 
 	SGVector<index_t> inds(size);
 	std::iota(inds.vector, inds.vector+inds.vlen, index*size);
@@ -57,26 +53,23 @@ Block::Block(CFeatures* feats, index_t index, index_t size) : m_feats(feats)
 
 Block::Block(const Block& other) : m_block(other.m_block), m_feats(other.m_feats)
 {
-	SG_REF(m_block);
-	SG_REF(m_feats);
 }
 
 Block& Block::operator=(const Block& other)
 {
 	m_block=other.m_block;
 	m_feats=other.m_feats;
-	SG_REF(m_block);
-	SG_REF(m_feats);
+
 	return *this;
 }
 
 Block::~Block()
 {
-	SG_UNREF(m_block);
-	SG_UNREF(m_feats);
+
+
 }
 
-std::vector<Block> Block::create_blocks(CFeatures* feats, index_t num_blocks, index_t size)
+std::vector<Block> Block::create_blocks(std::shared_ptr<Features> feats, index_t num_blocks, index_t size)
 {
 	std::vector<Block> vec;
 	for (index_t i=0; i<num_blocks; ++i)

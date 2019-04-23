@@ -19,22 +19,22 @@
 namespace shogun
 {
 template <class ST> class SGSparseVector;
-template <class ST> class CSparseFeatures;
+template <class ST> class SparseFeatures;
 
 /** @brief Template class SparsePreprocessor, base class for preprocessors (cf.
- * CPreprocessor) that apply to CSparseFeatures
+ * Preprocessor) that apply to SparseFeatures
  *
  * Two new functions apply_to_sparse_feature_vector() and
  * apply_to_sparse_matrix() are defined in this interface that need to
- * be implemented in each particular preprocessor operating on CSparseFeatures.
+ * be implemented in each particular preprocessor operating on SparseFeatures.
  *
  * */
-template <class ST> class CSparsePreprocessor : public CPreprocessor
+template <class ST> class SparsePreprocessor : public Preprocessor
 {
 public:
 	/** constructor
 	 */
-	CSparsePreprocessor() : CPreprocessor() {}
+	SparsePreprocessor() : Preprocessor() {}
 
 	/** generic interface for applying the preprocessor. used as a wrapper
 	 * for apply_to_sparse_feature_matrix() method
@@ -42,7 +42,7 @@ public:
 	 * @param features the sparse input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace);
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
@@ -73,12 +73,12 @@ protected:
 };
 
 template <class ST>
-CFeatures* CSparsePreprocessor<ST>::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features> SparsePreprocessor<ST>::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	SG_REF(features);
+	
 
 	auto feature_matrix =
-		features->as<CSparseFeatures<ST>>()->get_sparse_feature_matrix();
+		features->as<SparseFeatures<ST>>()->get_sparse_feature_matrix();
 
 	if (!inplace)
 	{
@@ -88,8 +88,8 @@ CFeatures* CSparsePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 
 	apply_to_sparse_matrix(feature_matrix);
 
-	auto processed = new CSparseFeatures<ST>(feature_matrix);
-	SG_UNREF(features);
+	auto processed = new SparseFeatures<ST>(feature_matrix);
+	
 
 	return processed;
 }

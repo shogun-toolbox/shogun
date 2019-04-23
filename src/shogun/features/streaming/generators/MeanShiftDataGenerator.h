@@ -29,11 +29,11 @@ namespace shogun
  * multivariate isotropic Gaussian in a certain dimensions, where one selected
  * dimension has its mean shifted by some value.
  */
-class CMeanShiftDataGenerator: public RandomMixin<CStreamingDenseFeatures<float64_t>>
+class MeanShiftDataGenerator: public RandomMixin<StreamingDenseFeatures<float64_t>>
 {
 public:
 	/** Constructor */
-	CMeanShiftDataGenerator();
+	MeanShiftDataGenerator();
 
 	/** Constructor
 	 *
@@ -41,11 +41,11 @@ public:
 	 * @param dimension Number of dimensions
 	 * @param m_dimension_shift Dimension that gets shifted
 	 */
-	CMeanShiftDataGenerator(float64_t mean_shift, index_t dimension,
+	MeanShiftDataGenerator(float64_t mean_shift, index_t dimension,
 			index_t m_dimension_shift=0);
 
 	/** Destructor */
-	virtual ~CMeanShiftDataGenerator();
+	virtual ~MeanShiftDataGenerator();
 
 	/** @return name of SG_SERIALIZABLE */
 	virtual const char* get_name() const

@@ -30,11 +30,11 @@ namespace shogun
  * \f]
  *
  */
-class CWaveletKernel: public CDotKernel
+class WaveletKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CWaveletKernel();
+		WaveletKernel();
 
 		/** constructor
 		 *
@@ -42,7 +42,7 @@ class CWaveletKernel: public CDotKernel
 		 * @param Wdilation is Dilation coefficient
 		 * @param Wtranslation is Translation coefficient
 		 */
-		CWaveletKernel(int32_t size, float64_t Wdilation, float64_t Wtranslation);
+		WaveletKernel(int32_t size, float64_t Wdilation, float64_t Wtranslation);
 
 		/** constructor
 		 *
@@ -52,9 +52,9 @@ class CWaveletKernel: public CDotKernel
 		 * @param Wdilation is Dilation coefficient
 		 * @param Wtranslation is Translation coefficient
 		 */
-		CWaveletKernel(CDotFeatures* l, CDotFeatures* r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
+		WaveletKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
 
-		virtual ~CWaveletKernel();
+		virtual ~WaveletKernel();
 
 		/** initialize kernel
 		 *
@@ -62,7 +62,7 @@ class CWaveletKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		virtual void cleanup();
 

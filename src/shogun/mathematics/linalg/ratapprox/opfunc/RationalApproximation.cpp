@@ -19,44 +19,44 @@
 namespace shogun
 {
 
-CRationalApproximation::CRationalApproximation()
-	: COperatorFunction<float64_t>()
+RationalApproximation::RationalApproximation()
+	: OperatorFunction<float64_t>()
 {
 	init();
 
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
-CRationalApproximation::CRationalApproximation(
-	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
+RationalApproximation::RationalApproximation(
+	std::shared_ptr<LinearOperator<float64_t>> linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
 	float64_t desired_accuracy, EOperatorFunction function_type)
-	: COperatorFunction<float64_t>(linear_operator, function_type)
+	: OperatorFunction<float64_t>(linear_operator, function_type)
 {
 	init();
 
 	m_eigen_solver=eigen_solver;
-	SG_REF(m_eigen_solver);
+	
 
 	m_desired_accuracy=desired_accuracy;
 
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
-CRationalApproximation::~CRationalApproximation()
+RationalApproximation::~RationalApproximation()
 {
-	SG_UNREF(m_eigen_solver);
+	
 
 	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
-void CRationalApproximation::init()
+void RationalApproximation::init()
 {
 	m_eigen_solver=NULL;
 	m_constant_multiplier=0.0;
 	m_num_shifts=0;
 	m_desired_accuracy=0.0;
 
-	SG_ADD((CSGObject**)&m_eigen_solver, "eigen_solver",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_eigen_solver, "eigen_solver",
 		"Eigen solver for computing extremal eigenvalues");
 
 	SG_ADD(&m_shifts, "complex_shifts", "Complex shifts in the linear system");
@@ -73,32 +73,32 @@ void CRationalApproximation::init()
 		"Desired accuracy of the rational approximation");
 }
 
-SGVector<complex128_t> CRationalApproximation::get_shifts() const
+SGVector<complex128_t> RationalApproximation::get_shifts() const
 {
 	return m_shifts;
 }
 
-SGVector<complex128_t> CRationalApproximation::get_weights() const
+SGVector<complex128_t> RationalApproximation::get_weights() const
 {
 	return m_weights;
 }
 
-float64_t CRationalApproximation::get_constant_multiplier() const
+float64_t RationalApproximation::get_constant_multiplier() const
 {
 	return m_constant_multiplier;
 }
 
-index_t CRationalApproximation::get_num_shifts() const
+index_t RationalApproximation::get_num_shifts() const
 {
 	return m_num_shifts;
 }
 
-void CRationalApproximation::set_num_shifts(index_t num_shifts)
+void RationalApproximation::set_num_shifts(index_t num_shifts)
 {
 	m_num_shifts=num_shifts;
 }
 
-void CRationalApproximation::precompute()
+void RationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
 	m_eigen_solver->compute();
@@ -116,7 +116,7 @@ void CRationalApproximation::precompute()
 	compute_shifts_weights_const();
 }
 
-int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
+int32_t RationalApproximation::compute_num_shifts_from_accuracy()
 {
 	require(m_desired_accuracy>0, "Desired accuracy must be positive but is {}",
 			m_desired_accuracy);
@@ -134,7 +134,7 @@ int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 	return num_shifts;
 }
 
-void CRationalApproximation::compute_shifts_weights_const()
+void RationalApproximation::compute_shifts_weights_const()
 {
 	float64_t PI=M_PI;
 
@@ -146,8 +146,8 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// $(\lambda_{M}*\lambda_{m})^{frac{1}{4}}$ for the rest of the
 	// calculation where $lambda_{M}$ and $\lambda_{m} are the maximum
 	// and minimum eigenvalue respectively
-	float64_t m_div=CMath::pow(max_eig/min_eig, 0.25);
-	float64_t m_mult=CMath::pow(max_eig*min_eig, 0.25);
+	float64_t m_div=Math::pow(max_eig/min_eig, 0.25);
+	float64_t m_mult=Math::pow(max_eig*min_eig, 0.25);
 
 	// k=$\frac{(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}-1}
 	// {(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}+1}$
@@ -157,7 +157,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// compute K and K'
 	float64_t K=0.0, Kp=0.0;
 #ifdef USE_GPL_SHOGUN
-	CJacobiEllipticFunctions::ellipKKp(L, K, Kp);
+	JacobiEllipticFunctions::ellipKKp(L, K, Kp);
 #else
 	gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
@@ -168,7 +168,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// compute Jacobi elliptic functions sn, cn, dn and compute shifts, weights
 	// using conformal mapping of the quadrature rule for discretization of the
 	// contour integral
-	float64_t m=CMath::sq(k);
+	float64_t m=Math::sq(k);
 
 	// allocate memory for shifts
 	m_shifts=SGVector<complex128_t>(m_num_shifts);
@@ -180,16 +180,16 @@ void CRationalApproximation::compute_shifts_weights_const()
 
 		complex128_t sn, cn, dn;
 #ifdef USE_GPL_SHOGUN
-		CJacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
+		JacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
 #else
 		gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 
 		complex128_t w=m_mult*(1.0+k*sn)/(1.0-k*sn);
-		complex128_t dzdt=cn*dn/CMath::sq(1.0/k-sn);
+		complex128_t dzdt=cn*dn/Math::sq(1.0/k-sn);
 
 		// compute shifts and weights as per Hale et. al. (2008) [2]
-		m_shifts[i]=CMath::sq(w);
+		m_shifts[i]=Math::sq(w);
 
 		switch (m_function_type)
 		{

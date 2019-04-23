@@ -21,7 +21,7 @@ struct T_ATTRIBUTE
 	/// attribute name
 	char* attr_name;
 	/// attribute object
-	CFeatures* attr_obj;
+	std::shared_ptr<Features> attr_obj;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -39,22 +39,22 @@ struct T_ATTRIBUTE
  * This might be used to represent
  * (attr, value) pairs, simple structures, trees ...
  */
-class CAttributeFeatures : public CFeatures
+class AttributeFeatures : public Features
 {
 
 public:
 	/** default constructor */
-	CAttributeFeatures();
+	AttributeFeatures();
 
 	/** destructor */
-	virtual ~CAttributeFeatures();
+	virtual ~AttributeFeatures();
 
 	/** return the feature object matching attribute name
 	 *
 	 * @param attr_name attribute name
 	 * @return feature object
 	 */
-	CFeatures* get_attribute(char* attr_name);
+	std::shared_ptr<Features> get_attribute(char* attr_name);
 
 	/** return the feature object at index
 	 *
@@ -62,7 +62,7 @@ public:
 	 * @param attr_name attribute name (returned by reference)
 	 * @param attr_obj attribute object (returned by reference)
 	 */
-	void get_attribute_by_index(int idx, const char* &attr_name, CFeatures* &attr_obj);
+	void get_attribute_by_index(int idx, const char* &attr_name, std::shared_ptr<Features>& attr_obj);
 
 	/** set the feature object for attribute name
 	 *
@@ -70,7 +70,7 @@ public:
 	 * @param attr_obj feature object to set
 	 * @return true on success
 	 */
-	bool set_attribute(char* attr_name, CFeatures* attr_obj);
+	bool set_attribute(char* attr_name, std::shared_ptr<Features> attr_obj);
 
 	/** delete the attribute matching attribute name
 	 *
@@ -94,7 +94,7 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const=0;
+	virtual std::shared_ptr<Features> duplicate() const=0;
 
 	/** get feature type
 	 *

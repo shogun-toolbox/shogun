@@ -22,8 +22,8 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 	// create some linearly seperable data
 	SGMatrix<float64_t> matrix(num_class, num_vec);
 	SGMatrix<float64_t> matrix_test(num_class, num_vec);
-	CMulticlassLabels* labels=new CMulticlassLabels(num_vec);
-	CMulticlassLabels* labels_test=new CMulticlassLabels(num_vec);
+	auto labels=std::make_shared<MulticlassLabels>(num_vec);
+	auto labels_test=std::make_shared<MulticlassLabels>(num_vec);
 	std::mt19937_64 prng(seed);
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<num_vec; ++i)
@@ -45,24 +45,24 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 	//labels->get_int_labels().display_vector("labels");
 
 	// shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
+	auto features=std::make_shared<DenseFeatures<float64_t>>(matrix);
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(
 			matrix_test);
 
 
 	float64_t C=1.0;
 
-	CMulticlassLibLinear* mocas=new CMulticlassLibLinear(C, features,
+	auto mocas=std::make_shared<MulticlassLibLinear>(C, features,
 			labels);
 	env()->set_num_threads(1);
 	mocas->set_epsilon(1e-5);
 	mocas->train();
 
-	CLabels* pred=mocas->apply(features_test);
+	auto pred=mocas->apply(features_test)->as<MulticlassLabels>();
 	for (int i=0; i<features_test->get_num_vectors(); ++i)
-		EXPECT_EQ(labels_test->get_label(i), ((CMulticlassLabels* )pred)->get_label(i));
+		EXPECT_EQ(labels_test->get_label(i), pred->get_label(i));
 
-	SG_UNREF(mocas);
-	SG_UNREF(labels_test);
-	SG_UNREF(pred);
+
+
+
 }

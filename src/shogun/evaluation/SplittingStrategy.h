@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias, Yuyu Zhang,
  *          Sergey Lisitsyn
  */
 
@@ -17,10 +17,10 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief Abstract base class for all splitting types.
- * Takes a CLabels instance and generates a desired number of subsets which are
+ * Takes a Labels instance and generates a desired number of subsets which are
  * being accessed by their indices via the method  generate_subset_indices(...).
  *
  * When being extended, the abstract method build_subsets() has to be
@@ -29,28 +29,28 @@ class CLabels;
  * to allow calling them from the outside. Also they HAVE to set the m_is_filled
  * flag to true (otherwise there will be an error when accessing the index sets)
  *
- * Implementations have to (re)fill the CDynamicArray<index_t> elements in the
+ * Implementations have to (re)fill the DynamicArray<index_t> elements in the
  * (inherited) m_subset_indices variable. Note that these elements are already
  * created by the constructor of this class - they just have to be filled. Every
  * element represents one index subset.
  *
  * Calling the method agains means that the indices are rebuilt.
  */
-class CSplittingStrategy: public CSGObject
+class SplittingStrategy: public SGObject
 {
 public:
 	/** constructor */
-	CSplittingStrategy();
+	SplittingStrategy();
 
 	/** constructor
 	 *
 	 * @param labels labels to be (possibly) used for splitting
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
-	CSplittingStrategy(CLabels* labels, index_t num_subsets);
+	SplittingStrategy(std::shared_ptr<Labels> labels, index_t num_subsets);
 
 	/** destructor */
-	virtual ~CSplittingStrategy();
+	virtual ~SplittingStrategy();
 
 	/** generates a newly created SGVector<index_t> with indices of the subset
 	 * with the desired index
@@ -79,7 +79,7 @@ public:
 
 	/** Abstract method.
 	 * Has to refill the elements of the m_subset_indices variable with concrete
-	 * indices. Note that CDynamicArray<index_t> instances for every subset are
+	 * indices. Note that DynamicArray<index_t> instances for every subset are
 	 * created in the constructor of this class - they just have to be filled.
 	 */
 	virtual void build_subsets()=0;
@@ -96,10 +96,10 @@ private:
 protected:
 
 	/** labels */
-	CLabels* m_labels;
+	std::shared_ptr<Labels> m_labels;
 
 	/** subset indices */
-	CDynamicObjectArray* m_subset_indices;
+	std::shared_ptr<DynamicObjectArray> m_subset_indices;
 
 	/** additional variable to store number of index subsets */
 	index_t m_num_subsets;

@@ -137,19 +137,19 @@ struct VarianceH1
 		Eigen::Map<Eigen::VectorXd> map_sum_colwise_xy(m_sum_colwise_xy.data(), m_sum_colwise_xy.size());
 
 		auto t_0=(map_sum_colwise_x.dot(map_sum_colwise_x)-m_sum_sq_x)/m_n_x/(m_n_x-1)/(m_n_x-2);
-		auto t_1=CMath::sq(m_sum_x/m_n_x/(m_n_x-1));
+		auto t_1=Math::sq(m_sum_x/m_n_x/(m_n_x-1));
 
 		auto t_2=map_sum_colwise_x.dot(map_sum_rowwise_xy)*2/m_n_x/(m_n_x-1)/m_n_y;
 		auto t_3=m_sum_x*m_sum_xy*2/m_n_x/m_n_x/(m_n_x-1)/m_n_y;
 
 		auto t_4=(map_sum_colwise_y.dot(map_sum_colwise_y)-m_sum_sq_y)/m_n_y/(m_n_y-1)/(m_n_y-2);
-		auto t_5=CMath::sq(m_sum_y/m_n_y/(m_n_y-1));
+		auto t_5=Math::sq(m_sum_y/m_n_y/(m_n_y-1));
 
 		auto t_6=map_sum_colwise_y.dot(map_sum_colwise_xy)*2/m_n_y/(m_n_y-1)/m_n_x;
 		auto t_7=m_sum_y*m_sum_xy*2/m_n_y/m_n_y/(m_n_y-1)/m_n_x;
 
 		auto t_8=(map_sum_rowwise_xy.dot(map_sum_rowwise_xy)-m_sum_sq_xy)/m_n_y/(m_n_y-1)/m_n_x;
-		auto t_9=2*CMath::sq(m_sum_xy/m_n_x/m_n_y);
+		auto t_9=2*Math::sq(m_sum_xy/m_n_x/m_n_y);
 		auto t_10=(map_sum_colwise_xy.dot(map_sum_colwise_xy)-m_sum_sq_xy)/m_n_x/(m_n_x-1)/m_n_y;
 
 		auto var_first=(t_0-t_1)-t_2+t_3+(t_4-t_5)-t_6+t_7+(t_8-t_9+t_10);

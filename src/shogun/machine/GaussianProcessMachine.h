@@ -57,19 +57,19 @@ namespace shogun
  *
  * where \f$m(x)\f$ - mean function, \f$k(x, x')\f$ - covariance function.
  */
-class CGaussianProcessMachine : public CMachine
+class GaussianProcessMachine : public Machine
 {
 public:
 	/** default constructor */
-	CGaussianProcessMachine();
+	GaussianProcessMachine();
 
 	/** constructor
 	 *
 	 * @param method inference method
 	 */
-	CGaussianProcessMachine(CInference* method);
+	GaussianProcessMachine(std::shared_ptr<Inference> method);
 
-	virtual ~CGaussianProcessMachine();
+	virtual ~GaussianProcessMachine();
 
 	/** returns name of the machine
 	 *
@@ -85,7 +85,7 @@ public:
 	 *
 	 * @return posterior means
 	 */
-	SGVector<float64_t> get_posterior_means(CFeatures* data);
+	SGVector<float64_t> get_posterior_means(std::shared_ptr<Features> data);
 
 	/** returns a variance \f$\sigma^2\f$ of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
@@ -95,15 +95,15 @@ public:
 	 *
 	 * @return posterior variances
 	 */
-	SGVector<float64_t> get_posterior_variances(CFeatures* data);
+	SGVector<float64_t> get_posterior_variances(std::shared_ptr<Features> data);
 
 	/** get inference method
 	 *
 	 * @return inference method, which is used by Gaussian process machine
 	 */
-	CInference* get_inference_method() const
+	std::shared_ptr<Inference> get_inference_method() const
 	{
-		SG_REF(m_method);
+		
 		return m_method;
 	}
 
@@ -111,10 +111,10 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	void set_inference_method(CInference* method)
+	void set_inference_method(std::shared_ptr<Inference> method)
 	{
-		SG_REF(method);
-		SG_UNREF(m_method);
+		
+		
 		m_method=method;
 	}
 
@@ -122,9 +122,9 @@ public:
 	 *
 	 * @param lab labels to set
 	 */
-	virtual void set_labels(CLabels* lab)
+	virtual void set_labels(std::shared_ptr<Labels> lab)
 	{
-		CMachine::set_labels(lab);
+		Machine::set_labels(lab);
 		m_method->set_labels(lab);
 	}
 private:
@@ -132,7 +132,7 @@ private:
 
 protected:
 	/** inference method */
-	CInference* m_method;
+	std::shared_ptr<Inference> m_method;
 	/** Whether predictive variance is computed in predictions. If true, the
 	 * values are stored in the current_values vector of the predicted labels
 	 */

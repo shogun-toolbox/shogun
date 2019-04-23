@@ -11,33 +11,33 @@
 
 using namespace shogun;
 
-CFKFeatures::CFKFeatures() : CDenseFeatures<float64_t>()
+FKFeatures::FKFeatures() : DenseFeatures<float64_t>()
 {
 	init();
 }
 
-CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
-: CDenseFeatures<float64_t>(size)
+FKFeatures::FKFeatures(int32_t size, std::shared_ptr<HMM> p, std::shared_ptr<HMM> n)
+: DenseFeatures<float64_t>(size)
 {
 	init();
 	weight_a=-1;
 	set_models(p,n);
 }
 
-CFKFeatures::CFKFeatures(const CFKFeatures &orig)
-: CDenseFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
+FKFeatures::FKFeatures(const FKFeatures &orig)
+: DenseFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
 {
 }
 
-CFKFeatures::~CFKFeatures()
+FKFeatures::~FKFeatures()
 {
-	SG_UNREF(pos);
-	SG_UNREF(neg);
+
+
 }
 
-float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension) const
+float64_t FKFeatures::deriv_a(float64_t a, int32_t dimension) const
 {
-	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
+	auto Obs=pos->get_observations() ;
 	float64_t deriv=0.0 ;
 	int32_t i=dimension ;
 
@@ -83,7 +83,7 @@ float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension) const
 }
 
 
-float64_t CFKFeatures::set_opt_a(float64_t a)
+float64_t FKFeatures::set_opt_a(float64_t a)
 {
 	if (a==-1)
 	{
@@ -99,7 +99,7 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 		float64_t la=0;
 		float64_t ua=1;
 		a=(la+ua)/2;
-		while (CMath::abs(ua-la)>1e-6)
+		while (Math::abs(ua-la)>1e-6)
 		{
 			float64_t da=deriv_a(a);
 			if (da>0)
@@ -120,11 +120,11 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 	return a;
 }
 
-void CFKFeatures::set_models(CHMM* p, CHMM* n)
+void FKFeatures::set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n)
 {
 	ASSERT(p && n)
-	SG_REF(p);
-	SG_REF(n);
+
+
 
 	pos=p;
 	neg=n;
@@ -140,7 +140,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
-float64_t* CFKFeatures::compute_feature_vector(
+float64_t* FKFeatures::compute_feature_vector(
 	int32_t num, int32_t &len, float64_t* target) const
 {
 	float64_t* featurevector=target;
@@ -160,7 +160,7 @@ float64_t* CFKFeatures::compute_feature_vector(
 	return featurevector;
 }
 
-void CFKFeatures::compute_feature_vector(
+void FKFeatures::compute_feature_vector(
 	float64_t* featurevector, int32_t num, int32_t& len) const
 {
 	int32_t i,j,p=0,x=num;
@@ -171,7 +171,7 @@ void CFKFeatures::compute_feature_vector(
 	len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	featurevector[p++] = deriv_a(weight_a, x);
-	float64_t px=CMath::logarithmic_sum(
+	float64_t px=Math::logarithmic_sum(
 		posx+log(weight_a),negx+log(1-weight_a));
 
 	//first do positive model
@@ -206,7 +206,7 @@ void CFKFeatures::compute_feature_vector(
 	}
 }
 
-float64_t* CFKFeatures::set_feature_matrix()
+float64_t* FKFeatures::set_feature_matrix()
 {
 	ASSERT(pos)
 	ASSERT(pos->get_observations())
@@ -243,7 +243,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	return feature_matrix.matrix;
 }
 
-void CFKFeatures::init()
+void FKFeatures::init()
 {
 	pos = NULL;
 	neg = NULL;
@@ -253,7 +253,7 @@ void CFKFeatures::init()
 
 	unset_generic();
 	//TODO serialize HMMs
-	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
-	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	//m_parameters->add((std::shared_ptr<SGObject>*) &pos, "pos", "HMM for positive class.");
+	//m_parameters->add((std::shared_ptr<SGObject>*) &neg, "neg", "HMM for negative class.");
 	SG_ADD(&weight_a, "weight_a", "Class prior.");
 }

@@ -16,15 +16,15 @@ namespace shogun
 {
 
 /** @brief Base class of the components of StructuredLabels */
-class CStructuredData : public CSGObject
+class StructuredData : public SGObject
 {
 
 	public:
 		/** default constructor */
-		CStructuredData();
+		StructuredData();
 
 		/** destructor */
-		virtual ~CStructuredData();
+		virtual ~StructuredData();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredData"; }

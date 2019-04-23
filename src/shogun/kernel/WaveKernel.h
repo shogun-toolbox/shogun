@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief Wave kernel
  *
@@ -28,18 +28,18 @@ class CDistance;
  *
  */
 
-class CWaveKernel: public CKernel
+class WaveKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CWaveKernel();
+	WaveKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param theta kernel parameter theta
 	 * @param dist distance to be used
 	 */
-	CWaveKernel(int32_t cache, float64_t theta, CDistance* dist);
+	WaveKernel(int32_t cache, float64_t theta, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param theta kernel parameter theta
 	 * @param dist distance to be used
 	 */
-	CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance* dist);
+	WaveKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t theta, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -76,7 +76,7 @@ public:
 	 */
 	virtual const char* get_name() const { return "WaveKernel"; }
 
-	virtual ~CWaveKernel();
+	virtual ~WaveKernel();
 
 protected:
 	/**
@@ -94,7 +94,7 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 	/// theta parameter of kernel
 	float64_t m_theta;

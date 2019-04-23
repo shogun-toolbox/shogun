@@ -22,26 +22,26 @@ using namespace shogun;
 namespace shogun
 {
 
-CKMeans::CKMeans():CKMeansBase()
+KMeans::KMeans():KMeansBase()
 {
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
+KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, d_i, use_kmpp_i)
 {
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
+KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, d_i, centers_i)
 {
 }
 
-CKMeans::~CKMeans()
+KMeans::~KMeans()
 {
 }
 
-void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
+void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 {
-	CDenseFeatures<float64_t>* lhs =
-		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto lhs =
+		std::dynamic_pointer_cast<DenseFeatures<float64_t>>(distance->get_lhs());
 
 	int32_t lhs_size=lhs->get_num_vectors();
 	int32_t dim=lhs->get_num_features();
@@ -68,7 +68,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 				   	Terminating. ", iter);
 
 		changed=0;
-		auto rhs_mus = some<CDenseFeatures<float64_t>>(centers.clone());
+		auto rhs_mus = std::make_shared<DenseFeatures<float64_t>>(centers.clone());
 		distance->replace_rhs(rhs_mus);
 
 #pragma omp parallel for firstprivate(lhs_size, dim, num_centers) \
@@ -176,19 +176,17 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	}
 	distance->reset_precompute();
 	distance->replace_rhs(rhs_cache);
-	SG_UNREF(lhs);
-	SG_UNREF(rhs_cache);
+
+
 }
 
-bool CKMeans::train_machine(CFeatures* data)
+bool KMeans::train_machine(std::shared_ptr<Features> data)
 {
 	initialize_training(data);
 	Lloyd_KMeans(mus, k);
 	compute_cluster_variances();
-	auto cluster_centres = new CDenseFeatures<float64_t>(mus);
-	SG_REF(cluster_centres);
-	auto old = distance->replace_lhs(cluster_centres);
-	SG_UNREF(old);
+	auto cluster_centres = std::make_shared<DenseFeatures<float64_t>>(mus);
+	distance->replace_lhs(cluster_centres);
 	return true;
 }
 

@@ -30,7 +30,7 @@ int32_t num_vectors=4;
 int32_t dim_vectors=3;
 
 void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
-		    CRegressionLabels* labels)
+		    RegressionLabels* labels)
 {
 	/*Fill Matrices with random nonsense*/
 	train[0] = -1;
@@ -57,40 +57,40 @@ void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 	}
 }
 
-CModelSelectionParameters* build_tree(CInferenceMethod* inf,
-				      CLikelihoodModel* lik, CKernel* kernel)
+ModelSelectionParameters* build_tree(CInferenceMethod* inf,
+				      LikelihoodModel* lik, Kernel* kernel)
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c1 =
-			new CModelSelectionParameters("inference_method", inf);
+	ModelSelectionParameters* c1 =
+			new ModelSelectionParameters("inference_method", inf);
 	root->append_child(c1);
 
-	CModelSelectionParameters* c2 = new CModelSelectionParameters("scale");
+	ModelSelectionParameters* c2 = new ModelSelectionParameters("scale");
 	c1 ->append_child(c2);
 	c2->build_values(0.5, 4.0, R_LINEAR);
 
 
-	CModelSelectionParameters* c3 =
-			new CModelSelectionParameters("likelihood_model", lik);
+	ModelSelectionParameters* c3 =
+			new ModelSelectionParameters("likelihood_model", lik);
 	c1->append_child(c3);
 
-	CModelSelectionParameters* c4=new CModelSelectionParameters("sigma");
+	ModelSelectionParameters* c4=new ModelSelectionParameters("sigma");
 	c3->append_child(c4);
 	c4->build_values(0.01, 4.0, R_LINEAR);
 
-	CModelSelectionParameters* c43=new CModelSelectionParameters("df");
+	ModelSelectionParameters* c43=new ModelSelectionParameters("df");
 	c3->append_child(c43);
 	c43->build_values(500.0, 1000.0, R_LINEAR);
 
 
 
-	CModelSelectionParameters* c5 =
-			new CModelSelectionParameters("kernel", kernel);
+	ModelSelectionParameters* c5 =
+			new ModelSelectionParameters("kernel", kernel);
 	c1->append_child(c5);
 
-	CModelSelectionParameters* c6 =
-			new CModelSelectionParameters("width");
+	ModelSelectionParameters* c6 =
+			new ModelSelectionParameters("width");
 	c5->append_child(c6);
 	c6->build_values(0.01, 4.0, R_LINEAR);
 
@@ -106,49 +106,44 @@ int main(int argc, char **argv)
 	SGMatrix<float64_t> matrix2 =
 			SGMatrix<float64_t>(dim_vectors, num_vectors);
 
-	CRegressionLabels* labels=new CRegressionLabels(num_vectors);
+	RegressionLabels* labels=new RegressionLabels(num_vectors);
 
 	build_matrices(matrix2, matrix, labels);
 
 	/* create training features */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t> ();
 	features->set_feature_matrix(matrix);
 
 	/* create testing features */
-	CDenseFeatures<float64_t>* features2=new CDenseFeatures<float64_t> ();
+	DenseFeatures<float64_t>* features2=new DenseFeatures<float64_t> ();
 	features2->set_feature_matrix(matrix2);
 
-	SG_REF(features);
-	SG_REF(features2);
 
-	SG_REF(labels);
 
 	/*Allocate our Kernel*/
-	CGaussianKernel* test_kernel = new CGaussianKernel(10, 2);
+	GaussianKernel* test_kernel = new GaussianKernel(10, 2);
 
 	test_kernel->init(features, features);
 
 	/*Allocate our mean function*/
-	CZeroMean* mean = new CZeroMean();
+	ZeroMean* mean = new ZeroMean();
 
 	/*Allocate our likelihood function*/
-	CStudentsTLikelihood* lik = new CStudentsTLikelihood();
+	StudentsTLikelihood* lik = new StudentsTLikelihood();
 
 	/*Allocate our inference method*/
 	CLaplacianInferenceMethod* inf =
 			new CLaplacianInferenceMethod(test_kernel,
 						  features, mean, labels, lik);
 
-	SG_REF(inf);
 
 	/*Finally use these to allocate the Gaussian Process Object*/
-	CGaussianProcessRegression* gp =
-			new CGaussianProcessRegression(inf);
+	GaussianProcessRegression* gp =
+			new GaussianProcessRegression(inf);
 
-	SG_REF(gp);
 
 	/*Build the parameter tree for model selection*/
-	CModelSelectionParameters* root = build_tree(inf, lik, test_kernel);
+	ModelSelectionParameters* root = build_tree(inf, lik, test_kernel);
 
 	/*Criterion for gradient search*/
 	CGradientCriterion* crit = new CGradientCriterion();
@@ -182,7 +177,7 @@ int main(int argc, char **argv)
 		best_combination->apply_to_machine(gp);
 	}
 
-	CGradientResult* result=(CGradientResult*)grad->evaluate();
+	GradientResult* result=(GradientResult*)grad->evaluate();
 
 	if(result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
@@ -193,7 +188,7 @@ int main(int argc, char **argv)
 	SGVector<float64_t> labe = labels->get_labels();
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
-	CRegressionLabels* predictions=gp->apply_regression(features);
+	RegressionLabels* predictions=gp->apply_regression(features);
 	SGVector<float64_t> variance_vector=gp->get_variance_vector(features);
 
 	alpha.display_vector("Alpha Vector");
@@ -206,15 +201,6 @@ int main(int argc, char **argv)
 	matrix2.display_matrix("Testing Features");
 
 	/*free memory*/
-	SG_UNREF(features);
-	SG_UNREF(features2);
-	SG_UNREF(predictions);
-	SG_UNREF(labels);
-	SG_UNREF(inf);
-	SG_UNREF(gp);
-	SG_UNREF(grad_search);
-	SG_UNREF(best_combination);
-	SG_UNREF(result);
 
 	return 0;
 }

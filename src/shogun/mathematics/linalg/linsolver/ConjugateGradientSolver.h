@@ -13,7 +13,7 @@
 
 namespace shogun
 {
-template<class T> class CLinearOperator;
+template<class T> class LinearOperator;
 template<class T> class SGVector;
 
 /**
@@ -21,18 +21,18 @@ template<class T> class SGVector;
  * involving a real valued linear operator and vector. Useful for large sparse
  * systems involving sparse symmetric and positive-definite matrices.
  */
-class CConjugateGradientSolver : public CIterativeLinearSolver<float64_t, float64_t>
+class ConjugateGradientSolver : public IterativeLinearSolver<float64_t, float64_t>
 {
 
 public:
 	/** default constructor */
-	CConjugateGradientSolver();
+	ConjugateGradientSolver();
 
 	/** one arg constructor */
-	CConjugateGradientSolver(bool store_residuals);
+	ConjugateGradientSolver(bool store_residuals);
 
 	/** destructor */
-	virtual ~CConjugateGradientSolver();
+	virtual ~ConjugateGradientSolver();
 
 	/**
 	 * solve method for solving real linear systems
@@ -41,7 +41,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(CLinearOperator<float64_t>* A,
+	virtual SGVector<float64_t> solve(std::shared_ptr<LinearOperator<float64_t>> A,
 		SGVector<float64_t> b);
 
 	/** @return object name */

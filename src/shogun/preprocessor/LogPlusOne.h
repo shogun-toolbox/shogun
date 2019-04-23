@@ -28,14 +28,14 @@ namespace shogun
  * small counts any difference may matter a lot, while small differences in
  * large counts don't. This is what this log transformation controls for.
  */
-class CLogPlusOne : public CDensePreprocessor<float64_t>
+class LogPlusOne : public DensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */
-		CLogPlusOne();
+		LogPlusOne();
 
 		/** destructor */
-		virtual ~CLogPlusOne();
+		virtual ~LogPlusOne();
 
 		/// cleanup
 		virtual void cleanup();

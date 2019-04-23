@@ -41,14 +41,14 @@ namespace shogun
 
 /** @brief This is the implementation of EM specialized for Mixture models.
  */
-class CEMMixtureModel : public CEMBase<MixModelData>
+class EMMixtureModel : public EMBase<MixModelData>
 {
 	public:
 		/** constructor */
-		CEMMixtureModel();
+		EMMixtureModel();
 
 		/** destructor */
-		virtual ~CEMMixtureModel();
+		virtual ~EMMixtureModel();
 
 		/** returns name of class */
 		virtual const char* get_name() const { return "EMMixtureModel"; }

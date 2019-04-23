@@ -18,15 +18,15 @@
 
 using namespace shogun;
 
-CLibLinearRegression::CLibLinearRegression() :
-	RandomMixin<CLinearMachine>()
+LibLinearRegression::LibLinearRegression() :
+	RandomMixin<LinearMachine>()
 {
 	register_parameters();
 	init_defaults();
 }
 
-CLibLinearRegression::CLibLinearRegression(float64_t C, CDotFeatures* feats, CLabels* labs) :
-	RandomMixin<CLinearMachine>()
+LibLinearRegression::LibLinearRegression(float64_t C, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs) :
+	RandomMixin<LinearMachine>()
 {
 	register_parameters();
 	init_defaults();
@@ -35,7 +35,7 @@ CLibLinearRegression::CLibLinearRegression(float64_t C, CDotFeatures* feats, CLa
 	set_labels(labs);
 }
 
-void CLibLinearRegression::init_defaults()
+void LibLinearRegression::init_defaults()
 {
 	set_C(1.0);
 	set_epsilon(1e-2);
@@ -45,7 +45,7 @@ void CLibLinearRegression::init_defaults()
 	set_liblinear_regression_type(L2R_L1LOSS_SVR_DUAL);
 }
 
-void CLibLinearRegression::register_parameters()
+void LibLinearRegression::register_parameters()
 {
 	SG_ADD(&m_C, "C", "regularization constant", ParameterProperties::HYPER);
 	SG_ADD(
@@ -65,15 +65,15 @@ void CLibLinearRegression::register_parameters()
 	    SG_OPTIONS(L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL, L2R_L2LOSS_SVR_DUAL));
 }
 
-CLibLinearRegression::~CLibLinearRegression()
+LibLinearRegression::~LibLinearRegression()
 {
 }
 
-bool CLibLinearRegression::train_machine(CFeatures* data)
+bool LibLinearRegression::train_machine(std::shared_ptr<Features> data)
 {
 
 	if (data)
-		set_features((CDotFeatures*)data);
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION)
@@ -125,7 +125,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 				Cs[i] = get_C();
 
 			function *fun_obj=new l2r_l2_svr_fun(&prob, Cs, get_tube_epsilon());
-			CTron tron_obj(fun_obj, get_epsilon());
+			Tron tron_obj(fun_obj, get_epsilon());
 			tron_obj.tron(w.vector, m_max_train_time);
 			delete fun_obj;
 			SG_FREE(Cs);
@@ -178,7 +178,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 #define GETI(i) (0)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const liblinear_problem *prob)
+void LibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const liblinear_problem *prob)
 {
 	int l = prob->l;
 	float64_t C = get_C();
@@ -195,7 +195,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	int *index = new int[l];
 
 	float64_t d, G, H;
-	float64_t Gmax_old = CMath::INFTY;
+	float64_t Gmax_old = Math::INFTY;
 	float64_t Gmax_new, Gnorm1_new;
 	float64_t Gnorm1_init = 0.0;
 	SGVector<float64_t> beta(l);
@@ -205,7 +205,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	// L2R_L2LOSS_SVR_DUAL
 	float64_t lambda[1], upper_bound[1];
 	lambda[0] = 0.5/C;
-	upper_bound[0] = CMath::INFTY;
+	upper_bound[0] = Math::INFTY;
 
 	if(m_liblinear_regression_type == L2R_L1LOSS_SVR_DUAL)
 	{
@@ -239,7 +239,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		for(i=0; i<active_size; i++)
 		{
 			int j = uniform_int_dist(m_prng, {i, active_size-1});
-			CMath::swap(index[i], index[j]);
+			Math::swap(index[i], index[j]);
 		}
 
 		for(s=0; s<active_size; s++)
@@ -264,7 +264,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 				else if(Gp>Gmax_old && Gn<-Gmax_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -276,7 +276,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 				else if(Gp < -Gmax_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -288,7 +288,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 				else if(Gn > Gmax_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -298,7 +298,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			else
 				violation = fabs(Gn);
 
-			Gmax_new = CMath::max(Gmax_new, violation);
+			Gmax_new = Math::max(Gmax_new, violation);
 			Gnorm1_new += violation;
 
 			// obtain Newton direction d
@@ -313,7 +313,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 				continue;
 
 			float64_t beta_old = beta[i];
-			beta[i] = CMath::min(CMath::max(beta[i]+d, -upper_bound[GETI(i)]), upper_bound[GETI(i)]);
+			beta[i] = Math::min(Math::max(beta[i]+d, -upper_bound[GETI(i)]), upper_bound[GETI(i)]);
 			d = beta[i]-beta_old;
 
 			if(d != 0)
@@ -330,8 +330,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		iter++;
 
 		pb.print_absolute(
-				Gnorm1_new, -CMath::log10(Gnorm1_new),
-				-CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
+				Gnorm1_new, -Math::log10(Gnorm1_new),
+				-Math::log10(eps * Gnorm1_init), -Math::log10(Gnorm1_init));
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{
@@ -340,7 +340,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			else
 			{
 				active_size = l;
-				Gmax_old = CMath::INFTY;
+				Gmax_old = Math::INFTY;
 				continue;
 			}
 		}

@@ -5,10 +5,39 @@
  */
 
 /* Remove C Prefix */
-%rename(Math) CMath;
-%rename(Statistics) CStatistics;
+%shared_ptr(shogun::Math)
+%shared_ptr(shogun::Statistics)
+
+/* Trace samplers */
+%shared_ptr(shogun::TraceSampler)
+%shared_ptr(shogun::NormalSampler)
+%shared_ptr(shogun::ProbingSampler)
+
+#ifdef USE_FLOAT32
+%shared_ptr(shagun::SparseMatrixOperator<float32_t>)
+#endif
+
+#ifdef USE_FLOAT64
+%shared_ptr(shogun::LinearOperator<float64_t>)
+%shared_ptr(shogun::MatrixOperator<float64_t>)
+%shared_ptr(shagun::SparseMatrixOperator<float64_t>)
+%shared_ptr(shogun::DenseMatrixOperator<float64_t>)
+%shared_ptr(shogun::LinearSolver<float64_t, float64_t>)
+%shared_ptr(shogun::IterativeLinearSolver<float64_t,float64_t>)
+%shared_ptr(shogun::OperatorFunction<float64_t>)
+#endif
+#ifdef USE_COMPLEX128
+%shared_ptr(shogun::LinearOperator<complex128_t>)
+%shared_ptr(shogun::MatrixOperator<complex128_t>)
+%shared_ptr(shogun::SparseMatrixOperator<complex128_t>)
+%shared_ptr(shogun::DenseMatrixOperator<complex128_t>)
+%shared_ptr(shogun::LinearSolver<complex128_t, float64_t>)
+%shared_ptr(shogun::IterativeLinearSolver<complex128_t,float64_t>)
+%shared_ptr(shogun::IterativeShiftedLinearFamilySolver<float64_t,complex128_t>)
+#endif
+
 #ifdef USE_GPL_SHOGUN
-%rename(SparseInverseCovariance) CSparseInverseCovariance;
+%shared_ptr(shogun::SparseInverseCovariance)
 #endif //USE_GPL_SHOGUN
 
 // fix overloaded methods in Math
@@ -17,7 +46,7 @@
 namespace shogun
 {
 #ifdef USE_INT32
-%rename(pow_int32) CMath::pow(int32_t,int32_t);
+%rename(pow_int32) Math::pow(int32_t,int32_t);
 #endif
 
 #ifdef USE_FLOAT32
@@ -25,35 +54,30 @@ namespace shogun
 #endif
 
 #ifdef USE_FLOAT64
-%rename(pow_float64_int32) CMath::pow(float64_t,int32_t);
-%rename(pow_float64_float64) CMath::pow(float64_t,float64_t);
+%rename(pow_float64_int32) Math::pow(float64_t,int32_t);
+%rename(pow_float64_float64) Math::pow(float64_t,float64_t);
 %rename(sqrt_float64) std::sqrt(float64_t);
 }
 #endif
 
 #ifdef USE_COMPLEX128
-%rename(pow_complex128_float64) CMath::pow(complex128_t,float64_t);
-%rename(pow_complex128_int32) CMath::pow(complex128_t,int32_t);
+%rename(shogun::pow_complex128_float64) Math::pow(complex128_t,float64_t)
+%rename(shogun::pow_complex128_int32) Math::pow(complex128_t,int32_t)
 #endif
 
 #endif // defined(SWIGLUA) || defined(SWIGR)
 
 /* Log-det framework */
 
-/* Trace samplers */
-%rename(TraceSampler) CTraceSampler;
-%rename(NormalSampler) CNormalSampler;
-%rename(ProbingSampler) CProbingSampler;
-
 /* Linear operators */
 %include <shogun/mathematics/linalg/linop/LinearOperator.h>
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealLinearOperator) CLinearOperator<float64_t>;
+    %template(RealLinearOperator) LinearOperator<float64_t>;
 #endif
 #ifdef USE_COMPLEX128
-    %template(ComplexLinearOperator) CLinearOperator<complex128_t>;
+    %template(ComplexLinearOperator) LinearOperator<complex128_t>;
 #endif
 }
 
@@ -61,10 +85,10 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealMatrixOperator) CMatrixOperator<float64_t>;
+    %template(RealMatrixOperator) MatrixOperator<float64_t>;
 #endif
 #ifdef USE_COMPLEX128
-    %template(ComplexMatrixOperator) CMatrixOperator<complex128_t>;
+    %template(ComplexMatrixOperator) MatrixOperator<complex128_t>;
 #endif
 }
 
@@ -72,10 +96,10 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealSparseMatrixOperator) CSparseMatrixOperator<float64_t>;
+    %template(RealSparseMatrixOperator) SparseMatrixOperator<float64_t>;
 #endif
 #ifdef USE_COMPLEX128
-    %template(ComplexSparseMatrixOperator) CSparseMatrixOperator<complex128_t>;
+    %template(ComplexSparseMatrixOperator) SparseMatrixOperator<complex128_t>;
 #endif
 }
 
@@ -83,10 +107,10 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealDenseMatrixOperator) CDenseMatrixOperator<float64_t>;
+    %template(RealDenseMatrixOperator) DenseMatrixOperator<float64_t>;
 #endif
 #ifdef USE_COMPLEX128
-    %template(ComplexDenseMatrixOperator) CDenseMatrixOperator<complex128_t>;
+    %template(ComplexDenseMatrixOperator) DenseMatrixOperator<complex128_t>;
 #endif
 }
 
@@ -95,59 +119,59 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealOperatorFunction) COperatorFunction<float64_t>;
+    %template(RealOperatorFunction) OperatorFunction<float64_t>;
 #endif
 }
 
-%rename(RationalApproximation) CRationalApproximation;
-%rename(LogRationalApproximationIndividual) CLogRationalApproximationIndividual;
-%rename(LogRationalApproximationCGM) CLogRationalApproximationCGM;
+%shared_ptr(shogun::RationalApproximation)
+%shared_ptr(shogun::LogRationalApproximationIndividual)
+%shared_ptr(shogun::LogRationalApproximationCGM)
 
 /* Linear solvers */
 %include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 namespace shogun
 {
 #if defined(USE_FLOAT64)
-    %template(RealLinearSolver) CLinearSolver<float64_t,float64_t>;
+    %template(RealLinearSolver) LinearSolver<float64_t,float64_t>;
 #endif
 #if defined(USE_FLOAT64) && defined(USE_COMPLEX128)
-    %template(ComplexRealLinearSolver) CLinearSolver<complex128_t,float64_t>;
+    %template(ComplexRealLinearSolver) LinearSolver<complex128_t,float64_t>;
 #endif
 }
 
-%rename(DirectSparseLinearSolver) CDirectSparseLinearSolver;
+%shared_ptr(shogun::DirectSparseLinearSolver)
 #ifdef USE_COMPLEX128
-  %rename(DirectLinearSolverComplex) CDirectLinearSolverComplex;
+  %shared_ptr(shogun::DirectLinearSolverComplex)
 #endif
 
 %include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
 namespace shogun
 {
 #if defined(USE_FLOAT64)
-    %template(RealIterativeLinearSolver) CIterativeLinearSolver<float64_t,float64_t>;
+    %template(RealIterativeLinearSolver) IterativeLinearSolver<float64_t,float64_t>;
 #endif
 #if defined(USE_FLOAT64) && defined(USE_COMPLEX128)
-    %template(ComplexRealIterativeLinearSolver) CIterativeLinearSolver<complex128_t,float64_t>;
+    %template(ComplexRealIterativeLinearSolver) IterativeLinearSolver<complex128_t,float64_t>;
 #endif
 }
 
-%rename (ConjugateGradientSolver) CConjugateGradientSolver;
-%rename (ConjugateOrthogonalCGSolver) CConjugateOrthogonalCGSolver;
+%shared_ptr(shogun::ConjugateGradientSolver)
+%shared_ptr(shogun::ConjugateOrthogonalCGSolver)
 
 %include <shogun/mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
 namespace shogun
 {
 #if defined(USE_FLOAT64) && defined(USE_COMPLEX128)
-    %template(RealComplexIterativeShiftedLinearSolver) CIterativeShiftedLinearFamilySolver<float64_t,complex128_t>;
+    %template(RealComplexIterativeShiftedLinearSolver) IterativeShiftedLinearFamilySolver<float64_t,complex128_t>;
 #endif
 }
 
-%rename(CGMShiftedFamilySolver) CCGMShiftedFamilySolver;
+%shared_ptr(shogun::CGMShiftedFamilySolver)
 
-%rename(EigenSolver) CEigenSolver;
-%rename(LanczosEigenSolver) CLanczosEigenSolver;
+%shared_ptr(shogun::EigenSolver)
+%shared_ptr(shogun::LanczosEigenSolver)
 
-%rename(LogDetEstimator) CLogDetEstimator;
+%shared_ptr(shogun::LogDetEstimator)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/mathematics/Math.h>

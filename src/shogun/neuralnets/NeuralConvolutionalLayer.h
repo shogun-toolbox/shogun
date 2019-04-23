@@ -72,11 +72,11 @@ enum EInitializationMode
  *
  * The layer assumes that its input images are in column major format
  */
-class CNeuralConvolutionalLayer : public CNeuralLayer
+class NeuralConvolutionalLayer : public NeuralLayer
 {
 public:
 	/** default constructor */
-	CNeuralConvolutionalLayer();
+	NeuralConvolutionalLayer();
 
 	/** Constuctor
 	 *
@@ -98,14 +98,14 @@ public:
 	 *
 	 * @param stride_y Stride in the y direction for convolution
 	 */
-	CNeuralConvolutionalLayer(EConvMapActivationFunction function,
+	NeuralConvolutionalLayer(EConvMapActivationFunction function,
 		int32_t num_maps,
 		int32_t radius_x, int32_t radius_y,
 		int32_t pooling_width=1, int32_t pooling_height=1,
 		int32_t stride_x=1, int32_t stride_y=1,
 		EInitializationMode initialization_mode=NORMAL);
 	
-	virtual ~CNeuralConvolutionalLayer() {}
+	virtual ~NeuralConvolutionalLayer() {}
 
 	/** Sets the batch_size and allocates memory for m_activations and
 	 * m_input_gradients accordingly. Must be called before forward or backward
@@ -125,7 +125,7 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize_neural_layer(CDynamicObjectArray* layers,
+	virtual void initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
 			SGVector<int32_t> input_indices);
 
 	/** Initializes the layer's parameters. The layer should fill the given
@@ -156,7 +156,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			std::shared_ptr<DynamicObjectArray> layers);
 
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
@@ -185,7 +185,7 @@ public:
 	 */
 	virtual void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> targets,
-			CDynamicObjectArray* layers,
+			std::shared_ptr<DynamicObjectArray> layers,
 			SGVector<float64_t> parameter_gradients);
 
 	/** Computes the error between the layer's current activations and the given

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, Thoralf Klein, 
- *          Evan Shelhamer, Yuyu Zhang, Weijie Lin, Fernando Iglesias, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, Thoralf Klein,
+ *          Evan Shelhamer, Yuyu Zhang, Weijie Lin, Fernando Iglesias,
  *          Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-template <class T> class CDynamicArray;
+template <class T> class DynamicArray;
 
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
@@ -28,9 +28,9 @@ template <class T> class CDynamicArray;
  */
 template <class T> class DynArray
 {
-	template<class U> friend class CDynamicArray;
-	friend class CDynamicObjectArray;
-	friend class CCommUlongStringKernel;
+	template<class U> friend class DynamicArray;
+	friend class DynamicObjectArray;
+	friend class CommUlongStringKernel;
 
 	public:
 		typedef RandomIterator<T> iterator;

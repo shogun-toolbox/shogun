@@ -9,24 +9,24 @@
 
 using namespace shogun;
 
-CGraphCut::CGraphCut()
-	: CMAPInferImpl()
+GraphCut::GraphCut()
+	: MAPInferImpl()
 {
 	unstable(SOURCE_LOCATION);
 
 	init();
 }
 
-CGraphCut::CGraphCut(CFactorGraph* fg)
-	: CMAPInferImpl(fg)
+GraphCut::GraphCut(std::shared_ptr<FactorGraph> fg)
+	: MAPInferImpl(fg)
 {
 	ASSERT(m_fg != NULL);
 
 	init();
 }
 
-CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
-	: CMAPInferImpl()
+GraphCut::GraphCut(int32_t num_nodes, int32_t num_edges)
+	: MAPInferImpl()
 {
 	init();
 
@@ -35,7 +35,7 @@ CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
 	build_st_graph(m_num_nodes, num_edges);
 }
 
-CGraphCut::~CGraphCut()
+GraphCut::~GraphCut()
 {
 	if (m_nodes!=NULL)
 		SG_FREE(m_nodes);
@@ -44,7 +44,7 @@ CGraphCut::~CGraphCut()
 		SG_FREE(m_edges);
 }
 
-void CGraphCut::init()
+void GraphCut::init()
 {
 	m_nodes = NULL;
 	m_edges = NULL;
@@ -66,7 +66,7 @@ void CGraphCut::init()
 	if (m_fg == NULL)
 		return;
 
-	CDynamicObjectArray* facs = m_fg->get_factors();
+	auto facs = m_fg->get_factors();
 
 	SGVector<int32_t> cards = m_fg->get_cardinalities();
 
@@ -83,11 +83,11 @@ void CGraphCut::init()
 
 	for (int32_t i = 0; i < facs->get_num_elements(); i++)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(i));
+		auto fac = facs->get_element<Factor>(i);
 
 		int32_t num_vars = fac->get_num_vars();
 
-		SG_UNREF(fac);
+
 
 		if (num_vars > 3)
 		{
@@ -107,15 +107,15 @@ void CGraphCut::init()
 
 	for (int32_t j = 0; j < m_fg->get_num_factors(); j++)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(j));
+		auto fac = facs->get_element<Factor>(j);
 		add_factor(fac);
-		SG_UNREF(fac);
+
 	}
 
-	SG_UNREF(facs);
+
 }
 
-void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
+void GraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 {
 	m_num_nodes = num_nodes;
 
@@ -144,7 +144,7 @@ void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 	m_timestamp = 0;
 }
 
-void CGraphCut::init_maxflow()
+void GraphCut::init_maxflow()
 {
 	GCNode* node_i;
 
@@ -186,7 +186,7 @@ void CGraphCut::init_maxflow()
 	}
 }
 
-float64_t CGraphCut::inference(SGVector<int32_t> assignment)
+float64_t GraphCut::inference(SGVector<int32_t> assignment)
 {
 	require(assignment.size() == m_fg->get_cardinalities().size(),
 	        "{}::inference(): the output assignment should be prepared as"
@@ -208,7 +208,7 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	return m_map_energy;
 }
 
-void CGraphCut::add_factor(CFactor* factor)
+void GraphCut::add_factor(std::shared_ptr<Factor> factor)
 {
 	SGVector<int32_t> fcards = factor->get_cardinalities();
 
@@ -400,7 +400,7 @@ void CGraphCut::add_factor(CFactor* factor)
 	}
 }
 
-int32_t CGraphCut::get_tripleId(SGVector<int32_t> triple)
+int32_t GraphCut::get_tripleId(SGVector<int32_t> triple)
 {
 	// search for triple in list
 	int32_t counter = m_num_variables;
@@ -424,7 +424,7 @@ int32_t CGraphCut::get_tripleId(SGVector<int32_t> triple)
 	return counter;
 }
 
-void CGraphCut::add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink)
+void GraphCut::add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink)
 {
 	ASSERT(i >= 0 && i < m_num_nodes);
 
@@ -444,7 +444,7 @@ void CGraphCut::add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink
 	m_nodes[i].tree_cap = cap_source - cap_sink;
 }
 
-void CGraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t reverse_capacity)
+void GraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t reverse_capacity)
 {
 	ASSERT(i >= 0 && i < m_num_nodes);
 	ASSERT(j >= 0 && j < m_num_nodes);
@@ -472,7 +472,7 @@ void CGraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t rev
 	e_rev->residual_capacity = reverse_capacity;
 }
 
-void CGraphCut::set_active(GCNode* node_i)
+void GraphCut::set_active(GCNode* node_i)
 {
 	if (node_i->next == NULL)
 	{
@@ -491,7 +491,7 @@ void CGraphCut::set_active(GCNode* node_i)
 	}
 }
 
-GCNode* CGraphCut::next_active()
+GCNode* GraphCut::next_active()
 {
 	// Returns the next active node. If it is connected to the sink,
 	// it stays in the list, otherwise it is removed from the list.
@@ -533,7 +533,7 @@ GCNode* CGraphCut::next_active()
 	}
 }
 
-float64_t CGraphCut::compute_maxflow()
+float64_t GraphCut::compute_maxflow()
 {
 	GCNode* current_node = NULL;
 	bool active_set_found = true;
@@ -574,7 +574,7 @@ float64_t CGraphCut::compute_maxflow()
 	return m_flow;
 }
 
-bool CGraphCut::grow(GCEdge* &edge, GCNode* &current_node)
+bool GraphCut::grow(GCEdge* &edge, GCNode* &current_node)
 {
 	GCNode* node_i, *node_j;
 
@@ -670,7 +670,7 @@ bool CGraphCut::grow(GCEdge* &edge, GCNode* &current_node)
 	return true;
 }
 
-void CGraphCut::augment_path(GCEdge* connecting_edge)
+void GraphCut::augment_path(GCEdge* connecting_edge)
 {
 	GCNode* node_i;
 	GCEdge* edge;
@@ -781,7 +781,7 @@ void CGraphCut::augment_path(GCEdge* connecting_edge)
 	m_flow += bottleneck;
 }
 
-void CGraphCut::adopt()
+void GraphCut::adopt()
 {
 	GCNodePtr* np, *np_next;
 	GCNode* node_i;
@@ -809,7 +809,7 @@ void CGraphCut::adopt()
 	}
 }
 
-void CGraphCut::set_orphan_front(GCNode* node_i)
+void GraphCut::set_orphan_front(GCNode* node_i)
 {
 	GCNodePtr* np;
 	node_i->parent = ORPHAN_EDGE;
@@ -819,7 +819,7 @@ void CGraphCut::set_orphan_front(GCNode* node_i)
 	m_orphan_first = np;
 }
 
-void CGraphCut::set_orphan_rear(GCNode* node_i)
+void GraphCut::set_orphan_rear(GCNode* node_i)
 {
 	GCNodePtr* np;
 	node_i->parent = ORPHAN_EDGE;
@@ -839,7 +839,7 @@ void CGraphCut::set_orphan_rear(GCNode* node_i)
 	np->next = NULL;
 }
 
-void CGraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
+void GraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
 {
 	GCNode* node_j;
 	GCEdge* edge0;
@@ -937,7 +937,7 @@ void CGraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
 	}
 }
 
-ETerminalType CGraphCut::get_assignment(int32_t i, ETerminalType default_terminal)
+ETerminalType GraphCut::get_assignment(int32_t i, ETerminalType default_terminal)
 {
 	if (m_nodes[i].parent != NULL)
 	{
@@ -949,7 +949,7 @@ ETerminalType CGraphCut::get_assignment(int32_t i, ETerminalType default_termina
 	}
 }
 
-void CGraphCut::print_graph()
+void GraphCut::print_graph()
 {
 	// print SOURCE-node_i and node_i->SINK edges
 	for (int32_t i = 0; i < m_num_nodes; i++)
@@ -977,7 +977,7 @@ void CGraphCut::print_graph()
 
 }
 
-void CGraphCut::print_assignment()
+void GraphCut::print_assignment()
 {
 	for (int32_t i = 0; i < m_num_nodes; i++)
 	{
@@ -994,7 +994,7 @@ void CGraphCut::print_assignment()
 	}
 }
 
-void CGraphCut::test_consistency(GCNode* current_node)
+void GraphCut::test_consistency(GCNode* current_node)
 {
 	GCNode* node_i;
 	GCEdge* edge;

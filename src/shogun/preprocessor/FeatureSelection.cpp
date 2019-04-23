@@ -40,13 +40,13 @@ namespace shogun
 {
 
 template <class ST>
-CFeatureSelection<ST>::CFeatureSelection() : CPreprocessor()
+FeatureSelection<ST>::FeatureSelection() : Preprocessor()
 {
 	initialize_parameters();
 }
 
 template <class ST>
-void CFeatureSelection<ST>::initialize_parameters()
+void FeatureSelection<ST>::initialize_parameters()
 {
 	SG_ADD(&m_target_dim, "target_dim", "target dimension");
 	SG_ADD(
@@ -54,10 +54,10 @@ void CFeatureSelection<ST>::initialize_parameters()
 		"number or percentage of features to "
 		"be removed");
 	SG_ADD(
-		(CSGObject**)&m_labels, "labels",
+		(std::shared_ptr<SGObject>*)&m_labels, "labels",
 		"the class labels for the features");
 	SG_ADD(
-		(CSGObject**)&m_subset, "subset", "indices of selected features");
+		(std::shared_ptr<SGObject>*)&m_subset, "subset", "indices of selected features");
 	SG_ADD_OPTIONS(
 		(machine_int_t*)&m_policy, "policy", "feature removal policy",
 		ParameterProperties::NONE,
@@ -72,25 +72,25 @@ void CFeatureSelection<ST>::initialize_parameters()
 	m_policy=N_LARGEST;
 	m_num_remove=1;
 	m_labels=NULL;
-	m_subset=new CSubsetStack();
+	m_subset=std::make_shared<SubsetStack>();
 }
 
 template <class ST>
-CFeatureSelection<ST>::~CFeatureSelection()
+FeatureSelection<ST>::~FeatureSelection()
 {
-	SG_UNREF(m_labels);
-	SG_UNREF(m_subset);
+
+
 }
 
 
 template <class ST>
-void CFeatureSelection<ST>::cleanup()
+void FeatureSelection<ST>::cleanup()
 {
 	m_subset->remove_all_subsets();
 }
 
 template <class ST>
-CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features)
+std::shared_ptr<Features> FeatureSelection<ST>::apply_backward_elimination(std::shared_ptr<Features> features)
 {
 	SG_TRACE("Entering!");
 
@@ -117,7 +117,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 			measures.display_vector("measures");
 
 		// rank the measures
-		SGVector<index_t> argsorted=CMath::argsort(measures);
+		SGVector<index_t> argsorted=Math::argsort(measures);
 
 		if (env()->io()->get_loglevel()<=io::MSG_DEBUG)
 			argsorted.display_vector("argsorted");
@@ -176,7 +176,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 }
 
 template <class ST>
-CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features> FeatureSelection<ST>::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	SG_TRACE("Entering!");
 
@@ -202,7 +202,7 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 	// this method makes a deep copy of the feature object and performs
 	// feature selection on it. This is already SG_REF'ed because of the
 	// implementation of clone()
-	CFeatures* feats_copy=(CFeatures*)features->clone();
+	auto feats_copy=features->clone()->as<Features>();
 
 	switch (m_algorithm)
 	{
@@ -217,8 +217,8 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 }
 
 template <class ST>
-CFeatures*
-CFeatureSelection<ST>::inverse_transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features>
+FeatureSelection<ST>::inverse_transform(std::shared_ptr<Features> features, bool inplace)
 {
 	not_implemented(SOURCE_LOCATION);;
 
@@ -226,17 +226,17 @@ CFeatureSelection<ST>::inverse_transform(CFeatures* features, bool inplace)
 }
 
 template <class ST>
-void CFeatureSelection<ST>::precompute()
+void FeatureSelection<ST>::precompute()
 {
 }
 
 template <class ST>
-void CFeatureSelection<ST>::adapt_params(CFeatures* features)
+void FeatureSelection<ST>::adapt_params(std::shared_ptr<Features> features)
 {
 }
 
 template <class ST>
-SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
+SGVector<index_t> FeatureSelection<ST>::get_selected_feats()
 {
 	ASSERT(m_subset);
 
@@ -246,14 +246,14 @@ SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
 		inds=SGVector<index_t>(m_subset->get_size());
 		for (index_t i=0; i<inds.vlen; ++i)
 			inds[i]=m_subset->subset_idx_conversion(i);
-		CMath::qsort(inds);
+		Math::qsort(inds);
 	}
 
 	return inds;
 }
 
 template <class ST>
-index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
+index_t FeatureSelection<ST>::get_num_features(std::shared_ptr<Features> features) const
 {
 	require(features, "Features not initialized!");
 
@@ -263,13 +263,13 @@ index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 	{
 		case C_DENSE:
 		{
-			CDenseFeatures<ST>* d_feats=dynamic_cast<CDenseFeatures<ST>*>(features);
+			auto d_feats=features->as<DenseFeatures<ST>>();
 			require(d_feats, "Type mismatch for dense features!");
 			return d_feats->get_num_features();
 		}
 		case C_SPARSE:
 		{
-			CSparseFeatures<ST>* s_feats=dynamic_cast<CSparseFeatures<ST>*>(features);
+			auto s_feats=features->as<SparseFeatures<ST>>();
 			require(s_feats, "Type mismatch for sparse features!");
 			return s_feats->get_num_features();
 		}
@@ -283,158 +283,158 @@ index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 }
 
 template <class ST>
-void CFeatureSelection<ST>::set_target_dim(index_t target_dim)
+void FeatureSelection<ST>::set_target_dim(index_t target_dim)
 {
 	m_target_dim=target_dim;
 }
 
 template <class ST>
-index_t CFeatureSelection<ST>::get_target_dim() const
+index_t FeatureSelection<ST>::get_target_dim() const
 {
 	return m_target_dim;
 }
 
 template <class ST>
-EFeatureSelectionAlgorithm CFeatureSelection<ST>::get_algorithm() const
+EFeatureSelectionAlgorithm FeatureSelection<ST>::get_algorithm() const
 {
 	return m_algorithm;
 }
 
 template <class ST>
-EFeatureRemovalPolicy CFeatureSelection<ST>::get_policy() const
+EFeatureRemovalPolicy FeatureSelection<ST>::get_policy() const
 {
 	return m_policy;
 }
 
 template <class ST>
-void CFeatureSelection<ST>::set_num_remove(index_t num_remove)
+void FeatureSelection<ST>::set_num_remove(index_t num_remove)
 {
 	m_num_remove=num_remove;
 }
 
 template <class ST>
-index_t CFeatureSelection<ST>::get_num_remove() const
+index_t FeatureSelection<ST>::get_num_remove() const
 {
 	return m_num_remove;
 }
 
 template <class ST>
-void CFeatureSelection<ST>::set_labels(CLabels* labels)
+void FeatureSelection<ST>::set_labels(std::shared_ptr<Labels> labels)
 {
-	SG_REF(labels);
-	SG_UNREF(m_labels);
+
+
 	m_labels=labels;
 }
 
 template <class ST>
-CLabels* CFeatureSelection<ST>::get_labels() const
+std::shared_ptr<Labels> FeatureSelection<ST>::get_labels() const
 {
-	SG_REF(m_labels);
+
 	return m_labels;
 }
 
 template <class ST>
-EFeatureClass CFeatureSelection<ST>::get_feature_class()
+EFeatureClass FeatureSelection<ST>::get_feature_class()
 {
 	return C_ANY;
 }
 
 template <class ST>
-EPreprocessorType CFeatureSelection<ST>::get_type() const
+EPreprocessorType FeatureSelection<ST>::get_type() const
 {
 	return P_UNKNOWN;
 }
 
 template<>
-EFeatureType CFeatureSelection<floatmax_t>::get_feature_type()
+EFeatureType FeatureSelection<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
 }
 
 template<>
-EFeatureType CFeatureSelection<float64_t>::get_feature_type()
+EFeatureType FeatureSelection<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }
 
 template<>
-EFeatureType CFeatureSelection<float32_t>::get_feature_type()
+EFeatureType FeatureSelection<float32_t>::get_feature_type()
 {
 	return F_SHORTREAL;
 }
 
 template<>
-EFeatureType CFeatureSelection<int16_t>::get_feature_type()
+EFeatureType FeatureSelection<int16_t>::get_feature_type()
 {
 	return F_SHORT;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint16_t>::get_feature_type()
+EFeatureType FeatureSelection<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }
 
 template<>
-EFeatureType CFeatureSelection<char>::get_feature_type()
+EFeatureType FeatureSelection<char>::get_feature_type()
 {
 	return F_CHAR;
 }
 
 template<>
-EFeatureType CFeatureSelection<int8_t>::get_feature_type()
+EFeatureType FeatureSelection<int8_t>::get_feature_type()
 {
 	return F_CHAR;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint8_t>::get_feature_type()
+EFeatureType FeatureSelection<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }
 
 template<>
-EFeatureType CFeatureSelection<int32_t>::get_feature_type()
+EFeatureType FeatureSelection<int32_t>::get_feature_type()
 {
 	return F_INT;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint32_t>::get_feature_type()
+EFeatureType FeatureSelection<uint32_t>::get_feature_type()
 {
 	return F_UINT;
 }
 
 template<>
-EFeatureType CFeatureSelection<int64_t>::get_feature_type()
+EFeatureType FeatureSelection<int64_t>::get_feature_type()
 {
 	return F_LONG;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint64_t>::get_feature_type()
+EFeatureType FeatureSelection<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }
 
 template<>
-EFeatureType CFeatureSelection<bool>::get_feature_type()
+EFeatureType FeatureSelection<bool>::get_feature_type()
 {
 	return F_BOOL;
 }
 
-template class CFeatureSelection<bool>;
-template class CFeatureSelection<char>;
-template class CFeatureSelection<int8_t>;
-template class CFeatureSelection<uint8_t>;
-template class CFeatureSelection<int16_t>;
-template class CFeatureSelection<uint16_t>;
-template class CFeatureSelection<int32_t>;
-template class CFeatureSelection<uint32_t>;
-template class CFeatureSelection<int64_t>;
-template class CFeatureSelection<uint64_t>;
-template class CFeatureSelection<float32_t>;
-template class CFeatureSelection<float64_t>;
-template class CFeatureSelection<floatmax_t>;
+template class FeatureSelection<bool>;
+template class FeatureSelection<char>;
+template class FeatureSelection<int8_t>;
+template class FeatureSelection<uint8_t>;
+template class FeatureSelection<int16_t>;
+template class FeatureSelection<uint16_t>;
+template class FeatureSelection<int32_t>;
+template class FeatureSelection<uint32_t>;
+template class FeatureSelection<int64_t>;
+template class FeatureSelection<uint64_t>;
+template class FeatureSelection<float32_t>;
+template class FeatureSelection<float64_t>;
+template class FeatureSelection<floatmax_t>;
 
 }

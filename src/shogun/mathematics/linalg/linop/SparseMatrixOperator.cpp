@@ -16,24 +16,24 @@ namespace shogun
 {
 
 template<class T>
-CSparseMatrixOperator<T>::CSparseMatrixOperator()
-	: CMatrixOperator<T>()
+SparseMatrixOperator<T>::SparseMatrixOperator()
+	: MatrixOperator<T>()
 	{
 		init();
 	}
 
 template<class T>
-CSparseMatrixOperator<T>::CSparseMatrixOperator(SGSparseMatrix<T> op)
-	: CMatrixOperator<T>(op.num_features),
+SparseMatrixOperator<T>::SparseMatrixOperator(SGSparseMatrix<T> op)
+	: MatrixOperator<T>(op.num_features),
 	  m_operator(op)
 	{
 		init();
 	}
 
 template<class T>
-CSparseMatrixOperator<T>::CSparseMatrixOperator
-	(const CSparseMatrixOperator<T>& orig)
-	: CMatrixOperator<T>(orig.get_dimension())
+SparseMatrixOperator<T>::SparseMatrixOperator
+	(const SparseMatrixOperator<T>& orig)
+	: MatrixOperator<T>(orig.get_dimension())
 	{
 		init();
 
@@ -60,31 +60,31 @@ CSparseMatrixOperator<T>::CSparseMatrixOperator
 	}
 
 template<class T>
-void CSparseMatrixOperator<T>::init()
+void SparseMatrixOperator<T>::init()
 	{
-		CSGObject::set_generic<T>();
+		SGObject::set_generic<T>();
 	}
 
 template<class T>
-CSparseMatrixOperator<T>::~CSparseMatrixOperator()
+SparseMatrixOperator<T>::~SparseMatrixOperator()
 	{
 	}
 
 template<class T>
-SGSparseMatrix<T> CSparseMatrixOperator<T>::get_matrix_operator() const
+SGSparseMatrix<T> SparseMatrixOperator<T>::get_matrix_operator() const
 	{
 		return m_operator;
 	}
 
 template<class T>
-SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
+SparsityStructure* SparseMatrixOperator<T>::get_sparsity_structure(
 	int64_t power) const
 	{
 		require(power>0, "matrix-power is non-positive!");
 
 		// create casted operator in bool for capturing the sparsity
-		CSparseMatrixOperator<bool>* sp_str
-			=static_cast<CSparseMatrixOperator<bool>*>(*this);
+		SparseMatrixOperator<bool>* sp_str
+			=static_cast<SparseMatrixOperator<bool>*>(*this);
 
 		// eigen3 map for this sparse matrix in which we compute current power
 		Eigen::SparseMatrix<bool> current_power
@@ -123,14 +123,12 @@ SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
 		int32_t* outerIndexPtr=const_cast<int32_t*>(matrix_power.outerIndexPtr());
 		int32_t* innerIndexPtr=const_cast<int32_t*>(matrix_power.innerIndexPtr());
 
-		SG_UNREF(sp_str);
-
 		return new SparsityStructure(outerIndexPtr, innerIndexPtr,
 			matrix_power.rows());
 	}
 
 template<> \
-SparsityStructure* CSparseMatrixOperator<complex128_t>
+SparsityStructure* SparseMatrixOperator<complex128_t>
 	::get_sparsity_structure(int64_t power) const
   {
     error("Not supported for complex128_t");
@@ -138,7 +136,7 @@ SparsityStructure* CSparseMatrixOperator<complex128_t>
   }
 
 template<class T>
-SGVector<T> CSparseMatrixOperator<T>::get_diagonal() const
+SGVector<T> SparseMatrixOperator<T>::get_diagonal() const
 	{
 		require(m_operator.sparse_matrix, "Operator not initialized!");
 
@@ -164,7 +162,7 @@ SGVector<T> CSparseMatrixOperator<T>::get_diagonal() const
 	}
 
 template<class T>
-void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
+void SparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	{
 		require(m_operator.sparse_matrix, "Operator not initialized!");
 		require(diag.vector, "Diagonal not initialized!");
@@ -208,7 +206,7 @@ void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	}
 
 template<class T>
-SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
+SGVector<T> SparseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
 		require(m_operator.sparse_matrix, "Operator not initialized!");
 		require(this->get_dimension()==b.vlen,
@@ -223,7 +221,7 @@ SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
 
 #define UNDEFINED(type) \
 template<> \
-SGVector<type> CSparseMatrixOperator<type>::apply(SGVector<type> b) const \
+SGVector<type> SparseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
 		error("Not supported for {}", #type);\
 		return b; \
@@ -243,18 +241,18 @@ UNDEFINED(float32_t)
 UNDEFINED(floatmax_t)
 #undef UNDEFINED
 
-template class CSparseMatrixOperator<bool>;
-template class CSparseMatrixOperator<char>;
-template class CSparseMatrixOperator<int8_t>;
-template class CSparseMatrixOperator<uint8_t>;
-template class CSparseMatrixOperator<int16_t>;
-template class CSparseMatrixOperator<uint16_t>;
-template class CSparseMatrixOperator<int32_t>;
-template class CSparseMatrixOperator<uint32_t>;
-template class CSparseMatrixOperator<int64_t>;
-template class CSparseMatrixOperator<uint64_t>;
-template class CSparseMatrixOperator<float32_t>;
-template class CSparseMatrixOperator<float64_t>;
-template class CSparseMatrixOperator<floatmax_t>;
-template class CSparseMatrixOperator<complex128_t>;
+template class SparseMatrixOperator<bool>;
+template class SparseMatrixOperator<char>;
+template class SparseMatrixOperator<int8_t>;
+template class SparseMatrixOperator<uint8_t>;
+template class SparseMatrixOperator<int16_t>;
+template class SparseMatrixOperator<uint16_t>;
+template class SparseMatrixOperator<int32_t>;
+template class SparseMatrixOperator<uint32_t>;
+template class SparseMatrixOperator<int64_t>;
+template class SparseMatrixOperator<uint64_t>;
+template class SparseMatrixOperator<float32_t>;
+template class SparseMatrixOperator<float64_t>;
+template class SparseMatrixOperator<floatmax_t>;
+template class SparseMatrixOperator<complex128_t>;
 }

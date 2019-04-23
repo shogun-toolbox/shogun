@@ -11,16 +11,16 @@
 
 using namespace shogun;
 
-CSigmoidCalibration::CSigmoidCalibration() : CCalibration()
+SigmoidCalibration::SigmoidCalibration() : Calibration()
 {
 	init();
 }
 
-CSigmoidCalibration::~CSigmoidCalibration()
+SigmoidCalibration::~SigmoidCalibration()
 {
 }
 
-void CSigmoidCalibration::init()
+void SigmoidCalibration::init()
 {
 	m_maxiter = 100;
 	m_minstep = 1E-10;
@@ -43,52 +43,52 @@ void CSigmoidCalibration::init()
 	SG_ADD(&m_epsilon, "m_epsilon", "Stopping criteria.");
 }
 
-void CSigmoidCalibration::set_maxiter(index_t maxiter)
+void SigmoidCalibration::set_maxiter(index_t maxiter)
 {
 	m_maxiter = maxiter;
 }
 
-index_t CSigmoidCalibration::get_maxiter()
+index_t SigmoidCalibration::get_maxiter()
 {
 	return m_maxiter;
 }
 
-void CSigmoidCalibration::set_minstep(float64_t minstep)
+void SigmoidCalibration::set_minstep(float64_t minstep)
 {
 	m_minstep = minstep;
 }
 
-float64_t CSigmoidCalibration::get_minstep()
+float64_t SigmoidCalibration::get_minstep()
 {
 	return m_minstep;
 }
 
-void CSigmoidCalibration::set_sigma(float64_t sigma)
+void SigmoidCalibration::set_sigma(float64_t sigma)
 {
 	m_sigma = sigma;
 }
 
-float64_t CSigmoidCalibration::get_sigma()
+float64_t SigmoidCalibration::get_sigma()
 {
 	return m_sigma;
 }
 
-void CSigmoidCalibration::set_epsilon(float64_t epsilon)
+void SigmoidCalibration::set_epsilon(float64_t epsilon)
 {
 	m_epsilon = epsilon;
 }
 
-float64_t CSigmoidCalibration::get_epsilon()
+float64_t SigmoidCalibration::get_epsilon()
 {
 	return m_epsilon;
 }
 
-bool CSigmoidCalibration::fit_binary(
-    CBinaryLabels* predictions, CBinaryLabels* targets)
+bool SigmoidCalibration::fit_binary(
+    std::shared_ptr<BinaryLabels> predictions, std::shared_ptr<BinaryLabels> targets)
 {
 	m_sigmoid_as.resize_vector(1);
 	m_sigmoid_bs.resize_vector(1);
-	auto sigmoid_params = CStatistics::fit_sigmoid(
+	auto sigmoid_params = Statistics::fit_sigmoid(
 	    predictions->get_values(), targets->get_labels(), m_maxiter, m_minstep,
 	    m_sigma, m_epsilon);
 
@@ -98,24 +98,22 @@ bool CSigmoidCalibration::fit_binary(
 	return true;
 }
 
-CBinaryLabels* CSigmoidCalibration::calibrate_binary(CBinaryLabels* predictions)
+std::shared_ptr<BinaryLabels> SigmoidCalibration::calibrate_binary(std::shared_ptr<BinaryLabels> predictions)
 {
 	require(
 	    m_sigmoid_as.size() == 1,
 	    "Parameters not fitted, which need to be fitted before calibrating.");
-	CStatistics::SigmoidParamters params;
+	Statistics::SigmoidParamters params;
 	params.a = m_sigmoid_as[0];
 	params.b = m_sigmoid_bs[0];
 
 	auto probabilities = calibrate_values(predictions->get_values(), params);
 
-	CBinaryLabels* calibrated_predictions = new CBinaryLabels(probabilities);
-
-	return calibrated_predictions;
+	return std::make_shared<BinaryLabels>(probabilities);
 }
 
-bool CSigmoidCalibration::fit_multiclass(
-    CMulticlassLabels* predictions, CMulticlassLabels* targets)
+bool SigmoidCalibration::fit_multiclass(
+    std::shared_ptr<MulticlassLabels> predictions, std::shared_ptr<MulticlassLabels> targets)
 {
 	index_t num_classes = predictions->get_num_classes();
 
@@ -128,20 +126,20 @@ bool CSigmoidCalibration::fit_multiclass(
 		auto pred_values = predictions->get_confidences_for_class(i);
 		auto target_labels = class_targets->get_labels();
 
-		auto sigmoid_params = CStatistics::fit_sigmoid(
+		auto sigmoid_params = Statistics::fit_sigmoid(
 		    pred_values, target_labels, m_maxiter, m_minstep, m_sigma,
 		    m_epsilon);
 		m_sigmoid_as[i] = sigmoid_params.a;
 		m_sigmoid_bs[i] = sigmoid_params.b;
 
-		SG_UNREF(class_targets);
+
 	}
 
 	return true;
 }
 
-CMulticlassLabels*
-CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
+std::shared_ptr<MulticlassLabels>
+SigmoidCalibration::calibrate_multiclass(std::shared_ptr<MulticlassLabels> predictions)
 {
 	index_t num_classes = predictions->get_num_classes();
 	index_t num_samples = predictions->get_num_labels();
@@ -156,7 +154,7 @@ CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
 	{
 		auto class_values = predictions->get_confidences_for_class(i);
 
-		CStatistics::SigmoidParamters sigmoid_params;
+		Statistics::SigmoidParamters sigmoid_params;
 		sigmoid_params.a = m_sigmoid_as[i];
 		sigmoid_params.b = m_sigmoid_bs[i];
 
@@ -166,7 +164,7 @@ CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
 		confidence_values.set_column(i, calibrated_values);
 	}
 
-	auto result_labels = new CMulticlassLabels(num_samples);
+	auto result_labels = std::make_shared<MulticlassLabels>(num_samples);
 	result_labels->allocate_confidences_for(num_classes);
 
 	/** Normalize the probabilities. */
@@ -185,8 +183,8 @@ CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
 	return result_labels;
 }
 
-SGVector<float64_t> CSigmoidCalibration::calibrate_values(
-    SGVector<float64_t> values, CStatistics::SigmoidParamters params)
+SGVector<float64_t> SigmoidCalibration::calibrate_values(
+    SGVector<float64_t> values, Statistics::SigmoidParamters params)
 {
 	/** Calibrate values by passing them to a sigmoid function. */
 	for (index_t i = 0; i < values.vlen; ++i)

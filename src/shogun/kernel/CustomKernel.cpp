@@ -17,18 +17,18 @@
 using namespace shogun;
 using namespace linalg;
 
-void CCustomKernel::init()
+void CustomKernel::init()
 {
-	m_row_subset_stack=new CSubsetStack();
-	SG_REF(m_row_subset_stack)
-	m_col_subset_stack=new CSubsetStack();
-	SG_REF(m_col_subset_stack)
+	m_row_subset_stack=std::make_shared<SubsetStack>();
+
+	m_col_subset_stack=std::make_shared<SubsetStack>();
+
 	m_is_symmetric=false;
 	m_free_km=true;
 
-	SG_ADD((CSGObject**)&m_row_subset_stack, "row_subset_stack",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_row_subset_stack, "row_subset_stack",
 			"Subset stack of rows");
-	SG_ADD((CSGObject**)&m_col_subset_stack, "col_subset_stack",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_col_subset_stack, "col_subset_stack",
 			"Subset stack of columns");
 	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
 			"destructor");
@@ -37,23 +37,23 @@ void CCustomKernel::init()
 	SG_ADD(&upper_diagonal, "upper_diagonal", "Upper diagonal");
 }
 
-CCustomKernel::CCustomKernel()
-: CKernel(10), kmatrix(), upper_diagonal(false)
+CustomKernel::CustomKernel()
+: Kernel(10), kmatrix(), upper_diagonal(false)
 {
-	SG_TRACE("created CCustomKernel");
+	SG_TRACE("created CustomKernel");
 	init();
 }
 
-CCustomKernel::CCustomKernel(CKernel* k)
-: CKernel(10)
+CustomKernel::CustomKernel(std::shared_ptr<Kernel> k)
+: Kernel(10)
 {
-	SG_TRACE("created CCustomKernel");
+	SG_TRACE("created CustomKernel");
 	init();
 
 	/* if constructed from a custom kernel, use same kernel matrix */
 	if (k->get_kernel_type()==K_CUSTOM)
 	{
-		CCustomKernel* casted=(CCustomKernel*)k;
+		auto casted=std::static_pointer_cast<CustomKernel>(k);
 		m_is_symmetric=casted->m_is_symmetric;
 		set_full_kernel_matrix_from_full(casted->get_float32_kernel_matrix());
 		m_free_km=false;
@@ -65,8 +65,8 @@ CCustomKernel::CCustomKernel(CKernel* k)
 	}
 }
 
-CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
-: CKernel(10), upper_diagonal(false)
+CustomKernel::CustomKernel(SGMatrix<float64_t> km)
+: Kernel(10), upper_diagonal(false)
 {
 	SG_TRACE("Entering");
 	init();
@@ -74,8 +74,8 @@ CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 	SG_TRACE("Leaving");
 }
 
-CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
-: CKernel(10), upper_diagonal(false)
+CustomKernel::CustomKernel(SGMatrix<float32_t> km)
+: Kernel(10), upper_diagonal(false)
 {
 	SG_TRACE("Entering");
 	init();
@@ -83,21 +83,19 @@ CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
 	SG_TRACE("Leaving");
 }
 
-CCustomKernel::~CCustomKernel()
+CustomKernel::~CustomKernel()
 {
 	SG_TRACE("Entering");
 	cleanup();
-	SG_UNREF(m_row_subset_stack);
-	SG_UNREF(m_col_subset_stack);
 	SG_TRACE("Leaving");
 }
 
-bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
+bool CustomKernel::dummy_init(int32_t rows, int32_t cols)
 {
-	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));
+	return init(std::make_shared<DummyFeatures>(rows), std::make_shared<DummyFeatures>(cols));
 }
 
-bool CCustomKernel::init(CFeatures* l, CFeatures* r)
+bool CustomKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	/* make it possible to call with NULL values since features are useless
 	 * for custom kernel matrix */
@@ -108,8 +106,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 		r=rhs;
 
 	/* Make sure l and r should not be NULL */
-	require(l, "CFeatures l should not be NULL");
-	require(r, "CFeatures r should not be NULL");
+	require(l, "Features l should not be NULL");
+	require(r, "Features r should not be NULL");
 
 	/* Make sure l and r have the same type of CFeatures */
 	require(l->get_feature_class()==r->get_feature_class(),
@@ -119,15 +117,15 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 			"Different FeatureType: l is {}, r is {}",
 			l->get_feature_type(),r->get_feature_type());
 
-	/* If l and r are the type of CIndexFeatures,
+	/* If l and r are the type of IndexFeatures,
 	 * the init function adds a subset to kernel matrix.
 	 * Then call get_kernel_matrix will get the submatrix
 	 * of the kernel matrix.
 	 */
 	if (l->get_feature_class()==C_INDEX && r->get_feature_class()==C_INDEX)
 	{
-		CIndexFeatures* l_idx = (CIndexFeatures*)l;
-		CIndexFeatures* r_idx = (CIndexFeatures*)r;
+		auto l_idx = std::static_pointer_cast<IndexFeatures>(l);
+		auto r_idx = std::static_pointer_cast<IndexFeatures>(r);
 
 		remove_all_col_subsets();
 		remove_all_row_subsets();
@@ -140,8 +138,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 		return true;
 	}
 
-	/* For other types of CFeatures do the default actions below */
-	CKernel::init(l, r);
+	/* For other types of Features do the default actions below */
+	Kernel::init(l, r);
 
 	lhs_equals_rhs=m_is_symmetric;
 
@@ -152,7 +150,7 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
+float64_t CustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -160,8 +158,8 @@ float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::sum_symmetric_block (slower)!");
-		return CKernel::sum_symmetric_block(block_begin, block_size, no_diag);
+				"Kernel::sum_symmetric_block (slower)!");
+		return Kernel::sum_symmetric_block(block_begin, block_size, no_diag);
 	}
 
 	require(kmatrix.matrix, "The kernel matrix is not initialized!");
@@ -179,7 +177,7 @@ float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 				block_begin, block_size, block_size), no_diag);
 }
 
-float64_t CCustomKernel::sum_block(index_t block_begin_row,
+float64_t CustomKernel::sum_block(index_t block_begin_row,
 		index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
@@ -188,8 +186,8 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::sum_block (slower)!");
-		return CKernel::sum_block(block_begin_row, block_begin_col,
+				"Kernel::sum_block (slower)!");
+		return Kernel::sum_block(block_begin_row, block_begin_col,
 				block_size_row, block_size_col, no_diag);
 	}
 
@@ -219,7 +217,7 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 				block_size_row, block_size_col), no_diag);
 }
 
-SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
+SGVector<float64_t> CustomKernel::row_wise_sum_symmetric_block(index_t
 		block_begin, index_t block_size, bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -227,8 +225,8 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::row_wise_sum_symmetric_block (slower)!");
-		return CKernel::row_wise_sum_symmetric_block(block_begin, block_size,
+				"Kernel::row_wise_sum_symmetric_block (slower)!");
+		return Kernel::row_wise_sum_symmetric_block(block_begin, block_size,
 				no_diag);
 	}
 
@@ -254,7 +252,7 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 	return sum;
 }
 
-SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
+SGMatrix<float64_t> CustomKernel::row_wise_sum_squared_sum_symmetric_block(
 		index_t block_begin, index_t block_size, bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -262,8 +260,8 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::row_wise_sum_squared_sum_symmetric_block (slower)!");
-		return CKernel::row_wise_sum_squared_sum_symmetric_block(block_begin,
+				"Kernel::row_wise_sum_squared_sum_symmetric_block (slower)!");
+		return Kernel::row_wise_sum_squared_sum_symmetric_block(block_begin,
 				block_size, no_diag);
 	}
 
@@ -299,7 +297,7 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	return row_sum;
 }
 
-SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
+SGVector<float64_t> CustomKernel::row_col_wise_sum_block(index_t
 		block_begin_row, index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
@@ -308,8 +306,8 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::row_col_wise_sum_block (slower)!");
-		return CKernel::row_col_wise_sum_block(block_begin_row, block_begin_col,
+				"Kernel::row_col_wise_sum_block (slower)!");
+		return Kernel::row_col_wise_sum_block(block_begin_row, block_begin_col,
 				block_size_row, block_size_col, no_diag);
 	}
 
@@ -357,7 +355,7 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 	return sum;
 }
 
-void CCustomKernel::cleanup_custom()
+void CustomKernel::cleanup_custom()
 {
 	SG_TRACE("Entering");
 	remove_all_row_subsets();
@@ -369,37 +367,37 @@ void CCustomKernel::cleanup_custom()
 	SG_TRACE("Leaving");
 }
 
-void CCustomKernel::cleanup()
+void CustomKernel::cleanup()
 {
 	cleanup_custom();
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-void CCustomKernel::add_row_subset(SGVector<index_t> subset)
+void CustomKernel::add_row_subset(SGVector<index_t> subset)
 {
 	m_row_subset_stack->add_subset(subset);
 	row_subset_changed_post();
 }
 
-void CCustomKernel::add_row_subset_in_place(SGVector<index_t> subset)
+void CustomKernel::add_row_subset_in_place(SGVector<index_t> subset)
 {
 	m_row_subset_stack->add_subset_in_place(subset);
 	row_subset_changed_post();
 }
 
-void CCustomKernel::remove_row_subset()
+void CustomKernel::remove_row_subset()
 {
 	m_row_subset_stack->remove_subset();
 	row_subset_changed_post();
 }
 
-void CCustomKernel::remove_all_row_subsets()
+void CustomKernel::remove_all_row_subsets()
 {
 	m_row_subset_stack->remove_all_subsets();
 	row_subset_changed_post();
 }
 
-void CCustomKernel::row_subset_changed_post()
+void CustomKernel::row_subset_changed_post()
 {
 	if (m_row_subset_stack->has_subsets())
 		num_lhs=m_row_subset_stack->get_size();
@@ -407,31 +405,31 @@ void CCustomKernel::row_subset_changed_post()
 		num_lhs=kmatrix.num_rows;
 }
 
-void CCustomKernel::add_col_subset(SGVector<index_t> subset)
+void CustomKernel::add_col_subset(SGVector<index_t> subset)
 {
 	m_col_subset_stack->add_subset(subset);
 	col_subset_changed_post();
 }
 
-void CCustomKernel::add_col_subset_in_place(SGVector<index_t> subset)
+void CustomKernel::add_col_subset_in_place(SGVector<index_t> subset)
 {
 	m_col_subset_stack->add_subset_in_place(subset);
 	col_subset_changed_post();
 }
 
-void CCustomKernel::remove_col_subset()
+void CustomKernel::remove_col_subset()
 {
 	m_col_subset_stack->remove_subset();
 	col_subset_changed_post();
 }
 
-void CCustomKernel::remove_all_col_subsets()
+void CustomKernel::remove_all_col_subsets()
 {
 	m_col_subset_stack->remove_all_subsets();
 	col_subset_changed_post();
 }
 
-void CCustomKernel::col_subset_changed_post()
+void CustomKernel::col_subset_changed_post()
 {
 	if (m_col_subset_stack->has_subsets())
 		num_rhs=m_col_subset_stack->get_size();

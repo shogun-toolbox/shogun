@@ -15,28 +15,23 @@ const char* fname_labels = "../data/7class_example4_train.label";
 int main(int argc, char** argv)
 {
 	/* dense features from matrix */
-	CCSVFile* feature_file = new CCSVFile(fname_feats);
+	CSVFile* feature_file = new CSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
-	SG_UNREF(feature_file);
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
-	SG_REF(features);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(mat);
 
 	/* labels from vector */
-	CCSVFile* label_file = new CCSVFile(fname_labels);
+	CSVFile* label_file = new CSVFile(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
-	SG_UNREF(label_file);
 
-	CMulticlassLabels* labels=new CMulticlassLabels(label_vec);
-	SG_REF(labels);
+	MulticlassLabels* labels=new MulticlassLabels(label_vec);
 
 	SG_SPRINT("Performing ShareBoost on a %d-class problem\n", labels->get_num_classes());
 
 	// Create ShareBoost Machine
 	CShareBoost *machine = new CShareBoost(features, labels, 10);
-	SG_REF(machine);
 
 	machine->train();
 
@@ -46,22 +41,14 @@ int main(int argc, char** argv)
 		SG_SPRINT("activeset[%02d] = %d\n", i, activeset[i]);
 
 	CDenseSubsetFeatures<float64_t> *subset_fea = new CDenseSubsetFeatures<float64_t>(features, machine->get_activeset());
-	SG_REF(subset_fea);
-	CMulticlassLabels* output =
-	    machine->apply(subset_fea)->as<CMulticlassLabels>();
+	MulticlassLabels* output =
+	    machine->apply(subset_fea)->as<MulticlassLabels>();
 
 	int32_t correct = 0;
 	for (int32_t i=0; i < output->get_num_labels(); ++i)
 		if (output->get_int_label(i) == labels->get_int_label(i))
 			correct++;
 	SG_SPRINT("Accuracy = %.4f\n", float64_t(correct)/labels->get_num_labels());
-
-	// Free resources
-	SG_UNREF(machine);
-	SG_UNREF(output);
-	SG_UNREF(subset_fea);
-	SG_UNREF(features);
-	SG_UNREF(labels);
 
 	return 0;
 }

@@ -43,32 +43,31 @@ namespace shogun
 
 /** @brief class TreeMachine, a base class for tree based multiclass classifiers.
  * This class is derived from CBaseMulticlassMachine and stores the root node
- * (of class type CTreeMachineNode) to the tree structure
+ * (of class type TreeMachineNode) to the tree structure
  */
-template <class T> class CTreeMachine : public CBaseMulticlassMachine
+template <class T> class TreeMachine : public BaseMulticlassMachine
 {
 public:
 	/** node_t type- Tree node with many possible children */
-	typedef CTreeMachineNode<T> node_t;
+	typedef TreeMachineNode<T> node_t;
 
 	/** bnode_t type- Tree node with max 2 possible children */
-	typedef CBinaryTreeMachineNode<T> bnode_t;
+	typedef BinaryTreeMachineNode<T> bnode_t;
 
 	/** constructor */
-	CTreeMachine() : CBaseMulticlassMachine()
+	TreeMachine() : BaseMulticlassMachine()
 	{
 		m_root=NULL;
 		// FIXME: Add m_root to the parameter list.
 		// the problem is "CARTree"/"RandomCARTree" can't be cloned because
 		// they inherit from TreeMachine which is templated and can't be
 		// created in class_list
-		// SG_ADD((CSGObject**)&m_root,"m_root", "tree structure");
+		// SG_ADD((std::shared_ptr<CSGObject>*)&m_root,"m_root", "tree structure");
 	}
 
 	/** destructor */
-	virtual ~CTreeMachine()
+	virtual ~TreeMachine()
 	{
-		SG_UNREF(m_root);
 	}
 
 	/** get name
@@ -79,80 +78,67 @@ public:
 	/** set root
 	 * @param root the root node of the tree
 	 */
-	void set_root(CTreeMachineNode<T>* root)
+	void set_root(std::shared_ptr<TreeMachineNode<T>> root)
 	{
-		SG_UNREF(m_root);
-		SG_REF(root);
 		m_root=root;
 	}
 
 	/** get root
 	 * @return root the root node of the tree
 	 */
-	CTreeMachineNode<T>* get_root()
+	std::shared_ptr<TreeMachineNode<T>> get_root()
 	{
-		SG_REF(m_root);
 		return m_root;
 	}
 
 	/** clone tree
 	 * @return clone of entire tree
 	 */
-	CTreeMachine* clone_tree()
+	std::shared_ptr<TreeMachine> clone_tree()
 	{
-		CTreeMachine<T>* cloned_tree=new CTreeMachine<T>();
-		node_t* clone_root;
+		auto cloned_tree=std::make_shared<TreeMachine>();
+		std::shared_ptr<node_t> clone_root;
 		if (!strcmp(m_root->get_name(),"TreeMachineNode"))
 		{
-			clone_root=new node_t();
-			SG_REF(clone_root);
+			clone_root=std::make_shared<node_t>();
 		}
 		else
 		{
-			clone_root=new bnode_t();
-			SG_REF(clone_root);
+			clone_root=std::make_shared<bnode_t>();
 		}
 
 		cloned_tree->set_root(clone_root);
 		clone_root->data=m_root->data;
 		clone_root->machine(m_root->machine());
-		CDynamicObjectArray* children=m_root->get_children();
+		auto children=m_root->get_children();
 		for (int32_t i=0;i<children->get_num_elements();i++)
 		{
-			CSGObject* el=children->get_element(i);
-			node_t* child=NULL;
+			auto el=children->get_element(i);
+			std::shared_ptr<node_t> child=NULL;
 			if (el!=NULL)
 			{
 				if (!strcmp(m_root->get_name(),"TreeMachineNode"))
-					child=dynamic_cast<node_t*>(el);
+					child=el->template as<node_t>();
 				else
-					child=dynamic_cast<bnode_t*>(el);
+					child=el->template as<bnode_t>();
 			}
 
-			CTreeMachine* child_tree=new CTreeMachine();
+			auto child_tree=std::make_shared<TreeMachine>();
 			child_tree->set_root(child);
-			CTreeMachine* clone_child_tree=child_tree->clone_tree();
+			auto clone_child_tree=child_tree->clone_tree();
 
-			node_t* child_node_copy=clone_child_tree->get_root();
+			auto child_node_copy=clone_child_tree->get_root();
 			if ((!strcmp(m_root->get_name(),"BinaryTreeMachineNode")) && (child_node_copy!=NULL))
-				child_node_copy=dynamic_cast<bnode_t*>(child_node_copy);
+				child_node_copy=child_node_copy->template as<bnode_t>();
 
 			clone_root->add_child(child_node_copy);
-
-			SG_UNREF(child_node_copy);
-			SG_UNREF(clone_child_tree);
-			SG_UNREF(child_tree);
-			SG_UNREF(child);
 		}
-
-		SG_UNREF(children);
-		SG_UNREF(clone_root);
 		return cloned_tree;
 	}
 
 protected:
 	/** tree root */
-	CTreeMachineNode<T>* m_root;
+	std::shared_ptr<TreeMachineNode<T>> m_root;
 };
 
 } /* namespace shogun */

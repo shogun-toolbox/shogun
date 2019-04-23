@@ -9,35 +9,32 @@
 
 using namespace shogun;
 
-CStreamingFeatures::CStreamingFeatures() : CFeatures()
+StreamingFeatures::StreamingFeatures() : Features()
 {
 	working_file=NULL;
 }
 
-CStreamingFeatures::~CStreamingFeatures()
+StreamingFeatures::~StreamingFeatures()
 {
-	SG_TRACE("entering CStreamingFeatures::~CStreamingFeatures()");
-	SG_UNREF(working_file);
-	SG_TRACE("leaving CStreamingFeatures::~CStreamingFeatures()");
 }
 
-void CStreamingFeatures::set_read_functions()
+void StreamingFeatures::set_read_functions()
 {
 	set_vector_reader();
 	set_vector_and_label_reader();
 }
 
-bool CStreamingFeatures::get_has_labels()
+bool StreamingFeatures::get_has_labels()
 {
 	return has_labels;
 }
 
-bool CStreamingFeatures::is_seekable()
+bool StreamingFeatures::is_seekable()
 {
 	return seekable;
 }
 
-void CStreamingFeatures::reset_stream()
+void StreamingFeatures::reset_stream()
 {
 	not_implemented(SOURCE_LOCATION);
 	return;

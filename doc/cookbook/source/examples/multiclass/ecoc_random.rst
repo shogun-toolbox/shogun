@@ -22,11 +22,11 @@ See :cite:`escalera2010error` for a detailed introduction
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: ecoc_random.sg:create_features
 
-We use :sgclass:`CLibLinear` as base classifier and create an instance of :sgclass:`CLibLinear`.
+We use :sgclass:`LibLinear` as base classifier and create an instance of :sgclass:`LibLinear`.
 (`See the linear SVM cookbook <http://shogun.ml/cookbook/latest/examples/binary/linear_support_vector_machine.html>`_)
 
 .. sgexample:: ecoc_random.sg:create_classifier
@@ -35,15 +35,15 @@ We initialize :sgclass:`CECOCStrategy` by specifying the random dense encoder an
 
 .. sgexample:: ecoc_random.sg:choose_strategy
 
-We create an instance of the :sgclass:`CLinearMulticlassMachine` classifier by passing it the ECOC strategies, together with the dataset, binary classifier and the labels.
+We create an instance of the :sgclass:`LinearMulticlassMachine` classifier by passing it the ECOC strategies, together with the dataset, binary classifier and the labels.
 
 .. sgexample:: ecoc_random.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: ecoc_random.sg:train_and_apply
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: ecoc_random.sg:evaluate_accuracy
 

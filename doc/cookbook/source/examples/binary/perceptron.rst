@@ -19,7 +19,7 @@ See Chapter 17 in :cite:`barber2012bayesian` for a detailed introduction.
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`BinaryLabels` as
 
 .. sgexample:: perceptron.sg:create_features
 
@@ -27,11 +27,11 @@ We need to initialize parameters for maximum number of iterations (since percept
 
 .. sgexample:: perceptron.sg:set_parameters
 
-We create an instance of the :sgclass:`CPerceptron` classifier by passing it training features and labels.
+We create an instance of the :sgclass:`Perceptron` classifier by passing it training features and labels.
 
 .. sgexample:: perceptron.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`BinaryLabels`.
 
 .. sgexample:: perceptron.sg:train_and_apply
 

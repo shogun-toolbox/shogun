@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Roman Votyakov, 
+ * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Roman Votyakov,
  *          Yuyu Zhang, Giovanni De Toni
  */
 
@@ -20,11 +20,11 @@ namespace shogun
 /** @brief Class evaluates a machine using its associated differentiable
  * function for the function value and its gradient with respect to parameters.
  */
-class CGradientEvaluation: public CMachineEvaluation
+class GradientEvaluation: public MachineEvaluation
 {
 public:
 	/** default constructor */
-	CGradientEvaluation();
+	GradientEvaluation();
 
 	/** constructor
 	 *
@@ -34,10 +34,11 @@ public:
 	 * @param evaluation_criterion evaluation criterion to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
-	CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
-			CEvaluation* evaluation_criterion, bool autolock=true);
+	GradientEvaluation(std::shared_ptr<Machine> machine,
+		std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
+		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock=true);
 
-	virtual ~CGradientEvaluation();
+	virtual ~GradientEvaluation();
 
 	/** returns the name of the machine evaluation
 	 *
@@ -49,10 +50,10 @@ public:
 	*
 	* @param diff differentiable function
 	*/
-	inline void set_function(CDifferentiableFunction* diff)
+	inline void set_function(std::shared_ptr<DifferentiableFunction> diff)
 	{
-		SG_REF(diff);
-		SG_UNREF(m_diff);
+
+
 		m_diff=diff;
 	}
 
@@ -60,9 +61,9 @@ public:
 	*
 	* @return differentiable function
 	*/
-	inline CDifferentiableFunction* get_function() const
+	inline std::shared_ptr<DifferentiableFunction> get_function() const
 	{
-		SG_REF(m_diff);
+
 		return m_diff;
 	}
 
@@ -74,17 +75,17 @@ private:
 	 *
 	 * @return GradientResult containing value and gradient
 	 */
-	virtual CEvaluationResult* evaluate_impl() const;
+	virtual std::shared_ptr<EvaluationResult> evaluate_impl() const;
 
 	/** updates parameter dictionary of differentiable function */
 	void update_parameter_dictionary() const;
 
 private:
 	/** differentiable function */
-	CDifferentiableFunction* m_diff;
+	std::shared_ptr<DifferentiableFunction> m_diff;
 
 	/** parameter dictionary of differentiable function */
-	mutable CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
+	mutable std::shared_ptr<CMap<TParameter*, SGObject*>>  m_parameter_dictionary;
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */

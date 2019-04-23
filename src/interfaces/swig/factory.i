@@ -1,30 +1,3 @@
-%newobject shogun::distance(std::string name);
-%newobject shogun::evaluation(const std::string& name);
-%newobject shogun::kernel(const std::string& name);
-%newobject shogun::machine(const std::string& name);
-%newobject shogun::multiclass_strategy(const std::string& name);
-%newobject shogun::ecoc_encoder(const std::string& name);
-%newobject shogun::ecoc_decoder(const std::string& name);
-%newobject shogun::transformer(const std::string& name);
-%newobject shogun::layer(const std::string& name);
-%newobject shogun::splitting_strategy(const std::string& name);
-%newobject shogun::machine_evaluation(const std::string& name);
-%newobject shogun::svm(const std::string& name);
-%newobject shogun::features;
-%newobject shogun::gp_likelihood(const std::string& name);
-%newobject shogun::gp_mean(const std::string& name);
-%newobject shogun::differentiable(const std::string& name);
-%newobject shogun::gp_inference(const std::string& name);
-%newobject shogun::loss(const std::string& name);
-%newobject shogun::string_features;
-%newobject shogun::transformer(const std::string&);
-%newobject shogun::csv_file(std::string fname, char rw);
-%newobject shogun::libsvm_file(std::string fname, char rw);
-%newobject shogun::pipeline;
-%newobject shogun::labels;
-%newobject shogun::distribution;
-%newobject shogun::combination_rule;
-
 %{
     #include <shogun/util/factory.h>
 %}

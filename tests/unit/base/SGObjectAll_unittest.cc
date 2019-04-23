@@ -13,7 +13,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/class_list.h>
 #include <shogun/base/range.h>
-#include <shogun/base/some.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
@@ -45,7 +44,7 @@ TYPED_TEST(SGObjectAll, sg_object_iterator)
 	{
 		ASSERT_NE(obj, nullptr);
 		SCOPED_TRACE(obj->get_name());
-		ASSERT_EQ(obj->ref_count(), 1);
+		ASSERT_EQ(2, obj.use_count());
 	}
 }
 
@@ -54,7 +53,7 @@ TYPED_TEST(SGObjectAll, clone_basic)
 	for (auto obj : sg_object_iterator<TypeParam>().ignore(sg_object_all_ignores))
 	{
 		SCOPED_TRACE(obj->get_name());
-		CSGObject* clone = nullptr;
+		std::shared_ptr<SGObject> clone;
 		try
 		{
 			clone = obj->clone();
@@ -65,10 +64,8 @@ TYPED_TEST(SGObjectAll, clone_basic)
 
 		ASSERT_NE(clone, nullptr);
 		EXPECT_NE(clone, obj);
-		EXPECT_EQ(clone->ref_count(), 1);
+		EXPECT_EQ(1, clone.use_count());
 		EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
-
-		SG_UNREF(clone);
 	}
 }
 
@@ -78,10 +75,8 @@ TYPED_TEST(SGObjectAll, clone_equals_empty)
 	{
 		SCOPED_TRACE(obj->get_name());
 
-		CSGObject* clone = obj->clone();
+		auto clone = obj->clone();
 		EXPECT_TRUE(clone->equals(obj));
-
-		SG_UNREF(clone);
 	}
 }
 
@@ -98,20 +93,19 @@ TYPED_TEST(SGObjectAll, serialization_empty_json)
 
 		generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-		SG_REF(obj);
 		auto fs = env();
 		ASSERT_FALSE(fs->file_exists(filename));
 		std::unique_ptr<io::WritableFile> file;
 		ASSERT_FALSE(fs->new_writable_file(filename, &file));
-		auto fos = some<io::CFileOutputStream>(file.get());
-		auto serializer = some<io::CJsonSerializer>();
+		auto fos = std::make_shared<io::FileOutputStream>(file.get());
+		auto serializer = std::make_unique<io::JsonSerializer>();
 		serializer->attach(fos);
-		serializer->write(wrap<CSGObject>(obj));
+		serializer->write(obj);
 
 		std::unique_ptr<io::RandomAccessFile> raf;
 		ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
-		auto fis = some<io::CFileInputStream>(raf.get());
-		auto deserializer = some<io::CJsonDeserializer>();
+		auto fis = std::make_shared<io::FileInputStream>(raf.get());
+		auto deserializer = std::make_unique<io::JsonDeserializer>();
 		deserializer->attach(fis);
 		auto loaded = deserializer->read_object();
 
@@ -166,7 +160,5 @@ TEST(SGObjectAll, DISABLED_tag_coverage)
 		std::sort(tag_names.begin(), tag_names.end());
 
 		EXPECT_EQ(tag_names, old_names);
-
-		SG_UNREF(obj);
 	}
 }

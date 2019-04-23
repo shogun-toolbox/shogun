@@ -143,15 +143,15 @@ void RegressionForTestCostFunction::init()
 
 RegressionForTestCostFunction::~RegressionForTestCostFunction()
 {
-	SG_UNREF(m_obj);
+
 }
 
-void RegressionForTestCostFunction::set_target(CRegressionExample *obj)
+void RegressionForTestCostFunction::set_target(std::shared_ptr<CRegressionExample >obj)
 {
 	if(m_obj!=obj)
 	{
-		SG_REF(obj);
-		SG_UNREF(m_obj);
+
+
 		m_obj=obj;
 	}
 }
@@ -171,15 +171,15 @@ int32_t RegressionForTestCostFunction::get_sample_size()
 SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
 	SGVector<float64_t> grad;
 	for(index_t i=0; i<num_gradients; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 		{
 			grad=m_obj->get_gradient(node->key);
 			for(index_t idx=0; idx<grad.vlen; idx++)
@@ -187,7 +187,7 @@ SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 		}
 	}
 
-	SG_UNREF(parameters);
+
 	return grad;
 }
 
@@ -208,25 +208,25 @@ bool RegressionForTestCostFunction::next_sample()
 SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
 	for(index_t idx=0; idx<num_variables; idx++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(idx);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(idx);
+		if(node && node->data==m_obj.get())
 			variable=m_obj->get_variable(node->key);
 	}
 
-	SG_UNREF(parameters);
+
 	return variable;
 }
 
 SGVector<float64_t> RegressionForTestCostFunction::get_gradient()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
@@ -234,12 +234,12 @@ SGVector<float64_t> RegressionForTestCostFunction::get_gradient()
 
 	for(index_t idx=0; idx<num_gradients; idx++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(idx);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(idx);
+		if(node && node->data==m_obj.get())
 			grad=m_obj->get_gradient(node->key, m_idx);
 	}
 
-	SG_UNREF(parameters);
+
 	return grad;
 }
 
@@ -374,46 +374,46 @@ void ClassificationFixture::init()
 {
 	y=SGVector<float64_t>(20);
 	x=SGMatrix<float64_t>(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874;
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521;
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423;
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271;
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956;
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419;
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298;
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682;
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933;
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587;
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624;
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835;
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454;
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363;
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918;
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468;
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305;
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211;
 	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
+	y[0]=1;
+	y[1]=-1;
+	y[2]=-1;
+	y[3]=1;
+	y[4]=1;
+	y[5]=-1;
+	y[6]=-1;
+	y[7]=1;
+	y[8]=1;
+	y[9]=-1;
 	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
+	y[11]=-1;
+	y[12]=1;
+	y[13]=1;
+	y[14]=1;
+	y[15]=1;
+	y[16]=-1;
+	y[17]=-1;
+	y[18]=-1;
+	y[19]=-1;
 }
 
 
@@ -461,20 +461,20 @@ TEST(SGDMinimizer,test1)
 	w.set_const(0.0);
 
 	RegressionFixture data;
-	CRegressionExample* aa=new CRegressionExample();
+	auto aa=std::make_shared<CRegressionExample>();
 
 	aa->set_x(data.x);
 	aa->set_y(data.y);
 	aa->set_init_w(w);
-	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
+	auto fun=std::make_shared<RegressionForTestCostFunction>();
 	fun->set_target(aa);
 
-	SGDMinimizer* opt=new SGDMinimizer(fun);
+	auto opt=std::make_shared<SGDMinimizer>(fun);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.01);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt->set_gradient_updater(updater);
 	opt->set_learning_rate(rate);
 
@@ -490,8 +490,6 @@ TEST(SGDMinimizer,test1)
 	//In this implementation, the cost function is 0.5 \times \sum_i{(y_i-x_i'*w)^2}
 	//cost=0.491198269864709
 	EXPECT_NEAR(cost,0.491198269864709, 1e-10);
-		
-	delete opt;
 }
 
 TEST(SGDMinimizer,test2)
@@ -501,19 +499,19 @@ TEST(SGDMinimizer,test2)
 	w.set_const(0.0);
 
 	RegressionFixture data;
-	CRegressionExample* aa=new CRegressionExample();
+	auto aa=std::make_shared<CRegressionExample>();
 	aa->set_x(data.x);
 	aa->set_y(data.y);
 	aa->set_init_w(w);
-	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
+	auto fun=std::make_shared<RegressionForTestCostFunction>();
 	fun->set_target(aa);
 
 	SGDMinimizer opt(fun);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.01);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt.set_gradient_updater(updater);
 	opt.set_learning_rate(rate);
 
@@ -539,23 +537,23 @@ TEST(SGDMinimizer,test3)
 	w.set_const(0.0);
 
 	RegressionFixture data;
-	CRegressionExample* aa=new CRegressionExample();
+	auto aa=std::make_shared<CRegressionExample>();
 	aa->set_x(data.x);
 	aa->set_y(data.y);
 	aa->set_init_w(w);
-	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
+	auto fun=std::make_shared<RegressionForTestCostFunction>();
 	fun->set_target(aa);
 
-	SGDMinimizer* opt=new SGDMinimizer(fun);
+	auto opt=std::make_shared<SGDMinimizer>(fun);
 	opt->set_penalty_weight(1.0);
-	L2Penalty* penalty_type=new L2Penalty();
+	auto penalty_type=std::make_shared<L2Penalty>();
 	opt->set_penalty_type(penalty_type);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.0001);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
-	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
+	auto updater=std::make_shared<GradientDescendUpdater>();
+	auto momentum_correction=std::make_shared<StandardMomentumCorrection>();
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 
@@ -575,8 +573,6 @@ TEST(SGDMinimizer,test3)
 	EXPECT_NEAR(w[0],0.289383,1e-6);
 	EXPECT_NEAR(w[1],-1.513633,1e-6);
 	EXPECT_NEAR(w[2],2.045611,1e-6);
-
-	delete opt;
 }
 
 TEST(SGDMinimizer,test4)
@@ -586,23 +582,23 @@ TEST(SGDMinimizer,test4)
 	w.set_const(0.0);
 
 	RegressionFixture data;
-	CRegressionExample* aa=new CRegressionExample();
+	auto aa=std::make_shared<CRegressionExample>();
 	aa->set_x(data.x);
 	aa->set_y(data.y);
 	aa->set_init_w(w);
-	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
+	auto fun=std::make_shared<RegressionForTestCostFunction>();
 	fun->set_target(aa);
 
-	SGDMinimizer* opt=new SGDMinimizer(fun);
+	auto opt=std::make_shared<SGDMinimizer>(fun);
 	opt->set_penalty_weight(1.0);
-	L2Penalty* penalty_type=new L2Penalty();
+	auto penalty_type=std::make_shared<L2Penalty>();
 	opt->set_penalty_type(penalty_type);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.0001);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
-	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
+	auto updater=std::make_shared<GradientDescendUpdater>();
+	auto momentum_correction=std::make_shared<StandardMomentumCorrection>();
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 	opt->set_gradient_updater(updater);
@@ -621,8 +617,6 @@ TEST(SGDMinimizer,test4)
 	//In this implementation, the cost function is 0.5 \times \sum_i{(y_i-x_i'*w)^2}+0.5*w'*w
 	//cost=3.48852246851037
 	EXPECT_NEAR(cost,3.48852246851037, 1e-10);
-
-	delete opt;
 }
 
 TEST(SGDMinimizer,test5)
@@ -632,23 +626,23 @@ TEST(SGDMinimizer,test5)
 	w.set_const(0.0);
 
 	RegressionFixture data;
-	CRegressionExample* aa=new CRegressionExample();
+	auto aa=std::make_shared<CRegressionExample>();
 	aa->set_x(data.x);
 	aa->set_y(data.y);
 	aa->set_init_w(w);
-	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
+	auto fun=std::make_shared<RegressionForTestCostFunction>();
 	fun->set_target(aa);
 
-	SGDMinimizer* opt=new SGDMinimizer(fun);
+	auto opt=std::make_shared<SGDMinimizer>(fun);
 	opt->set_penalty_weight(1.0);
-	L2Penalty* penalty_type=new L2Penalty();
+	auto penalty_type=std::make_shared<L2Penalty>();
 	opt->set_penalty_type(penalty_type);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.001);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
-	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
+	auto updater=std::make_shared<GradientDescendUpdater>();
+	auto momentum_correction=std::make_shared<StandardMomentumCorrection>();
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 
@@ -666,7 +660,6 @@ TEST(SGDMinimizer,test5)
 	//cost is return by going through the data 20 times
 	//cost=8.54011254349676
 	EXPECT_NEAR(cost,8.54011254349676, 1e-10);
-	delete opt;
 }
 
 TEST(SVRGMinimizer,test1)
@@ -676,27 +669,27 @@ TEST(SVRGMinimizer,test1)
 	w.set_const(0.0);
 
 	RegressionFixture data;
-	CRegressionExample* aa=new CRegressionExample();
+	auto aa=std::make_shared<CRegressionExample>();
 	aa->set_x(data.x);
 	aa->set_y(data.y);
 	aa->set_init_w(w);
-	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
+	auto fun=std::make_shared<RegressionForTestCostFunction>();
 	fun->set_target(aa);
 
-	SVRGMinimizer* opt=new SVRGMinimizer(fun);
+	auto opt=std::make_shared<SVRGMinimizer>(fun);
 	//add L2 penalty
-	L2Penalty* penalty_type=new L2Penalty();
+	auto penalty_type=std::make_shared<L2Penalty>();
 	opt->set_penalty_type(penalty_type);
 	//add penalty weight
 	opt->set_penalty_weight(1.0);
 
 	//uss const learning rate
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.001);
 
-	//using momentum method 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
-	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
+	//using momentum method
+	auto updater=std::make_shared<GradientDescendUpdater>();
+	auto momentum_correction=std::make_shared<StandardMomentumCorrection>();
 	//momentum=0.9
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
@@ -717,8 +710,6 @@ TEST(SVRGMinimizer,test1)
 	EXPECT_NEAR(w[0],0.5180193923,1e-8);
 	EXPECT_NEAR(w[1],-1.0194184559,1e-8);
 	EXPECT_NEAR(w[2],1.6913053544,1e-8);
-
-	delete opt;
 }
 
 TEST(SVRGMinimizer,test2)
@@ -760,19 +751,19 @@ TEST(SVRGMinimizer,test2)
 	seq[24]=18;
 
 	ClassificationFixture data;
-	ClassificationForTestCostFunction* bb=new ClassificationForTestCostFunction();
+	auto bb=std::make_shared<ClassificationForTestCostFunction>();
 	bb->set_data(data.x, data.y);
 	//there are 5 sample sequences
 	bb->set_sample_sequences(seq, 5);
 
 	SVRGMinimizer* opt=new SVRGMinimizer(bb);
 	opt->set_penalty_weight(1.0/data.y.vlen);
-	L2Penalty* penalty_type=new L2Penalty();
+	auto penalty_type=std::make_shared<L2Penalty>();
 	opt->set_penalty_type(penalty_type);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(1.758619054751211);
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt->set_gradient_updater(updater);
 	//since there are 5 samples sequences, we set the number of passes is 5
 	opt->set_number_passes(5);
@@ -782,13 +773,13 @@ TEST(SVRGMinimizer,test2)
 
 	//result from the Semi Stochastic Gradient Descent 1.0 (S2GD) package
 	//http://mloss.org/software/view/556/
-	//w[0]=1.840662 
-	//w[1]=-0.855683 
+	//w[0]=1.840662
+	//w[1]=-0.855683
 	//cost=0.334054
 	opt->minimize();
 	float64_t cost=bb->get_cost()/bb->get_sample_size();
 	EXPECT_NEAR(cost,0.334054,1e-6);
-	
+
 	SGVector<float64_t> w=bb->obtain_variable_reference();
 	EXPECT_NEAR(w[0],1.840662,1e-6);
 	EXPECT_NEAR(w[1],-0.855683,1e-6);
@@ -799,18 +790,18 @@ TEST(SVRGMinimizer,test2)
 TEST(AdaDeltaUpdater, test1)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
 
 	SGDMinimizer* opt=new SGDMinimizer(bb);
-	AdaDeltaUpdater* updater=new AdaDeltaUpdater();
+	auto updater=std::make_shared<AdaDeltaUpdater>();
 	updater->set_learning_rate(1.8);
 	updater->set_epsilon(1e-6);
 	updater->set_decay_factor(0.95);
-	MomentumCorrection* momentum_correction=new NesterovMomentumCorrection();
+	auto momentum_correction=std::make_shared<NesterovMomentumCorrection>();
 	momentum_correction->set_correction_weight(0.99);
 	updater->set_descend_correction(momentum_correction);
-	
+
 	opt->set_gradient_updater(updater);
 	opt->set_number_passes(1);
 
@@ -845,11 +836,11 @@ TEST(AdaDeltaUpdater, test1)
 TEST(AdamUpdater, test1)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
 
 	SGDMinimizer* opt2=new SGDMinimizer(bb);
-	AdamUpdater* updater2=new AdamUpdater(0.1, 1e-8, 0.9, 0.999);
+	auto updater2=std::make_shared<AdamUpdater>(0.1, 1e-8, 0.9, 0.999);
 
 	opt2->set_gradient_updater(updater2);
 	opt2->set_number_passes(1);
@@ -872,17 +863,17 @@ TEST(AdamUpdater, test1)
 TEST(AdaptMomentumCorrection, test1)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
 
 	SGDMinimizer* opt=new SGDMinimizer(bb);
-	RmsPropUpdater* updater=new RmsPropUpdater();
+	auto updater=std::make_shared<RmsPropUpdater>();
 	updater->set_learning_rate(1.0);
 	updater->set_epsilon(0.0);
 	updater->RmsPropUpdater::set_decay_factor(0.9);
-	MomentumCorrection* momentum_correction=new NesterovMomentumCorrection();
+	auto momentum_correction=std::make_shared<NesterovMomentumCorrection>();
 	momentum_correction->set_correction_weight(0.5);
-	AdaptMomentumCorrection* correction=new AdaptMomentumCorrection();
+	auto correction=std::make_shared<AdaptMomentumCorrection>();
 	correction->set_momentum_correction(momentum_correction);
 	correction->set_init_descend_rate(0.9);
 	correction->set_adapt_rate(0.1, 0.05, 2.0);
@@ -922,17 +913,17 @@ TEST(AdaptMomentumCorrection, test1)
 TEST(L1PenaltyForTG, test1)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.01);
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt->set_gradient_updater(updater);
 
 	opt->set_penalty_weight(0.01);
-	L1Penalty* penalty_type=new L1PenaltyForTG();
+	auto penalty_type=std::make_shared<L1PenaltyForTG>();
 
 	penalty_type->set_rounding_epsilon(0);
 	opt->set_penalty_type(penalty_type);
@@ -945,8 +936,8 @@ TEST(L1PenaltyForTG, test1)
 	//
 	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
 	//w=
-	//-0.047225925298 
-	//0.018566844801 
+	//-0.047225925298
+	//0.018566844801
 	//
 	//cost=
 	//0.679635661120
@@ -962,23 +953,23 @@ TEST(L1PenaltyForTG, test1)
 TEST(L1PenaltyForTG, test2)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
-	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
+	auto rate= std::make_shared<InverseScalingLearningRate>();
 	rate->set_initial_learning_rate(0.1);
 	rate->set_exponent(0.6);
 	rate->set_slope(1.0);
 	rate->set_intercept(0.0);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt->set_gradient_updater(updater);
 
 	opt->set_penalty_weight(0.01);
-	L1Penalty* penalty_type=new L1PenaltyForTG();
+	auto penalty_type=std::make_shared<L1PenaltyForTG>();
 	penalty_type->set_rounding_epsilon(0);
-	
+
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
@@ -989,8 +980,8 @@ TEST(L1PenaltyForTG, test2)
 	//
 	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
 	//w=
-	//-0.203765743995 
-	//0.109255680811 
+	//-0.203765743995
+	//0.109255680811
 	//cost=
 	//0.633950836133
 	//
@@ -1006,23 +997,23 @@ TEST(L1PenaltyForTG, test2)
 TEST(ElasticNetPenalty, test1)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
-	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
+	auto rate= std::make_shared<InverseScalingLearningRate>();
 	rate->set_initial_learning_rate(0.1);
 	rate->set_exponent(0.6);
 	rate->set_slope(1.0);
 	rate->set_intercept(0.0);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt->set_gradient_updater(updater);
 
 	opt->set_penalty_weight(0.01);
-	ElasticNetPenalty* penalty_type=new ElasticNetPenalty();
+	auto penalty_type=std::make_shared<ElasticNetPenalty>();
 	penalty_type->set_l1_ratio(0.7);
-	
+
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
@@ -1033,7 +1024,7 @@ TEST(ElasticNetPenalty, test1)
 	//
 	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
 	//
-	//w[0]=-0.206101230857 w[1]=0.111680271395 
+	//w[0]=-0.206101230857 w[1]=0.111680271395
 	//total loss=0.633194272101
 	float64_t cost=bb->get_cost()/bb->get_sample_size();
 	EXPECT_NEAR(cost,0.633194272101,1e-10);
@@ -1047,20 +1038,20 @@ TEST(ElasticNetPenalty, test1)
 TEST(SMIDASMinimizer, test1)
 {
 	ClassificationFixture data;
-	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	auto bb=std::make_shared<ClassificationForTestCostFunction2>();
 	bb->set_data(data.x, data.y);
-	SMIDASMinimizer* opt=new SMIDASMinimizer(bb);
+	auto opt=new SMIDASMinimizer(bb);
 
-	ConstLearningRate* rate=new ConstLearningRate();
+	auto rate=std::make_shared<ConstLearningRate>();
 	rate->set_const_learning_rate(0.01);
-	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	auto updater=std::make_shared<GradientDescendUpdater>();
 	opt->set_gradient_updater(updater);
-	PNormMappingFunction* mapping=new PNormMappingFunction();
+	auto mapping=std::make_shared<PNormMappingFunction>();
 	mapping->set_norm(2.0);
 	opt->set_mapping_function(mapping);
 
 	opt->set_penalty_weight(0.01);
-	L1Penalty* penalty_type=new L1Penalty();
+	auto penalty_type=std::make_shared<L1Penalty>();
 	penalty_type->set_rounding_epsilon(1e-8);
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(2);
@@ -1073,11 +1064,11 @@ TEST(SMIDASMinimizer, test1)
 	//reference result from http://mloss.org/software/view/208/
 	//
 	//w=
-	//-0.0934993 
+	//-0.0934993
 	//0.0367823
 	//
 	//cost=
-	//0.666646 
+	//0.666646
 	float64_t cost=bb->get_cost()/bb->get_sample_size();
 	EXPECT_NEAR(cost,0.666646,1e-6);
 	SGVector<float64_t> w=bb->obtain_variable_reference();

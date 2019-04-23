@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief Class ROCEvalution used to evaluate ROC
  * (Receiver Operating Characteristic) and an area
@@ -26,14 +26,14 @@ class CLabels;
  * Fawcett, Tom (2004) ROC Graphs:
  * Notes and Practical Considerations for Researchers; Machine Learning, 2004
  */
-class CROCEvaluation: public CBinaryClassEvaluation
+class ROCEvaluation: public BinaryClassEvaluation
 {
 public:
 	/** constructor */
-	CROCEvaluation();
+	ROCEvaluation();
 
 	/** destructor */
-	virtual ~CROCEvaluation();
+	virtual ~ROCEvaluation();
 
 	/** get name */
 	virtual const char* get_name() const { return "ROCEvaluation"; };
@@ -43,7 +43,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	virtual EEvaluationDirection get_evaluation_direction() const
 	{
@@ -72,7 +72,7 @@ protected:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	float64_t evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* ground_truth);
+	float64_t evaluate_roc(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth);
 
 protected:
 

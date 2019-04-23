@@ -6,24 +6,24 @@
 
 using namespace shogun;
 
-CMKLRegression::CMKLRegression(CSVM* s) : CMKL(s)
+MKLRegression::MKLRegression(std::shared_ptr<SVM> s) : MKL(s)
 {
 	if (!s)
 	{
 #ifdef USE_SVMLIGHT
-		s=new CSVRLight();
+		s=std::make_shared<SVRLight>();
 #endif //USE_SVMLIGHT
 		if (!s)
-			s=new CLibSVR();
+			s=std::make_shared<LibSVR>();
 		set_svm(s);
 	}
 }
 
-CMKLRegression::~CMKLRegression()
+MKLRegression::~MKLRegression()
 {
 }
 
-float64_t CMKLRegression::compute_sum_alpha()
+float64_t MKLRegression::compute_sum_alpha()
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
@@ -32,17 +32,17 @@ float64_t CMKLRegression::compute_sum_alpha()
 	//float64_t suma=0;
 	//int32_t nsv=svm->get_num_support_vectors();
 	//for (int32_t i=0; i<nsv; i++)
-	//	suma+=CMath::abs(svm->get_alpha(i))*tube_epsilon-svm->get_alpha(i);
+	//	suma+=Math::abs(svm->get_alpha(i))*tube_epsilon-svm->get_alpha(i);
 	//return suma;
 }
 
-float64_t CMKLRegression::compute_mkl_dual_objective()
+float64_t MKLRegression::compute_mkl_dual_objective()
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
-void CMKLRegression::init_training()
+void MKLRegression::init_training()
 {
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(svm)

@@ -22,22 +22,22 @@ namespace shogun
 	 *
 	 * Same as CLinearRidgeRegression, but without a regularization term.
 	 */
-	class CLeastSquaresRegression : public CLinearRidgeRegression
+	class LeastSquaresRegression : public LinearRidgeRegression
 	{
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		/** default constructor */
-		CLeastSquaresRegression();
+		LeastSquaresRegression();
 
 		/** constructor
 		 *
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab);
-		virtual ~CLeastSquaresRegression() {}
+		LeastSquaresRegression(std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab);
+		virtual ~LeastSquaresRegression() {}
 
 		/** get classifier type
 		 *

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Chiyuan Zhang, Heiko Strathmann, Bjoern Esser
  */
 
@@ -12,8 +12,8 @@
 
 using namespace shogun;
 
-CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
-	CEmbeddingConverter()
+StochasticProximityEmbedding::StochasticProximityEmbedding() :
+	EmbeddingConverter()
 {
 	// Initialize to default values
 	m_k         = 12;
@@ -25,7 +25,7 @@ CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 	init();
 }
 
-void CStochasticProximityEmbedding::init()
+void StochasticProximityEmbedding::init()
 {
 	SG_ADD(&m_k, "m_k", "Number of neighbors");
 	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter");
@@ -35,11 +35,11 @@ void CStochasticProximityEmbedding::init()
 	    ParameterProperties::NONE, SG_OPTIONS(SPE_GLOBAL, SPE_LOCAL));
 }
 
-CStochasticProximityEmbedding::~CStochasticProximityEmbedding()
+StochasticProximityEmbedding::~StochasticProximityEmbedding()
 {
 }
 
-void CStochasticProximityEmbedding::set_k(int32_t k)
+void StochasticProximityEmbedding::set_k(int32_t k)
 {
 	if ( k <= 0 )
 		error("Number of neighbors k must be greater than 0");
@@ -47,22 +47,22 @@ void CStochasticProximityEmbedding::set_k(int32_t k)
 	m_k = k;
 }
 
-int32_t CStochasticProximityEmbedding::get_k() const
+int32_t StochasticProximityEmbedding::get_k() const
 {
 	return m_k;
 }
 
-void CStochasticProximityEmbedding::set_strategy(ESPEStrategy strategy)
+void StochasticProximityEmbedding::set_strategy(ESPEStrategy strategy)
 {
 	m_strategy = strategy;
 }
 
-ESPEStrategy CStochasticProximityEmbedding::get_strategy() const
+ESPEStrategy StochasticProximityEmbedding::get_strategy() const
 {
 	return m_strategy;
 }
 
-void CStochasticProximityEmbedding::set_tolerance(float32_t tolerance)
+void StochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 {
 	if ( tolerance <= 0 )
 		error("Tolerance regularization parameter must be greater "
@@ -71,12 +71,12 @@ void CStochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 	m_tolerance = tolerance;
 }
 
-int32_t CStochasticProximityEmbedding::get_tolerance() const
+int32_t StochasticProximityEmbedding::get_tolerance() const
 {
 	return m_tolerance;
 }
 
-void CStochasticProximityEmbedding::set_nupdates(int32_t nupdates)
+void StochasticProximityEmbedding::set_nupdates(int32_t nupdates)
 {
 	if ( nupdates <= 0 )
 		error("The number of updates must be greater than 0");
@@ -84,36 +84,36 @@ void CStochasticProximityEmbedding::set_nupdates(int32_t nupdates)
 	m_nupdates = nupdates;
 }
 
-int32_t CStochasticProximityEmbedding::get_nupdates() const
+int32_t StochasticProximityEmbedding::get_nupdates() const
 {
 	return m_nupdates;
 }
 
-void CStochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
+void StochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
 {
 	m_max_iteration = max_iteration;
 }
 
-int32_t CStochasticProximityEmbedding::get_max_iteration() const
+int32_t StochasticProximityEmbedding::get_max_iteration() const
 {
 	return m_max_iteration;
 }
 
-const char * CStochasticProximityEmbedding::get_name() const
+const char * StochasticProximityEmbedding::get_name() const
 {
 	return "StochasticProximityEmbedding";
 }
 
-CFeatures*
-CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features>
+StochasticProximityEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	if ( !features )
 		error("Features are required to apply SPE");
 
 	// Shorthand for the DenseFeatures
-	CDenseFeatures< float64_t >* simple_features =
-		(CDenseFeatures< float64_t >*) features;
-	SG_REF(features);
+	auto simple_features =
+		std::static_pointer_cast<DenseFeatures<float64_t>>(features);
+
 
 	// Get and check the number of vectors
 	int32_t N = simple_features->get_num_vectors();
@@ -126,14 +126,14 @@ CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 			 "the number of updates ({})", N, m_nupdates);
 
 	m_distance->init(simple_features, simple_features);
-	CDenseFeatures< float64_t >* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return embedding;
 }
 
-CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDistance* distance)
+std::shared_ptr<DenseFeatures< float64_t >> StochasticProximityEmbedding::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
@@ -141,10 +141,9 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	parameters.target_dimension = m_target_dim;
 	parameters.spe_num_updates = m_nupdates;
 	parameters.spe_tolerance = m_tolerance;
-	parameters.distance = distance;
+	parameters.distance = distance.get();
 	parameters.spe_global_strategy = (m_strategy==SPE_GLOBAL);
 	parameters.max_iteration = m_max_iteration;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	return tapkee_embed(parameters);
 }
 

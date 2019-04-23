@@ -44,11 +44,11 @@ template<class T> struct CSetNode
 /** @brief the class CSet, a set based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
-template<class T> class CSet: public CSGObject
+template<class T> class Set: public SGObject
 {
 public:
 	/** Custom constructor */
-	CSet(int32_t size=41, int32_t reserved=128, bool tracable=true)
+	Set(int32_t size=41, int32_t reserved=128, bool tracable=true)
 	{
 		hash_size=size;
 		free_index=0;
@@ -69,7 +69,7 @@ public:
 	}
 
 	/** Default destructor */
-	virtual ~CSet()
+	virtual ~Set()
 	{
 		if (array!=NULL)
 		{
@@ -213,7 +213,7 @@ private:
 	 */
 	int32_t hash_element(const T& element)
 	{
-		return CHash::MurmurHash3((uint8_t*)(&element), sizeof(element), 0xDEADBEEF) % hash_size;
+		return Hash::MurmurHash3((uint8_t*)(&element), sizeof(element), 0xDEADBEEF) % hash_size;
 	}
 
 	/** is free? */

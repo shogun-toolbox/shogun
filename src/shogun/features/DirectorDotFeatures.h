@@ -20,7 +20,7 @@ namespace shogun
 /** @brief DirectorDotFeatures that support dot products among other operations and can be overloaded in modular interfaces.
  */
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
+IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 {
 	public:
 
@@ -28,11 +28,11 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param size cache size
 		 */
-		CDirectorDotFeatures(int32_t size=0) : CDotFeatures(size)
+		DirectorDotFeatures(int32_t size=0) : DotFeatures(size)
 		{
 		}
 
-		virtual ~CDirectorDotFeatures() { }
+		virtual ~DirectorDotFeatures() { }
 
 		/** get number of examples/vectors, possibly corresponding to the current subset
 		 *
@@ -67,7 +67,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2)
 		{
 			not_implemented(SOURCE_LOCATION);
 			return 0;
@@ -125,7 +125,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 		{
-			CDotFeatures::dense_dot_range(output, start, stop, alphas, vec, dim, b);
+			DotFeatures::dense_dot_range(output, start, stop, alphas, vec, dim, b);
 		}
 
 		/** Compute the dot product for a subset of vectors. This function makes use of dense_dot
@@ -142,7 +142,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num,
 				float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 		{
-			CDotFeatures::dense_dot_range_subset(sub_index, num, output, alphas, vec, dim, b);
+			DotFeatures::dense_dot_range_subset(sub_index, num, output, alphas, vec, dim, b);
 		}
 
 		/** get number of non-zero features in vector
@@ -205,7 +205,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual SGVector<float64_t> get_mean()
 		{
-			return CDotFeatures::get_mean();
+			return DotFeatures::get_mean();
 		}
 
 		/** get covariance
@@ -214,7 +214,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual SGMatrix<float64_t> get_cov()
 		{
-			return CDotFeatures::get_cov();
+			return DotFeatures::get_cov();
 		}
 
 		/** get feature type
@@ -234,7 +234,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const
+		virtual ::std::shared_ptr<Features> duplicate() const
 		{
 			not_implemented(SOURCE_LOCATION);
 			return NULL;
@@ -255,9 +255,9 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param p preprocessor to set
 		 */
-		virtual void add_preprocessor(CPreprocessor* p)
+		virtual void add_preprocessor(std::shared_ptr<Preprocessor> p)
 		{
-			CFeatures::add_preprocessor(p);
+			Features::add_preprocessor(p);
 		}
 
 		/** delete preprocessor from list
@@ -267,7 +267,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual void del_preprocessor(int32_t num)
 		{
-			CFeatures::del_preprocessor(num);
+			Features::del_preprocessor(num);
 		}
 
 		/** in case there is a feature matrix allow for reshaping
@@ -288,18 +288,18 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		virtual void load(CFile* loader)
+		virtual void load(std::shared_ptr<File> loader)
 		{
-			CFeatures::load(loader);
+			Features::load(loader);
 		}
 
 		/** save features to file
 		 *
 		 * @param writer File object via which data shall be saved
 		 */
-		virtual void save(CFile* writer)
+		virtual void save(std::shared_ptr<File> writer)
 		{
-			CFeatures::save(writer);
+			Features::save(writer);
 		}
 
 		/** adds a subset of indices on top of the current subsets (possibly
@@ -309,41 +309,41 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * */
 		virtual void add_subset(SGVector<index_t> subset)
 		{
-			CFeatures::add_subset(subset);
+			Features::add_subset(subset);
 		}
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_subset()
 		{
-			CFeatures::remove_subset();
+			Features::remove_subset();
 		}
 
 		/** removes all subsets
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_all_subsets()
 		{
-			CFeatures::remove_all_subsets();
+			Features::remove_all_subsets();
 		}
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post()
 		{
-			CFeatures::subset_changed_post();
+			Features::subset_changed_post();
 		}
 
-		/** Creates a new CFeatures instance containing copies of the elements
+		/** Creates a new Features instance containing copies of the elements
 		 * which are specified by the provided indices.
 		 *
 		 * This method is needed for a KernelMachine to store its model data.
 		 * NOT IMPLEMENTED!
 		 *
 		 * @param indices indices of feature elements to copy
-		 * @return new CFeatures instance with copies of feature data
+		 * @return new Features instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const
 		{
-			return CFeatures::copy_subset(indices);
+			return Features::copy_subset(indices);
 		}
 
 		/** @return object name */

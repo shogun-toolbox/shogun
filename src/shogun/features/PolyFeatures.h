@@ -21,11 +21,11 @@ namespace shogun
  * see DotFeatures for further discription
  *
  */
-class CPolyFeatures : public CDotFeatures
+class PolyFeatures : public DotFeatures
 {
 	public:
 		/** default constructor  */
-		CPolyFeatures();
+		PolyFeatures();
 
 		/** constructor
 		 *
@@ -33,9 +33,9 @@ class CPolyFeatures : public CDotFeatures
 		 * @param degree degree of the polynomial kernel
 		 * @param normalize normalize kernel
 		 */
-		CPolyFeatures(CDenseFeatures<float64_t>* feat, int32_t degree, bool normalize);
+		PolyFeatures(std::shared_ptr<DenseFeatures<float64_t>> feat, int32_t degree, bool normalize);
 
-		virtual ~CPolyFeatures();
+		virtual ~PolyFeatures();
 
 		/** copy constructor
 		 *
@@ -43,7 +43,7 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @param orig original PolyFeature
 		 */
-		CPolyFeatures(const CPolyFeatures & orig);
+		PolyFeatures(const PolyFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
@@ -83,13 +83,13 @@ class CPolyFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		CFeatures* duplicate() const;
+		std::shared_ptr<Features> duplicate() const;
 
 		/**
 		 *
@@ -210,7 +210,7 @@ class CPolyFeatures : public CDotFeatures
 	protected:
 
 		/** features in original space*/
-		CDenseFeatures<float64_t>* m_feat;
+		std::shared_ptr<DenseFeatures<float64_t>> m_feat;
 		/** degree of the polynomial kernel */
 		int32_t m_degree;
 		/** normalize */

@@ -14,11 +14,11 @@ where where :math:`\Vert \cdot\Vert_2` is the Euclidean norm.
 Example
 -------
 
-Imagine we have files with data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) as
+Imagine we have files with data. We create DenseFeatures (here 64 bit floats aka RealFeatures) as
 
 .. sgexample:: cosine.sg:create_features
 
-We create an instance of :sgclass:`CCosineDistance` by passing it :sgclass:`CDenseFeatures`.
+We create an instance of :sgclass:`CCosineDistance` by passing it :sgclass:`DenseFeatures`.
 
 .. sgexample:: cosine.sg:create_instance
 
@@ -26,7 +26,7 @@ The distance matrix can be extracted as follows:
 
 .. sgexample:: cosine.sg:extract_distance
 
-We can use the same instance with new :sgclass:`CDenseFeatures` to compute asymmetrical distance as follows:
+We can use the same instance with new :sgclass:`DenseFeatures` to compute asymmetrical distance as follows:
 
 .. sgexample:: cosine.sg:refresh_distance
 

@@ -25,11 +25,11 @@ namespace shogun
  * Mahalanobis matrix.
  *
  */
-class CCustomMahalanobisDistance : public CRealDistance
+class CustomMahalanobisDistance : public RealDistance
 {
 	public:
 		/** default constructor */
-		CCustomMahalanobisDistance();
+		CustomMahalanobisDistance();
 
 		/** standard constructor
 		 *
@@ -37,12 +37,12 @@ class CCustomMahalanobisDistance : public CRealDistance
 		 * @param r features of right hand side
 		 * @param m Mahalanobis matrix used to compute distances
 		 */
-		CCustomMahalanobisDistance(CFeatures* l, CFeatures* r, SGMatrix<float64_t> m);
+		CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, SGMatrix<float64_t> m);
 
 		/** destructor */
-		virtual ~CCustomMahalanobisDistance();
+		virtual ~CustomMahalanobisDistance();
 
-		/** cleanup distance, here only because it is abstract in CDistance. It does nothing */
+		/** cleanup distance, here only because it is abstract in Distance. It does nothing */
 		virtual void cleanup();
 
 		/** @return name of SGSerializable */

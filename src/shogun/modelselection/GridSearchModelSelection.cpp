@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Jacob Walker, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Heiko Strathmann, Jacob Walker, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Giovanni De Toni, Thoralf Klein, Roman Votyakov, Kyle McQuisten
  */
 
@@ -14,52 +14,51 @@
 
 using namespace shogun;
 
-CGridSearchModelSelection::CGridSearchModelSelection() : CModelSelection()
+GridSearchModelSelection::GridSearchModelSelection() : ModelSelection()
 {
 }
 
-CGridSearchModelSelection::CGridSearchModelSelection(
-		CMachineEvaluation* machine_eval,
-		CModelSelectionParameters* model_parameters)
-		: CModelSelection(machine_eval, model_parameters)
+GridSearchModelSelection::GridSearchModelSelection(
+		std::shared_ptr<MachineEvaluation> machine_eval,
+		std::shared_ptr<ModelSelectionParameters> model_parameters)
+		: ModelSelection(machine_eval, model_parameters)
 {
 }
 
-CGridSearchModelSelection::~CGridSearchModelSelection()
+GridSearchModelSelection::~GridSearchModelSelection()
 {
 }
 
-CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
+std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(bool print_state)
 {
 	if (print_state)
 		io::print("Generating parameter combinations\n");
 
 	/* Retrieve all possible parameter combinations */
-	CDynamicObjectArray* combinations=
-			(CDynamicObjectArray*)m_model_parameters->get_combinations();
+	auto combinations=
+			m_model_parameters->get_combinations()->as<DynamicObjectArray>();
 
-	CCrossValidationResult* best_result=new CCrossValidationResult();
+	auto best_result=std::make_shared<CrossValidationResult>();
 
-	CParameterCombination* best_combination=NULL;
+	std::shared_ptr<ParameterCombination> best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
 		if (print_state) io::print("Direction is maximize\n");
-		best_result->set_mean(CMath::ALMOST_NEG_INFTY);
+		best_result->set_mean(Math::ALMOST_NEG_INFTY);
 	}
 	else
 	{
 		if (print_state) io::print("Direction is minimize\n");
-		best_result->set_mean(CMath::ALMOST_INFTY);
+		best_result->set_mean(Math::ALMOST_INFTY);
 	}
 
 	/* underlying learning machine */
-	CMachine* machine=m_machine_eval->get_machine();
+	auto machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
 	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
 	{
-		CParameterCombination* current_combination=(CParameterCombination*)
-				combinations->get_element(i);
+		auto current_combination=combinations->get_element<ParameterCombination>(i);
 
 		/* eventually print */
 		if (print_state)
@@ -72,8 +71,8 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CCrossValidationResult* result =
-		    m_machine_eval->evaluate()->as<CCrossValidationResult>();
+		auto result =
+		    m_machine_eval->evaluate()->as<CrossValidationResult>();
 
 		if (print_state)
 			result->print_result();
@@ -84,20 +83,20 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 			if (result->get_mean() > best_result->get_mean())
 			{
 				if (best_combination)
-					SG_UNREF(best_combination);
 
-				best_combination=(CParameterCombination*)
-						combinations->get_element(i);
 
-				SG_REF(result);
-				SG_UNREF(best_result);
+				best_combination=
+						combinations->get_element<ParameterCombination>(i);
+
+
+
 				best_result=result;
 			}
 			else
 			{
-				CParameterCombination* combination=(CParameterCombination*)
-						combinations->get_element(i);
-				SG_UNREF(combination);
+				auto combination=
+						combinations->get_element<ParameterCombination>(i);
+
 			}
 		}
 		else
@@ -105,30 +104,27 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 			if (result->get_mean() < best_result->get_mean())
 			{
 				if (best_combination)
-					SG_UNREF(best_combination);
 
-				best_combination=(CParameterCombination*)
-						combinations->get_element(i);
 
-				SG_REF(result);
-				SG_UNREF(best_result);
+				best_combination=
+						combinations->get_element<ParameterCombination>(i);
+
+
+
 				best_result=result;
 			}
 			else
 			{
-				CParameterCombination* combination=(CParameterCombination*)
-						combinations->get_element(i);
-				SG_UNREF(combination);
+				auto combination=
+						combinations->get_element<ParameterCombination>(i);
+
 			}
 		}
 
-		SG_UNREF(result);
-		SG_UNREF(current_combination);
+
+
 	}
 
-	SG_UNREF(best_result);
-	SG_UNREF(machine);
-	SG_UNREF(combinations);
 
 	return best_combination;
 }

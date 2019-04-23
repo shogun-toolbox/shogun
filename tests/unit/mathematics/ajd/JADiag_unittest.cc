@@ -19,7 +19,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CJADiag, diagonalize)
+TEST(JADiag, diagonalize)
 {
 	int32_t seed = 17;
 	// Generating diagonal matrices
@@ -37,7 +37,7 @@ TEST(CJADiag, diagonalize)
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(uniform_int_dist(prng, {1,5}));
+			tmp(j,j) *= Math::abs(uniform_int_dist(prng, {1,5}));
 
 	}
 
@@ -53,7 +53,7 @@ TEST(CJADiag, diagonalize)
 	}
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CJADiag::diagonalize(C);
+	SGMatrix<float64_t> V = JADiag::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);

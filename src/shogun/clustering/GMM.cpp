@@ -9,7 +9,6 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
-#include <shogun/base/some.h>
 #include <shogun/clustering/GMM.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
@@ -25,27 +24,27 @@
 using namespace shogun;
 using namespace std;
 
-CGMM::CGMM() : RandomMixin<CDistribution>(), m_components(),	m_coefficients()
+GMM::GMM() : RandomMixin<Distribution>(), m_components(), m_coefficients()
 {
 	register_params();
 }
 
-CGMM::CGMM(int32_t n, ECovType cov_type) : RandomMixin<CDistribution>(), m_components(), m_coefficients()
+GMM::GMM(int32_t n, ECovType cov_type) : RandomMixin<Distribution>(), m_components(), m_coefficients()
 {
 	m_coefficients = SGVector<float64_t>(n);
-	m_components = vector<CGaussian*>(n);
+	m_components = vector<std::shared_ptr<Gaussian>>(n);
 
 	for (int32_t i=0; i<n; i++)
 	{
-		m_components[i]=new CGaussian();
-		SG_REF(m_components[i]);
+		m_components[i]=std::make_shared<Gaussian>();
+
 		m_components[i]->set_cov_type(cov_type);
 	}
 
 	register_params();
 }
 
-CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy) : RandomMixin<CDistribution>()
+GMM::GMM(vector<shared_ptr<Gaussian>> components, SGVector<float64_t> coefficients, bool copy) : RandomMixin<Distribution>()
 {
 	ASSERT(int32_t(components.size())==coefficients.vlen)
 
@@ -53,20 +52,16 @@ CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool
 	{
 		m_components=components;
 		m_coefficients=coefficients;
-		for (int32_t i=0; i<int32_t(components.size()); i++)
-		{
-			SG_REF(m_components[i]);
-		}
 	}
 	else
 	{
 		m_coefficients = coefficients;
-		m_components = vector<CGaussian*>(components.size());
+		m_components = vector<shared_ptr<Gaussian>>(components.size());
 
 		for (int32_t i=0; i<int32_t(components.size()); i++)
 		{
-			m_components[i]=new CGaussian();
-			SG_REF(m_components[i]);
+			m_components[i]=std::make_shared<Gaussian>();
+
 			m_components[i]->set_cov_type(components[i]->get_cov_type());
 
 			SGVector<float64_t> old_mean=components[i]->get_mean();
@@ -91,22 +86,22 @@ CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool
 	register_params();
 }
 
-CGMM::~CGMM()
+GMM::~GMM()
 {
 	if (!m_components.empty())
 		cleanup();
 }
 
-void CGMM::cleanup()
+void GMM::cleanup()
 {
 	for (int32_t i = 0; i < int32_t(m_components.size()); i++)
-		SG_UNREF(m_components[i]);
 
-	m_components = vector<CGaussian*>();
+
+	m_components = vector<shared_ptr<Gaussian>>();
 	m_coefficients = SGVector<float64_t>();
 }
 
-bool CGMM::train(CFeatures* data)
+bool GMM::train(std::shared_ptr<Features> data)
 {
 	ASSERT(m_components.size() != 0)
 
@@ -121,12 +116,12 @@ bool CGMM::train(CFeatures* data)
 	return true;
 }
 
-float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
+float64_t GMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
 	if (!features)
 		error("No features to train on.");
 
-	CDotFeatures* dotdata=(CDotFeatures *) features;
+	auto dotdata=features->as<DenseFeatures<float64_t>>();
 	int32_t num_vectors=dotdata->get_num_vectors();
 
 	SGMatrix<float64_t> alpha;
@@ -134,14 +129,14 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	/* compute initialization via kmeans if none is present */
 	if (m_components[0]->get_mean().vector==NULL)
 	{
-		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
+		auto init_k_means=std::make_shared<KMeans>(int32_t(m_components.size()), std::make_shared<EuclideanDistance>());
 		seed(init_k_means);
 		init_k_means->train(dotdata);
 		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
 		alpha=alpha_init(init_means);
 
-		SG_UNREF(init_k_means);
+
 
 		max_likelihood(alpha, min_cov);
 	}
@@ -193,7 +188,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		    iter, "log_likelihood", "Log Likelihood", log_likelihood_cur);
 		this->observe<SGVector<float64_t>>(
 		    iter, "coefficients", "Mixture Coefficients", alpha);
-		this->observe<std::vector<CGaussian*>>(iter, "components");
+		this->observe<std::vector<std::shared_ptr<Gaussian>>>(iter, "components");
 
 		iter++;
 	}
@@ -201,7 +196,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	return log_likelihood_cur;
 }
 
-float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
+float64_t GMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
 {
 	if (!features)
 		error("No features to train on.");
@@ -209,7 +204,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	if (m_components.size()<3)
 		error("Can't run SMEM with less than 3 component mixture model.");
 
-	CDotFeatures* dotdata = features->as<CDotFeatures>();
+	auto dotdata = features->as<DotFeatures>();
 	auto num_vectors = dotdata->get_num_vectors();
 
 	float64_t cur_likelihood=train_em(min_cov, max_em_iter, min_change);
@@ -298,9 +293,9 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				counter++;
 			}
 		}
-		CMath::qsort_backward_index(
+		Math::qsort_backward_index(
 		    split_crit.vector, split_ind.vector, int32_t(m_components.size()));
-		CMath::qsort_backward_index(
+		Math::qsort_backward_index(
 		    merge_crit.vector, merge_ind.vector,
 		    int32_t(m_components.size() * (m_components.size() - 1) / 2));
 
@@ -313,7 +308,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				if (merge_ind[j]/int32_t(m_components.size()) != split_ind[i] && int32_t(merge_ind[j]%m_components.size()) != split_ind[i])
 				{
 					candidates_checked++;
-					CGMM* candidate=new CGMM(m_components, m_coefficients, true);
+					auto candidate=std::make_shared<GMM>(m_components, m_coefficients, true);
 					seed(candidate);
 					candidate->train(features);
 					candidate->partial_em(split_ind[i], merge_ind[j]/int32_t(m_components.size()), merge_ind[j]%int32_t(m_components.size()), min_cov, max_em_iter, min_change);
@@ -326,11 +321,11 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						set_coef(candidate->get_coef());
 
 						better_found=true;
-						delete candidate;
+						candidate.reset();
 						break;
 					}
 					else
-						delete candidate;
+						candidate.reset();
 
 					if (candidates_checked>=max_cand)
 						break;
@@ -345,7 +340,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		this->observe<float64_t>(
 		    iter, "log_likelihood", "Log Likelihood", cur_likelihood);
 		this->observe<SGVector<float64_t>>(iter, "coefficients");
-		this->observe<std::vector<CGaussian*>>(iter, "components");
+		this->observe<std::vector<std::shared_ptr<Gaussian>>>(iter, "components");
 
 		iter++;
 		pb.print_progress();
@@ -354,9 +349,9 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	return cur_likelihood;
 }
 
-void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
+void GMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
 {
-	CDotFeatures* dotdata=(CDotFeatures *) features;
+	auto dotdata=features->as<DotFeatures>();
 	int32_t num_vectors=dotdata->get_num_vectors();
 
 	SGVector<float64_t> init_logPxy(num_vectors * m_components.size());
@@ -397,7 +392,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		        init_logPx[i]));
 	}
 
-	vector<CGaussian*> components(3);
+	vector<shared_ptr<Gaussian>> components(3);
 	SGVector<float64_t> coefficients(3);
 	components[0]=m_components[comp1];
 	components[1]=m_components[comp2];
@@ -495,7 +490,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		components[2]->get_d().vector[0]=components[0]->get_d().vector[0];
 	}
 
-	CGMM* partial_candidate=new CGMM(components, coefficients);
+	auto partial_candidate=std::make_shared<GMM>(components, coefficients);
 	seed(partial_candidate);
 	partial_candidate->train(features);
 
@@ -548,12 +543,12 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	m_coefficients.vector[comp2]=coefficients.vector[1];
 	m_coefficients.vector[comp3]=coefficients.vector[2];
 
-	delete partial_candidate;
+	partial_candidate.reset();
 }
 
-void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
+void GMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 {
-	CDotFeatures* dotdata=(CDotFeatures *) features;
+	auto dotdata=features->as<DotFeatures>();
 	int32_t num_dim=dotdata->get_dim_feature_space();
 
 	float64_t alpha_sum;
@@ -640,7 +635,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			    linalg::eigen_solver_symmetric(cov_sum, d0, cov_sum);
 
 			    for (auto& v: d0)
-				    v = CMath::max(min_cov, v);
+				    v = Math::max(min_cov, v);
 
 			    m_components[i]->set_d(d0);
 			    m_components[i]->set_u(cov_sum);
@@ -651,7 +646,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			    for (int32_t j = 0; j < num_dim; j++)
 			    {
 				    cov_sum(0, j) /= alpha_sum;
-				    cov_sum(0, j) = CMath::max(min_cov, cov_sum(0, j));
+				    cov_sum(0, j) = Math::max(min_cov, cov_sum(0, j));
 			    }
 
 			    m_components[i]->set_d(cov_sum.get_row_vector(0));
@@ -659,7 +654,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			    break;
 		    case SPHERICAL:
 			    cov_sum[0] /= alpha_sum * num_dim;
-			    cov_sum[0] = CMath::max(min_cov, cov_sum[0]);
+			    cov_sum[0] = Math::max(min_cov, cov_sum[0]);
 
 			    m_components[i]->set_d(cov_sum.get_row_vector(0));
 
@@ -673,41 +668,41 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 	linalg::scale(m_coefficients, m_coefficients, 1.0 / alpha_sum_sum);
 }
 
-int32_t CGMM::get_num_model_parameters()
+int32_t GMM::get_num_model_parameters()
 {
 	return 1;
 }
 
-float64_t CGMM::get_log_model_parameter(int32_t num_param)
+float64_t GMM::get_log_model_parameter(int32_t num_param)
 {
 	ASSERT(num_param==1)
 
 	return std::log(m_components.size());
 }
 
-index_t CGMM::get_num_components() const
+index_t GMM::get_num_components() const
 {
 	return m_components.size();
 }
 
-CDistribution* CGMM::get_component(index_t index) const
+std::shared_ptr<Distribution> GMM::get_component(index_t index) const
 {
 	return m_components[index];
 }
 
-float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t GMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
-float64_t CGMM::get_log_likelihood_example(int32_t num_example)
+float64_t GMM::get_log_likelihood_example(int32_t num_example)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 1;
 }
 
-float64_t CGMM::get_likelihood_example(int32_t num_example)
+float64_t GMM::get_likelihood_example(int32_t num_example)
 {
 	float64_t result=0;
 
@@ -715,9 +710,10 @@ float64_t CGMM::get_likelihood_example(int32_t num_example)
 	ASSERT(features->get_feature_class() == C_DENSE);
 	ASSERT(features->get_feature_type() == F_DREAL);
 
+	auto f = features->as<DenseFeatures<float64_t>>();
 	for (auto i: range(index_t(m_components.size())))
 	{
-		SGVector<float64_t> point= ((CDenseFeatures<float64_t>*) features)->get_feature_vector(num_example);
+		SGVector<float64_t> point= f->get_feature_vector(num_example);
 		result += std::exp(
 		    m_components[i]->compute_log_PDF(point) +
 		    std::log(m_coefficients[i]));
@@ -726,81 +722,71 @@ float64_t CGMM::get_likelihood_example(int32_t num_example)
 	return result;
 }
 
-SGVector<float64_t> CGMM::get_nth_mean(int32_t num)
+SGVector<float64_t> GMM::get_nth_mean(int32_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	return m_components[num]->get_mean();
 }
 
-void CGMM::set_nth_mean(SGVector<float64_t> mean, int32_t num)
+void GMM::set_nth_mean(SGVector<float64_t> mean, int32_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	m_components[num]->set_mean(mean);
 }
 
-SGMatrix<float64_t> CGMM::get_nth_cov(int32_t num)
+SGMatrix<float64_t> GMM::get_nth_cov(int32_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	return m_components[num]->get_cov();
 }
 
-void CGMM::set_nth_cov(SGMatrix<float64_t> cov, int32_t num)
+void GMM::set_nth_cov(SGMatrix<float64_t> cov, int32_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	m_components[num]->set_cov(cov);
 }
 
-SGVector<float64_t> CGMM::get_coef()
+SGVector<float64_t> GMM::get_coef()
 {
 	return m_coefficients;
 }
 
-void CGMM::set_coef(const SGVector<float64_t> coefficients)
+void GMM::set_coef(const SGVector<float64_t> coefficients)
 {
 	m_coefficients=coefficients;
 }
 
-vector<CGaussian*> CGMM::get_comp()
+vector<shared_ptr<Gaussian>> GMM::get_comp()
 {
 	return m_components;
 }
 
-void CGMM::set_comp(vector<CGaussian*> components)
+void GMM::set_comp(vector<shared_ptr<Gaussian>> components)
 {
-	for (int32_t i=0; i<int32_t(m_components.size()); i++)
-	{
-		SG_UNREF(m_components[i]);
-	}
-
 	m_components=components;
-
-	for (int32_t i=0; i<int32_t(m_components.size()); i++)
-	{
-		SG_REF(m_components[i]);
-	}
 }
 
-SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
+SGMatrix<float64_t> GMM::alpha_init(SGMatrix<float64_t> init_means)
 {
-	CDotFeatures* dotdata=(CDotFeatures *) features;
+	auto dotdata=features->as<DenseFeatures<float64_t>>();
 	auto num_vectors=dotdata->get_num_vectors();
 
 	SGVector<float64_t> label_num(init_means.num_cols);
 	linalg::range_fill(label_num);
 
-	auto knn=some<CKNN>(1, new CEuclideanDistance(), new CMulticlassLabels(label_num));
-	knn->train(new CDenseFeatures<float64_t>(init_means));
-	auto init_labels = knn->apply(features)->as<CMulticlassLabels>();
+	auto knn=std::make_shared<KNN>(1, std::make_shared<EuclideanDistance>(), std::make_shared<MulticlassLabels>(label_num));
+	knn->train(std::make_shared<DenseFeatures<float64_t>>(init_means));
+	auto init_labels = knn->apply(features)->as<MulticlassLabels>();
 
 	SGMatrix<float64_t> alpha(num_vectors, index_t(m_components.size()));
 	for (auto i: range(num_vectors))
 		alpha[i * m_components.size() + init_labels->get_int_label(i)] = 1;
 
-	SG_UNREF(init_labels);
+
 	return alpha;
 }
 
-SGVector<float64_t> CGMM::sample()
+SGVector<float64_t> GMM::sample()
 {
 	require(m_components.size()>0, "Number of mixture components is {} but "
 			"must be positive\n", m_components.size());
@@ -820,7 +806,7 @@ SGVector<float64_t> CGMM::sample()
 	return m_components[m_coefficients.vlen-1]->sample();
 }
 
-SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
+SGVector<float64_t> GMM::cluster(SGVector<float64_t> point)
 {
 	SGVector<float64_t> answer(m_components.size()+1);
 	answer.vector[m_components.size()]=0;
@@ -837,7 +823,7 @@ SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 	return answer;
 }
 
-void CGMM::register_params()
+void GMM::register_params()
 {
 	this->watch_param(
 	    "components", &m_components,

@@ -15,9 +15,9 @@
 
 namespace shogun
 {
-class CStreamingDotFeatures;
+class StreamingDotFeatures;
 
-/** @brief This class acts as an alternative to the CStreamingSparseFeatures class
+/** @brief This class acts as an alternative to the StreamingSparseFeatures class
  * and their difference is that the current example in this class is hashed into
  * a smaller dimension dim.
  *
@@ -25,11 +25,11 @@ class CStreamingDotFeatures;
  * and current_label. Call get_next_example() followed by get_current_vector()
  * to iterate through the stream.
  */
-template <class ST> class CStreamingHashedSparseFeatures : public CStreamingDotFeatures
+template <class ST> class StreamingHashedSparseFeatures : public StreamingDotFeatures
 {
 public:
 	/** Constructor */
-	CStreamingHashedSparseFeatures();
+	StreamingHashedSparseFeatures();
 
 	/**
 	 * Constructor with input information passed.
@@ -41,11 +41,11 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CStreamingHashedSparseFeatures (CStreamingFile* file, bool is_labelled, int32_t size,
+	StreamingHashedSparseFeatures (std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size,
 				int32_t d = 512, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/**
-	 * Constructor taking a CDotFeatures object and optionally,
+	 * Constructor taking a DotFeatures object and optionally,
 	 * labels, as args.
 	 *
 	 * The derived class should implement it so that the
@@ -53,17 +53,17 @@ public:
 	 * input, getting examples one by one from the DotFeatures
 	 * object (and labels, if applicable).
 	 *
-	 * @param dot_features CDotFeatures object
+	 * @param dot_features DotFeatures object
 	 * @param d the dimensionality of the target feature space
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @param lab labels (optional)
 	 */
-	CStreamingHashedSparseFeatures (CSparseFeatures<ST>* dot_features, int32_t d = 512,
+	StreamingHashedSparseFeatures (std::shared_ptr<SparseFeatures<ST>> dot_features, int32_t d = 512,
 				bool use_quadr = false, bool keep_lin_terms = true, float64_t* lab = NULL);
 
 	/** Destructor */
-	virtual ~CStreamingHashedSparseFeatures ();
+	virtual ~StreamingHashedSparseFeatures ();
 
 	/** compute dot product between vectors of two
 	 * StreamingDotFeatures objects.
@@ -71,7 +71,7 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(CStreamingDotFeatures* df);
+	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures> df);
 
 	/** compute dot product between current vector and a dense vector
 	 *
@@ -197,7 +197,7 @@ public:
 	SGSparseVector<ST> get_vector();
 
 private:
-	void init(CStreamingFile* file, bool is_labelled, int32_t size,
+	void init(std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size,
 		int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
@@ -209,7 +209,7 @@ protected:
 	SGSparseVector<ST> current_vector;
 
 	/** The parser */
-	CInputParser<SGSparseVectorEntry<ST> > parser;
+	InputParser<SGSparseVectorEntry<ST> > parser;
 
 	/** The current example's label */
 	float64_t current_label;

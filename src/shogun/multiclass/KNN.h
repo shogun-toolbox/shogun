@@ -35,7 +35,7 @@ namespace shogun
 		KNN_LSH
 	};
 
-class CDistanceMachine;
+class DistanceMachine;
 
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
  * classifier.
@@ -59,20 +59,20 @@ class CDistanceMachine;
  * where \f$|q|<1\f$.
  *
  * To avoid ties, k should be an odd number. To define how close examples are
- * k-NN requires a CDistance object to work with (e.g., CEuclideanDistance ).
+ * k-NN requires a Distance object to work with (e.g., EuclideanDistance ).
  *
  * Note that k-NN has zero training time but classification times increase
  * dramatically with the number of examples. Also note that k-NN is capable of
  * multi-class-classification. And finally, in case of k=1 classification will
  * take less time with an special optimization provided.
  */
-class CKNN : public CDistanceMachine
+class KNN : public DistanceMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
 
 		/** default constructor */
-		CKNN();
+		KNN();
 
 		/** constructor
 		 *
@@ -80,9 +80,9 @@ class CKNN : public CDistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
+		KNN(int32_t k, std::shared_ptr<Distance> d, std::shared_ptr<Labels> trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
 
-		virtual ~CKNN();
+		virtual ~KNN();
 
 		/** get classifier type
 		 *
@@ -106,7 +106,7 @@ class CKNN : public CDistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
@@ -214,12 +214,12 @@ class CKNN : public CDistanceMachine
 		/** classify all examples with nearest neighbor (k=1)
 		 * @return classified labels
 		 */
-		virtual CMulticlassLabels* classify_NN();
+		virtual std::shared_ptr<MulticlassLabels> classify_NN();
 
 		/** init distances to test examples
 		 * @param data test examples
 		 */
-		void init_distance(CFeatures* data);
+		void init_distance(std::shared_ptr<Features> data);
 
 		/** train k-NN classifier
 		 *
@@ -229,7 +229,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		void init();
@@ -284,7 +284,7 @@ class CKNN : public CDistanceMachine
 		SGVector<int32_t> m_train_labels;
 
 		/// Solver for KNN
-		CKNNSolver* solver;
+		std::shared_ptr<KNNSolver> solver;
 
 		KNN_SOLVER m_knn_solver;
 

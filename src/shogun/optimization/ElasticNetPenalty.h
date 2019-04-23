@@ -119,10 +119,10 @@ protected:
 	float64_t m_l1_ratio;
 
 	/** L1Penalty */
-	L1Penalty* m_l1_penalty;
+	std::shared_ptr<L1Penalty> m_l1_penalty;
 
 	/** L2Penalty */
-	L2Penalty* m_l2_penalty;
+	std::shared_ptr<L2Penalty> m_l2_penalty;
 
 private:
 	/**  init */

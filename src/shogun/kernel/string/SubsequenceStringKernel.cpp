@@ -10,47 +10,47 @@
 
 using namespace shogun;
 
-CSubsequenceStringKernel::CSubsequenceStringKernel()
-: CStringKernel<char>(0), m_maxlen(1), m_lambda(1.0)
+SubsequenceStringKernel::SubsequenceStringKernel()
+: StringKernel<char>(0), m_maxlen(1), m_lambda(1.0)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CSubsequenceStringKernel::CSubsequenceStringKernel(int32_t size, int32_t maxlen,
+SubsequenceStringKernel::SubsequenceStringKernel(int32_t size, int32_t maxlen,
 		float64_t lambda)
-: CStringKernel<char>(size), m_maxlen(maxlen), m_lambda(lambda)
+: StringKernel<char>(size), m_maxlen(maxlen), m_lambda(lambda)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CSubsequenceStringKernel::CSubsequenceStringKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r, int32_t maxlen, float64_t lambda)
-: CStringKernel<char>(10), m_maxlen(maxlen), m_lambda(lambda)
+SubsequenceStringKernel::SubsequenceStringKernel(std::shared_ptr<StringFeatures<char>> l,
+		std::shared_ptr<StringFeatures<char>> r, int32_t maxlen, float64_t lambda)
+: StringKernel<char>(10), m_maxlen(maxlen), m_lambda(lambda)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	init(l, r);
 	register_params();
 }
 
-CSubsequenceStringKernel::~CSubsequenceStringKernel()
+SubsequenceStringKernel::~SubsequenceStringKernel()
 {
 	cleanup();
 }
 
-bool CSubsequenceStringKernel::init(CFeatures* l, CFeatures* r)
+bool SubsequenceStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CSubsequenceStringKernel::cleanup()
+void SubsequenceStringKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t SubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	// sanity check
 	require(lhs, "lhs feature vector is not set!");
@@ -59,9 +59,9 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec=dynamic_cast<CStringFeatures<char>*>(lhs)
+	char* avec=std::dynamic_pointer_cast<StringFeatures<char>>(lhs)
 		->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=dynamic_cast<CStringFeatures<char>*>(rhs)
+	char* bvec=std::dynamic_pointer_cast<StringFeatures<char>>(rhs)
 		->get_feature_vector(idx_b, blen, free_bvec);
 
 	require(avec, "Feature vector for lhs is NULL!");
@@ -113,9 +113,9 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	}
 
 	// cleanup
-	dynamic_cast<CStringFeatures<char>*>(lhs)->free_feature_vector(avec, idx_a,
+	std::dynamic_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a,
 			free_avec);
-	dynamic_cast<CStringFeatures<char>*>(rhs)->free_feature_vector(bvec, idx_b,
+	std::dynamic_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b,
 			free_bvec);
 
 	for (index_t i=0; i<m_maxlen+1; ++i)
@@ -129,7 +129,7 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return K;
 }
 
-void CSubsequenceStringKernel::register_params()
+void SubsequenceStringKernel::register_params()
 {
 	SG_ADD(&m_maxlen, "m_maxlen", "maximum length of common subsequences", ParameterProperties::HYPER);
 	SG_ADD(&m_lambda, "m_lambda", "gap penalty", ParameterProperties::HYPER);

@@ -48,32 +48,19 @@ class KLInferenceCostFunction: public FirstOrderCostFunction
 {
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }
-        virtual ~KLInferenceCostFunction() { SG_UNREF(m_obj); }
-        void set_target(CKLInference *obj)
+        virtual ~KLInferenceCostFunction() {  }
+        void set_target(std::shared_ptr<KLInference>obj)
         {
-		require(obj,"Obj must set");
-		if(m_obj!=obj)
-		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+			require(obj,"Obj must set");
 			m_obj=obj;
-		}
-        }
-        void unset_target(bool is_unref)
-	{
-		if(is_unref)
-		{
-			SG_UNREF(m_obj);
-		}
-		m_obj=NULL;
-	}
+	    }
 
         virtual float64_t get_cost()
         {
                 require(m_obj,"Object not set");
                 bool status = m_obj->precompute();
                 if (!status)
-                        return CMath::NOT_A_NUMBER;
+                        return Math::NOT_A_NUMBER;
                 float64_t nlml=m_obj->get_nlml_wrt_parameters();
                 return nlml;
 
@@ -100,43 +87,43 @@ private:
                 m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "KLInferenceCostFunction__m_derivatives",
 			"derivatives in KLInferenceCostFunction");
-		SG_ADD((CSGObject **)&m_obj, "KLInferenceCostFunction__m_obj",
+		SG_ADD((std::shared_ptr<SGObject>*)&m_obj, "KLInferenceCostFunction__m_obj",
 			"obj in KLInferenceCostFunction");
         }
-        CKLInference *m_obj;
+        std::shared_ptr<KLInference> m_obj;
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
-CKLInference::CKLInference() : CInference()
+KLInference::KLInference() : Inference()
 {
 	init();
 }
 
-CKLInference::CKLInference(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CInference(kern, feat, m, lab, mod)
+KLInference::KLInference(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: Inference(kern, feat, m, lab, mod)
 {
 	init();
 	check_variational_likelihood(m_model);
 }
 
-void CKLInference::check_variational_likelihood(CLikelihoodModel* mod) const
+void KLInference::check_variational_likelihood(std::shared_ptr<LikelihoodModel> mod) const
 {
 	require(mod, "the likelihood model must not be NULL");
-	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(mod);
+	auto lik= std::dynamic_pointer_cast<VariationalGaussianLikelihood>(mod);
 	require(lik,
 		"The provided likelihood model ({}) must support variational Gaussian inference. ",
 		"Please use a Variational Gaussian Likelihood model",
 		mod->get_name());
 }
 
-void CKLInference::set_model(CLikelihoodModel* mod)
+void KLInference::set_model(std::shared_ptr<LikelihoodModel> mod)
 {
 	check_variational_likelihood(mod);
-	CInference::set_model(mod);
+	Inference::set_model(mod);
 }
 
-void CKLInference::init()
+void KLInference::init()
 {
 	m_noise_factor=1e-10;
 	m_max_attempt=0;
@@ -156,16 +143,16 @@ void CKLInference::init()
 		"Variational parameter mu and posterior mean");
 	SG_ADD(&m_Sigma, "Sigma",
 		"Posterior covariance matrix Sigma");
-	register_minimizer(new CLBFGSMinimizer());
+	register_minimizer(std::make_shared<LBFGSMinimizer>());
 }
 
-CKLInference::~CKLInference()
+KLInference::~KLInference()
 {
 }
 
-void CKLInference::compute_gradient()
+void KLInference::compute_gradient()
 {
-	CInference::compute_gradient();
+	Inference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -176,11 +163,11 @@ void CKLInference::compute_gradient()
 	}
 }
 
-void CKLInference::update()
+void KLInference::update()
 {
 	SG_TRACE("entering");
 
-	CInference::update();
+	Inference::update();
 	update_init();
 	update_alpha();
 	update_chol();
@@ -190,36 +177,36 @@ void CKLInference::update()
 	SG_TRACE("leaving");
 }
 
-void CKLInference::set_noise_factor(float64_t noise_factor)
+void KLInference::set_noise_factor(float64_t noise_factor)
 {
 	require(noise_factor>=0, "The noise_factor {:.20f} should be non-negative", noise_factor);
 	m_noise_factor=noise_factor;
 }
 
-void CKLInference::set_min_coeff_kernel(float64_t min_coeff_kernel)
+void KLInference::set_min_coeff_kernel(float64_t min_coeff_kernel)
 {
 	require(min_coeff_kernel>=0, "The min_coeff_kernel {:.20f} should be non-negative", min_coeff_kernel);
 	m_min_coeff_kernel=min_coeff_kernel;
 }
 
-void CKLInference::set_max_attempt(index_t max_attempt)
+void KLInference::set_max_attempt(index_t max_attempt)
 {
 	require(max_attempt>=0, "The max_attempt {} should be non-negative. 0 means inifity attempts", max_attempt);
 	m_max_attempt=max_attempt;
 }
 
-void CKLInference::set_exp_factor(float64_t exp_factor)
+void KLInference::set_exp_factor(float64_t exp_factor)
 {
 	require(exp_factor>1.0, "The exp_factor {} should be greater than 1.0.", exp_factor);
 	m_exp_factor=exp_factor;
 }
 
-void CKLInference::update_init()
+void KLInference::update_init()
 {
 	update_init_helper();
 }
 
-Eigen::LDLT<Eigen::MatrixXd> CKLInference::update_init_helper()
+Eigen::LDLT<Eigen::MatrixXd> KLInference::update_init_helper()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -251,35 +238,35 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInference::update_init_helper()
 }
 
 
-SGVector<float64_t> CKLInference::get_posterior_mean()
+SGVector<float64_t> KLInference::get_posterior_mean()
 {
 	compute_gradient();
 
 	return SGVector<float64_t>(m_mu);
 }
 
-SGMatrix<float64_t> CKLInference::get_posterior_covariance()
+SGMatrix<float64_t> KLInference::get_posterior_covariance()
 {
 	compute_gradient();
 
 	return SGMatrix<float64_t>(m_Sigma);
 }
 
-CVariationalGaussianLikelihood* CKLInference::get_variational_likelihood() const
+std::shared_ptr<VariationalGaussianLikelihood> KLInference::get_variational_likelihood() const
 {
 	check_variational_likelihood(m_model);
-	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(m_model);
+	auto lik= std::dynamic_pointer_cast<VariationalGaussianLikelihood>(m_model);
 	return lik;
 }
 
-float64_t CKLInference::get_nlml_wrt_parameters()
+float64_t KLInference::get_nlml_wrt_parameters()
 {
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	return get_negative_log_marginal_likelihood_helper();
 }
 
-float64_t CKLInference::get_negative_log_marginal_likelihood()
+float64_t KLInference::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -287,9 +274,9 @@ float64_t CKLInference::get_negative_log_marginal_likelihood()
 	return get_negative_log_marginal_likelihood_helper();
 }
 
-SGVector<float64_t> CKLInference::get_derivative_wrt_likelihood_model(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(const TParameter* param)
 {
-	CVariationalLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	if (!lik->supports_derivative_wrt_hyperparameter())
 		return SGVector<float64_t> ();
 
@@ -303,7 +290,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_likelihood_model(const TPar
 	return result;
 }
 
-SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_mean(const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
@@ -332,37 +319,32 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 	return result;
 }
 
-float64_t CKLInference::optimization()
+float64_t KLInference::optimization()
 {
-        KLInferenceCostFunction *cost_fun=new KLInferenceCostFunction();
-        cost_fun->set_target(this);
-	bool cleanup=false;
-	if(this->ref_count()>1)
-		cleanup=true;
+    auto cost_fun=std::make_shared<KLInferenceCostFunction>();
+    cost_fun->set_target(shared_from_this()->as<KLInference>());
 
-	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
+	auto opt=m_minimizer->as<FirstOrderMinimizer>();
 
 	require(opt, "FirstOrderMinimizer is required");
 	opt->set_cost_function(cost_fun);
 
-        float64_t nlml_opt = opt->minimize();
+	float64_t nlml_opt = opt->minimize();
 	opt->unset_cost_function(false);
-	cost_fun->unset_target(cleanup);
 
-        SG_UNREF(cost_fun);
 	return nlml_opt;
 }
 
-void CKLInference::register_minimizer(Minimizer* minimizer)
+void KLInference::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	require(minimizer, "Minimizer must set");
-	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
+	auto opt= std::dynamic_pointer_cast<FirstOrderMinimizer>(minimizer);
 	require(opt, "FirstOrderMinimizer is required");
-	CInference::register_minimizer(minimizer);
+	Inference::register_minimizer(minimizer);
 }
 
 
-SGVector<float64_t> CKLInference::get_derivative_wrt_inference_method(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(const TParameter* param)
 {
 	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
@@ -378,7 +360,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_inference_method(const TPar
 	return result;
 }
 
-SGVector<float64_t> CKLInference::get_derivative_wrt_kernel(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_kernel(const TParameter* param)
 {
 	require(param, "Param not set");
 	SGVector<float64_t> result;
@@ -402,7 +384,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_kernel(const TParameter* pa
 	return result;
 }
 
-SGMatrix<float64_t> CKLInference::get_cholesky()
+SGMatrix<float64_t> KLInference::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();

@@ -34,22 +34,22 @@
 
 using namespace shogun;
 
-CLikelihoodModel::CLikelihoodModel()
+LikelihoodModel::LikelihoodModel()
 {
 }
 
-CLikelihoodModel::~CLikelihoodModel()
+LikelihoodModel::~LikelihoodModel()
 {
 }
 
-SGVector<float64_t> CLikelihoodModel::get_predictive_log_probabilities(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab)
+SGVector<float64_t> LikelihoodModel::get_predictive_log_probabilities(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels >lab)
 {
 	return get_log_zeroth_moments(mu, s2, lab);
 }
 
-SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
-		const CLabels* lab, SGMatrix<float64_t> F) const
+SGVector<float64_t> LikelihoodModel::get_log_probability_fmatrix(
+		std::shared_ptr<const Labels> lab, SGMatrix<float64_t> F) const
 {
 	require(lab, "Given labels are NULL!");
 	require(lab->get_num_labels()==F.num_rows, "Number of labels ({}) does "
@@ -69,8 +69,8 @@ SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
 	return result;
 }
 
-SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> LikelihoodModel::get_first_moments(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
@@ -86,8 +86,8 @@ SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
 	return result;
 }
 
-SGVector<float64_t> CLikelihoodModel::get_second_moments(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> LikelihoodModel::get_second_moments(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),

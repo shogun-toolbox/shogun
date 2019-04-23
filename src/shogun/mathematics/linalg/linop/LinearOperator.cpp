@@ -11,13 +11,13 @@ namespace shogun
 {
 
 template<class T>
-CLinearOperator<T>::CLinearOperator() : CSGObject()
+LinearOperator<T>::LinearOperator() : SGObject()
 {
 	init();
 }
 
 template<class T>
-CLinearOperator<T>::CLinearOperator(index_t dimension) : CSGObject()
+LinearOperator<T>::LinearOperator(index_t dimension) : SGObject()
 {
 	init();
 
@@ -25,18 +25,18 @@ CLinearOperator<T>::CLinearOperator(index_t dimension) : CSGObject()
 }
 
 template<class T>
-CLinearOperator<T>::~CLinearOperator()
+LinearOperator<T>::~LinearOperator()
 {
 }
 
 template<class T>
-const index_t CLinearOperator<T>::get_dimension() const
+const index_t LinearOperator<T>::get_dimension() const
 {
 	return m_dimension;
 }
 
 template<class T>
-void CLinearOperator<T>::init()
+void LinearOperator<T>::init()
 {
 	m_dimension=0;
 
@@ -44,19 +44,19 @@ void CLinearOperator<T>::init()
 		"Dimension of the vector on which linear operator can apply");
 }
 
-template class CLinearOperator<bool>;
-template class CLinearOperator<char>;
-template class CLinearOperator<int8_t>;
-template class CLinearOperator<uint8_t>;
-template class CLinearOperator<int16_t>;
-template class CLinearOperator<uint16_t>;
-template class CLinearOperator<int32_t>;
-template class CLinearOperator<uint32_t>;
-template class CLinearOperator<int64_t>;
-template class CLinearOperator<uint64_t>;
-template class CLinearOperator<float32_t>;
-template class CLinearOperator<float64_t>;
-template class CLinearOperator<floatmax_t>;
-template class CLinearOperator<complex128_t>;
+template class LinearOperator<bool>;
+template class LinearOperator<char>;
+template class LinearOperator<int8_t>;
+template class LinearOperator<uint8_t>;
+template class LinearOperator<int16_t>;
+template class LinearOperator<uint16_t>;
+template class LinearOperator<int32_t>;
+template class LinearOperator<uint32_t>;
+template class LinearOperator<int64_t>;
+template class LinearOperator<uint64_t>;
+template class LinearOperator<float32_t>;
+template class LinearOperator<float64_t>;
+template class LinearOperator<floatmax_t>;
+template class LinearOperator<complex128_t>;
 
 }

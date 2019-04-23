@@ -21,15 +21,15 @@ namespace shogun
  * Uses implementation from the Tapkee library.
  *
  */
-class CTDistributedStochasticNeighborEmbedding : public CEmbeddingConverter
+class TDistributedStochasticNeighborEmbedding : public EmbeddingConverter
 {
 public:
 
 	/** constructor */
-	CTDistributedStochasticNeighborEmbedding();
+	TDistributedStochasticNeighborEmbedding();
 
 	/** destructor */
-	virtual ~CTDistributedStochasticNeighborEmbedding();
+	virtual ~TDistributedStochasticNeighborEmbedding();
 
 	/** get name */
 	virtual const char* get_name() const;
@@ -38,7 +38,7 @@ public:
 	 *
 	 * @param features features to embed
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** setter for the learning rate
 	 *

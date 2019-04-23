@@ -10,8 +10,7 @@ using namespace shogun;
 
 void test()
 {
-	CSubsetStack* stack=new CSubsetStack();
-	SG_REF(stack);
+	SubsetStack* stack=new SubsetStack();
 
 	/* subset indices, each set is shifted by one */
 	SGVector<index_t> subset_a(10);
@@ -43,7 +42,6 @@ void test()
 	stack->remove_subset();
 
 	/* clean up */
-	SG_UNREF(stack);
 }
 
 int main(int argc, char **argv)

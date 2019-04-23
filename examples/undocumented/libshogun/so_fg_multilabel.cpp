@@ -91,7 +91,6 @@ void read_data(const char * fname, SGMatrix<int32_t>& labels, SGMatrix<float64_t
 			labels((int32_t)v_labels[l], i) = 1;
 	}
 
-	SG_UNREF(svmfile);
 	SG_FREE(spv_feats);
 	SG_FREE(pv_labels);
 }
@@ -169,9 +168,9 @@ SGMatrix<int32_t> get_edge_list(EGraphStructure graph_type, int32_t num_classes)
 }
 
 void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
-		CFactorGraphFeatures * fg_feats, CFactorGraphLabels * fg_labels,
-		const DynArray<CTableFactorType *>& v_ftp_u,
-		const DynArray<CTableFactorType *>& v_ftp_t)
+		FactorGraphFeatures * fg_feats, FactorGraphLabels * fg_labels,
+		const DynArray<TableFactorType *>& v_ftp_u,
+		const DynArray<TableFactorType *>& v_ftp_t)
 {
 	int32_t num_sample        = labels.num_cols;
 	int32_t num_classes       = labels.num_rows;
@@ -186,7 +185,7 @@ void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SG
 		SGVector<int32_t> vc(num_classes);
 		SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, NUM_STATUS);
 
-		CFactorGraph * fg = new CFactorGraph(vc);
+		FactorGraph * fg = new FactorGraph(vc);
 
 		float64_t * pfeat = feats.get_column_vector(n);
 		SGVector<float64_t> feat_i(dim);
@@ -197,7 +196,7 @@ void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SG
 		{
 			SGVector<int32_t> var_index_u(1);
 			var_index_u[0] = u;
-			CFactor * fac_u = new CFactor(v_ftp_u[u], var_index_u, feat_i);
+			Factor * fac_u = new Factor(v_ftp_u[u], var_index_u, feat_i);
 			fg->add_factor(fac_u);
 		}
 
@@ -207,7 +206,7 @@ void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SG
 			SGVector<float64_t> data_t(1);
 			data_t[0] = 1.0;
 			SGVector<int32_t> var_index_t = mat_edges.get_row_vector(t);
-			CFactor * fac_t = new CFactor(v_ftp_t[t], var_index_t, data_t);
+			Factor * fac_t = new Factor(v_ftp_t[t], var_index_t, data_t);
 			fg->add_factor(fac_t);
 		}
 
@@ -220,24 +219,22 @@ void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SG
 		memcpy(states_gt.vector, plabs, num_classes * sizeof(int32_t));
 		SGVector<float64_t> loss_weights(num_classes);
 		SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0/num_classes);
-		CFactorGraphObservation * fg_obs = new CFactorGraphObservation(states_gt, loss_weights);
+		FactorGraphObservation * fg_obs = new FactorGraphObservation(states_gt, loss_weights);
 		fg_labels->add_label(fg_obs);
 	}
 }
 
-void evaluate(CFactorGraphModel * model, int32_t num_samples, CStructuredLabels * labels_sgd, \
-              CFactorGraphLabels * fg_labels, float64_t & ave_error)
+void evaluate(FactorGraphModel * model, int32_t num_samples, StructuredLabels * labels_sgd, \
+              FactorGraphLabels * fg_labels, float64_t & ave_error)
 {
 	float64_t acc_loss_sgd = 0.0;
 
 	for (int32_t i = 0; i < num_samples; ++i)
 	{
-		CStructuredData * y_pred  = labels_sgd->get_label(i);
-		CStructuredData * y_truth = fg_labels->get_label(i);
+		StructuredData * y_pred  = labels_sgd->get_label(i);
+		StructuredData * y_truth = fg_labels->get_label(i);
 		acc_loss_sgd += model->delta_loss(y_truth, y_pred);
 
-		SG_UNREF(y_pred);
-		SG_UNREF(y_truth);
 	}
 
 	ave_error = acc_loss_sgd / static_cast<float64_t>(num_samples);
@@ -257,7 +254,7 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 	int32_t tid;
 	// we have l = num_classes different weights: w_1, w_2, ..., w_l
 	// so we create num_classes different unary factor types
-	DynArray<CTableFactorType *> v_ftp_u;
+	DynArray<TableFactorType *> v_ftp_u;
 
 	for (int32_t u = 0; u < num_classes; u++)
 	{
@@ -266,12 +263,12 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 		card_u[0] = NUM_STATUS;
 		SGVector<float64_t> w_u(dim * NUM_STATUS);
 		w_u.zero();
-		v_ftp_u.append_element(new CTableFactorType(tid, card_u, w_u));
+		v_ftp_u.append_element(new TableFactorType(tid, card_u, w_u));
 	}
 
 	// define factor type: tree edge factor
 	// note that each edge is a new type
-	DynArray<CTableFactorType *> v_ftp_t;
+	DynArray<TableFactorType *> v_ftp_t;
 
 	for (int32_t t = 0; t < num_edges; t++)
 	{
@@ -281,21 +278,18 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 		card_t[1] = NUM_STATUS;
 		SGVector<float64_t> w_t(NUM_STATUS * NUM_STATUS);
 		w_t.zero();
-		v_ftp_t.append_element(new CTableFactorType(tid, card_t, w_t));
+		v_ftp_t.append_element(new TableFactorType(tid, card_t, w_t));
 	}
 
 	// prepare features and labels in factor graph
-	CFactorGraphFeatures * fg_feats_train = new CFactorGraphFeatures(num_sample_train);
-	SG_REF(fg_feats_train);
-	CFactorGraphLabels * fg_labels_train = new CFactorGraphLabels(num_sample_train);
-	SG_REF(fg_labels_train);
+	FactorGraphFeatures * fg_feats_train = new FactorGraphFeatures(num_sample_train);
+	FactorGraphLabels * fg_labels_train = new FactorGraphLabels(num_sample_train);
 
 	build_factor_graph(param, feats_train, labels_train, fg_feats_train, fg_labels_train, v_ftp_u, v_ftp_t);
 
 	SG_SPRINT("----------------------------------------------------\n");
 
-	CFactorGraphModel * model = new CFactorGraphModel(fg_feats_train, fg_labels_train, param.infer_type, false);
-	SG_REF(model);
+	FactorGraphModel * model = new FactorGraphModel(fg_feats_train, fg_labels_train, param.infer_type, false);
 
 	// initialize model parameters
 	for (int32_t u = 0; u < num_classes; u++)
@@ -308,10 +302,9 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 	CStochasticSOSVM * sgd = new CStochasticSOSVM(model, fg_labels_train, true);
 	sgd->set_num_iter(param.sgd_num_iter);
 	sgd->set_lambda(param.sgd_lambda);
-	SG_REF(sgd);
 
 	// timer
-	CTime start;
+	Time start;
 	// train SGD
 	sgd->train();
 	float64_t t2 = start.cur_time_diff(false);
@@ -319,44 +312,32 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 	SG_SPRINT("SGD trained in %9.4f\n", t2);
 
 	// Evaluation SGD
-	CStructuredLabels* labels_sgd = sgd->apply()->as<CStructuredLabels>();
-	SG_REF(labels_sgd);
+	StructuredLabels* labels_sgd = sgd->apply()->as<StructuredLabels>();
 
 	float64_t ave_loss_sgd = 0.0;
 
 	evaluate(model, num_sample_train, labels_sgd, fg_labels_train, ave_loss_sgd);
 
 	SG_SPRINT("sgd solver: average training loss = %f\n", ave_loss_sgd);
-	SG_UNREF(labels_sgd);
 
 	if(labels_test.num_cols > 0)
 	{
 		// prepare features and labels in factor graph
 		int32_t num_sample_test  = labels_test.num_cols;
-		CFactorGraphFeatures * fg_feats_test = new CFactorGraphFeatures(num_sample_test);
-		SG_REF(fg_feats_test);
-		CFactorGraphLabels * fg_labels_test = new CFactorGraphLabels(num_sample_test);
-		SG_REF(fg_labels_test);
+		FactorGraphFeatures * fg_feats_test = new FactorGraphFeatures(num_sample_test);
+		FactorGraphLabels * fg_labels_test = new FactorGraphLabels(num_sample_test);
 		build_factor_graph(param, feats_test, labels_test, fg_feats_test, fg_labels_test, v_ftp_u, v_ftp_t);
 
 		sgd->set_features(fg_feats_test);
 		sgd->set_labels(fg_labels_test);
-		labels_sgd = sgd->apply()->as<CStructuredLabels>();
+		labels_sgd = sgd->apply()->as<StructuredLabels>();
 
 		evaluate(model, num_sample_test, labels_sgd, fg_labels_test, ave_loss_sgd);
-		SG_REF(labels_sgd);
 
 		SG_SPRINT("sgd solver: average testing error = %f\n", ave_loss_sgd);
 
-		SG_UNREF(fg_feats_test);
-		SG_UNREF(fg_labels_test);
 	}
 
-	SG_UNREF(labels_sgd);
-	SG_UNREF(sgd);
-	SG_UNREF(model);
-	SG_UNREF(fg_feats_train);
-	SG_UNREF(fg_labels_train);
 }
 
 int main(int argc, char * argv[])

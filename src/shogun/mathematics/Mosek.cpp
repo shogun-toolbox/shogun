@@ -17,12 +17,12 @@
 using namespace shogun;
 
 CMosek::CMosek()
-: CSGObject()
+: SGObject()
 {
 }
 
 CMosek::CMosek(int32_t num_con, int32_t num_var)
-: CSGObject()
+: SGObject()
 {
 	// Create MOSEK environment
 #if (MSK_VERSION_MAJOR == 6)
@@ -204,7 +204,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 		float64_t bi)
 {
 	// Count the number of non-zero element in dPsi
-	int32_t nnz = CMath::get_num_nonzero(dPsi.vector, dPsi.vlen);
+	int32_t nnz = Math::get_num_nonzero(dPsi.vector, dPsi.vlen);
 	// Indices of the non-zero elements in the row of A to add
 	SGVector< index_t > asub(nnz+1); // +1 because of the -1 element
 	// Values of the non-zero elements
@@ -255,7 +255,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 		sub[i] = i;
 
 	// Non-zero elements of A
-	int32_t nnza = CMath::get_num_nonzero(A.matrix, A.num_rows*A.num_cols);
+	int32_t nnza = Math::get_num_nonzero(A.matrix, A.num_rows*A.num_cols);
 	SGVector< float64_t > aval(nnza);
 	// For each of the rows, indices to non-zero elements
 	SGVector< index_t > asub(nnza);

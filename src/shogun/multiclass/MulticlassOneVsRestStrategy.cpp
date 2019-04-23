@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Shell Hu, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Chiyuan Zhang, Shell Hu, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Bjoern Esser, Sanuj Sharma
  */
 
@@ -12,41 +12,43 @@
 
 using namespace shogun;
 
-CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy()
-	: CMulticlassStrategy()
+MulticlassOneVsRestStrategy::MulticlassOneVsRestStrategy()
+	: MulticlassStrategy()
 {
 }
 
-CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(EProbHeuristicType prob_heuris)
-	: CMulticlassStrategy(prob_heuris)
+MulticlassOneVsRestStrategy::MulticlassOneVsRestStrategy(EProbHeuristicType prob_heuris)
+	: MulticlassStrategy(prob_heuris)
 {
 }
 
-SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
+SGVector<int32_t> MulticlassOneVsRestStrategy::train_prepare_next()
 {
+	auto mc_orig = multiclass_labels(m_orig_labels);
+	auto binary_train = binary_labels(m_train_labels);
 	for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
 	{
-		if (((CMulticlassLabels*) m_orig_labels)->get_int_label(i)==m_train_iter)
-			((CBinaryLabels*) m_train_labels)->set_label(i, +1.0);
+		if (mc_orig->get_int_label(i)==m_train_iter)
+			binary_train->set_label(i, +1.0);
 		else
-			((CBinaryLabels*) m_train_labels)->set_label(i, -1.0);
+			binary_train->set_label(i, -1.0);
 	}
 
 	// increase m_train_iter *after* setting labels
-	CMulticlassStrategy::train_prepare_next();
+	MulticlassStrategy::train_prepare_next();
 
 	return SGVector<int32_t>();
 }
 
-int32_t CMulticlassOneVsRestStrategy::decide_label(SGVector<float64_t> outputs)
+int32_t MulticlassOneVsRestStrategy::decide_label(SGVector<float64_t> outputs)
 {
 	if (m_rejection_strategy && m_rejection_strategy->reject(outputs))
-		return CDenseLabels::REJECTION_LABEL;
+		return DenseLabels::REJECTION_LABEL;
 
-	return CMath::arg_max(outputs.vector, 1, outputs.vlen);
+	return Math::arg_max(outputs.vector, 1, outputs.vlen);
 }
 
-SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)
+SGVector<index_t> MulticlassOneVsRestStrategy::decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)
 {
 	float64_t* outputs_ = SG_MALLOC(float64_t, outputs.vlen);
 	int32_t* indices_ = SG_MALLOC(int32_t, outputs.vlen);
@@ -55,7 +57,7 @@ SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGV
 		outputs_[i] = outputs[i];
 		indices_[i] = i;
 	}
-	CMath::qsort_backward_index(outputs_,indices_,outputs.vlen);
+	Math::qsort_backward_index(outputs_,indices_,outputs.vlen);
 	SGVector<index_t> result(n_outputs);
 	for (int32_t i=0; i<n_outputs; i++)
 		result[i] = indices_[i];
@@ -64,7 +66,7 @@ SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGV
 	return result;
 }
 
-void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs)
+void MulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs)
 {
 	switch(get_prob_heuris_type())
 	{
@@ -82,7 +84,7 @@ void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs)
 	}
 }
 
-void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs,
+void MulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs,
 		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 {
 	if (get_prob_heuris_type()==OVA_SOFTMAX)
@@ -91,7 +93,7 @@ void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs,
 		rescale_outputs(outputs);
 }
 
-void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outputs)
+void MulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outputs)
 {
 	if (m_num_classes != outputs.vlen)
 	{
@@ -105,7 +107,7 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outpu
 		outputs[i] /= norm;
 }
 
-void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> outputs,
+void MulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> outputs,
 		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 {
 	if (m_num_classes != outputs.vlen)

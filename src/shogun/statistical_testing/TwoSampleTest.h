@@ -38,8 +38,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CFeatures;
+class Kernel;
+class Features;
 
 namespace internal
 {
@@ -55,14 +55,14 @@ namespace internal
  *
  * Abstract base class.
  */
-class CTwoSampleTest : public CTwoDistributionTest
+class TwoSampleTest : public TwoDistributionTest
 {
 public:
 	/** Default constructor */
-	CTwoSampleTest();
+	TwoSampleTest();
 
 	/** Destructor */
-	virtual ~CTwoSampleTest();
+	virtual ~TwoSampleTest();
 
 	/**
 	 * Method that sets the kernel that is used for performing the two-sample test.
@@ -71,11 +71,11 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	virtual void set_kernel(CKernel* kernel);
+	virtual void set_kernel(std::shared_ptr<Kernel> kernel);
 
 #ifndef SWIG
 	/** @return The kernel instance that is presently being used for performing the test */
-	CKernel* get_kernel() const;
+	std::shared_ptr<Kernel> get_kernel() const;
 #endif //SWIG
 
 	/**

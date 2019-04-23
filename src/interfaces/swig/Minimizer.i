@@ -31,10 +31,15 @@
 
 
 /* Remove C Prefix */
-%rename(LBFGSMinimizer) CLBFGSMinimizer;
+%shared_ptr(shogun::Minimizer)
+%shared_ptr(shogun::LBFGSMinimizer)
+%shared_ptr(shogun::FirstOrderMinimizer)
+%shared_ptr(shogun::SingleLaplaceNewtonOptimizer)
+%shared_ptr(shogun::SingleFITCLaplaceNewtonOptimizer)
+
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-%rename(NLOPTMinimizer) CNLOPTMinimizer;
+%shared_ptr(shogun::NLOPTMinimizer)
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
 

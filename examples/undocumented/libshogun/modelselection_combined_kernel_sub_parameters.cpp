@@ -26,63 +26,56 @@ using namespace shogun;
  * This can be used for modelselection of subkernel parameters of combined
  * kernels
  */
-CModelSelectionParameters* build_combined_kernel_parameter_tree()
+ModelSelectionParameters* build_combined_kernel_parameter_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
 	/* kernel a should be Gaussian with certain parameters
 	 * kernel b should be polynomial with certain parameters
 	 * This will create a list of combined kernels with all parameter combinations
-	 * All CList instances here do reference counting (also the combine_kernels
-	 * method of CCombinedKernel
+	 * All List instances here do reference counting (also the combine_kernels
+	 * method of CombinedKernel
 	 */
-	CList* kernels_a=new CList(true);
-	CList* kernels_b=new CList(true);
+	List* kernels_a=new List(true);
+	List* kernels_b=new List(true);
 
 	int32_t cache_size=10;
-	kernels_a->append_element(new CGaussianKernel(cache_size, 2));
-	kernels_a->append_element(new CGaussianKernel(cache_size, 4));
+	kernels_a->append_element(new GaussianKernel(cache_size, 2));
+	kernels_a->append_element(new GaussianKernel(cache_size, 4));
 
 	kernels_b->append_element(new CPolyKernel(cache_size, 4));
 	kernels_b->append_element(new CPolyKernel(cache_size, 2));
 
-	CList* kernel_list=new CList();
+	List* kernel_list=new List();
 	kernel_list->append_element(kernels_a);
 	kernel_list->append_element(kernels_b);
 
-	CList* combinations=CCombinedKernel::combine_kernels(kernel_list);
+	List* combinations=CombinedKernel::combine_kernels(kernel_list);
 
 	/* add all created combined kernels to parameters tree */
 
 	/* cast is safe since the above method guarantees the type */
-	CCombinedKernel* current=(CCombinedKernel*)(combinations->get_first_element());
+	CombinedKernel* current=(CombinedKernel*)(combinations->get_first_element());
 	SG_SPRINT("combined kernel combinations:\n");
 	index_t i=0;
 	while (current)
 	{
 		/* print out current kernel's subkernels */
 		SG_SPRINT("combined kernel %d:\n", i++);
-		CGaussianKernel* gaussian=(CGaussianKernel*)current->get_kernel(0);
+		GaussianKernel* gaussian=(GaussianKernel*)current->get_kernel(0);
 		CPolyKernel* poly=(CPolyKernel*)current->get_kernel(1);
 		SG_SPRINT("kernel_a type: %s\n", poly->get_name());
 		SG_SPRINT("kernel_b type: %s\n", gaussian->get_name());
 		SG_SPRINT("kernel_a parameter: %d\n", poly->get_degree());
 		SG_SPRINT("kernel_b parameter: %f\n", gaussian->get_width());
-		SG_UNREF(poly);
-		SG_UNREF(gaussian);
 
-		CModelSelectionParameters* param_kernel=
-					new CModelSelectionParameters("kernel", current);
+		ModelSelectionParameters* param_kernel=
+					new ModelSelectionParameters("kernel", current);
 		root->append_child(param_kernel);
 
-		SG_UNREF(current);
-		current=(CCombinedKernel*)(combinations->get_next_element());
+		current=(CombinedKernel*)(combinations->get_next_element());
 	}
 
-	SG_UNREF(combinations);
-	SG_UNREF(kernel_list);
-	SG_UNREF(kernels_a);
-	SG_UNREF(kernels_b);
 
 	return root;
 }
@@ -95,16 +88,16 @@ void modelselection_combined_kernel()
 
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
-	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
+	BinaryLabels* labels=new BinaryLabels(num_vectors);
 
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix.matrix[i]=CMath::randn_double();
+		matrix.matrix[i]=Math::randn_double();
 
 	/* create num_feautres 2-dimensional vectors */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(matrix);
 
 	/* create combined features */
-	CCombinedFeatures* comb_features=new CCombinedFeatures();
+	CombinedFeatures* comb_features=new CombinedFeatures();
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
 
@@ -113,27 +106,26 @@ void modelselection_combined_kernel()
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
 	/* create svm */
-	CMKL* classifier=new CMKLClassification(new CLibSVM());
+	MKL* classifier=new MKLClassification(new CLibSVM());
 	classifier->set_interleaved_optimization_enabled(false);
 
 	/* splitting strategy */
-	CStratifiedCrossValidationSplitting* splitting_strategy=
-			new CStratifiedCrossValidationSplitting(labels, num_subsets);
+	StratifiedCrossValidationSplitting* splitting_strategy=
+			new StratifiedCrossValidationSplitting(labels, num_subsets);
 
 	/* accuracy evaluation */
-	CContingencyTableEvaluation* evaluation_criterium=
-			new CContingencyTableEvaluation(ACCURACY);
+	ContingencyTableEvaluation* evaluation_criterium=
+			new ContingencyTableEvaluation(ACCURACY);
 
 	/* cross validation class for evaluation in model selection */
-	CCrossValidation* cross=new CCrossValidation(classifier, comb_features,
+	CrossValidation* cross=new CrossValidation(classifier, comb_features,
 												labels, splitting_strategy,
 												evaluation_criterium);
 	cross->set_num_runs(1);
 	/* TODO: remove this once locking is fixed for combined kernels */
 	cross->set_autolock(false);
 
-	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
-	CModelSelectionParameters* param_tree=build_combined_kernel_parameter_tree();
+	ModelSelectionParameters* param_tree=build_combined_kernel_parameter_tree();
 	param_tree->print_tree();
 
 	/* handles all of the above structures in memory */
@@ -148,30 +140,24 @@ void modelselection_combined_kernel()
 	best_combination->apply_to_machine(classifier);
 
 	/* print subkernel parameters, I know what the subkernel types are here */
-	CCombinedKernel* kernel=(CCombinedKernel*)classifier->get_kernel();
-	CGaussianKernel* gaussian=(CGaussianKernel*)kernel->get_kernel(0);
+	CombinedKernel* kernel=(CombinedKernel*)classifier->get_kernel();
+	GaussianKernel* gaussian=(GaussianKernel*)kernel->get_kernel(0);
 	CPolyKernel* poly=(CPolyKernel*)kernel->get_kernel(1);
 	SG_SPRINT("gaussian width: %f\n", gaussian->get_width());
 	SG_SPRINT("poly degree: %d\n", poly->get_degree());
-	SG_UNREF(kernel);
-	SG_UNREF(gaussian);
-	SG_UNREF(poly);
 
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 //	cross->set_conf_int_alpha(0.01);
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
 
 	SG_SPRINT("result: ");
 	result->print_result();
 
 	/* clean up destroy result parameter */
-	SG_UNREF(result);
-	SG_UNREF(best_combination);
-	SG_UNREF(grid_search);
 }
 
 int main(int argc, char **argv)

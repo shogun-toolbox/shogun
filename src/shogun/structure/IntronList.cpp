@@ -9,15 +9,15 @@
 
 using namespace shogun;
 
-CIntronList::CIntronList()
-:CSGObject()
+IntronList::IntronList()
+:SGObject()
 {
 	m_length = 0;
 	m_all_pos = NULL;
 	m_intron_list = NULL;
 	m_quality_list = NULL;
 }
-CIntronList::~CIntronList()
+IntronList::~IntronList()
 {
 	for (int i=0; i<m_length; i++)
 	{
@@ -28,7 +28,7 @@ CIntronList::~CIntronList()
 	SG_FREE(m_quality_list);
 	SG_FREE(m_all_pos);
 }
-void CIntronList::init_list(int32_t* all_pos, int32_t len)
+void IntronList::init_list(int32_t* all_pos, int32_t len)
 {
 	m_length = len;
 	m_all_pos = SG_MALLOC(int32_t, len);
@@ -48,7 +48,7 @@ void CIntronList::init_list(int32_t* all_pos, int32_t len)
 		m_quality_list[i][0] = 1;
 	}
 }
-void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* quality, int32_t len)
+void IntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* quality, int32_t len)
 {
 	int k=0;
 	for(int i=0;i<m_length;i++)//iterate over candidate positions
@@ -99,7 +99,7 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
  * from_pos and to_pos are indices in the all_pos list
  * not positions in the DNA sequence
  * */
-void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos)
+void IntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos)
 {
 	if (from_pos>=m_length)
 		error("from_pos ({}) is not < m_length ({})",to_pos, m_length);
@@ -119,7 +119,7 @@ void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t 
 		{
 			//io::print("found intron: {}->{}\n", from_pos, to_pos );
 			coverage = coverage+1;
-			quality = CMath::max(quality, q_list[i]);
+			quality = Math::max(quality, q_list[i]);
 		}
 	}
 	values[0] = coverage;

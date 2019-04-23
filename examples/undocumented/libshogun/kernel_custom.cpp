@@ -17,15 +17,14 @@ void test_custom_kernel_subsets()
 {
 	/* create some data */
 	index_t m=10;
-	CFeatures* features=
-			new CDenseFeatures<float64_t>(CDataGenerator::generate_mean_data(
+	auto features=
+		std::make_shared<DenseFeatures<float64_t>>(DataGenerator::generate_mean_data(
 			m, 2, 1));
-	SG_REF(features);
 
 	/* create a custom kernel */
-	CKernel* k=new CGaussianKernel();
+	auto k=std::make_shared<GaussianKernel>();
 	k->init(features, features);
-	CCustomKernel* l=new CCustomKernel(k);
+	auto l=std::make_shared<CustomKernel>(k);
 
 	/* create a random permutation */
 	SGVector<index_t> subset(m);
@@ -33,7 +32,7 @@ void test_custom_kernel_subsets()
 	for (index_t run=0; run<100; ++run)
 	{
 		subset.range_fill();
-		CMath::permute(subset);
+		Math::permute(subset);
 //		subset.display_vector("permutation");
 		features->add_subset(subset);
 		k->init(features, features);
@@ -47,7 +46,7 @@ void test_custom_kernel_subsets()
 			{
 				SG_SDEBUG("K(%d,%d)=%f, L(%d,%d)=%f\n", i, j, k->kernel(i, j), i, j,
 						l->kernel(i, j));
-				ASSERT(CMath::abs(k->kernel(i, j)-l->kernel(i, j))<10E-8);
+				ASSERT(Math::abs(k->kernel(i, j)-l->kernel(i, j))<10E-8);
 			}
 		}
 
@@ -56,9 +55,6 @@ void test_custom_kernel_subsets()
 		l->remove_col_subset();
 	}
 
-	SG_UNREF(k);
-	SG_UNREF(l);
-	SG_UNREF(features);
 }
 
 int main(int argc, char** argv)

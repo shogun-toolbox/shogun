@@ -14,25 +14,25 @@ TEST(MultidimensionaScalingTest,distance_preserving)
 	const index_t n_samples = 10;
 	const index_t n_gaussians = 5;
 	const index_t n_dimensions = 5;
-	CDenseFeatures<float64_t>* high_dimensional_features =
-		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions, prng));
+	auto high_dimensional_features =
+		std::make_shared<DenseFeatures<float64_t>>(DataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions, prng));
 
-	CDistance* euclidean_distance =
-		new CEuclideanDistance(high_dimensional_features, high_dimensional_features);
+	auto euclidean_distance =
+		std::make_shared<EuclideanDistance>(high_dimensional_features, high_dimensional_features);
 
-	CMultidimensionalScaling* mds_converter =
-		new CMultidimensionalScaling();
+	auto mds_converter =
+		std::make_shared<MultidimensionalScaling>();
 
 	mds_converter->set_target_dim(n_dimensions);
 	EXPECT_EQ(n_dimensions,mds_converter->get_target_dim());
 
-	CDenseFeatures<float64_t>* low_dimensional_features =
+	auto low_dimensional_features =
 		mds_converter->embed_distance(euclidean_distance);
 	EXPECT_EQ(n_dimensions,low_dimensional_features->get_dim_feature_space());
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());
 
-	CDistance* euclidean_distance_for_embedding =
-		new CEuclideanDistance(low_dimensional_features, low_dimensional_features);
+	auto euclidean_distance_for_embedding =
+		std::make_shared<EuclideanDistance>(low_dimensional_features, low_dimensional_features);
 
 	SGMatrix<float64_t> euclidean_distance_matrix =
 		euclidean_distance->get_distance_matrix();
@@ -47,9 +47,9 @@ TEST(MultidimensionaScalingTest,distance_preserving)
 		}
 	}
 
-	SG_UNREF(mds_converter);
-	SG_UNREF(euclidean_distance);
-	SG_UNREF(euclidean_distance_for_embedding);
+
+
+
 }
 #endif // HAVE_LAPACK
 

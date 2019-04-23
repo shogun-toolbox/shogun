@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
  *          Leon Kuchenbecker
  */
 
@@ -10,21 +10,21 @@
 
 using namespace shogun;
 
-CLibSVMOneClass::CLibSVMOneClass()
-: CSVM()
+LibSVMOneClass::LibSVMOneClass()
+: SVM()
 {
 }
 
-CLibSVMOneClass::CLibSVMOneClass(float64_t C, CKernel* k)
-: CSVM(C, k, NULL)
+LibSVMOneClass::LibSVMOneClass(float64_t C, std::shared_ptr<Kernel> k)
+: SVM(C, k, NULL)
 {
 }
 
-CLibSVMOneClass::~CLibSVMOneClass()
+LibSVMOneClass::~LibSVMOneClass()
 {
 }
 
-bool CLibSVMOneClass::train_machine(CFeatures* data)
+bool LibSVMOneClass::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -59,7 +59,7 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu();
-	param.kernel=kernel;
+	param.kernel=kernel.get();
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
@@ -70,12 +70,11 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 	param.weight_label = weights_label;
 	param.weight = weights;
 	param.use_bias = get_bias_enabled();
-	
+
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
 		error("Error: {}",error_msg);
-	
 	model = svm_train(&problem, &param);
 
 	if (model)
@@ -86,7 +85,7 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 		int32_t num_sv=model->l;
 
 		create_new_model(num_sv);
-		CSVM::set_objective(model->objective);
+		SVM::set_objective(model->objective);
 
 		set_bias(-model->rho[0]);
 		for (int32_t i=0; i<num_sv; i++)

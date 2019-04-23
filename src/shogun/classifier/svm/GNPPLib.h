@@ -19,11 +19,11 @@ namespace shogun
 /** @brief class GNPPLib, a Library of solvers for Generalized Nearest Point
  * Problem (GNPP).
  */
-class CGNPPLib: public CSGObject
+class GNPPLib: public SGObject
 {
  public:
   /** default constructor  */
-  CGNPPLib();
+  GNPPLib();
 
   /** constructor
    *
@@ -32,8 +32,8 @@ class CGNPPLib: public CSGObject
    * @param num_data number of data
    * @param reg_const reg const
    */
-  CGNPPLib(float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const);
-  virtual ~CGNPPLib();
+  GNPPLib(float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data, float64_t reg_const);
+  virtual ~GNPPLib();
 
   /** --------------------------------------------------------------
      QP solver based on MDM algorithm.
@@ -104,7 +104,7 @@ class CGNPPLib: public CSGObject
   /** vector y */
   float64_t* m_vector_y;
   /** kernel */
-  CKernel* m_kernel;
+  std::shared_ptr<Kernel> m_kernel;
 
 };
 }

@@ -11,16 +11,16 @@
 
 using namespace shogun;
 
-CGaussianARDKernel::CGaussianARDKernel() : CExponentialARDKernel()
+GaussianARDKernel::GaussianARDKernel() : ExponentialARDKernel()
 {
 	init();
 }
 
-CGaussianARDKernel::~CGaussianARDKernel()
+GaussianARDKernel::~GaussianARDKernel()
 {
 }
 
-void CGaussianARDKernel::init()
+void GaussianARDKernel::init()
 {
 	m_sq_lhs=SGVector<float64_t>();
 	m_sq_rhs=SGVector<float64_t>();
@@ -28,7 +28,7 @@ void CGaussianARDKernel::init()
 	SG_ADD(&m_sq_rhs, "sq_rhs", "squared right-hand side");
 }
 
-float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
+float64_t GaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=0.0;
 	require(lhs, "Left features (lhs) not set!");
@@ -39,7 +39,7 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 
 	if (m_ARD_type==KT_SCALAR)
 	{
-		result=(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2.0*CDotKernel::compute(idx_a,idx_b));
+		result=(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2.0*DotKernel::compute(idx_a,idx_b));
 		result *= std::exp(2.0 * m_log_weights[0]);
 	}
 	else
@@ -52,22 +52,22 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 	return result * 0.5;
 }
 
-CGaussianARDKernel::CGaussianARDKernel(int32_t size)
-		: CExponentialARDKernel(size)
+GaussianARDKernel::GaussianARDKernel(int32_t size)
+		: ExponentialARDKernel(size)
 {
 	init();
 }
 
-CGaussianARDKernel::CGaussianARDKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size)
-		: CExponentialARDKernel(size)
+GaussianARDKernel::GaussianARDKernel(std::shared_ptr<DotFeatures> l,
+		std::shared_ptr<DotFeatures> r, int32_t size)
+		: ExponentialARDKernel(size)
 {
 	init();
 }
 
-bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
+bool GaussianARDKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool status=CExponentialARDKernel::init(l,r);
+	bool status=ExponentialARDKernel::init(l,r);
 
 	if (m_ARD_type==KT_SCALAR)
 		precompute_squared();
@@ -75,7 +75,7 @@ bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
 	return status;
 }
 
-SGVector<float64_t> CGaussianARDKernel::precompute_squared_helper(CDotFeatures* df)
+SGVector<float64_t> GaussianARDKernel::precompute_squared_helper(std::shared_ptr<DotFeatures> df)
 {
 	require(df, "Features not set");
 	int32_t num_vec=df->get_num_vectors();
@@ -85,32 +85,32 @@ SGVector<float64_t> CGaussianARDKernel::precompute_squared_helper(CDotFeatures* 
 	return sq;
 }
 
-void CGaussianARDKernel::precompute_squared()
+void GaussianARDKernel::precompute_squared()
 {
 	if (!lhs || !rhs)
 		return;
-	m_sq_lhs=precompute_squared_helper((CDotFeatures*) lhs);
+	m_sq_lhs=precompute_squared_helper(std::static_pointer_cast<DotFeatures>(lhs));
 
 	if (lhs==rhs)
 		m_sq_rhs=m_sq_lhs;
 	else
-		m_sq_rhs=precompute_squared_helper((CDotFeatures*) rhs);
+		m_sq_rhs=precompute_squared_helper(std::static_pointer_cast<DotFeatures>(rhs));
 }
 
 
-CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<GaussianARDKernel> GaussianARDKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
 	{
-		error("Provided kernel is not of type CGaussianARDKernel!");
+		error("Provided kernel is not of type GaussianARDKernel!");
 	}
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CGaussianARDKernel*)kernel;
+
+	return std::static_pointer_cast<GaussianARDKernel>(kernel);
 }
 
-float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)
+float64_t GaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)
 {
 	SGMatrix<float64_t> left;
 	SGMatrix<float64_t> left_transpose;
@@ -132,7 +132,7 @@ float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<
 	return res[0]*scalar_weight;
 }
 
-float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
+float64_t GaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 	SGVector<float64_t> bvec, float64_t scale, index_t index)
 {
 	float64_t result=0.0;
@@ -197,7 +197,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 }
 
 
-SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
+SGVector<float64_t> GaussianARDKernel::get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index)
 {
 	require(param, "Param not set");
@@ -215,7 +215,7 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 	}
 	else
 	{
-		int32_t length=CMath::min(num_lhs, num_rhs);
+		int32_t length=Math::min(num_lhs, num_rhs);
 		SGVector<float64_t> derivative(length);
 		check_weight_gradient_index(index);
 		for (index_t j=0; j<length; j++)
@@ -244,7 +244,7 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 }
 
 
-float64_t CGaussianARDKernel::get_parameter_gradient_helper(
+float64_t GaussianARDKernel::get_parameter_gradient_helper(
 	const TParameter* param, index_t index, int32_t idx_a,
 	int32_t idx_b, SGVector<float64_t> avec, SGVector<float64_t> bvec)
 {
@@ -263,7 +263,7 @@ float64_t CGaussianARDKernel::get_parameter_gradient_helper(
 	}
 }
 
-SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
+SGMatrix<float64_t> GaussianARDKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
 	require(param, "Param not set");

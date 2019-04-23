@@ -39,8 +39,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
+class Kernel;
+class MMD;
 
 namespace internal
 {
@@ -48,11 +48,11 @@ namespace internal
 class MaxMeasure : public KernelSelection
 {
 public:
-	MaxMeasure(KernelManager&, CMMD*);
+	MaxMeasure(KernelManager&, std::shared_ptr<MMD>);
 	MaxMeasure(const MaxMeasure& other)=delete;
 	~MaxMeasure();
 	MaxMeasure& operator=(const MaxMeasure& other)=delete;
-	virtual CKernel* select_kernel();
+	virtual std::shared_ptr<Kernel> select_kernel();
 	virtual SGVector<float64_t> get_measure_vector();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:

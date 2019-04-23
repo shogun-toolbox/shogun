@@ -11,22 +11,22 @@
 
 using namespace shogun;
 
-CSortWordString::CSortWordString()
-: CStringPreprocessor<uint16_t>()
+SortWordString::SortWordString()
+: StringPreprocessor<uint16_t>()
 {
 }
 
-CSortWordString::~CSortWordString()
+SortWordString::~SortWordString()
 {
 }
 
 /// clean up allocated memory
-void CSortWordString::cleanup()
+void SortWordString::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CSortWordString::load(FILE* f)
+bool SortWordString::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -34,24 +34,24 @@ bool CSortWordString::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CSortWordString::save(FILE* f)
+bool SortWordString::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-void CSortWordString::apply_to_string_list(std::vector<SGVector<uint16_t>>& string_list)
+void SortWordString::apply_to_string_list(std::vector<SGVector<uint16_t>>& string_list)
 {
 	for (auto& vec : string_list)
 	{
-		//CMath::qsort(vec, len);
-		CMath::radix_sort(vec.vector, vec.vlen);
+		//Math::qsort(vec, len);
+		Math::radix_sort(vec.vector, vec.vlen);
 	}
 }
 
 /// apply preproc on single feature vector
-uint16_t* CSortWordString::apply_to_string(uint16_t* f, int32_t& len)
+uint16_t* SortWordString::apply_to_string(uint16_t* f, int32_t& len)
 {
 	uint16_t* vec=SG_MALLOC(uint16_t, len);
 	int32_t i=0;
@@ -59,8 +59,8 @@ uint16_t* CSortWordString::apply_to_string(uint16_t* f, int32_t& len)
 	for (i=0; i<len; i++)
 		vec[i]=f[i];
 
-	//CMath::qsort(vec, len);
-	CMath::radix_sort(vec, len);
+	//Math::qsort(vec, len);
+	Math::radix_sort(vec, len);
 
 	return vec;
 }

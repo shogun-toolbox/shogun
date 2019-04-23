@@ -16,27 +16,27 @@
 using namespace shogun;
 
 //define numbers for the bases
-const uint8_t CAlphabet::B_A=0;
-const uint8_t CAlphabet::B_C=1;
-const uint8_t CAlphabet::B_G=2;
-const uint8_t CAlphabet::B_T=3;
-const uint8_t CAlphabet::B_0=4;
-const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
-const char* CAlphabet::alphabet_names[18]={
+const uint8_t Alphabet::B_A=0;
+const uint8_t Alphabet::B_C=1;
+const uint8_t Alphabet::B_G=2;
+const uint8_t Alphabet::B_T=3;
+const uint8_t Alphabet::B_0=4;
+const uint8_t Alphabet::MAPTABLE_UNDEF=0xff;
+const char* Alphabet::alphabet_names[18]={
 	"DNA","RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM",
 	"CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID",
 	"NONE", "DIGIT", "DIGIT2", "RAWDIGIT", "RAWDIGIT2", "UNKNOWN",
 	"SNP", "RAWSNP"};
 
 
-CAlphabet::CAlphabet()
-  : CSGObject()
+Alphabet::Alphabet()
+  : SGObject()
 {
 	init();
 }
 
-CAlphabet::CAlphabet(char* al, int32_t len)
-: CSGObject()
+Alphabet::Alphabet(char* al, int32_t len)
+: SGObject()
 {
 	init();
 
@@ -82,27 +82,27 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 	set_alphabet(alpha);
 }
 
-CAlphabet::CAlphabet(EAlphabet alpha)
-: CSGObject()
+Alphabet::Alphabet(EAlphabet alpha)
+: SGObject()
 {
 	init();
 	set_alphabet(alpha);
 }
 
-CAlphabet::CAlphabet(CAlphabet* a)
-: CSGObject()
+Alphabet::Alphabet(std::shared_ptr<Alphabet> a)
+: SGObject()
 {
 	init();
 	require(a, "No Alphabet specified!");
 	set_alphabet(a->get_alphabet());
-	copy_histogram(a);
+	copy_histogram(a.get());
 }
 
-CAlphabet::~CAlphabet()
+Alphabet::~Alphabet()
 {
 }
 
-bool CAlphabet::set_alphabet(EAlphabet alpha)
+bool Alphabet::set_alphabet(EAlphabet alpha)
 {
 	bool result=true;
 	alphabet=alpha;
@@ -173,7 +173,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 	return result;
 }
 
-void CAlphabet::init_map_table()
+void Alphabet::init_map_table()
 {
 	for (int32_t i=0; i<(1<<(8*sizeof(uint8_t))); i++)
 	{
@@ -538,13 +538,13 @@ void CAlphabet::init_map_table()
 	};
 }
 
-void CAlphabet::clear_histogram()
+void Alphabet::clear_histogram()
 {
 	memset(histogram, 0, sizeof(histogram));
     print_histogram();
 }
 
-int32_t CAlphabet::get_max_value_in_histogram()
+int32_t Alphabet::get_max_value_in_histogram()
 {
 	int32_t max_sym=-1;
 	for (int32_t i=(int32_t) (1 <<(sizeof(uint8_t)*8))-1;i>=0; i--)
@@ -559,7 +559,7 @@ int32_t CAlphabet::get_max_value_in_histogram()
 	return max_sym;
 }
 
-int32_t CAlphabet::get_num_symbols_in_histogram()
+int32_t Alphabet::get_num_symbols_in_histogram()
 {
 	int32_t num_sym=0;
 	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
@@ -571,7 +571,7 @@ int32_t CAlphabet::get_num_symbols_in_histogram()
 	return num_sym;
 }
 
-int32_t CAlphabet::get_num_bits_in_histogram()
+int32_t Alphabet::get_num_bits_in_histogram()
 {
 	int32_t num_sym=get_num_symbols_in_histogram();
 	if (num_sym>0)
@@ -581,7 +581,7 @@ int32_t CAlphabet::get_num_bits_in_histogram()
 }
 
 
-void CAlphabet::print_histogram()
+void Alphabet::print_histogram()
 {
 	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
@@ -606,12 +606,12 @@ void CAlphabet::print_histogram()
 	}
 }
 
-SGVector<int64_t> CAlphabet::get_histogram() const
+SGVector<int64_t> Alphabet::get_histogram() const
 {
 	return SGVector<int64_t>(const_cast<int64_t*>(&histogram[0]), 1 << (sizeof(uint8_t)*8), false);
 }
 
-bool CAlphabet::check_alphabet(bool print_error)
+bool Alphabet::check_alphabet(bool print_error)
 {
 	bool result = true;
 
@@ -633,7 +633,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 	return result;
 }
 
-bool CAlphabet::check_alphabet_size(bool print_error)
+bool Alphabet::check_alphabet_size(bool print_error)
 {
 	if (get_num_bits_in_histogram() > get_num_bits())
 	{
@@ -650,7 +650,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 
 }
 
-void CAlphabet::copy_histogram(const CAlphabet* a)
+void Alphabet::copy_histogram(const Alphabet* a)
 {
 	SGVector<int64_t> h=a->get_histogram();
 
@@ -663,7 +663,7 @@ void CAlphabet::copy_histogram(const CAlphabet* a)
 	sg_memcpy(histogram, h.vector, sizeof(histogram));
 }
 
-const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
+const char* Alphabet::get_alphabet_name(EAlphabet alphabet)
 {
 
 	int32_t idx;
@@ -715,7 +715,7 @@ const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 	return alphabet_names[idx];
 }
 
-void CAlphabet::init()
+void Alphabet::init()
 {
 	alphabet = NONE;
 	num_symbols = 0;
@@ -740,9 +740,9 @@ void CAlphabet::init()
 			"Histogram."); */
 }
 
-void CAlphabet::load_serializable_post() noexcept(false)
+void Alphabet::load_serializable_post() noexcept(false)
 {
-	CSGObject::load_serializable_post();
+	SGObject::load_serializable_post();
 
 	init_map_table();
 }
@@ -751,7 +751,7 @@ void CAlphabet::load_serializable_post() noexcept(false)
 namespace shogun
 {
 template <class ST>
-void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
+void Alphabet::translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
 {
 	int32_t i,j;
 	ST value=0;
@@ -789,7 +789,7 @@ void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, in
 }
 
 template <class ST>
-void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
+void Alphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
 {
 	int32_t i,j;
 	ST value=0;
@@ -826,16 +826,16 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 	}
 }
 
-CSGObject * CAlphabet::clone(ParameterProperties pp) const
+std::shared_ptr<SGObject> Alphabet::clone(ParameterProperties pp) const
 {
-	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone(pp);
+	auto alph_clone = std::dynamic_pointer_cast<Alphabet>(SGObject::clone(pp));
 	alph_clone->init_map_table();
 	alph_clone->copy_histogram(this);
 	return alph_clone;
 }
 
 template <class ST>
-void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+void Alphabet::translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 	ASSERT(gap>=0)
 
@@ -897,7 +897,7 @@ void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, in
 }
 
 template <class ST>
-void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+void Alphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 	ASSERT(gap>=0)
 
@@ -954,74 +954,74 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 	}
 }
 
-template<> void CAlphabet::translate_from_single_order(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> void Alphabet::translate_from_single_order(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
-template<> void CAlphabet::translate_from_single_order(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> void Alphabet::translate_from_single_order(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
-template<> void CAlphabet::translate_from_single_order(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> void Alphabet::translate_from_single_order(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
-template<> void CAlphabet::translate_from_single_order_reversed(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> void Alphabet::translate_from_single_order_reversed(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
-template<> void CAlphabet::translate_from_single_order_reversed(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> void Alphabet::translate_from_single_order_reversed(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
-template<> void CAlphabet::translate_from_single_order_reversed(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> void Alphabet::translate_from_single_order_reversed(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
-template void CAlphabet::translate_from_single_order<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
 
-template void CAlphabet::translate_from_single_order<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 
-template void CAlphabet::translate_from_single_order_reversed<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
-template void CAlphabet::translate_from_single_order_reversed<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
+template void Alphabet::translate_from_single_order_reversed<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val);
 
-template void CAlphabet::translate_from_single_order_reversed<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<float32_t>(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<float64_t>(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
-template void CAlphabet::translate_from_single_order_reversed<floatmax_t>(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<bool>(bool* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<char>(char* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<int8_t>(int8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<uint8_t>(uint8_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<int16_t>(int16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<uint16_t>(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<int32_t>(int32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<uint32_t>(uint32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<int64_t>(int64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<uint64_t>(uint64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<float32_t>(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<float64_t>(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
+template void Alphabet::translate_from_single_order_reversed<floatmax_t>(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 }

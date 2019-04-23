@@ -40,11 +40,11 @@ TEST(SubsequenceStringKernel, compute)
 	list.push_back(string_1);
 	list.push_back(string_2);
 
-	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
+	auto s_feats=std::make_shared<StringFeatures<char>>(list, ALPHANUM);
 
 	// create string subsequence kernel with max subsequence length 2 and
 	// a decay factor (lambda) 1.0 (no decay)
-	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, 2, 1);
+	auto kernel=std::make_shared<SubsequenceStringKernel>(s_feats, s_feats, 2, 1);
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();
 
 	EXPECT_NEAR(kernel_matrix(0,0), 1.0, 1E-10);
@@ -52,7 +52,7 @@ TEST(SubsequenceStringKernel, compute)
 	EXPECT_NEAR(kernel_matrix(0,1), 0.214285714285714246, 1E-10);
 	EXPECT_NEAR(kernel_matrix(1,0), 0.214285714285714246, 1E-10);
 
-	SG_UNREF(kernel);
+
 }
 
 TEST(SubsequenceStringKernel, psd_random_feat)
@@ -76,10 +76,10 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 		list.push_back(str);
 	}
 
-	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
+	auto s_feats=std::make_shared<StringFeatures<char>>(list, ALPHANUM);
 	int32_t s_len=uniform_int_dist(prng, {1, min_len});
 	float64_t lambda=uniform_real_dist(prng, {0.0, 1.0});
-	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, s_len, lambda);
+	auto kernel=std::make_shared<SubsequenceStringKernel>(s_feats, s_feats, s_len, lambda);
 
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();
 	Map<MatrixXd> km_map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
@@ -88,6 +88,6 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 	for (index_t i=0; i<eig.size(); ++i)
 		EXPECT_GE(eig[i].real(), 0.0);
 
-	SG_UNREF(kernel);
+
 }
 

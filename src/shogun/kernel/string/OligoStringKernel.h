@@ -27,24 +27,24 @@ namespace shogun
  * applicable only to academic small scale problems:
  *
  * - the kernel should only ever see encoded sequences, which however
- * requires another OligoFeatures object (using CDenseFeatures of pairs)
+ * requires another OligoFeatures object (using DenseFeatures of pairs)
  *
  * Uses CSqrtDiagKernelNormalizer, as the vanilla kernel seems to be very
  * diagonally dominant.
  *
  */
-class COligoStringKernel : public CStringKernel<char>
+class OligoStringKernel : public StringKernel<char>
 {
 	public:
 		/** default constructor  */
-		COligoStringKernel();
+		OligoStringKernel();
 
 		/** Constructor
 		 * @param cache_size cache size for kernel
 		 * @param k k-mer length
 		 * @param width - equivalent to 2*sigma^2
 		 */
-		COligoStringKernel(int32_t cache_size, int32_t k, float64_t width);
+		OligoStringKernel(int32_t cache_size, int32_t k, float64_t width);
 
 		/** Constructor
 		 * @param l features of left-hand side
@@ -52,12 +52,12 @@ class COligoStringKernel : public CStringKernel<char>
 		 * @param k k-mer length
 		 * @param width - equivalent to 2*sigma^2
 		 */
-		COligoStringKernel(
-				CStringFeatures<char>* l, CStringFeatures<char>* r,
+		OligoStringKernel(
+				std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 				int32_t k, float64_t width);
 
 		/** Destructor */
-		virtual ~COligoStringKernel();
+		virtual ~OligoStringKernel();
 
 		/** initialize kernel
 		 *
@@ -65,7 +65,7 @@ class COligoStringKernel : public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

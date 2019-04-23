@@ -25,24 +25,24 @@ namespace shogun
  * representation. Also note that values are stored as 32bit floats.
  *
  * The custom kernel supports subsets each on the rows and the columns. See
- * documentation in CFeatures, CLabels how this works. The interface is similar.
+ * documentation in Features, Labels how this works. The interface is similar.
  *
  *
  */
-class CCustomKernel: public CKernel
+class CustomKernel: public Kernel
 {
 	void init();
 
 	public:
 		/** default constructor */
-		CCustomKernel();
+		CustomKernel();
 
 		/** constructor
 		 *
 		 * compute custom kernel from given kernel matrix
 		 * @param k kernel matrix
 		 */
-		CCustomKernel(CKernel* k);
+		CustomKernel(std::shared_ptr<Kernel> k);
 
 		/** constructor
 		 *
@@ -51,7 +51,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @param km kernel matrix
 		 */
-		CCustomKernel(SGMatrix<float64_t> km);
+		CustomKernel(SGMatrix<float64_t> km);
 
 		/** constructor
 		 *
@@ -60,12 +60,12 @@ class CCustomKernel: public CKernel
 		 *
 		 * @param km kernel matrix
 		 */
-		CCustomKernel(SGMatrix<float32_t> km);
+		CustomKernel(SGMatrix<float32_t> km);
 
 		/**
 		 *
 		 */
-		virtual ~CCustomKernel();
+		virtual ~CustomKernel();
 
 		/** initialize kernel with dummy features
 		 *
@@ -89,7 +89,7 @@ class CCustomKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -317,9 +317,9 @@ class CCustomKernel: public CKernel
 		}
 
 		/**
-		 * Overrides the sum_symmetric_block method of CKernel to compute the
+		 * Overrides the sum_symmetric_block method of Kernel to compute the
 		 * sum directly from the precomputed kernel matrix.
-		 * (Falls back to CKernel method if subsets are specified).
+		 * (Falls back to Kernel method if subsets are specified).
 		 *
 		 * @param block_begin the row and col index at which the block starts
 		 * @param block_size the number of rows and cols in the block
@@ -336,9 +336,9 @@ class CCustomKernel: public CKernel
 				index_t block_size, bool no_diag=true);
 
 		/**
-		 * Overrides the sum_block method of CKernel to compute the
+		 * Overrides the sum_block method of Kernel to compute the
 		 * sum directly from the precomputed kernel matrix.
-		 * (Falls back to CKernel method if subsets are specified).
+		 * (Falls back to Kernel method if subsets are specified).
 		 *
 		 * @param block_begin_row the row index at which the block starts
 		 * @param block_begin_col the col index at which the block starts
@@ -361,9 +361,9 @@ class CCustomKernel: public CKernel
 				index_t block_size_col, bool no_diag=false);
 
 		/**
-		 * Overrides the row_wise_sum_symmetric_block method of CKernel to compute the
+		 * Overrides the row_wise_sum_symmetric_block method of Kernel to compute the
 		 * sum directly from the precomputed kernel matrix.
-		 * (Falls back to CKernel method if subsets are specified).
+		 * (Falls back to Kernel method if subsets are specified).
 		 *
 		 * @param block_begin the row and col index at which the block starts
 		 * @param block_size the number of rows and cols in the block
@@ -381,8 +381,8 @@ class CCustomKernel: public CKernel
 
 		/**
 		 * Overrides the row_wise_sum_squared_sum_symmetric_block method of
-		 * CKernel to compute the sum directly from the precomputed kernel matrix.
-		 * (Falls back to CKernel method if subsets are specified).
+		 * Kernel to compute the sum directly from the precomputed kernel matrix.
+		 * (Falls back to Kernel method if subsets are specified).
 		 *
 		 * @param block_begin the row and col index at which the block starts
 		 * @param block_size the number of rows and cols in the block
@@ -404,9 +404,9 @@ class CCustomKernel: public CKernel
 				index_t block_begin, index_t block_size, bool no_diag=true);
 
 		/**
-		 * Overrides the row_wise_sum_block method of CKernel to compute the sum
+		 * Overrides the row_wise_sum_block method of Kernel to compute the sum
 		 * directly from the precomputed kernel matrix.
-		 * (Falls back to CKernel method if subsets are specified).
+		 * (Falls back to Kernel method if subsets are specified).
 		 *
 		 * @param block_begin_row the row index at which the block starts
 		 * @param block_begin_col the col index at which the block starts
@@ -607,10 +607,10 @@ class CCustomKernel: public CKernel
 		bool m_is_symmetric;
 
 		/** row subset stack */
-		CSubsetStack* m_row_subset_stack;
+		std::shared_ptr<SubsetStack> m_row_subset_stack;
 
 		/** column subset stack */
-		CSubsetStack* m_col_subset_stack;
+		std::shared_ptr<SubsetStack> m_col_subset_stack;
 
 		/** indicates whether kernel matrix is to be freed in destructor */
 		bool m_free_km;

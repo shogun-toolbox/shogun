@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev,
  *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -18,8 +18,8 @@
 namespace shogun
 {
 
-class CMKL;
-class CMulticlassSVM;
+class MKL;
+class MulticlassSVM;
 
 /** @brief A generic Support Vector Machine Interface.
  *
@@ -43,7 +43,7 @@ class CMulticlassSVM;
  * \f}
  * here C is a pre-specified regularization parameter.
  */
-class CSVM : public CKernelMachine
+class SVM : public KernelMachine
 {
 	public:
 
@@ -53,7 +53,7 @@ class CSVM : public CKernelMachine
 		/** Create an empty Support Vector Machine Object
 		 * @param num_sv with num_sv support vectors
 		 */
-		CSVM(int32_t num_sv=0);
+		SVM(int32_t num_sv=0);
 
 		/** Create a Support Vector Machine Object from a
 		 * trained SVM
@@ -62,9 +62,9 @@ class CSVM : public CKernelMachine
 		 * @param k the Kernel object
 		 * @param lab the Label object
 		 */
-		CSVM(float64_t C, CKernel* k, CLabels* lab);
+		SVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
-		virtual ~CSVM();
+		virtual ~SVM();
 
 		/** set default values for members a SVM object
 		*/
@@ -110,7 +110,7 @@ class CSVM : public CKernelMachine
 		 * @param c_pos new C constant for positively labeled examples
 		 *
 		 * Note that not all SVMs support this (however at least CLibSVM and
-		 * CSVMLight do)
+		 * SVMLight do)
 		 */
 		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
 
@@ -230,7 +230,7 @@ class CSVM : public CKernelMachine
 		inline void set_loaded_status(bool loaded)
 		{
 			svm_loaded = loaded;
-		}; 
+		};
 
 		/** set callback function svm optimizers may call when they have a new
 		 * (small) set of alphas
@@ -239,8 +239,8 @@ class CSVM : public CKernelMachine
 		 * @param cb callback function
 		 *
 		 * */
-		void set_callback_function(CMKL* m, bool (*cb)
-				(CMKL* mkl, const float64_t* sumw, const float64_t suma));
+		void set_callback_function(std::shared_ptr<MKL> m, bool (*cb)
+				(std::shared_ptr<MKL> mkl, const float64_t* sumw, const float64_t suma));
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SVM"; }
@@ -278,12 +278,12 @@ class CSVM : public CKernelMachine
 
 		/** callback function svm optimizers may call when they have a new
 		 * (small) set of alphas */
-		bool (*callback) (CMKL* mkl, const float64_t* sumw, const float64_t suma);
+		bool (*callback) (std::shared_ptr<MKL> mkl, const float64_t* sumw, const float64_t suma);
 		/** mkl object that svm optimizers need to pass when calling the callback
 		 * function */
-		CMKL* mkl;
+		std::shared_ptr<MKL> mkl;
 
-	friend class CMulticlassSVM;
+	friend class MulticlassSVM;
 };
 }
 #endif

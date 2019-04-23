@@ -41,88 +41,86 @@
 namespace shogun
 {
 
-	CDistance* distance(const std::string& name);
-	CEvaluation* evaluation(const std::string& name);
-	CKernel* kernel(const std::string& name);
-	CMachine* machine(const std::string& name);
-	CMulticlassStrategy* multiclass_strategy(const std::string& name);
-	CECOCEncoder* ecoc_encoder(const std::string& name);
-	CECOCDecoder* ecoc_decoder(const std::string& name);
-	CTransformer* transformer(const std::string& name);
-	CNeuralLayer* layer(const std::string& name);
-	CSplittingStrategy* splitting_strategy(const std::string& name);
-	CMachineEvaluation* machine_evaluation(const std::string& name);
-	CSVM* svm(const std::string& name);
-	CFeatures* features(const std::string& name);
-	CLikelihoodModel* gp_likelihood(const std::string& name);
-	CMeanFunction* gp_mean(const std::string& name);
-	CDifferentiableFunction* differentiable(const std::string& name);
-	CInference* gp_inference(const std::string& name);
-	CLossFunction* loss(const std::string& name);
-	ParameterObserver* parameter_observer(const std::string& name);
-	CDistribution* distribution(const std::string& name);
-	CCombinationRule* combination_rule(const std::string& name);
+	std::shared_ptr<Distance> distance(const std::string& name);
+	std::shared_ptr<Evaluation> evaluation(const std::string& name);
+	std::shared_ptr<Kernel> kernel(const std::string& name);
+	std::shared_ptr<Machine> machine(const std::string& name);
+	std::shared_ptr<MulticlassStrategy> multiclass_strategy(const std::string& name);
+	std::shared_ptr<ECOCEncoder> ecoc_encoder(const std::string& name);
+	std::shared_ptr<ECOCDecoder> ecoc_decoder(const std::string& name);
+	std::shared_ptr<Transformer> transformer(const std::string& name);
+	std::shared_ptr<NeuralLayer> layer(const std::string& name);
+	std::shared_ptr<SplittingStrategy> splitting_strategy(const std::string& name);
+	std::shared_ptr<MachineEvaluation> machine_evaluation(const std::string& name);
+	std::shared_ptr<SVM> svm(const std::string& name);
+	std::shared_ptr<Features> features(const std::string& name);
+	std::shared_ptr<LikelihoodModel> gp_likelihood(const std::string& name);
+	std::shared_ptr<MeanFunction> gp_mean(const std::string& name);
+	std::shared_ptr<DifferentiableFunction> differentiable(const std::string& name);
+	std::shared_ptr<Inference> gp_inference(const std::string& name);
+	std::shared_ptr<LossFunction> loss(const std::string& name);
+	std::shared_ptr<ParameterObserver> parameter_observer(const std::string& name);
+	std::shared_ptr<Distribution> distribution(const std::string& name);
+	std::shared_ptr<CombinationRule> combination_rule(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
-	T* factory_name(const std::string& name)                                   \
+	std::shared_ptr<T> factory_name(const std::string& name)                   \
 	{                                                                          \
 		return create_object<T>(name.c_str());                                 \
 	}                                                                          \
-	T* as_##factory_name(CSGObject* obj)                                       \
+	std::shared_ptr<T> as_## factory_name(std::shared_ptr<SGObject> obj)      \
 	{                                                                          \
-		return obj->as<T>();                                                   \
+		return obj->as<T>();                             					   \
 	}
-
-	BASE_CLASS_FACTORY(CEvaluation, evaluation)
-	BASE_CLASS_FACTORY(CDistance, distance)
-	BASE_CLASS_FACTORY(CKernel, kernel)
-	BASE_CLASS_FACTORY(CMachine, machine)
-	BASE_CLASS_FACTORY(CMulticlassStrategy, multiclass_strategy)
-	BASE_CLASS_FACTORY(CECOCEncoder, ecoc_encoder)
-	BASE_CLASS_FACTORY(CECOCDecoder, ecoc_decoder)
-	BASE_CLASS_FACTORY(CTransformer, transformer)
-	BASE_CLASS_FACTORY(CNeuralLayer, layer)
-	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
-	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
-	BASE_CLASS_FACTORY(CSVM, svm)
-	BASE_CLASS_FACTORY(CFeatures, features)
-	BASE_CLASS_FACTORY(CLikelihoodModel, gp_likelihood)
-	BASE_CLASS_FACTORY(CMeanFunction, gp_mean)
-	BASE_CLASS_FACTORY(CInference, gp_inference)
-	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
-	BASE_CLASS_FACTORY(CLossFunction, loss)
+	BASE_CLASS_FACTORY(Evaluation, evaluation)
+	BASE_CLASS_FACTORY(Distance, distance)
+	BASE_CLASS_FACTORY(Kernel, kernel)
+	BASE_CLASS_FACTORY(Machine, machine)
+	BASE_CLASS_FACTORY(MulticlassStrategy, multiclass_strategy)
+	BASE_CLASS_FACTORY(ECOCEncoder, ecoc_encoder)
+	BASE_CLASS_FACTORY(ECOCDecoder, ecoc_decoder)
+	BASE_CLASS_FACTORY(Transformer, transformer)
+	BASE_CLASS_FACTORY(NeuralLayer, layer)
+	BASE_CLASS_FACTORY(SplittingStrategy, splitting_strategy)
+	BASE_CLASS_FACTORY(MachineEvaluation, machine_evaluation)
+	BASE_CLASS_FACTORY(SVM, svm)
+	BASE_CLASS_FACTORY(Features, features)
+	BASE_CLASS_FACTORY(LikelihoodModel, gp_likelihood)
+	BASE_CLASS_FACTORY(MeanFunction, gp_mean)
+	BASE_CLASS_FACTORY(Inference, gp_inference)
+	BASE_CLASS_FACTORY(DifferentiableFunction, differentiable)
 	BASE_CLASS_FACTORY(ParameterObserver, parameter_observer)
-	BASE_CLASS_FACTORY(CEvaluationResult, evaluation_result)
-	BASE_CLASS_FACTORY(CDistribution, distribution)
-	BASE_CLASS_FACTORY(CCombinationRule, combination_rule)
+	BASE_CLASS_FACTORY(EvaluationResult, evaluation_result)
+	BASE_CLASS_FACTORY(Distribution, distribution)
+	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
 
 	template <class T>
-	CFeatures* features(SGMatrix<T> mat)
+	std::shared_ptr<Features> features(SGMatrix<T> mat)
 	{
-		return new CDenseFeatures<T>(mat);
+		return std::make_shared<DenseFeatures<T>>(mat);
 	}
 
-	CFeatures* features(CFile* file, EPrimitiveType primitive_type = PT_FLOAT64)
+	std::shared_ptr<Features> features(std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
 	{
 		require(file, "No file provided.");
-		CFeatures* result = nullptr;
+		std::shared_ptr<Features> result = nullptr;
 
 		switch (primitive_type)
 		{
 		case PT_FLOAT64:
-			result = new CDenseFeatures<float64_t>();
+			result = std::make_shared<DenseFeatures<float64_t>>();
 			break;
 		case PT_FLOAT32:
-			result = new CDenseFeatures<float32_t>();
+			result = std::make_shared<DenseFeatures<float32_t>>();
 			break;
 		case PT_FLOATMAX:
-			result = new CDenseFeatures<floatmax_t>();
+			result = std::make_shared<DenseFeatures<floatmax_t>>();
 			break;
 		case PT_UINT8:
-			result = new CDenseFeatures<uint8_t>();
+			result = std::make_shared<DenseFeatures<uint8_t>>();
 			break;
 		case PT_UINT16:
-			result = new CDenseFeatures<uint16_t>();
+			result = std::make_shared<DenseFeatures<uint16_t>>();
 			break;
 		default:
 			not_implemented(SOURCE_LOCATION);
@@ -131,8 +129,8 @@ namespace shogun
 		return result;
 	}
 
-	CFeatures* string_features(
-	    CFile* file, EAlphabet alphabet_type = DNA,
+	std::shared_ptr<Features> string_features(
+	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 	    EPrimitiveType primitive_type = PT_CHAR)
 	{
 		require(file, "No file provided.");
@@ -141,8 +139,7 @@ namespace shogun
 		{
 		case PT_CHAR:
 		{
-			return new CStringFeatures<char>(file, alphabet_type);
-			break;
+			return std::make_shared<StringFeatures<char>>(file, alphabet_type);
 		}
 		default:
 			not_implemented(SOURCE_LOCATION);
@@ -164,8 +161,8 @@ namespace shogun
 	 * @param primitive_type primitive type of the string features
 	 * @return new instance of string features
 	 */
-	CFeatures* string_features(
-	    CFeatures* features, int32_t start, int32_t p_order, int32_t gap,
+	std::shared_ptr<Features> string_features(
+	    std::shared_ptr<Features> features, int32_t start, int32_t p_order, int32_t gap,
 	    bool rev, EPrimitiveType primitive_type = PT_UINT16)
 	{
 
@@ -179,17 +176,16 @@ namespace shogun
 		    features->get_name(), features->get_feature_class(),
 		    features->get_feature_type());
 
-		auto string_features = features->as<CStringFeatures<char>>();
+		auto string_features = std::dynamic_pointer_cast<StringFeatures<char>>(features);
 
 		switch (primitive_type)
 		{
 		case PT_UINT16:
 		{
-			auto* alphabet = string_features->get_alphabet();
-			auto result = new CStringFeatures<uint16_t>(alphabet);
+			auto result =
+			    std::make_shared<StringFeatures<uint16_t>>(string_features->get_alphabet());
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
-			SG_UNREF(alphabet);
 			require(success, "Failed to obtain from string char features.");
 			return result;
 		}
@@ -203,17 +199,16 @@ namespace shogun
 	/** Factory for CDenseSubsetFeatures.
 	 * TODO: Should be removed once the concept of feature views has arrived
 	 */
-	CFeatures* features_subset(
-	    CFeatures* base_features, SGVector<index_t> indices,
-	    EPrimitiveType primitive_type = PT_FLOAT64)
+	std::shared_ptr<Features> features_subset(std::shared_ptr<Features> base_features, SGVector<index_t> indices,
+			EPrimitiveType primitive_type = PT_FLOAT64)
 	{
 		require(base_features, "No base features provided.");
 
 		switch (primitive_type)
 		{
 		case PT_FLOAT64:
-			return new CDenseSubsetFeatures<float64_t>(
-			    base_features->as<CDenseFeatures<float64_t>>(), indices);
+			return std::make_shared<DenseSubsetFeatures<float64_t>>(
+				std::dynamic_pointer_cast<DenseFeatures<float64_t>>(base_features), indices);
 			break;
 		default:
 			not_implemented(SOURCE_LOCATION);
@@ -222,55 +217,50 @@ namespace shogun
 		return nullptr;
 	}
 
-	template <
-	    typename T, typename T2 = typename std::enable_if_t<
-	                    std::is_floating_point<T>::value>>
-	CKernel* kernel(SGMatrix<T> kernel_matrix)
+	template <typename T, typename T2 = typename std::enable_if_t<
+	                          std::is_floating_point<T>::value>>
+	std::shared_ptr<Kernel> kernel(SGMatrix<T> kernel_matrix)
 	{
-		return new CCustomKernel(kernel_matrix);
+		return std::make_shared<CustomKernel>(kernel_matrix);
 	}
 
 #ifndef SWIG // SWIG should skip this part
-	template <
-	    typename LT,
-	    std::enable_if_t<
-	        std::is_base_of<
-	            CDenseLabels, typename std::remove_pointer<LT>::type>::value,
-	        LT>* = nullptr>
-	void try_labels(CDenseLabels*& labels, const SGVector<float64_t>& data)
+	template <typename LT,
+	          std::enable_if_t<
+	              std::is_base_of_v<DenseLabels, typename std::remove_pointer_t<LT>>,
+	              LT>* = nullptr>
+	void try_labels(std::shared_ptr<DenseLabels>& labels, const SGVector<float64_t>& data)
 	{
 		if (!labels)
 		{
-			labels = new LT();
-			labels->set_labels(data);
-			if (!labels->is_valid())
-				SG_UNREF(labels);
+			auto l = std::make_shared<LT>();
+			l->set_labels(data);
+			if (l->is_valid())
+				labels = l;
 		}
 	}
 #endif // SWIG
 
-	CLabels* labels(CFile* file)
+	std::shared_ptr<Labels> labels(std::shared_ptr<File> file)
 	{
 		require(file, "No file provided.");
 
 		// load label data into memory via any dense label specialization
-		CDenseLabels* loaded = new CRegressionLabels();
+		auto loaded = std::make_shared<RegressionLabels>();
 		loaded->load(file);
 		auto labels = loaded->get_labels();
-		SG_UNREF(loaded);
 
-		CDenseLabels* result = nullptr;
-
+		std::shared_ptr<DenseLabels> result = nullptr;
+		auto csv_file = std::dynamic_pointer_cast<CSVFile>(file);
 		require(
-		    dynamic_cast<CCSVFile*>(file),
+		    file,
 		    "Cannot load labels from {}(\"{}\").", file->get_name(),
 		    file->get_filename());
-
 		// try to interpret as all dense label types, from most restrictive to
 		// least restrictive
-		try_labels<CBinaryLabels>(result, labels);
-		try_labels<CMulticlassLabels>(result, labels);
-		try_labels<CRegressionLabels>(result, labels);
+		try_labels<BinaryLabels>(result, labels);
+		try_labels<MulticlassLabels>(result, labels);
+		try_labels<RegressionLabels>(result, labels);
 		require(
 		    result,
 		    "Cannot load labels from {}(\"{}\") as any of dense labels.",
@@ -283,37 +273,37 @@ namespace shogun
 	}
 
 	template <class T>
-	CLabels* labels(SGVector<T> labels_vector)
+	std::shared_ptr<Labels> labels(SGVector<T> labels)
 	{
-		CDenseLabels* result = nullptr;
+		std::shared_ptr<DenseLabels> result = nullptr;
 		// try to interpret as all dense label types, from most restrictive to
 		// least restrictive
-		try_labels<CBinaryLabels>(result, labels_vector);
-		try_labels<CMulticlassLabels>(result, labels_vector);
-		try_labels<CRegressionLabels>(result, labels_vector);
+		try_labels<BinaryLabels>(result, labels);
+		try_labels<MulticlassLabels>(result, labels);
+		try_labels<RegressionLabels>(result, labels);
 		require(
 		    result, "Cannot interpret given labels as any of dense labels.");
 		io::info("Interpreted labels as {}", result->get_name());
 		return result;
 	}
 
-	CFile* csv_file(std::string fname, char rw = 'r')
+	std::shared_ptr<File> csv_file(std::string fname, char rw = 'r')
 	{
-		return new CCSVFile(fname.c_str(), rw);
+		return std::make_shared<CSVFile>(fname.c_str(), rw);
 	}
 
-	CFile* libsvm_file(std::string fname, char rw = 'r')
+	std::shared_ptr<File> libsvm_file(std::string fname, char rw = 'r')
 	{
-		return new CLibSVMFile(fname.c_str(), rw);
+		return std::make_shared<LibSVMFile>(fname.c_str(), rw);
 	}
 
 	/** Create a pipeline builder.
-	 * See also CPipelineBuilder and CPipeline.
-	 * @return new instance of CPipelineBuilder
+	 * See also PipelineBuilder and CPipeline.
+	 * @return new instance of PipelineBuilder
 	 */
-	CPipelineBuilder* pipeline()
+	std::shared_ptr<PipelineBuilder> pipeline()
 	{
-		return new CPipelineBuilder();
+		return std::make_shared<PipelineBuilder>();
 	}
 } // namespace shogun
 #endif // FACTORY_H_

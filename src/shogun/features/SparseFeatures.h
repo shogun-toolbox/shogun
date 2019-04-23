@@ -22,11 +22,11 @@
 namespace shogun
 {
 
-class CFile;
-class CLibSVMFile;
-class CFeatures;
-template <class ST> class CDenseFeatures;
-template <class T> class CCache;
+class File;
+class LibSVMFile;
+class Features;
+template <class ST> class DenseFeatures;
+template <class T> class Cache;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
  *
@@ -44,45 +44,45 @@ template <class T> class CCache;
  * Simple use the (inherited) add_subset(), remove_subset() functions.
  * If done, all calls that work with features are translated to the subset.
  * See comments to find out whether it is supported for that method.
- * See also CFeatures class documentation
+ * See also Features class documentation
  */
-template <class ST> class CSparseFeatures : public CDotFeatures
+template <class ST> class SparseFeatures : public DotFeatures
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CSparseFeatures(int32_t size=0);
+		SparseFeatures(int32_t size=0);
 
 		/** convenience constructor that creates sparse features from
 		 * sparse features
 		 *
 		 * @param sparse sparse matrix
 		 */
-		CSparseFeatures(SGSparseMatrix<ST> sparse);
+		SparseFeatures(SGSparseMatrix<ST> sparse);
 
 		/** convenience constructor that creates sparse features from
 		 * dense features
 		 *
 		 * @param dense dense feature matrix
 		 */
-		CSparseFeatures(SGMatrix<ST> dense);
+		SparseFeatures(SGMatrix<ST> dense);
 
 		/** copy constructor */
-		CSparseFeatures(const CSparseFeatures & orig);
+		SparseFeatures(const SparseFeatures & orig);
 
 		/** copy constructor from DenseFeatures */
-		CSparseFeatures(CDenseFeatures<ST>* dense);
+		SparseFeatures(std::shared_ptr<DenseFeatures<ST>> dense);
 
 		/** constructor loading features from file
 		 *
 		 * @param loader File object to load data from
 		 */
-		CSparseFeatures(CFile* loader);
+		SparseFeatures(std::shared_ptr<File> loader);
 
 		/** default destructor */
-		virtual ~CSparseFeatures();
+		virtual ~SparseFeatures();
 
 		/** free sparse feature matrix
 		 *
@@ -100,7 +100,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** get a single feature
 		 *
@@ -200,7 +200,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return transposed copy
 		 */
-		CSparseFeatures<ST>* get_transposed();
+		std::shared_ptr<SparseFeatures<ST>> get_transposed();
 
 		/** compute and return the transpose of the sparse feature matrix
 		 * which will be prepocessed.
@@ -317,9 +317,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param sq_rhs squared values of right-hand side
 		 * @param idx_b index of right-hand side's vector to compute
 		 */
-		float64_t compute_squared_norm(CSparseFeatures<float64_t>* lhs,
+		float64_t compute_squared_norm(std::shared_ptr<SparseFeatures<float64_t>> lhs,
 				float64_t* sq_lhs, int32_t idx_a,
-				CSparseFeatures<float64_t>* rhs, float64_t* sq_rhs,
+				std::shared_ptr<SparseFeatures<float64_t>> rhs, float64_t* sq_rhs,
 				int32_t idx_b);
 
 		/** load features from file
@@ -328,7 +328,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param loader File object to load data from
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<File> loader);
 
 		/** load features from file
 		 *
@@ -337,7 +337,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param loader File object to load data from
 		 * @return label vector
 		 */
-		SGVector<float64_t> load_with_labels(CLibSVMFile* loader);
+		SGVector<float64_t> load_with_labels(std::shared_ptr<LibSVMFile> loader);
 
 		/** save features to file
 		 *
@@ -345,7 +345,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param writer File object to write data to
 		 */
-		void save(CFile* writer);
+		void save(std::shared_ptr<File> writer);
 
 		/** save features to file
 		 *
@@ -354,7 +354,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param writer File object to write data to
 		 * @param labels vector with labels to write out
 		 */
-		void save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels);
+		void save_with_labels(std::shared_ptr<LibSVMFile> writer, SGVector<float64_t> labels);
 
 		/** ensure that features occur in ascending order, only call when no
 		 * preprocessors are attached
@@ -381,7 +381,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -391,7 +391,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param vec2 dense vector
 		 */
 		virtual float64_t
-		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
+		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for sparse features */
@@ -447,13 +447,13 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator);
 
-		/** Creates a new CFeatures instance containing copies of the elements
+		/** Creates a new Features instance containing copies of the elements
 		 * which are specified by the provided indices.
 		 *
 		 * @param indices indices of feature elements to copy
-		 * @return new CFeatures instance with copies of feature data
+		 * @return new Features instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SparseFeatures"; }
@@ -481,7 +481,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		SGSparseMatrix<ST> sparse_feature_matrix;
 
 		/** feature cache */
-		CCache< SGSparseVectorEntry<ST> >* feature_cache;
+		std::shared_ptr<Cache< SGSparseVectorEntry<ST> >> feature_cache;
 };
 }
 #endif /* _SPARSEFEATURES__H__ */

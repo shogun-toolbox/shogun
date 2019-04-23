@@ -16,21 +16,21 @@
 
 namespace shogun
 {
-	/** @brief Abstract class CLatentModel
+	/** @brief Abstract class LatentModel
 	 * It represents the application specific model and contains most of the
 	 * application dependent logic to solve latent variable based problems.
 	 *
 	 * The idea is that the user have to define and implement her own model, which
-	 * is derived from CLatentModel and implement all the pure virtual functions
+	 * is derived from LatentModel and implement all the pure virtual functions
 	 * which depends on the given problem she wants to solve, like the combined
 	 * feature representation: \f$\Psi(\bold{x_i},\bold{h_i})\f$ and the inference
 	 * of the latent variable \f$argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 	 */
-	class CLatentModel: public CSGObject
+	class LatentModel: public SGObject
 	{
 		public:
 			/** default ctor */
-			CLatentModel();
+			LatentModel();
 
 			/** constructor
 			 *
@@ -38,10 +38,10 @@ namespace shogun
 			 * @param labels Latent labels
 			 * @param do_caching whether caching of PSI vectors is enabled or not. Enabled by default.
 			 */
-			CLatentModel(CLatentFeatures* feats, CLatentLabels* labels, bool do_caching = true);
+			LatentModel(std::shared_ptr<LatentFeatures> feats, std::shared_ptr<LatentLabels> labels, bool do_caching = true);
 
 			/** destructor */
-			virtual ~CLatentModel();
+			virtual ~LatentModel();
 
 			/** get the number of examples
 			 *
@@ -59,31 +59,31 @@ namespace shogun
 			 *
 			 * @param labs latent labels
 			 */
-			void set_labels(CLatentLabels* labs);
+			void set_labels(std::shared_ptr<LatentLabels> labs);
 
 			/** get latent labels
 			 *
 			 * @return latent labels
 			 */
-			CLatentLabels* get_labels() const;
+			std::shared_ptr<LatentLabels> get_labels() const;
 
 			/** set latent features
 			 *
 			 * @param feats the latent features of the problem
 			 */
-			void set_features(CLatentFeatures* feats);
+			void set_features(std::shared_ptr<LatentFeatures> feats);
 
 			/** get latent features
 			 *
 			 * @return latent features
 			 */
-			CLatentFeatures* get_features() const;
+			std::shared_ptr<LatentFeatures> get_features() const;
 
 			/** Calculate the PSI vectors for all features
 			 *
 			 * @return PSI vectors
 			 */
-			virtual CDotFeatures* get_psi_feature_vectors()=0;
+			virtual std::shared_ptr<DotFeatures> get_psi_feature_vectors()=0;
 
 			/** User defined \f$h^{*} = argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 			 * This function has to be defined the user as it is applications specific, since
@@ -93,7 +93,7 @@ namespace shogun
 			 * @param idx index of the example
 			 * @return returns \f$h^{*}\f$ for the given example
 			 */
-			virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)=0;
+			virtual std::shared_ptr<Data> infer_latent_variable(const SGVector<float64_t>& w, index_t idx)=0;
 
 			/** Calculates \f$argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 			 * The default implementaiton calculates the argmax_h only on the positive examples.
@@ -111,7 +111,7 @@ namespace shogun
 			 *
 			 * @return the cached PSI vectors
 			 */
-			CDotFeatures* get_cached_psi_features() const;
+			std::shared_ptr<DotFeatures> get_cached_psi_features() const;
 
 			/** get caching
 			 *
@@ -139,13 +139,13 @@ namespace shogun
 
 		protected:
 			/** latent features for training */
-			CLatentFeatures* m_features;
+			std::shared_ptr<LatentFeatures> m_features;
 			/** corresponding labels for the train set */
-			CLatentLabels* m_labels;
+			std::shared_ptr<LatentLabels> m_labels;
 			/** boolean that indicates whether caching of PSI vectors is enabled or not */
 			bool m_do_caching;
 			/** cached PSI feature vectors after argmax_h */
-			CDotFeatures* m_cached_psi;
+			std::shared_ptr<DotFeatures> m_cached_psi;
 
 		private:
 			/** register the parameters */

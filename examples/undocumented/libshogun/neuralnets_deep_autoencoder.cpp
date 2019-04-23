@@ -42,10 +42,10 @@ using namespace shogun;
 
 int main(int, char*[])
 {
-#ifdef HAVE_LAPACK // for CDataGenerator::generate_gaussian()
+#ifdef HAVE_LAPACK // for DataGenerator::generate_gaussian()
 
 	// initialize the random number generator with a fixed seed, for repeatability
-	CMath::init_random(10);
+	Math::init_random(10);
 
 	// Prepare the training data
 	const int num_features = 20;
@@ -55,7 +55,7 @@ int main(int, char*[])
 	SGMatrix<float64_t> X;
 	try
 	{
-		X = CDataGenerator::generate_gaussians(
+		X = DataGenerator::generate_gaussians(
 			num_examples_per_class,num_classes,num_features);
 	}
 	catch (ShogunException e)
@@ -65,15 +65,15 @@ int main(int, char*[])
 		return 0;
 	}
 
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
+	DenseFeatures<float64_t>* features = new DenseFeatures<float64_t>(X);
 
 	// Create a deep autoencoder
-	CNeuralLayers* layers = new CNeuralLayers();
+	NeuralLayers* layers = new NeuralLayers();
 	layers
 		->input(num_features)
 		->rectified_linear(10)->rectified_linear(5)->rectified_linear(10)
 		->linear(num_features);
-	CDeepAutoencoder* ae = new CDeepAutoencoder(layers->done());
+	DeepAutoencoder* ae = new DeepAutoencoder(layers->done());
 
 	// uncomment this line to enable info logging
 	// ae->io->set_loglevel(MSG_INFO);
@@ -86,23 +86,19 @@ int main(int, char*[])
 	ae->train(features);
 
 	// reconstruct the data
-	CDenseFeatures<float64_t>* reconstructions = ae->reconstruct(features);
+	DenseFeatures<float64_t>* reconstructions = ae->reconstruct(features);
 	SGMatrix<float64_t> X_reconstructed = reconstructions->get_feature_matrix();
 
 	// find the average difference between the data and the reconstructions
 	float64_t avg_diff = 0;
 	int32_t N = X.num_rows*X.num_cols;
 	for (int32_t i=0; i<N; i++)
-		avg_diff += CMath::abs(X[i]-X_reconstructed[i])/CMath::abs(X[i]);
+		avg_diff += Math::abs(X[i]-X_reconstructed[i])/Math::abs(X[i]);
 	avg_diff /= N;
 
 	SG_SINFO("Average difference = %f %\n", avg_diff*100);
 
 	// Clean up
-	SG_UNREF(ae);
-	SG_UNREF(layers);
-	SG_UNREF(features);
-	SG_UNREF(reconstructions);
 
 #endif
 

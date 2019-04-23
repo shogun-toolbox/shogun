@@ -35,7 +35,7 @@ enum E_PROB_TYPE
  * a number of optimization problems that are used in shogun, like for Multiple
  * Kernel Learning, Linear Programming Machines and Linear Programming Boosting.
  */
-class CCplex : public CSGObject
+class CCplex : public SGObject
 {
 public:
 
@@ -49,14 +49,14 @@ public:
 	// A = [ E Z_w Z_x ] dim(A)=(num_dim+1, num_dim+1 + num_zero + num_bound)
 	// (+1 for bias!)
 	bool setup_subgradientlpm_QP(
-		float64_t C, CBinaryLabels* labels, CSparseFeatures<float64_t>* features,
+		float64_t C, BinaryLabels* labels, SparseFeatures<float64_t>* features,
 		int32_t* idx_bound, int32_t num_bound, int32_t* w_zero,
 		int32_t num_zero, float64_t* vee, int32_t num_dim, bool use_bias);
 
 	bool setup_lpboost(float64_t C, int32_t num_cols);
 	bool add_lpboost_constraint(
 		float64_t factor, SGSparseVectorEntry<float64_t>* h, int32_t len,
-		int32_t ulen, CBinaryLabels* label);
+		int32_t ulen, BinaryLabels* label);
 
 	// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
 	// create the following 1-norm SVM problem & transfer to cplex
@@ -95,7 +95,7 @@ public:
 	//
 	// b =  -1 -1 -1 -1 ...
 	bool setup_lpm(
-		float64_t C, CSparseFeatures<float64_t>* x, CBinaryLabels* y, bool use_bias);
+		float64_t C, SparseFeatures<float64_t>* x, BinaryLabels* y, bool use_bias);
 
 	// call this to setup linear part
 	//

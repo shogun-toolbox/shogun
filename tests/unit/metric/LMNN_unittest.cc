@@ -1,12 +1,11 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Pan Deng, Wuwei Lin, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Pan Deng, Wuwei Lin,
  *          Viktor Gal
  */
 #include <gtest/gtest.h>
 
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/metric/LMNN.h>
@@ -30,7 +29,7 @@ TEST(LMNN,train_identity_init)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -40,11 +39,11 @@ TEST(LMNN,train_identity_init)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because it works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// create LMNN metric machine
 	int32_t k=1;	// number of target neighbors per example
-	CLMNN* lmnn=new CLMNN(features,labels,k);
+	auto lmnn=std::make_shared<LMNN>(features,labels,k);
 	// use the identity matrix as initial transform for LMNN
 	SGMatrix<float64_t> init_transform=SGMatrix<float64_t>::create_identity_matrix(2,1);
 	// set number of maximum iterations and train
@@ -58,7 +57,7 @@ TEST(LMNN,train_identity_init)
 	EXPECT_NEAR(L(1,0),0,1e-5);
 	EXPECT_NEAR(L(1,1),1.00000080000000002,1e-5);
 
-	SG_UNREF(lmnn)
+
 }
 
 TEST(LMNN, train_termination)
@@ -73,8 +72,8 @@ TEST(LMNN, train_termination)
 	feat_mat(0, 3) = -1;
 	feat_mat(1, 3) = 1;
 
-	CDenseFeatures<float64_t>* features =
-	    new CDenseFeatures<float64_t>(feat_mat);
+	auto features =
+	    std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	SGVector<float64_t> lab_vec(4);
 	lab_vec[0] = 0;
@@ -82,10 +81,10 @@ TEST(LMNN, train_termination)
 	lab_vec[2] = 1;
 	lab_vec[3] = 1;
 
-	CMulticlassLabels* labels = new CMulticlassLabels(lab_vec);
+	auto labels = std::make_shared<MulticlassLabels>(lab_vec);
 
 	int32_t k = 1; // number of target neighbors per example
-	auto lmnn = some<CLMNN>(features, labels, k);
+	auto lmnn = std::make_shared<LMNN>(features, labels, k);
 
 	SGMatrix<float64_t> init_transform =
 	    SGMatrix<float64_t>::create_identity_matrix(2, 1);
@@ -121,7 +120,7 @@ TEST(LMNN,train_pca_init)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -131,11 +130,11 @@ TEST(LMNN,train_pca_init)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because it works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// create LMNN metric machine
 	int32_t k=1;	// number of target neighbors per example
-	CLMNN* lmnn=new CLMNN(features,labels,k);
+	auto lmnn=std::make_shared<LMNN>(features,labels,k);
 	// set number of maximum iterations and train
 	lmnn->set_maxiter(500);
 	lmnn->train();
@@ -147,7 +146,7 @@ TEST(LMNN,train_pca_init)
 	EXPECT_NEAR(L(1,0),0,1e-5);
 	EXPECT_NEAR(L(1,1),1.00000080000000002,1e-5);
 
-	SG_UNREF(lmnn)
+
 }
 
 TEST(LMNN,train_diagonal)
@@ -167,7 +166,7 @@ TEST(LMNN,train_diagonal)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -177,11 +176,11 @@ TEST(LMNN,train_diagonal)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because it works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// create LMNN metric machine
 	int32_t k=1;	// number of target neighbors per example
-	CLMNN* lmnn=new CLMNN(features,labels,k);
+	auto lmnn=std::make_shared<LMNN>(features,labels,k);
 	// use the identity matrix as initial transform for LMNN
 	SGMatrix<float64_t> init_transform=SGMatrix<float64_t>::create_identity_matrix(2,1);
 	// set number of maximum iterations and train
@@ -196,5 +195,5 @@ TEST(LMNN,train_diagonal)
 	EXPECT_NEAR(L(1,0),0,1e-5);
 	EXPECT_NEAR(L(1,1),1.0000,1e-5);
 
-	SG_UNREF(lmnn)
+
 }

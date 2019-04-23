@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni,
  *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Bjoern Esser
  */
 
@@ -15,14 +15,14 @@
 
 using namespace shogun;
 
-CSGDQN::CSGDQN()
-: CLinearMachine()
+SGDQN::SGDQN()
+: LinearMachine()
 {
 	init();
 }
 
-CSGDQN::CSGDQN(float64_t C)
-: CLinearMachine()
+SGDQN::SGDQN(float64_t C)
+: LinearMachine()
 {
 	init();
 
@@ -30,8 +30,8 @@ CSGDQN::CSGDQN(float64_t C)
 	C2=C;
 }
 
-CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
+SGDQN::SGDQN(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+: LinearMachine()
 {
 	init();
 	C1=C;
@@ -41,19 +41,19 @@ CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 	set_labels(trainlab);
 }
 
-CSGDQN::~CSGDQN()
+SGDQN::~SGDQN()
 {
-	SG_UNREF(loss);
+
 }
 
-void CSGDQN::set_loss_function(CLossFunction* loss_func)
+void SGDQN::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
-	SG_REF(loss_func);
-	SG_UNREF(loss);
+
+
 	loss=loss_func;
 }
 
-void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)
+void SGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)
 {
 	for (int32_t i=0; i < dim;i++)
 	{
@@ -65,19 +65,19 @@ void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* d
 	}
 }
 
-void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2)
+void SGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2)
 {
 	for (int32_t i=0; i < dim;i++)
 	{
 		if(B[i])
 		{
 			Bc[i] = Bc[i] * c1 + B[i] * c2;
-			Bc[i]= CMath::min(CMath::max(Bc[i],v1),v2);
+			Bc[i]= Math::min(Math::max(Bc[i],v1),v2);
 		}
 	}
 }
 
-bool CSGDQN::train(CFeatures* data)
+bool SGDQN::train(std::shared_ptr<Features> data)
 {
 
 	ASSERT(m_labels)
@@ -87,7 +87,7 @@ bool CSGDQN::train(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 
 	ASSERT(features)
@@ -108,7 +108,7 @@ bool CSGDQN::train(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
+	float64_t eta0 = typw / Math::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	io::info("lambda={}, epochs={}, eta0={}", lambda, epochs, eta0);
@@ -130,6 +130,7 @@ bool CSGDQN::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
+	auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
 	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
@@ -140,7 +141,7 @@ bool CSGDQN::train(CFeatures* data)
 			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
 			ASSERT(w.vlen==v.vlen)
 			float64_t eta = 1.0/t;
-			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
+			float64_t y = binary_labels->get_label(i);
 			float64_t z = y * features->dot(i, w);
 			if(updateB==true)
 			{
@@ -192,7 +193,7 @@ bool CSGDQN::train(CFeatures* data)
 
 
 
-void CSGDQN::calibrate()
+void SGDQN::calibrate()
 {
 	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
@@ -214,7 +215,7 @@ void CSGDQN::calibrate()
 	skip = (int32_t) ((16 * n * c_dim) / r);
 }
 
-void CSGDQN::init()
+void SGDQN::init()
 {
 	t=0;
 	C1=1;
@@ -223,8 +224,8 @@ void CSGDQN::init()
 	skip=1000;
 	count=1000;
 
-	loss=new CHingeLoss();
-	SG_REF(loss);
+	loss=std::make_shared<HingeLoss>();
+
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);

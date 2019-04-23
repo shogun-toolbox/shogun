@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Evgeniy Andreev, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Evgeniy Andreev, Viktor Gal,
  *          Sergey Lisitsyn, Bjoern Esser, Sanuj Sharma, Saurabh Goyal
  */
 
@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) {
+void RandomFourierGaussPreproc::copy(const RandomFourierGaussPreproc & feats) {
 
 	dim_input_space = feats.dim_input_space;
 	cur_dim_input_space = feats.cur_dim_input_space;
@@ -59,8 +59,8 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 
 }
 
-CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
-	RandomMixin<CDensePreprocessor<float64_t>> () {
+RandomFourierGaussPreproc::RandomFourierGaussPreproc() :
+	RandomMixin<DensePreprocessor<float64_t>> () {
 	dim_feature_space = 1000;
 	dim_input_space = 0;
 	cur_dim_input_space = 0;
@@ -72,7 +72,7 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 	kernelwidth=1;
 	cur_kernelwidth=kernelwidth;
 
-	//m_parameter is inherited from CSGObject,
+	//m_parameter is inherited from SGObject,
 	//serialization initialization
 	if(m_parameters)
 	{
@@ -88,12 +88,12 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 
-		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		/*m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");*/
 		watch_param(
 		    "randomcoeff_additive", &randomcoeff_additive,
 		    &cur_dim_feature_space);
 
-		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		/*m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");*/
 		watch_param(
 		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
 		    &cur_dim_feature_space, &cur_dim_input_space);
@@ -101,14 +101,14 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 
 }
 
-CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
-		const CRandomFourierGaussPreproc & feats) :
-	RandomMixin<CDensePreprocessor<float64_t>> () {
+RandomFourierGaussPreproc::RandomFourierGaussPreproc(
+		const RandomFourierGaussPreproc & feats) :
+	RandomMixin<DensePreprocessor<float64_t>> () {
 
 	randomcoeff_multiplicative=NULL;
 	randomcoeff_additive=NULL;
 
-	//m_parameter is inherited from CSGObject,
+	//m_parameter is inherited from SGObject,
 	//serialization initialization
 	if(m_parameters)
 	{
@@ -124,12 +124,12 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 
-		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		/*m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");*/
 		watch_param(
 		    "randomcoeff_additive", &randomcoeff_additive,
 		    &cur_dim_feature_space);
 
-		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		/*m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");*/
 		watch_param(
 		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
 		    &cur_dim_feature_space, &cur_dim_input_space);
@@ -138,26 +138,26 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 	copy(feats);
 }
 
-CRandomFourierGaussPreproc::~CRandomFourierGaussPreproc() {
+RandomFourierGaussPreproc::~RandomFourierGaussPreproc() {
 
 	SG_FREE(randomcoeff_multiplicative);
 	SG_FREE(randomcoeff_additive);
 
 }
 
-EFeatureClass CRandomFourierGaussPreproc::get_feature_class() {
+EFeatureClass RandomFourierGaussPreproc::get_feature_class() {
 	return C_DENSE;
 }
 
-EFeatureType CRandomFourierGaussPreproc::get_feature_type() {
+EFeatureType RandomFourierGaussPreproc::get_feature_type() {
 	return F_DREAL;
 }
 
-int32_t CRandomFourierGaussPreproc::get_dim_feature_space() const {
+int32_t RandomFourierGaussPreproc::get_dim_feature_space() const {
 	return ((int32_t) dim_feature_space);
 }
 
-void CRandomFourierGaussPreproc::set_dim_feature_space(const int32_t dim) {
+void RandomFourierGaussPreproc::set_dim_feature_space(const int32_t dim) {
 	if (dim <= 0) {
 		throw ShogunException(
 				"void CRandomFourierGaussPreproc::set_dim_feature_space(const int32 dim): dim<=0 is not allowed");
@@ -167,11 +167,11 @@ void CRandomFourierGaussPreproc::set_dim_feature_space(const int32_t dim) {
 
 }
 
-int32_t CRandomFourierGaussPreproc::get_dim_input_space() const {
+int32_t RandomFourierGaussPreproc::get_dim_input_space() const {
 	return ((int32_t) dim_input_space);
 }
 
-void CRandomFourierGaussPreproc::set_kernelwidth(const float64_t kernelwidth2 ) {
+void RandomFourierGaussPreproc::set_kernelwidth(const float64_t kernelwidth2 ) {
 	if (kernelwidth2 <= 0) {
 		throw ShogunException(
 				"void CRandomFourierGaussPreproc::set_kernelwidth(const float64_t kernelwidth2 ): kernelwidth2 <= 0 is not allowed");
@@ -179,11 +179,11 @@ void CRandomFourierGaussPreproc::set_kernelwidth(const float64_t kernelwidth2 ) 
 	kernelwidth=kernelwidth2;
 }
 
-float64_t CRandomFourierGaussPreproc::get_kernelwidth( ) const {
+float64_t RandomFourierGaussPreproc::get_kernelwidth( ) const {
 	return (kernelwidth);
 }
 
-void CRandomFourierGaussPreproc::set_dim_input_space(const int32_t dim) {
+void RandomFourierGaussPreproc::set_dim_input_space(const int32_t dim) {
 	if (dim <= 0) {
 		throw ShogunException(
 				"void CRandomFourierGaussPreproc::set_dim_input_space(const int32 dim): dim<=0 is not allowed");
@@ -193,11 +193,11 @@ void CRandomFourierGaussPreproc::set_dim_input_space(const int32_t dim) {
 
 }
 
-bool CRandomFourierGaussPreproc::test_rfinited() const {
+bool RandomFourierGaussPreproc::test_rfinited() const {
 
 	if ((dim_feature_space ==  cur_dim_feature_space)
 			&& (dim_input_space > 0) && (dim_feature_space > 0)) {
-		if ((dim_input_space == cur_dim_input_space)&&(CMath::abs(kernelwidth-cur_kernelwidth)<1e-5)) {
+		if ((dim_input_space == cur_dim_input_space)&&(Math::abs(kernelwidth-cur_kernelwidth)<1e-5)) {
 
 			// already inited
 			return true;
@@ -209,7 +209,7 @@ bool CRandomFourierGaussPreproc::test_rfinited() const {
 	return false;
 }
 
-bool CRandomFourierGaussPreproc::init_randomcoefficients() {
+bool RandomFourierGaussPreproc::init_randomcoefficients() {
 	if (dim_feature_space <= 0) {
 		throw ShogunException(
 				"bool CRandomFourierGaussPreproc::init_randomcoefficients(): dim_feature_space<=0 is not allowed\n");
@@ -269,7 +269,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	return true;
 }
 
-void CRandomFourierGaussPreproc::get_randomcoefficients(
+void RandomFourierGaussPreproc::get_randomcoefficients(
 		float64_t ** randomcoeff_additive2,
 		float64_t ** randomcoeff_multiplicative2, int32_t *dim_feature_space2,
 		int32_t *dim_input_space2, float64_t* kernelwidth2) const {
@@ -301,7 +301,7 @@ void CRandomFourierGaussPreproc::get_randomcoefficients(
 
 }
 
-void CRandomFourierGaussPreproc::set_randomcoefficients(
+void RandomFourierGaussPreproc::set_randomcoefficients(
 		float64_t *randomcoeff_additive2,
 		float64_t * randomcoeff_multiplicative2,
 		const int32_t dim_feature_space2, const int32_t dim_input_space2, const float64_t kernelwidth2) {
@@ -331,16 +331,16 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 
 }
 
-void CRandomFourierGaussPreproc::fit(CFeatures* f)
+void RandomFourierGaussPreproc::fit(std::shared_ptr<Features> f)
 {
 	if (dim_feature_space <= 0) {
 		throw ShogunException(
-				"CRandomFourierGaussPreproc::init (CFeatures *f): dim_feature_space<=0 is not allowed, use void set_dim_feature_space(const int32 dim) before!\n");
+				"CRandomFourierGaussPreproc::init (Features *f): dim_feature_space<=0 is not allowed, use void set_dim_feature_space(const int32 dim) before!\n");
 	}
 
 	io::info("calling CRandomFourierGaussPreproc::init(...)");
 	int32_t num_features =
-	    f->as<CDenseFeatures<float64_t>>()->get_num_features();
+	    f->as<DenseFeatures<float64_t>>()->get_num_features();
 
 	if (!test_rfinited()) {
 		dim_input_space = num_features;
@@ -353,11 +353,11 @@ void CRandomFourierGaussPreproc::fit(CFeatures* f)
 	}
 }
 
-SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> RandomFourierGaussPreproc::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	if (!test_rfinited()) {
 		throw ShogunException(
-				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (CFeatures *f) OR	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
+				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (Features *f) OR	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
 	}
 
 	float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
@@ -372,7 +372,7 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 }
 
 SGMatrix<float64_t>
-CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
+RandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	// version for case dim_feature_space < dim_input space with direct transformation on feature matrix ??
 
@@ -411,7 +411,7 @@ CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 	return res;
 }
 
-void CRandomFourierGaussPreproc::cleanup()
+void RandomFourierGaussPreproc::cleanup()
 {
 
 }

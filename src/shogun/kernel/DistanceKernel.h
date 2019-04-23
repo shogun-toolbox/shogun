@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-	class CDistance;
+	class Distance;
 
 /** @brief The Distance kernel takes a distance as input.
  *
@@ -25,11 +25,11 @@ namespace shogun
  *     k({\bf x}, {\bf x'}) = e^{-\frac{dist({\bf x}, {\bf x'})}{width}}
  * \f]
  */
-class CDistanceKernel: public CKernel
+class DistanceKernel: public Kernel
 {
 	public:
 		/** default constructor  */
-		CDistanceKernel();
+		DistanceKernel();
 
 		/** constructor
 		 *
@@ -37,7 +37,7 @@ class CDistanceKernel: public CKernel
 		 * @param width width
 		 * @param dist distance
 		 */
-		CDistanceKernel(int32_t cache, float64_t width, CDistance* dist);
+		DistanceKernel(int32_t cache, float64_t width, std::shared_ptr<Distance> dist);
 
 		/** constructor
 		 *
@@ -46,10 +46,10 @@ class CDistanceKernel: public CKernel
 		 * @param width width
 		 * @param dist distance
 		 */
-		CDistanceKernel(
-			CFeatures *l, CFeatures *r, float64_t width, CDistance* dist);
+		DistanceKernel(
+			std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t width, std::shared_ptr<Distance> dist);
 
-		virtual ~CDistanceKernel();
+		virtual ~DistanceKernel();
 
 		/** initialize kernel
 		 *
@@ -57,7 +57,7 @@ class CDistanceKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** register the parameters (serialization support)
 		 *
@@ -118,7 +118,7 @@ class CDistanceKernel: public CKernel
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 		/** distance */
-		CDistance* distance;
+		std::shared_ptr<Distance> distance;
 		/** width */
 		float64_t width;
 };

@@ -33,23 +33,23 @@
 
 using namespace shogun;
 
-CRandomCARTree::CRandomCARTree()
-: CCARTree()
+RandomCARTree::RandomCARTree()
+: CARTree()
 {
 	init();
 }
 
-CRandomCARTree::~CRandomCARTree()
+RandomCARTree::~RandomCARTree()
 {
 }
 
-void CRandomCARTree::set_feature_subset_size(index_t size)
+void RandomCARTree::set_feature_subset_size(index_t size)
 {
 	require(size>0, "Subset size should be greater than 0. {} supplied!",size);
 	m_randsubset_size=size;
 }
 
-index_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+index_t RandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels,
 	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing_final, index_t &count_left,
 	index_t &count_right, index_t subset_size, const SGVector<index_t>& active_indices)
 
@@ -64,11 +64,11 @@ index_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, c
 	require(subset_size<=num_feats, "The Feature subset size(set {}) should be less than"
 	" or equal to the total number of features({} here).",subset_size,num_feats);
 
-	return CCARTree::compute_best_attribute(mat,weights,labels,left,right,is_left_final,num_missing_final,count_left,count_right,subset_size, active_indices);
+	return CARTree::compute_best_attribute(mat,weights,labels,left,right,is_left_final,num_missing_final,count_left,count_right,subset_size, active_indices);
 
 }
 
-void CRandomCARTree::init()
+void RandomCARTree::init()
 {
 	m_randsubset_size=0;
 

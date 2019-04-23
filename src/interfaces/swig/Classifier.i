@@ -12,7 +12,7 @@
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorLinearMachine;
-%feature("director") shogun::CDirectorKernelMachine;
+%feature("director") shogun::DirectorKernelMachine;
 %feature("director:except") {
     if ($error != NULL) {
         throw Swig::DirectorMethodException();
@@ -21,51 +21,45 @@
 #endif
 
 /* Remove C Prefix */
-%rename(Machine) CMachine;
-%rename(KernelMachine) CKernelMachine;
-%rename(GNPPSVM) CGNPPSVM;
+%shared_ptr(shogun::Machine)
+%shared_ptr(shogun::KernelMachine)
+%shared_ptr(shogun::SVM)
+%shared_ptr(shogun::GNPPSVM)
 #ifdef USE_GPL_SHOGUN
-%rename(GPBTSVM) CGPBTSVM;
+%shared_ptr(shogun::GPBTSVM)
 #endif //USE_GPL_SHOGUN
-%rename(LDA) CLDA;
-%rename(LinearMachine) CLinearMachine;
-%rename(OnlineLinearMachine) COnlineLinearMachine;
-%rename(LPBoost) CLPBoost;
-%rename(LPM) CLPM;
-%rename(MPDSVM) CMPDSVM;
-%rename(OnlineSVMSGD) COnlineSVMSGD;
-%rename(Perceptron) CPerceptron;
-%rename(AveragedPerceptron) CAveragedPerceptron;
+%shared_ptr(shogun::LDA)
+%shared_ptr(shogun::LinearMachine)
+%shared_ptr(shogun::OnlineLinearMachine)
+%shared_ptr(shogun::LPBoost)
+%shared_ptr(shogun::LPM)
+%shared_ptr(shogun::MPDSVM)
+%shared_ptr(shogun::OnlineSVMSGD)
+%shared_ptr(shogun::Perceptron)
+%shared_ptr(shogun::AveragedPerceptron)
 #ifndef HAVE_PYTHON
-%rename(SVM) CSVM;
+%shared_ptr(shogun::SVM)
 #endif
 #ifdef USE_GPL_SHOGUN
-%rename(SVMLin) CSVMLin;
-%rename(SVMOcas) CSVMOcas;
+%shared_ptr(shogun::SVMLin)
+%shared_ptr(shogun::SVMOcas)
 #endif //USE_GPL_SHOGUN
-%rename(SVMSGD) CSVMSGD;
-%rename(SGDQN) CSGDQN;
+%shared_ptr(shogun::SVMSGD)
+%shared_ptr(shogun::SGDQN)
 #ifdef USE_GPL_SHOGUN
-%rename(WDSVMOcas) CWDSVMOcas;
+%shared_ptr(shogun::WDSVMOcas)
 #endif //USE_GPL_SHOGUN
-%rename(PluginEstimate) CPluginEstimate;
-%rename(MKL) CMKL;
-%rename(MKLClassification) CMKLClassification;
-%rename(MKLOneClass) CMKLOneClass;
-%rename(VowpalWabbit) CVowpalWabbit;
+%shared_ptr(shogun::PluginEstimate)
+%shared_ptr(shogun::MKL)
+%shared_ptr(shogun::MKLClassification)
+%shared_ptr(shogun::MKLOneClass)
+%shared_ptr(shogun::VowpalWabbit)
 #ifdef USE_GPL_SHOGUN
-%rename(FeatureBlockLogisticRegression) CFeatureBlockLogisticRegression;
+%shared_ptr(shogun::FeatureBlockLogisticRegression)
 #endif //USE_GPL_SHOGUN
-%rename(DirectorLinearMachine) CDirectorLinearMachine;
-%rename(DirectorKernelMachine) CDirectorKernelMachine;
-%rename(BaggingMachine) CBaggingMachine;
-
-/* These functions return new Objects */
-%newobject apply();
-%newobject apply(CFeatures* data);
-%newobject apply_locked(const SGVector<index_t>& indices);
-%newobject classify();
-%newobject classify(CFeatures* data);
+%shared_ptr(shogun::DirectorLinearMachine)
+%shared_ptr(shogun::DirectorKernelMachine)
+%shared_ptr(shogun::BaggingMachine)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>

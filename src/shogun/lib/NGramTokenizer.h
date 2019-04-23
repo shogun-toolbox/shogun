@@ -15,10 +15,10 @@ namespace shogun
 {
 template <class T> class SGVector;
 
-/** @brief The class CNGramTokenizer is used to tokenize
+/** @brief The class NGramTokenizer is used to tokenize
  *  a SGVector<char> into n-grams
  */
-class CNGramTokenizer: public CTokenizer
+class NGramTokenizer: public Tokenizer
 {
 
 public:
@@ -26,16 +26,16 @@ public:
 	 *
 	 * @param ns N-grams' size
 	 */
-    CNGramTokenizer(int32_t ns=3);
+    NGramTokenizer(int32_t ns=3);
 
     /** copy constructor
 	 *
 	 * @param orig the original NGramTokenizer
 	 */
-    CNGramTokenizer(const CNGramTokenizer& orig);
+    NGramTokenizer(const NGramTokenizer& orig);
 
     /** destructor */
-    virtual ~CNGramTokenizer() {}
+    virtual ~NGramTokenizer() {}
 
 	/** Set the char array that requires tokenization
 	 *
@@ -65,7 +65,7 @@ public:
 	 */
     virtual const char* get_name() const;
 
-	virtual CNGramTokenizer* get_copy();
+	virtual NGramTokenizer* get_copy();
 
 private:
 	void init();

@@ -10,14 +10,14 @@
 
 using namespace shogun;
 
-CContingencyTableEvaluation::CContingencyTableEvaluation()
-    : CContingencyTableEvaluation(ACCURACY)
+ContingencyTableEvaluation::ContingencyTableEvaluation()
+    : ContingencyTableEvaluation(ACCURACY)
 {
 }
 
-CContingencyTableEvaluation::CContingencyTableEvaluation(
+ContingencyTableEvaluation::ContingencyTableEvaluation(
     EContingencyTableMeasureType type)
-    : CBinaryClassEvaluation(), m_type(type), m_computed(false)
+    : BinaryClassEvaluation(), m_type(type), m_computed(false)
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_type, "type", "type of measure to evaluate",
@@ -28,7 +28,7 @@ CContingencyTableEvaluation::CContingencyTableEvaluation(
 }
 
 float64_t
-CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+ContingencyTableEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	require(
 	    predicted->get_num_labels() == ground_truth->get_num_labels(),
@@ -41,7 +41,7 @@ CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	auto ground_truth_binary = binary_labels(ground_truth);
 
 	ground_truth->ensure_valid();
-	compute_scores(predicted_binary.get(), ground_truth_binary.get());
+	compute_scores(predicted_binary, ground_truth_binary);
 	switch (m_type)
 	{
 	case ACCURACY:
@@ -71,7 +71,7 @@ CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 }
 
 EEvaluationDirection
-CContingencyTableEvaluation::get_evaluation_direction() const
+ContingencyTableEvaluation::get_evaluation_direction() const
 {
 	switch (m_type)
 	{
@@ -102,8 +102,7 @@ CContingencyTableEvaluation::get_evaluation_direction() const
 	return ED_MINIMIZE;
 }
 
-void CContingencyTableEvaluation::compute_scores(
-    CBinaryLabels* predicted, CBinaryLabels* ground_truth)
+void ContingencyTableEvaluation::compute_scores(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;

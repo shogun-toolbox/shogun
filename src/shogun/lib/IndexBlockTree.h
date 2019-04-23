@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-class CIndexBlock;
+class IndexBlock;
 
 /** @brief class IndexBlockTree used to represent
  * tree guided feature relation.
@@ -24,23 +24,23 @@ class CIndexBlock;
  * Can be constructed via CIndexBlock instance having
  * sub blocks, adjacency matrix or precomputed indices.
  */
-class CIndexBlockTree : public CIndexBlockRelation
+class IndexBlockTree : public IndexBlockRelation
 {
 public:
 
 	/** default constructor */
-	CIndexBlockTree();
+	IndexBlockTree();
 
 	/** constructor from index block
 	 * @param root_block root block of the tree
 	 */
-	CIndexBlockTree(CIndexBlock* root_block);
+	IndexBlockTree(std::shared_ptr<IndexBlock> root_block);
 
 	/** constructor from adjacency matrix
 	 * @param adjacency_matrix adjacency matrix
 	 * @param include_supernode whether to include supernode
 	 */
-	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode);
+	IndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode);
 
 #ifndef SWIG
 	/** constructor from general precomputed indices
@@ -49,7 +49,7 @@ public:
 	 * @param G custom G containing mapping indices
 	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
-	CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
+	IndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
 #endif
 
 	/** constructor from basic precomputed indices
@@ -57,16 +57,16 @@ public:
 	 * and weight ind_t.weight
 	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
-	CIndexBlockTree(SGVector<float64_t> ind_t);
+	IndexBlockTree(SGVector<float64_t> ind_t);
 
 	/** destructor */
-	virtual ~CIndexBlockTree();
+	virtual ~IndexBlockTree();
 
 	/** get root IndexBlock */
-	CIndexBlock* get_root_block() const;
+	std::shared_ptr<IndexBlock> get_root_block() const;
 
 	/** set root block */
-	void set_root_block(CIndexBlock* root_block);
+	void set_root_block(std::shared_ptr<IndexBlock> root_block);
 
 	/** returns information about blocks in
 	 * SLEP "ind" format
@@ -95,7 +95,7 @@ public:
 protected:
 
 	/** root block */
-	CIndexBlock* m_root_block;
+	std::shared_ptr<IndexBlock> m_root_block;
 
 	/** general */
 	bool m_general;

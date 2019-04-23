@@ -17,12 +17,12 @@ template<class T> class SGVector;
 /** @brief Abstract template base class that provides an interface for sampling
  * the trace of a linear operator using an abstract sample method
  */
-class CTraceSampler : public CSGObject
+class TraceSampler : public SGObject
 {
 public:
 	/** default constructor */
-	CTraceSampler()
-	: CSGObject()
+	TraceSampler()
+	: SGObject()
 	{
 		init();
 
@@ -34,8 +34,8 @@ public:
 	 *
 	 * @param dimension the dimension of the sample vectors
 	 */
-	CTraceSampler(index_t dimension)
-	: CSGObject()
+	TraceSampler(index_t dimension)
+	: SGObject()
 	{
 		init();
 
@@ -45,7 +45,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~CTraceSampler()
+	virtual ~TraceSampler()
 	{
 		SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 	}

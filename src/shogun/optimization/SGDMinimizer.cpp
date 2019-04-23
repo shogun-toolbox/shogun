@@ -43,7 +43,7 @@ SGDMinimizer::~SGDMinimizer()
 {
 }
 
-SGDMinimizer::SGDMinimizer(FirstOrderStochasticCostFunction *fun)
+SGDMinimizer::SGDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
 	:FirstOrderStochasticMinimizer(fun)
 {
 	init();
@@ -54,7 +54,7 @@ float64_t SGDMinimizer::minimize()
 	init_minimization();
 
 	SGVector<float64_t> variable_reference=m_fun->obtain_variable_reference();
-	FirstOrderStochasticCostFunction *fun=dynamic_cast<FirstOrderStochasticCostFunction *>(m_fun);
+	auto fun= m_fun->as<FirstOrderStochasticCostFunction>();
 	require(fun,"the cost function must be a stochastic cost function");
 	for(;m_cur_passes<m_num_passes;m_cur_passes++)
 	{

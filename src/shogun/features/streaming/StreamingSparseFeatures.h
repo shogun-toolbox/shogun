@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-class CStreamingFile;
+class StreamingFile;
 
 /** @brief This class implements streaming features with sparse feature vectors.
  * The vector is represented as an SGSparseVector<T>. Each entry is of type
@@ -41,7 +41,7 @@ class CStreamingFile;
  * array to the new dimensionality (if necessary), setting the newer dimensions
  * to zero, and updates the length parameter to equal the new length of the array.
  */
-template <class T> class CStreamingSparseFeatures : public CStreamingDotFeatures
+template <class T> class StreamingSparseFeatures : public StreamingDotFeatures
 {
 public:
 
@@ -52,7 +52,7 @@ public:
 	 * CStreamingFile::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
-	CStreamingSparseFeatures();
+	StreamingSparseFeatures();
 
 	/**
 	 * Constructor taking args.
@@ -62,7 +62,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingSparseFeatures(CStreamingFile* file,
+	StreamingSparseFeatures(std::shared_ptr<StreamingFile> file,
 				 bool is_labelled,
 				 int32_t size);
 
@@ -71,7 +71,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	virtual ~CStreamingSparseFeatures();
+	virtual ~StreamingSparseFeatures();
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -182,14 +182,14 @@ public:
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
 	 *
-	 * Currently only works if it is a CStreamingSparseFeatures object.
+	 * Currently only works if it is a StreamingSparseFeatures object.
 	 * It takes the dot product of the current_vectors of both objects.
 	 *
 	 * @param df CStreamingDotFeatures object.
 	 *
 	 * @return Dot product.
 	 */
-	virtual float32_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures >df);
 
 	/** compute the dot product between two sparse feature vectors
 	 * alpha * vec^T * vec
@@ -333,11 +333,11 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	virtual void init(std::shared_ptr<StreamingFile >file, bool is_labelled, int32_t size);
 
 protected:
 	/// The parser object, which reads from input and returns parsed example objects.
-	CInputParser< SGSparseVectorEntry<T> > parser;
+	InputParser< SGSparseVectorEntry<T> > parser;
 
 	/// The current example's feature vector as an SGVector<T>
 	SGSparseVector<T> current_sgvector;

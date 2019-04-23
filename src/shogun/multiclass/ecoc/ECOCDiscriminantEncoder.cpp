@@ -8,25 +8,24 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace std;
 using namespace shogun;
 
-CECOCDiscriminantEncoder::CECOCDiscriminantEncoder()
+ECOCDiscriminantEncoder::ECOCDiscriminantEncoder()
 {
     init();
 }
 
-CECOCDiscriminantEncoder::~CECOCDiscriminantEncoder()
+ECOCDiscriminantEncoder::~ECOCDiscriminantEncoder()
 {
-    SG_UNREF(m_features);
-    SG_UNREF(m_labels);
+
+
 }
 
-void CECOCDiscriminantEncoder::init()
+void ECOCDiscriminantEncoder::init()
 {
     // default parameters
     m_iterations = 25;
@@ -43,26 +42,22 @@ void CECOCDiscriminantEncoder::init()
     SG_ADD(&m_features, "features", "Features")
 }
 
-void CECOCDiscriminantEncoder::set_features(CFeatures *features)
+void ECOCDiscriminantEncoder::set_features(std::shared_ptr<Features >features)
 {
-    SG_REF(features);
-    SG_UNREF(m_features);
-    m_features = features;
+    m_features = features->as<DenseFeatures<float64_t>>();
 }
 
-void CECOCDiscriminantEncoder::set_labels(CLabels *labels)
+void ECOCDiscriminantEncoder::set_labels(std::shared_ptr<Labels >labels)
 {
-    SG_REF(labels);
-    SG_UNREF(m_labels);
-    m_labels = labels;
+    m_labels = labels->as<MulticlassLabels>();
 }
 
-SGMatrix<int32_t> CECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
+SGMatrix<int32_t> ECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
 {
     if (!m_features || !m_labels)
         error("Need features and labels to learn the codebook");
 
-    m_feats = m_features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+    m_feats = m_features->as<DenseFeatures<float64_t>>()->get_feature_matrix();
     m_codebook = SGMatrix<int32_t>(m_num_trees * (num_classes-1), num_classes);
     m_codebook.zero();
     m_code_idx = 0;
@@ -80,7 +75,7 @@ SGMatrix<int32_t> CECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
     return m_codebook;
 }
 
-void CECOCDiscriminantEncoder::binary_partition(const vector<int32_t>& classes)
+void ECOCDiscriminantEncoder::binary_partition(const vector<int32_t>& classes)
 {
     if (classes.size() > 2)
     {
@@ -107,16 +102,16 @@ void CECOCDiscriminantEncoder::binary_partition(const vector<int32_t>& classes)
     }
 }
 
-void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>& part2)
+void ECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>& part2)
 {
     std::set<int32_t> idata1;
     std::set<int32_t> idata2;
 
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
-        if (find(part1.begin(), part1.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part1.end())
+        if (find(part1.begin(), part1.end(), (m_labels)->get_int_label(i)) != part1.end())
             idata1.insert(i);
-        else if (find(part2.begin(), part2.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part2.end())
+        else if (find(part2.begin(), part2.end(), (m_labels)->get_int_label(i)) != part2.end())
             idata2.insert(i);
     }
 
@@ -130,7 +125,7 @@ void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>&
     }
 }
 
-float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>& part1, std::set<int32_t>& idata1,
+float64_t ECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>& part1, std::set<int32_t>& idata1,
         vector<int32_t>& part2, std::set<int32_t>& idata2)
 {
     if (part1.size() <= 1)
@@ -143,7 +138,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     // move clas from part1 to part2
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
-        if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
+        if ((m_labels)->get_int_label(i) == clas)
         {
             idata1.erase(i);
             idata2.insert(i);
@@ -162,7 +157,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
         // revert changes
         for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
         {
-            if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
+            if ((m_labels)->get_int_label(i) == clas)
             {
                 idata2.erase(i);
                 idata1.insert(i);
@@ -173,7 +168,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
 
 }
 
-float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, const std::set<int32_t>& idata2)
+float64_t ECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, const std::set<int32_t>& idata2)
 {
     float64_t MI = 0;
 
@@ -205,7 +200,7 @@ float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, 
 	return MI;
 }
 
-void CECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val,
+void ECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val,
         const std::set<int32_t>& idata, int32_t *hist)
 {
     // hist of 0:0.1:1

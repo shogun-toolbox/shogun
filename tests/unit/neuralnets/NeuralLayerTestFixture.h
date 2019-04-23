@@ -71,7 +71,7 @@ public:
 	{
 		auto data_batch = create_rand_matrix(
 		    num_features, num_samples, lower_bound, upper_bound, prng);
-		auto input_layer = new CNeuralInputLayer(data_batch.num_rows);
+		auto input_layer = std::make_shared<NeuralInputLayer>(data_batch.num_rows);
 		input_layer->set_batch_size(data_batch.num_cols);
 		input_layer->compute_activations(data_batch);
 		if (add_to_layers)
@@ -96,29 +96,29 @@ public:
 	 * @return: The initialized parameters
 	 */
 	auto init_linear_layer(
-	    CNeuralLinearLayer* layer, const SGVector<int32_t>& input_indices,
+	    std::shared_ptr<NeuralLinearLayer> layer, const SGVector<int32_t>& input_indices,
 	    int32_t batch_size, double sigma, bool add_to_layers) const
 	{
 		if (add_to_layers)
 		{
 			m_layers->append_element(layer);
 		}
-		layer->initialize_neural_layer(m_layers.get(), input_indices);
+		layer->initialize_neural_layer(m_layers, input_indices);
 		SGVector<float64_t> params(layer->get_num_parameters());
 		SGVector<bool> param_regularizable(layer->get_num_parameters());
 		layer->initialize_parameters(params, param_regularizable, sigma);
 		layer->set_batch_size(batch_size);
-		layer->compute_activations(params, m_layers.get());
+		layer->compute_activations(params, m_layers);
 		return params;
 	}
 
 	// dynamic list of layers
-	std::unique_ptr<CDynamicObjectArray> m_layers;
+	std::shared_ptr<DynamicObjectArray> m_layers;
 
 protected:
 	void SetUp() final
 	{
-		m_layers = std::make_unique<CDynamicObjectArray>();
+		m_layers = std::make_shared<DynamicObjectArray>();
 	}
 };
 #endif // NEURAL_LAYER_TEST_FIXTURE_H

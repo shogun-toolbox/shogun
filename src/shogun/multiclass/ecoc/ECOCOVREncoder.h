@@ -15,14 +15,14 @@ namespace shogun
 {
 
 /** One-vs-Rest Encoder */
-class CECOCOVREncoder: public CECOCEncoder
+class ECOCOVREncoder: public ECOCEncoder
 {
 public:
     /** constructor */
-    CECOCOVREncoder() {}
+    ECOCOVREncoder() {}
 
     /** destructor */
-    virtual ~CECOCOVREncoder() {}
+    virtual ~ECOCOVREncoder() {}
 
     /** get name */
     virtual const char* get_name() const

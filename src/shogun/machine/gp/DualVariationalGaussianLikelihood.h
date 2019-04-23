@@ -59,13 +59,13 @@ namespace shogun
  * In this setting, \f$\alpha\f$ and \f$\lambda\f$ are called dual parameters for \f$\mu\f$ and \f$\sigma^2\f$ respectively.
  *
  */
-class CDualVariationalGaussianLikelihood : public CVariationalGaussianLikelihood
+class DualVariationalGaussianLikelihood : public VariationalGaussianLikelihood
 {
 public:
 	/** default constructor */
-	CDualVariationalGaussianLikelihood();
+	DualVariationalGaussianLikelihood();
 
-	virtual ~CDualVariationalGaussianLikelihood();
+	virtual ~DualVariationalGaussianLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -118,7 +118,7 @@ public:
 	 *
 	 */
 	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab);
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
 
 	/** check whether the dual parameters are valid or not.
 	 *
@@ -146,7 +146,7 @@ public:
 	 * Note that dual parameter (alpha) for the variational variance
 	 * is implicitly set based on lambda
 	 */
-	virtual void set_dual_parameters(SGVector<float64_t> the_lambda,  const CLabels* lab);
+	virtual void set_dual_parameters(SGVector<float64_t> the_lambda,  std::shared_ptr<const Labels> lab);
 
 	/** get the dual parameter (alpha) for variational mu
 	 *
@@ -245,7 +245,7 @@ protected:
 	/** this method is used to dynamic-cast the likelihood model, m_likelihood,
 	 * to variational likelihood model.
 	 */
-	virtual CVariationalGaussianLikelihood* get_variational_likelihood() const;
+	virtual std::shared_ptr<VariationalGaussianLikelihood> get_variational_likelihood() const;
 private:
 	/** initialize private data members for this class */
 	void init();

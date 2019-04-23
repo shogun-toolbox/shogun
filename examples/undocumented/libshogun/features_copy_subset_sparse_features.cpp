@@ -33,7 +33,7 @@ void test()
 			data.sparse_matrix[i].features[j].feat_index=3*j;
 		}
 	}
-	CSparseFeatures<float64_t>* f=new CSparseFeatures<float64_t>(data);
+	auto f=std::make_shared<SparseFeatures<float64_t>>(data);
 
 	/* display sparse matrix */
 	SG_SPRINT("original data\n");
@@ -77,8 +77,8 @@ void test()
 			"indices that are to be copied");
 
 	/* copy a subset of features */
-	CSparseFeatures<float64_t>* subset_copy=
-			(CSparseFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
+	auto subset_copy=
+			f->copy_subset(feature_copy_subset)->as<SparseFeatures<float64_t>>();
 
 	/* print copied subset */
 	SG_SPRINT("copied features:\n");
@@ -113,8 +113,6 @@ void test()
 		subset_copy->free_sparse_feature_vector(i);
 	}
 
-	SG_UNREF(f);
-	SG_UNREF(subset_copy);
 }
 int main(int argc, char **argv)
 {

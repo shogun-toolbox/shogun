@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Saurabh Mahindre, Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang,
  *          Chiyuan Zhang, Fernando Iglesias, Sergey Lisitsyn
  */
 
@@ -18,9 +18,9 @@
 
 namespace shogun
 {
-	class CFile;
-	class CRegressionLabels;
-	class CDenseLabels;
+	class File;
+	class RegressionLabels;
+	class DenseLabels;
 
 /** @brief Real Labels are real-valued labels
  *
@@ -28,29 +28,29 @@ namespace shogun
  *
  * valid values for labels are all real-valued numbers.
  */
-class CRegressionLabels : public CDenseLabels
+class RegressionLabels : public DenseLabels
 {
 	public:
 		/** default constructor */
-		CRegressionLabels();
+		RegressionLabels();
 
 		/** constructor
 		 *
 		 * @param num_labels number of labels
 		 */
-		CRegressionLabels(int32_t num_labels);
+		RegressionLabels(int32_t num_labels);
 
 		/** constructor
 		 *
 		 * @param src labels to set
 		 */
-		CRegressionLabels(const SGVector<float64_t> src);
+		RegressionLabels(const SGVector<float64_t> src);
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CRegressionLabels(CFile* loader);
+		RegressionLabels(std::shared_ptr<File> loader);
 
 		/** get label type
 		 *
@@ -62,17 +62,17 @@ class CRegressionLabels : public CDenseLabels
 		virtual const char* get_name() const { return "RegressionLabels"; }
 
 		/** shallow-copy of the labels object
-		 * @see CLabels::duplicate
+		 * @see Labels::duplicate
 		 */
-		virtual CLabels* duplicate() const;
+		virtual std::shared_ptr<Labels> duplicate() const;
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CLabels* shallow_subset_copy();
+		virtual std::shared_ptr<Labels> shallow_subset_copy();
 #endif
 };
 
 #ifndef SWIG
-Some<CRegressionLabels> regression_labels(CLabels* orig);
+std::shared_ptr<RegressionLabels> regression_labels(std::shared_ptr<Labels> orig);
 #endif // SWIG
 }
 #endif

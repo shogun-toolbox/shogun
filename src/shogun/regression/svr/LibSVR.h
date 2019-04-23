@@ -64,14 +64,14 @@ enum LIBSVR_SOLVER_TYPE
 	LIBSVR_NU_SVR = 2
 };
 #endif
-class CLibSVR : public CSVM
+class LibSVR : public SVM
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		/** default constructor, creates a EPISOLON-SVR */
-		CLibSVR();
+		LibSVR();
 
 		/** constructor
 		 *
@@ -81,10 +81,10 @@ class CLibSVR : public CSVM
 		 * @param lab labels
 		 * @param st solver type to use, EPSILON-SVR or NU-SVR
 		 */
-		CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+		LibSVR(float64_t C, float64_t svr_param, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab,
 				LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR);
 
-		virtual ~CLibSVR();
+		virtual ~LibSVR();
 
 		/** get classifier type
 		 *
@@ -107,7 +107,7 @@ class CLibSVR : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 	protected:
 		/** solver type */
 		LIBSVR_SOLVER_TYPE solver_type;

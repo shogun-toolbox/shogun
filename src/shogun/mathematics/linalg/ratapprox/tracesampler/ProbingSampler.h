@@ -43,17 +43,17 @@ enum EColoringVariant
 };
 
 template<class T> class SGVector;
-template<class T> class CSparseMatrixOperator;
+template<class T> class SparseMatrixOperator;
 
 /** @brief Class that provides a sample method for probing vector using
  * greedy graph coloring. It depends on an external library ColPack (used
  * under GPL2+) for graph coloring related things.
  */
-class CProbingSampler : public RandomMixin<CTraceSampler>
+class ProbingSampler : public RandomMixin<TraceSampler>
 {
 public:
 	/** default constructor */
-	CProbingSampler();
+	ProbingSampler();
 
 	/**
 	 * constructor
@@ -64,12 +64,12 @@ public:
 	 * @param ordering the ordering variant
 	 * @param coloring the coloring variant
 	 */
-	CProbingSampler(CSparseMatrixOperator<float64_t>* matrix_operator,
+	ProbingSampler(std::shared_ptr<SparseMatrixOperator<float64_t>> matrix_operator,
 		int64_t power=1, EOrderingVariant ordering=NATURAL,
 		EColoringVariant coloring=DISTANCE_TWO);
 
 	/** destructor */
-	virtual ~CProbingSampler();
+	virtual ~ProbingSampler();
 
 	/**
 	 * set the coloring vector
@@ -99,7 +99,7 @@ public:
 
 private:
 	/** the matrix operator */
-	CSparseMatrixOperator<float64_t>* m_matrix_operator;
+	std::shared_ptr<SparseMatrixOperator<float64_t>> m_matrix_operator;
 
 	/** power of the matrix */
 	int64_t m_power;

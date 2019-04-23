@@ -47,11 +47,11 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /** Class of the probability density function of the normal distribution */
-class CNormalPDF : public CFunction
+class NormalPDF : public Function
 {
 public:
 	/** default constructor */
-	CNormalPDF()
+	NormalPDF()
 	{
 		m_mu=0.0;
 		m_sigma=1.0;
@@ -62,7 +62,7 @@ public:
 	 * @param mu mean
 	 * @param sigma standard deviation
 	 */
-	CNormalPDF(float64_t mu, float64_t sigma)
+	NormalPDF(float64_t mu, float64_t sigma)
 	{
 		m_mu=mu;
 		m_sigma=sigma;
@@ -88,8 +88,8 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0 / (std::sqrt(2 * CMath::PI) * m_sigma)) *
-			   std::exp(-CMath::sq(x - m_mu) / (2.0 * CMath::sq(m_sigma)));
+		return (1.0 / (std::sqrt(2 * Math::PI) * m_sigma)) *
+			   std::exp(-Math::sq(x - m_mu) / (2.0 * Math::sq(m_sigma)));
 	}
 
 private:
@@ -101,11 +101,11 @@ private:
 };
 
 /** Class of the sigmoid function */
-class CSigmoidFunction : public CFunction
+class SigmoidFunction : public Function
 {
 public:
 	/** default constructor */
-	CSigmoidFunction()
+	SigmoidFunction()
 	{
 		m_a=0.0;
 	}
@@ -114,7 +114,7 @@ public:
 	 *
 	 * @param a slope parameter
 	 */
-	CSigmoidFunction(float64_t a)
+	SigmoidFunction(float64_t a)
 	{
 		m_a=a;
 	}
@@ -142,7 +142,7 @@ private:
 };
 
 /** Class of the function, which is a product of two given functions */
-class CProductFunction : public CFunction
+class ProductFunction : public Function
 {
 public:
 	/** constructor
@@ -150,18 +150,18 @@ public:
 	 * @param f f(x)
 	 * @param g g(x)
 	 */
-	CProductFunction(CFunction* f, CFunction* g)
+	ProductFunction(std::shared_ptr<Function> f, std::shared_ptr<Function> g)
 	{
-		SG_REF(f);
-		SG_REF(g);
+
+
 		m_f=f;
 		m_g=g;
 	}
 
-	virtual ~CProductFunction()
+	virtual ~ProductFunction()
 	{
-		SG_UNREF(m_f);
-		SG_UNREF(m_g);
+
+
 	}
 
 	/** returns value of the function at given point
@@ -177,19 +177,19 @@ public:
 
 private:
 	/** function f(x) */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 	/**	function g(x) */
-	CFunction* m_g;
+	std::shared_ptr<Function> m_g;
 };
 
 /** Class of the f(x)=x */
-class CLinearFunction : public CFunction
+class LinearFunction : public Function
 {
 public:
 	/** default constructor */
-	CLinearFunction() { }
+	LinearFunction() { }
 
-	virtual ~CLinearFunction() { }
+	virtual ~LinearFunction() { }
 
 	/** returns value of the function at given point
 	 *
@@ -204,13 +204,13 @@ public:
 };
 
 /** Class of the f(x)=x^2 */
-class CQuadraticFunction : public CFunction
+class QuadraticFunction : public Function
 {
 public:
 	/** default constructor */
-	CQuadraticFunction() { }
+	QuadraticFunction() { }
 
-	virtual ~CQuadraticFunction() { }
+	virtual ~QuadraticFunction() { }
 
 	/** returns value of the function at given point
 	 *
@@ -220,22 +220,22 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return CMath::sq(x);
+		return Math::sq(x);
 	}
 };
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CLogitLikelihood::CLogitLikelihood() : CLikelihoodModel()
+LogitLikelihood::LogitLikelihood() : LikelihoodModel()
 {
 }
 
-CLogitLikelihood::~CLogitLikelihood()
+LogitLikelihood::~LogitLikelihood()
 {
 }
 
-SGVector<float64_t> CLogitLikelihood::get_predictive_means(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> LogitLikelihood::get_predictive_means(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -252,8 +252,8 @@ SGVector<float64_t> CLogitLikelihood::get_predictive_means(
 	return r;
 }
 
-SGVector<float64_t> CLogitLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> LogitLikelihood::get_predictive_variances(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -270,17 +270,17 @@ SGVector<float64_t> CLogitLikelihood::get_predictive_variances(
 	return r;
 }
 
-SGVector<float64_t> CLogitLikelihood::get_log_probability_f(const CLabels* lab,
+SGVector<float64_t> LogitLikelihood::get_log_probability_f(std::shared_ptr<const Labels> lab,
 		SGVector<float64_t> func) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -294,18 +294,18 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_f(const CLabels* lab,
 	return r;
 }
 
-SGVector<float64_t> CLogitLikelihood::get_log_probability_derivative_f(
-		const CLabels* lab, SGVector<float64_t> func, index_t i) const
+SGVector<float64_t> LogitLikelihood::get_log_probability_derivative_f(
+		std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 	require(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -341,8 +341,8 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_derivative_f(
 	return r;
 }
 
-SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> LogitLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> y;
 
@@ -353,9 +353,8 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 				"variances ({}) and number of labels ({}) should be the same",
 				mu.vlen, s2.vlen, lab->get_num_labels());
 		require(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels");
-
-		y=((CBinaryLabels*)lab)->get_labels();
+				"Labels must be type of BinaryLabels");
+		y=lab->as<BinaryLabels>()->get_labels();
 	}
 	else
 	{
@@ -368,14 +367,14 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 	}
 
 	// create an object of normal pdf function
-	CNormalPDF* f=new CNormalPDF();
+	auto f=std::make_shared<NormalPDF>();
 
 	// create an object of sigmoid function
-	CSigmoidFunction* g=new CSigmoidFunction();
+	auto g=std::make_shared<SigmoidFunction>();
 
 	// create an object of product of sigmoid and normal pdf functions
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
+	auto h=std::make_shared<ProductFunction>(f, g);
+
 
 	// compute probabilities using numerical integration
 	SGVector<float64_t> r(mu.vlen);
@@ -391,14 +390,14 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 
 		// evaluate integral on (-inf, inf)
 #ifdef USE_GPL_SHOGUN
-		r[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+		r[i]=Integration::integrate_quadgk(h, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(h, mu[i], Math::INFTY);
 #else
 		gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 	}
 
-	SG_UNREF(h);
+
 
 	for (index_t i=0; i<r.vlen; i++)
 		r[i] = std::log(r[i]);
@@ -406,8 +405,8 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 	return r;
 }
 
-float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+float64_t LogitLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
@@ -417,44 +416,44 @@ float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 			mu.vlen, s2.vlen, lab->get_num_labels());
 	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 
 	// create an object of f(x)=N(x|mu,sigma^2)
-	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	auto f = std::make_shared<NormalPDF>(mu[i], std::sqrt(s2[i]));
 
 	// create an object of g(x)=sigmoid(x)
-	CSigmoidFunction* g=new CSigmoidFunction(y[i]);
+	auto g=std::make_shared<SigmoidFunction>(y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma^2)*sigmoid(x)
-	CProductFunction* h=new CProductFunction(f, g);
+	auto h=std::make_shared<ProductFunction>(f, g);
 
 	// create an object of l(x)=x
-	CLinearFunction* l=new CLinearFunction();
+	auto l=std::make_shared<LinearFunction>();
 
 	// create an object of k(x)=x*N(x|mu,sigma^2)*sigmoid(x)
-	CProductFunction* k=new CProductFunction(l, h);
-	SG_REF(k);
+	auto k=std::make_shared<ProductFunction>(l, h);
+
 	float64_t Ex=0;
 #ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
-	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
-		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+	float64_t Z=Integration::integrate_quadgk(h, -Math::INFTY, mu[i])+
+		Integration::integrate_quadgk(h, mu[i], Math::INFTY);
 
 	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
-	Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
+	Ex=(Integration::integrate_quadgk(k, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(k, mu[i], Math::INFTY))/Z;
 #else
 	gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
-	SG_UNREF(k);
+
 
 	return Ex;
 }
 
-float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+float64_t LogitLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
@@ -464,55 +463,55 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 			mu.vlen, s2.vlen, lab->get_num_labels());
 	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 
 	// create an object of f(x)=N(x|mu,sigma^2)
-	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	auto f = std::make_shared<NormalPDF>(mu[i], std::sqrt(s2[i]));
 
 	// create an object of g(x)=sigmoid(a*x)
-	CSigmoidFunction* g=new CSigmoidFunction(y[i]);
+	auto g=std::make_shared<SigmoidFunction>(y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma^2)*sigmoid(a*x)
-	CProductFunction* h=new CProductFunction(f, g);
+	auto h=std::make_shared<ProductFunction>(f, g);
 
 	// create an object of l(x)=x
-	CLinearFunction* l=new CLinearFunction();
+	auto l=std::make_shared<LinearFunction>();
 
 	// create an object of k(x)=x*N(x|mu,sigma^2)*sigmoid(a*x)
-	CProductFunction* k=new CProductFunction(l, h);
-	SG_REF(k);
+	auto k=std::make_shared<ProductFunction>(l, h);
+
 
 	// create an object of q(x)=x^2
-	CQuadraticFunction* q=new CQuadraticFunction();
+	auto q=std::make_shared<QuadraticFunction>();
 
 	// create an object of p(x)=x^2*N(x|mu,sigma^2)*sigmoid(x)
-	CProductFunction* p=new CProductFunction(q, h);
-	SG_REF(p);
+	auto p=std::make_shared<ProductFunction>(q, h);
+
 
 	float64_t Ex=0;
 	float64_t Ex2=0;
 #ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
-	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
-		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+	float64_t Z=Integration::integrate_quadgk(h, -Math::INFTY, mu[i])+
+		Integration::integrate_quadgk(h, mu[i], Math::INFTY);
 
 	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
-	Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
+	Ex=(Integration::integrate_quadgk(k, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(k, mu[i], Math::INFTY))/Z;
 
 	// compute E[x^2] = Z^-1 * \int x^2*N(x|mu,sigma)*sigmoid(a*x)dx
-	Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(p, mu[i], CMath::INFTY))/Z;
+	Ex2=(Integration::integrate_quadgk(p, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(p, mu[i], Math::INFTY))/Z;
 #else
 	gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
-	SG_UNREF(k);
-	SG_UNREF(p);
+
+
 
 	// return 2nd moment: Var[x]=E[x^2]-E[x]^2
-	return Ex2-CMath::sq(Ex);;
+	return Ex2-Math::sq(Ex);;
 }
 }
 

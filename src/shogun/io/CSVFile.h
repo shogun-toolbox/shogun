@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Fernando Iglesias, Sergey Lisitsyn, 
- *          Heiko Strathmann, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
+ * Authors: Evgeniy Andreev, Fernando Iglesias, Sergey Lisitsyn,
+ *          Heiko Strathmann, Yuyu Zhang, Viktor Gal, Thoralf Klein,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -16,27 +16,27 @@
 
 namespace shogun
 {
-class CDelimiterTokenizer;
-class CLineReader;
-class CParser;
+class DelimiterTokenizer;
+class LineReader;
+class Parser;
 template <class ST> class SGVector;
 template <class T> class SGSparseVector;
 
 /** @brief Class CSVFile used to read data from comma-separated values (CSV)
  * files. See http://en.wikipedia.org/wiki/Comma-separated_values.
  */
-class CCSVFile : public CFile
+class CSVFile : public File
 {
 public:
 	/** default constructor */
-	CCSVFile();
+	CSVFile();
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CCSVFile(FILE* f, const char* name=NULL);
+	CSVFile(FILE* f, const char* name=NULL);
 
 #ifdef HAVE_FDOPEN
 	/** constructor
@@ -45,7 +45,7 @@ public:
 	 * @param mode mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CCSVFile(int fd, const char* mode, const char* name=NULL);
+	CSVFile(int fd, const char* mode, const char* name=NULL);
 #endif
 
 	/** constructor
@@ -54,10 +54,10 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CCSVFile(const char* fname, char rw='r', const char* name=NULL);
+	CSVFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
-	virtual ~CCSVFile();
+	virtual ~CSVFile();
 
 	/** set order for data in file
 	 *
@@ -387,16 +387,16 @@ private:
 
 private:
 	/** object for reading lines from file */
-	CLineReader* m_line_reader;
+	std::shared_ptr<LineReader> m_line_reader;
 
 	/** parser of lines */
-	CParser* m_parser;
+	std::shared_ptr<Parser> m_parser;
 
 	/** tokenizer for line_reader */
-	CDelimiterTokenizer* m_line_tokenizer;
+	std::shared_ptr<DelimiterTokenizer> m_line_tokenizer;
 
 	/** tokenizer for parser */
-	CDelimiterTokenizer* m_tokenizer;
+	std::shared_ptr<DelimiterTokenizer> m_tokenizer;
 
 	/** data order */
 	bool is_data_transposed;

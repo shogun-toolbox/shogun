@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-CSNPFeatures::CSNPFeatures()
+SNPFeatures::SNPFeatures()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -27,33 +27,32 @@ CSNPFeatures::CSNPFeatures()
 	m_str_maj = NULL;
 }
 
-CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures(),
+SNPFeatures::SNPFeatures(std::shared_ptr<StringFeatures<uint8_t>> str) : DotFeatures(),
 	m_str_min(NULL), m_str_maj(NULL)
 {
 	ASSERT(str)
 	ASSERT(str->have_same_length())
-	SG_REF(str);
+
 
 	strings=str;
 	string_length=str->get_max_vector_length();
 	ASSERT((string_length & 1) == 0) // length divisible by 2
 	w_dim=3*string_length/2;
 	num_strings=str->get_num_vectors();
-	CAlphabet* alpha=str->get_alphabet();
+	auto alpha=str->get_alphabet();
 	ASSERT(alpha->get_alphabet()==SNP)
-	SG_UNREF(alpha);
 
 	obtain_base_strings();
 	set_normalization_const();
 
 }
 
-CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
-	: CDotFeatures(orig), strings(orig.strings),
+SNPFeatures::SNPFeatures(const SNPFeatures& orig)
+	: DotFeatures(orig), strings(orig.strings),
 	normalization_const(orig.normalization_const),
 	m_str_min(NULL), m_str_maj(NULL)
 {
-	SG_REF(strings);
+
 
 	if (strings)
 	{
@@ -72,67 +71,67 @@ CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
 	obtain_base_strings();
 }
 
-CSNPFeatures::~CSNPFeatures()
+SNPFeatures::~SNPFeatures()
 {
-	SG_UNREF(strings);
+
 }
 
-int32_t CSNPFeatures::get_dim_feature_space() const
+int32_t SNPFeatures::get_dim_feature_space() const
 {
 	return w_dim;
 }
 
-int32_t CSNPFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t SNPFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return w_dim/3;
 }
 
-EFeatureType CSNPFeatures::get_feature_type() const
+EFeatureType SNPFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CSNPFeatures::get_feature_class() const
+EFeatureClass SNPFeatures::get_feature_class() const
 {
 	return C_WD;
 }
 
-int32_t CSNPFeatures::get_num_vectors() const
+int32_t SNPFeatures::get_num_vectors() const
 {
 	return num_strings;
 }
 
-float64_t CSNPFeatures::get_normalization_const()
+float64_t SNPFeatures::get_normalization_const()
 {
 	return normalization_const;
 }
 
-void CSNPFeatures::set_minor_base_string(const char* str)
+void SNPFeatures::set_minor_base_string(const char* str)
 {
 	m_str_min=(uint8_t*) get_strdup(str);
 }
 
-void CSNPFeatures::set_major_base_string(const char* str)
+void SNPFeatures::set_major_base_string(const char* str)
 {
 	m_str_maj=(uint8_t*) get_strdup(str);
 }
 
-char* CSNPFeatures::get_minor_base_string()
+char* SNPFeatures::get_minor_base_string()
 {
 	return (char*) m_str_min;
 }
 
-char* CSNPFeatures::get_major_base_string()
+char* SNPFeatures::get_major_base_string()
 {
 	return (char*) m_str_maj;
 }
 
-float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) const
+float64_t SNPFeatures::dot(int32_t idx_a, std::shared_ptr<DotFeatures> df, int32_t idx_b) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CSNPFeatures* sf=(CSNPFeatures*) df;
+	auto sf=std::static_pointer_cast<SNPFeatures>(df);
 
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
@@ -186,7 +185,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) cons
 }
 
 float64_t
-CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
+SNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	require(
 	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}",
@@ -226,7 +225,7 @@ CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 	return sum/normalization_const;
 }
 
-void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void SNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
 		error("Dimensions don't match, vec2_dim={}, w_dim={}", vec2_len, w_dim);
@@ -237,7 +236,7 @@ void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t
 	int32_t offs=0;
 
 	if (abs_val)
-		alpha=CMath::abs(alpha);
+		alpha=Math::abs(alpha);
 
 	for (int32_t i=0; i<len; i+=2)
 	{
@@ -265,13 +264,13 @@ void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
-void CSNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
+void SNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
 {
 	for (int32_t i=0; i<num_strings; i++)
 	{
 		int32_t len;
 		bool free_vec;
-		uint8_t* vec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(i, len, free_vec);
+		uint8_t* vec = strings->get_feature_vector(i, len, free_vec);
 		ASSERT(string_length==len)
 
 		for (int32_t j=0; j<len; j++)
@@ -286,11 +285,11 @@ void CSNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
 				major[j]=vec[j];
 		}
 
-		((CStringFeatures<uint8_t>*) strings)->free_feature_vector(vec, i, free_vec);
+		strings->free_feature_vector(vec, i, free_vec);
 	}
 }
 
-void CSNPFeatures::obtain_base_strings(CSNPFeatures* snp)
+void SNPFeatures::obtain_base_strings(std::shared_ptr<SNPFeatures> snp)
 {
 	SG_FREE(m_str_min);
 	SG_FREE(m_str_maj);
@@ -313,11 +312,11 @@ void CSNPFeatures::obtain_base_strings(CSNPFeatures* snp)
             m_str_maj[j]='0';
 
 		if (m_str_min[j]>m_str_maj[j])
-			CMath::swap(m_str_min[j], m_str_maj[j]);
+			Math::swap(m_str_min[j], m_str_maj[j]);
 	}
 }
 
-void CSNPFeatures::set_normalization_const(float64_t n)
+void SNPFeatures::set_normalization_const(float64_t n)
 {
 	if (n==0)
 	{
@@ -330,26 +329,26 @@ void CSNPFeatures::set_normalization_const(float64_t n)
 	SG_DEBUG("normalization_const:{}", normalization_const)
 }
 
-void* CSNPFeatures::get_feature_iterator(int32_t vector_index)
+void* SNPFeatures::get_feature_iterator(int32_t vector_index)
 {
 	return NULL;
 }
 
-bool CSNPFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool SNPFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	return false;
 }
 
-void CSNPFeatures::free_feature_iterator(void* iterator)
+void SNPFeatures::free_feature_iterator(void* iterator)
 {
 }
 
-CFeatures* CSNPFeatures::duplicate() const
+std::shared_ptr<Features> SNPFeatures::duplicate() const
 {
-	return new CSNPFeatures(*this);
+	return std::make_shared<SNPFeatures>(*this);
 }
 
-SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
+SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 {
 	int32_t nsym=3;
 	float64_t* h= SG_CALLOC(float64_t, size_t(nsym)*string_length/2);
@@ -406,7 +405,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 	return SGMatrix<float64_t>(h, nsym, string_length/2);
 }
 
-SGMatrix<float64_t> CSNPFeatures::get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg)
+SGMatrix<float64_t> SNPFeatures::get_2x3_table(std::shared_ptr<SNPFeatures> pos, std::shared_ptr<SNPFeatures> neg)
 {
 
 	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length())

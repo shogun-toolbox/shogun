@@ -44,7 +44,7 @@
 namespace shogun
 {
 
-class CMulticlassLabels;
+class MulticlassLabels;
 
 	/** Matrix decomposition method for Fisher LDA */
 	enum EFLDAMethod
@@ -93,7 +93,7 @@ class CMulticlassLabels;
 	 * based on whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses
 	 * ::CLASSIC_FLDA)
 	 */
-	class CFisherLDA : public CDensePreprocessor<float64_t>
+	class FisherLDA : public DensePreprocessor<float64_t>
 	{
 	public:
 		/** standard constructor
@@ -111,21 +111,21 @@ class CMulticlassLabels;
 		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
 		 * [default = BDC-SVD]
 		 */
-		CFisherLDA(
+		FisherLDA(
 		    int32_t num_dimensions = 0, EFLDAMethod method = AUTO_FLDA,
 		    float64_t thresh = 0.01, float64_t gamma = 0, bool bdc_svd = true);
 
 		/** destructor */
-		virtual ~CFisherLDA();
+		virtual ~FisherLDA();
 
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<Features> features);
 
 		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
 		 */
-		virtual void fit(CFeatures* features, CLabels* labels);
+		virtual void fit(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels);
 
 		/** cleanup */
 		virtual void cleanup();
@@ -178,7 +178,7 @@ class CMulticlassLabels;
 		 * @param labels multiclass labels.
 		 */
 		void solver_canvar(
-		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
+		    std::shared_ptr<DenseFeatures<float64_t>> features, std::shared_ptr<MulticlassLabels> labels);
 
 		/**
 		 * Train the preprocessor with the classic method.
@@ -186,7 +186,7 @@ class CMulticlassLabels;
 		 * @param labels multiclass labels.
 		 */
 		void solver_classic(
-		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
+		    std::shared_ptr<DenseFeatures<float64_t>> features, std::shared_ptr<MulticlassLabels> labels);
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;

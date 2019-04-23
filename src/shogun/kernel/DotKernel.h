@@ -18,32 +18,32 @@ namespace shogun
 /** @brief Template class DotKernel is the base class for kernels working on
  * DotFeatures.
  *
- * CDotFeatures are features supporting operations like dot product, dot product
+ * DotFeatures are features supporting operations like dot product, dot product
  * with a dense vector and addition to a dense vector. Therefore several dot
- * product based kernels derive from this class (cf., e.g., CLinearKernel)
+ * product based kernels derive from this class (cf., e.g., LinearKernel)
  *
- * \sa CDotFeatures
+ * \sa DotFeatures
  */
-class CDotKernel : public CKernel
+class DotKernel : public Kernel
 {
 	public:
 		/** default constructor
 		 *
 		 */
-		CDotKernel() : CKernel() {}
+		DotKernel() : Kernel() {}
 
 		/** constructor
 		 *
 		 * @param cachesize cache size
 		 */
-		CDotKernel(int32_t cachesize) : CKernel(cachesize) {}
+		DotKernel(int32_t cachesize) : Kernel(cachesize) {}
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CDotKernel(CFeatures* l, CFeatures* r) : CKernel(10)
+		DotKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r) : Kernel(10)
 		{
 			init(l, r);
 		}
@@ -58,9 +58,9 @@ class CDotKernel : public CKernel
 		 *  @param r features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
-			CKernel::init(l,r);
+			Kernel::init(l,r);
 			init_auto_params();
 
 			ASSERT(l->has_property(FP_DOT))
@@ -79,10 +79,11 @@ class CDotKernel : public CKernel
 					l->get_name(), r->get_name());
 			}
 
-			if ( ((CDotFeatures*) l)->get_dim_feature_space() != ((CDotFeatures*) r)->get_dim_feature_space() )
+			if ( (std::static_pointer_cast<DotFeatures>(l))->get_dim_feature_space() != (std::static_pointer_cast<DotFeatures>(r))->get_dim_feature_space() )
 			{
 				error("train or test features #dimension mismatch (l:{} vs. r:{})",
-						((CDotFeatures*) l)->get_dim_feature_space(),((CDotFeatures*) r)->get_dim_feature_space());
+						(std::static_pointer_cast<DotFeatures>(l))->get_dim_feature_space(),
+						(std::static_pointer_cast<DotFeatures>(r))->get_dim_feature_space());
 			}
 			return true;
 		}
@@ -130,7 +131,7 @@ class CDotKernel : public CKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-			return ((CDotFeatures*) lhs)->dot(idx_a, ((CDotFeatures*) rhs), idx_b);
+			return (std::static_pointer_cast<DotFeatures>(lhs))->dot(idx_a, (std::static_pointer_cast<DotFeatures>(rhs)), idx_b);
 		}
 };
 }

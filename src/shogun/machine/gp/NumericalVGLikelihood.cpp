@@ -53,17 +53,17 @@ using namespace Eigen;
 namespace shogun
 {
 
-CNumericalVGLikelihood::CNumericalVGLikelihood()
-	: CVariationalGaussianLikelihood()
+NumericalVGLikelihood::NumericalVGLikelihood()
+	: VariationalGaussianLikelihood()
 {
 	init();
 }
 
-CNumericalVGLikelihood::~CNumericalVGLikelihood()
+NumericalVGLikelihood::~NumericalVGLikelihood()
 {
 }
 
-void CNumericalVGLikelihood::init()
+void NumericalVGLikelihood::init()
 {
 	SG_ADD(&m_log_lam, "log_lam",
 		"The result of used for computing variational expection\n");
@@ -84,7 +84,7 @@ void CNumericalVGLikelihood::init()
 
 }
 
-void CNumericalVGLikelihood::set_GHQ_number(index_t n)
+void NumericalVGLikelihood::set_GHQ_number(index_t n)
 {
 	require(n>0, "The number ({}) of Gaussian Hermite point should be positive",n);
 	if (m_GHQ_N!=n)
@@ -94,7 +94,7 @@ void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 	}
 }
 
-SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
+SGVector<float64_t> NumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
 	const TParameter* param) const
 {
 	require(param, "Param is required (param should not be NULL)");
@@ -107,12 +107,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparame
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
 
 	//ll  = ll  + w(i)*lp;
-	CLabels* lab=NULL;
+	std::shared_ptr<Labels> lab=NULL;
 
 	if (supports_binary())
-		lab=new CBinaryLabels(m_lab);
+		lab=std::make_shared<BinaryLabels>(m_lab);
 	else if (supports_regression())
-		lab=new CRegressionLabels(m_lab);
+		lab=std::make_shared<RegressionLabels>(m_lab);
 
 	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
 	{
@@ -122,24 +122,24 @@ SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparame
 		eigen_res+=eigen_lp*m_wgh[cidx];
 	}
 
-	SG_UNREF(lab);
+
 
 	return res;
 }
 
-SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
+SGVector<float64_t> NumericalVGLikelihood::get_variational_expection()
 {
 	SGVector<float64_t> res(m_lab.vlen);
 	res.zero();
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
 
 	//ll  = ll  + w(i)*lp;
-	CLabels* lab=NULL;
+	std::shared_ptr<Labels> lab=NULL;
 
 	if (supports_binary())
-		lab=new CBinaryLabels(m_lab);
+		lab=std::make_shared<BinaryLabels>(m_lab);
 	else if (supports_regression())
-		lab=new CRegressionLabels(m_lab);
+		lab=std::make_shared<RegressionLabels>(m_lab);
 
 	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
 	{
@@ -149,12 +149,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
 		eigen_res+=eigen_lp*m_wgh[cidx];
 	}
 
-	SG_UNREF(lab);
+
 
 	return res;
 }
 
-SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
+SGVector<float64_t> NumericalVGLikelihood::get_variational_first_derivative(
 		const TParameter* param) const
 {
 	//based on the likKL(v, lik, varargin) function in infKL.m
@@ -175,12 +175,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 
 	Map<VectorXd> eigen_v(m_s2.vector, m_s2.vlen);
 
-	CLabels* lab=NULL;
+	std::shared_ptr<Labels> lab=NULL;
 
 	if (supports_binary())
-		lab=new CBinaryLabels(m_lab);
+		lab=std::make_shared<BinaryLabels>(m_lab);
 	else if (supports_regression())
-		lab=new CRegressionLabels(m_lab);
+		lab=std::make_shared<RegressionLabels>(m_lab);
 
 	if (strcmp(param->m_name, "mu")==0)
 	{
@@ -212,47 +212,47 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 		}
 	}
 
-	SG_UNREF(lab);
+
 
 	return res;
 }
 
 
-bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels* lab)
+bool NumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+	SGVector<float64_t> s2, std::shared_ptr<const Labels> lab)
 {
 	bool status = true;
-	status = CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
+	status = VariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 
 	if (status)
 	{
 		if (supports_binary())
 		{
 			require(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels");
+				"Labels must be type of BinaryLabels");
 		}
 		else
 		{
 			if (supports_regression())
 			{
 				require(lab->get_label_type()==LT_REGRESSION,
-					"Labels must be type of CRegressionLabels");
+					"Labels must be type of RegressionLabels");
 			}
 			else
 				error("Unsupported Label type");
 		}
 
 		if (supports_binary())
-			m_lab=((CBinaryLabels*)lab)->get_labels();
+			m_lab=lab->as<BinaryLabels>()->get_labels();
 		else
-			m_lab=((CRegressionLabels*)lab)->get_labels();
+			m_lab=lab->as<RegressionLabels>()->get_labels();
 
 		if (!m_is_init_GHQ)
 		{
 			m_xgh=SGVector<float64_t>(m_GHQ_N);
 			m_wgh=SGVector<float64_t>(m_GHQ_N);
 #ifdef USE_GPL_SHOGUN
-			CIntegration::generate_gauher(m_xgh, m_wgh);
+			Integration::generate_gauher(m_xgh, m_wgh);
 #else
 			gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
@@ -266,7 +266,7 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 	return status;
 }
 
-void CNumericalVGLikelihood::precompute()
+void NumericalVGLikelihood::precompute()
 {
 	//samples-by-abscissas
 	m_log_lam=SGMatrix<float64_t>(m_s2.vlen, m_xgh.vlen);

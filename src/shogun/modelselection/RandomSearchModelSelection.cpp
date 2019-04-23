@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Heiko Strathmann, Thoralf Klein, 
+ * Authors: Giovanni De Toni, Heiko Strathmann, Thoralf Klein,
  *          Soeren Sonnenburg, Sergey Lisitsyn, Roman Votyakov, Kyle McQuisten
  */
 
@@ -15,62 +15,62 @@
 
 using namespace shogun;
 
-CRandomSearchModelSelection::CRandomSearchModelSelection() : RandomMixin<CModelSelection>()
+RandomSearchModelSelection::RandomSearchModelSelection() : RandomMixin<ModelSelection>()
 {
 	set_ratio(0.5);
 }
 
-CRandomSearchModelSelection::CRandomSearchModelSelection(
-		CMachineEvaluation* machine_eval,
-		CModelSelectionParameters* model_parameters, float64_t ratio)
-		: RandomMixin<CModelSelection>(machine_eval, model_parameters)
+RandomSearchModelSelection::RandomSearchModelSelection(
+		std::shared_ptr<MachineEvaluation> machine_eval,
+		std::shared_ptr<ModelSelectionParameters> model_parameters, float64_t ratio)
+		: RandomMixin<ModelSelection>(machine_eval, model_parameters)
 {
 	set_ratio(ratio);
 }
 
-CRandomSearchModelSelection::~CRandomSearchModelSelection()
+RandomSearchModelSelection::~RandomSearchModelSelection()
 {
 }
 
-CParameterCombination* CRandomSearchModelSelection::select_model(bool print_state)
+std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(bool print_state)
 {
 	if (print_state)
 		io::print("Generating parameter combinations\n");
 
 	/* Retrieve all possible parameter combinations */
-	CDynamicObjectArray* all_combinations=
-			(CDynamicObjectArray*)m_model_parameters->get_combinations();
+	auto all_combinations=
+			std::static_pointer_cast<DynamicObjectArray>(m_model_parameters->get_combinations());
 
 	int32_t n_all_combinations=all_combinations->get_num_elements();
-	SGVector<index_t> combinations_indices=CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations, m_prng);
+	SGVector<index_t> combinations_indices=Statistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations, m_prng);
 
-	CDynamicObjectArray* combinations=new CDynamicObjectArray();
+	auto combinations=std::make_shared<DynamicObjectArray>();
 
 	for (int32_t i=0; i<combinations_indices.vlen; i++)
 		combinations->append_element(all_combinations->get_element(i));
 
-	CCrossValidationResult* best_result=new CCrossValidationResult();
+	auto best_result=std::make_shared<CrossValidationResult>();
 
-	CParameterCombination* best_combination=NULL;
+	std::shared_ptr<ParameterCombination> best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
 		if (print_state) io::print("Direction is maximize\n");
-		best_result->set_mean(CMath::ALMOST_NEG_INFTY);
+		best_result->set_mean(Math::ALMOST_NEG_INFTY);
 	}
 	else
 	{
 		if (print_state) io::print("Direction is minimize\n");
-		best_result->set_mean(CMath::ALMOST_INFTY);
+		best_result->set_mean(Math::ALMOST_INFTY);
 	}
 
 	/* underlying learning machine */
-	CMachine* machine=m_machine_eval->get_machine();
+	auto machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
 	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
 	{
-		CParameterCombination* current_combination=(CParameterCombination*)
-				combinations->get_element(i);
+		auto current_combination=
+				combinations->get_element<ParameterCombination>(i);
 
 		/* eventually print */
 		if (print_state)
@@ -83,8 +83,8 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CCrossValidationResult* result =
-		    m_machine_eval->evaluate()->as<CCrossValidationResult>();
+		auto result =
+		    m_machine_eval->evaluate()->as<CrossValidationResult>();
 
 		if (print_state)
 			result->print_result();
@@ -94,21 +94,18 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 		{
 			if (result->get_mean() > best_result->get_mean())
 			{
-				if (best_combination)
-					SG_UNREF(best_combination);
+				best_combination=
+						combinations->get_element<ParameterCombination>(i);
 
-				best_combination=(CParameterCombination*)
-						combinations->get_element(i);
 
-				SG_REF(result);
-				SG_UNREF(best_result);
+
 				best_result=result;
 			}
 			else
 			{
-				CParameterCombination* combination=(CParameterCombination*)
-						combinations->get_element(i);
-				SG_UNREF(combination);
+				auto combination=
+						combinations->get_element<ParameterCombination>(i);
+
 			}
 		}
 		else
@@ -116,30 +113,26 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 			if (result->get_mean() < best_result->get_mean())
 			{
 				if (best_combination)
-					SG_UNREF(best_combination);
 
-				best_combination=(CParameterCombination*)
-						combinations->get_element(i);
 
-				SG_REF(result);
-				SG_UNREF(best_result);
+				best_combination=
+						combinations->get_element<ParameterCombination>(i);
+
+
+
 				best_result=result;
 			}
 			else
 			{
-				CParameterCombination* combination=(CParameterCombination*)
-						combinations->get_element(i);
-				SG_UNREF(combination);
+				auto combination=
+						combinations->get_element<ParameterCombination>(i);
+
 			}
 		}
 
-		SG_UNREF(result);
-		SG_UNREF(current_combination);
-	}
 
-	SG_UNREF(best_result);
-	SG_UNREF(machine);
-	SG_UNREF(combinations);
+
+	}
 
 	return best_combination;
 }

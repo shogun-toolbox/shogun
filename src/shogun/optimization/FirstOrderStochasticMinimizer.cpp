@@ -35,21 +35,21 @@
 #include <shogun/base/Parameter.h>
 using namespace shogun;
 
-void FirstOrderStochasticMinimizer::set_gradient_updater(DescendUpdater* gradient_updater)
+void FirstOrderStochasticMinimizer::set_gradient_updater(std::shared_ptr<DescendUpdater> gradient_updater)
 {
 	require(gradient_updater, "Gradient updater must set");
 	if(m_gradient_updater != gradient_updater)
 	{
-		SG_REF(gradient_updater);
-		SG_UNREF(m_gradient_updater);
+
+
 		m_gradient_updater=gradient_updater;
 	}
 }
 
 FirstOrderStochasticMinimizer:: ~FirstOrderStochasticMinimizer()
 {
-	SG_UNREF(m_gradient_updater);
-	SG_UNREF(m_learning_rate);
+
+
 }
 
 void FirstOrderStochasticMinimizer::set_number_passes(int32_t num_passes)
@@ -58,23 +58,23 @@ void FirstOrderStochasticMinimizer::set_number_passes(int32_t num_passes)
 	m_num_passes=num_passes;
 }
 
-void FirstOrderStochasticMinimizer::set_learning_rate(LearningRate *learning_rate)
+void FirstOrderStochasticMinimizer::set_learning_rate(std::shared_ptr<LearningRate >learning_rate)
 {
 	if(m_learning_rate != learning_rate)
 	{
-		SG_REF(learning_rate);
-		SG_UNREF(m_learning_rate);
+
+
 		m_learning_rate=learning_rate;
 	}
 }
 
 void FirstOrderStochasticMinimizer::do_proximal_operation(SGVector<float64_t>variable_reference)
 {
-	ProximalPenalty* proximal_penalty=dynamic_cast<ProximalPenalty*>(m_penalty_type);
+	auto proximal_penalty=std::dynamic_pointer_cast<ProximalPenalty>(m_penalty_type);
 	if(proximal_penalty)
 	{
 		float64_t proximal_weight=m_penalty_weight;
-		SparsePenalty* sparse_penalty=dynamic_cast<SparsePenalty*>(m_penalty_type);
+		auto sparse_penalty=std::dynamic_pointer_cast<SparsePenalty>(m_penalty_type);
 		if(sparse_penalty)
 		{
 			require(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used");
@@ -100,9 +100,9 @@ void FirstOrderStochasticMinimizer::init()
 	m_cur_passes=0;
 	m_iter_counter=0;
 
-	SG_ADD((CSGObject **)&m_learning_rate, "FirstOrderMinimizer__m_learning_rate",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_learning_rate, "FirstOrderMinimizer__m_learning_rate",
 		"learning_rate in FirstOrderStochasticMinimizer");
-	SG_ADD((CSGObject **)&m_gradient_updater, "FirstOrderMinimizer__m_gradient_updater",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_gradient_updater, "FirstOrderMinimizer__m_gradient_updater",
 		"gradient_updater in FirstOrderStochasticMinimizer");
 	SG_ADD(&m_num_passes, "FirstOrderMinimizer__m_num_passes",
 		"num_passes in FirstOrderStochasticMinimizer");

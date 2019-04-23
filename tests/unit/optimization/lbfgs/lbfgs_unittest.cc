@@ -96,14 +96,14 @@ float64_t adjust_step_bounded(void *obj, const float64_t *parameters,
 			continue;
 		if (attempt<lower_bound)
 		{
-			adjust=(parameters[i]-lower_bound)/CMath::abs(direction[i]);
+			adjust=(parameters[i]-lower_bound)/Math::abs(direction[i]);
 			if (adjust<min_step)
 				min_step=adjust;
 		}
 
 		if (attempt>upper_bound)
 		{
-			adjust=(upper_bound-parameters[i])/CMath::abs(direction[i]);
+			adjust=(upper_bound-parameters[i])/Math::abs(direction[i]);
 			if (adjust<min_step)
 				min_step=adjust;
 		}
@@ -125,7 +125,7 @@ float64_t evaluate_bounded(void *obj, const float64_t *variable, float64_t *grad
 		}
 	}
 	if (!is_valid)
-		return CMath::INFTY;
+		return Math::INFTY;
 
 	float64_t * non_const_variable=const_cast<float64_t *>(variable);
 	const Map<VectorXd> eigen_x(non_const_variable, dim);
@@ -151,7 +151,7 @@ float64_t evaluate_strict_bounded(void *obj, const float64_t *variable, float64_
 		}
 	}
 	if (!is_valid)
-		return CMath::INFTY;
+		return Math::INFTY;
 
 	float64_t * non_const_variable=const_cast<float64_t *>(variable);
 	const Map<VectorXd> eigen_x(non_const_variable, dim);
@@ -176,7 +176,7 @@ float64_t adjust_step_strict_bounded(void *obj, const float64_t *parameters,
 			continue;
 		if (attempt<lower_bound)
 		{
-			adjust=(parameters[i]-lower_bound)/CMath::abs(direction[i]);
+			adjust=(parameters[i]-lower_bound)/Math::abs(direction[i]);
 			adjust*=(1-strict_scale);
 			if (adjust<min_step)
 				min_step=adjust;
@@ -184,7 +184,7 @@ float64_t adjust_step_strict_bounded(void *obj, const float64_t *parameters,
 
 		if (attempt>upper_bound)
 		{
-			adjust=(upper_bound-parameters[i])/CMath::abs(direction[i]);
+			adjust=(upper_bound-parameters[i])/Math::abs(direction[i]);
 			adjust*=(1-strict_scale);
 			if (adjust<min_step)
 				min_step=adjust;
@@ -200,29 +200,29 @@ TEST(lbfgs, original_lbfgs)
 	Map<VectorXd> eigen_x(x.vector, x.vlen);
 	eigen_x.fill(10);
 	lbfgs_parameter_t lbfgs_param=init_lbfgs_parameters();
-	float64_t opt_value=CMath::INFTY;
+	float64_t opt_value=Math::INFTY;
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate, NULL, NULL, &lbfgs_param);
 
 	float64_t rel_tolerance = 1e-15;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(opt_value, 0, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(x[0], 0, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(x[1], 0, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(x[2], 0, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(x[3], 0, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(x[4], 0, abs_tolerance);
 }
 
@@ -233,29 +233,29 @@ TEST(lbfgs, lbfgs_with_adjust_step_test1)
 	Map<VectorXd> eigen_x(x.vector, x.vlen);
 	eigen_x.fill(10);
 	lbfgs_parameter_t lbfgs_param=init_lbfgs_parameters();
-	float64_t opt_value=CMath::INFTY;
+	float64_t opt_value=Math::INFTY;
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_bounded, NULL, NULL, &lbfgs_param, &adjust_step_bounded);
 
 	float64_t rel_tolerance = 1e-15;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(len, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(len, rel_tolerance);
 	EXPECT_NEAR(opt_value, len, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(lower_bound, rel_tolerance);
 	EXPECT_NEAR(x[0], lower_bound, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(lower_bound, rel_tolerance);
 	EXPECT_NEAR(x[1], lower_bound, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(lower_bound, rel_tolerance);
 	EXPECT_NEAR(x[2], lower_bound, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(lower_bound, rel_tolerance);
 	EXPECT_NEAR(x[3], lower_bound, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(lower_bound, rel_tolerance);
 	EXPECT_NEAR(x[4], lower_bound, abs_tolerance);
 
 }
@@ -267,14 +267,14 @@ TEST(lbfgs, lbfgs_with_adjust_step_test2)
 	Map<VectorXd> eigen_x(x.vector, x.vlen);
 	eigen_x.fill(10);
 	lbfgs_parameter_t lbfgs_param=init_lbfgs_parameters();
-	float64_t opt_value=CMath::INFTY;
+	float64_t opt_value=Math::INFTY;
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_strict_bounded, NULL, NULL, &lbfgs_param, &adjust_step_strict_bounded);
 
 	float64_t rel_tolerance=strict_scale;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(len, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(len, rel_tolerance);
 	EXPECT_NEAR(opt_value, len, abs_tolerance);
 
 	eigen_x=eigen_x.array()-lower_bound;

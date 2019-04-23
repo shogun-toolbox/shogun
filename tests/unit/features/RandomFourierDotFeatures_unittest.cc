@@ -31,10 +31,10 @@ TEST(RandomFourierDotFeatures, dot_test)
 			data(j,i) = i+j;
 	}
 
-	CDenseFeatures<int32_t>* d_feats = new CDenseFeatures<int32_t>(data);
+	auto d_feats = std::make_shared<DenseFeatures<int32_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
-	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
@@ -68,7 +68,7 @@ TEST(RandomFourierDotFeatures, dot_test)
 		for (index_t j=0; j<5; j++)
 			EXPECT_NEAR(precomputed_mat(i,j), cross_dot_matrix(i,j), e);
 	}
-	SG_UNREF(r_feats);
+
 }
 
 TEST(RandomFourierDotFeatures, dense_dot_test)
@@ -93,10 +93,10 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 			data(j,i) = i+j;
 	}
 
-	CDenseFeatures<int32_t>* d_feats = new CDenseFeatures<int32_t>(data);
+	auto d_feats = std::make_shared<DenseFeatures<int32_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
-	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
@@ -119,7 +119,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 		float64_t dot = r_feats->dot(i, ones);
 		EXPECT_NEAR(dot, vec[i], e);
 	}
-	SG_UNREF(r_feats);
+
 }
 
 TEST(RandomFourierDotFeatures, add_to_dense_test)
@@ -144,10 +144,10 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 			data(j,i) = i+j;
 	}
 
-	CDenseFeatures<int32_t>* d_feats = new CDenseFeatures<int32_t>(data);
+	auto d_feats = std::make_shared<DenseFeatures<int32_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
-	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
@@ -173,6 +173,6 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 			sum += zeros[j];
 		EXPECT_NEAR(sum, vec[i], e);
 	}
-	SG_UNREF(r_feats);
+
 }
 

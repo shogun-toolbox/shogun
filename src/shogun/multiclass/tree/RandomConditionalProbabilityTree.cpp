@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-bool CRandomConditionalProbabilityTree::which_subtree(bnode_t *node, SGVector<float32_t> ex)
+bool RandomConditionalProbabilityTree::which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex)
 {
 	if (m_uniform_real_dist(m_prng) > 0.5)
 		return true;

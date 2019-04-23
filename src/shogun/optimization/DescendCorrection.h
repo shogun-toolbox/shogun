@@ -52,7 +52,7 @@ struct DescendPair
  * The interfact will be used in DescendUpdaterWithCorrection::update_variable()
  * An example of descend based correction is NesterovMomentumCorrection
  */
-class DescendCorrection: public CSGObject
+class DescendCorrection: public SGObject
 {
 public:
 	/*  Constructor */

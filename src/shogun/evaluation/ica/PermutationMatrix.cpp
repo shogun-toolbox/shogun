@@ -20,7 +20,7 @@ bool is_permutation_matrix(SGMatrix<float64_t> m)
 	{
 		for (int j = 0; j < mat.cols(); j++)
 		{
-			if (CMath::abs(CMath::round(mat(i,j))) >= 1.0)
+			if (Math::abs(Math::round(mat(i,j))) >= 1.0)
 				mat(i,j) = 1.0;
 			else
 				mat(i,j) = 0.0;

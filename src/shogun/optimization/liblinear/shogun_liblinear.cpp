@@ -438,9 +438,9 @@ void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int act
 	for(r=0;r<active_i;r++)
 	{
 		if(r == yi)
-			alpha_new[r] = CMath::min(C_yi, (beta-state->B[r])/A_i);
+			alpha_new[r] = Math::min(C_yi, (beta-state->B[r])/A_i);
 		else
-			alpha_new[r] = CMath::min((double)0, (beta - state->B[r])/A_i);
+			alpha_new[r] = Math::min((double)0, (beta - state->B[r])/A_i);
 	}
 	SG_FREE(D);
 }
@@ -496,9 +496,9 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 	int dim = prob->x->get_dim_feature_space();
 
 	int active_size = l;
-	double eps_shrink = CMath::max(10.0*eps, 1.0); // stopping tolerance for shrinking
+	double eps_shrink = Math::max(10.0*eps, 1.0); // stopping tolerance for shrinking
 	bool start_from_all = true;
-	CTime start_time;
+	Time start_time;
 	// initial
 	if (!state->inited)
 	{
@@ -519,10 +519,10 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 	}
 
 	// TODO: replace with the new signal
-	// while(iter < max_iter && !CSignal::cancel_computations())
+	// while(iter < max_iter && !Signal::cancel_computations())
 	while (iter < max_iter)
 	{
-		double stopping = -CMath::INFTY;
+		double stopping = -Math::INFTY;
 		random::shuffle(index, index+active_size, prng);
 		for(s=0;s<active_size;s++)
 		{
@@ -569,8 +569,8 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 				}
 				// ***
 
-				double minG = CMath::INFTY;
-				double maxG = -CMath::INFTY;
+				double minG = Math::INFTY;
+				double maxG = -Math::INFTY;
 				for(m=0;m<active_size_i[i];m++)
 				{
 					if(alpha_i[alpha_index_i[m]] < 0 && G[m] < minG)
@@ -592,8 +592,8 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 							if(!be_shrunk(i, active_size_i[i], y_index[i],
 											alpha_i[alpha_index_i[active_size_i[i]]], minG))
 							{
-								CMath::swap(alpha_index_i[m], alpha_index_i[active_size_i[i]]);
-								CMath::swap(G[m], G[active_size_i[i]]);
+								Math::swap(alpha_index_i[m], alpha_index_i[active_size_i[i]]);
+								Math::swap(G[m], G[active_size_i[i]]);
 								if(y_index[i] == active_size_i[i])
 									y_index[i] = m;
 								else if(y_index[i] == m)
@@ -608,7 +608,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 				if(active_size_i[i] <= 1)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -616,7 +616,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 				if(maxG-minG <= 1e-12)
 					continue;
 				else
-					stopping = CMath::CMath::max(maxG - minG, stopping);
+					stopping = Math::Math::max(maxG - minG, stopping);
 
 				for(m=0;m<active_size_i[i];m++)
 					B[m] = G[m] - Ai*alpha_i[alpha_index_i[m]] ;
@@ -676,7 +676,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 				for(i=0;i<l;i++)
 					active_size_i[i] = nr_class;
 				//io::info("*");
-				eps_shrink = CMath::max(eps_shrink/2, eps);
+				eps_shrink = Math::max(eps_shrink/2, eps);
 				start_from_all = true;
 			}
 		}
@@ -687,7 +687,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 			break;
 	}
 
-	io::info("\noptimization finished, #iter = {}",iter);
+	io::info("optimization finished, #iter = {}",iter);
 	if (iter >= max_iter)
 		io::info("Warning: reaching max number of iterations");
 

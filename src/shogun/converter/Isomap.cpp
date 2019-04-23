@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
  *          Heiko Strathmann, Bjoern Esser
  */
 
@@ -12,39 +12,39 @@
 
 using namespace shogun;
 
-CIsomap::CIsomap() : CMultidimensionalScaling()
+Isomap::Isomap() : MultidimensionalScaling()
 {
 	m_k = 3;
 
 	init();
 }
 
-void CIsomap::init()
+void Isomap::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 }
 
-CIsomap::~CIsomap()
+Isomap::~Isomap()
 {
 }
 
-void CIsomap::set_k(int32_t k)
+void Isomap::set_k(int32_t k)
 {
 	ASSERT(k>0)
 	m_k = k;
 }
 
-int32_t CIsomap::get_k() const
+int32_t Isomap::get_k() const
 {
 	return m_k;
 }
 
-const char* CIsomap::get_name() const
+const char* Isomap::get_name() const
 {
 	return "Isomap";
 }
 
-CDenseFeatures<float64_t>* CIsomap::embed_distance(CDistance* distance)
+std::shared_ptr<DenseFeatures<float64_t>> Isomap::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	if (m_landmark)
@@ -58,8 +58,7 @@ CDenseFeatures<float64_t>* CIsomap::embed_distance(CDistance* distance)
 	}
 	parameters.n_neighbors = m_k;
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	parameters.distance = distance.get();
+	return tapkee_embed(parameters);
 }
 

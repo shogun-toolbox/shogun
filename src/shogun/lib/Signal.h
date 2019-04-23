@@ -30,7 +30,7 @@ namespace shogun
 	 *  option bewteen: immediately exit the running method and fall back to
 	 *  the command line, prematurely stop the current algoritmh and do nothing.
 	 */
-	class CSignal
+	class Signal
 	{
 	public:
 		typedef rxcpp::subjects::subject<int> SGSubjectS;
@@ -40,8 +40,8 @@ namespace shogun
 		                          rxcpp::observer<int, void, void, void, void>>
 		    SGSubscriberS;
 
-		CSignal();
-		virtual ~CSignal();
+		Signal();
+		virtual ~Signal();
 
 		/** Signal handler. Need to be registered with std::signal.
 		 *

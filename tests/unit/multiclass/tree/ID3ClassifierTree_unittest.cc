@@ -131,7 +131,7 @@ TEST(ID3ClassifierTree, classify_simple)
 	data(2,14)=high;
 	data(3,14)=strong;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(15);
@@ -151,9 +151,9 @@ TEST(ID3ClassifierTree, classify_simple)
 	lab[13]=0.0;
 	lab[14]=0.0;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CID3ClassifierTree* id3=new CID3ClassifierTree();
+	auto id3=std::make_shared<ID3ClassifierTree>();
 	id3->set_labels(labels);
 	id3->train(feats);
 
@@ -182,8 +182,8 @@ TEST(ID3ClassifierTree, classify_simple)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=(CMulticlassLabels*) id3->apply(test_feats);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=id3->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -192,10 +192,10 @@ TEST(ID3ClassifierTree, classify_simple)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(id3);
-	SG_UNREF(feats);
+
+
+
+
 }
 
 TEST(ID3ClassifierTree, tree_prune)
@@ -275,18 +275,18 @@ TEST(ID3ClassifierTree, tree_prune)
 	validation_labels[14]=1;
 	validation_labels[15]=1;
 
-	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
-	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
-	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
-	SG_REF(train_lab);
-	SG_REF(validation_lab);
+	auto train_features=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto train_lab=std::make_shared<MulticlassLabels>(train_labels);
+	auto validation_lab=std::make_shared<MulticlassLabels>(validation_labels);
 
-	CID3ClassifierTree* id3tree=new CID3ClassifierTree();
+
+
+	auto id3tree=std::make_shared<ID3ClassifierTree>();
 	id3tree->set_labels(train_lab);
 	id3tree->train(train_features);
 	id3tree->prune_tree(train_features,validation_lab);
 
-	CMulticlassLabels* result=(CMulticlassLabels*) id3tree->apply(train_features);
+	auto result=id3tree->apply(train_features)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -306,9 +306,9 @@ TEST(ID3ClassifierTree, tree_prune)
 	EXPECT_EQ(1.0,res_vector[14]);
 	EXPECT_EQ(1.0,res_vector[15]);
 
-	SG_UNREF(train_lab);
-	SG_UNREF(train_features);
-	SG_UNREF(validation_lab);
-	SG_UNREF(result);
-	SG_UNREF(id3tree);
+
+
+
+
+
 }

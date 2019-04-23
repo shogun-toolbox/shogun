@@ -37,7 +37,7 @@ using namespace shogun;
 float64_t InverseScalingLearningRate::get_learning_rate(int32_t iter_counter)
 {
 	require(iter_counter,"Iter_counter ({}) must be positive", iter_counter);
-	return m_initial_learning_rate/CMath::pow(m_intercept+m_slope*iter_counter,m_exponent);
+	return m_initial_learning_rate/Math::pow(m_intercept+m_slope*iter_counter,m_exponent);
 }
 
 void InverseScalingLearningRate::set_initial_learning_rate(float64_t initial_learning_rate)

@@ -12,11 +12,11 @@ We start by constructing a pairwise distance matrix. Then, the clusters of the p
 Example
 -------
 
-Imagine we have files with the training data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) as:
+Imagine we have files with the training data. We create DenseFeatures (here 64 bit floats aka RealFeatures) as:
 
 .. sgexample:: hierarchical.sg:create_features
 
-In order to run :sgclass:`CHierarchical`, we need to choose a distance, for example :sgclass:`CEuclideanDistance`, or other sub-classes of :sgclass:`CDistance`. The distance is initialized with the data we want to classify.
+In order to run :sgclass:`CHierarchical`, we need to choose a distance, for example :sgclass:`EuclideanDistance`, or other sub-classes of :sgclass:`Distance`. The distance is initialized with the data we want to classify.
 
 .. sgexample:: hierarchical.sg:choose_distance
 

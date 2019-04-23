@@ -22,15 +22,15 @@ namespace shogun
  *
  * @see CTask
  */
-class CTaskGroup : public CTaskRelation
+class TaskGroup : public TaskRelation
 {
 public:
 
 	/** default constructor */
-	CTaskGroup();
+	TaskGroup();
 
 	/** destructor */
-	virtual ~CTaskGroup();
+	virtual ~TaskGroup();
 
 	/** get tasks indices
 	 *
@@ -42,7 +42,7 @@ public:
 	 *
 	 * @param task task to append
 	 */
-	void append_task(CTask* task);
+	void append_task(std::shared_ptr<Task> task);
 
 	/** get number of tasks in the group
 	 *
@@ -70,7 +70,7 @@ private:
 protected:
 
 	/** tasks of the task group */
-	CDynamicObjectArray* m_tasks;
+	std::shared_ptr<DynamicObjectArray> m_tasks;
 
 };
 }

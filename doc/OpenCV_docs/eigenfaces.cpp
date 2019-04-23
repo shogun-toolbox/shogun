@@ -104,9 +104,9 @@ int main()
     //                                                            ]
 
 
-    // convert the Stacked_mats into the CDenseFeatures of Shogun.
+    // convert the Stacked_mats into the DenseFeatures of Shogun.
     // From here on we will be performing our PCA algo in Shogun.
-    CDenseFeatures<float64_t>* Face_features=new CDenseFeatures<float64_t>(Stacked_mats);
+    DenseFeatures<float64_t>* Face_features=new DenseFeatures<float64_t>(Stacked_mats);
     SG_REF(Face_features);
 
     // We initialise the Preprocessor CPCA of Shogun which performs principal
@@ -195,19 +195,19 @@ int main()
 
     // we need to have the Densefeature pointer of the finalmat.
     // finalmat_densefeature_ptr is the lhs.
-    CDenseFeatures<float64_t>* finalmat_densefeature_ptr=new CDenseFeatures<float64_t>(finalmat);
+    DenseFeatures<float64_t>* finalmat_densefeature_ptr=new DenseFeatures<float64_t>(finalmat);
     SG_REF(finalmat_densefeature_ptr);
 
     // and similarly we just need to convert the testimage_sgvec into the DenseFeature pointer for the rhs.
     SGMatrix<float64_t>data_matrix(testimage_projected_vec.vlen, 1);
 
-    CDenseFeatures<float64_t>* testimage_dense=new CDenseFeatures<float64_t>(data_matrix);
+    DenseFeatures<float64_t>* testimage_dense=new DenseFeatures<float64_t>(data_matrix);
     SG_REF(testimage_dense);
     testimage_dense->set_feature_vector(testimage_projected_vec,0);
 
 
 
-    CEuclideanDistance* euclid=new CEuclideanDistance(finalmat_densefeature_ptr,testimage_dense);
+    EuclideanDistance* euclid=new EuclideanDistance(finalmat_densefeature_ptr,testimage_dense);
     SG_REF(euclid);
     float64_t distance_array[size];
     int min_index=0;

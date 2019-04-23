@@ -29,7 +29,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/multiclass/tree/CARTree.h>
@@ -127,7 +126,7 @@ TEST(CARTree, classify_nominal)
 	data(2,13)=high;
 	data(3,13)=strong;
 
-	auto feats = some<CDenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -152,9 +151,9 @@ TEST(CARTree, classify_nominal)
 	ft[2]=true;
 	ft[3]=true;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CCARTree* c=new CCARTree();
+	auto c=std::make_shared<CARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats);
@@ -184,8 +183,8 @@ TEST(CARTree, classify_nominal)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=(CMulticlassLabels*) c->apply(test_feats);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=c->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -194,9 +193,9 @@ TEST(CARTree, classify_nominal)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(c);
+
+
+
 }
 
 TEST(CARTree, classify_non_nominal)
@@ -274,7 +273,7 @@ TEST(CARTree, classify_non_nominal)
 	data(2,13)=high;
 	data(3,13)=strong;
 
-	auto feats = some<CDenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -299,9 +298,9 @@ TEST(CARTree, classify_non_nominal)
 	ft[2]=false;
 	ft[3]=false;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CCARTree* c=new CCARTree();
+	auto c=std::make_shared<CARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats);
@@ -331,8 +330,8 @@ TEST(CARTree, classify_non_nominal)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=(CMulticlassLabels*) c->apply(test_feats);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=c->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -341,9 +340,9 @@ TEST(CARTree, classify_non_nominal)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(c);
+
+
+
 }
 
 TEST(CARTree, handle_missing_nominal)
@@ -369,7 +368,7 @@ TEST(CARTree, handle_missing_nominal)
 	data(1,4)=4;
 	data(2,4)=8;
 
-	data(0,5)=CCARTree::MISSING;
+	data(0,5)=CARTree::MISSING;
 	data(1,5)=5;
 	data(2,5)=8;
 
@@ -401,27 +400,22 @@ TEST(CARTree, handle_missing_nominal)
 	ft[1]=true;
 	ft[2]=true;
 
-	auto feats = some<CDenseFeatures<float64_t>>(data);
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CCARTree* c=new CCARTree();
+	auto c=std::make_shared<CARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats);
 
-	CBinaryTreeMachineNode<CARTreeNodeData>* root=dynamic_cast<CBinaryTreeMachineNode<CARTreeNodeData>*>(c->get_root());
-	CBinaryTreeMachineNode<CARTreeNodeData>* left=root->left();
-	CBinaryTreeMachineNode<CARTreeNodeData>* right=root->right();
+	auto root=c->get_root()->as<BinaryTreeMachineNode<CARTreeNodeData>>();
+	auto left=root->left();
+	auto right=root->right();
 
 	EXPECT_EQ(0.0,root->data.attribute_id);
 	EXPECT_EQ(9.0,root->data.total_weight);
 	EXPECT_EQ(6.0,left->data.total_weight);
 	EXPECT_EQ(3.0,right->data.total_weight);
-
-	SG_UNREF(root);
-	SG_UNREF(left);
-	SG_UNREF(right);
-	SG_UNREF(c);
 }
 
 TEST(CARTree, handle_missing_continuous)
@@ -447,7 +441,7 @@ TEST(CARTree, handle_missing_continuous)
 	data(1,4)=4;
 	data(2,4)=8;
 
-	data(0,5)=CCARTree::MISSING;
+	data(0,5)=CARTree::MISSING;
 	data(1,5)=5;
 	data(2,5)=7;
 
@@ -479,27 +473,22 @@ TEST(CARTree, handle_missing_continuous)
 	ft[1]=false;
 	ft[2]=false;
 
-	auto feats = some<CDenseFeatures<float64_t>>(data);
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CCARTree* c=new CCARTree();
+	auto c=std::make_shared<CARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats);
 
-	CBinaryTreeMachineNode<CARTreeNodeData>* root=dynamic_cast<CBinaryTreeMachineNode<CARTreeNodeData>*>(c->get_root());
-	CBinaryTreeMachineNode<CARTreeNodeData>* left=root->left();
-	CBinaryTreeMachineNode<CARTreeNodeData>* right=root->right();
+	auto root=c->get_root()->as<BinaryTreeMachineNode<CARTreeNodeData>>();
+	auto left=root->left();
+	auto right=root->right();
 
 	EXPECT_EQ(2.0,root->data.attribute_id);
 	EXPECT_EQ(9.0,root->data.total_weight);
 	EXPECT_EQ(5.0,left->data.total_weight);
 	EXPECT_EQ(4.0,right->data.total_weight);
-
-	SG_UNREF(root);
-	SG_UNREF(left);
-	SG_UNREF(right);
-	SG_UNREF(c);
 }
 
 TEST(CARTree, form_t1_test)
@@ -518,28 +507,24 @@ TEST(CARTree, form_t1_test)
 	lab[3]=1;
 	lab[4]=0;
 
-	auto feats = some<CDenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<bool> ft=SGVector<bool>(1);
 	ft[0]=true;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
-	CCARTree* c=new CCARTree();
+	auto labels=std::make_shared<MulticlassLabels>(lab);
+	auto c=std::make_shared<CARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats);
 
-	CTreeMachineNode<CARTreeNodeData>* root=c->get_root();
+	auto root=c->get_root();
 	EXPECT_EQ(2,root->data.num_leaves);
 
 	c->prune_using_test_dataset(feats,labels);
 
-	SG_UNREF(root);
 	root=c->get_root();
 	EXPECT_EQ(1,root->data.num_leaves);
-
-	SG_UNREF(c);
-	SG_UNREF(root);
 }
 
 TEST(CARTree,cv_prune_simple)
@@ -611,19 +596,19 @@ TEST(CARTree,cv_prune_simple)
 	lab[18]=1.0;
 	lab[19]=1.0;
 
-	auto feats = some<CDenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<bool> ft=SGVector<bool>(2);
 	ft[0]=true;
 	ft[1]=true;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
-	CCARTree* c=new CCARTree();
+	auto labels=std::make_shared<MulticlassLabels>(lab);
+	auto c=std::make_shared<CARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats);
 
-	CBinaryTreeMachineNode<CARTreeNodeData>* root=dynamic_cast<CBinaryTreeMachineNode<CARTreeNodeData>*>(c->get_root());
+	auto root=c->get_root()->as<BinaryTreeMachineNode<CARTreeNodeData>>();
 
 	EXPECT_EQ(4,root->data.num_leaves);
 	EXPECT_EQ(2.0,root->data.weight_minus_branch);
@@ -632,12 +617,12 @@ TEST(CARTree,cv_prune_simple)
 	c->set_cv_pruning(true);
 	c->train(feats);
 
-	SG_UNREF(root);
-	root=dynamic_cast<CBinaryTreeMachineNode<CARTreeNodeData>*>(c->get_root());
+
+	root=c->get_root()->as<BinaryTreeMachineNode<CARTreeNodeData>>();
 
 	EXPECT_EQ(3,root->data.num_leaves);
 	EXPECT_EQ(2.0,root->data.weight_minus_branch);
 
-	SG_UNREF(c);
-	SG_UNREF(root);
+
+
 }

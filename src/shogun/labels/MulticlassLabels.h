@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Saurabh Mahindre, Olivier NGuyen, Thoralf Klein, Giovanni De Toni, 
- *          Heiko Strathmann, Michele Mazzoni, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Saurabh Mahindre, Olivier NGuyen, Thoralf Klein, Giovanni De Toni,
+ *          Heiko Strathmann, Michele Mazzoni, Evgeniy Andreev, Yuyu Zhang,
  *          Chiyuan Zhang, Viktor Gal, Bjoern Esser
  */
 
@@ -21,39 +21,39 @@
 
 namespace shogun
 {
-	class CFile;
-	class CBinaryLabels;
-	class CMulticlassLabels;
-	class CDenseLabels;
+	class File;
+	class BinaryLabels;
+	class MulticlassLabels;
+	class DenseLabels;
 
 /** @brief Multiclass Labels for multi-class classification
  *
  * valid values for labels are 0...nr_classes-1
  */
-class CMulticlassLabels : public CDenseLabels
+class MulticlassLabels : public DenseLabels
 {
 	public:
 		/** default constructor */
-		CMulticlassLabels();
+		MulticlassLabels();
 
 		/** constructor
 		 *
 		 * @param num_labels number of labels
 		 */
-		CMulticlassLabels(int32_t num_labels);
+		MulticlassLabels(int32_t num_labels);
 
 		/** constructor
 		 *
 		 * @param src labels to set
 		 */
-		CMulticlassLabels(SGVector<float64_t> src);
+		MulticlassLabels(SGVector<float64_t> src);
 
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CMulticlassLabels(CFile* loader);
+		MulticlassLabels(std::shared_ptr<File> loader);
 
 		/**
 		 * Convert binary labels to multiclass labels,
@@ -61,13 +61,13 @@ class CMulticlassLabels : public CDenseLabels
 		 *
 		 * @param labels Binary labels
 		 */
-		CMulticlassLabels(CBinaryLabels* labels);
+		MulticlassLabels(std::shared_ptr<BinaryLabels> labels);
 
 		/** copy constructor */
-		CMulticlassLabels(const CMulticlassLabels& orig);
+		MulticlassLabels(const MulticlassLabels& orig);
 
 		/** destructor */
-		~CMulticlassLabels();
+		~MulticlassLabels();
 
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
@@ -85,14 +85,14 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		virtual ELabelType get_label_type() const;
 
-		virtual CLabels* duplicate() const;
+		virtual std::shared_ptr<Labels> duplicate() const;
 
 		/** returns labels containing +1 at positions with ith class
 		 *  and -1 at other positions
 		 *  @param i index of class
 		 *  @return new binary labels
 		 */
-		CBinaryLabels* get_binary_for_class(int32_t i);
+		std::shared_ptr<BinaryLabels> get_binary_for_class(int32_t i);
 
 		/** get unique labels (new SGVector)
 		 *
@@ -143,14 +143,14 @@ class CMulticlassLabels : public CDenseLabels
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
 #ifndef SWIG // SWIG should skip this part
-		virtual CLabels* shallow_subset_copy();
+		virtual std::shared_ptr<Labels> shallow_subset_copy();
 #endif
 		/**
 		 * Cast a generic label object to a multiclass one
-		 * @param labels generic CLabels instance
+		 * @param labels generic Labels instance
 		 * @return the casted pointer (already SG_REF'ed)
 		 */
-		static CMulticlassLabels* obtain_from_generic(CLabels* labels);
+		static std::shared_ptr<MulticlassLabels> obtain_from_generic(std::shared_ptr<Labels> labels);
 
 	private:
 		/** initialises and register parameters */
@@ -163,7 +163,7 @@ class CMulticlassLabels : public CDenseLabels
 };
 
 #ifndef SWIG
-Some<CMulticlassLabels> multiclass_labels(CLabels* orig);
+std::shared_ptr<MulticlassLabels> multiclass_labels(std::shared_ptr<Labels> orig);
 #endif // SWIG
 }
 #endif

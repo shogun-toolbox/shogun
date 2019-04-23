@@ -13,7 +13,7 @@
 using namespace std;
 using namespace shogun;
 
-void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
+void MultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 {
 	indices.display_vector("indices");
 	ASSERT(m_task_relation)
@@ -53,13 +53,13 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 	SG_FREE(tasks_indices);
 }
 
-float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t MultitaskROCEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	require(predicted->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
 	require(ground_truth->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
 
-        CBinaryLabels* predicted_binary = (CBinaryLabels*)predicted;
-        CBinaryLabels* ground_truth_binary = (CBinaryLabels*)ground_truth;
+        auto predicted_binary = binary_labels(predicted);
+        auto ground_truth_binary = binary_labels(ground_truth);
 
 	//io::print("Evaluate\n");
 	predicted->remove_all_subsets();

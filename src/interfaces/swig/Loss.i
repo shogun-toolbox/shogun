@@ -5,7 +5,7 @@
  */
 
 /* Loss renames */
-%rename(LossFunction) CLossFunction;
+%shared_ptr(shogun::LossFunction)
 
 /* Loss includes */
 %include <shogun/loss/LossFunction.h>

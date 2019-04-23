@@ -12,39 +12,34 @@
 
 using namespace shogun;
 
-CMulticlassOVREvaluation::CMulticlassOVREvaluation() :
-	CMulticlassOVREvaluation(nullptr)
+MulticlassOVREvaluation::MulticlassOVREvaluation() :
+	MulticlassOVREvaluation(nullptr)
 {
 }
 
-CMulticlassOVREvaluation::CMulticlassOVREvaluation(CBinaryClassEvaluation* binary_evaluation) :
-	CEvaluation(), m_binary_evaluation(nullptr), m_graph_results(nullptr), m_num_graph_results(0)
+MulticlassOVREvaluation::MulticlassOVREvaluation(std::shared_ptr<BinaryClassEvaluation> binary_evaluation) :
+	Evaluation(), m_binary_evaluation(nullptr), m_graph_results(nullptr), m_num_graph_results(0)
 {
-    SG_ADD((CEvaluation**)&m_binary_evaluation, "binary_evaluation", "binary evaluator")
+    SG_ADD((std::shared_ptr<Evaluation>*)&m_binary_evaluation, "binary_evaluation", "binary evaluator")
 }
 
-CMulticlassOVREvaluation::~CMulticlassOVREvaluation()
+MulticlassOVREvaluation::~MulticlassOVREvaluation()
 {
 	if (m_graph_results)
 	{
 		SG_FREE(m_graph_results);
 	}
-
-	if (m_binary_evaluation)
-	{
-		SG_UNREF(m_binary_evaluation);
-	}
 }
 
-float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t MulticlassOVREvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(m_binary_evaluation)
 	ASSERT(predicted)
 	ASSERT(ground_truth)
 	int32_t n_labels = predicted->get_num_labels();
 	ASSERT(n_labels)
-	CMulticlassLabels* predicted_mc = (CMulticlassLabels*)predicted;
-	CMulticlassLabels* ground_truth_mc = (CMulticlassLabels*)ground_truth;
+	auto predicted_mc = multiclass_labels(predicted);
+	auto ground_truth_mc = multiclass_labels(ground_truth);
 	int32_t n_classes = predicted_mc->get_multiclass_confidences(0).size();
 	ASSERT(n_classes>0)
 	m_last_results = SGVector<float64_t>(n_classes);
@@ -58,7 +53,7 @@ float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground
 			all(i,j) = confs[j];
 		}
 	}
-	if (dynamic_cast<CROCEvaluation*>(m_binary_evaluation) || dynamic_cast<CPRCEvaluation*>(m_binary_evaluation))
+	if (std::dynamic_pointer_cast<ROCEvaluation>(m_binary_evaluation) || std::dynamic_pointer_cast<PRCEvaluation>(m_binary_evaluation))
 	{
 		for (int32_t i=0; i<m_num_graph_results; i++)
 			m_graph_results[i].~SGMatrix<float64_t>();
@@ -68,7 +63,7 @@ float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground
 	}
 	for (int32_t c=0; c<n_classes; c++)
 	{
-		CLabels* pred = new CBinaryLabels(SGVector<float64_t>(all.get_column_vector(c),n_labels,false));
+		auto pred = std::make_shared<BinaryLabels>(SGVector<float64_t>(all.get_column_vector(c),n_labels,false));
 		SGVector<float64_t> gt_vec(n_labels);
 		for (int32_t i=0; i<n_labels; i++)
 		{
@@ -77,19 +72,19 @@ float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground
 			else
 				gt_vec[i] = -1.0;
 		}
-		CLabels* gt = new CBinaryLabels(gt_vec);
+		auto gt = std::make_shared<BinaryLabels>(gt_vec);
 		m_last_results[c] = m_binary_evaluation->evaluate(pred, gt);
 
-		if (dynamic_cast<CROCEvaluation*>(m_binary_evaluation))
+		if (std::dynamic_pointer_cast<ROCEvaluation>(m_binary_evaluation))
 		{
 			new (&m_graph_results[c]) SGMatrix<float64_t>();
-			m_graph_results[c] = ((CROCEvaluation*)m_binary_evaluation)->get_ROC();
+			m_graph_results[c] = (std::static_pointer_cast<ROCEvaluation>(m_binary_evaluation))->get_ROC();
 		}
-		if (dynamic_cast<CPRCEvaluation*>(m_binary_evaluation))
+		if (std::dynamic_pointer_cast<PRCEvaluation>(m_binary_evaluation))
 		{
 			new (&m_graph_results[c]) SGMatrix<float64_t>();
-			m_graph_results[c] = ((CPRCEvaluation*)m_binary_evaluation)->get_PRC();
+			m_graph_results[c] = (std::static_pointer_cast<PRCEvaluation>(m_binary_evaluation))->get_PRC();
 		}
 	}
-	return CStatistics::mean(m_last_results);
+	return Statistics::mean(m_last_results);
 }

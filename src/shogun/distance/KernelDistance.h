@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-	class CDistance;
+	class Distance;
 
 /** @brief The Kernel distance takes a distance as input.
  *
@@ -28,18 +28,18 @@ namespace shogun
  *     d({\bf x}, {\bf x'}) = e^{-\frac{k({\bf x}, {\bf x'})}{width}}
  * \f]
  */
-class CKernelDistance: public CDistance
+class KernelDistance: public Distance
 {
 	public:
 		/** default constructor  */
-		CKernelDistance();
+		KernelDistance();
 
 		/** constructor
 		 *
 		 * @param width width
 		 * @param k kernel
 		 */
-		CKernelDistance(float64_t width, CKernel* k);
+		KernelDistance(float64_t width, std::shared_ptr<Kernel> k);
 
 		/** constructor
 		 *
@@ -48,11 +48,11 @@ class CKernelDistance: public CDistance
 		 * @param width width
 		 * @param k kernel
 		 */
-		CKernelDistance(
-			CFeatures *l, CFeatures *r, float64_t width, CKernel* k);
+		KernelDistance(
+			std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t width, std::shared_ptr<Kernel> k);
 
 		/** destructor */
-		virtual ~CKernelDistance();
+		virtual ~KernelDistance();
 
 		/** initialize kernel
 		 *
@@ -60,7 +60,7 @@ class CKernelDistance: public CDistance
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *
@@ -106,7 +106,7 @@ class CKernelDistance: public CDistance
 
 	private:
 		/** kernel */
-		CKernel* kernel;
+		std::shared_ptr<Kernel> kernel;
 		/** width */
 		float64_t width;
 };

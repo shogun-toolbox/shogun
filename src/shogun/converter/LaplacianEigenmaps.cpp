@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
  *          Heiko Strathmann
  */
 
@@ -12,8 +12,8 @@
 
 using namespace shogun;
 
-CLaplacianEigenmaps::CLaplacianEigenmaps() :
-		CEmbeddingConverter()
+LaplacianEigenmaps::LaplacianEigenmaps() :
+		EmbeddingConverter()
 {
 	m_k = 3;
 	m_tau = 1.0;
@@ -21,46 +21,46 @@ CLaplacianEigenmaps::CLaplacianEigenmaps() :
 	init();
 }
 
-void CLaplacianEigenmaps::init()
+void LaplacianEigenmaps::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 	SG_ADD(&m_tau, "tau", "heat distribution coefficient", ParameterProperties::HYPER);
 }
 
-CLaplacianEigenmaps::~CLaplacianEigenmaps()
+LaplacianEigenmaps::~LaplacianEigenmaps()
 {
 }
 
-void CLaplacianEigenmaps::set_k(int32_t k)
+void LaplacianEigenmaps::set_k(int32_t k)
 {
 	ASSERT(k>0)
 	m_k = k;
 }
 
-int32_t CLaplacianEigenmaps::get_k() const
+int32_t LaplacianEigenmaps::get_k() const
 {
 	return m_k;
 }
 
-void CLaplacianEigenmaps::set_tau(float64_t tau)
+void LaplacianEigenmaps::set_tau(float64_t tau)
 {
 	m_tau = tau;
 }
 
-float64_t CLaplacianEigenmaps::get_tau() const
+float64_t LaplacianEigenmaps::get_tau() const
 {
 	return m_tau;
 }
 
-const char* CLaplacianEigenmaps::get_name() const
+const char* LaplacianEigenmaps::get_name() const
 {
 	return "LaplacianEigenmaps";
 };
 
-CFeatures* CLaplacianEigenmaps::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features> LaplacianEigenmaps::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	// shorthand for simplefeatures
-	SG_REF(features);
+
 
 	// get dimensionality and number of vectors of data
 	int32_t N = features->get_num_vectors();
@@ -70,19 +70,19 @@ CFeatures* CLaplacianEigenmaps::transform(CFeatures* features, bool inplace)
 	// compute distance matrix
 	ASSERT(m_distance)
 	m_distance->init(features,features);
-	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return embedding;
 }
 
-CDenseFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* distance)
+std::shared_ptr<DenseFeatures<float64_t>> LaplacianEigenmaps::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.gaussian_kernel_width = m_tau;
 	parameters.method = SHOGUN_LAPLACIAN_EIGENMAPS;
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
+	parameters.distance = distance.get();
 	return tapkee_embed(parameters);
 }

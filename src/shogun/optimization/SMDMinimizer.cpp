@@ -39,10 +39,10 @@ SMDMinimizer::SMDMinimizer()
 
 SMDMinimizer::~SMDMinimizer()
 {
-	SG_UNREF(m_mapping_fun);
+
 }
 
-SMDMinimizer::SMDMinimizer(FirstOrderStochasticCostFunction *fun)
+SMDMinimizer::SMDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
 	:FirstOrderStochasticMinimizer(fun)
 {
 	init();
@@ -54,7 +54,7 @@ float64_t SMDMinimizer::minimize()
 	init_minimization();
 	SGVector<float64_t> variable_reference=m_fun->obtain_variable_reference();
 	SGVector<float64_t> dual_variable=m_mapping_fun->get_dual_variable(variable_reference);
-	FirstOrderStochasticCostFunction *fun=dynamic_cast<FirstOrderStochasticCostFunction *>(m_fun);
+	auto fun=m_fun->as<FirstOrderStochasticCostFunction>();
 	require(fun,"the cost function must be a stochastic cost function");
 	for(;m_cur_passes<m_num_passes;m_cur_passes++)
 	{
@@ -79,17 +79,17 @@ float64_t SMDMinimizer::minimize()
 void SMDMinimizer::init()
 {
 	m_mapping_fun=NULL;
-	SG_ADD((CSGObject **)&m_mapping_fun, "SMDMinimizer__m_mapping_fun",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_mapping_fun, "SMDMinimizer__m_mapping_fun",
 		"m_mapping_fun in SMDMinimizer");
 }
 
-void SMDMinimizer::set_mapping_function(MappingFunction* mapping_fun)
+void SMDMinimizer::set_mapping_function(std::shared_ptr<MappingFunction> mapping_fun)
 {
 	require(mapping_fun, "mapping/projection function must be set");
 	if(m_mapping_fun!=mapping_fun)
 	{
-		SG_REF(mapping_fun);
-		SG_UNREF(m_mapping_fun);
+
+
 		m_mapping_fun=mapping_fun;
 	}
 }

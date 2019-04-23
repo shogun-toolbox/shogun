@@ -27,21 +27,21 @@ enum EDirectSolverType
 /** @brief Class that provides a solve method for complex dense-matrix
  * linear systems
  */
-class CDirectLinearSolverComplex : public CLinearSolver<complex128_t, float64_t>
+class DirectLinearSolverComplex : public LinearSolver<complex128_t, float64_t>
 {
 public:
 	/** default constructor */
-	CDirectLinearSolverComplex();
+	DirectLinearSolverComplex();
 
 	/**
 	 * constructor
 	 *
 	 * @param type the type of solver to be used in solve method
 	 */
-	CDirectLinearSolverComplex(EDirectSolverType type);
+	DirectLinearSolverComplex(EDirectSolverType type);
 
 	/** destructor */
-	virtual ~CDirectLinearSolverComplex();
+	virtual ~DirectLinearSolverComplex();
 
 	/**
 	 * solve method for solving complex linear systems
@@ -50,7 +50,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex128_t> solve(CLinearOperator<complex128_t>* A,
+	virtual SGVector<complex128_t> solve(std::shared_ptr<LinearOperator<complex128_t>> A,
 			SGVector<float64_t> b);
 
 	/** @return object name */

@@ -43,12 +43,12 @@
 
 using namespace shogun;
 
-class RandomForest : public ::testing::Test
+class RandomForestTest : public ::testing::Test
 {
 public:
-	CDenseFeatures<float64_t>* weather_features_test;
-	CDenseFeatures<float64_t>* weather_features_train;
-	CMulticlassLabels* weather_labels_train;
+	std::shared_ptr<DenseFeatures<float64_t>> weather_features_test;
+	std::shared_ptr<DenseFeatures<float64_t>> weather_features_train;
+	std::shared_ptr<MulticlassLabels> weather_labels_train;
 	SGVector<bool> weather_ft;
 
 	virtual void SetUp()
@@ -58,9 +58,9 @@ public:
 
 	virtual void TearDown()
 	{
-		SG_UNREF(weather_features_train);
-		SG_UNREF(weather_features_test);
-		SG_UNREF(weather_labels_train);
+
+
+
 	}
 
 	void load_toy_data()
@@ -70,13 +70,13 @@ public:
 
 		generate_toy_data_weather(weather_data, lab);
 
-		weather_features_train = new CDenseFeatures<float64_t>(weather_data);
-		weather_labels_train = new CMulticlassLabels(lab);
+		weather_features_train = std::make_shared<DenseFeatures<float64_t>>(weather_data);
+		weather_labels_train = std::make_shared<MulticlassLabels>(lab);
 
 		SGMatrix<float64_t> test(4, 5);
 		SGVector<float64_t> test_labels(4);
 		generate_toy_data_weather(test, test_labels, false);
-		weather_features_test = new CDenseFeatures<float64_t>(test);
+		weather_features_test = std::make_shared<DenseFeatures<float64_t>>(test);
 
 		auto feature_types = SGVector<bool>(4);
 
@@ -87,26 +87,26 @@ public:
 
 		weather_ft = feature_types;
 
-		SG_REF(weather_features_train);
-		SG_REF(weather_features_test);
-		SG_REF(weather_labels_train);
+
+
+
 	}
 };
 
-TEST_F(RandomForest, classify_nominal_test)
+TEST_F(RandomForestTest, classify_nominal_test)
 {
 	int32_t seed = 2343;
-	CRandomForest* c =
-		new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
+	auto c =
+	    std::make_shared<RandomForest>(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
-	CMajorityVote* mv = new CMajorityVote();
+	auto mv = std::make_shared<MajorityVote>();
 	c->set_combination_rule(mv);
 	env()->set_num_threads(1);
 	c->put("seed", seed);
 	c->train(weather_features_train);
 
-	CMulticlassLabels* result =
-		(CMulticlassLabels*)c->apply(weather_features_test);
+	auto result =
+	    c->apply(weather_features_test)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -115,16 +115,12 @@ TEST_F(RandomForest, classify_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	CEvaluation* eval = new CMulticlassAccuracy();
-	c->put(CRandomForest::kOobEvaluationMetric, eval);
-	EXPECT_NEAR(0.7142857,c->get<float64_t>(CRandomForest::kOobError),1e-6);
-
-	SG_UNREF(result);
-	SG_UNREF(c);
-	SG_UNREF(eval);
+	auto eval=std::make_shared<MulticlassAccuracy>();
+	c->put(RandomForest::kOobEvaluationMetric, eval);
+	EXPECT_NEAR(0.7142857,c->get<float64_t>(RandomForest::kOobError),1e-6);
 }
 
-TEST_F(RandomForest, classify_non_nominal_test)
+TEST_F(RandomForestTest, classify_non_nominal_test)
 {
 	int32_t seed = 2343;
 
@@ -133,17 +129,17 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	weather_ft[2] = false;
 	weather_ft[3] = false;
 
-	CRandomForest* c =
-		new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
+	auto c =
+	    std::make_shared<RandomForest>(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
-	CMajorityVote* mv = new CMajorityVote();
+	auto mv = std::make_shared<MajorityVote>();
 	c->set_combination_rule(mv);
 	env()->set_num_threads(1);
 	c->put("seed", seed);
 	c->train(weather_features_train);
 
-	CMulticlassLabels* result =
-		(CMulticlassLabels*)c->apply(weather_features_test);
+	auto result =
+	    c->apply(weather_features_test)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 	SGVector<float64_t> values_vector = result->get_values();
 
@@ -153,16 +149,12 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	CEvaluation* eval = new CMulticlassAccuracy();
-	c->put(CRandomForest::kOobEvaluationMetric, eval);
-	EXPECT_NEAR(0.714285,c->get<float64_t>(CRandomForest::kOobError),1e-6);
-
-	SG_UNREF(result);
-	SG_UNREF(c);
-	SG_UNREF(eval);
+	auto eval=std::make_shared<MulticlassAccuracy>();
+	c->put(RandomForest::kOobEvaluationMetric, eval);
+	EXPECT_NEAR(0.714285,c->get<float64_t>(RandomForest::kOobError),1e-6);
 }
 
-TEST_F(RandomForest, score_compare_sklearn_toydata)
+TEST_F(RandomForestTest, score_compare_sklearn_toydata)
 {
 	int32_t seed = 211;
 	// Comparison with sklearn's RandomForest probability outputs
@@ -172,20 +164,19 @@ TEST_F(RandomForest, score_compare_sklearn_toydata)
 
 	SGMatrix<float64_t> data(data_A, 2, 4, false);
 
-	CDenseFeatures<float64_t>* features_train =
-		new CDenseFeatures<float64_t>(data);
+	auto features_train =
+	    std::make_shared<DenseFeatures<float64_t>>(data);
 
-	float64_t labels[] = {0.0, 0.0, 1.0, 1.0};
-	SGVector<float64_t> lab(labels, 4);
-	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
+	SGVector<float64_t> lab {0.0, 0.0, 1.0, 1.0};
+	auto labels_train = std::make_shared<MulticlassLabels>(lab);
 
-	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
+	auto c = std::make_shared<RandomForest>(features_train, labels_train, 10, 2);
 	SGVector<bool> ft = SGVector<bool>(2);
 	ft[0] = false;
 	ft[1] = false;
 	c->set_feature_types(ft);
 
-	CMeanRule* mr = new CMeanRule();
+	auto mr = std::make_shared<MeanRule>();
 	c->set_combination_rule(mr);
 	c->put("seed", seed);
 	c->train(features_train);
@@ -204,10 +195,9 @@ TEST_F(RandomForest, score_compare_sklearn_toydata)
 		EXPECT_NEAR(expected_probabilities[i], values_vector[i], 1.1e-1);
 	}
 
-	SG_UNREF(result);
 }
 
-TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
+TEST_F(RandomForestTest, score_consistent_with_binary_trivial_data)
 {
 	int32_t seed = 1137;
 	// Generates data for y = x1 > 5 as decision boundary
@@ -223,12 +213,11 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 	{
 		data_B(0, i) = i < 5 ? uniform_int_dist(prng, {0, 5}) : uniform_int_dist(prng, {5, 10});
 	}
-	CDenseFeatures<float64_t>* features_train =
-		new CDenseFeatures<float64_t>(data_B);
+	auto features_train =
+	    std::make_shared<DenseFeatures<float64_t>>(data_B);
 
-	float64_t labels[] = {0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-	SGVector<float64_t> lab(labels, num_train);
-	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
+	SGVector<float64_t> lab {0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+	auto labels_train = std::make_shared<MulticlassLabels>(lab);
 
 	SGMatrix<float64_t> test_data(1, num_test, false);
 
@@ -237,16 +226,16 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 		test_data(0, i) = i < 5 ? uniform_int_dist(prng, {0, 4}) : uniform_int_dist(prng, {6, 10});
 	}
 
-	CDenseFeatures<float64_t>* features_test =
-		new CDenseFeatures<float64_t>(test_data);
+	auto features_test =
+	    std::make_shared<DenseFeatures<float64_t>>(test_data);
 
-	CRandomForest* c =
-		new CRandomForest(features_train, labels_train, num_trees, 1);
+	auto c =
+	    std::make_shared<RandomForest>(features_train, labels_train, num_trees, 1);
 	SGVector<bool> ft = SGVector<bool>(1);
 	ft[0] = false;
 	c->set_feature_types(ft);
 
-	CMeanRule* mr = new CMeanRule();
+	auto mr = std::make_shared<MeanRule>();
 	c->set_combination_rule(mr);
 	c->put("seed", seed);
 	c->train(features_train);
@@ -276,6 +265,4 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 	EXPECT_NEAR(1.0, values_vector[7], 1e-1);
 	EXPECT_NEAR(1.0, values_vector[8], 1e-1);
 	EXPECT_NEAR(1.0, values_vector[9], 1e-1);
-
-	SG_UNREF(result);
 }

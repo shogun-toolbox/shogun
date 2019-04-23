@@ -20,41 +20,41 @@
 
 using namespace shogun;
 
-CCrossValidation::CCrossValidation() : Seedable<CMachineEvaluation>()
+CrossValidation::CrossValidation() : Seedable<MachineEvaluation>()
 {
 	init();
 }
 
-CCrossValidation::CCrossValidation(
-    CMachine* machine, CFeatures* features, CLabels* labels,
-    CSplittingStrategy* splitting_strategy, CEvaluation* evaluation_criterion)
-    : Seedable<CMachineEvaluation>(
+CrossValidation::CrossValidation(
+    std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
+    std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion)
+    : Seedable<MachineEvaluation>(
           machine, features, labels, splitting_strategy, evaluation_criterion)
 {
 	init();
 }
 
-CCrossValidation::CCrossValidation(
-    CMachine* machine, CLabels* labels, CSplittingStrategy* splitting_strategy,
-    CEvaluation* evaluation_criterion)
-    : Seedable<CMachineEvaluation>(
+CrossValidation::CrossValidation(
+    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+    std::shared_ptr<Evaluation> evaluation_criterion)
+    : Seedable<MachineEvaluation>(
           machine, labels, splitting_strategy, evaluation_criterion)
 {
 	init();
 }
 
-CCrossValidation::~CCrossValidation()
+CrossValidation::~CrossValidation()
 {
 }
 
-void CCrossValidation::init()
+void CrossValidation::init()
 {
 	m_num_runs = 1;
 
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions");
 }
 
-CEvaluationResult* CCrossValidation::evaluate_impl() const
+std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl() const
 {
 	SGVector<float64_t> results(m_num_runs);
 
@@ -67,18 +67,17 @@ CEvaluationResult* CCrossValidation::evaluate_impl() const
 	}
 
 	/* construct evaluation result */
-	CCrossValidationResult* result = new CCrossValidationResult();
-	result->set_mean(CStatistics::mean(results));
+	auto result = std::make_shared<CrossValidationResult>();
+	result->set_mean(Statistics::mean(results));
 	if (m_num_runs > 1)
-		result->set_std_dev(CStatistics::std_deviation(results));
+		result->set_std_dev(Statistics::std_deviation(results));
 	else
 		result->set_std_dev(0);
 
-	SG_REF(result);
 	return result;
 }
 
-void CCrossValidation::set_num_runs(int32_t num_runs)
+void CrossValidation::set_num_runs(int32_t num_runs)
 {
 	if (num_runs < 1)
 		error("{} is an illegal number of repetitions", num_runs);
@@ -86,7 +85,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs = num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run(int64_t index) const
+float64_t CrossValidation::evaluate_one_run(int64_t index) const
 {
 	SG_TRACE("entering {}::evaluate_one_run()", get_name());
 	index_t num_subsets = m_splitting_strategy->get_num_subsets();
@@ -114,10 +113,6 @@ float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 		auto labels_train = view(m_labels, idx_train);
 		auto features_test = view(m_features, idx_test);
 		auto labels_test = view(m_labels, idx_test);
-		SG_REF(features_train);
-		SG_REF(labels_train);
-		SG_REF(features_test);
-		SG_REF(labels_test);
 
 		auto evaluation_criterion = make_clone(m_evaluation_criterion);
 
@@ -125,22 +120,13 @@ float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 		machine->train(features_train);
 
 		auto result_labels = machine->apply(features_test);
-		SG_REF(result_labels);
 
 		results[i] = evaluation_criterion->evaluate(result_labels, labels_test);
 		io::info("Result of cross-validation fold {}/{} is {}", i+1, num_subsets, results[i]);
-
-		SG_UNREF(machine);
-		SG_UNREF(features_train);
-		SG_UNREF(labels_train);
-		SG_UNREF(features_test);
-		SG_UNREF(labels_test);
-		SG_UNREF(evaluation_criterion);
-		SG_UNREF(result_labels);
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean = CStatistics::mean(results);
+	float64_t mean = Statistics::mean(results);
 
 	SG_TRACE("leaving {}::evaluate_one_run()", get_name());
 	return mean;

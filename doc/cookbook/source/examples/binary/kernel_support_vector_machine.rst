@@ -16,7 +16,7 @@ subject to:
 
 where :math:`N` is the number of training samples, :math:`{\bf x}_i` are training samples, :math:`k` is a kernel, :math:`\alpha_i` are the weights, :math:`y_i` is the corresponding label where :math:`y_i \in \{-1,+1\}` and :math:`C` is a pre-specified regularization parameter.
 
-This example uses LibSVM :cite:`chang2011libsvm` as backend, Shogun has many more SVM implementations, see :sgclass:`CSVM`.
+This example uses LibSVM :cite:`chang2011libsvm` as backend, Shogun has many more SVM implementations, see :sgclass:`SVM`.
 
 See :cite:`scholkopf2002learning` and Chapter 6 in :cite:`cristianini2000introduction` for a detailed introduction.
 
@@ -24,16 +24,16 @@ See :cite:`scholkopf2002learning` and Chapter 6 in :cite:`cristianini2000introdu
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`BinaryLabels` as
 
 .. sgexample:: kernel_support_vector_machine.sg:create_features
 
-In order to run :sgclass:`CLibSVM`, we first need to initialize a :sgclass:`CKernel` instance, such as :sgclass:`CGaussianKernel`.
-We then create a :sgclass:`CKernelMachine` instance, here :sgclass:`CLibSVM`, and provide it with parameters like the regularization coefficient :math:`C`, the kernel, the training labels, and an optional residual convergence parameter epsilon.
+In order to run :sgclass:`CLibSVM`, we first need to initialize a :sgclass:`Kernel` instance, such as :sgclass:`GaussianKernel`.
+We then create a :sgclass:`KernelMachine` instance, here :sgclass:`CLibSVM`, and provide it with parameters like the regularization coefficient :math:`C`, the kernel, the training labels, and an optional residual convergence parameter epsilon.
 
 .. sgexample:: kernel_support_vector_machine.sg:create_instance
 
-Then we train it on training data and apply it to test data. This gives :sgclass:`CLabels`, which we can extract the label vector from.
+Then we train it on training data and apply it to test data. This gives :sgclass:`Labels`, which we can extract the label vector from.
 
 .. sgexample:: kernel_support_vector_machine.sg:train_and_apply
 

@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** @brief class JediSep
  *
@@ -28,15 +28,15 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  *
  */
-class CJediSep: public CICAConverter
+class JediSep: public ICAConverter
 {
 	public:
 
 		/** constructor */
-		CJediSep();
+		JediSep();
 
 		/** destructor */
-		virtual ~CJediSep();
+		virtual ~JediSep();
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -61,7 +61,7 @@ class CJediSep: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	private:
 

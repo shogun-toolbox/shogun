@@ -4,20 +4,20 @@
 using namespace std;
 using namespace shogun::io;
 
-CBufferedInputStream::CBufferedInputStream(CInputStream* is, size_t buffer_bytes):
-	CInputStream(),
+BufferedInputStream::BufferedInputStream(InputStream* is, size_t buffer_bytes):
+	InputStream(),
 	m_is(is),
 	m_size(buffer_bytes)
 {
 	m_buffer.reserve(m_size);
 }
 
-CBufferedInputStream::~CBufferedInputStream()
+BufferedInputStream::~BufferedInputStream()
 {
 
 }
 
-error_condition CBufferedInputStream::read(string* buffer, int64_t size)
+error_condition BufferedInputStream::read(string* buffer, int64_t size)
 {
 	if (size < 0)
 		return make_error_condition(errc::invalid_argument);
@@ -55,7 +55,7 @@ error_condition CBufferedInputStream::read(string* buffer, int64_t size)
 	return r;
 }
 
-error_condition CBufferedInputStream::skip(int64_t bytes)
+error_condition BufferedInputStream::skip(int64_t bytes)
 {
 	if (bytes < 0)
 		return make_error_condition(errc::invalid_argument);
@@ -77,12 +77,12 @@ error_condition CBufferedInputStream::skip(int64_t bytes)
 	return {};
 }
 
-int64_t CBufferedInputStream::tell() const
+int64_t BufferedInputStream::tell() const
 {
 	return m_is->tell() - (m_limit - m_pos);
 }
 
-void CBufferedInputStream::reset()
+void BufferedInputStream::reset()
 {
 	m_is->reset();
 	m_pos = 0;
@@ -91,7 +91,7 @@ void CBufferedInputStream::reset()
 }
 
 
-error_condition CBufferedInputStream::read_line(std::string* result)
+error_condition BufferedInputStream::read_line(std::string* result)
 {
 	result->clear();
 	error_condition r;
@@ -123,7 +123,7 @@ error_condition CBufferedInputStream::read_line(std::string* result)
 	return r;
 }
 
-error_condition CBufferedInputStream::read_all(std::string* result)
+error_condition BufferedInputStream::read_all(std::string* result)
 {
 	result->clear();
 	error_condition r;
@@ -145,7 +145,7 @@ error_condition CBufferedInputStream::read_all(std::string* result)
 	return r;
 }
 
-error_condition CBufferedInputStream::fill()
+error_condition BufferedInputStream::fill()
 {
 	if (m_status)
 	{

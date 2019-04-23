@@ -15,13 +15,13 @@
 
 using namespace shogun;
 
-CHammingWordDistance::CHammingWordDistance()
+HammingWordDistance::HammingWordDistance()
 {
 	init();
 }
 
-CHammingWordDistance::CHammingWordDistance(bool sign)
-: CStringDistance<uint16_t>()
+HammingWordDistance::HammingWordDistance(bool sign)
+: StringDistance<uint16_t>()
 {
 	init();
 	use_sign=sign;
@@ -29,9 +29,9 @@ CHammingWordDistance::CHammingWordDistance(bool sign)
 	SG_DEBUG("CHammingWordDistance with sign: {} created", (sign) ? 1 : 0)
 }
 
-CHammingWordDistance::CHammingWordDistance(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool sign)
-: CStringDistance<uint16_t>()
+HammingWordDistance::HammingWordDistance(
+	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, bool sign)
+: StringDistance<uint16_t>()
 {
 	init();
 	use_sign=sign;
@@ -41,29 +41,29 @@ CHammingWordDistance::CHammingWordDistance(
 	init(l, r);
 }
 
-CHammingWordDistance::~CHammingWordDistance()
+HammingWordDistance::~HammingWordDistance()
 {
 	cleanup();
 }
 
-bool CHammingWordDistance::init(CFeatures* l, CFeatures* r)
+bool HammingWordDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool result=CStringDistance<uint16_t>::init(l,r);
+	bool result=StringDistance<uint16_t>::init(l,r);
 	return result;
 }
 
-void CHammingWordDistance::cleanup()
+void HammingWordDistance::cleanup()
 {
 }
 
-float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t HammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->
+	uint16_t* avec=(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs))->
 		get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->
+	uint16_t* bvec=(std::static_pointer_cast<StringFeatures<uint16_t>>(rhs))->
 		get_feature_vector(idx_b, blen, free_bvec);
 
 	int32_t result=0;
@@ -158,15 +158,15 @@ float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
 			right_idx++;
 	}
 
-	((CStringFeatures<uint16_t>*) lhs)->
+	(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs))->
 		free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint16_t>*) rhs)->
+	(std::static_pointer_cast<StringFeatures<uint16_t>>(rhs))->
 		free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
 }
 
-void CHammingWordDistance::init()
+void HammingWordDistance::init()
 {
 	use_sign = false;
 	SG_ADD(

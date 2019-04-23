@@ -17,10 +17,10 @@
 
 namespace shogun
 {
-class CFeatures;
-class CTokenizer;
-class CConverter;
-template<class T> class CSparseFeatures;
+class Features;
+class Tokenizer;
+class Converter;
+template<class T> class SparseFeatures;
 
 /** @brief This class can be used to convert a document collection contained in a CStringFeatures<char>
  * object where each document is stored as a single vector into a hashed Bag-of-Words representation.
@@ -33,11 +33,11 @@ template<class T> class CSparseFeatures;
  * Eg. for the tokens ["a", "b", "c", "d"], with n_grams = 2 and skips = 2, one would get the following combinations :
  * ["a", "ab", "ac" (skipped 1), "ad" (skipped 2), "b", "bc", "bd" (skipped 1), "c", "cd", "d"].
  */
-class CHashedDocConverter : public CConverter
+class HashedDocConverter : public Converter
 {
 public:
 	/** Default constructor */
-	CHashedDocConverter();
+	HashedDocConverter();
 
 	/** Constructor
 	 * Creates tokens on whitespace
@@ -47,7 +47,7 @@ public:
 	 * @param n_grams the max number of tokens to consider when combining tokens
 	 * @param skips the max number of tokens to skip when combining tokens
 	 */
-	CHashedDocConverter(int32_t hash_bits, bool normalize = false, int32_t n_grams = 1, int32_t skips = 0);
+	HashedDocConverter(int32_t hash_bits, bool normalize = false, int32_t n_grams = 1, int32_t skips = 0);
 
 	/** Constructor
 	 *
@@ -57,18 +57,18 @@ public:
 	 * @param n_grams the max number of tokens to consider when combining tokens
 	 * @param skips the max number of tokens to skip when combining tokens
 	 */
-	CHashedDocConverter(CTokenizer* tzer, int32_t hash_bits, bool normalize = false, int32_t n_grams = 1,
+	HashedDocConverter(std::shared_ptr<Tokenizer> tzer, int32_t hash_bits, bool normalize = false, int32_t n_grams = 1,
 		int32_t skips = 0);
 
 	/** Destructor */
-	virtual ~CHashedDocConverter();
+	virtual ~HashedDocConverter();
 
 	/** Hashes each string contained in features
 	 *
 	 * @param features the strings to be hashed. Must be an instance of CStringFeatures.
-	 * @return a CSparseFeatures object containing the hashes of the strings.
+	 * @return a SparseFeatures object containing the hashes of the strings.
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** Hashes the tokens contained in document
 	 *
@@ -118,7 +118,7 @@ public:
 protected:
 
 	/** init */
-	void init(CTokenizer* tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
+	void init(std::shared_ptr<Tokenizer> tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
 
 	/** This method takes a dynamic array as an argument, sorts it and returns the number
 	 * of the distinct elements(indices here) in the array.
@@ -126,7 +126,7 @@ protected:
 	 * @param hashed_indices the array to sort and count elements
 	 * @return the number of distinct elements
 	 */
-	int32_t count_distinct_indices(CDynamicArray<uint32_t>& hashed_indices);
+	int32_t count_distinct_indices(std::vector<uint32_t>& hashed_indices);
 
 	/** This method takes the dynamic array containing all the hashed indices of a document and returns a compact
 	 * sparse representation with each index found and with the count of such index
@@ -134,7 +134,7 @@ protected:
 	 * @param hashed_indices the array containing the hashed indices
 	 * @return the compact hashed document representation
 	 */
-	SGSparseVector<float64_t> create_hashed_representation(CDynamicArray<uint32_t>& hashed_indices);
+	SGSparseVector<float64_t> create_hashed_representation(std::vector<uint32_t>& hashed_indices);
 
 protected:
 
@@ -142,7 +142,7 @@ protected:
 	int32_t num_bits;
 
 	/** the tokenizer */
-	CTokenizer* tokenizer;
+	std::shared_ptr<Tokenizer> tokenizer;
 
 	/** whether to normalize or not */
 	bool should_normalize;

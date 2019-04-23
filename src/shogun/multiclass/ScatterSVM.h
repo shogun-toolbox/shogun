@@ -45,14 +45,14 @@ namespace shogun
  * TU Berlin, 2009
  *
  * */
-class CScatterSVM : public CMulticlassSVM
+class ScatterSVM : public MulticlassSVM
 {
 	public:
 		/** default constructor  */
-		CScatterSVM();
+		ScatterSVM();
 
 		/** constructor */
-		CScatterSVM(SCATTER_TYPE type);
+		ScatterSVM(SCATTER_TYPE type);
 
 		/** constructor (using NO_BIAS as default scatter_type)
 		 *
@@ -60,10 +60,10 @@ class CScatterSVM : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CScatterSVM(float64_t C, CKernel* k, CLabels* lab);
+		ScatterSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~CScatterSVM();
+		virtual ~ScatterSVM();
 
 		/** get classifier type
 		 *
@@ -82,7 +82,7 @@ class CScatterSVM : public CMulticlassSVM
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify_one_vs_rest();
+		virtual std::shared_ptr<Labels> classify_one_vs_rest();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "ScatterSVM"; }
@@ -96,7 +96,7 @@ class CScatterSVM : public CMulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		void compute_norm_wc();

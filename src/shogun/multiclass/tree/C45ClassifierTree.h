@@ -72,14 +72,14 @@ namespace shogun
  *
  * cf. http://tesis-algoritmo-c45.googlecode.com/files/C45.ppt
  */
-class CC45ClassifierTree : public CTreeMachine<C45TreeNodeData>
+class C45ClassifierTree : public TreeMachine<C45TreeNodeData>
 {
 public:
 	/** constructor */
-	CC45ClassifierTree();
+	C45ClassifierTree();
 
 	/** destructor */
-	virtual ~CC45ClassifierTree();
+	virtual ~C45ClassifierTree();
 
 	/** get name
 	 * @return class name C45ClassifierTree
@@ -90,7 +90,7 @@ public:
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** prune decision tree - uses reduced error pruning algorithm
 	 *
@@ -109,7 +109,7 @@ public:
 	 * @param validation_labels multiclass labels from validation dataset
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
-	void prune_tree(CFeatures* validation_data, CLabels* validation_labels, float64_t epsilon=0.f);
+	void prune_tree(std::shared_ptr<Features> validation_data, std::shared_ptr<Labels> validation_labels, float64_t epsilon=0.f);
 
 	/** certainty of classification done by apply_multiclass.
 	 * For each data point reaching a leaf node, it computes the ratio of weight of training data
@@ -151,7 +151,7 @@ protected:
 	/** train machine - build C4.5 Tree from training data
 	 * @param data training data
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 private:
 
@@ -164,7 +164,7 @@ private:
 	 * @param level tree depth
 	 * @return pointer to the root of the C45 subtree
 	 */
-	node_t* C45train(CFeatures* data, SGVector<float64_t> weights, CMulticlassLabels* class_labels,
+	std::shared_ptr<node_t> C45train(std::shared_ptr<Features> data, SGVector<float64_t> weights, std::shared_ptr<MulticlassLabels> class_labels,
 							SGVector<int32_t> id_values, int level = 0);
 
 	/** recursive tree pruning method - called within prune_tree method
@@ -174,7 +174,7 @@ private:
 	 * @param current root of current subtree
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
-	void prune_tree_from_current_node(CDenseFeatures<float64_t>* feats, CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon);
+	void prune_tree_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon);
 
 	/** informational gain attribute for selecting best feature at each node of C4.5 Tree
 	 *
@@ -184,8 +184,8 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */
-	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, SGVector<float64_t> weights,
-									 CMulticlassLabels* class_labels);
+	float64_t informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data, SGVector<float64_t> weights,
+									 std::shared_ptr<MulticlassLabels> class_labels);
 
 	/** computes entropy (aka randomness) in data
 	 *
@@ -193,7 +193,7 @@ private:
 	 * @param weights weights associated with each of the labels
 	 * @return entropy
 	 */
-	float64_t entropy(CMulticlassLabels* labels, SGVector<float64_t> weights);
+	float64_t entropy(std::shared_ptr<MulticlassLabels> labels, SGVector<float64_t> weights);
 
 	/** uses current subtree to classify data
 	 *
@@ -202,7 +202,7 @@ private:
 	 * @param set_certainty whether to calculate certainty values or not
 	 * @return classification labels of input data
 	 */
-	CMulticlassLabels* apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats, node_t* current, bool set_certainty=false);
+	std::shared_ptr<MulticlassLabels> apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<node_t> current, bool set_certainty=false);
 
 	/** initializes members of class */
 	void init();

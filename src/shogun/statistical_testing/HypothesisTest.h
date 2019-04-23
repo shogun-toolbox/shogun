@@ -39,7 +39,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 namespace internal
 {
@@ -66,14 +66,14 @@ class DataManager;
  *
  * Abstract base class.
  */
-class CHypothesisTest : public CSGObject
+class HypothesisTest : public SGObject
 {
 public:
 	/** Default constructor */
-	CHypothesisTest();
+	HypothesisTest();
 
 	/** Destructor */
-	virtual ~CHypothesisTest();
+	virtual ~HypothesisTest();
 
 	/**
 	 * Method that enables/disables the training-testing mode. If this option
@@ -165,12 +165,12 @@ public:
 	/** @return The name of the class */
 	virtual const char* get_name() const;
 protected:
-	explicit CHypothesisTest(index_t num_distributions);
+	explicit HypothesisTest(index_t num_distributions);
 	internal::DataManager& get_data_mgr();
 	const internal::DataManager& get_data_mgr() const;
 private:
-	CHypothesisTest(const CHypothesisTest& other)=delete;
-	CHypothesisTest& operator=(const CHypothesisTest& other)=delete;
+	HypothesisTest(const HypothesisTest& other)=delete;
+	HypothesisTest& operator=(const HypothesisTest& other)=delete;
 
 	struct Self;
 	std::unique_ptr<Self> self;

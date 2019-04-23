@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-class CFile;
+class File;
 template <class T> class SGVector;
 
 /** @brief Binary Labels for binary classification
@@ -31,17 +31,17 @@ template <class T> class SGVector;
  * A note on Platt's probabilistic outputs for support vector machines.
  * Should only be used in conjunction with SVM.
  */
-class CBinaryLabels : public CDenseLabels
+class BinaryLabels : public DenseLabels
 {
 public:
 	/** default constructor */
-	CBinaryLabels();
+	BinaryLabels();
 
 	/** constructor
 	 *
 	 * @param num_labels number of labels
 	 */
-	CBinaryLabels(int32_t num_labels);
+	BinaryLabels(int32_t num_labels);
 
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 	/** constructor
@@ -49,14 +49,14 @@ public:
 	 *
 	 * @param src labels to set
 	 */
-	CBinaryLabels(SGVector<int32_t> src);
+	BinaryLabels(SGVector<int32_t> src);
 
 	/** constructor
 	 * sets labels with src elements (int64 version)
 	 *
 	 * @param src labels to set
 	 */
-	CBinaryLabels(SGVector<int64_t> src);
+	BinaryLabels(SGVector<int64_t> src);
 #endif
 
 	/** constructor
@@ -66,19 +66,19 @@ public:
 	 * @param src labels to set
 	 * @param threshold threshold
 	 */
-	CBinaryLabels(SGVector<float64_t> src, float64_t threshold = 0.0);
+	BinaryLabels(SGVector<float64_t> src, float64_t threshold = 0.0);
 
 	/** constructor
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CBinaryLabels(CFile * loader);
+	BinaryLabels(std::shared_ptr<File > loader);
 
 	/** Cast constructor
 	 *
-	 * @param dense CDenseLabels containing the binary labels
+	 * @param dense DenseLabels containing the binary labels
 	 */
-	CBinaryLabels(const CDenseLabels& dense);
+	BinaryLabels(const DenseLabels& dense);
 
 	virtual bool is_valid() const override;
 
@@ -96,7 +96,7 @@ public:
 	 */
 	virtual ELabelType get_label_type() const override;
 
-	virtual CLabels* duplicate() const override;
+	virtual std::shared_ptr<Labels> duplicate() const override;
 
 	/** Converts all scores to calibrated probabilities by fitting a
 	 * sigmoid function using the method described in
@@ -125,12 +125,12 @@ public:
 	}
 
 #ifndef SWIG // SWIG should skip this part
-	virtual CLabels* shallow_subset_copy() override;
+	virtual std::shared_ptr<Labels> shallow_subset_copy() override;
 #endif
 };
 
 #ifndef SWIG
-Some<CBinaryLabels> binary_labels(CLabels* orig);
+std::shared_ptr<BinaryLabels> binary_labels(std::shared_ptr<Labels> orig);
 #endif // SWIG
 }
 #endif

@@ -37,10 +37,10 @@
 	static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
 %}
 
-%feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
-%feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
-/*%feature("python:slot", "tp_hash", functype="hashfunc") shogun::CSGObject::myHashFunc;*/
-%feature("python:tp_print") shogun::CSGObject "print_sgobject";
+%feature("python:slot", "tp_str", functype="reprfunc") shogun::SGObject::__str__;
+%feature("python:slot", "tp_repr", functype="reprfunc") shogun::SGObject::__repr__;
+/*%feature("python:slot", "tp_hash", functype="hashfunc") shogun::SGObject::myHashFunc;*/
+%feature("python:tp_print") shogun::SGObject "print_sgobject";
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
 #endif // SWIGPYTHON
@@ -54,6 +54,9 @@
 %include "std_vector.i"
 %include "shogun_ignores.i"
 %include "RandomMixin.i"
+%include "std_shared_ptr.i" 
+%shared_ptr(shogun::SparseMatrixOperator<float64_t>)
+
 %include "Machine_includes.i"
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
@@ -192,7 +195,7 @@ import org.jblas.*;
 
 namespace shogun
 {
-%extend CSGObject
+%extend SGObject
 {
 	template <typename T, typename U = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 	void put_scalar_dispatcher(const std::string& name, T value)
@@ -290,73 +293,73 @@ namespace shogun
 #endif // SWIGR
 }
 
-%template(put) CSGObject::put_scalar_dispatcher<int32_t, int32_t>;
+%template(put) SGObject::put_scalar_dispatcher<int32_t, int32_t>;
 #ifndef SWIGJAVA
-%template(put) CSGObject::put_scalar_dispatcher<int64_t, int64_t>;
+%template(put) SGObject::put_scalar_dispatcher<int64_t, int64_t>;
 #endif // SWIGJAVA
-%template(put) CSGObject::put_scalar_dispatcher<float64_t, float64_t>;
-%template(put) CSGObject::put_scalar_dispatcher<bool, bool>;
+%template(put) SGObject::put_scalar_dispatcher<float64_t, float64_t>;
+%template(put) SGObject::put_scalar_dispatcher<bool, bool>;
 
 #ifndef SWIGR
-%template(put) CSGObject::put<SGVector<bool>, SGVector<bool>>;
+%template(put) SGObject::put<SGVector<bool>, SGVector<bool>>;
 #endif // SWIGR
 
 #if !defined(SWIGJAVA) && !defined(SWIGR)
-%template(put) CSGObject::put<SGVector<int32_t>, SGVector<int32_t>>;
-%template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
+%template(put) SGObject::put<SGVector<int32_t>, SGVector<int32_t>>;
+%template(put) SGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
 #elif defined(SWIGJAVA)
-%template(put) CSGObject::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+%template(put) SGObject::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 #elif defined(SWIGR)
-%template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<bool>, bool>;
-%template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<int32_t>, int32_t>;
-%template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<float64_t>, float64_t>;
+%template(put) SGObject::put_vector_scalar_dispatcher<SGVector<bool>, bool>;
+%template(put) SGObject::put_vector_scalar_dispatcher<SGVector<int32_t>, int32_t>;
+%template(put) SGObject::put_vector_scalar_dispatcher<SGVector<float64_t>, float64_t>;
 #endif
 
 #ifndef SWIGJAVA
-%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+%template(put) SGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #endif // SWIGJAVA
 
-%template(get_real) CSGObject::get<float64_t, void>;
-%template(get_int) CSGObject::get<int32_t, void>;
-%template(get_long) CSGObject::get<int64_t, void>;
-%template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
-%template(get_char_string_list) CSGObject::get<std::vector<SGVector<char>>, void>;
-%template(get_word_string_list) CSGObject::get<std::vector<SGVector<uint16_t>>, void>;
-%template(get_option) CSGObject::get<std::string, void>;
+%template(get_real) SGObject::get<float64_t, void>;
+%template(get_int) SGObject::get<int32_t, void>;
+%template(get_long) SGObject::get<int64_t, void>;
+%template(get_real_matrix) SGObject::get<SGMatrix<float64_t>, void>;
+%template(get_char_string_list) SGObject::get<std::vector<SGVector<char>>, void>;
+%template(get_word_string_list) SGObject::get<std::vector<SGVector<uint16_t>>, void>;
+%template(get_option) SGObject::get<std::string, void>;
 
 #ifndef SWIGJAVA
-%template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
-%template(get_int_vector) CSGObject::get<SGVector<int32_t>, void>;
+%template(get_real_vector) SGObject::get<SGVector<float64_t>, void>;
+%template(get_int_vector) SGObject::get<SGVector<int32_t>, void>;
 #else // SWIGJAVA
-%template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
-%template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
+%template(get_real_vector) SGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+%template(get_int_vector) SGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
-%template(put) CSGObject::put<std::string, std::string>;
+%template(put) SGObject::put<std::string, std::string>;
 
 %define PUT_ADD(sg_class)
-%template(put) CSGObject::put<sg_class, sg_class, void>;
-%template(add) CSGObject::add<sg_class, sg_class>;
+%template(put) SGObject::put<sg_class, sg_class, void>;
+%template(add) SGObject::add<sg_class, sg_class>;
 %enddef
 
-PUT_ADD(CMachine)
-PUT_ADD(CKernel)
-PUT_ADD(CDistance)
-PUT_ADD(CFeatures)
-PUT_ADD(CLabels)
-PUT_ADD(CECOCEncoder)
-PUT_ADD(CECOCDecoder)
-PUT_ADD(CMulticlassStrategy)
-PUT_ADD(CCombinationRule)
-PUT_ADD(CInference)
-PUT_ADD(CDifferentiableFunction)
-PUT_ADD(CNeuralLayer)
-PUT_ADD(CSplittingStrategy)
-PUT_ADD(CEvaluation)
-PUT_ADD(CSVM)
-PUT_ADD(CMeanFunction)
-PUT_ADD(CLikelihoodModel)
-PUT_ADD(CTokenizer)
-PUT_ADD(CLossFunction)
+PUT_ADD(Machine)
+PUT_ADD(Kernel)
+PUT_ADD(Distance)
+PUT_ADD(Features)
+PUT_ADD(Labels)
+PUT_ADD(ECOCEncoder)
+PUT_ADD(ECOCDecoder)
+PUT_ADD(MulticlassStrategy)
+PUT_ADD(CombinationRule)
+PUT_ADD(Inference)
+PUT_ADD(DifferentiableFunction)
+PUT_ADD(NeuralLayer)
+PUT_ADD(SplittingStrategy)
+PUT_ADD(Evaluation)
+PUT_ADD(SVM)
+PUT_ADD(MeanFunction)
+PUT_ADD(LikelihoodModel)
+PUT_ADD(Tokenizer)
+PUT_ADD(LossFunction)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;

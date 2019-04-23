@@ -14,12 +14,12 @@
 
 using namespace shogun;
 
-CCircularBuffer::CCircularBuffer()
+CircularBuffer::CircularBuffer()
 {
 	init();
 }
 
-CCircularBuffer::CCircularBuffer(int32_t buffer_size)
+CircularBuffer::CircularBuffer(int32_t buffer_size)
 {
 	init();
 
@@ -32,23 +32,23 @@ CCircularBuffer::CCircularBuffer(int32_t buffer_size)
 	m_bytes_available=m_buffer.vlen;
 }
 
-CCircularBuffer::~CCircularBuffer()
+CircularBuffer::~CircularBuffer()
 {
-	SG_UNREF(m_tokenizer);
+	
 }
 
-void CCircularBuffer::set_tokenizer(CTokenizer* tokenizer)
+void CircularBuffer::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
 {
-	SG_REF(tokenizer);
-	SG_UNREF(m_tokenizer);
+	
+	
 	m_tokenizer=tokenizer;
 }
 
-int32_t CCircularBuffer::push(SGVector<char> source)
+int32_t CircularBuffer::push(SGVector<char> source)
 {
 	if (source.vector==NULL || source.vlen==0)
 	{
-		error("CCircularBuffer::push(SGVector<char>):: Invalid parameters! Source shouldn't be NULL or zero sized");
+		error("CircularBuffer::push(SGVector<char>):: Invalid parameters! Source shouldn't be NULL or zero sized");
 		return -1;
 	}
 
@@ -88,11 +88,11 @@ int32_t CCircularBuffer::push(SGVector<char> source)
 	return bytes_to_write;
 }
 
-int32_t CCircularBuffer::push(FILE* source, int32_t source_size)
+int32_t CircularBuffer::push(FILE* source, int32_t source_size)
 {
 	if (source==NULL || source_size==0)
 	{
-		error("CCircularBuffer::push(FILE*, int32_t):: Invalid parameters! Source shouldn't be NULL or zero sized");
+		error("CircularBuffer::push(FILE*, int32_t):: Invalid parameters! Source shouldn't be NULL or zero sized");
 		return -1;
 	}
 
@@ -132,7 +132,7 @@ int32_t CCircularBuffer::push(FILE* source, int32_t source_size)
 	return bytes_to_write;
 }
 
-SGVector<char> CCircularBuffer::pop(int32_t num_bytes)
+SGVector<char> CircularBuffer::pop(int32_t num_bytes)
 {
 	SGVector<char> result;
 
@@ -171,11 +171,11 @@ SGVector<char> CCircularBuffer::pop(int32_t num_bytes)
 	return result;
 }
 
-bool CCircularBuffer::has_next()
+bool CircularBuffer::has_next()
 {
 	if (m_tokenizer==NULL)
 	{
-		error("CCircularBuffer::has_next():: Tokenizer is not initialized");
+		error("CircularBuffer::has_next():: Tokenizer is not initialized");
 		return false;
 	}
 
@@ -208,13 +208,13 @@ bool CCircularBuffer::has_next()
 	return false;
 }
 
-index_t CCircularBuffer::next_token_idx(index_t &start)
+index_t CircularBuffer::next_token_idx(index_t &start)
 {
 	index_t end;
 
 	if (m_tokenizer==NULL)
 	{
-		error("CCircularBuffer::next_token_idx(index_t&):: Tokenizer is not initialized");
+		error("CircularBuffer::next_token_idx(index_t&):: Tokenizer is not initialized");
 		return 0;
 	}
 
@@ -263,7 +263,7 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 	return start;
 }
 
-void CCircularBuffer::skip_characters(int32_t num_chars)
+void CircularBuffer::skip_characters(int32_t num_chars)
 {
 	auto head_length = std::distance(m_begin_pos, m_buffer_end);
 	if (head_length >= num_chars)
@@ -279,7 +279,7 @@ void CCircularBuffer::skip_characters(int32_t num_chars)
 	m_bytes_count-=num_chars;
 }
 
-void CCircularBuffer::clear()
+void CircularBuffer::clear()
 {
 	m_begin_pos=m_buffer.vector;
 	m_end_pos=m_begin_pos;
@@ -289,7 +289,7 @@ void CCircularBuffer::clear()
 	m_bytes_count=0;
 }
 
-void CCircularBuffer::init()
+void CircularBuffer::init()
 {
 	m_buffer=SGVector<char>();
 	m_buffer_end=NULL;
@@ -303,12 +303,12 @@ void CCircularBuffer::init()
 	m_bytes_count=0;
 }
 
-int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
+int32_t CircularBuffer::append_chunk(const char* source, int32_t source_size,
 					bool from_buffer_begin)
 {
 	if (source==NULL || source_size==0)
 	{
-		error("CCircularBuffer::append_chunk(const char*, int32_t, bool):: Invalid parameters!\
+		error("CircularBuffer::append_chunk(const char*, int32_t, bool):: Invalid parameters!\
 				Source shouldn't be NULL or zero sized");
 		return -1;
 	}
@@ -325,7 +325,7 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 	return source_size;
 }
 
-int32_t CCircularBuffer::append_chunk(FILE* source, int32_t source_size,
+int32_t CircularBuffer::append_chunk(FILE* source, int32_t source_size,
 					bool from_buffer_begin)
 {
 	int32_t actually_read=fread(m_end_pos, sizeof(char), source_size, source);
@@ -340,12 +340,12 @@ int32_t CCircularBuffer::append_chunk(FILE* source, int32_t source_size,
 	return actually_read;
 }
 
-void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes,
+void CircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes,
 					bool from_buffer_begin)
 {
 	if (dest==NULL || dest_size==NULL)
 	{
-		error("CCircularBuffer::detach_chunk(...):: Invalid parameters! Pointers are NULL");
+		error("CircularBuffer::detach_chunk(...):: Invalid parameters! Pointers are NULL");
 		return;
 	}
 
@@ -375,7 +375,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 	m_bytes_count-=num_bytes;
 }
 
-bool CCircularBuffer::has_next_locally(char* part_begin, char* part_end)
+bool CircularBuffer::has_next_locally(char* part_begin, char* part_end)
 {
 	auto num_bytes_to_search=std::distance(part_begin, part_end);
 
@@ -385,7 +385,7 @@ bool CCircularBuffer::has_next_locally(char* part_begin, char* part_end)
 	return m_tokenizer->has_next();
 }
 
-index_t CCircularBuffer::next_token_idx_locally(index_t &start, char* part_begin, char* part_end)
+index_t CircularBuffer::next_token_idx_locally(index_t &start, char* part_begin, char* part_end)
 {
 	index_t end=0;
 	auto num_bytes_to_search=std::distance(part_begin, part_end);
@@ -409,7 +409,7 @@ index_t CCircularBuffer::next_token_idx_locally(index_t &start, char* part_begin
 		return m_last_idx++;
 }
 
-void CCircularBuffer::move_pointer(char** pointer, char* new_position)
+void CircularBuffer::move_pointer(char** pointer, char* new_position)
 {
 	*pointer = (new_position >= m_buffer_end)
 		? m_buffer.vector

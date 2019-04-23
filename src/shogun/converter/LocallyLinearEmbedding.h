@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class LocallyLinearEmbedding used to embed
  * data using Locally Linear Embedding algorithm described in
@@ -39,20 +39,20 @@ class CDistance;
  * sg('create_converter','lle',k);
  *
  */
-class CLocallyLinearEmbedding: public CEmbeddingConverter
+class LocallyLinearEmbedding: public EmbeddingConverter
 {
 public:
 
 	/** constructor */
-	CLocallyLinearEmbedding();
+	LocallyLinearEmbedding();
 
 	/** destructor */
-	virtual ~CLocallyLinearEmbedding();
+	virtual ~LocallyLinearEmbedding();
 
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** setter for k parameter
 	 * @param k k value

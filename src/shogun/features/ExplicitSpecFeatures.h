@@ -16,36 +16,36 @@
 
 namespace shogun
 {
-template <class ST> class CStringFeatures;
+template <class ST> class StringFeatures;
 
 /**@brief Features that compute the Spectrum Kernel feature space explicitly.
  *
  * \sa CCommWordStringKernel
  */
-class CExplicitSpecFeatures : public CDotFeatures
+class ExplicitSpecFeatures : public DotFeatures
 {
 	public:
 		/** default constructor */
-		CExplicitSpecFeatures();
+		ExplicitSpecFeatures();
 
 		/** constructor
 		 *
 		 * @param str stringfeatures (of words)
 		 * @param normalize whether to use sqrtdiag normalization
 		 */
-		CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize=true);
+		ExplicitSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize=true);
 
 		/** copy constructor */
-		CExplicitSpecFeatures(const CExplicitSpecFeatures & orig);
+		ExplicitSpecFeatures(const ExplicitSpecFeatures & orig);
 
 		/** destructor */
-		virtual ~CExplicitSpecFeatures();
+		virtual ~ExplicitSpecFeatures();
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -63,7 +63,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -166,7 +166,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 *
 		 * @param str the string feature object already in k-mer format
 		 */
-		void obtain_kmer_spectrum(CStringFeatures<uint16_t>* str);
+		void obtain_kmer_spectrum(std::shared_ptr<StringFeatures<uint16_t>> str);
 
 		/** free kmer spectrum */
 		void delete_kmer_spectrum();

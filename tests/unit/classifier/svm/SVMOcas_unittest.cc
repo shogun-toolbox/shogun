@@ -18,12 +18,12 @@ TEST(SVMOcasTest,train)
 	std::shared_ptr<GaussianCheckerboard> mockData =
 	    linear_test_env->getBinaryLabelData();
 
-	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
-	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
+	auto train_feats = mockData->get_features_train();
+	auto test_feats = mockData->get_features_test();
 
-	CBinaryLabels* ground_truth = (CBinaryLabels*)mockData->get_labels_test();
+	auto ground_truth = std::static_pointer_cast<BinaryLabels>(mockData->get_labels_test());
 
-	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
+	auto ocas = std::make_shared<SVMOcas>(1.0, train_feats, ground_truth);
 	env()->set_num_threads(1);
 	ocas->set_epsilon(1e-5);
 	ocas->train();
@@ -31,13 +31,11 @@ TEST(SVMOcasTest,train)
 
 	EXPECT_NEAR(objective, 0.024344632618686062, 1e-2);
 
-	CLabels* pred = ocas->apply(test_feats);
-	SG_REF(pred);
-	CAccuracyMeasure evaluate = CAccuracyMeasure();
-	evaluate.evaluate(pred, ground_truth);
-	EXPECT_GT(evaluate.get_accuracy(), 0.99);
+	auto pred = ocas->apply(test_feats);
 
-	SG_UNREF(ocas);
-	SG_UNREF(pred);
+	auto evaluate = std::make_shared<AccuracyMeasure>();
+	evaluate->evaluate(pred, ground_truth);
+	EXPECT_GT(evaluate->get_accuracy(), 0.99);
+
 }
 #endif // HAVE_LAPACK

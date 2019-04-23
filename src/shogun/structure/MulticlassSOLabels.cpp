@@ -9,24 +9,24 @@
 
 using namespace shogun;
 
-CMulticlassSOLabels::CMulticlassSOLabels()
-: CStructuredLabels(), m_labels_vector(16)
+MulticlassSOLabels::MulticlassSOLabels()
+: StructuredLabels(), m_labels_vector(16)
 {
 	init();
 }
 
-CMulticlassSOLabels::CMulticlassSOLabels(int32_t num_labels)
-: CStructuredLabels(), m_labels_vector(num_labels)
+MulticlassSOLabels::MulticlassSOLabels(int32_t num_labels)
+: StructuredLabels(), m_labels_vector(num_labels)
 {
 	init();
 }
 
-CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
-: CStructuredLabels(src.vlen), m_labels_vector(src.vlen)
+MulticlassSOLabels::MulticlassSOLabels(SGVector< float64_t > const src)
+: StructuredLabels(src.vlen), m_labels_vector(src.vlen)
 {
 	init();
 
-	m_num_classes = CMath::max(src.vector, src.vlen) + 1;
+	m_num_classes = Math::max(src.vector, src.vlen) + 1;
 	m_labels_vector.resize_vector(src.vlen);
 
 	for ( int32_t i = 0 ; i < src.vlen ; ++i )
@@ -34,30 +34,30 @@ CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
 		if ( src[i] < 0 || src[i] >= m_num_classes )
 			error("Found label out of {0, 1, 2, ..., num_classes-1}");
 		else
-			add_label( new CRealNumber(src[i]) );
+			add_label( std::make_shared<RealNumber>(src[i]) );
 	}
 
 	//TODO check that every class has at least one example
 }
 
-CMulticlassSOLabels::~CMulticlassSOLabels()
+MulticlassSOLabels::~MulticlassSOLabels()
 {
 }
 
-CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
+std::shared_ptr<StructuredData> MulticlassSOLabels::get_label(int32_t idx)
 {
 	// ensure_valid("CMulticlassSOLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		error("Index must be inside [0, num_labels-1]");
 
-	return (CStructuredData*) new CRealNumber(m_labels_vector[idx]);
+	return std::static_pointer_cast<StructuredData>( std::make_shared<RealNumber>(m_labels_vector[idx]));
 }
 
-void CMulticlassSOLabels::add_label(CStructuredData* label)
+void MulticlassSOLabels::add_label(std::shared_ptr<StructuredData> label)
 {
-        SG_REF(label);
-        float64_t value = label->as<CRealNumber>()->value;
-        SG_UNREF(label);
+        
+        float64_t value = label->as<RealNumber>()->value;
+        
 
 	//ensure_valid_sdt(label);
 	if (m_num_labels_set >= m_labels_vector.vlen)
@@ -70,11 +70,11 @@ void CMulticlassSOLabels::add_label(CStructuredData* label)
 	m_num_labels_set++;
 }
 
-bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
+bool MulticlassSOLabels::set_label(int32_t idx, std::shared_ptr<StructuredData> label)
 {
-        SG_REF(label);
-        float64_t value = label->as<CRealNumber>()->value;
-        SG_UNREF(label);
+        
+        float64_t value = label->as<RealNumber>()->value;
+        
 
 	// ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
@@ -90,12 +90,12 @@ bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
 	}
 }
 
-int32_t CMulticlassSOLabels::get_num_labels() const
+int32_t MulticlassSOLabels::get_num_labels() const
 {
 	return m_num_labels_set;
 }
 
-void CMulticlassSOLabels::init()
+void MulticlassSOLabels::init()
 {
 	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes");
 	SG_ADD(&m_num_labels_set, "m_num_labels_set", "The number of assigned labels");

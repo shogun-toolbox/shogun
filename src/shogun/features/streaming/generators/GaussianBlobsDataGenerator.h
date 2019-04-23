@@ -27,19 +27,19 @@ namespace shogun
  * is a 2D grid-like mixture of a number Gaussians at a certain distance from each
  * other, and where each Gaussian is stretched and rotated by a factor.
  */
-class CGaussianBlobsDataGenerator: public RandomMixin<CStreamingDenseFeatures<float64_t>>
+class GaussianBlobsDataGenerator: public RandomMixin<StreamingDenseFeatures<float64_t>>
 {
 public:
 	/** Constructor */
-	CGaussianBlobsDataGenerator();
+	GaussianBlobsDataGenerator();
 
 	/** Constructor
 	 */
-	CGaussianBlobsDataGenerator(index_t sqrt_num_blobs, float64_t distance,
+	GaussianBlobsDataGenerator(index_t sqrt_num_blobs, float64_t distance,
 			float64_t stretch, float64_t angle);
 
 	/** Destructor */
-	virtual ~CGaussianBlobsDataGenerator();
+	virtual ~GaussianBlobsDataGenerator();
 
 	/** @return name of SG_SERIALIZABLE */
 	virtual const char* get_name() const

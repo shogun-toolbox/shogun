@@ -40,6 +40,29 @@ config_tests = ["HAVE_HDF5", "HAVE_LAPACK",
                 "USE_BZIP2", "USE_LZMA", "USE_MOSEK", "HAVE_COLPACK",
                 "HAVE_NLOPT", "HAVE_PROTOBUF", "HAVE_VIENNACL", "USE_GPL_SHOGUN",
                 "USE_META_INTEGRATION_TESTS", "HAVE_TFLOGGER"]
+# TODO: remove once plugins are working
+class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix", 
+        "SGStringList", "SGMatrixList", "SGCachedVector", "SGNDArray",
+        "ObservedValue", "ObservedValueTemplated", "ParameterObserverCV",
+        "ParameterObserverHistogram", "ParameterObserverScalar", "ParameterObserverTensorBoard",
+        "TBOutputFormat", "Iterator", "Wrapper", "PIterator",
+        "BitPackedFlatHashTableError", "TypedAnyPolicy", "NonOwningAnyPolicy",
+        "PointerValueAnyPolicy", "InvalidStateException", "NotFittedException",
+        "ShogunException", "BitPackedVectorError", "CompositeHashTableError",
+        "DataStorageError", "DataTransformationError", "AugmentedHeap",
+        "HashTableError", "LSHTableError", "LSHFunctionError",
+        "NearestNeighborQueryError", "StaticProbingHashTableError", "DynamicProbingHashTableError",
+        "FalconnError", "LSHNearestNeighborTableError", "LSHNNTableWrapper",
+        "Tag", "LinalgBackendGPUBase", "LinalgBackendEigen", "LinalgBackendViennaCL",
+        "TypeMismatchException", "FlatHashTableError", "SimpleHeap", "LSHNNTableSetupError",
+        "KDTREEKNNSolver", "LDACanVarSolver",
+        "GammaFeatureNumberInit", "StdVectorPrefetcher", "ShogunNotImplementedException",
+        "ToStringVisitor", "BitseryVisitor", "FileSystem", "PosixFileSystem",
+        "WindowsFileSystem", "LocalWindowsFileSystem", "LocalPosixFileSystem",
+        "NullFileSystem", "FilterVisitor", "RandomMixin", "MaxCrossValidation",
+        "StreamingDataFetcher", "MaxMeasure", "MaxTestPower",
+        "MedianHeuristic", "WeightedMaxMeasure", "WeightedMaxTestPower",
+        "Seedable", "ShogunEnv"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
 SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"
@@ -91,18 +114,15 @@ def extract_class_name(lines, line_nr, line, blacklist):
 
     c = c.strip(':').strip()
 
-    if not c.startswith('C'):
-        return
     if c.endswith(';'):
         return
     if '>' in c:
         return
-    if not (len(c) > 2 and c[1].isupper()):
+    if not (len(c) > 2 and c[0].isupper()):
         return
-    if check_is_in_blacklist(c[1:], lines, line_nr, blacklist):
+    if check_is_in_blacklist(c, lines, line_nr, blacklist) or (c in class_blacklist):
         return
-
-    return c[1:]
+    return c
 
 
 def get_includes(classes, headers_absolute_fnames):
@@ -136,7 +156,7 @@ def get_definitions(classes):
     definitions.append("#define %s" % SHOGUN_TEMPLATE_CLASS)
     definitions.append("#define %s" % SHOGUN_BASIC_CLASS)
     for c, t in classes:
-        d = "static %s CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }" % (SHOGUN_BASIC_CLASS,c,c)
+        d = "static %s SGObject* __new_%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new %s(): NULL; }" % (SHOGUN_BASIC_CLASS,c,c)
         definitions.append(d)
     return definitions
 
@@ -145,7 +165,7 @@ def get_template_definitions(classes, supports_complex):
     definitions = []
     for c, t in classes:
         d = []
-        d.append("static %s CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n"
+        d.append("static %s SGObject* __new_%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n"
                  % (SHOGUN_TEMPLATE_CLASS, c))
         for t in types:
             if t in ('BOOL', 'CHAR'):
@@ -155,7 +175,7 @@ def get_template_definitions(classes, supports_complex):
             if t == 'COMPLEX128' and not supports_complex:
                 d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
             else:
-                d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n"
+                d.append("\t\tcase PT_%s: return new %s<%s%s>();\n"
                          % (t, c, t.lower(), suffix))
         d.append("\t\tcase PT_SGOBJECT:\n")
         d.append("\t\tcase PT_UNDEFINED: return NULL;\n\t}\n\treturn NULL;\n}")
@@ -170,7 +190,7 @@ def get_struct(classes):
         if template:
             prefix = SHOGUN_TEMPLATE_CLASS
 
-        s = '{"%s", %s __new_C%s},' % (c, prefix, c)
+        s = '{"%s", %s __new_%s},' % (c, prefix, c)
         struct.append(s)
     return struct
 
@@ -234,14 +254,15 @@ def test_candidate(c, lines, line_nr, supports_complex):
 
 def extract_classes(HEADERS, template, blacklist, supports_complex):
     """
-    Search in headers for non-template/non-abstract class-names starting
-    with `C'.
+    Search in headers for non-template/non-abstract class-names
 
     Does not support local nor multiple classes and
     drops classes with pure virtual functions
     """
     classes = list()
     for fname in HEADERS:
+        if fname.find("external") > 0:
+            continue
         try:
             lines = open(fname).readlines()
         except: # python3 workaround

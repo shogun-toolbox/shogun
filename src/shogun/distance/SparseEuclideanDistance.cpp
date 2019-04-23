@@ -12,46 +12,46 @@
 
 using namespace shogun;
 
-CSparseEuclideanDistance::CSparseEuclideanDistance()
-: CSparseDistance<float64_t>()
+SparseEuclideanDistance::SparseEuclideanDistance()
+: SparseDistance<float64_t>()
 {
 	init();
 }
 
-CSparseEuclideanDistance::CSparseEuclideanDistance(
-	CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r)
-: CSparseDistance<float64_t>()
+SparseEuclideanDistance::SparseEuclideanDistance(
+	std::shared_ptr<SparseFeatures<float64_t>> l, std::shared_ptr<SparseFeatures<float64_t>> r)
+: SparseDistance<float64_t>()
 {
 	init();
 	init(l, r);
 }
 
-CSparseEuclideanDistance::~CSparseEuclideanDistance()
+SparseEuclideanDistance::~SparseEuclideanDistance()
 {
 	cleanup();
 }
 
-bool CSparseEuclideanDistance::init(CFeatures* l, CFeatures* r)
+bool SparseEuclideanDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CSparseDistance<float64_t>::init(l, r);
+	SparseDistance<float64_t>::init(l, r);
 
 	cleanup();
 
 	sq_lhs=SG_MALLOC(float64_t, lhs->get_num_vectors());
-	sq_lhs=((CSparseFeatures<float64_t>*) lhs)->compute_squared(sq_lhs);
+	sq_lhs=(std::static_pointer_cast<SparseFeatures<float64_t>>(lhs))->compute_squared(sq_lhs);
 
 	if (lhs==rhs)
 		sq_rhs=sq_lhs;
 	else
 	{
 		sq_rhs=SG_MALLOC(float64_t, rhs->get_num_vectors());
-		sq_rhs=((CSparseFeatures<float64_t>*) rhs)->compute_squared(sq_rhs);
+		sq_rhs=(std::static_pointer_cast<SparseFeatures<float64_t>>(rhs))->compute_squared(sq_rhs);
 	}
 
 	return true;
 }
 
-void CSparseEuclideanDistance::cleanup()
+void SparseEuclideanDistance::cleanup()
 {
 	if (sq_lhs != sq_rhs)
 		SG_FREE(sq_rhs);
@@ -61,16 +61,16 @@ void CSparseEuclideanDistance::cleanup()
 	sq_lhs = NULL;
 }
 
-float64_t CSparseEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t SparseEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t result=((CSparseFeatures<float64_t>*) lhs)->compute_squared_norm(
-		(CSparseFeatures<float64_t>*) lhs, sq_lhs, idx_a,
-		(CSparseFeatures<float64_t>*) rhs, sq_rhs, idx_b);
+	float64_t result=(std::static_pointer_cast<SparseFeatures<float64_t>>(lhs))->compute_squared_norm(
+		std::static_pointer_cast<SparseFeatures<float64_t>>(lhs), sq_lhs, idx_a,
+		std::static_pointer_cast<SparseFeatures<float64_t>>(rhs), sq_rhs, idx_b);
 
 	return std::sqrt(result);
 }
 
-void CSparseEuclideanDistance::init()
+void SparseEuclideanDistance::init()
 {
 	sq_lhs=NULL;
 	sq_rhs=NULL;

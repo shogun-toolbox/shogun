@@ -25,14 +25,12 @@ TEST(MLDataHDF5File, read_matrix)
 	SGMatrix<float64_t> a=SGMatrix<float64_t>(data, num_rows, num_cols, false);
 
 	char* fname = mktemp(strdup("/tmp/read_matrix.XXXXXX"));
-	CHDF5File* fout=new CHDF5File(fname,'w', (char*)"/data/data");
+	auto fout=std::make_shared<HDF5File>(fname,'w', (char*)"/data/data");
 	fout->set_matrix(data, num_rows, num_cols);
-	SG_UNREF(fout);
+
 
 	SGMatrix<float64_t> tmp(true);
-	CMLDataHDF5File* fin;
-
-	fin=new CMLDataHDF5File(&fname[5], "/data/data", "file:///tmp/");
+	auto fin=std::make_shared<MLDataHDF5File>(&fname[5], "/data/data", "file:///tmp/");
 
 	fin->get_matrix(tmp.matrix, tmp.num_rows, tmp.num_cols);
 	EXPECT_EQ(tmp.num_rows, num_rows);
@@ -45,7 +43,7 @@ TEST(MLDataHDF5File, read_matrix)
 			EXPECT_EQ(tmp(i, j), a(i, j));
 		}
 	}
-	SG_UNREF(fin);
+
 	unlink(fname);
 	SG_FREE(fname);
 }

@@ -19,37 +19,37 @@
 
 using namespace shogun;
 
-CSVMOcas::CSVMOcas()
-: CLinearMachine()
+SVMOcas::SVMOcas()
+: LinearMachine()
 {
 	init();
 }
 
-CSVMOcas::CSVMOcas(E_SVM_TYPE type)
-: CLinearMachine()
+SVMOcas::SVMOcas(E_SVM_TYPE type)
+: LinearMachine()
 {
 	init();
 	method=type;
 }
 
-CSVMOcas::CSVMOcas(
-	float64_t C, CFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
+SVMOcas::SVMOcas(
+	float64_t C, std::shared_ptr<Features> traindat, std::shared_ptr<Labels> trainlab)
+: LinearMachine()
 {
 	init();
 	C1=C;
 	C2=C;
 
-	set_features(traindat->as<CDotFeatures>());
+	set_features(std::dynamic_pointer_cast<DotFeatures>(traindat));
 	set_labels(trainlab);
 }
 
 
-CSVMOcas::~CSVMOcas()
+SVMOcas::~SVMOcas()
 {
 }
 
-bool CSVMOcas::train_machine(CFeatures* data)
+bool SVMOcas::train_machine(std::shared_ptr<Features> data)
 {
 	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = {}", get_bias_enabled())
@@ -60,14 +60,15 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 	ASSERT(features)
 
 	int32_t num_vec=features->get_num_vectors();
 	lab = SGVector<float64_t>(num_vec);
+	auto labels = binary_labels(m_labels);
 	for (int32_t i=0; i<num_vec; i++)
-		lab[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		lab[i] = labels->get_label(i);
 
 	current_w = SGVector<float64_t>(features->get_dim_feature_space());
 	current_w.zero();
@@ -93,12 +94,12 @@ bool CSVMOcas::train_machine(CFeatures* data)
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
 			TolAbs, QPBound, get_max_train_time(), bufsize, Method,
-			&CSVMOcas::compute_W,
-			&CSVMOcas::update_W,
-			&CSVMOcas::add_new_cut,
-			&CSVMOcas::compute_output,
-			&CSVMOcas::sort,
-			&CSVMOcas::print,
+			&SVMOcas::compute_W,
+			&SVMOcas::update_W,
+			&SVMOcas::add_new_cut,
+			&SVMOcas::compute_output,
+			&SVMOcas::sort,
+			&SVMOcas::print,
 			this);
 
 	io::info("Ocas Converged after {} iterations"
@@ -151,10 +152,10 @@ bool CSVMOcas::train_machine(CFeatures* data)
   sq_norm_W = W'*W;
 
   ---------------------------------------------------------------------------------*/
-float64_t CSVMOcas::update_W( float64_t t, void* ptr )
+float64_t SVMOcas::update_W( float64_t t, void* ptr )
 {
   float64_t sq_norm_W = 0;
-  CSVMOcas* o = (CSVMOcas*) ptr;
+  auto o = (SVMOcas*)ptr;
   uint32_t nDim = (uint32_t) o->current_w.vlen;
   float64_t* W = o->current_w.vector;
   float64_t* oldW=o->old_w;
@@ -165,7 +166,7 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
 	  sq_norm_W += W[j]*W[j];
   }
   o->bias=o->old_bias*(1-t) + t*o->bias;
-  sq_norm_W += CMath::sq(o->bias);
+  sq_norm_W += Math::sq(o->bias);
 
   return( sq_norm_W );
 }
@@ -178,12 +179,12 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
     sparse_A(:,nSel+1) = new_a;
 
   ---------------------------------------------------------------------------------*/
-int CSVMOcas::add_new_cut(
+int SVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
-	CDotFeatures* f = o->features;
+	auto o = (SVMOcas*)ptr;
+	auto f = o->features;
 	uint32_t nDim=(uint32_t) o->current_w.vlen;
 	float64_t* y = o->lab.vector;
 
@@ -209,7 +210,7 @@ int CSVMOcas::add_new_cut(
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
 	nz_dims = 0;
-	sq_norm_a = CMath::sq(c_bias[nSel]);
+	sq_norm_a = Math::sq(c_bias[nSel]);
 	for(j=0; j < nDim; j++ ) {
 		if(new_a[j] != 0) {
 			nz_dims++;
@@ -248,15 +249,15 @@ int CSVMOcas::add_new_cut(
 
 		new_col_H[i] = tmp;
 	}
-	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
-	//CMath::display_vector((int32_t*) c_idx[nSel], (int32_t) nz_dims, "c_idx");
-	//CMath::display_vector((float64_t*) c_val[nSel], nz_dims, "c_val");
+	//Math::display_vector(new_col_H, nSel+1, "new_col_H");
+	//Math::display_vector((int32_t*) c_idx[nSel], (int32_t) nz_dims, "c_idx");
+	//Math::display_vector((float64_t*) c_val[nSel], nz_dims, "c_val");
 	return 0;
 }
 
-int CSVMOcas::sort(float64_t* vals, float64_t* data, uint32_t size)
+int SVMOcas::sort(float64_t* vals, float64_t* data, uint32_t size)
 {
-	CMath::qsort_index(vals, data, size);
+	Math::qsort_index(vals, data, size);
 	return 0;
 }
 
@@ -265,10 +266,10 @@ int CSVMOcas::sort(float64_t* vals, float64_t* data, uint32_t size)
 
   output = data_X'*W;
   ----------------------------------------------------------------------*/
-int CSVMOcas::compute_output(float64_t *output, void* ptr)
+int SVMOcas::compute_output(float64_t *output, void* ptr)
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
-	CDotFeatures* f=o->features;
+	auto o = (SVMOcas*)ptr;
+	auto f=o->features;
 	int32_t nData=f->get_num_vectors();
 
 	float64_t* y = o->lab.vector;
@@ -289,13 +290,13 @@ int CSVMOcas::compute_output(float64_t *output, void* ptr)
   dp_WoldW = W'*oldW';
 
   ----------------------------------------------------------------------*/
-void CSVMOcas::compute_W(
+void SVMOcas::compute_W(
 	float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha, uint32_t nSel,
 	void* ptr )
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
+	auto o = (SVMOcas*)ptr;
 	uint32_t nDim= (uint32_t) o->current_w.vlen;
-	CMath::swap(o->current_w.vector, o->old_w);
+	Math::swap(o->current_w.vector, o->old_w);
 	SGVector<float64_t> W(o->current_w.vector, nDim, false);
 	SGVector<float64_t> oldW(o->old_w, nDim, false);
 	linalg::zero(W);
@@ -319,7 +320,7 @@ void CSVMOcas::compute_W(
 		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = linalg::dot(W, W) + CMath::sq(bias);
+	*sq_norm_W = linalg::dot(W, W) + Math::sq(bias);
 	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;
 	//io::print("nSel={} sq_norm_W={} dp_WoldW={}\n", nSel, *sq_norm_W, *dp_WoldW);
 
@@ -327,7 +328,7 @@ void CSVMOcas::compute_W(
 	o->old_bias = old_bias;
 }
 
-void CSVMOcas::init()
+void SVMOcas::init()
 {
 	use_bias = true;
 	bufsize = 3000;
@@ -355,7 +356,7 @@ void CSVMOcas::init()
 	    SG_OPTIONS(SVM_OCAS, SVM_BMRM));
 }
 
-float64_t CSVMOcas::compute_primal_objective() const
+float64_t SVMOcas::compute_primal_objective() const
 {
 	return primal_objective;
 }

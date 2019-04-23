@@ -12,55 +12,55 @@
 
 using namespace shogun;
 
-CExponentialKernel::CExponentialKernel()
-	: CDotKernel(), m_distance(NULL), m_width(1)
+ExponentialKernel::ExponentialKernel()
+	: DotKernel(), m_distance(NULL), m_width(1)
 {
 	init();
 }
 
-CExponentialKernel::CExponentialKernel(
-	CDotFeatures* l, CDotFeatures* r, float64_t width, CDistance* distance, int32_t size)
-: CDotKernel(size), m_distance(distance), m_width(width)
+ExponentialKernel::ExponentialKernel(
+	std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, float64_t width, std::shared_ptr<Distance> distance, int32_t size)
+: DotKernel(size), m_distance(distance), m_width(width)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l,r);
 }
 
-CExponentialKernel::~CExponentialKernel()
+ExponentialKernel::~ExponentialKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-void CExponentialKernel::cleanup()
+void ExponentialKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
+bool ExponentialKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(m_distance)
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	m_distance->init(l, r);
 	return init_normalizer();
 }
 
-float64_t CExponentialKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t ExponentialKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	ASSERT(m_distance)
 	float64_t dist=m_distance->distance(idx_a, idx_b);
 	return exp(-dist/m_width);
 }
 
-void CExponentialKernel::load_serializable_post() noexcept(false)
+void ExponentialKernel::load_serializable_post() noexcept(false)
 {
-	CKernel::load_serializable_post();
+	Kernel::load_serializable_post();
 }
 
 
-void CExponentialKernel::init()
+void ExponentialKernel::init()
 {
 	SG_ADD(&m_width, "width", "Kernel width.", ParameterProperties::HYPER);
 	SG_ADD(&m_distance, "distance", "Distance to be used.",

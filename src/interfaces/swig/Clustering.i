@@ -12,12 +12,12 @@
 #endif
 
 /* Remove C Prefix */
-%rename(DistanceMachine) CDistanceMachine;
-%rename(Hierarchical) CHierarchical;
-%rename(KMeans) CKMeans;
-%rename(KMeansBase) CKMeansBase;
-%rename(KMeansMiniBatch) CKMeansMiniBatch;
-%rename(GMM) CGMM;
+%shared_ptr(shogun::DistanceMachine)
+%shared_ptr(shogun::Hierarchical)
+%shared_ptr(shogun::KMeans)
+%shared_ptr(shogun::KMeansBase)
+%shared_ptr(shogun::KMeansMiniBatch)
+%shared_ptr(shogun::GMM)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>

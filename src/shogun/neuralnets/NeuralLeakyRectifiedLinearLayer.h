@@ -47,19 +47,19 @@ namespace shogun
  *
  * When used as an output layer, a squared error measure is used
  */
-class CNeuralLeakyRectifiedLinearLayer : public CNeuralRectifiedLinearLayer
+class NeuralLeakyRectifiedLinearLayer : public NeuralRectifiedLinearLayer
 {
 public:
 	/** default constructor */
-	CNeuralLeakyRectifiedLinearLayer();
+	NeuralLeakyRectifiedLinearLayer();
 
 	/** Constuctor
 	 *
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralLeakyRectifiedLinearLayer(int32_t num_neurons);
+	NeuralLeakyRectifiedLinearLayer(int32_t num_neurons);
 
-	virtual ~CNeuralLeakyRectifiedLinearLayer() {}
+	virtual ~NeuralLeakyRectifiedLinearLayer() {}
 
 	/** Sets the value of alpha used to calculate max(alpha*(W*x+b),W*x+b)
 	 *
@@ -84,7 +84,7 @@ public:
 	 *
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers);
+		std::shared_ptr<DynamicObjectArray> layers);
 
 	virtual const char* get_name() const { return "NeuralLeakyRectifiedLinearLayer"; }
 

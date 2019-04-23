@@ -44,12 +44,12 @@ namespace shogun
  *	http://www.shloosl.com/~ali/random-features/
  *	https://research.microsoft.com/apps/video/dl.aspx?id=103390&l=i
  */
-class CRandomKitchenSinksDotFeatures : public RandomMixin<CDotFeatures>
+class RandomKitchenSinksDotFeatures : public RandomMixin<DotFeatures>
 {
 public:
 
 	/** default constructor */
-	CRandomKitchenSinksDotFeatures();
+	RandomKitchenSinksDotFeatures();
 
 	/** constructor
 	 * Subclasses should call generate_random_coefficients() on their
@@ -58,7 +58,7 @@ public:
 	 * @param dataset the dataset to work on
 	 * @param K the number of samples to draw
 	 */
-	CRandomKitchenSinksDotFeatures(CDotFeatures* dataset, int32_t K);
+	RandomKitchenSinksDotFeatures(std::shared_ptr<DotFeatures> dataset, int32_t K);
 
 	/** constructor
 	 *
@@ -66,23 +66,23 @@ public:
 	 * @param K the number of samples to draw
 	 * @param coeff the random coefficients to use
 	 */
-	CRandomKitchenSinksDotFeatures(CDotFeatures* dataset, int32_t K,
+	RandomKitchenSinksDotFeatures(std::shared_ptr<DotFeatures> dataset, int32_t K,
 			SGMatrix<float64_t> coeff);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CRandomKitchenSinksDotFeatures(CFile* loader);
+	RandomKitchenSinksDotFeatures(std::shared_ptr<File> loader);
 
 	/** copy constructor */
-	CRandomKitchenSinksDotFeatures(const CRandomKitchenSinksDotFeatures& orig);
+	RandomKitchenSinksDotFeatures(const RandomKitchenSinksDotFeatures& orig);
 
 	/** duplicate */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
 	/** destructor */
-	virtual ~CRandomKitchenSinksDotFeatures();
+	virtual ~RandomKitchenSinksDotFeatures();
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -102,7 +102,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 			int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
@@ -226,12 +226,12 @@ protected:
 	 */
 	virtual SGVector<float64_t> generate_random_parameter_vector()=0;
 private:
-	void init(CDotFeatures* dataset, int32_t K);
+	void init(std::shared_ptr<DotFeatures> dataset, int32_t K);
 
 protected:
 
 	/** the dataset to work on */
-	CDotFeatures* feats;
+	std::shared_ptr<DotFeatures> feats;
 
 	/** the number of samples to use */
 	int32_t num_samples;

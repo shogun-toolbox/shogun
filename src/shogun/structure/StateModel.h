@@ -20,17 +20,17 @@ namespace shogun
 {
 
 /**
- * @brief class CStateModel base, abstract class for the internal state
+ * @brief class StateModel base, abstract class for the internal state
  * representation used in the CHMSVMModel.
  */
-class CStateModel : public CSGObject
+class StateModel : public SGObject
 {
 	public:
 		/** default constructor */
-		CStateModel();
+		StateModel();
 
 		/** destructor */
-		virtual ~CStateModel();
+		virtual ~StateModel();
 
 		/** @return number of states */
 		int32_t get_num_states() const;
@@ -48,7 +48,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return the loss matrix
 		 */
-		virtual SGMatrix< float64_t > loss_matrix(CSequence* label_seq) = 0;
+		virtual SGMatrix< float64_t > loss_matrix(std::shared_ptr<Sequence> label_seq) = 0;
 
 		/**
 		 * computes the loss between two sequences of labels using the Hamming loss
@@ -59,7 +59,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return the Hamming loss
 		 */
-		virtual float64_t loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs) = 0;
+		virtual float64_t loss(std::shared_ptr<Sequence> label_seq_lhs, std::shared_ptr<Sequence> label_seq_rhs) = 0;
 
 		/**
 		 * arranges the emission parameters of the weight vector into a vector
@@ -85,7 +85,7 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
+		virtual void reshape_emission_params(std::shared_ptr<DynamicObjectArray> plif_matrix,
 			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes) = 0;
 
 		/**
@@ -106,7 +106,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const = 0;
+		virtual SGVector< int32_t > labels_to_states(std::shared_ptr<Sequence> label_seq) const = 0;
 
 		/** translates state sequence to label sequence
 		 *
@@ -114,7 +114,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return label sequence
 		 */
-		virtual CSequence* states_to_labels(SGVector< int32_t > state_seq) const = 0;
+		virtual std::shared_ptr<Sequence> states_to_labels(SGVector< int32_t > state_seq) const = 0;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -179,7 +179,7 @@ class CStateModel : public CSGObject
 		 * - 0 otherwise
 		 *
 		 * The distrubtion of start states m_p must be initialized in the
-		 * constructor of CStateModel's child classes.
+		 * constructor of StateModel's child classes.
 		 *
 		 * @return the distribution of start states m_p, vector of m_num_states
 		 * elements
@@ -196,7 +196,7 @@ class CStateModel : public CSGObject
 		 * - 0 otherwise
 		 *
 		 * The distrubtion of stop states m_q must be initialized in the
-		 * constructor of CStateModel's child classes.
+		 * constructor of StateModel's child classes.
 		 *
 		 * @return the distribution of start states m_p, vector of m_num_states
 		 * elements
@@ -226,7 +226,7 @@ class CStateModel : public CSGObject
 		/** the distribution of stop states */
 		SGVector< float64_t > m_q;
 
-}; /* class CStateModel */
+}; /* class StateModel */
 
 } /* namespace shogun */
 

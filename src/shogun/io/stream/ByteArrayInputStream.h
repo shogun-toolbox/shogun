@@ -17,16 +17,16 @@ namespace shogun
 	{
 #define IGNORE_IN_CLASSLIST
 
-		IGNORE_IN_CLASSLIST class CByteArrayInputStream : public CInputStream
+		IGNORE_IN_CLASSLIST class ByteArrayInputStream : public InputStream
 		{
 		public:
-			CByteArrayInputStream(const char* _buffer, const size_t _length):
-				CInputStream(),	m_buffer(_buffer, _length) {}
+			ByteArrayInputStream(const char* _buffer, const size_t _length):
+				InputStream(),	m_buffer(_buffer, _length) {}
 
-			CByteArrayInputStream(const std::string& _buffer):
-				CByteArrayInputStream(_buffer.c_str(), _buffer.length()) {}
+			ByteArrayInputStream(const std::string& _buffer):
+				ByteArrayInputStream(_buffer.c_str(), _buffer.length()) {}
 
-			~CByteArrayInputStream() override {}
+			~ByteArrayInputStream() override {}
 
 			std::error_condition read(std::string* buffer, int64_t size) override
 			{
@@ -73,7 +73,7 @@ namespace shogun
 			const std::string_view m_buffer;
 			size_t m_pos = 0;
 
-			SG_DELETE_COPY_AND_ASSIGN(CByteArrayInputStream);
+			SG_DELETE_COPY_AND_ASSIGN(ByteArrayInputStream);
 		};
 	}
 }

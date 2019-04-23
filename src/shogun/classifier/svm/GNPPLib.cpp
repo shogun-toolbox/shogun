@@ -21,7 +21,7 @@ using namespace shogun;
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
-CGNPPLib::CGNPPLib()
+GNPPLib::GNPPLib()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -35,9 +35,9 @@ CGNPPLib::CGNPPLib()
 	m_kernel = NULL;
 }
 
-CGNPPLib::CGNPPLib(
-	float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const)
-: CSGObject()
+GNPPLib::GNPPLib(
+	float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data, float64_t reg_const)
+: SGObject()
 {
   m_reg_const = reg_const;
   m_num_data = num_data;
@@ -45,7 +45,7 @@ CGNPPLib::CGNPPLib(
   m_kernel = kernel;
 
   Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
-  Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
+  Cache_Size = Math::min(Cache_Size, (int64_t) num_data);
 
   io::info("using {} kernel cache lines", Cache_Size);
   ASSERT(Cache_Size>=2)
@@ -63,7 +63,7 @@ CGNPPLib::CGNPPLib(
 
 }
 
-CGNPPLib::~CGNPPLib()
+GNPPLib::~GNPPLib()
 {
   for(int32_t i = 0; i < Cache_Size; i++ ) 
       SG_FREE(kernel_columns[i]);
@@ -78,7 +78,7 @@ CGNPPLib::~CGNPPLib()
  Usage: exitflag = gnpp_mdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
-int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
+int8_t GNPPLib::gnpp_mdm(float64_t *diag_H,
                        float64_t *vector_c,
                        float64_t *vector_y,
                        int32_t dim,
@@ -184,7 +184,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
-  else if(UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB <= Math::abs(UB)*tolrel ) exitflag = 2;
   else if(LB > th) exitflag = 3;
   else exitflag = -1;
 
@@ -206,7 +206,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
       Huv = col_u[v1];
 
       lambda = delta1/(alpha[v1]*(Huu - 2*Huv + Hvv ));
-      lambda = CMath::min(1.0,lambda);
+      lambda = Math::min(1.0,lambda);
 
       tmp = lambda*alpha[v1];
 
@@ -246,7 +246,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
       Huv = col_u[v2];
   
       lambda = delta2/(alpha[v2]*( Huu - 2*Huv + Hvv ));
-      lambda = CMath::min(1.0,lambda);
+      lambda = Math::min(1.0,lambda);
 
       tmp = lambda*alpha[v2];
       aHa22 = aHa22 + 2*tmp*( Ha2[u2]-Ha2[v2]) + tmp*tmp*( Huu - 2*Huv + Hvv);
@@ -285,7 +285,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
 
     /* Stopping conditions */
     if( UB-LB <= tolabs ) exitflag = 1; 
-    else if( UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
+    else if( UB-LB <= Math::abs(UB)*tolrel ) exitflag = 2;
     else if(LB > th) exitflag = 3;
     else if(t >= tmax) exitflag = 0; 
 
@@ -343,7 +343,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
  Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
-int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
+int8_t GNPPLib::gnpp_imdm(float64_t *diag_H,
             float64_t *vector_c,
             float64_t *vector_y,
             int32_t dim,
@@ -464,7 +464,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
-  else if(UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB <= Math::abs(UB)*tolrel ) exitflag = 2;
   else if(LB > th) exitflag = 3;
   else exitflag = -1;
 
@@ -483,7 +483,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
       Huv = col_u[v1];
 
       lambda = delta1/(alpha[v1]*(Huu - 2*Huv + Hvv ));
-      lambda = CMath::min(1.0,lambda);
+      lambda = Math::min(1.0,lambda);
 
       tmp = lambda*alpha[v1];
 
@@ -520,7 +520,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
       Huv = col_u[v2];
   
       lambda = delta2/(alpha[v2]*( Huu - 2*Huv + Hvv ));
-      lambda = CMath::min(1.0,lambda);
+      lambda = Math::min(1.0,lambda);
 
       tmp = lambda*alpha[v2];
       aHa22 = aHa22 + 2*tmp*( Ha2[u2]-Ha2[v2]) + tmp*tmp*( Huu - 2*Huv + Hvv);
@@ -621,7 +621,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
 
     /* Stopping conditions */
     if( UB-LB <= tolabs ) exitflag = 1; 
-    else if( UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
+    else if( UB-LB <= Math::abs(UB)*tolrel ) exitflag = 2;
     else if(LB > th) exitflag = 3;
     else if(t >= tmax) exitflag = 0; 
 
@@ -673,7 +673,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
 }
 
 
-float64_t* CGNPPLib::get_col(int64_t a, int64_t b)
+float64_t* GNPPLib::get_col(int64_t a, int64_t b)
 {
   float64_t *col_ptr;
   float64_t y;

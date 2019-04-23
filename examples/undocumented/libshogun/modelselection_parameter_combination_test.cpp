@@ -61,11 +61,10 @@ void test_leaf_sets_multiplication()
 	SGVector<float64_t> param_vector(6);
 	SGVector<float64_t>::range_fill_vector(param_vector.vector, param_vector.vlen);
 
-	CDynamicObjectArray sets;
+	DynamicObjectArray sets;
 	CParameterCombination* new_root=new CParameterCombination();
-	SG_REF(new_root);
 
-	CDynamicObjectArray* current=new CDynamicObjectArray();
+	DynamicObjectArray* current=new DynamicObjectArray();
 	sets.append_element(current);
 	Parameter* p=new Parameter();
 	p->add(&param_vector.vector[0], "0");
@@ -78,7 +77,7 @@ void test_leaf_sets_multiplication()
 	current->append_element(pc);
 
 	/* first case: one element */
-	CDynamicObjectArray* result_simple=
+	DynamicObjectArray* result_simple=
 			CParameterCombination::leaf_sets_multiplication(sets, new_root);
 
 	SG_SPRINT("one set\n");
@@ -87,13 +86,11 @@ void test_leaf_sets_multiplication()
 		CParameterCombination* tpc=(CParameterCombination*)
 				result_simple->get_element(i);
 		tpc->print_tree();
-		SG_UNREF(tpc);
 	}
-	SG_UNREF(result_simple);
 
 	/* now more elements are created */
 
-	current=new CDynamicObjectArray();
+	current=new DynamicObjectArray();
 	sets.append_element(current);
 	p=new Parameter();
 	p->add(&param_vector.vector[2], "2");
@@ -105,7 +102,7 @@ void test_leaf_sets_multiplication()
 	pc=new CParameterCombination(p);
 	current->append_element(pc);
 
-	current=new CDynamicObjectArray();
+	current=new DynamicObjectArray();
 	sets.append_element(current);
 	p=new Parameter();
 	p->add(&param_vector.vector[4], "4");
@@ -118,7 +115,7 @@ void test_leaf_sets_multiplication()
 	current->append_element(pc);
 
 	/* second case: more element */
-	CDynamicObjectArray* result_complex=
+	DynamicObjectArray* result_complex=
 			CParameterCombination::leaf_sets_multiplication(sets, new_root);
 
 	SG_SPRINT("more sets\n");
@@ -127,11 +124,8 @@ void test_leaf_sets_multiplication()
 		CParameterCombination* tpc=(CParameterCombination*)
 				result_complex->get_element(i);
 		tpc->print_tree();
-		SG_UNREF(tpc);
 	}
-	SG_UNREF(result_complex);
 
-	SG_UNREF(new_root);
 }
 
 int main(int argc, char **argv)

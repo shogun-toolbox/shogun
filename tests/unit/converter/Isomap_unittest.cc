@@ -26,14 +26,14 @@ TEST(IsomapTest,DISABLED_distance_preserving_max_k)
 	const index_t n_samples = 5;
 	const index_t n_gaussians = 5;
 	const index_t n_dimensions = 5;
-	CDenseFeatures<float64_t>* high_dimensional_features =
-		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions, prng));
+	auto high_dimensional_features =
+		std::make_shared<DenseFeatures<float64_t>>(DataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions, prng));
 
-	CDistance* euclidean_distance =
-		new CEuclideanDistance(high_dimensional_features, high_dimensional_features);
+	auto euclidean_distance =
+		std::make_shared<EuclideanDistance>(high_dimensional_features, high_dimensional_features);
 
-	CIsomap* isomap_converter =
-		new CIsomap();
+	auto isomap_converter =
+		std::make_shared<Isomap>();
 
 	isomap_converter->set_target_dim(n_dimensions);
 	EXPECT_EQ(n_dimensions,isomap_converter->get_target_dim());
@@ -41,13 +41,13 @@ TEST(IsomapTest,DISABLED_distance_preserving_max_k)
 	isomap_converter->set_k(n_samples*n_gaussians-1);
 	EXPECT_EQ(n_samples*n_gaussians-1,isomap_converter->get_k());
 
-	CDenseFeatures<float64_t>* low_dimensional_features =
+	auto low_dimensional_features =
 		isomap_converter->embed_distance(euclidean_distance);
 	EXPECT_EQ(n_dimensions,low_dimensional_features->get_dim_feature_space());
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());
 
-	CDistance* euclidean_distance_for_embedding =
-		new CEuclideanDistance(low_dimensional_features, low_dimensional_features);
+	auto euclidean_distance_for_embedding =
+		std::make_shared<EuclideanDistance>(low_dimensional_features, low_dimensional_features);
 
 	SGMatrix<float64_t> euclidean_distance_matrix =
 		euclidean_distance->get_distance_matrix();
@@ -62,9 +62,9 @@ TEST(IsomapTest,DISABLED_distance_preserving_max_k)
 		}
 	}
 
-	SG_UNREF(isomap_converter);
-	SG_UNREF(euclidean_distance);
-	SG_UNREF(euclidean_distance_for_embedding);
+
+
+
 }
 #endif // HAVE_LAPACK
 
@@ -82,7 +82,7 @@ struct heap_comparator
 	}
 } comparator;
 
-std::set<index_t> get_neighbors_indices(CDistance* distance_object, index_t feature_vector_index, index_t n_neighbors);
+std::set<index_t> get_neighbors_indices(std::shared_ptr<Distance> distance_object, index_t feature_vector_index, index_t n_neighbors);
 
 void check_similarity_of_sets(const std::set<index_t>& first_set, const std::set<index_t>& second_set, float64_t min_similarity_level);
 
@@ -108,11 +108,11 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 	std::mt19937_64 prng(seed);
 	fill_matrix_with_test_data(high_dimensional_matrix, prng);
 
-	CDenseFeatures<float64_t>* high_dimensional_features =
-		new CDenseFeatures<float64_t>(high_dimensional_matrix);
+	auto high_dimensional_features =
+		std::make_shared<DenseFeatures<float64_t>>(high_dimensional_matrix);
 
-	CDistance* high_dimensional_dist =
-		new CEuclideanDistance(high_dimensional_features, high_dimensional_features);
+	auto high_dimensional_dist =
+		std::make_shared<EuclideanDistance>(high_dimensional_features, high_dimensional_features);
 
 	std::vector<std::set<index_t> > high_dimensional_neighbors_for_vectors;
 	/* Find n_neighbors nearest neighbors for each vector */
@@ -121,7 +121,7 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 		high_dimensional_neighbors_for_vectors.push_back(get_neighbors_indices(high_dimensional_dist, i, n_neighbors));
 	}
 
-	CIsomap* isoEmbedder = new CIsomap();
+	auto isoEmbedder = std::make_shared<Isomap>();
 
 	isoEmbedder->set_k(n_neighbors);
 
@@ -130,13 +130,13 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 
 	auto low_dimensional_features =
 	    isoEmbedder->transform(high_dimensional_features)
-	        ->as<CDenseFeatures<float64_t>>();
+	        ->as<DenseFeatures<float64_t>>();
 
 	EXPECT_EQ(n_target_dimensions,low_dimensional_features->get_dim_feature_space());
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());
 
-	CDistance* low_dimensional_dist =
-		new CEuclideanDistance(low_dimensional_features, low_dimensional_features);
+	auto low_dimensional_dist =
+		std::make_shared<EuclideanDistance>(low_dimensional_features, low_dimensional_features);
 
 	for (index_t i=0; i<n_samples; ++i)
 	{
@@ -144,12 +144,12 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 		check_similarity_of_sets(high_dimensional_neighbors_for_vectors[i], low_dimensional_neighbors, required_similarity_level);
 	}
 
-	SG_UNREF(isoEmbedder);
-	SG_UNREF(high_dimensional_dist);
-	SG_UNREF(low_dimensional_dist);
+
+
+
 }
 
-std::set<index_t> get_neighbors_indices(CDistance* distance_object, index_t feature_vector_index, index_t n_neighbors)
+std::set<index_t> get_neighbors_indices(std::shared_ptr<Distance> distance_object, index_t feature_vector_index, index_t n_neighbors)
 {
 	index_t n_vectors = distance_object->get_num_vec_lhs();
 	EXPECT_EQ(n_vectors, distance_object->get_num_vec_rhs());

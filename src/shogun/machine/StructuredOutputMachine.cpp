@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Thoralf Klein, Shell Hu, Bjoern Esser, 
+ * Authors: Fernando Iglesias, Thoralf Klein, Shell Hu, Bjoern Esser,
  *          Viktor Gal
  */
 
@@ -14,89 +14,89 @@
 
 using namespace shogun;
 
-CStructuredOutputMachine::CStructuredOutputMachine()
-: CMachine(), m_model(NULL), m_surrogate_loss(NULL)
+StructuredOutputMachine::StructuredOutputMachine()
+: Machine(), m_model(NULL), m_surrogate_loss(NULL)
 {
 	register_parameters();
 }
 
-CStructuredOutputMachine::CStructuredOutputMachine(
-		CStructuredModel*  model,
-		CStructuredLabels* labs)
-: CMachine(), m_model(model), m_surrogate_loss(NULL)
+StructuredOutputMachine::StructuredOutputMachine(
+		std::shared_ptr<StructuredModel>  model,
+		std::shared_ptr<StructuredLabels> labs)
+: Machine(), m_model(model), m_surrogate_loss(NULL)
 {
-	SG_REF(m_model);
+
 	set_labels(labs);
 	register_parameters();
 }
 
-CStructuredOutputMachine::~CStructuredOutputMachine()
+StructuredOutputMachine::~StructuredOutputMachine()
 {
-	SG_UNREF(m_model);
-	SG_UNREF(m_surrogate_loss);
-	SG_UNREF(m_helper);
+
+
+
 }
 
-void CStructuredOutputMachine::set_model(CStructuredModel* model)
+void StructuredOutputMachine::set_model(std::shared_ptr<StructuredModel> model)
 {
-	SG_REF(model);
-	SG_UNREF(m_model);
+
+
 	m_model = model;
 }
 
-CStructuredModel* CStructuredOutputMachine::get_model() const
+std::shared_ptr<StructuredModel> StructuredOutputMachine::get_model() const
 {
-	SG_REF(m_model);
+
 	return m_model;
 }
 
-void CStructuredOutputMachine::register_parameters()
+void StructuredOutputMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model");
-	SG_ADD((CSGObject**)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_model, "m_model", "Structured model");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss");
 	SG_ADD(&m_verbose, "verbose", "Verbosity flag");
-	SG_ADD((CSGObject**)&m_helper, "helper", "Training helper");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_helper, "helper", "Training helper");
 
 	m_verbose = false;
 	m_helper = NULL;
 }
 
-void CStructuredOutputMachine::set_labels(CLabels* lab)
+void StructuredOutputMachine::set_labels(std::shared_ptr<Labels> lab)
 {
-	CMachine::set_labels(lab);
+	Machine::set_labels(lab);
 	require(m_model != NULL, "please call set_model() before set_labels()");
-	m_model->set_labels(lab->as<CStructuredLabels>());
+	m_model->set_labels(lab->as<StructuredLabels>());
 }
 
-void CStructuredOutputMachine::set_features(CFeatures* f)
+void StructuredOutputMachine::set_features(std::shared_ptr<Features> f)
 {
 	m_model->set_features(f);
 }
 
-CFeatures* CStructuredOutputMachine::get_features() const
+std::shared_ptr<Features> StructuredOutputMachine::get_features() const
 {
 	return m_model->get_features();
 }
 
-void CStructuredOutputMachine::set_surrogate_loss(CLossFunction* loss)
+void StructuredOutputMachine::set_surrogate_loss(std::shared_ptr<LossFunction> loss)
 {
-	SG_REF(loss);
-	SG_UNREF(m_surrogate_loss);
+
+
 	m_surrogate_loss = loss;
 }
 
-CLossFunction* CStructuredOutputMachine::get_surrogate_loss() const
+std::shared_ptr<LossFunction> StructuredOutputMachine::get_surrogate_loss() const
 {
-	SG_REF(m_surrogate_loss);
+
 	return m_surrogate_loss;
 }
 
-float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	int32_t dim = m_model->get_dim();
 
 	int32_t from=0, to=0;
-	CFeatures* features = get_features();
+	auto features = get_features();
 	if (info)
 	{
 		from = info->m_from;
@@ -107,50 +107,50 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_
 		from = 0;
 		to = features->get_num_vectors();
 	}
-	SG_UNREF(features);
+
 
 	float64_t R = 0.0;
 	linalg::zero(subgrad);
 
 	for (int32_t i=from; i<to; i++)
 	{
-		CResultSet* result = m_model->argmax(SGVector<float64_t>(W.vector,dim,false), i, true);
+		auto result = m_model->argmax(SGVector<float64_t>(W.vector,dim,false), i, true);
 		SGVector<float64_t> psi_pred = result->psi_pred;
 		SGVector<float64_t> psi_truth = result->psi_truth;
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad.vector, 1.0, psi_pred.vector, dim);
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad.vector, -1.0, psi_truth.vector, dim);
 		R += result->score;
-		SG_UNREF(result);
+
 	}
 
 	return R;
 }
 
-float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	error("{}::risk_nslack_slack_rescale() has not been implemented!", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	error("{}::risk_1slack_margin_rescale() has not been implemented!", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	error("{}::risk_1slack_slack_rescale() has not been implemented!", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	error("{}::risk_customized_formulation() has not been implemented!", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<float64_t>& W,
+float64_t StructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<float64_t>& W,
 		TMultipleCPinfo* info, EStructRiskType rtype)
 {
 	float64_t ret = 0.0;
@@ -179,7 +179,7 @@ float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<
 	return ret;
 }
 
-CSOSVMHelper* CStructuredOutputMachine::get_helper() const
+std::shared_ptr<SOSVMHelper> StructuredOutputMachine::get_helper() const
 {
 	if (m_helper == NULL)
 	{
@@ -187,16 +187,16 @@ CSOSVMHelper* CStructuredOutputMachine::get_helper() const
 			"Please set verbose before training!", get_name());
 	}
 
-	SG_REF(m_helper);
+
 	return m_helper;
 }
 
-void CStructuredOutputMachine::set_verbose(bool verbose)
+void StructuredOutputMachine::set_verbose(bool verbose)
 {
 	m_verbose = verbose;
 }
 
-bool CStructuredOutputMachine::get_verbose() const
+bool StructuredOutputMachine::get_verbose() const
 {
 	return m_verbose;
 }

@@ -40,23 +40,23 @@
 using namespace shogun;
 using namespace Eigen;
 
-CSparseInference::CSparseInference() : CInference()
+SparseInference::SparseInference() : Inference()
 {
 	init();
 }
 
-void CSparseInference::check_features()
+void SparseInference::check_features()
 {
 	require(m_features, "Input features not set");
 }
 
-void CSparseInference::convert_features()
+void SparseInference::convert_features()
 {
-	CDotFeatures *feat_type=dynamic_cast<CDotFeatures *>(m_features);
+	auto feat_type=m_features->as<DotFeatures>();
 
 	SGMatrix<float64_t>lat_m(m_inducing_features.matrix,
 		m_inducing_features.num_rows,m_inducing_features.num_cols,false);
-	CDotFeatures *lat_type=new CDenseFeatures<float64_t>(lat_m);
+	auto lat_type=std::make_shared<DenseFeatures<float64_t>>(lat_m);
 
 	require(feat_type, "Input features ({}) must be DotFeatures"
 		" or one of its subclasses", m_features->get_name());
@@ -80,22 +80,22 @@ void CSparseInference::convert_features()
 		}
 		io::warn("Input features may be deleted");
 		SGMatrix<float64_t> feat_m=feat_type->get_computed_dot_feature_matrix();
-		SG_UNREF(m_features);
-		m_features=new CDenseFeatures<float64_t>(feat_m);
-		SG_REF(m_features);
+
+		m_features=std::make_shared<DenseFeatures<float64_t>>(feat_m);
+
 	}
-	SG_UNREF(lat_type);
+
 }
 
-CSparseInference::CSparseInference(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CInference(kern, feat, m, lab, mod)
+SparseInference::SparseInference(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
+		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
+		: Inference(kern, feat, m, lab, mod)
 {
 	init();
 	set_inducing_features(lat);
 }
 
-void CSparseInference::init()
+void SparseInference::init()
 {
 	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
 			ParameterProperties::HYPER | ParameterProperties::GRADIENT);
@@ -109,30 +109,30 @@ void CSparseInference::init()
 	m_inducing_features=SGMatrix<float64_t>();
 }
 
-void CSparseInference::set_inducing_noise(float64_t noise)
+void SparseInference::set_inducing_noise(float64_t noise)
 {
 	require(noise>0, "Noise ({}) for inducing points must be postive",noise);
 	m_log_ind_noise = std::log(noise);
 }
 
-float64_t CSparseInference::get_inducing_noise()
+float64_t SparseInference::get_inducing_noise()
 {
 	return std::exp(m_log_ind_noise);
 }
 
-CSparseInference::~CSparseInference()
+SparseInference::~SparseInference()
 {
 }
 
-void CSparseInference::check_members() const
+void SparseInference::check_members() const
 {
-	CInference::check_members();
+	Inference::check_members();
 
 	require(m_inducing_features.num_rows, "Inducing features should not be empty");
 	require(m_inducing_features.num_cols, "Inducing features should not be empty");
 }
 
-SGVector<float64_t> CSparseInference::get_alpha()
+SGVector<float64_t> SparseInference::get_alpha()
 {
 	if (parameter_hash_changed())
 		update();
@@ -141,7 +141,7 @@ SGVector<float64_t> CSparseInference::get_alpha()
 	return result;
 }
 
-SGMatrix<float64_t> CSparseInference::get_cholesky()
+SGMatrix<float64_t> SparseInference::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();
@@ -150,7 +150,7 @@ SGMatrix<float64_t> CSparseInference::get_cholesky()
 	return result;
 }
 
-void CSparseInference::update_train_kernel()
+void SparseInference::update_train_kernel()
 {
 	//time complexity can be O(m*n) if the TO DO is done
 	check_features();
@@ -159,7 +159,7 @@ void CSparseInference::update_train_kernel()
 	m_kernel->init(m_features, m_features);
 	m_ktrtr_diag=m_kernel->get_kernel_diagonal();
 
-	CFeatures* inducing_features=get_inducing_features();
+	auto inducing_features=get_inducing_features();
 
 	// create kernel matrix for inducing features
 	m_kernel->init(inducing_features, inducing_features);
@@ -169,6 +169,6 @@ void CSparseInference::update_train_kernel()
 	m_kernel->init(inducing_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
 
-	SG_UNREF(inducing_features);
+
 }
 

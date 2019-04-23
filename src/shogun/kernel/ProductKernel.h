@@ -19,9 +19,9 @@
 
 namespace shogun
 {
-class CFeatures;
-class CCombinedFeatures;
-class CDynamicObjectArray;
+class Features;
+class CombinedFeatures;
+class DynamicObjectArray;
 
 /** @brief The Product kernel is used to combine a number of kernels into a
  * single ProductKernel object by element multiplication.
@@ -34,16 +34,16 @@ class CDynamicObjectArray;
  * k_{product}({\bf x}, {\bf x'}) = \prod_{m=1}^M k_m({\bf x}, {\bf x'})
  * \f]
  */
-class CProductKernel : public CKernel
+class ProductKernel : public Kernel
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CProductKernel(int32_t size=10);
+		ProductKernel(int32_t size=10);
 
-		virtual ~CProductKernel();
+		virtual ~ProductKernel();
 
 		/** initialize kernel
 		 *
@@ -51,7 +51,7 @@ class CProductKernel : public CKernel
 		 * @param rhs features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -88,9 +88,9 @@ class CProductKernel : public CKernel
 		 * @param idx index of kernel
 		 * @return kernel at index idx
 		 */
-		inline CKernel* get_kernel(int32_t idx)
+		inline std::shared_ptr<Kernel> get_kernel(int32_t idx)
 		{
-			return (CKernel*) kernel_array->get_element(idx);
+			return std::static_pointer_cast<Kernel>( kernel_array->get_element(idx));
 		}
 
 		/** insert kernel at position idx
@@ -100,7 +100,7 @@ class CProductKernel : public CKernel
 		 * @param idx the position where to add the kernel
 		 * @return if inserting was successful
 		 */
-		inline bool insert_kernel(CKernel* k, int32_t idx)
+		inline bool insert_kernel(std::shared_ptr<Kernel> k, int32_t idx)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -116,7 +116,7 @@ class CProductKernel : public CKernel
 		 * @param k kernel
 		 * @return if appending was successful
 		 */
-		inline bool append_kernel(CKernel* k)
+		inline bool append_kernel(std::shared_ptr<Kernel> k)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -172,9 +172,9 @@ class CProductKernel : public CKernel
 		/** casts kernel to combined kernel
 		 * @param n kernel to cast
 		 */
-		CProductKernel* KernelToProductKernel(CKernel* n)
+		std::shared_ptr<ProductKernel> KernelToProductKernel(std::shared_ptr<Kernel> n)
 		{
-			return dynamic_cast<CProductKernel*>(n);
+			return std::dynamic_pointer_cast<ProductKernel>(n);
 		}
 
 		/** return derivative with respect to specified parameter
@@ -191,9 +191,9 @@ class CProductKernel : public CKernel
 		 *
 		 * @return kernel array
 		 */
-		inline CDynamicObjectArray* get_array()
+		inline std::shared_ptr<DynamicObjectArray> get_array()
 		{
-			SG_REF(kernel_array);
+			
 			return kernel_array;
 		}
 
@@ -211,7 +211,7 @@ class CProductKernel : public CKernel
 		 *
 		 * @param k kernel
 		 */
-		inline void adjust_num_lhs_rhs_initialized(CKernel* k)
+		inline void adjust_num_lhs_rhs_initialized(std::shared_ptr<Kernel> k)
 		{
 			ASSERT(k)
 
@@ -255,7 +255,7 @@ class CProductKernel : public CKernel
 
 	protected:
 		/** array of kernels */
-		CDynamicObjectArray* kernel_array;
+		std::shared_ptr<DynamicObjectArray> kernel_array;
 		/** whether kernel is ready to be used */
 		bool initialized;
 };

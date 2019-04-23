@@ -18,18 +18,18 @@
 
 using namespace shogun;
 
-CPlifArray::CPlifArray()
-: CPlifBase()
+PlifArray::PlifArray()
+: PlifBase()
 {
 	min_value=-1e6;
 	max_value=1e6;
 }
 
-CPlifArray::~CPlifArray()
+PlifArray::~PlifArray()
 {
 }
 
-void CPlifArray::add_plif(CPlifBase* new_plif)
+void PlifArray::add_plif(std::shared_ptr<PlifBase> new_plif)
 {
 	ASSERT(new_plif)
 	m_array.append_element(new_plif) ;
@@ -39,23 +39,23 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 	{
 		ASSERT(m_array[i])
 		if (!m_array[i]->uses_svm_values())
-			min_value = CMath::max(min_value, m_array[i]->get_min_value()) ;
+			min_value = Math::max(min_value, m_array[i]->get_min_value()) ;
 	}
 
 	max_value = 1e6 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		if (!m_array[i]->uses_svm_values())
-			max_value = CMath::min(max_value, m_array[i]->get_max_value()) ;
+			max_value = Math::min(max_value, m_array[i]->get_max_value()) ;
 }
 
-void CPlifArray::clear()
+void PlifArray::clear()
 {
 	m_array.clear_array(NULL);
 	min_value = -1e6 ;
 	max_value = 1e6 ;
 }
 
-float64_t CPlifArray::lookup_penalty(
+float64_t PlifArray::lookup_penalty(
 	float64_t p_value, float64_t* svm_values) const
 {
 	//min_value = -1e6 ;
@@ -63,7 +63,7 @@ float64_t CPlifArray::lookup_penalty(
 	if (p_value<min_value || p_value>max_value)
 	{
 		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}",p_value, min_value, max_value);
-		return -CMath::INFTY ;
+		return -Math::INFTY ;
 	}
 	float64_t ret = 0.0 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
@@ -71,7 +71,7 @@ float64_t CPlifArray::lookup_penalty(
 	return ret ;
 }
 
-float64_t CPlifArray::lookup_penalty(
+float64_t PlifArray::lookup_penalty(
 	int32_t p_value, float64_t* svm_values) const
 {
 	//min_value = -1e6 ;
@@ -79,7 +79,7 @@ float64_t CPlifArray::lookup_penalty(
 	if (p_value<min_value || p_value>max_value)
 	{
 		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}",p_value, min_value, max_value);
-		return -CMath::INFTY ;
+		return -Math::INFTY ;
 	}
 	float64_t ret = 0.0 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
@@ -97,20 +97,20 @@ float64_t CPlifArray::lookup_penalty(
 	return ret ;
 }
 
-void CPlifArray::penalty_clear_derivative()
+void PlifArray::penalty_clear_derivative()
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_clear_derivative() ;
 }
 
-void CPlifArray::penalty_add_derivative(
+void PlifArray::penalty_add_derivative(
 	float64_t p_value, float64_t* svm_values, float64_t factor)
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_add_derivative(p_value, svm_values, factor) ;
 }
 
-bool CPlifArray::uses_svm_values() const
+bool PlifArray::uses_svm_values() const
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		if (m_array[i]->uses_svm_values())
@@ -118,15 +118,15 @@ bool CPlifArray::uses_svm_values() const
 	return false ;
 }
 
-int32_t CPlifArray::get_max_id() const
+int32_t PlifArray::get_max_id() const
 {
 	int32_t max_id = 0 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
-		max_id = CMath::max(max_id, m_array[i]->get_max_id()) ;
+		max_id = Math::max(max_id, m_array[i]->get_max_id()) ;
 	return max_id ;
 }
 
-void CPlifArray::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
+void PlifArray::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
 	io::print("get_used_svms: num: {} \n",m_array.get_num_elements());
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)

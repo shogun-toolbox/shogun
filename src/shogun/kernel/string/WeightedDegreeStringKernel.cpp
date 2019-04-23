@@ -32,7 +32,7 @@ struct S_THREAD_PARAM_WD
 	int32_t* vec;
 	float64_t* result;
 	float64_t* weights;
-	CWeightedDegreeStringKernel* kernel;
+	WeightedDegreeStringKernel* kernel;
 	CTrie<DNATrie>* tries;
 	float64_t factor;
 	int32_t j;
@@ -43,16 +43,16 @@ struct S_THREAD_PARAM_WD
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel ()
-: CStringKernel<char>()
+WeightedDegreeStringKernel::WeightedDegreeStringKernel ()
+: StringKernel<char>()
 {
 	init();
 }
 
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
+WeightedDegreeStringKernel::WeightedDegreeStringKernel (
 	int32_t d, EWDKernType t)
-: CStringKernel<char>()
+: StringKernel<char>()
 {
 	init();
 
@@ -60,8 +60,8 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	type=t;
 }
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(SGVector<float64_t> w)
-: CStringKernel<char>(10)
+WeightedDegreeStringKernel::WeightedDegreeStringKernel(SGVector<float64_t> w)
+: StringKernel<char>(10)
 {
 	init();
 
@@ -76,17 +76,19 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(SGVector<float64_t> w)
 		weights[i]=w.vector[i];
 }
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d)
-: CStringKernel<char>(10)
+WeightedDegreeStringKernel::WeightedDegreeStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t d)
+: StringKernel<char>(10)
 {
 	init();
 	degree=d;
-	set_normalizer(new CFirstElementKernelNormalizer());
+	type=E_WD;
+	set_wd_weights_by_type(type);
+	set_normalizer(std::make_shared<FirstElementKernelNormalizer>());
 	init(l, r);
 }
 
-CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
+WeightedDegreeStringKernel::~WeightedDegreeStringKernel()
 {
 	cleanup();
 
@@ -106,7 +108,7 @@ CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
 }
 
 
-void CWeightedDegreeStringKernel::remove_lhs()
+void WeightedDegreeStringKernel::remove_lhs()
 {
 	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization")
 	delete_optimization();
@@ -114,14 +116,14 @@ void CWeightedDegreeStringKernel::remove_lhs()
 	if (tries!=NULL)
 		tries->destroy();
 
-	CKernel::remove_lhs();
+	Kernel::remove_lhs();
 }
 
-void CWeightedDegreeStringKernel::create_empty_tries()
+void WeightedDegreeStringKernel::create_empty_tries()
 {
 	ASSERT(lhs)
 
-	seq_length=((CStringFeatures<char>*) lhs)->get_max_vector_length();
+	seq_length=lhs->as<StringFeatures<char>>()->get_max_vector_length();
 
 	if (tries!=NULL)
 	{
@@ -130,7 +132,7 @@ void CWeightedDegreeStringKernel::create_empty_tries()
 	}
 }
 
-bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
+bool WeightedDegreeStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	if (type != E_EXTERNAL)
 		set_wd_weights_by_type(type);
@@ -138,13 +140,13 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	int32_t lhs_changed=(lhs!=l);
 	int32_t rhs_changed=(rhs!=r);
 
-	CStringKernel<char>::init(l,r);
+	StringKernel<char>::init(l,r);
 
 	SG_DEBUG("lhs_changed: {}", lhs_changed)
 	SG_DEBUG("rhs_changed: {}", rhs_changed)
 
-	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
-	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
+	auto sf_l=l->as<StringFeatures<char>>();
+	auto sf_r=r->as<StringFeatures<char>>();
 
 	int32_t len=sf_l->get_max_vector_length();
 	if (lhs_changed && !sf_l->have_same_length(len))
@@ -153,21 +155,21 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	if (rhs_changed && !sf_r->have_same_length(len))
 		error("All strings in WD kernel must have same length (rhs wrong)!");
 
-	SG_UNREF(alphabet);
+
 	alphabet=sf_l->get_alphabet();
-	CAlphabet* ralphabet=sf_r->get_alphabet();
+	auto ralphabet=sf_r->get_alphabet();
 
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
-	SG_UNREF(ralphabet);
+
 
 	if (tries!=NULL) {
 		tries->delete_trees(max_mismatch==0);
-		SG_UNREF(tries);
+
 	}
-	tries=new CTrie<DNATrie>(degree, max_mismatch==0);
+	tries=std::make_shared<CTrie<DNATrie>>(degree, max_mismatch==0);
 	create_empty_tries();
 
 	init_block_weights();
@@ -175,7 +177,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CWeightedDegreeStringKernel::cleanup()
+void WeightedDegreeStringKernel::cleanup()
 {
 	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization")
 	delete_optimization();
@@ -186,20 +188,20 @@ void CWeightedDegreeStringKernel::cleanup()
 	if (tries!=NULL)
 	{
 		tries->destroy();
-		SG_UNREF(tries);
+
 		tries=NULL;
 	}
 
 	seq_length=0;
 	tree_initialized = false;
 
-	SG_UNREF(alphabet);
+
 	alphabet=NULL;
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX, float64_t* alphas, int32_t tree_num)
+bool WeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX, float64_t* alphas, int32_t tree_num)
 {
 	if (tree_num<0)
 		SG_DEBUG("deleting CWeightedDegreeStringKernel optimization")
@@ -236,7 +238,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 	return true ;
 }
 
-bool CWeightedDegreeStringKernel::delete_optimization()
+bool WeightedDegreeStringKernel::delete_optimization()
 {
 	if (get_is_initialized())
 	{
@@ -250,7 +252,7 @@ bool CWeightedDegreeStringKernel::delete_optimization()
 }
 
 
-float64_t CWeightedDegreeStringKernel::compute_with_mismatch(
+float64_t WeightedDegreeStringKernel::compute_with_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
 	float64_t sum = 0.0;
@@ -278,7 +280,7 @@ float64_t CWeightedDegreeStringKernel::compute_with_mismatch(
 	return sum ;
 }
 
-float64_t CWeightedDegreeStringKernel::compute_using_block(
+float64_t WeightedDegreeStringKernel::compute_using_block(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
 	ASSERT(alen==blen)
@@ -304,7 +306,7 @@ float64_t CWeightedDegreeStringKernel::compute_using_block(
 	return sum;
 }
 
-float64_t CWeightedDegreeStringKernel::compute_without_mismatch(
+float64_t WeightedDegreeStringKernel::compute_without_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
 	float64_t sum = 0.0;
@@ -327,7 +329,7 @@ float64_t CWeightedDegreeStringKernel::compute_without_mismatch(
 	return sum ;
 }
 
-float64_t CWeightedDegreeStringKernel::compute_without_mismatch_matrix(
+float64_t WeightedDegreeStringKernel::compute_without_mismatch_matrix(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
 	float64_t sum = 0.0;
@@ -351,12 +353,12 @@ float64_t CWeightedDegreeStringKernel::compute_without_mismatch_matrix(
 }
 
 
-float64_t CWeightedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t WeightedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec=lhs->as<StringFeatures<char>>()->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec=rhs->as<StringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
 	float64_t result=0;
 
 	if (max_mismatch==0 && length==0 && block_computation)
@@ -370,14 +372,14 @@ float64_t CWeightedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		else
 			result=compute_without_mismatch_matrix(avec, alen, bvec, blen);
 	}
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(avec, idx_a, free_avec);
+	rhs->as<StringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
 }
 
 
-void CWeightedDegreeStringKernel::add_example_to_tree(
+void WeightedDegreeStringKernel::add_example_to_tree(
 	int32_t idx, float64_t alpha)
 {
 	ASSERT(alphabet)
@@ -385,13 +387,13 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 
 	int32_t len=0;
 	bool free_vec;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
+	char* char_vec=lhs->as<StringFeatures<char>>()->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0)
 	int32_t *vec=SG_MALLOC(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(char_vec, idx, free_vec);
 
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -423,7 +425,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 	tree_initialized=true ;
 }
 
-void CWeightedDegreeStringKernel::add_example_to_single_tree(
+void WeightedDegreeStringKernel::add_example_to_single_tree(
 	int32_t idx, float64_t alpha, int32_t tree_num)
 {
 	ASSERT(alphabet)
@@ -431,13 +433,13 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(
 
 	int32_t len;
 	bool free_vec;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
+	char* char_vec=lhs->as<StringFeatures<char>>()->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0)
 	int32_t *vec = SG_MALLOC(int32_t, len);
 
 	for (int32_t i=tree_num; i<tree_num+degree && i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(char_vec, idx, free_vec);
 
 
 	ASSERT(tries)
@@ -448,7 +450,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(
 	tree_initialized=true ;
 }
 
-void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, float64_t alpha)
+void WeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, float64_t alpha)
 {
 	ASSERT(tries)
 	ASSERT(alphabet)
@@ -456,13 +458,13 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, floa
 
 	int32_t len ;
 	bool free_vec;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
+	char* char_vec=lhs->as<StringFeatures<char>>()->get_feature_vector(idx, len, free_vec);
 
 	int32_t *vec = SG_MALLOC(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 	{
@@ -474,7 +476,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, floa
 	tree_initialized=true ;
 }
 
-void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
+void WeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
 	int32_t idx, float64_t alpha, int32_t tree_num)
 {
 	ASSERT(tries)
@@ -483,12 +485,12 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
 
 	int32_t len=0;
 	bool free_vec;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
+	char* char_vec=lhs->as<StringFeatures<char>>()->get_feature_vector(idx, len, free_vec);
 	int32_t *vec=SG_MALLOC(int32_t, len);
 
 	for (int32_t i=tree_num; i<len && i<tree_num+degree; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(char_vec, idx, free_vec);
 
 	if (alpha!=0.0)
 	{
@@ -502,20 +504,20 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
 }
 
 
-float64_t CWeightedDegreeStringKernel::compute_by_tree(int32_t idx)
+float64_t WeightedDegreeStringKernel::compute_by_tree(int32_t idx)
 {
 	ASSERT(alphabet)
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	int32_t len=0;
 	bool free_vec;
-	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
+	char* char_vec=rhs->as<StringFeatures<char>>()->get_feature_vector(idx, len, free_vec);
 	ASSERT(char_vec && len>0)
 	int32_t *vec=SG_MALLOC(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(char_vec, idx, free_vec);
 
 	float64_t sum=0;
 	ASSERT(tries)
@@ -526,7 +528,7 @@ float64_t CWeightedDegreeStringKernel::compute_by_tree(int32_t idx)
 	return normalizer->normalize_rhs(sum, idx);
 }
 
-void CWeightedDegreeStringKernel::compute_by_tree(
+void WeightedDegreeStringKernel::compute_by_tree(
 	int32_t idx, float64_t* LevelContrib)
 {
 	ASSERT(alphabet)
@@ -534,13 +536,13 @@ void CWeightedDegreeStringKernel::compute_by_tree(
 
 	int32_t len ;
 	bool free_vec;
-	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
+	char* char_vec=rhs->as<StringFeatures<char>>()->get_feature_vector(idx, len, free_vec);
 
 	int32_t *vec = SG_MALLOC(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(char_vec, idx, free_vec);
 
 	ASSERT(tries)
 	for (int32_t i=0; i<len; i++)
@@ -553,13 +555,13 @@ void CWeightedDegreeStringKernel::compute_by_tree(
 	SG_FREE(vec);
 }
 
-float64_t *CWeightedDegreeStringKernel::compute_abs_weights(int32_t &len)
+float64_t *WeightedDegreeStringKernel::compute_abs_weights(int32_t &len)
 {
 	ASSERT(tries)
 	return tries->compute_abs_weights(len);
 }
 
-bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
+bool WeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 {
 	ASSERT(degree>0)
 	ASSERT(p_type==E_WD) /// if we know a better weighting later on do a switch
@@ -587,8 +589,8 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 			{
 				if (j<i+1)
 				{
-					int32_t nk=CMath::nchoosek(i+1, j);
-					weights[i+j*degree]=weights[i]/(nk*CMath::pow(3.0,j));
+					int32_t nk=Math::nchoosek(i+1, j);
+					weights[i+j*degree]=weights[i]/(nk*Math::pow(3.0,j));
 				}
 				else
 					weights[i+j*degree]= 0;
@@ -612,7 +614,7 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 		return false;
 }
 
-bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
+bool WeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 {
 	float64_t* ws=new_weights.matrix;
 	int32_t d=new_weights.num_rows;
@@ -642,7 +644,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::set_position_weights(
+bool WeightedDegreeStringKernel::set_position_weights(
 	float64_t* pws, int32_t len)
 {
 	if (len==0)
@@ -672,40 +674,40 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 		return false;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
+bool WeightedDegreeStringKernel::init_block_weights_from_wd()
 {
 	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
+	block_weights=SG_MALLOC(float64_t, Math::max(seq_length,degree));
 
 	int32_t k;
 	float64_t d=degree; // use float to evade rounding errors below
 
 	for (k=0; k<degree; k++)
 		block_weights[k]=
-			(-CMath::pow(k, 3)+(3*d-3)*CMath::pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
+			(-Math::pow(k, 3)+(3*d-3)*Math::pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
 	for (k=degree; k<seq_length; k++)
 		block_weights[k]=(-d+3*k+4)/3;
 
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
+bool WeightedDegreeStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights)
 	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
+	block_weights=SG_MALLOC(float64_t, Math::max(seq_length,degree));
 
 	int32_t i=0;
 	block_weights[0]=weights[0];
-	for (i=1; i<CMath::max(seq_length,degree); i++)
+	for (i=1; i<Math::max(seq_length,degree); i++)
 		block_weights[i]=0;
 
-	for (i=1; i<CMath::max(seq_length,degree); i++)
+	for (i=1; i<Math::max(seq_length,degree); i++)
 	{
 		block_weights[i]=block_weights[i-1];
 
 		float64_t contrib=0;
-		for (int32_t j=0; j<CMath::min(degree,i+1); j++)
+		for (int32_t j=0; j<Math::min(degree,i+1); j++)
 			contrib+=weights[j];
 
 		block_weights[i]+=contrib;
@@ -713,7 +715,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_const()
+bool WeightedDegreeStringKernel::init_block_weights_const()
 {
 	SG_FREE(block_weights);
 	block_weights=SG_MALLOC(float64_t, seq_length);
@@ -723,7 +725,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_const()
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_linear()
+bool WeightedDegreeStringKernel::init_block_weights_linear()
 {
 	SG_FREE(block_weights);
 	block_weights=SG_MALLOC(float64_t, seq_length);
@@ -734,7 +736,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_linear()
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
+bool WeightedDegreeStringKernel::init_block_weights_sqpoly()
 {
 	SG_FREE(block_weights);
 	block_weights=SG_MALLOC(float64_t, seq_length);
@@ -748,7 +750,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
+bool WeightedDegreeStringKernel::init_block_weights_cubicpoly()
 {
 	SG_FREE(block_weights);
 	block_weights=SG_MALLOC(float64_t, seq_length);
@@ -761,7 +763,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_exp()
+bool WeightedDegreeStringKernel::init_block_weights_exp()
 {
 	SG_FREE(block_weights);
 	block_weights=SG_MALLOC(float64_t, seq_length);
@@ -775,22 +777,22 @@ bool CWeightedDegreeStringKernel::init_block_weights_exp()
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_log()
+bool WeightedDegreeStringKernel::init_block_weights_log()
 {
 	SG_FREE(block_weights);
 	block_weights=SG_MALLOC(float64_t, seq_length);
 
 	for (int32_t i=1; i<degree+1 ; i++)
-		block_weights[i - 1] = CMath::pow(std::log((float64_t)i), 2);
+		block_weights[i - 1] = Math::pow(std::log((float64_t)i), 2);
 
 	for (int32_t i=degree+1; i<seq_length+1 ; i++)
 		block_weights[i - 1] =
-		    i - degree + 1 + CMath::pow(std::log(degree + 1.0), 2);
+		    i - degree + 1 + Math::pow(std::log(degree + 1.0), 2);
 
 	return true;
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights()
+bool WeightedDegreeStringKernel::init_block_weights()
 {
 	switch (type)
 	{
@@ -815,11 +817,11 @@ bool CWeightedDegreeStringKernel::init_block_weights()
 }
 
 
-void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
+void* WeightedDegreeStringKernel::compute_batch_helper(void* p)
 {
 	S_THREAD_PARAM_WD* params = (S_THREAD_PARAM_WD*) p;
 	int32_t j=params->j;
-	CWeightedDegreeStringKernel* wd=params->kernel;
+	WeightedDegreeStringKernel* wd=params->kernel;
 	CTrie<DNATrie>* tries=params->tries;
 	float64_t* weights=params->weights;
 	int32_t length=params->length;
@@ -828,15 +830,15 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 	float64_t factor=params->factor;
 	int32_t* vec_idx=params->vec_idx;
 
-	CStringFeatures<char>* rhs_feat=((CStringFeatures<char>*) wd->get_rhs());
-	CAlphabet* alpha=wd->alphabet;
+	StringFeatures<char>* rhs_feat=(StringFeatures<char>*)(wd->get_rhs().get());
+	auto alpha=wd->alphabet;
 
 	for (int32_t i=params->start; i<params->end; i++)
 	{
 		int32_t len=0;
 		bool free_vec;
 		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len, free_vec);
-		for (int32_t k=j; k<CMath::min(len,j+wd->get_degree()); k++)
+		for (int32_t k=j; k<Math::min(len,j+wd->get_degree()); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
 		rhs_feat->free_feature_vector(char_vec, vec_idx[i], free_vec);
 
@@ -846,12 +848,12 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 			wd->normalizer->normalize_rhs(tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0)), vec_idx[i]);
 	}
 
-	SG_UNREF(rhs_feat);
+
 
 	return NULL;
 }
 
-void CWeightedDegreeStringKernel::compute_batch(
+void WeightedDegreeStringKernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* result, int32_t num_suppvec,
 	int32_t* IDX, float64_t* alphas, float64_t factor)
 {
@@ -865,7 +867,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 	ASSERT(result)
 	create_empty_tries();
 
-	int32_t num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
+	int32_t num_feat=rhs->as<StringFeatures<char>>()->get_max_vector_length();
 	ASSERT(num_feat>0)
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
@@ -880,7 +882,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 	if (num_threads < 2)
 	{
 		// TODO: replace with the new signal
-		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// for (int32_t j=0; j<num_feat && !Signal::cancel_computations(); j++)
 		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
@@ -889,7 +891,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 			params.result=result;
 			params.weights=weights;
 			params.kernel=this;
-			params.tries=tries;
+			params.tries=tries.get();
 			params.factor=factor;
 			params.j=j;
 			params.start=0;
@@ -906,7 +908,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 	else
 	{
 		// TODO: replace with the new signal
-		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// for (int32_t j=0; j<num_feat && !Signal::cancel_computations(); j++)
 		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
@@ -921,20 +923,20 @@ void CWeightedDegreeStringKernel::compute_batch(
 				params[t].result=result;
 				params[t].weights=weights;
 				params[t].kernel=this;
-				params[t].tries=tries;
+				params[t].tries=tries.get();
 				params[t].factor=factor;
 				params[t].j=j;
 				params[t].start = t*step;
 				params[t].end = (t+1)*step;
 				params[t].length=length;
 				params[t].vec_idx=vec_idx;
-				pthread_create(&threads[t], NULL, CWeightedDegreeStringKernel::compute_batch_helper, (void*)&params[t]);
+				pthread_create(&threads[t], NULL, WeightedDegreeStringKernel::compute_batch_helper, (void*)&params[t]);
 			}
 			params[t].vec=&vec[num_feat*t];
 			params[t].result=result;
 			params[t].weights=weights;
 			params[t].kernel=this;
-			params[t].tries=tries;
+			params[t].tries=tries.get();
 			params[t].factor=factor;
 			params[t].j=j;
 			params[t].start=t*step;
@@ -961,7 +963,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 	create_empty_tries();
 }
 
-bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
+bool WeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 {
 	if (type==E_EXTERNAL && max!=0)
 		return false;
@@ -974,7 +976,7 @@ bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 		return true;
 }
 
-void CWeightedDegreeStringKernel::init()
+void WeightedDegreeStringKernel::init()
 {
 	type = E_WD;
 
@@ -1007,16 +1009,16 @@ void CWeightedDegreeStringKernel::init()
 
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
-	set_normalizer(new CFirstElementKernelNormalizer());
+	set_normalizer(std::make_shared<FirstElementKernelNormalizer>());
 
-	m_parameters->add_matrix(
+	/*m_parameters->add_matrix(
 	    &weights, &weights_degree, &weights_length, "weights",
-	    "WD Kernel weights.");
+	    "WD Kernel weights.");*/
 	watch_param("weights", &weights, &weights_degree, &weights_length);
 
-	m_parameters->add_vector(
+	/*m_parameters->add_vector(
 	    &position_weights, &position_weights_len, "position_weights",
-	    "Weights per position.");
+	    "Weights per position.");*/
 	watch_param("position_weights", &position_weights, &position_weights_len);
 
 	SG_ADD(
@@ -1034,7 +1036,7 @@ void CWeightedDegreeStringKernel::init()
 	    &which_degree, "which_degree",
 	    "The selected degree. All degrees are used by default (for value -1).",
 	    ParameterProperties::HYPER);
-	SG_ADD((CSGObject**)&alphabet, "alphabet", "Alphabet of Features.");
+	SG_ADD((std::shared_ptr<SGObject>*)&alphabet, "alphabet", "Alphabet of Features.");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&type, "type", "WeightedDegree kernel type.",
 	    ParameterProperties::HYPER,

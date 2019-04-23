@@ -20,7 +20,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CJADiagOrth, diagonalize)
+TEST(JADiagOrth, diagonalize)
 {
 	int32_t seed = 17;
 	// Generating diagonal matrices
@@ -38,8 +38,7 @@ TEST(CJADiagOrth, diagonalize)
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(uniform_int_dist(prng, {1,5}));
-
+			tmp(j,j) *= Math::abs(uniform_int_dist(prng, {1,5}));
 	}
 
 	// Building a random orthonormal matrix A
@@ -57,7 +56,7 @@ TEST(CJADiagOrth, diagonalize)
 	}
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CJADiagOrth::diagonalize(C);
+	SGMatrix<float64_t> V = JADiagOrth::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);

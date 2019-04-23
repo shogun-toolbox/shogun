@@ -40,7 +40,7 @@
 
 namespace shogun
 {
-	class CLabels;
+	class Labels;
 
 	/** @brief Implements a timeseries splitting strategy for cross-validation.
 	 * The strategy builds a given number of subsets each filled with labels
@@ -54,11 +54,11 @@ namespace shogun
 	 * The two splits are \f$ S1 = [5,6,7,8,9] \f$ and \f$ S2 = [8,9]\f$
 	 */
 
-	class CTimeSeriesSplitting : public RandomMixin<CSplittingStrategy>
+	class TimeSeriesSplitting : public RandomMixin<SplittingStrategy>
 	{
 	public:
 		/** constructor */
-		CTimeSeriesSplitting();
+		TimeSeriesSplitting();
 
 		/** constructor
 		 *
@@ -66,7 +66,7 @@ namespace shogun
 		 * @param num_subsets desired number of subsets, the labels are split
 		 * into
 		 */
-		CTimeSeriesSplitting(CLabels* labels, index_t num_subsets);
+		TimeSeriesSplitting(std::shared_ptr<Labels> labels, index_t num_subsets);
 
 		/** Sets the minimum subset size for subsets. If forecasting h-step
 		 * ahead, set min_size to h.

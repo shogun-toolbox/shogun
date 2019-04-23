@@ -24,7 +24,7 @@ namespace shogun
 /** @brief This class implements streaming features as strings.
  *
  */
-template <class T> class CStreamingStringFeatures : public CStreamingFeatures
+template <class T> class StreamingStringFeatures : public StreamingFeatures
 {
 public:
 
@@ -35,7 +35,7 @@ public:
 	 * CStreamingFile::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
-	CStreamingStringFeatures();
+	StreamingStringFeatures();
 
 	/**
 	 * Constructor taking args.
@@ -45,7 +45,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingStringFeatures(CStreamingFile* file,
+	StreamingStringFeatures(std::shared_ptr<StreamingFile> file,
 				 bool is_labelled,
 				 int32_t size);
 
@@ -54,7 +54,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	virtual ~CStreamingStringFeatures();
+	virtual ~StreamingStringFeatures();
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -90,18 +90,18 @@ public:
 	 * Set the alphabet to be used.
 	 * Call before parsing.
 	 *
-	 * @param alpha alphabet as a pointer to a CAlphabet object.
+	 * @param alpha alphabet as a pointer to a Alphabet object.
 	 */
-	void use_alphabet(CAlphabet* alpha);
+	void use_alphabet(std::shared_ptr<Alphabet> alpha);
 
 	/**
 	 * Set whether remapping to another alphabet is required.
 	 *
 	 * Call before parsing.
-	 * @param ascii_alphabet the alphabet to convert from, CAlphabet*
-	 * @param binary_alphabet the alphabet to convert to, CAlphabet*
+	 * @param ascii_alphabet the alphabet to convert from, Alphabet*
+	 * @param binary_alphabet the alphabet to convert to, Alphabet*
 	 */
-	void set_remap(CAlphabet* ascii_alphabet, CAlphabet* binary_alphabet);
+	void set_remap(std::shared_ptr<Alphabet> ascii_alphabet, std::shared_ptr<Alphabet> binary_alphabet);
 
 	/**
 	 * Set whether remapping to another alphabet is required.
@@ -113,10 +113,10 @@ public:
 	void set_remap(EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA);
 
 	/**
-	 * Return the alphabet being used as a CAlphabet*
+	 * Return the alphabet being used as a Alphabet*
 	 * @return
 	 */
-	CAlphabet* get_alphabet();
+	std::shared_ptr<Alphabet> get_alphabet();
 
 	/** get number of symbols
 	 *
@@ -231,21 +231,21 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	void init(std::shared_ptr<StreamingFile >file, bool is_labelled, int32_t size);
 
 protected:
 
 	/// The parser object, which reads from input and returns parsed example objects.
-	CInputParser<T> parser;
+	InputParser<T> parser;
 
 	/// Alphabet to use
-	CAlphabet* alphabet;
+	std::shared_ptr<Alphabet> alphabet;
 
 	/// If remapping is enabled, this is the source alphabet
-	CAlphabet* alpha_ascii;
+	std::shared_ptr<Alphabet> alpha_ascii;
 
 	/// If remapping is enabled, this is the target alphabet
-	CAlphabet* alpha_bin;
+	std::shared_ptr<Alphabet> alpha_bin;
 
 	/// The current example's string
 	SGVector<T> current_string;

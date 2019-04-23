@@ -8,20 +8,20 @@
 
 using namespace shogun;
 
-CSequenceLabels::CSequenceLabels()
-: CStructuredLabels()
+SequenceLabels::SequenceLabels()
+: StructuredLabels()
 {
 }
 
-CSequenceLabels::CSequenceLabels(int32_t num_labels, int32_t num_states)
-: CStructuredLabels(num_labels), m_num_states(num_states)
+SequenceLabels::SequenceLabels(int32_t num_labels, int32_t num_states)
+: StructuredLabels(num_labels), m_num_states(num_states)
 {
 	init();
 }
 
-CSequenceLabels::CSequenceLabels(SGVector< int32_t > labels, int32_t label_length,
+SequenceLabels::SequenceLabels(SGVector< int32_t > labels, int32_t label_length,
 		int32_t num_labels, int32_t num_states)
-: CStructuredLabels(num_labels), m_num_states(num_states)
+: StructuredLabels(num_labels), m_num_states(num_states)
 {
 	require(labels.vlen == label_length*num_labels, "The length of the labels must be "
 			"equal to label_length times num_labels");
@@ -35,16 +35,16 @@ CSequenceLabels::CSequenceLabels(SGVector< int32_t > labels, int32_t label_lengt
 	}
 }
 
-CSequenceLabels::~CSequenceLabels()
+SequenceLabels::~SequenceLabels()
 {
 }
 
-void CSequenceLabels::add_vector_label(SGVector< int32_t > label)
+void SequenceLabels::add_vector_label(SGVector< int32_t > label)
 {
-	CStructuredLabels::add_label( new CSequence(label) );
+	StructuredLabels::add_label( std::make_shared<Sequence>(label) );
 }
 
-void CSequenceLabels::init()
+void SequenceLabels::init()
 {
 	SG_ADD(&m_num_states, "m_num_states", "Number of states");
 }

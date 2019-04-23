@@ -16,24 +16,24 @@
 using namespace shogun;
 
 
-int32_t CECOCIHDDecoder::decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook)
+int32_t ECOCIHDDecoder::decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook)
 {
     update_delta_cache(codebook);
 
     SGVector<float64_t> query = binarize(outputs);
     SGVector<float64_t> L(codebook.num_cols);
     for (int32_t i=0; i < codebook.num_cols; ++i)
-        L[i] = CECOCUtil::hamming_distance(query.vector, codebook.get_column_vector(i), query.vlen);
+        L[i] = ECOCUtil::hamming_distance(query.vector, codebook.get_column_vector(i), query.vlen);
 
     SGVector<float64_t> res(codebook.num_cols);
     res.zero();
     // res = m_delta * L
     cblas_dgemv(CblasColMajor, CblasNoTrans, m_delta.num_cols, m_delta.num_cols,
             1, m_delta.matrix, m_delta.num_cols, L.vector, 1, 1, res.vector, 1);
-    return CMath::arg_max(res.vector, 1, res.vlen);
+    return Math::arg_max(res.vector, 1, res.vlen);
 }
 
-void CECOCIHDDecoder::update_delta_cache(const SGMatrix<int32_t> codebook)
+void ECOCIHDDecoder::update_delta_cache(const SGMatrix<int32_t> codebook)
 {
     if (codebook.matrix == m_codebook.matrix)
         return; // memory address the same
@@ -57,7 +57,7 @@ void CECOCIHDDecoder::update_delta_cache(const SGMatrix<int32_t> codebook)
         for (int32_t j=i+1; j < codebook.num_cols; ++j)
         {
             m_delta(i, j) = m_delta(j, i) =
-                CECOCUtil::hamming_distance(codebook.get_column_vector(i), codebook.get_column_vector(j), codebook.num_rows);
+                ECOCUtil::hamming_distance(codebook.get_column_vector(i), codebook.get_column_vector(j), codebook.num_rows);
         }
     }
 

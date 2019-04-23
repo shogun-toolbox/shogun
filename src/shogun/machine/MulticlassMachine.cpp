@@ -16,78 +16,70 @@
 
 using namespace shogun;
 
-CMulticlassMachine::CMulticlassMachine()
-: CBaseMulticlassMachine(), m_multiclass_strategy(new CMulticlassOneVsRestStrategy()),
+MulticlassMachine::MulticlassMachine()
+: BaseMulticlassMachine(), m_multiclass_strategy(std::make_shared<MulticlassOneVsRestStrategy>()),
 	m_machine(NULL)
 {
-	SG_REF(m_multiclass_strategy);
+
 	register_parameters();
 }
 
-CMulticlassMachine::CMulticlassMachine(
-		CMulticlassStrategy *strategy,
-		CMachine* machine, CLabels* labs)
-: CBaseMulticlassMachine(), m_multiclass_strategy(strategy)
+MulticlassMachine::MulticlassMachine(
+		std::shared_ptr<MulticlassStrategy >strategy,
+		std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs)
+: BaseMulticlassMachine(), m_multiclass_strategy(strategy)
 {
-	SG_REF(strategy);
+
 	set_labels(labs);
-	SG_REF(machine);
+
 	m_machine = machine;
 	register_parameters();
 }
 
-CMulticlassMachine::~CMulticlassMachine()
+MulticlassMachine::~MulticlassMachine()
 {
-	SG_UNREF(m_multiclass_strategy);
-	SG_UNREF(m_machine);
-}
 
-void CMulticlassMachine::set_labels(CLabels* lab)
-{
-    CMachine::set_labels(lab);
 
 }
 
-void CMulticlassMachine::register_parameters()
+void MulticlassMachine::set_labels(std::shared_ptr<Labels> lab)
+{
+    Machine::set_labels(lab);
+
+}
+
+void MulticlassMachine::register_parameters()
 {
 	SG_ADD(&m_multiclass_strategy,"multiclass_strategy", "Multiclass strategy");
 	SG_ADD(&m_machine, "machine", "The base machine");
 }
 
-void CMulticlassMachine::init_strategy()
+void MulticlassMachine::init_strategy()
 {
-    int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+    int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
-CBinaryLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
+std::shared_ptr<BinaryLabels> MulticlassMachine::get_submachine_outputs(int32_t i)
 {
-	CMachine *machine = (CMachine*)m_machines->get_element(i);
+	auto machine = m_machines.at(i);
 	ASSERT(machine)
-	CBinaryLabels* output = machine->apply_binary();
-	SG_UNREF(machine);
-	return output;
+	return machine->apply_binary();
 }
 
-float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
+float64_t MulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 {
-	CMachine *machine = get_machine(i);
+	auto machine = get_machine(i);
 	float64_t output = 0.0;
-	// dirty hack
-	if (dynamic_cast<CLinearMachine*>(machine))
-		output = ((CLinearMachine*)machine)->apply_one(num);
-	if (dynamic_cast<CKernelMachine*>(machine))
-		output = ((CKernelMachine*)machine)->apply_one(num);
-	SG_UNREF(machine);
-	return output;
+	return machine->apply_one(num);
 }
 
-CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
+std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::shared_ptr<Features> data)
 {
 	SG_TRACE("entering {}::apply_multiclass({} at {})",
-			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));
 
-	CMulticlassLabels* return_labels=NULL;
+	std::shared_ptr<MulticlassLabels> return_labels=NULL;
 
 	if (data)
 		init_machines_for_apply(data);
@@ -100,11 +92,11 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		int32_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
 
-		int32_t num_machines=m_machines->get_num_elements();
+		int32_t num_machines=m_machines.size();
 		if (num_machines <= 0)
 			error("num_machines = {}, did you train your machine?", num_machines);
 
-		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
+		auto result=std::make_shared<MulticlassLabels>(num_vectors);
 
 		// if outputs are prob, only one confidence for each class
 		int32_t num_classes=m_multiclass_strategy->get_num_classes();
@@ -115,17 +107,17 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		else
 			result->allocate_confidences_for(num_machines);
 
-		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
+		std::vector<std::shared_ptr<BinaryLabels>> outputs(num_machines);
 		SGVector<float64_t> As(num_machines);
 		SGVector<float64_t> Bs(num_machines);
 
 		for (int32_t i=0; i<num_machines; ++i)
 		{
-			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
+			outputs[i] = get_submachine_outputs(i);
 
 			if (heuris==OVA_SOFTMAX)
 			{
-				CStatistics::SigmoidParamters params = CStatistics::fit_sigmoid(outputs[i]->get_values());
+				Statistics::SigmoidParamters params = Statistics::fit_sigmoid(outputs[i]->get_values());
 				As[i] = params.a;
 				Bs[i] = params.b;
 			}
@@ -167,11 +159,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			result->set_label(i, m_multiclass_strategy->decide_label(r_output_for_i));
 			result->set_multiclass_confidences(i, r_output_for_i);
 		}
-
-		for (int32_t i=0; i < num_machines; ++i)
-			SG_UNREF(outputs[i]);
-
-		SG_FREE(outputs);
+		outputs.clear();
 
 		return_labels=result;
 	}
@@ -180,13 +168,13 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 
 
 	SG_TRACE("leaving {}::apply_multiclass({} at {})",
-				get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
+				get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));
 	return return_labels;
 }
 
-CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, int32_t n_outputs)
+std::shared_ptr<MultilabelLabels> MulticlassMachine::apply_multilabel_output(std::shared_ptr<Features> data, int32_t n_outputs)
 {
-	CMultilabelLabels* return_labels=NULL;
+	std::shared_ptr<MultilabelLabels> return_labels=NULL;
 
 	if (data)
 		init_machines_for_apply(data);
@@ -199,16 +187,16 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 		int32_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
 
-		int32_t num_machines=m_machines->get_num_elements();
+		int32_t num_machines=m_machines.size();
 		if (num_machines <= 0)
 			error("num_machines = {}, did you train your machine?", num_machines);
 		require(n_outputs<=num_machines,"You request more outputs than machines available");
 
-		CMultilabelLabels* result=new CMultilabelLabels(num_vectors, n_outputs);
-		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
+		auto result=std::make_shared<MultilabelLabels>(num_vectors, n_outputs);
+		std::vector<std::shared_ptr<BinaryLabels>> outputs(num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
-			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
+			outputs[i] = get_submachine_outputs(i);
 
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
@@ -218,11 +206,8 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 
 			result->set_label(i, m_multiclass_strategy->decide_label_multiple_output(output_for_i, n_outputs));
 		}
-
 		for (int32_t i=0; i < num_machines; ++i)
-			SG_UNREF(outputs[i]);
-
-		SG_FREE(outputs);
+			outputs[i].reset();
 
 		return_labels=result;
 	}
@@ -232,7 +217,7 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 	return return_labels;
 }
 
-bool CMulticlassMachine::train_machine(CFeatures* data)
+bool MulticlassMachine::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(m_multiclass_strategy)
 	init_strategy();
@@ -242,9 +227,9 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	else
 		init_machine_for_train(data);
 
-	m_machines->reset_array();
-	CBinaryLabels* train_labels = new CBinaryLabels(get_num_rhs_vectors());
-	SG_REF(train_labels);
+	m_machines.clear();
+	auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
+
 	m_machine->set_labels(train_labels);
 
 	m_multiclass_strategy->train_start(
@@ -259,7 +244,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 		}
 
 		m_machine->train();
-		m_machines->push_back(get_machine_from_trained(m_machine));
+		m_machines.push_back(get_machine_from_trained(m_machine));
 
 		if (subset.vlen)
 		{
@@ -269,19 +254,19 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	}
 
 	m_multiclass_strategy->train_stop();
-	SG_UNREF(train_labels);
+
 
 	return true;
 }
 
-float64_t CMulticlassMachine::apply_one(int32_t vec_idx)
+float64_t MulticlassMachine::apply_one(int32_t vec_idx)
 {
 	init_machines_for_apply(NULL);
 
-	ASSERT(m_machines->get_num_elements()>0)
-	SGVector<float64_t> outputs(m_machines->get_num_elements());
+	ASSERT(m_machines.size()>0)
+	SGVector<float64_t> outputs(m_machines.size());
 
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (int32_t i=0; i<m_machines.size(); i++)
 		outputs[i] = get_submachine_output(i, vec_idx);
 
 	float64_t result = m_multiclass_strategy->decide_label(outputs);

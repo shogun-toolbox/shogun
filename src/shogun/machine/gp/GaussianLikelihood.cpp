@@ -38,47 +38,46 @@
 using namespace shogun;
 using namespace Eigen;
 
-CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
+GaussianLikelihood::GaussianLikelihood() : LikelihoodModel()
 {
 	init();
 }
 
-CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
+GaussianLikelihood::GaussianLikelihood(float64_t sigma) : LikelihoodModel()
 {
 	init();
 	set_sigma(sigma);
 }
 
-void CGaussianLikelihood::init()
+void GaussianLikelihood::init()
 {
 	m_log_sigma=0.0;
 	SG_ADD(&m_log_sigma, "log_sigma", "Observation noise in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
-CGaussianLikelihood::~CGaussianLikelihood()
+GaussianLikelihood::~GaussianLikelihood()
 {
 }
 
-CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
-		CLikelihoodModel* lik)
+std::shared_ptr<GaussianLikelihood> GaussianLikelihood::obtain_from_generic(
+		std::shared_ptr<LikelihoodModel> lik)
 {
 	ASSERT(lik!=NULL);
 
 	if (lik->get_model_type()!=LT_GAUSSIAN)
-		error("Provided likelihood is not of type CGaussianLikelihood!");
+		error("Provided likelihood is not of type GaussianLikelihood!");
 
-	SG_REF(lik);
-	return (CGaussianLikelihood*)lik;
+	return lik->as<GaussianLikelihood>();
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_predictive_means(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> GaussianLikelihood::get_predictive_means(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	return SGVector<float64_t>(mu);
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> GaussianLikelihood::get_predictive_variances(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
@@ -88,13 +87,13 @@ SGVector<float64_t> CGaussianLikelihood::get_predictive_variances(
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* lab,
+SGVector<float64_t> GaussianLikelihood::get_log_probability_f(std::shared_ptr<const Labels> lab,
 		SGVector<float64_t> func) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 
@@ -103,7 +102,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* la
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<RegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute log probability: lp=-(y-f).^2./sigma^2/2-log(2*pi*sigma^2)/2
@@ -111,18 +110,18 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* la
 	eigen_result = -eigen_result.cwiseProduct(eigen_result) /
 	                   (2.0 * std::exp(m_log_sigma * 2.0)) -
 	               VectorXd::Ones(result.vlen) *
-	                   log(2.0 * CMath::PI * std::exp(m_log_sigma * 2.0)) / 2.0;
+	                   log(2.0 * Math::PI * std::exp(m_log_sigma * 2.0)) / 2.0;
 
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
-		const CLabels* lab, SGVector<float64_t> func, index_t i) const
+SGVector<float64_t> GaussianLikelihood::get_log_probability_derivative_f(
+		std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 	require(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3");
@@ -132,7 +131,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<RegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// set result=y-f
@@ -150,12 +149,12 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab,
+SGVector<float64_t> GaussianLikelihood::get_first_derivative(std::shared_ptr<const Labels> lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 
@@ -167,7 +166,7 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 	if (strcmp(param->m_name, "log_sigma"))
 		return SGVector<float64_t>();
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<RegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute derivative of log probability wrt log_sigma:
@@ -181,12 +180,12 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* lab,
+SGVector<float64_t> GaussianLikelihood::get_second_derivative(std::shared_ptr<const Labels> lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 
@@ -198,7 +197,7 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<RegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute derivative of (the first log_sigma derivative of log probability) wrt f:
@@ -209,12 +208,12 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab,
+SGVector<float64_t> GaussianLikelihood::get_third_derivative(std::shared_ptr<const Labels> lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 
@@ -235,8 +234,8 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab) const
+SGVector<float64_t> GaussianLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels >lab) const
 {
 	SGVector<float64_t> y;
 
@@ -247,9 +246,9 @@ SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
 				"variances ({}) and number of labels ({}) should be the same",
 				mu.vlen, s2.vlen, lab->get_num_labels());
 		require(lab->get_label_type()==LT_REGRESSION,
-				"Labels must be type of CRegressionLabels");
+				"Labels must be type of RegressionLabels");
 
-		y=((CRegressionLabels*)lab)->get_labels();
+		y=lab->as<RegressionLabels>()->get_labels();
 	}
 	else
 	{
@@ -272,13 +271,13 @@ SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
 	// compule lZ=-(y-mu).^2./(sn2+s2)/2-log(2*pi*(sn2+s2))/2
 	eigen_s2 = eigen_s2.array() + std::exp(m_log_sigma * 2.0);
 	eigen_result=-(eigen_y-eigen_mu).array().square()/(2.0*eigen_s2.array())-
-		(2.0*CMath::PI*eigen_s2.array()).log()/2.0;
+		(2.0*Math::PI*eigen_s2.array()).log()/2.0;
 
 	return result;
 }
 
-float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+float64_t GaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
@@ -288,9 +287,9 @@ float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
 			mu.vlen, s2.vlen, lab->get_num_labels());
 	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<RegressionLabels>()->get_labels();
 
 	// compute 1st moment
 	float64_t Ex =
@@ -299,8 +298,8 @@ float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
 	return Ex;
 }
 
-float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+float64_t GaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
@@ -310,11 +309,11 @@ float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
 			mu.vlen, s2.vlen, lab->get_num_labels());
 	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels");
+			"Labels must be type of RegressionLabels");
 
 	// compute 2nd moment
 	float64_t Var =
-	    s2[i] - CMath::sq(s2[i]) / (std::exp(m_log_sigma * 2.0) + s2[i]);
+	    s2[i] - Math::sq(s2[i]) / (std::exp(m_log_sigma * 2.0) + s2[i]);
 
 	return Var;
 }

@@ -19,7 +19,7 @@ namespace shogun
 /** @brief Class KernelRidgeRegression implements Kernel Ridge Regression - a regularized least square
  * method for classification and regression.
  *
- * It is similar to support vector machines (cf. CSVM). However in contrast to
+ * It is similar to support vector machines (cf. SVM). However in contrast to
  * SVMs a different objective is optimized that leads to a dense solution (thus
  * not only a few support vectors are active in the end but all training
  * examples). This makes it only applicable to rather few (a couple of
@@ -44,16 +44,16 @@ namespace shogun
  * \f]
  * where K is the kernel matrix and y the vector of labels. The expressed
  * solution can again be written as a linear combination of kernels (cf.
- * CKernelMachine) with bias \f$b=0\f$.
+ * KernelMachine) with bias \f$b=0\f$.
  */
-class CKernelRidgeRegression : public CKernelMachine
+class KernelRidgeRegression : public KernelMachine
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		/** default constructor */
-		CKernelRidgeRegression();
+		KernelRidgeRegression();
 
 		/** constructor
 		 *
@@ -61,10 +61,10 @@ class CKernelRidgeRegression : public CKernelMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab);
+		KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~CKernelRidgeRegression() {}
+		virtual ~KernelRidgeRegression() {}
 
 		/** set regularization constant
 		 *
@@ -113,7 +113,7 @@ class CKernelRidgeRegression : public CKernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** Train regression using Cholesky decomposition.
 		 * Assumes that m_alpha is already allocated.

@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CMLDataHDF5File::CMLDataHDF5File()
+MLDataHDF5File::MLDataHDF5File()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -31,9 +31,9 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 	return written;
 }
 
-CMLDataHDF5File::CMLDataHDF5File(char* data_name,
+MLDataHDF5File::MLDataHDF5File(char* data_name,
                                  const char* name,
-                                 const char* url_prefix) : CFile()
+                                 const char* url_prefix) : File()
 {
 	get_boolean_type();
 	H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
@@ -82,7 +82,7 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 		error("Could not open data repository '{}'", data_name);
 }
 
-CMLDataHDF5File::~CMLDataHDF5File()
+MLDataHDF5File::~MLDataHDF5File()
 {
 	H5Fclose(h5file);
 	remove(fname);
@@ -91,7 +91,7 @@ CMLDataHDF5File::~CMLDataHDF5File()
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
+void MLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
 {																					\
 	if (!h5file)																	\
 		error("File invalid.");												\
@@ -145,7 +145,7 @@ GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void MLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																					\
 	if (!h5file)																	\
 		error("File invalid.");												\
@@ -197,7 +197,7 @@ GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void MLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		error("File invalid.");													\
@@ -219,7 +219,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CMLDataHDF5File::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void MLDataHDF5File::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 
@@ -238,7 +238,7 @@ GET_STRING_LIST(get_string_list, float64_t, DT_STRING_REAL)
 GET_STRING_LIST(get_string_list, floatmax_t, DT_STRING_LONGREAL)
 #undef GET_STRING_LIST
 
-void CMLDataHDF5File::get_boolean_type()
+void MLDataHDF5File::get_boolean_type()
 {
 	boolean_type=H5T_NATIVE_UCHAR;
 	switch (sizeof(bool))
@@ -260,7 +260,7 @@ void CMLDataHDF5File::get_boolean_type()
 	}
 }
 
-hid_t CMLDataHDF5File::get_compatible_type(H5T_class_t t_class,
+hid_t MLDataHDF5File::get_compatible_type(H5T_class_t t_class,
 									 const TSGDataType* datatype)
 {
 	switch (t_class)
@@ -306,7 +306,7 @@ hid_t CMLDataHDF5File::get_compatible_type(H5T_class_t t_class,
 	}
 }
 
-void CMLDataHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
+void MLDataHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
 {
 	hid_t dataspace = H5Dget_space(dataset);
 	if (dataspace<0)
@@ -323,7 +323,7 @@ void CMLDataHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, in
 	H5Sclose(dataspace);
 }
 
-void CMLDataHDF5File::create_group_hierarchy()
+void MLDataHDF5File::create_group_hierarchy()
 {
 	char* vname=get_strdup(variable_name);
 	int32_t vlen=strlen(vname);

@@ -24,11 +24,11 @@ namespace shogun
  * where
  * \f$ I_i({\bf x},{\bf x'})=1\f$ if \f$x_i=x'_i\f$ and 0 otherwise.
  */
-class CLocalityImprovedStringKernel: public CStringKernel<char>
+class LocalityImprovedStringKernel: public StringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CLocalityImprovedStringKernel();
+		LocalityImprovedStringKernel();
 
 		/** constructor
 		 *
@@ -37,7 +37,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param inner_degree inner degree
 		 * @param outer_degree outer degree
 		 */
-		CLocalityImprovedStringKernel(int32_t size, int32_t length,
+		LocalityImprovedStringKernel(int32_t size, int32_t length,
 			int32_t inner_degree, int32_t outer_degree);
 
 		/** constructor
@@ -48,11 +48,11 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param inner_degree inner degree
 		 * @param outer_degree outer degree
 		 */
-		CLocalityImprovedStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+		LocalityImprovedStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			int32_t length, int32_t inner_degree, int32_t outer_degree);
 
-		virtual ~CLocalityImprovedStringKernel();
+		virtual ~LocalityImprovedStringKernel();
 
 		/** initialize kernel
 		 *
@@ -60,7 +60,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

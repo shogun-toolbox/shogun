@@ -19,21 +19,21 @@ TEST(SGObject,clone_equals_{{class}})
 {% endif %}
 {
 	const char* class_name="{{class}}";
-	CSGObject* object = create(class_name, PT_NOT_GENERIC);
+	SGObject* object = create(class_name, PT_NOT_GENERIC);
 	ASSERT_TRUE(object != NULL);
 
 	/* test for get_name() */
 	ASSERT_TRUE(strcmp(object->get_name(), class_name) == 0);
 
 	/* test for .equals() */
-	CSGObject* object2 = create(class_name, PT_NOT_GENERIC);
+	SGObject* object2 = create(class_name, PT_NOT_GENERIC);
 	ASSERT_TRUE(object2 != NULL);
 	ASSERT_TRUE(object->equals(object2));
 	ASSERT_TRUE(object2->equals(object));
 	SG_UNREF(object2);
 
 	/* test for .clone() */
-	CSGObject* clone = object->clone();
+	SGObject* clone = object->clone();
 	ASSERT_TRUE(clone != NULL);
 
 	/* test for .clone() + .equals() */
@@ -54,21 +54,21 @@ TEST(SGObject,clone_equals_{{class}}_{{type}})
 {% endif %}
 {
 	const char* class_name="{{class}}";
-	CSGObject* object = create(class_name, {{type}});
+	SGObject* object = create(class_name, {{type}});
 	ASSERT_TRUE(object != NULL);
 
 	/* test for get_name() */
 	ASSERT_TRUE(strcmp(object->get_name(), class_name) == 0);
 
 	/* test for .equals() */
-	CSGObject* object2 = create(class_name, {{type}});
+	SGObject* object2 = create(class_name, {{type}});
 	ASSERT_TRUE(object2 != NULL);
 	ASSERT_TRUE(object->equals(object2));
 	ASSERT_TRUE(object2->equals(object));
 	SG_UNREF(object2);
 
 	/* test for .clone() */
-	CSGObject* clone = object->clone();
+	SGObject* clone = object->clone();
 	ASSERT_TRUE(clone != NULL);
 
 	/* test for .clone() + .equals() */

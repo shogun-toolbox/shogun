@@ -13,13 +13,13 @@
 
 using namespace shogun;
 
-CECOCRandomDenseEncoder::CECOCRandomDenseEncoder() : RandomMixin<CECOCEncoder>()
+ECOCRandomDenseEncoder::ECOCRandomDenseEncoder() : RandomMixin<ECOCEncoder>()
 {
 	init();
 }
 
-CECOCRandomDenseEncoder::CECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone)
-: RandomMixin<CECOCEncoder>()
+ECOCRandomDenseEncoder::ECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone)
+: RandomMixin<ECOCEncoder>()
 {
     if (!check_probability(pposone))
         error("invalid probability of +1");
@@ -30,7 +30,7 @@ CECOCRandomDenseEncoder::CECOCRandomDenseEncoder(int32_t maxiter, int32_t codele
 	m_pposone = pposone;
 }
 
-void CECOCRandomDenseEncoder::init()
+void ECOCRandomDenseEncoder::init()
 {
 	m_maxiter = 10000;
 	m_codelen = 0;
@@ -40,7 +40,7 @@ void CECOCRandomDenseEncoder::init()
     SG_ADD(&m_pposone, "pposone", "probability of +1");
 }
 
-void CECOCRandomDenseEncoder::set_probability(float64_t pposone)
+void ECOCRandomDenseEncoder::set_probability(float64_t pposone)
 {
     if (!check_probability(pposone))
         error("probability of 0, +1 and -1 must sum to one");
@@ -48,7 +48,7 @@ void CECOCRandomDenseEncoder::set_probability(float64_t pposone)
     m_pposone = pposone;
 }
 
-SGMatrix<int32_t> CECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
+SGMatrix<int32_t> ECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
 {
     int32_t codelen = m_codelen;
     if (codelen <= 0)
@@ -103,7 +103,7 @@ SGMatrix<int32_t> CECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
             {
                 for (int32_t j=i+1; j < num_classes; ++j)
                 {
-                    int32_t dist = CECOCUtil::hamming_distance(codebook.get_column_vector(i),
+                    int32_t dist = ECOCUtil::hamming_distance(codebook.get_column_vector(i),
                             codebook.get_column_vector(j), codelen);
                     if (dist < min_dist)
                         min_dist = dist;

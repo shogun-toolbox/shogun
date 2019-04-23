@@ -16,18 +16,18 @@ namespace shogun
 /**@brief CLogLoss implements the logarithmic loss
  * function.
  */
-class CLogLoss: public CLossFunction
+class LogLoss: public LossFunction
 {
 public:
 	/**
 	 * Constructor
 	 */
-	CLogLoss(): CLossFunction() {};
+	LogLoss(): LossFunction() {};
 
 	/**
 	 * Destructor
 	 */
-	~CLogLoss() {};
+	~LogLoss() {};
 
 	/**
 	 * Get loss for an example

@@ -25,7 +25,7 @@ const char* const kGenericKey = "generic";
 extern const char* const kParametersKey;
 const char* const kParametersKey = "parameters";
 
-struct COutputStreamAdapter
+struct OutputStreamAdapter
 {
 	typedef char Ch;
 	void Put(Ch c)
@@ -39,10 +39,10 @@ struct COutputStreamAdapter
 		m_stream->flush();
 	}
 
-	Some<COutputStream> m_stream;
+	std::shared_ptr<OutputStream> m_stream;
 };
 
-template<typename Writer> void write_object(Writer& writer, Some<CSGObject> object);
+template<typename Writer> void write_object(Writer& writer, std::shared_ptr<SGObject> object);
 
 template<class Writer>
 class JSONWriterVisitor : public AnyVisitor
@@ -167,12 +167,12 @@ public:
 		SG_DEBUG("writing std::string with value {}", v->c_str());
 		m_json_writer.String(v->c_str());
 	}
-	void on(CSGObject** v) override
+	void on(std::shared_ptr<SGObject>* v) override
 	{
 		if (*v)
 		{
 			SG_DEBUG("writing SGObject: {}", (*v)->get_name());
-			write_object(m_json_writer, this, wrap<CSGObject>(*v));
+			write_object(m_json_writer, this, *v);
 		}
 		else
 		{
@@ -284,9 +284,9 @@ private:
 };
 
 template<typename Writer>
-void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGObject> object) noexcept(false)
+void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, std::shared_ptr<SGObject> object) noexcept(false)
 {
-	pre_serialize(object.get());
+	pre_serialize(object);
 
 	visitor->start_object();
 	writer.StartObject();
@@ -310,22 +310,22 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGOb
 	writer.EndObject();
 
 	visitor->end_object();
-	post_serialize(object.get());
+	post_serialize(object);
 }
 
-using JsonWriter = Writer<COutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
+using JsonWriter = Writer<OutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
 
-CJsonSerializer::CJsonSerializer() : CSerializer()
+JsonSerializer::JsonSerializer() : Serializer()
 {
 }
 
-CJsonSerializer::~CJsonSerializer()
+JsonSerializer::~JsonSerializer()
 {
 }
 
-void CJsonSerializer::write(Some<CSGObject> object) noexcept(false)
+void JsonSerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
 {
-	COutputStreamAdapter adapter { stream() };
+	OutputStreamAdapter adapter { stream() };
 	JsonWriter writer(adapter);
 	auto writer_visitor =
 		make_unique<JSONWriterVisitor<JsonWriter>>(writer);

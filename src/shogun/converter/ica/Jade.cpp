@@ -20,27 +20,27 @@
 using namespace shogun;
 using namespace Eigen;
 
-CJade::CJade() : CICAConverter()
+Jade::Jade() : ICAConverter()
 {
 	init();
 }
 
-void CJade::init()
+void Jade::init()
 {
 	m_cumulant_matrix = SGMatrix<float64_t>();
 	SG_ADD(&m_cumulant_matrix, "cumulant_matrix", "m_cumulant_matrix");
 }
 
-CJade::~CJade()
+Jade::~Jade()
 {
 }
 
-SGMatrix<float64_t> CJade::get_cumulant_matrix() const
+SGMatrix<float64_t> Jade::get_cumulant_matrix() const
 {
 	return m_cumulant_matrix;
 }
 
-void CJade::fit_dense(CDenseFeatures<float64_t>* features)
+void Jade::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	ASSERT(features);
 
@@ -50,7 +50,7 @@ void CJade::fit_dense(CDenseFeatures<float64_t>* features)
 	int T = X.num_cols;
 	int m = n;
 
-	Map<MatrixXd> EX(X.matrix,n,T);
+	Eigen::Map<MatrixXd> EX(X.matrix,n,T);
 
 	// Mean center X
 	VectorXd mean = (EX.rowwise().sum() / (float64_t)T);
@@ -91,7 +91,7 @@ void CJade::fit_dense(CDenseFeatures<float64_t>* features)
 	int dimsymm = (m * ( m + 1)) / 2; // Dim. of the space of real symm matrices
 	int nbcm = dimsymm; //  number of cumulant matrices
 	m_cumulant_matrix = SGMatrix<float64_t>(m,m*nbcm);	// Storage for cumulant matrices
-	Map<MatrixXd> CM(m_cumulant_matrix.matrix,m,m*nbcm);
+	Eigen::Map<MatrixXd> CM(m_cumulant_matrix.matrix,m,m*nbcm);
 	MatrixXd R(m,m); R.setIdentity();
 	MatrixXd Qij = MatrixXd::Zero(m,m); // Temp for a cum. matrix
 	VectorXd Xim = VectorXd::Zero(m); // Temp
@@ -130,13 +130,13 @@ void CJade::fit_dense(CDenseFeatures<float64_t>* features)
 
 	for (int i = 0; i < nbcm; i++)
 	{
-		Map<MatrixXd> EM(M.get_matrix(i),m,m);
+		Eigen::Map<MatrixXd> EM(M.get_matrix(i),m,m);
 		EM = CM.block(0,i*m,m,m);
 	}
 
 	// Diagonalize
-	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
-	Map<MatrixXd> EQ(Q.matrix,m,m);
+	SGMatrix<float64_t> Q = JADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
+	Eigen::Map<MatrixXd> EQ(Q.matrix,m,m);
 	EQ = -1 * EQ.inverse();
 
 	#ifdef DEBUG_JADE
@@ -146,7 +146,7 @@ void CJade::fit_dense(CDenseFeatures<float64_t>* features)
 
 	// Separating matrix
 	SGMatrix<float64_t> sep_matrix = SGMatrix<float64_t>(m,m);
-	Map<MatrixXd> C(sep_matrix.matrix,m,m);
+	Eigen::Map<MatrixXd> C(sep_matrix.matrix,m,m);
 	C = EQ.transpose() * B;
 
 	// Sort
@@ -187,6 +187,6 @@ void CJade::fit_dense(CDenseFeatures<float64_t>* features)
 	#endif
 
 	m_mixing_matrix = SGMatrix<float64_t>(m,m);
-	Map<MatrixXd> Emixing_matrix(m_mixing_matrix.matrix,m,m);
+	Eigen::Map<MatrixXd> Emixing_matrix(m_mixing_matrix.matrix,m,m);
 	Emixing_matrix = C.inverse();
 }

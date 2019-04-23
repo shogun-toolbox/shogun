@@ -42,14 +42,14 @@ namespace shogun
  * this base class. This is a template class having a template member called data which can be used to store all
  * parameters used and results calculated by the expectation and maximization steps of EM.
  */
-template <class T> class CEMBase : public CSGObject
+template <class T> class EMBase : public SGObject
 {
 	public:
 		/** constructor */
-		CEMBase() : CSGObject() { };
+		EMBase() : SGObject() { };
 
 		/** destructor */
-		virtual ~CEMBase() { };
+		virtual ~EMBase() { };
 
 		/** returns the name of the class */
 		virtual const char* get_name() const { return "EMBase"; }

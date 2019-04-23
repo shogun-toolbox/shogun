@@ -16,53 +16,53 @@
 
 using namespace shogun;
 
-CDenseLabels::CDenseLabels()
-: CLabels()
+DenseLabels::DenseLabels()
+: Labels()
 {
 	init();
 }
 
-CDenseLabels::CDenseLabels(int32_t num_lab)
-: CLabels()
+DenseLabels::DenseLabels(int32_t num_lab)
+: Labels()
 {
 	init();
 	m_labels = SGVector<float64_t>(num_lab);
 	m_current_values=SGVector<float64_t>(num_lab);
 }
 
-CDenseLabels::CDenseLabels(const CDenseLabels& orig)
-    : CLabels(orig), m_labels(orig.m_labels)
+DenseLabels::DenseLabels(const DenseLabels& orig)
+    : Labels(orig), m_labels(orig.m_labels)
 {
 	init();
 }
 
-CDenseLabels::CDenseLabels(CFile* loader)
-: CLabels()
+DenseLabels::DenseLabels(std::shared_ptr<File> loader)
+: Labels()
 {
 	init();
 	load(loader);
 }
 
-CDenseLabels::~CDenseLabels()
+DenseLabels::~DenseLabels()
 {
 }
 
-void CDenseLabels::init()
+void DenseLabels::init()
 {
 	SG_ADD(&m_labels, "labels", "The labels.");
 }
 
-void CDenseLabels::set_to_one()
+void DenseLabels::set_to_one()
 {
 	set_to_const(1.0);
 }
 
-void CDenseLabels::zero()
+void DenseLabels::zero()
 {
 	set_to_const(0.0);
 }
 
-void CDenseLabels::set_to_const(float64_t c)
+void DenseLabels::set_to_const(float64_t c)
 {
 	ASSERT(m_labels.vector)
 	index_t subset_size=get_num_labels();
@@ -73,7 +73,7 @@ void CDenseLabels::set_to_const(float64_t c)
 	}
 }
 
-void CDenseLabels::set_labels(SGVector<float64_t> v)
+void DenseLabels::set_labels(SGVector<float64_t> v)
 {
 	if (m_subset_stack->has_subsets())
 		error("A subset is set, cannot set labels");
@@ -81,7 +81,7 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 	m_labels = v;
 }
 
-SGVector<float64_t> CDenseLabels::get_labels() const
+SGVector<float64_t> DenseLabels::get_labels() const
 {
 	if (m_subset_stack->has_subsets())
 		return get_labels_copy();
@@ -89,7 +89,7 @@ SGVector<float64_t> CDenseLabels::get_labels() const
 	return m_labels;
 }
 
-SGVector<float64_t> CDenseLabels::get_labels_copy() const
+SGVector<float64_t> DenseLabels::get_labels_copy() const
 {
 	if (!m_subset_stack->has_subsets())
 		return m_labels.clone();
@@ -104,7 +104,7 @@ SGVector<float64_t> CDenseLabels::get_labels_copy() const
 	return result;
 }
 
-SGVector<int32_t> CDenseLabels::get_int_labels()
+SGVector<int32_t> DenseLabels::get_int_labels() const
 {
 	SGVector<int32_t> intlab(get_num_labels());
 
@@ -114,7 +114,7 @@ SGVector<int32_t> CDenseLabels::get_int_labels()
 	return intlab;
 }
 
-void CDenseLabels::set_int_labels(SGVector<int32_t> lab)
+void DenseLabels::set_int_labels(SGVector<int32_t> lab)
 {
 	if (m_subset_stack->has_subsets())
 		error("set_int_labels() is not possible on subset");
@@ -126,7 +126,7 @@ void CDenseLabels::set_int_labels(SGVector<int32_t> lab)
 }
 
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
-void CDenseLabels::set_int_labels(SGVector<int64_t> lab)
+void DenseLabels::set_int_labels(SGVector<int64_t> lab)
 {
 	if (m_subset_stack->has_subsets())
 		error("set_int_labels() is not possible on subset");
@@ -138,24 +138,24 @@ void CDenseLabels::set_int_labels(SGVector<int64_t> lab)
 }
 #endif
 
-bool CDenseLabels::is_valid() const
+bool DenseLabels::is_valid() const
 {
 	return (m_labels.data() != nullptr) && (m_labels.size() > 0);
 }
 
-void CDenseLabels::ensure_valid(const char* context)
+void DenseLabels::ensure_valid(const char* context)
 {
 	require(is_valid(), "Labels cannot be empty!");
 }
 
-void CDenseLabels::load(CFile* loader)
+void DenseLabels::load(std::shared_ptr<File> loader)
 {
 	remove_subset();
 	m_labels = SGVector<float64_t>();
 	m_labels.load(loader);
 }
 
-void CDenseLabels::save(CFile* writer)
+void DenseLabels::save(std::shared_ptr<File> writer)
 {
 	if (m_subset_stack->has_subsets())
 		error("save() is not possible on subset");
@@ -163,7 +163,7 @@ void CDenseLabels::save(CFile* writer)
 	m_labels.save(writer);
 }
 
-bool CDenseLabels::set_label(int32_t idx, float64_t label)
+bool DenseLabels::set_label(int32_t idx, float64_t label)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	if (m_labels.vector && real_num<get_num_labels())
@@ -175,7 +175,7 @@ bool CDenseLabels::set_label(int32_t idx, float64_t label)
 		return false;
 }
 
-bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
+bool DenseLabels::set_int_label(int32_t idx, int32_t label)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	if (m_labels.vector && real_num<get_num_labels())
@@ -187,14 +187,14 @@ bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
 		return false;
 }
 
-float64_t CDenseLabels::get_label(int32_t idx) const
+float64_t DenseLabels::get_label(int32_t idx) const
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())
 	return m_labels.vector[real_num];
 }
 
-int32_t CDenseLabels::get_int_label(int32_t idx)
+int32_t DenseLabels::get_int_label(int32_t idx) const
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())
@@ -204,7 +204,7 @@ int32_t CDenseLabels::get_int_label(int32_t idx)
 	return int32_t(m_labels.vector[real_num]);
 }
 
-int32_t CDenseLabels::get_num_labels() const
+int32_t DenseLabels::get_num_labels() const
 {
 	return m_subset_stack->has_subsets()
 			? m_subset_stack->get_size() : m_labels.vlen;

@@ -23,19 +23,19 @@ int main(int argc, char** argv)
 	SGMatrix<float64_t> matrix(n,n);
 
 	for(int32_t i=0; i<n*n; ++i)
-		matrix.matrix[i]=CMath::random((float64_t)-n,(float64_t)n);
+		matrix.matrix[i]=Math::random((float64_t)-n,(float64_t)n);
 
 	SGMatrix<float64_t>::display_matrix(matrix.matrix, n, n);
 
 	/* create n n-dimensional feature vectors */
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features= new DenseFeatures<float64_t>(matrix);
 
 	/* create gaussian kernel with cache 10MB, width will be changed later */
-	CGaussianKernel* kernel = new CGaussianKernel(10, 2.0);
+	GaussianKernel* kernel = new GaussianKernel(10, 2.0);
 	kernel->init(features, features);
 
 	/* create n labels (+1,-1,+1,-1,...) */
-	CBinaryLabels* labels=new CBinaryLabels(n);
+	BinaryLabels* labels=new BinaryLabels(n);
 	for (int32_t i=0; i<n; ++i)
 		labels->set_label(i, i%2==0 ? +1 : -1);
 
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 	for (int32_t k=0; k<10; ++k)
 	{
 
-		float64_t width=CMath::pow(2.0,k);
+		float64_t width=Math::pow(2.0,k);
 		float64_t log_width = std::log(width / 2.0) / 2.0;
 
 		/* create parameter to change current kernel width */
@@ -76,7 +76,6 @@ int main(int argc, char** argv)
 	}
 
 	/* free up memory */
-	SG_UNREF(svm);
 
 	return 0;
 

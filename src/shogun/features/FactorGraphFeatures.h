@@ -15,28 +15,28 @@
 namespace shogun
 {
 
-/** @brief CFactorGraphFeatures maintains an array of factor graphs,
+/** @brief FactorGraphFeatures maintains an array of factor graphs,
  * each graph is a sample, i.e. an instance of structured input.
  */
-class CFactorGraphFeatures : public CFeatures
+class FactorGraphFeatures : public Features
 {
 	public:
 		/** default constructor */
-		CFactorGraphFeatures();
+		FactorGraphFeatures();
 
 		/** constructor
 		 *
 		 * @param num_samples the number of examples the object will contain
 		 */
-		CFactorGraphFeatures(int32_t num_samples);
+		FactorGraphFeatures(int32_t num_samples);
 
-		virtual ~CFactorGraphFeatures();
+		virtual ~FactorGraphFeatures();
 
 		/** Copy-constructor
 		 *
 		 * @return the copy of the given object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** get feature type
 		 *
@@ -67,25 +67,25 @@ class CFactorGraphFeatures : public CFeatures
 		 * @param fg a factor graph instance
 		 * @return whether the sample has been added successfully
 		 */
-		bool add_sample(CFactorGraph* fg);
+		bool add_sample(std::shared_ptr<FactorGraph> fg);
 
 		/** get a graph instance
 		 *
 		 * @param idx index of the required example
-		 * @return pointer of CFactorGraph
+		 * @return pointer of FactorGraph
 		 */
-		CFactorGraph* get_sample(index_t idx);
+		std::shared_ptr<FactorGraph> get_sample(index_t idx);
 
 		/** helper method used to specialize a base class instance
 		 *
-		 * @param base_feats its dynamic type must be CFactorGraphFeatures
-		 * @return pointer to CFactorGraphFeatures
+		 * @param base_feats its dynamic type must be FactorGraphFeatures
+		 * @return pointer to FactorGraphFeatures
 		 */
-		static CFactorGraphFeatures* obtain_from_generic(CFeatures* base_feats);
+		static std::shared_ptr<FactorGraphFeatures> obtain_from_generic(std::shared_ptr<Features> base_feats);
 
 	protected:
-		/** array of CFactorGraph */
-		CDynamicObjectArray* m_samples;
+		/** array of FactorGraph */
+		std::shared_ptr<DynamicObjectArray> m_samples;
 
 	private:
 		/** init function for the object */

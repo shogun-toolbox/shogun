@@ -11,13 +11,13 @@ namespace shogun
 {
 
 /** @brief weighted degree RBF kernel */
-class CWeightedDegreeRBFKernel: public CDotKernel
+class WeightedDegreeRBFKernel: public DotKernel
 {
 	public:
 		/** default constructor
 		 *
 		 */
-		CWeightedDegreeRBFKernel();
+		WeightedDegreeRBFKernel();
 
 		/** constructor
 		 *
@@ -26,7 +26,7 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 * @param degree degree
 		 * @param nof_properties number of properties per amino acid
 		 */
-		CWeightedDegreeRBFKernel(int32_t size, float64_t width, int32_t degree, int32_t nof_properties);
+		WeightedDegreeRBFKernel(int32_t size, float64_t width, int32_t degree, int32_t nof_properties);
 
 		/** constructor
 		 *
@@ -37,10 +37,10 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 * @param nof_properties number of properties per amino acid
 		 * @param size cache size
 		 */
-		CWeightedDegreeRBFKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+		WeightedDegreeRBFKernel(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 			float64_t width, int32_t degree, int32_t nof_properties, int32_t size=10);
 
-		virtual ~CWeightedDegreeRBFKernel();
+		virtual ~WeightedDegreeRBFKernel();
 
 		/** initialize kernel
 		 *
@@ -48,7 +48,7 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

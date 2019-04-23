@@ -51,19 +51,19 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInference()
+KLCovarianceInferenceMethod::KLCovarianceInferenceMethod() : KLInference()
 {
 	init();
 }
 
-CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInference(kern, feat, m, lab, mod)
+KLCovarianceInferenceMethod::KLCovarianceInferenceMethod(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: KLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CKLCovarianceInferenceMethod::init()
+void KLCovarianceInferenceMethod::init()
 {
 	SG_ADD(&m_V, "V",
 		"V is L'*V=diag(sW)*K");
@@ -80,7 +80,7 @@ void CKLCovarianceInferenceMethod::init()
 }
 
 
-SGVector<float64_t> CKLCovarianceInferenceMethod::get_alpha()
+SGVector<float64_t> KLCovarianceInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
 	 * but also a vector corresponding to the diagonal part of W
@@ -103,24 +103,23 @@ SGVector<float64_t> CKLCovarianceInferenceMethod::get_alpha()
 	return result;
 }
 
-CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
+KLCovarianceInferenceMethod::~KLCovarianceInferenceMethod()
 {
 }
 
-CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<KLCovarianceInferenceMethod> KLCovarianceInferenceMethod::obtain_from_generic(
+		std::shared_ptr<Inference> inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
-		error("Provided inference is not of type CKLCovarianceInferenceMethod!");
+		error("Provided inference is not of type KLCovarianceInferenceMethod!");
 
-	SG_REF(inference);
-	return (CKLCovarianceInferenceMethod*)inference;
+	return inference->as<KLCovarianceInferenceMethod>();
 }
 
-bool CKLCovarianceInferenceMethod::precompute()
+bool KLCovarianceInferenceMethod::precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
@@ -160,12 +159,12 @@ bool CKLCovarianceInferenceMethod::precompute()
 		           .abs()
 		           .matrix();
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	return status;
 }
 
-void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+void KLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	require(gradient.vlen==m_alpha.vlen,
 		"The length of gradients ({}) should the same as the length of parameters ({})",
@@ -181,7 +180,7 @@ void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_log_neg_lambda(m_alpha.vector+len, len);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
@@ -218,7 +217,7 @@ void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<
 }
 
 
-float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_helper()
+float64_t KLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
@@ -228,7 +227,7 @@ float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_hel
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
 	float64_t trace=0;
@@ -245,7 +244,7 @@ float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_hel
 	return result;
 }
 
-float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
+float64_t KLCovarianceInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
 	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -270,7 +269,7 @@ float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(SGMatrix<floa
 	return eigen_alpha.dot(eigen_dK*(eigen_alpha/2.0-eigen_df))-z.dot(eigen_dv);
 }
 
-void CKLCovarianceInferenceMethod::update_alpha()
+void KLCovarianceInferenceMethod::update_alpha()
 {
 	float64_t nlml_new=0;
 	float64_t nlml_def=0;
@@ -301,7 +300,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 			           .matrix();
 		SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 
-		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		auto lik=get_variational_likelihood();
 		lik->set_variational_distribution(mean, s2_tmp, m_labels);
 		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
@@ -339,7 +338,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 	nlml_new=optimization();
 }
 
-SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> KLCovarianceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -347,21 +346,21 @@ SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-void CKLCovarianceInferenceMethod::update_deriv()
+void KLCovarianceInferenceMethod::update_deriv()
 {
 	/** get_derivative_related_cov() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }
 
-void CKLCovarianceInferenceMethod::update_chol()
+void KLCovarianceInferenceMethod::update_chol()
 {
 	/** L is automatically updated when update_alpha is called
 	 * Therefore, this function body is empty
 	 */
 }
 
-void CKLCovarianceInferenceMethod::update_approx_cov()
+void KLCovarianceInferenceMethod::update_approx_cov()
 {
 	/** The variational co-variational matrix,
 	 * which is automatically computed when update_alpha is called,

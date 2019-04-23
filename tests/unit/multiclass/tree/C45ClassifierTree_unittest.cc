@@ -131,7 +131,7 @@ TEST(C45ClassifierTree, classify_equivalence_check_to_id3)
 	data(2,14)=high;
 	data(3,14)=strong;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(15);
@@ -157,9 +157,9 @@ TEST(C45ClassifierTree, classify_equivalence_check_to_id3)
 	ft[2]=true;
 	ft[3]=true;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CC45ClassifierTree* c45=new CC45ClassifierTree();
+	auto c45=std::make_shared<C45ClassifierTree>();
 	c45->set_labels(labels);
 	c45->set_feature_types(ft);
 	c45->train(feats);
@@ -189,8 +189,8 @@ TEST(C45ClassifierTree, classify_equivalence_check_to_id3)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=(CMulticlassLabels*) c45->apply(test_feats);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=c45->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -199,10 +199,10 @@ TEST(C45ClassifierTree, classify_equivalence_check_to_id3)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(c45);
-	SG_UNREF(feats);
+
+
+
+
 }
 
 TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
@@ -282,7 +282,7 @@ TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
 	data(2,13)=80;
 	data(3,13)=1;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// play 1. don't play 0.
 	SGVector<float64_t> lab(14);
@@ -307,9 +307,9 @@ TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
 	ft[2]=false;
 	ft[3]=true;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CC45ClassifierTree* c45=new CC45ClassifierTree();
+	auto c45=std::make_shared<C45ClassifierTree>();
 	c45->set_labels(labels);
 	c45->set_feature_types(ft);
 	c45->train(feats);
@@ -339,8 +339,8 @@ TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
 	test(3,3)=0;
 	test(3,4)=1;
 
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=(CMulticlassLabels*) c45->apply(test_feats);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=c45->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -349,10 +349,10 @@ TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(c45);
-	SG_UNREF(feats);
+
+
+
+
 }
 
 TEST(C45ClassifierTree, missing_attribute)
@@ -366,9 +366,9 @@ TEST(C45ClassifierTree, missing_attribute)
 	data(0,4)=60.;
 	data(0,5)=70.;
 	data(0,6)=80.;
-	data(0,7)=CC45ClassifierTree::MISSING;
+	data(0,7)=C45ClassifierTree::MISSING;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<float64_t> lab(8);
 	lab[0]=0.0;
@@ -383,9 +383,9 @@ TEST(C45ClassifierTree, missing_attribute)
 	SGVector<bool> ft=SGVector<bool>(1);
 	ft[0]=false;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	CC45ClassifierTree* c45=new CC45ClassifierTree();
+	auto c45=std::make_shared<C45ClassifierTree>();
 	c45->set_labels(labels);
 	c45->set_feature_types(ft);
 	c45->train(feats);
@@ -394,8 +394,8 @@ TEST(C45ClassifierTree, missing_attribute)
 	test(0,0)=32;
 	test(0,1)=75;
 
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=(CMulticlassLabels*) c45->apply(test_feats);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=c45->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> certainty=c45->get_certainty_vector();
 	SGVector<float64_t> res_vector=result->get_labels();
 
@@ -404,10 +404,10 @@ TEST(C45ClassifierTree, missing_attribute)
 	EXPECT_EQ(0.875,certainty[0]);
 	EXPECT_EQ(0.5625,certainty[1]);
 
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(c45);
-	SG_UNREF(feats);
+
+
+
+
 }
 
 TEST(C45ClassifierTree, tree_prune_categorical_attributes)
@@ -493,19 +493,19 @@ TEST(C45ClassifierTree, tree_prune_categorical_attributes)
 	validation_labels[14]=1;
 	validation_labels[15]=1;
 
-	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
-	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
-	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
-	SG_REF(train_lab);
-	SG_REF(validation_lab);
+	auto train_features=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto train_lab=std::make_shared<MulticlassLabels>(train_labels);
+	auto validation_lab=std::make_shared<MulticlassLabels>(validation_labels);
 
-	CC45ClassifierTree* c45tree=new CC45ClassifierTree();
+
+
+	auto c45tree=std::make_shared<C45ClassifierTree>();
 	c45tree->set_labels(train_lab);
 	c45tree->set_feature_types(feature_types);
 	c45tree->train(train_features);
 	c45tree->prune_tree(train_features,validation_lab);
 
-	CMulticlassLabels* result=(CMulticlassLabels*) c45tree->apply(train_features);
+	auto result=c45tree->apply(train_features)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -525,10 +525,10 @@ TEST(C45ClassifierTree, tree_prune_categorical_attributes)
 	EXPECT_EQ(1.0,res_vector[14]);
 	EXPECT_EQ(1.0,res_vector[15]);
 
-	SG_UNREF(train_features);
-	SG_UNREF(validation_lab);
-	SG_UNREF(result);
-	SG_UNREF(c45tree);
+
+
+
+
 }
 
 TEST(C45ClassifierTree, tree_prune_continuous_attributes)
@@ -581,20 +581,20 @@ TEST(C45ClassifierTree, tree_prune_continuous_attributes)
 	validation_labels[1]=2;
 	validation_labels[2]=1;
 
-	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
-	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
-	SG_REF(train_lab);
-	CDenseFeatures<float64_t>* validation_features=new CDenseFeatures<float64_t>(validation_data);
-	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
-	SG_REF(validation_lab);
+	auto train_features=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto train_lab=std::make_shared<MulticlassLabels>(train_labels);
 
-	CC45ClassifierTree* c45tree=new CC45ClassifierTree();
+	auto validation_features=std::make_shared<DenseFeatures<float64_t>>(validation_data);
+	auto validation_lab=std::make_shared<MulticlassLabels>(validation_labels);
+
+
+	auto c45tree=std::make_shared<C45ClassifierTree>();
 	c45tree->set_labels(train_lab);
 	c45tree->set_feature_types(feature_types);
 	c45tree->train(train_features);
 	c45tree->prune_tree(validation_features,validation_lab);
 
-	CMulticlassLabels* result=(CMulticlassLabels*) c45tree->apply(train_features);
+	auto result=c45tree->apply(train_features)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -606,9 +606,9 @@ TEST(C45ClassifierTree, tree_prune_continuous_attributes)
 	EXPECT_EQ(2.0,res_vector[6]);
 	EXPECT_EQ(2.0,res_vector[7]);
 
-	SG_UNREF(train_features);
-	SG_UNREF(validation_features);
-	SG_UNREF(validation_lab);
-	SG_UNREF(result);
-	SG_UNREF(c45tree);
+
+
+
+
+
 }

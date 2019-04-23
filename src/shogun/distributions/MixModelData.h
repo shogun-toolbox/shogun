@@ -47,7 +47,7 @@ struct MixModelData
 	/** allocated belongingness matrix */
 	SGMatrix<float64_t> alpha;
 	/** components of mixture */
-	CDynamicObjectArray* components;
+	std::shared_ptr<DynamicObjectArray> components;
 	/** weights of mixture */
 	SGVector<float64_t> weights;
 

@@ -16,18 +16,18 @@ namespace shogun
 /** @brief Class CLogLossMargin implements a
  * margin-based log-likelihood loss function.
  */
-class CLogLossMargin: public CLossFunction
+class LogLossMargin: public LossFunction
 {
 public:
 	/**
 	 * Constructor
 	 */
-	CLogLossMargin(): CLossFunction() {};
+	LogLossMargin(): LossFunction() {};
 
 	/**
 	 * Destructor
 	 */
-	~CLogLossMargin() {};
+	~LogLossMargin() {};
 
 	/**
 	 * Get loss for an example

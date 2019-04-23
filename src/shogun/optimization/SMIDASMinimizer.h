@@ -53,7 +53,7 @@ public:
 	/** Constructor
 	 * @param fun stochastic cost function
 	 */
-	SMIDASMinimizer(FirstOrderStochasticCostFunction *fun);
+	SMIDASMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun);
 
 	/** Destructor */
 	virtual ~SMIDASMinimizer();

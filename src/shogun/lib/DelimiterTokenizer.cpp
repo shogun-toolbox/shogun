@@ -15,21 +15,21 @@
 namespace shogun
 {
 
-CDelimiterTokenizer::CDelimiterTokenizer(bool skip_delimiters) : delimiters(256)
+DelimiterTokenizer::DelimiterTokenizer(bool skip_delimiters) : delimiters(256)
 {
 	last_idx = 0;
 	skip_consecutive_delimiters = skip_delimiters;
 	init();
 }
 
-CDelimiterTokenizer::CDelimiterTokenizer(const CDelimiterTokenizer& orig)
+DelimiterTokenizer::DelimiterTokenizer(const DelimiterTokenizer& orig)
 {
-	CTokenizer::set_text(orig.text);
+	Tokenizer::set_text(orig.text);
 	delimiters = orig.delimiters;
 	init();
 }
 
-void CDelimiterTokenizer::init()
+void DelimiterTokenizer::init()
 {
 	SG_ADD(&last_idx, "last_idx", "Index of last token");
 	SG_ADD(&skip_consecutive_delimiters, "skip_consecutive_delimiters",
@@ -37,18 +37,18 @@ void CDelimiterTokenizer::init()
 	SGVector<bool>::fill_vector(delimiters, 256, 0);
 }
 
-void CDelimiterTokenizer::set_text(SGVector<char> txt)
+void DelimiterTokenizer::set_text(SGVector<char> txt)
 {
 	last_idx = 0;
-	CTokenizer::set_text(txt);
+	Tokenizer::set_text(txt);
 }
 
-const char* CDelimiterTokenizer::get_name() const
+const char* DelimiterTokenizer::get_name() const
 {
     return "DelimiterTokenizer";
 }
 
-bool CDelimiterTokenizer::has_next()
+bool DelimiterTokenizer::has_next()
 {
 	if (skip_consecutive_delimiters)
 	{
@@ -63,19 +63,19 @@ bool CDelimiterTokenizer::has_next()
 		return last_idx<text.size();
 }
 
-void CDelimiterTokenizer::init_for_whitespace()
+void DelimiterTokenizer::init_for_whitespace()
 {
 	clear_delimiters();
 	delimiters[' '] = 1;
 	delimiters['\t'] = 1;
 }
 
-void CDelimiterTokenizer::clear_delimiters()
+void DelimiterTokenizer::clear_delimiters()
 {
 	memset(delimiters, 0, sizeof (delimiters));
 }
 
-index_t CDelimiterTokenizer::next_token_idx(index_t& start)
+index_t DelimiterTokenizer::next_token_idx(index_t& start)
 {
 	start = last_idx;
 
@@ -97,20 +97,20 @@ index_t CDelimiterTokenizer::next_token_idx(index_t& start)
 	return last_idx++;
 }
 
-CDelimiterTokenizer* CDelimiterTokenizer::get_copy()
+DelimiterTokenizer* DelimiterTokenizer::get_copy()
 {
-	CDelimiterTokenizer* t = new CDelimiterTokenizer();
+	DelimiterTokenizer* t = new DelimiterTokenizer();
 	t->delimiters = delimiters;
 	t->skip_consecutive_delimiters = skip_consecutive_delimiters;
 	return t;
 }
 
-void CDelimiterTokenizer::set_skip_delimiters(bool skip_delimiters)
+void DelimiterTokenizer::set_skip_delimiters(bool skip_delimiters)
 {
 	skip_consecutive_delimiters = skip_delimiters;
 }
 
-bool CDelimiterTokenizer::get_skip_delimiters() const
+bool DelimiterTokenizer::get_skip_delimiters() const
 {
 	return skip_consecutive_delimiters;
 }

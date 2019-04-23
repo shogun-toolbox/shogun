@@ -18,29 +18,29 @@
 namespace shogun
 {
 
-/** @brief Class CFactorDataSource Source for factor data.
+/** @brief Class FactorDataSource Source for factor data.
  * In some cases, the same data can be shared by many factors.
  */
-class CFactorDataSource : public CSGObject
+class FactorDataSource : public SGObject
 {
 public:
 	/** default constructor is prohibitted */
-	CFactorDataSource();
+	FactorDataSource();
 
 	/** constructor
 	 *
 	 * @param dense dense factor data
 	 */
-	CFactorDataSource(SGVector<float64_t> dense);
+	FactorDataSource(SGVector<float64_t> dense);
 
 	/** constructor
 	 *
 	 * @param sparse sparse factor data
 	 */
-	CFactorDataSource(SGSparseVector<float64_t> sparse);
+	FactorDataSource(SGSparseVector<float64_t> sparse);
 
 	/** destructor */
-	virtual ~CFactorDataSource();
+	virtual ~FactorDataSource();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "FactorDataSource"; }
@@ -79,15 +79,15 @@ private:
 	SGSparseVector<float64_t> m_sparse;
 };
 
-/** @brief Class CFactor A factor is defined on a clique in the factor graph.
+/** @brief Class Factor A factor is defined on a clique in the factor graph.
  * Each factor can have its own data, either dense, sparse or shared data.
  * Note that currently this class is table factor oriented.
  */
-class CFactor : public CSGObject
+class Factor : public SGObject
 {
 public:
 	/** default constructor */
-	CFactor();
+	Factor();
 
 	/** Constructor
 	 *
@@ -95,7 +95,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data dense data, can be empty
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
+	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
 
 	/** Constructor
 	 *
@@ -103,7 +103,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_sparse sparse data, can be empty
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
+	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index,
 		SGSparseVector<float64_t> data_sparse);
 
 	/** Constructor
@@ -112,23 +112,23 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_source common data for many factors
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
-		CFactorDataSource* data_source);
+	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index,
+		std::shared_ptr<FactorDataSource> data_source);
 
 	/** deconstructor */
-	virtual ~CFactor();
+	virtual ~Factor();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "Factor"; }
 
 	/** @return factor type pointer */
-	CTableFactorType* get_factor_type() const;
+	std::shared_ptr<TableFactorType> get_factor_type() const;
 
 	/** set factor type
 	 *
 	 * @param ftype factor type
 	 */
-	void set_factor_type(CTableFactorType* ftype);
+	void set_factor_type(std::shared_ptr<TableFactorType> ftype);
 
 	/** @return adjacent variables */
 	const SGVector<int32_t> get_variables() const;
@@ -212,7 +212,7 @@ public:
 
 protected:
 	/** factor type */
-	CTableFactorType* m_factor_type;
+	std::shared_ptr<TableFactorType> m_factor_type;
 
 	/** variable indices */
 	SGVector<int32_t> m_var_index;
@@ -221,7 +221,7 @@ protected:
 	SGVector<float64_t> m_energies;
 
 	/** shared data */
-	CFactorDataSource* m_data_source;
+	std::shared_ptr<FactorDataSource> m_data_source;
 
 	/** dense data */
 	SGVector<float64_t> m_data;

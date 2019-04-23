@@ -10,45 +10,43 @@ using namespace shogun;
 
 TEST(CreateObject,create_wrong_name)
 {
-    EXPECT_THROW(create_object<CKernel>("GoussianKernel"), ShogunException);
+    EXPECT_THROW(create_object<Kernel>("GoussianKernel"), ShogunException);
 }
 
 TEST(CreateObject,create_wrong_type)
 {
-    EXPECT_THROW(create_object<CMachine>("GaussianKernel"), ShogunException);
+    EXPECT_THROW(create_object<Machine>("GaussianKernel"), ShogunException);
 }
 
 TEST(CreateObject, create_wrong_ptype)
 {
 	EXPECT_THROW(
-	    create_object<CMachine>("GaussianKernel", PT_FLOAT64), ShogunException);
+	    create_object<Machine>("GaussianKernel", PT_FLOAT64), ShogunException);
 }
 
 TEST(CreateObject, create_wrong_ptype2)
 {
-	EXPECT_THROW(create_object<CMachine>("DenseFeatures"), ShogunException);
+	EXPECT_THROW(create_object<Machine>("DenseFeatures"), ShogunException);
 }
 
 TEST(CreateObject,create_wrong_type_wrong_name)
 {
-    EXPECT_THROW(create_object<CMachine>("GoussianKernel"), ShogunException);
+    EXPECT_THROW(create_object<Machine>("GoussianKernel"), ShogunException);
 }
 
 TEST(CreateObject,create)
 {
-    auto* obj = create_object<CKernel>("GaussianKernel");
+    auto obj = create_object<Kernel>("GaussianKernel");
     EXPECT_TRUE(obj != nullptr);
-    EXPECT_TRUE(dynamic_cast<CKernel*>(obj) != nullptr);
+    EXPECT_TRUE(obj->as<Kernel>() != nullptr);
 	EXPECT_EQ(obj->get_generic(), PT_NOT_GENERIC);
-	delete obj;
 }
 
 TEST(CreateObject, create_with_ptype)
 {
-	auto* obj =
-	    create_object<CDenseFeatures<float64_t>>("DenseFeatures", PT_FLOAT64);
+	auto obj =
+	    create_object<DenseFeatures<float64_t>>("DenseFeatures", PT_FLOAT64);
 	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(dynamic_cast<CDenseFeatures<float64_t>*>(obj) != nullptr);
+	EXPECT_TRUE(obj->as<DenseFeatures<float64_t>>() != nullptr);
 	EXPECT_EQ(obj->get_generic(), PT_FLOAT64);
-	delete obj;
 }

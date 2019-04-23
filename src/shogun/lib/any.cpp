@@ -36,7 +36,7 @@ namespace shogun
 	bool compare_impl_eq(const real_t& lhs, const real_t& rhs)                 \
 	{                                                                          \
 		SG_DEBUG("Comparing using fequals<" #real_t ">(lhs, rhs).");        \
-		return CMath::fequals(                                                 \
+		return Math::fequals(                                                 \
 		    lhs, rhs, std::numeric_limits<real_t>::epsilon());                 \
 	}
 
@@ -50,13 +50,14 @@ namespace shogun
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs)
 		{
 			SG_DEBUG("Comparing using fequals<complex128_t>(lhs, rhs).");
-			return CMath::fequals(lhs.real(), rhs.real(), LDBL_EPSILON) &&
-			       CMath::fequals(lhs.imag(), rhs.imag(), LDBL_EPSILON);
+			return Math::fequals(lhs.real(), rhs.real(), LDBL_EPSILON) &&
+			       Math::fequals(lhs.imag(), rhs.imag(), LDBL_EPSILON);
 		}
 
-		void free_object(CSGObject* obj)
+		void free_object(SGObject* obj)
 		{
-			SG_UNREF(obj);
+			//FIXME
+			//SG_UNREF(obj);
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Sergey Lisitsyn, 
+ * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Sergey Lisitsyn,
  *          Bjoern Esser
  */
 
@@ -45,19 +45,19 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 
 	int32_t hash_bits = 5; //log2(32).
 
-	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
-	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false);
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, hash_bits, false);
 
-	CSparseFeatures<float64_t>* converted_docs =
-	    (CSparseFeatures<float64_t>*)converter->transform(doc_collection);
+	auto converted_docs =
+	    converter->transform(doc_collection)->as<SparseFeatures<float64_t>>();
 
 	for (index_t i=0; i<3; i++)
 	{
@@ -69,9 +69,9 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 			EXPECT_EQ(c_feat_2[j], feat_2[j]);
 	}
 
-	SG_UNREF(converter);
-	SG_UNREF(converted_docs);
-	SG_UNREF(hddf);
+
+
+
 }
 
 TEST(HashedDocDotFeaturesTest, dense_dot_test)
@@ -102,18 +102,18 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	int32_t dimension = 32;
 	int32_t hash_bits = 5;
 
-	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
-	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false);
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
-	CSparseFeatures<float64_t>* converted_docs =
-	    (CSparseFeatures<float64_t>*)converter->transform(doc_collection);
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, hash_bits, false);
+	auto converted_docs =
+	    converter->transform(doc_collection)->as<SparseFeatures<float64_t>>();
 
 	std::mt19937_64 prng(seed);
 	UniformIntDistribution<int32_t> uniform_int_dist;
@@ -132,9 +132,9 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 		EXPECT_EQ(features_result, converter_result);
 	}
 
-	SG_UNREF(converter);
-	SG_UNREF(converted_docs);
-	SG_UNREF(hddf);
+
+
+
 }
 
 TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
@@ -145,7 +145,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
-		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+		hashes[i] = Hash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
 
 
 	int32_t dimension = 32;
@@ -200,15 +200,15 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	std::vector<SGVector<char>> list;
 	list.push_back(string_1);
 
-	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);
-	SG_REF(tokenizer);
-	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
-	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
+	auto tokenizer = std::make_shared<NGramTokenizer>(3);
+
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false, 3, 2);
-	CHashedDocConverter* conv = new CHashedDocConverter(tokenizer, hash_bits, false, 3, 2);
-	CSparseFeatures<float64_t>* sf =
-	    (CSparseFeatures<float64_t>*)conv->transform(doc_collection);
-	SG_UNREF(conv);
+	auto conv = std::make_shared<HashedDocConverter>(tokenizer, hash_bits, false, 3, 2);
+	auto sf =
+	    conv->transform(doc_collection)->as<SparseFeatures<float64_t>>();
+
 	SGVector<float64_t> dense_vec(dimension);
 	float64_t dot_product = 0;
 	for (index_t i=0; i<dimension; i++)
@@ -222,10 +222,10 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	float64_t sparse_dot_product = sf->dot(0, dense_vec);
 	EXPECT_EQ(sparse_dot_product, dot_product);
 
-	SG_UNREF(sf);
-	SG_UNREF(hddf);
+
+
 	SG_FREE(hashes);
-	SG_UNREF(tokenizer);
+
 }
 
 TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
@@ -236,7 +236,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
-		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+		hashes[i] = Hash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
 
 
 	int32_t dimension = 32;
@@ -291,9 +291,9 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	std::vector<SGVector<char>> list;
 	list.push_back(string_1);
 
-	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);
-	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
-	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
+	auto tokenizer = std::make_shared<NGramTokenizer>(3);
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false, 3, 2);
 
 	SGVector<float64_t> dense_vec(dimension);
@@ -309,6 +309,6 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	for (index_t i=0; i<dimension; i++)
 		EXPECT_EQ(dense_vec[i], dense_vec2[i]);
 
-	SG_UNREF(hddf);
+
 	SG_FREE(hashes);
 }

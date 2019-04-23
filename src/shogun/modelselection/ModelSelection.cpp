@@ -12,37 +12,37 @@
 
 using namespace shogun;
 
-CModelSelection::CModelSelection()
+ModelSelection::ModelSelection()
 {
 	init();
 }
 
-CModelSelection::CModelSelection(CMachineEvaluation* machine_eval,
-	CModelSelectionParameters* model_parameters)
+ModelSelection::ModelSelection(std::shared_ptr<MachineEvaluation> machine_eval,
+	std::shared_ptr<ModelSelectionParameters> model_parameters)
 {
 	init();
 
 	m_model_parameters=model_parameters;
-	SG_REF(m_model_parameters);
+	
 
 	m_machine_eval=machine_eval;
-	SG_REF(m_machine_eval);
+	
 }
 
-void CModelSelection::init()
+void ModelSelection::init()
 {
 	m_model_parameters=NULL;
 	m_machine_eval=NULL;
 
-	SG_ADD((CSGObject**)&m_model_parameters, "model_parameters",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_model_parameters, "model_parameters",
 			"Parameter tree for model selection");
 
-	SG_ADD((CSGObject**)&m_machine_eval, "machine_evaluation",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_machine_eval, "machine_evaluation",
 			"Machine evaluation strategy");
 }
 
-CModelSelection::~CModelSelection()
+ModelSelection::~ModelSelection()
 {
-	SG_UNREF(m_model_parameters);
-	SG_UNREF(m_machine_eval);
+	
+	
 }

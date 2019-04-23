@@ -25,17 +25,17 @@ IGNORE_IN_CLASSLIST enum ETaskRelationType
 
 /** @brief used to represent tasks in multitask learning
  */
-class CTaskRelation : public CSGObject
+class TaskRelation : public SGObject
 {
 public:
 
 	/** default constructor */
-	CTaskRelation()
+	TaskRelation()
 	{
 	}
 
 	/** destructor */
-	virtual ~CTaskRelation()
+	virtual ~TaskRelation()
 	{
 	}
 

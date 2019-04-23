@@ -17,9 +17,9 @@
 
 namespace shogun
 {
-class CStreamingDotFeatures;
-class CTokenizer;
-class CHashedDocConverter;
+class StreamingDotFeatures;
+class Tokenizer;
+class HashedDocConverter;
 
 /** @brief This class implements streaming features for a document collection.
  * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
@@ -35,11 +35,11 @@ class CHashedDocConverter;
  * and current_label. Call get_next_example() followed by get_current_vector()
  * to iterate through the stream.
  */
-class CStreamingHashedDocDotFeatures : public CStreamingDotFeatures
+class StreamingHashedDocDotFeatures : public StreamingDotFeatures
 {
 public:
 	/** Constructor */
-	CStreamingHashedDocDotFeatures();
+	StreamingHashedDocDotFeatures();
 
 	/**
 	 * Constructor with input information passed.
@@ -52,11 +52,11 @@ public:
 	 * @param tzer the tokenizer to use on the document collection
 	 * @param bits the number of bits of the new dimension (means a dimension of size 2^bits)
 	 */
-	CStreamingHashedDocDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size,
-			CTokenizer* tzer, int32_t bits=20);
+	StreamingHashedDocDotFeatures(std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size,
+			std::shared_ptr<Tokenizer> tzer, int32_t bits=20);
 
 	/**
-	 * Constructor taking a CDotFeatures object and optionally,
+	 * Constructor taking a DotFeatures object and optionally,
 	 * labels, as args.
 	 * Will use normalization and no quadratic features by default, user should
 	 * use the set_normalization() and set_k_skip_n_gram() methods to change that.
@@ -66,16 +66,16 @@ public:
 	 * input, getting examples one by one from the DotFeatures
 	 * object (and labels, if applicable).
 	 *
-	 * @param dot_features CDotFeatures object
+	 * @param dot_features DotFeatures object
 	 * @param tzer the tokenizer to use on the document collection
 	 * @param bits the number of bits of the new dimension (means a dimension of size 2^bits)
 	 * @param lab labels (optional)
 	 */
-	CStreamingHashedDocDotFeatures(CStringFeatures<char>* dot_features,CTokenizer* tzer,
+	StreamingHashedDocDotFeatures(std::shared_ptr<StringFeatures<char>> dot_features,std::shared_ptr<Tokenizer> tzer,
 			int32_t bits=20, float64_t* lab=NULL);
 
 	/** Destructor */
-	virtual ~CStreamingHashedDocDotFeatures();
+	virtual ~StreamingHashedDocDotFeatures();
 
 	/** compute dot product between vectors of two
 	 * StreamingDotFeatures objects.
@@ -83,7 +83,7 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(CStreamingDotFeatures* df);
+	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures> df);
 
 	/** compute dot product between current vector and a dense vector
 	 *
@@ -224,7 +224,7 @@ public:
 	void set_k_skip_n_grams(int32_t k, int32_t n);
 
 private:
-	void init(CStreamingFile* file, bool is_labelled, int32_t size, CTokenizer* tzer,
+	void init(std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size, std::shared_ptr<Tokenizer> tzer,
 		int32_t bits, bool normalize, int32_t n_grams, int32_t skips);
 
 protected:
@@ -235,14 +235,14 @@ protected:
 	/** Current example */
 	SGSparseVector<float64_t> current_vector;
 
-	/** CTokenizer */
-	CTokenizer *tokenizer;
+	/** Tokenizer */
+	std::shared_ptr<Tokenizer >tokenizer;
 
 	/** Converter */
-	CHashedDocConverter* converter;
+	std::shared_ptr<HashedDocConverter> converter;
 
 	/** The parser */
-	CInputParser<char> parser;
+	InputParser<char> parser;
 
 	/** The current example's label */
 	float64_t current_label;

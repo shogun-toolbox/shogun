@@ -18,12 +18,12 @@ namespace shogun
  * computing eigenvalues of a real valued, self-adjoint linear operator. It
  * also provides method for getting min and max eigenvalues.
  */
-class CEigenSolver : public CSGObject
+class EigenSolver : public SGObject
 {
 public:
 	/** default constructor */
-	CEigenSolver()
-	: CSGObject()
+	EigenSolver()
+	: SGObject()
 	{
 		init();
 	}
@@ -34,18 +34,18 @@ public:
 	 * @param linear_operator real valued self-adjoint linear operator
 	 * whose eigenvalues have to be found
 	 */
-	CEigenSolver(CLinearOperator<float64_t>* linear_operator)
-	: CSGObject()
+	EigenSolver(std::shared_ptr<LinearOperator<float64_t>> linear_operator)
+	: SGObject()
 	{
 		init();
 
 		m_linear_operator=linear_operator;
-		SG_REF(m_linear_operator);
+
 	}
 	/** destructor */
-	virtual ~CEigenSolver()
+	virtual ~EigenSolver()
 	{
-		SG_UNREF(m_linear_operator);
+
 	}
 
 	/**
@@ -93,7 +93,7 @@ protected:
 	float64_t m_max_eigenvalue;
 
 	/** the linear solver whose eigenvalues have to be found */
-	CLinearOperator<float64_t>* m_linear_operator;
+	std::shared_ptr<LinearOperator<float64_t>> m_linear_operator;
 
 	/** flag that denotes that the minimum eigenvalue is already computed */
 	bool m_is_computed_min;
@@ -117,7 +117,7 @@ private:
 		SG_ADD(&m_max_eigenvalue, "max_eigenvalue",
 			"Maximum eigenvalue of a real valued self-adjoint linear operator");
 
-		SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",
+		SG_ADD((std::shared_ptr<SGObject>*)&m_linear_operator, "linear_operator",
 			"Self-adjoint linear operator");
 
 		SG_ADD(&m_is_computed_min, "is_computed_min",

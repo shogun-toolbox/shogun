@@ -11,20 +11,20 @@
 
 using namespace shogun;
 
-CStructuredData::CStructuredData()
-: CSGObject()
+StructuredData::StructuredData()
+: SGObject()
 {
 }
 
-CStructuredData::~CStructuredData()
+StructuredData::~StructuredData()
 {
 }
 
-EStructuredDataType CStructuredData::get_structured_data_type() const
+EStructuredDataType StructuredData::get_structured_data_type() const
 {
 	error("get_structured_data_type() not defined. "
 		 "Make sure that STRUCTURED_DATA_TYPE(SDT) is defined "
-		 "in every class that inherits from CStructuredData.");
+		 "in every class that inherits from StructuredData.");
 
 	return SDT_UNKNOWN;
 };

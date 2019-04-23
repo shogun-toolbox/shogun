@@ -37,29 +37,29 @@
 
 using namespace shogun;
 
-CNeuralRectifiedLinearLayer::CNeuralRectifiedLinearLayer() : CNeuralLinearLayer()
+NeuralRectifiedLinearLayer::NeuralRectifiedLinearLayer() : NeuralLinearLayer()
 {
 }
 
-CNeuralRectifiedLinearLayer::CNeuralRectifiedLinearLayer(int32_t num_neurons):
-CNeuralLinearLayer(num_neurons)
+NeuralRectifiedLinearLayer::NeuralRectifiedLinearLayer(int32_t num_neurons):
+NeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralRectifiedLinearLayer::compute_activations(
+void NeuralRectifiedLinearLayer::compute_activations(
 		SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+		std::shared_ptr<DynamicObjectArray> layers)
 {
-	CNeuralLinearLayer::compute_activations(parameters, layers);
+	NeuralLinearLayer::compute_activations(parameters, layers);
 
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i<len; i++)
 	{
-		m_activations[i] = CMath::max<float64_t>(0, m_activations[i]);
+		m_activations[i] = Math::max<float64_t>(0, m_activations[i]);
 	}
 }
 
-float64_t CNeuralRectifiedLinearLayer::compute_contraction_term(
+float64_t NeuralRectifiedLinearLayer::compute_contraction_term(
 	SGVector< float64_t > parameters)
 {
 	int32_t num_inputs = SGVector<int32_t>::sum(m_input_sizes.vector, m_input_sizes.vlen);
@@ -84,7 +84,7 @@ float64_t CNeuralRectifiedLinearLayer::compute_contraction_term(
 	return (contraction_coefficient/m_batch_size) * contraction_term;
 }
 
-void CNeuralRectifiedLinearLayer::compute_contraction_term_gradients(
+void NeuralRectifiedLinearLayer::compute_contraction_term_gradients(
 	SGVector< float64_t > parameters, SGVector< float64_t > gradients)
 {
 	int32_t num_inputs = SGVector<int32_t>::sum(m_input_sizes.vector, m_input_sizes.vlen);
@@ -108,7 +108,7 @@ void CNeuralRectifiedLinearLayer::compute_contraction_term_gradients(
 }
 
 
-void CNeuralRectifiedLinearLayer::compute_local_gradients(
+void NeuralRectifiedLinearLayer::compute_local_gradients(
 		SGMatrix<float64_t> targets)
 {
 	if (targets.num_rows != 0)

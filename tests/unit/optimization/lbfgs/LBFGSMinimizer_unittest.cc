@@ -45,15 +45,15 @@ void LBFGSTestCostFunction::init()
 
 LBFGSTestCostFunction::~LBFGSTestCostFunction()
 {
-	SG_UNREF(m_obj);
+
 }
 
-void LBFGSTestCostFunction::set_target(CPiecewiseQuadraticObject *obj)
+void LBFGSTestCostFunction::set_target(std::shared_ptr<CPiecewiseQuadraticObject >obj)
 {
 	if(obj!=m_obj)
 	{
-		SG_REF(obj);
-		SG_UNREF(m_obj);
+
+
 		m_obj=obj;
 	}
 }
@@ -67,7 +67,7 @@ float64_t LBFGSTestCostFunction::get_cost()
 SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 
@@ -75,20 +75,20 @@ SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 		{
 			variables=m_obj->get_variable(node->key);
 		}
 	}
-	SG_UNREF(parameters);
+
 	return variables;
 }
 
 SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
@@ -96,19 +96,19 @@ SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 
 	for(index_t i=0; i<num_gradients; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 		{
 			gradients=m_obj->get_gradient(node->key);
 		}
 	}
-	SG_UNREF(parameters);
+
 	return gradients;
 }
 
 
 CPiecewiseQuadraticObject::CPiecewiseQuadraticObject()
-	:CSGObject()
+	:SGObject()
 {
 	init();
 }
@@ -183,9 +183,9 @@ SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(TParameter * param)
 	return SGVector<float64_t>();
 }
 
-TEST(CLBFGSMinimizer,test1)
+TEST(LBFGSMinimizer,test1)
 {
-	CPiecewiseQuadraticObject *obj=new CPiecewiseQuadraticObject();
+	auto obj=std::make_shared<CPiecewiseQuadraticObject>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -194,21 +194,19 @@ TEST(CLBFGSMinimizer,test1)
 	obj->set_init_x(init_x);
 	obj->set_truth_x(truth_x);
 
-	LBFGSTestCostFunction *b=new LBFGSTestCostFunction();
-	SG_REF(obj);
+	auto b=std::make_shared<LBFGSTestCostFunction>();
+
 	b->set_target(obj);
-	
-	FirstOrderMinimizer* opt=new CLBFGSMinimizer(b);
+
+	FirstOrderMinimizer* opt=new LBFGSMinimizer(b);
 	float64_t cost=opt->minimize();
 	EXPECT_NEAR(cost, 0.0, 1e-6);
 
-	SG_UNREF(obj);
-	delete opt;
 }
 
-TEST(CLBFGSMinimizer,test2)
+TEST(LBFGSMinimizer,test2)
 {
-	CPiecewiseQuadraticObject *obj=new CPiecewiseQuadraticObject();
+	auto obj=std::make_shared<CPiecewiseQuadraticObject>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -217,11 +215,11 @@ TEST(CLBFGSMinimizer,test2)
 	obj->set_init_x(init_x);
 	obj->set_truth_x(truth_x);
 
-	LBFGSTestCostFunction *b=new LBFGSTestCostFunction();
-	SG_REF(obj);
+	auto b=std::make_shared<LBFGSTestCostFunction>();
+
 	b->set_target(obj);
 
-	FirstOrderMinimizer* opt=new CLBFGSMinimizer(b);
+	auto opt=std::make_shared<LBFGSMinimizer>(b);
 	opt->minimize();
 
 	for(index_t i=0; i<init_x.vlen; i++)
@@ -229,6 +227,4 @@ TEST(CLBFGSMinimizer,test2)
 		EXPECT_NEAR(init_x[i], truth_x[i], 1e-6);
 	}
 
-	SG_UNREF(obj);
-	delete opt;
 }

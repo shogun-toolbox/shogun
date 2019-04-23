@@ -27,21 +27,20 @@ public:
 		float64_t bias = 2.0;
 		coefficients[0] = 3.0;
 
-		mBinaryLabelData = std::shared_ptr<GaussianCheckerboard>(
-			new GaussianCheckerboard(100, 2, 2, prng));
+		mBinaryLabelData = std::make_shared<GaussianCheckerboard>(100, 2, 2, prng);
 		// generate linear regression data y = 3x + 2
-		one_dimensional_regression_data_with_bias = std::shared_ptr<LinearRegressionDataGenerator>(
-				new LinearRegressionDataGenerator(100, coefficients, bias, 0.95));
-		one_dimensional_regression_data = std::shared_ptr<LinearRegressionDataGenerator>(
-				new LinearRegressionDataGenerator(100, coefficients, 0.0, 0.95));
+		one_dimensional_regression_data_with_bias = std::make_shared<LinearRegressionDataGenerator>(
+			100, coefficients, bias, 0.95);
+		one_dimensional_regression_data = std::make_shared<LinearRegressionDataGenerator>(
+				100, coefficients, 0.0, 0.95);
 	}
 
-	std::shared_ptr<GaussianCheckerboard> getBinaryLabelData() const
+	auto getBinaryLabelData() const
 	{
 		return mBinaryLabelData;
 	}
 
-	std::shared_ptr<LinearRegressionDataGenerator> get_one_dimensional_regression_data(bool withBias) const
+	auto get_one_dimensional_regression_data(bool withBias) const
 	{
 		std::shared_ptr<LinearRegressionDataGenerator> data;
 		if (withBias)

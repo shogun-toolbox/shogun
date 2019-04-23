@@ -17,14 +17,14 @@
 
 namespace shogun
 {
-class CKMeansBase;
+class KMeansBase;
 	
 /** Class for the mini batch KMeans */
-class CKMeansMiniBatch : public CKMeansBase
+class KMeansMiniBatch : public KMeansBase
 {
 	public:
 		/** default constructor */
-		CKMeansMiniBatch();
+		KMeansMiniBatch();
 
 		/** constructor
 		 *
@@ -32,16 +32,16 @@ class CKMeansMiniBatch : public CKMeansBase
 		 * @param d distance
 		 * @param kmeanspp true for using KMeans++ (default false)
 		 */
-		CKMeansMiniBatch(int32_t k, CDistance* d, bool kmeanspp=false);
+		KMeansMiniBatch(int32_t k, std::shared_ptr<Distance> d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans aloverride private method c++gorithm
 		*/
-		CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
+		KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
 		
-		virtual ~CKMeansMiniBatch();
+		virtual ~KMeansMiniBatch();
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -59,7 +59,7 @@ class CKMeansMiniBatch : public CKMeansBase
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** mini-batch KMeans training method
 		 */

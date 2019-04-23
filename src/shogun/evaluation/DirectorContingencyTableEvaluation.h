@@ -19,26 +19,26 @@ namespace shogun
  * a base class used to evaluate 2-class classification
  * using SWIG directors.
  */
-IGNORE_IN_CLASSLIST class CDirectorContingencyTableEvaluation: public CContingencyTableEvaluation
+IGNORE_IN_CLASSLIST class DirectorContingencyTableEvaluation: public ContingencyTableEvaluation
 {
 
 public:
 
 	/** constructor */
-	CDirectorContingencyTableEvaluation() :
-		CContingencyTableEvaluation(CUSTOM)
+	DirectorContingencyTableEvaluation() :
+		ContingencyTableEvaluation(CUSTOM)
 	{
 	}
 
 	/** destructor */
-	virtual ~CDirectorContingencyTableEvaluation()
+	virtual ~DirectorContingencyTableEvaluation()
 	{
 	}
 
 	/** Evaluate */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 	{
-		return CContingencyTableEvaluation::evaluate(predicted, ground_truth);
+		return ContingencyTableEvaluation::evaluate(predicted, ground_truth);
 	}
 
 	/** Computes custom score, not implemented

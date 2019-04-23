@@ -29,8 +29,8 @@ See chapter 17 in :cite:`barber2012bayesian` for a brief explanation of the Perc
 Example
 -------
 
-Given a linearly separable dataset, we create some CDenseFeatures
-(RealFeatures, here 64 bit float values) and some :sgclass:`CBinaryLabels` to set up the training and validation sets.
+Given a linearly separable dataset, we create some DenseFeatures
+(RealFeatures, here 64 bit float values) and some :sgclass:`BinaryLabels` to set up the training and validation sets.
 
 .. sgexample:: averaged_perceptron.sg:create_features
 
@@ -39,7 +39,7 @@ We also set its learn rate and its maximum iterations.
 
 .. sgexample:: averaged_perceptron.sg:set_parameters
 
-Then we train the :sgclass:`CAveragedPerceptron` and we apply it to the test data, which gives the predicted :sgclass:`CBinaryLabels`.
+Then we train the :sgclass:`CAveragedPerceptron` and we apply it to the test data, which gives the predicted :sgclass:`BinaryLabels`.
 
 .. sgexample:: averaged_perceptron.sg:train_and_apply
 

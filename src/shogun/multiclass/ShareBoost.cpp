@@ -17,34 +17,34 @@
 
 using namespace shogun;
 
-CShareBoost::CShareBoost()
-	:CLinearMulticlassMachine(), m_nonzero_feas(0)
+ShareBoost::ShareBoost()
+	:LinearMulticlassMachine(), m_nonzero_feas(0)
 {
 	init_sb_params();
 }
 
-CShareBoost::CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels *labs, int32_t num_nonzero_feas)
-	:CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), features, NULL, labs), m_nonzero_feas(num_nonzero_feas)
+ShareBoost::ShareBoost(std::shared_ptr<DenseFeatures<float64_t> >features, std::shared_ptr<MulticlassLabels >labs, int32_t num_nonzero_feas)
+	:LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), features, NULL, labs), m_nonzero_feas(num_nonzero_feas)
 {
 	init_sb_params();
 }
 
-void CShareBoost::init_sb_params()
+void ShareBoost::init_sb_params()
 {
 	SG_ADD(&m_nonzero_feas, "nonzero_feas", "Number of non-zero features");
 	SG_ADD(&m_activeset, "active_set", "Selected features");
 }
 
-SGVector<int32_t> CShareBoost::get_activeset()
+SGVector<int32_t> ShareBoost::get_activeset()
 {
 	return m_activeset;
 }
 
-bool CShareBoost::train_machine(CFeatures* data)
+bool ShareBoost::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
 		set_features(data);
-	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t>*>(m_features);
+	auto fea = m_features->as<DenseFeatures<float64_t>>();
 
 	if (m_features == NULL)
 		error("No features given for training");
@@ -68,11 +68,11 @@ bool CShareBoost::train_machine(CFeatures* data)
 	m_activeset = SGVector<int32_t>(m_fea.num_rows);
 	m_activeset.vlen = 0;
 
-	m_machines->reset_array();
+	m_machines.clear();
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
-		m_machines->push_back(new CLinearMachine());
+		m_machines.push_back(std::make_shared<LinearMachine>());
 
-	CTime *timer = new CTime();
+	auto timer = std::make_shared<Time>();
 
 	float64_t t_compute_pred = 0; // t of 1st round is 0, since no pred to compute
 	for (auto t : SG_PROGRESS(range(m_nonzero_feas)))
@@ -95,7 +95,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 		t_compute_pred = timer->cur_time_diff();
 	}
 
-	SG_UNREF(timer);
+
 
 	// release memory
 	m_fea = SGMatrix<float64_t>();
@@ -106,37 +106,37 @@ bool CShareBoost::train_machine(CFeatures* data)
 	return true;
 }
 
-void CShareBoost::compute_pred()
+void ShareBoost::compute_pred()
 {
-	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features);
-	CDenseSubsetFeatures<float64_t> *subset_fea = new CDenseSubsetFeatures<float64_t>(fea, m_activeset);
+	auto fea = m_features->as<DenseFeatures<float64_t>>();
+	auto subset_fea = std::make_shared<DenseSubsetFeatures<float64_t>>(fea, m_activeset);
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
-		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_machines->get_element(i));
-		CRegressionLabels *lab = machine->apply_regression(subset_fea);
+		auto machine = m_machines.at(i)->as<LinearMachine>();
+		auto lab = machine->apply_regression(subset_fea);
 		SGVector<float64_t> lab_raw = lab->get_labels();
 		std::copy(lab_raw.vector, lab_raw.vector + lab_raw.vlen, m_pred.get_column_vector(i));
-		SG_UNREF(machine);
-		SG_UNREF(lab);
+
+
 	}
 }
 
-void CShareBoost::compute_pred(const float64_t *W)
+void ShareBoost::compute_pred(const float64_t *W)
 {
 	int32_t w_len = m_activeset.vlen;
 
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
-		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_machines->get_element(i));
+		auto machine = m_machines.at(i)->as<LinearMachine>();
 		SGVector<float64_t> w(w_len);
 		std::copy(W + i*w_len, W + (i+1)*w_len, w.vector);
 		machine->set_w(w);
-		SG_UNREF(machine);
+
 	}
 	compute_pred();
 }
 
-void CShareBoost::compute_rho()
+void ShareBoost::compute_rho()
 {
 	auto lab = multiclass_labels(m_labels);
 
@@ -160,7 +160,7 @@ void CShareBoost::compute_rho()
 	}
 }
 
-int32_t CShareBoost::choose_feature()
+int32_t ShareBoost::choose_feature()
 {
 	SGVector<float64_t> l1norm(m_fea.num_rows);
 	auto lab = multiclass_labels(m_labels);
@@ -182,25 +182,25 @@ int32_t CShareBoost::choose_feature()
 					abssum += m_fea(j, ii)*(m_rho(k, ii)/m_rho_norm[ii] -
 							(j == lab->get_int_label(ii)));
 				}
-				l1norm[j] += CMath::abs(abssum);
+				l1norm[j] += Math::abs(abssum);
 			}
 			l1norm[j] /= m_fea.num_cols;
 		}
 	}
 
-	return CMath::arg_max(l1norm.vector, 1, l1norm.vlen);
+	return Math::arg_max(l1norm.vector, 1, l1norm.vlen);
 }
 
-void CShareBoost::optimize_coefficients()
+void ShareBoost::optimize_coefficients()
 {
-	ShareBoostOptimizer optimizer(this, false);
+	ShareBoostOptimizer optimizer(shared_from_this()->as<ShareBoost>(), false);
 	optimizer.optimize();
 }
 
-void CShareBoost::set_features(CFeatures *f)
+void ShareBoost::set_features(std::shared_ptr<Features >f)
 {
-	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(f);
+	auto fea = f->as<DenseFeatures<float64_t>>();
 	if (fea == NULL)
 		error("Require DenseFeatures<float64_t>");
-	CLinearMulticlassMachine::set_features(fea);
+	LinearMulticlassMachine::set_features(fea);
 }

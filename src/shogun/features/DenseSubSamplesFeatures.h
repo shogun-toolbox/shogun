@@ -40,28 +40,28 @@
 namespace shogun
 {
 
-template<class ST> class CDenseFeatures;
+template<class ST> class DenseFeatures;
 template<class ST> class SGVector;
-class CDotFeatures;
+class DotFeatures;
 
-/** SubSamples wrap CDotFeatures but only uses a subset of samples */
-template<class ST> class CDenseSubSamplesFeatures: public CDotFeatures
+/** SubSamples wrap DotFeatures but only uses a subset of samples */
+template<class ST> class DenseSubSamplesFeatures: public DotFeatures
 {
 public:
     /** default constructor */
-	CDenseSubSamplesFeatures();
+	DenseSubSamplesFeatures();
 
 	/** constructor */
-	CDenseSubSamplesFeatures(CDenseFeatures<ST> *fea, SGVector<int32_t> idx);
+	DenseSubSamplesFeatures(std::shared_ptr<DenseFeatures<ST>> fea, SGVector<int32_t> idx);
 
     /** destructor */
-	virtual ~CDenseSubSamplesFeatures();
+	virtual ~DenseSubSamplesFeatures();
 
     /** get name */
     virtual const char* get_name() const { return "DenseSubSamplesFeatures"; }
 
 	/** set the underlying features */
-	void set_features(CDenseFeatures<ST> *fea);
+	void set_features(std::shared_ptr<DenseFeatures<ST>> fea);
 
 	/** set the index into the subset of samples */
 	void set_subset_idx(SGVector<int32_t> idx);
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
 	/** get feature type
 	 *
@@ -114,7 +114,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -202,7 +202,7 @@ private:
 	void check_bound(int32_t index) const;
 
 	/* full samples  */
-	CDenseFeatures<ST> *m_fea;
+	std::shared_ptr<DenseFeatures<ST>> m_fea;
 
 	/* the indices of subsamples of m_fea */
 	SGVector<int32_t> m_idx;

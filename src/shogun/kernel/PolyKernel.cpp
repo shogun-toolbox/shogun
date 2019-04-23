@@ -15,13 +15,13 @@
 
 using namespace shogun;
 
-CPolyKernel::CPolyKernel() : CDotKernel(0)
+PolyKernel::PolyKernel() : DotKernel(0)
 {
 	init();
 }
 
-CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
-    : CDotKernel(size)
+PolyKernel::PolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
+    : DotKernel(size)
 {
 	require(c >= 0.0, "c parameter must be positive!");
 	init();
@@ -30,10 +30,10 @@ CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
 	m_gamma = gamma;
 }
 
-CPolyKernel::CPolyKernel(
-    CDotFeatures* l, CDotFeatures* r, int32_t d, float64_t c, float64_t gamma,
+PolyKernel::PolyKernel(
+    std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t d, float64_t c, float64_t gamma,
     int32_t size)
-    : CDotKernel(size)
+    : DotKernel(size)
 {
 	require(c >= 0.0, "c parameter must be positive!");
 	init();
@@ -44,34 +44,34 @@ CPolyKernel::CPolyKernel(
 	m_gamma = gamma;
 }
 
-CPolyKernel::~CPolyKernel()
+PolyKernel::~PolyKernel()
 {
 	cleanup();
 }
 
-bool CPolyKernel::init(CFeatures* l, CFeatures* r)
+bool PolyKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	return init_normalizer();
 }
 
-void CPolyKernel::cleanup()
+void PolyKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t PolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	auto result = m_gamma * CDotKernel::compute(idx_a, idx_b) + m_c;
-	return CMath::pow(result, degree);
+	auto result = m_gamma * DotKernel::compute(idx_a, idx_b) + m_c;
+	return Math::pow(result, degree);
 }
 
-void CPolyKernel::init()
+void PolyKernel::init()
 {
 	degree = 0;
 	m_c = 0.0;
 	m_gamma = 1.0;
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	SG_ADD(
 	    &degree, "degree", "Degree of polynomial kernel",
 	    ParameterProperties::HYPER);

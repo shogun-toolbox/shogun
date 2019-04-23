@@ -15,8 +15,8 @@
 
 namespace shogun
 {
-template <class ST> class CDenseFeatures;
-class CDotFeatures;
+template <class ST> class DenseFeatures;
+class DotFeatures;
 
 /** names of kernels that can be approximated currently */
 enum KernelName
@@ -41,12 +41,12 @@ enum KernelName
  *  For more detailed information you can take a look at this source:
  *  i) Random Features for Large-Scale Kernel Machines - Ali Rahimi and Ben Recht
  */
-class CRandomFourierDotFeatures : public CRandomKitchenSinksDotFeatures
+class RandomFourierDotFeatures : public RandomKitchenSinksDotFeatures
 {
 public:
 
 	/** default constructor */
-	CRandomFourierDotFeatures();
+	RandomFourierDotFeatures();
 
 	/** constructor that creates new random coefficients, basedon the kernel specified and the parameters
 	 * of the kernel.
@@ -56,7 +56,7 @@ public:
 	 * @param kernel_name the name of the kernel to approximate
 	 * @param params kernel parameters (see kernel's description in KernelName to see what each kernel expects)
 	 */
-	CRandomFourierDotFeatures(CDotFeatures* features, int32_t D, KernelName kernel_name,
+	RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features, int32_t D, KernelName kernel_name,
 			SGVector<float64_t> params);
 
 	/** constructor that uses the specified random coefficients.
@@ -67,23 +67,23 @@ public:
 	 * @param params kernel parameters (see kernel's description in KernelName to see what each kernel expects)
 	 * @param coeff pre-computed random coefficients to use
 	 */
-	CRandomFourierDotFeatures(CDotFeatures* features, int32_t D, KernelName kernel_name,
+	RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features, int32_t D, KernelName kernel_name,
 			SGVector<float64_t> params, SGMatrix<float64_t> coeff);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CRandomFourierDotFeatures(CFile* loader);
+	RandomFourierDotFeatures(std::shared_ptr<File> loader);
 
 	/** copy constructor */
-	CRandomFourierDotFeatures(const CRandomFourierDotFeatures& orig);
+	RandomFourierDotFeatures(const RandomFourierDotFeatures& orig);
 
 	/** duplicate */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
 	/** destructor */
-	virtual ~CRandomFourierDotFeatures();
+	virtual ~RandomFourierDotFeatures();
 
 	/** @return object name */
 	virtual const char* get_name() const;

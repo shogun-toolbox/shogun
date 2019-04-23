@@ -10,16 +10,16 @@ to multi-class classifications.
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: linear_discriminant_analysis.sg:create_features
 
-We create an instance of the :sgclass:`CMCLDA` classifier with feature matrix and label list.
-:sgclass:`CMCLDA` also has two default parameters, to set tolerance used in training and mark whether to store the within class covariances.
+We create an instance of the :sgclass:`MCLDA` classifier with feature matrix and label list.
+:sgclass:`MCLDA` also has two default parameters, to set tolerance used in training and mark whether to store the within class covariances.
 
 .. sgexample:: linear_discriminant_analysis.sg:create_instance
 
-Then we train and apply it to the test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we train and apply it to the test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: linear_discriminant_analysis.sg:train_and_apply
 
@@ -28,7 +28,7 @@ If we enabled storing covariance when creating instances, we can also extract th
 
 .. sgexample:: linear_discriminant_analysis.sg:extract_mean_and_cov
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: linear_discriminant_analysis.sg:evaluate_accuracy
 

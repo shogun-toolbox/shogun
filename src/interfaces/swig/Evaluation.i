@@ -4,21 +4,17 @@
  * Authors: Giovanni De Toni, Sahil Chaddha, Sergey Lisitsyn
  */
 
-/* These functions return new Objects */
-%newobject CMachineEvaluation::evaluate();
-
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%feature("director") shogun::CDirectorContingencyTableEvaluation;
+%feature("director") shogun::DirectorContingencyTableEvaluation;
 #endif
 
-/* Remove C Prefix */
-%rename(Evaluation) CEvaluation;
-%rename(EvaluationResult) CEvaluationResult;
-%rename(ClusteringAccuracy) CClusteringAccuracy;
-%rename(ClusteringMutualInformation) CClusteringMutualInformation;
-%rename(DifferentiableFunction) CDifferentiableFunction;
-%rename(MachineEvaluation) CMachineEvaluation;
-%rename(SplittingStrategy) CSplittingStrategy;
+%shared_ptr(shogun::Evaluation)
+%shared_ptr(shogun::EvaluationResult)
+%shared_ptr(shogun::ClusteringAccuracy)
+%shared_ptr(shogun::ClusteringMutualInformation)
+%shared_ptr(shogun::DifferentiableFunction)
+%shared_ptr(shogun::MachineEvaluation)
+%shared_ptr(shogun::SplittingStrategy)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/Evaluation.h>

@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-uint32_t CHash::crc32(uint8_t *data, int32_t len)
+uint32_t Hash::crc32(uint8_t *data, int32_t len)
 {
 	uint32_t result;
 	int32_t i,j;
@@ -39,7 +39,7 @@ uint32_t CHash::crc32(uint8_t *data, int32_t len)
     return ~result;
 }
 
-void CHash::MD5(unsigned char *x, unsigned l, unsigned char *buf)
+void Hash::MD5(unsigned char *x, unsigned l, unsigned char *buf)
 {
     struct MD5Context ctx;
 
@@ -70,7 +70,7 @@ void byteReverse(unsigned char *buf, unsigned uint32_t longs)
 #endif
 #endif
 
-void CHash::MD5Init(struct MD5Context *ctx)
+void Hash::MD5Init(struct MD5Context *ctx)
 {
     ctx->buf[0] = 0x67452301;
     ctx->buf[1] = 0xefcdab89;
@@ -81,7 +81,7 @@ void CHash::MD5Init(struct MD5Context *ctx)
     ctx->bits[1] = 0;
 }
 
-void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
+void Hash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
                unsigned len)
 {
     uint32_t t;
@@ -126,7 +126,7 @@ void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
     sg_memcpy(ctx->in, buf, len);
 }
 
-void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
+void Hash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 {
     unsigned count;
     unsigned char *p;
@@ -186,7 +186,7 @@ void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
 #endif
 
-void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
+void Hash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
     uint32_t a, b, c, d;
 
@@ -340,22 +340,22 @@ void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
 }
 #endif
 
-uint32_t CHash::MurmurHash3(uint8_t* data, int32_t len, uint32_t seed)
+uint32_t Hash::MurmurHash3(uint8_t* data, int32_t len, uint32_t seed)
 {
 	return PMurHash32(seed, data, len);
 }
 
-void CHash::IncrementalMurmurHash3(uint32_t *ph1, uint32_t *pcarry, uint8_t* data, int32_t len)
+void Hash::IncrementalMurmurHash3(uint32_t *ph1, uint32_t *pcarry, uint8_t* data, int32_t len)
 {
 	PMurHash32_Process(ph1, pcarry, data, len);
 }
 
-uint32_t CHash::FinalizeIncrementalMurmurHash3(uint32_t h, uint32_t carry, uint32_t total_length)
+uint32_t Hash::FinalizeIncrementalMurmurHash3(uint32_t h, uint32_t carry, uint32_t total_length)
 {
 	return PMurHash32_Result(h, carry, total_length);
 }
 
-uint32_t CHash::MurmurHashString(substring s, uint32_t h)
+uint32_t Hash::MurmurHashString(substring s, uint32_t h)
 {
 	uint32_t ret = 0;
 

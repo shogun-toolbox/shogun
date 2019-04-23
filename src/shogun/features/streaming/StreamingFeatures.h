@@ -64,7 +64,7 @@ namespace shogun
  *
  */
 
-class CStreamingFeatures : public CFeatures
+class StreamingFeatures : public Features
 {
 
 public:
@@ -73,14 +73,14 @@ public:
 	 * Default constructor with no args.
 	 * Doesn't do anything yet.
 	 */
-	CStreamingFeatures();
+	StreamingFeatures();
 
-	CStreamingFeatures(const CStreamingFeatures&) = delete;
+	StreamingFeatures(const StreamingFeatures&) = delete;
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFeatures();
+	virtual ~StreamingFeatures();
 
 	/**
 	 * Set the vector reading functions.
@@ -165,7 +165,7 @@ public:
 	 * batch fashion.
 	 *
 	 * A stream can usually seekable when it comes from a file or
-	 * when it comes from another conventional CFeatures object.
+	 * when it comes from another conventional Features object.
 	 *
 	 * @return true if seekable, else false.
 	 */
@@ -176,16 +176,16 @@ public:
 	 */
 	virtual void reset_stream();
 
-	/** Returns a new CFeatures instance which contains num_elements elements from
+	/** Returns a new Features instance which contains num_elements elements from
 	 * the underlying stream. Not SG_REF'ed
 	 *
 	 * @param num_elements num elements to save from stream
-	 * @return CFeatures object of underlying type, might be smaller than
+	 * @return Features object of underlying type, might be smaller than
 	 * requested if the stream stopped. A warning is issued in this case.
 	 *
 	 * NOT IMPLEMENTED!
 	 */
-	virtual CFeatures* get_streamed_features(index_t num_elements)
+	virtual std::shared_ptr<Features> get_streamed_features(index_t num_elements)
 	{
 		error("{}::get_streamed_features() is not yet implemented!",
 				get_name());
@@ -195,9 +195,9 @@ public:
 	/**
 	 * Duplicate the object.
 	 *
-	 * @return a duplicate object as CFeatures*
+	 * @return a duplicate object as Features*
 	 */
-	virtual CFeatures* duplicate() const
+	virtual std::shared_ptr<Features> duplicate() const
 	{
 		not_implemented(SOURCE_LOCATION);
 		return NULL;
@@ -209,7 +209,7 @@ protected:
 	bool has_labels;
 
 	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
+	std::shared_ptr<StreamingFile> working_file;
 
 	/// Whether the stream is seekable
 	bool seekable;

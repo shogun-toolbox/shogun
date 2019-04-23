@@ -29,46 +29,38 @@ void test_libsvr()
 
 	for (index_t i=0; i<n; ++i)
 	{
-		feat_train[i]=CMath::random(0.0, x_range);
+		feat_train[i]=Math::random(0.0, x_range);
 		feat_test[i]=(float64_t)i/n*x_range;
 		lab_train[i] = std::sin(feat_train[i]);
 		lab_test[i] = std::sin(feat_test[i]);
 	}
 
 	/* shogun representation */
-	CLabels* labels_train=new CRegressionLabels(lab_train);
-	SG_REF(labels_train);
-	CLabels* labels_test=new CRegressionLabels(lab_test);
-	SG_REF(labels_test);
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto labels_test=std::make_shared<RegressionLabels>(lab_test);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(
 			feat_test);
 
-	CGaussianKernel* kernel=new CGaussianKernel(rbf_width);
+	auto kernel=std::make_shared<GaussianKernel>(rbf_width);
 	kernel->init(features_train, features_train);
 
 	// also epsilon svr possible here
 	LIBSVR_SOLVER_TYPE st=LIBSVR_NU_SVR;
-	CLibSVR* svm=new CLibSVR(svm_C, svm_nu, kernel, labels_train, st);
+	auto svm=std::make_shared<LibSVR>(svm_C, svm_nu, kernel, labels_train, st);
 	svm->train();
 
 	/* predict */
-	CRegressionLabels* predicted_labels =
-	    svm->apply(features_test)->as<CRegressionLabels>();
-	SG_REF(predicted_labels);
+	auto predicted_labels =
+	    svm->apply(features_test)->as<RegressionLabels>();
 
 	/* evaluate */
-	CEvaluation* eval=new CMeanSquaredError();
+	auto eval=std::make_shared<MeanSquaredError>();
 	SG_SPRINT("mean squared error: %f\n",
 			eval->evaluate(predicted_labels, labels_test));
 
 	 /* clean up */
-	SG_UNREF(eval);
-	SG_UNREF(labels_test)
-	SG_UNREF(predicted_labels);
-	SG_UNREF(svm);
-	SG_UNREF(labels_train);
 }
 
 int main()

@@ -24,9 +24,9 @@ TEST(StreamingHashedDenseFeaturesTest, dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats =
-		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<StreamingHashedDenseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	index_t i;
@@ -36,7 +36,7 @@ TEST(StreamingHashedDenseFeaturesTest, dot)
 		SGVector<uint32_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -53,7 +53,7 @@ TEST(StreamingHashedDenseFeaturesTest, dot)
 
 	EXPECT_EQ(i, n);
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(StreamingHashedDenseFeaturesTest, dense_dot)
@@ -70,9 +70,9 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 
 	int32_t hashing_dim = 8;
 
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats =
-		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<StreamingHashedDenseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	for (index_t i=0; i<n && h_feats->get_next_example(); i++)
@@ -81,7 +81,7 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 		SGVector<float32_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -97,7 +97,7 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 	}
 	h_feats->end_parser();
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
@@ -113,9 +113,9 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats =
-		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<StreamingHashedDenseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	for (index_t i=0; i<n && h_feats->get_next_example(); i++)
@@ -124,7 +124,7 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 		SGVector<float32_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -141,5 +141,5 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 	}
 	h_feats->end_parser();
 
-	SG_UNREF(h_feats);
+
 }

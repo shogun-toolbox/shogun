@@ -13,16 +13,16 @@
 
 namespace shogun
 {
-template<class T> class CDenseMatrixOperator;
+template<class T> class DenseMatrixOperator;
 
 /** @brief Class that computes eigenvalues of a real valued, self-adjoint
  * dense matrix linear operator using Eigen3
  */
-class CDirectEigenSolver : public CEigenSolver
+class DirectEigenSolver : public EigenSolver
 {
 public:
 	/** default constructor */
-	CDirectEigenSolver();
+	DirectEigenSolver();
 
 	/**
 	 * constructor
@@ -30,10 +30,10 @@ public:
 	 * @param linear_operator self-adjoint dense-matrix linear operator whose
 	 * eigenvalues have to be found
 	 */
-	CDirectEigenSolver(CDenseMatrixOperator<float64_t>* linear_operator);
+	DirectEigenSolver(std::shared_ptr<DenseMatrixOperator<float64_t>> linear_operator);
 
 	/** destructor */
-	virtual ~CDirectEigenSolver();
+	virtual ~DirectEigenSolver();
 
 	/**
 	 * compute method for computing eigenvalues of a real valued dense matrix

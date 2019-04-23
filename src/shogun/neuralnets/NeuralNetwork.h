@@ -42,9 +42,9 @@
 
 namespace shogun
 {
-template<class T> class CDenseFeatures;
-class CDynamicObjectArray;
-class CNeuralLayer;
+template<class T> class DenseFeatures;
+class DynamicObjectArray;
+class NeuralLayer;
 
 /** optimization method for neural networks */
 enum ENNOptimizationMethod
@@ -56,14 +56,14 @@ enum ENNOptimizationMethod
 /** @brief A generic multi-layer neural network
  *
  * A [Neural network](http://en.wikipedia.org/wiki/Artificial_neural_network)
- * is constructed using an array of CNeuralLayer objects. The NeuralLayer
+ * is constructed using an array of NeuralLayer objects. The NeuralLayer
  * class defines the interface necessary for forward and
  * [backpropagation](http://en.wikipedia.org/wiki/Backpropagation).
  *
  * The network can be constructed as any arbitrary directed acyclic graph.
  *
  * How to use the network:
- * 	- Prepare a CDynamicObjectArray of CNeuralLayer-based objects that specify
+ * 	- Prepare a DynamicObjectArray of NeuralLayer-based objects that specify
  * the type of layers used in the network. The array must contain at least one
  * input layer. The last layer in the array is treated as the output layer.
  * Also note that forward propagation is performed in the order at which the
@@ -79,13 +79,13 @@ enum ENNOptimizationMethod
  * 	- Apply the network using apply()
  *
  * The network can also be initialized from a JSON file using
- * CNeuralNetworkFileReader.
+ * NeuralNetworkFileReader.
  *
- * Supported feature types: CDenseFeatures<float64_t>
+ * Supported feature types: DenseFeatures<float64_t>
  * Supported label types:
- * 	- CBinaryLabels
- * 	- CMulticlassLabels
- * 	- CRegressionLabels
+ * 	- BinaryLabels
+ * 	- MulticlassLabels
+ * 	- RegressionLabels
  *
  * The neural network can be trained using
  * [L-BFGS](http://en.wikipedia.org/wiki/Limited-memory_BFGS) (default) or
@@ -108,29 +108,29 @@ enum ENNOptimizationMethod
  * When implemnting new layer types, the function check_gradients() can be used
  * to make sure the gradient computations are correct.
  */
-class CNeuralNetwork : public RandomMixin<CMachine>
+class NeuralNetwork : public RandomMixin<Machine>
 {
-friend class CDeepBeliefNetwork;
+friend class DeepBeliefNetwork;
 
 public:
 	/** default constuctor */
-	CNeuralNetwork();
+	NeuralNetwork();
 
 	/** Sets the layers of the network
 	 *
-	 * @param layers An array of CNeuralLayer objects specifying the layers of
+	 * @param layers An array of NeuralLayer objects specifying the layers of
 	 * the network. Must contain at least one input layer. The last layer in
 	 * the array is treated as the output layer
 	 */
-	CNeuralNetwork(CDynamicObjectArray* layers);
+	NeuralNetwork(std::shared_ptr<DynamicObjectArray> layers);
 
 	/** Sets the layers of the network
 	 *
-	 * @param layers An array of CNeuralLayer objects specifying the layers of
+	 * @param layers An array of NeuralLayer objects specifying the layers of
 	 * the network. Must contain at least one input layer. The last layer in
 	 * the array is treated as the output layer
 	 */
-	virtual void set_layers(CDynamicObjectArray* layers);
+	virtual void set_layers(std::shared_ptr<DynamicObjectArray> layers);
 
 	/** Connects layer i as input to layer j. In order for forward and
 	 * backpropagation to work correctly, i must be less that j
@@ -159,14 +159,14 @@ public:
 	 */
 	virtual void initialize_neural_network(float64_t sigma = 0.01f);
 
-	virtual ~CNeuralNetwork();
+	virtual ~NeuralNetwork();
 
 	/** apply machine to data in means of binary classification problem */
-	virtual CBinaryLabels* apply_binary(CFeatures* data);
+	virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data);
 	/** apply machine to data in means of regression problem */
-	virtual CRegressionLabels* apply_regression(CFeatures* data);
+	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data);
 	/** apply machine to data in means of multiclass classification problem */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data);
 
 	/** Applies the network as a feature transformation
 	 *
@@ -177,14 +177,14 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> transform(
+		std::shared_ptr<DenseFeatures<float64_t>> data);
 
 	/** set labels
 	*
 	* @param lab labels
 	*/
-	virtual void set_labels(CLabels* lab);
+	virtual void set_labels(std::shared_ptr<Labels> lab);
 
 	/** get classifier type
 	 *
@@ -232,7 +232,7 @@ public:
 	int32_t get_num_outputs();
 
 	/** Returns an array holding the network's layers */
-	CDynamicObjectArray* get_layers();
+	std::shared_ptr<DynamicObjectArray> get_layers();
 
 	virtual const char* get_name() const { return "NeuralNetwork";}
 
@@ -285,7 +285,7 @@ public:
 	 *
 	 * For more details on dropout, see
 	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
-	 * 
+	 *
 	 * @param dropout_hidden dropout probability
 	 */
 	void set_dropout_hidden(float64_t dropout_hidden)
@@ -463,7 +463,7 @@ public:
 
 protected:
 	/** trains the network */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	/** trains the network using gradient descent*/
 	virtual bool train_gradient_descent(SGMatrix<float64_t> inputs,
@@ -482,7 +482,7 @@ protected:
 	 *
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, int32_t j=-1);
+	virtual SGMatrix<float64_t> forward_propagate(std::shared_ptr<Features> data, int32_t j=-1);
 
 	/** Applies forward propagation, computes the activations of each layer up
 	 * to layer j
@@ -542,21 +542,21 @@ protected:
 	 */
 	virtual float64_t compute_error(SGMatrix<float64_t> targets);
 
-	virtual bool is_label_valid(CLabels *lab) const;
+	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const;
 
 	/** returns a pointer to layer i in the network */
-	CNeuralLayer* get_layer(int32_t i);
+	std::shared_ptr<NeuralLayer> get_layer(int32_t i);
 
 	/** Ensures the given features are suitable for use with the network and
 	 * returns their feature matrix
 	 */
-	SGMatrix<float64_t> features_to_matrix(CFeatures* features);
+	SGMatrix<float64_t> features_to_matrix(std::shared_ptr<Features> features);
 
 	/** converts the given labels into a matrix suitable for use with network
 	 *
 	 * @return matrix of size get_num_outputs()*num_labels
 	 */
-	SGMatrix<float64_t> labels_to_matrix(CLabels* labs);
+	SGMatrix<float64_t> labels_to_matrix(std::shared_ptr<Labels> labs);
 
 private:
 	void init();
@@ -593,7 +593,7 @@ protected:
 	int32_t m_num_layers;
 
 	/** network's layers */
-	CDynamicObjectArray* m_layers;
+	std::shared_ptr<DynamicObjectArray> m_layers;
 
 	/** Describes the connections in the network: if there's a connection from
 	 * layer i to layer j then m_adj_matrix(i,j) = 1.
@@ -631,12 +631,12 @@ protected:
 	 * initial value is False
 	 */
 	bool m_auto_quick_initialize;
-	
+
 	/** Standard deviation of the gaussian used to randomly
 	* initialize the parameters
 	*/
 	float64_t m_sigma;
-	
+
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod m_optimization_method;
 

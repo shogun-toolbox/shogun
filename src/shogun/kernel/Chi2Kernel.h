@@ -27,20 +27,20 @@ namespace shogun
  * \f]
  *
  * */
-class CChi2Kernel: public CDotKernel
+class Chi2Kernel: public DotKernel
 {
 	void init();
 
 	public:
 		/** default constructor  */
-		CChi2Kernel();
+		Chi2Kernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param width width
 		 */
-		CChi2Kernel(int32_t size, float64_t width);
+		Chi2Kernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -49,10 +49,10 @@ class CChi2Kernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CChi2Kernel( CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+		Chi2Kernel(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 				float64_t width, int32_t size=10);
 
-		virtual ~CChi2Kernel();
+		virtual ~Chi2Kernel();
 
 		/** initialize kernel
 		 *
@@ -60,16 +60,16 @@ class CChi2Kernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** @return width of the kernel */
 		virtual float64_t get_width();
 
 		/** @param kernel is casted to CChi2Kernel, error if not possible
 		 * is SG_REF'ed
-		 * @return casted CGaussianKernel object
+		 * @return casted GaussianKernel object
 		 */
-		static CChi2Kernel* obtain_from_generic(CKernel* kernel);
+		static std::shared_ptr<Chi2Kernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
 
 		/** return what type of kernel we are
 		 *

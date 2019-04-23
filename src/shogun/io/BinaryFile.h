@@ -24,18 +24,18 @@ template <class T> class SGSparseVector;
  * data. The current implementation is capable of storing only a single
  * header/data type. Multiple headers are currently not implemented.
  */
-class CBinaryFile: public CFile
+class BinaryFile: public File
 {
 public:
 	/** default constructor  */
-	CBinaryFile();
+	BinaryFile();
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CBinaryFile(FILE* f, const char* name=NULL);
+	BinaryFile(FILE* f, const char* name=NULL);
 
 	/** constructor
 	 *
@@ -43,10 +43,10 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CBinaryFile(const char* fname, char rw='r', const char* name=NULL);
+	BinaryFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
-	virtual ~CBinaryFile();
+	virtual ~BinaryFile();
 
 #ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions
@@ -399,7 +399,7 @@ private:
 	 */
 	template <class DT> DT* load_data(DT* target, int64_t& num)
 	{
-		CSimpleFile<DT> f(filename, file);
+		SimpleFile<DT> f(filename, file);
 		return f.load(target, num);
 	}
 
@@ -411,7 +411,7 @@ private:
 	 */
 	template <class DT> bool save_data(DT* src, int64_t num)
 	{
-		CSimpleFile<DT> f(filename, file);
+		SimpleFile<DT> f(filename, file);
 		return f.save(src, num);
 	}
 };

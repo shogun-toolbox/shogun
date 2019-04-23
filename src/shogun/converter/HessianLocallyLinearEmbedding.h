@@ -14,8 +14,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class HessianLocallyLinearEmbedding used to preprocess
  * data using Hessian Locally Linear Embedding algorithm as described in
@@ -34,21 +34,21 @@ class CDistance;
  * sg('create_converter','hlle',k);
  *
  */
-class CHessianLocallyLinearEmbedding: public CLocallyLinearEmbedding
+class HessianLocallyLinearEmbedding: public LocallyLinearEmbedding
 {
 public:
 
 	/** constructor */
-	CHessianLocallyLinearEmbedding();
+	HessianLocallyLinearEmbedding();
 
 	/** destructor */
-	virtual ~CHessianLocallyLinearEmbedding();
+	virtual ~HessianLocallyLinearEmbedding();
 
 	/** get name */
 	virtual const char* get_name() const;
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 };
 }
 

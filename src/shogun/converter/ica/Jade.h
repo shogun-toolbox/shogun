@@ -14,7 +14,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 //#define DEBUG_JADE
 
@@ -30,15 +30,15 @@ class CFeatures;
  * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
  *
  */
-class CJade: public CICAConverter
+class Jade: public ICAConverter
 {
 	public:
 
 		/** constructor */
-		CJade();
+		Jade();
 
 		/** destructor */
-		virtual ~CJade();
+		virtual ~Jade();
 
 		/** getter for cumulant_matrix
 		 * @return cumulant_matrix
@@ -53,7 +53,7 @@ class CJade: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	private:
 

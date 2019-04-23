@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Soeren Sonnenburg, Saloni Nigam, Sergey Lisitsyn, 
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Saloni Nigam, Sergey Lisitsyn,
  *          Viktor Gal
  */
 
@@ -27,7 +27,7 @@ namespace shogun
 
 /* For dense vectors */
 #define GET_VECTOR(fname, conv, sg_type)				\
-	void CStreamingFile::get_vector					\
+	void StreamingFile::get_vector					\
 	(sg_type*& vector, int32_t& num_feat)				\
 	{								\
 		vector=NULL;						\
@@ -52,7 +52,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 
 /* For dense vectors with labels */
 #define GET_VECTOR_AND_LABEL(fname, conv, sg_type)			\
-	void CStreamingFile::get_vector_and_label			\
+	void StreamingFile::get_vector_and_label			\
 	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
 	{								\
 		vector=NULL;						\
@@ -77,7 +77,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 
 /* For string vectors */
 #define GET_STRING(fname, conv, sg_type)				\
-	void CStreamingFile::get_string					\
+	void StreamingFile::get_string					\
 	(sg_type*& vector, int32_t& num_feat)				\
 	{								\
 		vector=NULL;						\
@@ -102,7 +102,7 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 
 /* For string vectors with labels */
 #define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
-	void CStreamingFile::get_string_and_label			\
+	void StreamingFile::get_string_and_label			\
 	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
 	{								\
 		vector=NULL;						\
@@ -128,7 +128,7 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 /* For sparse vectors */
 #define GET_SPARSE_VECTOR(fname, conv, sg_type)				\
 									\
-	void CStreamingFile::get_sparse_vector				\
+	void StreamingFile::get_sparse_vector				\
 	(SGSparseVectorEntry<sg_type>*& vector, int32_t& num_feat)	\
 	{								\
 		vector=NULL;						\
@@ -154,7 +154,7 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 /* For sparse vectors with labels */
 #define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)		\
 									\
-	void CStreamingFile::get_sparse_vector_and_label		\
+	void StreamingFile::get_sparse_vector_and_label		\
 	(SGSparseVectorEntry<sg_type>*& vector,				\
 	 int32_t& num_feat,						\
 	 float64_t& label)						\
@@ -178,18 +178,18 @@ GET_SPARSE_VECTOR_AND_LABEL(get_long_sparse_vector_and_label, atoi, int64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_ulong_sparse_vector_and_label, atoi, uint64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax_t)
 #undef GET_SPARSE_VECTOR_AND_LABEL
-	
+
 }
 
 using namespace shogun;
 
-CStreamingFile::CStreamingFile() : CSGObject()
+StreamingFile::StreamingFile() : SGObject()
 {
 	buf=NULL;
 	filename=NULL;
 }
 
-CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
+StreamingFile::StreamingFile(const char* fname, char rw) : SGObject()
 {
 	task=rw;
 	filename=get_strdup(fname);
@@ -213,15 +213,13 @@ CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 		if (file < 0)
 			error("Error opening file '{}'", filename);
 
-		buf = new CIOBuffer(file);
-		SG_REF(buf);
+		buf = std::make_shared<IOBuffer>(file);
 	}
 	else
 		error("Error getting the file name!");
 }
 
-CStreamingFile::~CStreamingFile()
+StreamingFile::~StreamingFile()
 {
 	SG_FREE(filename);
-	SG_UNREF(buf);
 }

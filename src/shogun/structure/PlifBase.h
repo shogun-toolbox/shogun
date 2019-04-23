@@ -16,12 +16,12 @@
 namespace shogun
 {
 /** @brief class PlifBase */
-class CPlifBase : public CSGObject
+class PlifBase : public SGObject
 {
 	public:
 		/** default constructor */
-		CPlifBase() {};
-		virtual ~CPlifBase() {};
+		PlifBase() {};
+		virtual ~PlifBase() {};
 
 		/** lookup penalty float64_t
 		 *

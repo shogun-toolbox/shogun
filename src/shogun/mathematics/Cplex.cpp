@@ -18,7 +18,7 @@
 using namespace shogun;
 
 CCplex::CCplex()
-: CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
+: SGObject(), env(NULL), lp(NULL), lp_initialized(false)
 {
 }
 
@@ -82,7 +82,7 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 }
 
 bool CCplex::setup_subgradientlpm_QP(
-	float64_t C, CBinaryLabels* labels, CSparseFeatures<float64_t>* features,
+	float64_t C, BinaryLabels* labels, SparseFeatures<float64_t>* features,
 	int32_t* idx_bound, int32_t num_bound, int32_t* w_zero, int32_t num_zero,
 	float64_t* vee, int32_t num_dim, bool use_bias)
 {
@@ -288,7 +288,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 
 bool CCplex::add_lpboost_constraint(
 	float64_t factor, SGSparseVectorEntry<float64_t>* h, int32_t len, int32_t ulen,
-	CBinaryLabels* label)
+	BinaryLabels* label)
 {
 	int amatbeg[1]; /* for calling external lib */
 	int amatind[len+1]; /* for calling external lib */
@@ -317,7 +317,7 @@ bool CCplex::add_lpboost_constraint(
 }
 
 bool CCplex::setup_lpm(
-	float64_t C, CSparseFeatures<float64_t>* x, CBinaryLabels* y, bool use_bias)
+	float64_t C, SparseFeatures<float64_t>* x, BinaryLabels* y, bool use_bias)
 {
 	ASSERT(x)
 	ASSERT(y)

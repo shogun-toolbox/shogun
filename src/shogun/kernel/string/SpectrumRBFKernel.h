@@ -24,11 +24,11 @@ namespace shogun
 {
 
 /** @brief spectrum rbf kernel */
-class CSpectrumRBFKernel: public CStringKernel<char>
+class SpectrumRBFKernel: public StringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CSpectrumRBFKernel();
+		SpectrumRBFKernel();
 
 		/** constructor
 		 * @param size
@@ -36,7 +36,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 * @param degree
 		 * @param width
 		 */
-		CSpectrumRBFKernel(int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
+		SpectrumRBFKernel(int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
 		/** constructor
 		 *
@@ -47,11 +47,11 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 * @param degree
 		 * @param width
 		 */
-		CSpectrumRBFKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
+		SpectrumRBFKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
 		/** destructor */
-		virtual ~CSpectrumRBFKernel();
+		virtual ~SpectrumRBFKernel();
 
 		/** initialize kernel
 		 *
@@ -59,7 +59,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -134,7 +134,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 	protected:
 		/** alphabet of features */
-		CAlphabet* alphabet;
+		std::shared_ptr<Alphabet> alphabet;
 		/** degree */
 		int32_t degree;
 		/** maximum mismatch */
@@ -154,7 +154,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** sequences */
 		SGVector<char>* sequences; // profile
 		/** string features */
-		CStringFeatures<char>* string_features;
+		std::shared_ptr<StringFeatures<char>> string_features;
 		/** nof sequences */
 		int32_t nof_sequences;
 		/** max sequence length */
@@ -163,7 +163,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** if kernel is initialized */
 		bool initialized;
 		/** kernel matrix */
-		CDynamicArray<float64_t> kernel_matrix; // 2d
+		DynamicArray<float64_t> kernel_matrix; // 2d
 		/** target letter 0 */
 		int32_t target_letter_0;
 

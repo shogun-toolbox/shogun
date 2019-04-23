@@ -15,39 +15,39 @@
 
 namespace shogun
 {
-	class CFeatures;
-	class CLabels;
+	class Features;
+	class Labels;
 #define IGNORE_IN_CLASSLIST
 
 	template <class P, class T>
-	IGNORE_IN_CLASSLIST class CDenseRealDispatch : public T
+	IGNORE_IN_CLASSLIST class DenseRealDispatch : public T
 	{
 	public:
 		/** Default constructor */
-		CDenseRealDispatch() : T()
+		DenseRealDispatch() : T()
 		{
 		}
 
-		virtual ~CDenseRealDispatch()
+		virtual ~DenseRealDispatch()
 		{
 		}
 
 	protected:
-		virtual bool train_dense(CFeatures* data)
+		virtual bool train_dense(std::shared_ptr<Features> data)
 		{
 			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_DREAL:
 				return this_casted->template train_machine_templated<float64_t>(
-				    data->as<CDenseFeatures<float64_t>>());
+				    std::dynamic_pointer_cast<DenseFeatures<float64_t>>(data));
 			case F_SHORTREAL:
 				return this_casted->template train_machine_templated<float32_t>(
-				    data->as<CDenseFeatures<float32_t>>());
+				    std::dynamic_pointer_cast<DenseFeatures<float32_t>>(data));
 			case F_LONGREAL:
 				return this_casted
 				    ->template train_machine_templated<floatmax_t>(
-				        data->as<CDenseFeatures<floatmax_t>>());
+				        std::dynamic_pointer_cast<DenseFeatures<floatmax_t>>(data));
 			default:
 				error(
 				    "Training with {} of provided type {} is not "
@@ -70,33 +70,33 @@ namespace shogun
 	};
 
 	template <class P, class T>
-	IGNORE_IN_CLASSLIST class CStringFeaturesDispatch : public T
+	IGNORE_IN_CLASSLIST class StringFeaturesDispatch : public T
 	{
 	public:
 		/** Default constructor */
-		CStringFeaturesDispatch() : T()
+		StringFeaturesDispatch() : T()
 		{
 		}
 
-		virtual ~CStringFeaturesDispatch()
+		virtual ~StringFeaturesDispatch()
 		{
 		}
 
 	protected:
-		virtual bool train_string(CFeatures* data)
+		virtual bool train_string(std::shared_ptr<Features> data)
 		{
 			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_BYTE:
 				return this_casted->template train_machine_templated<uint8_t>(
-				    data->as<CStringFeatures<uint8_t>>());
+				    data->as<StringFeatures<uint8_t>>());
 			case F_CHAR:
 				return this_casted->template train_machine_templated<char>(
-				    data->as<CStringFeatures<char>>());
+				    data->as<StringFeatures<char>>());
 			case F_WORD:
 				return this_casted->template train_machine_templated<uint16_t>(
-				    data->as<CStringFeatures<uint16_t>>());
+				    data->as<StringFeatures<uint16_t>>());
 			default:
 				error(
 				    "Training with {} of provided type {} is "

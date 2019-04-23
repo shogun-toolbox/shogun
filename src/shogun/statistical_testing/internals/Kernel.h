@@ -37,7 +37,7 @@
 namespace shogun
 {
 
-class CKernel;
+class Kernel;
 
 namespace internal
 {
@@ -45,7 +45,7 @@ namespace internal
 class Kernel
 {
 public:
-	explicit Kernel(CKernel* kernel) : m_kernel(kernel)
+	explicit Kernel(std::shared_ptr<shogun::Kernel> kernel) : m_kernel(kernel)
 	{
 	}
 
@@ -54,7 +54,7 @@ public:
 		return m_kernel->kernel(i, j);
 	}
 private:
-	CKernel* m_kernel;
+	std::shared_ptr<shogun::Kernel> m_kernel;
 };
 
 class SelfAdjointPrecomputedKernel
@@ -68,7 +68,7 @@ public:
 		require(self_adjoint_kernel_matrix.size()>0, "Provided kernel matrix cannot be of size 0!");
 		m_self_adjoint_kernel_matrix=self_adjoint_kernel_matrix;
 	}
-	void precompute(CKernel* kernel)
+	void precompute(std::shared_ptr<shogun::Kernel> kernel)
 	{
 		require(kernel, "Kernel instance cannot be NULL!");
 		require(kernel->get_num_vec_lhs()==kernel->get_num_vec_rhs(),

@@ -12,46 +12,46 @@
 
 using namespace shogun;
 
-CLinearKernel::CLinearKernel()
-: CDotKernel(0)
+LinearKernel::LinearKernel()
+: DotKernel(0)
 {
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CDotFeatures* l, CDotFeatures* r)
-: CDotKernel(0)
+LinearKernel::LinearKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r)
+: DotKernel(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);
 }
 
-CLinearKernel::~CLinearKernel()
+LinearKernel::~LinearKernel()
 {
 	cleanup();
 }
 
-bool CLinearKernel::init(CFeatures* l, CFeatures* r)
+bool LinearKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 
 	return init_normalizer();
 }
 
-void CLinearKernel::cleanup()
+void LinearKernel::cleanup()
 {
 	delete_optimization();
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
+void LinearKernel::add_to_normal(int32_t idx, float64_t weight)
 {
-	((CDotFeatures*) lhs)->add_to_dense_vec(
+	lhs->as<DotFeatures>()->add_to_dense_vec(
 		normalizer->normalize_lhs(weight, idx), idx, normal.vector, normal.size());
 	set_is_initialized(true);
 }
 
-bool CLinearKernel::init_optimization(
+bool LinearKernel::init_optimization(
 	int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas)
 {
 	clear_normal();
@@ -63,7 +63,7 @@ bool CLinearKernel::init_optimization(
 	return true;
 }
 
-bool CLinearKernel::init_optimization(CKernelMachine* km)
+bool LinearKernel::init_optimization(std::shared_ptr<KernelMachine> km)
 {
 	clear_normal();
 
@@ -76,7 +76,7 @@ bool CLinearKernel::init_optimization(CKernelMachine* km)
 	return true;
 }
 
-bool CLinearKernel::delete_optimization()
+bool LinearKernel::delete_optimization()
 {
 	normal = SGVector<float64_t>();
 	set_is_initialized(false);
@@ -84,9 +84,9 @@ bool CLinearKernel::delete_optimization()
 	return true;
 }
 
-float64_t CLinearKernel::compute_optimized(int32_t idx)
+float64_t LinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized())
-	float64_t result = ((CDotFeatures*) rhs)->dot(idx, normal);
+	float64_t result = rhs->as<DotFeatures>()->dot(idx, normal);
 	return normalizer->normalize_rhs(result, idx);
 }

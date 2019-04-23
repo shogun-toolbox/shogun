@@ -18,37 +18,37 @@
 
 using namespace shogun;
 
-CGMNPSVM::CGMNPSVM()
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
+GMNPSVM::GMNPSVM()
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>())
 {
 	init();
 }
 
-CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab)
+GMNPSVM::GMNPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab)
 {
 	init();
 }
 
-CGMNPSVM::~CGMNPSVM()
+GMNPSVM::~GMNPSVM()
 {
 	if (m_basealphas != NULL) SG_FREE(m_basealphas);
 }
 
 void
-CGMNPSVM::init()
+GMNPSVM::init()
 {
-	m_parameters->add_matrix(&m_basealphas,
+	/*m_parameters->add_matrix(&m_basealphas,
 							 &m_basealphas_y, &m_basealphas_x,
 							 "m_basealphas",
-							 "Is the basic untransformed alpha.");
+							 "Is the basic untransformed alpha.");*/
 	watch_param(
 	    "m_basealphas", &m_basealphas, &m_basealphas_y, &m_basealphas_x);
 
 	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }
 
-bool CGMNPSVM::train_machine(CFeatures* data)
+bool GMNPSVM::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(m_kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
@@ -73,9 +73,10 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	io::info("{} trainlabels, {} classes", num_data, num_classes);
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
+	auto mc = multiclass_labels(m_labels);
 	for (int32_t i=0; i<num_data; i++)
 	{
-		vector_y[i] = ((CMulticlassLabels*) m_labels)->get_label(i)+1;
+		vector_y[i] = mc->get_label(i)+1;
 
 	}
 
@@ -98,7 +99,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	float64_t* History = NULL;
 	int32_t verb = 0;
 
-	CGMNPLib mnp(vector_y,m_kernel,num_data, num_virtual_data, num_classes, reg_const);
+	GMNPLib mnp(vector_y,m_kernel,num_data, num_virtual_data, num_classes, reg_const);
 
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
 				  tolabs, tolrel, thlb, alpha, &t, &History, verb);
@@ -140,7 +141,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 		ASSERT(num_sv>0)
 		SG_DEBUG("svm[{}] has {} sv, b={}", i, num_sv, all_bs[i])
 
-		CSVM* svm=new CSVM(num_sv);
+		auto svm=std::make_shared<SVM>(num_sv);
 
 		int32_t k=0;
 		for (int32_t j=0; j<num_data; j++)
@@ -182,7 +183,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 }
 
 float64_t*
-CGMNPSVM::get_basealphas_ptr(index_t* y, index_t* x)
+GMNPSVM::get_basealphas_ptr(index_t* y, index_t* x)
 {
 	if (y == NULL || x == NULL) return NULL;
 

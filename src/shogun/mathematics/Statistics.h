@@ -22,7 +22,7 @@ template<class T> class SGSparseMatrix;
 /** @brief Class that contains certain functions related to statistics, such as
  * probability/cumulative distribution functions, different statistics, etc.
  */
-class CStatistics: public CSGObject
+class Statistics: public SGObject
 {
 
 public:
@@ -340,7 +340,7 @@ public:
 	/** The log determinant of a dense matrix
 	 *
 	 * If determinant of the input matrix is positive, it returns the logarithm of the value.
-	 * If not, it returns CMath::INFTY
+	 * If not, it returns Math::INFTY
 	 * Note that the input matrix is not required to be symmetric positive definite.
 	 * This method is slower than log_det() if input matrix is known to be symmetric positive definite
 	 *
@@ -435,7 +435,7 @@ public:
 
 /// mean not implemented for complex128_t, returns 0.0 instead
 template <>
-	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
+	inline floatmax_t Statistics::mean<complex128_t>(SGVector<complex128_t> vec)
 	{
 		not_implemented(SOURCE_LOCATION);
 		return floatmax_t(0.0);

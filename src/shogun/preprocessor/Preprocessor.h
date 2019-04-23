@@ -19,7 +19,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** enumeration of possible preprocessor types
  * used by Shogun UI
@@ -64,23 +64,23 @@ enum EPreprocessorType
  * As preprocessors might need a certain initialization they may expect that
  * the init() function is called before anything else. The actual preprocessing
  * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
- * CDensePreprocessor. Although, for providing a generic interface for this,
+ * DensePreprocessor. Although, for providing a generic interface for this,
  * an abstract transform() method is there, which sub-classes may choose to use
  * as
  * a wrapper to more specific methods.
  */
-class CPreprocessor : public CTransformer
+class Preprocessor : public Transformer
 {
 public:
 	/** constructor */
-	CPreprocessor() : CTransformer(){};
+	Preprocessor() : Transformer(){};
 
 	/** destructor */
-	virtual ~CPreprocessor()
+	virtual ~Preprocessor()
 	{
 	}
 
-	virtual CFeatures* transform(CFeatures* features, bool inplace) = 0;
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace) = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;

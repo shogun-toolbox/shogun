@@ -62,13 +62,13 @@ namespace shogun {
  * subsampled uniformly. To implement another sampling method one has to
  * override the method 'subsample_indices'.
  */
-class CKRRNystrom : public RandomMixin<CKernelRidgeRegression>
+class KRRNystrom : public RandomMixin<KernelRidgeRegression>
 {
 public:
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 	/** Default constructor */
-	CKRRNystrom();
+	KRRNystrom();
 
 	/** Constructor
 	 *
@@ -77,10 +77,10 @@ public:
 	 * @param k kernel
 	 * @param lab labels
 	 */
-	CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab);
+	KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 	/** Default destructor */
-	virtual ~CKRRNystrom() {}
+	virtual ~KRRNystrom() {}
 
 	/** Set the number of columns/rows to choose
 	 *
@@ -100,7 +100,7 @@ less than number of data points ({})", m_num_rkhs_basis, n);
 
 	};
 
-	bool train_machine(CFeatures *data) override;
+	bool train_machine(std::shared_ptr<Features >data) override;
 
 	/** @return object name */
 	virtual const char* get_name() const override { return "KRRNystrom"; }

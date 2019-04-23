@@ -23,11 +23,11 @@ namespace shogun
  * (or any other string of small alphabet size)
  *
  */
-class CBitString : public CSGObject
+class BitString : public SGObject
 {
 	public:
 		/** default constructor  */
-		CBitString() {
+		BitString() {
 			unstable(SOURCE_LOCATION);
 
 			alphabet = NULL;
@@ -45,9 +45,9 @@ class CBitString : public CSGObject
 		 * @param alpha Alphabet
 		 * @param width return this many bits upon str[idx] access operations
 		 */
-		CBitString(EAlphabet alpha, int32_t width=1) : CSGObject(), string(NULL), length(0)
+		BitString(EAlphabet alpha, int32_t width=1) : SGObject(), string(NULL), length(0)
 		{
-			alphabet=new CAlphabet(alpha);
+			alphabet=std::make_shared<Alphabet>(alpha);
 			int32_t nbits=alphabet->get_num_bits();
 			word_len = width*nbits;
 
@@ -62,10 +62,9 @@ class CBitString : public CSGObject
 		}
 
 		/** destructor */
-		~CBitString()
+		~BitString()
 		{
 			cleanup();
-			SG_UNREF(alphabet);
 		}
 
 		/** free up memory */
@@ -125,7 +124,7 @@ class CBitString : public CSGObject
 			uint64_t len=0;
 			uint64_t offs=0;
 
-			CMemoryMappedFile<char> f(fname);
+			MemoryMappedFile<char> f(fname);
 
 			uint64_t id_len=0;
 			char* id=f.get_line(id_len, offs);
@@ -331,7 +330,7 @@ class CBitString : public CSGObject
 
 	private:
 		/** alphabet the bit string is based on */
-		CAlphabet* alphabet;
+		std::shared_ptr<Alphabet> alphabet;
 		/** the bit string */
 		uint64_t* string;
 		/** the length of the bit string */

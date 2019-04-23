@@ -15,17 +15,17 @@ QDA is a generalization of linear discriminant analysis (LDA). See Chapter 16 in
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: quadratic_discriminant_analysis.sg:create_features
 
 
-We create an instance of the :sgclass:`CQDA` classifier with feature matrix and label list.
-:sgclass:`CQDA` also has two default arguments, to set tolerance used in training and mark whether to store the within class covariances
+We create an instance of the :sgclass:`QDA` classifier with feature matrix and label list.
+:sgclass:`QDA` also has two default arguments, to set tolerance used in training and mark whether to store the within class covariances
 
 .. sgexample:: quadratic_discriminant_analysis.sg:create_instance
 
-We run the train QDA algorithm and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+We run the train QDA algorithm and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: quadratic_discriminant_analysis.sg:train_and_apply
 
@@ -34,7 +34,7 @@ If we enabled storing covariance when creating instances, we can also extract th
 
 .. sgexample:: quadratic_discriminant_analysis.sg:extract_mean_and_cov
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: quadratic_discriminant_analysis.sg:evaluate_accuracy
 

@@ -35,7 +35,7 @@ namespace shogun
 {
 	template <class T> class SGSparseVector;
 	template <class T> class SGMatrix;
-	class CFile;
+	class File;
 
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData
@@ -536,13 +536,13 @@ template<class T> class SGVector : public SGReferencedData
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<File> loader);
 
 		/** Save vector to file
 		 *
 		 * @param saver File object via which to save data
 		 */
-		void save(CFile* saver);
+		void save(std::shared_ptr<File> saver);
 
 		/** Real part of a complex128_t vector */
 		SGVector<float64_t> get_real();

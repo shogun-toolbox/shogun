@@ -11,52 +11,52 @@
 namespace shogun
 {
 
-CNGramTokenizer::CNGramTokenizer(int32_t ns) : CTokenizer()
+NGramTokenizer::NGramTokenizer(int32_t ns) : Tokenizer()
 {
 	n = ns;
 	last_idx = 0;
 	init();
 }
 
-CNGramTokenizer::CNGramTokenizer(const CNGramTokenizer& orig)
-: CTokenizer(orig)
+NGramTokenizer::NGramTokenizer(const NGramTokenizer& orig)
+: Tokenizer(orig)
 {
-	CTokenizer::set_text(orig.text);
+	Tokenizer::set_text(orig.text);
 	n = orig.n;
 	init();
 }
 
-void CNGramTokenizer::init()
+void NGramTokenizer::init()
 {
 	SG_ADD(&n, "n", "Size of n-grams");
 	SG_ADD(&last_idx, "last_idx", "Index of last token");
 }
 
-void CNGramTokenizer::set_text(SGVector<char> txt)
+void NGramTokenizer::set_text(SGVector<char> txt)
 {
 	last_idx = 0;
-	CTokenizer::set_text(txt);
+	Tokenizer::set_text(txt);
 }
 
-const char* CNGramTokenizer::get_name() const
+const char* NGramTokenizer::get_name() const
 {
     return "NGramTokenizer";
 }
 
-bool CNGramTokenizer::has_next()
+bool NGramTokenizer::has_next()
 {
 	return last_idx<=text.size()-n;
 }
 
-index_t CNGramTokenizer::next_token_idx(index_t& start)
+index_t NGramTokenizer::next_token_idx(index_t& start)
 {
 	start = last_idx++;
 	return start + n;
 }
 
-CNGramTokenizer* CNGramTokenizer::get_copy()
+NGramTokenizer* NGramTokenizer::get_copy()
 {
-	CNGramTokenizer* t = new CNGramTokenizer(n);
+	NGramTokenizer* t = new NGramTokenizer(n);
 	return t;
 }
 }

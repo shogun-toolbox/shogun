@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Elijah Rippeth, Saurabh Goyal, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Elijah Rippeth, Saurabh Goyal,
  *          Bjoern Esser
  */
 
@@ -23,8 +23,8 @@
 
 namespace shogun
 {
-	class CFeatures;
-	template <class ST> class CStringFeatures;
+	class Features;
+	template <class ST> class StringFeatures;
 /**@name HMM specific types*/
 //@{
 
@@ -91,13 +91,13 @@ class Model
 		/// sorts learn_a matrix
 		inline void sort_learn_a()
 		{
-			CMath::sort(learn_a,2) ;
+			Math::sort(learn_a,2) ;
 		}
 
 		/// sorts learn_b matrix
 		inline void sort_learn_b()
 		{
-			CMath::sort(learn_b,2) ;
+			Math::sort(learn_b,2) ;
 		}
 
 		/**@name read access functions.
@@ -363,7 +363,7 @@ class Model
  * Several functions for tasks such as training,reading/writing models, reading observations,
  * calculation of derivatives are supplied.
  */
-class CHMM : public RandomMixin<CDistribution>
+class HMM : public RandomMixin<Distribution>
 {
 	private:
 
@@ -380,7 +380,7 @@ class CHMM : public RandomMixin<CDistribution>
 		/// Datatype that is used in parrallel computation of viterbi
 		struct S_DIM_THREAD_PARAM
 		{
-			CHMM* hmm;
+			std::shared_ptr<CHMM> hmm;
 			int32_t dim;
 			float64_t prob_sum;
 		};
@@ -388,7 +388,7 @@ class CHMM : public RandomMixin<CDistribution>
 		/// Datatype that is used in parrallel baum welch model estimation
 		struct S_BW_THREAD_PARAM
 		{
-			CHMM* hmm;
+			std::shared_ptr<CHMM> hmm;
 			int32_t dim_start;
 			int32_t dim_stop;
 
@@ -460,7 +460,7 @@ class CHMM : public RandomMixin<CDistribution>
 
 	public:
 		/** default constructor  */
-		CHMM();
+		HMM();
 
 		/**@name Constructor/Destructor and helper function
 		*/
@@ -472,14 +472,14 @@ class CHMM : public RandomMixin<CDistribution>
 		 * @param PSEUDO Pseudo Value
 		 */
 
-		CHMM(
+		HMM(
 			int32_t N, int32_t M, Model* model, float64_t PSEUDO);
-		CHMM(
-			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M,
+		HMM(
+			std::shared_ptr<StringFeatures<uint16_t>> obs, int32_t N, int32_t M,
 			float64_t PSEUDO);
-		CHMM(
+		HMM(
 			int32_t N, float64_t* p, float64_t* q, float64_t* a);
-		CHMM(
+		HMM(
 			int32_t N, float64_t* p, float64_t* q, int32_t num_trans,
 			float64_t* a_trans);
 
@@ -487,13 +487,13 @@ class CHMM : public RandomMixin<CDistribution>
 		 * @param model_file Filehandle to a hmm model file (*.mod)
 		 * @param PSEUDO Pseudo Value
 		 */
-		CHMM(FILE* model_file, float64_t PSEUDO);
+		HMM(FILE* model_file, float64_t PSEUDO);
 
 		/// Constructor - Clone model h
-		CHMM(CHMM* h);
+		HMM(std::shared_ptr<HMM> h);
 
 		/// Destructor - Cleanup
-		virtual ~CHMM();
+		virtual ~HMM();
 
 		/** learn distribution
 		 *
@@ -503,7 +503,7 @@ class CHMM : public RandomMixin<CDistribution>
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 		virtual int32_t get_num_model_parameters() { return N*(N+M+2); }
 		virtual float64_t get_log_model_parameter(int32_t num_param);
 		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
@@ -635,31 +635,31 @@ class CHMM : public RandomMixin<CDistribution>
 		/** uses baum-welch-algorithm to train a fully connected HMM.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_baum_welch(CHMM* train);
-		void estimate_model_baum_welch_trans(CHMM* train);
+		void estimate_model_baum_welch(std::shared_ptr<HMM> train);
+		void estimate_model_baum_welch_trans(std::shared_ptr<HMM> train);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		void ab_buf_comp(
 			float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
 			float64_t* b_buf, int32_t dim) ;
 #else
-		void estimate_model_baum_welch_old(CHMM* train);
+		void estimate_model_baum_welch_old(std::shared_ptr<HMM> train);
 #endif
 
 		/** uses baum-welch-algorithm to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_baum_welch_defined(CHMM* train);
+		void estimate_model_baum_welch_defined(std::shared_ptr<HMM> train);
 
 		/** uses viterbi training to train a fully connected HMM
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_viterbi(CHMM* train);
+		void estimate_model_viterbi(std::shared_ptr<HMM> train);
 
 		/** uses viterbi training to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_viterbi_defined(CHMM* train);
+		void estimate_model_viterbi_defined(std::shared_ptr<HMM> train);
 
 		//@}
 
@@ -699,12 +699,12 @@ class CHMM : public RandomMixin<CDistribution>
 		/// the other state is the start state of the append_model.
 		/// transition probability from state 1 to states 1 is 1
 		bool append_model(
-			CHMM* append_model, float64_t* cur_out, float64_t* app_out);
+			std::shared_ptr<HMM> append_model, float64_t* cur_out, float64_t* app_out);
 
 		/// appends the append_model to the current hmm, here
 		/// no extra states are created. former q_i are multiplied by q_ji
 		/// to give the a_ij from the current hmm to the append_model
-		bool append_model(CHMM* append_model);
+		bool append_model(std::shared_ptr<HMM> append_model);
 
 		/// set any model parameter with probability smaller than value to ZERO
 		void chop(float64_t value);
@@ -729,7 +729,7 @@ class CHMM : public RandomMixin<CDistribution>
 		void clear_model_defined();
 
 		/// copies the the modelparameters from l
-		void copy_model(CHMM* l);
+		void copy_model(std::shared_ptr<HMM> l);
 
 		/** invalidates all caches.
 		 * this function has to be called when direct changes to the model have been made.
@@ -785,17 +785,16 @@ class CHMM : public RandomMixin<CDistribution>
 		 * sets the observation pointer and initializes observation-dependent caches
 		 * if hmm is given, then the caches of the model hmm are used
 		 */
-		void set_observations(CStringFeatures<uint16_t>* obs, CHMM* hmm=NULL);
+		void set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::shared_ptr<HMM> hmm=NULL);
 
 		/** set new observations
 		 * only set the observation pointer and drop caches if there were any
 		 */
-		void set_observation_nocache(CStringFeatures<uint16_t>* obs);
+		void set_observation_nocache(std::shared_ptr<StringFeatures<uint16_t>> obs);
 
 		/// return observation pointer
-		inline CStringFeatures<uint16_t>* get_observations()
+		inline std::shared_ptr<StringFeatures<uint16_t>> get_observations()
 		{
-			SG_REF(p_observations);
 			return p_observations;
 		}
 		//@}
@@ -1200,7 +1199,7 @@ class CHMM : public RandomMixin<CDistribution>
 		int32_t line;
 
 		/// observation matrix
-		CStringFeatures<uint16_t>* p_observations;
+		std::shared_ptr<StringFeatures<uint16_t>> p_observations;
 
 		//train definition for HMM
 		Model* model;
@@ -1420,9 +1419,9 @@ inline float64_t model_derivative_q(T_STATES i, int32_t dimension)
 /// computes log dp(lambda)/d a_ij.
 inline float64_t model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 {
-	float64_t sum=-CMath::INFTY;
+	float64_t sum=-Math::INFTY;
 	for (int32_t t=0; t<p_observations->get_vector_length(dimension)-1; t++)
-		sum= CMath::logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
+		sum= Math::logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
 
 	return sum;
 }
@@ -1431,13 +1430,13 @@ inline float64_t model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 /// computes log dp(lambda)/d b_ij.
 inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 {
-	float64_t sum=-CMath::INFTY;
+	float64_t sum=-Math::INFTY;
 	for (int32_t t=0; t<p_observations->get_vector_length(dimension); t++)
 	{
 		if (p_observations->get_feature(dimension,t)==j)
-			sum= CMath::logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
+			sum= Math::logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
 	}
-	//if (sum==-CMath::INFTY)
+	//if (sum==-Math::INFTY)
 	// SG_DEBUG("log derivative is -inf: dim={}, state={}, obs={}",dimension, i, j)
 	return sum;
 }
@@ -1560,7 +1559,7 @@ protected:
 			if (time<p_observations->get_vector_length(dimension))
 				return BETA_CACHE(dimension).table[time*N+state];
 			else
-				return -CMath::INFTY;
+				return -Math::INFTY;
 		}
 		else
 			return backward_comp(time, state, dimension) ;

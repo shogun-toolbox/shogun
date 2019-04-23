@@ -8,42 +8,39 @@
 
 using namespace shogun;
 
-CFactorGraphFeatures::CFactorGraphFeatures()
+FactorGraphFeatures::FactorGraphFeatures(): FactorGraphFeatures(0)
+{
+}
+
+FactorGraphFeatures::FactorGraphFeatures(int32_t num_samples)
 {
 	init();
-	m_samples = new CDynamicObjectArray();
-	SG_REF(m_samples);
+	m_samples = std::make_shared<DynamicObjectArray>(num_samples);
+
 }
 
-CFactorGraphFeatures::CFactorGraphFeatures(int32_t num_samples)
+FactorGraphFeatures::~FactorGraphFeatures()
 {
-	init();
-	m_samples = new CDynamicObjectArray(num_samples);
-	SG_REF(m_samples);
+
 }
 
-CFactorGraphFeatures::~CFactorGraphFeatures()
+std::shared_ptr<Features> FactorGraphFeatures::duplicate() const
 {
-	SG_UNREF(m_samples);
+	return std::make_shared<FactorGraphFeatures>(*this);
 }
 
-CFeatures* CFactorGraphFeatures::duplicate() const
-{
-	return new CFactorGraphFeatures(*this);
-}
-
-EFeatureType CFactorGraphFeatures::get_feature_type() const
+EFeatureType FactorGraphFeatures::get_feature_type() const
 {
 	return F_ANY;
 }
 
-EFeatureClass CFactorGraphFeatures::get_feature_class() const
+EFeatureClass FactorGraphFeatures::get_feature_class() const
 {
 	return C_FACTOR_GRAPH;
 }
 
 
-int32_t CFactorGraphFeatures::get_num_vectors() const
+int32_t FactorGraphFeatures::get_num_vectors() const
 {
 	if (m_samples == NULL)
 		return 0;
@@ -51,7 +48,7 @@ int32_t CFactorGraphFeatures::get_num_vectors() const
 		return m_samples->get_array_size();
 }
 
-bool CFactorGraphFeatures::add_sample(CFactorGraph* example)
+bool FactorGraphFeatures::add_sample(std::shared_ptr<FactorGraph> example)
 {
 	if (m_samples != NULL)
 	{
@@ -62,27 +59,27 @@ bool CFactorGraphFeatures::add_sample(CFactorGraph* example)
 		return false;
 }
 
-CFactorGraph* CFactorGraphFeatures::get_sample(index_t idx)
+std::shared_ptr<FactorGraph> FactorGraphFeatures::get_sample(index_t idx)
 {
 	require(m_samples != NULL, "{}::get_sample(): m_samples is NULL!", get_name());
 	require(idx >= 0 && idx < get_num_vectors(), "{}::get_sample(): out of index!", get_name());
 
-	return dynamic_cast<CFactorGraph*>(m_samples->get_element(idx));
+	return m_samples->get_element<FactorGraph>(idx);
 }
 
-void CFactorGraphFeatures::init()
+void FactorGraphFeatures::init()
 {
-	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_samples, "samples", "Array of examples");
 }
 
-CFactorGraphFeatures* CFactorGraphFeatures::obtain_from_generic(CFeatures* base_feats)
+std::shared_ptr<FactorGraphFeatures> FactorGraphFeatures::obtain_from_generic(std::shared_ptr<Features> base_feats)
 {
-	require(base_feats != NULL, "CFactorGraphFeatures::obtain_from_generic(): base_feats is NULL!");
+	require(base_feats != NULL, "FactorGraphFeatures::obtain_from_generic(): base_feats is NULL!");
 
 	if (base_feats->get_feature_class() == C_FACTOR_GRAPH)
-		return dynamic_cast<CFactorGraphFeatures*>(base_feats);
+		return std::dynamic_pointer_cast<FactorGraphFeatures>(base_feats);
 	else
-		error("base_labels must be of dynamic type CFactorGraph!");
+		error("base_labels must be of dynamic type FactorGraph!");
 
 	return NULL;
 }

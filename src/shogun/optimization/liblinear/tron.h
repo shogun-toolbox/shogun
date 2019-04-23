@@ -52,19 +52,19 @@ public:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief class Tron */
-class CTron : public CSGObject
+class Tron : public SGObject
 {
 public:
-	CTron() { }
+	Tron() { }
 	/** constructor
 	 *
 	 * @param fun_obj object of class function
 	 * @param eps eps
 	 * @param max_iter max iter
 	 */
-	CTron(
+	Tron(
 		const function *fun_obj, float64_t eps = 0.1, int32_t max_iter = 1000);
-	virtual ~CTron();
+	virtual ~Tron();
 
 	/** tron
 	 *

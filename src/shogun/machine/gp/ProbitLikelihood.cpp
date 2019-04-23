@@ -38,16 +38,16 @@
 using namespace shogun;
 using namespace Eigen;
 
-CProbitLikelihood::CProbitLikelihood()
+ProbitLikelihood::ProbitLikelihood()
 {
 }
 
-CProbitLikelihood::~CProbitLikelihood()
+ProbitLikelihood::~ProbitLikelihood()
 {
 }
 
-SGVector<float64_t> CProbitLikelihood::get_predictive_means(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> ProbitLikelihood::get_predictive_means(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -61,8 +61,8 @@ SGVector<float64_t> CProbitLikelihood::get_predictive_means(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> ProbitLikelihood::get_predictive_variances(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -76,17 +76,17 @@ SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_log_probability_f(const CLabels* lab,
+SGVector<float64_t> ProbitLikelihood::get_log_probability_f(std::shared_ptr<const Labels> lab,
 		SGVector<float64_t> func) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -98,23 +98,23 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_f(const CLabels* lab,
 	eigen_r=eigen_y.cwiseProduct(eigen_f);
 
 	for (index_t i=0; i<eigen_r.size(); i++)
-		eigen_r[i]=CStatistics::lnormal_cdf(eigen_r[i]);
+		eigen_r[i]=Statistics::lnormal_cdf(eigen_r[i]);
 
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
-		const CLabels* lab, SGVector<float64_t> func, index_t i) const
+SGVector<float64_t> ProbitLikelihood::get_log_probability_derivative_f(
+		std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector");
 	require(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -127,18 +127,18 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 	for (index_t j=0; j<eigen_yf.size(); j++)
 	{
 		float64_t v = eigen_yf[j];
-		if (v<CStatistics::ERFC_CASE2)
+		if (v<Statistics::ERFC_CASE2)
 		{
 			//dlp( id2) = abs(den./num) * sqrt(2/pi); % strictly positive first derivative
-			eigen_dlp[j] = std::sqrt(2.0 / CMath::PI) /
-			               CMath::abs(CStatistics::erfc8_weighted_sum(v));
+			eigen_dlp[j] = std::sqrt(2.0 / Math::PI) /
+			               Math::abs(Statistics::erfc8_weighted_sum(v));
 		}
 		else
 		{
 			//dlp(~id2) = exp(-z(~id2).*z(~id2)/2-lp(~id2))/sqrt(2*pi); % safe computation
 			eigen_dlp[j] =
-			    std::exp(-v * v / 2.0 - CStatistics::lnormal_cdf(v)) /
-			    std::sqrt(2.0 * CMath::PI);
+			    std::exp(-v * v / 2.0 - Statistics::lnormal_cdf(v)) /
+			    std::sqrt(2.0 * Math::PI);
 		}
 	}
 
@@ -168,8 +168,8 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> ProbitLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {
 	SGVector<float64_t> y;
 
@@ -180,9 +180,8 @@ SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
 				"variances ({}) and number of labels ({}) should be the same",
 				mu.vlen, s2.vlen, lab->get_num_labels());
 		require(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels");
-
-		y=((CBinaryLabels*)lab)->get_labels();
+				"Labels must be type of BinaryLabels");
+		y=lab->as<BinaryLabels>()->get_labels();
 	}
 	else
 	{
@@ -205,13 +204,13 @@ SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
 	eigen_r=eigen_mu.array()*eigen_y.array()/((1.0+eigen_s2.array()).sqrt());
 
 	for (index_t i=0; i<eigen_r.size(); i++)
-		eigen_r[i]=CStatistics::lnormal_cdf(eigen_r[i]);
+		eigen_r[i]=Statistics::lnormal_cdf(eigen_r[i]);
 
 	return r;
 }
 
-float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+float64_t ProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
@@ -221,18 +220,18 @@ float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
 			mu.vlen, s2.vlen, lab->get_num_labels());
 	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 
 	float64_t z = y[i] * mu[i] / std::sqrt(1.0 + s2[i]);
 
 	// compute ncdf=normal_cdf(z)
-	float64_t ncdf=CStatistics::normal_cdf(z);
+	float64_t ncdf=Statistics::normal_cdf(z);
 
 	// compute npdf=normal_pdf(z)=(1/sqrt(2*pi))*exp(-z.^2/2)
 	float64_t npdf =
-	    (1.0 / std::sqrt(2.0 * CMath::PI)) * std::exp(-0.5 * CMath::sq(z));
+	    (1.0 / std::sqrt(2.0 * Math::PI)) * std::exp(-0.5 * Math::sq(z));
 
 	// compute the 1st moment: E[x] = mu + (y*s2*N(z))/(Phi(z)*sqrt(1+s2))
 	float64_t Ex =
@@ -241,8 +240,8 @@ float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
 	return Ex;
 }
 
-float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+float64_t ProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, index_t i) const
 {
 	// check the parameters
 	require(lab, "Labels are required (lab should not be NULL)");
@@ -252,25 +251,25 @@ float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
 			mu.vlen, s2.vlen, lab->get_num_labels());
 	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<BinaryLabels>()->get_labels();
 
 	float64_t z = y[i] * mu[i] / std::sqrt(1.0 + s2[i]);
 
 	// compute ncdf=normal_cdf(z)
-	float64_t ncdf=CStatistics::normal_cdf(z);
+	float64_t ncdf=Statistics::normal_cdf(z);
 
 	// compute npdf=normal_pdf(z)=(1/sqrt(2*pi))*exp(-z.^2/2)
 	float64_t npdf =
-	    (1.0 / std::sqrt(2.0 * CMath::PI)) * std::exp(-0.5 * CMath::sq(z));
+	    (1.0 / std::sqrt(2.0 * Math::PI)) * std::exp(-0.5 * Math::sq(z));
 
 	SGVector<float64_t> r(y.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// compute the 2nd moment:
 	// Var[x] = s2 - (s2^2*N(z))/((1+s2)*Phi(z))*(z+N(z)/Phi(z))
-	float64_t Var=s2[i]-(CMath::sq(s2[i])/(1.0+s2[i]))*(npdf/ncdf)*(z+(npdf/ncdf));
+	float64_t Var=s2[i]-(Math::sq(s2[i])/(1.0+s2[i]))*(npdf/ncdf)*(z+(npdf/ncdf));
 
 	return Var;
 }

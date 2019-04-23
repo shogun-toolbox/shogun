@@ -19,23 +19,23 @@ namespace shogun
 {
 /** @brief Trains a one class C SVM
  *
- * \sa CSVMLight
+ * \sa SVMLight
  */
-class CSVMLightOneClass: public CSVMLight
+class SVMLightOneClass: public SVMLight
 {
 	public:
 		/** default constructor */
-		CSVMLightOneClass();
+		SVMLightOneClass();
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 * @param k kernel
 		 */
-		CSVMLightOneClass(float64_t C, CKernel* k);
+		SVMLightOneClass(float64_t C, std::shared_ptr<Kernel> k);
 
 		/** default destructor */
-		virtual ~CSVMLightOneClass() { }
+		virtual ~SVMLightOneClass() { }
 
 		/** get classifier type
 		 *
@@ -58,7 +58,7 @@ class CSVMLightOneClass: public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 };
 }
 #endif //USE_SVMLIGHT

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Sergey Lisitsyn, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Sergey Lisitsyn, Thoralf Klein,
  *          Viktor Gal, Weijie Lin, Evan Shelhamer, Sanuj Sharma
  */
 
@@ -14,14 +14,14 @@
 
 using namespace shogun;
 
-COnlineLibLinear::COnlineLibLinear()
-	: COnlineLinearMachine()
+OnlineLibLinear::OnlineLibLinear()
+	: OnlineLinearMachine()
 {
 		init();
 }
 
-COnlineLibLinear::COnlineLibLinear(float64_t C_reg)
-	: COnlineLinearMachine()
+OnlineLibLinear::OnlineLibLinear(float64_t C_reg)
+	: OnlineLinearMachine()
 {
 		init();
 		C1=C_reg;
@@ -29,9 +29,9 @@ COnlineLibLinear::COnlineLibLinear(float64_t C_reg)
 		use_bias=true;
 }
 
-COnlineLibLinear::COnlineLibLinear(
-		float64_t C_reg, CStreamingDotFeatures* traindat)
-	: COnlineLinearMachine()
+OnlineLibLinear::OnlineLibLinear(
+		float64_t C_reg, std::shared_ptr<StreamingDotFeatures> traindat)
+	: OnlineLinearMachine()
 {
 		init();
 		C1=C_reg;
@@ -41,8 +41,8 @@ COnlineLibLinear::COnlineLibLinear(
 		set_features(traindat);
 }
 
-COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
-	: COnlineLinearMachine()
+OnlineLibLinear::OnlineLibLinear(std::shared_ptr<OnlineLibLinear >mch)
+	: OnlineLinearMachine()
 {
 	init();
 	C1 = mch->C1;
@@ -55,7 +55,7 @@ COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
 }
 
 
-void COnlineLibLinear::init()
+void OnlineLibLinear::init()
 {
 	C1=1;
 	C2=1;
@@ -69,10 +69,10 @@ void COnlineLibLinear::init()
 	    &use_bias, "use_bias", "Indicates if bias is used.", ParameterProperties::SETTING);
 
 	PG = 0;
-	PGmax_old = CMath::INFTY;
-	PGmin_old = -CMath::INFTY;
-	PGmax_new = -CMath::INFTY;
-	PGmin_new = CMath::INFTY;
+	PGmax_old = Math::INFTY;
+	PGmin_old = -Math::INFTY;
+	PGmax_new = -Math::INFTY;
+	PGmin_new = Math::INFTY;
 
 	diag[0]=0;diag[1]=0;diag[2]=0;
 	upper_bound[0]=Cn;upper_bound[1]=0;upper_bound[2]=Cp;
@@ -88,20 +88,20 @@ void COnlineLibLinear::init()
 	alpha_current = 0;
 }
 
-COnlineLibLinear::~COnlineLibLinear()
+OnlineLibLinear::~OnlineLibLinear()
 {
 }
 
-void COnlineLibLinear::start_train()
+void OnlineLibLinear::start_train()
 {
 	Cp = C1;
 	Cn = C2;
 	bias = false;
 
-	PGmax_old = CMath::INFTY;
-	PGmin_old = -CMath::INFTY;
-	PGmax_new = -CMath::INFTY;
-	PGmin_new = CMath::INFTY;
+	PGmax_old = Math::INFTY;
+	PGmin_old = -Math::INFTY;
+	PGmax_new = -Math::INFTY;
+	PGmin_new = Math::INFTY;
 
 	diag[0]=0;diag[1]=0;diag[2]=0;
 	upper_bound[0]=Cn;upper_bound[1]=0;upper_bound[2]=Cp;
@@ -110,7 +110,7 @@ void COnlineLibLinear::start_train()
 	nSV = 0;
 }
 
-void COnlineLibLinear::stop_train()
+void OnlineLibLinear::stop_train()
 {
 	float64_t gap = PGmax_new - PGmin_new;
 
@@ -126,7 +126,7 @@ void COnlineLibLinear::stop_train()
 	io::info("gap = {:g}", gap);
 }
 
-void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
+void OnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 {
 	alpha_current = 0;
 	int32_t y_current = 0;
@@ -172,13 +172,13 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 	else
 		PG = G;
 
-	PGmax_new = CMath::max(PGmax_new, PG);
-	PGmin_new = CMath::min(PGmin_new, PG);
+	PGmax_new = Math::max(PGmax_new, PG);
+	PGmin_new = Math::min(PGmin_new, PG);
 
 	if (fabs(PG) > 1.0e-12)
 	{
 		float64_t alpha_old = alpha_current;
-		alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
+		alpha_current = Math::min(Math::max(alpha_current - G/QD, 0.0), C);
 		d = (alpha_current - alpha_old) * y_current;
 
 		linalg::add(m_w, ex, m_w, 1.0f, (float32_t)d);
@@ -192,7 +192,7 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 		nSV++;
 }
 
-void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
+void OnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 {
 	alpha_current = 0;
 	int32_t y_current = 0;
@@ -238,13 +238,13 @@ void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 	else
 		PG = G;
 
-	PGmax_new = CMath::max(PGmax_new, PG);
-	PGmin_new = CMath::min(PGmin_new, PG);
+	PGmax_new = Math::max(PGmax_new, PG);
+	PGmin_new = Math::min(PGmin_new, PG);
 
 	if (fabs(PG) > 1.0e-12)
 	{
 		float64_t alpha_old = alpha_current;
-		alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
+		alpha_current = Math::min(Math::max(alpha_current - G/QD, 0.0), C);
 		d = (alpha_current - alpha_old) * y_current;
 
 		for (int32_t i=0; i < ex.num_feat_entries; i++)
@@ -260,21 +260,21 @@ void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 		nSV++;
 }
 
-void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
+void OnlineLibLinear::train_example(std::shared_ptr<StreamingDotFeatures >feature, float64_t label)
 {
 	feature->expand_if_required(m_w.vector, m_w.vlen);
 
 	if (feature->get_feature_class() == C_STREAMING_DENSE) {
-		CStreamingDenseFeatures<float32_t> *feat =
-			dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
+		auto feat =
+			std::dynamic_pointer_cast<StreamingDenseFeatures<float32_t>>(feature);
 		if (feat == NULL)
 			error("Expected streaming dense feature <float32_t>");
 
 		train_one(feat->get_vector(), label);
 	}
 	else if (feature->get_feature_class() == C_STREAMING_SPARSE) {
-		CStreamingSparseFeatures<float32_t> *feat =
-			dynamic_cast<CStreamingSparseFeatures<float32_t> *>(feature);
+		auto feat =
+			std::dynamic_pointer_cast<StreamingSparseFeatures<float32_t>>(feature);
 		if (feat == NULL)
 			error("Expected streaming sparse feature <float32_t>");
 

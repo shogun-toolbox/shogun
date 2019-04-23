@@ -39,7 +39,7 @@ namespace shogun
 /** @brief structure to store data of a node of
  * CART. This can be used as a template type in
  * TreeMachineNode class. CART algorithm uses nodes
- * of type CTreeMachineNode<CARTreeNodeData>
+ * of type TreeMachineNode<CARTreeNodeData>
  */
 struct CARTreeNodeData
 {

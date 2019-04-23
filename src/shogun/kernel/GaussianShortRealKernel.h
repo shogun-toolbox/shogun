@@ -26,18 +26,18 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CGaussianShortRealKernel: public CDotKernel
+class GaussianShortRealKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CGaussianShortRealKernel();
+		GaussianShortRealKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param width width
 		 */
-		CGaussianShortRealKernel(int32_t size, float64_t width);
+		GaussianShortRealKernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -46,10 +46,10 @@ class CGaussianShortRealKernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CGaussianShortRealKernel(CDenseFeatures<float32_t>* l, CDenseFeatures<float32_t>* r,
+		GaussianShortRealKernel(std::shared_ptr<DenseFeatures<float32_t>> l, std::shared_ptr<DenseFeatures<float32_t>> r,
 			float64_t width, int32_t size=10);
 
-		virtual ~CGaussianShortRealKernel();
+		virtual ~GaussianShortRealKernel();
 
 		/** initialize kernel
 		 *
@@ -57,7 +57,7 @@ class CGaussianShortRealKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

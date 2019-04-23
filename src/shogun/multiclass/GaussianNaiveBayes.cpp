@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Viktor Gal, Giovanni De Toni, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Viktor Gal, Giovanni De Toni, Soeren Sonnenburg,
  *          Thoralf Klein, Bjoern Esser
  */
 
@@ -18,15 +18,15 @@
 
 using namespace shogun;
 
-CGaussianNaiveBayes::CGaussianNaiveBayes() : CNativeMulticlassMachine(), m_features(NULL),
+GaussianNaiveBayes::GaussianNaiveBayes() : NativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(), m_variances(),
 	m_label_prob(), m_rates()
 {
 	init();
 };
 
-CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
-	CLabels* train_labels) : CNativeMulticlassMachine(), m_features(NULL),
+GaussianNaiveBayes::GaussianNaiveBayes(std::shared_ptr<Features> train_examples,
+	std::shared_ptr<Labels> train_labels) : NativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
@@ -37,38 +37,36 @@ CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
 	if (!train_examples->has_property(FP_DOT))
 		error("Specified features are not of type CDotFeatures");
 
-	set_features((CDotFeatures*)train_examples);
+	set_features(train_examples->as<DotFeatures>());
 };
 
-CGaussianNaiveBayes::~CGaussianNaiveBayes()
+GaussianNaiveBayes::~GaussianNaiveBayes()
 {
-	SG_UNREF(m_features);
+
 };
 
-CFeatures* CGaussianNaiveBayes::get_features()
+std::shared_ptr<Features> GaussianNaiveBayes::get_features()
 {
-	SG_REF(m_features);
+
 	return m_features;
 }
 
-void CGaussianNaiveBayes::set_features(CFeatures* features)
+void GaussianNaiveBayes::set_features(std::shared_ptr<Features> features)
 {
 	if (!features->has_property(FP_DOT))
-		error("Specified features are not of type CDotFeatures");
+		error("Specified features are not of type DotFeatures");
 
-	SG_REF(features);
-	SG_UNREF(m_features);
-	m_features = (CDotFeatures*)features;
+	m_features = features->as<DotFeatures>();
 }
 
-bool CGaussianNaiveBayes::train_machine(CFeatures* data)
+bool GaussianNaiveBayes::train_machine(std::shared_ptr<Features> data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+				error("Specified features are not of type DotFeatures");
+		set_features(data->as<DotFeatures>());
 	}
 
 	// get int labels to train_labels and check length equality
@@ -78,8 +76,8 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// find minimal and maximal label
-	auto min_label = CMath::min(train_labels.vector, train_labels.vlen);
-	auto max_label = CMath::max(train_labels.vector, train_labels.vlen);
+	auto min_label = Math::min(train_labels.vector, train_labels.vlen);
+	auto max_label = Math::max(train_labels.vector, train_labels.vlen);
 	int i,j;
 
 	// subtract minimal label from all labels
@@ -137,7 +135,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 		for (j=0; j<m_dim; j++)
 		{
 			m_variances(j, train_labels.vector[i]) +=
-				CMath::sq(fea[j]-m_means(j, train_labels.vector[i]));
+				Math::sq(fea[j]-m_means(j, train_labels.vector[i]));
 		}
 		pb.print_progress();
 	}
@@ -158,7 +156,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	return true;
 }
 
-CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
+std::shared_ptr<MulticlassLabels> GaussianNaiveBayes::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 		set_features(data);
@@ -169,7 +167,7 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	int32_t num_vectors = m_features->get_num_vectors();
 
 	// init result labels
-	CMulticlassLabels* result = new CMulticlassLabels(num_vectors);
+	auto result = std::make_shared<MulticlassLabels>(num_vectors);
 
 	// classify each example of data
 	for (auto i : SG_PROGRESS(range(num_vectors)))
@@ -180,7 +178,7 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	return result;
 };
 
-float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
+float64_t GaussianNaiveBayes::apply_one(int32_t idx)
 {
 	// get [idx] feature vector
 	SGVector<float64_t> feature_vector = m_features->get_computed_dot_feature_vector(idx);
@@ -205,7 +203,7 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 			if (m_variances(k,i)!=0.0)
 				m_rates.vector[i] +=
 				    std::log(0.39894228 / std::sqrt(m_variances(k, i))) -
-				    0.5 * CMath::sq(feature_vector.vector[k] - m_means(k, i)) /
+				    0.5 * Math::sq(feature_vector.vector[k] - m_means(k, i)) /
 				        (m_variances(k, i));
 	}
 
@@ -221,7 +219,7 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 	return max_label_idx+m_min_label;
 };
 
-void CGaussianNaiveBayes::init()
+void GaussianNaiveBayes::init()
 {
 	SG_ADD(&m_min_label, "m_min_label", "minimal label");
 	SG_ADD(&m_num_classes, "m_num_classes",
@@ -236,5 +234,5 @@ void CGaussianNaiveBayes::init()
 		"a priori probabilities of labels");
 	SG_ADD(&m_rates, "m_rates", "label rates");
 	SG_ADD(
-	    (CFeatures**)&m_features, "features", "Training features");
+	    (std::shared_ptr<Features>*)&m_features, "features", "Training features");
 }

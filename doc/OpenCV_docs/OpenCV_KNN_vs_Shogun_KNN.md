@@ -158,33 +158,33 @@ Then, evaluate the accuracy using the ```opencv_trainresponse``` Mat.
     cout << "The accuracy of OpenCV's k-NN is: " << 100.0 * ko/testdata.rows << endl;
 ```
 
-We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_trainfeatures``` for training the **Shogun** k-NN over it.
+We, as usual, prepare the ```DenseFeatures``` object namely ```shogun_trainfeatures``` for training the **Shogun** k-NN over it.
 ```CPP
 
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
     shogun_traindata = linalg::transpose_matrix(shogun_traindata);
-    CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
+    auto shogun_trainfeatures = std::make_shared<DenseFeatures<float64_t>>(shogun_traindata);
 ```
 
-We form the ```CMulticlassLabels``` object named ```labels``` for containing the responses from the ```shogun_trainresponse``` Mat.
+We form the ```MulticlassLabels``` object named ```labels``` for containing the responses from the ```shogun_trainresponse``` Mat.
 ```CPP
-    CDenseFeatures<float64_t>* shogun_dense_response =
+    DenseFeatures<float64_t>* shogun_dense_response =
     		CV2SGFactory::get_dense_features<float64_t>(shogun_trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
-    CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
+    MulticlassLabels* labels = new MulticlassLabels(shogun_vector_response);
 ```
 
-We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_testfeatures``` for testing.
+We, as usual, prepare the ```DenseFeatures``` object namely ```shogun_testfeatures``` for testing.
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGFactory::get_sgmatrix<float64_t>(testdata);
     shogun_testdata = linalg::transpose_matrix(shogun_testdata);
-    CDenseFeatures<float64_t>* shogun_testfeatures = new CDenseFeatures<float64_t>(shogun_testdata);
+    DenseFeatures<float64_t>* shogun_testfeatures = new DenseFeatures<float64_t>(shogun_testdata);
 ```
 ___
 **Shogun's** k-NN implementation.
 ```CPP
     // Create k-NN classifier.
-	CKNN* knn = new CKNN(k, new CEuclideanDistance(shogun_trainfeatures, shogun_trainfeatures), labels);
+	KNN* knn = new KNN(k, new EuclideanDistance(shogun_trainfeatures, shogun_trainfeatures), labels);
 
 	// Train classifier.
 	knn->train();
@@ -192,7 +192,7 @@ ___
 
 Test it!
 ```CPP
-    CMulticlassLabels* output = knn->apply_multiclass(shogun_testfeatures);
+    MulticlassLabels* output = knn->apply_multiclass(shogun_testfeatures);
     SGMatrix<int32_t> multiple_k_output = knn->classify_for_multiple_k();
     SGVector<float64_t> sgvec = output->get_labels();
 

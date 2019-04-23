@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Evgeniy Andreev, Sergey Lisitsyn, 
+ * Authors: Fernando Iglesias, Evgeniy Andreev, Sergey Lisitsyn,
  *          Soeren Sonnenburg, Sanuj Sharma, Abinash Panda
  */
 
@@ -14,28 +14,28 @@
 
 using namespace shogun;
 
-CStructuredAccuracy::CStructuredAccuracy() : CEvaluation()
+StructuredAccuracy::StructuredAccuracy() : Evaluation()
 {
 }
 
-CStructuredAccuracy::~CStructuredAccuracy()
+StructuredAccuracy::~StructuredAccuracy()
 {
 }
 
-float64_t CStructuredAccuracy::evaluate(CLabels * predicted, CLabels * ground_truth)
+float64_t StructuredAccuracy::evaluate(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth)
 {
-	require(predicted && ground_truth, "CLabels objects passed to evaluate "
+	require(predicted && ground_truth, "Labels objects passed to evaluate "
 	        "cannot be null");
 	require(predicted->get_num_labels() == ground_truth->get_num_labels(),
 	        "The number of predicted and ground truth labels must "
 	        "be the same");
 	require(predicted->get_label_type() == LT_STRUCTURED, "The predicted "
-	        "labels must be of type CStructuredLabels");
+	        "labels must be of type StructuredLabels");
 	require(ground_truth->get_label_type() == LT_STRUCTURED, "The ground truth "
-	        "labels must be of type CStructuredLabels");
+	        "labels must be of type StructuredLabels");
 
-	CStructuredLabels* pred_labs = predicted->as<CStructuredLabels>();
-	CStructuredLabels* true_labs = ground_truth->as<CStructuredLabels>();
+	auto pred_labs = std::dynamic_pointer_cast<StructuredLabels>(predicted);
+	auto true_labs = std::dynamic_pointer_cast<StructuredLabels>(ground_truth);
 
 	require(pred_labs->get_structured_data_type() ==
 	        true_labs->get_structured_data_type(), "Predicted and ground truth "
@@ -59,35 +59,35 @@ float64_t CStructuredAccuracy::evaluate(CLabels * predicted, CLabels * ground_tr
 	return 0.0;
 }
 
-SGMatrix<int32_t> CStructuredAccuracy::get_confusion_matrix(
-        CLabels * predicted, CLabels * ground_truth)
+SGMatrix<int32_t> StructuredAccuracy::get_confusion_matrix(
+        std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth)
 {
 	error("Not implemented");
 	return SGMatrix<int32_t>();
 }
 
-float64_t CStructuredAccuracy::evaluate_real(CStructuredLabels * predicted,
-                CStructuredLabels * ground_truth)
+float64_t StructuredAccuracy::evaluate_real(std::shared_ptr<StructuredLabels > predicted,
+                std::shared_ptr<StructuredLabels > ground_truth)
 {
 	int32_t length = predicted->get_num_labels();
 	int32_t num_equal = 0;
 
 	for (int32_t i = 0 ; i < length ; ++i)
 	{
-		CRealNumber * truth = ground_truth->get_label(i)->as<CRealNumber>();
-		CRealNumber * pred = predicted->get_label(i)->as<CRealNumber>();
+		auto truth = std::dynamic_pointer_cast<RealNumber>(ground_truth->get_label(i));
+		auto pred = std::dynamic_pointer_cast<RealNumber>(predicted->get_label(i));
 
 		num_equal += truth->value == pred->value;
 
-		SG_UNREF(truth);
-		SG_UNREF(pred);
+
+
 	}
 
 	return (1.0 * num_equal) / length;
 }
 
-float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
-                CStructuredLabels * ground_truth)
+float64_t StructuredAccuracy::evaluate_sequence(std::shared_ptr<StructuredLabels > predicted,
+                std::shared_ptr<StructuredLabels > ground_truth)
 {
 	int32_t length = predicted->get_num_labels();
 	// Accuracy of each each label
@@ -96,8 +96,8 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
 
 	for (int32_t i = 0 ; i < length ; ++i)
 	{
-		CSequence * true_seq = ground_truth->get_label(i)->as<CSequence>();
-		CSequence * pred_seq = predicted->get_label(i)->as<CSequence>();
+		auto true_seq = std::dynamic_pointer_cast<Sequence>(ground_truth->get_label(i));
+		auto pred_seq = std::dynamic_pointer_cast<Sequence>(predicted->get_label(i));
 
 		SGVector<int32_t> true_seq_data = true_seq->get_data();
 		SGVector<int32_t> pred_seq_data = pred_seq->get_data();
@@ -115,26 +115,26 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
 
 		accuracies[i] = (1.0 * num_equal) / true_seq_data.size();
 
-		SG_UNREF(true_seq);
-		SG_UNREF(pred_seq);
+
+
 	}
 
-	return CStatistics::mean(accuracies);
+	return Statistics::mean(accuracies);
 }
 
-float64_t CStructuredAccuracy::evaluate_sparse_multilabel(CStructuredLabels * predicted,
-                CStructuredLabels * ground_truth)
+float64_t StructuredAccuracy::evaluate_sparse_multilabel(std::shared_ptr<StructuredLabels > predicted,
+                std::shared_ptr<StructuredLabels > ground_truth)
 {
-	CMultilabelSOLabels * multi_pred = (CMultilabelSOLabels *) predicted;
-	CMultilabelSOLabels * multi_truth = (CMultilabelSOLabels *) ground_truth;
+	auto multi_pred = std::static_pointer_cast<MultilabelSOLabels>(predicted);
+	auto multi_truth = std::static_pointer_cast<MultilabelSOLabels>(ground_truth);
 
-	CMultilabelAccuracy * evaluator = new CMultilabelAccuracy();
-	SG_REF(evaluator);
+	auto evaluator = std::make_shared<MultilabelAccuracy>();
+
 
 	float64_t accuracy = evaluator->evaluate(multi_pred->get_multilabel_labels(),
 	                     multi_truth->get_multilabel_labels());
 
-	SG_UNREF(evaluator);
+
 
 	return accuracy;
 }

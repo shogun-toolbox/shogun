@@ -8,23 +8,54 @@
 #define PROTOCOLS_SGVECTOR(class_name, type_name, format_str, typecode)
 #endif
 
-%rename(Cache) CCache;
-%rename(ListElement) CListElement;
-%rename(List) CList;
-%rename(Signal) CSignal;
-%rename(Time) CTime;
-%rename(Hash) CHash;
-%rename(StructuredData) CStructuredData;
-%rename(DynamicObjectArray) CDynamicObjectArray;
-%rename(Tokenizer) CTokenizer;
-%rename(DelimiterTokenizer) CDelimiterTokenizer;
-%rename(NGramTokenizer) CNGramTokenizer;
+%shared_ptr(shogun::Cache)
+%shared_ptr(shogun::ListElement)
+%shared_ptr(shogun::List)
+%shared_ptr(shogun::Signal)
+%shared_ptr(shogun::Time)
+%shared_ptr(shogun::Hash)
+%shared_ptr(shogun::StructuredData)
+%shared_ptr(shogun::DynamicObjectArray)
+%shared_ptr(shogun::Tokenizer)
+%shared_ptr(shogun::DelimiterTokenizer)
+%shared_ptr(shogun::NGramTokenizer)
 
-%rename(IndexBlock) CIndexBlock;
-%rename(IndexBlockRelation) CIndexBlockRelation;
-%rename(IndexBlockGroup) CIndexBlockGroup;
-%rename(IndexBlockTree) CIndexBlockTree;
-%rename(Data) CData;
+%shared_ptr(shogun::IndexBlock)
+%shared_ptr(shogun::IndexBlockRelation)
+%shared_ptr(shogun::IndexBlockGroup)
+%shared_ptr(shogun::IndexBlockTree)
+%shared_ptr(shogun::Data)
+
+#ifdef USE_CHAR
+%shared_ptr(shogun::DynamicArray<char>)
+#endif
+#ifdef USE_UINT8
+%shared_ptr(shogun::DynamicArray<uint8_t>)
+#endif
+#ifdef USE_INT16
+%shared_ptr(shogun::DynamicArray<int16_t>)
+#endif
+#ifdef USE_UINT16
+%shared_ptr(shogun::DynamicArray<uint16_t>)
+#endif
+#ifdef USE_INT32
+%shared_ptr(shogun::DynamicArray<int32_t>)
+#endif
+#ifdef USE_UINT32
+%shared_ptr(shogun::DynamicArray<uint32_t>)
+#endif
+#ifdef USE_INT64
+%shared_ptr(shogun::DynamicArray<int64_t>)
+#endif
+#ifdef USE_UINT64
+%shared_ptr(shogun::DynamicArray<uint64_t>)
+#endif
+#ifdef USE_FLOAT32
+%shared_ptr(shogun::DynamicArray<float32_t>)
+#endif
+#ifdef USE_FLOAT64
+%shared_ptr(shogun::DynamicArray<float64_t>)
+#endif
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -258,44 +289,37 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_CHAR
-        %template(DynamicCharArray) CDynamicArray<char>;
+        %template(DynamicCharArray) DynamicArray<char>;
 #endif
 #ifdef USE_UINT8
-        %template(DynamicByteArray) CDynamicArray<uint8_t>;
+        %template(DynamicByteArray) DynamicArray<uint8_t>;
 #endif
 #ifdef USE_INT16
-        %template(DynamicShortArray) CDynamicArray<int16_t>;
+        %template(DynamicShortArray) DynamicArray<int16_t>;
 #endif
 #ifdef USE_UINT16
-        %template(DynamicWordArray) CDynamicArray<uint16_t>;
+        %template(DynamicWordArray) DynamicArray<uint16_t>;
 #endif
 #ifdef USE_INT32
-        %template(DynamicIntArray) CDynamicArray<int32_t>;
+        %template(DynamicIntArray) DynamicArray<int32_t>;
 #endif
 #ifdef USE_UINT32
-        %template(DynamicUIntArray) CDynamicArray<uint32_t>;
+        %template(DynamicUIntArray) DynamicArray<uint32_t>;
 #endif
 #ifdef USE_INT64
-        %template(DynamicLongArray) CDynamicArray<int64_t>;
+        %template(DynamicLongArray) DynamicArray<int64_t>;
 #endif
 #ifdef USE_UINT64
-        %template(DynamicULongArray) CDynamicArray<uint64_t>;
+        %template(DynamicULongArray) DynamicArray<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-        %template(DynamicShortRealArray) CDynamicArray<float32_t>;
+        %template(DynamicShortRealArray) DynamicArray<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-        %template(DynamicRealArray) CDynamicArray<float64_t>;
+        %template(DynamicRealArray) DynamicArray<float64_t>;
 #endif
-        %template(DynamicPlifArray) DynArray<shogun::CPlifBase*>;
+        %template(DynamicPlifArray) DynArray<shogun::PlifBase*>;
 }
-/* Template Class GCArray */
-%include <shogun/lib/GCArray.h>
-namespace shogun
-{
-        %template(PlifGCArray) CGCArray<shogun::CPlifBase*>;
-}
-
 /* Hash */
 %include <shogun/lib/Hash.h>
 
@@ -313,7 +337,7 @@ namespace shogun
 %include <shogun/lib/DynamicObjectArray.h>
 namespace shogun
 {
-%extend CDynamicObjectArray
+%extend DynamicObjectArray
 {
     template <typename T, typename X = typename std::enable_if_t<std::is_same<SGVector<typename extract_value_type<T>::value_type>, T>::value>>
     void append_element_vector(T v, const char* name="")
@@ -336,12 +360,12 @@ namespace shogun
 
     /* Specialize DynamicObjectArray::append_element function */
 #ifdef USE_FLOAT64
-    %template(append_element_real_vector) CDynamicObjectArray::append_element_vector<SGVector<float64_t>, SGVector<float64_t>>;
-    %template(append_element_real_matrix) CDynamicObjectArray::append_element_matrix<SGMatrix<float64_t>, SGMatrix<float64_t>>;
-    %template(append_element_real) CDynamicObjectArray::append_element<float64_t, float64_t>;
+    %template(append_element_real_vector) DynamicObjectArray::append_element_vector<SGVector<float64_t>, SGVector<float64_t>>;
+    %template(append_element_real_matrix) DynamicObjectArray::append_element_matrix<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+    %template(append_element_real) DynamicObjectArray::append_element<float64_t, float64_t>;
 #ifdef SWIGOCTAVE
     /* (Octave converts single element arrays to scalars and our typemaps take that for real) */
-    %extend CDynamicObjectArray {
+    %extend DynamicObjectArray {
         bool append_element_real_vector(float64_t v, const char* name="")
         {
             SGVector<float64_t> wrap(1);
@@ -352,15 +376,15 @@ namespace shogun
 #endif
 #endif
 #ifdef USE_FLOAT32
-    %template(append_element_float_vector) CDynamicObjectArray::append_element_vector<SGVector<float32_t>, SGVector<float32_t>>;
-    %template(append_element_float_matrix) CDynamicObjectArray::append_element_matrix<SGMatrix<float32_t>, SGMatrix<float32_t>>;
-    %template(append_element_float) CDynamicObjectArray::append_element<float32_t, float32_t>;
+    %template(append_element_float_vector) DynamicObjectArray::append_element_vector<SGVector<float32_t>, SGVector<float32_t>>;
+    %template(append_element_float_matrix) DynamicObjectArray::append_element_matrix<SGMatrix<float32_t>, SGMatrix<float32_t>>;
+    %template(append_element_float) DynamicObjectArray::append_element<float32_t, float32_t>;
 #endif
 #ifdef USE_INT32
-    %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;
+    %template(append_element_int) DynamicObjectArray::append_element<int32_t, int32_t>;
 #endif
-    %template(append_element_string_char_list) CDynamicObjectArray::append_element_string_list<char>;
-    %template(append_element_string_word_list) CDynamicObjectArray::append_element_string_list<uint16_t>;
+    %template(append_element_string_char_list) DynamicObjectArray::append_element_string_list<char>;
+    %template(append_element_string_word_list) DynamicObjectArray::append_element_string_list<uint16_t>;
 }
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>

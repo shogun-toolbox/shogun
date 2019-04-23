@@ -6,11 +6,37 @@
 
 /* Remove C Prefix */
 /* Feature selection framework */
-%rename(Preprocessor) CPreprocessor;
-#%rename(DependenceMaximization) CDependenceMaximization;
-#%rename(KernelDependenceMaximization) CDependenceMaximization;
+%shared_ptr(shogun::Preprocessor)
+#%shared_ptr(shogun::DependenceMaximization)
+#%shared_ptr(shogun::KernelDependenceMaximization)
 
-%newobject shogun::CFeatureSelection::remove_feats;
+#ifdef USE_UINT64
+%shared_ptr(shogun::StringPreprocessor<uint64_t>)
+%shared_ptr(shogun::DecompressString<uint64_t>)
+%shared_ptr(shogun::FeatureSelection<uint64_t>)
+#endif
+#ifdef USE_UINT16
+%shared_ptr(shogun::StringPreprocessor<uint16_t>)
+%shared_ptr(shogun::DecompressString<uint16_t>)
+%shared_ptr(shogun::FeatureSelection<uint16_t>)
+#endif
+#ifdef USE_UINT8
+%shared_ptr(shogun::StringPreprocessor<uint8_t>)
+%shared_ptr(shogun::DecompressString<uint8_t>)
+%shared_ptr(shogun::FeatureSelection<uint8_t>)
+#endif
+#ifdef USE_CHAR
+%shared_ptr(shogun::StringPreprocessor<char>)
+%shared_ptr(shogun::DecompressString<char>)
+%shared_ptr(shogun::FeatureSelection<char>)
+#endif
+#ifdef USE_FLOAT64
+%shared_ptr(shogun::FeatureSelection<float64_t>)
+#endif
+#ifdef USE_INT16
+%shared_ptr(shogun::FeatureSelection<int16_t>)
+#endif
+
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
@@ -21,16 +47,16 @@
 namespace shogun
 {
 #ifdef USE_UINT64
-    %template(StringUlongPreprocessor) CStringPreprocessor<uint64_t>;
+    %template(StringUlongPreprocessor) StringPreprocessor<uint64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StringWordPreprocessor) CStringPreprocessor<uint16_t>;
+    %template(StringWordPreprocessor) StringPreprocessor<uint16_t>;
 #endif
 #ifdef USE_UINT8
-    %template(StringBytePreprocessor) CStringPreprocessor<uint8_t>;
+    %template(StringBytePreprocessor) StringPreprocessor<uint8_t>;
 #endif
 #ifdef USE_CHAR
-    %template(StringCharPreprocessor) CStringPreprocessor<char>;
+    %template(StringCharPreprocessor) StringPreprocessor<char>;
 #endif
 }
 
@@ -39,16 +65,16 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_UINT64
-    %template(DecompressUlongString) CDecompressString<uint64_t>;
+    %template(DecompressUlongString) DecompressString<uint64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(DecompressWordString) CDecompressString<uint16_t>;
+    %template(DecompressWordString) DecompressString<uint16_t>;
 #endif
 #ifdef USE_UINT8
-    %template(DecompressByteString) CDecompressString<uint8_t>;
+    %template(DecompressByteString) DecompressString<uint8_t>;
 #endif
 #ifdef USE_CHAR
-    %template(DecompressCharString) CDecompressString<char>;
+    %template(DecompressCharString) DecompressString<char>;
 #endif
 }
 
@@ -57,22 +83,22 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealFeatureSelection) CFeatureSelection<float64_t>;
+    %template(RealFeatureSelection) FeatureSelection<float64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(UlongFeatureSelection) CFeatureSelection<uint64_t>;
+    %template(UlongFeatureSelection) FeatureSelection<uint64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(WordFeatureSelection) CFeatureSelection<uint16_t>;
+    %template(WordFeatureSelection) FeatureSelection<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(ShortFeatureSelection) CFeatureSelection<int16_t>;
+    %template(ShortFeatureSelection) FeatureSelection<int16_t>;
 #endif
 #ifdef USE_UINT8
-    %template(ByteFeatureSelection) CFeatureSelection<uint8_t>;
+    %template(ByteFeatureSelection) FeatureSelection<uint8_t>;
 #endif
 #ifdef USE_CHAR
-    %template(CharFeatureSelection) CFeatureSelection<char>;
+    %template(CharFeatureSelection) FeatureSelection<char>;
 #endif
 }
 

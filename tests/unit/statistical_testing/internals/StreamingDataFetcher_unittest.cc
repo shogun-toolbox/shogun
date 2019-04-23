@@ -49,9 +49,9 @@ TEST(StreamingDataFetcher, full_data)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	CStreamingFeatures *streaming_p = new CStreamingDenseFeatures<float64_t>(feats_p);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto streaming_p = std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	StreamingDataFetcher fetcher(streaming_p);
 	fetcher.set_num_samples(num_vec);
@@ -60,10 +60,9 @@ TEST(StreamingDataFetcher, full_data)
 	auto curr=fetcher.next();
 	ASSERT_TRUE(curr!=nullptr);
 
-	auto tmp=dynamic_cast<feat_type*>(curr);
+	auto tmp=curr->as<feat_type>();
 	ASSERT_TRUE(tmp!=nullptr);
 
-	SG_UNREF(curr);
 
 	curr=fetcher.next();
 	ASSERT_TRUE(curr==nullptr);
@@ -80,9 +79,9 @@ TEST(StreamingDataFetcher, block_data)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	CStreamingFeatures *streaming_p = new CStreamingDenseFeatures<float64_t>(feats_p);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto streaming_p = std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	StreamingDataFetcher fetcher(streaming_p);
 	fetcher.set_num_samples(num_vec);
@@ -96,10 +95,9 @@ TEST(StreamingDataFetcher, block_data)
 	ASSERT_TRUE(curr!=nullptr);
 	while (curr!=nullptr)
 	{
-		auto tmp=dynamic_cast<feat_type*>(curr);
+		auto tmp=curr->as<feat_type>();
 		ASSERT_TRUE(tmp!=nullptr);
 		ASSERT_TRUE(tmp->get_num_vectors()==blocksize*num_blocks_per_burst);
-		SG_UNREF(curr);
 		curr=fetcher.next();
 	}
 	fetcher.end();
@@ -115,9 +113,9 @@ TEST(StreamingDataFetcher, DISABLED_reset_functionality)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	CStreamingFeatures *streaming_p = new CStreamingDenseFeatures<float64_t>(feats_p);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto streaming_p = std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	StreamingDataFetcher fetcher(streaming_p);
 	fetcher.set_num_samples(num_vec);
@@ -126,10 +124,9 @@ TEST(StreamingDataFetcher, DISABLED_reset_functionality)
 	auto curr=fetcher.next();
 	ASSERT_TRUE(curr!=nullptr);
 
-	auto tmp=dynamic_cast<feat_type*>(curr);
+	auto tmp=curr->as<feat_type>();
 	ASSERT_TRUE(tmp!=nullptr);
 
-	SG_UNREF(curr);
 
 	curr=fetcher.next();
 	ASSERT_TRUE(curr==nullptr);
@@ -144,10 +141,10 @@ TEST(StreamingDataFetcher, DISABLED_reset_functionality)
 	ASSERT_TRUE(curr!=nullptr);
 	while (curr!=nullptr)
 	{
-		tmp=dynamic_cast<feat_type*>(curr);
+		tmp=curr->as<feat_type>();
 		ASSERT_TRUE(tmp!=nullptr);
 		ASSERT_TRUE(tmp->get_num_vectors()==blocksize*num_blocks_per_burst);
-		SG_UNREF(curr);
+
 		curr=fetcher.next();
 	}
 	fetcher.end();

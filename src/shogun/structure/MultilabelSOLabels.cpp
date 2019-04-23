@@ -11,48 +11,48 @@
 
 using namespace shogun;
 
-CMultilabelSOLabels::CMultilabelSOLabels() : CStructuredLabels()
+MultilabelSOLabels::MultilabelSOLabels() : StructuredLabels()
 {
 	init();
 	m_multilabel_labels = NULL;
 }
 
-CMultilabelSOLabels::CMultilabelSOLabels(int32_t num_classes)
-	: CStructuredLabels()
+MultilabelSOLabels::MultilabelSOLabels(int32_t num_classes)
+	: StructuredLabels()
 {
 	init();
-	m_multilabel_labels = new CMultilabelLabels(num_classes);
+	m_multilabel_labels = std::make_shared<MultilabelLabels>(num_classes);
 }
 
-CMultilabelSOLabels::CMultilabelSOLabels(int32_t num_labels, int32_t num_classes)
-	: CStructuredLabels()
+MultilabelSOLabels::MultilabelSOLabels(int32_t num_labels, int32_t num_classes)
+	: StructuredLabels()
 {
 	init();
-	m_multilabel_labels = new CMultilabelLabels(num_labels, num_classes);
+	m_multilabel_labels = std::make_shared<MultilabelLabels>(num_labels, num_classes);
 }
 
-CMultilabelSOLabels::CMultilabelSOLabels(CMultilabelLabels * multilabel_labels)
-	: CStructuredLabels()
+MultilabelSOLabels::MultilabelSOLabels(std::shared_ptr<MultilabelLabels > multilabel_labels)
+	: StructuredLabels()
 {
 	init();
-	SG_REF(multilabel_labels);
+
 	m_multilabel_labels = multilabel_labels;
 }
 
-void CMultilabelSOLabels::init()
+void MultilabelSOLabels::init()
 {
-	SG_ADD((CSGObject **)&m_multilabel_labels, "multilabel_labels", "multilabel labels object");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_multilabel_labels, "multilabel_labels", "multilabel labels object");
 	SG_ADD(&m_last_set_label, "last_set_label", "index of the last label added using add_label() method");
 
 	m_last_set_label = 0;
 }
 
-CMultilabelSOLabels::~CMultilabelSOLabels()
+MultilabelSOLabels::~MultilabelSOLabels()
 {
-	SG_UNREF(m_multilabel_labels);
+
 }
 
-void CMultilabelSOLabels::set_sparse_label(int32_t j, SGVector<int32_t> label)
+void MultilabelSOLabels::set_sparse_label(int32_t j, SGVector<int32_t> label)
 {
 	if (m_sdt == SDT_UNKNOWN)
 	{
@@ -62,7 +62,7 @@ void CMultilabelSOLabels::set_sparse_label(int32_t j, SGVector<int32_t> label)
 	m_multilabel_labels->set_label(j, label);
 }
 
-void CMultilabelSOLabels::set_sparse_labels(SGVector<int32_t> * labels)
+void MultilabelSOLabels::set_sparse_labels(SGVector<int32_t> * labels)
 {
 	if (m_sdt == SDT_UNKNOWN)
 	{
@@ -72,7 +72,7 @@ void CMultilabelSOLabels::set_sparse_labels(SGVector<int32_t> * labels)
 	m_multilabel_labels->set_labels(labels);
 }
 
-int32_t CMultilabelSOLabels::get_num_labels() const
+int32_t MultilabelSOLabels::get_num_labels() const
 {
 	if (m_multilabel_labels == NULL)
 	{
@@ -82,7 +82,7 @@ int32_t CMultilabelSOLabels::get_num_labels() const
 	return m_multilabel_labels->get_num_labels();
 }
 
-int32_t CMultilabelSOLabels::get_num_classes() const
+int32_t MultilabelSOLabels::get_num_classes() const
 {
 	if (m_multilabel_labels == NULL)
 	{
@@ -92,50 +92,50 @@ int32_t CMultilabelSOLabels::get_num_classes() const
 	return m_multilabel_labels->get_num_classes();
 }
 
-CMultilabelLabels * CMultilabelSOLabels::get_multilabel_labels()
+std::shared_ptr<MultilabelLabels > MultilabelSOLabels::get_multilabel_labels()
 {
 	return m_multilabel_labels;
 }
 
-bool CMultilabelSOLabels::set_label(int32_t j, CStructuredData * label)
+bool MultilabelSOLabels::set_label(int32_t j, std::shared_ptr<StructuredData > label)
 {
 	if (m_sdt == SDT_UNKNOWN)
 	{
 		m_sdt = label->get_structured_data_type();
 	}
 
-	CSparseMultilabel * slabel = label->as<CSparseMultilabel>();
+	auto slabel = label->as<SparseMultilabel>();
 	m_multilabel_labels->set_label(j, slabel->get_data());
 	return true;
 }
 
-CStructuredData * CMultilabelSOLabels::get_label(int32_t j)
+std::shared_ptr<StructuredData > MultilabelSOLabels::get_label(int32_t j)
 {
-	CSparseMultilabel * slabel = new CSparseMultilabel(m_multilabel_labels->get_label(j));
-	SG_REF(slabel);
-	return (CStructuredData *)slabel;
+	auto slabel = std::make_shared<SparseMultilabel>(m_multilabel_labels->get_label(j));
+
+	return slabel->as<StructuredData>();
 }
 
-SGVector<int32_t> CMultilabelSOLabels::get_sparse_label(int32_t j)
+SGVector<int32_t> MultilabelSOLabels::get_sparse_label(int32_t j)
 {
 	return m_multilabel_labels->get_label(j);
 }
 
-void CMultilabelSOLabels::ensure_valid(const char * context)
+void MultilabelSOLabels::ensure_valid(const char * context)
 {
 	m_multilabel_labels->ensure_valid(context);
 }
 
-SGVector<float64_t> CMultilabelSOLabels::to_dense(CStructuredData * label,
+SGVector<float64_t> MultilabelSOLabels::to_dense(std::shared_ptr<StructuredData > label,
                 int32_t dense_dim, float64_t d_true, float64_t d_false)
 {
-	CSparseMultilabel * slabel = label->as<CSparseMultilabel>();
+	auto slabel = label->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_data = slabel->get_data();
-	return CMultilabelLabels::to_dense<int32_t, float64_t>(&slabel_data,
+	return MultilabelLabels::to_dense<int32_t, float64_t>(&slabel_data,
 	                dense_dim, d_true, d_false);
 }
 
-void CMultilabelSOLabels::add_label(CStructuredData * label)
+void MultilabelSOLabels::add_label(std::shared_ptr<StructuredData > label)
 {
 	require(m_last_set_label >= 0 && m_last_set_label < get_num_labels(),
 	        "Only {} number of labels can be added.", get_num_labels());

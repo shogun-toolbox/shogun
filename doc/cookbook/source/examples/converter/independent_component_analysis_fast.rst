@@ -6,13 +6,13 @@ Independent component analysis (ICA) separates a multivariate signal into additi
 It is typically used for separating superimposed signals.
 
 The ICA algorithm presented here is fastICA, see :cite:`hyvarinen2000independent` for details.
-There are many other ICA implementations, all based on :sgclass:`CICAConverter`
+There are many other ICA implementations, all based on :sgclass:`ICAConverter`
 
 -------
 Example
 -------
 
-Given a dataset which we assume consists of linearly mixed signals, we create CDenseFeatures
+Given a dataset which we assume consists of linearly mixed signals, we create DenseFeatures
 (RealFeatures, here 64 bit float values).
 
 .. sgexample:: independent_component_analysis_fast.sg:create_features
@@ -29,7 +29,7 @@ We can also extract the estimated mixing matrix.
 
 .. sgexample:: independent_component_analysis_fast.sg:extract
 
-:sgclass:`CICAConverter` supports inverse transformation. We can mix signals using the mixing matrix learnt before.
+:sgclass:`ICAConverter` supports inverse transformation. We can mix signals using the mixing matrix learnt before.
 
 .. sgexample:: independent_component_analysis_fast.sg:inverse_transform
 

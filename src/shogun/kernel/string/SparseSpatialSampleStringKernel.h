@@ -29,21 +29,21 @@ namespace shogun
  * by Pavel Kuksa <pkuksa@cs.rutgers.edu> and
  * Vladimir Pavlovic <vladimir@cs.rutgers.edu>
  */
-class CSparseSpatialSampleStringKernel: public CStringKernel<char>
+class SparseSpatialSampleStringKernel: public StringKernel<char>
 {
 	public:
 		/** constructor
 		 */
-		CSparseSpatialSampleStringKernel();
+		SparseSpatialSampleStringKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CSparseSpatialSampleStringKernel(CStringFeatures<char>* l, CStringFeatures<char>* r);
+		SparseSpatialSampleStringKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r);
 
-		virtual ~CSparseSpatialSampleStringKernel();
+		virtual ~SparseSpatialSampleStringKernel();
 
 		/** initialize kernel
 		 *
@@ -51,7 +51,7 @@ class CSparseSpatialSampleStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

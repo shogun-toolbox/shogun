@@ -10,18 +10,18 @@
 
 using namespace shogun;
 
-CMeanRule::CMeanRule()
-	: CCombinationRule()
+MeanRule::MeanRule()
+	: CombinationRule()
 {
 
 }
 
-CMeanRule::~CMeanRule()
+MeanRule::~MeanRule()
 {
 
 }
 
-SGVector<float64_t> CMeanRule::combine(const SGMatrix<float64_t>& ensemble_result) const
+SGVector<float64_t> MeanRule::combine(const SGMatrix<float64_t>& ensemble_result) const
 {
 	float64_t* row_sum =
 		SGMatrix<float64_t>::get_column_sum(ensemble_result.matrix,
@@ -36,7 +36,7 @@ SGVector<float64_t> CMeanRule::combine(const SGMatrix<float64_t>& ensemble_resul
 	return mean_labels;
 }
 
-float64_t CMeanRule::combine(const SGVector<float64_t>& ensemble_result) const
+float64_t MeanRule::combine(const SGVector<float64_t>& ensemble_result) const
 {
 	float64_t combined = SGVector<float64_t>::sum(ensemble_result);
 	combined /= (float64_t)ensemble_result.vlen;

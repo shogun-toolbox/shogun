@@ -45,14 +45,14 @@ namespace shogun
  * split. In randomized CART, a few (fixed number) attributes are randomly chosen from all available attributes while deciding the best split.
  * This is unlike the original CART where all available attributes are considered while deciding the best split.
  */
-class CRandomCARTree : public CCARTree
+class RandomCARTree : public CARTree
 {
 public:
 	/** constructor */
-	CRandomCARTree();
+	RandomCARTree();
 
 	/** destructor */
-	virtual ~CRandomCARTree();
+	virtual ~RandomCARTree();
 
 	/** get name
 	 * @return class name CARTree
@@ -85,7 +85,7 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels,
 		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
 		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
 

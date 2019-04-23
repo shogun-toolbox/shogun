@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-template <class T> class CDenseFeatures;
-class CHMM;
+template <class T> class DenseFeatures;
+class HMM;
 
 /** @brief The class FKFeatures implements Fischer kernel features obtained from
  * two Hidden Markov models.
@@ -32,14 +32,14 @@ class CHMM;
  * Note that FK-features are computed on the fly, so to be effective feature
  * caching should be enabled.
  *
- * It inherits its functionality from CDenseFeatures, which should be
+ * It inherits its functionality from DenseFeatures, which should be
  * consulted for further reference.
  */
-class CFKFeatures: public CDenseFeatures<float64_t>
+class FKFeatures: public DenseFeatures<float64_t>
 {
 	public:
 		/** default constructor  */
-		CFKFeatures();
+		FKFeatures();
 
 		/** constructor
 		 *
@@ -47,19 +47,19 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		CFKFeatures(int32_t size, CHMM* p, CHMM* n);
+		FKFeatures(int32_t size, std::shared_ptr<HMM> p, std::shared_ptr<HMM> n);
 
 		/** copy constructor */
-		CFKFeatures(const CFKFeatures &orig);
+		FKFeatures(const FKFeatures &orig);
 
-		virtual ~CFKFeatures();
+		virtual ~FKFeatures();
 
 		/** set HMMs
 		 *
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		void set_models(CHMM* p, CHMM* n);
+		void set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n);
 
 		/** set weight a
 		 *
@@ -132,9 +132,9 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 
 	protected:
 		/** positive HMM */
-		CHMM* pos;
+		std::shared_ptr<HMM> pos;
 		/** negative HMM */
-		CHMM* neg;
+		std::shared_ptr<HMM> neg;
 		/** positive prob */
 		float64_t* pos_prob;
 		/** negative prob */

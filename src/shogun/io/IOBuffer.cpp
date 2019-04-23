@@ -20,22 +20,22 @@
 
 using namespace shogun;
 
-CIOBuffer::CIOBuffer()
+IOBuffer::IOBuffer()
 {
 	init();
 }
 
-CIOBuffer::CIOBuffer(int fd)
+IOBuffer::IOBuffer(int fd)
 {
 	init();
 	working_file = fd;
 }
 
-CIOBuffer::~CIOBuffer()
+IOBuffer::~IOBuffer()
 {
 }
 
-void CIOBuffer::init()
+void IOBuffer::init()
 {
 	size_t s = 1 << 16;
 	space.reserve(s);
@@ -43,12 +43,12 @@ void CIOBuffer::init()
 	working_file=-1;
 }
 
-void CIOBuffer::use_file(int fd)
+void IOBuffer::use_file(int fd)
 {
 	working_file = fd;
 }
 
-int CIOBuffer::open_file(const char* name, char flag)
+int IOBuffer::open_file(const char* name, char flag)
 {
 	int ret=1;
 	switch(flag)
@@ -68,24 +68,24 @@ int CIOBuffer::open_file(const char* name, char flag)
 	return ret;
 }
 
-void CIOBuffer::reset_file()
+void IOBuffer::reset_file()
 {
 	lseek(working_file, 0, SEEK_SET);
 	endloaded = space.begin;
 	space.end = space.begin;
 }
 
-void CIOBuffer::set(char *p)
+void IOBuffer::set(char *p)
 {
 	space.end = p;
 }
 
-ssize_t CIOBuffer::read_file(void* buf, size_t nbytes)
+ssize_t IOBuffer::read_file(void* buf, size_t nbytes)
 {
 	return read(working_file, buf, nbytes);
 }
 
-size_t CIOBuffer::fill()
+size_t IOBuffer::fill()
 {
 	if (space.end_array - endloaded == 0)
 	{
@@ -103,12 +103,12 @@ size_t CIOBuffer::fill()
 		return 0;
 }
 
-ssize_t CIOBuffer::write_file(const void* buf, size_t nbytes)
+ssize_t IOBuffer::write_file(const void* buf, size_t nbytes)
 {
 	return write(working_file, buf, nbytes);
 }
 
-void CIOBuffer::flush()
+void IOBuffer::flush()
 {
 	if (working_file>=0)
 	{
@@ -123,7 +123,7 @@ void CIOBuffer::flush()
 #endif
 }
 
-bool CIOBuffer::close_file()
+bool IOBuffer::close_file()
 {
 	if (working_file < 0)
 		return false;
@@ -136,7 +136,7 @@ bool CIOBuffer::close_file()
 	}
 }
 
-ssize_t CIOBuffer::readto(char* &pointer, char terminal)
+ssize_t IOBuffer::readto(char* &pointer, char terminal)
 {
 //Return a pointer to the bytes before the terminal.  Must be less
 //than the buffer size.
@@ -167,7 +167,7 @@ ssize_t CIOBuffer::readto(char* &pointer, char terminal)
 	}
 }
 
-void CIOBuffer::buf_write(char* &pointer, int n)
+void IOBuffer::buf_write(char* &pointer, int n)
 {
 	if (space.end + n <= space.end_array)
 	{
@@ -187,7 +187,7 @@ void CIOBuffer::buf_write(char* &pointer, int n)
 	}
 }
 
-unsigned int CIOBuffer::buf_read(char* &pointer, int n)
+unsigned int IOBuffer::buf_read(char* &pointer, int n)
 {
 	// Return a pointer to the next n bytes.
 	// n must be smaller than the maximum size.

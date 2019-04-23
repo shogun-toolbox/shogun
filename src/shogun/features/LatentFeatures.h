@@ -17,27 +17,27 @@ namespace shogun
 	/** @brief Latent Features class
 	 * The class if for representing features for latent learning, e.g. LatentSVM.
 	 * It's basically a very generic way of storing features of any (user-defined) form
-	 * based on CData.
+	 * based on Data.
 	 */
-	class CLatentFeatures : public CFeatures
+	class LatentFeatures : public Features
 	{
 		public:
 			/** default constructor */
-			CLatentFeatures();
+			LatentFeatures();
 
 			/** constructor
 			 *
 			 * @param num_samples the number of examples the object will contain
 			 */
-			CLatentFeatures(int32_t num_samples);
+			LatentFeatures(int32_t num_samples);
 
-			virtual ~CLatentFeatures();
+			virtual ~LatentFeatures();
 
 			/** Copy-constructor
 			 *
 			 * @return the copy of the given object
 			 */
-			virtual CFeatures* duplicate() const;
+			virtual std::shared_ptr<Features> duplicate() const;
 
 			/** get feature type
 			 *
@@ -65,25 +65,25 @@ namespace shogun
 
 			/** add latent example
 			 *
-			 * @param example the user defined CData
+			 * @param example the user defined Data
 			 */
-			bool add_sample(CData* example);
+			bool add_sample(std::shared_ptr<Data> example);
 
 			/** get latent example
 			 *
 			 * @param idx index of the required example
-			 * @return the user defined CData at the given index
+			 * @return the user defined Data at the given index
 			 */
-			CData* get_sample(index_t idx);
+			std::shared_ptr<Data> get_sample(index_t idx);
 
 			/** helper method used to specialize a base class instance
 			 *
-			 * @param base_feats its dynamic type must be CLatentFeatures
+			 * @param base_feats its dynamic type must be LatentFeatures
 			 */
-			static CLatentFeatures* obtain_from_generic(CFeatures* base_feats);
+			static std::shared_ptr<LatentFeatures> obtain_from_generic(std::shared_ptr<Features> base_feats);
 		protected:
-			/** array of CData */
-			CDynamicObjectArray* m_samples;
+			/** array of Data */
+			std::shared_ptr<DynamicObjectArray> m_samples;
 
 		private:
 			/** init function for the object */

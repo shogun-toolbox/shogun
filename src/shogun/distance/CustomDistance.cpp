@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn,
  *          Evan Shelhamer
  */
 
@@ -14,12 +14,12 @@
 
 using namespace shogun;
 
-CCustomDistance::CCustomDistance() : CDistance()
+CustomDistance::CustomDistance() : Distance()
 {
 	init();
 }
 
-CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
+CustomDistance::CustomDistance(std::shared_ptr<Distance> d) : Distance()
 {
 	init();
 
@@ -60,8 +60,8 @@ CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
 	dummy_init(num_rows, num_cols);
 }
 
-CCustomDistance::CCustomDistance(const SGMatrix<float64_t> distance_matrix)
-: CDistance()
+CustomDistance::CustomDistance(const SGMatrix<float64_t> distance_matrix)
+: Distance()
 {
 	init();
 	set_full_distance_matrix_from_full(distance_matrix.matrix,
@@ -69,33 +69,33 @@ CCustomDistance::CCustomDistance(const SGMatrix<float64_t> distance_matrix)
 	                                   distance_matrix.num_cols);
 }
 
-CCustomDistance::CCustomDistance(const float64_t* dm, int32_t rows, int32_t cols)
-: CDistance()
+CustomDistance::CustomDistance(const float64_t* dm, int32_t rows, int32_t cols)
+: Distance()
 {
 	init();
 	set_full_distance_matrix_from_full(dm, rows, cols);
 }
 
-CCustomDistance::CCustomDistance(const float32_t* dm, int32_t rows, int32_t cols)
-: CDistance()
+CustomDistance::CustomDistance(const float32_t* dm, int32_t rows, int32_t cols)
+: Distance()
 {
 	init();
 	set_full_distance_matrix_from_full(dm, rows, cols);
 }
 
-CCustomDistance::~CCustomDistance()
+CustomDistance::~CustomDistance()
 {
 	cleanup();
 }
 
-bool CCustomDistance::dummy_init(int32_t rows, int32_t cols)
+bool CustomDistance::dummy_init(int32_t rows, int32_t cols)
 {
-	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));
+	return init(std::make_shared<DummyFeatures>(rows), std::make_shared<DummyFeatures>(cols));
 }
 
-bool CCustomDistance::init(CFeatures* l, CFeatures* r)
+bool CustomDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDistance::init(l, r);
+	Distance::init(l, r);
 
 	SG_DEBUG("num_vec_lhs: {} vs num_rows {}", l->get_num_vectors(), num_rows)
 	SG_DEBUG("num_vec_rhs: {} vs num_cols {}", r->get_num_vectors(), num_cols)
@@ -105,7 +105,7 @@ bool CCustomDistance::init(CFeatures* l, CFeatures* r)
 }
 
 
-void CCustomDistance::cleanup_custom()
+void CustomDistance::cleanup_custom()
 {
 	SG_DEBUG("cleanup up custom distance")
 	SG_FREE(dmatrix);
@@ -115,14 +115,14 @@ void CCustomDistance::cleanup_custom()
 	num_rows=0;
 }
 
-void CCustomDistance::init()
+void CustomDistance::init()
 {
 	dmatrix=NULL;
 	num_rows=0;
 	num_cols=0;
 	upper_diagonal=false;
 
-	m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix");
+	/*m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix")*/;
 	watch_param(
 	    "dmatrix", &dmatrix, &num_rows, &num_cols,
 	    AnyParameterProperties("Distance Matrix"));
@@ -131,12 +131,12 @@ void CCustomDistance::init()
 	    &upper_diagonal, "upper_diagonal", "Upper diagonal");
 }
 
-void CCustomDistance::cleanup()
+void CustomDistance::cleanup()
 {
 	cleanup_custom();
 }
 
-float64_t CCustomDistance::compute(int32_t row, int32_t col)
+float64_t CustomDistance::compute(int32_t row, int32_t col)
 {
 	ASSERT(dmatrix)
 

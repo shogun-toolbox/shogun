@@ -10,30 +10,30 @@
 
 using namespace shogun;
 
-CParser::CParser()
+Parser::Parser()
 {
 	init();
 }
 
-CParser::CParser(SGVector<char> text, CTokenizer* tokenizer)
+Parser::Parser(SGVector<char> text, std::shared_ptr<Tokenizer> tokenizer)
 {
 	init();
 
 	m_text=text;
 
-	SG_REF(tokenizer);
+	
 	m_tokenizer=tokenizer;
 
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
 }
 
-CParser::~CParser()
+Parser::~Parser()
 {
-	SG_UNREF(m_tokenizer);
+	
 }
 
-bool CParser::has_next()
+bool Parser::has_next()
 {
 	if (m_tokenizer!=NULL)
 		return m_tokenizer->has_next();
@@ -41,13 +41,13 @@ bool CParser::has_next()
 	return false;
 }
 
-void CParser::skip_token()
+void Parser::skip_token()
 {
 	index_t start=0;
 	m_tokenizer->next_token_idx(start);
 }
 
-SGVector<char> CParser::read_string()
+SGVector<char> Parser::read_string()
 {
 	index_t start=0;
 	index_t end=0;
@@ -63,7 +63,7 @@ SGVector<char> CParser::read_string()
 	return result;
 }
 
-SGVector<char> CParser::read_cstring()
+SGVector<char> Parser::read_cstring()
 {
 	index_t start=0;
 	index_t end=0;
@@ -80,7 +80,7 @@ SGVector<char> CParser::read_cstring()
 	return result;
 }
 
-bool CParser::read_bool()
+bool Parser::read_bool()
 {
 	SGVector<char> token=read_cstring();
 
@@ -91,7 +91,7 @@ bool CParser::read_bool()
 }
 
 #define READ_INT_METHOD(fname, convf, sg_type) \
-sg_type CParser::fname() \
+sg_type Parser::fname() \
 { \
 	SGVector<char> token=read_cstring(); \
 	\
@@ -106,7 +106,7 @@ READ_INT_METHOD(read_ulong, strtoull, uint64_t)
 #undef READ_INT_METHOD
 
 #define READ_REAL_METHOD(fname, convf, sg_type) \
-sg_type CParser::fname() \
+sg_type Parser::fname() \
 { \
 	SGVector<char> token=read_cstring(); \
 	\
@@ -132,7 +132,7 @@ READ_REAL_METHOD(read_long_real, strtod, floatmax_t)
 #endif
 #undef READ_REAL_METHOD
 
-void CParser::set_text(SGVector<char> text)
+void Parser::set_text(SGVector<char> text)
 {
 	m_text=text;
 
@@ -140,17 +140,17 @@ void CParser::set_text(SGVector<char> text)
 		m_tokenizer->set_text(m_text);
 }
 
-void CParser::set_tokenizer(CTokenizer* tokenizer)
+void Parser::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
 {
-	SG_REF(tokenizer);
-	SG_UNREF(m_tokenizer);
+	
+	
 	m_tokenizer=tokenizer;
 
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
 }
 
-void CParser::init()
+void Parser::init()
 {
 	m_text=SGVector<char>();
 	m_tokenizer=NULL;

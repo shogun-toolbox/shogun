@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Heiko Strathmann, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Evgeniy Andreev, Heiko Strathmann, Yuyu Zhang, Thoralf Klein,
  *          Fernando Iglesias, Bjoern Esser
  */
 
@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-class CTokenizer;
+class Tokenizer;
 
 /** @brief Implementation of circular buffer
  * This buffer has logical structure such as queue (FIFO).
@@ -27,26 +27,26 @@ class CTokenizer;
  *
  * w: http://en.wikipedia.org/wiki/Circular_buffer
  */
-class CCircularBuffer : public CSGObject
+class CircularBuffer : public SGObject
 {
 public:
 	/** default constructor */
-	CCircularBuffer();
+	CircularBuffer();
 
 	/** constructor
 	 *
 	 * @param buffer_size size of buffer
 	 */
-	CCircularBuffer(int32_t buffer_size);
+	CircularBuffer(int32_t buffer_size);
 
 	/** destructor */
-	~CCircularBuffer();
+	~CircularBuffer();
 
 	/** set tokenizer
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(CTokenizer* tokenizer);
+	void set_tokenizer(std::shared_ptr<Tokenizer> tokenizer);
 
 	/** push data into buffer from memory block
 	 *
@@ -152,7 +152,7 @@ private:
 	char* m_end_pos;
 
 	/** tokenizer */
-	CTokenizer* m_tokenizer;
+	std::shared_ptr<Tokenizer> m_tokenizer;
 
 	/** position at which the search starts */
 	index_t m_last_idx;

@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CKernel;
+class Features;
+class Kernel;
 
 /** @brief class KernelLocallyLinearEmbedding used to construct embeddings
  * of data using kernel formulation of Locally Linear Embedding algorithm as
@@ -36,28 +36,28 @@ class CKernel;
  * Uses the Tapkee library code.
  *
  */
-class CKernelLocallyLinearEmbedding: public CLocallyLinearEmbedding
+class KernelLocallyLinearEmbedding: public LocallyLinearEmbedding
 {
 public:
 
 	/** constructor */
-	CKernelLocallyLinearEmbedding();
+	KernelLocallyLinearEmbedding();
 
 	/** constructor
 	 * @param kernel kernel to be used
 	 */
-	CKernelLocallyLinearEmbedding(CKernel* kernel);
+	KernelLocallyLinearEmbedding(std::shared_ptr<Kernel> kernel);
 
 	/** destructor */
-	virtual ~CKernelLocallyLinearEmbedding();
+	virtual ~KernelLocallyLinearEmbedding();
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** embed kernel (kernel should be inited)
 	 * @param kernel kernel to construct embed
 	 */
-	CDenseFeatures<float64_t>* embed_kernel(CKernel* kernel);
+	std::shared_ptr<DenseFeatures<float64_t>> embed_kernel(std::shared_ptr<Kernel> kernel);
 
 	/** get name */
 	virtual const char* get_name() const;

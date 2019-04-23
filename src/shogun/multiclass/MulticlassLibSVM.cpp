@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann,
  *          Bjoern Esser, Leon Kuchenbecker
  */
 
@@ -12,21 +12,21 @@
 
 using namespace shogun;
 
-CMulticlassLibSVM::CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
-: CMulticlassSVM(new CMulticlassOneVsOneStrategy()), solver_type(st)
+MulticlassLibSVM::MulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
+: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>()), solver_type(st)
 {
 }
 
-CMulticlassLibSVM::CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(new CMulticlassOneVsOneStrategy(), C, k, lab), solver_type(LIBSVM_C_SVC)
+MulticlassLibSVM::MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>(), C, k, lab), solver_type(LIBSVM_C_SVC)
 {
 }
 
-CMulticlassLibSVM::~CMulticlassLibSVM()
+MulticlassLibSVM::~MulticlassLibSVM()
 {
 }
 
-void CMulticlassLibSVM::register_params()
+void MulticlassLibSVM::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvm_solver_type",
@@ -34,7 +34,7 @@ void CMulticlassLibSVM::register_params()
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
-bool CMulticlassLibSVM::train_machine(CFeatures* data)
+bool MulticlassLibSVM::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -72,7 +72,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.pv[i]=-1.0;
-		problem.y[i]=((CMulticlassLabels*) m_labels)->get_label(i);
+		problem.y[i]=multiclass_labels(m_labels)->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -86,7 +86,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu(); // Nu
-	param.kernel=m_kernel;
+	param.kernel=m_kernel.get();
 	param.cache_size = m_kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C();
@@ -138,7 +138,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 				ASSERT(num_sv>0)
 				ASSERT(model->sv_coef[i] && model->sv_coef[j-1])
 
-				CSVM* svm=new CSVM(num_sv);
+				auto svm=std::make_shared<SVM>(num_sv);
 
 				svm->set_bias(sgn*bias);
 

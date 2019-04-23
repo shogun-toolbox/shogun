@@ -15,7 +15,7 @@
 
 using namespace shogun;
 
-CTwoStateModel::CTwoStateModel() : CStateModel()
+TwoStateModel::TwoStateModel() : StateModel()
 {
 	// The number of states in this state model is equal to four.
 	// Although parameters are learnt only for two of them, other
@@ -34,17 +34,17 @@ CTwoStateModel::CTwoStateModel() : CStateModel()
 	// Initialize the start and stop states
 	m_p = SGVector< float64_t >(m_num_states);
 	m_q = SGVector< float64_t >(m_num_states);
-	m_p.set_const(-CMath::INFTY);
-	m_q.set_const(-CMath::INFTY);
+	m_p.set_const(-Math::INFTY);
+	m_q.set_const(-Math::INFTY);
 	m_p[0] = 0; // start state
 	m_q[1] = 0; // stop  state
 }
 
-CTwoStateModel::~CTwoStateModel()
+TwoStateModel::~TwoStateModel()
 {
 }
 
-SGMatrix< float64_t > CTwoStateModel::loss_matrix(CSequence* label_seq)
+SGMatrix< float64_t > TwoStateModel::loss_matrix(std::shared_ptr<Sequence> label_seq)
 {
 	SGVector< int32_t > state_seq = labels_to_states(label_seq);
 	SGMatrix< float64_t > loss_mat(m_num_states, state_seq.vlen);
@@ -58,7 +58,7 @@ SGMatrix< float64_t > CTwoStateModel::loss_matrix(CSequence* label_seq)
 	return loss_mat;
 }
 
-float64_t CTwoStateModel::loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs)
+float64_t TwoStateModel::loss(std::shared_ptr<Sequence> label_seq_lhs, std::shared_ptr<Sequence> label_seq_rhs)
 {
 	SGVector< int32_t > state_seq_lhs = labels_to_states(label_seq_lhs);
 	SGVector< int32_t > state_seq_rhs = labels_to_states(label_seq_rhs);
@@ -72,7 +72,7 @@ float64_t CTwoStateModel::loss(CSequence* label_seq_lhs, CSequence* label_seq_rh
 	return ret;
 }
 
-SGVector< int32_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
+SGVector< int32_t > TwoStateModel::labels_to_states(std::shared_ptr<Sequence> label_seq) const
 {
 	// 0 -> start state
 	// 1 -> stop state
@@ -95,7 +95,7 @@ SGVector< int32_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
 	return state_seq;
 }
 
-CSequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
+std::shared_ptr<Sequence> TwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
 {
 	SGVector< int32_t > label_seq(state_seq.vlen);
 
@@ -112,12 +112,10 @@ CSequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
 			label_seq[i] = 1;
 	}
 
-	CSequence* ret = new CSequence(label_seq);
-	SG_REF(ret);
-	return ret;
+	return std::make_shared<Sequence>(label_seq);
 }
 
-void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_weights,
+void TwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_weights,
 		SGVector< float64_t > w, int32_t num_feats, int32_t num_obs)
 {
 	emission_weights.zero();
@@ -144,10 +142,9 @@ void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_wei
 	}
 }
 
-void CTwoStateModel::reshape_emission_params(CDynamicObjectArray* plif_matrix,
+void TwoStateModel::reshape_emission_params(std::shared_ptr<DynamicObjectArray> plif_matrix,
 		SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes)
 {
-	CPlif* plif;
 	index_t p_idx, w_idx = m_num_transmission_params;
 	for ( int32_t s = 2 ; s < m_num_states ; ++s )
 	{
@@ -159,17 +156,17 @@ void CTwoStateModel::reshape_emission_params(CDynamicObjectArray* plif_matrix,
 			for ( int32_t i = 0 ; i < num_plif_nodes ; ++i )
 				penalties[p_idx++] = w[w_idx++];
 
-			plif = (CPlif*) plif_matrix->get_element(m_num_states*f + s);
+			auto plif = plif_matrix->get_element<Plif>(m_num_states*f + s);
 			plif->set_plif_penalty(penalties);
-			SG_UNREF(plif);
+
 		}
 	}
 }
 
-void CTwoStateModel::reshape_transmission_params(
+void TwoStateModel::reshape_transmission_params(
 		SGMatrix< float64_t >& transmission_weights, SGVector< float64_t > w)
 {
-	transmission_weights.set_const(-CMath::INFTY);
+	transmission_weights.set_const(-Math::INFTY);
 
 	// Legend for state indices:
 	// 0 -> start state
@@ -190,7 +187,7 @@ void CTwoStateModel::reshape_transmission_params(
 	transmission_weights(3,3) = w[2]; // to negative
 }
 
-void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
+void TwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 		SGMatrix< float64_t > transmission_weights,
 		SGVector< float64_t > emission_weights,
 		int32_t num_feats, int32_t num_obs) const
@@ -221,7 +218,7 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 
 }
 
-SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > transmission_weights,
+SGVector< float64_t > TwoStateModel::weights_to_vector(SGMatrix< float64_t > transmission_weights,
 		SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const
 {
 	int32_t num_free_states = 2;
@@ -231,7 +228,7 @@ SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > tr
 	return vec;
 }
 
-SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
+SGVector< int32_t > TwoStateModel::get_monotonicity(int32_t num_free_states,
 		int32_t num_feats) const
 {
 	require(num_free_states == 2, "Using the TwoStateModel only two states are free");
@@ -247,7 +244,7 @@ SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 }
 
 template <typename PRNG>
-CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
+std::shared_ptr<HMSVMModel> TwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	int32_t num_features, int32_t num_noise_features, PRNG& prng)
 {
 	// Number of different states
@@ -266,7 +263,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	// num_blocks[1] blocks of positive labels each of length between
 	// block_len[0] and block_len[1]
 
-	CSequenceLabels* labels = new CSequenceLabels(num_exm, num_states);
+	auto labels = std::make_shared<SequenceLabels>(num_exm, num_states);
 	SGVector< int32_t > ll(num_exm*exm_len);
 	ll.zero();
 	int32_t rnb, rl, rp;
@@ -304,7 +301,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	// ii) adding Gaussian noise to the (distorted) label sequence
 
 	SGVector< int32_t >   distort(num_exm*exm_len);
-	SGVector< int32_t >   d1(CMath::round(distort.vlen*prop_distort));
+	SGVector< int32_t >   d1(Math::round(distort.vlen*prop_distort));
 	SGVector< int32_t >   d2(d1.vlen);
 	SGVector< int32_t >   lf;
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
@@ -338,18 +335,18 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 			signal[idx++] = noise_std*normal_dist(prng);
 	}
 
-	CMatrixFeatures< float64_t >* features =
-		new CMatrixFeatures< float64_t >(signal, exm_len, num_exm);
+	auto features =
+		std::make_shared<MatrixFeatures< float64_t >>(signal, exm_len, num_exm);
 
 	int32_t num_obs = 0; // continuous observations, dummy value
 	bool use_plifs = true;
-	return new CHMSVMModel(features, labels, SMT_TWO_STATE, num_obs, use_plifs);
+	return std::make_shared<HMSVMModel>(features, labels, SMT_TWO_STATE, num_obs, use_plifs);
 }
 
-template CHMSVMModel* CTwoStateModel::simulate_data<std::mt19937_64>(int32_t num_exm, int32_t exm_len,
+template std::shared_ptr<HMSVMModel> TwoStateModel::simulate_data<std::mt19937_64>(int32_t num_exm, int32_t exm_len,
 	int32_t num_features, int32_t num_noise_features, std::mt19937_64& prng);
 
-CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
+std::shared_ptr<HMSVMModel> TwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	int32_t num_features, int32_t num_noise_features, int32_t seed)
 {
 	std::mt19937_64 prng(seed);

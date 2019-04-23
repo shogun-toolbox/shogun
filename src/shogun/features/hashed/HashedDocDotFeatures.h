@@ -15,11 +15,11 @@
 #include <shogun/lib/Tokenizer.h>
 
 namespace shogun {
-template<class ST> class CStringFeatures;
+template<class ST> class StringFeatures;
 template<class ST> class SGMatrix;
-class CDotFeatures;
-class CHashedDocConverter;
-class CTokenizer;
+class DotFeatures;
+class HashedDocConverter;
+class Tokenizer;
 
 /** @brief This class can be used to provide on-the-fly vectorization of a document collection.
  * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
@@ -31,7 +31,7 @@ class CTokenizer;
  * Eg. for the tokens ["a", "b", "c", "d"], with n_grams = 2 and skips = 2, one would get the following combinations :
  * ["a", "ab", "ac" (skipped 1), "ad" (skipped 2), "b", "bc", "bd" (skipped 1), "c", "cd", "d"].
  */
-class CHashedDocDotFeatures: public CDotFeatures
+class HashedDocDotFeatures: public DotFeatures
 {
 public:
 
@@ -45,20 +45,20 @@ public:
 	 * @param skips max number of tokens to skip when combining tokens
 	 * @param size cache size
 	 */
-	CHashedDocDotFeatures(int32_t hash_bits=0, CStringFeatures<char>* docs=NULL,
-			CTokenizer* tzer=NULL, bool normalize=true, int32_t n_grams=1, int32_t skips=0, int32_t size=0);
+	HashedDocDotFeatures(int32_t hash_bits=0, std::shared_ptr<StringFeatures<char>> docs=NULL,
+			std::shared_ptr<Tokenizer> tzer=NULL, bool normalize=true, int32_t n_grams=1, int32_t skips=0, int32_t size=0);
 
 	/** copy constructor */
-	CHashedDocDotFeatures(const CHashedDocDotFeatures& orig);
+	HashedDocDotFeatures(const HashedDocDotFeatures& orig);
 
 	/** constructor
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CHashedDocDotFeatures(CFile* loader);
+	HashedDocDotFeatures(std::shared_ptr<File> loader);
 
 	/** destructor */
-	virtual ~CHashedDocDotFeatures();
+	virtual ~HashedDocDotFeatures();
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -76,7 +76,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -142,7 +142,7 @@ public:
 	 *
 	 * @param docs the document collection
 	 */
-	void set_doc_collection(CStringFeatures<char>* docs);
+	void set_doc_collection(std::shared_ptr<StringFeatures<char>> docs);
 
 	virtual const char* get_name() const;
 
@@ -150,7 +150,7 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
 	/** get feature type
 	 *
@@ -182,18 +182,18 @@ public:
 			int32_t num_bits, uint32_t seed);
 
 private:
-	void init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer,
+	void init(int32_t hash_bits, std::shared_ptr<StringFeatures<char>> docs, std::shared_ptr<Tokenizer> tzer,
 		bool normalize, int32_t n_grams, int32_t skips);
 
 protected:
 	/** the document collection*/
-	CStringFeatures<char>* doc_collection;
+	std::shared_ptr<StringFeatures<char>> doc_collection;
 
 	/** number of bits of hash */
 	int32_t num_bits;
 
 	/** tokenizer */
-	CTokenizer* tokenizer;
+	std::shared_ptr<Tokenizer> tokenizer;
 
 	/** if should normalize the dot product results */
 	bool should_normalize;

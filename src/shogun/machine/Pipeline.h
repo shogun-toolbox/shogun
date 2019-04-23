@@ -14,28 +14,28 @@
 
 namespace shogun
 {
-	class CPipeline;
+	class Pipeline;
 
 	/** @brief Builder of pipeline. */
-	class CPipelineBuilder : public CSGObject
+	class PipelineBuilder : public SGObject
 	{
 	public:
-		virtual ~CPipelineBuilder();
+		virtual ~PipelineBuilder();
 
 		/** Add a transformer with default name to pipeline. The name is
 		 * obtained by transformer->get_name().
 		 * @param transformer the transformer
 		 * @return the current pipeline builder
 		 */
-		CPipelineBuilder* over(CTransformer* transformer);
+		std::shared_ptr<PipelineBuilder> over(std::shared_ptr<Transformer> transformer);
 
 		/** Add a transformer with given name to pipeline
 		 * @param name the name of the transformer
 		 * @param transformer the transformer
 		 * @return the current pipeline builder
 		 */
-		CPipelineBuilder*
-		over(const std::string& name, CTransformer* transformer);
+		std::shared_ptr<PipelineBuilder>
+		over(const std::string& name, std::shared_ptr<Transformer> transformer);
 
 		/** Add a machine with default name to pipeline. Pipeline may have only
 		 * one machine. build() will be called to create a new pipeline
@@ -43,7 +43,7 @@ namespace shogun
 		 * @param machine the machine
 		 * @return the current pipeline
 		 */
-		CPipeline* then(CMachine* machine);
+		std::shared_ptr<Pipeline> then(std::shared_ptr<Machine> machine);
 
 		/** Add a machine with given name to pipeline. Pipeline may have only
 		 * one machine. build() will be called to create a new pipeline
@@ -52,20 +52,20 @@ namespace shogun
 		 * @param machine the machine
 		 * @return the current pipeline
 		 */
-		CPipeline* then(const std::string& name, CMachine* machine);
+		std::shared_ptr<Pipeline> then(const std::string& name, std::shared_ptr<Machine> machine);
 
 		/** Add a list of stages to pipeline. Stages in the list must be
 		 * transformers or machines.
 		 * @param stages vector of stages to add
 		 * @return the current pipeline
 		 */
-		CPipelineBuilder* add_stages(std::vector<CSGObject*> stages);
+		std::shared_ptr<PipelineBuilder> add_stages(std::vector<std::shared_ptr<SGObject>> stages);
 
 		/* Build pipeline. A new pipeline instance will be created, current
 		 * pipeline builder will become invalid after calling this method.
 		 * @return the new pipeline instance
 		 */
-		CPipeline* build();
+		std::shared_ptr<Pipeline> build();
 
 		virtual const char* get_name() const override
 		{
@@ -76,7 +76,7 @@ namespace shogun
 		/** Check pipeline is not empty and machine has been added. */
 		void check_pipeline() const;
 
-		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
+		std::vector<std::pair<std::string, variant<std::shared_ptr<Transformer>, std::shared_ptr<Machine>>>>
 		    m_stages;
 	};
 
@@ -85,15 +85,15 @@ namespace shogun
 	 * or testing and a machine as the final stage. Features are transformed by
 	 * transformers and fed into the next stage sequentially.
 	 */
-	class CPipeline : public CMachine
+	class Pipeline : public Machine
 	{
-		friend class CPipelineBuilder;
+		friend class PipelineBuilder;
 
 	public:
-		CPipeline();
-		virtual ~CPipeline();
+		Pipeline();
+		virtual ~Pipeline();
 
-		virtual CLabels* apply(CFeatures* data = NULL) override;
+		virtual std::shared_ptr<Labels> apply(std::shared_ptr<Features> data = NULL) override;
 
 		virtual const char* get_name() const override
 		{
@@ -107,21 +107,21 @@ namespace shogun
 		 * @param name name of the transformer
 		 * @return the index-th transformer
 		 */
-		CTransformer* get_transformer(const std::string& name) const;
+		std::shared_ptr<Transformer> get_transformer(const std::string& name) const;
 
 		/** Get machine in the pipeline
 		 * @return the machine
 		 */
-		CMachine* get_machine() const;
+		std::shared_ptr<Machine> get_machine() const;
 
-		virtual CSGObject* clone(ParameterProperties pp = ParameterProperties::ALL) const override;
+		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override;
 
 		virtual EProblemType get_machine_problem_type() const override;
 
 	protected:
-		virtual bool train_machine(CFeatures* data = NULL) override;
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
-		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
+		std::vector<std::pair<std::string, variant<std::shared_ptr<Transformer>, std::shared_ptr<Machine>>>>
 		    m_stages;
 		virtual bool train_require_labels() const override;
 	};

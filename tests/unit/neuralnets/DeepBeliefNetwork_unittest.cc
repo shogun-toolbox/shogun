@@ -45,24 +45,24 @@ TEST(DeepBeliefNetwork, convert_to_neural_network)
 	const int32_t seed = 100;
 	std::mt19937_64 prng(seed);
 
-	CDeepBeliefNetwork dbn(5, RBMVUT_BINARY);
+	DeepBeliefNetwork dbn(5, RBMVUT_BINARY);
 	dbn.add_hidden_layer(6);
 	dbn.add_hidden_layer(4);
 	dbn.add_hidden_layer(8);
 
 	dbn.initialize_neural_network();
 
-	CNeuralNetwork* nn = dbn.convert_to_neural_network();
+	auto nn = dbn.convert_to_neural_network();
 
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	SGMatrix<float64_t> x(5, 3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
 		x[i] = uniform_real_dist(prng);
 
-	CDenseFeatures<float64_t> f(x);
+	auto f = std::make_shared<DenseFeatures<float64_t>>(x);
 
-	CDenseFeatures<float64_t>* f_transformed_dbn = dbn.transform(&f);
-	CDenseFeatures<float64_t>* f_transformed_nn = nn->transform(&f);
+	auto f_transformed_dbn = dbn.transform(f);
+	auto f_transformed_nn = nn->transform(f);
 
 	SGMatrix<float64_t> x_transformed_dbn =
 		f_transformed_dbn->get_feature_matrix();
@@ -73,7 +73,4 @@ TEST(DeepBeliefNetwork, convert_to_neural_network)
 	for (int32_t i=0; i< x_transformed_dbn.num_rows*x_transformed_dbn.num_cols; i++)
 		EXPECT_NEAR(x_transformed_dbn[i], x_transformed_nn[i], 1e-15);
 
-	SG_UNREF(nn);
-	SG_UNREF(f_transformed_dbn);
-	SG_UNREF(f_transformed_nn);
 }

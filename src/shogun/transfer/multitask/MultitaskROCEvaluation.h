@@ -20,42 +20,42 @@ namespace shogun
  * under ROC curve (auROC) of each task separately.
  *
  */
-class CMultitaskROCEvaluation: public CROCEvaluation
+class MultitaskROCEvaluation: public ROCEvaluation
 {
 public:
 	/** constructor */
-	CMultitaskROCEvaluation() :
-		CROCEvaluation(), m_task_relation(NULL), m_tasks_indices(NULL),
+	MultitaskROCEvaluation() :
+		ROCEvaluation(), m_task_relation(NULL), m_tasks_indices(NULL),
 		m_num_tasks(0)
 	{
 	}
 
 	/** constructor */
-	CMultitaskROCEvaluation(CTaskRelation* task_relation) :
-		CROCEvaluation(), m_task_relation(NULL), m_tasks_indices(NULL),
+	MultitaskROCEvaluation(std::shared_ptr<TaskRelation> task_relation) :
+		ROCEvaluation(), m_task_relation(NULL), m_tasks_indices(NULL),
 		m_num_tasks(0)
 	{
 		set_task_relation(task_relation);
 	}
 
 	/** destructor */
-	virtual ~CMultitaskROCEvaluation()
+	virtual ~MultitaskROCEvaluation()
 	{
 		SG_FREE(m_tasks_indices);
 	}
 
 	/** set task relation */
-	void set_task_relation(CTaskRelation* task_relation)
+	void set_task_relation(std::shared_ptr<TaskRelation> task_relation)
 	{
-		SG_REF(task_relation);
-		SG_UNREF(m_task_relation);
+		
+		
 		m_task_relation = task_relation;
 	}
 
 	/** get task relation */
-	CTaskRelation* get_task_relation() const
+	std::shared_ptr<TaskRelation> get_task_relation() const
 	{
-		SG_REF(m_task_relation);
+		
 		return m_task_relation;
 	}
 
@@ -74,7 +74,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	/** get evaluation direction */
 	virtual EEvaluationDirection get_evaluation_direction() const
@@ -85,7 +85,7 @@ public:
 protected:
 
 	/** task relation */
-	CTaskRelation* m_task_relation;
+	std::shared_ptr<TaskRelation> m_task_relation;
 
 	/** indices */
 	SGVector<index_t>* m_tasks_indices;

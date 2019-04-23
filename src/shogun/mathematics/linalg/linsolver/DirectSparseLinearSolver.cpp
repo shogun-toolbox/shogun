@@ -17,22 +17,21 @@ using namespace Eigen;
 namespace shogun
 {
 
-CDirectSparseLinearSolver::CDirectSparseLinearSolver()
-	: CLinearSolver<float64_t, float64_t>()
+DirectSparseLinearSolver::DirectSparseLinearSolver()
+	: LinearSolver<float64_t, float64_t>()
 {
 }
 
-CDirectSparseLinearSolver::~CDirectSparseLinearSolver()
+DirectSparseLinearSolver::~DirectSparseLinearSolver()
 {
 }
 
-SGVector<float64_t> CDirectSparseLinearSolver::solve(
-		CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+SGVector<float64_t> DirectSparseLinearSolver::solve(
+		std::shared_ptr<LinearOperator<float64_t>> A, SGVector<float64_t> b)
 {
 	require(A, "Operator is NULL!");
 	require(A->get_dimension()==b.vlen, "Dimension mismatch!");
-	CSparseMatrixOperator<float64_t>* op
-		=dynamic_cast<CSparseMatrixOperator<float64_t>*>(A);
+	auto op=A->as<SparseMatrixOperator<float64_t>>();
 	require(op, "Operator is not SparseMatrixOperator type!");
 
 	// creating eigen3 Sparse Matrix

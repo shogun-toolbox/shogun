@@ -14,25 +14,25 @@
 
 using namespace shogun;
 
-CGaussianKernel::CGaussianKernel() : CShiftInvariantKernel()
+GaussianKernel::GaussianKernel() : ShiftInvariantKernel()
 {
 	register_params();
 }
 
-CGaussianKernel::CGaussianKernel(float64_t w) : CShiftInvariantKernel()
+GaussianKernel::GaussianKernel(float64_t w) : ShiftInvariantKernel()
 {
 	register_params();
 	set_width(w);
 }
 
-CGaussianKernel::CGaussianKernel(int32_t size, float64_t w) : CShiftInvariantKernel()
+GaussianKernel::GaussianKernel(int32_t size, float64_t w) : ShiftInvariantKernel()
 {
 	register_params();
 	set_width(w);
 	set_cache_size(size);
 }
 
-CGaussianKernel::CGaussianKernel(CDotFeatures* l, CDotFeatures* r, float64_t w, int32_t size) : CShiftInvariantKernel()
+GaussianKernel::GaussianKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, float64_t w, int32_t size) : ShiftInvariantKernel()
 {
 	register_params();
 	set_width(w);
@@ -40,28 +40,27 @@ CGaussianKernel::CGaussianKernel(CDotFeatures* l, CDotFeatures* r, float64_t w, 
 	init(l, r);
 }
 
-CGaussianKernel::~CGaussianKernel()
+GaussianKernel::~GaussianKernel()
 {
 	cleanup();
 }
 
-CGaussianKernel* CGaussianKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<GaussianKernel> GaussianKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
 {
 	require(kernel->get_kernel_type()==K_GAUSSIAN,
-		"Provided kernel ({}) must be of type CGaussianKernel!", kernel->get_name());
+		"Provided kernel ({}) must be of type GaussianKernel!", kernel->get_name());
 
-	SG_REF(kernel);
-	return (CGaussianKernel*)kernel;
+	return std::static_pointer_cast<GaussianKernel>(kernel);
 }
 
 #include <typeinfo>
-CSGObject *CGaussianKernel::shallow_copy() const
+std::shared_ptr<SGObject >GaussianKernel::shallow_copy() const
 {
 	// TODO: remove this after all the classes get shallow_copy properly implemented
-	// this assert is to avoid any subclass of CGaussianKernel accidentally called
+	// this assert is to avoid any subclass of GaussianKernel accidentally called
 	// with the implement here
-	ASSERT(typeid(*this) == typeid(CGaussianKernel))
-	CGaussianKernel *ker = new CGaussianKernel(cache_size, get_width());
+	ASSERT(typeid(*this) == typeid(GaussianKernel))
+	auto ker = std::make_shared<GaussianKernel>(cache_size, get_width());
 	if (lhs && rhs)
 	{
 		ker->init(lhs, rhs);
@@ -70,25 +69,25 @@ CSGObject *CGaussianKernel::shallow_copy() const
 	return ker;
 }
 
-void CGaussianKernel::cleanup()
+void GaussianKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 	m_distance->cleanup();
 }
 
-bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
+bool GaussianKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	cleanup();
-	return CShiftInvariantKernel::init(l, r);
+	return ShiftInvariantKernel::init(l, r);
 }
 
-void CGaussianKernel::set_width(float64_t w)
+void GaussianKernel::set_width(float64_t w)
 {
 	require(w>0, "width ({}) must be positive",w);
 	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
-SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
+SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
 {
 	require(lhs, "Left hand side features must be set!");
 	require(rhs, "Rightt hand side features must be set!");
@@ -114,33 +113,33 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 	}
 }
 
-float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t GaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
     float64_t result=distance(idx_a, idx_b);
 	return std::exp(-result);
 }
 
-void CGaussianKernel::load_serializable_post() noexcept(false)
+void GaussianKernel::load_serializable_post() noexcept(false)
 {
-	CKernel::load_serializable_post();
+	Kernel::load_serializable_post();
 	if (lhs && rhs)
 		m_distance->init(lhs, rhs);
 }
 
-float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b) const
+float64_t GaussianKernel::distance(int32_t idx_a, int32_t idx_b) const
 {
-	return CShiftInvariantKernel::distance(idx_a, idx_b)/get_width();
+	return ShiftInvariantKernel::distance(idx_a, idx_b)/get_width();
 }
 
-void CGaussianKernel::register_params()
+void GaussianKernel::register_params()
 {
 	set_width(1.0);
 	set_cache_size(10);
 
-	CEuclideanDistance* dist=new CEuclideanDistance();
+	auto dist=std::make_shared<EuclideanDistance>();
 	dist->set_disable_sqrt(true);
 	m_distance=dist;
-	SG_REF(m_distance);
+
 
 	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }

@@ -69,7 +69,7 @@ public:
 	 * @param correction standard momentum method (eg, StandardMomentumCorrection)
 	 *
 	 */
-	virtual void set_momentum_correction(MomentumCorrection* correction);
+	virtual void set_momentum_correction(std::shared_ptr<MomentumCorrection> correction);
 
 	/*  Destructor */
 	virtual ~AdaptMomentumCorrection();
@@ -111,7 +111,7 @@ public:
 	 * @param rate_min minimum of the rate
 	 * @param rate_max maximum of the rate
 	 */
-	virtual void set_adapt_rate(float64_t adapt_rate, float64_t rate_min=0.0, float64_t rate_max=CMath::INFTY);
+	virtual void set_adapt_rate(float64_t adapt_rate, float64_t rate_min=0.0, float64_t rate_max=Math::INFTY);
 
 	/** Set the init rate used to discount/raise the current descend direction 
 	 *
@@ -123,7 +123,7 @@ protected:
 	/** element wise rate used to discount/raise the current descend direction  */
 	SGVector<float64_t> m_descend_rate;
 	/** the standard momentum method */
-	MomentumCorrection* m_momentum_correction;
+	std::shared_ptr<MomentumCorrection> m_momentum_correction;
 	/** the adapt rate */
 	float64_t m_adapt_rate;
 	/** the minimum of the adapt rate */

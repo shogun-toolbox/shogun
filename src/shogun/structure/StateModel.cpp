@@ -8,26 +8,26 @@
 
 using namespace shogun;
 
-CStateModel::CStateModel() : CSGObject()
+StateModel::StateModel() : SGObject()
 {
 	init();
 }
 
-CStateModel::~CStateModel()
+StateModel::~StateModel()
 {
 }
 
-int32_t CStateModel::get_num_states() const
+int32_t StateModel::get_num_states() const
 {
 	return m_num_states;
 }
 
-int32_t CStateModel::get_num_transmission_params() const
+int32_t StateModel::get_num_transmission_params() const
 {
 	return m_num_transmission_params;
 }
 
-void CStateModel::init()
+void StateModel::init()
 {
 	SG_ADD(&m_num_states, "m_num_states", "The number of states");
 	SG_ADD(&m_num_transmission_params, "m_num_tranmission_params",
@@ -40,7 +40,7 @@ void CStateModel::init()
 	m_num_transmission_params = 0;
 }
 
-SGVector< int32_t > CStateModel::get_monotonicity(int32_t num_free_states,
+SGVector< int32_t > StateModel::get_monotonicity(int32_t num_free_states,
 		int32_t num_feats) const
 {
 	SGVector< int32_t > ret(num_feats*num_free_states);
@@ -48,12 +48,12 @@ SGVector< int32_t > CStateModel::get_monotonicity(int32_t num_free_states,
 	return ret;
 }
 
-SGVector< float64_t > CStateModel::get_start_states() const
+SGVector< float64_t > StateModel::get_start_states() const
 {
 	return m_p;
 }
 
-SGVector< float64_t > CStateModel::get_stop_states() const
+SGVector< float64_t > StateModel::get_stop_states() const
 {
 	return m_q;
 }

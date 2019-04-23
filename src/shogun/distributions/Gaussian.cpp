@@ -17,14 +17,14 @@
 using namespace shogun;
 using namespace linalg;
 
-CGaussian::CGaussian() : RandomMixin<CDistribution>(), m_constant(0), m_d(), m_u(), m_mean(), m_cov_type(FULL)
+Gaussian::Gaussian() : RandomMixin<Distribution>(), m_constant(0), m_d(), m_u(), m_mean(), m_cov_type(FULL)
 {
 	register_params();
 }
 
-CGaussian::CGaussian(
+Gaussian::Gaussian(
     const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type)
-    : RandomMixin<CDistribution>()
+    : RandomMixin<Distribution>()
 {
 	ASSERT(mean.vlen==cov.num_rows)
 	ASSERT(cov.num_rows==cov.num_cols)
@@ -42,7 +42,7 @@ CGaussian::CGaussian(
 	register_params();
 }
 
-void CGaussian::init()
+void Gaussian::init()
 {
 	m_constant = std::log(2 * M_PI) * m_mean.vlen;
 	switch (m_cov_type)
@@ -58,11 +58,11 @@ void CGaussian::init()
 	}
 }
 
-CGaussian::~CGaussian()
+Gaussian::~Gaussian()
 {
 }
 
-bool CGaussian::train(CFeatures* data)
+bool Gaussian::train(std::shared_ptr<Features> data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -72,7 +72,7 @@ bool CGaussian::train(CFeatures* data)
 		set_features(data);
 	}
 
-	CDotFeatures* dotdata=(CDotFeatures *) data;
+	auto dotdata=data->as<DotFeatures>();
 	m_mean=dotdata->get_mean();
 	SGMatrix<float64_t> cov=dotdata->get_cov();
 	decompose_cov(cov);
@@ -80,7 +80,7 @@ bool CGaussian::train(CFeatures* data)
 	return true;
 }
 
-int32_t CGaussian::get_num_model_parameters()
+int32_t Gaussian::get_num_model_parameters()
 {
 	switch (m_cov_type)
 	{
@@ -94,29 +94,29 @@ int32_t CGaussian::get_num_model_parameters()
 	return 0;
 }
 
-float64_t CGaussian::get_log_model_parameter(int32_t num_param)
+float64_t Gaussian::get_log_model_parameter(int32_t num_param)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
-float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t Gaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
-float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
+float64_t Gaussian::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features->has_property(FP_DOT))
-	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
+	SGVector<float64_t> v=features->as<DotFeatures>()->get_computed_dot_feature_vector(num_example);
 	float64_t answer=compute_log_PDF(v);
 	return answer;
 }
 
-float64_t CGaussian::update_params_em(const SGVector<float64_t> alpha_k)
+float64_t Gaussian::update_params_em(const SGVector<float64_t> alpha_k)
 {
-	CDotFeatures* dotdata=features->as<CDotFeatures>();
+	auto dotdata=features->as<DotFeatures>();
 	int32_t num_dim=dotdata->get_dim_feature_space();
 
 	// compute mean
@@ -229,7 +229,7 @@ float64_t CGaussian::update_params_em(const SGVector<float64_t> alpha_k)
 	return alpha_k_sum;
 }
 
-float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
+float64_t Gaussian::compute_log_PDF(SGVector<float64_t> point)
 {
 	ASSERT(m_mean.vector && m_d.vector)
 	ASSERT(point.vlen == m_mean.vlen)
@@ -268,12 +268,12 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 	return -0.5 * answer;
 }
 
-SGVector<float64_t> CGaussian::get_mean()
+SGVector<float64_t> Gaussian::get_mean()
 {
 	return m_mean;
 }
 
-void CGaussian::set_mean(SGVector<float64_t> mean)
+void Gaussian::set_mean(SGVector<float64_t> mean)
 {
 	if (mean.vlen==1)
 		m_cov_type=SPHERICAL;
@@ -281,7 +281,7 @@ void CGaussian::set_mean(SGVector<float64_t> mean)
 	m_mean=mean;
 }
 
-void CGaussian::set_cov(SGMatrix<float64_t> cov)
+void Gaussian::set_cov(SGMatrix<float64_t> cov)
 {
 	ASSERT(cov.num_rows==cov.num_cols)
 	ASSERT(cov.num_rows==m_mean.vlen)
@@ -289,13 +289,13 @@ void CGaussian::set_cov(SGMatrix<float64_t> cov)
 	init();
 }
 
-void CGaussian::set_d(const SGVector<float64_t> d)
+void Gaussian::set_d(const SGVector<float64_t> d)
 {
 	m_d = d;
 	init();
 }
 
-SGMatrix<float64_t> CGaussian::get_cov()
+SGMatrix<float64_t> Gaussian::get_cov()
 {
 	SGMatrix<float64_t> cov(m_mean.vlen, m_mean.vlen);
 
@@ -336,7 +336,7 @@ SGMatrix<float64_t> CGaussian::get_cov()
 	return cov;
 }
 
-void CGaussian::register_params()
+void Gaussian::register_params()
 {
 	SG_ADD(&m_u, "m_u", "Unitary matrix.");
 	SG_ADD(&m_d, "m_d", "Diagonal.");
@@ -347,7 +347,7 @@ void CGaussian::register_params()
 	    ParameterProperties::NONE, SG_OPTIONS(FULL, DIAG, SPHERICAL));
 }
 
-void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
+void Gaussian::decompose_cov(SGMatrix<float64_t> cov)
 {
 	switch (m_cov_type)
 	{
@@ -383,7 +383,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 	}
 }
 
-SGVector<float64_t> CGaussian::sample()
+SGVector<float64_t> Gaussian::sample()
 {
 	SG_TRACE("Entering");
 	SGMatrix<float64_t> r_matrix(m_mean.vlen, m_mean.vlen);
@@ -439,16 +439,16 @@ SGVector<float64_t> CGaussian::sample()
 	return samp;
 }
 
-CGaussian* CGaussian::obtain_from_generic(CDistribution* distribution)
+std::shared_ptr<Gaussian> Gaussian::obtain_from_generic(std::shared_ptr<Distribution> distribution)
 {
 	if (!distribution)
 		return NULL;
 
-	CGaussian* casted=dynamic_cast<CGaussian*>(distribution);
+	auto casted=std::dynamic_pointer_cast<Gaussian>(distribution);
 	if (!casted)
 		return NULL;
 
 	/* since an additional reference is returned */
-	SG_REF(casted);
+
 	return casted;
 }

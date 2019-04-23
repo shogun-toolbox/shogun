@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Sergey Lisitsyn, Heiko Strathmann,
  *          Chiyuan Zhang, Viktor Gal, Bjoern Esser
  */
 
@@ -15,25 +15,25 @@
 
 using namespace shogun;
 
-CBinaryFile::CBinaryFile()
+BinaryFile::BinaryFile()
 {
 	unstable(SOURCE_LOCATION);
 }
 
-CBinaryFile::CBinaryFile(FILE* f, const char* name) : CFile(f, name)
+BinaryFile::BinaryFile(FILE* f, const char* name) : File(f, name)
 {
 }
 
-CBinaryFile::CBinaryFile(const char* fname, char rw, const char* name) : CFile(fname, rw, name)
+BinaryFile::BinaryFile(const char* fname, char rw, const char* name) : File(fname, rw, name)
 {
 }
 
-CBinaryFile::~CBinaryFile()
+BinaryFile::~BinaryFile()
 {
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
+void BinaryFile::fname(sg_type*& vec, int32_t& len)								\
 {																					\
 	if (!file)																		\
 		error("File invalid.");												\
@@ -63,7 +63,7 @@ GET_VECTOR(get_vector, uint64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
+void BinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 {																					\
 	if (!file)																		\
 		error("File invalid.");												\
@@ -94,7 +94,7 @@ GET_MATRIX(get_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 #define GET_NDARRAY(fname,sg_type,datatype)									\
-void CBinaryFile::fname(sg_type *& array, int32_t *& dims,int32_t & num_dims)\
+void BinaryFile::fname(sg_type *& array, int32_t *& dims,int32_t & num_dims)\
 {																			\
 	size_t total = 1;														\
 																			\
@@ -132,7 +132,7 @@ GET_NDARRAY(get_ndarray,float64_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void BinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		error("File invalid.");													\
@@ -157,7 +157,7 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
 			error("Failed to read sparse vector {}", i);							\
 		matrix[i].features=vec;															\
-		num_feat = CMath::max(num_feat, matrix[i].get_num_dimensions()); \
+		num_feat = Math::max(num_feat, matrix[i].get_num_dimensions()); \
 	}																					\
 }
 GET_SPARSEMATRIX(get_sparse_matrix, bool, TSGDataType(CT_MATRIX, ST_NONE, PT_BOOL))
@@ -177,7 +177,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, 
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CBinaryFile::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void BinaryFile::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 	strings=NULL;																				\
 	num_str=0;																					\
@@ -223,7 +223,7 @@ GET_STRING_LIST(get_string_list, floatmax_t, TSGDataType(CT_VECTOR, ST_NONE, PT_
 /** set functions - to pass data from shogun to the target interface */
 
 #define SET_VECTOR(fname, sg_type, dtype)							\
-void CBinaryFile::fname(const sg_type* vec, int32_t len)			\
+void BinaryFile::fname(const sg_type* vec, int32_t len)			\
 {																	\
 	if (!(file && vec))												\
 		error("File or vector invalid.");						\
@@ -249,7 +249,7 @@ SET_VECTOR(set_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype) \
-void CBinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+void BinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 {																					\
 	if (!(file && matrix))															\
 		error("File or matrix invalid.");										\
@@ -276,7 +276,7 @@ SET_MATRIX(set_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef SET_MATRIX
 
 #define SET_NDARRAY(fname,sg_type,datatype)									\
-void CBinaryFile::fname(const sg_type * array, int32_t * dims,int32_t num_dims)	\
+void BinaryFile::fname(const sg_type * array, int32_t * dims,int32_t num_dims)	\
 {																			\
 	size_t total = 1;														\
 																			\
@@ -312,7 +312,7 @@ SET_NDARRAY(set_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef SET_NDARRAY
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
-void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
+void BinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
@@ -348,7 +348,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CBinaryFile::fname(const SGVector<sg_type>* strings, int32_t num_str)	\
+void BinaryFile::fname(const SGVector<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		error("File or strings invalid.");											\
@@ -377,18 +377,18 @@ SET_STRING_LIST(set_string_list, floatmax_t, (CT_VECTOR, ST_NONE, PT_FLOATMAX))
 #undef SET_STRING_LIST
 
 
-int32_t CBinaryFile::parse_first_header(TSGDataType& type)
+int32_t BinaryFile::parse_first_header(TSGDataType& type)
 {
 	    return -1;
 }
 
-int32_t CBinaryFile::parse_next_header(TSGDataType& type)
+int32_t BinaryFile::parse_next_header(TSGDataType& type)
 {
 	    return -1;
 }
 
 void
-CBinaryFile::read_header(TSGDataType* dest)
+BinaryFile::read_header(TSGDataType* dest)
 {
 	ASSERT(file)
 	ASSERT(dest)
@@ -414,7 +414,7 @@ CBinaryFile::read_header(TSGDataType* dest)
 }
 
 void
-CBinaryFile::write_header(const TSGDataType* datatype)
+BinaryFile::write_header(const TSGDataType* datatype)
 {
 	ASSERT(file)
 

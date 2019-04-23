@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Abinash Panda, Viktor Gal, Soeren Sonnenburg, 
+ * Authors: Fernando Iglesias, Abinash Panda, Viktor Gal, Soeren Sonnenburg,
  *          Shell Hu, Thoralf Klein, Michal Uricar, Sanuj Sharma
  */
 
@@ -13,44 +13,44 @@
 
 using namespace shogun;
 
-CMulticlassModel::CMulticlassModel()
-: CStructuredModel()
+MulticlassModel::MulticlassModel()
+: StructuredModel()
 {
 	init();
 }
 
-	CMulticlassModel::CMulticlassModel(CFeatures* features, CStructuredLabels* labels)
-: CStructuredModel(features, labels)
+	MulticlassModel::MulticlassModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels)
+: StructuredModel(features, labels)
 {
 	init();
 }
 
-CMulticlassModel::~CMulticlassModel()
+MulticlassModel::~MulticlassModel()
 {
 }
 
-CStructuredLabels* CMulticlassModel::structured_labels_factory(int32_t num_labels)
+std::shared_ptr<StructuredLabels> MulticlassModel::structured_labels_factory(int32_t num_labels)
 {
-	return new CMulticlassSOLabels(num_labels);
+	return std::make_shared<MulticlassSOLabels>(num_labels);
 }
 
-int32_t CMulticlassModel::get_dim() const
+int32_t MulticlassModel::get_dim() const
 {
 	// TODO make the casts safe!
-	int32_t num_classes = ((CMulticlassSOLabels*) m_labels)->get_num_classes();
-	int32_t feats_dim   = ((CDotFeatures*) m_features)->get_dim_feature_space();
+	int32_t num_classes = m_labels->as<MulticlassSOLabels>()->get_num_classes();
+	int32_t feats_dim   = m_features->as<DotFeatures>()->get_dim_feature_space();
 
 	return feats_dim*num_classes;
 }
 
-SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
+SGVector< float64_t > MulticlassModel::get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y)
 {
 	SGVector< float64_t > psi( get_dim() );
 	psi.zero();
 
-	SGVector< float64_t > x = ((CDotFeatures*) m_features)->
+	SGVector< float64_t > x = m_features->as<DotFeatures>()->
 		get_computed_dot_feature_vector(feat_idx);
-	CRealNumber* r = y->as<CRealNumber>();
+	auto r = y->as<RealNumber>();
 	ASSERT(r != NULL)
 	float64_t label_value = r->value;
 
@@ -60,17 +60,17 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 	return psi;
 }
 
-CResultSet* CMulticlassModel::argmax(
+std::shared_ptr<ResultSet> MulticlassModel::argmax(
 		SGVector< float64_t > w,
 		int32_t feat_idx,
 		bool const training)
 {
-	CDotFeatures* df = (CDotFeatures*) m_features;
+	auto df = m_features->as<DotFeatures>();
 	int32_t feats_dim   = df->get_dim_feature_space();
 
 	if ( training )
 	{
-		CMulticlassSOLabels* ml = (CMulticlassSOLabels*) m_labels;
+		auto ml = m_labels->as<MulticlassSOLabels>();
 		m_num_classes = ml->get_num_classes();
 	}
 	else
@@ -85,7 +85,7 @@ CResultSet* CMulticlassModel::argmax(
 	// Find the class that gives the maximum score
 
 	float64_t score = 0, ypred = 0;
-	float64_t max_score = -CMath::INFTY;
+	float64_t max_score = -Math::INFTY;
 
 	for ( int32_t c = 0 ; c < m_num_classes ; ++c )
 	{
@@ -100,20 +100,20 @@ CResultSet* CMulticlassModel::argmax(
 		}
 	}
 
-	// Build the CResultSet object to return
-	CResultSet* ret = new CResultSet();
-	SG_REF(ret);
+	// Build the ResultSet object to return
+	auto ret = std::make_shared<ResultSet>();
+
 	ret->psi_computed = true;
-	CRealNumber* y  = new CRealNumber(ypred);
-	SG_REF(y);
+	auto y  = std::make_shared<RealNumber>(ypred);
+
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, y);
 	ret->score    = max_score;
 	ret->argmax   = y;
 	if ( training )
 	{
-		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+		ret->delta     = StructuredModel::delta_loss(feat_idx, y);
+		ret->psi_truth = StructuredModel::get_joint_feature_vector(
 					feat_idx, feat_idx);
 		ret->score    -= linalg::dot(w, ret->psi_truth);
 	}
@@ -121,34 +121,34 @@ CResultSet* CMulticlassModel::argmax(
 	return ret;
 }
 
-float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t MulticlassModel::delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2)
 {
-	CRealNumber* rn1 = y1->as<CRealNumber>();
-	CRealNumber* rn2 = y2->as<CRealNumber>();
+	auto rn1 = y1->as<RealNumber>();
+	auto rn2 = y2->as<RealNumber>();
 	ASSERT(rn1 != NULL)
 	ASSERT(rn2 != NULL)
 
 	return delta_loss(rn1->value, rn2->value);
 }
 
-float64_t CMulticlassModel::delta_loss(int32_t y1_idx, float64_t y2)
+float64_t MulticlassModel::delta_loss(int32_t y1_idx, float64_t y2)
 {
 	require(y1_idx >= 0 || y1_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]");
 
-	CRealNumber* rn1 = m_labels->get_label(y1_idx)->as<CRealNumber>();
+	auto rn1 = m_labels->get_label(y1_idx)->as<RealNumber>();
 	float64_t ret = delta_loss(rn1->value, y2);
-	SG_UNREF(rn1);
+
 
 	return ret;
 }
 
-float64_t CMulticlassModel::delta_loss(float64_t y1, float64_t y2)
+float64_t MulticlassModel::delta_loss(float64_t y1, float64_t y2)
 {
 	return (y1 == y2) ? 0 : 1;
 }
 
-void CMulticlassModel::init_primal_opt(
+void MulticlassModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
@@ -161,7 +161,7 @@ void CMulticlassModel::init_primal_opt(
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
 }
 
-void CMulticlassModel::init()
+void MulticlassModel::init()
 {
 	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes");
 

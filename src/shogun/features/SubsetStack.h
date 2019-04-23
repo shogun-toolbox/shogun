@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Soumyajit De, 
- *          Chiyuan Zhang, Viktor Gal, Fernando Iglesias, Bjoern Esser, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Soumyajit De,
+ *          Chiyuan Zhang, Viktor Gal, Fernando Iglesias, Bjoern Esser,
  *          Yuyu Zhang
  */
 
@@ -20,7 +20,7 @@
 namespace shogun
 {
 
-/** @brief class to add subset support to another class. A CSubsetStackStack instance
+/** @brief class to add subset support to another class. A SubsetStackStack instance
  * should be added and wrapper methods to all interfaces should be added.
  *
  * The subsets are organized as a stack. One can add arbritary many index sets
@@ -33,19 +33,19 @@ namespace shogun
  * mapping. On  removal, the last element on stack will be removed. This is done
  * for computational convenience.
  */
-class CSubsetStack: public CSGObject
+class SubsetStack: public SGObject
 {
 public:
 	/** Constructor. Creates empty subset stack
 	 */
-	CSubsetStack();
+	SubsetStack();
 
 	/** copy constructor
 	 */
-	CSubsetStack(const CSubsetStack& other);
+	SubsetStack(const SubsetStack& other);
 
 	/** destructor */
-	virtual ~CSubsetStack();
+	virtual ~SubsetStack() = default;
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "SubsetStack"; }
@@ -79,7 +79,7 @@ public:
 	inline index_t get_size() const
 	{
 		if (!has_subsets())
-			io::warn("CSubsetStack::get_size(): No subset in stack!");
+			io::warn("SubsetStack::get_size(): No subset in stack!");
 
 		return has_subsets() ? m_active_subset->get_size() : -1;
 	}
@@ -87,14 +87,14 @@ public:
 	/** @return true iff subset was added */
 	virtual bool has_subsets() const
 	{
-		return (m_active_subsets_stack->get_num_elements() > 0);
+		return (m_active_subsets_stack.size() > 0);
 	}
 
 	/** returns last (active) subset of the stack
 	 *
 	 * @return active subset
 	 */
-	CSubset* get_last_subset() const { return m_active_subset; }
+	std::shared_ptr<Subset> get_last_subset() const { return m_active_subset; }
 
 	/** returns the corresponding real index of a subset index
 	 * Maps through all added subsets in stack.
@@ -115,10 +115,10 @@ private:
 	 * recomputing them when subsets are removed. There is always the identity
 	 * subset as first element in here (only internal visible, has_subsets()
 	 * returns false if only this identity is present) */
-	CDynamicObjectArray* m_active_subsets_stack;
+	std::vector<std::shared_ptr<Subset>> m_active_subsets_stack;
 
 	/** active index subset. Last element on stack for quick access */
-	CSubset* m_active_subset;
+	std::shared_ptr<Subset> m_active_subset;
 };
 
 }

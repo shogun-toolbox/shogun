@@ -35,58 +35,57 @@
 #include <shogun/statistical_testing/internals/TestTypes.h>
 
 using namespace shogun;
-using namespace internal;
 
-struct CIndependenceTest::Self
+struct IndependenceTest::Self
 {
 	Self(index_t num_kernels);
-	KernelManager kernel_mgr;
+	internal::KernelManager kernel_mgr;
 };
 
-CIndependenceTest::Self::Self(index_t num_kernels) : kernel_mgr(num_kernels)
+IndependenceTest::Self::Self(index_t num_kernels) : kernel_mgr(num_kernels)
 {
 }
 
-CIndependenceTest::CIndependenceTest() : CTwoDistributionTest()
+IndependenceTest::IndependenceTest() : TwoDistributionTest()
 {
-	self=std::unique_ptr<Self>(new Self(IndependenceTest::num_kernels));
+	self=std::unique_ptr<Self>(new Self(internal::IndependenceTest::num_kernels));
 }
 
-CIndependenceTest::~CIndependenceTest()
+IndependenceTest::~IndependenceTest()
 {
 }
 
-void CIndependenceTest::set_kernel_p(CKernel* kernel_p)
+void IndependenceTest::set_kernel_p(std::shared_ptr<Kernel> kernel_p)
 {
 	self->kernel_mgr.kernel_at(0)=kernel_p;
 }
 
-CKernel* CIndependenceTest::get_kernel_p() const
+std::shared_ptr<Kernel> IndependenceTest::get_kernel_p() const
 {
 	return self->kernel_mgr.kernel_at(0);
 }
 
-void CIndependenceTest::set_kernel_q(CKernel* kernel_q)
+void IndependenceTest::set_kernel_q(std::shared_ptr<Kernel> kernel_q)
 {
 	self->kernel_mgr.kernel_at(1)=kernel_q;
 }
 
-CKernel* CIndependenceTest::get_kernel_q() const
+std::shared_ptr<Kernel> IndependenceTest::get_kernel_q() const
 {
 	return self->kernel_mgr.kernel_at(1);
 }
 
-const char* CIndependenceTest::get_name() const
+const char* IndependenceTest::get_name() const
 {
 	return "IndependenceTest";
 }
 
-KernelManager& CIndependenceTest::get_kernel_mgr()
+internal::KernelManager& IndependenceTest::get_kernel_mgr()
 {
 	return self->kernel_mgr;
 }
 
-const KernelManager& CIndependenceTest::get_kernel_mgr() const
+const internal::KernelManager& IndependenceTest::get_kernel_mgr() const
 {
 	return self->kernel_mgr;
 }

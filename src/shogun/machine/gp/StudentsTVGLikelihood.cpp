@@ -46,16 +46,16 @@ using namespace Eigen;
 namespace shogun
 {
 
-CStudentsTVGLikelihood::CStudentsTVGLikelihood()
-	: CNumericalVGLikelihood()
+StudentsTVGLikelihood::StudentsTVGLikelihood()
+	: NumericalVGLikelihood()
 {
 	m_log_sigma = 0.0;
 	m_log_df = std::log(2.0);
 	init();
 }
 
-CStudentsTVGLikelihood::CStudentsTVGLikelihood(float64_t sigma, float64_t df)
-	: CNumericalVGLikelihood()
+StudentsTVGLikelihood::StudentsTVGLikelihood(float64_t sigma, float64_t df)
+	: NumericalVGLikelihood()
 {
 	require(sigma>0.0, "Scale parameter ({}) must be greater than zero", sigma);
 	require(df>1.0, "Number of degrees of freedom ({}) must be greater than one", df);
@@ -65,18 +65,18 @@ CStudentsTVGLikelihood::CStudentsTVGLikelihood(float64_t sigma, float64_t df)
 	init();
 }
 
-CStudentsTVGLikelihood::~CStudentsTVGLikelihood()
+StudentsTVGLikelihood::~StudentsTVGLikelihood()
 {
 }
 
-void CStudentsTVGLikelihood::init_likelihood()
+void StudentsTVGLikelihood::init_likelihood()
 {
 	set_likelihood(
-		new CStudentsTLikelihood(
+		std::make_shared<StudentsTLikelihood>(
 		    std::exp(m_log_sigma), std::exp(m_log_df) + 1.0));
 }
 
-void CStudentsTVGLikelihood::init()
+void StudentsTVGLikelihood::init()
 {
 	init_likelihood();
 	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);

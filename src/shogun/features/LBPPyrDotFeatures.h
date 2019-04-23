@@ -17,16 +17,16 @@
 namespace shogun
 {
 /** @brief Implements Local Binary Patterns with Scale Pyramids as dot features for a set
- * of images. Expects the images to be loaded in a CDenseFeatures object.
+ * of images. Expects the images to be loaded in a DenseFeatures object.
  *
  * Original code can be found here : https://github.com/grenaud/freeIbis/tree/master/libocas_v093
  *
  */
-class CLBPPyrDotFeatures : public CDotFeatures
+class LBPPyrDotFeatures : public DotFeatures
 {
 	public:
 		/** default constructor  */
-		CLBPPyrDotFeatures();
+		LBPPyrDotFeatures();
 
 		/** constructor that initializes this Features object with the images to work on and
 		 * the number of pyramids to consider.
@@ -36,11 +36,11 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param image_h image height
 		 * @param num_pyramids the number of pyramids to consider
 		 */
-		CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, int32_t image_w, int32_t image_h,
+		LBPPyrDotFeatures(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w, int32_t image_h,
 			uint16_t num_pyramids);
 
 		/** Destructor */
-		virtual ~CLBPPyrDotFeatures();
+		virtual ~LBPPyrDotFeatures();
 
 		/** copy constructor
 		 *
@@ -48,7 +48,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *
 		 * @param orig original PolyFeature
 		 */
-		CLBPPyrDotFeatures(const CLBPPyrDotFeatures & orig);
+		LBPPyrDotFeatures(const LBPPyrDotFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
@@ -88,7 +88,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** iterate over the non-zero features
 		 *
@@ -124,7 +124,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		CFeatures* duplicate() const;
+		std::shared_ptr<Features> duplicate() const;
 
 		/**
 		 *
@@ -183,12 +183,12 @@ class CLBPPyrDotFeatures : public CDotFeatures
 	private:
 
 		/** init */
-		void init(CDenseFeatures<uint32_t>* image_set, int32_t image_w,
+		void init(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w,
 				int32_t image_h);
 
 	protected:
 		/** features in original space */
-		CDenseFeatures<uint32_t>* images;
+		std::shared_ptr<DenseFeatures<uint32_t>> images;
 
 		/** image width */
 		int32_t image_width;

@@ -19,22 +19,22 @@
 
 using namespace shogun;
 
-CDataGenerator::CDataGenerator() : CSGObject()
+DataGenerator::DataGenerator() : SGObject()
 {
 	init();
 }
 
-CDataGenerator::~CDataGenerator()
+DataGenerator::~DataGenerator()
 {
 
 }
 
-void CDataGenerator::init()
+void DataGenerator::init()
 {
 }
 
 template <typename PRNG>
-SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes,
+SGMatrix<float64_t> DataGenerator::generate_checkboard_data(int32_t num_classes,
 		int32_t dim, int32_t num_points, float64_t overlap, PRNG& prng)
 {
 	int32_t points_per_class = num_points / num_classes;
@@ -86,12 +86,12 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 	return points;
 }
 
-template SGMatrix<float64_t> CDataGenerator::generate_checkboard_data<std::mt19937_64>(int32_t num_classes,
+template SGMatrix<float64_t> DataGenerator::generate_checkboard_data<std::mt19937_64>(int32_t num_classes,
 		int32_t dim, int32_t num_points, float64_t overlap, std::mt19937_64& prng);
 
 
 template <typename PRNG>
-SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
+SGMatrix<float64_t> DataGenerator::generate_mean_data(index_t m,
 		index_t dim, float64_t mean_shift, PRNG& prng,
 		SGMatrix<float64_t> target)
 {
@@ -110,13 +110,13 @@ SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
 	return result;
 }
 
-template SGMatrix<float64_t> CDataGenerator::generate_mean_data<std::mt19937_64>(index_t m,
+template SGMatrix<float64_t> DataGenerator::generate_mean_data<std::mt19937_64>(index_t m,
 		index_t dim, float64_t mean_shift, std::mt19937_64& prng,
 		SGMatrix<float64_t> target);
 
 
 template <typename PRNG>
-SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
+SGMatrix<float64_t> DataGenerator::generate_sym_mix_gauss(index_t m,
 		float64_t d, float64_t angle, PRNG& prng, SGMatrix<float64_t> target)
 {
 	/* evtl. allocate space */
@@ -147,12 +147,12 @@ SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
 	return result;
 }
 
-template SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss<std::mt19937_64>(index_t m,
+template SGMatrix<float64_t> DataGenerator::generate_sym_mix_gauss<std::mt19937_64>(index_t m,
 		float64_t d, float64_t angle, std::mt19937_64& prng, SGMatrix<float64_t> target);
 
 
 template <typename PRNG>
-SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, index_t dim, PRNG& prng)
+SGMatrix<float64_t> DataGenerator::generate_gaussians(index_t m, index_t n, index_t dim, PRNG& prng)
 {
 	/* evtl. allocate space */
 	SGMatrix<float64_t> result =
@@ -171,7 +171,7 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 			if (k % (i+1) == 0)
 				mean[k] *= -1;
 		}
-		CGaussian* g = new CGaussian(mean, cov, DIAG);
+		auto g = std::make_shared<Gaussian>(mean, cov, DIAG);
 		random::seed(g, prng);
 		for (index_t j = 0; j < m; ++j)
 		{
@@ -179,12 +179,12 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 			sg_memcpy((result.matrix+j*result.num_rows+i*m*dim), v.vector, dim*sizeof(float64_t));
 		}
 
-		SG_UNREF(g);
+
 	}
 
 	return result;
 }
 
-template SGMatrix<float64_t> CDataGenerator::generate_gaussians<std::mt19937_64>(
+template SGMatrix<float64_t> DataGenerator::generate_gaussians<std::mt19937_64>(
 	index_t m, index_t n, index_t dim, std::mt19937_64& prng);
 

@@ -84,34 +84,34 @@ enum EAlphabet
  * BINARY, ALPHANUM, CUBE, RAW, IUPAC_NUCLEIC_ACID and IUPAC_AMINO_ACID.
  *
  */
-class CAlphabet : public CSGObject
+class Alphabet : public SGObject
 {
 	public:
 
 		/** default constructor
 		 *
 		 */
-		CAlphabet();
+		Alphabet();
 
 		/** constructor
 		 *
 		 * @param alpha alphabet to use
 		 * @param len len
 		 */
-		CAlphabet(char* alpha, int32_t len);
+		Alphabet(char* alpha, int32_t len);
 
 		/** constructor
 		 *
 		 * @param alpha alphabet (type) to use
 		 */
-		CAlphabet(EAlphabet alpha);
+		Alphabet(EAlphabet alpha);
 
 		/** constructor
 		 *
 		 * @param alpha alphabet to use
 		 */
-		CAlphabet(CAlphabet* alpha);
-		virtual ~CAlphabet();
+		Alphabet(std::shared_ptr<Alphabet> alpha);
+		virtual ~Alphabet();
 
 		/** set alphabet and initialize mapping table (for remap)
 		 *
@@ -302,7 +302,7 @@ class CAlphabet : public CSGObject
 		template <class ST>
 		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 
-		virtual CSGObject* clone(ParameterProperties pp = ParameterProperties::ALL) const override;
+		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const;
 
 	private:
 		/** Do basic initialisations like default settings
@@ -317,7 +317,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param src alphabet to copy histogram from
 		 */
-		void copy_histogram(const CAlphabet* src);
+		void copy_histogram(const Alphabet* src);
 
 	public:
 		/** B_A */

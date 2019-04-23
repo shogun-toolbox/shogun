@@ -16,22 +16,22 @@
 
 namespace shogun
 {
-	class CPluginEstimate;
-	template <class T> class CStringFeatures;
+	class PluginEstimate;
+	template <class T> class StringFeatures;
 /** @brief The HistogramWordString computes the TOP kernel on inhomogeneous
  * Markov Chains. */
-class CHistogramWordStringKernel: public CStringKernel<uint16_t>
+class HistogramWordStringKernel: public StringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */
-		CHistogramWordStringKernel();
+		HistogramWordStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param pie plugin estimate
 		 */
-		CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie);
+		HistogramWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie);
 
 		/** constructor
 		 *
@@ -39,11 +39,11 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @param pie plugin estimate
 		 */
-		CHistogramWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
-			CPluginEstimate* pie);
+		HistogramWordStringKernel(
+			std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
+			std::shared_ptr<PluginEstimate> pie);
 
-		virtual ~CHistogramWordStringKernel();
+		virtual ~HistogramWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -51,7 +51,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -95,7 +95,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 
 	protected:
 		/** plugin estimate */
-		CPluginEstimate* estimate;
+		std::shared_ptr<PluginEstimate> estimate;
 
 		/** mean */
 		float64_t* mean;

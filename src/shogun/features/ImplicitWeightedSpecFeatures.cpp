@@ -10,8 +10,8 @@
 
 using namespace shogun;
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
-	:CDotFeatures()
+ImplicitWeightedSpecFeatures::ImplicitWeightedSpecFeatures()
+	:DotFeatures()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -25,11 +25,11 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
 	spec_weights = 0;
 }
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
+ImplicitWeightedSpecFeatures::ImplicitWeightedSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize) : DotFeatures()
 {
 	ASSERT(str)
 	strings=str;
-	SG_REF(strings)
+
 	normalization_factors=NULL;
 	spec_weights=NULL;
 	num_strings = str->get_num_vectors();
@@ -44,18 +44,19 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 		compute_normalization_const();
 }
 
-void CImplicitWeightedSpecFeatures::compute_normalization_const()
+void ImplicitWeightedSpecFeatures::compute_normalization_const()
 {
 	float64_t* factors=SG_MALLOC(float64_t, num_strings);
 
 	for (int32_t i=0; i<num_strings; i++)
-		factors[i] = 1.0 / std::sqrt(dot(i, this, i));
+		factors[i] = 1.0 / std::sqrt(dot(i,
+			std::dynamic_pointer_cast<std::remove_pointer_t<decltype(this)>>(shared_from_this()), i));
 
 	normalization_factors=factors;
-	//CMath::display_vector(normalization_factors, num_strings, "n");
+	//Math::display_vector(normalization_factors, num_strings, "n");
 }
 
-bool CImplicitWeightedSpecFeatures::set_wd_weights()
+bool ImplicitWeightedSpecFeatures::set_wd_weights()
 {
 	SG_FREE(spec_weights);
 	spec_weights=SG_MALLOC(float64_t, degree);
@@ -66,7 +67,7 @@ bool CImplicitWeightedSpecFeatures::set_wd_weights()
 
 	for (i=0; i<degree; i++)
 	{
-		spec_size+=CMath::pow(alphabet_size, i+1);
+		spec_size+=Math::pow(alphabet_size, i+1);
 		spec_weights[i]=degree-i;
 		sum+=spec_weights[i];
 	}
@@ -76,7 +77,7 @@ bool CImplicitWeightedSpecFeatures::set_wd_weights()
 	return spec_weights!=NULL;
 }
 
-bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
+bool ImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 {
 	ASSERT(d==degree)
 
@@ -87,27 +88,26 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 	return true;
 }
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeightedSpecFeatures& orig) : CDotFeatures(orig),
+ImplicitWeightedSpecFeatures::ImplicitWeightedSpecFeatures(const ImplicitWeightedSpecFeatures& orig) : DotFeatures(orig),
 	num_strings(orig.num_strings),
 	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	not_implemented(SOURCE_LOCATION);
-	SG_REF(strings);
 }
 
-CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
+ImplicitWeightedSpecFeatures::~ImplicitWeightedSpecFeatures()
 {
-	SG_UNREF(strings);
+
 	SG_FREE(spec_weights);
 	SG_FREE(normalization_factors);
 }
 
-float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t ImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CImplicitWeightedSpecFeatures* sf = (CImplicitWeightedSpecFeatures*) df;
+	auto sf = std::static_pointer_cast<ImplicitWeightedSpecFeatures>(df);
 
 	ASSERT(vec_idx1 < num_strings)
 	ASSERT(vec_idx2 < sf->get_num_vectors())
@@ -165,7 +165,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
 		return result;
 }
 
-float64_t CImplicitWeightedSpecFeatures::dot(
+float64_t ImplicitWeightedSpecFeatures::dot(
     int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	ASSERT(vec2.size() == spec_size)
@@ -205,7 +205,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(
 	return result;
 }
 
-void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void ImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	int32_t len1=-1;
 	bool free_vec1;
@@ -226,7 +226,7 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 				int32_t idx=strings->get_masked_symbols(vec[j], mask);
 				idx=strings->shift_symbol(idx, degree-d-1);
 				if (abs_val)
-					vec2[offs + idx] += CMath::abs(alpha*spec_weights[d]);
+					vec2[offs + idx] += Math::abs(alpha*spec_weights[d]);
 				else
 					vec2[offs + idx] += alpha*spec_weights[d];
 				offs+=strings->shift_offset(1,d+1);
@@ -237,17 +237,17 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
-CFeatures* CImplicitWeightedSpecFeatures::duplicate() const
+std::shared_ptr<Features> ImplicitWeightedSpecFeatures::duplicate() const
 {
-	return new CImplicitWeightedSpecFeatures(*this);
+	return std::make_shared<ImplicitWeightedSpecFeatures>(*this);
 }
 
-int32_t CImplicitWeightedSpecFeatures::get_dim_feature_space() const
+int32_t ImplicitWeightedSpecFeatures::get_dim_feature_space() const
 {
 	return spec_size;
 }
 
-void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
+void* ImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=num_strings)
 	{
@@ -268,7 +268,7 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 	return it;
 }
 
-bool CImplicitWeightedSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool ImplicitWeightedSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
 
@@ -298,7 +298,7 @@ bool CImplicitWeightedSpecFeatures::get_next_feature(int32_t& index, float64_t& 
 	return true;
 }
 
-void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
+void ImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
 {
 	ASSERT(iterator)
 	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
@@ -307,7 +307,7 @@ void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
 }
 
 
-int32_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t ImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen=-1;
 	bool free_vec;
@@ -315,21 +315,21 @@ int32_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num) 
 	strings->free_feature_vector(vec1, num, free_vec);
 	int32_t nnz=0;
 	for (int32_t i=1; i<=degree; i++)
-		nnz+=CMath::min(CMath::pow(alphabet_size,i), vlen);
+		nnz+=Math::min(Math::pow(alphabet_size,i), vlen);
 	return nnz;
 }
 
-EFeatureType CImplicitWeightedSpecFeatures::get_feature_type() const
+EFeatureType ImplicitWeightedSpecFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CImplicitWeightedSpecFeatures::get_feature_class() const
+EFeatureClass ImplicitWeightedSpecFeatures::get_feature_class() const
 {
 	return C_WEIGHTEDSPEC;
 }
 
-int32_t CImplicitWeightedSpecFeatures::get_num_vectors() const
+int32_t ImplicitWeightedSpecFeatures::get_num_vectors() const
 {
 	return num_strings;
 }

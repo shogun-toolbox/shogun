@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg,
  *          Evan Shelhamer, Bjoern Esser
  */
 
@@ -12,22 +12,22 @@
 
 using namespace shogun;
 
-CLocalityPreservingProjections::CLocalityPreservingProjections() :
-		CLaplacianEigenmaps()
+LocalityPreservingProjections::LocalityPreservingProjections() :
+		LaplacianEigenmaps()
 {
 }
 
-CLocalityPreservingProjections::~CLocalityPreservingProjections()
+LocalityPreservingProjections::~LocalityPreservingProjections()
 {
 }
 
-const char* CLocalityPreservingProjections::get_name() const
+const char* LocalityPreservingProjections::get_name() const
 {
 	return "LocalityPreservingProjections";
 };
 
-CFeatures*
-CLocalityPreservingProjections::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features>
+LocalityPreservingProjections::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	m_distance->init(features,features);
@@ -35,9 +35,8 @@ CLocalityPreservingProjections::transform(CFeatures* features, bool inplace)
 	parameters.gaussian_kernel_width = m_tau;
 	parameters.method = SHOGUN_LOCALITY_PRESERVING_PROJECTIONS;
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = m_distance;
-	parameters.features = (CDotFeatures*)features;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	parameters.distance = m_distance.get();
+	parameters.features = (DotFeatures*)features.get();
+	return tapkee_embed(parameters);
 }
 

@@ -15,14 +15,14 @@
 using namespace shogun;
 using namespace Eigen;
 
-CKernelRidgeRegression::CKernelRidgeRegression()
-: CKernelMachine()
+KernelRidgeRegression::KernelRidgeRegression()
+: KernelMachine()
 {
 	init();
 }
 
-CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab)
-: CKernelMachine()
+KernelRidgeRegression::KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: KernelMachine()
 {
 	init();
 
@@ -31,14 +31,14 @@ CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabel
 	set_kernel(k);
 }
 
-void CKernelRidgeRegression::init()
+void KernelRidgeRegression::init()
 {
 	set_tau(1e-6);
 	set_epsilon(0.0001);
 	SG_ADD(&m_tau, "tau", "Regularization parameter", ParameterProperties::HYPER);
 }
 
-bool CKernelRidgeRegression::solve_krr_system()
+bool KernelRidgeRegression::solve_krr_system()
 {
 	SGMatrix<float64_t> kernel_matrix(kernel->get_kernel_matrix());
 	int32_t n = kernel_matrix.num_rows;
@@ -62,7 +62,7 @@ bool CKernelRidgeRegression::solve_krr_system()
 	return true;
 }
 
-bool CKernelRidgeRegression::train_machine(CFeatures *data)
+bool KernelRidgeRegression::train_machine(std::shared_ptr<Features >data)
 {
 	require(m_labels, "No labels set");
 
@@ -92,14 +92,14 @@ bool CKernelRidgeRegression::train_machine(CFeatures *data)
 	return true;
 }
 
-bool CKernelRidgeRegression::load(FILE* srcfile)
+bool KernelRidgeRegression::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool CKernelRidgeRegression::save(FILE* dstfile)
+bool KernelRidgeRegression::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;

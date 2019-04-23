@@ -379,7 +379,7 @@ finalbeta=oldweights;
 		if(  oldweights[p] >= 0.0 )
 		{
 			finalbeta[p] = normsofsubkernels.back()[p] * oldweights[p]*oldweights[p] / pnorm;
-			finalbeta[p] = CMath::pow( finalbeta[p], 1.0 / (pnorm+1.0) );
+			finalbeta[p] = Math::pow( finalbeta[p], 1.0 / (pnorm+1.0) );
 		}
 		else
 		{
@@ -392,9 +392,9 @@ finalbeta=oldweights;
 	// --- normalize
 	float64_t Z = 0.0;
 	for( int32_t p=0; p<num_kernels; ++p )
-		Z += CMath::pow( finalbeta[p], pnorm );
+		Z += Math::pow( finalbeta[p], pnorm );
 
-	Z = CMath::pow( Z, -1.0/pnorm );
+	Z = Math::pow( Z, -1.0/pnorm );
 	ASSERT( Z >= 0 )
 	for( int32_t p=0; p<num_kernels; ++p )
 		finalbeta[p] *= Z;
@@ -402,7 +402,7 @@ finalbeta=oldweights;
 	// --- regularize & renormalize
 	float64_t preR = 0.0;
 	for( int32_t p=0; p<num_kernels; ++p )
-		preR += CMath::pow( oldweights[p] - finalbeta[p], 2.0 );
+		preR += Math::pow( oldweights[p] - finalbeta[p], 2.0 );
 
 	const float64_t R = std::sqrt(preR / pnorm) * epsRegul;
 	if( !( R >= 0 ) )
@@ -413,7 +413,7 @@ finalbeta=oldweights;
 		io::print("MKL-direct: eps = {:e}\n", epsRegul );
 		for( int32_t p=0; p<num_kernels; ++p )
 		{
-			const float64_t t = CMath::pow( oldweights[p] - finalbeta[p], 2.0 );
+			const float64_t t = Math::pow( oldweights[p] - finalbeta[p], 2.0 );
 			io::print("MKL-direct: t[{:3d}] = {:e}  ( diff = {:e} = {:e} - {:e} )\n", p, t, oldweights[p]-finalbeta[p], oldweights[p], finalbeta[p] );
 		}
 		io::print("MKL-direct: preR = {:e}\n", preR );
@@ -427,10 +427,10 @@ finalbeta=oldweights;
 	for( int32_t p=0; p<num_kernels; ++p )
 	{
 		finalbeta[p] += R;
-		Z += CMath::pow( finalbeta[p], pnorm );
+		Z += Math::pow( finalbeta[p], pnorm );
 		ASSERT( finalbeta[p] >= 0 )
 	}
-	Z = CMath::pow( Z, -1.0/pnorm );
+	Z = Math::pow( Z, -1.0/pnorm );
 	ASSERT( Z >= 0 )
 	for( int32_t p=0; p<num_kernels; ++p )
 	{

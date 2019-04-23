@@ -21,7 +21,7 @@
 
 namespace shogun
 {
-class CDotFeatures;
+class DotFeatures;
 
 /** Covariance type */
 enum ECovType
@@ -41,19 +41,19 @@ enum ECovType
  * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
  * The actual computations depend on the type of covariance used.
  */
-class CGaussian : public RandomMixin<CDistribution>
+class Gaussian : public RandomMixin<Distribution>
 {
 	public:
 		/** default constructor */
-		CGaussian();
+		Gaussian();
 		/** constructor
 		 *
 		 * @param mean mean of the Gaussian
 		 * @param cov covariance of the Gaussian
 		 * @param cov_type covariance type (full, diagonal or shperical)
 		 */
-		CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
-		virtual ~CGaussian();
+		Gaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
+		virtual ~Gaussian();
 
 		/** Compute the constant part */
 		void init();
@@ -64,7 +64,7 @@ class CGaussian : public RandomMixin<CDistribution>
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** get number of parameters in model
 		 *
@@ -207,14 +207,14 @@ class CGaussian : public RandomMixin<CDistribution>
 		 */
 		SGVector<float64_t> sample();
 
-		/** @param distribution is casted to CGaussian, NULL if not possible
+		/** @param distribution is casted to Gaussian, NULL if not possible
 		 * Note that the object is SG_REF'ed
-		 * @return casted CGaussian object
+		 * @return casted Gaussian object
 		 */
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static CGaussian* obtain_from_generic(CDistribution* distribution);
+		static std::shared_ptr<Gaussian> obtain_from_generic(std::shared_ptr<Distribution> distribution);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Gaussian"; }

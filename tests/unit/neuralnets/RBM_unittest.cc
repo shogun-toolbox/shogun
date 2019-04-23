@@ -47,7 +47,7 @@ TEST(RBM, gibbs_sampling)
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;
 
-	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
+	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
 	rbm.put("seed", seed);
 	rbm.initialize_neural_network();
 	rbm.set_batch_size(1);
@@ -91,7 +91,7 @@ TEST(RBM, free_energy_binary)
 	int32_t num_hidden = 6;
 	int32_t batch_size = 3;
 
-	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
+	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
 	rbm.put("seed", seed);
 	rbm.initialize_neural_network();
 
@@ -122,7 +122,7 @@ TEST(RBM, free_energy_gradients)
 	std::mt19937_64 prng(seed);
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 
-	CRBM rbm(num_hidden);
+	RBM rbm(num_hidden);
 	rbm.put("seed", seed);
 	rbm.add_visible_group(4, RBMVUT_BINARY);
 	rbm.add_visible_group(6, RBMVUT_GAUSSIAN);
@@ -163,7 +163,7 @@ TEST(RBM, pseudo_likelihood_binary)
 	int32_t num_hidden = 6;
 	int32_t batch_size = 1;
 
-	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
+	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
 	rbm.put("seed", seed);
 	rbm.initialize_neural_network();
 

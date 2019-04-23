@@ -19,7 +19,7 @@ namespace shogun
 	 * Latent SVM implementation based on [1].
 	 * For optimization this implementation uses SVMOcas.
 	 *
-	 * User must provide a her own CLatentModel which implements the PSI(x_i,h_i)
+	 * User must provide a her own LatentModel which implements the PSI(x_i,h_i)
 	 * function for the given problem.
 	 *
 	 * [1] P. F. Felzenszwalb, R. B. Girshick, D. McAllester, and D. Ramanan,
@@ -28,28 +28,28 @@ namespace shogun
 	 *  IEEE Transactions on, vol. 32, no. 9, pp. 1627-1645, 2010.
 	 *
 	 */
-	class CLatentSVM: public CLinearLatentMachine
+	class LatentSVM: public LinearLatentMachine
 	{
 		public:
 			/** default contstructor */
-			CLatentSVM();
+			LatentSVM();
 
 			/** constructor
 			 *
-			 * @param model the user defined CLatentModel object.
+			 * @param model the user defined LatentModel object.
 			 * @param C regularization constant
 			 */
-			CLatentSVM(CLatentModel* model, float64_t C);
+			LatentSVM(std::shared_ptr<LatentModel> model, float64_t C);
 
-			virtual ~CLatentSVM();
+			virtual ~LatentSVM();
 
 			/** apply linear machine to all examples
 			 *
 			 * @return resulting labels
 			 */
-			virtual CLatentLabels* apply_latent();
+			virtual std::shared_ptr<LatentLabels> apply_latent();
 
-			using CLinearLatentMachine::apply_latent;
+			using LinearLatentMachine::apply_latent;
 
 			/** Returns the name of the SGSerializable instance.
 			 *

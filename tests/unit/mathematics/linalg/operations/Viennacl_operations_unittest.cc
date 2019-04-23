@@ -567,7 +567,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_rectified_linear)
 	from_gpu(A_gpu, A);
 	from_gpu(B_gpu, B);
 	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(CMath::max(0.0, A[i]), B[i], 1e-15);
+		EXPECT_NEAR(Math::max(0.0, A[i]), B[i], 1e-15);
 }
 
 TEST(LinalgBackendViennaCL, SGVector_scale)
@@ -727,7 +727,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_squared_error)
 
 	float64_t ref = 0;
 	for (index_t i = 0; i < size; i++)
-		ref += CMath::pow(A[i] - B[i], 2);
+		ref += Math::pow(A[i] - B[i], 2);
 	ref *= 0.5;
 
 	to_gpu(A, A_gpu);

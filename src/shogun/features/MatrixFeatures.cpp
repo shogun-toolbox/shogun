@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Heiko Strathmann, Vladislav Horbatiuk, 
+ * Authors: Fernando Iglesias, Heiko Strathmann, Vladislav Horbatiuk,
  *          Bjoern Esser
  */
 
@@ -9,16 +9,16 @@
 
 namespace shogun {
 
-template< class ST > CMatrixFeatures< ST >::CMatrixFeatures()
-: CFeatures(0)
+template< class ST > MatrixFeatures< ST >::MatrixFeatures()
+: Features(0)
 {
 	init();
 }
 
-template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
+template< class ST > MatrixFeatures< ST >::MatrixFeatures(
 		int32_t num_vecs,
 		int32_t num_feats)
-: CFeatures(0)
+: Features(0)
 {
 	init();
 	m_features     = SGMatrixList< ST >(num_vecs);
@@ -26,17 +26,17 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 	m_num_features = num_feats;
 }
 
-template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
+template< class ST > MatrixFeatures< ST >::MatrixFeatures(
 		SGMatrixList< ST > feats, int32_t num_feats)
-: CFeatures(0)
+: Features(0)
 {
 	init();
 	set_features(feats, num_feats);
 }
 
-template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
+template< class ST > MatrixFeatures< ST >::MatrixFeatures(
 		SGMatrix< ST > feats, int32_t feat_length, int32_t num_vecs)
-: CFeatures(0)
+: Features(0)
 {
 	require(feats.num_cols == feat_length*num_vecs, "The number of columns of feats "
 			"must be equal to feat_length times num_vecs");
@@ -46,28 +46,28 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 }
 
 /* TODO */
-template< class ST > CFeatures* CMatrixFeatures< ST >::duplicate() const
+template< class ST > std::shared_ptr<Features> MatrixFeatures< ST >::duplicate() const
 {
 	return NULL;
 }
 
-template< class ST > CMatrixFeatures< ST >::~CMatrixFeatures()
+template< class ST > MatrixFeatures< ST >::~MatrixFeatures()
 {
 	cleanup();
 }
 
 /* TODO */
-template< class ST > EFeatureType CMatrixFeatures< ST >::get_feature_type() const
+template< class ST > EFeatureType MatrixFeatures< ST >::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-template< class ST > EFeatureClass CMatrixFeatures< ST >::get_feature_class() const
+template< class ST > EFeatureClass MatrixFeatures< ST >::get_feature_class() const
 {
 	return C_MATRIX;
 }
 
-template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
+template< class ST > SGMatrix< ST > MatrixFeatures< ST >::get_feature_vector(
 		int32_t num) const
 {
 	if ( num < 0 || num >= get_num_vectors() )
@@ -79,7 +79,7 @@ template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
 	return m_features[num];
 }
 
-template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
+template< class ST > void MatrixFeatures< ST >::get_feature_vector_col(
 		SGVector< ST > out,
 		int32_t num,
 		int32_t col) const
@@ -113,7 +113,7 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 	}
 }
 
-template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
+template< class ST > void MatrixFeatures< ST >::set_feature_vector(
 		SGMatrix< ST > const vec,
 		int32_t num)
 {
@@ -133,7 +133,7 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 	m_features.set_matrix(num, vec);
 }
 
-template< class ST > void CMatrixFeatures< ST >::set_features(
+template< class ST > void MatrixFeatures< ST >::set_features(
 		SGMatrixList< ST > features, int32_t num_feats)
 {
 	m_features     = features;
@@ -141,11 +141,11 @@ template< class ST > void CMatrixFeatures< ST >::set_features(
 	m_num_features = num_feats;
 }
 
-template< class ST > void CMatrixFeatures< ST >::init()
+template< class ST > void MatrixFeatures< ST >::init()
 {
-	SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors");
-	SG_ADD(&m_num_features, "m_num_features",
-			"Number of features per vector (optional)");
+	//SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors");
+	//SG_ADD(&m_num_features, "m_num_features",
+	//		"Number of features per vector (optional)");
 	//TODO add SG_ADD for SGMatrixList
 	//SG_ADD(&m_features, "m_features", "Matrix features");
 
@@ -155,33 +155,33 @@ template< class ST > void CMatrixFeatures< ST >::init()
 	set_generic<ST>();
 }
 
-template< class ST > void CMatrixFeatures< ST >::cleanup()
+template< class ST > void MatrixFeatures< ST >::cleanup()
 {
 	m_features     = SGMatrixList< ST >();
 	m_num_vectors  = 0;
 	m_num_features = 0;
 }
 
-template< class ST > CMatrixFeatures< ST >* CMatrixFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+template< class ST > std::shared_ptr<MatrixFeatures< ST >> MatrixFeatures< ST >::obtain_from_generic(std::shared_ptr<Features> base_features)
 {
 	require(base_features->get_feature_class() == C_MATRIX,
 			"base_features must be of dynamic type CMatrixFeatures");
 
-	return (CMatrixFeatures< ST >*) base_features;
+	return std::dynamic_pointer_cast<MatrixFeatures< ST >>(base_features);
 }
 
-template class CMatrixFeatures<bool>;
-template class CMatrixFeatures<char>;
-template class CMatrixFeatures<int8_t>;
-template class CMatrixFeatures<uint8_t>;
-template class CMatrixFeatures<int16_t>;
-template class CMatrixFeatures<uint16_t>;
-template class CMatrixFeatures<int32_t>;
-template class CMatrixFeatures<uint32_t>;
-template class CMatrixFeatures<int64_t>;
-template class CMatrixFeatures<uint64_t>;
-template class CMatrixFeatures<float32_t>;
-template class CMatrixFeatures<float64_t>;
-template class CMatrixFeatures<floatmax_t>;
+template class MatrixFeatures<bool>;
+template class MatrixFeatures<char>;
+template class MatrixFeatures<int8_t>;
+template class MatrixFeatures<uint8_t>;
+template class MatrixFeatures<int16_t>;
+template class MatrixFeatures<uint16_t>;
+template class MatrixFeatures<int32_t>;
+template class MatrixFeatures<uint32_t>;
+template class MatrixFeatures<int64_t>;
+template class MatrixFeatures<uint64_t>;
+template class MatrixFeatures<float32_t>;
+template class MatrixFeatures<float64_t>;
+template class MatrixFeatures<floatmax_t>;
 
 } /* namespace shogun */

@@ -3,48 +3,48 @@
 
 using namespace shogun;
 
-CDummyFeatures::CDummyFeatures()
+DummyFeatures::DummyFeatures()
 {
 	init();
 	num_vectors = 0;
 }
 
-CDummyFeatures::CDummyFeatures(int32_t num) : CFeatures(0), num_vectors(num)
+DummyFeatures::DummyFeatures(int32_t num) : Features(0), num_vectors(num)
 {
 	init();
 }
 
-CDummyFeatures::CDummyFeatures(const CDummyFeatures &orig) : CFeatures(0),
+DummyFeatures::DummyFeatures(const DummyFeatures &orig) : Features(0),
 	num_vectors(orig.num_vectors)
 {
 	init();
 }
 
-CDummyFeatures::~CDummyFeatures()
+DummyFeatures::~DummyFeatures()
 {
 }
 
-int32_t CDummyFeatures::get_num_vectors() const
+int32_t DummyFeatures::get_num_vectors() const
 {
 	return num_vectors;
 }
 
-CFeatures* CDummyFeatures::duplicate() const
+std::shared_ptr<Features> DummyFeatures::duplicate() const
 {
-	return new CDummyFeatures(*this);
+	return std::make_shared<DummyFeatures>(*this);
 }
 
-inline EFeatureType CDummyFeatures::get_feature_type() const
+inline EFeatureType DummyFeatures::get_feature_type() const
 {
 	return F_ANY;
 }
 
-EFeatureClass CDummyFeatures::get_feature_class() const
+EFeatureClass DummyFeatures::get_feature_class() const
 {
 	return C_ANY;
 }
 
-void CDummyFeatures::init()
+void DummyFeatures::init()
 {
 	SG_ADD(
 	    &num_vectors, "num_vectors", "Number of feature vectors.");

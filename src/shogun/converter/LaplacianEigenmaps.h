@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg,
  *          Evan Shelhamer
  */
 
@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class LaplacianEigenmaps used to construct embeddings of
  * data using Laplacian Eigenmaps algorithm as described in:
@@ -32,26 +32,26 @@ class CDistance;
  * sg('create_converter','laplacian_eigenmaps',k,width);
  *
  */
-class CLaplacianEigenmaps: public CEmbeddingConverter
+class LaplacianEigenmaps: public EmbeddingConverter
 {
 public:
 
 	/** constructor */
-	CLaplacianEigenmaps();
+	LaplacianEigenmaps();
 
 	/** destructor */
-	virtual ~CLaplacianEigenmaps();
+	virtual ~LaplacianEigenmaps();
 
 	/** apply to features
 	 * @param features to embed
 	 * @return embedded features
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** embed distance
 	 * @param distance to use for embedding
 	 */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
 
 	/** setter for K parameter
 	 * @param k k value

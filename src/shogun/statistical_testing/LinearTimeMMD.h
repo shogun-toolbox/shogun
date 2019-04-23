@@ -37,12 +37,12 @@
 namespace shogun
 {
 
-class CLinearTimeMMD : public CStreamingMMD
+class LinearTimeMMD : public StreamingMMD
 {
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
-	CLinearTimeMMD();
-	virtual ~CLinearTimeMMD();
+	LinearTimeMMD();
+	virtual ~LinearTimeMMD();
 
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 

@@ -29,7 +29,7 @@ void test_libsvmfile_multilabel(const char* fname)
     fclose(pfile);
 
 	/* sparse data from matrix*/
-	CLibSVMFile* svmfile = new CLibSVMFile(fname);
+	auto svmfile = std::make_shared<LibSVMFile>(fname);
 
 	SGSparseVector<float64_t>* feats;
 	SGVector<float64_t>* labels;
@@ -51,7 +51,6 @@ void test_libsvmfile_multilabel(const char* fname)
 	SG_SPRINT("Dimention of the feature: %d\n", dim_feat);
 	SG_SPRINT("Number of classes: %d\n", num_classes);
 
-	SG_UNREF(svmfile);
 	SG_FREE(feats);
 	SG_FREE(labels);
 }

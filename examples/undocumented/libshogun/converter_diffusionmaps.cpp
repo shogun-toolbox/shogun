@@ -20,15 +20,11 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
-	CDiffusionMaps* dmaps = new CDiffusionMaps();
+	auto features = std::make_shared<DenseFeatures<double>>(SGMatrix<double>(matrix,dim,N));
+	auto dmaps = std::make_shared<DiffusionMaps>();
 	dmaps->set_target_dim(2);
 	dmaps->set_t(10);
 	dmaps->get_global_parallel()->set_num_threads(4);
 	auto embedding = dmaps->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(dmaps);
-	SG_UNREF(features);
 	return 0;
 }

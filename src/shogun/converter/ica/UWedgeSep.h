@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** @brief class UWedgeSep
  *
@@ -28,15 +28,15 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 57(3), 878-891.
  *
  */
-class CUWedgeSep: public CICAConverter
+class UWedgeSep: public ICAConverter
 {
 	public:
 
 		/** constructor */
-		CUWedgeSep();
+		UWedgeSep();
 
 		/** destructor */
-		virtual ~CUWedgeSep();
+		virtual ~UWedgeSep();
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -61,7 +61,7 @@ class CUWedgeSep: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	private:
 

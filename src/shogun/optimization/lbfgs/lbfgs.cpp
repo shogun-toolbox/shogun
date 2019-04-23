@@ -655,7 +655,7 @@ static int32_t line_search_backtracking(
 
         for(index_t j=0; j<n; j++)
         {
-            if (CMath::is_nan(s[j]) || std::isinf(s[j]))
+            if (Math::is_nan(s[j]) || std::isinf(s[j]))
                 return LBFGSERR_INVALID_VALUE;
         }
 
@@ -668,7 +668,7 @@ static int32_t line_search_backtracking(
             /* Evaluate the function and gradient values. */
             *f = cd->proc_evaluate(cd->instance, x, g.vector, cd->n, *stp);
             ++count;
-            if (CMath::is_nan(*f) || std::isinf(*f))
+            if (Math::is_nan(*f) || std::isinf(*f))
                 *stp*=decay;
             else
                 break;

@@ -18,13 +18,13 @@ In practice, an additional bias :math:`b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\
 :math:`\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}` can also be included, which effectively centers the :math:`X` before
 computing the solution.
 
-For the special case when :math:`\tau = 0`, a wrapper class :sgclass:`CLeastSquaresRegression` is available.
+For the special case when :math:`\tau = 0`, a wrapper class :sgclass:`LeastSquaresRegression` is available.
 
 -------
 Example
 -------
 
-Imagine we have files with training and test data. We create `CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CRegressionLabels` as
+Imagine we have files with training and test data. We create `DenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`RegressionLabels` as
 
 .. sgexample:: linear_ridge_regression.sg:create_features
 
@@ -32,7 +32,7 @@ We create an instance of :sgclass:`CLinearRidgeRegression` classifier, passing i
 
 .. sgexample:: linear_ridge_regression.sg:create_instance
 
-Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels`.
+Then we train the regression model and apply it to test data to get the predicted :sgclass:`RegressionLabels`.
 
 .. sgexample:: linear_ridge_regression.sg:train_and_apply
 
@@ -44,7 +44,7 @@ We could also have trained without bias and set it manually.
 
 .. sgexample:: linear_ridge_regression.sg:manual_bias
 
-Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
+Finally, we can evaluate the :sgclass:`MeanSquaredError`.
 
 .. sgexample:: linear_ridge_regression.sg:evaluate_error
 

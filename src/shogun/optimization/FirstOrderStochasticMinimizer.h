@@ -79,7 +79,7 @@ public:
 	/** Constructor
 	 * @param fun stochastic cost function
 	 */
-	FirstOrderStochasticMinimizer(FirstOrderStochasticCostFunction *fun)
+	FirstOrderStochasticMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
 		:FirstOrderMinimizer(fun)
 	{
 		init();
@@ -105,7 +105,7 @@ public:
 	 *
 	 * @param gradient_updater the gradient_updater
 	 */
-	virtual void set_gradient_updater(DescendUpdater* gradient_updater);
+	virtual void set_gradient_updater(std::shared_ptr<DescendUpdater> gradient_updater);
 
 	/** Do minimization and get the optimal value 
 	 * 
@@ -127,7 +127,7 @@ public:
 	/** Set the learning rate of a minimizer
 	 * @param learning_rate learn rate or step size
 	 */
-	virtual void set_learning_rate(LearningRate *learning_rate);
+	virtual void set_learning_rate(std::shared_ptr<LearningRate >learning_rate);
 
 	/** How many samples/mini-batch does the minimizer use?
 	 *
@@ -147,7 +147,7 @@ protected:
 	virtual void init_minimization();
 
 	/** the gradient update step */
-	DescendUpdater* m_gradient_updater;
+	std::shared_ptr<DescendUpdater> m_gradient_updater;
 
 	/**  iteration to go through data */
 	int32_t m_num_passes;
@@ -159,7 +159,7 @@ protected:
 	int32_t m_iter_counter;
 
 	/** learning_rate object */
-	LearningRate* m_learning_rate;
+	std::shared_ptr<LearningRate> m_learning_rate;
 	
 private:
 	/** Init */

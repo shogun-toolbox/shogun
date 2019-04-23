@@ -13,18 +13,18 @@
 
 using namespace shogun;
 
-CStochasticSOSVM::CStochasticSOSVM()
-: RandomMixin<CLinearStructuredOutputMachine>()
+StochasticSOSVM::StochasticSOSVM()
+: RandomMixin<LinearStructuredOutputMachine>()
 {
 	init();
 }
 
-CStochasticSOSVM::CStochasticSOSVM(
-		CStructuredModel*  model,
-		CStructuredLabels* labs,
+StochasticSOSVM::StochasticSOSVM(
+		std::shared_ptr<StructuredModel>  model,
+		std::shared_ptr<StructuredLabels> labs,
 		bool do_weighted_averaging,
 		bool verbose)
-: RandomMixin<CLinearStructuredOutputMachine>(model, labs)
+: RandomMixin<LinearStructuredOutputMachine>(model, labs)
 {
 	require(model != NULL && labs != NULL,
 		"{}::CStochasticSOSVM(): model and labels cannot be NULL!", get_name());
@@ -38,7 +38,7 @@ CStochasticSOSVM::CStochasticSOSVM(
 	m_verbose = verbose;
 }
 
-void CStochasticSOSVM::init()
+void StochasticSOSVM::init()
 {
 	SG_ADD(&m_lambda, "lambda", "Regularization constant");
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
@@ -51,16 +51,16 @@ void CStochasticSOSVM::init()
 	m_debug_multiplier = 0;
 }
 
-CStochasticSOSVM::~CStochasticSOSVM()
+StochasticSOSVM::~StochasticSOSVM()
 {
 }
 
-EMachineType CStochasticSOSVM::get_classifier_type()
+EMachineType StochasticSOSVM::get_classifier_type()
 {
 	return CT_STOCHASTICSOSVM;
 }
 
-bool CStochasticSOSVM::train_machine(CFeatures* data)
+bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
 {
 	SG_TRACE("Entering CStochasticSOSVM::train_machine.");
 	if (data)
@@ -75,7 +75,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
-	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
+	int32_t N = m_labels->as<StructuredLabels>()->get_num_labels();
 
 	SG_DEBUG("M={}, N ={}.", M, N);
 
@@ -91,10 +91,10 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 	{
 		if (m_helper != NULL)
-			SG_UNREF(m_helper);
 
-		m_helper = new CSOSVMHelper();
-		SG_REF(m_helper);
+
+		m_helper = std::make_shared<SOSVMHelper>();
+
 	}
 
 	int32_t debug_iter = 1;
@@ -115,7 +115,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			int32_t i = uniform_int_dist(m_prng, {0, N-1});
 
 			// 2) solve the loss-augmented inference for point i
-			CResultSet* result = m_model->argmax(m_w, i);
+			auto result = m_model->argmax(m_w, i);
 
 			// 3) get the subgradient
 			// psi_i(y) := phi(x_i,y_i) - phi(x_i, y)
@@ -159,7 +159,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 
 			k += 1;
-			SG_UNREF(result);
+
 
 			// Debug: compute objective and training error
 			if (m_verbose && k == debug_iter)
@@ -170,15 +170,15 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 				else
 					w_debug = m_w.clone();
 
-				float64_t primal = CSOSVMHelper::primal_objective(w_debug, m_model, m_lambda);
-				float64_t train_error = CSOSVMHelper::average_loss(w_debug, m_model);
+				float64_t primal = SOSVMHelper::primal_objective(w_debug, m_model, m_lambda);
+				float64_t train_error = SOSVMHelper::average_loss(w_debug, m_model);
 
 				SG_DEBUG("pass {} (iteration {}), SVM primal = {}, train_error = {} ",
 					pi, k, primal, train_error);
 
 				m_helper->add_debug_info(primal, (1.0*k) / N, train_error);
 
-				debug_iter = CMath::min(debug_iter+N, debug_iter*(1+m_debug_multiplier/100));
+				debug_iter = Math::min(debug_iter+N, debug_iter*(1+m_debug_multiplier/100));
 			}
 		}
 	}
@@ -193,32 +193,33 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CStochasticSOSVM::get_lambda() const
+float64_t StochasticSOSVM::get_lambda() const
 {
 	return m_lambda;
 }
 
-void CStochasticSOSVM::set_lambda(float64_t lbda)
+void StochasticSOSVM::set_lambda(float64_t lbda)
 {
 	m_lambda = lbda;
 }
 
-int32_t CStochasticSOSVM::get_num_iter() const
+int32_t StochasticSOSVM::get_num_iter() const
 {
 	return m_num_iter;
 }
 
-void CStochasticSOSVM::set_num_iter(int32_t num_iter)
+void StochasticSOSVM::set_num_iter(int32_t num_iter)
 {
 	m_num_iter = num_iter;
 }
 
-int32_t CStochasticSOSVM::get_debug_multiplier() const
+int32_t StochasticSOSVM::get_debug_multiplier() const
 {
 	return m_debug_multiplier;
 }
 
-void CStochasticSOSVM::set_debug_multiplier(int32_t multiplier)
+void StochasticSOSVM::set_debug_multiplier(int32_t multiplier)
 {
 	m_debug_multiplier = multiplier;
 }
+

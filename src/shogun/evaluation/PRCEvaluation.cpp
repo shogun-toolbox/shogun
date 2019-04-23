@@ -12,21 +12,21 @@
 
 using namespace shogun;
 
-CPRCEvaluation::CPRCEvaluation() : CBinaryClassEvaluation(), m_computed(false)
+PRCEvaluation::PRCEvaluation() : BinaryClassEvaluation(), m_computed(false)
 {
 	m_PRC_graph = SGMatrix<float64_t>();
 	m_thresholds = SGVector<float64_t>();
 	m_auPRC = 0.0;
-	watch_method("PRC", &CPRCEvaluation::get_PRC);
-	watch_method("thresholds", &CPRCEvaluation::get_thresholds);
-	watch_method("auPRC", &CPRCEvaluation::get_auPRC);
+	watch_method("PRC", &PRCEvaluation::get_PRC);
+	watch_method("thresholds", &PRCEvaluation::get_thresholds);
+	watch_method("auPRC", &PRCEvaluation::get_auPRC);
 };
 
-CPRCEvaluation::~CPRCEvaluation()
+PRCEvaluation::~PRCEvaluation()
 {
 }
 
-float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t PRCEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
@@ -53,7 +53,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 		idxs[i] = i;
 
 	// sort indexes by labels ascending
-	CMath::qsort_backward_index(labels, idxs, length);
+	Math::qsort_backward_index(labels, idxs, length);
 
 	// clean and initialize graph and auPRC
 	SG_FREE(labels);
@@ -87,7 +87,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	// calc auRPC using area under curve
-	m_auPRC = CMath::area_under_curve(m_PRC_graph.matrix, length, true);
+	m_auPRC = Math::area_under_curve(m_PRC_graph.matrix, length, true);
 
 	// set computed indicator
 	m_computed = true;
@@ -96,7 +96,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	return m_auPRC;
 }
 
-SGMatrix<float64_t> CPRCEvaluation::get_PRC() const
+SGMatrix<float64_t> PRCEvaluation::get_PRC() const
 {
 	if (!m_computed)
 		error("Uninitialized, please call evaluate first");
@@ -104,7 +104,7 @@ SGMatrix<float64_t> CPRCEvaluation::get_PRC() const
 	return m_PRC_graph;
 }
 
-SGVector<float64_t> CPRCEvaluation::get_thresholds() const
+SGVector<float64_t> PRCEvaluation::get_thresholds() const
 {
 	if (!m_computed)
 		error("Uninitialized, please call evaluate first");
@@ -112,7 +112,7 @@ SGVector<float64_t> CPRCEvaluation::get_thresholds() const
 	return m_thresholds;
 }
 
-float64_t CPRCEvaluation::get_auPRC() const
+float64_t PRCEvaluation::get_auPRC() const
 {
 	if (!m_computed)
 		error("Uninitialized, please call evaluate first");

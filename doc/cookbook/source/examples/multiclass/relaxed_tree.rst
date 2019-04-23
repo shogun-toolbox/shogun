@@ -15,7 +15,7 @@ See :cite:`gao2011discriminative` for a detailed introduction.
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: relaxed_tree.sg:create_features
 
@@ -28,11 +28,11 @@ We use confusion matrix to estimate the initial partition of the dataset and the
 
 .. sgexample:: relaxed_tree.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: relaxed_tree.sg:train_and_apply
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: relaxed_tree.sg:evaluate_accuracy
 

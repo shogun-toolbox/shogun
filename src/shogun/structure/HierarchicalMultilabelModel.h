@@ -26,11 +26,11 @@ namespace shogun
  *     Multilabel Classification
  *     http://papers.nips.cc/paper/4520-mandatory-leaf-node-prediction-in-hierarchical-multilabel-classification.pdf
  */
-class CHierarchicalMultilabelModel : public CStructuredModel
+class HierarchicalMultilabelModel : public StructuredModel
 {
 public:
 	/** default constructor */
-	CHierarchicalMultilabelModel();
+	HierarchicalMultilabelModel();
 
 	/** constructor
 	 *
@@ -44,14 +44,14 @@ public:
 	 * TERMINAL NODES) are only allowed or not
 	 * class or not
 	 */
-	CHierarchicalMultilabelModel(CFeatures * features, CStructuredLabels * labels,
+	HierarchicalMultilabelModel(std::shared_ptr<Features > features, std::shared_ptr<StructuredLabels > labels,
 	                             SGVector<int32_t> taxonomy, bool leaf_nodes_mandatory = false);
 
 	/** destructor */
-	virtual ~CHierarchicalMultilabelModel();
+	virtual ~HierarchicalMultilabelModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(int32_t num_labels = 0);
+	virtual std::shared_ptr<StructuredLabels > structured_labels_factory(int32_t num_labels = 0);
 
 	/** @return the dimensionality of the joint feature space, i.e., the
 	 * dimension of the weight vector \f$w\f$.
@@ -70,7 +70,7 @@ public:
 	 * @return joint feature vector
 	 */
 	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	                std::shared_ptr<StructuredData > y);
 
 	/** obtain the argmax of
 	 *
@@ -82,7 +82,7 @@ public:
 	 * @param feat_idx index of the feature vector to use
 	 * @param training whether training is being used
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, int32_t feat_idx,
+	virtual std::shared_ptr<ResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
 	                            bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
@@ -92,7 +92,7 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(CStructuredData * y1, CStructuredData * y2);
+	virtual float64_t delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2);
 
 	/** initialize the optimization problem
 	 *

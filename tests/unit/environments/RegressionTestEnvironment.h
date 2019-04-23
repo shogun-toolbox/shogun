@@ -51,8 +51,8 @@ class RegressionTestEnvironment : public ::testing::Environment
 {
 private:
 	const index_t n_train = 20, n_test = 15, n_dim = 4;
-	CDenseFeatures<float64_t> *features_train, *features_test;
-	CRegressionLabels *labels_train, *labels_test;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train, features_test;
+	std::shared_ptr<RegressionLabels> labels_train, labels_test;
 
 public:
 	virtual void SetUp()
@@ -60,10 +60,10 @@ public:
 		std::mt19937_64 prng(57);
 
 		SGMatrix<float64_t> feat_train_data =
-		    CDataGenerator::generate_gaussians(n_train, 1, n_dim, prng);
+		    DataGenerator::generate_gaussians(n_train, 1, n_dim, prng);
 
 		SGMatrix<float64_t> feat_test_data =
-		    CDataGenerator::generate_gaussians(n_test, 1, n_dim, prng);
+		    DataGenerator::generate_gaussians(n_test, 1, n_dim, prng);
 
 		SGVector<float64_t> w(n_dim);
 		random::fill_array(w, -1.0, 1.0, prng);
@@ -74,44 +74,34 @@ public:
 		SGVector<float64_t> label_test_data =
 		    linalg::matrix_prod(feat_test_data, w, true);
 
-		features_train = new CDenseFeatures<float64_t>(feat_train_data);
-		labels_train = new CRegressionLabels(label_train_data);
+		features_train = std::make_shared<DenseFeatures<float64_t>>(feat_train_data);
+		labels_train = std::make_shared<RegressionLabels>(label_train_data);
 
-		features_test = new CDenseFeatures<float64_t>(feat_test_data);
-		labels_test = new CRegressionLabels(label_test_data);
+		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test_data);
+		labels_test = std::make_shared<RegressionLabels>(label_test_data);
 
-		SG_REF(features_train);
-		SG_REF(labels_train);
-
-		SG_REF(features_test);
-		SG_REF(labels_test);
 	}
 
 	virtual void TearDown()
 	{
-		SG_UNREF(features_train);
-		SG_UNREF(labels_train);
-
-		SG_UNREF(features_test);
-		SG_UNREF(labels_test);
 	}
 
-	CDenseFeatures<float64_t>* get_features_train() const
+	auto get_features_train() const
 	{
 		return features_train;
 	}
 
-	CDenseFeatures<float64_t>* get_features_test() const
+	auto get_features_test() const
 	{
 		return features_test;
 	}
 
-	CRegressionLabels* get_labels_train() const
+	auto get_labels_train() const
 	{
 		return labels_train;
 	}
 
-	CRegressionLabels* get_labels_test() const
+	auto get_labels_test() const
 	{
 		return labels_test;
 	}

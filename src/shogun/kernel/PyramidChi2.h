@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Evan Shelhamer,
  *          Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -18,18 +18,18 @@
 
 namespace shogun
 {
-	template <class T> class CDenseFeatures;
+	template <class T> class DenseFeatures;
 
 /** @brief Pyramid Kernel over Chi2 matched histograms.
  *
  *
  *
  */
-class CPyramidChi2 : public RandomMixin<CDotKernel>
+class PyramidChi2 : public RandomMixin<DotKernel>
 {
 public:
 	/** default constructor protected to avoid its usage */
-	CPyramidChi2();
+	PyramidChi2();
 
 	/** constructor
 	 *
@@ -45,7 +45,7 @@ public:
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
 	 */
-	CPyramidChi2(int32_t size, int32_t num_cells2,
+	PyramidChi2(int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2);
@@ -68,8 +68,8 @@ public:
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
 	 */
-	CPyramidChi2(
-		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+	PyramidChi2(
+		std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
@@ -80,10 +80,10 @@ public:
 	 * @param l features lhs
 	 * @param r reatures rhs
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 
-	virtual ~CPyramidChi2();
+	virtual ~PyramidChi2();
 
 	/** cleanup */
 	virtual void cleanup();

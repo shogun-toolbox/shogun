@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief The class MulticlassAccuracy
  * used to compute accuracy of multiclass classification.
@@ -30,33 +30,33 @@ class CLabels;
  *
  *
  */
-class CMulticlassAccuracy: public CEvaluation
+class MulticlassAccuracy: public Evaluation
 {
 public:
 	/** constructor */
-	CMulticlassAccuracy() :
-		CEvaluation(), m_ignore_rejects(false), m_rejects_num(0) {};
+	MulticlassAccuracy() :
+		Evaluation(), m_ignore_rejects(false), m_rejects_num(0) {};
 
 	/** constructor */
-	CMulticlassAccuracy(bool ignore_rejects) :
-		CEvaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
+	MulticlassAccuracy(bool ignore_rejects) :
+		Evaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
 
 	/** destructor */
-	virtual ~CMulticlassAccuracy() {};
+	virtual ~MulticlassAccuracy() {};
 
 	/** evaluate accuracy
 	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	/** constructs confusion matrix for multiclass classification
 	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct
 	 * @return confusion matrix
 	 */
-	static SGMatrix<int32_t> get_confusion_matrix(CLabels* predicted, CLabels* ground_truth);
+	static SGMatrix<int32_t> get_confusion_matrix(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

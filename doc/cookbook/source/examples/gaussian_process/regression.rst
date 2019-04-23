@@ -22,19 +22,19 @@ See :cite:`Rasmussen2005GPM` for a comprehensive treatment of Gaussian Processes
 Example
 -------
 
-Imagine we have files with training and test data. We create `CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CRegressionLabels` as:
+Imagine we have files with training and test data. We create `DenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`RegressionLabels` as:
 
 .. sgexample:: regression.sg:create_features
 
-To fit the input (training) data :math:`\mathbf{X}`, we have to choose an appropriate :sgclass:`CMeanFunction` and  :sgclass:`CKernel` and instantiate them. Here we use a basic :sgclass:`CZeroMean` and a :sgclass:`CGaussianKernel` with chosen width parameter.
+To fit the input (training) data :math:`\mathbf{X}`, we have to choose an appropriate :sgclass:`MeanFunction` and  :sgclass:`Kernel` and instantiate them. Here we use a basic :sgclass:`ZeroMean` and a :sgclass:`GaussianKernel` with chosen width parameter.
 
 .. sgexample:: regression.sg:create_appropriate_kernel_and_mean_function
 
-We need to specify the inference method to find the posterior distribution of the function values :math:`\mathbf{f}`. Here we choose to perform exact inference with an instance of :sgclass:`CExactInferenceMethod` and pass it the chosen kernel, the training features, the mean function, the labels and an instance of :sgclass:`CGaussianLikelihood`, to specify the distribution of the targets/labels as above. Finally we generate a CGaussianProcessRegression class to be trained.
+We need to specify the inference method to find the posterior distribution of the function values :math:`\mathbf{f}`. Here we choose to perform exact inference with an instance of :sgclass:`ExactInferenceMethod` and pass it the chosen kernel, the training features, the mean function, the labels and an instance of :sgclass:`GaussianLikelihood`, to specify the distribution of the targets/labels as above. Finally we generate a GaussianProcessRegression class to be trained.
 
 .. sgexample:: regression.sg:create_instance
 
-Then we can train the model and evaluate the predictive distribution. We get predicted :sgclass:`CRegressionLabels`.
+Then we can train the model and evaluate the predictive distribution. We get predicted :sgclass:`RegressionLabels`.
 
 .. sgexample:: regression.sg:train_and_apply
 
@@ -43,11 +43,11 @@ We can compute the predictive variances as
 .. sgexample:: regression.sg:compute_variance
 
 The prediction above is based on arbitrarily set hyperparameters :math:`\boldsymbol{\theta}`: kernel width :math:`\tau`, kernel scaling :math:`\gamma` and observation noise :math:`\sigma^2`. We can also learn these parameters by optimizing the marginal likelihood :math:`p(\mathbf{y}|\mathbf{X}, \boldsymbol{\theta})` w.r.t. :math:`\boldsymbol{\theta}`.
-To do this, we define a :sgclass:`CGradientModelSelection`, passing to it a :sgclass:`CGradientEvaluation` with its own :sgclass:`CGradientCriterion`, specifying the gradient scheme and direction. Then we can follow the gradient and apply the chosen :math:`\boldsymbol{\theta}` back to the CGaussianProcessRegression instance.
+To do this, we define a :sgclass:`CGradientModelSelection`, passing to it a :sgclass:`CGradientEvaluation` with its own :sgclass:`CGradientCriterion`, specifying the gradient scheme and direction. Then we can follow the gradient and apply the chosen :math:`\boldsymbol{\theta}` back to the GaussianProcessRegression instance.
 
 .. sgexample:: regression.sg:optimize_marginal_likelihood
 
-Finally, we evaluate the :sgclass:`CMeanSquaredError` and the (negative log) marginal likelihood for the optimized hyperparameters.
+Finally, we evaluate the :sgclass:`MeanSquaredError` and the (negative log) marginal likelihood for the optimized hyperparameters.
 
 .. sgexample:: regression.sg:evaluate_error_and_marginal_likelihood
 

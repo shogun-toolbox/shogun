@@ -39,7 +39,7 @@
 
 namespace shogun
 {
-template <class T> class CDenseFeatures;
+template <class T> class DenseFeatures;
 
 /** @brief Represents a muti-layer autoencoder
  *
@@ -66,7 +66,7 @@ template <class T> class CDenseFeatures;
  *
  * [Deep convolutional autoencoders](http://www.idsia.ch/~ciresan/data/icann2011.pdf)
  * [J Masci, 2011] are also supported. Simply build the autoencoder
- * using CNeuralConvolutionalLayer objects.
+ * using NeuralConvolutionalLayer objects.
  *
  * NOTE: Contractive convolutional autoencoders are not supported.
  *
@@ -82,24 +82,24 @@ template <class T> class CDenseFeatures;
  *
  * When finetuning the autoencoder in a unsupervised manner, denoising and
  * contraction can also be used through set_contraction_coefficient() and
- * noise_type and noise_parameter. See CAutoencoder for more details.
+ * noise_type and noise_parameter. See Autoencoder for more details.
  */
-class CDeepAutoencoder : public CAutoencoder
+class DeepAutoencoder : public Autoencoder
 {
 public:
 	/** default constructor */
-	CDeepAutoencoder();
+	DeepAutoencoder();
 
 	/** Constructs and initializes an autoencoder
 	 *
-	 * @param layers An array of CNeuralLayer objects specifying the layers of
+	 * @param layers An array of NeuralLayer objects specifying the layers of
 	 * the autoencoder
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * weights
 	 */
-	CDeepAutoencoder(CDynamicObjectArray* layers, float64_t sigma = 0.01);
+	DeepAutoencoder(std::shared_ptr<DynamicObjectArray> layers, float64_t sigma = 0.01);
 
-	virtual ~CDeepAutoencoder() {}
+	virtual ~DeepAutoencoder() {}
 
 	/** Pre-trains the deep autoencoder as a stack of autoencoders
 	 *
@@ -121,7 +121,7 @@ public:
 	 *
 	 * @param data Training examples
 	 */
-	virtual void pre_train(CFeatures* data);
+	virtual void pre_train(std::shared_ptr<Features> data);
 
 	/** Forward propagates the data through the autoencoder and returns the
 	 * activations of the last encoding layer (layer (N-1)/2)
@@ -130,8 +130,8 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> transform(
+		std::shared_ptr<DenseFeatures<float64_t>> data);
 
 	/** Forward propagates the data through the autoencoder and returns the
 	 * activations of the last layer
@@ -140,8 +140,8 @@ public:
 	 *
 	 * @return Reconstructed features
 	 */
-	virtual CDenseFeatures<float64_t>* reconstruct(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> reconstruct(
+		std::shared_ptr<DenseFeatures<float64_t>> data);
 
 	/** Converts the autoencoder into a neural network for supervised finetuning.
 	 *
@@ -153,8 +153,8 @@ public:
 	 * @param sigma Standard deviation used to initialize the parameters of the
 	 * output layer
 	 */
-	virtual CNeuralNetwork* convert_to_neural_network(
-		CNeuralLayer* output_layer=NULL, float64_t sigma = 0.01);
+	virtual std::shared_ptr<NeuralNetwork> convert_to_neural_network(
+		std::shared_ptr<NeuralLayer> output_layer=NULL, float64_t sigma = 0.01);
 
 	/** Sets the contraction coefficient
 	 *
@@ -188,68 +188,68 @@ private:
 	SGVector<T> get_section(SGVector<T> v, int32_t i);
 
 public:
-	/** CAutoencoder::noise_type for pre-training each encoding layer
+	/** Autoencoder::noise_type for pre-training each encoding layer
 	 * Default value is AENT_NONE for all layers
 	 */
 	SGVector<int32_t> pt_noise_type;
 
-	/** CAutoencoder::noise_parameter for pre-training each encoding layer
+	/** Autoencoder::noise_parameter for pre-training each encoding layer
 	 * Default value is 0.0 for all layers
 	 */
 	SGVector<float64_t> pt_noise_parameter;
 
-	/** Contraction coefficient (see CAutoencoder::set_contraction_coefficient())
+	/** Contraction coefficient (see Autoencoder::set_contraction_coefficient())
 	 * for pre-training each encoding layer
 	 * Default value is 0.0 for all layers
 	 */
 	SGVector<float64_t> pt_contraction_coefficient;
 
-	/** CAutoencoder::optimization_method for pre-training each encoding layer
+	/** Autoencoder::optimization_method for pre-training each encoding layer
 	 * Default value is NNOM_LBFGS for all layers
 	 */
 	SGVector<int32_t> pt_optimization_method;
 
-	/** CAutoencoder::l2_coefficient for pre-training each encoding layer
+	/** Autoencoder::l2_coefficient for pre-training each encoding layer
 	 * Default value is 0.0 for all layers
 	 */
 	SGVector<float64_t> pt_l2_coefficient;
 
-	/** CAutoencoder::l1_coefficient for pre-training each encoding layer
+	/** Autoencoder::l1_coefficient for pre-training each encoding layer
 	 * Default value is 0.0 for all layers
 	 */
 	SGVector<float64_t> pt_l1_coefficient;
 
-	/** CAutoencoder::epsilon for pre-training each encoding layer
+	/** Autoencoder::epsilon for pre-training each encoding layer
 	 * Default value is 1.0e-5 for all layers
 	 */
 	SGVector<float64_t> pt_epsilon;
 
-	/** CAutoencoder::max_num_epochs for pre-training each encoding layer
+	/** Autoencoder::max_num_epochs for pre-training each encoding layer
 	 * Default value is 0 for all layers
 	 */
 	SGVector<int32_t> pt_max_num_epochs;
 
-	/** CAutoencoder::gd_mini_batch_size for pre-training each encoding layer
+	/** Autoencoder::gd_mini_batch_size for pre-training each encoding layer
 	 * Default value is 0 for all layers
 	 */
 	SGVector<int32_t> pt_gd_mini_batch_size;
 
-	/** CAutoencoder::gd_learning_rate for pre-training each encoding layer
+	/** Autoencoder::gd_learning_rate for pre-training each encoding layer
 	 * Default value is 0.1 for all layers
 	 */
 	SGVector<float64_t> pt_gd_learning_rate;
 
-	/** CAutoencoder::gd_learning_rate_decay for pre-training each encoding layer
+	/** Autoencoder::gd_learning_rate_decay for pre-training each encoding layer
 	 * Default value is 1.0 for all layers
 	 */
 	SGVector<float64_t> pt_gd_learning_rate_decay;
 
-	/** CAutoencoder::gd_momentum for pre-training each encoding layer
+	/** Autoencoder::gd_momentum for pre-training each encoding layer
 	 * Default value is 0.9 for all layers
 	 */
 	SGVector<float64_t> pt_gd_momentum;
 
-	/** CAutoencoder::gd_error_damping_coeff for pre-training each encoding layer
+	/** Autoencoder::gd_error_damping_coeff for pre-training each encoding layer
 	 * Default value is -1 for all layers
 	 */
 	SGVector<float64_t> pt_gd_error_damping_coeff;

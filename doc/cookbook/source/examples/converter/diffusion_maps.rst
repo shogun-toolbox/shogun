@@ -17,7 +17,7 @@ For more information see :cite:`Coifman-Lafon2006Diffusionmaps`.
 Example
 -------
 
-We create CDenseFeatures (RealFeatures, here 64 bit float values).
+We create DenseFeatures (RealFeatures, here 64 bit float values).
 
 .. sgexample:: diffusionmaps.sg:create_features
 

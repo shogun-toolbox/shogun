@@ -11,17 +11,17 @@
 
 using namespace shogun;
 
-CExponentialARDKernel::CExponentialARDKernel() : CDotKernel()
+ExponentialARDKernel::ExponentialARDKernel() : DotKernel()
 {
 	init();
 }
 
-CExponentialARDKernel::~CExponentialARDKernel()
+ExponentialARDKernel::~ExponentialARDKernel()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-void CExponentialARDKernel::init()
+void ExponentialARDKernel::init()
 {
 	m_ARD_type=KT_SCALAR;
 
@@ -44,21 +44,21 @@ void CExponentialARDKernel::init()
 
 }
 
-SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
+SGVector<float64_t> ExponentialARDKernel::get_feature_vector(int32_t idx, std::shared_ptr<Features> hs)
 {
 	require(hs, "Features not set!");
-	CDenseFeatures<float64_t> * dense_hs=dynamic_cast<CDenseFeatures<float64_t> *>(hs);
+	auto dense_hs=std::dynamic_pointer_cast<DenseFeatures<float64_t>>(hs);
 	if (dense_hs)
 		return dense_hs->get_feature_vector(idx);
 
-	CDotFeatures * dot_hs=dynamic_cast<CDotFeatures *>(hs);
+	auto dot_hs=std::dynamic_pointer_cast<DotFeatures>(hs);
 	require(dot_hs, "Kernel only supports DotFeatures");
 	return dot_hs->get_computed_dot_feature_vector(idx);
 
 }
 
 
-void CExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
+void ExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
 {
 	require(weights.num_rows>0 && weights.num_cols>0, "Weights matrix is non-empty");
 	if (weights.num_rows==1)
@@ -75,7 +75,7 @@ void CExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
 		set_matrix_weights(weights);
 }
 
-void CExponentialARDKernel::lazy_update_weights()
+void ExponentialARDKernel::lazy_update_weights()
 {
 	if (parameter_hash_changed())
 	{
@@ -105,13 +105,13 @@ void CExponentialARDKernel::lazy_update_weights()
 	}
 }
 
-SGMatrix<float64_t> CExponentialARDKernel::get_weights()
+SGMatrix<float64_t> ExponentialARDKernel::get_weights()
 {
 	lazy_update_weights();
 	return SGMatrix<float64_t>(m_weights_raw);
 }
 
-void CExponentialARDKernel::set_scalar_weights(float64_t weight)
+void ExponentialARDKernel::set_scalar_weights(float64_t weight)
 {
 	require(weight>0, "Scalar ({}) weight should be positive",weight);
 	m_log_weights=SGVector<float64_t>(1);
@@ -122,7 +122,7 @@ void CExponentialARDKernel::set_scalar_weights(float64_t weight)
 	m_weights_cols=1.0;
 }
 
-void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
+void ExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 {
 	require(rhs==NULL && lhs==NULL,
 		"Setting vector weights must be before initialize features");
@@ -140,7 +140,7 @@ void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 	m_weights_cols=weights.vlen;
 }
 
-void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
+void ExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 {
 	require(rhs==NULL && lhs==NULL,
 		"Setting matrix weights must be before initialize features");
@@ -167,23 +167,23 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 	}
 }
 
-CExponentialARDKernel::CExponentialARDKernel(int32_t size) : CDotKernel(size)
+ExponentialARDKernel::ExponentialARDKernel(int32_t size) : DotKernel(size)
 {
 	init();
 }
 
-CExponentialARDKernel::CExponentialARDKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size)	: CDotKernel(size)
+ExponentialARDKernel::ExponentialARDKernel(std::shared_ptr<DotFeatures> l,
+		std::shared_ptr<DotFeatures> r, int32_t size)	: DotKernel(size)
 {
 	init();
 	init(l,r);
 }
 
-bool CExponentialARDKernel::init(CFeatures* l, CFeatures* r)
+bool ExponentialARDKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	cleanup();
-	CDotKernel::init(l, r);
-	int32_t dim=((CDotFeatures*) l)->get_dim_feature_space();
+	DotKernel::init(l, r);
+	int32_t dim=(std::static_pointer_cast<DotFeatures>(l))->get_dim_feature_space();
 	if (m_ARD_type==KT_FULL)
 	{
 		require(m_weights_rows==dim, "Dimension mismatch between features ({}) and weights ({})",
@@ -198,7 +198,7 @@ bool CExponentialARDKernel::init(CFeatures* l, CFeatures* r)
 }
 
 
-SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_t> vec)
+SGMatrix<float64_t> ExponentialARDKernel::get_weighted_vector(SGVector<float64_t> vec)
 {
 	require(m_ARD_type==KT_FULL || m_ARD_type==KT_DIAG, "This method only supports vector weights or matrix weights");
 	SGMatrix<float64_t> res;
@@ -230,7 +230,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 	return res;
 }
 
-SGMatrix<float64_t> CExponentialARDKernel::compute_right_product(SGVector<float64_t>vec,
+SGMatrix<float64_t> ExponentialARDKernel::compute_right_product(SGVector<float64_t>vec,
 	float64_t & scalar_weight)
 {
 	SGMatrix<float64_t> right;
@@ -249,7 +249,7 @@ SGMatrix<float64_t> CExponentialARDKernel::compute_right_product(SGVector<float6
 	return right;
 }
 
-void CExponentialARDKernel::check_weight_gradient_index(index_t index)
+void ExponentialARDKernel::check_weight_gradient_index(index_t index)
 {
 	require(lhs, "Left features not set!");
 	require(rhs, "Right features not set!");

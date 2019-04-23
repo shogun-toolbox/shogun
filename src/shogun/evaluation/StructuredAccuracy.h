@@ -16,16 +16,16 @@ namespace shogun
 {
 
 /**
- * @brief class CStructuredAccuracy used to compute accuracy of structured classification
+ * @brief class StructuredAccuracy used to compute accuracy of structured classification
  */
-class CStructuredAccuracy : public CEvaluation
+class StructuredAccuracy : public Evaluation
 {
 public:
 	/** default constructor */
-	CStructuredAccuracy();
+	StructuredAccuracy();
 
 	/** destructor */
-	virtual ~CStructuredAccuracy();
+	virtual ~StructuredAccuracy();
 
 	/** evaluate accuracy
 	 *
@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(CLabels * predicted, CLabels * ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth);
 
 	/** NOT IMPLEMENTED
 	 * constructs confusion matrix for multiclass classification
@@ -44,7 +44,7 @@ public:
 	 *
 	 * @return confusion matrix
 	 */
-	static SGMatrix<int32_t> get_confusion_matrix(CLabels * predicted, CLabels * ground_truth);
+	static SGMatrix<int32_t> get_confusion_matrix(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth);
 
 	/** whether the evaluation criterion has to be maximimed or minimized
 	*
@@ -69,7 +69,7 @@ private:
 	 *
 	 * @return accuracy
 	 */
-	float64_t evaluate_real(CStructuredLabels * predicted, CStructuredLabels * ground_truth);
+	float64_t evaluate_real(std::shared_ptr<StructuredLabels > predicted, std::shared_ptr<StructuredLabels > ground_truth);
 
 	/** evaluate accuracy for structured labels composed of sequences
 	 *
@@ -78,7 +78,7 @@ private:
 	 *
 	 * @return accuracy
 	 */
-	float64_t evaluate_sequence(CStructuredLabels * predicted, CStructuredLabels * ground_truth);
+	float64_t evaluate_sequence(std::shared_ptr<StructuredLabels > predicted, std::shared_ptr<StructuredLabels > ground_truth);
 
 	/** evaluate accuracy for structured labels composed of sparse multi
 	 * labels. Formally the accuracy is defined as
@@ -93,10 +93,10 @@ private:
 	 *
 	 * @return accuracy
 	 */
-	float64_t evaluate_sparse_multilabel(CStructuredLabels * predicted,
-	                                     CStructuredLabels * ground_truth);
+	float64_t evaluate_sparse_multilabel(std::shared_ptr<StructuredLabels > predicted,
+	                                     std::shared_ptr<StructuredLabels > ground_truth);
 
-}; /* class CStructuredAccuracy*/
+}; /* class StructuredAccuracy*/
 
 } /* namespace shogun */
 

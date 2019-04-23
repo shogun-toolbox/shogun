@@ -36,67 +36,66 @@
 #include <shogun/statistical_testing/internals/NextSamples.h>
 
 using namespace shogun;
-using namespace internal;
 
-CTwoDistributionTest::CTwoDistributionTest() : CHypothesisTest(TwoDistributionTest::num_feats)
+TwoDistributionTest::TwoDistributionTest() : HypothesisTest(internal::TwoDistributionTest::num_feats)
 {
 }
 
-CTwoDistributionTest::~CTwoDistributionTest()
+TwoDistributionTest::~TwoDistributionTest()
 {
 }
 
-void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
+void TwoDistributionTest::set_p(std::shared_ptr<Features> samples_from_p)
 {
 	require(samples_from_p, "Samples from P cannot be NULL!");
 	auto& dm=get_data_mgr();
 	dm.samples_at(0)=samples_from_p;
 }
 
-CFeatures* CTwoDistributionTest::get_p() const
+std::shared_ptr<Features> TwoDistributionTest::get_p() const
 {
 	const auto& dm=get_data_mgr();
 	return dm.samples_at(0);
 }
 
-void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
+void TwoDistributionTest::set_q(std::shared_ptr<Features> samples_from_q)
 {
 	require(samples_from_q, "Samples from Q cannot be NULL!");
 	auto& dm=get_data_mgr();
 	dm.samples_at(1)=samples_from_q;
 }
 
-CFeatures* CTwoDistributionTest::get_q() const
+std::shared_ptr<Features> TwoDistributionTest::get_q() const
 {
 	const auto& dm=get_data_mgr();
 	return dm.samples_at(1);
 }
 
-void CTwoDistributionTest::set_num_samples_p(index_t num_samples_from_p)
+void TwoDistributionTest::set_num_samples_p(index_t num_samples_from_p)
 {
 	auto& dm=get_data_mgr();
 	dm.num_samples_at(0)=num_samples_from_p;
 }
 
-const index_t CTwoDistributionTest::get_num_samples_p() const
+const index_t TwoDistributionTest::get_num_samples_p() const
 {
 	const auto& dm=get_data_mgr();
 	return dm.num_samples_at(0);
 }
 
-void CTwoDistributionTest::set_num_samples_q(index_t num_samples_from_q)
+void TwoDistributionTest::set_num_samples_q(index_t num_samples_from_q)
 {
 	auto& dm=get_data_mgr();
 	dm.num_samples_at(1)=num_samples_from_q;
 }
 
-const index_t CTwoDistributionTest::get_num_samples_q() const
+const index_t TwoDistributionTest::get_num_samples_q() const
 {
 	const auto& dm=get_data_mgr();
 	return dm.num_samples_at(1);
 }
 
-CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
+std::shared_ptr<CustomDistance> TwoDistributionTest::compute_distance(std::shared_ptr<Distance> distance)
 {
 	auto& data_mgr=get_data_mgr();
 	bool is_blockwise=data_mgr.is_blockwise();
@@ -106,8 +105,8 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 	auto samples=data_mgr.next();
 	require(!samples.empty(), "Could not fetch samples!");
 
-	CFeatures *samples_p=samples[0][0];
-	CFeatures *samples_q=samples[1][0];
+	std::shared_ptr<Features> samples_p=samples[0][0];
+	std::shared_ptr<Features> samples_q=samples[1][0];
 
 	distance->cleanup();
 	distance->remove_lhs_and_rhs();
@@ -120,12 +119,12 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 	data_mgr.end();
 	data_mgr.set_blockwise(is_blockwise);
 
-	auto precomputed_distance=new CCustomDistance();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	precomputed_distance->set_full_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
 	return precomputed_distance;
 }
 
-CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distance)
+std::shared_ptr<CustomDistance> TwoDistributionTest::compute_joint_distance(std::shared_ptr<Distance> distance)
 {
 	require(distance!=nullptr, "Distance instance cannot be NULL!");
 	auto& data_mgr=get_data_mgr();
@@ -136,8 +135,8 @@ CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distanc
 	auto samples=data_mgr.next();
 	require(!samples.empty(), "Could not fetch samples!");
 
-	CFeatures *samples_p=samples[0][0];
-	CFeatures *samples_q=samples[1][0];
+	std::shared_ptr<Features> samples_p=samples[0][0];
+	std::shared_ptr<Features> samples_q=samples[1][0];
 	auto p_and_q=samples_p->create_merged_copy(samples_q);
 
 	samples.clear();
@@ -151,12 +150,12 @@ CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distanc
 	distance->remove_lhs_and_rhs();
 	distance->cleanup();
 
-	auto precomputed_distance=new CCustomDistance();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
 	return precomputed_distance;
 }
 
-const char* CTwoDistributionTest::get_name() const
+const char* TwoDistributionTest::get_name() const
 {
 	return "TwoDistributionTest";
 }

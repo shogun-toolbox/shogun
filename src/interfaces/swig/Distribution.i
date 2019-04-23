@@ -11,14 +11,13 @@
 %feature("autodoc", "get_transition_probs(self) -> numpy 1dim array of %float") get_transition_probs;
 #endif
 
-/* Remove C Prefix */
-%rename(Distribution) CDistribution;
-%rename(HMM) CHMM;
-%rename(PositionalPWM) CPositionalPWM;
-%rename(Gaussian) CGaussian;
-%rename(GMM) CGMM;
-%rename(KernelDensity) CKernelDensity;
-%rename(GaussianDistribution) CGaussianDistribution;
+%shared_ptr(shogun::Distribution)
+%shared_ptr(shogun::HMM)
+%shared_ptr(shogun::PositionalPWM)
+%shared_ptr(shogun::Gaussian)
+%shared_ptr(shogun::GMM)
+%shared_ptr(shogun::KernelDensity)
+%shared_ptr(shogun::GaussianDistribution)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>

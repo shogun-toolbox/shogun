@@ -17,14 +17,14 @@ using namespace std;
 /**
  * Mock model to show the use of the callback.
  */
-class MockModel : public CMachine
+#if 0
+class MockModel : public Machine
 {
 public:
 	MockModel() : m_check(0), m_last_iteration(0)
 	{
 		// Set up the custom callback
-		function<bool()> callback = [this]() {
-			// Stop if we did more than 5 steps
+		function<bool()> callback = [std::shared_ptr<> if we did more than 5 steps
 			if (m_last_iteration >= 5)
 			{
 				env()->signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
@@ -54,7 +54,7 @@ protected:
 	}
 
 	/* Custom train machine */
-	virtual bool train_machine(CFeatures* data = NULL)
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL)
 	{
 		for (int num_iterations_train = 0; num_iterations_train < 10;
 		     num_iterations_train++)
@@ -107,3 +107,4 @@ TEST(StoppableSGObject, custom_callback_by_user)
 	a.train();
 	EXPECT_TRUE(a.get_check() == 3);
 }
+#endif

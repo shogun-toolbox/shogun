@@ -121,20 +121,20 @@ enum ERBMVisibleUnitType
  * will be stored in visible_state[15:21,:]. Note that the groups are numbered
  * by the order in which they where added to the RBM using add_visible_group()
  */
-class CRBM : public RandomMixin<CSGObject>
+class RBM : public RandomMixin<SGObject>
 {
-friend class CDeepBeliefNetwork;
+friend class DeepBeliefNetwork;
 
 public:
 	/** default constructor */
-	CRBM();
+	RBM();
 
 	/** Constructs an RBM with no visible units. The visible units can be added
 	 * later using add_visible_group()
 	 *
 	 * @param num_hidden Number of hidden units
 	 */
-	CRBM(int32_t num_hidden);
+	RBM(int32_t num_hidden);
 
 	/** Constructs an RBM with a single group of visible units
 	 *
@@ -142,10 +142,10 @@ public:
 	 * @param num_visible Number of visible units
 	 * @param visible_unit_type Type of the visible units
 	 */
-	CRBM(int32_t num_hidden, int32_t num_visible,
+	RBM(int32_t num_hidden, int32_t num_visible,
 		ERBMVisibleUnitType visible_unit_type = RBMVUT_BINARY);
 
-	virtual ~CRBM();
+	virtual ~RBM();
 
 	/** Adds a group of visible units to the RBM
 	 *
@@ -173,7 +173,7 @@ public:
 	 * @param features Input features. Should have as many features as there
 	 * are visible units in the RBM.
 	 */
-	virtual void train(CDenseFeatures<float64_t>* features);
+	virtual void train(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	/** Draws samples from the marginal distribution of the visible units using
 	 * Gibbs sampling. The sampling starts from the values in the RBM's
@@ -196,7 +196,7 @@ public:
 	 *
 	 * @return Sampled states of group V
 	 */
-	virtual CDenseFeatures<float64_t>* sample_group(
+	virtual std::shared_ptr<DenseFeatures<float64_t>> sample_group(
 			int32_t V,
 			int32_t num_gibbs_steps=1, int32_t batch_size=1);
 
@@ -210,7 +210,7 @@ public:
 	 * @param num_gibbs_steps Number of Gibbs sampling steps
 	 */
 	virtual void sample_with_evidence(
-			int32_t E, CDenseFeatures<float64_t>* evidence,
+			int32_t E, std::shared_ptr<DenseFeatures<float64_t>> evidence,
 			int32_t num_gibbs_steps=1);
 
 	/** Draws Samples from \f$ P(V|E=evidence) \f$ where \f$ E \f$ is one of
@@ -225,9 +225,9 @@ public:
 	 *
 	 * @return Sampled states of group V
 	 */
-	virtual CDenseFeatures<float64_t>* sample_group_with_evidence(
+	virtual std::shared_ptr<DenseFeatures<float64_t>> sample_group_with_evidence(
 			int32_t V,
-			int32_t E, CDenseFeatures<float64_t>* evidence,
+			int32_t E, std::shared_ptr<DenseFeatures<float64_t>> evidence,
 			int32_t num_gibbs_steps=1);
 
 	/** Resets the state of the markov chain used for sampling, which is stored
@@ -309,10 +309,10 @@ public:
 	virtual float64_t pseudo_likelihood(SGMatrix<float64_t> visible,
 		SGMatrix<float64_t> buffer = SGMatrix<float64_t>());
 
-	/** Returns the states of the visible unit as CDenseFeatures<float64_t> */
-	virtual CDenseFeatures<float64_t>* visible_state_features()
+	/** Returns the states of the visible unit as DenseFeatures<float64_t> */
+	virtual std::shared_ptr<DenseFeatures<float64_t>> visible_state_features()
 	{
-		return new CDenseFeatures<float64_t>(visible_state);
+		return std::make_shared<DenseFeatures<float64_t>>(visible_state);
 	}
 
 	/** Returns the parameter vector of the RBM */
@@ -448,13 +448,13 @@ protected:
 	int32_t m_num_visible_groups;
 
 	/** Type of each visible unit group */
-	CDynamicArray<int32_t>* m_visible_group_types;
+	std::shared_ptr<DynamicArray<int32_t>> m_visible_group_types;
 
 	/** Size of each visible unit group */
-	CDynamicArray<int32_t>* m_visible_group_sizes;
+	std::shared_ptr<DynamicArray<int32_t>> m_visible_group_sizes;
 
 	/** Row offsets for accessing the states of each visible unit groups */
-	CDynamicArray<int32_t>* m_visible_state_offsets;
+	std::shared_ptr<DynamicArray<int32_t>> m_visible_state_offsets;
 
 	/** Number of parameters */
 	int32_t m_num_params;

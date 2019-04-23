@@ -286,7 +286,7 @@ void LinalgBackendEigen::pinvh_impl(
 	typename SGVector<T>::EigenVectorXtMap s_eig = s;
 	typename SGMatrix<T>::EigenMatrixXtMap V_eig = V;
 
-	float64_t pinv_tol = CMath::MACHINE_EPSILON * m * s_eig.real().maxCoeff();
+	float64_t pinv_tol = Math::MACHINE_EPSILON * m * s_eig.real().maxCoeff();
 	s_eig.array() = (s_eig.real().array() > pinv_tol)
 	                    .select(s_eig.real().array().inverse(), 0);
 	result_eig = V_eig * s_eig.asDiagonal() * V_eig.transpose();
@@ -305,7 +305,7 @@ void LinalgBackendEigen::pinv_impl(
 	auto U_eig = svd_eig.matrixU().real();
 	auto V_eig = svd_eig.matrixV().real();
 
-	float64_t pinv_tol = CMath::MACHINE_EPSILON * m * s_eig.maxCoeff();
+	float64_t pinv_tol = Math::MACHINE_EPSILON * m * s_eig.maxCoeff();
 	s_eig.array() =
 	    (s_eig.array() > pinv_tol).select(s_eig.array().inverse(), 0);
 	result_eig = V_eig * s_eig.asDiagonal() * U_eig.transpose();

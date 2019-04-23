@@ -18,13 +18,13 @@ namespace shogun
 	 * An abstract class for storing data in any kind of format for
 	 * LatentLabels, LatentFeatures and for StructuredLabels.
 	 */
-	class CData : public CSGObject
+	class Data : public SGObject
 	{
 		public:
 			/** default ctor */
-			CData();
+			Data();
 
-			virtual ~CData();
+			virtual ~Data();
 
 			/** Returns the name of the SGSerializable instance.
 			 *

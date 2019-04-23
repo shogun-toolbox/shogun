@@ -11,15 +11,15 @@
 using namespace shogun;
 using namespace std;
 
-CGEMPLP::CGEMPLP()
-	: CMAPInferImpl()
+GEMPLP::GEMPLP()
+	: MAPInferImpl()
 {
 	m_fg = NULL;
 	m_factors = NULL;
 }
 
-CGEMPLP::CGEMPLP(CFactorGraph* fg, Parameter param)
-	: CMAPInferImpl(fg),
+GEMPLP::GEMPLP(std::shared_ptr<FactorGraph> fg, Parameter param)
+	: MAPInferImpl(fg),
 	  m_param(param)
 {
 	ASSERT(m_fg != NULL);
@@ -27,13 +27,12 @@ CGEMPLP::CGEMPLP(CFactorGraph* fg, Parameter param)
 	init();
 }
 
-CGEMPLP::~CGEMPLP()
+GEMPLP::~GEMPLP()
 {
-	if(m_factors != NULL)
-		SG_UNREF(m_factors);
+
 }
 
-void CGEMPLP::init()
+void GEMPLP::init()
 {
 	SGVector<int32_t> fg_var_sizes = m_fg->get_cardinalities();
 	m_factors = m_fg->get_factors();
@@ -44,15 +43,15 @@ void CGEMPLP::init()
 	// get all the intersections
 	for (int32_t i = 0; i < num_factors; i++)
 	{
-		CFactor* factor_i = dynamic_cast<CFactor*>(m_factors->get_element(i));
+		auto factor_i = m_factors->get_element<Factor>(i);
 		SGVector<int32_t> region_i = factor_i->get_variables();
-		SG_UNREF(factor_i);
+
 
 		for (int32_t j = i; j < num_factors; j++)
 		{
-			CFactor* factor_j = dynamic_cast<CFactor*>(m_factors->get_element(j));
+			auto factor_j = m_factors->get_element<Factor>(j);
 			SGVector<int32_t> region_j = factor_j->get_variables();
-			SG_UNREF(factor_j);
+
 
 			const int32_t k = find_intersection_index(region_i, region_j);
 			if (k < 0) continue;
@@ -70,9 +69,9 @@ void CGEMPLP::init()
 
 	for (int32_t c = 0; c < num_factors; c++)
 	{
-		CFactor* factor_c = dynamic_cast<CFactor*>(m_factors->get_element(c));
+		auto factor_c = m_factors->get_element<Factor>(c);
 		SGVector<int32_t> vars_c = factor_c->get_variables();
-		SG_UNREF(factor_c);
+
 
 		m_region_inds_intersections[c].resize(m_region_intersections[c].size());
 		m_msgs_from_region[c].resize(m_region_intersections[c].size());
@@ -126,7 +125,7 @@ void CGEMPLP::init()
 	}
 }
 
-SGNDArray<float64_t> CGEMPLP::convert_energy_to_potential(CFactor* factor)
+SGNDArray<float64_t> GEMPLP::convert_energy_to_potential(std::shared_ptr<Factor> factor)
 {
 	SGVector<float64_t> energies = factor->get_energies();
 	SGVector<int32_t> cards = factor->get_cardinalities();
@@ -150,7 +149,7 @@ SGNDArray<float64_t> CGEMPLP::convert_energy_to_potential(CFactor* factor)
 	return message.clone();
 }
 
-int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<int32_t> region_B)
+int32_t GEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<int32_t> region_B)
 {
 	vector<int32_t> tmp;
 
@@ -183,7 +182,7 @@ int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<in
 	return k;
 }
 
-float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
+float64_t GEMPLP::inference(SGVector<int32_t> assignment)
 {
 	require(assignment.size() == m_fg->get_cardinalities().size(),
 	        "{}::inference(): the output assignment should be prepared as"
@@ -192,7 +191,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 	// iterate over message loop
 	SG_DEBUG("Running MPLP for {} iterations",  m_param.m_max_iter);
 
-	float64_t last_obj = CMath::INFTY;
+	float64_t last_obj = Math::INFTY;
 
 	// block coordinate desent, outer loop
 	for (int32_t it = 0; it < m_param.m_max_iter; ++it)
@@ -200,9 +199,9 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 		// update message, iterate over all regions
 		for (int32_t c = 0; c < m_factors->get_num_elements(); c++)
 		{
-			CFactor* factor_c = dynamic_cast<CFactor*>(m_factors->get_element(c));
+			auto factor_c =m_factors->get_element<Factor>(c);
 			SGVector<int32_t> vars = factor_c->get_variables();
-			SG_UNREF(factor_c);
+
 
 			if (vars.size() == 1 && it > 0)
 				continue;
@@ -228,7 +227,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 		// iterates over factors
 		for (int32_t c = 0; c < m_factors->get_num_elements(); c++)
 		{
-			CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(c));
+			auto factor = m_factors->get_element<Factor>(c);
 			SGVector<int32_t> vars = factor->get_variables();
 			SGVector<int32_t> var_assignment(vars.size());
 
@@ -238,7 +237,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 			// add value from current factor
 			int_val += m_theta_region[c].get_value(var_assignment);
 
-			SG_UNREF(factor);
+
 		}
 
 		float64_t obj_del = last_obj - obj;
@@ -261,7 +260,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 	return energy;
 }
 
-void CGEMPLP::update_messages(int32_t id_region)
+void GEMPLP::update_messages(int32_t id_region)
 {
 	require(m_factors != NULL, "Factors are not set!");
 
@@ -269,7 +268,7 @@ void CGEMPLP::update_messages(int32_t id_region)
 			"Region id ({}) exceeds the factor elements' length ({})!",
 			id_region, m_factors->get_num_elements());
 
-	CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(id_region));
+	auto factor = m_factors->get_element<Factor>(id_region);
 	SGVector<int32_t> vars = factor->get_variables();
 	SGVector<int32_t> cards = factor->get_cardinalities();
 	SGNDArray<float64_t> lam_sum(cards);
@@ -325,10 +324,10 @@ void CGEMPLP::update_messages(int32_t id_region)
 		s++;
 	}
 
-	SG_UNREF(factor);
+
 }
 
-void CGEMPLP::max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<int32_t> &subset_inds, SGNDArray<float64_t> &max_res) const
+void GEMPLP::max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<int32_t> &subset_inds, SGNDArray<float64_t> &max_res) const
 {
 	// If the subset equals the target array then maximizing would
 	// give us the target array (assuming there is no reordering)
@@ -338,7 +337,7 @@ void CGEMPLP::max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<int32_t
 		return;
 	}
 	else
-		max_res.set_const(-CMath::INFTY);
+		max_res.set_const(-Math::INFTY);
 
 	// Go over all values of the target array. For each check if its
 	// value on the subset is larger than the current max

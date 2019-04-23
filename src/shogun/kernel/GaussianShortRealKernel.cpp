@@ -11,58 +11,58 @@
 
 using namespace shogun;
 
-CGaussianShortRealKernel::CGaussianShortRealKernel()
-: CDotKernel(0), width(0.0)
+GaussianShortRealKernel::GaussianShortRealKernel()
+: DotKernel(0), width(0.0)
 {
 	register_params();
 }
 
-CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, float64_t w)
-: CDotKernel(size), width(w)
+GaussianShortRealKernel::GaussianShortRealKernel(int32_t size, float64_t w)
+: DotKernel(size), width(w)
 {
 	register_params();
 }
 
-CGaussianShortRealKernel::CGaussianShortRealKernel(
-	CDenseFeatures<float32_t>* l, CDenseFeatures<float32_t>* r, float64_t w, int32_t size)
-: CDotKernel(size), width(w)
+GaussianShortRealKernel::GaussianShortRealKernel(
+	std::shared_ptr<DenseFeatures<float32_t>> l, std::shared_ptr<DenseFeatures<float32_t>> r, float64_t w, int32_t size)
+: DotKernel(size), width(w)
 {
 	init(l,r);
 	register_params();
 }
 
-CGaussianShortRealKernel::~CGaussianShortRealKernel()
+GaussianShortRealKernel::~GaussianShortRealKernel()
 {
 }
 
-bool CGaussianShortRealKernel::init(CFeatures* l, CFeatures* r)
+bool GaussianShortRealKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	return init_normalizer();
 }
 
-float64_t CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t GaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float32_t* avec=((CDenseFeatures<float32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float32_t* bvec=((CDenseFeatures<float32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float32_t* avec=(std::static_pointer_cast<DenseFeatures<float32_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
+	float32_t* bvec=(std::static_pointer_cast<DenseFeatures<float32_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result=0;
 	for (int32_t i=0; i<alen; i++)
-		result+=CMath::sq(avec[i]-bvec[i]);
+		result+=Math::sq(avec[i]-bvec[i]);
 
 	result=exp(-result/width);
 
-	((CDenseFeatures<float32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float32_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float32_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
 
-void CGaussianShortRealKernel::register_params()
+void GaussianShortRealKernel::register_params()
 {
 	SG_ADD(&width, "width", "kernel width", ParameterProperties::HYPER);
 }

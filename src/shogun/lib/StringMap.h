@@ -62,7 +62,7 @@ protected:
 	virtual uint32_t get_hash_value(const std::string& key)
 	{
 		const char* k=key.c_str();
-		return CHash::MurmurHash3((uint8_t*)(k), key.length(), 0xDEADBEEF);
+		return Hash::MurmurHash3((uint8_t*)(k), key.length(), 0xDEADBEEF);
 	}
 
 };

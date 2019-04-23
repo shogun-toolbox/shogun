@@ -21,8 +21,8 @@
 using namespace Eigen;
 using namespace shogun;
 
-CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
-    : CDenseRealDispatch<CLDA, CLinearMachine>()
+LDA::LDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
+    : DenseRealDispatch<LDA, LinearMachine>()
 {
 	init();
 	m_method = method;
@@ -30,25 +30,21 @@ CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
 	m_bdc_svd = bdc_svd;
 }
 
-CLDA::CLDA(
-    float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab,
+LDA::LDA(
+    float64_t gamma, std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab,
     ELDAMethod method, bool bdc_svd)
-    : CDenseRealDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
+    : DenseRealDispatch<LDA, LinearMachine>(), m_gamma(gamma)
 {
 	init();
 
 	features = traindat;
-	SG_REF(features)
-
 	m_labels = trainlab;
-	SG_REF(trainlab)
-
 	m_method = method;
 	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;
 }
 
-void CLDA::init()
+void LDA::init()
 {
 	m_method = AUTO_LDA;
 	m_gamma = 0;
@@ -66,12 +62,12 @@ void CLDA::init()
 	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA))
 }
 
-CLDA::~CLDA()
+LDA::~LDA()
 {
 }
 
 template <typename ST, typename U>
-bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
+bool LDA::train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
@@ -85,7 +81,7 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 }
 
 template <typename ST>
-bool CLDA::solver_svd(CDenseFeatures<ST>* data)
+bool LDA::solver_svd(std::shared_ptr<DenseFeatures<ST>> data)
 {
 	auto labels = multiclass_labels(m_labels);
 	require(
@@ -121,7 +117,7 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 }
 
 template <typename ST>
-bool CLDA::solver_classic(CDenseFeatures<ST>* data)
+bool LDA::solver_classic(std::shared_ptr<DenseFeatures<ST>> data)
 {
 	auto labels = multiclass_labels(m_labels);
 	require(

@@ -195,7 +195,7 @@ bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
 		return std::equal(                                                     \
 		    matrix, matrix + size(), other.matrix,                             \
 		    [](const real_t& a, const real_t& b) {                             \
-			    return CMath::fequals<real_t>(                                 \
+			    return Math::fequals<real_t>(                                 \
 			        a, b, std::numeric_limits<real_t>::epsilon());             \
 			});                                                                \
 	}
@@ -221,8 +221,8 @@ bool SGMatrix<complex128_t>::equals(const SGMatrix<complex128_t>& other) const
 	return std::equal(matrix, matrix+size(), other.matrix,
 		[](const complex128_t& a, const complex128_t& b)
 		{
-			return CMath::fequals<float64_t>(a.real(), b.real(), LDBL_EPSILON) &&
-				CMath::fequals<float64_t>(a.imag(), b.imag(), LDBL_EPSILON);
+			return Math::fequals<float64_t>(a.real(), b.real(), LDBL_EPSILON) &&
+				Math::fequals<float64_t>(a.imag(), b.imag(), LDBL_EPSILON);
 		});
 }
 
@@ -286,7 +286,7 @@ bool SGMatrix<real_t>::is_symmetric() const	\
 	{	\
 		for (index_t j=i+1; j<num_cols; ++j)	\
 		{	\
-			if (!CMath::fequals<real_t>(matrix[j*num_rows+i],	\
+			if (!Math::fequals<real_t>(matrix[j*num_rows+i],	\
 						matrix[i*num_rows+j], std::numeric_limits<real_t>::epsilon()))	\
 				return false;	\
 		}	\
@@ -317,9 +317,9 @@ bool SGMatrix<complex128_t>::is_symmetric() const
 	{
 		for (index_t j=i+1; j<num_cols; ++j)
 		{
-			if (!(CMath::fequals<float64_t>(matrix[j*num_rows+i].real(),
+			if (!(Math::fequals<float64_t>(matrix[j*num_rows+i].real(),
 						matrix[i*num_rows+j].real(), DBL_EPSILON) &&
-					CMath::fequals<float64_t>(matrix[j*num_rows+i].imag(),
+					Math::fequals<float64_t>(matrix[j*num_rows+i].imag(),
 						matrix[i*num_rows+j].imag(), DBL_EPSILON)))
 				return false;
 		}
@@ -913,7 +913,7 @@ void SGMatrix<T>::free_data()
 }
 
 template<class T>
-void SGMatrix<T>::load(CFile* loader)
+void SGMatrix<T>::load(std::shared_ptr<File> loader)
 {
 	ASSERT(loader)
 	unref();
@@ -929,13 +929,13 @@ void SGMatrix<T>::load(CFile* loader)
 }
 
 template<>
-void SGMatrix<complex128_t>::load(CFile* loader)
+void SGMatrix<complex128_t>::load(std::shared_ptr<File> loader)
 {
 	error("SGMatrix::load():: Not supported for complex128_t");
 }
 
 template<class T>
-void SGMatrix<T>::save(CFile* writer)
+void SGMatrix<T>::save(std::shared_ptr<File> writer)
 {
 	assert_on_cpu();
 	ASSERT(writer)
@@ -945,7 +945,7 @@ void SGMatrix<T>::save(CFile* writer)
 }
 
 template<>
-void SGMatrix<complex128_t>::save(CFile* saver)
+void SGMatrix<complex128_t>::save(std::shared_ptr<File> saver)
 {
 	error("SGMatrix::save():: Not supported for complex128_t");
 }
@@ -966,7 +966,7 @@ template<class T>
 SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 {
 	assert_on_cpu();
-	index_t diag_vlen=CMath::min(num_cols, num_rows);
+	index_t diag_vlen=Math::min(num_cols, num_rows);
 	SGVector<T> diag(diag_vlen);
 
 	for (int64_t i=0; i<diag_vlen; i++)

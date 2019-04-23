@@ -15,9 +15,9 @@
 
 namespace shogun
 {
-	class CDotFeatures;
+	class DotFeatures;
 
-/** @brief Computes the standard polynomial kernel on CDotFeatures
+/** @brief Computes the standard polynomial kernel on DotFeatures
  *
  * Formally, it computes
  *
@@ -30,11 +30,11 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyKernel: public CDotKernel
+class PolyKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CPolyKernel();
+		PolyKernel();
 
 		/** constructor
 		 *
@@ -44,7 +44,7 @@ class CPolyKernel: public CDotKernel
 		 * @param c trade-off parameter
 		 * @param size cache size
 		 */
-		CPolyKernel(CDotFeatures* l, CDotFeatures* r,
+		PolyKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
 			int32_t d, float64_t c, float64_t gamma, int32_t size=10);
 
 		/** constructor
@@ -54,9 +54,9 @@ class CPolyKernel: public CDotKernel
 		 * @param c trade-off parameter
 		 * @param gamma scaler for the dot product
 		 */
-		CPolyKernel(int32_t size, int32_t degree, float64_t c=1.0, float64_t gamma=1.0);
+		PolyKernel(int32_t size, int32_t degree, float64_t c=1.0, float64_t gamma=1.0);
 
-		virtual ~CPolyKernel();
+		virtual ~PolyKernel();
 
 		/** initialize kernel
 		 *
@@ -64,7 +64,7 @@ class CPolyKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

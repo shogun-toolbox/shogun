@@ -19,21 +19,21 @@ namespace shogun
  *
  * See e.g. the CSparseGaussianKernel for an example.
  */
-template <class ST> class CSparseKernel : public CKernel
+template <class ST> class SparseKernel : public Kernel
 {
 	public:
 		/** constructor
 		 *
 		 * @param cachesize cache size
 		 */
-		CSparseKernel(int32_t cachesize) : CKernel(cachesize) {}
+		SparseKernel(int32_t cachesize) : Kernel(cachesize) {}
 
 		/** constructor
 		 *
 		 * @param l features for left-hand side
 		 * @param r features for right-hand side
 		 */
-		CSparseKernel(CFeatures* l, CFeatures* r) : CKernel(10)
+		SparseKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r) : Kernel(10)
 		{
 			init(l, r);
 		}
@@ -44,19 +44,22 @@ template <class ST> class CSparseKernel : public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
-			CKernel::init(l,r);
+			Kernel::init(l,r);
 
 			ASSERT(l->get_feature_class()==C_SPARSE)
 			ASSERT(r->get_feature_class()==C_SPARSE)
 			ASSERT(l->get_feature_type()==this->get_feature_type())
 			ASSERT(r->get_feature_type()==this->get_feature_type())
 
-			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features())
+			auto sf_lhs = lhs->as<SparseFeatures<ST>>();
+			auto sf_rhs = rhs->as<SparseFeatures<ST>>();
+
+			if (sf_lhs->get_num_features() != sf_rhs->get_num_features())
 			{
 				error("train or test features #dimension mismatch (l:{} vs. r:{})",
-						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
+						sf_lhs->get_num_features(),sf_rhs->get_num_features());
 			}
 			return true;
 		}
@@ -91,18 +94,18 @@ template <class ST> class CSparseKernel : public CKernel
 		virtual EKernelType get_kernel_type()=0;
 };
 
-template<> inline EFeatureType CSparseKernel<float64_t>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType SparseKernel<float64_t>::get_feature_type() { return F_DREAL; }
 
-template<> inline EFeatureType CSparseKernel<uint64_t>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType SparseKernel<uint64_t>::get_feature_type() { return F_ULONG; }
 
-template<> inline EFeatureType CSparseKernel<int32_t>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType SparseKernel<int32_t>::get_feature_type() { return F_INT; }
 
-template<> inline EFeatureType CSparseKernel<uint16_t>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType SparseKernel<uint16_t>::get_feature_type() { return F_WORD; }
 
-template<> inline EFeatureType CSparseKernel<int16_t>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType SparseKernel<int16_t>::get_feature_type() { return F_SHORT; }
 
-template<> inline EFeatureType CSparseKernel<uint8_t>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType SparseKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 
-template<> inline EFeatureType CSparseKernel<char>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType SparseKernel<char>::get_feature_type() { return F_CHAR; }
 }
 #endif /* _SPARSEKERNEL_H__ */

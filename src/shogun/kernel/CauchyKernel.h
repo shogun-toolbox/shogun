@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief Cauchy kernel
  *
@@ -28,18 +28,18 @@ class CDistance;
  *
  */
 
-class CCauchyKernel: public CKernel
+class CauchyKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CCauchyKernel();
+	CauchyKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance to be used
 	 */
-	CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist);
+	CauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance to be used
 	 */
-	CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist);
+	CauchyKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -76,7 +76,7 @@ public:
 	 */
 	virtual const char* get_name() const { return "CauchyKernel"; }
 
-	virtual ~CCauchyKernel();
+	virtual ~CauchyKernel();
 
 protected:
 
@@ -96,7 +96,7 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 	/// sigma parameter of kernel
 	float64_t m_sigma;

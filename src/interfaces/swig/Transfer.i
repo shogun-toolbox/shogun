@@ -5,33 +5,36 @@
  */
 
 /* Multitask renames */
-%rename(MultitaskKernelNormalizer) CMultitaskKernelNormalizer;
-%rename(MultitaskKernelMklNormalizer) CMultitaskKernelMklNormalizer;
-%rename(MultitaskKernelTreeNormalizer) CMultitaskKernelTreeNormalizer;
-%rename(MultitaskKernelMaskNormalizer) CMultitaskKernelMaskNormalizer;
-%rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
-%rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
+%shared_ptr(shogun::Node)
+%shared_ptr(shogun::MultitaskLinearMachine)
+%shared_ptr(shogun::MultitaskKernelNormalizer)
+%shared_ptr(shogun::MultitaskKernelMklNormalizer)
+%shared_ptr(shogun::MultitaskKernelTreeNormalizer)
+%shared_ptr(shogun::MultitaskKernelMaskNormalizer)
+%shared_ptr(shogun::MultitaskKernelMaskPairNormalizer)
+%shared_ptr(shogun::MultitaskKernelPlifNormalizer)
 
-%rename(Task) CTask;
-%rename(TaskRelationBase) CTaskRelation;
-%rename(TaskTree) CTaskTree;
-%rename(TaskGroup) CTaskGroup;
+%shared_ptr(shogun::Task)
+%shared_ptr(shogun::TaskRelation)
+%shared_ptr(shogun::TaskRelationBase)
+%shared_ptr(shogun::TaskTree)
+%shared_ptr(shogun::TaskGroup)
 #ifdef USE_GPL_SHOGUN
-%rename(MultitaskLinearMachineBase) CMultitaskLinearMachine;
-%rename(MultitaskLeastSquaresRegression) CMultitaskLeastSquaresRegression;
-%rename(MultitaskLogisticRegression) CMultitaskLogisticRegression;
-%rename(MultitaskL12LogisticRegression) CMultitaskL12LogisticRegression;
-%rename(MultitaskTraceLogisticRegression) CMultitaskTraceLogisticRegression;
-%rename(MultitaskClusteredLogisticRegression) CMultitaskClusteredLogisticRegression;
+%shared_ptr(shogun::MultitaskLinearMachineBase)
+%shared_ptr(shogun::MultitaskLeastSquaresRegression)
+%shared_ptr(shogun::MultitaskLogisticRegression)
+%shared_ptr(shogun::MultitaskL12LogisticRegression)
+%shared_ptr(shogun::MultitaskTraceLogisticRegression)
+%shared_ptr(shogun::MultitaskClusteredLogisticRegression)
 #endif //USE_GPL_SHOGUN
 
-%rename(MultitaskROCEvaluation) CMultitaskROCEvaluation;
+%shared_ptr(shogun::MultitaskROCEvaluation)
 
-%rename(LibLinearMTL) CLibLinearMTL;
+%shared_ptr(shogun::LibLinearMTL)
 
 /* Domain adaptation renames */
-%rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
-%rename(DomainAdaptationMulticlassLibLinear) CDomainAdaptationMulticlassLibLinear;
+%shared_ptr(shogun::DomainAdaptationSVMLinear)
+%shared_ptr(shogun::DomainAdaptationMulticlassLibLinear)
 
 /* Multitask includes */
 %include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>

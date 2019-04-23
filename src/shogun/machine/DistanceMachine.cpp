@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein,
  *          Viktor Gal, Evan Shelhamer
  */
 
@@ -15,24 +15,24 @@
 
 using namespace shogun;
 
-CDistanceMachine::CDistanceMachine()
-: CMachine()
+DistanceMachine::DistanceMachine()
+: Machine()
 {
 	init();
 }
 
-CDistanceMachine::~CDistanceMachine()
+DistanceMachine::~DistanceMachine()
 {
-	SG_UNREF(distance);
+
 }
 
-void CDistanceMachine::init()
+void DistanceMachine::init()
 {
 	distance=NULL;
 	SG_ADD(&distance, "distance", "Distance to use", ParameterProperties::HYPER);
 }
 
-void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)
+void DistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)
 {
     int32_t num_threads;
     int32_t num_vec;
@@ -64,7 +64,7 @@ void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1
     }
 }
 
-void CDistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1, index_t idx_b2, index_t idx_a)
+void DistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1, index_t idx_b2, index_t idx_a)
 {
     int32_t num_threads;
     int32_t num_vec;
@@ -96,17 +96,16 @@ void CDistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1
     }
 }
 
-CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
+std::shared_ptr<MulticlassLabels> DistanceMachine::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		/* set distance features to given ones and apply to all */
-		CFeatures* lhs=distance->get_lhs();
+		auto lhs=distance->get_lhs();
 		distance->init(lhs, data);
-		SG_UNREF(lhs);
 
 		/* build result labels and classify all elements of procedure */
-		CMulticlassLabels* result=new CMulticlassLabels(data->get_num_vectors());
+		auto result=std::make_shared<MulticlassLabels>(data->get_num_vectors());
 		for (index_t i=0; i<data->get_num_vectors(); ++i)
 			result->set_label(i, apply_one(i));
 		return result;
@@ -114,20 +113,17 @@ CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 	else
 	{
 		/* call apply on complete right hand side */
-		CFeatures* all=distance->get_rhs();
-		CMulticlassLabels* result = apply_multiclass(all);
-		SG_UNREF(all);
-		return result;
+		auto all=distance->get_rhs();
+		return apply_multiclass(all);
 	}
 	return NULL;
 }
 
-float64_t CDistanceMachine::apply_one(int32_t num)
+float64_t DistanceMachine::apply_one(int32_t num)
 {
 	/* number of clusters */
-	CFeatures* lhs=distance->get_lhs();
+	auto lhs=distance->get_lhs();
 	int32_t num_clusters=lhs->get_num_vectors();
-	SG_UNREF(lhs);
 
 	/* (multiple threads) calculate distances to all cluster centers */
     SGVector<float64_t> dists(num_clusters);
@@ -149,16 +145,16 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 	return best_index;
 }
 
-void CDistanceMachine::set_distance(CDistance* d)
+void DistanceMachine::set_distance(std::shared_ptr<Distance> d)
 {
-	SG_REF(d);
-	SG_UNREF(distance);
+
+
 	distance=d;
 }
 
-CDistance* CDistanceMachine::get_distance() const
+std::shared_ptr<Distance> DistanceMachine::get_distance() const
 {
-	SG_REF(distance);
+
 	return distance;
 }
 

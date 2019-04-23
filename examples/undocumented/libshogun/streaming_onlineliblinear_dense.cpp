@@ -16,16 +16,14 @@ int main()
 {
 	// Create a StreamingAsciiFile from the training data
 	const char* train_file_name = "../data/train_densereal.light";
-	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
-	SG_REF(train_file);
+	auto train_file = std::make_shared<StreamingAsciiFile>(train_file_name);
 
 	// The bool value is true if examples are labelled.
 	// 1024 is a good standard value for the number of examples for the parser to hold at a time.
-	CStreamingDenseFeatures<float32_t>* train_features = new CStreamingDenseFeatures<float32_t>(train_file, true, 1024);
-	SG_REF(train_features);
+	auto train_features = std::make_shared<StreamingDenseFeatures<float32_t>>(train_file, true, 1024);
 
 	// Create an OnlineLiblinear object from the features. The first parameter is 'C'.
-	COnlineLibLinear* svm = new COnlineLibLinear(1, train_features);
+	auto svm = std::make_shared<OnlineLibLinear>(1, train_features);
 
 	svm->set_bias_enabled(false); // Enable/disable bias
 	svm->train();		// Train
@@ -34,25 +32,17 @@ int main()
 
 	// Now we want to test on other data
 	const char* test_file_name = "../data/fm_test_densereal.dat";
-	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
-	SG_REF(test_file);
+	auto test_file = std::make_shared<StreamingAsciiFile>(test_file_name);
 
 	// Similar, but 'false' since the file contains unlabelled examples
-	CStreamingDenseFeatures<float64_t>* test_features = new CStreamingDenseFeatures<float64_t>(test_file, false, 1024);
-	SG_REF(test_features);
+	auto test_features = std::make_shared<StreamingDenseFeatures<float64_t>>(test_file, false, 1024);
 
-	// Apply on all examples and return a CLabels*
-	CRegressionLabels* test_labels = svm->apply_regression(test_features);
+	// Apply on all examples and return a Labels*
+	auto test_labels = svm->apply_regression(test_features);
 
 	for (int32_t i=0; i<test_labels->get_num_labels(); i++)
 		SG_SPRINT("For example %d, predicted label is %f.\n", i, test_labels->get_label(i));
 
-	SG_UNREF(test_features);
-	SG_UNREF(test_labels);
-	SG_UNREF(test_file);
-	SG_UNREF(train_features);
-	SG_UNREF(train_file);
-	SG_UNREF(svm);
 
 	return 0;
 }

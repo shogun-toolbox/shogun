@@ -26,24 +26,24 @@ namespace shogun
  * [1] J. Milgram, M. Cheriet, R.Sabourin, "One Against One" or "One Against One":
  * Which One is Better for Handwriting Recognition with SVMs?
  */
-class CMulticlassOneVsRestStrategy: public CMulticlassStrategy
+class MulticlassOneVsRestStrategy: public MulticlassStrategy
 {
 public:
 	/** constructor */
-	CMulticlassOneVsRestStrategy();
+	MulticlassOneVsRestStrategy();
 
 	/** constructor
 	 * @param prob_heuris probability estimation heuristic
 	 */
-	CMulticlassOneVsRestStrategy(EProbHeuristicType prob_heuris);
+	MulticlassOneVsRestStrategy(EProbHeuristicType prob_heuris);
 
 	/** destructor */
-	virtual ~CMulticlassOneVsRestStrategy() {}
+	virtual ~MulticlassOneVsRestStrategy() {}
 
 	/** start training */
-	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
+	virtual void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels)
 	{
-		CMulticlassStrategy::train_start(orig_labels, train_labels);
+		MulticlassStrategy::train_start(orig_labels, train_labels);
 	}
 
 	/** has more training phase */

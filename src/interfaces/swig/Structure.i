@@ -5,63 +5,64 @@
  */
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%feature("director") shogun::CDirectorStructuredModel;
+%feature("director") shogun::DirectorStructuredModel;
 #endif
 
 /* Remove C Prefix */
-%rename(PlifBase) CPlifBase;
-%rename(Plif) CPlif;
-%rename(PlifArray) CPlifArray;
-%rename(DynProg) CDynProg;
-%rename(PlifMatrix) CPlifMatrix;
-%rename(SegmentLoss) CSegmentLoss;
-%rename(IntronList) CIntronList;
+%shared_ptr(shogun::PlifBase)
+%shared_ptr(shogun::Plif)
+%shared_ptr(shogun::PlifArray)
+%shared_ptr(shogun::DynProg)
+%shared_ptr(shogun::PlifMatrix)
+%shared_ptr(shogun::SegmentLoss)
+%shared_ptr(shogun::IntronList)
 
-%rename(StructuredModel) CStructuredModel;
-%rename(ResultSet) CResultSet;
-%rename(MulticlassModel) CMulticlassModel;
-%rename(MulticlassSOLabels) CMulticlassSOLabels;
-%rename(RealNumber) CRealNumber;
-%rename(HMSVMModel) CHMSVMModel;
-%rename(SequenceLabels) CSequenceLabels;
-%rename(Sequence) CSequence;
-%rename(StateModel) CStateModel;
-%rename(TwoStateModel) CTwoStateModel;
-%rename(DirectorStructuredModel) CDirectorStructuredModel;
-%rename(MultilabelSOLabels) CMultilabelSOLabels;
-%rename(SparseMultilabel) CSparseMultilabel;
-%rename(MultilabelModel) CMultilabelModel;
-%rename(HashedMultilabelModel) CHashedMultilabelModel;
-%rename(MultilabelCLRModel) CMultilabelCLRModel;
-%rename(HierarchicalMultilabelModel) CHierarchicalMultilabelModel;
+%shared_ptr(shogun::StructuredModel)
+%shared_ptr(shogun::ResultSet)
+%shared_ptr(shogun::MulticlassModel)
+%shared_ptr(shogun::MulticlassSOLabels)
+%shared_ptr(shogun::RealNumber)
+%shared_ptr(shogun::HMSVMModel)
+%shared_ptr(shogun::SequenceLabels)
+%shared_ptr(shogun::Sequence)
+%shared_ptr(shogun::StateModel)
+%shared_ptr(shogun::TwoStateModel)
+%shared_ptr(shogun::DirectorStructuredModel)
+%shared_ptr(shogun::MultilabelSOLabels)
+%shared_ptr(shogun::SparseMultilabel)
+%shared_ptr(shogun::MultilabelModel)
+%shared_ptr(shogun::HashedMultilabelModel)
+%shared_ptr(shogun::MultilabelCLRModel)
+%shared_ptr(shogun::HierarchicalMultilabelModel)
 
-%rename(FactorType) CFactorType;
-%rename(TableFactorType) CTableFactorType;
-%rename(FactorDataSource) CFactorDataSource;
-%rename(Factor) CFactor;
-%rename(DisjointSet) CDisjointSet;
-%rename(FactorGraph) CFactorGraph;
-%rename(FactorGraphObservation) CFactorGraphObservation;
-%rename(FactorGraphLabels) CFactorGraphLabels;
-%rename(FactorGraphFeatures) CFactorGraphFeatures;
-%rename(MAPInference) CMAPInference;
-%rename(GraphCut) CGraphCut;
-%rename(FactorGraphModel) CFactorGraphModel;
+%shared_ptr(shogun::FactorType)
+%shared_ptr(shogun::TableFactorType)
+%shared_ptr(shogun::FactorDataSource)
+%shared_ptr(shogun::Factor)
+%shared_ptr(shogun::DisjointSet)
+%shared_ptr(shogun::FactorGraph)
+%shared_ptr(shogun::FactorGraphObservation)
+%shared_ptr(shogun::FactorGraphLabels)
+%shared_ptr(shogun::FactorGraphFeatures)
+%shared_ptr(shogun::MAPInference)
+%shared_ptr(shogun::MAPInferImpl)
+%shared_ptr(shogun::GraphCut)
+%shared_ptr(shogun::FactorGraphModel)
 
-%rename(SOSVMHelper) CSOSVMHelper;
-%rename(StructuredOutputMachine) CStructuredOutputMachine;
-%rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
-%rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
+%shared_ptr(shogun::SOSVMHelper)
+%shared_ptr(shogun::StructuredOutputMachine)
+%shared_ptr(shogun::LinearStructuredOutputMachine)
+%shared_ptr(shogun::KernelStructuredOutputMachine)
 
 #ifdef USE_GPL_SHOGUN
-%rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
+%shared_ptr(shogun::DualLibQPBMSOSVM)
 #ifdef USE_MOSEK
-%rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
+%shared_ptr(shogun::PrimalMosekSOSVM)
 #endif /* USE_MOSEK */
 #endif //USE_GPL_SHOGUN
 
-%rename(StochasticSOSVM) CStochasticSOSVM;
-%rename(FWSOSVM) CFWSOSVM;
+%shared_ptr(shogun::StochasticSOSVM)
+%shared_ptr(shogun::FWSOSVM)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>

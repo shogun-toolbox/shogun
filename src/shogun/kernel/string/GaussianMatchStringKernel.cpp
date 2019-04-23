@@ -13,52 +13,52 @@
 
 using namespace shogun;
 
-CGaussianMatchStringKernel::CGaussianMatchStringKernel()
-: CStringKernel<char>(0), width(0.0)
+GaussianMatchStringKernel::GaussianMatchStringKernel()
+: StringKernel<char>(0), width(0.0)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CGaussianMatchStringKernel::CGaussianMatchStringKernel(int32_t size, float64_t w)
-: CStringKernel<char>(size), width(w)
+GaussianMatchStringKernel::GaussianMatchStringKernel(int32_t size, float64_t w)
+: StringKernel<char>(size), width(w)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CGaussianMatchStringKernel::CGaussianMatchStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, float64_t w)
-: CStringKernel<char>(10), width(w)
+GaussianMatchStringKernel::GaussianMatchStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, float64_t w)
+: StringKernel<char>(10), width(w)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	init(l, r);
 	register_params();
 }
 
-CGaussianMatchStringKernel::~CGaussianMatchStringKernel()
+GaussianMatchStringKernel::~GaussianMatchStringKernel()
 {
 	cleanup();
 }
 
-bool CGaussianMatchStringKernel::init(CFeatures* l, CFeatures* r)
+bool GaussianMatchStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CGaussianMatchStringKernel::cleanup()
+void GaussianMatchStringKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t GaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t i, alen, blen ;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = lhs->as<StringFeatures<char>>()->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = rhs->as<StringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
 
 	float64_t result=0;
 
@@ -70,12 +70,12 @@ float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	result=exp(-result/width);
 
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(avec, idx_a, free_avec);
+	rhs->as<StringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 
-void CGaussianMatchStringKernel::register_params()
+void GaussianMatchStringKernel::register_params()
 {
 	SG_ADD(&width, "width", "kernel width", ParameterProperties::HYPER);
 }

@@ -16,9 +16,9 @@
 
 namespace shogun
 {
-	class CDotFeatures;
+	class DotFeatures;
 /** @brief The Exponential Kernel, closely related to the Gaussian Kernel
- * computed on CDotFeatures.
+ * computed on DotFeatures.
  *
  * It is computed as
  *
@@ -28,13 +28,13 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CExponentialKernel: public CDotKernel
+class ExponentialKernel: public DotKernel
 {
 	public:
 		/** default constructor
 		 *
 		 */
-		CExponentialKernel();
+		ExponentialKernel();
 
 		/** constructor
 		 *
@@ -44,11 +44,11 @@ class CExponentialKernel: public CDotKernel
 		 * @param distance distance to be used
 		 * @param size cache size
 		 */
-		CExponentialKernel(CDotFeatures* l, CDotFeatures* r,
-			float64_t width, CDistance* distance, int32_t size);
+		ExponentialKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
+			float64_t width, std::shared_ptr<Distance> distance, int32_t size);
 
 		/** destructor */
-		virtual ~CExponentialKernel();
+		virtual ~ExponentialKernel();
 
 		/** initialize kernel
 		 *
@@ -56,7 +56,7 @@ class CExponentialKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -108,7 +108,7 @@ class CExponentialKernel: public CDotKernel
 
 	protected:
 		/** distance **/
-		CDistance* m_distance;
+		std::shared_ptr<Distance> m_distance;
 		/** width */
 		float64_t m_width;
 };

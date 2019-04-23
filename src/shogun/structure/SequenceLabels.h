@@ -17,11 +17,11 @@
 namespace shogun
 {
 
-class CSequenceLabels;
+class SequenceLabels;
 
 /** @brief Class CSequence to be used in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). */
-class CSequence : public CStructuredData
+class Sequence : public StructuredData
 {
 public:
 	/** data type */
@@ -31,19 +31,19 @@ public:
 	 *
 	 * @param seq data sequence
 	 */
-	CSequence(SGVector< int32_t > seq = SGVector<int32_t>()) : CStructuredData(), data(seq) { }
+	Sequence(SGVector< int32_t > seq = SGVector<int32_t>()) : StructuredData(), data(seq) { }
 
 	/** destructor */
-	~CSequence() { }
+	~Sequence() { }
 
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param base_data its dynamic type must be CSequence
 	 */
-	static CSequence* obtain_from_generic(CStructuredData* base_data)
+	static std::shared_ptr<Sequence> obtain_from_generic(std::shared_ptr<StructuredData> base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_SEQUENCE )
-			return (CSequence*) base_data;
+			return std::static_pointer_cast<Sequence>(base_data);
 		else
 			error("base_data must be of dynamic type CSequence");
 
@@ -65,19 +65,19 @@ protected:
 /** @brief Class CSequenceLabels used e.g. in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). Each of the
  * labels is represented by a sequence of integers. Each label is of type
- * CSequence and all of them are stored in a CDynamicObjectArray. */
-class CSequenceLabels : public CStructuredLabels
+ * CSequence and all of them are stored in a DynamicObjectArray. */
+class SequenceLabels : public StructuredLabels
 {
 	public:
 		/** default constructor */
-		CSequenceLabels();
+		SequenceLabels();
 
 		/** standard constructor
 		 *
 		 * @param num_labels number of labels
 		 * @param num_states number of states
 		 */
-		CSequenceLabels(int32_t num_labels, int32_t num_states);
+		SequenceLabels(int32_t num_labels, int32_t num_states);
 
 		/**
 		 * constructor using the data of all the labels concatenated. All the
@@ -89,10 +89,10 @@ class CSequenceLabels : public CStructuredLabels
 		 * @param num_labels number of labels
 		 * @param num_states number of states
 		 */
-		CSequenceLabels(SGVector< int32_t > labels, int32_t label_length, int32_t num_labels, int32_t num_states);
+		SequenceLabels(SGVector< int32_t > labels, int32_t label_length, int32_t num_labels, int32_t num_states);
 
 		/** destructor */
-		virtual ~CSequenceLabels();
+		virtual ~SequenceLabels();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SequenceLabels"; }

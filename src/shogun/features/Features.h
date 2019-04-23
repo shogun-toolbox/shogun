@@ -24,9 +24,9 @@
 
 namespace shogun
 {
-	class CFile;
-	class CPreprocessor;
-	class CKernel;
+	class File;
+	class Preprocessor;
+	class Kernel;
 }
 
 namespace shogun
@@ -46,9 +46,9 @@ namespace shogun
  *
  *   In addition it provides helpers to check e.g. for compatibility of feature objects.
  *
- *   Currently there are 3 general feature classes, which are CDenseFeatures
- *   (dense matrices), CSparseFeatures (sparse matrices), CStringFeatures (a
- *   set of strings) from which all the specific features like CDenseFeatures<float64_t>
+ *   Currently there are 3 general feature classes, which are DenseFeatures
+ *   (dense matrices), SparseFeatures (sparse matrices), CStringFeatures (a
+ *   set of strings) from which all the specific features like DenseFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  *
  *
@@ -62,23 +62,23 @@ namespace shogun
  * to many when add_subset() is called many times) with add_subset_in_place().
  * The latter does not allow to remove such modifications one-by-one.
  */
-class CFeatures : public CSGObject
+class Features : public SGObject
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CFeatures(int32_t size=0);
+		Features(int32_t size=0);
 
 		/** copy constructor */
-		CFeatures(const CFeatures& orig);
+		Features(const Features& orig);
 
 		/** constructor
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		CFeatures(CFile* loader);
+		Features(std::shared_ptr<File> loader);
 
 		/** duplicate feature object
 		 *
@@ -86,9 +86,9 @@ class CFeatures : public CSGObject
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const=0;
+		virtual std::shared_ptr<Features> duplicate() const=0;
 
-		virtual ~CFeatures();
+		virtual ~Features();
 
 		/** get feature type
 		 *
@@ -108,7 +108,7 @@ class CFeatures : public CSGObject
 
 #ifndef SWIG
 		/** returns an iterator of indices
-		 * from 0 to @ref CFeatures::get_num_vectors
+		 * from 0 to @ref Features::get_num_vectors
 		 *
 		 * Should be used in algorithms in the following way:
 		 * @code
@@ -126,7 +126,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param p preprocessor to set
 		 */
-		virtual void add_preprocessor(CPreprocessor* p);
+		virtual void add_preprocessor(std::shared_ptr<Preprocessor> p);
 
 		/** delete preprocessor from list
 		 *
@@ -138,7 +138,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreprocessor* get_preprocessor(int32_t num) const;
+		std::shared_ptr<Preprocessor> get_preprocessor(int32_t num) const;
 
 		/** get number of preprocessors
 		 *
@@ -180,20 +180,20 @@ class CFeatures : public CSGObject
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		virtual void load(CFile* loader);
+		virtual void load(std::shared_ptr<File> loader);
 
 		/** save features to file
 		 *
 		 * @param writer File object via which data shall be saved
 		 */
-		virtual void save(CFile* writer);
+		virtual void save(std::shared_ptr<File> writer);
 
 		/** check feature compatibility
 		 *
 		 * @param f features to check for compatibility
 		 * @return if features are compatible
 		 */
-		bool check_feature_compatibility(CFeatures* f) const;
+		bool check_feature_compatibility(std::shared_ptr<Features> f) const;
 
 		/** check if features have given property
 		 *
@@ -224,7 +224,7 @@ class CFeatures : public CSGObject
 		 * @return new feature object which contains copy of data of this
 		 * instance and given ones
 		 */
-		virtual CFeatures* create_merged_copy(CList* others) const
+		virtual std::shared_ptr<Features> create_merged_copy(const std::vector<std::shared_ptr<Features>>& others) const
 		{
 			error("{}::create_merged_copy() is not yet implemented!");
 			return NULL;
@@ -238,7 +238,7 @@ class CFeatures : public CSGObject
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		virtual CFeatures* create_merged_copy(CFeatures* other) const
+		virtual std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const
 		{
 			error("{}::create_merged_copy() is not yet implemented!");
 			return NULL;
@@ -279,32 +279,32 @@ class CFeatures : public CSGObject
 		 *
 		 * @return subset stack
 		 */
-		virtual CSubsetStack* get_subset_stack();
+		virtual std::shared_ptr<SubsetStack> get_subset_stack();
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
 
-		/** Creates a new CFeatures instance containing copies of the elements
+		/** Creates a new Features instance containing copies of the elements
 		 * which are specified by the provided indices.
 		 *
 		 * This method is needed for a KernelMachine to store its model data.
 		 * NOT IMPLEMENTED!
 		 *
 		 * @param indices indices of feature elements to copy
-		 * @return new CFeatures instance with copies of feature data
+		 * @return new Features instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
 
-		/** Creates a new CFeatures instance containing only the dimensions
+		/** Creates a new Features instance containing only the dimensions
 		 * of the feature vector which are specified by the provided indices.
 		 *
 		 * This method is needed for feature selection tasks
 		 * NOT IMPLEMENTED!
 		 *
 		 * @param dims indices of feature dimensions to copy
-		 * @return new CFeatures instance with copies of specified features
+		 * @return new Features instance with copies of specified features
 		 */
-		virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims) const;
+		virtual std::shared_ptr<Features> copy_dimension_subset(SGVector<index_t> dims) const;
 
 		/** does this class support compatible computation bewteen difference classes?
 		 * for example, this->dot(rhs_prt),
@@ -325,7 +325,7 @@ class CFeatures : public CSGObject
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CFeatures* shallow_subset_copy()
+		virtual std::shared_ptr<Features> shallow_subset_copy()
 		{
 			not_implemented(SOURCE_LOCATION);;
 			return NULL;
@@ -343,11 +343,11 @@ class CFeatures : public CSGObject
 		int32_t cache_size;
 
 		/** list of preprocessors */
-		CDynamicObjectArray* preproc;
+		std::vector<std::shared_ptr<Preprocessor>> preproc;
 
 	protected:
 		/** subset used for index transformations */
-		CSubsetStack* m_subset_stack;
+		std::shared_ptr<SubsetStack> m_subset_stack;
 };
 }
 #endif

@@ -12,25 +12,24 @@
 
 using namespace shogun;
 
-CHistogram::CHistogram()
-: CDistribution()
+Histogram::Histogram()
+: Distribution()
 {
 	init();
 }
 
-CHistogram::CHistogram(CStringFeatures<uint16_t> *f)
-: CDistribution()
+Histogram::Histogram(std::shared_ptr<StringFeatures<uint16_t>> f)
+: Distribution()
 {
 	init();
 	features=f;
-	SG_REF(features);
 }
 
-CHistogram::~CHistogram()
+Histogram::~Histogram()
 {
 }
 
-bool CHistogram::train(CFeatures* data)
+bool Histogram::train(std::shared_ptr<Features> data)
 {
 	int32_t vec;
 	int32_t feat;
@@ -53,19 +52,18 @@ bool CHistogram::train(CFeatures* data)
 	for (i=0; i< (int32_t) (1<<16); i++)
 		hist[i]=0;
 
+	auto sf = std::static_pointer_cast<StringFeatures<uint16_t>>(features);
 	for (vec=0; vec<features->get_num_vectors(); vec++)
 	{
 		int32_t len;
 		bool free_vec;
 
-		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-			get_feature_vector(vec, len, free_vec);
+		uint16_t* vector=sf->get_feature_vector(vec, len, free_vec);
 
 		for (feat=0; feat<len ; feat++)
 			hist[vector[feat]]++;
 
-		((CStringFeatures<uint16_t>*) features)->
-			free_feature_vector(vector, vec, free_vec);
+		sf->free_feature_vector(vector, vec, free_vec);
 	}
 
 	for (i=0; i< (int32_t) (1<<16); i++)
@@ -74,7 +72,7 @@ bool CHistogram::train(CFeatures* data)
 	return true;
 }
 
-float64_t CHistogram::get_log_likelihood_example(int32_t num_example)
+float64_t Histogram::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features)
 	ASSERT(features->get_feature_class()==C_STRING)
@@ -84,22 +82,21 @@ float64_t CHistogram::get_log_likelihood_example(int32_t num_example)
 	bool free_vec;
 	float64_t loglik=0;
 
-	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-		get_feature_vector(num_example, len, free_vec);
+	auto sf = std::static_pointer_cast<StringFeatures<uint16_t>>(features);
+	uint16_t* vector=sf->get_feature_vector(num_example, len, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 		loglik+=hist[vector[i]];
 
-	((CStringFeatures<uint16_t>*) features)->
-		free_feature_vector(vector, num_example, free_vec);
+	sf->free_feature_vector(vector, num_example, free_vec);
 
 	return loglik;
 }
 
-float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t Histogram::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	if (hist[num_param] < CMath::ALMOST_NEG_INFTY)
-		return -CMath::INFTY;
+	if (hist[num_param] < Math::ALMOST_NEG_INFTY)
+		return -Math::INFTY;
 	else
 	{
 		ASSERT(features)
@@ -110,8 +107,8 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 		bool free_vec;
 		float64_t deriv=0;
 
-		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-			get_feature_vector(num_example, len, free_vec);
+		auto sf = std::static_pointer_cast<StringFeatures<uint16_t>>(features);
+		uint16_t* vector=sf->get_feature_vector(num_example, len, free_vec);
 
 		int32_t num_occurences=0;
 
@@ -123,24 +120,23 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 				num_occurences++;
 		}
 
-		((CStringFeatures<uint16_t>*) features)->
-			free_feature_vector(vector, num_example, free_vec);
+		sf->free_feature_vector(vector, num_example, free_vec);
 
 		if (num_occurences>0)
 			deriv += std::log((float64_t)num_occurences) - hist[num_param];
 		else
-			deriv=-CMath::INFTY;
+			deriv=-Math::INFTY;
 
 		return deriv;
 	}
 }
 
-float64_t CHistogram::get_log_model_parameter(int32_t num_param)
+float64_t Histogram::get_log_model_parameter(int32_t num_param)
 {
 	return hist[num_param];
 }
 
-bool CHistogram::set_histogram(const SGVector<float64_t> histogram)
+bool Histogram::set_histogram(const SGVector<float64_t> histogram)
 {
 	ASSERT(histogram.vlen==get_num_model_parameters())
 
@@ -148,13 +144,13 @@ bool CHistogram::set_histogram(const SGVector<float64_t> histogram)
 	return true;
 }
 
-SGVector<float64_t> CHistogram::get_histogram()
+SGVector<float64_t> Histogram::get_histogram()
 {
 	return hist;
 }
 
 
-void CHistogram::init()
+void Histogram::init()
 {
 	hist = SGVector<float64_t>(1 << 16);
 	SG_ADD(&hist, "histogram", "Histogram array.");

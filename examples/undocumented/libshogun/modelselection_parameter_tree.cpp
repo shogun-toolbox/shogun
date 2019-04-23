@@ -23,13 +23,13 @@
 
 using namespace shogun;
 
-void test_tree(CModelSelectionParameters* tree)
+void test_tree(ModelSelectionParameters* tree)
 {
 	SG_SPRINT("\n\ntree to process:\n");
 	tree->print_tree();
 
 	/* build combinations of parameter trees */
-	CDynamicObjectArray* combinations=tree->get_combinations();
+	DynamicObjectArray* combinations=tree->get_combinations();
 
 	/* print and directly delete them all */
 	SG_SPRINT("----------------------------------\n");
@@ -38,17 +38,15 @@ void test_tree(CModelSelectionParameters* tree)
 		CParameterCombination* combination=
 				(CParameterCombination*)combinations->get_element(i);
 		combination->print_tree();
-		SG_UNREF(combination);
 	}
 
-	SG_UNREF(combinations);
 }
 
-CModelSelectionParameters* create_param_tree_1()
+ModelSelectionParameters* create_param_tree_1()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c=new CModelSelectionParameters("C");
+	ModelSelectionParameters* c=new ModelSelectionParameters("C");
 	root->append_child(c);
 	c->build_values(1, 2, R_EXP);
 
@@ -58,13 +56,13 @@ CModelSelectionParameters* create_param_tree_1()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	power_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_power_kernel=new CModelSelectionParameters(
+	ModelSelectionParameters* param_power_kernel=new ModelSelectionParameters(
 			"kernel", power_kernel);
 
 	root->append_child(param_power_kernel);
 
-	CModelSelectionParameters* param_power_kernel_degree=
-			new CModelSelectionParameters("degree");
+	ModelSelectionParameters* param_power_kernel_degree=
+			new ModelSelectionParameters("degree");
 	param_power_kernel_degree->build_values(1, 2, R_EXP);
 	param_power_kernel->append_child(param_power_kernel_degree);
 
@@ -74,32 +72,32 @@ CModelSelectionParameters* create_param_tree_1()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	m_metric->print_modsel_params();
 
-	CModelSelectionParameters* param_power_kernel_metrikernel_width_sigma_param=
-			new CModelSelectionParameters("distance", m_metric);
+	ModelSelectionParameters* param_power_kernel_metrikernel_width_sigma_param=
+			new ModelSelectionParameters("distance", m_metric);
 
 	param_power_kernel->append_child(
 			param_power_kernel_metrikernel_width_sigma_param);
 
-	CModelSelectionParameters* param_power_kernel_metrikernel_width_sigma_param_k=
-			new CModelSelectionParameters("k");
+	ModelSelectionParameters* param_power_kernel_metrikernel_width_sigma_param_k=
+			new ModelSelectionParameters("k");
 	param_power_kernel_metrikernel_width_sigma_param_k->build_values(1, 2,
 			R_LINEAR);
 	param_power_kernel_metrikernel_width_sigma_param->append_child(
 			param_power_kernel_metrikernel_width_sigma_param_k);
 
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+	GaussianKernel* gaussian_kernel=new GaussianKernel();
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	gaussian_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_gaussian_kernel=
-			new CModelSelectionParameters("kernel", gaussian_kernel);
+	ModelSelectionParameters* param_gaussian_kernel=
+			new ModelSelectionParameters("kernel", gaussian_kernel);
 
 	root->append_child(param_gaussian_kernel);
 
-	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("log_width");
+	ModelSelectionParameters* param_gaussian_kernel_width=
+			new ModelSelectionParameters("log_width");
 	param_gaussian_kernel_width->build_values(0.0, 0.5 * std::log(2), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
@@ -109,227 +107,227 @@ CModelSelectionParameters* create_param_tree_1()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	ds_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters(
+	ModelSelectionParameters* param_ds_kernel=new ModelSelectionParameters(
 			"kernel", ds_kernel);
 
 	root->append_child(param_ds_kernel);
 
-	CModelSelectionParameters* param_ds_kernel_delta=
-			new CModelSelectionParameters("delta");
+	ModelSelectionParameters* param_ds_kernel_delta=
+			new ModelSelectionParameters("delta");
 	param_ds_kernel_delta->build_values(1, 2, R_EXP);
 	param_ds_kernel->append_child(param_ds_kernel_delta);
 
-	CModelSelectionParameters* param_ds_kernel_theta=
-			new CModelSelectionParameters("theta");
+	ModelSelectionParameters* param_ds_kernel_theta=
+			new ModelSelectionParameters("theta");
 	param_ds_kernel_theta->build_values(1, 2, R_EXP);
 	param_ds_kernel->append_child(param_ds_kernel_theta);
 
 	return root;
 }
 
-CModelSelectionParameters* create_param_tree_2()
+ModelSelectionParameters* create_param_tree_2()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
 	CPowerKernel* power_kernel=new CPowerKernel();
-	CModelSelectionParameters* param_power_kernel=new CModelSelectionParameters(
+	ModelSelectionParameters* param_power_kernel=new ModelSelectionParameters(
 			"kernel", power_kernel);
 	root->append_child(param_power_kernel);
 
 	CMinkowskiMetric* metric=new CMinkowskiMetric();
-	CModelSelectionParameters* param_power_kernel_metric=
-			new CModelSelectionParameters("distance", metric);
+	ModelSelectionParameters* param_power_kernel_metric=
+			new ModelSelectionParameters("distance", metric);
 	param_power_kernel->append_child(param_power_kernel_metric);
 
-	CModelSelectionParameters* param_metric_k=new CModelSelectionParameters(
+	ModelSelectionParameters* param_metric_k=new ModelSelectionParameters(
 			"k");
 	param_metric_k->build_values(2, 3, R_LINEAR);
 	param_power_kernel_metric->append_child(param_metric_k);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
-	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters(
+	ModelSelectionParameters* param_ds_kernel=new ModelSelectionParameters(
 			"kernel", ds_kernel);
 	root->append_child(param_ds_kernel);
 
 	return root;
 }
 
-CModelSelectionParameters* create_param_tree_3()
+ModelSelectionParameters* create_param_tree_3()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
 	CPowerKernel* power_kernel=new CPowerKernel();
-	CModelSelectionParameters* param_power_kernel=new CModelSelectionParameters(
+	ModelSelectionParameters* param_power_kernel=new ModelSelectionParameters(
 			"kernel", power_kernel);
 	root->append_child(param_power_kernel);
 
 	CMinkowskiMetric* metric=new CMinkowskiMetric();
-	CModelSelectionParameters* param_power_kernel_metric=
-			new CModelSelectionParameters("distance", metric);
+	ModelSelectionParameters* param_power_kernel_metric=
+			new ModelSelectionParameters("distance", metric);
 	param_power_kernel->append_child(param_power_kernel_metric);
 
-	CEuclideanDistance* euclidean=new CEuclideanDistance();
-	CModelSelectionParameters* param_power_kernel_distance=
-			new CModelSelectionParameters("distance", euclidean);
+	EuclideanDistance* euclidean=new EuclideanDistance();
+	ModelSelectionParameters* param_power_kernel_distance=
+			new ModelSelectionParameters("distance", euclidean);
 	param_power_kernel->append_child(param_power_kernel_distance);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
-	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters(
+	ModelSelectionParameters* param_ds_kernel=new ModelSelectionParameters(
 			"kernel", ds_kernel);
 	root->append_child(param_ds_kernel);
 
 	return root;
 }
 
-CModelSelectionParameters* create_param_tree_4a()
+ModelSelectionParameters* create_param_tree_4a()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
-	CRegressionLabels* labels=new CRegressionLabels();
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel(10, 2);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>();
+	RegressionLabels* labels=new RegressionLabels();
+	GaussianKernel* gaussian_kernel=new GaussianKernel(10, 2);
 	CPowerKernel* power_kernel=new CPowerKernel();
 
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
-	CExactInferenceMethod* inf=new CExactInferenceMethod(gaussian_kernel, features,
+	ZeroMean* mean=new ZeroMean();
+	GaussianLikelihood* lik=new GaussianLikelihood();
+	ExactInferenceMethod* inf=new ExactInferenceMethod(gaussian_kernel, features,
 			mean, labels, lik);
 
 	CLibSVM* svm=new CLibSVM();
 	CPowerKernel* power_kernel_svm=new CPowerKernel();
-	CGaussianKernel* gaussian_kernel_svm=new CGaussianKernel(10, 2);
+	GaussianKernel* gaussian_kernel_svm=new GaussianKernel(10, 2);
 
-	CModelSelectionParameters* param_inf=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf=new ModelSelectionParameters(
 			"inference_method", inf);
 	root->append_child(param_inf);
 
-	CModelSelectionParameters* param_inf_gaussian=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_gaussian=new ModelSelectionParameters(
 			"likelihood_model", lik);
 	param_inf->append_child(param_inf_gaussian);
 
-	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_1=new ModelSelectionParameters(
 			"kernel", gaussian_kernel);
 	param_inf->append_child(param_inf_kernel_1);
 
-	CModelSelectionParameters* param_inf_kernel_2=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_2=new ModelSelectionParameters(
 			"kernel", power_kernel);
 	param_inf->append_child(param_inf_kernel_2);
 
 
 
-	CModelSelectionParameters* param_svm=new CModelSelectionParameters(
+	ModelSelectionParameters* param_svm=new ModelSelectionParameters(
 			"SVM", svm);
 	root->append_child(param_svm);
 
-	CModelSelectionParameters* param_svm_kernel_1=new CModelSelectionParameters(
+	ModelSelectionParameters* param_svm_kernel_1=new ModelSelectionParameters(
 			"kernel", power_kernel_svm);
 	param_svm->append_child(param_svm_kernel_1);
 
-	CModelSelectionParameters* param_svm_kernel_2=new CModelSelectionParameters(
+	ModelSelectionParameters* param_svm_kernel_2=new ModelSelectionParameters(
 				"kernel", gaussian_kernel_svm);
 	param_svm->append_child(param_svm_kernel_2);
 
 	return root;
 }
 
-CModelSelectionParameters* create_param_tree_4b()
+ModelSelectionParameters* create_param_tree_4b()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
-	CRegressionLabels* labels=new CRegressionLabels();
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel(10, 2);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>();
+	RegressionLabels* labels=new RegressionLabels();
+	GaussianKernel* gaussian_kernel=new GaussianKernel(10, 2);
 	CPowerKernel* power_kernel=new CPowerKernel();
 
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
-	CExactInferenceMethod* inf=new CExactInferenceMethod(gaussian_kernel, features,
+	ZeroMean* mean=new ZeroMean();
+	GaussianLikelihood* lik=new GaussianLikelihood();
+	ExactInferenceMethod* inf=new ExactInferenceMethod(gaussian_kernel, features,
 			mean, labels, lik);
 
 	CLibSVM* svm=new CLibSVM();
 	CPowerKernel* power_kernel_svm=new CPowerKernel();
-	CGaussianKernel* gaussian_kernel_svm=new CGaussianKernel(10, 2);
+	GaussianKernel* gaussian_kernel_svm=new GaussianKernel(10, 2);
 
-	CModelSelectionParameters* param_c=new CModelSelectionParameters("C1");
+	ModelSelectionParameters* param_c=new ModelSelectionParameters("C1");
 	root->append_child(param_c);
 	param_c->build_values(1,2,R_EXP);
 
-	CModelSelectionParameters* param_inf=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf=new ModelSelectionParameters(
 			"inference_method", inf);
 	root->append_child(param_inf);
 
-	CModelSelectionParameters* param_inf_gaussian=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_gaussian=new ModelSelectionParameters(
 			"likelihood_model", lik);
 	param_inf->append_child(param_inf_gaussian);
 
-	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_1=new ModelSelectionParameters(
 			"kernel", gaussian_kernel);
 	param_inf->append_child(param_inf_kernel_1);
 
-	CModelSelectionParameters* param_inf_kernel_2=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_2=new ModelSelectionParameters(
 			"kernel", power_kernel);
 	param_inf->append_child(param_inf_kernel_2);
 
 
 
-	CModelSelectionParameters* param_svm=new CModelSelectionParameters(
+	ModelSelectionParameters* param_svm=new ModelSelectionParameters(
 			"SVM", svm);
 	root->append_child(param_svm);
 
-	CModelSelectionParameters* param_svm_kernel_1=new CModelSelectionParameters(
+	ModelSelectionParameters* param_svm_kernel_1=new ModelSelectionParameters(
 			"kernel", power_kernel_svm);
 	param_svm->append_child(param_svm_kernel_1);
 
-	CModelSelectionParameters* param_svm_kernel_2=new CModelSelectionParameters(
+	ModelSelectionParameters* param_svm_kernel_2=new ModelSelectionParameters(
 				"kernel", gaussian_kernel_svm);
 	param_svm->append_child(param_svm_kernel_2);
 
 	return root;
 }
 
-CModelSelectionParameters* create_param_tree_5()
+ModelSelectionParameters* create_param_tree_5()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
-	CRegressionLabels* labels=new CRegressionLabels();
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel(10, 2);
-	CLinearKernel* linear_kernel=new CLinearKernel();
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>();
+	RegressionLabels* labels=new RegressionLabels();
+	GaussianKernel* gaussian_kernel=new GaussianKernel(10, 2);
+	LinearKernel* linear_kernel=new LinearKernel();
 	CPowerKernel* power_kernel=new CPowerKernel();
 
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
-	CExactInferenceMethod* inf=new CExactInferenceMethod(gaussian_kernel, features,
+	ZeroMean* mean=new ZeroMean();
+	GaussianLikelihood* lik=new GaussianLikelihood();
+	ExactInferenceMethod* inf=new ExactInferenceMethod(gaussian_kernel, features,
 			mean, labels, lik);
 
-	CModelSelectionParameters* param_inf=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf=new ModelSelectionParameters(
 			"inference_method", inf);
 	root->append_child(param_inf);
 
-	CModelSelectionParameters* param_inf_gaussian=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_gaussian=new ModelSelectionParameters(
 			"likelihood_model", lik);
 	param_inf->append_child(param_inf_gaussian);
 
-	CModelSelectionParameters* param_inf_gaussian_sigma=
-			new CModelSelectionParameters("log_sigma");
+	ModelSelectionParameters* param_inf_gaussian_sigma=
+			new ModelSelectionParameters("log_sigma");
 	param_inf_gaussian->append_child(param_inf_gaussian_sigma);
 	param_inf_gaussian_sigma->build_values(
 	    2.0 * std::log(2.0), 3.0 * std::log(2.0), R_LINEAR);
 
-	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_1=new ModelSelectionParameters(
 			"kernel", gaussian_kernel);
 	param_inf->append_child(param_inf_kernel_1);
 
-	CModelSelectionParameters* param_inf_kernel_width=
-			new CModelSelectionParameters("log_width");
+	ModelSelectionParameters* param_inf_kernel_width=
+			new ModelSelectionParameters("log_width");
 	param_inf_kernel_1->append_child(param_inf_kernel_width);
 	param_inf_kernel_width->build_values(0.0, 0.5 * std::log(2.0), R_LINEAR);
 
-	CModelSelectionParameters* param_inf_kernel_2=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_2=new ModelSelectionParameters(
 			"kernel", linear_kernel);
 	param_inf->append_child(param_inf_kernel_2);
 
-	CModelSelectionParameters* param_inf_kernel_3=new CModelSelectionParameters(
+	ModelSelectionParameters* param_inf_kernel_3=new ModelSelectionParameters(
 			"kernel", power_kernel);
 	param_inf->append_child(param_inf_kernel_3);
 
@@ -340,37 +338,25 @@ int main(int argc, char **argv)
 {
 //	env()->io()->set_loglevel(MSG_DEBUG);
 
-	CModelSelectionParameters* tree=NULL;
+	ModelSelectionParameters* tree=NULL;
 
 	tree=create_param_tree_1();
-	SG_REF(tree);
 	test_tree(tree);
-	SG_UNREF(tree);
 
 	tree=create_param_tree_2();
-	SG_REF(tree);
 	test_tree(tree);
-	SG_UNREF(tree);
 
 	tree=create_param_tree_3();
-	SG_REF(tree);
 	test_tree(tree);
-	SG_UNREF(tree);
 
 	tree=create_param_tree_4a();
-	SG_REF(tree);
 	test_tree(tree);
-	SG_UNREF(tree);
 
 	tree=create_param_tree_4b();
-	SG_REF(tree);
 	test_tree(tree);
-	SG_UNREF(tree);
 
 	tree=create_param_tree_5();
-	SG_REF(tree);
 	test_tree(tree);
-	SG_UNREF(tree);
 
 	return 0;
 }

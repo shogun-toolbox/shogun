@@ -20,15 +20,15 @@
 
 using namespace shogun;
 
-CModelSelectionParameters* create_param_tree()
+ModelSelectionParameters* create_param_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
+	ModelSelectionParameters* c1=new ModelSelectionParameters("C1");
 	root->append_child(c1);
 	c1->build_values(1.0, 2.0, R_EXP);
 
-	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
+	ModelSelectionParameters* c2=new ModelSelectionParameters("C2");
 	root->append_child(c2);
 	c2->build_values(1.0, 2.0, R_EXP);
 
@@ -39,17 +39,17 @@ CModelSelectionParameters* create_param_tree()
 	ds_kernel->print_modsel_params();
 
 
-	CModelSelectionParameters* param_ds_kernel=
-			new CModelSelectionParameters("kernel", ds_kernel);
+	ModelSelectionParameters* param_ds_kernel=
+			new ModelSelectionParameters("kernel", ds_kernel);
 	root->append_child(param_ds_kernel);
 
-	CModelSelectionParameters* ds_kernel_delta=
-			new CModelSelectionParameters("delta");
+	ModelSelectionParameters* ds_kernel_delta=
+			new ModelSelectionParameters("delta");
 	ds_kernel_delta->build_values(1, 2, R_LINEAR);
 	param_ds_kernel->append_child(ds_kernel_delta);
 
-	CModelSelectionParameters* ds_kernel_theta=
-			new CModelSelectionParameters("theta");
+	ModelSelectionParameters* ds_kernel_theta=
+			new ModelSelectionParameters("theta");
 	ds_kernel_theta->build_values(1, 2, R_LINEAR);
 	param_ds_kernel->append_child(ds_kernel_theta);
 
@@ -68,14 +68,14 @@ int main(int argc, char **argv)
 
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t len=CMath::random(min_string_length, max_string_length);
+		index_t len=Math::random(min_string_length, max_string_length);
 		SGString<char> current(len);
 
 		SG_SPRINT("string %i: \"", i);
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
 		{
-			current.string[j]=(char)CMath::random('A', 'Z');
+			current.string[j]=(char)Math::random('A', 'Z');
 
 			char* string=new char[2];
 			string[0]=current.string[j];
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 	CStringFeatures<char>* features=new CStringFeatures<char>(strings, ALPHANUM);
 
 	/* create labels, two classes */
-	CBinaryLabels* labels=new CBinaryLabels(num_strings);
+	BinaryLabels* labels=new BinaryLabels(num_strings);
 	for (index_t i=0; i<num_strings; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
@@ -100,15 +100,15 @@ int main(int argc, char **argv)
 	CLibSVM* classifier=new CLibSVM();
 
 	/* splitting strategy */
-	CStratifiedCrossValidationSplitting* splitting_strategy=
-			new CStratifiedCrossValidationSplitting(labels, num_subsets);
+	StratifiedCrossValidationSplitting* splitting_strategy=
+			new StratifiedCrossValidationSplitting(labels, num_subsets);
 
 	/* accuracy evaluation */
-	CContingencyTableEvaluation* evaluation_criterium=
-			new CContingencyTableEvaluation(ACCURACY);
+	ContingencyTableEvaluation* evaluation_criterium=
+			new ContingencyTableEvaluation(ACCURACY);
 
 	/* cross validation class for evaluation in model selection */
-	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
+	CrossValidation* cross=new CrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 	cross->set_num_runs(2);
 
@@ -116,8 +116,7 @@ int main(int argc, char **argv)
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	classifier->print_modsel_params();
 
-	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
-	CModelSelectionParameters* param_tree=create_param_tree();
+	ModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();
 
 	/* handles all of the above structures in memory */
@@ -135,18 +134,15 @@ int main(int argc, char **argv)
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 //	cross->set_conf_int_alpha(0.01);
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
 
 	SG_SPRINT("result: ");
 	result->print_result();
 
 	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(best_combination);
-	SG_UNREF(grid_search);
 
 	return 0;
 }

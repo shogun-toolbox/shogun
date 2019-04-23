@@ -26,20 +26,20 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CFixedDegreeStringKernel: public CStringKernel<char>
+class FixedDegreeStringKernel: public StringKernel<char>
 {
 	void init();
 
 	public:
 		/** default constructor  */
-		CFixedDegreeStringKernel();
+		FixedDegreeStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param degree the degree
 		 */
-		CFixedDegreeStringKernel(int32_t size, int32_t degree);
+		FixedDegreeStringKernel(int32_t size, int32_t degree);
 
 		/** constructor
 		 *
@@ -47,11 +47,11 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @param degree the degree
 		 */
-		CFixedDegreeStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+		FixedDegreeStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			int32_t degree);
 
-		virtual ~CFixedDegreeStringKernel();
+		virtual ~FixedDegreeStringKernel();
 
 		/** initialize kernel
 		 *
@@ -59,7 +59,7 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

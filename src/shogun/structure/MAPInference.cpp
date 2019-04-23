@@ -12,42 +12,42 @@
 
 using namespace shogun;
 
-CMAPInference::CMAPInference() : CSGObject()
+MAPInference::MAPInference() : SGObject()
 {
 	unstable(SOURCE_LOCATION);
 
 	init();
 }
 
-CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
-	: CSGObject()
+MAPInference::MAPInference(std::shared_ptr<FactorGraph> fg, EMAPInferType inference_method)
+	: SGObject()
 {
 	init();
 	m_fg = fg;
 
-	require(fg != NULL, "{}::CMAPInference(): fg cannot be NULL!", get_name());
+	require(fg != NULL, "{}::MAPInference(): fg cannot be NULL!", get_name());
 
 	switch(inference_method)
 	{
 		case TREE_MAX_PROD:
-			m_infer_impl = new CTreeMaxProduct(fg);
+			m_infer_impl = std::make_shared<TreeMaxProduct>(fg);
 			break;
 		case GRAPH_CUT:
-			m_infer_impl = new CGraphCut(fg);
+			m_infer_impl = std::make_shared<GraphCut>(fg);
 			break;
-		case GEMPLP:
-			m_infer_impl = new CGEMPLP(fg);
+		case GEMP_LP:
+			m_infer_impl = std::make_shared<GEMPLP>(fg);
 			break;
 		case LOOPY_MAX_PROD:
-			error("{}::CMAPInference(): LoopyMaxProduct has not been implemented!",
+			error("{}::MAPInference(): LoopyMaxProduct has not been implemented!",
 				get_name());
 			break;
 		case LP_RELAXATION:
-			error("{}::CMAPInference(): LPRelaxation has not been implemented!",
+			error("{}::MAPInference(): LPRelaxation has not been implemented!",
 				get_name());
 			break;
 		case TRWS_MAX_PROD:
-			error("{}::CMAPInference(): TRW-S has not been implemented!",
+			error("{}::MAPInference(): TRW-S has not been implemented!",
 				get_name());
 			break;
 		default:
@@ -56,22 +56,19 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 			break;
 	}
 
-	SG_REF(m_infer_impl);
-	SG_REF(m_fg);
+
+
 }
 
-CMAPInference::~CMAPInference()
+MAPInference::~MAPInference()
 {
-	SG_UNREF(m_infer_impl);
-	SG_UNREF(m_outputs);
-	SG_UNREF(m_fg);
 }
 
-void CMAPInference::init()
+void MAPInference::init()
 {
-	SG_ADD((CSGObject**)&m_fg, "fg", "factor graph");
-	SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs");
-	SG_ADD((CSGObject**)&m_infer_impl, "infer_impl", "Inference implementation");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_fg, "fg", "factor graph");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_outputs, "outputs", "Structured outputs");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_infer_impl, "infer_impl", "Inference implementation");
 	SG_ADD(&m_energy, "energy", "Minimized energy");
 
 	m_outputs = NULL;
@@ -80,52 +77,52 @@ void CMAPInference::init()
 	m_energy = 0;
 }
 
-void CMAPInference::inference()
+void MAPInference::inference()
 {
 	SGVector<int32_t> assignment(m_fg->get_num_vars());
 	assignment.zero();
 	m_energy = m_infer_impl->inference(assignment);
 
 	// create structured output, with default normalized hamming loss
-	SG_UNREF(m_outputs);
+
 	SGVector<float64_t> loss_weights(m_fg->get_num_vars());
 	SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / loss_weights.vlen);
-	m_outputs = new CFactorGraphObservation(assignment, loss_weights); // already ref() in constructor
-	SG_REF(m_outputs);
+	m_outputs = std::make_shared<FactorGraphObservation>(assignment, loss_weights); // already ref() in constructor
+
 }
 
-CFactorGraphObservation* CMAPInference::get_structured_outputs() const
+std::shared_ptr<FactorGraphObservation> MAPInference::get_structured_outputs() const
 {
-	SG_REF(m_outputs);
+
 	return m_outputs;
 }
 
-float64_t CMAPInference::get_energy() const
+float64_t MAPInference::get_energy() const
 {
 	return m_energy;
 }
 
 //-----------------------------------------------------------------
 
-CMAPInferImpl::CMAPInferImpl() : CSGObject()
+MAPInferImpl::MAPInferImpl() : SGObject()
 {
 	register_parameters();
 }
 
-CMAPInferImpl::CMAPInferImpl(CFactorGraph* fg)
-	: CSGObject()
+MAPInferImpl::MAPInferImpl(std::shared_ptr<FactorGraph> fg)
+	: SGObject()
 {
 	register_parameters();
 	m_fg = fg;
 }
 
-CMAPInferImpl::~CMAPInferImpl()
+MAPInferImpl::~MAPInferImpl()
 {
 }
 
-void CMAPInferImpl::register_parameters()
+void MAPInferImpl::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_fg, "fg",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_fg, "fg",
 		"Factor graph pointer");
 
 	m_fg = NULL;

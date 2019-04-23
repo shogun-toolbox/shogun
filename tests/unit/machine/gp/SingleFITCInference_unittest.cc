@@ -84,12 +84,12 @@ TEST(SingleFITCInference,set_kernel)
 	lab_train[5]=2.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<int32_t>* inducing_features_train=new CDenseFeatures<int32_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<DenseFeatures<int32_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<GaussianARDSparseKernel>(10);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);
@@ -98,28 +98,28 @@ TEST(SingleFITCInference,set_kernel)
 	kernel->set_vector_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<ConstMean>(mean_weight);
 
 	// Gaussian likelihood with sigma = 0.1
 	float64_t sigma=0.1;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<GaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<FITCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
-	float64_t ind_noise=1e-6*CMath::sq(sigma);
+	float64_t ind_noise=1e-6*Math::sq(sigma);
 	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=3.0;
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -173,26 +173,26 @@ TEST(SingleFITCInference,set_kernel)
 	EXPECT_NEAR(deriv_lat(1,2), 0.127863406431433, 1E-10);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
 
 
-	CKernel* kernel2=new CGaussianKernel(10, 2.0);
+
+
+	auto kernel2=std::make_shared<GaussianKernel>(10, 2.0);
 	inf->set_kernel(kernel2);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary2=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary2=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary2);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient2=
+	auto gradient2=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary2);
 
 	TParameter* lat_param2=inf->m_gradient_parameters->get_parameter("inducing_features");
 	SGVector<float64_t> tmp2=gradient2->get_element(lat_param2);
 	SGMatrix<float64_t> deriv_lat2(tmp2.vector, dim, m, false);
 
-	//Since CGaussianKernel does not fully support FITC inference, the derivatives are all zeros.
+	//Since GaussianKernel does not fully support FITC inference, the derivatives are all zeros.
 	EXPECT_NEAR(deriv_lat2(0,0), 0, 1E-10);
 	EXPECT_NEAR(deriv_lat2(1,0), 0, 1E-10);
 
@@ -202,9 +202,9 @@ TEST(SingleFITCInference,set_kernel)
 	EXPECT_NEAR(deriv_lat2(0,2), 0, 1E-10);
 	EXPECT_NEAR(deriv_lat2(1,2), 0, 1E-10);
 
-	SG_UNREF(gradient2);
-	SG_UNREF(parameter_dictionary2);
-	SG_UNREF(inducing_features_train);
 
-	SG_UNREF(inf);
+
+
+
+
 }

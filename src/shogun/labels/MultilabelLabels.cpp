@@ -34,35 +34,35 @@
 
 using namespace shogun;
 
-CMultilabelLabels::CMultilabelLabels()
-	: CLabels()
+MultilabelLabels::MultilabelLabels()
+	: Labels()
 {
 	init(0, 1);
 }
 
 
-CMultilabelLabels::CMultilabelLabels(int32_t num_classes)
-	: CLabels()
+MultilabelLabels::MultilabelLabels(int32_t num_classes)
+	: Labels()
 {
 	init(0, num_classes);
 }
 
 
-CMultilabelLabels::CMultilabelLabels(int32_t num_labels, int32_t num_classes)
-	: CLabels()
+MultilabelLabels::MultilabelLabels(int32_t num_labels, int32_t num_classes)
+	: Labels()
 {
 	init(num_labels, num_classes);
 }
 
 
-CMultilabelLabels::~CMultilabelLabels()
+MultilabelLabels::~MultilabelLabels()
 {
 	delete[] m_labels;
 }
 
 
 void
-CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
+MultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 {
 	require(num_labels >= 0, "num_labels={} should be >= 0", num_labels);
 	require(num_classes > 0, "num_classes={} should be > 0", num_classes);
@@ -71,7 +71,7 @@ CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 	// Can be disabled as
 	SG_ADD(&m_num_labels, "m_num_labels", "number of labels");
 	SG_ADD(&m_num_classes, "m_num_classes", "number of classes");
-	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
+	// SG_ADD((std::shared_ptr<SGObject>*) &m_labels, "m_labels", "The labels");
 
 
 	// Can only be enabled after this issue has been solved:
@@ -91,11 +91,11 @@ CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 	m_labels = new SGVector <int32_t>[m_num_labels];
 }
 
-bool CMultilabelLabels::is_valid() const
+bool MultilabelLabels::is_valid() const
 {
 	for (int32_t label_j = 0; label_j < get_num_labels(); label_j++)
 		{
-		    if (!CMath::is_sorted(m_labels[label_j]))
+		    if (!Math::is_sorted(m_labels[label_j]))
 			    return false;
 
 		    int32_t c_len = m_labels[label_j].vlen;
@@ -113,7 +113,7 @@ bool CMultilabelLabels::is_valid() const
 	    return true;
 }
 
-void CMultilabelLabels::ensure_valid(const char* context)
+void MultilabelLabels::ensure_valid(const char* context)
 {
 	require(
 	    is_valid(),
@@ -122,21 +122,21 @@ void CMultilabelLabels::ensure_valid(const char* context)
 
 
 int32_t
-CMultilabelLabels::get_num_labels() const
+MultilabelLabels::get_num_labels() const
 {
 	return m_num_labels;
 }
 
 
 int32_t
-CMultilabelLabels::get_num_classes() const
+MultilabelLabels::get_num_classes() const
 {
 	return m_num_classes;
 }
 
 
 void
-CMultilabelLabels::set_labels(SGVector <int32_t> * labels)
+MultilabelLabels::set_labels(SGVector <int32_t> * labels)
 {
 	for (int32_t label_j = 0; label_j < m_num_labels; label_j++)
 	{
@@ -146,7 +146,7 @@ CMultilabelLabels::set_labels(SGVector <int32_t> * labels)
 }
 
 
-SGVector <int32_t> ** CMultilabelLabels::get_class_labels() const
+SGVector <int32_t> ** MultilabelLabels::get_class_labels() const
 {
 	SGVector <int32_t> ** labels_list =
 	        SG_MALLOC(SGVector <int32_t> *, get_num_classes());
@@ -204,7 +204,7 @@ SGVector <int32_t> ** CMultilabelLabels::get_class_labels() const
 	return labels_list;
 }
 
-SGMatrix<int32_t>  CMultilabelLabels::get_labels() const
+SGMatrix<int32_t>  MultilabelLabels::get_labels() const
 {
 	if (m_num_labels==0)
 	        return SGMatrix<int32_t>();
@@ -223,7 +223,7 @@ SGMatrix<int32_t>  CMultilabelLabels::get_labels() const
         return labels;
 }
 
-SGVector <int32_t> CMultilabelLabels::get_label(int32_t j)
+SGVector <int32_t> MultilabelLabels::get_label(int32_t j)
 {
 	require(j < get_num_labels(),
 	        "label index j={} should be within [{},{}[",
@@ -233,7 +233,7 @@ SGVector <int32_t> CMultilabelLabels::get_label(int32_t j)
 
 
 template <class S, class D>
-SGVector <D> CMultilabelLabels::to_dense
+SGVector <D> MultilabelLabels::to_dense
 (SGVector <S> * sparse, int32_t dense_len, D d_true, D d_false)
 {
 	SGVector <D> dense(dense_len);
@@ -250,15 +250,15 @@ SGVector <D> CMultilabelLabels::to_dense
 
 
 template
-SGVector <int32_t> CMultilabelLabels::to_dense <int32_t, int32_t>
+SGVector <int32_t> MultilabelLabels::to_dense <int32_t, int32_t>
 (SGVector <int32_t> *, int32_t, int32_t, int32_t);
 
 template
-SGVector <float64_t> CMultilabelLabels::to_dense <int32_t, float64_t>
+SGVector <float64_t> MultilabelLabels::to_dense <int32_t, float64_t>
 (SGVector <int32_t> *, int32_t, float64_t, float64_t);
 
 void
-CMultilabelLabels::set_label(int32_t j, SGVector <int32_t> label)
+MultilabelLabels::set_label(int32_t j, SGVector <int32_t> label)
 {
 	require(j < get_num_labels(),
 	        "label index j={} should be within [{},{}[",
@@ -268,7 +268,7 @@ CMultilabelLabels::set_label(int32_t j, SGVector <int32_t> label)
 
 
 void
-CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
+MultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 {
 	int32_t * num_class_idx = SG_MALLOC(int32_t , get_num_labels());
 	for (int32_t label_j = 0; label_j < get_num_labels(); label_j++)
@@ -329,7 +329,7 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 
 
 void
-CMultilabelLabels::display() const
+MultilabelLabels::display() const
 {
 	SGVector <int32_t> ** labels_list = get_class_labels();
 	io::print("printing {} binary label vectors for {} multilabels:\n",

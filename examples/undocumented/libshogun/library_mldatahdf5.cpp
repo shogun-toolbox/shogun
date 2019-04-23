@@ -10,14 +10,13 @@ using namespace shogun;
 int main(int argc, char** argv)
 {
 #if defined(HAVE_HDF5) && defined( HAVE_CURL)
-	CMLDataHDF5File* hdf = NULL;
+	MLDataHDF5File* hdf = NULL;
 	try
 	{
-		hdf = new CMLDataHDF5File((char *)"australian", "/data/data");
+		hdf = new MLDataHDF5File((char *)"australian", "/data/data");
 	}
 	catch (ShogunException& e)
 	{
-		SG_UNREF(hdf);
 		return 0;
 	}
 	float64_t* mat=NULL;
@@ -34,7 +33,6 @@ int main(int argc, char** argv)
 	}
 
 	SG_FREE(mat);
-	SG_UNREF(hdf);
 #endif // HAVE_CURL && HAVE_HDF5
 	return 0;
 }
