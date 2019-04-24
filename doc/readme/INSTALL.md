@@ -130,7 +130,9 @@ In case none of the binary packages listed on our website work for your system, 
 
 ## Requirements <a name="manual-requirements"></a>
 The standard GNU/Linux tools and Python are minimal requirements to compile Shogun.
-For the convenience of developers, the `BUILD_META_EXAMPLES` is initially `ON`, so we need to have `python-ply` and `ctags` be installed, see [generating meta examples](#manual-examples) below.
+
+By default, building the meta examples is enabled, requiring `python-ply` and `ctags`. Disable using `-DBUILD_META_EXAMPLES=Off` if those requirements are a problem, also see [generating meta examples](#manual-examples).
+
 To compile the interfaces, in addition to [swig](http://www.swig.org/) itself, you will need language specific development packages installed, see [interfaces](#manual-interfaces) below.
 
 There is a larger number of optional requirements.
