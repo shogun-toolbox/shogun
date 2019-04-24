@@ -89,17 +89,15 @@ namespace shogun
 		 * @param i the index
 		 * @return the observation casted to the requested type
 		 */
-		ObservedValue * get_observation(index_t i)
+		ObservedValue* get_observation(index_t i)
 		{
-			REQUIRE(i>=0 && i<this->get_num_observations(), "Observation index (%i) is out of bound (total observations %i)", i, this->get_num_observations());
+			REQUIRE(
+			    i >= 0 && i < this->get_num_observations(),
+			    "Observation index (%i) is out of bound (total observations "
+			    "%i)",
+			    i, this->get_num_observations());
 			return this->m_observations[i].get();
 		};
-
-		/**
-		 * Get the total number of observation received.
-		 * @return number of obsevation received.
-		 */
-		const index_t get_num_observations() const;
 
 		/**
 		 * Erase all observations registered so far by the observer.
@@ -139,6 +137,11 @@ namespace shogun
 		}
 
 	protected:
+		/**
+		 * Get the total number of observation received.
+		 * @return number of obsevation received.
+		 */
+		index_t get_num_observations() const;
 
 		/**
 		 * Implementation of the on_next method which will be needed
@@ -161,7 +164,6 @@ namespace shogun
 		 * Subscription id set when I subscribe to a machine
 		 */
 		int64_t m_subscription_id;
-
 	};
 }
 

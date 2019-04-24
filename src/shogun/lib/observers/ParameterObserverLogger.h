@@ -9,33 +9,34 @@
 
 #include <shogun/lib/observers/ParameterObserver.h>
 
-namespace shogun {
+namespace shogun
+{
 
 	/**
 	 * This class implements a logger which prints all observed updates.
 	 */
-	class ParameterObserverLogger : public ParameterObserver {
+	class CParameterObserverLogger : public ParameterObserver
+	{
 
 	public:
-		ParameterObserverLogger();
+		CParameterObserverLogger();
 
-		ParameterObserverLogger(std::vector<std::string> &parameters);
+		CParameterObserverLogger(std::vector<std::string>& parameters);
 
-		virtual ~ParameterObserverLogger();
+		virtual ~CParameterObserverLogger();
 
 		virtual void on_error(std::exception_ptr ptr);
 
 		virtual void on_complete();
 
-		virtual const char *get_name() const {
+		virtual const char* get_name() const
+		{
 			return "ParameterObserverLogger";
 		};
 
 	protected:
-		virtual void on_next_impl(const TimedObservedValue &value);
-
+		virtual void on_next_impl(const TimedObservedValue& value);
 	};
 }
 
-
-#endif //SHOGUN_PARAMETEROBSERVERLOGGER_H
+#endif // SHOGUN_PARAMETEROBSERVERLOGGER_H

@@ -35,7 +35,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include "ParameterObserverTensorBoard.h"
+#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
 
 using namespace shogun;
 

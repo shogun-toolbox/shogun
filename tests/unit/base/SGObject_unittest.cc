@@ -573,29 +573,33 @@ TEST(SGObject, watch_method)
 TEST(SGObject, subscribe_observer)
 {
 	auto obj = some<CMockObject>();
-	auto param_obs = some<ParameterObserverLogger>();
+	auto param_obs = some<CParameterObserverLogger>();
 	obj->subscribe(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), 0);
-	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(1));
+	EXPECT_EQ(
+	    obj->get<index_t>("num_subscriptions"),
+	    utils::safe_convert<index_t>(1));
 }
 
 TEST(SGObject, unsubscribe_observer)
 {
 	auto obj = some<CMockObject>();
-	auto param_obs = some<ParameterObserverLogger>();
+	auto param_obs = some<CParameterObserverLogger>();
 	obj->subscribe(param_obs);
 	obj->unsubscribe(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), -1);
-	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(0));
+	EXPECT_EQ(
+	    obj->get<index_t>("num_subscriptions"),
+	    utils::safe_convert<index_t>(0));
 }
 
 TEST(SGObject, unsubscribe_observer_failure)
 {
 	auto obj = some<CMockObject>();
-	auto param_obs = some<ParameterObserverLogger>();
-	auto param_obs_not_in = some<ParameterObserverLogger>();
+	auto param_obs = some<CParameterObserverLogger>();
+	auto param_obs_not_in = some<CParameterObserverLogger>();
 
 	EXPECT_THROW(obj->unsubscribe(param_obs_not_in), ShogunException);
 }

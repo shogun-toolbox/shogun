@@ -32,16 +32,21 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <shogun/base/Parameter.h>
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ParameterObserver.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/util/converters.h>
 
 using namespace shogun;
 
-ParameterObserver::ParameterObserver() : m_observed_parameters(), m_subscription_id(-1)
+ParameterObserver::ParameterObserver()
+    : m_observed_parameters(), m_subscription_id(-1)
 {
-	SG_ADD(&m_subscription_id, "subscription_id", "Id of the subscription to an object.");
+	SG_ADD(
+	    &m_subscription_id, "subscription_id",
+	    "Id of the subscription to an object.");
+	this->watch_method(
+	    "num_observations", &ParameterObserver::get_num_observations);
 }
 
 ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
@@ -72,7 +77,7 @@ bool ParameterObserver::filter(const std::string& param)
 	return false;
 }
 
-const index_t ParameterObserver::get_num_observations() const
+index_t ParameterObserver::get_num_observations() const
 {
 	return utils::safe_convert<index_t>(m_observations.size());
 };
