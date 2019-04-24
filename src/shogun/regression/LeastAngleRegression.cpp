@@ -341,7 +341,10 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 			va.push_back((float64_t) m_beta_path_t[i][p]);			
 		}
 		m_beta_path.push_back(va);
-		observe(i, "beta_path", "Beta path", va);
+
+		SGVector<float64_t> obs_beta_path(va.size());
+		std::copy(va.begin(), va.end(), obs_beta_path.vector);
+		observe(i, "beta_path", "Beta path", obs_beta_path);
 	}
 
 	// assign default estimator
