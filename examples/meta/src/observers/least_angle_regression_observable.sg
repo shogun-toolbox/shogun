@@ -1,0 +1,63 @@
+File f_feats_train = csv_file("../../data/regression_1d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![preprocess_features]
+Transformer SubMean = transformer("PruneVarSubMean")
+Transformer Normalize = transformer("NormOne")
+SubMean.fit(features_train)
+Features pruned_features_train = SubMean.transform(features_train)
+Features pruned_features_test = SubMean.transform(features_test)
+Normalize.fit(features_train)
+Features normalized_features_train = Normalize.transform(pruned_features_train)
+Features normalized_features_test = Normalize.transform(pruned_features_test)
+#![preprocess_features]
+
+#![create_instance]
+Machine lars = machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=0.01)
+#![create_instance]
+
+#![create_observer]
+ParameterObserver logger = parameter_observer("ParameterObserverLogger")
+lars.subscribe(logger)
+#![create_observer]
+
+#![train_and_apply]
+lars.train(normalized_features_train)
+Labels labels_predict = lars.apply(normalized_features_test)
+#![train_and_apply]
+
+#![extract_last_observation]
+int num_observation = logger.get_int("num_observations")
+ObservedValue observation = logger.get_observation(num_observation-1)
+#![extract_last_observation]
+
+#![read_observation_information]
+String observation_name = observation.get_option("name")
+int observation_step = observation.get_int("step")
+RealVector beta_path = observation.get_real_vector("beta_path")
+#![read_observation_information]
+
+#![unsubscribe_observer]
+lars.unsubscribe(logger)
+#![unsubscribe_observer]
+
+#![evaluate_error]
+Evaluation eval = evaluation("MeanSquaredError")
+real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+#[!extract_w]
+RealVector weights = lars.get_real_vector("w")
+#[!extract_w]
+
+# integration testing variables
+RealVector output = labels_predict.get_real_vector("labels")
