@@ -207,7 +207,10 @@ public:
 
 	/** set generic type to T
 	 */
-	template<class T> void set_generic();
+	template<class T> void set_generic()
+	{
+		m_generic = TSGDataType::type_to_ptype<T>();
+	}
 
 	/** Returns generic type.
 	 * @return generic type of this object

@@ -168,6 +168,12 @@ struct TSGDataType
 	 */
 	static void ptype_to_string(char* dest, EPrimitiveType ptype,
 	                            size_t n);
+
+	/** type to EPrmitiveType
+	 */
+	template<typename T>
+	static EPrimitiveType type_to_ptype();
+
 	/** string to ptype
 	 * @param ptype
 	 * @param str
