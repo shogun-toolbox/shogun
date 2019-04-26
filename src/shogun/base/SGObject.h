@@ -25,6 +25,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
+#include <shogun/util/mixins.h>
+#include <shogun/base/mixins/HouseKeeper.h>
 
 #include <map>
 #include <unordered_map>
@@ -38,12 +40,13 @@ namespace shogun
 {
 class RefCount;
 class SGIO;
-class Parallel;
 class Parameter;
 class CSerializableFile;
 class ObservedValue;
 class ParameterObserver;
 class CDynamicObjectArray;
+
+#define IGNORE_IN_CLASSLIST
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -63,14 +66,6 @@ template <class T> class DynArray;
 template <class T> class SGStringList;
 
 using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
-
-/*******************************************************************************
- * define reference counter macros
- ******************************************************************************/
-
-#define SG_REF(x) { if (x) (x)->ref(); }
-#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
-#define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
 
 /*******************************************************************************
  * Macros for registering parameter properties
@@ -131,8 +126,12 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class CSGObject
+
+
+template <typename M>
+IGNORE_IN_CLASSLIST class CSGObjectBase : public mixin<M, requires<HouseKeeper>>
 {
+	using Derived = typename M::derived_t;
 public:
 	/** Definition of observed subject */
 	typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
@@ -147,84 +146,18 @@ public:
 		SGSubscriber;
 
 	/** default constructor */
-	CSGObject();
+	CSGObjectBase();
 
 	/** copy constructor */
-	CSGObject(const CSGObject& orig);
+	CSGObjectBase(const CSGObjectBase<M>& orig);
 
 	/** destructor */
-	virtual ~CSGObject();
+	virtual ~CSGObjectBase();
 
-	/** increase reference counter
-	 *
-	 * @return reference count
-	 */
-	int32_t ref();
-
-	/** display reference counter
-	 *
-	 * @return reference count
-	 */
-	int32_t ref_count();
-
-	/** decrement reference counter and deallocate object if refcount is zero
-	 * before or after decrementing it
-	 *
-	 * @return reference count
-	 */
-	int32_t unref();
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs();
 #endif
-
-	/** A shallow copy.
-	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
-	 */
-	virtual CSGObject *shallow_copy() const;
-
-	/** A deep copy.
-	 * All the instance variables will also be copied.
-	 */
-	virtual CSGObject *deep_copy() const;
-
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 *  @return name of the SGSerializable
-	 */
-	virtual const char* get_name() const = 0;
-
-	/** If the SGSerializable is a class template then TRUE will be
-	 *  returned and GENERIC is set to the type of the generic.
-	 *
-	 *  @param generic set to the type of the generic if returning
-	 *                 TRUE
-	 *
-	 *  @return TRUE if a class template.
-	 */
-	virtual bool is_generic(EPrimitiveType* generic) const;
-
-	/** set generic type to T
-	 */
-	template<class T> void set_generic()
-	{
-		m_generic = TSGDataType::type_to_ptype<T>();
-	}
-
-	/** Returns generic type.
-	 * @return generic type of this object
-	 */
-	EPrimitiveType get_generic() const
-	{
-		return m_generic;
-	}
-
-	/** unset generic type
-	 *
-	 * this has to be called in classes specializing a template class
-	 */
-	void unset_generic();
 
 	/** prints registered parameters out
 	 *
@@ -253,42 +186,6 @@ public:
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
 			const char* prefix="");
-
-	/** set the io object
-	 *
-	 * @param io io object to use
-	 */
-	void set_global_io(SGIO* io);
-
-	/** get the io object
-	 *
-	 * @return io object
-	 */
-	SGIO* get_global_io();
-
-	/** set the parallel object
-	 *
-	 * @param parallel parallel object to use
-	 */
-	void set_global_parallel(Parallel* parallel);
-
-	/** get the parallel object
-	 *
-	 * @return parallel object
-	 */
-	Parallel* get_global_parallel();
-
-	/** set the version object
-	 *
-	 * @param version version object to use
-	 */
-	void set_global_version(Version* version);
-
-	/** get the version object
-	 *
-	 * @return version object
-	 */
-	Version* get_global_version();
 
 	/** @return vector of names of all parameters which are registered for model
 	 * selection */
@@ -319,7 +216,7 @@ public:
 	 *
 	 * @param dict dictionary of parameters to be built.
 	 */
-	void build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict);
+	void build_gradient_parameter_dictionary(CMap<TParameter*, Derived*>* dict);
 
 	/** Checks if object has a class parameter identified by a name.
 	 *
@@ -381,7 +278,7 @@ public:
 		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
 		{
 			SG_ERROR(
-					"There are no options for parameter %s::%s", get_name(),
+					"There are no options for parameter %s::%s", house_keeper.get_name(),
 					_tag.name().c_str());
 		}
 
@@ -391,7 +288,7 @@ public:
 		{
 			SG_ERROR(
 					"Illegal option '%s' for parameter %s::%s",
-                    val_string.c_str(), get_name(), _tag.name().c_str());
+                    val_string.c_str(), house_keeper.get_name(), _tag.name().c_str());
 		}
 
 		machine_int_t enum_value = string_to_enum[val_string];
@@ -425,18 +322,20 @@ public:
 	void add(const std::string& name, T* value)
 	{
 		REQUIRE(
-			value, "Cannot add to %s::%s, no object provided.\n", get_name(),
+			value, "Cannot add to %s::%s, no object provided.\n", house_keeper.get_name(),
 			name.c_str());
 
 		auto push_back_lambda = [&value](auto& array) {
 			array.push_back(value);
 		};
-		if (sgo_details::dispatch_array_type<T>(this, name, push_back_lambda))
+
+		auto derived = static_cast<const Derived *>(this);
+		if (sgo_details::dispatch_array_type<T>(derived, name, push_back_lambda))
 			return;
 
 		SG_ERROR(
 		    "Cannot add object %s to array parameter %s::%s of type %s.\n",
-		    value->get_name(), get_name(), name.c_str(),
+		    value->get_name(), house_keeper.get_name(), name.c_str(),
 			demangled_type<T>().c_str());
 	}
 
@@ -455,16 +354,18 @@ public:
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
 	T* get(const std::string& name, index_t index, std::nothrow_t) const
 	{
-		CSGObject* result = nullptr;
+		Derived* result = nullptr;
 
 		auto get_lambda = [&index, &result](auto& array) {
 			result = array.at(index);
 		};
-		if (sgo_details::dispatch_array_type<T>(this, name, get_lambda))
+
+		auto derived = static_cast<const Derived *>(this);
+		if (sgo_details::dispatch_array_type<T>(derived, name, get_lambda))
 		{
 			ASSERT(result);
 			// guard against mixed types in the array
-			return result->as<T>();
+			return result->template as<T>();
 		}
 
 		return nullptr;
@@ -479,7 +380,7 @@ public:
 		{
 			SG_ERROR(
 				"Could not get array parameter %s::%s[%d] of type %s\n",
-				get_name(), name.c_str(), index, demangled_type<T>().c_str());
+				house_keeper.get_name(), name.c_str(), index, demangled_type<T>().c_str());
 		}
 		return result;
 	};
@@ -492,7 +393,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name) const noexcept(false);
+	Derived* get(const std::string& name) const noexcept(false);
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Does not throw an error if class parameter object cannot be casted
@@ -501,7 +402,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
+	Derived* get(const std::string& name, std::nothrow_t) const noexcept;
 
 	/** Untyped getter for an object array class parameter, identified by a name
 	 * and an index.
@@ -512,7 +413,7 @@ public:
 	 * @index index of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name, index_t index) const;
+	Derived* get(const std::string& name, index_t index) const;
 
 #ifndef SWIG
 	/** Typed setter for an object class parameter of a Shogun base class type,
@@ -549,7 +450,7 @@ public:
 	template <typename T,
 		      typename T2 = typename std::enable_if<
 		          !std::is_base_of<
-		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		              Derived, typename std::remove_pointer<T>::type>::value,
 		          T>::type>
 	void put(const std::string& name, T value)
 	{
@@ -576,7 +477,7 @@ public:
 			SG_ERROR(
 				"Cannot get parameter %s::%s of type %s, incompatible "
 				"requested type %s.\n",
-				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				house_keeper.get_name(), _tag.name().c_str(), exc.actual().c_str(),
 				exc.expected().c_str());
 		}
 		// we won't be there
@@ -599,8 +500,8 @@ public:
 					"Cannot get parameter %s::%s of type %s, incompatible "
 					"requested type %s or there are no options for parameter "
 					"%s::%s.\n",
-					get_name(), _tag.name().c_str(), exc.actual().c_str(),
-					exc.expected().c_str(), get_name(), _tag.name().c_str());
+					house_keeper.get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str(), house_keeper.get_name(), _tag.name().c_str());
 			}
 		}
 		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
@@ -632,37 +533,7 @@ public:
 	 */
 #ifndef SWIG // SWIG should skip this part
 	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
-#endif
-	/** Specializes a provided object to the specified type.
-	 * Throws exception if the object cannot be specialized.
-	 *
-	 * @param sgo object of CSGObject base type
-	 * @return The requested type
-	 */
-	template<class T> static T* as(CSGObject* sgo)
-	{
-		REQUIRE(sgo, "No object provided!\n");
-		return sgo->as<T>();
-	}
 
-	/** Specializes the object to the specified type.
-	 * Throws exception if the object cannot be specialized.
-	 *
-	 * @return The requested type
-	 */
-	template<class T> T* as()
-	{
-		auto c = dynamic_cast<T*>(this);
-		if (c)
-			return c;
-
-		SG_SERROR(
-			"Object of type %s cannot be converted to type %s.\n",
-			this->get_name(),
-			demangled_type<T>().c_str());
-		return nullptr;
-	}
-#ifndef SWIG
 	/**
 	  * Get parameters observable
 	  * @return RxCpp observable
@@ -865,7 +736,7 @@ public:
 	 * @param other object to compare with
 	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(const CSGObject* other) const;
+	virtual bool equals(const Derived* other) const;
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
@@ -875,7 +746,7 @@ public:
 	 * @return an identical copy of the given object, which is disjoint in memory.
 	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
-	virtual CSGObject* clone() const;
+	virtual Derived* clone() const;
 
 	/**
 	 * Looks up the option name of a parameter given the enum value.
@@ -897,7 +768,7 @@ protected:
 	 *
 	 * @return empty instance of own type
 	 */
-	virtual CSGObject* create_empty() const;
+	virtual Derived* create_empty() const;
 
 	/** Initialises all parameters with ParameterProperties::AUTO flag */
 	void init_auto_params();
@@ -906,23 +777,6 @@ private:
 	void set_global_objects();
 	void unset_global_objects();
 	void init();
-
-	/** Overloaded helper to increase reference counter */
-	static void ref_value(CSGObject* value)
-	{
-		SG_REF(value);
-	}
-
-	/** Overloaded helper to increase reference counter
-	 * Here a no-op for non CSGobject pointer parameters */
-	template <typename T,
-		      std::enable_if_t<
-		          !std::is_base_of<
-		              CSGObject, typename std::remove_pointer<T>::type>::value,
-		          T>* = nullptr>
-	static void ref_value(T value)
-	{
-	}
 
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.
@@ -1039,15 +893,6 @@ protected:
 		stringToEnumMapType m_string_to_enum_map;
 
 	public:
-		/** io */
-		SGIO* io;
-
-		/** parallel */
-		Parallel* parallel;
-
-		/** version */
-		Version* version;
-
 		/** parameters */
 		Parameter* m_parameters;
 
@@ -1061,13 +906,10 @@ protected:
 		uint32_t m_hash;
 
 	private:
-		EPrimitiveType m_generic;
 		bool m_load_pre_called;
 		bool m_load_post_called;
 		bool m_save_pre_called;
 		bool m_save_post_called;
-
-		RefCount* m_refcount;
 
 		/** Subject used to create the params observer */
 		SGSubject* m_subject_params;
@@ -1081,6 +923,21 @@ protected:
 		/** List of subscription for this SGObject */
 		std::map<int64_t, rxcpp::subscription> m_subscriptions;
 		int64_t m_next_subscription_index;
+
+		// mixins
+		typename M::template requirement_t<HouseKeeper>& house_keeper;
+		SGIO*& io;
+	};
+
+
+	IGNORE_IN_CLASSLIST class CSGObject : public composition<CSGObject, CSGObjectBase, HouseKeeper>
+	{
+	public:
+		virtual ~CSGObject() {};
+
+	public:
+		// to resolve naming conflict
+		SGIO*& io = mixin_t<shogun::HouseKeeper>::io;
 	};
 
 #ifndef SWIG
@@ -1263,8 +1120,9 @@ private:
 	T m_observed_value;
 };
 
+template <typename M>
 template <typename T, typename std::enable_if_t<!is_string<T>::value>*>
-void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
+void CSGObjectBase<M>::put(const Tag<T>& _tag, const T& value) noexcept(false)
 {
 	if (has_parameter(_tag))
 	{
@@ -1272,7 +1130,7 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
 		if (!parameter_value.cloneable())
 		{
 			SG_ERROR(
-				"Cannot put parameter %s::%s.\n", get_name(),
+				"Cannot put parameter %s::%s.\n", house_keeper.get_name(),
 				_tag.name().c_str());
 		}
 		try
@@ -1284,10 +1142,10 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
 			SG_ERROR(
 				"Cannot put parameter %s::%s of type %s, incompatible "
 				"provided type %s.\n",
-				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				house_keeper.get_name(), _tag.name().c_str(), exc.actual().c_str(),
 				exc.expected().c_str());
 		}
-		ref_value(value);
+		house_keeper.ref_value(value);
 		update_parameter(_tag, make_any(value));
 
 		observe<T>(this->get_step(), _tag.name());
@@ -1295,13 +1153,14 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
 	else
 	{
 		SG_ERROR(
-			"Parameter %s::%s does not exist.\n", get_name(),
+			"Parameter %s::%s does not exist.\n", house_keeper.get_name(),
 			_tag.name().c_str());
 	}
 }
 
+template <typename M>
 template <class T>
-void CSGObject::observe(
+void CSGObjectBase<M>::observe(
 	const int64_t step, const std::string& name, const std::string& description,
 	const T value) const
 {
@@ -1309,8 +1168,9 @@ void CSGObject::observe(
 	this->observe(obs);
 }
 
+template <typename M>
 template <class T>
-void CSGObject::observe(const int64_t step, const std::string& name) const
+void CSGObjectBase<M>::observe(const int64_t step, const std::string& name) const
 {
 	auto param = this->get_parameter(BaseTag(name));
 	auto obs = some<ObservedValueTemplated<T>>(

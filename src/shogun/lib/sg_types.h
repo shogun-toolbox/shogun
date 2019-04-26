@@ -20,6 +20,11 @@ namespace shogun
 	struct None
 	{
 	};
+	template <typename T>
+	struct TemplateNone
+	{
+	};
+
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	// struct to store types
@@ -36,6 +41,48 @@ namespace shogun
 		using Tail = Types<Args...>;
 		using Head = T1;
 		static constexpr int size = sizeof...(Args) + 1;
+	};
+
+	template <template <typename> class... Args>
+	struct TemplateTypes
+	{
+		template <typename U>
+		using Head = TemplateNone<U>;
+		using Tail = None;
+		static constexpr int size = 0;
+
+		template <template <typename> class U>
+		struct has : std::false_type
+		{
+		};
+	};
+
+	template <template <typename> class T1, template <typename> class... Args>
+	struct TemplateTypes<T1, Args...> : TemplateTypes<Args...>
+	{
+		template <template <typename...> class, template<typename...> class>
+		struct is_same_template : std::false_type
+		{
+		};
+
+		template <template <typename...> class T>
+		struct is_same_template<T, T> : std::true_type
+		{
+		};
+
+		template <typename U>
+		using Head = T1<U>;
+		using Tail = TemplateTypes<Args...>;
+		static constexpr int size = sizeof...(Args) + 1;
+
+		template <template <typename> class U>
+		struct has : std::integral_constant<
+						bool, is_same_template<U, TemplateNone>::value ||
+								std::conditional_t<
+									is_same_template<T1, U>::value, std::true_type,
+									typename Tail::template has<U>>::value>
+		{
+		};
 	};
 
 	using sg_feature_types = Types<

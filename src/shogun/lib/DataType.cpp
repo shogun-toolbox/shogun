@@ -56,6 +56,96 @@ namespace shogun
 			return "UNKNOWN";
 		}
 	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<bool>()
+	{
+		return PT_BOOL;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<char>()
+	{
+		return PT_CHAR;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<int8_t>()
+	{
+		return PT_INT8;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<uint8_t>()
+	{
+		return PT_UINT8;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<int16_t>()
+	{
+		return PT_INT16;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<uint16_t>()
+	{
+		return PT_UINT16;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<int32_t>()
+	{
+		return PT_INT32;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<uint32_t>()
+	{
+		return PT_UINT32;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<int64_t>()
+	{
+		return PT_INT64;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<uint64_t>()
+	{
+		return PT_UINT64;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<float32_t>()
+	{
+		return PT_FLOAT32;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<float64_t>()
+	{
+		return PT_FLOAT64;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<floatmax_t>()
+	{
+		return PT_FLOATMAX;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<CSGObject*>()
+	{
+		return PT_SGOBJECT;
+	}
+
+	template<>
+	EPrimitiveType TSGDataType::type_to_ptype<complex128_t>()
+	{
+		return PT_COMPLEX128;
+	}
 }
 
 TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
@@ -441,95 +531,5 @@ int64_t TSGDataType::get_num_elements()
 			break;
 	}
 	return 0;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<bool>()
-{
-	return PT_BOOL;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<char>()
-{
-	return PT_CHAR;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<int8_t>()
-{
-	return PT_INT8;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<uint8_t>()
-{
-	return PT_UINT8;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<int16_t>()
-{
-	return PT_INT16;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<uint16_t>()
-{
-	return PT_UINT16;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<int32_t>()
-{
-	return PT_INT32;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<uint32_t>()
-{
-	return PT_UINT32;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<int64_t>()
-{
-	return PT_INT64;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<uint64_t>()
-{
-	return PT_UINT64;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<float32_t>()
-{
-	return PT_FLOAT32;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<float64_t>()
-{
-	return PT_FLOAT64;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<floatmax_t>()
-{
-	return PT_FLOATMAX;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<CSGObject*>()
-{
-	return PT_SGOBJECT;
-}
-
-template<>
-EPrimitiveType TSGDataType::type_to_ptype<complex128_t>()
-{
-	return PT_COMPLEX128;
 }
 
