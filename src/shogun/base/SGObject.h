@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <shogun/lib/type_case.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -1011,7 +1012,16 @@ protected:
 	 * @param step step
 	 * @param name tag's name
 	 */
-	template <class T>
+	template<class T,
+			typename std::enable_if_t<
+				!type_internal::is_sg_vector<T>::value &&
+				!type_internal::is_sg_matrix<T>::value>* = nullptr>
+	void observe(const int64_t step, const std::string& name) const;
+
+	template<class T,
+			typename std::enable_if_t<
+					type_internal::is_sg_vector<T>::value ||
+					type_internal::is_sg_matrix<T>::value>* = nullptr>
 	void observe(const int64_t step, const std::string& name) const;
 
 	/**
@@ -1313,7 +1323,10 @@ void CSGObject::observe(
 	this->observe(obs);
 }
 
-template <class T>
+	template<class T,
+			typename std::enable_if_t<
+					!type_internal::is_sg_vector<T>::value &&
+					!type_internal::is_sg_matrix<T>::value>* = nullptr>
 void CSGObject::observe(const int64_t step, const std::string& name) const
 {
 	auto param = this->get_parameter(BaseTag(name));
@@ -1321,5 +1334,19 @@ void CSGObject::observe(const int64_t step, const std::string& name) const
 		step, name, any_cast<T>(param.get_value()), param.get_properties());
 	this->observe(obs);
 }
+
+template<class T,
+		typename std::enable_if_t<
+				type_internal::is_sg_vector<T>::value ||
+				type_internal::is_sg_matrix<T>::value>* = nullptr>
+void CSGObject::observe(const int64_t step, const std::string& name) const
+{
+	auto param = this->get_parameter(BaseTag(name));
+	auto obs = some<ObservedValueTemplated<T>>(
+			step, name, any_cast<T>(param.get_value()).clone(), param.get_properties());
+	this->observe(obs);
+}
+
+
 }
 #endif // __SGOBJECT_H__
