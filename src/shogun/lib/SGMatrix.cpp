@@ -518,7 +518,7 @@ std::string SGMatrix<T>::to_string(const T* matrix, index_t rows, index_t cols)
 {
 	std::stringstream ss;
 	ss << std::boolalpha << "[\n";
-	if (rows == 0 || cols == 0)
+	if (rows != 0 && cols != 0)
 	{
 		for (int64_t i=0; i<rows; ++i)
 		{
@@ -526,7 +526,7 @@ std::string SGMatrix<T>::to_string(const T* matrix, index_t rows, index_t cols)
 			for (int64_t j=0; j<cols; ++j)
 				ss << "\t" << matrix[j*rows+i]
 					<< (j == cols - 1 ? "" : ",");
-			ss << "]\n" << (i == rows-1 ? "" : ",");
+			ss << "]" << (i == rows-1 ? "" : ",") << "\n";
 		}
 	}
 	ss << "]";
