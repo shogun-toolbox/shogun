@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <shogun/lib/type_case.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
