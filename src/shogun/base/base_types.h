@@ -68,6 +68,31 @@ namespace shogun
 	                  const char*, typename std::decay<T>::type>::value>
 	{
 	};
+
+	// General type traits to recognize SGMatrix and SGVectors.
+	template <typename T> class SGMatrix;
+	template <typename T> class SGVector;
+
+	template <typename>
+	struct is_sg_vector : std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_sg_vector<SGVector<T>> : std::true_type
+	{
+	};
+
+	template <typename>
+	struct is_sg_matrix : std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_sg_matrix<SGMatrix<T>> : std::true_type
+	{
+	};
+
 } // namespace shogun
 
 #endif // BASE_TYPES__H
