@@ -131,7 +131,7 @@ public:
 	SGVector<float64_t> get_w_for_var(int32_t num_var)
 	{
 		SGVector<float64_t> w = get_w();
-		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w.vlen, false);
+		return SGVector<float64_t>(m_beta_path[m_beta_idx[num_var]].vector, w.vlen, false);
 	}
 
 	/** get classifier type
@@ -197,7 +197,7 @@ private:
 	int32_t m_max_nonz;  //!< max number of non-zero variables for early stopping
 	float64_t m_max_l1_norm; //!< max l1-norm of beta (estimator) for early stopping
 
-	std::vector<std::vector<float64_t> > m_beta_path;
+	std::vector<SGVector<float64_t>> m_beta_path;
 	std::vector<int32_t> m_beta_idx;
 	std::vector<int32_t> m_active_set;
 	std::vector<bool> m_is_active;
