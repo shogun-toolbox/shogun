@@ -71,6 +71,7 @@
         "MethodCall": {
             "Default": "$object.$method($arguments)",
             "get_int": "$object.get($arguments)",
+            "get_long_int": "$object.get($arguments)",
             "get_int_vector": "$object.get($arguments)",
             "get_real": "$object.get($arguments)",
             "get_real_vector": "$object.get($arguments)",
