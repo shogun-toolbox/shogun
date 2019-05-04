@@ -105,7 +105,7 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 template <typename ST, typename U>
 bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 {
-	std::vector<std::vector<ST>> m_beta_path_t;		
+	std::vector<SGVector<ST>> m_beta_path_t;
 
 	int32_t n_fea = data->get_num_features();
 	int32_t n_vec = data->get_num_vectors();
@@ -135,7 +135,8 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	SGMatrix<ST> X_active(n_vec, n_fea);
 
 	// beta is the estimator
-	vector<ST> beta(n_fea);
+	SGVector<ST> beta(n_fea);
+	beta.set_const(0);
 
 	vector<ST> Xy(n_fea);
 	typename SGVector<ST>::EigenVectorXtMap map_Xy(&Xy[0], n_fea);
@@ -157,7 +158,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	int32_t i_max_corr = 1;
 
 	// first entry: all coefficients are zero
-	m_beta_path_t.push_back(beta);
+	m_beta_path_t.push_back(beta.clone());
 	m_beta_idx.push_back(0);
 
 	//maximum allowed active variables at a time
@@ -287,17 +288,17 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		// early stopping on max l1-norm
 		if (m_max_l1_norm > 0)
 		{
-			ST l1 = SGVector<ST>::onenorm(&beta[0], n_fea);
+			ST l1 = SGVector<ST>::onenorm(beta.vector, n_fea);
 			if (l1 > m_max_l1_norm)
 			{
 				// stopping with interpolated beta
 				stop_cond = true;
 				lasso_cond = false;
-				ST l1_prev = (ST) SGVector<ST>::onenorm(&m_beta_path_t[nloop][0], n_fea);
+				ST l1_prev = (ST) SGVector<ST>::onenorm(m_beta_path_t[nloop].vector, n_fea);
 				ST s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
 
-				typename SGVector<ST>::EigenVectorXtMap map_beta(&beta[0], n_fea);
-				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(&m_beta_path_t[nloop][0], n_fea);
+				typename SGVector<ST>::EigenVectorXtMap map_beta(beta.vector, n_fea);
+				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(m_beta_path_t[nloop].vector, n_fea);
 				map_beta = (1-s)*map_beta_prev + s*map_beta;
 			}
 		}
@@ -318,7 +319,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		}
 
 		nloop++;
-		m_beta_path_t.push_back(beta);
+		m_beta_path_t.push_back(beta.clone());
 		if (int32_t(m_num_active) >= get_path_size())
 			m_beta_idx.push_back(nloop);
 		else
@@ -334,17 +335,15 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	pb.complete();
 
 	//copy m_beta_path_t (of type ST) into m_beta_path
+	//do also a cast to float64_t
 	for(size_t i = 0; i < m_beta_path_t.size(); ++i)
 	{
-		std::vector<float64_t> va;
-		for(size_t p = 0; p < m_beta_path_t[i].size(); ++p){
-			va.push_back((float64_t) m_beta_path_t[i][p]);			
+		SGVector<float64_t> va(m_beta_path_t[i].vlen);
+		for(size_t p = 0; p < m_beta_path_t[i].vlen; ++p){
+			va.set_element(static_cast<float64_t>(m_beta_path_t[i][p]), p);
 		}
 		m_beta_path.push_back(va);
-
-		SGVector<float64_t> obs_beta_path(va.size());
-		std::copy(va.begin(), va.end(), obs_beta_path.vector);
-		observe(i, "beta_path", "Beta path", obs_beta_path);
+		observe(i, "beta_path", "Beta path", va.clone());
 	}
 
 	// assign default estimator
