@@ -108,6 +108,7 @@
         "MethodCall": {
             "Default": "$object->$method($arguments)",
             "get_int": "$object->get<int32_t>($arguments)",
+            "get_long_int": "$object->get<int64_t>($arguments)",
             "get_int_vector": "$object->get<SGVector<int32_t>>($arguments)",
             "get_real": "$object->get<float64_t>($arguments)",
             "get_real_vector": "$object->get<SGVector<float64_t>>($arguments)",
