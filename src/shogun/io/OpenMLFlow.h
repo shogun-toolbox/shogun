@@ -7,16 +7,22 @@
 #ifndef SHOGUN_OPENMLFLOW_H
 #define SHOGUN_OPENMLFLOW_H
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_CURL
 
+#include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
 
 #include <curl/curl.h>
+#include <rapidjson/document.h>
+
+#include <iostream>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
 namespace shogun
 {
@@ -90,10 +96,7 @@ namespace shogun
 			return m_curl_response_buffer;
 		}
 
-		void post(const std::string& request, const std::string& data);
-
 	private:
-
 		std::string m_curl_response_buffer;
 
 		/**
@@ -107,9 +110,10 @@ namespace shogun
 		/**
 		 * Handles all possible codes
 		 *
+		 * @param curl_handle curl handle used in the request
 		 * @param code the code returned by the query
 		 */
-		void openml_curl_error_helper(CURLcode code);
+		void openml_curl_error_helper(CURL* curl_handle, CURLcode code);
 
 		std::string m_api_key;
 
@@ -132,21 +136,85 @@ namespace shogun
 		static const char* flow_file;
 	};
 
+	class OpenMLWritter
+	{
+	public:
+		OpenMLWritter(const std::string& api_key) : m_api_key(api_key){};
+
+	private:
+		std::string m_api_key;
+	};
+
 	class OpenMLFlow
 	{
 
 	public:
-		explicit OpenMLFlow(
-		    const std::string& api_key, const std::string& flow_id)
-		    : m_api_key(api_key), m_flow_id(flow_id){};
+		using components_type =
+		std::unordered_map<std::string, std::shared_ptr<OpenMLFlow>>;
+		using parameters_type = std::unordered_map<
+				std::string, std::unordered_map<std::string, std::string>>;
 
-		void download_flow();
+		OpenMLFlow(
+		    const std::string& name, const std::string& description,
+		    const std::string& model, components_type components,
+		    parameters_type parameters)
+		    : m_name(name), m_description(description), m_class_name(model),
+		      m_parameters(parameters), m_components(components)
+		{
+		}
 
-		static void upload_flow(const OpenMLFlow& flow);
+		~OpenMLFlow()= default;
+
+		static std::shared_ptr<OpenMLFlow>
+		download_flow(const std::string& flow_id, const std::string& api_key);
+
+		static void upload_flow(const std::shared_ptr<OpenMLFlow>& flow);
+
+		std::shared_ptr<OpenMLFlow> get_subflow(const std::string& name)
+		{
+			auto find_flow = m_components.find(name);
+			if (find_flow != m_components.end())
+				return find_flow->second;
+			else
+				SG_SERROR(
+				    "The provided subflow could not be found in this flow!")
+			return nullptr;
+		}
 
 	private:
-		std::string m_api_key;
-		std::string m_flow_id;
+		std::string m_name;
+		std::string m_description;
+		std::string m_class_name;
+		parameters_type m_parameters;
+		components_type m_components;
+
+#ifndef SWIG
+		static void check_flow_response(rapidjson::Document& doc);
+
+		static SG_FORCED_INLINE void emplace_string_to_map(
+		    const rapidjson::GenericValue<rapidjson::UTF8<char>>& v,
+		    std::unordered_map<std::string, std::string>& param_dict,
+		    const std::string& name)
+		{
+			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
+				param_dict.emplace(name, v[name.c_str()].GetString());
+			else
+				param_dict.emplace(name, "");
+		}
+
+		static SG_FORCED_INLINE void emplace_string_to_map(
+		    const rapidjson::GenericObject<
+		        true, rapidjson::GenericValue<rapidjson::UTF8<char>>>& v,
+		    std::unordered_map<std::string, std::string>& param_dict,
+		    const std::string& name)
+		{
+			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
+				param_dict.emplace(name, v[name.c_str()].GetString());
+			else
+				param_dict.emplace(name, "");
+		}
+
+#endif // SWIG
 	};
 } // namespace shogun
 #endif // HAVE_CURL

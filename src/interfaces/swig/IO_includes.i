@@ -13,6 +13,7 @@
 
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/HDF5File.h>
+#include <shogun/io/OpenMLFlow.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/io/SerializableHdf5File.h>

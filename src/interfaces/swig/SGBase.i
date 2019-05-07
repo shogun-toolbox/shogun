@@ -8,6 +8,7 @@
 %include "stdint.i"
 %include "std_string.i"
 %include "exception.i"
+%include "std_shared_ptr.i"
 
 %feature("ref")   shogun::CSGObject "SG_REF($this);"
 %feature("unref") shogun::CSGObject "SG_UNREF($this);"

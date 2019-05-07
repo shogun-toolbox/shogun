@@ -75,31 +75,31 @@ ENDMACRO()
 # based on compiz_discover_tests
 function (shogun_discover_tests EXECUTABLE)
 
-        add_dependencies (${EXECUTABLE} discover_gtest_tests)
+	add_dependencies (${EXECUTABLE} discover_gtest_tests)
 
-        add_custom_command (TARGET ${EXECUTABLE}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -D UNIT_TEST_CMD=${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
-                     -D DISCOVER_CMD=${CMAKE_BINARY_DIR}/bin/discover_gtest_tests
-                     -D WORKING_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                     -P ${CMAKE_MODULE_PATH}/discover_unit_tests.cmake
-            COMMENT "Discovering Tests in ${EXECUTABLE}"
-            DEPENDS
-            VERBATIM)
+	add_custom_command (TARGET ${EXECUTABLE}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -D UNIT_TEST_CMD=${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
+			-D DISCOVER_CMD=${CMAKE_BINARY_DIR}/bin/discover_gtest_tests
+			-D WORKING_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${CMAKE_MODULE_PATH}/discover_unit_tests.cmake
+			COMMENT "Discovering Tests in ${EXECUTABLE}"
+			DEPENDS
+			VERBATIM)
 endfunction ()
 
 MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
-    IF (${CONDITION})
-        add_test(NAME integration_meta_${META_TARGET}-${NAME_WITH_DIR}
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                        COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} generated_results reference_results)
-                    set_tests_properties(
-                        integration_meta_${META_TARGET}-${NAME_WITH_DIR}
-	                        PROPERTIES
-	                        LABELS "integration"
-	                        DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
-                    )
-    ENDIF()
+	IF (${CONDITION})
+		add_test(NAME integration_meta_${META_TARGET}-${NAME_WITH_DIR}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} generated_results reference_results)
+		set_tests_properties(
+				integration_meta_${META_TARGET}-${NAME_WITH_DIR}
+				PROPERTIES
+				LABELS "integration"
+				DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
+		)
+	ENDIF()
 ENDMACRO()
 
 MACRO(AddLibShogunExample EXAMPLE_CPP)
@@ -144,18 +144,23 @@ macro(ADD_LIBRARY_DEPENDENCY)
 	set(oneValueArgs LIBRARY CONFIG_FLAG VERSION SCOPE)
 	set(multiValueArgs TARGETS)
 	cmake_parse_arguments(ADD_LIBRARY_DEPENDENCY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-	STRING(TOUPPER ${ADD_LIBRARY_DEPENDENCY_LIBRARY} LIBRARY_PREFIX)
-	OPTION(ENABLE_${LIBRARY_PREFIX} "Use ${LIBRARY_PREFIX}" ON)
+	SET(LIBRARY_PREFIX ${ADD_LIBRARY_DEPENDENCY_LIBRARY})
+	STRING(TOUPPER ${ADD_LIBRARY_DEPENDENCY_LIBRARY} LIBRARY_PREFIX_UPPER)
+	OPTION(ENABLE_${LIBRARY_PREFIX_UPPER} "Use ${LIBRARY_PREFIX}" ON)
 	if (${ADD_LIBRARY_DEPENDENCY_REQUIRED})
 		find_package(${ADD_LIBRARY_DEPENDENCY_LIBRARY} REQUIRED ${ADD_LIBRARY_DEPENDENCY_VERSION})
 	else()
 		find_package(${ADD_LIBRARY_DEPENDENCY_LIBRARY} ${ADD_LIBRARY_DEPENDENCY_VERSION})
 	endif()
-	if (${LIBRARY_PREFIX}_FOUND AND ENABLE_${LIBRARY_PREFIX})
+	if ((${LIBRARY_PREFIX}_FOUND OR ${LIBRARY_PREFIX_UPPER}_FOUND) AND ENABLE_${LIBRARY_PREFIX_UPPER})
 		if (${LIBRARY_PREFIX}_INCLUDE_DIR)
 			set(LIBRARY_HEADER ${${LIBRARY_PREFIX}_INCLUDE_DIR})
+		elseif (${LIBRARY_PREFIX_UPPER}_INCLUDE_DIR)
+			set(LIBRARY_HEADER ${${LIBRARY_PREFIX_UPPER}_INCLUDE_DIR})
 		elseif (${LIBRARY_PREFIX}_INCLUDE_DIRS)
 			set(LIBRARY_HEADER ${${LIBRARY_PREFIX}_INCLUDE_DIRS})
+		elseif (${LIBRARY_PREFIX_UPPER}_INCLUDE_DIRS)
+			set(LIBRARY_HEADER ${${LIBRARY_PREFIX_UPPER}_INCLUDE_DIRS})
 		else ()
 			message(${${LIBRARY_PREFIX}_INCLUDE_DIR})
 			message(FATAL_ERROR "Found ${ADD_LIBRARY_DEPENDENCY_LIBRARY}, but not it's headers!")
@@ -163,15 +168,23 @@ macro(ADD_LIBRARY_DEPENDENCY)
 
 		set(${ADD_LIBRARY_DEPENDENCY_CONFIG_FLAG} ON CACHE BOOL "Use ${LIBRARY_PREFIX}" FORCE)
 
+		if (${LIBRARY_PREFIX}_LIBRARIES)
+			set(LIBRARY_LIBS ${${LIBRARY_PREFIX}_LIBRARIES})
+		elseif(${LIBRARY_PREFIX_UPPER}_LIBRARIES)
+			set(LIBRARY_LIBS ${${LIBRARY_PREFIX_UPPER}_LIBRARIES})
+		else()
+			message(FATAL_ERROR "Found ${ADD_LIBRARY_DEPENDENCY_LIBRARY}, but not it's libraries!")
+		endif()
+
 		ForEach (element ${ADD_LIBRARY_DEPENDENCY_TARGETS})
 			if (TARGET ${element})
 				get_target_property(TARGET_TYPE ${element} TYPE)
 				if (${TARGET_TYPE} STREQUAL INTERFACE_LIBRARY)
 					target_include_directories(${element} INTERFACE ${LIBRARY_HEADER})
-					target_link_libraries(${element} INTERFACE ${${LIBRARY_PREFIX}_LIBRARIES})
+					target_link_libraries(${element} INTERFACE ${LIBRARY_LIBS})
 				else()
 					if (NOT ${TARGET_TYPE} STREQUAL OBJECT_LIBRARY)
-						target_link_libraries(${element} ${ADD_LIBRARY_DEPENDENCY_SCOPE} ${${LIBRARY_PREFIX}_LIBRARIES})
+						target_link_libraries(${element} ${ADD_LIBRARY_DEPENDENCY_SCOPE} ${LIBRARY_LIBS})
 					endif()
 					target_include_directories(${element} ${ADD_LIBRARY_DEPENDENCY_SCOPE} ${LIBRARY_HEADER})
 				endif()
@@ -225,12 +238,12 @@ endfunction()
 function(SET_LINALG_BACKEND COMPONENT FLAG)
 	OPTION(USE_EIGEN3_${FLAG} "Use ${COMPONENT} Eigen3" ON)
 	CMAKE_DEPENDENT_OPTION(
-		USE_VIENNACL_${FLAG} "Use ${COMPONENT} ViennaCL" OFF
-        "VIENNACL_FOUND;USE_VIENNACL;NOT USE_EIGEN3_${FLAG}" ON)
+			USE_VIENNACL_${FLAG} "Use ${COMPONENT} ViennaCL" OFF
+			"VIENNACL_FOUND;USE_VIENNACL;NOT USE_EIGEN3_${FLAG}" ON)
 	if(NOT ${COMPONENT})
-	  set(${COMPONENT} EIGEN3 CACHE STRING
-		"Set linear algebra backend ${COMPONENT}: EIGEN3, VIENNACL"
-		FORCE)
+		set(${COMPONENT} EIGEN3 CACHE STRING
+				"Set linear algebra backend ${COMPONENT}: EIGEN3, VIENNACL"
+				FORCE)
 	endif()
 
 	if (${COMPONENT} STREQUAL "EIGEN3")
@@ -264,7 +277,7 @@ function(GET_META_EXAMPLE_VARS META_EXAMPLE EX_NAME REL_DIR NAME_WITH_DIR)
 endfunction()
 
 function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
-    string(REGEX MATCH "INTERFACE_([a-zA-Z]+)" _dir ${INTERFACE})
+	string(REGEX MATCH "INTERFACE_([a-zA-Z]+)" _dir ${INTERFACE})
 	STRING(TOLOWER "${CMAKE_MATCH_1}" _dir)
 	SET(${DIRECTORY} ${_dir} PARENT_SCOPE)
 
