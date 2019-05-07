@@ -15,7 +15,6 @@
 #include <shogun/io/SGIO.h>
 
 #include <curl/curl.h>
-#include <rapidjson/document.h>
 
 #include <iostream>
 #include <memory>
@@ -150,9 +149,9 @@ namespace shogun
 
 	public:
 		using components_type =
-		std::unordered_map<std::string, std::shared_ptr<OpenMLFlow>>;
+		    std::unordered_map<std::string, std::shared_ptr<OpenMLFlow>>;
 		using parameters_type = std::unordered_map<
-				std::string, std::unordered_map<std::string, std::string>>;
+		    std::string, std::unordered_map<std::string, std::string>>;
 
 		OpenMLFlow(
 		    const std::string& name, const std::string& description,
@@ -163,12 +162,14 @@ namespace shogun
 		{
 		}
 
-		~OpenMLFlow()= default;
-
 		static std::shared_ptr<OpenMLFlow>
 		download_flow(const std::string& flow_id, const std::string& api_key);
 
+		static std::shared_ptr<OpenMLFlow> from_file();
+
 		static void upload_flow(const std::shared_ptr<OpenMLFlow>& flow);
+
+		void dump();
 
 		std::shared_ptr<OpenMLFlow> get_subflow(const std::string& name)
 		{
@@ -181,40 +182,82 @@ namespace shogun
 			return nullptr;
 		}
 
+#ifndef SWIG
+		SG_FORCED_INLINE parameters_type get_parameters()
+		{
+			return m_parameters;
+		}
+
+		SG_FORCED_INLINE components_type get_components()
+		{
+			return m_components;
+		}
+
+		SG_FORCED_INLINE std::string get_class_name()
+		{
+			return m_class_name;
+		}
+#endif // SWIG
+
 	private:
 		std::string m_name;
 		std::string m_description;
 		std::string m_class_name;
 		parameters_type m_parameters;
 		components_type m_components;
+	};
 
 #ifndef SWIG
-		static void check_flow_response(rapidjson::Document& doc);
+	template <typename T>
+	T char_to_scalar(const char* string_val)
+	{
+		SG_SERROR(
+		    "No registered conversion from string to type \"s\"\n",
+		    demangled_type<T>().c_str())
+		return 0;
+	}
 
-		static SG_FORCED_INLINE void emplace_string_to_map(
-		    const rapidjson::GenericValue<rapidjson::UTF8<char>>& v,
-		    std::unordered_map<std::string, std::string>& param_dict,
-		    const std::string& name)
-		{
-			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
-				param_dict.emplace(name, v[name.c_str()].GetString());
-			else
-				param_dict.emplace(name, "");
-		}
+	template <>
+	float32_t char_to_scalar(const char* string_val)
+	{
+		char* end;
+		return std::strtof(string_val, &end);
+	}
 
-		static SG_FORCED_INLINE void emplace_string_to_map(
-		    const rapidjson::GenericObject<
-		        true, rapidjson::GenericValue<rapidjson::UTF8<char>>>& v,
-		    std::unordered_map<std::string, std::string>& param_dict,
-		    const std::string& name)
-		{
-			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
-				param_dict.emplace(name, v[name.c_str()].GetString());
-			else
-				param_dict.emplace(name, "");
-		}
+	template <>
+	float64_t char_to_scalar(const char* string_val)
+	{
+		char* end;
+		return std::strtod(string_val, &end);
+	}
+
+	template <>
+	floatmax_t char_to_scalar(const char* string_val)
+	{
+		char* end;
+		return std::strtold(string_val, &end);
+	}
+
+	template <>
+	bool char_to_scalar(const char* string_val)
+	{
+		return strcmp(string_val, "true");
+	}
 
 #endif // SWIG
+
+	class ShogunOpenML
+	{
+	public:
+		static std::shared_ptr<CSGObject> flow_to_model(
+		    std::shared_ptr<OpenMLFlow> flow, bool initialize_with_defaults);
+
+		static std::shared_ptr<OpenMLFlow>
+		model_to_flow(const std::shared_ptr<CSGObject>& model);
+
+	private:
+		static std::tuple<std::string, std::string>
+		get_class_info(const std::string& class_name);
 	};
 } // namespace shogun
 #endif // HAVE_CURL
