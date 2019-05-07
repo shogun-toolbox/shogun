@@ -13,6 +13,7 @@
 
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/HDF5File.h>
+#include <shogun/io/OpenMLFlow.h>
 #include <shogun/io/stream/InputStream.h>
 #include <shogun/io/stream/OutputStream.h>
 #include <shogun/io/stream/ByteArrayInputStream.h>

@@ -30,6 +30,7 @@
 %shared_ptr(shogun::MemoryMappedFile)
 %shared_ptr(shogun::Compressor)
 
+%shared_ptr(shogun::OpenMLFlow)
 #ifdef USE_BOOL
 %shared_ptr(shogun::StreamingFileFromSparseFeatures<bool>)
 %shared_ptr(shogun::StreamingFileFromDenseFeatures<bool>)
@@ -183,6 +184,7 @@ namespace shogun
 
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
+%include <shogun/io/OpenMLFlow.h>
 
 %include <shogun/io/SimpleFile.h>
 %include <shogun/io/MemoryMappedFile.h>

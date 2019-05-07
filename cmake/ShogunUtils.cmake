@@ -75,31 +75,31 @@ ENDMACRO()
 # based on compiz_discover_tests
 function (shogun_discover_tests EXECUTABLE)
 
-        add_dependencies (${EXECUTABLE} discover_gtest_tests)
+	add_dependencies (${EXECUTABLE} discover_gtest_tests)
 
-        add_custom_command (TARGET ${EXECUTABLE}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -D UNIT_TEST_CMD=${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
-                     -D DISCOVER_CMD=${CMAKE_BINARY_DIR}/bin/discover_gtest_tests
-                     -D WORKING_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                     -P ${CMAKE_MODULE_PATH}/discover_unit_tests.cmake
-            COMMENT "Discovering Tests in ${EXECUTABLE}"
-            DEPENDS
-            VERBATIM)
+	add_custom_command (TARGET ${EXECUTABLE}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -D UNIT_TEST_CMD=${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
+			-D DISCOVER_CMD=${CMAKE_BINARY_DIR}/bin/discover_gtest_tests
+			-D WORKING_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${CMAKE_MODULE_PATH}/discover_unit_tests.cmake
+			COMMENT "Discovering Tests in ${EXECUTABLE}"
+			DEPENDS
+			VERBATIM)
 endfunction ()
 
 MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
-    IF (${CONDITION})
-        add_test(NAME integration_meta_${META_TARGET}-${NAME_WITH_DIR}
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                        COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} generated_results reference_results)
-                    set_tests_properties(
-                        integration_meta_${META_TARGET}-${NAME_WITH_DIR}
-	                        PROPERTIES
-	                        LABELS "integration"
-	                        DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
-                    )
-    ENDIF()
+	IF (${CONDITION})
+		add_test(NAME integration_meta_${META_TARGET}-${NAME_WITH_DIR}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} generated_results reference_results)
+		set_tests_properties(
+				integration_meta_${META_TARGET}-${NAME_WITH_DIR}
+				PROPERTIES
+				LABELS "integration"
+				DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
+		)
+	ENDIF()
 ENDMACRO()
 
 MACRO(AddLibShogunExample EXAMPLE_CPP)
@@ -238,12 +238,12 @@ endfunction()
 function(SET_LINALG_BACKEND COMPONENT FLAG)
 	OPTION(USE_EIGEN3_${FLAG} "Use ${COMPONENT} Eigen3" ON)
 	CMAKE_DEPENDENT_OPTION(
-		USE_VIENNACL_${FLAG} "Use ${COMPONENT} ViennaCL" OFF
-        "VIENNACL_FOUND;USE_VIENNACL;NOT USE_EIGEN3_${FLAG}" ON)
+			USE_VIENNACL_${FLAG} "Use ${COMPONENT} ViennaCL" OFF
+			"VIENNACL_FOUND;USE_VIENNACL;NOT USE_EIGEN3_${FLAG}" ON)
 	if(NOT ${COMPONENT})
-	  set(${COMPONENT} EIGEN3 CACHE STRING
-		"Set linear algebra backend ${COMPONENT}: EIGEN3, VIENNACL"
-		FORCE)
+		set(${COMPONENT} EIGEN3 CACHE STRING
+				"Set linear algebra backend ${COMPONENT}: EIGEN3, VIENNACL"
+				FORCE)
 	endif()
 
 	if (${COMPONENT} STREQUAL "EIGEN3")
@@ -277,7 +277,7 @@ function(GET_META_EXAMPLE_VARS META_EXAMPLE EX_NAME REL_DIR NAME_WITH_DIR)
 endfunction()
 
 function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
-    string(REGEX MATCH "INTERFACE_([a-zA-Z]+)" _dir ${INTERFACE})
+	string(REGEX MATCH "INTERFACE_([a-zA-Z]+)" _dir ${INTERFACE})
 	STRING(TOLOWER "${CMAKE_MATCH_1}" _dir)
 	SET(${DIRECTORY} ${_dir} PARENT_SCOPE)
 
