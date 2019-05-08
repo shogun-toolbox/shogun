@@ -258,6 +258,7 @@ namespace shogun
 #endif // SWIGJAVA
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;
+%template(get_long) CSGObject::get<int64_t, void>;
 %template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
 %template(get_char_string_list) CSGObject::get<SGStringList<char>, void>;
 %template(get_word_string_list) CSGObject::get<SGStringList<uint16_t>, void>;

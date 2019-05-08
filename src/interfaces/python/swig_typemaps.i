@@ -1273,7 +1273,8 @@ _GETTERS = ["get",
             "get_real_vector",
             "get_int_vector",
             "get_char_string_list",
-            "get_word_string_list"
+            "get_word_string_list",
+            "get_long"
    ]
 
 _FACTORIES = ["distance",
