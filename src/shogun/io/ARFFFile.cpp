@@ -7,13 +7,15 @@
 #include <shogun/io/ARFFFile.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <iostream>
+
 using namespace shogun;
 using namespace shogun::arff_detail;
 
 const char* ARFFDeserializer::m_comment_string = "%";
-const char* ARFFDeserializer::m_relation_string = "@RELATION";
-const char* ARFFDeserializer::m_attribute_string = "@ATTRIBUTE";
-const char* ARFFDeserializer::m_data_string = "@DATA";
+const char* ARFFDeserializer::m_relation_string = "@relation";
+const char* ARFFDeserializer::m_attribute_string = "@attribute";
+const char* ARFFDeserializer::m_data_string = "@data";
 
 std::vector<std::string>
 ARFFDeserializer::clean_up(std::vector<std::string>& line)
@@ -48,7 +50,7 @@ ARFFDeserializer::clean_up(std::vector<std::string>& line)
 					++iter;
 				}
 				// concatenate strings within quotes with a space in
-				// between 
+				// between
 				result_string = std::accumulate(
 				    begin + 1, iter + 1, *begin,
 				    [](std::string s0, std::string& s1) {
@@ -83,7 +85,7 @@ void ARFFDeserializer::read()
 		else
 			m_state = true;
 	};
-	auto check_comment = [this]() { return true; };
+	auto check_comment = []() { return true; };
 	process_chunk(read_comment, check_comment, false);
 
 	auto read_relation = [this]() {
@@ -119,7 +121,7 @@ void ARFFDeserializer::read()
 				    elems.begin() + 1, elems.end());
 				m_nominal_attributes.emplace_back(
 				    std::make_pair(elems[0], attributes));
-				m_attributes.emplace_back("nominal");
+				m_attributes.push_back(Attribute::Nominal);
 				return;
 			}
 
@@ -140,24 +142,24 @@ void ARFFDeserializer::read()
 				}
 				// m_attributes.emplace(std::make_pair(elems[0],
 				// "date"));
-				m_attributes.emplace_back("date");
+				m_attributes.push_back(Attribute::Date);
 			}
 			else if (elems.size() == 2)
 			{
 				auto type = string_to_lower(elems[1]);
 				// numeric attributes
-				if (type == "numeric" || type == "integer" || type == "real")
-				{
-					// m_attributes.emplace(std::make_pair(elems[0],
-					// "numeric"));
-					m_attributes.emplace_back("numeric");
-				}
+				if (type == "numeric")
+					m_attributes.push_back(Attribute::Numeric);
+				else if (type == "integer")
+					m_attributes.push_back(Attribute::Integer);
+				else if (type == "real")
+					m_attributes.push_back(Attribute::Real);
 				else if (type == "string")
 				{
 					// @ATTRIBUTE LCC    string
 					// m_attributes.emplace(std::make_pair(elems[0],
 					// "string"));
-					m_attributes.emplace_back("string");
+					m_attributes.push_back(Attribute::String);
 				}
 				else
 					SG_SERROR(
@@ -203,17 +205,21 @@ void ARFFDeserializer::read()
 		else
 		{
 			std::vector<std::string> elems;
-			std::string type;
 			split(m_current_line, ",", std::back_inserter(elems));
 			auto nominal_pos = m_nominal_attributes.begin();
 			for (int i = 0; i < elems.size(); ++i)
 			{
-				type = m_attributes[i];
-				if (type == "numeric")
+				Attribute type = m_attributes[i];
+				switch (type)
+				{
+				case (Attribute::Numeric):
+				case (Attribute::Integer):
+				case (Attribute::Real):
 				{
 					m_data.push_back(std::stod(elems[i]));
 				}
-				else if (type == "nominal")
+				break;
+				case (Attribute::Nominal):
 				{
 					if (nominal_pos == m_nominal_attributes.end())
 						SG_SERROR(
@@ -231,6 +237,12 @@ void ARFFDeserializer::read()
 					float64_t idx = std::distance(encoding.begin(), pos);
 					m_data.push_back(idx);
 					nominal_pos = std::next(nominal_pos);
+				}
+				break;
+				case (Attribute::Date):
+					SG_SERROR("Date parsing not implemented.\n")
+				case (Attribute::String):
+					SG_SERROR("String parsing not implemented.\n")
 				}
 			}
 		}

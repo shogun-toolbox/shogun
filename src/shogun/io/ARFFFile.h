@@ -111,6 +111,20 @@ namespace shogun
 	 */
 	class ARFFDeserializer
 	{
+	private:
+		/**
+		 * The attributes supported in the ARFF format
+		 */
+		enum class Attribute
+		{
+			Numeric = 0,
+			Integer = 1,
+			Real = 2,
+			String = 3,
+			Date = 4,
+			Nominal = 5
+		};
+
 	public:
 		/**
 		 * ARFFDeserializer constructor with a filename.
@@ -122,11 +136,32 @@ namespace shogun
 		 */
 		explicit ARFFDeserializer(const std::string& filename)
 		{
-			m_file_stream = std::ifstream(filename);
-			if (m_file_stream.fail())
+			auto* file_stream = new std::ifstream(filename);
+			if (file_stream->fail())
 			{
-				SG_SERROR("Cannot open %s\n", filename.c_str())
+				SG_SERROR(
+				    "Cannot open %s. Please check if file exists and if you "
+				    "have the right permissions to open it.\n",
+				    filename.c_str())
 			}
+			m_stream = static_cast<std::istream*>(file_stream);
+		}
+
+		/**
+		 * ARFFDeserializer constructor with an input stream.
+		 * This constructors copies the stream and takes care
+		 * of proper deletion.
+		 *
+		 * @param filename the input stream
+		 */
+		explicit ARFFDeserializer(std::istream stream)
+		{
+			m_stream = &stream;
+		}
+
+		~ARFFDeserializer()
+		{
+			delete m_stream;
 		}
 
 		/**
@@ -163,7 +198,7 @@ namespace shogun
 		{
 			m_state = false;
 
-			if (skip_first && !m_file_stream.eof())
+			if (skip_first && !m_stream->eof())
 				func();
 
 			while (!m_state && !m_file_done)
@@ -172,7 +207,9 @@ namespace shogun
 			}
 			if (!check_func())
 			{
-				SG_SERROR("Parsing error: %d", m_current_line.c_str());
+				SG_SERROR(
+				    "Parsing error on line %d: %s\n", m_line_number,
+				    m_current_line.c_str());
 			}
 		}
 
@@ -186,12 +223,12 @@ namespace shogun
 		template <typename T>
 		void consume_line(T&& func)
 		{
-			if (m_file_stream.eof())
+			if (m_stream->eof())
 			{
 				m_file_done = true;
 				return;
 			}
-			std::getline(m_file_stream, m_current_line);
+			std::getline(*m_stream, m_current_line);
 			m_line_number++;
 			if (!arff_detail::string_is_blank(m_current_line))
 				func();
@@ -225,14 +262,14 @@ namespace shogun
 		size_t m_row_count;
 		/** the string after m_relation_string*/
 		std::string m_relation;
-		/** the shared file stream */
-		std::ifstream m_file_stream;
+		/** the input stream */
+		std::istream* m_stream;
 		/** the string where comments are stored */
 		std::vector<std::string> m_comments;
 		/** the string representing the current line being parsed */
 		std::string m_current_line;
 		/** the attribute types in the order they are parsed */
-		std::vector<std::string> m_attributes;
+		std::vector<Attribute> m_attributes;
 		/** the mapping of nominal attributes to their value */
 		std::vector<std::pair<std::string, std::vector<std::string>>>
 		    m_nominal_attributes;
