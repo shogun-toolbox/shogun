@@ -25,6 +25,9 @@
 
 namespace shogun
 {
+	/**
+	 * Reads OpenML streams which can be downloaded with this function.
+	 */
 	class OpenMLReader
 	{
 
@@ -96,6 +99,7 @@ namespace shogun
 		}
 
 	private:
+		/** the raw buffer as a C++ string */
 		std::string m_curl_response_buffer;
 
 		/**
@@ -114,13 +118,18 @@ namespace shogun
 		 */
 		void openml_curl_error_helper(CURL* curl_handle, CURLcode code);
 
+		/** the user API key, not required for all requests */
 		std::string m_api_key;
 
+		/** the server path to get a response in XML format*/
 		static const char* xml_server;
+		/** the server path to get a response in JSON format*/
 		static const char* json_server;
 
+		/** the server response format options: XML or JSON */
 		static const std::unordered_map<std::string, std::string>
 		    m_format_options;
+		/** all the supported server options */
 		static const std::unordered_map<std::string, std::string>
 		    m_request_options;
 
@@ -135,24 +144,48 @@ namespace shogun
 		static const char* flow_file;
 	};
 
+	/**
+	 * Writes OpenML streams to the OpenML server.
+	 */
 	class OpenMLWritter
 	{
 	public:
 		OpenMLWritter(const std::string& api_key) : m_api_key(api_key){};
 
 	private:
+		/** the user API key, likely to be needed to write to OpenML */
 		std::string m_api_key;
 	};
 
+	/**
+	 * Handles OpenML flows. A flow contains the information
+	 * required to instantiate a model.
+	 */
 	class OpenMLFlow
 	{
 
 	public:
+		/** alias for component type, map of flows */
 		using components_type =
 		    std::unordered_map<std::string, std::shared_ptr<OpenMLFlow>>;
+		/** alias for parameter type, map of maps with information specific to a
+		 * parameter */
 		using parameters_type = std::unordered_map<
 		    std::string, std::unordered_map<std::string, std::string>>;
 
+		/**
+		 * The OpenMLFlow constructor. This constructor is rarely used by the
+		 * user and is used by the static class members download_flow and
+		 * from_file. The user is expected to use either of the previously
+		 * mentioned functions.
+		 *
+		 * @param name the model name
+		 * @param description the model description
+		 * @param model the flow class_name field
+		 * @param components a map of subflows, i.e. kernels
+		 * @param parameters a map of parameter information, i.e. default values
+		 * for each parameter name
+		 */
 		OpenMLFlow(
 		    const std::string& name, const std::string& description,
 		    const std::string& model, components_type components,
@@ -162,15 +195,39 @@ namespace shogun
 		{
 		}
 
+		/**
+		 * Instantiates a OpenMLFlow by downloaded a flow from the OpenML server.
+		 *
+		 * @param flow_id the flow ID
+		 * @param api_key the user API key (might not be required and can be an empty string)
+		 * @return the OpenMLFlow corresponding to the flow requested
+		 * @throws ShogunException when there is a server error or the requested flow is ill formed.
+		 */
 		static std::shared_ptr<OpenMLFlow>
 		download_flow(const std::string& flow_id, const std::string& api_key);
 
+		/**
+		 * Instantiates a OpenMLFlow from a file.
+		 * @return the OpenMLFlow corresponding to the flow requested
+		 */
 		static std::shared_ptr<OpenMLFlow> from_file();
 
+		/**
+		 * Publishes a flow to the OpenML server
+		 * @param flow the flow to be published
+		 */
 		static void upload_flow(const std::shared_ptr<OpenMLFlow>& flow);
 
+		/**
+		 * Dumps the OpenMLFlow to disk.
+		 */
 		void dump();
 
+		/**
+		 * Gets a subflow, i.e. a kernel in a machine
+		 * @param name the name of the subflow, not the flow ID
+		 * @return the subflow if it exists
+		 */
 		std::shared_ptr<OpenMLFlow> get_subflow(const std::string& name)
 		{
 			auto find_flow = m_components.find(name);
@@ -200,62 +257,66 @@ namespace shogun
 #endif // SWIG
 
 	private:
+		/** name field of the flow */
 		std::string m_name;
+		/** description field of the flow */
 		std::string m_description;
+		/** the class_name field of the flow */
 		std::string m_class_name;
+		/** the parameter field of the flow (optional) */
 		parameters_type m_parameters;
+		/** the components fields of the flow (optional) */
 		components_type m_components;
 	};
 
-#ifndef SWIG
-	template <typename T>
-	T char_to_scalar(const char* string_val)
+	/**
+	 * Handles OpenML tasks. A task contains all the information
+	 * required to train and test a model.
+	 */
+	class OpenMLTask
 	{
-		SG_SERROR(
-		    "No registered conversion from string to type \"s\"\n",
-		    demangled_type<T>().c_str())
-		return 0;
-	}
+	public:
+		OpenMLTask();
+	};
 
-	template <>
-	float32_t char_to_scalar(const char* string_val)
-	{
-		char* end;
-		return std::strtof(string_val, &end);
-	}
-
-	template <>
-	float64_t char_to_scalar(const char* string_val)
-	{
-		char* end;
-		return std::strtod(string_val, &end);
-	}
-
-	template <>
-	floatmax_t char_to_scalar(const char* string_val)
-	{
-		char* end;
-		return std::strtold(string_val, &end);
-	}
-
-	template <>
-	bool char_to_scalar(const char* string_val)
-	{
-		return strcmp(string_val, "true");
-	}
-
-#endif // SWIG
-
+	/**
+	 * The Shogun OpenML extension to run models from an OpenMLFlow
+	 * and convert models to OpenMLFlow.
+	 */
 	class ShogunOpenML
 	{
 	public:
+		/**
+		 * Instantiates a SGObject from an OpenMLFlow.
+		 *
+		 * @param flow the flow to instantiate
+		 * @param initialize_with_defaults whether to use the default values
+		 * specified in the flow
+		 * @return the flow as a trainable model
+		 */
 		static std::shared_ptr<CSGObject> flow_to_model(
 		    std::shared_ptr<OpenMLFlow> flow, bool initialize_with_defaults);
 
+		/**
+		 * Converts a SGObject to an OpenMLFlow.
+		 *
+		 * @param model the model to convert
+		 * @return the flow from the model conversion
+		 */
 		static std::shared_ptr<OpenMLFlow>
 		model_to_flow(const std::shared_ptr<CSGObject>& model);
 
 	private:
+		/**
+		 * Helper function to extract module/factory information from the class
+		 * name field of OpenMLFlow. Throws an error either if the class name
+		 * field is ill formed (i.e. not library.module.algorithm) or if the
+		 * library name is not "shogun".
+		 *
+		 * @param class_name the flow class_name field
+		 * @return a tuple with the module name (factory string) and the
+		 * algorithm name
+		 */
 		static std::tuple<std::string, std::string>
 		get_class_info(const std::string& class_name);
 	};
