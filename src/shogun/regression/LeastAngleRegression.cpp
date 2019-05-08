@@ -336,10 +336,10 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 
 	//copy m_beta_path_t (of type ST) into m_beta_path
 	//do also a cast to float64_t
-	for(size_t i = 0; i < m_beta_path_t.size(); ++i)
+	for(index_t i = 0; i < m_beta_path_t.size(); ++i)
 	{
 		SGVector<float64_t> va(m_beta_path_t[i].vlen);
-		for(size_t p = 0; p < m_beta_path_t[i].vlen; ++p){
+		for(index_t p = 0; p < m_beta_path_t[i].vlen; ++p){
 			va.set_element(static_cast<float64_t>(m_beta_path_t[i][p]), p);
 		}
 		m_beta_path.push_back(va);
