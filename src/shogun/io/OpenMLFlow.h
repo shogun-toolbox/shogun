@@ -21,6 +21,7 @@
 #include <numeric>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace shogun
@@ -50,6 +51,7 @@ namespace shogun
 		std::string
 		get(const std::string& request, const std::string& format, Args... args)
 		{
+			m_curl_response_buffer.clear();
 			auto find_format = m_format_options.find(format);
 			if (find_format == m_format_options.end())
 			{
@@ -137,11 +139,15 @@ namespace shogun
 		static const char* dataset_description;
 		static const char* list_data_qualities;
 		static const char* data_features;
+		static const char* data_qualities;
 		static const char* list_dataset_qualities;
 		static const char* list_dataset_filter;
 
 		/* FLOW API */
 		static const char* flow_file;
+
+		/* TASK API */
+		static const char* task_file;
 	};
 
 	/**
@@ -196,12 +202,15 @@ namespace shogun
 		}
 
 		/**
-		 * Instantiates a OpenMLFlow by downloaded a flow from the OpenML server.
+		 * Instantiates a OpenMLFlow by downloaded a flow from the OpenML
+		 * server.
 		 *
 		 * @param flow_id the flow ID
-		 * @param api_key the user API key (might not be required and can be an empty string)
+		 * @param api_key the user API key (might not be required and can be an
+		 * empty string)
 		 * @return the OpenMLFlow corresponding to the flow requested
-		 * @throws ShogunException when there is a server error or the requested flow is ill formed.
+		 * @throws ShogunException when there is a server error or the requested
+		 * flow is ill formed.
 		 */
 		static std::shared_ptr<OpenMLFlow>
 		download_flow(const std::string& flow_id, const std::string& api_key);
@@ -270,13 +279,162 @@ namespace shogun
 	};
 
 	/**
+	 * Handles an OpenML dataset.
+	 */
+	class OpenMLData
+	{
+	public:
+		OpenMLData(
+		    const std::string& name, const std::string& description,
+		    const std::string& data_format, const std::string& dataset_id,
+		    const std::string& version, const std::string& creator,
+		    const std::string& contributor, const std::string& collection_date,
+		    const std::string& upload_date, const std::string& language,
+		    const std::string& license, const std::string& url,
+		    const std::string& default_target_attribute,
+		    const std::string& row_id_attribute,
+		    const std::string& ignore_attribute,
+		    const std::string& version_label, const std::string& citation,
+		    std::vector<std::string> tag, const std::string& visibility,
+		    const std::string& original_data_url, const std::string& paper_url,
+		    const std::string& update_comment, const std::string& md5_checksum,
+		    std::vector<std::unordered_map<std::string, std::string>>
+		        param_descriptors,
+		    std::vector<std::unordered_map<std::string, std::string>>
+		        param_qualities)
+
+		    : m_name(name), m_description(description),
+		      m_data_format(data_format), m_dataset_id(dataset_id),
+		      m_version(version), m_creator(creator),
+		      m_contributor(contributor), m_collection_date(collection_date),
+		      m_upload_date(upload_date), m_language(language),
+		      m_license(license), m_url(url),
+		      m_default_target_attribute(default_target_attribute),
+		      m_row_id_attribute(row_id_attribute),
+		      m_ignore_attribute(ignore_attribute),
+		      m_version_label(version_label), m_citation(citation),
+		      m_tag(std::move(tag)), m_visibility(visibility),
+		      m_original_data_url(original_data_url), m_paper_url(paper_url),
+		      m_update_comment(update_comment), m_md5_checksum(md5_checksum),
+		      m_param_descriptors(std::move(param_descriptors)),
+		      m_param_qualities(std::move(param_qualities))
+		{
+		}
+
+		/**
+		 * Creates a dataset instance from a given ID.
+		 *
+		 */
+		static std::shared_ptr<OpenMLData>
+		get_data(const std::string& id, const std::string& api_key);
+
+		/**
+		 * Returns the dataset
+		 * @param api_key
+		 * @return
+		 */
+		std::string get_data_buffer(const std::string& api_key);
+
+	private:
+		std::string m_name;
+		std::string m_description;
+		std::string m_data_format;
+		std::string m_dataset_id;
+		std::string m_version;
+		std::string m_creator;
+		std::string m_contributor;
+		std::string m_collection_date;
+		std::string m_upload_date;
+		std::string m_language;
+		std::string m_license;
+		std::string m_url;
+		std::string m_default_target_attribute;
+		std::string m_row_id_attribute;
+		std::string m_ignore_attribute;
+		std::string m_version_label;
+		std::string m_citation;
+		std::vector<std::string> m_tag;
+		std::string m_visibility;
+		std::string m_original_data_url;
+		std::string m_paper_url;
+		std::string m_update_comment;
+		std::string m_md5_checksum;
+		std::vector<std::unordered_map<std::string, std::string>>
+		    m_param_descriptors;
+		std::vector<std::unordered_map<std::string, std::string>>
+		    m_param_qualities;
+	};
+
+	/**
+	 * Handles an OpenML split.
+	 */
+	class OpenMLSplit
+	{
+	public:
+		OpenMLSplit(
+		    const std::string& split_id, const std::string& split_type,
+		    const std::string& split_url,
+		    const std::unordered_map<std::string, std::string>&
+		        split_parameters)
+		    : m_split_id(split_id), m_split_type(split_type),
+		      m_split_url(split_url), m_parameters(split_parameters)
+		{
+		}
+
+	private:
+		std::string m_split_id;
+		std::string m_split_type;
+		std::string m_split_url;
+		std::unordered_map<std::string, std::string> m_parameters;
+	};
+
+	/**
 	 * Handles OpenML tasks. A task contains all the information
 	 * required to train and test a model.
 	 */
 	class OpenMLTask
 	{
 	public:
-		OpenMLTask();
+		enum TaskType
+		{
+			SUPERVISED_CLASSIFICATION = 0,
+			SUPERVISED_REGRESSION = 1,
+			LEARNING_CURVE = 2,
+			SUPERVISED_DATASTREAM_CLASSIFICATION = 3,
+			CLUSTERING = 4,
+			MACHINE_LEARNING_CHALLENGE = 5,
+			SURVIVAL_ANALYSIS = 6,
+			SUBGROUP_DISCOVERY = 7
+		};
+		OpenMLTask(
+		    const std::string& task_id, const std::string task_name,
+		    TaskType task_type, const std::string& task_type_id,
+		    const std::pair<
+		        std::shared_ptr<OpenMLData>, std::shared_ptr<OpenMLSplit>>&
+		        task_descriptor)
+		    : m_task_id(task_id), m_task_name(task_name),
+		      m_task_type(task_type), m_task_type_id(task_type_id),
+		      m_task_descriptor(task_descriptor)
+		{
+		}
+
+		static std::shared_ptr<OpenMLTask>
+		get_task(const std::string& task_id, const std::string& api_key);
+
+		std::shared_ptr<OpenMLData> get_dataset()
+		{
+			return m_task_descriptor.first;
+		}
+
+	private:
+		static TaskType get_task_from_string(const std::string& task_type);
+
+		std::string m_task_id;
+		std::string m_task_name;
+		TaskType m_task_type;
+		std::string m_task_type_id;
+		std::pair<std::shared_ptr<OpenMLData>, std::shared_ptr<OpenMLSplit>>
+		    m_task_descriptor;
 	};
 
 	/**
@@ -317,7 +475,7 @@ namespace shogun
 		 * @return a tuple with the module name (factory string) and the
 		 * algorithm name
 		 */
-		static std::tuple<std::string, std::string>
+		static std::pair<std::string, std::string>
 		get_class_info(const std::string& class_name);
 	};
 } // namespace shogun

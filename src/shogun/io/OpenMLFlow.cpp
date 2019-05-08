@@ -10,10 +10,10 @@
 
 #include <rapidjson/document.h>
 
-#ifdef HAVE_CURL
-
 using namespace shogun;
 using namespace rapidjson;
+
+#ifdef HAVE_CURL
 
 /**
  * The writer callback function used to write the packets to a C++ string.
@@ -45,10 +45,13 @@ const char* OpenMLReader::json_server = "https://www.openml.org/api/v1/json";
 const char* OpenMLReader::dataset_description = "/data/{}";
 const char* OpenMLReader::list_data_qualities = "/data/qualities/list";
 const char* OpenMLReader::data_features = "/data/features/{}";
+const char* OpenMLReader::data_qualities = "/data/qualities/{}";
 const char* OpenMLReader::list_dataset_qualities = "/data/qualities/{}";
 const char* OpenMLReader::list_dataset_filter = "/data/list/{}";
 /* FLOW API */
 const char* OpenMLReader::flow_file = "/flow/{}";
+/* TASK API */
+const char* OpenMLReader::task_file = "/task/{}";
 
 const std::unordered_map<std::string, std::string>
     OpenMLReader::m_format_options = {{"xml", xml_server},
@@ -58,9 +61,11 @@ const std::unordered_map<std::string, std::string>
         {"dataset_description", dataset_description},
         {"list_data_qualities", list_data_qualities},
         {"data_features", data_features},
+        {"data_qualities", data_qualities},
         {"list_dataset_qualities", list_dataset_qualities},
         {"list_dataset_filter", list_dataset_filter},
-        {"flow_file", flow_file}};
+        {"flow_file", flow_file},
+        {"task_file", task_file}};
 
 OpenMLReader::OpenMLReader(const std::string& api_key) : m_api_key(api_key)
 {
@@ -102,10 +107,10 @@ void OpenMLReader::openml_curl_error_helper(CURL* curl_handle, CURLcode code)
 #endif // HAVE_CURL
 
 /**
- * Checks the returned flow in JSON format
- * @param doc the parsed flow
+ * Checks the returned response from OpenML in JSON format
+ * @param doc the parsed OpenML JSON format response
  */
-static void check_flow_response(Document& doc)
+static void check_response(const Document& doc, const std::string& type)
 {
 	if (SG_UNLIKELY(doc.HasMember("error")))
 	{
@@ -115,7 +120,9 @@ static void check_flow_response(Document& doc)
 		    root["message"].GetString())
 		return;
 	}
-	REQUIRE(doc.HasMember("flow"), "Unexpected format of OpenML flow.\n");
+	REQUIRE(
+	    doc.HasMember(type.c_str()), "Unexpected format of OpenML %s.\n",
+	    type.c_str());
 }
 
 /**
@@ -142,8 +149,7 @@ static SG_FORCED_INLINE void emplace_string_to_map(
  * @param name the name of the key
  */
 static SG_FORCED_INLINE void emplace_string_to_map(
-    const GenericObject<
-        true, GenericValue<UTF8<char>>>& v,
+    const GenericObject<true, GenericValue<UTF8<char>>>& v,
     std::unordered_map<std::string, std::string>& param_dict,
     const std::string& name)
 {
@@ -151,6 +157,55 @@ static SG_FORCED_INLINE void emplace_string_to_map(
 		param_dict.emplace(name, v[name.c_str()].GetString());
 	else
 		param_dict.emplace(name, "");
+}
+
+template <typename T>
+SG_FORCED_INLINE T return_if_possible(
+    const std::string& name,
+    const GenericObject<true, GenericValue<UTF8<char>>>& v)
+{
+	SG_SNOTIMPLEMENTED
+}
+
+template <>
+SG_FORCED_INLINE std::string return_if_possible<std::string>(
+    const std::string& name,
+    const GenericObject<true, GenericValue<UTF8<char>>>& v)
+{
+	if (v.HasMember(name.c_str()) && v[name.c_str()].IsString())
+		return v[name.c_str()].GetString();
+	if (v.HasMember(name.c_str()) && !v[name.c_str()].IsString())
+		SG_SERROR("Found member \"%s\" but it is not a string", name.c_str())
+	if (!v.HasMember(name.c_str()))
+		return "";
+	SG_SERROR("\"%s\" is not a member of the given object", name.c_str())
+	return nullptr;
+}
+
+template <>
+SG_FORCED_INLINE std::vector<std::string>
+return_if_possible<std::vector<std::string>>(
+    const std::string& name,
+    const GenericObject<true, GenericValue<UTF8<char>>>& v)
+{
+	std::vector<std::string> result;
+	if (!v.HasMember(name.c_str()))
+		SG_SERROR("\"%s\" is not a member of the given object", name.c_str())
+	if (v[name.c_str()].IsString())
+	{
+		result.emplace_back(v[name.c_str()].GetString());
+	}
+	if (v[name.c_str()].IsArray())
+	{
+		for (const auto& val : v[name.c_str()].GetArray())
+		{
+			if (val.IsString())
+				result.emplace_back(val.GetString());
+			else
+				SG_SERROR("Found non string member in \"%s\".\n", name.c_str())
+		}
+	}
+	return result;
 }
 
 std::shared_ptr<OpenMLFlow> OpenMLFlow::download_flow(
@@ -167,7 +222,7 @@ std::shared_ptr<OpenMLFlow> OpenMLFlow::download_flow(
 	auto reader = OpenMLReader(api_key);
 	auto return_string = reader.get("flow_file", "json", flow_id);
 	document.Parse(return_string.c_str());
-	check_flow_response(document);
+	check_response(document, "flow");
 
 	// store root for convenience. We know it exists from previous check.
 	const Value& root = document["flow"];
@@ -237,21 +292,241 @@ std::shared_ptr<OpenMLFlow> OpenMLFlow::download_flow(
 
 void OpenMLFlow::upload_flow(const std::shared_ptr<OpenMLFlow>& flow)
 {
+	SG_SNOTIMPLEMENTED;
 }
 
 void OpenMLFlow::dump()
 {
+	SG_SNOTIMPLEMENTED;
 }
 
 std::shared_ptr<OpenMLFlow> OpenMLFlow::from_file()
 {
+	SG_SNOTIMPLEMENTED;
 	return std::shared_ptr<OpenMLFlow>();
+}
+
+std::shared_ptr<OpenMLData>
+OpenMLData::get_data(const std::string& id, const std::string& api_key)
+{
+	// description
+	Document document;
+	auto reader = OpenMLReader(api_key);
+	auto return_string = reader.get("dataset_description", "json", id);
+
+	document.Parse(return_string.c_str());
+	check_response(document, "data_set_description");
+
+	const Value& dataset_description = document["data_set_description"];
+
+	auto name = return_if_possible<std::string>(
+	    "name", dataset_description.GetObject());
+	auto description = return_if_possible<std::string>(
+	    "description", dataset_description.GetObject());
+	auto data_format = return_if_possible<std::string>(
+	    "data_format", dataset_description.GetObject());
+	auto dataset_id =
+	    return_if_possible<std::string>("id", dataset_description.GetObject());
+	auto version = return_if_possible<std::string>(
+	    "version", dataset_description.GetObject());
+	auto creator = return_if_possible<std::string>(
+	    "creator", dataset_description.GetObject());
+	auto contributor = return_if_possible<std::string>(
+	    "contributor", dataset_description.GetObject());
+	auto collection_date = return_if_possible<std::string>(
+	    "collection_date", dataset_description.GetObject());
+	auto upload_date = return_if_possible<std::string>(
+	    "upload_date", dataset_description.GetObject());
+	auto language = return_if_possible<std::string>(
+	    "language", dataset_description.GetObject());
+	auto licence = return_if_possible<std::string>(
+	    "licence", dataset_description.GetObject());
+	auto url =
+	    return_if_possible<std::string>("url", dataset_description.GetObject());
+	auto default_target_attribute = return_if_possible<std::string>(
+	    "default_target_attribute", dataset_description.GetObject());
+	auto row_id_attribute = return_if_possible<std::string>(
+	    "row_id_attribute", dataset_description.GetObject());
+	auto ignore_attribute = return_if_possible<std::string>(
+	    "ignore_attribute", dataset_description.GetObject());
+	auto version_label = return_if_possible<std::string>(
+	    "version_label", dataset_description.GetObject());
+	auto citation = return_if_possible<std::string>(
+	    "citation", dataset_description.GetObject());
+	auto tags = return_if_possible<std::vector<std::string>>(
+	    "tag", dataset_description.GetObject());
+	auto visibility = return_if_possible<std::string>(
+	    "visibility", dataset_description.GetObject());
+	auto original_data_url = return_if_possible<std::string>(
+	    "original_data_url", dataset_description.GetObject());
+	auto paper_url = return_if_possible<std::string>(
+	    "paper_url", dataset_description.GetObject());
+	auto update_comment = return_if_possible<std::string>(
+	    "update_comment", dataset_description.GetObject());
+	auto md5_checksum = return_if_possible<std::string>(
+	    "md5_checksum", dataset_description.GetObject());
+
+	// features
+	std::vector<std::unordered_map<std::string, std::string>> param_vector;
+	return_string = reader.get("data_features", "json", id);
+	document.Parse(return_string.c_str());
+	check_response(document, "data_features");
+	const Value& dataset_features = document["data_features"];
+	for (const auto& param : dataset_features.GetArray())
+	{
+		std::unordered_map<std::string, std::string> param_map;
+		for (const auto& param_descriptors : param.GetObject())
+		{
+			param_map.emplace(
+			    param_descriptors.name.GetString(),
+			    param_descriptors.value.GetString());
+		}
+		param_vector.push_back(param_map);
+	}
+
+	// qualities
+	std::vector<std::unordered_map<std::string, std::string>> qualities_vector;
+	return_string = reader.get("data_qualities", "json", id);
+	document.Parse(return_string.c_str());
+	check_response(document, "data_qualities");
+	const Value& data_qualities = document["data_qualities"];
+	for (const auto& param : data_qualities.GetArray())
+	{
+		std::unordered_map<std::string, std::string> param_map;
+		for (const auto& param_quality : param.GetObject())
+		{
+			param_map.emplace(
+			    param_quality.name.GetString(),
+			    param_quality.value.GetString());
+		}
+		qualities_vector.push_back(param_map);
+	}
+
+	auto result = std::make_shared<OpenMLData>(
+	    name, description, data_format, dataset_id, version, creator,
+	    contributor, collection_date, upload_date, language, licence, url,
+	    default_target_attribute, row_id_attribute, ignore_attribute,
+	    version_label, citation, tags, visibility, original_data_url, paper_url,
+	    update_comment, md5_checksum, param_vector, qualities_vector);
+
+	return result;
+}
+
+std::string OpenMLData::get_data_buffer(const std::string& api_key)
+{
+	SG_SNOTIMPLEMENTED;
+	return nullptr;
+}
+
+std::shared_ptr<OpenMLTask>
+OpenMLTask::get_task(const std::string& task_id, const std::string& api_key)
+{
+	Document document;
+	std::string task_name;
+	std::string task_type_id;
+	std::shared_ptr<OpenMLData> openml_dataset;
+	std::shared_ptr<OpenMLSplit> openml_split;
+	std::pair<std::shared_ptr<OpenMLData>, std::shared_ptr<OpenMLSplit>>
+	    task_descriptor;
+
+	auto reader = OpenMLReader(api_key);
+	auto return_string = reader.get("task_file", "json", task_id);
+
+	document.Parse(return_string.c_str());
+	check_response(document, "task");
+
+	const Value& root = document["task"];
+
+	REQUIRE(
+	    task_id == root["task_id"].GetString(),
+	    "Expected downloaded task to have the same id as the requested task "
+	    "id, but got \"%s\", instead of \"%s\".\n",
+	    root["task_id"].GetString(), task_id.c_str())
+
+	task_name = root["task_name"].GetString();
+	OpenMLTask::TaskType task_type =
+	    get_task_from_string(root["task_type"].GetString());
+	task_type_id = root["task_type_id"].GetString();
+
+	// expect two elements in input array: dataset and split
+	const Value& json_input = root["input"];
+
+	REQUIRE(
+	    json_input.IsArray(), "Currently the dataset reader can only handle "
+	                          "inputs with a dataset and split field.\n")
+
+	auto input_array = json_input.GetArray();
+	REQUIRE(
+	    input_array.Size() == 2,
+	    "Currently the dataset reader can only handle inputs with a dataset "
+	    "and split fields. Found %d elements.\n",
+	    input_array.Size())
+
+	// handle dataset
+	auto json_dataset = input_array[0].GetObject();
+
+	if (strcmp(json_dataset["name"].GetString(), "source_data") == 0)
+	{
+		auto dataset_info = json_dataset["data_set"].GetObject();
+		std::string dataset_id = dataset_info["data_set_id"].GetString();
+		std::string target_feature = dataset_info["target_feature"].GetString();
+		//		openml_dataset =
+		//		    std::make_shared<OpenMLData>(dataset_id, target_feature);
+	}
+	else
+		SG_SERROR("Error parsing the OpenML dataset, could not find the "
+		          "source_data field.\n")
+
+	// handle split
+	auto json_split = input_array[1].GetObject();
+	if (strcmp(json_split["name"].GetString(), "estimation_procedure") == 0)
+	{
+		auto split_info = json_dataset["estimation_procedure"].GetObject();
+		std::string split_id = split_info["id"].GetString();
+		std::string split_type = split_info["type"].GetString();
+		std::string split_url = split_info["data_splits_url"].GetString();
+		std::unordered_map<std::string, std::string> split_parameters;
+		for (const auto& param : split_info["parameter"].GetArray())
+		{
+			if (param.Size() == 2)
+				split_parameters.emplace(
+				    param["name"].GetString(), param["value"].GetString());
+			else if (param.Size() == 1)
+				split_parameters.emplace(param["name"].GetString(), "");
+			else
+				SG_SERROR("Unexpected number of parameters in parameter array "
+				          "of estimation_procedure.\n")
+		}
+		openml_split = std::make_shared<OpenMLSplit>(
+		    split_id, split_type, split_url, split_parameters);
+	}
+	else
+		SG_SERROR("Error parsing the OpenML dataset, could not find the "
+		          "estimation_procedure field.\n")
+
+	task_descriptor = std::make_pair(openml_dataset, openml_split);
+
+	auto result = std::make_shared<OpenMLTask>(
+	    task_id, task_name, task_type, task_type_id, task_descriptor);
+
+	return result;
+}
+
+OpenMLTask::TaskType
+OpenMLTask::get_task_from_string(const std::string& task_type)
+{
+	if (task_type == "Supervised Classification")
+		return OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION;
+	SG_SERROR("OpenMLTask does not supported \"%s\"", task_type.c_str())
 }
 
 /**
  * Class using the Any visitor pattern to convert
  * a string to a C++ type that can be used as a parameter
- * in a Shogun model.
+ * in a Shogun model. If the string value is not "null" it will
+ * be put in its casted type in the given model with the provided parameter
+ * name. If the value is null nothing happens, i.e. no error is thrown
+ * and no value is put in model.
  */
 class StringToShogun : public AnyVisitor
 {
@@ -266,18 +541,18 @@ public:
 
 	void on(bool* v) final
 	{
+		SG_SDEBUG("bool: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
-			SG_SDEBUG("bool: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 			bool result = strcmp(m_string_val.c_str(), "true") == 0;
 			m_model->put(m_parameter, result);
 		}
 	}
 	void on(int32_t* v) final
 	{
+		SG_SDEBUG("int32: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
-			SG_SDEBUG("int32: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 			try
 			{
 				int32_t result = std::stoi(m_string_val);
@@ -299,84 +574,94 @@ public:
 	}
 	void on(int64_t* v) final
 	{
+		SG_SDEBUG("int64: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
-			SG_SDEBUG("int64: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+
 			int64_t result = std::stol(m_string_val);
 			m_model->put(m_parameter, result);
 		}
 	}
 	void on(float* v) final
 	{
+		SG_SDEBUG("float: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
-			SG_SDEBUG("float: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
-			char* end;
-			float32_t result = std::strtof(m_string_val.c_str(), &end);
+			float32_t result = std::stof(m_string_val);
 			m_model->put(m_parameter, result);
 		}
 	}
 	void on(double* v) final
 	{
+		SG_SDEBUG("double: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
-			SG_SDEBUG("double: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
-			char* end;
-			float64_t result = std::strtod(m_string_val.c_str(), &end);
+			float64_t result = std::stod(m_string_val);
 			m_model->put(m_parameter, result);
 		}
 	}
 	void on(long double* v)
 	{
+		SG_SDEBUG(
+		    "long double: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
-			SG_SDEBUG("long double: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
-			char* end;
-			floatmax_t result = std::strtold(m_string_val.c_str(), &end);
+			floatmax_t result = std::stold(m_string_val);
 			m_model->put(m_parameter, result);
 		}
 	}
 	void on(CSGObject** v) final
 	{
-		SG_SDEBUG("CSGObject: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		SG_SDEBUG(
+		    "CSGObject: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 	}
 	void on(SGVector<int>* v) final
 	{
-		SG_SDEBUG("SGVector<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		SG_SDEBUG(
+		    "SGVector<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 	}
 	void on(SGVector<float>* v) final
 	{
-		SG_SDEBUG("SGVector<float>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		SG_SDEBUG(
+		    "SGVector<float>: %s=%s\n", m_parameter.c_str(),
+		    m_string_val.c_str())
 	}
 	void on(SGVector<double>* v) final
 	{
-		SG_SDEBUG("SGVector<double>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		SG_SDEBUG(
+		    "SGVector<double>: %s=%s\n", m_parameter.c_str(),
+		    m_string_val.c_str())
 	}
 	void on(SGMatrix<int>* mat) final
 	{
-		SG_SDEBUG("SGMatrix<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		SG_SDEBUG(
+		    "SGMatrix<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 	}
 	void on(SGMatrix<float>* mat) final
 	{
-		SG_SDEBUG("SGMatrix<float>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		SG_SDEBUG(
+		    "SGMatrix<float>: %s=%s\n", m_parameter.c_str(),
+		    m_string_val.c_str())
 	}
-	void on(SGMatrix<double>* mat) final
-	{
-		SG_SDEBUG("SGMatrix<double>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
-	}
+	void on(SGMatrix<double>* mat) final{SG_SDEBUG(
+	    "SGMatrix<double>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())}
 
-	bool is_null()
+	/**
+	 * In OpenML "null" is an empty parameter value field.
+	 * @return whether the field is "null"
+	 */
+	SG_FORCED_INLINE bool is_null()
 	{
 		bool result = strcmp(m_string_val.c_str(), "null") == 0;
 		return result;
 	}
 
-	void set_parameter_name(const std::string& name)
+	SG_FORCED_INLINE void set_parameter_name(const std::string& name)
 	{
 		m_parameter = name;
 	}
 
-	void set_string_value(const std::string& value)
+	SG_FORCED_INLINE void set_string_value(const std::string& value)
 	{
 		m_string_val = value;
 	}
@@ -396,17 +681,16 @@ private:
 std::shared_ptr<CSGObject> instantiate_model_from_factory(
     const std::string& factory_name, const std::string& algo_name)
 {
-	std::shared_ptr<CSGObject> obj;
 	if (factory_name == "machine")
-		obj = std::shared_ptr<CSGObject>(machine(algo_name));
-	else if (factory_name == "kernel")
-		obj = std::shared_ptr<CSGObject>(kernel(algo_name));
-	else if (factory_name == "distance")
-		obj = std::shared_ptr<CSGObject>(distance(algo_name));
-	else
-		SG_SERROR("Unsupported factory \"%s\".\n", factory_name.c_str())
+		return std::shared_ptr<CSGObject>(machine(algo_name));
+	if (factory_name == "kernel")
+		return std::shared_ptr<CSGObject>(kernel(algo_name));
+	if (factory_name == "distance")
+		return std::shared_ptr<CSGObject>(distance(algo_name));
 
-	return obj;
+	SG_SERROR("Unsupported factory \"%s\".\n", factory_name.c_str())
+
+	return nullptr;
 }
 
 /**
@@ -426,19 +710,21 @@ void cast_and_put(
 		//  temporary fix until shared_ptr PR merged
 		auto* tmp_clone = dynamic_cast<CMachine*>(casted_obj->clone());
 		obj->put(parameter_name, tmp_clone);
+		return;
 	}
-	else if (auto casted_obj = std::dynamic_pointer_cast<CKernel>(nested_obj))
+	if (auto casted_obj = std::dynamic_pointer_cast<CKernel>(nested_obj))
 	{
 		auto* tmp_clone = dynamic_cast<CKernel*>(casted_obj->clone());
 		obj->put(parameter_name, tmp_clone);
+		return;
 	}
-	else if (auto casted_obj = std::dynamic_pointer_cast<CDistance>(nested_obj))
+	if (auto casted_obj = std::dynamic_pointer_cast<CDistance>(nested_obj))
 	{
 		auto* tmp_clone = dynamic_cast<CDistance*>(casted_obj->clone());
 		obj->put(parameter_name, tmp_clone);
+		return;
 	}
-	else
-		SG_SERROR("Could not cast SGObject.\n")
+	SG_SERROR("Could not cast SGObject.\n")
 }
 
 std::shared_ptr<CSGObject> ShogunOpenML::flow_to_model(
@@ -447,8 +733,8 @@ std::shared_ptr<CSGObject> ShogunOpenML::flow_to_model(
 	auto params = flow->get_parameters();
 	auto components = flow->get_components();
 	auto class_name = get_class_info(flow->get_class_name());
-	auto module_name = std::get<0>(class_name);
-	auto algo_name = std::get<1>(class_name);
+	auto module_name = class_name.first;
+	auto algo_name = class_name.second;
 
 	auto obj = instantiate_model_from_factory(module_name, algo_name);
 	auto obj_param = obj->get_params();
@@ -486,12 +772,12 @@ ShogunOpenML::model_to_flow(const std::shared_ptr<CSGObject>& model)
 	return std::shared_ptr<OpenMLFlow>();
 }
 
-std::tuple<std::string, std::string>
+std::pair<std::string, std::string>
 ShogunOpenML::get_class_info(const std::string& class_name)
 {
 	std::vector<std::string> class_components;
 	auto begin = class_name.begin();
-	std::tuple<std::string, std::string> result;
+	std::pair<std::string, std::string> result;
 
 	for (auto it = class_name.begin(); it != class_name.end(); ++it)
 	{
@@ -503,15 +789,16 @@ ShogunOpenML::get_class_info(const std::string& class_name)
 		if (std::next(it) == class_name.end())
 			class_components.emplace_back(std::string(begin, std::next(it)));
 	}
-	if (class_components[0] == "shogun")
-		result = std::make_tuple(class_components[1], class_components[2]);
+
+	if (class_components[0] == "shogun" && class_components.size() == 3)
+		result = std::make_pair(class_components[1], class_components[2]);
+	else if (class_components[0] == "shogun" && class_components.size() != 3)
+		SG_SERROR("Invalid class name format %s.\n", class_name.c_str())
 	else
 		SG_SERROR(
 		    "The provided flow is not meant for shogun deserialisation! The "
 		    "required library is \"%s\".\n",
 		    class_components[0].c_str())
-	if (class_components.size() != 3)
-		SG_SERROR("Invalid class name format %s.\n", class_name.c_str())
 
 	return result;
 }

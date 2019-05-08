@@ -31,8 +31,6 @@
 %shared_ptr(shogun::Compressor)
 
 %shared_ptr(shogun::OpenMLFlow)
-%shared_ptr(shogun::ShogunOpenML::flow_to_model)
-%shared_ptr(shogun::ShogunOpenML::model_to_flow)
 #ifdef USE_BOOL
 %shared_ptr(shogun::StreamingFileFromSparseFeatures<bool>)
 %shared_ptr(shogun::StreamingFileFromDenseFeatures<bool>)
