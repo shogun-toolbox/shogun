@@ -131,24 +131,6 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		    bool bdc_svd = true);
 		virtual ~CLDA();
 
-		/** set gamma
-		 *
-		 * @param gamma the new gamma
-		 */
-		inline void set_gamma(float64_t gamma)
-		{
-			m_gamma=gamma;
-		}
-
-		/** get gamma
-		 *
-		 * @return gamma
-		 */
-		inline float64_t get_gamma()
-		{
-			return m_gamma;
-		}
-
 		/** get classifier type
 		 *
 		 * @return classifier type LDA
@@ -156,19 +138,6 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		virtual EMachineType get_classifier_type()
 		{
 			return CT_LDA;
-		}
-
-		/** set features
-		 *
-		 * @param feat features to set
-		 */
-		virtual void set_features(CDotFeatures* feat)
-		{
-			if (feat->get_feature_class() != C_DENSE ||
-				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("LDA requires SIMPLE REAL valued features\n")
-
-			CLinearMachine::set_features(feat);
 		}
 
 		/** @return object name */
