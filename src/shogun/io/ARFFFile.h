@@ -329,7 +329,7 @@ namespace shogun
 				    "have the right permissions to open it.\n",
 				    filename.c_str())
 			}
-			m_stream = static_cast<std::istream*>(file_stream);
+			m_stream = std::unique_ptr<std::istream>(static_cast<std::istream*>(file_stream));
 		}
 
 		/**
@@ -341,12 +341,7 @@ namespace shogun
 		 */
 		explicit ARFFDeserializer(std::istream stream)
 		{
-			m_stream = &stream;
-		}
-
-		~ARFFDeserializer()
-		{
-			delete m_stream;
+			m_stream = std::unique_ptr<std::istream>(&stream);
 		}
 
 		/**
@@ -449,7 +444,7 @@ namespace shogun
 		/** the string after m_relation_string*/
 		std::string m_relation;
 		/** the input stream */
-		std::istream* m_stream;
+		std::unique_ptr<std::istream> m_stream;
 		/** the string where comments are stored */
 		std::vector<std::string> m_comments;
 		/** the string representing the current line being parsed */

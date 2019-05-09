@@ -7,7 +7,7 @@
 #include <shogun/io/ARFFFile.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
-#include <iostream>
+#include <ctime>
 
 using namespace shogun;
 using namespace shogun::arff_detail;
@@ -55,7 +55,8 @@ void ARFFDeserializer::read()
 			// store attribute name and type
 			std::string name;
 			std::string type;
-			auto inner_string = m_current_line.substr(strlen(m_attribute_string));
+			auto inner_string =
+			    m_current_line.substr(strlen(m_attribute_string));
 			left_trim(inner_string);
 			auto it = inner_string.begin();
 			while (it != inner_string.end())
@@ -71,14 +72,16 @@ void ARFFDeserializer::read()
 			}
 			if (it == inner_string.end())
 				SG_SERROR(
-				    "Could not split attibute name and type on line %d: \"%s\".\n",
+				    "Could not split attibute name and type on line %d: "
+				    "\"%s\".\n",
 				    m_line_number, m_current_line.c_str())
 			// check if it is nominal
 			if (type[0] == '{')
 			{
 				std::vector<std::string> attributes;
 				// split norminal values: "{A, B, C}" to vector{A, B, C}
-				split(type.substr(1, type.size() - 2), ", ", true,
+				split(
+				    type.substr(1, type.size() - 2), ", ", true,
 				    std::back_inserter(attributes));
 				m_nominal_attributes.emplace_back(
 				    std::make_pair(name, attributes));
@@ -91,23 +94,24 @@ void ARFFDeserializer::read()
 			{
 				std::vector<std::string> date_elements;
 				// split "date [[date-format]]" or "name date [[date-format]]"
-				split(type, " ", true,
-					  std::back_inserter(date_elements));
-				if (date_elements[0]=="date" && date_elements.size() < 3)
+				split(type, " ", true, std::back_inserter(date_elements));
+				if (date_elements[0] == "date" && date_elements.size() < 3)
 				{
 					// @attribute date [[date-format]]
 					if (type.size() == 1)
 						m_date_formats.emplace_back(m_default_date_format);
 					else
-						m_date_formats.push_back(javatime_to_cpptime(date_elements[1]));
+						m_date_formats.push_back(
+						    javatime_to_cpptime(date_elements[1]));
 				}
-				else if (date_elements[1]=="date" && date_elements.size() < 4)
+				else if (date_elements[1] == "date" && date_elements.size() < 4)
 				{
 					// @attribute name date [[date-format]]
 					if (date_elements.size() == 2)
 						m_date_formats.emplace_back(m_default_date_format);
 					else
-						m_date_formats.push_back(javatime_to_cpptime(date_elements[2]));
+						m_date_formats.push_back(
+						    javatime_to_cpptime(date_elements[2]));
 				}
 				else
 				{
@@ -165,64 +169,86 @@ void ARFFDeserializer::read()
 		// it's a comment and can be skipped
 		if (m_current_line.substr(0, 1) == m_comment_string)
 			return;
-		// it's the data string (i.e. @data"), does not provide
-		// information
+		// it's the data string (i.e. @data"), does not provide information
 		if (string_to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
 		    m_data_string)
 		{
 			return;
 		}
-		// assumes that until EOF we should expect tabular data to be parsed
-		else
+		// assumes that until EOF we should expect comma delimited values
+		std::vector<std::string> elems;
+		split(m_current_line, ",", true, std::back_inserter(elems));
+		auto nominal_pos = m_nominal_attributes.begin();
+		auto date_pos = m_date_formats.begin();
+		for (int i = 0; i < elems.size(); ++i)
 		{
-			std::vector<std::string> elems;
-			split(m_current_line, ",", true, std::back_inserter(elems));
-			auto nominal_pos = m_nominal_attributes.begin();
-			for (int i = 0; i < elems.size(); ++i)
+			Attribute type = m_attributes[i];
+			switch (type)
 			{
-				Attribute type = m_attributes[i];
-				switch (type)
+			case (Attribute::Numeric):
+			case (Attribute::Integer):
+			case (Attribute::Real):
+			{
+				try
 				{
-				case (Attribute::Numeric):
-				case (Attribute::Integer):
-				case (Attribute::Real):
+					m_data.push_back(std::stod(elems[i]));
+				}
+				catch (const std::invalid_argument&)
 				{
-					try
-					{
-						m_data.push_back(std::stod(elems[i]));
-					}
-					catch (const std::invalid_argument&)
-					{
-						SG_SERROR(
-						    "Failed to covert \"%s\" to numeric.\n", elems[i].c_str())
-					}
+					SG_SERROR(
+					    "Failed to covert \"%s\" to numeric.\n",
+					    elems[i].c_str())
 				}
-				break;
-				case (Attribute::Nominal):
+			}
+			break;
+			case (Attribute::Nominal):
+			{
+				if (nominal_pos == m_nominal_attributes.end())
+					SG_SERROR(
+					    "Unexpected nominal value \"%s\" on line %d\n",
+					    elems[i].c_str(), m_line_number);
+				auto encoding = (*nominal_pos).second;
+				remove_char_inplace(elems[i], '\'');
+				auto pos =
+				    std::find(encoding.begin(), encoding.end(), elems[i]);
+				if (pos == encoding.end())
+					SG_SERROR(
+					    "Unexpected value \"%s\" on line %d\n",
+					    elems[i].c_str(), m_line_number);
+				float64_t idx = std::distance(encoding.begin(), pos);
+				m_data.push_back(idx);
+				nominal_pos = std::next(nominal_pos);
+			}
+			break;
+			case (Attribute::Date):
+			{
+				tm t{};
+				if (date_pos == m_date_formats.end())
+					SG_SERROR(
+					    "Unexpected date value \"%s\" on line %d.\n",
+					    elems[i].c_str(), m_line_number);
+				if (strptime(elems[i].c_str(), (*date_pos).c_str(), &t))
 				{
-					if (nominal_pos == m_nominal_attributes.end())
+					auto value_timestamp = std::mktime(&t);
+					if (value_timestamp == -1)
 						SG_SERROR(
-						    "Unexpected nominal value \"%s\" on line "
-						    "%d\n",
-						    elems[i].c_str(), m_line_number);
-					auto encoding = (*nominal_pos).second;
-					remove_char_inplace(elems[i], '\'');
-					auto pos =
-					    std::find(encoding.begin(), encoding.end(), elems[i]);
-					if (pos == encoding.end())
-						SG_SERROR(
-						    "Unexpected value \"%s\" on line %d\n",
-						    elems[i].c_str(), m_line_number);
-					float64_t idx = std::distance(encoding.begin(), pos);
-					m_data.push_back(idx);
-					nominal_pos = std::next(nominal_pos);
+						    "Error creating timestamp with \"%s\" with "
+						    "date format \"%s\" on line %d.\n",
+						    elems[i].c_str(), (*date_pos).c_str(),
+						    m_line_number)
+					else
+						m_data.emplace_back(value_timestamp);
 				}
-				break;
-				case (Attribute::Date):
-					SG_SERROR("Date parsing not implemented.\n")
-				case (Attribute::String):
-					SG_SERROR("String parsing not implemented.\n")
-				}
+				else
+					SG_SERROR(
+					    "Error parsing date \"%s\" with date format \"%s\" "
+					    "on line %d.\n",
+					    elems[i].c_str(), (*date_pos).c_str(), m_line_number)
+				++date_pos;
+			}
+			break;
+			case (Attribute::String):
+				SG_SERROR("String parsing not implemented.\n")
 			}
 		}
 		++m_row_count;
