@@ -172,6 +172,12 @@ namespace shogun
 			$self->put(tag_t, value);
 	}
 
+	/* get method for strings to disambiguate it from get_option */
+	std::string get_string(const std::string& name) const
+	{
+		return $self->get<std::string>(name);
+	}
+
 #ifdef SWIGJAVA
 	// templated since otherwise SWIG doesn't match the typemap for SGMatrix
 	// for the DoubleMatrix hack, X = float64_t and T = SGMatrix<X>
