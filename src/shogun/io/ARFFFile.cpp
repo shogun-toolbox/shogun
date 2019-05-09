@@ -16,63 +16,7 @@ const char* ARFFDeserializer::m_comment_string = "%";
 const char* ARFFDeserializer::m_relation_string = "@relation";
 const char* ARFFDeserializer::m_attribute_string = "@attribute";
 const char* ARFFDeserializer::m_data_string = "@data";
-
-std::vector<std::string>
-ARFFDeserializer::clean_up(std::vector<std::string>& line)
-{
-	std::string result_string;
-	std::vector<std::string> result;
-	std::vector<std::string>::iterator begin;
-
-	for (auto& elem : line)
-	{
-		elem.erase(
-		    std::remove_if(
-		        elem.begin(), elem.end(),
-		        [](auto& v) { return v == ',' || v == '{' || v == '}'; }),
-		    elem.end());
-	}
-	for (auto iter = line.begin(); iter != line.end(); ++iter)
-	{
-		if (iter->front() == '\'' || iter->front() == '\"')
-		{
-			result_string = *iter;
-			if (iter->back() != '\'' && iter->back() != '\"')
-			{
-				begin = iter;
-				++iter;
-				while (iter->back() != '\'' && iter->back() != '\"')
-				{
-					if (iter == line.end())
-					{
-						SG_SERROR("Unbalanced quotes")
-					}
-					++iter;
-				}
-				// concatenate strings within quotes with a space in
-				// between
-				result_string = std::accumulate(
-				    begin + 1, iter + 1, *begin,
-				    [](std::string s0, std::string& s1) {
-					    remove_char_inplace(s0, '\'');
-					    remove_char_inplace(s1, '\'');
-					    return s0 += " " + s1;
-				    });
-			}
-			else
-				remove_char_inplace(result_string, '\'');
-			result.push_back(result_string);
-		}
-		else
-		{
-			result_string = *iter;
-			remove_char_inplace(result_string, '\'');
-			if (!result_string.empty())
-				result.push_back(result_string);
-		}
-	}
-	return result;
-}
+const char* ARFFDeserializer::m_default_date_format = "%Y-%M-%D %Z %H:%M:%S";
 
 void ARFFDeserializer::read()
 {
@@ -82,7 +26,9 @@ void ARFFDeserializer::read()
 	auto read_comment = [this]() {
 		if (string_to_lower(m_current_line.substr(0, 1)) == m_comment_string)
 			m_comments.push_back(m_current_line.substr(1, std::string::npos));
-		else
+		else if (
+		    string_to_lower(m_current_line.substr(
+		        0, strlen(m_relation_string))) == m_relation_string)
 			m_state = true;
 	};
 	auto check_comment = []() { return true; };
@@ -91,11 +37,11 @@ void ARFFDeserializer::read()
 	auto read_relation = [this]() {
 		if (string_to_lower(m_current_line.substr(
 		        0, strlen(m_relation_string))) == m_relation_string)
-		{
 			m_relation = remove_whitespace(
 			    m_current_line.substr(strlen(m_relation_string)));
-		}
-		else
+		else if (
+		    string_to_lower(m_current_line.substr(
+		        0, strlen(m_attribute_string))) == m_attribute_string)
 			m_state = true;
 	};
 	// a relation has to be defined
@@ -106,47 +52,74 @@ void ARFFDeserializer::read()
 		if (string_to_lower(m_current_line.substr(
 		        0, strlen(m_attribute_string))) == m_attribute_string)
 		{
-			std::vector<std::string> elems;
-			auto innner_string =
-			    m_current_line.substr(strlen(m_attribute_string));
-			split(innner_string, " ,\t\r\f\v", std::back_inserter(elems));
-			std::transform(
-			    elems.begin(), elems.end(), elems.begin(),
-			    [](const auto& val) { return remove_whitespace(val); });
-			// check if it is nominal
-			if (elems[1] == "{" || elems[1].front() == '{')
+			// store attribute name and type
+			std::string name;
+			std::string type;
+			auto inner_string = m_current_line.substr(strlen(m_attribute_string));
+			left_trim(inner_string);
+			auto it = inner_string.begin();
+			while (it != inner_string.end())
 			{
-				elems = clean_up(elems);
-				std::vector<std::string> attributes(
-				    elems.begin() + 1, elems.end());
+				if (!std::isspace(*it))
+					it = std::next(it);
+				else
+				{
+					name = trim({inner_string.begin(), it});
+					type = trim({it, inner_string.end()});
+					break;
+				}
+			}
+			if (it == inner_string.end())
+				SG_SERROR(
+				    "Could not split attibute name and type on line %d: \"%s\".\n",
+				    m_line_number, m_current_line.c_str())
+			// check if it is nominal
+			if (type[0] == '{')
+			{
+				std::vector<std::string> attributes;
+				// split norminal values: "{A, B, C}" to vector{A, B, C}
+				split(type.substr(1, type.size() - 2), ", ", true,
+				    std::back_inserter(attributes));
 				m_nominal_attributes.emplace_back(
-				    std::make_pair(elems[0], attributes));
+				    std::make_pair(name, attributes));
 				m_attributes.push_back(Attribute::Nominal);
 				return;
 			}
 
-			auto is_date = std::find(elems.begin(), elems.end(), "date");
-			if (is_date != elems.end())
+			auto is_date = type.find("date") != std::string::npos;
+			if (is_date)
 			{
-				if (elems.begin() == is_date && elems.size() < 2)
+				std::vector<std::string> date_elements;
+				// split "date [[date-format]]" or "name date [[date-format]]"
+				split(type, " ", true,
+					  std::back_inserter(date_elements));
+				if (date_elements[0]=="date" && date_elements.size() < 3)
 				{
-					// TODO: @attribute date [[date-format]]
+					// @attribute date [[date-format]]
+					if (type.size() == 1)
+						m_date_formats.emplace_back(m_default_date_format);
+					else
+						m_date_formats.push_back(javatime_to_cpptime(date_elements[1]));
 				}
-				else if (elems.begin() + 1 == is_date && elems.size() < 3)
+				else if (date_elements[1]=="date" && date_elements.size() < 4)
 				{
-					// TODO: @attribute [name] date [[date-format]]
+					// @attribute name date [[date-format]]
+					if (date_elements.size() == 2)
+						m_date_formats.emplace_back(m_default_date_format);
+					else
+						m_date_formats.push_back(javatime_to_cpptime(date_elements[2]));
 				}
 				else
 				{
-					SG_SERROR("Error parsing date on line %d", m_line_number)
+					SG_SERROR(
+					    "Error parsing date on line %d: %s\n", m_line_number,
+					    m_current_line.c_str())
 				}
-				// m_attributes.emplace(std::make_pair(elems[0],
-				// "date"));
 				m_attributes.push_back(Attribute::Date);
 			}
-			else if (elems.size() == 2)
+			else if (is_primitive_type(type))
 			{
-				auto type = string_to_lower(elems[1]);
+				type = string_to_lower(type);
 				// numeric attributes
 				if (type == "numeric")
 					m_attributes.push_back(Attribute::Numeric);
@@ -164,25 +137,22 @@ void ARFFDeserializer::read()
 				else
 					SG_SERROR(
 					    "Unexpected attribute type identifier \"%s\" "
-					    "on line %d\n",
-					    type.c_str(), m_line_number)
+					    "on line %d: %s\n",
+					    type.c_str(), m_line_number, m_current_line.c_str())
 			}
 			else
 				SG_SERROR(
-				    "Unexpected format in @ATTRIBUTE on line %d\n",
-				    m_line_number);
+				    "Unexpected format in @ATTRIBUTE on line %d: %s\n",
+				    m_line_number, m_current_line.c_str());
 		}
 		// comments in this section are ignored
 		else if (m_current_line.substr(0, 1) == m_comment_string)
 		{
-			return;
 		}
-		// if none of the others are true this is the end of the
-		// attributes section
-		else
-		{
+		else if (
+		    string_to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
+		    m_data_string)
 			m_state = true;
-		}
 	};
 
 	auto check_attributes = [this]() {
@@ -202,10 +172,11 @@ void ARFFDeserializer::read()
 		{
 			return;
 		}
+		// assumes that until EOF we should expect tabular data to be parsed
 		else
 		{
 			std::vector<std::string> elems;
-			split(m_current_line, ",", std::back_inserter(elems));
+			split(m_current_line, ",", true, std::back_inserter(elems));
 			auto nominal_pos = m_nominal_attributes.begin();
 			for (int i = 0; i < elems.size(); ++i)
 			{
@@ -216,7 +187,15 @@ void ARFFDeserializer::read()
 				case (Attribute::Integer):
 				case (Attribute::Real):
 				{
-					m_data.push_back(std::stod(elems[i]));
+					try
+					{
+						m_data.push_back(std::stod(elems[i]));
+					}
+					catch (const std::invalid_argument&)
+					{
+						SG_SERROR(
+						    "Failed to covert \"%s\" to numeric.\n", elems[i].c_str())
+					}
 				}
 				break;
 				case (Attribute::Nominal):

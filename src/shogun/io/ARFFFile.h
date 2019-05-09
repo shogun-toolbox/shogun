@@ -32,31 +32,91 @@ namespace shogun
 			return line.find_first_not_of(" \t\r\f\v") == std::string::npos;
 		}
 
+		SG_FORCED_INLINE bool char_in_string(char lhs, const std::string& rhs)
+		{
+			auto result =
+			    std::find_if(std::begin(rhs), std::end(rhs), [&lhs](char val) {
+				    return lhs == val;
+			    });
+
+			return result != rhs.end();
+		}
+
+		SG_FORCED_INLINE void left_trim(std::string& s)
+		{
+			s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](char val) {
+				return !std::isspace(val);
+			}));
+		}
+
+		SG_FORCED_INLINE void right_trim(std::string& s)
+		{
+			s.erase(std::find_if(s.rbegin(), s.rend(), [](char val) {
+				return !std::isspace(val);
+			}).base(), s.end());
+		}
+
+		SG_FORCED_INLINE std::string trim(std::string line)
+		{
+			left_trim(line);
+			right_trim(line);
+			return line;
+		}
+
 		/**
 		 * Splits a line given a set of delimiter characters
 		 *
-		 * @tparam Out type of container
 		 * @param s string to split
 		 * @param delimiters a set of delimiter character
 		 * @param result dynamic container where tokens are stored
 		 */
-		template <typename Out>
-		void split(const std::string& s, const char* delimiters, Out result)
+		void split(
+		    const std::string& s, const std::string& delimiters,
+		    bool read_quotes,
+		    std::back_insert_iterator<std::vector<std::string>> result)
 		{
-			std::stringstream ss(s);
-			std::string line;
-			while (std::getline(ss, line))
+			auto it = s.begin();
+			auto begin = s.begin();
+			while (arff_detail::char_in_string(*it, delimiters))
 			{
-				size_t prev = 0, pos;
-				while ((pos = line.find_first_of(delimiters, prev)) !=
-				       std::string::npos)
+				it = std::next(it);
+				begin = it;
+			}
+			while (it != s.end())
+			{
+				if (arff_detail::char_in_string(*it, delimiters))
 				{
-					if (pos > prev)
-						*(result++) = line.substr(prev, pos - prev);
-					prev = pos + 1;
 				}
-				if (prev < line.length())
-					*(result++) = line.substr(prev, std::string::npos);
+				else if (read_quotes && (*it == '\"' || *it == '\''))
+				{
+					begin = std::next(it);
+					it = begin;
+					while ((*it != '\"' && *it != '\'') && it != s.end())
+					{
+						it = std::next(it);
+					}
+					if (it == s.end())
+						SG_SERROR(
+						    "Encountered unbalanced parenthesis in \"%s\"\n",
+						    std::string(std::prev(begin), it).c_str())
+					*(result++) = {begin, it};
+					begin = std::next(it);
+				}
+				else
+				{
+					begin = it;
+					while (!arff_detail::char_in_string(*it, delimiters) &&
+					       it != s.end())
+					{
+						it = std::next(it);
+					}
+					auto token = std::string(begin, it);
+					if (!arff_detail::string_is_blank(token))
+						*(result++) = token;
+					begin = std::next(it);
+				}
+				if (it != s.end())
+					it = std::next(it);
 			}
 		}
 
@@ -102,6 +162,131 @@ namespace shogun
 			        line.begin(), line.end(),
 			        [&character](auto const& val) { return val == character; }),
 			    line.end());
+		}
+		/**
+		 * Java to C++ time format token converter.
+		 *
+		 * Java tokens taken from:
+		 * http://tutorials.jenkov.com/java-date-time/parsing-formatting-dates.html
+		 * C++ tokens taken from:
+		 * https://www.ibm.com/support/knowledgecenter/en/ssw_ibm_i_71/rtref/strpti.htm
+		 * @param java_token
+		 * @return
+		 */
+		const char* process_javatoken(const std::string& java_token)
+		{
+			if (java_token == "yy")
+				return "%y";
+			if (java_token == "yyyy")
+				return "%Y";
+			if (java_token == "MM")
+				return "%m";
+			if (java_token == "dd")
+				return "%d";
+			if (java_token == "hh")
+				return "%I";
+			if (java_token == "HH")
+				return "%H";
+			if (java_token == "mm")
+				return "%M";
+			if (java_token == "ss")
+				return "%S";
+			if (java_token == "Z")
+				return "%z";
+			if (java_token == "z")
+				return "%Z";
+			if (java_token == "")
+				return "";
+			if (java_token == "SSS")
+				return nullptr;
+			return nullptr;
+		}
+		const char* process_javatoken(char java_token)
+		{
+			if (java_token == ':')
+				return ":";
+			if (java_token == '\'')
+				return " ";
+			if (java_token == '-')
+				return "-";
+			if (java_token == ' ')
+				return " ";
+			return nullptr;
+		}
+
+		SG_FORCED_INLINE const char*
+		check_and_append_j2cpp(const std::string& java_time_token)
+		{
+			if (auto cpp_token = process_javatoken(java_time_token))
+				return cpp_token;
+			else
+				SG_SERROR(
+				    "Could not convert Java time token \"%s\" to C++ time "
+				    "token.\n",
+				    java_time_token.c_str())
+			return nullptr;
+		}
+
+		SG_FORCED_INLINE const char*
+		check_and_append_j2cpp(char java_time_token)
+		{
+			if (auto cpp_token = process_javatoken(java_time_token))
+				return cpp_token;
+			else
+				SG_SERROR(
+				    "Could not convert Java time token \"%c\" to C++ time "
+				    "token.\n",
+				    java_time_token)
+			return nullptr;
+		}
+
+		std::string javatime_to_cpptime(const std::string& java_time)
+		{
+			std::string cpp_time;
+			std::string token;
+			auto begin = java_time.begin();
+			auto it = java_time.begin();
+			while (it != java_time.end())
+			{
+				if (*it == '-' || *it == ' ' || *it == ':')
+				{
+					token = {begin, it};
+					cpp_time.append(check_and_append_j2cpp(token));
+					cpp_time.append(check_and_append_j2cpp(*it));
+					begin = std::next(it);
+				}
+				else if (*it == '\'')
+				{
+					token = {begin, it};
+					cpp_time.append(check_and_append_j2cpp(token));
+					cpp_time.append(check_and_append_j2cpp(*it));
+					begin = it;
+					it = std::next(it);
+					while (*it != '\'')
+					{
+						it = std::next(it);
+					}
+					token = {std::next(begin), it};
+					cpp_time.append(check_and_append_j2cpp(token));
+					cpp_time.append(check_and_append_j2cpp(*it));
+					begin = std::next(it);
+				}
+				else if (std::next(it) == java_time.end())
+				{
+					token = {begin, std::next(it)};
+					if (auto cpp_token = process_javatoken(token))
+					{
+						cpp_time.append(cpp_token);
+					}
+					else
+						SG_SERROR(
+						    "Could not convert Java time token %s to C++ time "
+						    "token.\n",
+						    token.c_str())
+				}
+				it = std::next(it);
+			}
+			return cpp_time;
 		}
 	} // namespace arff_detail
 	/**
@@ -234,14 +419,13 @@ namespace shogun
 				func();
 		}
 
-		/**
-		 * Cleans up the tokens for nominal attributes.
-		 *
-		 * @param line the line with nominal attributes.
-		 * @return returns a vector with the nominal values in the correct
-		 * position.
-		 */
-		std::vector<std::string> clean_up(std::vector<std::string>& line);
+		SG_FORCED_INLINE bool is_primitive_type(const std::string& token)
+		{
+			return token.find_first_of("numeric") != std::string::npos ||
+			       token.find_first_of("integer") != std::string::npos ||
+			       token.find_first_of("real") != std::string::npos ||
+			       token.find_first_of("string") != std::string::npos;
+		}
 
 		/** character used in file to comment out a line */
 		static const char* m_comment_string;
@@ -251,6 +435,8 @@ namespace shogun
 		static const char* m_attribute_string;
 		/** characters to declare data fields, i.e. @data */
 		static const char* m_data_string;
+
+		static const char* m_default_date_format;
 
 		/** internal line number counter for exceptions */
 		size_t m_line_number;
@@ -270,6 +456,8 @@ namespace shogun
 		std::string m_current_line;
 		/** the attribute types in the order they are parsed */
 		std::vector<Attribute> m_attributes;
+		/** stores the date formats */
+		std::vector<std::string> m_date_formats;
 		/** the mapping of nominal attributes to their value */
 		std::vector<std::pair<std::string, std::vector<std::string>>>
 		    m_nominal_attributes;
