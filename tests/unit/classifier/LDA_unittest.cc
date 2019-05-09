@@ -105,15 +105,15 @@ void test_with_method(
 	generate_test_data<float64_t>(lab, feat);
 
 	auto features = some<CDenseFeatures<float64_t>>(feat);
-	auto labels = some<CBinaryLabels>(lab);
+	auto labels = Some<CLabels>::from_raw(new CBinaryLabels(lab));
 
 	auto lda = some<CLDA>(0, method);
-	lda->set_labels(labels);
+	lda->put("labels", labels);
 	lda->train(features);
 
 	auto results = lda->apply_regression(features);
-	projection = results->get_labels();
-	w = lda->get_w();
+	projection = results->get<SGVector<ST>>("labels");
+	w = lda->get<SGVector<ST>>("w");
 }
 
 template <typename ST>
@@ -199,11 +199,10 @@ TEST(LDA, num_classes_in_labels_exception)
 {
 	SGVector<float64_t> lab{1, -1, 2};
 	SGMatrix<float64_t> feat(1, 3);
-	auto labels = some<CMulticlassLabels>();
-	labels->set_labels(lab);
+	auto labels = Some<CLabels>::from_raw(new CMulticlassLabels(lab));
 	auto features = some<CDenseFeatures<float64_t>>(feat);
 	auto lda = some<CLDA>(0, SVD_LDA);
-	lda->set_labels(labels);
+	lda->put("labels", labels);
 	// should throw an incorrect number of classes exception (expected value is
 	// 2)
 	EXPECT_THROW(lda->train(features), ShogunException);
