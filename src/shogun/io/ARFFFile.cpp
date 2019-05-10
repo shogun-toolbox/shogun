@@ -7,7 +7,7 @@
 #include <shogun/io/ARFFFile.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
-#include <ctime>
+#include <iomanip>
 
 using namespace shogun;
 using namespace shogun::arff_detail;
@@ -223,18 +223,20 @@ void ARFFDeserializer::read()
 			case (Attribute::Date):
 			{
 				tm t{};
+				std::istringstream ss(elems[i]);
 				if (date_pos == m_date_formats.end())
 					SG_SERROR(
 					    "Unexpected date value \"%s\" on line %d.\n",
-					    elems[i].c_str(), m_line_number);
-				if (strptime(elems[i].c_str(), (*date_pos).c_str(), &t))
+						elems[i].c_str(), m_line_number);
+				ss >> std::get_time(&t, (*date_pos).c_str());
+				if (!ss.fail())
 				{
 					auto value_timestamp = std::mktime(&t);
 					if (value_timestamp == -1)
 						SG_SERROR(
 						    "Error creating timestamp with \"%s\" with "
 						    "date format \"%s\" on line %d.\n",
-						    elems[i].c_str(), (*date_pos).c_str(),
+							elems[i].c_str(), (*date_pos).c_str(),
 						    m_line_number)
 					else
 						m_data.emplace_back(value_timestamp);
@@ -243,7 +245,7 @@ void ARFFDeserializer::read()
 					SG_SERROR(
 					    "Error parsing date \"%s\" with date format \"%s\" "
 					    "on line %d.\n",
-					    elems[i].c_str(), (*date_pos).c_str(), m_line_number)
+						elems[i].c_str(), (*date_pos).c_str(), m_line_number)
 				++date_pos;
 			}
 			break;
