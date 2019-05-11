@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
-#include <shogun/util/mixins.h>
 
 #include <map>
 #include <unordered_map>
@@ -21,15 +20,12 @@
 
 namespace shogun
 {
-#ifndef IGNORE_IN_CLASSLIST
-#define IGNORE_IN_CLASSLIST
-#endif
-
 	class CDynamicObjectArray;
-	template <typename M>
+	template <typename Dervied>
 	class HouseKeeper;
-	template <typename M>
+	template <typename Derived>
 	class ParameterWatcher;
+	class CSGObject;
 
 	using stringToEnumMapType = std::unordered_map<
 	    std::string, std::unordered_map<std::string, machine_int_t>>;
@@ -45,21 +41,17 @@ namespace shogun
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // SWIG
 
-	template <typename M>
-	IGNORE_IN_CLASSLIST class ParameterHandler
-	    : public mixin<M, friends_with<ParameterWatcher>, requires<HouseKeeper>>
+	template <typename Derived>
+	class ParameterHandler
 	{
-		friend typename M::template friend_t<ParameterWatcher>;
-		using Derived = typename M::derived_t;
-
-		friend Derived;
+		friend ParameterWatcher<Derived>;
 
 	public:
 		/** default constructor */
 		ParameterHandler();
 
 		/** copy constructor */
-		ParameterHandler(const ParameterHandler<M>& orig);
+		ParameterHandler(const ParameterHandler<Derived>& orig);
 
 		/** destructor */
 		virtual ~ParameterHandler();
@@ -171,7 +163,7 @@ namespace shogun
 		    class X = typename std::enable_if<is_sg_base<T>::value>::type>
 		T* get(const std::string& name, index_t index, std::nothrow_t) const
 		{
-			Derived* result = nullptr;
+			CSGObject* result = nullptr;
 
 			auto get_lambda = [&index, &result](auto& array) {
 				result = array.at(index);
@@ -182,7 +174,8 @@ namespace shogun
 			{
 				ASSERT(result);
 				// guard against mixed types in the array
-				return result->template as<T>();
+				// FIXME
+				return dynamic_cast<T*>(result);
 			}
 
 			return nullptr;
@@ -211,7 +204,7 @@ namespace shogun
 		 * @param name name of the parameter
 		 * @return object parameter
 		 */
-		Derived* get(const std::string& name) const noexcept(false);
+		CSGObject* get(const std::string& name) const noexcept(false);
 
 		/** Untyped getter for an object class parameter, identified by a name.
 		 * Does not throw an error if class parameter object cannot be casted
@@ -220,7 +213,7 @@ namespace shogun
 		 * @param name name of the parameter
 		 * @return object parameter
 		 */
-		Derived* get(const std::string& name, std::nothrow_t) const noexcept;
+		CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
 
 		/** Untyped getter for an object array class parameter, identified by a
 		 * name and an index. Will attempt to get specified object of
@@ -231,9 +224,22 @@ namespace shogun
 		 * @index index of the parameter
 		 * @return object parameter
 		 */
-		Derived* get(const std::string& name, index_t index) const;
+		CSGObject* get(const std::string& name, index_t index) const;
 
 #ifndef SWIG
+		/** Typed setter for an object class parameter of a Shogun base class
+		 * type, identified by a name.
+		 *
+		 * @param name name of the parameter
+		 * @param value value of the parameter
+		 */
+		template <
+		    class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
+		void put(const std::string& name, Some<T> value)
+		{
+			put(name, value.get());
+		}
+
 		/** Typed appender for an object class parameter of a Shogun base class
 		 * type,
 		 * identified by a name.
@@ -247,8 +253,23 @@ namespace shogun
 		{
 			add(name, value.get());
 		}
-
 #endif // SWIG
+
+		/** Typed setter for a non-object class parameter, identified by a name.
+		 *
+		 * @param name name of the parameter
+		 * @param value value of the parameter along with type information
+		 */
+		template <
+		    typename T,
+		    typename T2 = typename std::enable_if<
+		        !std::is_base_of<
+		            CSGObject, typename std::remove_pointer<T>::type>::value,
+		        T>::type>
+		void put(const std::string& name, T value)
+		{
+			put(Tag<T>(name), value);
+		}
 
 #ifndef SWIG
 		/** Getter for a class parameter, identified by a Tag.
@@ -367,7 +388,9 @@ namespace shogun
 				update_parameter(_tag, make_any(value));
 
 				// ParameterHandler needs observe
-				// observe<T>(this->get_step(), _tag.name());
+				// FIXME!
+				static_cast<Derived*>(this)->template observe<T>(
+				    this->get_step(), _tag.name());
 			}
 			else
 			{
@@ -414,35 +437,6 @@ namespace shogun
 			put(Tag<machine_int_t>(_tag.name()), enum_value);
 		}
 #endif
-		/** Typed setter for an object class parameter of a Shogun base class
-		 * type, identified by a name.
-		 *
-		 * @param name name of the parameter
-		 * @param value value of the parameter
-		 */
-		template <
-		    class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-		void put(const std::string& name, Some<T> value)
-		{
-			put(name, value.get());
-		}
-
-		/** Typed setter for a non-object class parameter, identified by a name.
-		 *
-		 * @param name name of the parameter
-		 * @param value value of the parameter along with type information
-		 */
-		template <
-		    typename T,
-		    typename T2 = typename std::enable_if<
-		        !std::is_base_of<
-		            Derived, typename std::remove_pointer<T>::type>::value,
-		        T>::type>
-		void put(const std::string& name, T value)
-		{
-			put(Tag<T>(name), value);
-		}
-
 		/** Typed setter for an object class parameter of a Shogun base class
 		 * type, identified by a name.
 		 *
@@ -557,94 +551,9 @@ namespace shogun
 		Unique<Self> self;
 
 		// mixins
-		typename M::template requirement_t<HouseKeeper>& house_keeper;
+		HouseKeeper<Derived>& house_keeper;
 		SGIO*& io;
 	};
-
-#ifndef SWIG
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	namespace sgo_details
-	{
-		template <typename T1, typename T2, typename ParamObject>
-		bool dispatch_array_type(
-		    const ParamObject* obj, const std::string& name, T2&& lambda)
-		{
-			Tag<CDynamicObjectArray*> tag_array_sg(name);
-			if (obj->template has(tag_array_sg))
-			{
-				auto dispatched = obj->template get(tag_array_sg);
-				lambda(*dispatched); // is stored as a pointer
-				return true;
-			}
-
-			Tag<std::vector<T1*>> tag_vector(name);
-			if (obj->template has(tag_vector))
-			{
-				auto dispatched = obj->template get(tag_vector);
-				lambda(dispatched);
-				return true;
-			}
-
-			return false;
-		}
-
-		struct GetByName
-		{
-		};
-
-		struct GetByNameIndex
-		{
-			GetByNameIndex(index_t index) : m_index(index)
-			{
-			}
-			index_t m_index;
-		};
-
-		template <typename T, typename ParamObject>
-		ParamObject* get_if_possible(
-		    const ParamObject* obj, const std::string& name, GetByName)
-		{
-			return obj->template has<T*>(name) ? obj->template get<T*>(name)
-			                                   : nullptr;
-		}
-
-		template <typename T, typename ParamObject>
-		ParamObject* get_if_possible(
-		    const ParamObject* obj, const std::string& name, GetByNameIndex how)
-		{
-			ParamObject* result = nullptr;
-			result = obj->template get<T>(name, how.m_index, std::nothrow);
-			return result;
-		}
-
-		template <typename T, typename ParamObject>
-		ParamObject* get_dispatch_all_base_types(
-		    const ParamObject* obj, const std::string& name, T&& how)
-		{
-			if (auto* result = get_if_possible<CKernel>(obj, name, how))
-				return result;
-			if (auto* result = get_if_possible<CFeatures>(obj, name, how))
-				return result;
-			if (auto* result = get_if_possible<CMachine>(obj, name, how))
-				return result;
-			if (auto* result = get_if_possible<CLabels>(obj, name, how))
-				return result;
-			if (auto* result =
-			        get_if_possible<CEvaluationResult>(obj, name, how))
-				return result;
-
-			return nullptr;
-		}
-
-		template <class T, typename ParamObject>
-		ParamObject*
-		get_by_tag(const ParamObject* obj, const std::string& name, T&& how)
-		{
-			return get_dispatch_all_base_types(obj, name, how);
-		}
-	}  // namespace sgo_details
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-#endif // SWIG
 
 } // namespace shogun
 

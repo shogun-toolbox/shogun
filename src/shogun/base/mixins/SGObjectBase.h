@@ -27,7 +27,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
-#include <shogun/util/mixins.h>
 
 #include <map>
 #include <unordered_map>
@@ -39,10 +38,6 @@
  */
 namespace shogun
 {
-#ifndef IGNORE_IN_CLASSLIST
-#define IGNORE_IN_CLASSLIST
-#endif
-
 	class SGIO;
 	class Parameter;
 	class CSerializableFile;
@@ -123,18 +118,15 @@ namespace shogun
 	 * All objects can be cloned and compared (deep copy, recursively)
 	 */
 
-	template <typename M>
-	IGNORE_IN_CLASSLIST class CSGObjectBase
-	    : public mixin<M, requires<HouseKeeper, ParameterHandler>>
+	template <typename Derived>
+	class CSGObjectBase
 	{
-		using Derived = typename M::derived_t;
-
 	public:
 		/** default constructor */
 		CSGObjectBase();
 
 		/** copy constructor */
-		CSGObjectBase(const CSGObjectBase<M>& orig);
+		CSGObjectBase(const CSGObjectBase<Derived>& orig);
 
 		/** destructor */
 		virtual ~CSGObjectBase();
@@ -204,16 +196,6 @@ namespace shogun
 		void
 		build_gradient_parameter_dictionary(CMap<TParameter*, Derived*>* dict);
 
-		/** Subscribe a parameter observer to watch over params */
-		void subscribe(ParameterObserver* obs);
-
-		/**
-		 * Detach an observer from the current SGObject.
-		 * @param subscription_index the index obtained by calling the subscribe
-		 * procedure
-		 */
-		void unsubscribe(ParameterObserver* obs);
-
 		/** Print to stdout a list of observable parameters */
 		std::vector<std::string> observable_names();
 
@@ -263,22 +245,6 @@ namespace shogun
 		 */
 		virtual bool parameter_hash_changed();
 
-	protected:
-		/** Returns an empty instance of own type.
-		 *
-		 * When inheriting from CSGObject from outside the main source tree
-		 * (i.e. customized classes, or in a unit test), then this method has to
-		 * be overloaded manually to return an empty instance. Shogun can only
-		 * instantiate empty class instances from its source tree.
-		 *
-		 * @return empty instance of own type
-		 */
-		virtual Derived* create_empty() const
-		{
-			SG_NOTIMPLEMENTED;
-			return nullptr;
-		}
-
 	private:
 		void init();
 
@@ -313,8 +279,8 @@ namespace shogun
 		bool m_save_post_called;
 
 		// mixins
-		typename M::template requirement_t<HouseKeeper>& house_keeper;
-		typename M::template requirement_t<ParameterHandler>& param_handler;
+		HouseKeeper<Derived>& house_keeper;
+		ParameterHandler<Derived>& param_handler;
 		SGIO*& io;
 	};
 } // namespace shogun

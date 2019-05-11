@@ -1,9 +1,11 @@
+#include <shogun/base/DynArray.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/base/mixins/ParameterHandler.h>
-
+#include <shogun/base/range.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
-#include <shogun/base/DynArray.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 
@@ -13,8 +15,19 @@
 
 #include <algorithm>
 #include <memory>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <unordered_map>
 #include <utility>
+
+#include <shogun/distance/Distance.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/machine/Machine.h>
+#include <shogun/multiclass/MulticlassStrategy.h>
+#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 using namespace shogun;
 
@@ -23,8 +36,8 @@ namespace shogun
 	typedef std::unordered_map<std::string, std::string> ObsParamsList;
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 
-	template <typename M>
-	class ParameterHandler<M>::Self
+	template <typename Derived>
+	class ParameterHandler<Derived>::Self
 	{
 	public:
 		void create(const BaseTag& tag, const AnyParameter& parameter)
@@ -74,41 +87,32 @@ namespace shogun
 	}; // namespace shogun
 } // namespace shogun
 
-template <typename M>
-ParameterHandler<M>::ParameterHandler(const ParameterHandler<M>& orig)
+template <typename Derived>
+ParameterHandler<Derived>::ParameterHandler(
+    const ParameterHandler<Derived>& orig)
     : ParameterHandler()
 {
 }
 
-template <typename M>
-ParameterHandler<M>::ParameterHandler()
-    : self(), house_keeper(M::template mutate<HouseKeeper>()),
+template <typename Derived>
+ParameterHandler<Derived>::ParameterHandler()
+    : self(), house_keeper((HouseKeeper<Derived>&)(*(Derived*)this)), // FIXME
       io(house_keeper.io)
 {
-	m_subject_params = new SGSubject();
-	m_observable_params = new SGObservable(m_subject_params->get_observable());
-	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
-	m_next_subscription_index = 0;
-
-	watch_method(
-	    "num_subscriptions", &ParameterWatcher<M>::get_num_subscriptions);
 }
 
-template <typename M>
-ParameterHandler<M>::~ParameterHandler()
+template <typename Derived>
+ParameterHandler<Derived>::~ParameterHandler()
 {
-	delete m_subject_params;
-	delete m_observable_params;
-	delete m_subscriber_params;
 }
 
-template <typename M>
-typename ParameterHandler<M>::Derived* ParameterHandler<M>::clone() const
+template <typename Derived>
+Derived* ParameterHandler<Derived>::clone() const
 {
 	SG_DEBUG("Starting to clone %s at %p.\n", house_keeper.get_name(), this);
 	SG_DEBUG(
 	    "Constructing an empty instance of %s.\n", house_keeper.get_name());
-	Derived* clone = create_empty();
+	Derived* clone = house_keeper.create_empty();
 	SG_DEBUG(
 	    "Empty instance of %s created at %p.\n", house_keeper.get_name(),
 	    clone);
@@ -150,8 +154,261 @@ typename ParameterHandler<M>::Derived* ParameterHandler<M>::clone() const
 	return clone;
 }
 
-template <typename M>
-std::string ParameterHandler<M>::to_string() const
+template <typename Derived>
+bool ParameterHandler<Derived>::has(const std::string& name) const
+{
+	return has_parameter(BaseTag(name));
+}
+
+template <typename Derived>
+void ParameterHandler<Derived>::create_parameter(
+    const BaseTag& _tag, const AnyParameter& parameter)
+{
+	self->create(_tag, parameter);
+}
+
+template <typename Derived>
+void ParameterHandler<Derived>::update_parameter(
+    const BaseTag& _tag, const Any& value)
+{
+	if (!self->map[_tag].get_properties().has_property(
+	        ParameterProperties::READONLY))
+		self->update(_tag, value);
+	else
+	{
+		SG_ERROR(
+		    "%s::%s is marked as read-only and cannot be modified",
+		    house_keeper.get_name(), _tag.name().c_str());
+	}
+	self->map[_tag].get_properties().remove_property(ParameterProperties::AUTO);
+}
+
+template <typename Derived>
+AnyParameter ParameterHandler<Derived>::get_parameter(const BaseTag& _tag) const
+{
+	const auto& parameter = self->get(_tag);
+	if (parameter.get_value().empty())
+	{
+		SG_ERROR(
+		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+		    house_keeper.get_name());
+	}
+	return parameter;
+}
+
+template <typename Derived>
+bool ParameterHandler<Derived>::has_parameter(const BaseTag& _tag) const
+{
+	return self->has(_tag);
+}
+
+template <typename Derived>
+std::map<std::string, std::shared_ptr<const AnyParameter>>
+ParameterHandler<Derived>::get_params() const
+{
+	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
+	for (auto const& each : self->map)
+	{
+		result.emplace(
+		    each.first.name(),
+		    std::make_shared<const AnyParameter>(each.second));
+	}
+	return result;
+}
+
+template <typename Derived>
+void ParameterHandler<Derived>::init_auto_params()
+{
+	auto params = self->filter(ParameterProperties::AUTO);
+	for (const auto& param : params)
+	{
+		update_parameter(
+		    param.first, param.second.get_init_function()->operator()());
+	}
+}
+
+template <typename Derived>
+std::string ParameterHandler<Derived>::string_enum_reverse_lookup(
+    const std::string& param, machine_int_t value) const
+{
+	auto param_enum_map = m_string_to_enum_map.at(param);
+	auto enum_value = value;
+	auto enum_map_it = std::find_if(
+	    param_enum_map.begin(), param_enum_map.end(),
+	    [&enum_value](const std::pair<std::string, machine_int_t>& p) {
+		    return p.second == enum_value;
+	    });
+	return enum_map_it->first;
+}
+
+template <typename Derived>
+CSGObject*
+ParameterHandler<Derived>::get(const std::string& name, index_t index) const
+{
+	auto* result = sgo_details::get_by_tag(
+	    (Derived*)this, name, std::move(sgo_details::GetByNameIndex(index)));
+	if (!result && has(name))
+	{
+		SG_ERROR(
+		    "Cannot get array parameter %s::%s[%d] of type %s as object.\n",
+		    house_keeper.get_name(), name.c_str(), index,
+		    self->map[BaseTag(name)].get_value().type().c_str());
+	}
+	return result;
+}
+
+template <typename Derived>
+CSGObject*
+ParameterHandler<Derived>::get(const std::string& name, std::nothrow_t) const
+    noexcept
+{
+	return sgo_details::get_by_tag(
+	    (Derived*)this, name, std::move(sgo_details::GetByName()));
+}
+
+template <typename Derived>
+CSGObject* ParameterHandler<Derived>::get(const std::string& name) const
+    noexcept(false)
+{
+	if (!has(name))
+	{
+		SG_ERROR(
+		    "Parameter %s::%s does not exist.\n", house_keeper.get_name(),
+		    name.c_str())
+	}
+	if (auto* result = get(name, std::nothrow))
+	{
+		return result;
+	}
+	SG_ERROR(
+	    "Cannot get parameter %s::%s of type %s as object.\n",
+	    house_keeper.get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
+	return nullptr;
+}
+
+class ToStringVisitor : public AnyVisitor
+{
+public:
+	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
+	{
+	}
+
+	virtual void on(bool* v)
+	{
+		stream() << (*v ? "true" : "false");
+	}
+	virtual void on(int32_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(int64_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(float* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(double* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(long double* v)
+	{
+		stream() << *v;
+	}
+
+	virtual void on(CSGObject** v)
+	{
+		if (*v)
+		{
+			stream() << (*v)->get_name() << "(...)";
+		}
+		else
+		{
+			stream() << "null";
+		}
+	}
+
+	virtual void on(SGVector<int>* v)
+	{
+		to_string(v);
+	}
+	virtual void on(SGVector<float>* v)
+	{
+		to_string(v);
+	}
+	virtual void on(SGVector<double>* v)
+	{
+		to_string(v);
+	}
+	virtual void on(SGMatrix<int>* mat)
+	{
+		to_string(mat);
+	}
+	virtual void on(SGMatrix<float>* mat)
+	{
+		to_string(mat);
+	}
+	virtual void on(SGMatrix<double>* mat)
+	{
+		to_string(mat);
+	}
+
+private:
+	std::stringstream& stream()
+	{
+		return *m_stream;
+	}
+
+	template <class T>
+	void to_string(SGMatrix<T>* m)
+	{
+		if (m)
+		{
+			stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
+			         << "," << m->num_cols << "): [";
+			for (auto col : range(m->num_cols))
+			{
+				stream() << "[";
+				for (auto row : range(m->num_rows))
+				{
+					stream() << (*m)(row, col);
+					if (row < m->num_rows - 1)
+						stream() << ",";
+				}
+				stream() << "]";
+				if (col < m->num_cols)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
+	}
+
+	template <class T>
+	void to_string(SGVector<T>* v)
+	{
+		if (v)
+		{
+			stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
+			         << "): [";
+			for (auto i : range(v->vlen))
+			{
+				stream() << (*v)[i];
+				if (i < v->vlen - 1)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
+	}
+
+private:
+	std::stringstream* m_stream;
+};
+
+template <typename Derived>
+std::string ParameterHandler<Derived>::to_string() const
 {
 	std::stringstream ss;
 	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
@@ -184,70 +441,8 @@ std::string ParameterHandler<M>::to_string() const
 	return ss.str();
 }
 
-template <typename M>
-bool ParameterHandler<M>::has(const std::string& name) const
-{
-	return has_parameter(BaseTag(name));
-}
-
-template <typename M>
-void ParameterHandler<M>::create_parameter(
-    const BaseTag& _tag, const AnyParameter& parameter)
-{
-	self->create(_tag, parameter);
-}
-
-template <typename M>
-void ParameterHandler<M>::update_parameter(
-    const BaseTag& _tag, const Any& value)
-{
-	if (!self->map[_tag].get_properties().has_property(
-	        ParameterProperties::READONLY))
-		self->update(_tag, value);
-	else
-	{
-		SG_ERROR(
-		    "%s::%s is marked as read-only and cannot be modified",
-		    house_keeper.get_name(), _tag.name().c_str());
-	}
-	self->map[_tag].get_properties().remove_property(ParameterProperties::AUTO);
-}
-
-template <typename M>
-AnyParameter ParameterHandler<M>::get_parameter(const BaseTag& _tag) const
-{
-	const auto& parameter = self->get(_tag);
-	if (parameter.get_value().empty())
-	{
-		SG_ERROR(
-		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
-		    house_keeper.get_name());
-	}
-	return parameter;
-}
-
-template <typename M>
-bool ParameterHandler<M>::has_parameter(const BaseTag& _tag) const
-{
-	return self->has(_tag);
-}
-
-template <typename M>
-std::map<std::string, std::shared_ptr<const AnyParameter>>
-ParameterHandler<M>::get_params() const
-{
-	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
-	for (auto const& each : self->map)
-	{
-		result.emplace(
-		    each.first.name(),
-		    std::make_shared<const AnyParameter>(each.second));
-	}
-	return result;
-}
-
-template <typename M>
-bool ParameterHandler<M>::equals(const Derived* other) const
+template <typename Derived>
+bool ParameterHandler<Derived>::equals(const Derived* other) const
 {
 	if (other == this)
 		return true;
@@ -315,82 +510,8 @@ bool ParameterHandler<M>::equals(const Derived* other) const
 	return true;
 }
 
-template <typename M>
-void ParameterHandler<M>::init_auto_params()
-{
-	auto params = self->filter(ParameterProperties::AUTO);
-	for (const auto& param : params)
-	{
-		update_parameter(
-		    param.first, param.second.get_init_function()->operator()());
-	}
-}
-
-template <typename M>
-std::string ParameterHandler<M>::string_enum_reverse_lookup(
-    const std::string& param, machine_int_t value) const
-{
-	auto param_enum_map = m_string_to_enum_map.at(param);
-	auto enum_value = value;
-	auto enum_map_it = std::find_if(
-	    param_enum_map.begin(), param_enum_map.end(),
-	    [&enum_value](const std::pair<std::string, machine_int_t>& p) {
-		    return p.second == enum_value;
-	    });
-	return enum_map_it->first;
-}
-
-template <typename M>
-typename ParameterHandler<M>::Derived*
-ParameterHandler<M>::get(const std::string& name, index_t index) const
-{
-	auto* result = sgo_details::get_by_tag(
-	    (Derived*)this, name, std::move(sgo_details::GetByNameIndex(index)));
-	if (!result && has(name))
-	{
-		SG_ERROR(
-		    "Cannot get array parameter %s::%s[%d] of type %s as object.\n",
-		    house_keeper.get_name(), name.c_str(), index,
-		    self->map[BaseTag(name)].get_value().type().c_str());
-	}
-	return result;
-}
-
-template <typename M>
-typename ParameterHandler<M>::Derived*
-ParameterHandler<M>::get(const std::string& name, std::nothrow_t) const noexcept
-{
-	return sgo_details::get_by_tag(
-	    (Derived*)this, name, std::move(sgo_details::GetByName()));
-}
-
-template <typename M>
-typename ParameterHandler<M>::Derived*
-ParameterHandler<M>::get(const std::string& name) const noexcept(false)
-{
-	if (!has(name))
-	{
-		SG_ERROR(
-		    "Parameter %s::%s does not exist.\n", house_keeper.get_name(),
-		    name.c_str())
-	}
-	if (auto* result = get(name, std::nothrow))
-	{
-		return result;
-	}
-	SG_ERROR(
-	    "Cannot get parameter %s::%s of type %s as object.\n",
-	    house_keeper.get_name(), name.c_str(),
-	    self->map[BaseTag(name)].get_value().type().c_str());
-	return nullptr;
-}
-
 namespace shogun
 {
-	template class ParameterHandler<mutator<
-	    CSGObject, ParameterHandler, CSGObjectBase, HouseKeeper,
-	    ParameterHandler, ParameterWatcher>>;
-	template class ParameterHandler<mutator<
-	    ObservedValue, ParameterHandler, HouseKeeper, ParameterHandler,
-	    ParameterWatcher>>;
+	template class ParameterHandler<CSGObject>;
+	template class ParameterHandler<ObservedValue>;
 } // namespace shogun

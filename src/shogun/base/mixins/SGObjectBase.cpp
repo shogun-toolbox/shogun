@@ -7,65 +7,53 @@
  *          Leon Kuchenbecker, Sanuj Sharma, Wu Lin
  */
 
-#include <shogun/lib/RefCount.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/memory.h>
-
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/class_list.h>
+#include <shogun/base/mixins/SGObjectBase.h>
+#include <shogun/base/range.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/RefCount.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <typeinfo>
 
-#include <rxcpp/operators/rx-filter.hpp>
-#include <rxcpp/rx-lite.hpp>
-#include <rxcpp/rx-subscription.hpp>
-
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
 #include <utility>
 
-#include <shogun/distance/Distance.h>
-#include <shogun/evaluation/EvaluationResult.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
-
 using namespace shogun;
 
-template <typename M>
-CSGObjectBase<M>::CSGObjectBase(const CSGObjectBase<M>& orig) : CSGObjectBase()
+template <typename Derived>
+CSGObjectBase<Derived>::CSGObjectBase(const CSGObjectBase<Derived>& orig)
+    : CSGObjectBase()
 {
 }
 
-template <typename M>
-CSGObjectBase<M>::CSGObjectBase()
-    : house_keeper(M::template mutate<HouseKeeper>()),
-      param_handler(M::template mutate<ParameterHandler>()), io(house_keeper.io)
+template <typename Derived>
+CSGObjectBase<Derived>::CSGObjectBase()
+    : house_keeper((HouseKeeper<Derived>&)(*(Derived*)this)), // FIXME
+      param_handler((ParameterHandler<Derived>&)(*(Derived*)this)),
+      io(house_keeper.io)
 {
 	init();
 	SG_SGCDEBUG("SGObject created (%p)\n", this)
 }
 
-template <typename M>
-CSGObjectBase<M>::~CSGObjectBase()
+template <typename Derived>
+CSGObjectBase<Derived>::~CSGObjectBase()
 {
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -76,15 +64,15 @@ CSGObjectBase<M>::~CSGObjectBase()
 #include <shogun/lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
-template <typename M>
-void CSGObjectBase<M>::list_memory_allocs()
+template <typename Derived>
+void CSGObjectBase<Derived>::list_memory_allocs()
 {
 	shogun::list_memory_allocs();
 }
 #endif
 
-template <typename M>
-void CSGObjectBase<M>::update_parameter_hash()
+template <typename Derived>
+void CSGObjectBase<Derived>::update_parameter_hash()
 {
 	SG_DEBUG("entering\n")
 
@@ -98,8 +86,8 @@ void CSGObjectBase<M>::update_parameter_hash()
 	SG_DEBUG("leaving\n")
 }
 
-template <typename M>
-bool CSGObjectBase<M>::parameter_hash_changed()
+template <typename Derived>
+bool CSGObjectBase<Derived>::parameter_hash_changed()
 {
 	SG_DEBUG("entering\n")
 
@@ -114,8 +102,8 @@ bool CSGObjectBase<M>::parameter_hash_changed()
 	return (m_hash != hash);
 }
 
-template <typename M>
-void CSGObjectBase<M>::print_serializable(const char* prefix)
+template <typename Derived>
+void CSGObjectBase<Derived>::print_serializable(const char* prefix)
 {
 	SG_PRINT(
 	    "\n%s\n================================================================"
@@ -124,8 +112,8 @@ void CSGObjectBase<M>::print_serializable(const char* prefix)
 	m_parameters->print(prefix);
 }
 
-template <typename M>
-bool CSGObjectBase<M>::save_serializable(
+template <typename Derived>
+bool CSGObjectBase<Derived>::save_serializable(
     CSerializableFile* file, const char* prefix)
 {
 	SG_DEBUG("START SAVING CSGObject '%s'\n", house_keeper.get_name())
@@ -186,8 +174,8 @@ bool CSGObjectBase<M>::save_serializable(
 	return true;
 }
 
-template <typename M>
-bool CSGObjectBase<M>::load_serializable(
+template <typename Derived>
+bool CSGObjectBase<Derived>::load_serializable(
     CSerializableFile* file, const char* prefix)
 {
 	REQUIRE(file != NULL, "Serializable file object should be != NULL\n");
@@ -246,26 +234,26 @@ bool CSGObjectBase<M>::load_serializable(
 	return true;
 }
 
-template <typename M>
-void CSGObjectBase<M>::load_serializable_pre() throw(ShogunException)
+template <typename Derived>
+void CSGObjectBase<Derived>::load_serializable_pre() throw(ShogunException)
 {
 	m_load_pre_called = true;
 }
 
-template <typename M>
-void CSGObjectBase<M>::load_serializable_post() throw(ShogunException)
+template <typename Derived>
+void CSGObjectBase<Derived>::load_serializable_post() throw(ShogunException)
 {
 	m_load_post_called = true;
 }
 
-template <typename M>
-void CSGObjectBase<M>::save_serializable_pre() throw(ShogunException)
+template <typename Derived>
+void CSGObjectBase<Derived>::save_serializable_pre() throw(ShogunException)
 {
 	m_save_pre_called = true;
 }
 
-template <typename M>
-void CSGObjectBase<M>::save_serializable_post() throw(ShogunException)
+template <typename Derived>
+void CSGObjectBase<Derived>::save_serializable_post() throw(ShogunException)
 {
 	m_save_post_called = true;
 }
@@ -275,8 +263,8 @@ void CSGObjectBase<M>::save_serializable_post() throw(ShogunException)
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 #endif
 
-template <typename M>
-void CSGObjectBase<M>::init()
+template <typename Derived>
+void CSGObjectBase<Derived>::init()
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
@@ -300,8 +288,8 @@ void CSGObjectBase<M>::init()
 	m_hash = 0;
 }
 
-template <typename M>
-void CSGObjectBase<M>::print_modsel_params()
+template <typename Derived>
+void CSGObjectBase<Derived>::print_modsel_params()
 {
 	SG_PRINT(
 	    "parameters available for model selection for %s:\n",
@@ -328,8 +316,8 @@ void CSGObjectBase<M>::print_modsel_params()
 	}
 }
 
-template <typename M>
-SGStringList<char> CSGObjectBase<M>::get_modelsel_names()
+template <typename Derived>
+SGStringList<char> CSGObjectBase<Derived>::get_modelsel_names()
 {
 	index_t num_param = m_model_selection_parameters->get_num_parameters();
 
@@ -353,8 +341,8 @@ SGStringList<char> CSGObjectBase<M>::get_modelsel_names()
 	return result;
 }
 
-template <typename M>
-char* CSGObjectBase<M>::get_modsel_param_descr(const char* param_name)
+template <typename Derived>
+char* CSGObjectBase<Derived>::get_modsel_param_descr(const char* param_name)
 {
 	index_t index = get_modsel_param_index(param_name);
 
@@ -368,8 +356,8 @@ char* CSGObjectBase<M>::get_modsel_param_descr(const char* param_name)
 	return m_model_selection_parameters->get_parameter(index)->m_description;
 }
 
-template <typename M>
-index_t CSGObjectBase<M>::get_modsel_param_index(const char* param_name)
+template <typename Derived>
+index_t CSGObjectBase<Derived>::get_modsel_param_index(const char* param_name)
 {
 	/* use fact that names extracted from below method are in same order than
 	 * in m_model_selection_parameters variable */
@@ -390,8 +378,8 @@ index_t CSGObjectBase<M>::get_modsel_param_index(const char* param_name)
 	return index;
 }
 
-template <typename M>
-void CSGObjectBase<M>::get_parameter_incremental_hash(
+template <typename Derived>
+void CSGObjectBase<Derived>::get_parameter_incremental_hash(
     uint32_t& hash, uint32_t& carry, uint32_t& total_length)
 {
 	for (index_t i = 0; i < m_parameters->get_num_parameters(); i++)
@@ -435,8 +423,8 @@ void CSGObjectBase<M>::get_parameter_incremental_hash(
 	}
 }
 
-template <typename M>
-void CSGObjectBase<M>::build_gradient_parameter_dictionary(
+template <typename Derived>
+void CSGObjectBase<Derived>::build_gradient_parameter_dictionary(
     CMap<TParameter*, Derived*>* dict)
 {
 	for (index_t i = 0; i < m_gradient_parameters->get_num_parameters(); i++)
@@ -459,127 +447,8 @@ void CSGObjectBase<M>::build_gradient_parameter_dictionary(
 	}
 }
 
-class ToStringVisitor : public AnyVisitor
-{
-public:
-	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
-	{
-	}
-
-	virtual void on(bool* v)
-	{
-		stream() << (*v ? "true" : "false");
-	}
-	virtual void on(int32_t* v)
-	{
-		stream() << *v;
-	}
-	virtual void on(int64_t* v)
-	{
-		stream() << *v;
-	}
-	virtual void on(float* v)
-	{
-		stream() << *v;
-	}
-	virtual void on(double* v)
-	{
-		stream() << *v;
-	}
-	virtual void on(long double* v)
-	{
-		stream() << *v;
-	}
-	virtual void on(CSGObject** v)
-	{
-		if (*v)
-		{
-			stream() << (*v)->get_name() << "(...)";
-		}
-		else
-		{
-			stream() << "null";
-		}
-	}
-	virtual void on(SGVector<int>* v)
-	{
-		to_string(v);
-	}
-	virtual void on(SGVector<float>* v)
-	{
-		to_string(v);
-	}
-	virtual void on(SGVector<double>* v)
-	{
-		to_string(v);
-	}
-	virtual void on(SGMatrix<int>* mat)
-	{
-		to_string(mat);
-	}
-	virtual void on(SGMatrix<float>* mat)
-	{
-		to_string(mat);
-	}
-	virtual void on(SGMatrix<double>* mat)
-	{
-		to_string(mat);
-	}
-
-private:
-	std::stringstream& stream()
-	{
-		return *m_stream;
-	}
-
-	template <class T>
-	void to_string(SGMatrix<T>* m)
-	{
-		if (m)
-		{
-			stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
-			         << "," << m->num_cols << "): [";
-			for (auto col : range(m->num_cols))
-			{
-				stream() << "[";
-				for (auto row : range(m->num_rows))
-				{
-					stream() << (*m)(row, col);
-					if (row < m->num_rows - 1)
-						stream() << ",";
-				}
-				stream() << "]";
-				if (col < m->num_cols)
-					stream() << ",";
-			}
-			stream() << "]";
-		}
-	}
-
-	template <class T>
-	void to_string(SGVector<T>* v)
-	{
-		if (v)
-		{
-			stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
-			         << "): [";
-			for (auto i : range(v->vlen))
-			{
-				stream() << (*v)[i];
-				if (i < v->vlen - 1)
-					stream() << ",";
-			}
-			stream() << "]";
-		}
-	}
-
-private:
-	std::stringstream* m_stream;
-};
-
 namespace shogun
 {
-	template class CSGObjectBase<mutator<
-	    CSGObject, CSGObjectBase, CSGObjectBase, HouseKeeper, ParameterHandler,
-	    ParameterWatcher>>;
-}
+	template class CSGObjectBase<CSGObject>;
+	template class CSGObjectBase<ObservedValue>;
+} // namespace shogun

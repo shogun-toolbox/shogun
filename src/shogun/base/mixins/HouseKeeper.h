@@ -9,7 +9,6 @@
 #include <shogun/lib/any.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
-#include <shogun/util/mixins.h>
 
 namespace shogun
 {
@@ -38,14 +37,12 @@ namespace shogun
 	extern SGIO* sg_io;
 	extern Version* sg_version;
 
-	template <typename M>
-	class HouseKeeper : public mixin<M>
+	template <typename Derived>
+	class HouseKeeper
 	{
-		using Derived = typename M::derived_t;
-
 	public:
 		/** copy constructor */
-		HouseKeeper(const HouseKeeper<M>& orig) : HouseKeeper()
+		HouseKeeper(const HouseKeeper<Derived>& orig) : HouseKeeper()
 		{
 			m_generic = orig.m_generic;
 		}
@@ -292,6 +289,21 @@ namespace shogun
 		void unset_generic()
 		{
 			m_generic = PT_NOT_GENERIC;
+		}
+
+		/** Returns an empty instance of own type.
+		 *
+		 * When inheriting from CSGObject from outside the main source tree
+		 * (i.e. customized classes, or in a unit test), then this method has to
+		 * be overloaded manually to return an empty instance. Shogun can only
+		 * instantiate empty class instances from its source tree.
+		 *
+		 * @return empty instance of own type
+		 */
+		virtual Derived* create_empty() const
+		{
+			SG_NOTIMPLEMENTED;
+			return nullptr;
 		}
 
 	private:

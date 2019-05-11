@@ -356,6 +356,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
+%nodefaultctor CSGObject;
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
@@ -373,6 +374,23 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
+
+%include <shogun/base/mixins/HouseKeeper.h>
+%include <shogun/base/mixins/ParameterHandler.h>
+%include <shogun/base/mixins/SGObjectBase.h>
+
+%template(HouseKeeperSGObject) shogun::HouseKeeper<shogun::CSGObject>;
+%template(HouseKeeperObservedValue) shogun::HouseKeeper<shogun::ObservedValue>;
+%template(ParameterHandlerSGObject) shogun::ParameterHandler<shogun::CSGObject>;
+%template(ParameterHandlerObservedValue) shogun::ParameterHandler<shogun::ObservedValue>;
+%template(SGObjectBaseSGObject) shogun::CSGObjectBase<shogun::CSGObject>;
+%template(SGObjectBaseObservedValue) shogun::CSGObjectBase<shogun::ObservedValue>;
+
+%include <shogun/base/mixins/ParameterWatcher.h>
+
+%template(ParameterWatcherSGObject) shogun::ParameterWatcher<shogun::CSGObject>;
+%template(ParameterWatcherObservedValue) shogun::ParameterWatcher<shogun::ObservedValue>;
+
 %include <shogun/base/SGObject.h>
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>

@@ -11,6 +11,5 @@ namespace shogun
 	};
 
 	// ugly explicit template specialization
-	template class HouseKeeper<
-	    mutator<CSGObject, HouseKeeper, CSGObjectBase, HouseKeeper>>;
+	template class HouseKeeper<CSGObject>;
 } // namespace shogun

@@ -148,8 +148,42 @@ import org.jblas.*;
 
 namespace shogun
 {
-%extend CSGObject
+%define EXTEND_PARAM_WATCHER(ParamWatcher)
+%extend ParamWatcher
 {
+	// FIXME: ObservedValue doesn't know about ParameterWatcher since they're
+	// in the same file
+	template <class T,
+			class X = typename std::enable_if<is_sg_base<T>::value>::type,
+			class Z = void>
+	void put(const std::string& name, T* value)
+	{
+		$self->ParamWatcher::put<T, X, Z>(name, value);
+	}
+
+	template <typename T,
+		      typename T2 = typename std::enable_if<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>::type>
+	void put(const std::string& name, T value)
+	{
+		$self->ParamWatcher::put<T, T2>(name, value);
+	}
+
+	template <class T,
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	void add(const std::string& name, T* value)
+	{
+		$self->ParamWatcher::add<T, X>(name, value);
+	}
+
+	template <typename T, typename U = void>
+	T get(const std::string& name) const noexcept(false)
+	{
+		return $self->ParamWatcher::get<T, U>(name);
+	}
+
 	template <typename T, typename U = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 	void put_scalar_dispatcher(const std::string& name, T value)
 	{
@@ -240,65 +274,67 @@ namespace shogun
 #endif // SWIGJAVA
 }
 
-%template(put) CSGObject::put_scalar_dispatcher<int32_t, int32_t>;
+%template(put) ParamWatcher::put_scalar_dispatcher<int32_t, int32_t>;
 #ifndef SWIGJAVA
-%template(put) CSGObject::put_scalar_dispatcher<int64_t, int64_t>;
+%template(put) ParamWatcher::put_scalar_dispatcher<int64_t, int64_t>;
 #endif // SWIGJAVA
-%template(put) CSGObject::put_scalar_dispatcher<float64_t, float64_t>;
-%template(put) CSGObject::put_scalar_dispatcher<bool, bool>;
+%template(put) ParamWatcher::put_scalar_dispatcher<float64_t, float64_t>;
+%template(put) ParamWatcher::put_scalar_dispatcher<bool, bool>;
 
-
-%template(put) CSGObject::put<SGVector<bool>, SGVector<bool>>;
+%template(put) ParamWatcher::put<SGVector<bool>, SGVector<bool>>;
 #ifndef SWIGJAVA
-%template(put) CSGObject::put<SGVector<int32_t>, SGVector<int32_t>>;
-%template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
-%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+%template(put) ParamWatcher::put<SGVector<int32_t>, SGVector<int32_t>>;
+%template(put) ParamWatcher::put<SGVector<float64_t>, SGVector<float64_t>>;
+%template(put) ParamWatcher::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #else // SWIGJAVA
-%template(put) CSGObject::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+%template(put) ParamWatcher::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 #endif // SWIGJAVA
-%template(get_real) CSGObject::get<float64_t, void>;
-%template(get_int) CSGObject::get<int32_t, void>;
-%template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
-%template(get_char_string_list) CSGObject::get<SGStringList<char>, void>;
-%template(get_word_string_list) CSGObject::get<SGStringList<uint16_t>, void>;
-%template(get_option) CSGObject::get<std::string, void>;
+%template(get_real) ParamWatcher::get<float64_t, void>;
+%template(get_int) ParamWatcher::get<int32_t, void>;
+%template(get_real_matrix) ParamWatcher::get<SGMatrix<float64_t>, void>;
+%template(get_char_string_list) ParamWatcher::get<SGStringList<char>, void>;
+%template(get_word_string_list) ParamWatcher::get<SGStringList<uint16_t>, void>;
+%template(get_option) ParamWatcher::get<std::string, void>;
 
 #ifndef SWIGJAVA
-%template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
-%template(get_int_vector) CSGObject::get<SGVector<int32_t>, void>;
+%template(get_real_vector) ParamWatcher::get<SGVector<float64_t>, void>;
+%template(get_int_vector) ParamWatcher::get<SGVector<int32_t>, void>;
 #else // SWIGJAVA
-%template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
-%template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
+%template(get_real_vector) ParamWatcher::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+%template(get_int_vector) ParamWatcher::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
 
-%template(put) CSGObject::put<std::string, std::string>;
+%template(put) ParamWatcher::put<std::string, std::string>;
 
-%define PUT_ADD(sg_class)
-%template(put) CSGObject::put<sg_class, sg_class, void>;
-%template(add) CSGObject::add<sg_class, sg_class>;
+PUT_ADD(ParamWatcher, CMachine)
+PUT_ADD(ParamWatcher, CKernel)
+PUT_ADD(ParamWatcher, CDistance)
+PUT_ADD(ParamWatcher, CFeatures)
+PUT_ADD(ParamWatcher, CLabels)
+PUT_ADD(ParamWatcher, CECOCEncoder)
+PUT_ADD(ParamWatcher, CECOCDecoder)
+PUT_ADD(ParamWatcher, CMulticlassStrategy)
+PUT_ADD(ParamWatcher, CCombinationRule)
+PUT_ADD(ParamWatcher, CInference)
+PUT_ADD(ParamWatcher, CDifferentiableFunction)
+PUT_ADD(ParamWatcher, CNeuralLayer)
+PUT_ADD(ParamWatcher, CSplittingStrategy)
+PUT_ADD(ParamWatcher, CEvaluation)
+PUT_ADD(ParamWatcher, CSVM)
+PUT_ADD(ParamWatcher, CMeanFunction)
+PUT_ADD(ParamWatcher, CLikelihoodModel)
+PUT_ADD(ParamWatcher, CTokenizer)
 %enddef
 
-PUT_ADD(CMachine)
-PUT_ADD(CKernel)
-PUT_ADD(CDistance)
-PUT_ADD(CFeatures)
-PUT_ADD(CLabels)
-PUT_ADD(CECOCEncoder)
-PUT_ADD(CECOCDecoder)
-PUT_ADD(CMulticlassStrategy)
-PUT_ADD(CCombinationRule)
-PUT_ADD(CInference)
-PUT_ADD(CDifferentiableFunction)
-PUT_ADD(CNeuralLayer)
-PUT_ADD(CSplittingStrategy)
-PUT_ADD(CEvaluation)
-PUT_ADD(CSVM)
-PUT_ADD(CMeanFunction)
-PUT_ADD(CLikelihoodModel)
-PUT_ADD(CTokenizer)
+%define PUT_ADD(base, sg_class)
+%template(put) base::put<sg_class, sg_class, void>;
+%template(add) base::add<sg_class, sg_class>;
+%enddef
+
+EXTEND_PARAM_WATCHER(CSGObject)
+EXTEND_PARAM_WATCHER(ObservedValue)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;
-
 
 } // namespace shogun

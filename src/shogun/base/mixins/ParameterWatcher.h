@@ -4,6 +4,7 @@
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/base_types.h>
 #include <shogun/base/macros.h>
+#include <shogun/base/mixins/SGObjectBase.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -12,7 +13,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
-#include <shogun/util/mixins.h>
 
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
@@ -27,17 +27,14 @@ namespace shogun
 	class ObservedValue;
 	class ParameterObserver;
 
-	template <typename M>
+	template <typename Derived>
 	class HouseKeeper;
-	template <typename M>
+	template <typename Derived>
 	class ParameterHandler;
 
-	template <typename M>
-	IGNORE_IN_CLASSLIST class ParameterWatcher
-	    : public mixin<M, requires<HouseKeeper, ParameterHandler>>
+	template <typename Derived>
+	class ParameterWatcher
 	{
-		using Derived = typename M::derived_t;
-
 		/** Definition of observed subject */
 		typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
 		/** Definition of observable */
@@ -55,7 +52,7 @@ namespace shogun
 		ParameterWatcher();
 
 		/** copy constructor */
-		ParameterWatcher(const ParameterWatcher<M>& orig);
+		ParameterWatcher(const ParameterWatcher<Derived>& orig);
 
 		/** destructor */
 		virtual ~ParameterWatcher();
@@ -191,6 +188,16 @@ namespace shogun
 		template <class T>
 		void observe(const int64_t step, const std::string& name) const;
 
+		/** Subscribe a parameter observer to watch over params */
+		void subscribe(ParameterObserver* obs);
+
+		/**
+		 * Detach an observer from the current SGObject.
+		 * @param subscription_index the index obtained by calling the subscribe
+		 * procedure
+		 */
+		void unsubscribe(ParameterObserver* obs);
+
 		/**
 		 * Get parameters observable
 		 * @return RxCpp observable
@@ -219,6 +226,9 @@ namespace shogun
 		void register_observable(
 		    const std::string& name, const std::string& description);
 
+		/** Print to stdout a list of observable parameters */
+		std::vector<std::string> observable_names();
+
 	private:
 		class ParameterObserverList;
 		Unique<ParameterObserverList> param_obs_list;
@@ -237,8 +247,8 @@ namespace shogun
 		int64_t m_next_subscription_index;
 
 		// mixins
-		typename M::template requirement_t<HouseKeeper>& house_keeper;
-		typename M::template requirement_t<ParameterHandler>& param_handler;
+		HouseKeeper<Derived>& house_keeper;
+		ParameterHandler<Derived>& param_handler;
 		SGIO*& io;
 	};
 
@@ -248,14 +258,16 @@ namespace shogun
 	/**
 	 * Observed value which is emitted by algorithms.
 	 */
-	class ObservedValue
-	    : public composition<
-	          ObservedValue, HouseKeeper, ParameterHandler, ParameterWatcher>
+	// ObservedValue ended up inherting from all the mixins!
+	class ObservedValue : public HouseKeeper<ObservedValue>,
+	                      public ParameterHandler<ObservedValue>,
+	                      public ParameterWatcher<ObservedValue>,
+	                      public CSGObjectBase<ObservedValue>
 	{
 	public:
 		/**
 		 * Constructor
-		 * @param step step
+		 * @paraMm step step
 		 * @param name name of the observed value
 		 */
 		ObservedValue(const int64_t step, const std::string& name);
@@ -289,6 +301,10 @@ namespace shogun
 		std::string m_name;
 		/** Untyped value */
 		Any m_any_value;
+
+	public:
+		// to resolve naming conflict
+		SGIO*& io = HouseKeeper<ObservedValue>::io;
 	};
 
 	/**
@@ -346,9 +362,9 @@ namespace shogun
 		T m_observed_value;
 	};
 
-	template <class M>
+	template <class Derived>
 	template <class T>
-	void ParameterWatcher<M>::observe(
+	void ParameterWatcher<Derived>::observe(
 	    const int64_t step, const std::string& name,
 	    const std::string& description, const T value) const
 	{
@@ -357,9 +373,9 @@ namespace shogun
 		this->observe(obs);
 	}
 
-	template <class M>
+	template <class Derived>
 	template <class T>
-	void ParameterWatcher<M>::observe(
+	void ParameterWatcher<Derived>::observe(
 	    const int64_t step, const std::string& name) const
 	{
 		auto param = param_handler.get_parameter(BaseTag(name));
