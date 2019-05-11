@@ -1,10 +1,9 @@
 #ifndef __HOUSEKEEPER_H__
 #define __HOUSEKEEPER_H__
 
-#include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
-#include <shogun/lib/RefCount.h>
 #include <shogun/base/Version.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/any.h>
