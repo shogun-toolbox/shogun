@@ -8,6 +8,8 @@
 #define SHOGUN_ARFFFILE_H
 
 #include <shogun/base/init.h>
+#include <shogun/base/variant.h>
+#include <shogun/features/CombinedFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
@@ -20,6 +22,8 @@
 
 namespace shogun
 {
+	/** Contains miscellaneous string manipulation functions using the STL and
+	 * Java to C++ date format utilities */
 	namespace arff_detail
 	{
 		/**
@@ -32,26 +36,47 @@ namespace shogun
 			return line.find_first_not_of(" \t\r\f\v") == std::string::npos;
 		}
 
+		/**
+		 * Checks if the character in the lhs is in the rhs
+		 * @param lhs the single character to find
+		 * @param rhs a string with the characters to compare against the lhs
+		 * @return whether the character of the lhs is in the rhs
+		 */
 		SG_FORCED_INLINE bool char_in_string(char lhs, const std::string& rhs)
 		{
 			auto result = rhs.find(lhs);
 			return result != std::string::npos;
 		}
 
+		/**
+		 * Trims the whitespace to the left of a string in place.
+		 * @param s the string to trim
+		 */
 		SG_FORCED_INLINE void left_trim(std::string& s)
 		{
 			s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](char val) {
-				return !std::isspace(val);
-			}));
+				        return !std::isspace(val);
+			        }));
 		}
 
+		/**
+		 * Trims the whitespace to the right of a string in place.
+		 * @param s the string to trim
+		 */
 		SG_FORCED_INLINE void right_trim(std::string& s)
 		{
-			s.erase(std::find_if(s.rbegin(), s.rend(), [](char val) {
-				return !std::isspace(val);
-			}).base(), s.end());
+			s.erase(
+			    std::find_if(
+			        s.rbegin(), s.rend(),
+			        [](char val) { return !std::isspace(val); })
+			        .base(),
+			    s.end());
 		}
 
+		/**
+		 * Returns the string with any whitespace to the left and right trimmed.
+		 * @param s the string to trim
+		 */
 		SG_FORCED_INLINE std::string trim(std::string line)
 		{
 			left_trim(line);
@@ -65,6 +90,8 @@ namespace shogun
 		 * @param s string to split
 		 * @param delimiters a set of delimiter character
 		 * @param result dynamic container where tokens are stored
+		 * @param quotes a string with the characters that are considered
+		 * quotes, i.e. any text between quotes is kept together.
 		 */
 		SG_FORCED_INLINE void split(
 		    const std::string& s, const std::string& delimiters,
@@ -168,9 +195,10 @@ namespace shogun
 		 * C++ tokens taken from:
 		 * https://www.ibm.com/support/knowledgecenter/en/ssw_ibm_i_71/rtref/strpti.htm
 		 * @param java_token
-		 * @return
+		 * @return C++ equivalent
 		 */
-		SG_FORCED_INLINE const char* process_javatoken(const std::string& java_token)
+		SG_FORCED_INLINE const char*
+		process_javatoken(const std::string& java_token)
 		{
 			if (java_token == "yy")
 				return "%y";
@@ -191,7 +219,8 @@ namespace shogun
 			if (java_token == "Z")
 				return "%z";
 			if (java_token == "z")
-				return "%Z";
+				SG_SERROR(
+				    "Timezone abbreviations are currently not supported.\n")
 			if (java_token.empty())
 				return "";
 			if (java_token == "SSS")
@@ -211,6 +240,12 @@ namespace shogun
 			return nullptr;
 		}
 
+		/**
+		 * Checks if a Java token is valid and returns string representing the
+		 * C++ token.
+		 * @param java_time_token token to check and translate
+		 * @return translated C++ token
+		 */
 		SG_FORCED_INLINE const char*
 		check_and_append_j2cpp(const std::string& java_time_token)
 		{
@@ -237,7 +272,13 @@ namespace shogun
 			return nullptr;
 		}
 
-		SG_FORCED_INLINE std::string javatime_to_cpptime(const std::string& java_time)
+		/**
+		 * Converts a Java SimpleDateFormat to a C++ date format
+		 * @param java_time the string to translate
+		 * @return the C++ format equivalent of java_time
+		 */
+		SG_FORCED_INLINE std::string
+		javatime_to_cpptime(const std::string& java_time)
 		{
 			std::string cpp_time;
 			std::string token;
@@ -326,7 +367,7 @@ namespace shogun
 				    "have the right permissions to open it.\n",
 				    filename.c_str())
 			}
-			m_stream = std::unique_ptr<std::istream>(static_cast<std::istream*>(file_stream));
+			m_stream = std::unique_ptr<std::istream>(file_stream);
 		}
 
 		/**
@@ -348,13 +389,19 @@ namespace shogun
 		void read();
 
 		/**
-		 * Returns the data processed after parsing.
-		 * @return matrix with parsed data
+		 * Returns string parsed in @relation line
+		 * @return the relation string
 		 */
-		SGMatrix<float64_t> get_data()
+		SG_FORCED_INLINE std::string get_relation() const noexcept
 		{
-			return m_data_matrix;
+			return m_relation;
 		}
+
+		/**
+		 * Get combined features from parsed data
+		 * @return
+		 */
+		std::shared_ptr<CCombinedFeatures> get_features() const;
 
 	private:
 		/**
@@ -411,13 +458,33 @@ namespace shogun
 				func();
 		}
 
-		SG_FORCED_INLINE bool is_primitive_type(const std::string& token)
+		/**
+		 * Checks if a token represented by a string
+		 * denotes a primitive type in the ARFF format
+		 * @param token the token to be checked
+		 * @return whether the token denotes a primitive type
+		 */
+		SG_FORCED_INLINE bool is_primitive_type(const std::string& token) const
+		    noexcept
 		{
 			return token.find_first_of("numeric") != std::string::npos ||
 			       token.find_first_of("integer") != std::string::npos ||
 			       token.find_first_of("real") != std::string::npos ||
 			       token.find_first_of("string") != std::string::npos;
 		}
+
+		/**
+		 * Visitor pattern to determine size of a std::vector
+		 * wrapped in a variant class.
+		 */
+		struct VectorSizeVisitor
+		{
+			template <typename T>
+			size_t operator()(const std::vector<T>& v) const noexcept
+			{
+				return v.size();
+			}
+		};
 
 		/** character used in file to comment out a line */
 		static const char* m_comment_string;
@@ -427,7 +494,7 @@ namespace shogun
 		static const char* m_attribute_string;
 		/** characters to declare data fields, i.e. @data */
 		static const char* m_data_string;
-
+		/** the default C++ date format specified by the ARFF standard */
 		static const char* m_default_date_format;
 
 		/** internal line number counter for exceptions */
@@ -454,10 +521,11 @@ namespace shogun
 		std::vector<std::pair<std::string, std::vector<std::string>>>
 		    m_nominal_attributes;
 
-		/** dynamic continuous vector with the parsed data */
-		std::vector<float64_t> m_data;
-		/** sgmatrix with the properly formatted data from m_data */
-		SGMatrix<float64_t> m_data_matrix;
+		/** a vector containing the feature vectors containing the parsed data
+		 * in the correct type
+		 */
+		std::vector<variant<std::vector<float64_t>, std::vector<std::string>>>
+		    m_data_vectors;
 	};
 } // namespace shogun
 

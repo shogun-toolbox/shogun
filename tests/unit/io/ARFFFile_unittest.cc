@@ -7,12 +7,13 @@
 #include <shogun/io/ARFFFile.h>
 
 #include <gtest/gtest.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 
 TEST(ARFFFileTest, Parse_numeric)
 {
-	std::string test = "@relation test \n"
+	std::string test = "@relation test_numeric \n"
 	                   "%\n"
 	                   "% \n"
 	                   "@attribute VAR1 numeric \n"
@@ -23,26 +24,35 @@ TEST(ARFFFileTest, Parse_numeric)
 	                   "50, 5.1 \n"
 	                   "45, 4.13 ";
 	auto ss = std::make_shared<std::istringstream>(test);
-	auto s = std::dynamic_pointer_cast<std::istream>(ss);
+	auto s = std::shared_ptr<std::istream>(ss);
 
 	SGVector<float64_t> solution{50, 45, 5.1, 4.13};
 
 	auto parser = std::make_unique<ARFFDeserializer>(s);
 	parser->read();
-	auto result = parser->get_data();
-	ASSERT_EQ(result.size(), 4);
-	for (int i = 0; i < 4; ++i)
-		ASSERT_EQ(result[i], solution[i]);
+	auto result = parser->get_features();
+	ASSERT_EQ(result->get_num_feature_obj(), 2);
+
+	auto col1 =
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
+	auto col2 =
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+
+	ASSERT_EQ(col1->get_feature_matrix()[0], 50);
+	ASSERT_EQ(col1->get_feature_matrix()[1], 45);
+
+	ASSERT_EQ(col2->get_feature_matrix()[0], 5.1);
+	ASSERT_EQ(col2->get_feature_matrix()[1], 4.13);
+	ASSERT_EQ(parser->get_relation(), "test_numeric");
 }
 
 TEST(ARFFFileTest, Parse_datetime)
 {
-	std::string test = "@relation test \n"
+	std::string test = "@relation test_date \n"
 	                   "% \n"
 	                   "% \n"
 	                   "@attribute PERIOD_DATE date \"yyyy-MM-dd Z\" \n"
 	                   "@attribute VAR1 numeric \n"
-	                   "@attribute VAR2 numeric \n"
 	                   "% \n"
 	                   "% \n"
 	                   "@data \n"
@@ -54,15 +64,116 @@ TEST(ARFFFileTest, Parse_datetime)
 	                   "\"2019-06-10 +0000\", 45 ";
 
 	auto ss = std::make_shared<std::istringstream>(test);
-	auto s = std::dynamic_pointer_cast<std::istream>(ss);
+	auto s = std::shared_ptr<std::istream>(ss);
 
-	SGVector<float64_t> solution{1547078400, 1549760400, 1552176000,
-	                             1554854400, 1557446400, 1560124800};
+	SGVector<float64_t> solution1{1547078400, 1549760400, 1552176000,
+	                              1554854400, 1557446400, 1560124800};
+
+	SGVector<float64_t> solution2{50, 26, 34, 41, 44, 45};
 
 	auto parser = std::make_unique<ARFFDeserializer>(s);
 	parser->read();
-	auto result = parser->get_data();
-	ASSERT_EQ(result.size(), 12);
+	auto result = parser->get_features();
+	ASSERT_EQ(result->get_num_feature_obj(), 2);
+
+	auto col1 =
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
+	auto mat1 = col1->get_feature_matrix();
+	auto col2 =
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto mat2 = col2->get_feature_matrix();
+	ASSERT_EQ(mat1.size(), 6);
 	for (int i = 0; i < 6; ++i)
-		ASSERT_EQ(result[i], solution[i]);
+	{
+		ASSERT_EQ(mat1[i], solution1[i]);
+		ASSERT_EQ(mat2[i], solution2[i]);
+	}
+	ASSERT_EQ(parser->get_relation(), "test_date");
+}
+
+TEST(ARFFFileTest, Parse_string)
+{
+	std::string test = "@relation test_string \n"
+	                   "% \n"
+	                   "% \n"
+	                   "@attribute VAR1 string \n"
+	                   "@attribute VAR2 numeric \n"
+	                   "% \n"
+	                   "% \n"
+	                   "@data \n"
+	                   "\"test1\", 50 \n"
+	                   "\"test2\", 26 \n"
+	                   "\"test3\", 34 \n"
+	                   "test1, 41 \n"
+	                   "test2, 44 \n"
+	                   "test3, 45 ";
+
+	auto ss = std::make_shared<std::istringstream>(test);
+	auto s = std::shared_ptr<std::istream>(ss);
+
+	std::vector<const char*> solution1{"test1", "test2", "test3",
+	                                   "test1", "test2", "test3"};
+	SGVector<float64_t> solution2{50, 26, 34, 41, 44, 45};
+
+	auto parser = std::make_unique<ARFFDeserializer>(s);
+	parser->read();
+	auto result = parser->get_features();
+	ASSERT_EQ(result->get_num_feature_obj(), 2);
+	auto col1 =
+	    dynamic_cast<CStringFeatures<char>*>(result->get_feature_obj(0));
+	auto col2 =
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto mat2 = col2->get_feature_matrix();
+	ASSERT_EQ(col1->get_num_vectors(), 6);
+	for (int i = 0; i < col1->get_num_vectors(); ++i)
+	{
+		auto row = col1->get_feature_vector(i);
+		for (auto j = 0; j < col1->get_max_vector_length(); ++j)
+			ASSERT_EQ(row[j], solution1[i][j]);
+		ASSERT_EQ(mat2[i], solution2[i]);
+	}
+	ASSERT_EQ(parser->get_relation(), "test_string");
+}
+
+TEST(ARFFFileTest, Parse_nominal)
+{
+	std::string test = "@relation test_nominal \n"
+	                   "% \n"
+	                   "% \n"
+	                   "@attribute VAR1 {\"a\", b} \n"
+	                   "@attribute VAR2 numeric \n"
+	                   "% \n"
+	                   "% \n"
+	                   "@data \n"
+	                   "\"a\", 50 \n"
+	                   "b, 26 \n"
+	                   "\"b\", 34 \n"
+	                   "\"a\", 41 \n"
+	                   "\"b\", 44 \n"
+	                   "a, 45 ";
+
+	auto ss = std::make_shared<std::istringstream>(test);
+	auto s = std::shared_ptr<std::istream>(ss);
+
+	SGVector<float64_t> solution1{0, 1, 1, 0, 1, 0};
+	SGVector<float64_t> solution2{50, 26, 34, 41, 44, 45};
+
+	auto parser = std::make_unique<ARFFDeserializer>(s);
+	parser->read();
+	auto result = parser->get_features();
+	ASSERT_EQ(result->get_num_feature_obj(), 2);
+
+	auto col1 =
+			dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
+	auto mat1 = col1->get_feature_matrix();
+	auto col2 =
+			dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto mat2 = col2->get_feature_matrix();
+	ASSERT_EQ(mat1.size(), 6);
+	for (int i = 0; i < 6; ++i)
+	{
+		ASSERT_EQ(mat1[i], solution1[i]);
+		ASSERT_EQ(mat2[i], solution2[i]);
+	}
+	ASSERT_EQ(parser->get_relation(), "test_nominal");
 }

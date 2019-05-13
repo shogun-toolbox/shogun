@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/io/ARFFFile.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <date/date.h>
 
@@ -78,6 +78,7 @@ void ARFFDeserializer::read()
 			// check if it is nominal
 			if (type[0] == '{')
 			{
+				// @ATTRIBUTE class {Iris-setosa,Iris-versicolor,Iris-virginica}
 				std::vector<std::string> attributes;
 				// split norminal values: "{A, B, C}" to vector{A, B, C}
 				split(
@@ -86,6 +87,7 @@ void ARFFDeserializer::read()
 				m_nominal_attributes.emplace_back(
 				    std::make_pair(name, attributes));
 				m_attributes.push_back(Attribute::Nominal);
+				m_data_vectors.emplace_back(std::vector<float64_t>{});
 				return;
 			}
 
@@ -120,23 +122,32 @@ void ARFFDeserializer::read()
 					    m_current_line.c_str())
 				}
 				m_attributes.push_back(Attribute::Date);
+				m_data_vectors.emplace_back(std::vector<float64_t>{});
 			}
 			else if (is_primitive_type(type))
 			{
 				type = string_to_lower(type);
 				// numeric attributes
 				if (type == "numeric")
+				{
 					m_attributes.push_back(Attribute::Numeric);
+					m_data_vectors.emplace_back(std::vector<float64_t>{});
+				}
 				else if (type == "integer")
+				{
 					m_attributes.push_back(Attribute::Integer);
+					m_data_vectors.emplace_back(std::vector<float64_t>{});
+				}
 				else if (type == "real")
+				{
 					m_attributes.push_back(Attribute::Real);
+					m_data_vectors.emplace_back(std::vector<float64_t>{});
+				}
 				else if (type == "string")
 				{
 					// @ATTRIBUTE LCC    string
-					// m_attributes.emplace(std::make_pair(elems[0],
-					// "string"));
 					m_attributes.push_back(Attribute::String);
+					m_data_vectors.emplace_back(std::vector<std::string>{});
 				}
 				else
 					SG_SERROR(
@@ -180,7 +191,8 @@ void ARFFDeserializer::read()
 		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
 		auto nominal_pos = m_nominal_attributes.begin();
 		auto date_pos = m_date_formats.begin();
-		for (int i = 0; i < elems.size(); ++i)
+		int i = 0;
+		for (; i < elems.size(); ++i)
 		{
 			Attribute type = m_attributes[i];
 			switch (type)
@@ -191,7 +203,8 @@ void ARFFDeserializer::read()
 			{
 				try
 				{
-					m_data.push_back(std::stod(elems[i]));
+					shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+					    .push_back(std::stod(elems[i]));
 				}
 				catch (const std::invalid_argument&)
 				{
@@ -216,7 +229,8 @@ void ARFFDeserializer::read()
 					    "Unexpected value \"%s\" on line %d\n",
 					    elems[i].c_str(), m_line_number);
 				float64_t idx = std::distance(encoding.begin(), pos);
-				m_data.push_back(idx);
+				shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+				    .push_back(idx);
 				nominal_pos = std::next(nominal_pos);
 			}
 			break;
@@ -227,49 +241,106 @@ void ARFFDeserializer::read()
 				if (date_pos == m_date_formats.end())
 					SG_SERROR(
 					    "Unexpected date value \"%s\" on line %d.\n",
-						elems[i].c_str(), m_line_number);
+					    elems[i].c_str(), m_line_number);
 				ss >> date::parse(*date_pos, t);
 				if (bool(ss))
 				{
 					auto value_timestamp = t.time_since_epoch().count();
-					m_data.emplace_back(value_timestamp);
+					shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+					    .push_back(value_timestamp);
 				}
 				else
 					SG_SERROR(
 					    "Error parsing date \"%s\" with date format \"%s\" "
 					    "on line %d.\n",
-						elems[i].c_str(), (*date_pos).c_str(), m_line_number)
+					    elems[i].c_str(), (*date_pos).c_str(), m_line_number)
 				++date_pos;
 			}
 			break;
 			case (Attribute::String):
-				SG_SERROR("String parsing not implemented.\n")
+				shogun::get<std::vector<std::string>>(m_data_vectors[i])
+				    .emplace_back(elems[i]);
 			}
 		}
+		if (i != m_attributes.size())
+			SG_SERROR(
+			    "Unexpected number of values on line %d, expected %d values, "
+			    "but found %d.\n",
+			    m_line_number, m_attributes.size(), i)
 		++m_row_count;
 	};
 	auto check_data = [this]() {
 		// check X values
 		SG_SDEBUG(
-		    "size: %d, cols: %d, rows: %d", m_data.size(),
-		    m_data.size() / m_row_count, m_row_count)
-		if (!m_data.empty())
+		    "size: %d, cols: %d, rows: %d", m_data_vectors.size(),
+		    m_data_vectors.size() / m_row_count, m_row_count)
+		if (!m_data_vectors.empty())
 		{
-			auto tmp =
-			    SGMatrix<float64_t>(m_data.size() / m_row_count, m_row_count);
-			m_data_matrix =
-			    SGMatrix<float64_t>(m_row_count, m_data.size() / m_row_count);
-			memcpy(
-			    tmp.matrix, m_data.data(), m_data.size() * sizeof(float64_t));
-			typename SGMatrix<float64_t>::EigenMatrixXtMap tmp_eigen = tmp;
-			typename SGMatrix<float64_t>::EigenMatrixXtMap m_data_matrix_eigen =
-			    m_data_matrix;
-
-			m_data_matrix_eigen = tmp_eigen.transpose();
+			auto feature_count = m_data_vectors.size();
+			index_t row_count =
+			    shogun::visit(VectorSizeVisitor{}, m_data_vectors[0]);
+			for (int i = 1; i < feature_count; ++i)
+			{
+				REQUIRE(
+				    shogun::visit(VectorSizeVisitor{}, m_data_vectors[i]) ==
+				        row_count,
+				    "All columns must have the same number of features!\n")
+			}
 		}
 		else
 			return false;
 		return true;
 	};
 	process_chunk(read_data, check_data, true);
+}
+
+std::shared_ptr<CCombinedFeatures> ARFFDeserializer::get_features() const
+{
+	auto result = std::make_shared<CCombinedFeatures>();
+	index_t row_count = shogun::visit(VectorSizeVisitor{}, m_data_vectors[0]);
+	for (int i = 0; i < m_data_vectors.size(); ++i)
+	{
+		Attribute att = m_attributes[i];
+		auto vec = m_data_vectors[i];
+		switch (att)
+		{
+		case Attribute::Numeric:
+		case Attribute::Integer:
+		case Attribute::Real:
+		case Attribute::Date:
+		case Attribute::Nominal:
+		{
+			auto casted_vec = shogun::get<std::vector<float64_t>>(vec);
+			SGMatrix<float64_t> mat(1, row_count);
+			memcpy(
+			    mat.matrix, casted_vec.data(),
+			    casted_vec.size() * sizeof(float64_t));
+			auto* feat = new CDenseFeatures<float64_t>(mat);
+			result->append_feature_obj(feat);
+		}
+		break;
+		case Attribute::String:
+		{
+			auto casted_vec = shogun::get<std::vector<std::string>>(vec);
+			index_t max_string_length = 0;
+			for (const auto& el : casted_vec)
+			{
+				if (max_string_length < el.size())
+					max_string_length = el.size();
+			}
+			SGStringList<char> strings(row_count, max_string_length);
+			for (int j = 0; j < row_count; ++j)
+			{
+				SGString<char> current(max_string_length);
+				memcpy(
+				    current.string, casted_vec[j].data(),
+				    (casted_vec.size() + 1) * sizeof(char));
+				strings.strings[j] = current;
+			}
+			auto* feat = new CStringFeatures<char>(strings, EAlphabet::RAWBYTE);
+			result->append_feature_obj(feat);
+		}
+		}
+	}
+	return result;
 }
