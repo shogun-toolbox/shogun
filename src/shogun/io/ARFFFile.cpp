@@ -232,13 +232,6 @@ void ARFFDeserializer::read()
 				if (bool(ss))
 				{
 					auto value_timestamp = t.time_since_epoch().count();
-					// if (value_timestamp == -1)
-					// 	SG_SERROR(
-					// 	    "Error creating timestamp with \"%s\" with "
-					// 	    "date format \"%s\" on line %d.\n",
-					// 		elems[i].c_str(), (*date_pos).c_str(),
-					// 	    m_line_number)
-					// else
 					m_data.emplace_back(value_timestamp);
 				}
 				else

@@ -66,7 +66,7 @@ namespace shogun
 		 * @param delimiters a set of delimiter character
 		 * @param result dynamic container where tokens are stored
 		 */
-		void split(
+		SG_FORCED_INLINE void split(
 		    const std::string& s, const std::string& delimiters,
 		    std::back_insert_iterator<std::vector<std::string>> result,
 		    const std::string& quotes)
@@ -170,7 +170,7 @@ namespace shogun
 		 * @param java_token
 		 * @return
 		 */
-		const char* process_javatoken(const std::string& java_token)
+		SG_FORCED_INLINE const char* process_javatoken(const std::string& java_token)
 		{
 			if (java_token == "yy")
 				return "%y";
@@ -198,7 +198,7 @@ namespace shogun
 				return nullptr;
 			return nullptr;
 		}
-		const char* process_javatoken(char java_token)
+		SG_FORCED_INLINE const char* process_javatoken(char java_token)
 		{
 			if (java_token == ':')
 				return ":";
@@ -237,7 +237,7 @@ namespace shogun
 			return nullptr;
 		}
 
-		std::string javatime_to_cpptime(const std::string& java_time)
+		SG_FORCED_INLINE std::string javatime_to_cpptime(const std::string& java_time)
 		{
 			std::string cpp_time;
 			std::string token;
