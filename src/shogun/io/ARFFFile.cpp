@@ -7,7 +7,7 @@
 #include <shogun/io/ARFFFile.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
-#include <iomanip>
+#include <date/date.h>
 
 using namespace shogun;
 using namespace shogun::arff_detail;
@@ -16,7 +16,7 @@ const char* ARFFDeserializer::m_comment_string = "%";
 const char* ARFFDeserializer::m_relation_string = "@relation";
 const char* ARFFDeserializer::m_attribute_string = "@attribute";
 const char* ARFFDeserializer::m_data_string = "@data";
-const char* ARFFDeserializer::m_default_date_format = "%Y-%M-%D %Z %H:%M:%S";
+const char* ARFFDeserializer::m_default_date_format = "%Y-%M-%DT%H:%M:%S";
 
 void ARFFDeserializer::read()
 {
@@ -81,8 +81,8 @@ void ARFFDeserializer::read()
 				std::vector<std::string> attributes;
 				// split norminal values: "{A, B, C}" to vector{A, B, C}
 				split(
-				    type.substr(1, type.size() - 2), ", ", true,
-				    std::back_inserter(attributes));
+				    type.substr(1, type.size() - 2), ", ",
+				    std::back_inserter(attributes), "\'\"");
 				m_nominal_attributes.emplace_back(
 				    std::make_pair(name, attributes));
 				m_attributes.push_back(Attribute::Nominal);
@@ -94,7 +94,7 @@ void ARFFDeserializer::read()
 			{
 				std::vector<std::string> date_elements;
 				// split "date [[date-format]]" or "name date [[date-format]]"
-				split(type, " ", true, std::back_inserter(date_elements));
+				split(type, " ", std::back_inserter(date_elements), "\"");
 				if (date_elements[0] == "date" && date_elements.size() < 3)
 				{
 					// @attribute date [[date-format]]
@@ -177,7 +177,7 @@ void ARFFDeserializer::read()
 		}
 		// assumes that until EOF we should expect comma delimited values
 		std::vector<std::string> elems;
-		split(m_current_line, ",", true, std::back_inserter(elems));
+		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
 		auto nominal_pos = m_nominal_attributes.begin();
 		auto date_pos = m_date_formats.begin();
 		for (int i = 0; i < elems.size(); ++i)
@@ -222,24 +222,24 @@ void ARFFDeserializer::read()
 			break;
 			case (Attribute::Date):
 			{
-				tm t{};
+				date::sys_seconds t;
 				std::istringstream ss(elems[i]);
 				if (date_pos == m_date_formats.end())
 					SG_SERROR(
 					    "Unexpected date value \"%s\" on line %d.\n",
 						elems[i].c_str(), m_line_number);
-				ss >> std::get_time(&t, (*date_pos).c_str());
-				if (!ss.fail())
+				ss >> date::parse(*date_pos, t);
+				if (bool(ss))
 				{
-					auto value_timestamp = std::mktime(&t);
-					if (value_timestamp == -1)
-						SG_SERROR(
-						    "Error creating timestamp with \"%s\" with "
-						    "date format \"%s\" on line %d.\n",
-							elems[i].c_str(), (*date_pos).c_str(),
-						    m_line_number)
-					else
-						m_data.emplace_back(value_timestamp);
+					auto value_timestamp = t.time_since_epoch().count();
+					// if (value_timestamp == -1)
+					// 	SG_SERROR(
+					// 	    "Error creating timestamp with \"%s\" with "
+					// 	    "date format \"%s\" on line %d.\n",
+					// 		elems[i].c_str(), (*date_pos).c_str(),
+					// 	    m_line_number)
+					// else
+					m_data.emplace_back(value_timestamp);
 				}
 				else
 					SG_SERROR(

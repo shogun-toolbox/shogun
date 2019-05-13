@@ -34,12 +34,8 @@ namespace shogun
 
 		SG_FORCED_INLINE bool char_in_string(char lhs, const std::string& rhs)
 		{
-			auto result =
-			    std::find_if(std::begin(rhs), std::end(rhs), [&lhs](char val) {
-				    return lhs == val;
-			    });
-
-			return result != rhs.end();
+			auto result = rhs.find(lhs);
+			return result != std::string::npos;
 		}
 
 		SG_FORCED_INLINE void left_trim(std::string& s)
@@ -72,8 +68,8 @@ namespace shogun
 		 */
 		void split(
 		    const std::string& s, const std::string& delimiters,
-		    bool read_quotes,
-		    std::back_insert_iterator<std::vector<std::string>> result)
+		    std::back_insert_iterator<std::vector<std::string>> result,
+		    const std::string& quotes)
 		{
 			auto it = s.begin();
 			auto begin = s.begin();
@@ -87,11 +83,11 @@ namespace shogun
 				if (arff_detail::char_in_string(*it, delimiters))
 				{
 				}
-				else if (read_quotes && (*it == '\"' || *it == '\''))
+				else if (arff_detail::char_in_string(*it, quotes))
 				{
 					begin = std::next(it);
 					it = begin;
-					while ((*it != '\"' && *it != '\'') && it != s.end())
+					while (!arff_detail::char_in_string(*it, quotes))
 					{
 						it = std::next(it);
 					}
@@ -100,7 +96,6 @@ namespace shogun
 						    "Encountered unbalanced parenthesis in \"%s\"\n",
 						    std::string(std::prev(begin), it).c_str())
 					*(result++) = {begin, it};
-					begin = std::next(it);
 				}
 				else
 				{
@@ -113,10 +108,12 @@ namespace shogun
 					auto token = std::string(begin, it);
 					if (!arff_detail::string_is_blank(token))
 						*(result++) = token;
-					begin = std::next(it);
 				}
 				if (it != s.end())
+				{
+					begin = std::next(it);
 					it = std::next(it);
+				}
 			}
 		}
 
@@ -195,7 +192,7 @@ namespace shogun
 				return "%z";
 			if (java_token == "z")
 				return "%Z";
-			if (java_token == "")
+			if (java_token.empty())
 				return "";
 			if (java_token == "SSS")
 				return nullptr;
@@ -206,7 +203,7 @@ namespace shogun
 			if (java_token == ':')
 				return ":";
 			if (java_token == '\'')
-				return " ";
+				return "";
 			if (java_token == '-')
 				return "-";
 			if (java_token == ' ')
@@ -260,6 +257,7 @@ namespace shogun
 					token = {begin, it};
 					cpp_time.append(check_and_append_j2cpp(token));
 					cpp_time.append(check_and_append_j2cpp(*it));
+					begin = std::next(it);
 					begin = it;
 					it = std::next(it);
 					while (*it != '\'')
@@ -267,8 +265,7 @@ namespace shogun
 						it = std::next(it);
 					}
 					token = {std::next(begin), it};
-					cpp_time.append(check_and_append_j2cpp(token));
-					cpp_time.append(check_and_append_j2cpp(*it));
+					cpp_time.append(token);
 					begin = std::next(it);
 				}
 				else if (std::next(it) == java_time.end())
@@ -339,9 +336,9 @@ namespace shogun
 		 *
 		 * @param filename the input stream
 		 */
-		explicit ARFFDeserializer(std::istream stream)
+		explicit ARFFDeserializer(std::shared_ptr<std::istream>& stream)
 		{
-			m_stream = std::unique_ptr<std::istream>(&stream);
+			m_stream = stream;
 		}
 
 		/**
@@ -444,7 +441,7 @@ namespace shogun
 		/** the string after m_relation_string*/
 		std::string m_relation;
 		/** the input stream */
-		std::unique_ptr<std::istream> m_stream;
+		std::shared_ptr<std::istream> m_stream;
 		/** the string where comments are stored */
 		std::vector<std::string> m_comments;
 		/** the string representing the current line being parsed */
