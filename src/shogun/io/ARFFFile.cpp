@@ -24,24 +24,24 @@ void ARFFDeserializer::read()
 	m_row_count = 0;
 	m_file_done = false;
 	auto read_comment = [this]() {
-		if (string_to_lower(m_current_line.substr(0, 1)) == m_comment_string)
+		if (to_lower(m_current_line.substr(0, 1)) == m_comment_string)
 			m_comments.push_back(m_current_line.substr(1, std::string::npos));
 		else if (
-		    string_to_lower(m_current_line.substr(
-		        0, strlen(m_relation_string))) == m_relation_string)
+		    to_lower(m_current_line.substr(0, strlen(m_relation_string))) ==
+		    m_relation_string)
 			m_state = true;
 	};
 	auto check_comment = []() { return true; };
 	process_chunk(read_comment, check_comment, false);
 
 	auto read_relation = [this]() {
-		if (string_to_lower(m_current_line.substr(
-		        0, strlen(m_relation_string))) == m_relation_string)
+		if (to_lower(m_current_line.substr(0, strlen(m_relation_string))) ==
+		    m_relation_string)
 			m_relation = remove_whitespace(
 			    m_current_line.substr(strlen(m_relation_string)));
 		else if (
-		    string_to_lower(m_current_line.substr(
-		        0, strlen(m_attribute_string))) == m_attribute_string)
+		    to_lower(m_current_line.substr(0, strlen(m_attribute_string))) ==
+		    m_attribute_string)
 			m_state = true;
 	};
 	// a relation has to be defined
@@ -49,8 +49,8 @@ void ARFFDeserializer::read()
 	process_chunk(read_relation, check_relation, true);
 
 	auto read_attributes = [this]() {
-		if (string_to_lower(m_current_line.substr(
-		        0, strlen(m_attribute_string))) == m_attribute_string)
+		if (to_lower(m_current_line.substr(0, strlen(m_attribute_string))) ==
+		    m_attribute_string)
 		{
 			// store attribute name and type
 			std::string name;
@@ -128,7 +128,7 @@ void ARFFDeserializer::read()
 			}
 			else if (is_primitive_type(type))
 			{
-				type = string_to_lower(type);
+				type = to_lower(type);
 				// numeric attributes
 				if (type == "numeric")
 				{
@@ -168,7 +168,7 @@ void ARFFDeserializer::read()
 		{
 		}
 		else if (
-		    string_to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
+		    to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
 		    m_data_string)
 			m_state = true;
 	};
@@ -185,8 +185,8 @@ void ARFFDeserializer::read()
 			return;
 		// it's the data string (i.e. @data"), does not provide information
 		if (SG_UNLIKELY(
-		        string_to_lower(m_current_line.substr(
-		            0, strlen(m_data_string))) == m_data_string))
+		        to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
+		        m_data_string))
 		{
 			return;
 		}

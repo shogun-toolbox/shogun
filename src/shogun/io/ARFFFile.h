@@ -31,7 +31,7 @@ namespace shogun
 		 * @param line to check
 		 * @return bool whether line is empty
 		 */
-		SG_FORCED_INLINE bool string_is_blank(const std::string& line)
+		SG_FORCED_INLINE bool is_blank(const std::string& line)
 		{
 			return line.find_first_not_of(" \t\r\f\v") == std::string::npos;
 		}
@@ -42,7 +42,7 @@ namespace shogun
 		 * @param rhs a string with the characters to compare against the lhs
 		 * @return whether the character of the lhs is in the rhs
 		 */
-		SG_FORCED_INLINE bool char_in_string(char lhs, const std::string& rhs)
+		SG_FORCED_INLINE bool contains(char lhs, const std::string& rhs)
 		{
 			auto result = rhs.find(lhs);
 			return result != std::string::npos;
@@ -100,21 +100,21 @@ namespace shogun
 		{
 			auto it = s.begin();
 			auto begin = s.begin();
-			while (arff_detail::char_in_string(*it, delimiters))
+			while (arff_detail::contains(*it, delimiters))
 			{
 				it = std::next(it);
 				begin = it;
 			}
 			while (it != s.end())
 			{
-				if (arff_detail::char_in_string(*it, delimiters))
+				if (arff_detail::contains(*it, delimiters))
 				{
 				}
-				else if (arff_detail::char_in_string(*it, quotes))
+				else if (arff_detail::contains(*it, quotes))
 				{
 					begin = std::next(it);
 					it = begin;
-					while (!arff_detail::char_in_string(*it, quotes))
+					while (!arff_detail::contains(*it, quotes))
 					{
 						it = std::next(it);
 					}
@@ -127,13 +127,13 @@ namespace shogun
 				else
 				{
 					begin = it;
-					while (!arff_detail::char_in_string(*it, delimiters) &&
+					while (!arff_detail::contains(*it, delimiters) &&
 					       it != s.end())
 					{
 						it = std::next(it);
 					}
 					auto token = std::string(begin, it);
-					if (!arff_detail::string_is_blank(token))
+					if (!arff_detail::is_blank(token))
 						*(result++) = token;
 				}
 				if (it != s.end())
@@ -150,7 +150,7 @@ namespace shogun
 		 * @param line string to process
 		 * @return lowercase string
 		 */
-		SG_FORCED_INLINE std::string string_to_lower(const std::string& line)
+		SG_FORCED_INLINE std::string to_lower(const std::string& line)
 		{
 			std::string result;
 			std::transform(
@@ -187,6 +187,7 @@ namespace shogun
 			        [&character](auto const& val) { return val == character; }),
 			    line.end());
 		}
+
 		/**
 		 * Java to C++ time format token converter.
 		 *
@@ -464,7 +465,7 @@ namespace shogun
 			}
 			std::getline(*m_stream, m_current_line);
 			m_line_number++;
-			if (!arff_detail::string_is_blank(m_current_line))
+			if (!arff_detail::is_blank(m_current_line))
 				func();
 		}
 

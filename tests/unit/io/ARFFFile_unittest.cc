@@ -31,10 +31,8 @@ TEST(ARFFFileTest, Parse_numeric)
 	auto result = parser->get_features();
 	ASSERT_EQ(result->get_num_feature_obj(), 2);
 
-	auto col1 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
-	auto col2 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto col1 = result->get_feature_obj(0)->as<CDenseFeatures<float64_t>>();
+	auto col2 = result->get_feature_obj(1)->as<CDenseFeatures<float64_t>>();
 
 	ASSERT_EQ(col1->get_feature_matrix()[0], 50);
 	ASSERT_EQ(col1->get_feature_matrix()[1], 45);
@@ -74,11 +72,9 @@ TEST(ARFFFileTest, Parse_datetime)
 	auto result = parser->get_features();
 	ASSERT_EQ(result->get_num_feature_obj(), 2);
 
-	auto col1 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
+	auto col1 = result->get_feature_obj(0)->as<CDenseFeatures<float64_t>>();
 	auto mat1 = col1->get_feature_matrix();
-	auto col2 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto col2 = result->get_feature_obj(1)->as<CDenseFeatures<float64_t>>();
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(mat1.size(), 6);
 	for (int i = 0; i < 6; ++i)
@@ -92,12 +88,8 @@ TEST(ARFFFileTest, Parse_datetime)
 TEST(ARFFFileTest, Parse_string)
 {
 	std::string test = "@relation test_string \n"
-	                   "% \n"
-	                   "% \n"
 	                   "@attribute VAR1 string \n"
 	                   "@attribute VAR2 numeric \n"
-	                   "% \n"
-	                   "% \n"
 	                   "@data \n"
 	                   "\"test1\", 50 \n"
 	                   "\"test2\", 26 \n"
@@ -117,10 +109,8 @@ TEST(ARFFFileTest, Parse_string)
 	parser->read();
 	auto result = parser->get_features();
 	ASSERT_EQ(result->get_num_feature_obj(), 2);
-	auto col1 =
-	    dynamic_cast<CStringFeatures<char>*>(result->get_feature_obj(0));
-	auto col2 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto col1 = result->get_feature_obj(0)->as<CStringFeatures<char>>();
+	auto col2 = result->get_feature_obj(1)->as<CDenseFeatures<float64_t>>();
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(col1->get_num_vectors(), 6);
 	for (int i = 0; i < col1->get_num_vectors(); ++i)
@@ -135,20 +125,22 @@ TEST(ARFFFileTest, Parse_string)
 
 TEST(ARFFFileTest, Parse_nominal)
 {
-	std::string test = "@relation test_nominal \n"
-	                   "% \n"
-	                   "% \n"
-	                   "@attribute VAR1 {\"a\", b, \"c 1\", \'¯\\_(ツ)_/¯\'} \n"
-	                   "@attribute VAR2 numeric \n"
-	                   "% \n"
-	                   "% \n"
-	                   "@data \n"
-	                   "	\'a\', 50 \n"
-	                   "b, 26 \n"
-	                   "\"b\"	, 34 \n"
-	                   "	\'c 1\'  , 41 \n"
-	                   "\"¯\\_(ツ)_/¯\", 44 \n"
-	                   "a, 45 ";
+	std::string test =
+	    "@relation test_nominal \n"
+	    "% \n"
+	    "% \n"
+	    "@attribute VAR1 {\"a\", b, \"c 1\", \'¯\\_(ツ)_/¯\'} \n"
+	    "@attribute VAR2 numeric \n"
+	    "% \n"
+	    "% \n"
+	    "@data \n"
+	    "	\'a\', 50 \n"
+	    "b, 26 \n"
+	    "\"b\"	, 34 \n"
+	    "	\'c 1\'  , 41 \n"
+	    "% the row below can be replaced if it causes issues...\n"
+	    "\"¯\\_(ツ)_/¯\", 44 \n"
+	    "a, 45 ";
 
 	auto ss = std::make_shared<std::istringstream>(test);
 	auto s = std::shared_ptr<std::istream>(ss);
@@ -161,11 +153,9 @@ TEST(ARFFFileTest, Parse_nominal)
 	auto result = parser->get_features();
 	ASSERT_EQ(result->get_num_feature_obj(), 2);
 
-	auto col1 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
+	auto col1 = result->get_feature_obj(0)->as<CDenseFeatures<float64_t>>();
 	auto mat1 = col1->get_feature_matrix();
-	auto col2 =
-	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	auto col2 = result->get_feature_obj(1)->as<CDenseFeatures<float64_t>>();
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(mat1.size(), 6);
 	for (int i = 0; i < 6; ++i)
