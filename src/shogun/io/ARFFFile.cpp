@@ -88,6 +88,7 @@ void ARFFDeserializer::read()
 				    std::make_pair(name, attributes));
 				m_attributes.push_back(Attribute::Nominal);
 				m_data_vectors.emplace_back(std::vector<float64_t>{});
+				m_attribute_names.emplace_back(name);
 				return;
 			}
 
@@ -105,6 +106,7 @@ void ARFFDeserializer::read()
 					else
 						m_date_formats.push_back(
 						    javatime_to_cpptime(date_elements[1]));
+					name = "";
 				}
 				else if (date_elements[1] == "date" && date_elements.size() < 4)
 				{
@@ -159,6 +161,7 @@ void ARFFDeserializer::read()
 				SG_SERROR(
 				    "Unexpected format in @ATTRIBUTE on line %d: %s\n",
 				    m_line_number, m_current_line.c_str());
+			m_attribute_names.emplace_back(name);
 		}
 		// comments in this section are ignored
 		else if (m_current_line.substr(0, 1) == m_comment_string)
@@ -181,8 +184,9 @@ void ARFFDeserializer::read()
 		if (SG_UNLIKELY(m_current_line.substr(0, 1) == m_comment_string))
 			return;
 		// it's the data string (i.e. @data"), does not provide information
-		if (SG_UNLIKELY(string_to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
-		    m_data_string))
+		if (SG_UNLIKELY(
+		        string_to_lower(m_current_line.substr(
+		            0, strlen(m_data_string))) == m_data_string))
 		{
 			return;
 		}
@@ -224,13 +228,14 @@ void ARFFDeserializer::read()
 						    "Unexpected nominal value \"%s\" on line %d\n",
 						    elems[i].c_str(), m_line_number);
 					auto encoding = (*nominal_pos).second;
-					remove_char_inplace(elems[i], '\'');
+					auto trimmed_el = trim(elems[i]);
+					remove_char_inplace(trimmed_el, '\'');
 					auto pos =
-					    std::find(encoding.begin(), encoding.end(), elems[i]);
+					    std::find(encoding.begin(), encoding.end(), trimmed_el);
 					if (pos == encoding.end())
 						SG_SERROR(
 						    "Unexpected value \"%s\" on line %d\n",
-						    elems[i].c_str(), m_line_number);
+						    trimmed_el.c_str(), m_line_number);
 					float64_t idx = std::distance(encoding.begin(), pos);
 					shogun::get<std::vector<float64_t>>(m_data_vectors[i])
 					    .push_back(idx);

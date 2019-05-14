@@ -398,6 +398,16 @@ namespace shogun
 		}
 
 		/**
+		 * Returns the name of the features parsed in @attribute
+		 * @return the relation string
+		 */
+		SG_FORCED_INLINE std::vector<std::string> get_feature_names() const
+		    noexcept
+		{
+			return m_attribute_names;
+		}
+
+		/**
 		 * Get combined features from parsed data
 		 * @return
 		 */
@@ -496,6 +506,8 @@ namespace shogun
 		static const char* m_data_string;
 		/** the default C++ date format specified by the ARFF standard */
 		static const char* m_default_date_format;
+		/** the name of the attributes */
+		std::vector<std::string> m_attribute_names;
 
 		/** internal line number counter for exceptions */
 		size_t m_line_number;

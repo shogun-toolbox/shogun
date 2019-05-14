@@ -143,10 +143,10 @@ TEST(ARFFFileTest, Parse_nominal)
 	                   "% \n"
 	                   "% \n"
 	                   "@data \n"
-	                   "\"a\", 50 \n"
+	                   "	\'a\', 50 \n"
 	                   "b, 26 \n"
-	                   "\"b\", 34 \n"
-	                   "\'c 1\', 41 \n"
+	                   "\"b\"	, 34 \n"
+	                   "	\'c 1\'  , 41 \n"
 	                   "\"¯\\_(ツ)_/¯\", 44 \n"
 	                   "a, 45 ";
 
@@ -174,4 +174,7 @@ TEST(ARFFFileTest, Parse_nominal)
 		ASSERT_EQ(mat2[i], solution2[i]);
 	}
 	ASSERT_EQ(parser->get_relation(), "test_nominal");
+	ASSERT_EQ(parser->get_feature_names().size(), 2);
+	ASSERT_EQ(parser->get_feature_names()[0], "VAR1");
+	ASSERT_EQ(parser->get_feature_names()[1], "VAR2");
 }
