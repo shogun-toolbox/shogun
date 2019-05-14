@@ -9,12 +9,8 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_CURL
-
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
-
-#include <curl/curl.h>
 
 #include <memory>
 #include <numeric>
@@ -32,7 +28,9 @@ namespace shogun
 	{
 
 	public:
-		explicit OpenMLReader(const std::string& api_key);
+		explicit OpenMLReader(const std::string& api_key) : m_api_key(api_key)
+		{
+		}
 
 		/**
 		 * Returns a string returned by the server given a request.
@@ -50,7 +48,9 @@ namespace shogun
 		std::string
 		get(const std::string& request, const std::string& format, Args... args)
 		{
+#ifdef HAVE_CURL
 			std::string request_path;
+			// clear the buffer before request
 			m_curl_response_buffer.clear();
 			auto find_format = m_format_options.find(format);
 			if (find_format == m_format_options.end())
@@ -63,8 +63,8 @@ namespace shogun
 			if (format == "split")
 			{
 				REQUIRE(
-						request == "get_split",
-						"Split server can only handle \"get_split\" request.\n")
+				    request == "get_split",
+				    "Split server can only handle \"get_split\" request.\n")
 				request_path = get_split;
 			}
 			else
@@ -73,8 +73,8 @@ namespace shogun
 				if (find_request == m_request_options.end())
 				{
 					SG_SERROR(
-							"Could not find a way to solve the request \"%s\"\n",
-							request.c_str())
+					    "Could not find a way to solve the request \"%s\"\n",
+					    request.c_str())
 				}
 				request_path = find_request->second;
 			}
@@ -110,6 +110,9 @@ namespace shogun
 			openml_curl_request_helper(url);
 
 			return m_curl_response_buffer;
+#else
+			SG_SERROR("This function is only available witht the CURL library!\n")
+#endif // HAVE_CURL
 		}
 
 	private:
@@ -123,14 +126,6 @@ namespace shogun
 		 * @param url the url to query
 		 */
 		void openml_curl_request_helper(const std::string& url);
-
-		/**
-		 * Handles all possible codes
-		 *
-		 * @param curl_handle curl handle used in the request
-		 * @param code the code returned by the query
-		 */
-		void openml_curl_error_helper(CURL* curl_handle, CURLcode code);
 
 		/** the user API key, not required for all requests */
 		std::string m_api_key;
@@ -214,7 +209,8 @@ namespace shogun
 		    const std::string& model, components_type components,
 		    parameters_type parameters)
 		    : m_name(name), m_description(description), m_class_name(model),
-		      m_parameters(parameters), m_components(components)
+		      m_parameters(std::move(parameters)),
+		      m_components(std::move(components))
 		{
 		}
 
@@ -247,7 +243,7 @@ namespace shogun
 		/**
 		 * Dumps the OpenMLFlow to disk.
 		 */
-		void dump();
+		void dump() const;
 
 		/**
 		 * Gets a subflow, i.e. a kernel in a machine
@@ -266,17 +262,17 @@ namespace shogun
 		}
 
 #ifndef SWIG
-		SG_FORCED_INLINE parameters_type get_parameters()
+		SG_FORCED_INLINE parameters_type get_parameters() const noexcept
 		{
 			return m_parameters;
 		}
 
-		SG_FORCED_INLINE components_type get_components()
+		SG_FORCED_INLINE components_type get_components() const noexcept
 		{
 			return m_components;
 		}
 
-		SG_FORCED_INLINE std::string get_class_name()
+		SG_FORCED_INLINE std::string get_class_name() const noexcept
 		{
 			return m_class_name;
 		}
@@ -320,7 +316,6 @@ namespace shogun
 		        param_descriptors,
 		    std::vector<std::unordered_map<std::string, std::string>>
 		        param_qualities)
-
 		    : m_name(name), m_description(description),
 		      m_data_format(data_format), m_dataset_id(dataset_id),
 		      m_version(version), m_creator(creator),
@@ -441,8 +436,8 @@ namespace shogun
 		    std::shared_ptr<OpenMLData> data)
 		    : m_task_id(task_id), m_task_name(task_name),
 		      m_task_type(task_type), m_task_type_id(task_type_id),
-		      m_evaluation_measures(evaluation_measures), m_split(split),
-		      m_data(data)
+		      m_evaluation_measures(std::move(evaluation_measures)),
+		      m_split(std::move(split)), m_data(std::move(data))
 		{
 		}
 
@@ -459,9 +454,9 @@ namespace shogun
 			return m_split;
 		}
 
-		SGMatrix<int32_t> get_train_indices();
+		SGMatrix<int32_t> get_train_indices() const;
 
-		SGMatrix<int32_t> get_test_indices();
+		SGMatrix<int32_t> get_test_indices() const;
 
 #ifndef SWIG
 		SG_FORCED_INLINE TaskType get_task_type() const noexcept
@@ -553,9 +548,10 @@ namespace shogun
 		      m_fold_evaluations(std::move(fold_evaluations)),
 		      m_sample_evaluations(std::move(sample_evaluations)),
 		      m_data_content(data_content),
-		      m_output_files(std::move(output_files)), m_task(task),
-		      m_flow(flow), m_run_id(run_id), m_model(model), m_tags(tags),
-		      m_predictions_url(predictions_url)
+		      m_output_files(std::move(output_files)), m_task(std::move(task)),
+		      m_flow(std::move(flow)), m_run_id(run_id),
+		      m_model(std::move(model)), m_tags(std::move(tags)),
+		      m_predictions_url(std::move(predictions_url))
 		{
 		}
 
@@ -591,6 +587,5 @@ namespace shogun
 		std::string m_predictions_url;
 	};
 } // namespace shogun
-#endif // HAVE_CURL
 
 #endif // SHOGUN_OPENMLFLOW_H
