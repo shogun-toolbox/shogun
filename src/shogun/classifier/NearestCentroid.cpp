@@ -8,6 +8,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/FeatureTypes.h>
+#include <shogun/features/iterators/DotIterator.h>
 
 
 
@@ -41,9 +42,7 @@ namespace shogun{
 	bool CNearestCentroid::train_machine(CFeatures* data)
 	{
 		ASSERT(m_labels)
-		ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 		ASSERT(distance)
-		ASSERT( data->get_feature_class() == C_DENSE)
 		if (data)
 		{
 			if (m_labels->get_num_labels() != data->get_num_vectors())
@@ -54,34 +53,28 @@ namespace shogun{
 		{
 			data = distance->get_lhs();
 		}
-		int32_t num_vectors = data->get_num_vectors();
-		int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
-		int32_t num_feats = ((CDenseFeatures<float64_t>*) data)->get_num_features();
-		SGMatrix<float64_t> centroids(num_feats,num_classes);
-		centroids.zero();
 
-		int64_t* num_per_class = new int64_t[num_classes];
-		for (int32_t i=0 ; i<num_classes ; i++)
-		{
-			num_per_class[i]=0;
-		}
+		auto* multiclass_labels = m_labels->as<CMulticlassLabels>();
+		auto* dense_data = data->as<CDenseFeatures<float64_t>>();
 
-		for (int32_t idx=0 ; idx<num_vectors ; idx++)
+		int32_t num_classes = multiclass_labels->get_num_classes();
+		int32_t num_feats = dense_data->get_num_features();
+
+		SGMatrix<float64_t> centroids(num_feats, num_classes);
+		SGVector<int64_t> num_per_class(num_classes);
+
+		auto iter_labels = multiclass_labels->get_int_labels().begin();
+		for(const auto& current : DotIterator(dense_data))
 		{
-			int32_t current_len;
-			bool current_free;
-			int32_t current_class = ((CMulticlassLabels*) m_labels)->get_label(idx);
-			float64_t* target = centroids.matrix + num_feats*current_class;
-			float64_t* current = ((CDenseFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
-			SGVector<float64_t>::add(target,1.0,target,1.0,current,current_len);
+			const auto current_class = *(iter_labels++);
+			auto target = centroids.get_column(current_class);
+			current.add(1, target);
 			num_per_class[current_class]++;
-			((CDenseFeatures<float64_t>*)data)->free_feature_vector(current, current_len, current_free);
 		}
-
 
 		for (int32_t i=0 ; i<num_classes ; i++)
 		{
-			float64_t* target = centroids.matrix + num_feats*i;
+			auto target = centroids.get_column(i);
 			int32_t total = num_per_class[i];
 			float64_t scale = 0;
 			if(total>1)
@@ -89,15 +82,13 @@ namespace shogun{
 			else
 				scale = 1.0/(float64_t)total;
 
-			SGVector<float64_t>::scale_vector(scale,target,num_feats);
+			target.scale(scale);
 		}
 
 		auto centroids_feats = some<CDenseFeatures<float64_t>>(centroids);
 
 		m_is_trained=true;
 		distance->init(centroids_feats, distance->get_rhs());
-
-		SG_FREE(num_per_class);
 
 		return true;
 	}
