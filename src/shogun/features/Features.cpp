@@ -293,7 +293,7 @@ CSubsetStack* CFeatures::get_subset_stack()
 	return m_subset_stack;
 }
 
-CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
+CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
 {
 	SG_ERROR("%s::copy_subset(): copy_subset and therefore model storage of "
 			"CMachine (required for cross-validation and model-selection is "

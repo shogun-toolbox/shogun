@@ -1598,7 +1598,7 @@ CStringFeatures<SSKFeature>* obtain_sssk_double_from_char(int **S, int *len, int
 */
 
 template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(
-		SGVector<index_t> indices)
+		SGVector<index_t> indices) const
 {
 	/* string list to create new CStringFeatures from */
 	SGStringList<ST> list_copy(indices.vlen, max_string_length);

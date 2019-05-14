@@ -522,7 +522,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_iterator(void* iterator
 	SG_FREE(it);
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> indices)
+template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
 {
 	SGMatrix<ST> feature_matrix_copy(num_features, indices.vlen);
 

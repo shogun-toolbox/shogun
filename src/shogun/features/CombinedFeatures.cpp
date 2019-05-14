@@ -296,7 +296,7 @@ void CCombinedFeatures::remove_all_subsets()
 	SG_DEBUG("leaving %s::remove_all_subsets()\n", get_name())
 }
 
-CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)
+CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices) const
 {
 	/* this is returned with the results of copy_subset of sub-features */
 	CCombinedFeatures* result=new CCombinedFeatures();
