@@ -453,7 +453,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SparseFeatures"; }
