@@ -5,15 +5,15 @@
  */
 
 #include <shogun/io/OpenMLFlow.h>
-#include <shogun/lib/type_case.h>
 #include <shogun/util/factory.h>
 
 #include <rapidjson/document.h>
+#ifdef HAVE_CURL
+#include <curl/curl.h>
+#endif // HAVE_CURL
 
 using namespace shogun;
 using namespace rapidjson;
-
-#ifdef HAVE_CURL
 
 /**
  * The writer callback function used to write the packets to a C++ string.
@@ -25,16 +25,14 @@ using namespace rapidjson;
  */
 size_t writer(char* data, size_t size, size_t nmemb, std::string* buffer_in)
 {
-	// adapted from https://stackoverflow.com/a/5780603
-	// Is there anything in the buffer?
-	if (buffer_in->empty())
+	// check that the buffer string points to something
+	if (buffer_in != nullptr)
 	{
 		// Append the data to the buffer
 		buffer_in->append(data, size * nmemb);
 
 		return size * nmemb;
 	}
-
 	return 0;
 }
 
@@ -55,7 +53,7 @@ const char* OpenMLReader::flow_file = "/flow/{}";
 /* TASK API */
 const char* OpenMLReader::task_file = "/task/{}";
 /* SPLIT API */
-const char* OpenMLReader::get_split = "/split/{}";
+const char* OpenMLReader::get_split = "/get/{}";
 
 const std::unordered_map<std::string, std::string>
     OpenMLReader::m_format_options = {{"xml", xml_server},
@@ -72,12 +70,9 @@ const std::unordered_map<std::string, std::string>
         {"flow_file", flow_file},
         {"task_file", task_file}};
 
-OpenMLReader::OpenMLReader(const std::string& api_key) : m_api_key(api_key)
-{
-}
-
 void OpenMLReader::openml_curl_request_helper(const std::string& url)
 {
+#ifdef HAVE_CURL
 	CURL* curl_handle = nullptr;
 
 	curl_handle = curl_easy_init();
@@ -95,18 +90,11 @@ void OpenMLReader::openml_curl_request_helper(const std::string& url)
 
 	CURLcode res = curl_easy_perform(curl_handle);
 
-	openml_curl_error_helper(curl_handle, res);
+	if (res != CURLE_OK)
+		SG_SERROR("Connection error: %s.\n", curl_easy_strerror(res))
 
 	curl_easy_cleanup(curl_handle);
-}
-
-void OpenMLReader::openml_curl_error_helper(CURL* curl_handle, CURLcode code)
-{
-	if (code != CURLE_OK)
-	{
-		// TODO: call curl_easy_cleanup(curl_handle) ?
-		SG_SERROR("Connection error: %s.\n", curl_easy_strerror(code))
-	}
+#endif // HAVE_CURL
 }
 
 /**
@@ -298,7 +286,7 @@ void OpenMLFlow::upload_flow(const std::shared_ptr<OpenMLFlow>& flow)
 	SG_SNOTIMPLEMENTED;
 }
 
-void OpenMLFlow::dump()
+void OpenMLFlow::dump() const
 {
 	SG_SNOTIMPLEMENTED;
 }
@@ -543,13 +531,13 @@ OpenMLTask::get_task_from_string(const std::string& task_type)
 	SG_SERROR("OpenMLTask does not support \"%s\"", task_type.c_str())
 }
 
-SGMatrix<int32_t> OpenMLTask::get_train_indices()
+SGMatrix<int32_t> OpenMLTask::get_train_indices() const
 {
 	SG_SNOTIMPLEMENTED
 	return SGMatrix<int32_t>();
 }
 
-SGMatrix<int32_t> OpenMLTask::get_test_indices()
+SGMatrix<int32_t> OpenMLTask::get_test_indices() const
 {
 	SG_SNOTIMPLEMENTED
 	return SGMatrix<int32_t>();
@@ -685,18 +673,18 @@ public:
 	 * In OpenML "null" is an empty parameter value field.
 	 * @return whether the field is "null"
 	 */
-	SG_FORCED_INLINE bool is_null()
+	SG_FORCED_INLINE bool is_null() const noexcept
 	{
 		bool result = strcmp(m_string_val.c_str(), "null") == 0;
 		return result;
 	}
 
-	SG_FORCED_INLINE void set_parameter_name(const std::string& name)
+	SG_FORCED_INLINE void set_parameter_name(const std::string& name) noexcept
 	{
 		m_parameter = name;
 	}
 
-	SG_FORCED_INLINE void set_string_value(const std::string& value)
+	SG_FORCED_INLINE void set_string_value(const std::string& value) noexcept
 	{
 		m_string_val = value;
 	}
@@ -774,7 +762,7 @@ std::shared_ptr<CSGObject> ShogunOpenML::flow_to_model(
 	auto obj = instantiate_model_from_factory(module_name, algo_name);
 	auto obj_param = obj->get_params();
 
-	std::unique_ptr<StringToShogun> visitor(new StringToShogun(obj));
+	auto visitor = std::make_unique<StringToShogun>(obj);
 
 	if (initialize_with_defaults)
 	{
@@ -859,7 +847,7 @@ CLabels* ShogunOpenML::run_model_on_fold(
 			return machine->apply(X_test);
 		}
 		else
-			SG_SERROR("The provided model is not trainable!\n")
+			SG_SERROR("The provided model is not a trainable machine!\n")
 	}
 	break;
 	case OpenMLTask::TaskType::LEARNING_CURVE:
@@ -909,5 +897,3 @@ void OpenMLRun::publish() const
 {
 	SG_SNOTIMPLEMENTED
 }
-
-#endif // HAVE_CURL
