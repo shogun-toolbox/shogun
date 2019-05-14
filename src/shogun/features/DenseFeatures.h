@@ -452,7 +452,7 @@ public:
 	 * @param dims indices of feature dimensions to copy
 	 * @return new CFeatures instance with copies of specified features
 	 */
-	virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims);
+	virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims) const;
 
 	/** checks if the contents of this CDenseFeatures object are the same to
 	 * the contents of rhs

@@ -301,7 +301,7 @@ CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
 	return NULL;
 }
 
-CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims)
+CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims) const
 {
 	SG_WARNING("%s::copy_dimension_subset():: Is not yet implemented!\n",
 			get_name());

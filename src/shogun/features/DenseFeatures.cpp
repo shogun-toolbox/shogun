@@ -540,7 +540,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 }
 
 template<class ST>
-CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
+CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
 {
 	SG_DEBUG("Entering!\n");
 

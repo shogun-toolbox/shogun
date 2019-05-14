@@ -148,7 +148,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	pb.complete();
 }
 
-SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
+SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix() const
 {
 
 	int64_t offs=0;
@@ -169,7 +169,7 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 	return m;
 }
 
-SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
+SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num) const
 {
 
 	int32_t dim=get_dim_feature_space();
@@ -265,7 +265,7 @@ CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	return mean;
 }
 
-SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed)
+SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed) const
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
