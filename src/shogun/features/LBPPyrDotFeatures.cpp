@@ -56,7 +56,7 @@ int32_t CLBPPyrDotFeatures::get_dim_feature_space() const
 	return vec_nDim;
 }
 
-int32_t CLBPPyrDotFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CLBPPyrDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return vec_nDim;
 }

@@ -168,7 +168,7 @@ void CExplicitSpecFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-int32_t CExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	SG_NOTIMPLEMENTED
 	return 0;

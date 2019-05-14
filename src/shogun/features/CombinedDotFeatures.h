@@ -131,7 +131,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param num which vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num);
+		virtual int32_t get_nnz_features_for_vector(int32_t num) const;
 
 		/** get feature type
 		 *

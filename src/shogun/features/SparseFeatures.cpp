@@ -100,7 +100,7 @@ template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int
 	return dense;
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
+template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
 {
 	SGSparseVector<ST> sv = get_sparse_feature_vector(num);
 	int32_t len=sv.num_feat_entries;

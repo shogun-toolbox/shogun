@@ -295,7 +295,7 @@ int32_t CCombinedDotFeatures::get_num_feature_obj() const
 	return feature_array->get_num_elements();
 }
 
-int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t result=0;
 

@@ -205,7 +205,7 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
+int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
 {
 	return dim;
 }
