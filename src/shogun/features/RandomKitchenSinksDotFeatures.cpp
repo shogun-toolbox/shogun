@@ -138,7 +138,7 @@ void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
 	SG_DEBUG("Leaving add_to_dense()\n");
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return num_samples;
 }

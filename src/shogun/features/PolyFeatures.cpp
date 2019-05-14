@@ -57,7 +57,7 @@ int32_t CPolyFeatures::get_dim_feature_space() const
 	return m_output_dimensions;
 }
 
-int32_t CPolyFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CPolyFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return m_output_dimensions;
 }

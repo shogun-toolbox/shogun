@@ -264,7 +264,7 @@ void CHashedDocDotFeatures::set_doc_collection(CStringFeatures<char>* docs)
 	doc_collection = docs;
 }
 
-int32_t CHashedDocDotFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CHashedDocDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	SGVector<char> sv = doc_collection->get_feature_vector(num);
 	int32_t num_nnz_features = sv.size();

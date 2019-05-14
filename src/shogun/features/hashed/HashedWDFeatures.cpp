@@ -276,7 +276,7 @@ CFeatures* CHashedWDFeatures::duplicate() const
 }
 
 
-int32_t CHashedWDFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CHashedWDFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen=-1;
 	bool free_vec;
