@@ -178,96 +178,102 @@ void ARFFDeserializer::read()
 
 	auto read_data = [this]() {
 		// it's a comment and can be skipped
-		if (m_current_line.substr(0, 1) == m_comment_string)
+		if (SG_UNLIKELY(m_current_line.substr(0, 1) == m_comment_string))
 			return;
 		// it's the data string (i.e. @data"), does not provide information
-		if (string_to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
-		    m_data_string)
+		if (SG_UNLIKELY(string_to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
+		    m_data_string))
 		{
 			return;
 		}
 		// assumes that until EOF we should expect comma delimited values
 		std::vector<std::string> elems;
 		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
-		auto nominal_pos = m_nominal_attributes.begin();
-		auto date_pos = m_date_formats.begin();
-		int i = 0;
-		for (; i < elems.size(); ++i)
+		// only parse rows that do not contain missing values
+		if (std::find(elems.begin(), elems.end(), "?") == elems.end())
 		{
-			Attribute type = m_attributes[i];
-			switch (type)
+			auto nominal_pos = m_nominal_attributes.begin();
+			auto date_pos = m_date_formats.begin();
+			int i = 0;
+			for (; i < elems.size(); ++i)
 			{
-			case (Attribute::Numeric):
-			case (Attribute::Integer):
-			case (Attribute::Real):
-			{
-				try
+				Attribute type = m_attributes[i];
+				switch (type)
 				{
+				case (Attribute::Numeric):
+				case (Attribute::Integer):
+				case (Attribute::Real):
+				{
+					try
+					{
+						shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+						    .push_back(std::stod(elems[i]));
+					}
+					catch (const std::invalid_argument&)
+					{
+						SG_SERROR(
+						    "Failed to covert \"%s\" to numeric on line %d.\n",
+						    elems[i].c_str(), m_line_number)
+					}
+				}
+				break;
+				case (Attribute::Nominal):
+				{
+					if (nominal_pos == m_nominal_attributes.end())
+						SG_SERROR(
+						    "Unexpected nominal value \"%s\" on line %d\n",
+						    elems[i].c_str(), m_line_number);
+					auto encoding = (*nominal_pos).second;
+					remove_char_inplace(elems[i], '\'');
+					auto pos =
+					    std::find(encoding.begin(), encoding.end(), elems[i]);
+					if (pos == encoding.end())
+						SG_SERROR(
+						    "Unexpected value \"%s\" on line %d\n",
+						    elems[i].c_str(), m_line_number);
+					float64_t idx = std::distance(encoding.begin(), pos);
 					shogun::get<std::vector<float64_t>>(m_data_vectors[i])
-					    .push_back(std::stod(elems[i]));
+					    .push_back(idx);
+					nominal_pos = std::next(nominal_pos);
 				}
-				catch (const std::invalid_argument&)
+				break;
+				case (Attribute::Date):
 				{
-					SG_SERROR(
-					    "Failed to covert \"%s\" to numeric.\n",
-					    elems[i].c_str())
+					date::sys_seconds t;
+					std::istringstream ss(elems[i]);
+					if (date_pos == m_date_formats.end())
+						SG_SERROR(
+						    "Unexpected date value \"%s\" on line %d.\n",
+						    elems[i].c_str(), m_line_number);
+					ss >> date::parse(*date_pos, t);
+					if (bool(ss))
+					{
+						auto value_timestamp = t.time_since_epoch().count();
+						shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+						    .push_back(value_timestamp);
+					}
+					else
+						SG_SERROR(
+						    "Error parsing date \"%s\" with date format \"%s\" "
+						    "on line %d.\n",
+						    elems[i].c_str(), (*date_pos).c_str(),
+						    m_line_number)
+					++date_pos;
+				}
+				break;
+				case (Attribute::String):
+					shogun::get<std::vector<std::string>>(m_data_vectors[i])
+					    .emplace_back(elems[i]);
 				}
 			}
-			break;
-			case (Attribute::Nominal):
-			{
-				if (nominal_pos == m_nominal_attributes.end())
-					SG_SERROR(
-					    "Unexpected nominal value \"%s\" on line %d\n",
-					    elems[i].c_str(), m_line_number);
-				auto encoding = (*nominal_pos).second;
-				remove_char_inplace(elems[i], '\'');
-				auto pos =
-				    std::find(encoding.begin(), encoding.end(), elems[i]);
-				if (pos == encoding.end())
-					SG_SERROR(
-					    "Unexpected value \"%s\" on line %d\n",
-					    elems[i].c_str(), m_line_number);
-				float64_t idx = std::distance(encoding.begin(), pos);
-				shogun::get<std::vector<float64_t>>(m_data_vectors[i])
-				    .push_back(idx);
-				nominal_pos = std::next(nominal_pos);
-			}
-			break;
-			case (Attribute::Date):
-			{
-				date::sys_seconds t;
-				std::istringstream ss(elems[i]);
-				if (date_pos == m_date_formats.end())
-					SG_SERROR(
-					    "Unexpected date value \"%s\" on line %d.\n",
-					    elems[i].c_str(), m_line_number);
-				ss >> date::parse(*date_pos, t);
-				if (bool(ss))
-				{
-					auto value_timestamp = t.time_since_epoch().count();
-					shogun::get<std::vector<float64_t>>(m_data_vectors[i])
-					    .push_back(value_timestamp);
-				}
-				else
-					SG_SERROR(
-					    "Error parsing date \"%s\" with date format \"%s\" "
-					    "on line %d.\n",
-					    elems[i].c_str(), (*date_pos).c_str(), m_line_number)
-				++date_pos;
-			}
-			break;
-			case (Attribute::String):
-				shogun::get<std::vector<std::string>>(m_data_vectors[i])
-				    .emplace_back(elems[i]);
-			}
+			if (i != m_attributes.size())
+				SG_SERROR(
+				    "Unexpected number of values on line %d, expected %d "
+				    "values, "
+				    "but found %d.\n",
+				    m_line_number, m_attributes.size(), i)
+			++m_row_count;
 		}
-		if (i != m_attributes.size())
-			SG_SERROR(
-			    "Unexpected number of values on line %d, expected %d values, "
-			    "but found %d.\n",
-			    m_line_number, m_attributes.size(), i)
-		++m_row_count;
 	};
 	auto check_data = [this]() {
 		// check X values
