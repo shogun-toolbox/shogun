@@ -16,7 +16,6 @@
 
 #include <curl/curl.h>
 
-#include <iostream>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -51,6 +50,7 @@ namespace shogun
 		std::string
 		get(const std::string& request, const std::string& format, Args... args)
 		{
+			std::string request_path;
 			m_curl_response_buffer.clear();
 			auto find_format = m_format_options.find(format);
 			if (find_format == m_format_options.end())
@@ -59,15 +59,27 @@ namespace shogun
 				    "The provided format \"%s\" is not available\n",
 				    format.c_str())
 			}
-			auto find_request = m_request_options.find(request);
-			if (find_request == m_request_options.end())
+
+			if (format == "split")
 			{
-				SG_SERROR(
-				    "Could not find a way to solve the request \"%s\"\n",
-				    request.c_str())
+				REQUIRE(
+						request == "get_split",
+						"Split server can only handle \"get_split\" request.\n")
+				request_path = get_split;
 			}
+			else
+			{
+				auto find_request = m_request_options.find(request);
+				if (find_request == m_request_options.end())
+				{
+					SG_SERROR(
+							"Could not find a way to solve the request \"%s\"\n",
+							request.c_str())
+				}
+				request_path = find_request->second;
+			}
+
 			std::string request_format = find_format->second;
-			std::string request_path = find_request->second;
 
 			// get additional args and concatenate them with "/"
 			if (sizeof...(Args) > 0)
@@ -127,6 +139,8 @@ namespace shogun
 		static const char* xml_server;
 		/** the server path to get a response in JSON format*/
 		static const char* json_server;
+		/** the server path to get a split in ARFF format */
+		static const char* splits_server;
 
 		/** the server response format options: XML or JSON */
 		static const std::unordered_map<std::string, std::string>
@@ -148,6 +162,9 @@ namespace shogun
 
 		/* TASK API */
 		static const char* task_file;
+
+		/* SPLIT API */
+		static const char* get_split;
 	};
 
 	/**
@@ -298,7 +315,8 @@ namespace shogun
 		    std::vector<std::string> tag, const std::string& visibility,
 		    const std::string& original_data_url, const std::string& paper_url,
 		    const std::string& update_comment, const std::string& md5_checksum,
-		    std::vector<std::unordered_map<std::string, std::string>>
+		    std::vector<
+		        std::unordered_map<std::string, std::vector<std::string>>>
 		        param_descriptors,
 		    std::vector<std::unordered_map<std::string, std::string>>
 		        param_qualities)
@@ -359,7 +377,7 @@ namespace shogun
 		std::string m_paper_url;
 		std::string m_update_comment;
 		std::string m_md5_checksum;
-		std::vector<std::unordered_map<std::string, std::string>>
+		std::vector<std::unordered_map<std::string, std::vector<std::string>>>
 		    m_param_descriptors;
 		std::vector<std::unordered_map<std::string, std::string>>
 		    m_param_qualities;
@@ -381,6 +399,9 @@ namespace shogun
 		{
 		}
 
+		static std::shared_ptr<OpenMLSplit>
+		get_split(const std::string& split_url, const std::string& api_key);
+
 	private:
 		std::string m_split_id;
 		std::string m_split_type;
@@ -395,7 +416,7 @@ namespace shogun
 	class OpenMLTask
 	{
 	public:
-		enum TaskType
+		enum class TaskType
 		{
 			SUPERVISED_CLASSIFICATION = 0,
 			SUPERVISED_REGRESSION = 1,
@@ -406,25 +427,48 @@ namespace shogun
 			SURVIVAL_ANALYSIS = 6,
 			SUBGROUP_DISCOVERY = 7
 		};
+
+		enum class TaskEvaluation
+		{
+
+		};
+
 		OpenMLTask(
 		    const std::string& task_id, const std::string task_name,
 		    TaskType task_type, const std::string& task_type_id,
-		    const std::pair<
-		        std::shared_ptr<OpenMLData>, std::shared_ptr<OpenMLSplit>>&
-		        task_descriptor)
+		    std::unordered_map<std::string, std::string> evaluation_measures,
+		    std::shared_ptr<OpenMLSplit> split,
+		    std::shared_ptr<OpenMLData> data)
 		    : m_task_id(task_id), m_task_name(task_name),
 		      m_task_type(task_type), m_task_type_id(task_type_id),
-		      m_task_descriptor(task_descriptor)
+		      m_evaluation_measures(evaluation_measures), m_split(split),
+		      m_data(data)
 		{
 		}
 
 		static std::shared_ptr<OpenMLTask>
 		get_task(const std::string& task_id, const std::string& api_key);
 
-		std::shared_ptr<OpenMLData> get_dataset()
+		std::shared_ptr<OpenMLData> get_dataset() const noexcept
 		{
-			return m_task_descriptor.first;
+			return m_data;
 		}
+
+		std::shared_ptr<OpenMLSplit> get_split() const noexcept
+		{
+			return m_split;
+		}
+
+		SGMatrix<int32_t> get_train_indices();
+
+		SGMatrix<int32_t> get_test_indices();
+
+#ifndef SWIG
+		SG_FORCED_INLINE TaskType get_task_type() const noexcept
+		{
+			return m_task_type;
+		}
+#endif // SWIG
 
 	private:
 		static TaskType get_task_from_string(const std::string& task_type);
@@ -433,8 +477,9 @@ namespace shogun
 		std::string m_task_name;
 		TaskType m_task_type;
 		std::string m_task_type_id;
-		std::pair<std::shared_ptr<OpenMLData>, std::shared_ptr<OpenMLSplit>>
-		    m_task_descriptor;
+		std::unordered_map<std::string, std::string> m_evaluation_measures;
+		std::shared_ptr<OpenMLSplit> m_split;
+		std::shared_ptr<OpenMLData> m_data;
 	};
 
 	/**
@@ -464,12 +509,19 @@ namespace shogun
 		static std::shared_ptr<OpenMLFlow>
 		model_to_flow(const std::shared_ptr<CSGObject>& model);
 
+	protected:
+		CLabels* run_model_on_fold(
+		    const std::shared_ptr<CSGObject>& model,
+		    const std::shared_ptr<OpenMLTask>& task, CFeatures* X_train,
+		    index_t repeat_number, index_t fold_number, CLabels* y_train,
+		    CFeatures* X_test);
+
 	private:
 		/**
-		 * Helper function to extract module/factory information from the class
-		 * name field of OpenMLFlow. Throws an error either if the class name
-		 * field is ill formed (i.e. not library.module.algorithm) or if the
-		 * library name is not "shogun".
+		 * Helper function to extract module/factory information from the
+		 * class name field of OpenMLFlow. Throws an error either if the
+		 * class name field is ill formed (i.e. not
+		 * library.module.algorithm) or if the library name is not "shogun".
 		 *
 		 * @param class_name the flow class_name field
 		 * @return a tuple with the module name (factory string) and the
@@ -477,6 +529,66 @@ namespace shogun
 		 */
 		static std::pair<std::string, std::string>
 		get_class_info(const std::string& class_name);
+	};
+
+	class OpenMLRun
+	{
+	public:
+		OpenMLRun(
+		    const std::string& uploader, const std::string& uploader_name,
+		    const std::string& setup_id, const std::string& setup_string,
+		    const std::string& parameter_settings,
+		    std::vector<float64_t> evaluations,
+		    std::vector<float64_t> fold_evaluations,
+		    std::vector<float64_t> sample_evaluations,
+		    const std::string& data_content,
+		    std::vector<std::string> output_files,
+		    std::shared_ptr<OpenMLTask> task, std::shared_ptr<OpenMLFlow> flow,
+		    const std::string& run_id, std::shared_ptr<CSGObject> model,
+		    std::vector<std::string> tags, std::string predictions_url)
+		    : m_uploader(uploader), m_uploader_name(uploader_name),
+		      m_setup_id(setup_id), m_setup_string(setup_string),
+		      m_parameter_settings(parameter_settings),
+		      m_evaluations(std::move(evaluations)),
+		      m_fold_evaluations(std::move(fold_evaluations)),
+		      m_sample_evaluations(std::move(sample_evaluations)),
+		      m_data_content(data_content),
+		      m_output_files(std::move(output_files)), m_task(task),
+		      m_flow(flow), m_run_id(run_id), m_model(model), m_tags(tags),
+		      m_predictions_url(predictions_url)
+		{
+		}
+
+		static std::shared_ptr<OpenMLRun>
+		from_filesystem(const std::string& directory);
+
+		static std::shared_ptr<OpenMLRun> run_flow_on_task(
+		    std::shared_ptr<OpenMLFlow> flow, std::shared_ptr<OpenMLTask> task);
+
+		static std::shared_ptr<OpenMLRun> run_model_on_task(
+		    std::shared_ptr<CSGObject> model, std::shared_ptr<OpenMLTask> task);
+
+		void to_filesystem(const std::string& directory) const;
+
+		void publish() const;
+
+	private:
+		std::string m_uploader;
+		std::string m_uploader_name;
+		std::string m_setup_id;
+		std::string m_setup_string;
+		std::string m_parameter_settings;
+		std::vector<float64_t> m_evaluations;
+		std::vector<float64_t> m_fold_evaluations;
+		std::vector<float64_t> m_sample_evaluations;
+		std::string m_data_content;
+		std::vector<std::string> m_output_files;
+		std::shared_ptr<OpenMLTask> m_task;
+		std::shared_ptr<OpenMLFlow> m_flow;
+		std::string m_run_id;
+		std::shared_ptr<CSGObject> m_model;
+		std::vector<std::string> m_tags;
+		std::string m_predictions_url;
 	};
 } // namespace shogun
 #endif // HAVE_CURL
