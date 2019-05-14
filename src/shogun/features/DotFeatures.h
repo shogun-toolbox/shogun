@@ -156,13 +156,13 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @return computed feature matrix
 		 */
-		SGMatrix<float64_t> get_computed_dot_feature_matrix();
+		SGMatrix<float64_t> get_computed_dot_feature_matrix() const;
 
 		/** compute the feature vector in feature space
 		 *
 		 * @return computed feature vector
 		 */
-		SGVector<float64_t> get_computed_dot_feature_vector(int32_t num);
+		SGVector<float64_t> get_computed_dot_feature_vector(int32_t num) const;
 
 		/** iterate over the non-zero features
 		 *
@@ -227,7 +227,7 @@ class CDotFeatures : public CFeatures
 		 * [default = true]
 		 * @return covariance
 		 */
-		virtual SGMatrix<float64_t> get_cov(bool copy_data_for_speed = true);
+		virtual SGMatrix<float64_t> get_cov(bool copy_data_for_speed = true) const;
 
 		/** compute the covariance of two CDotFeatures together
 		 *

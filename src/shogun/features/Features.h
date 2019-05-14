@@ -307,7 +307,7 @@ class CFeatures : public CSGObject
 		 * @param dims indices of feature dimensions to copy
 		 * @return new CFeatures instance with copies of specified features
 		 */
-		virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims);
+		virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims) const;
 
 		/** does this class support compatible computation bewteen difference classes?
 		 * for example, this->dot(rhs_prt),
