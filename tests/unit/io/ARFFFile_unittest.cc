@@ -26,8 +26,6 @@ TEST(ARFFFileTest, Parse_numeric)
 	auto ss = std::make_shared<std::istringstream>(test);
 	auto s = std::shared_ptr<std::istream>(ss);
 
-	SGVector<float64_t> solution{50, 45, 5.1, 4.13};
-
 	auto parser = std::make_unique<ARFFDeserializer>(s);
 	parser->read();
 	auto result = parser->get_features();
@@ -140,7 +138,7 @@ TEST(ARFFFileTest, Parse_nominal)
 	std::string test = "@relation test_nominal \n"
 	                   "% \n"
 	                   "% \n"
-	                   "@attribute VAR1 {\"a\", b} \n"
+	                   "@attribute VAR1 {\"a\", b, \"c 1\", \'¯\\_(ツ)_/¯\'} \n"
 	                   "@attribute VAR2 numeric \n"
 	                   "% \n"
 	                   "% \n"
@@ -148,14 +146,14 @@ TEST(ARFFFileTest, Parse_nominal)
 	                   "\"a\", 50 \n"
 	                   "b, 26 \n"
 	                   "\"b\", 34 \n"
-	                   "\"a\", 41 \n"
-	                   "\"b\", 44 \n"
+	                   "\'c 1\', 41 \n"
+	                   "\"¯\\_(ツ)_/¯\", 44 \n"
 	                   "a, 45 ";
 
 	auto ss = std::make_shared<std::istringstream>(test);
 	auto s = std::shared_ptr<std::istream>(ss);
 
-	SGVector<float64_t> solution1{0, 1, 1, 0, 1, 0};
+	SGVector<float64_t> solution1{0, 1, 1, 2, 3, 0};
 	SGVector<float64_t> solution2{50, 26, 34, 41, 44, 45};
 
 	auto parser = std::make_unique<ARFFDeserializer>(s);
@@ -164,10 +162,10 @@ TEST(ARFFFileTest, Parse_nominal)
 	ASSERT_EQ(result->get_num_feature_obj(), 2);
 
 	auto col1 =
-			dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(0));
 	auto mat1 = col1->get_feature_matrix();
 	auto col2 =
-			dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
+	    dynamic_cast<CDenseFeatures<float64_t>*>(result->get_feature_obj(1));
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(mat1.size(), 6);
 	for (int i = 0; i < 6; ++i)
