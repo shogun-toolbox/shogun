@@ -307,7 +307,7 @@ void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
 }
 
 
-int32_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen=-1;
 	bool free_vec;

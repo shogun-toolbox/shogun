@@ -307,7 +307,7 @@ int32_t CWDFeatures::get_dim_feature_space() const
 	return w_dim;
 }
 
-int32_t CWDFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CWDFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen=-1;
 	bool free_vec;

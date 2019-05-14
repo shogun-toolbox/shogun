@@ -138,7 +138,7 @@ class CDotFeatures : public CFeatures
 		 * @param num which vector
 		 * @return number of sparse features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num)=0;
+		virtual int32_t get_nnz_features_for_vector(int32_t num) const=0;
 
 		/** get combined feature weight
 		 *

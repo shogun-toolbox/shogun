@@ -228,7 +228,7 @@ void CBinnedDotFeatures::assert_shape(int32_t vec2_len) const
 
 }
 
-int32_t CBinnedDotFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CBinnedDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	if (m_fill)
 		return m_bins.num_rows;

@@ -158,7 +158,7 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::add_to_dense_vec(
 }
 
 template<class ST> int32_t CDenseSubSamplesFeatures<ST>::get_nnz_features_for_vector(
-	int32_t num)
+	int32_t num) const
 {
 	return m_fea->get_nnz_features_for_vector(num);
 }

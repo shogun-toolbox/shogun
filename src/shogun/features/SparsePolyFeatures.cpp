@@ -60,7 +60,7 @@ int32_t CSparsePolyFeatures::get_dim_feature_space() const
 	return m_output_dimensions;
 }
 
-int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num)
+int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen;
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(num);

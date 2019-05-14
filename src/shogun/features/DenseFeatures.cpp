@@ -478,7 +478,7 @@ void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 	free_feature_vector(vec1, vec_idx1, vfree);
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
+template<class ST> int32_t CDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
 {
 	return num_features;
 }
