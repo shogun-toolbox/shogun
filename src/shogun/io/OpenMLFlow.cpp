@@ -41,6 +41,8 @@ size_t writer(char* data, size_t size, size_t nmemb, std::string* buffer_in)
 /* OpenML server format */
 const char* OpenMLReader::xml_server = "https://www.openml.org/api/v1/xml";
 const char* OpenMLReader::json_server = "https://www.openml.org/api/v1/json";
+const char* OpenMLReader::splits_server = "https://www.openml.org/api_splits";
+
 /* DATA API */
 const char* OpenMLReader::dataset_description = "/data/{}";
 const char* OpenMLReader::list_data_qualities = "/data/qualities/list";
@@ -52,10 +54,13 @@ const char* OpenMLReader::list_dataset_filter = "/data/list/{}";
 const char* OpenMLReader::flow_file = "/flow/{}";
 /* TASK API */
 const char* OpenMLReader::task_file = "/task/{}";
+/* SPLIT API */
+const char* OpenMLReader::get_split = "/split/{}";
 
 const std::unordered_map<std::string, std::string>
     OpenMLReader::m_format_options = {{"xml", xml_server},
-                                      {"json", json_server}};
+                                      {"json", json_server},
+									  {"split", splits_server}};
 const std::unordered_map<std::string, std::string>
     OpenMLReader::m_request_options = {
         {"dataset_description", dataset_description},
@@ -103,8 +108,6 @@ void OpenMLReader::openml_curl_error_helper(CURL* curl_handle, CURLcode code)
 		SG_SERROR("Connection error: %s.\n", curl_easy_strerror(code))
 	}
 }
-
-#endif // HAVE_CURL
 
 /**
  * Checks the returned response from OpenML in JSON format
@@ -367,19 +370,25 @@ OpenMLData::get_data(const std::string& id, const std::string& api_key)
 	    "md5_checksum", dataset_description.GetObject());
 
 	// features
-	std::vector<std::unordered_map<std::string, std::string>> param_vector;
+	std::vector<std::unordered_map<std::string, std::vector<std::string>>>
+	    param_vector;
 	return_string = reader.get("data_features", "json", id);
 	document.Parse(return_string.c_str());
 	check_response(document, "data_features");
 	const Value& dataset_features = document["data_features"];
-	for (const auto& param : dataset_features.GetArray())
+	for (const auto& param : dataset_features["feature"].GetArray())
 	{
-		std::unordered_map<std::string, std::string> param_map;
+		std::unordered_map<std::string, std::vector<std::string>> param_map;
 		for (const auto& param_descriptors : param.GetObject())
 		{
-			param_map.emplace(
-			    param_descriptors.name.GetString(),
-			    param_descriptors.value.GetString());
+			std::vector<std::string> second;
+			if (param_descriptors.value.IsArray())
+				for (const auto& v : param_descriptors.value.GetArray())
+					second.emplace_back(v.GetString());
+			else
+				second.emplace_back(param_descriptors.value.GetString());
+
+			param_map.emplace(param_descriptors.name.GetString(), second);
 		}
 		param_vector.push_back(param_map);
 	}
@@ -390,14 +399,17 @@ OpenMLData::get_data(const std::string& id, const std::string& api_key)
 	document.Parse(return_string.c_str());
 	check_response(document, "data_qualities");
 	const Value& data_qualities = document["data_qualities"];
-	for (const auto& param : data_qualities.GetArray())
+	for (const auto& param : data_qualities["quality"].GetArray())
 	{
 		std::unordered_map<std::string, std::string> param_map;
 		for (const auto& param_quality : param.GetObject())
 		{
-			param_map.emplace(
-			    param_quality.name.GetString(),
-			    param_quality.value.GetString());
+			if (param_quality.name.IsString() && param_quality.value.IsString())
+				param_map.emplace(
+				    param_quality.name.GetString(),
+				    param_quality.value.GetString());
+			else if (param_quality.name.IsString())
+				param_map.emplace(param_quality.name.GetString(), "");
 		}
 		qualities_vector.push_back(param_map);
 	}
@@ -418,16 +430,28 @@ std::string OpenMLData::get_data_buffer(const std::string& api_key)
 	return nullptr;
 }
 
+std::shared_ptr<OpenMLSplit>
+OpenMLSplit::get_split(const std::string& split_url, const std::string& api_key)
+{
+	Document document;
+
+	auto reader = OpenMLReader(api_key);
+	auto return_string = reader.get("get_split", "split", split_url);
+	auto return_stream = std::istringstream(return_string);
+	// add ARFF parsing here
+	SG_SNOTIMPLEMENTED
+	return nullptr;
+}
+
 std::shared_ptr<OpenMLTask>
 OpenMLTask::get_task(const std::string& task_id, const std::string& api_key)
 {
 	Document document;
 	std::string task_name;
 	std::string task_type_id;
-	std::shared_ptr<OpenMLData> openml_dataset;
-	std::shared_ptr<OpenMLSplit> openml_split;
-	std::pair<std::shared_ptr<OpenMLData>, std::shared_ptr<OpenMLSplit>>
-	    task_descriptor;
+	std::shared_ptr<OpenMLData> openml_dataset = nullptr;
+	std::shared_ptr<OpenMLSplit> openml_split = nullptr;
+	std::unordered_map<std::string, std::string> evaluation_measures;
 
 	auto reader = OpenMLReader(api_key);
 	auto return_string = reader.get("task_file", "json", task_id);
@@ -451,63 +475,62 @@ OpenMLTask::get_task(const std::string& task_id, const std::string& api_key)
 	// expect two elements in input array: dataset and split
 	const Value& json_input = root["input"];
 
-	REQUIRE(
-	    json_input.IsArray(), "Currently the dataset reader can only handle "
-	                          "inputs with a dataset and split field.\n")
-
 	auto input_array = json_input.GetArray();
-	REQUIRE(
-	    input_array.Size() == 2,
-	    "Currently the dataset reader can only handle inputs with a dataset "
-	    "and split fields. Found %d elements.\n",
-	    input_array.Size())
 
-	// handle dataset
-	auto json_dataset = input_array[0].GetObject();
-
-	if (strcmp(json_dataset["name"].GetString(), "source_data") == 0)
+	for (const auto& task_settings : input_array)
 	{
-		auto dataset_info = json_dataset["data_set"].GetObject();
-		std::string dataset_id = dataset_info["data_set_id"].GetString();
-		std::string target_feature = dataset_info["target_feature"].GetString();
-		//		openml_dataset =
-		//		    std::make_shared<OpenMLData>(dataset_id, target_feature);
-	}
-	else
-		SG_SERROR("Error parsing the OpenML dataset, could not find the "
-		          "source_data field.\n")
-
-	// handle split
-	auto json_split = input_array[1].GetObject();
-	if (strcmp(json_split["name"].GetString(), "estimation_procedure") == 0)
-	{
-		auto split_info = json_dataset["estimation_procedure"].GetObject();
-		std::string split_id = split_info["id"].GetString();
-		std::string split_type = split_info["type"].GetString();
-		std::string split_url = split_info["data_splits_url"].GetString();
-		std::unordered_map<std::string, std::string> split_parameters;
-		for (const auto& param : split_info["parameter"].GetArray())
+		if (strcmp(task_settings["name"].GetString(), "source_data") == 0)
 		{
-			if (param.Size() == 2)
-				split_parameters.emplace(
-				    param["name"].GetString(), param["value"].GetString());
-			else if (param.Size() == 1)
-				split_parameters.emplace(param["name"].GetString(), "");
-			else
-				SG_SERROR("Unexpected number of parameters in parameter array "
-				          "of estimation_procedure.\n")
+			auto dataset_info = task_settings["data_set"].GetObject();
+			std::string dataset_id = dataset_info["data_set_id"].GetString();
+			std::string target_feature =
+			    dataset_info["target_feature"].GetString();
+			openml_dataset = OpenMLData::get_data(dataset_id, api_key);
 		}
-		openml_split = std::make_shared<OpenMLSplit>(
-		    split_id, split_type, split_url, split_parameters);
+		else if (
+		    strcmp(task_settings["name"].GetString(), "estimation_procedure") ==
+		    0)
+		{
+			auto split_info = task_settings["estimation_procedure"].GetObject();
+			std::string split_id = split_info["id"].GetString();
+			std::string split_type = split_info["type"].GetString();
+			std::string split_url = split_info["data_splits_url"].GetString();
+			std::unordered_map<std::string, std::string> split_parameters;
+			for (const auto& param : split_info["parameter"].GetArray())
+			{
+				if (param.HasMember("name") && param.HasMember("value"))
+					split_parameters.emplace(
+					    param["name"].GetString(), param["value"].GetString());
+				else if (param.HasMember("name"))
+					split_parameters.emplace(param["name"].GetString(), "");
+				else
+					SG_SERROR(
+					    "Unexpected number of parameters in parameter array "
+					    "of estimation_procedure.\n")
+			}
+			openml_split = std::make_shared<OpenMLSplit>(
+			    split_id, split_type, split_url, split_parameters);
+		}
+		else if (
+		    strcmp(task_settings["name"].GetString(), "evaluation_measures") ==
+		    0)
+		{
+			auto evaluation_info =
+			    task_settings["evaluation_measures"].GetObject();
+			for (const auto& param : evaluation_info)
+			{
+				evaluation_measures.emplace(
+				    param.name.GetString(), param.value.GetString());
+			}
+		}
 	}
-	else
-		SG_SERROR("Error parsing the OpenML dataset, could not find the "
-		          "estimation_procedure field.\n")
 
-	task_descriptor = std::make_pair(openml_dataset, openml_split);
+	if (openml_dataset == nullptr && openml_split == nullptr)
+		SG_SERROR("Error parsing task.")
 
 	auto result = std::make_shared<OpenMLTask>(
-	    task_id, task_name, task_type, task_type_id, task_descriptor);
+	    task_id, task_name, task_type, task_type_id, evaluation_measures,
+	    openml_split, openml_dataset);
 
 	return result;
 }
@@ -517,7 +540,19 @@ OpenMLTask::get_task_from_string(const std::string& task_type)
 {
 	if (task_type == "Supervised Classification")
 		return OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION;
-	SG_SERROR("OpenMLTask does not supported \"%s\"", task_type.c_str())
+	SG_SERROR("OpenMLTask does not support \"%s\"", task_type.c_str())
+}
+
+SGMatrix<int32_t> OpenMLTask::get_train_indices()
+{
+	SG_SNOTIMPLEMENTED
+	return SGMatrix<int32_t>();
+}
+
+SGMatrix<int32_t> OpenMLTask::get_test_indices()
+{
+	SG_SNOTIMPLEMENTED
+	return SGMatrix<int32_t>();
 }
 
 /**
@@ -802,3 +837,77 @@ ShogunOpenML::get_class_info(const std::string& class_name)
 
 	return result;
 }
+
+CLabels* ShogunOpenML::run_model_on_fold(
+    const std::shared_ptr<CSGObject>& model,
+    const std::shared_ptr<OpenMLTask>& task, CFeatures* X_train,
+    index_t repeat_number, index_t fold_number, CLabels* y_train,
+    CFeatures* X_test)
+{
+	auto task_type = task->get_task_type();
+	auto model_clone = std::shared_ptr<CSGObject>(model->clone());
+
+	switch (task_type)
+	{
+	case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
+	case OpenMLTask::TaskType::SUPERVISED_REGRESSION:
+	{
+		if (auto machine = std::dynamic_pointer_cast<CMachine>(model_clone))
+		{
+			machine->put("labels", y_train);
+			machine->train(X_train);
+			return machine->apply(X_test);
+		}
+		else
+			SG_SERROR("The provided model is not trainable!\n")
+	}
+	break;
+	case OpenMLTask::TaskType::LEARNING_CURVE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::CLUSTERING:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::MACHINE_LEARNING_CHALLENGE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SURVIVAL_ANALYSIS:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUBGROUP_DISCOVERY:
+		SG_SNOTIMPLEMENTED
+	}
+	return nullptr;
+}
+
+std::shared_ptr<OpenMLRun> OpenMLRun::run_model_on_task(
+    std::shared_ptr<CSGObject> model, std::shared_ptr<OpenMLTask> task)
+{
+	SG_SNOTIMPLEMENTED
+	return std::shared_ptr<OpenMLRun>();
+}
+
+std::shared_ptr<OpenMLRun> OpenMLRun::run_flow_on_task(
+    std::shared_ptr<OpenMLFlow> flow, std::shared_ptr<OpenMLTask> task)
+{
+	auto data = task->get_dataset();
+	SG_SNOTIMPLEMENTED
+	return std::shared_ptr<OpenMLRun>();
+}
+
+std::shared_ptr<OpenMLRun>
+OpenMLRun::from_filesystem(const std::string& directory)
+{
+	SG_SNOTIMPLEMENTED
+	return nullptr;
+}
+
+void OpenMLRun::to_filesystem(const std::string& directory) const
+{
+	SG_SNOTIMPLEMENTED
+}
+
+void OpenMLRun::publish() const
+{
+	SG_SNOTIMPLEMENTED
+}
+
+#endif // HAVE_CURL
