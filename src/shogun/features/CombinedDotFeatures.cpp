@@ -9,7 +9,11 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 
+#include <vector>
+
 using namespace shogun;
+
+const float64_t CCombinedDotFeatures::initial_weight = 1.0;
 
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
@@ -98,8 +102,8 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 		ASSERT(f2)
 
 		result += f1->dot(vec_idx1, f2,vec_idx2) *
-			f1->get_combined_feature_weight() *
-			f2->get_combined_feature_weight();
+			get_subfeature_weight(f_idx) *
+			cf->get_subfeature_weight(f_idx);
 
 		SG_UNREF(f1);
 		SG_UNREF(f2);
@@ -118,7 +122,7 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t dim = f->get_dim_feature_space();
-		result += f->dense_dot(vec_idx1, vec2+offs, dim)*f->get_combined_feature_weight();
+		result += f->dense_dot(vec_idx1, vec2+offs, dim)*get_subfeature_weight(f_idx);
 		offs += dim;
 
 		SG_UNREF(f);
@@ -200,7 +204,7 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t dim = f->get_dim_feature_space();
-		f->add_to_dense_vec(alpha*f->get_combined_feature_weight(), vec_idx1, vec2+offs, dim, abs_val);
+		f->add_to_dense_vec(alpha*get_subfeature_weight(f_idx), vec_idx1, vec2+offs, dim, abs_val);
 		offs += dim;
 
 		SG_UNREF(f);
@@ -227,7 +231,6 @@ bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, vo
 	{
 		if (it->f->get_next_feature(index, value, it->iterator))
 		{
-			value*=get_combined_feature_weight();
 			return true;
 		}
 
@@ -269,6 +272,8 @@ bool CCombinedDotFeatures::insert_feature_obj(CDotFeatures* obj, int32_t idx)
 {
 	ASSERT(obj)
 	bool result=feature_array->insert_element(obj, idx);
+	auto iterator = feature_weights.begin() + idx;
+	feature_weights.insert(iterator, initial_weight);
 	update_dim_feature_space_and_num_vec();
 	return result;
 }
@@ -278,6 +283,7 @@ bool CCombinedDotFeatures::append_feature_obj(CDotFeatures* obj)
 	ASSERT(obj)
 	int n = get_num_feature_obj();
 	feature_array->push_back(obj);
+	feature_weights.push_back(initial_weight);
 	update_dim_feature_space_and_num_vec();
 	return n+1==get_num_feature_obj();
 }
@@ -287,6 +293,8 @@ bool CCombinedDotFeatures::delete_feature_obj(int32_t idx)
 	bool succesful_deletion = feature_array->delete_element(idx);
 	if (succesful_deletion)
 		update_dim_feature_space_and_num_vec();
+	auto iterator = feature_weights.begin() + idx;
+	feature_weights.erase(iterator);
 	return succesful_deletion;
 }
 
@@ -309,32 +317,35 @@ int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num) const
 	return result;
 }
 
-SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights()
+SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights() const
 {
 	int32_t num_weights = get_num_feature_obj();
 	ASSERT(num_weights > 0)
 
-	float64_t* weights=SG_MALLOC(float64_t, num_weights);
+	SGVector<float64_t> weights(num_weights);
+	std::copy(feature_weights.begin(), feature_weights.end(), weights.vector);
 
-	for (index_t f_idx=0; f_idx<num_weights; f_idx++)
-	{
-		CDotFeatures* f = get_feature_obj(f_idx);
-		weights[f_idx] = f->get_combined_feature_weight();
-		SG_UNREF(f);
-	}
-	return SGVector<float64_t>(weights,num_weights);
+	return weights;
 }
 
-void CCombinedDotFeatures::set_subfeature_weights(SGVector<float64_t> weights)
+void CCombinedDotFeatures::set_subfeature_weights(const SGVector<float64_t>& weights)
 {
 	ASSERT(weights.vlen==get_num_feature_obj())
 
-	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
-	{
-		CDotFeatures* f = get_feature_obj(f_idx);
-		f->set_combined_feature_weight(weights[f_idx]);
-		SG_UNREF(f);
-	}
+	std::copy(
+	    weights.vector, weights.vector + weights.vlen, feature_weights.begin());
+}
+
+float64_t CCombinedDotFeatures::get_subfeature_weight(index_t idx) const
+{
+	ASSERT(idx >= 0 && (size_t)idx < feature_weights.size())
+	return feature_weights[idx];
+}
+
+void CCombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
+{
+	ASSERT(idx >= 0 && (size_t)idx < feature_weights.size())
+	feature_weights[idx] = weight;
 }
 
 void CCombinedDotFeatures::init()
@@ -347,5 +358,6 @@ void CCombinedDotFeatures::init()
 	SG_ADD(
 	    &num_vectors, "num_vectors", "Total number of vectors.");
 	SG_ADD(&feature_array, "feature_array", "Feature array.");
+	watch_param("feature_weights", &feature_weights);
 }
 
