@@ -105,7 +105,7 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 template <typename ST, typename U>
 bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 {
-	std::vector<std::vector<ST>> m_beta_path_t;		
+	std::vector<SGVector<ST>> m_beta_path_t;
 
 	int32_t n_fea = data->get_num_features();
 	int32_t n_vec = data->get_num_vectors();
@@ -135,7 +135,8 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	SGMatrix<ST> X_active(n_vec, n_fea);
 
 	// beta is the estimator
-	vector<ST> beta(n_fea);
+	SGVector<ST> beta(n_fea);
+	beta.set_const(0);
 
 	vector<ST> Xy(n_fea);
 	typename SGVector<ST>::EigenVectorXtMap map_Xy(&Xy[0], n_fea);
@@ -157,7 +158,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	int32_t i_max_corr = 1;
 
 	// first entry: all coefficients are zero
-	m_beta_path_t.push_back(beta);
+	m_beta_path_t.push_back(beta.clone());
 	m_beta_idx.push_back(0);
 
 	//maximum allowed active variables at a time
@@ -168,7 +169,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	//========================================
 	int32_t nloop=0;
 	auto pb = SG_PROGRESS(range(0, max_active_allowed));
-	while (m_num_active < max_active_allowed && max_corr/n_vec > get_epsilon() && !stop_cond)
+	while (m_num_active < max_active_allowed && max_corr/n_vec > m_epsilon && !stop_cond)
 	{
 		COMPUTATION_CONTROLLERS
 
@@ -285,19 +286,19 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 			beta[m_active_set[i]] += gamma * wA(i);
 
 		// early stopping on max l1-norm
-		if (get_max_l1_norm() > 0)
+		if (m_max_l1_norm > 0)
 		{
-			ST l1 = SGVector<ST>::onenorm(&beta[0], n_fea);
-			if (l1 > get_max_l1_norm())
+			ST l1 = SGVector<ST>::onenorm(beta.vector, n_fea);
+			if (l1 > m_max_l1_norm)
 			{
 				// stopping with interpolated beta
 				stop_cond = true;
 				lasso_cond = false;
-				ST l1_prev = (ST) SGVector<ST>::onenorm(&m_beta_path_t[nloop][0], n_fea);
-				ST s = (get_max_l1_norm()-l1_prev)/(l1-l1_prev);
+				ST l1_prev = (ST) SGVector<ST>::onenorm(m_beta_path_t[nloop].vector, n_fea);
+				ST s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
 
-				typename SGVector<ST>::EigenVectorXtMap map_beta(&beta[0], n_fea);
-				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(&m_beta_path_t[nloop][0], n_fea);
+				typename SGVector<ST>::EigenVectorXtMap map_beta(beta.vector, n_fea);
+				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(m_beta_path_t[nloop].vector, n_fea);
 				map_beta = (1-s)*map_beta_prev + s*map_beta;
 			}
 		}
@@ -318,14 +319,14 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		}
 
 		nloop++;
-		m_beta_path_t.push_back(beta);
+		m_beta_path_t.push_back(beta.clone());
 		if (int32_t(m_num_active) >= get_path_size())
 			m_beta_idx.push_back(nloop);
 		else
 			m_beta_idx[m_num_active] = nloop;
 
 		// early stopping with max number of non-zero variables
-		if (get_max_non_zero() > 0 && m_num_active >= get_max_non_zero())
+		if (m_max_nonz > 0 && m_num_active >= m_max_nonz)
 			stop_cond = true;
 		SG_DEBUG("Added : %d , Dropped %d, Active set size %d max_corr %.17f \n", i_max_corr, i_kick, m_num_active, max_corr);
 
@@ -334,25 +335,27 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	pb.complete();
 
 	//copy m_beta_path_t (of type ST) into m_beta_path
-	for(size_t i = 0; i < m_beta_path_t.size(); ++i)
+	//do also a cast to float64_t
+	for(index_t i = 0; i < m_beta_path_t.size(); ++i)
 	{
-		std::vector<float64_t> va;
-		for(size_t p = 0; p < m_beta_path_t[i].size(); ++p){
-			va.push_back((float64_t) m_beta_path_t[i][p]);			
+		SGVector<float64_t> va(m_beta_path_t[i].vlen);
+		for(index_t p = 0; p < m_beta_path_t[i].vlen; ++p){
+			va.set_element(static_cast<float64_t>(m_beta_path_t[i][p]), p);
 		}
 		m_beta_path.push_back(va);
+		observe(i, "beta_path", "Beta path", va.clone());
 	}
 
 	// assign default estimator
 	set_w(SGVector<float64_t>(n_fea));
 	switch_w(get_path_size()-1);
 
-	if (max_corr / n_vec > get_epsilon())
+	if (max_corr / n_vec > m_epsilon)
 	{
 		SG_WARNING(
 		    "Convergence level (%f) not below tolerance (%f) after %d "
 		    "iterations.\n",
-		    max_corr / n_vec, get_epsilon(), nloop);
+		    max_corr / n_vec, m_epsilon, nloop);
 	}
 
 	return true;

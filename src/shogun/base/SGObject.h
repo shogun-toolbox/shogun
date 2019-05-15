@@ -287,6 +287,13 @@ public:
 	 */
 	Version* get_global_version();
 
+	/**
+	 * Return the description of a registered parameter given its name
+	 * @param name parameter's name
+	 * @return description of the parameter as a string
+	 */
+	std::string get_description(const std::string& name) const;
+
 	/** @return vector of names of all parameters which are registered for model
 	 * selection */
 	SGStringList<char> get_modelsel_names();
