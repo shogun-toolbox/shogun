@@ -401,16 +401,6 @@ namespace shogun
             }
         }
 
-        std::string parameter_description(const std::string& name) const {
-            auto params = $self->get_params();
-            if (params.find(name) != params.end()) {
-                return params[name].get()->get_properties().get_description();
-            }
-            else {
-                SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
-            }
-        }
-
         bool parameter_is_sg_base(const std::string& name) const {
             auto params = $self->get_params();
             if (params.find(name) != params.end()) {
