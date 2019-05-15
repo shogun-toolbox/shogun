@@ -547,6 +547,17 @@ void CSGObject::init()
 	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
 }
 
+std::string CSGObject::get_description(const std::string &name) const
+{
+	auto it = this->get_params().find(name);
+	if (it != this->get_params().end()) {
+		return it->second.get()->get_properties().get_description();
+	}
+	else {
+		SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), this->get_name());
+	}
+}
+
 void CSGObject::print_modsel_params()
 {
 	SG_PRINT("parameters available for model selection for %s:\n", get_name())
