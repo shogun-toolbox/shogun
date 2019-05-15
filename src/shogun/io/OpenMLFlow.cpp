@@ -6,10 +6,13 @@
 
 #include <shogun/io/OpenMLFlow.h>
 #include <shogun/util/factory.h>
+#include <shogun/labels/Labels.h>
 
 #include <rapidjson/document.h>
 #ifdef HAVE_CURL
+#include "OpenMLFlow.h"
 #include <curl/curl.h>
+
 #endif // HAVE_CURL
 
 using namespace shogun;
@@ -39,6 +42,7 @@ size_t writer(char* data, size_t size, size_t nmemb, std::string* buffer_in)
 /* OpenML server format */
 const char* OpenMLReader::xml_server = "https://www.openml.org/api/v1/xml";
 const char* OpenMLReader::json_server = "https://www.openml.org/api/v1/json";
+const char* OpenMLReader::download_server = "";
 const char* OpenMLReader::splits_server = "https://www.openml.org/api_splits";
 
 /* DATA API */
@@ -58,7 +62,8 @@ const char* OpenMLReader::get_split = "/get/{}";
 const std::unordered_map<std::string, std::string>
     OpenMLReader::m_format_options = {{"xml", xml_server},
                                       {"json", json_server},
-									  {"split", splits_server}};
+                                      {"split", splits_server},
+                                      {"download", download_server}};
 const std::unordered_map<std::string, std::string>
     OpenMLReader::m_request_options = {
         {"dataset_description", dataset_description},
@@ -298,7 +303,7 @@ std::shared_ptr<OpenMLFlow> OpenMLFlow::from_file()
 }
 
 std::shared_ptr<OpenMLData>
-OpenMLData::get_data(const std::string& id, const std::string& api_key)
+OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 {
 	// description
 	Document document;
@@ -408,27 +413,189 @@ OpenMLData::get_data(const std::string& id, const std::string& api_key)
 	    default_target_attribute, row_id_attribute, ignore_attribute,
 	    version_label, citation, tags, visibility, original_data_url, paper_url,
 	    update_comment, md5_checksum, param_vector, qualities_vector);
-
+	result->set_api_key(api_key);
 	return result;
 }
 
-std::string OpenMLData::get_data_buffer(const std::string& api_key)
+std::shared_ptr<CCombinedFeatures> OpenMLData::get_features() noexcept
 {
-	SG_SNOTIMPLEMENTED;
+	if (!m_cached_features)
+		get_data();
+	return m_cached_features;
+}
+
+std::shared_ptr<CCombinedFeatures> OpenMLData::get_features(const std::string& label)
+{
+	auto find_label =
+			std::find(m_feature_names.begin(), m_feature_names.end(), label);
+	if (find_label == m_feature_names.end())
+		SG_SERROR(
+			"Requested label \"%s\" not in the dataset!\n", label.c_str())
+	if (!m_cached_features)
+		get_data();
+	auto col_idx = std::distance(m_feature_names.begin(), find_label);
+	auto result = std::shared_ptr<CCombinedFeatures>(m_cached_features->clone()->as<CCombinedFeatures>());
+	if (result->delete_feature_obj(col_idx))
+		SG_SERROR("Error deleting the label column in CombinedFeatures!\n")
+	return result;
+}
+
+std::shared_ptr<CLabels> OpenMLData::get_labels()
+{
+	REQUIRE(
+	    !m_default_target_attribute.empty(),
+	    "A default target attribute is required if no label is given!\n")
+	return get_labels(m_default_target_attribute);
+}
+
+std::shared_ptr<CLabels> OpenMLData::get_labels(const std::string& label_name)
+{
+	auto find_label =
+	    std::find(m_feature_names.begin(), m_feature_names.end(), label_name);
+	if (find_label == m_feature_names.end())
+		SG_SERROR(
+		    "Requested label \"%s\" not in the dataset!\n", label_name.c_str())
+	auto col_idx = std::distance(m_feature_names.begin(), find_label);
+
+	if (!m_cached_features)
+		get_data();
+
+	auto target_label_as_feat =
+	    std::shared_ptr<CFeatures>(m_cached_features->get_feature_obj(col_idx));
+
+	// TODO: replace with actual enum values
+	switch(m_feature_types[col_idx])
+	{
+		// real features
+		case 0:
+		{
+			auto casted_feat = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(target_label_as_feat);
+			auto labels_vec = casted_feat->get_feature_vector(0);
+			auto labels = std::make_shared<CRegressionLabels>();
+			labels->set_values(labels_vec);
+			return labels;
+		} break;
+		// nominal features
+		case 1:
+		{
+			auto casted_feat = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(target_label_as_feat);
+			auto labels_vec = casted_feat->get_feature_vector(0);
+			auto labels = std::make_shared<CMulticlassLabels>();
+			labels->set_values(labels_vec);
+			return labels;
+		} break;
+		default:
+			SG_SERROR("Unknown type for label \"%s\"!\n", label_name.c_str())
+	}
+
 	return nullptr;
+}
+
+void OpenMLData::get_data()
+{
+	auto reader = OpenMLReader(m_api_key);
+	auto return_string = reader.get(m_url);
+
+	// TODO: add ARFF parsing and don't forget feature names and feature types
+	m_cached_features = std::make_shared<CCombinedFeatures>();
 }
 
 std::shared_ptr<OpenMLSplit>
 OpenMLSplit::get_split(const std::string& split_url, const std::string& api_key)
 {
-	Document document;
-
 	auto reader = OpenMLReader(api_key);
 	auto return_string = reader.get("get_split", "split", split_url);
+
+	if (return_string == "Task not providing datasplits.")
+		return std::make_shared<OpenMLSplit>();
+
 	auto return_stream = std::istringstream(return_string);
-	// add ARFF parsing here
-	SG_SNOTIMPLEMENTED
-	return nullptr;
+	// TODO: add ARFF parsing here
+	// get train/test indices
+	// TODO: replace line below with ARFFDeserialiser::get_features()
+	auto arff_features = std::make_shared<CCombinedFeatures>();
+	REQUIRE(
+	    arff_features->get_num_feature_obj() == 4,
+	    "Expected a ARFF file with 4 attributes: type, rowid, repeat and "
+	    "fold.\n")
+
+	auto train_test_feat =
+	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(0));
+	auto rowid_feat =
+	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(1));
+	auto repeat_feat =
+	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(2));
+	auto fold_feat =
+	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(3));
+
+	auto type_vector = string_feature_to_vector(train_test_feat);
+	auto rowid_vector = dense_feature_to_vector(rowid_feat);
+	auto repeat_vector = dense_feature_to_vector(repeat_feat);
+	auto fold_vector = dense_feature_to_vector(fold_feat);
+
+	std::vector<std::vector<int64_t>> train_idx, test_idx;
+	for (int i = 0; i < arff_features->get_num_vectors(); ++i)
+	{
+		if (type_vector[i] == LabelType::TRAIN)
+			train_idx.emplace_back(std::initializer_list<int64_t>{
+			    static_cast<int64_t>(rowid_vector[i]),
+			    static_cast<int64_t>(repeat_vector[i]),
+			    static_cast<int64_t>(fold_vector[i])});
+		else
+			test_idx.emplace_back(std::initializer_list<int64_t>{
+			    static_cast<int64_t>(rowid_vector[i]),
+			    static_cast<int64_t>(repeat_vector[i]),
+			    static_cast<int64_t>(fold_vector[i])});
+	}
+
+	return std::make_shared<OpenMLSplit>(train_idx, test_idx);
+}
+
+SGVector<float64_t>
+OpenMLSplit::dense_feature_to_vector(const std::shared_ptr<CFeatures>& feat)
+{
+	auto casted_feat =
+	    std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(feat);
+	// this should never happen
+	if (!casted_feat)
+		SG_SERROR("Error casting a column in the split file from CFeatures to "
+		          "CDenseFeatures!\n>");
+	return casted_feat->get_feature_vector(0);
+}
+
+std::vector<OpenMLSplit::LabelType>
+OpenMLSplit::string_feature_to_vector(const std::shared_ptr<CFeatures>& feat)
+{
+	auto casted_feat = std::dynamic_pointer_cast<CStringFeatures<char>>(feat);
+	// this should never happen
+	if (!casted_feat)
+		SG_SERROR("Error casting a column in the split file from CFeatures to "
+		          "CStringFeatures!\n");
+
+	auto to_lower = [](const std::string& line) {
+		std::string result;
+		std::transform(
+		    line.begin(), line.end(), std::back_inserter(result),
+		    [](uint8_t val) { return std::tolower(val); });
+		return result;
+	};
+
+	std::vector<OpenMLSplit::LabelType> result;
+
+	for (int i = 0; i < casted_feat->get_num_vectors(); ++i)
+	{
+		auto row = casted_feat->get_feature_vector(i);
+		std::string label(1, row[0]);
+		for (auto j = 1; j < casted_feat->get_max_vector_length(); ++j)
+			label.append(1, row[j]);
+		if (to_lower(label) == "train")
+			result.push_back(LabelType::TRAIN);
+		else if (to_lower(label) == "test")
+			result.push_back(LabelType::TEST);
+		else
+			SG_SERROR("Unknown label type in split file %s!\n", label.c_str())
+	}
+	return result;
 }
 
 std::shared_ptr<OpenMLTask>
@@ -473,7 +640,7 @@ OpenMLTask::get_task(const std::string& task_id, const std::string& api_key)
 			std::string dataset_id = dataset_info["data_set_id"].GetString();
 			std::string target_feature =
 			    dataset_info["target_feature"].GetString();
-			openml_dataset = OpenMLData::get_data(dataset_id, api_key);
+			openml_dataset = OpenMLData::get_dataset(dataset_id, api_key);
 		}
 		else if (
 		    strcmp(task_settings["name"].GetString(), "estimation_procedure") ==
@@ -496,8 +663,11 @@ OpenMLTask::get_task(const std::string& task_id, const std::string& api_key)
 					    "Unexpected number of parameters in parameter array "
 					    "of estimation_procedure.\n")
 			}
-			openml_split = std::make_shared<OpenMLSplit>(
-			    split_id, split_type, split_url, split_parameters);
+			REQUIRE(
+			    split_type == "crossvalidation",
+			    "Currently only tasks with cross validation are enabled in "
+			    "shogun!\n")
+			openml_split = OpenMLSplit::get_split(split_url, api_key);
 		}
 		else if (
 		    strcmp(task_settings["name"].GetString(), "evaluation_measures") ==
@@ -877,7 +1047,16 @@ std::shared_ptr<OpenMLRun> OpenMLRun::run_flow_on_task(
     std::shared_ptr<OpenMLFlow> flow, std::shared_ptr<OpenMLTask> task)
 {
 	auto data = task->get_dataset();
-	SG_SNOTIMPLEMENTED
+	std::shared_ptr<CFeatures> train_features, test_features;
+	std::shared_ptr<CLabels> train_labels, test_labels;
+
+	if (task->get_split()->contains_splits())
+		SG_SNOTIMPLEMENTED
+	else
+	{
+		auto labels = data->get_labels();
+		auto feat = data->get_features();
+	}
 	return std::shared_ptr<OpenMLRun>();
 }
 

@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
+#include <shogun/features/CombinedFeatures.h>
 #include <shogun/io/SGIO.h>
 
 #include <memory>
@@ -48,10 +49,7 @@ namespace shogun
 		std::string
 		get(const std::string& request, const std::string& format, Args... args)
 		{
-#ifdef HAVE_CURL
 			std::string request_path;
-			// clear the buffer before request
-			m_curl_response_buffer.clear();
 			auto find_format = m_format_options.find(format);
 			if (find_format == m_format_options.end())
 			{
@@ -107,11 +105,20 @@ namespace shogun
 
 			std::string url = request_format + request_path + "?" + m_api_key;
 
-			openml_curl_request_helper(url);
+			return get(url);
+		}
 
+		std::string get(const std::string& url)
+		{
+#ifdef HAVE_CURL
+			// clear the buffer before request
+			m_curl_response_buffer.clear();
+
+			openml_curl_request_helper(url);
 			return m_curl_response_buffer;
 #else
-			SG_SERROR("This function is only available witht the CURL library!\n")
+			SG_SERROR(
+			    "This function is only available with the CURL library!\n")
 #endif // HAVE_CURL
 		}
 
@@ -134,6 +141,8 @@ namespace shogun
 		static const char* xml_server;
 		/** the server path to get a response in JSON format*/
 		static const char* json_server;
+		/** the server path to download datasets */
+		static const char* download_server;
 		/** the server path to get a split in ARFF format */
 		static const char* splits_server;
 
@@ -339,16 +348,53 @@ namespace shogun
 		 *
 		 */
 		static std::shared_ptr<OpenMLData>
-		get_data(const std::string& id, const std::string& api_key);
+		get_dataset(const std::string& id, const std::string& api_key);
 
 		/**
-		 * Returns the dataset
-		 * @param api_key
+		 * Returns ALL the features of the dataset, potentially also the labels column
+		 * @return the features
+		 */
+		std::shared_ptr<CCombinedFeatures> get_features() noexcept;
+
+		/**
+		 * Returns the dataset features
+		 * @param label_name the name of the attribute containing the label
+		 * @return the features
+		 */
+		std::shared_ptr<CCombinedFeatures> get_features(const std::string& label_name);
+
+		/**
+		 * Returns the dataset labels if m_default_target_attribute is not empty
+		 * @return the labels
+		 */
+		std::shared_ptr<CLabels> get_labels();
+
+		/**
+		 * Returns the dataset labels given the label_name
+		 * @return the labels
+		 */
+		std::shared_ptr<CLabels> get_labels(const std::string& label_name);
+
+		/**
+		 * Returns the type of all attributes/features in the ARFF file
 		 * @return
 		 */
-		std::string get_data_buffer(const std::string& api_key);
+		// TODO: replace with actual enum values
+		SG_FORCED_INLINE std::vector<int> get_feature_types() const noexcept
+		{
+			return m_feature_types;
+		}
+
+	protected:
+		SG_FORCED_INLINE void set_api_key(const std::string& api_key) noexcept
+		{
+			m_api_key = api_key;
+		}
 
 	private:
+
+		void get_data();
+
 		std::string m_name;
 		std::string m_description;
 		std::string m_data_format;
@@ -376,6 +422,11 @@ namespace shogun
 		    m_param_descriptors;
 		std::vector<std::unordered_map<std::string, std::string>>
 		    m_param_qualities;
+		std::string m_api_key;
+
+		std::shared_ptr<CCombinedFeatures> m_cached_features;
+		std::vector<std::string> m_feature_names;
+		std::vector<int> m_feature_types; // TODO: replace int with type enum
 	};
 
 	/**
@@ -384,24 +435,54 @@ namespace shogun
 	class OpenMLSplit
 	{
 	public:
+		enum class LabelType
+		{
+			TRAIN = 1,
+			TEST = 2
+		};
+
+		/**
+		 * Default constructor. This is used when there are no
+		 * train or test indices.
+		 */
+		OpenMLSplit() = default;
+
 		OpenMLSplit(
-		    const std::string& split_id, const std::string& split_type,
-		    const std::string& split_url,
-		    const std::unordered_map<std::string, std::string>&
-		        split_parameters)
-		    : m_split_id(split_id), m_split_type(split_type),
-		      m_split_url(split_url), m_parameters(split_parameters)
+		    std::vector<std::vector<int64_t>> train_idx,
+		    std::vector<std::vector<int64_t>> test_idx)
+		    : m_train_idx(std::move(train_idx)), m_test_idx(std::move(test_idx))
 		{
 		}
 
 		static std::shared_ptr<OpenMLSplit>
 		get_split(const std::string& split_url, const std::string& api_key);
 
+		SG_FORCED_INLINE std::vector<std::vector<int64_t>> get_train_idx() const
+		    noexcept
+		{
+			return m_train_idx;
+		}
+
+		SG_FORCED_INLINE std::vector<std::vector<int64_t>> get_test_idx() const
+		    noexcept
+		{
+			return m_test_idx;
+		}
+
+		SG_FORCED_INLINE bool contains_splits() const noexcept
+		{
+			return !m_train_idx.empty() && !m_test_idx.empty();
+		}
+
 	private:
-		std::string m_split_id;
-		std::string m_split_type;
-		std::string m_split_url;
-		std::unordered_map<std::string, std::string> m_parameters;
+		static SGVector<float64_t>
+		dense_feature_to_vector(const std::shared_ptr<CFeatures>& feat);
+
+		static std::vector<OpenMLSplit::LabelType>
+		string_feature_to_vector(const std::shared_ptr<CFeatures>& feat);
+
+		std::vector<std::vector<int64_t>> m_train_idx;
+		std::vector<std::vector<int64_t>> m_test_idx;
 	};
 
 	/**
