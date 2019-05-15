@@ -326,7 +326,7 @@ fail:
 }
 
 /* used for numpy's style slicing */
-static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool get_scalar=true)
+static PyObject* class_name ## _getsubscript_helper(PyObject *self, PyObject *key, bool get_scalar=true)
 {
 	// key is tuple, like (PySlice or PyLong, PySlice or PyLong)
 	// or only PySlice or PyLong
@@ -483,6 +483,11 @@ fail:
 	return NULL;
 }
 
+static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key)
+{
+	return class_name ## _getsubscript_helper(self, key, true);
+}
+
 /* used for numpy's style slicing */
 static int class_name ## _setsubscript(PyObject *self, PyObject *key, PyObject* v)
 {
@@ -495,7 +500,7 @@ static int class_name ## _setsubscript(PyObject *self, PyObject *key, PyObject* 
 		goto fail;
 	}
 
-	tmp = (PyArrayObject *) class_name ## _getsubscript(self, key, false);
+	tmp = (PyArrayObject *) class_name ## _getsubscript_helper(self, key, false);
 	if(tmp == NULL)
 	{
 		goto fail;

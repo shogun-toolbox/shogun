@@ -145,7 +145,7 @@ static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 }
 
 /* used by PySequence_GetItem */
-static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get_scalar=true)
+static PyObject* class_name ## _getitem_helper(PyObject *self, Py_ssize_t idx, bool get_scalar=true)
 {
 	class_type* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
@@ -213,6 +213,11 @@ fail:
 	return NULL;
 }
 
+static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
+{
+	return class_name ## _getitem_helper(self, idx, true);
+}
+
 /* used by PySequence_SetItem */
 static int class_name ## _setitem(PyObject *self, Py_ssize_t idx, PyObject *v)
 {
@@ -225,7 +230,7 @@ static int class_name ## _setitem(PyObject *self, Py_ssize_t idx, PyObject *v)
 		goto fail;
 	}
 
-	tmp=(PyArrayObject *) class_name ## _getitem(self, idx, false);
+	tmp=(PyArrayObject *) class_name ## _getitem_helper(self, idx, false);
 	if(tmp==NULL)
 	{
 		goto fail;
