@@ -17,9 +17,85 @@ const char* ARFFDeserializer::m_relation_string = "@relation";
 const char* ARFFDeserializer::m_attribute_string = "@attribute";
 const char* ARFFDeserializer::m_data_string = "@data";
 const char* ARFFDeserializer::m_default_date_format = "%Y-%M-%DT%H:%M:%S";
+const char* ARFFDeserializer::m_missing_value_string = "?";
 
-void ARFFDeserializer::read()
+/**
+ * Visitor pattern to reserve memory for a std::vector
+ * wrapped in a variant class.
+ */
+struct VectorResizeVisitor
 {
+	VectorResizeVisitor(size_t size) : m_size(size){};
+	template <typename T>
+	void operator()(std::vector<T>& v) const noexcept
+	{
+		v.reserve(m_size);
+	}
+	size_t m_size;
+};
+
+/**
+ * Visitor pattern to determine size of a std::vector
+ * wrapped in a variant class.
+ */
+struct VectorSizeVisitor
+{
+	template <typename T>
+	size_t operator()(const std::vector<T>& v) const noexcept
+	{
+		return v.size();
+	}
+};
+
+template <typename T>
+T buffer_to_type(const std::string& buffer)
+{
+	SG_SERROR(
+	    "No conversion from \"%s\" to \"%s\"!\n", buffer.c_str(),
+	    demangled_type<T>())
+}
+template <>
+int8_t buffer_to_type<int8_t>(const std::string& buffer)
+{
+	return static_cast<int8_t>(std::stoi(buffer));
+}
+template <>
+int16_t buffer_to_type<int16_t>(const std::string& buffer)
+{
+	return static_cast<int16_t>(std::stoi(buffer));
+}
+template <>
+int32_t buffer_to_type<int32_t>(const std::string& buffer)
+{
+	return std::stoi(buffer);
+}
+template <>
+int64_t buffer_to_type<int64_t>(const std::string& buffer)
+{
+	return std::stoll(buffer);
+}
+template <>
+float32_t buffer_to_type<float32_t>(const std::string& buffer)
+{
+	return std::stof(buffer);
+}
+template <>
+float64_t buffer_to_type<float64_t>(const std::string& buffer)
+{
+	return std::stod(buffer);
+}
+template <>
+floatmax_t buffer_to_type<floatmax_t>(const std::string& buffer)
+{
+	return std::stold(buffer);
+}
+
+template <typename ScalarType, typename CharType>
+void ARFFDeserializer::read_helper()
+{
+	std::vector<variant<
+	    std::vector<ScalarType>, std::vector<std::basic_string<CharType>>>>
+	    data_vectors;
 	m_line_number = 0;
 	m_row_count = 0;
 	m_file_done = false;
@@ -48,7 +124,7 @@ void ARFFDeserializer::read()
 	auto check_relation = [this]() { return !m_relation.empty(); };
 	process_chunk(read_relation, check_relation, true);
 
-	auto read_attributes = [this]() {
+	auto read_attributes = [this, &data_vectors]() {
 		if (to_lower(m_current_line.substr(0, strlen(m_attribute_string))) ==
 		    m_attribute_string)
 		{
@@ -62,7 +138,7 @@ void ARFFDeserializer::read()
 			while (it != inner_string.end())
 			{
 				if (!std::isspace(*it))
-					it = std::next(it);
+					++it;
 				else
 				{
 					name = trim({inner_string.begin(), it});
@@ -86,8 +162,8 @@ void ARFFDeserializer::read()
 				    std::back_inserter(attributes), "\'\"");
 				m_nominal_attributes.emplace_back(
 				    std::make_pair(name, attributes));
-				m_attributes.push_back(Attribute::Nominal);
-				m_data_vectors.emplace_back(std::vector<float64_t>{});
+				m_attributes.push_back(Attribute::NOMINAL);
+				data_vectors.emplace_back(std::vector<ScalarType>{});
 				m_attribute_names.emplace_back(name);
 				return;
 			}
@@ -123,8 +199,8 @@ void ARFFDeserializer::read()
 					    "Error parsing date on line %d: %s\n", m_line_number,
 					    m_current_line.c_str())
 				}
-				m_attributes.push_back(Attribute::Date);
-				m_data_vectors.emplace_back(std::vector<float64_t>{});
+				m_attributes.push_back(Attribute::DATE);
+				data_vectors.emplace_back(std::vector<ScalarType>{});
 			}
 			else if (is_primitive_type(type))
 			{
@@ -132,24 +208,25 @@ void ARFFDeserializer::read()
 				// numeric attributes
 				if (type == "numeric")
 				{
-					m_attributes.push_back(Attribute::Numeric);
-					m_data_vectors.emplace_back(std::vector<float64_t>{});
+					m_attributes.push_back(Attribute::NUMERIC);
+					data_vectors.emplace_back(std::vector<ScalarType>{});
 				}
 				else if (type == "integer")
 				{
-					m_attributes.push_back(Attribute::Integer);
-					m_data_vectors.emplace_back(std::vector<float64_t>{});
+					m_attributes.push_back(Attribute::INTEGER);
+					data_vectors.emplace_back(std::vector<ScalarType>{});
 				}
 				else if (type == "real")
 				{
-					m_attributes.push_back(Attribute::Real);
-					m_data_vectors.emplace_back(std::vector<float64_t>{});
+					m_attributes.push_back(Attribute::REAL);
+					data_vectors.emplace_back(std::vector<ScalarType>{});
 				}
 				else if (type == "string")
 				{
 					// @ATTRIBUTE LCC    string
-					m_attributes.push_back(Attribute::String);
-					m_data_vectors.emplace_back(std::vector<std::string>{});
+					m_attributes.push_back(Attribute::STRING);
+					data_vectors.emplace_back(
+					    std::vector<std::basic_string<CharType>>{});
 				}
 				else
 					SG_SERROR(
@@ -180,12 +257,13 @@ void ARFFDeserializer::read()
 	process_chunk(read_attributes, check_attributes, true);
 
 	auto pos = m_stream->tellg();
-	auto approx_data_line_count = std::count(std::istreambuf_iterator<char>(*m_stream),
-	        std::istreambuf_iterator<char>(), '\n');
-	reserve_vector_memory(approx_data_line_count);
+	auto approx_data_line_count = std::count(
+	    std::istreambuf_iterator<char>(*m_stream),
+	    std::istreambuf_iterator<char>(), '\n');
+	reserve_vector_memory(approx_data_line_count, data_vectors);
 	m_stream->seekg(pos);
 
-	auto read_data = [this]() {
+	auto read_data = [this, &data_vectors]() {
 		// it's a comment and can be skipped
 		if (SG_UNLIKELY(m_current_line.substr(0, 1) == m_comment_string))
 			return;
@@ -200,7 +278,8 @@ void ARFFDeserializer::read()
 		std::vector<std::string> elems;
 		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
 		// only parse rows that do not contain missing values
-		if (std::find(elems.begin(), elems.end(), "?") == elems.end())
+		if (std::find(elems.begin(), elems.end(), m_missing_value_string) ==
+		    elems.end())
 		{
 			auto nominal_pos = m_nominal_attributes.begin();
 			auto date_pos = m_date_formats.begin();
@@ -210,14 +289,14 @@ void ARFFDeserializer::read()
 				Attribute type = m_attributes[i];
 				switch (type)
 				{
-				case (Attribute::Numeric):
-				case (Attribute::Integer):
-				case (Attribute::Real):
+				case (Attribute::NUMERIC):
+				case (Attribute::INTEGER):
+				case (Attribute::REAL):
 				{
 					try
 					{
-						shogun::get<std::vector<float64_t>>(m_data_vectors[i])
-						    .push_back(std::stod(elems[i]));
+						shogun::get<std::vector<ScalarType>>(data_vectors[i])
+						    .push_back(buffer_to_type<ScalarType>(elems[i]));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -227,7 +306,7 @@ void ARFFDeserializer::read()
 					}
 				}
 				break;
-				case (Attribute::Nominal):
+				case (Attribute::NOMINAL):
 				{
 					if (nominal_pos == m_nominal_attributes.end())
 						SG_SERROR(
@@ -242,13 +321,13 @@ void ARFFDeserializer::read()
 						SG_SERROR(
 						    "Unexpected value \"%s\" on line %d\n",
 						    trimmed_el.c_str(), m_line_number);
-					float64_t idx = std::distance(encoding.begin(), pos);
-					shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+					ScalarType idx = std::distance(encoding.begin(), pos);
+					shogun::get<std::vector<ScalarType>>(data_vectors[i])
 					    .push_back(idx);
-					nominal_pos = std::next(nominal_pos);
+					++nominal_pos;
 				}
 				break;
-				case (Attribute::Date):
+				case (Attribute::DATE):
 				{
 					date::sys_seconds t;
 					std::istringstream ss(elems[i]);
@@ -260,7 +339,7 @@ void ARFFDeserializer::read()
 					if (bool(ss))
 					{
 						auto value_timestamp = t.time_since_epoch().count();
-						shogun::get<std::vector<float64_t>>(m_data_vectors[i])
+						shogun::get<std::vector<ScalarType>>(data_vectors[i])
 						    .push_back(value_timestamp);
 					}
 					else
@@ -272,8 +351,9 @@ void ARFFDeserializer::read()
 					++date_pos;
 				}
 				break;
-				case (Attribute::String):
-					shogun::get<std::vector<std::string>>(m_data_vectors[i])
+				case (Attribute::STRING):
+					shogun::get<std::vector<std::basic_string<CharType>>>(
+					    data_vectors[i])
 					    .emplace_back(elems[i]);
 				}
 			}
@@ -286,20 +366,20 @@ void ARFFDeserializer::read()
 			++m_row_count;
 		}
 	};
-	auto check_data = [this]() {
+	auto check_data = [this, &data_vectors]() {
 		// check X values
 		SG_SDEBUG(
-		    "size: %d, cols: %d, rows: %d", m_data_vectors.size(),
-		    m_data_vectors.size() / m_row_count, m_row_count)
-		if (!m_data_vectors.empty())
+		    "size: %d, cols: %d, rows: %d", data_vectors.size(),
+		    data_vectors.size() / m_row_count, m_row_count)
+		if (!data_vectors.empty())
 		{
-			auto feature_count = m_data_vectors.size();
+			auto feature_count = data_vectors.size();
 			index_t row_count =
-			    shogun::visit(VectorSizeVisitor{}, m_data_vectors[0]);
+			    shogun::visit(VectorSizeVisitor{}, data_vectors[0]);
 			for (int i = 1; i < feature_count; ++i)
 			{
 				REQUIRE(
-				    shogun::visit(VectorSizeVisitor{}, m_data_vectors[i]) ==
+				    shogun::visit(VectorSizeVisitor{}, data_vectors[i]) ==
 				        row_count,
 				    "All columns must have the same number of features!\n")
 			}
@@ -309,34 +389,30 @@ void ARFFDeserializer::read()
 		return true;
 	};
 	process_chunk(read_data, check_data, true);
-}
-
-std::shared_ptr<CCombinedFeatures> ARFFDeserializer::get_features() const
-{
-	auto result = std::make_shared<CCombinedFeatures>();
-	index_t row_count = shogun::visit(VectorSizeVisitor{}, m_data_vectors[0]);
-	for (int i = 0; i < m_data_vectors.size(); ++i)
+	m_features = std::make_shared<CCombinedFeatures>();
+	index_t row_count = shogun::visit(VectorSizeVisitor{}, data_vectors[0]);
+	for (int i = 0; i < data_vectors.size(); ++i)
 	{
 		Attribute att = m_attributes[i];
-		auto vec = m_data_vectors[i];
+		auto vec = data_vectors[i];
 		switch (att)
 		{
-		case Attribute::Numeric:
-		case Attribute::Integer:
-		case Attribute::Real:
-		case Attribute::Date:
-		case Attribute::Nominal:
+		case Attribute::NUMERIC:
+		case Attribute::INTEGER:
+		case Attribute::REAL:
+		case Attribute::DATE:
+		case Attribute::NOMINAL:
 		{
-			auto casted_vec = shogun::get<std::vector<float64_t>>(vec);
-			SGMatrix<float64_t> mat(1, row_count);
+			auto casted_vec = shogun::get<std::vector<ScalarType>>(vec);
+			SGMatrix<ScalarType> mat(1, row_count);
 			memcpy(
 			    mat.matrix, casted_vec.data(),
-			    casted_vec.size() * sizeof(float64_t));
-			auto* feat = new CDenseFeatures<float64_t>(mat);
-			result->append_feature_obj(feat);
+			    casted_vec.size() * sizeof(ScalarType));
+			auto* feat = new CDenseFeatures<ScalarType>(mat);
+			m_features->append_feature_obj(feat);
 		}
 		break;
-		case Attribute::String:
+		case Attribute::STRING:
 		{
 			auto casted_vec = shogun::get<std::vector<std::string>>(vec);
 			index_t max_string_length = 0;
@@ -345,19 +421,76 @@ std::shared_ptr<CCombinedFeatures> ARFFDeserializer::get_features() const
 				if (max_string_length < el.size())
 					max_string_length = el.size();
 			}
-			SGStringList<char> strings(row_count, max_string_length);
+			SGStringList<CharType> strings(row_count, max_string_length);
 			for (int j = 0; j < row_count; ++j)
 			{
-				SGString<char> current(max_string_length);
+				SGString<CharType> current(max_string_length);
 				memcpy(
 				    current.string, casted_vec[j].data(),
-				    (casted_vec.size() + 1) * sizeof(char));
+				    (casted_vec.size() + 1) * sizeof(CharType));
 				strings.strings[j] = current;
 			}
-			auto* feat = new CStringFeatures<char>(strings, EAlphabet::RAWBYTE);
-			result->append_feature_obj(feat);
+			auto* feat =
+			    new CStringFeatures<CharType>(strings, EAlphabet::RAWBYTE);
+			m_features->append_feature_obj(feat);
 		}
 		}
 	}
-	return result;
+}
+
+void ARFFDeserializer::read()
+{
+	switch (m_primitive_type)
+	{
+	case EPrimitiveType::PT_INT8:
+	{
+		read_helper<int8_t, char>();
+	}
+	break;
+	case EPrimitiveType::PT_INT16:
+	{
+		read_helper<int16_t, char>();
+	}
+	break;
+	case EPrimitiveType::PT_INT32:
+	{
+		read_helper<int32_t, char>();
+	}
+	break;
+	case EPrimitiveType::PT_INT64:
+	{
+		read_helper<int64_t, char>();
+	}
+	break;
+	case EPrimitiveType::PT_FLOAT32:
+	{
+		read_helper<float32_t, char>();
+	}
+	break;
+	case EPrimitiveType::PT_FLOAT64:
+	{
+		read_helper<float64_t, char>();
+	}
+	break;
+	case EPrimitiveType::PT_FLOATMAX:
+	{
+		read_helper<floatmax_t, char>();
+	}
+	break;
+	default:
+		SG_SERROR("The provided type for scalar parsing is not valid!\n")
+	}
+}
+
+template <typename ScalarType, typename CharType>
+void ARFFDeserializer::reserve_vector_memory(
+    size_t line_count,
+    std::vector < variant<
+                      std::vector<ScalarType>,
+                      std::vector<std::basic_string<CharType>>>> &
+        v)
+{
+	VectorResizeVisitor visitor{line_count};
+	for (auto& vec : v)
+		shogun::visit(visitor, vec);
 }

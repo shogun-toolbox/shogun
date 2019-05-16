@@ -90,7 +90,7 @@ namespace shogun
 		 *
 		 * @param s string to split
 		 * @param delimiters a set of delimiter character
-		 * @param result dynamic container where tokens are stored
+		 * @param result dynamic container inserter where tokens are stored
 		 * @param quotes a string with the characters that are considered
 		 * quotes, i.e. any text between quotes is kept together.
 		 */
@@ -103,7 +103,7 @@ namespace shogun
 			auto begin = s.begin();
 			while (arff_detail::contains(*it, delimiters))
 			{
-				it = std::next(it);
+				++it;
 				begin = it;
 			}
 			while (it != s.end())
@@ -113,11 +113,11 @@ namespace shogun
 				}
 				else if (arff_detail::contains(*it, quotes))
 				{
-					begin = std::next(it);
-					it = begin;
+					++it;
+					begin = it;
 					while (!arff_detail::contains(*it, quotes))
 					{
-						it = std::next(it);
+						++it;
 					}
 					if (it == s.end())
 						SG_SERROR(
@@ -131,7 +131,7 @@ namespace shogun
 					while (!arff_detail::contains(*it, delimiters) &&
 					       it != s.end())
 					{
-						it = std::next(it);
+						++it;
 					}
 					auto token = std::string(begin, it);
 					if (!arff_detail::is_blank(token))
@@ -139,8 +139,8 @@ namespace shogun
 				}
 				if (it != s.end())
 				{
-					begin = std::next(it);
-					it = std::next(it);
+					++it;
+					begin = it;
 				}
 			}
 		}
@@ -302,10 +302,10 @@ namespace shogun
 					cpp_time.append(check_and_append_j2cpp(*it));
 					begin = std::next(it);
 					begin = it;
-					it = std::next(it);
+					++it;
 					while (*it != '\'')
 					{
-						it = std::next(it);
+						++it;
 					}
 					token = {std::next(begin), it};
 					cpp_time.append(token);
@@ -324,7 +324,7 @@ namespace shogun
 						    "token.\n",
 						    token.c_str())
 				}
-				it = std::next(it);
+				++it;
 			}
 			return cpp_time;
 		}
@@ -337,21 +337,20 @@ namespace shogun
 	 */
 	class ARFFDeserializer
 	{
-	private:
+	public:
 		/**
 		 * The attributes supported in the ARFF format
 		 */
 		enum class Attribute
 		{
-			Numeric = 0,
-			Integer = 1,
-			Real = 2,
-			String = 3,
-			Date = 4,
-			Nominal = 5
+			NUMERIC = 0,
+			INTEGER = 1,
+			REAL = 2,
+			STRING = 3,
+			DATE = 4,
+			NOMINAL = 5
 		};
 
-	public:
 		/**
 		 * ARFFDeserializer constructor with a filename.
 		 * Performs a check to see if a file can be streamed.
@@ -359,8 +358,12 @@ namespace shogun
 		 * i.e. not the correct permission.
 		 *
 		 * @param filename the name of the file to parse
+		 * @param primitive_type the type to parse the scalars in, i.e. numeric attributes
 		 */
-		explicit ARFFDeserializer(const std::string& filename)
+		explicit ARFFDeserializer(
+		    const std::string& filename,
+		    EPrimitiveType primitive_type = PT_FLOAT64)
+		    : m_primitive_type(primitive_type)
 		{
 			auto* file_stream = new std::ifstream(filename);
 			if (file_stream->fail())
@@ -379,17 +382,27 @@ namespace shogun
 		 * of proper deletion.
 		 *
 		 * @param filename the input stream
+		 * @param primitive_type the type to parse the scalars in, i.e. numeric attributes
 		 */
-		explicit ARFFDeserializer(std::shared_ptr<std::istream>& stream)
+		explicit ARFFDeserializer(
+		    std::shared_ptr<std::istream>& stream,
+		    EPrimitiveType primitive_type = PT_FLOAT64)
+		    : m_stream(stream), m_primitive_type(primitive_type)
 		{
-			m_stream = stream;
 		}
 #endif // SWIG
 		/**
-		 * Parse the file passed to the contructor.
+		 * Parse the file.
 		 *
 		 */
 		void read();
+
+		/**
+		 * Templated parser helper.
+		 *
+		 */
+		template <typename ScalarType, typename CharType>
+		void read_helper();
 
 		/**
 		 * Returns string parsed in @relation line
@@ -401,7 +414,7 @@ namespace shogun
 		}
 
 		/**
-		 * Returns the name of the features parsed in @attribute
+		 * Returns the name of the features parsed in "@attribute"
 		 * @return the relation string
 		 */
 		std::vector<std::string> get_feature_names() const noexcept
@@ -410,10 +423,21 @@ namespace shogun
 		}
 
 		/**
-		 * Get combined features from parsed data
+		 * Get combined features from parsed data.
 		 * @return
 		 */
-		std::shared_ptr<CCombinedFeatures> get_features() const;
+		std::shared_ptr<CCombinedFeatures> get_features() const noexcept
+		{
+			return m_features;
+		}
+
+		/**
+		 * Get ARFF attribute types.
+		 */
+		 std::vector<Attribute> get_attribute_types() const noexcept
+		{
+		 	return m_attributes;
+		}
 
 	private:
 		/**
@@ -485,41 +509,12 @@ namespace shogun
 			       token.find_first_of("string") != std::string::npos;
 		}
 #endif // SWIG
-
-		void reserve_vector_memory(size_t line_count)
-		{
-			VectorResizeVisitor visitor{line_count};
-			for (auto& vec : m_data_vectors)
-				shogun::visit(visitor, vec);
-		}
-
-		/**
-		 * Visitor pattern to reserve memory for a std::vector
-		 * wrapped in a variant class.
-		 */
-		struct VectorResizeVisitor
-		{
-			VectorResizeVisitor(size_t size) : m_size(size){};
-			template <typename T>
-			void operator()(std::vector<T>& v) const noexcept
-			{
-				v.reserve(m_size);
-			}
-			int m_size;
-		};
-
-		/**
-		 * Visitor pattern to determine size of a std::vector
-		 * wrapped in a variant class.
-		 */
-		struct VectorSizeVisitor
-		{
-			template <typename T>
-			size_t operator()(const std::vector<T>& v) const noexcept
-			{
-				return v.size();
-			}
-		};
+		template <typename ScalarType, typename CharType>
+		void reserve_vector_memory(
+		    size_t line_count,
+		    std::vector<variant<
+		        std::vector<ScalarType>,
+		        std::vector<std::basic_string<CharType>>>>& v);
 
 		/** character used in file to comment out a line */
 		static const char* m_comment_string;
@@ -531,8 +526,15 @@ namespace shogun
 		static const char* m_data_string;
 		/** the default C++ date format specified by the ARFF standard */
 		static const char* m_default_date_format;
+		/** missing data */
+		static const char* m_missing_value_string;
 		/** the name of the attributes */
 		std::vector<std::string> m_attribute_names;
+
+		/** the input stream */
+		std::shared_ptr<std::istream> m_stream;
+		/** the scalar type used for parsing */
+		EPrimitiveType m_primitive_type;
 
 		/** internal line number counter for exceptions */
 		size_t m_line_number;
@@ -544,8 +546,6 @@ namespace shogun
 		size_t m_row_count;
 		/** the string after m_relation_string*/
 		std::string m_relation;
-		/** the input stream */
-		std::shared_ptr<std::istream> m_stream;
 		/** the string where comments are stored */
 		std::vector<std::string> m_comments;
 		/** the string representing the current line being parsed */
@@ -558,11 +558,8 @@ namespace shogun
 		std::vector<std::pair<std::string, std::vector<std::string>>>
 		    m_nominal_attributes;
 
-		/** a vector containing the feature vectors containing the parsed data
-		 * in the correct type
-		 */
-		std::vector<variant<std::vector<float64_t>, std::vector<std::string>>>
-		    m_data_vectors;
+		/** the parsed features */
+		std::shared_ptr<CCombinedFeatures> m_features;
 	};
 } // namespace shogun
 
