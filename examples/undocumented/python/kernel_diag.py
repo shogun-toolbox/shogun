@@ -2,12 +2,13 @@
 parameter_list =[[23],[24]]
 def kernel_diag (diag=23):
 	from shogun import DummyFeatures
-	from shogun import DiagKernel
+	import shogun as sg
 
 	feats_train=DummyFeatures(10)
 	feats_test=DummyFeatures(17)
 
-	kernel=DiagKernel(feats_train, feats_train, diag)
+	kernel=sg.kernel("DiagKernel", diag=diag)
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)

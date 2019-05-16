@@ -253,10 +253,7 @@ namespace shogun {
 		{
 			if (lhs && rhs)
 				return lhs->equals(rhs);
-			else if (!lhs && !rhs)
-				return true;
-			else
-				return false;
+			else return !lhs && !rhs;
 		}
 
 		template <class T>

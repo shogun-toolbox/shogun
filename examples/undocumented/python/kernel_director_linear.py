@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import numpy
-from shogun import MSG_DEBUG
-traindat = numpy.random.random_sample((10,10))
-testdat = numpy.random.random_sample((10,10))
+import numpy as np
+
+traindat = np.random.random_sample((10,10))
+testdat = np.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
@@ -17,20 +17,20 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 		def __init__(self):
 			DirectorKernel.__init__(self, True)
 		def kernel_function(self, idx_a, idx_b):
-			seq1 = self.get_lhs().get_feature_vector(idx_a)
-			seq2 = self.get_rhs().get_feature_vector(idx_b)
-			return numpy.dot(seq1, seq2)
+			seq1 = self.get_lhs().get("feature_matrix")[idx_a]
+			seq2 = self.get_rhs().get("feature_matrix")[idx_b]
+			return np.dot(seq1, seq2)
 
 
-	from shogun import LinearKernel, AvgDiagKernelNormalizer
+	from shogun import AvgDiagKernelNormalizer
 	from shogun import Time
 
 	feats_train=sg.features(fm_train_real)
-	#feats_train.io.set_loglevel(MSG_DEBUG)
+	#feats_train.io.set_loglevel(0)
 	feats_train.parallel.set_num_threads(1)
 	feats_test=sg.features(fm_test_real)
 
-	kernel=LinearKernel()
+	kernel=sg.kernel("LinearKernel")
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 

@@ -6,13 +6,10 @@ from numpy import *
 from pylab import *
 from scipy import *
 
-from shogun import RealFeatures
 from shogun import MeanShiftDataGenerator
-from shogun import GaussianKernel, CombinedKernel
 from shogun import QuadraticTimeMMD, MMDKernelSelectionMax
 from shogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
-from shogun import EuclideanDistance
-from shogun import Statistics, Math
+import shogun as sg
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits
@@ -48,9 +45,9 @@ def quadratic_time_mmd_graphical():
 	sigmas=[2**x for x in range(-3,10)]
 	widths=[x*x*2 for x in sigmas]
 	print "kernel widths:", widths
-	combined=CombinedKernel()
+	combined=sg.kernel("CombinedKernel")
 	for i in range(len(sigmas)):
-		combined.append_kernel(GaussianKernel(10, widths[i]))
+		combined.add("kernel_array", sg.kernel("GaussianKernel", log_width=widths[i]))
 
 	# create MMD instance, use biased statistic
 	mmd=QuadraticTimeMMD(combined,features, m)
@@ -62,8 +59,7 @@ def quadratic_time_mmd_graphical():
 
 	# perform kernel selection
 	kernel=selection.select_kernel()
-	kernel=GaussianKernel.obtain_from_generic(kernel)
-	mmd.set_kernel(kernel);
+	mmd.set_kernel(kernel)
 	print "selected kernel width:", kernel.get_width()
 
 	# sample alternative distribution (new data each trial)

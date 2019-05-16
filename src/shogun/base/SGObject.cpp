@@ -748,11 +748,33 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
+	if (parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
+	{
+		SG_ERROR("The parameter %s::%s is registered as a function, "
+		   "use the run method instead", get_name(), _tag.name().c_str())
+	}
 	if (parameter.get_value().empty())
 	{
 		SG_ERROR(
 		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
 		    get_name());
+	}
+	return parameter;
+}
+
+AnyParameter CSGObject::get_function(const BaseTag& _tag) const
+{
+	const auto& parameter = self->get(_tag);
+	if (!parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
+	{
+		SG_ERROR("The parameter %s::%s is not registered as a function, "
+				 "use the get method instead", get_name(), _tag.name().c_str())
+	}
+	if (parameter.get_value().empty())
+	{
+		SG_ERROR(
+				"There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+				get_name());
 	}
 	return parameter;
 }
@@ -1067,7 +1089,7 @@ void CSGObject::init_auto_params()
 
 CSGObject* CSGObject::get(const std::string& name, index_t index) const
 {
-	auto* result = sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByNameIndex(index)));
+	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
 	{
 		SG_ERROR(
@@ -1081,7 +1103,7 @@ CSGObject* CSGObject::get(const std::string& name, index_t index) const
 CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
     noexcept
 {
-	return sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByName()));
+	return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
 }
 
 CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
@@ -1112,5 +1134,4 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
-
 }
