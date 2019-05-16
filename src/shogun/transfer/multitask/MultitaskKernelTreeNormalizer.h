@@ -102,7 +102,7 @@ public:
     }
 
     /** @return boolean indicating, whether this node is a leaf */
-    bool is_leaf()
+    bool is_leaf() const noexcept
 	{
 		return children.empty();
 
@@ -170,7 +170,7 @@ public:
 	 *  @param task_id task identifier
 	 *  @return node with id task_id
 	 */
-	CNode* get_node(int32_t task_id) {
+	CNode* get_node(int32_t task_id) const{
 		return nodes[task_id];
 	}
 
@@ -226,7 +226,7 @@ public:
 	 *  @param node_rhs node of right hand side
 	 *  @return intersection of the two sets of ancestors
 	 */
-	std::set<CNode*> intersect_root_path(CNode* node_lhs, CNode* node_rhs)
+	std::set<CNode*> intersect_root_path(CNode* node_lhs, CNode* node_rhs) const
 	{
 
 		std::set<CNode*> root_path_lhs = node_lhs->get_path_root();
@@ -247,7 +247,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t compute_node_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t compute_node_similarity(int32_t task_lhs, int32_t task_rhs) const
 	{
 
 		CNode* node_lhs = get_node(task_lhs);
@@ -297,13 +297,13 @@ public:
 	}
 
 	/** @return number of nodes */
-	int32_t get_num_nodes()
+	int32_t get_num_nodes() const noexcept
 	{
 		return (int32_t)(nodes.size());
 	}
 
 	/** @return number of leaves */
-	int32_t get_num_leaves()
+	int32_t get_num_leaves() const
 	{
 		int32_t num_leaves = 0;
 
@@ -319,7 +319,7 @@ public:
 	}
 
 	/** @return weight of node with identifier idx */
-	float64_t get_node_weight(int32_t idx)
+	float64_t get_node_weight(int32_t idx) const
 	{
 		CNode* node = get_node(idx);
 		return node->beta;
@@ -342,7 +342,7 @@ public:
 	}
 
 	/** @return mapping from name to id */
-	std::map<std::string, int32_t> get_name2id() {
+	std::map<std::string, int32_t> get_name2id() const noexcept {
 		return name2id;
 	}
 
@@ -438,7 +438,7 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 	{
 		//lookup tasks
 		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
@@ -459,7 +459,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -469,7 +469,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -513,7 +513,7 @@ public:
 	}
 
 	/** @return number of parameters/weights */
-	int32_t get_num_betas()
+	int32_t get_num_betas() const noexcept
 	{
 
 		return taxonomy.get_num_nodes();
@@ -523,7 +523,7 @@ public:
 	/**
 	 * @param idx id of weight
 	 * @return weight of node with given id */
-	float64_t get_beta(int32_t idx)
+	float64_t get_beta(int32_t idx) const
 	{
 
 		return taxonomy.get_node_weight(idx);
@@ -548,7 +548,7 @@ public:
 	 * @param node_rhs node_id on right hand side
 	 * @return similarity between nodes
 	 */
-	float64_t get_node_similarity(int32_t node_lhs, int32_t node_rhs)
+	float64_t get_node_similarity(int32_t node_lhs, int32_t node_rhs) const
 	{
 
 		ASSERT(node_lhs < num_nodes && node_lhs >= 0)

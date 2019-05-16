@@ -73,7 +73,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -83,7 +83,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -95,7 +95,7 @@ public:
 	/**
 	 *  @param idx index of MKL weight to get
 	 */
-	virtual float64_t get_beta(int32_t idx) = 0;
+	virtual float64_t get_beta(int32_t idx) const = 0;
 
 	/**
 	 *  @param idx index of MKL weight to set
@@ -107,7 +107,7 @@ public:
 	/**
 	 * @return number of sub-kernel weights for MKL
 	 */
-	virtual int32_t get_num_betas() = 0;
+	virtual int32_t get_num_betas() const noexcept = 0;
 
 
 	/** @return object name */

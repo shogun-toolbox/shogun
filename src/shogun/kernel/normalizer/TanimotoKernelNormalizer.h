@@ -74,7 +74,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 		{
 			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return value/(diag_sum-value);
@@ -84,7 +84,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
 			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
 			return 0;
@@ -94,7 +94,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
 			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
 			return 0;
@@ -108,12 +108,12 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		virtual const char* get_name() const {
 			return "TanimotoKernelNormalizer"; }
 
-    public:
+    protected:
 		/**
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num) const
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
@@ -137,7 +137,6 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 			return (v!=NULL);
 		}
 
-    protected:
 		/** diagonal left-hand side */
 		float64_t* diag_lhs;
 		/** diagonal right-hand side */

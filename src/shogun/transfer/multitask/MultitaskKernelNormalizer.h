@@ -99,7 +99,7 @@ public:
 	 * @param vec vector with containing task_id for each example
 	 * @return number of unique task ids
 	 */
-	int32_t get_num_unique_tasks(std::vector<int32_t> vec) {
+	int32_t get_num_unique_tasks(std::vector<int32_t> vec) const noexcept {
 
 		//sort
 		std::sort(vec.begin(), vec.end());
@@ -120,7 +120,7 @@ public:
 	 * @param idx_rhs index of right hand side vector
 	 */
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs)
+			int32_t idx_rhs) const
 	{
 
 		//lookup tasks
@@ -143,7 +143,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -153,7 +153,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -197,7 +197,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs) const
 	{
 
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)

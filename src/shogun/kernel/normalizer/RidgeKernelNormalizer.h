@@ -101,7 +101,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 		{
 			if (idx_lhs==idx_rhs)
 				return value+ridge;
@@ -113,7 +113,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
 			SG_ERROR("linadd not supported with Ridge normalization.\n")
 			return 0;
@@ -123,7 +123,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
 			SG_ERROR("linadd not supported with Ridge normalization.\n")
 			return 0;
