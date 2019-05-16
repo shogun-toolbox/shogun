@@ -148,7 +148,7 @@ TEST(KMeans, minibatch_training_test)
 	for (int32_t loop=0; loop<10; ++loop)
 	{
 		clustering->put<int32_t>("max_iter", 1000);
-		clustering->put<int32_t>("k", 4);
+		clustering->put<int32_t>("batch_size", 4);
 		clustering->train(features);
 		auto learnt_centers=wrap(distance->get_lhs()->as<CDenseFeatures<float64_t>>());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
