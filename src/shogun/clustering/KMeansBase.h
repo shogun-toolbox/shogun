@@ -68,71 +68,11 @@ class CKMeansBase : public CDistanceMachine
 		 */
 		virtual bool save(FILE* dstfile);
 
-		/** set k
-		 *
-		 * @param p_k new k
-		 */
-		void set_k(int32_t p_k);
-
-		/** get k
-		 *
-		 * @return the parameter k
-		 */
-		int32_t get_k();
-
-		/** set use_kmeanspp attribute
-		 *
-		 * @param kmpp Set true/false to use/not use KMeans++ initialization
-		 */
-		void set_use_kmeanspp(bool kmpp);
-
-		/** get use_kmeanspp attribute
-		 *
-		 * @return use_kmeanspp If KMeans++ initialization is used
-		 */
-		bool get_use_kmeanspp() const;
-
-		/** set fixed centers
-		 *
-		 * @param fixed true if fixed cluster centers are intended
-		 */
-		void set_fixed_centers(bool fixed);
-
-		/** get fixed centers
-		 *
-		 * @return whether boolean centers are to be used
-		 */
-		bool get_fixed_centers();
-
-		/** set maximum number of iterations
-		 *
-		 * @param iter the new maximum
-		 */
-		void set_max_iter(int32_t iter);
-
-		/** get maximum number of iterations
-		 *
-		 * @return maximum number of iterations
-		 */
-		float64_t get_max_iter();
-
-		/** get radiuses
-		 *
-		 * @return radiuses
-		 */
-		SGVector<float64_t> get_radiuses();
-
 		/** get centers
 		 *
 		 * @return cluster centers or empty matrix if no radiuses are there (not trained yet)
 		 */
 		SGMatrix<float64_t> get_cluster_centers() const;
-
-		/** get dimensions
-		 *
-		 * @return number of dimensions
-		 */
-		int32_t get_dimensions();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KMeansBase"; }
@@ -160,7 +100,10 @@ class CKMeansBase : public CDistanceMachine
 		* @return initial cluster centers: matrix (k columns, dim rows)
 		*/
 		SGMatrix<float64_t> kmeanspp();
-		
+
+		/**
+		 * Init the model (register params)
+		 */
 		void init();
 
 		/** Algorithm to initialize random cluster centers
