@@ -78,6 +78,8 @@ void CKMeansBase::set_random_centers()
 		lhs->free_feature_vector(vec, cluster_center_i);
 	}
 
+	observe<SGMatrix<float64_t>>(0, "mus");
+
 	SG_UNREF(lhs);
 
 }
@@ -132,10 +134,10 @@ void CKMeansBase::compute_cluster_variances()
 
 void CKMeansBase::initialize_training(CFeatures* data)
 {
-	REQUIRE(distance, "Distance is not provided")
-	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)")
-	REQUIRE(max_iter > 0, "The number of iterations must be greater than 0")
-	REQUIRE(k > 0, "The number of clusters must be greater than 0")
+	REQUIRE(distance, "Distance is not provided\n")
+	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)\n")
+	REQUIRE(max_iter > 0, "The number of iterations provided (%i) must be greater than 0\n", max_iter)
+	REQUIRE(k > 0, "The number of clusters provided (%i) must be greater than 0\n", k)
 
 	if (data)
 		distance->init(data, data);
@@ -163,7 +165,7 @@ void CKMeansBase::initialize_training(CFeatures* data)
 
 
 	if (mus_initial.matrix)
-		mus = mus_initial;
+		this->put<SGMatrix<float64_t>>("mus", mus_initial);
 	else
 		set_random_centers();
 
@@ -315,6 +317,7 @@ void CKMeansBase::init()
 	SG_ADD(&fixed_centers, "fixed_centers", "Use fixed centers");
 	SG_ADD(&R, "radiuses", "Cluster radiuses");
 	SG_ADD(&use_kmeanspp, "kmeanspp", "Whether use kmeans++", ParameterProperties::HYPER);
+	SG_ADD(&mus, "mus", "Cluster centers")
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }
