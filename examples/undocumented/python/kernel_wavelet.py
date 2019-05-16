@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
-from numpy import where
 
 lm=LoadMatrix()
 traindat = lm.load_numbers('../data/fm_train_real.dat')

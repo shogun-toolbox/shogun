@@ -635,6 +635,21 @@ public:
 		return get(tag);
 	}
 
+	/**
+	 *
+	 * @param name name of the parameter
+	 * @return value of the parameter corresponding to the input name and type
+	 */
+	void run(const std::string& name) const noexcept(false)
+	{
+		Tag<bool> tag(name);
+		auto param = get_function(tag);
+		if (!any_cast<bool>(param.get_value()))
+		{
+			SG_ERROR("Failed to run function %s::%s", get_name(), name.c_str())
+		}
+	}
+
 	/** Returns string representation of the object that contains
 	 * its name and parameters.
 	 *
@@ -839,7 +854,7 @@ protected:
 	}
 
 #ifndef SWIG
-	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
+	/** Puts a pointer to a (lazily evaluated) const function into the parameter map.
 	 *
 	 * @param name name of the parameter
 	 * @param method pointer to the method
@@ -850,11 +865,28 @@ protected:
 		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Dynamic parameter",
-			ParameterProperties::HYPER |
-			ParameterProperties::GRADIENT |
-            ParameterProperties::MODEL);
+			ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
+		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
+	}
+
+	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
+	 * The bound function can modify the class members and can only be
+	 * invoked using CSGObject::run(name).
+	 *
+	 * @param name name of the parameter
+	 * @param method pointer to the method
+	 */
+	template <typename T, typename S>
+	void watch_method(const std::string& name, T (S::*method)())
+	{
+		BaseTag tag(name);
+		AnyParameterProperties properties(
+			"Non-const function",
+			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY);
+		std::function<T()> bind_method =
+			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
 	}
 #endif
@@ -962,6 +994,14 @@ private:
 	 * @return value of the parameter identified by the input tag
 	 */
 	AnyParameter get_parameter(const BaseTag& _tag) const;
+
+	/** Getter for a class function, identified by a BaseTag.
+	 * Throws an exception if the class does not have such a parameter.
+	 *
+	 * @param _tag name information of parameter
+	 * @return value of the parameter identified by the input tag
+	 */
+	AnyParameter get_function(const BaseTag& _tag) const;
 
 	/** Gets an incremental hash of all parameters as well as the parameters of
 	 * CSGObject children of the current object's parameters.

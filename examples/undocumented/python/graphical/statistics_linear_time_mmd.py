@@ -8,11 +8,11 @@ from scipy import *
 
 from shogun import RealFeatures
 from shogun import MeanShiftDataGenerator
-from shogun import GaussianKernel, CombinedKernel
 from shogun import LinearTimeMMD, MMDKernelSelectionOpt
 from shogun import PERMUTATION, MMD1_GAUSSIAN
 from shogun import EuclideanDistance
 from shogun import Statistics, Math
+import shogun as sg
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits
@@ -44,9 +44,9 @@ def linear_time_mmd_graphical():
 	sigmas=[2**x for x in range(-3,10)]
 	widths=[x*x*2 for x in sigmas]
 	print "kernel widths:", widths
-	combined=CombinedKernel()
+	combined=sg.kernel("CombinedKernel")
 	for i in range(len(sigmas)):
-		combined.append_kernel(GaussianKernel(10, widths[i]))
+		combined.append_kernel(sg.kernel("GaussianKernel", log_width=widths[i]))
 
 	# mmd instance using streaming features, blocksize of 10000
 	block_size=1000
@@ -58,8 +58,7 @@ def linear_time_mmd_graphical():
 
 	# perform kernel selection
 	kernel=selection.select_kernel()
-	kernel=GaussianKernel.obtain_from_generic(kernel)
-	mmd.set_kernel(kernel);
+	mmd.set_kernel(kernel)
 	print "selected kernel width:", kernel.get_width()
 
 	# sample alternative distribution, stream ensures different samples each run

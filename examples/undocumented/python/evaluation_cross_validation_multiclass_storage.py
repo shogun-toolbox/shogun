@@ -24,7 +24,6 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from shogun import splitting_strategy
     from shogun import MulticlassLabels
     from shogun import CombinedFeatures
-    from shogun import CombinedKernel
     from shogun import MKLMulticlass
     from shogun import Statistics, MSG_DEBUG, Math
     from shogun import ROCEvaluation
@@ -42,10 +41,10 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     labels=MulticlassLabels(label_traindat)
 
     # kernel, different Gaussians combined
-    kernel=CombinedKernel()
-    kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(0.1)))
-    kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(1)))
-    kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(2)))
+    kernel=sg.kernel("CombinedKernel")
+    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(0.1)))
+    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(1)))
+    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(2)))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
     svm=MKLMulticlass(1.0,kernel,labels);

@@ -3,7 +3,7 @@
 import shogun as sg
 from shogun import StringCharFeatures, CombinedFeatures, StringWordFeatures
 from shogun import DNA, PROTEIN, Labels
-from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
+from shogun import WeightedDegreeStringKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
 from shogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
 from shogun import BinaryLabels, DNA, Alphabet
@@ -17,6 +17,8 @@ import sys
 import random
 import bz2
 import pickle
+import inspect
+import shogun as sg
 
 ###################################################
 #             Random Data
@@ -167,10 +169,10 @@ def serialization_string_kernels(n_data, num_shifts, size):
 
     ########
     # combined kernel
-    kernel = CombinedKernel()
-    kernel.append_kernel(kernel_wdk)
-    kernel.append_kernel(kernel_spec_1)
-    kernel.append_kernel(kernel_spec_2)
+    kernel = sg.kernel("CombinedKernel")
+    kernel.add("kernel_array", kernel_wdk)
+    kernel.add("kernel_array", kernel_spec_1)
+    kernel.add("kernel_array", kernel_spec_2)
 
     # init kernel
     labels = BinaryLabels(train_lt);
