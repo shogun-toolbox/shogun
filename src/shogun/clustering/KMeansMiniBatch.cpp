@@ -91,6 +91,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
 			}
 		}
+		this->put<SGMatrix<float64_t>>("mus", rhs_mus->get_feature_matrix());
 	}
 	SG_UNREF(lhs);
 	distance->replace_rhs(rhs_cache);
