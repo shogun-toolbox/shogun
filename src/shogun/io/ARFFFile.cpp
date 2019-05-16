@@ -179,6 +179,12 @@ void ARFFDeserializer::read()
 	};
 	process_chunk(read_attributes, check_attributes, true);
 
+	auto pos = m_stream->tellg();
+	auto approx_data_line_count = std::count(std::istreambuf_iterator<char>(*m_stream),
+	        std::istreambuf_iterator<char>(), '\n');
+	reserve_vector_memory(approx_data_line_count);
+	m_stream->seekg(pos);
+
 	auto read_data = [this]() {
 		// it's a comment and can be skipped
 		if (SG_UNLIKELY(m_current_line.substr(0, 1) == m_comment_string))

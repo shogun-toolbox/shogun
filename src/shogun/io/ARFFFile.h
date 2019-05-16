@@ -22,6 +22,7 @@
 
 namespace shogun
 {
+#ifndef SWIG
 	/** Contains miscellaneous string manipulation functions using the STL and
 	 * Java to C++ date format utilities */
 	namespace arff_detail
@@ -327,7 +328,8 @@ namespace shogun
 			}
 			return cpp_time;
 		}
-	} // namespace arff_detail
+	}  // namespace arff_detail
+#endif // SWIG
 	/**
 	 * ARFFDeserializer parses files in the ARFF format.
 	 * For information about this format see
@@ -370,7 +372,7 @@ namespace shogun
 			}
 			m_stream = std::unique_ptr<std::istream>(file_stream);
 		}
-
+#ifndef SWIG
 		/**
 		 * ARFFDeserializer constructor with an input stream.
 		 * This constructors copies the stream and takes care
@@ -382,7 +384,7 @@ namespace shogun
 		{
 			m_stream = stream;
 		}
-
+#endif // SWIG
 		/**
 		 * Parse the file passed to the contructor.
 		 *
@@ -393,7 +395,7 @@ namespace shogun
 		 * Returns string parsed in @relation line
 		 * @return the relation string
 		 */
-		SG_FORCED_INLINE std::string get_relation() const noexcept
+		std::string get_relation() const noexcept
 		{
 			return m_relation;
 		}
@@ -402,8 +404,7 @@ namespace shogun
 		 * Returns the name of the features parsed in @attribute
 		 * @return the relation string
 		 */
-		SG_FORCED_INLINE std::vector<std::string> get_feature_names() const
-		    noexcept
+		std::vector<std::string> get_feature_names() const noexcept
 		{
 			return m_attribute_names;
 		}
@@ -468,7 +469,7 @@ namespace shogun
 			if (!arff_detail::is_blank(m_current_line))
 				func();
 		}
-
+#ifndef SWIG
 		/**
 		 * Checks if a token represented by a string
 		 * denotes a primitive type in the ARFF format
@@ -483,6 +484,29 @@ namespace shogun
 			       token.find_first_of("real") != std::string::npos ||
 			       token.find_first_of("string") != std::string::npos;
 		}
+#endif // SWIG
+
+		void reserve_vector_memory(size_t line_count)
+		{
+			VectorResizeVisitor visitor{line_count};
+			for (auto& vec : m_data_vectors)
+				shogun::visit(visitor, vec);
+		}
+
+		/**
+		 * Visitor pattern to reserve memory for a std::vector
+		 * wrapped in a variant class.
+		 */
+		struct VectorResizeVisitor
+		{
+			VectorResizeVisitor(size_t size) : m_size(size){};
+			template <typename T>
+			void operator()(std::vector<T>& v) const noexcept
+			{
+				v.reserve(m_size);
+			}
+			int m_size;
+		};
 
 		/**
 		 * Visitor pattern to determine size of a std::vector
