@@ -38,25 +38,6 @@ CKMeansMiniBatch::~CKMeansMiniBatch()
 {
 }
 
-void CKMeansMiniBatch::set_batch_size(int32_t b)
-{
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	batch_size=b;
-}
-
-int32_t CKMeansMiniBatch::get_batch_size() const
-{
-	return batch_size;
-}
-
-void CKMeansMiniBatch::set_mb_params(int32_t b, int32_t t)
-{
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	REQUIRE(t>0, "Parameter number of iterations should be > 0");
-	batch_size=b;
-	max_iter = t;
-}
-
 void CKMeansMiniBatch::minibatch_KMeans()
 {
 	REQUIRE(batch_size>0,

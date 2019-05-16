@@ -147,7 +147,8 @@ TEST(KMeans, minibatch_training_test)
 
 	for (int32_t loop=0; loop<10; ++loop)
 	{
-		clustering->set_mb_params(4,1000);
+		clustering->put<int32_t>("max_iter", 1000);
+		clustering->put<int32_t>("k", 4);
 		clustering->train(features);
 		auto learnt_centers=wrap(distance->get_lhs()->as<CDenseFeatures<float64_t>>());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
@@ -181,7 +182,7 @@ TEST(KMeans, fixed_centers)
 	SG_REF(features);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(2, distance,initial_centers);
-	clustering->set_fixed_centers(true);
+	clustering->put<bool>("fixed_centers", true);
 
 	clustering->train(features);
 	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
