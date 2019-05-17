@@ -50,38 +50,46 @@ namespace shogun
 		}
 
 		/**
-		 * Trims the whitespace to the left of a string in place.
+		 * Trims to the left of a string in place according to trim_func
 		 * @param s the string to trim
+		 * @param trim_func a unary function that determines what values to
+		 * erase
 		 */
-		SG_FORCED_INLINE void left_trim(std::string& s)
+		template <typename FunctorT>
+		SG_FORCED_INLINE void left_trim(std::string& s, FunctorT trim_func)
 		{
-			s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](char val) {
-				        return !std::isspace(val);
-			        }));
+			s.erase(s.begin(), std::find_if(s.begin(), s.end(), trim_func));
 		}
 
 		/**
-		 * Trims the whitespace to the right of a string in place.
+		 * Trims to the right of a string in place according to trim_func
 		 * @param s the string to trim
+		 * @param trim_func a unary function that determines what values to
+		 * erase
 		 */
-		SG_FORCED_INLINE void right_trim(std::string& s)
+		template <typename FunctorT>
+		SG_FORCED_INLINE void right_trim(std::string& s, FunctorT trim_func)
 		{
 			s.erase(
-			    std::find_if(
-			        s.rbegin(), s.rend(),
-			        [](char val) { return !std::isspace(val); })
-			        .base(),
-			    s.end());
+			    std::find_if(s.rbegin(), s.rend(), trim_func).base(), s.end());
 		}
 
+		auto lambda_is_space = [](const auto& val) {
+			return !std::isspace(val);
+		};
 		/**
-		 * Returns the string with any whitespace to the left and right trimmed.
+		 * Returns the string trimmed to the left and right according to
+		 * trim_func. By default this function trims whitespaces
 		 * @param s the string to trim
+		 * @param trim_func a unary function that determines what values to
+		 * erase
 		 */
-		SG_FORCED_INLINE std::string trim(std::string line)
+		template <typename FunctorT = decltype(lambda_is_space)>
+		SG_FORCED_INLINE std::string
+		trim(std::string line, FunctorT trim_func = lambda_is_space)
 		{
-			left_trim(line);
-			right_trim(line);
+			left_trim(line, trim_func);
+			right_trim(line, trim_func);
 			return line;
 		}
 
@@ -94,28 +102,30 @@ namespace shogun
 		 * @param quotes a string with the characters that are considered
 		 * quotes, i.e. any text between quotes is kept together.
 		 */
+		template <typename T>
 		SG_FORCED_INLINE void split(
-		    const std::string& s, const std::string& delimiters,
-		    std::back_insert_iterator<std::vector<std::string>> result,
+		    const std::basic_string<T>& s, const std::string& delimiters,
+		    std::back_insert_iterator<std::vector<std::basic_string<T>>> result,
 		    const std::string& quotes)
 		{
 			auto it = s.begin();
 			auto begin = s.begin();
-			while (arff_detail::contains(*it, delimiters))
+			while (contains(*it, delimiters))
 			{
 				++it;
 				begin = it;
 			}
 			while (it != s.end())
 			{
-				if (arff_detail::contains(*it, delimiters))
+				if (contains(*it, delimiters))
 				{
 				}
-				else if (arff_detail::contains(*it, quotes))
+				else if (contains(*it, quotes))
 				{
+					auto quote_type = *it;
 					++it;
 					begin = it;
-					while (!arff_detail::contains(*it, quotes))
+					while (*it != quote_type)
 					{
 						++it;
 					}
@@ -128,13 +138,12 @@ namespace shogun
 				else
 				{
 					begin = it;
-					while (!arff_detail::contains(*it, delimiters) &&
-					       it != s.end())
+					while (!contains(*it, delimiters) && it != s.end())
 					{
 						++it;
 					}
 					auto token = std::string(begin, it);
-					if (!arff_detail::is_blank(token))
+					if (!is_blank(token))
 						*(result++) = token;
 				}
 				if (it != s.end())
@@ -156,7 +165,7 @@ namespace shogun
 			std::string result;
 			std::transform(
 			    line.begin(), line.end(), std::back_inserter(result),
-			    [](uint8_t val) { return std::tolower(val); });
+			    [](auto val) { return std::tolower(val); });
 			return result;
 		}
 
@@ -358,12 +367,15 @@ namespace shogun
 		 * i.e. not the correct permission.
 		 *
 		 * @param filename the name of the file to parse
-		 * @param primitive_type the type to parse the scalars in, i.e. numeric attributes
+		 * @param primitive_type the type to parse the scalars in, i.e. numeric
+		 * attributes
 		 */
 		explicit ARFFDeserializer(
 		    const std::string& filename,
-		    EPrimitiveType primitive_type = PT_FLOAT64)
-		    : m_primitive_type(primitive_type)
+		    EPrimitiveType primitive_type = PT_FLOAT64,
+		    EPrimitiveType string_primitive_type = PT_UINT8)
+		    : m_primitive_type(primitive_type),
+		      m_string_primitive_type(string_primitive_type)
 		{
 			auto* file_stream = new std::ifstream(filename);
 			if (file_stream->fail())
@@ -382,12 +394,15 @@ namespace shogun
 		 * of proper deletion.
 		 *
 		 * @param filename the input stream
-		 * @param primitive_type the type to parse the scalars in, i.e. numeric attributes
+		 * @param primitive_type the type to parse the scalars in, i.e. numeric
+		 * attributes
 		 */
 		explicit ARFFDeserializer(
 		    std::shared_ptr<std::istream>& stream,
-		    EPrimitiveType primitive_type = PT_FLOAT64)
-		    : m_stream(stream), m_primitive_type(primitive_type)
+		    EPrimitiveType primitive_type = PT_FLOAT64,
+		    EPrimitiveType string_primitive_type = PT_UINT8)
+		    : m_stream(stream), m_primitive_type(primitive_type),
+		      m_string_primitive_type(string_primitive_type)
 		{
 		}
 #endif // SWIG
@@ -396,6 +411,13 @@ namespace shogun
 		 *
 		 */
 		void read();
+
+		/**
+		 * Templated parser helper for string container primitive type.
+		 *
+		 */
+		template <typename ScalarType>
+		void read_string_dispatcher();
 
 		/**
 		 * Templated parser helper.
@@ -434,9 +456,9 @@ namespace shogun
 		/**
 		 * Get ARFF attribute types.
 		 */
-		 std::vector<Attribute> get_attribute_types() const noexcept
+		std::vector<Attribute> get_attribute_types() const noexcept
 		{
-		 	return m_attributes;
+			return m_attributes;
 		}
 
 	private:
@@ -535,6 +557,8 @@ namespace shogun
 		std::shared_ptr<std::istream> m_stream;
 		/** the scalar type used for parsing */
 		EPrimitiveType m_primitive_type;
+		/** the string underlying type used for parsing */
+		EPrimitiveType m_string_primitive_type;
 
 		/** internal line number counter for exceptions */
 		size_t m_line_number;

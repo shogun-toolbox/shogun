@@ -129,7 +129,7 @@ TEST(ARFFFileTest, Parse_nominal)
 	    "@relation test_nominal \n"
 	    "% \n"
 	    "% \n"
-	    "@attribute VAR1 {\"a\", b, \"c 1\", \'¯\\_(ツ)_/¯\'} \n"
+	    "@attribute \"Twist n\' Shout\" {\"a\", b, \"c 1\", \'¯\\_(ツ)_/¯\'} \n"
 	    "@attribute VAR2 numeric \n"
 	    "% \n"
 	    "% \n"
@@ -165,6 +165,6 @@ TEST(ARFFFileTest, Parse_nominal)
 	}
 	ASSERT_EQ(parser->get_relation(), "test_nominal");
 	ASSERT_EQ(parser->get_feature_names().size(), 2);
-	ASSERT_EQ(parser->get_feature_names()[0], "VAR1");
+	ASSERT_EQ(parser->get_feature_names()[0], "Twist n\' Shout");
 	ASSERT_EQ(parser->get_feature_names()[1], "VAR2");
 }

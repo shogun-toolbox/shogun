@@ -124,47 +124,76 @@ void ARFFDeserializer::read_helper()
 	auto check_relation = [this]() { return !m_relation.empty(); };
 	process_chunk(read_relation, check_relation, true);
 
+	// parse the @attributes section
 	auto read_attributes = [this, &data_vectors]() {
 		if (to_lower(m_current_line.substr(0, strlen(m_attribute_string))) ==
 		    m_attribute_string)
 		{
-			// store attribute name and type
-			std::string name;
-			std::string type;
+			std::string name, type;
 			auto inner_string =
 			    m_current_line.substr(strlen(m_attribute_string));
-			left_trim(inner_string);
+			left_trim(
+			    inner_string, [](auto val) { return !std::isspace(val); });
 			auto it = inner_string.begin();
-			while (it != inner_string.end())
+			if (contains(*it, "\"\'"))
 			{
-				if (!std::isspace(*it))
+				auto quote_type = *it;
+				++it;
+				auto begin = it;
+				while (*it != quote_type && it != inner_string.end())
 					++it;
-				else
-				{
-					name = trim({inner_string.begin(), it});
-					type = trim({it, inner_string.end()});
-					break;
-				}
+				if (it == inner_string.end())
+					SG_SERROR(
+						"Encountered unbalanced parenthesis in attribute "
+						"declaration on line %d: \"%s\"\n",
+						m_line_number, m_current_line.c_str())
+				name = {begin, it};
+				type = trim({std::next(it), inner_string.end()});
 			}
+			else
+			{
+				auto begin = it;
+				while (!std::isspace(*it))
+					++it;
+				if (it == inner_string.end() && it != inner_string.end())
+				SG_SERROR(
+						"Expected at least two elements in attribute "
+						"declaration on line %d: \"%s\"",
+						m_line_number, m_current_line.c_str())
+				name = {begin, it};
+				type = trim({std::next(it), inner_string.end()});
+			}
+
+			SG_SDEBUG("name: %s\n", name.c_str())
+			SG_SDEBUG("type: %s\n", type.c_str())
+
+			if (name.empty() || type.empty())
+				SG_SERROR(
+				    "Could not find the name and type on line %d: \"%s\".\n",
+				    m_line_number, m_current_line.c_str())
 			if (it == inner_string.end())
 				SG_SERROR(
 				    "Could not split attibute name and type on line %d: "
 				    "\"%s\".\n",
 				    m_line_number, m_current_line.c_str())
+
 			// check if it is nominal
 			if (type[0] == '{')
 			{
 				// @ATTRIBUTE class {Iris-setosa,Iris-versicolor,Iris-virginica}
 				std::vector<std::string> attributes;
-				// split norminal values: "{A, B, C}" to vector{A, B, C}
+				// split nominal values: "{A, B, C}" to vector{A, B, C}
 				split(
 				    type.substr(1, type.size() - 2), ", ",
 				    std::back_inserter(attributes), "\'\"");
+				auto processed_name = trim(name, [](auto val) {
+					return !std::isspace(val) && val != '\'' && val != '\"';
+				});
+				m_attribute_names.emplace_back(processed_name);
 				m_nominal_attributes.emplace_back(
-				    std::make_pair(name, attributes));
+						std::make_pair(name, attributes));
 				m_attributes.push_back(Attribute::NOMINAL);
 				data_vectors.emplace_back(std::vector<ScalarType>{});
-				m_attribute_names.emplace_back(name);
 				return;
 			}
 
@@ -238,7 +267,10 @@ void ARFFDeserializer::read_helper()
 				SG_SERROR(
 				    "Unexpected format in @ATTRIBUTE on line %d: %s\n",
 				    m_line_number, m_current_line.c_str());
-			m_attribute_names.emplace_back(name);
+			auto processed_name = trim(name, [](auto val) {
+				return !std::isspace(val) && val != '\'' && val != '\"';
+			});
+			m_attribute_names.emplace_back(processed_name);
 		}
 		// comments in this section are ignored
 		else if (m_current_line.substr(0, 1) == m_comment_string)
@@ -256,13 +288,15 @@ void ARFFDeserializer::read_helper()
 	};
 	process_chunk(read_attributes, check_attributes, true);
 
+	// estimate the size of the @data section
 	auto pos = m_stream->tellg();
 	auto approx_data_line_count = std::count(
 	    std::istreambuf_iterator<char>(*m_stream),
-	    std::istreambuf_iterator<char>(), '\n');
+		std::istreambuf_iterator<char>(), '\n');
 	reserve_vector_memory(approx_data_line_count, data_vectors);
 	m_stream->seekg(pos);
 
+	// read the @data section
 	auto read_data = [this, &data_vectors]() {
 		// it's a comment and can be skipped
 		if (SG_UNLIKELY(m_current_line.substr(0, 1) == m_comment_string))
@@ -271,11 +305,10 @@ void ARFFDeserializer::read_helper()
 		if (SG_UNLIKELY(
 		        to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
 		        m_data_string))
-		{
 			return;
-		}
+
 		// assumes that until EOF we should expect comma delimited values
-		std::vector<std::string> elems;
+		std::vector<std::basic_string<CharType>> elems;
 		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
 		// only parse rows that do not contain missing values
 		if (std::find(elems.begin(), elems.end(), m_missing_value_string) ==
@@ -366,11 +399,7 @@ void ARFFDeserializer::read_helper()
 			++m_row_count;
 		}
 	};
-	auto check_data = [this, &data_vectors]() {
-		// check X values
-		SG_SDEBUG(
-		    "size: %d, cols: %d, rows: %d", data_vectors.size(),
-		    data_vectors.size() / m_row_count, m_row_count)
+	auto check_data = [&data_vectors]() {
 		if (!data_vectors.empty())
 		{
 			auto feature_count = data_vectors.size();
@@ -389,6 +418,8 @@ void ARFFDeserializer::read_helper()
 		return true;
 	};
 	process_chunk(read_data, check_data, true);
+
+	// transform data into a feature object
 	m_features = std::make_shared<CCombinedFeatures>();
 	index_t row_count = shogun::visit(VectorSizeVisitor{}, data_vectors[0]);
 	for (int i = 0; i < data_vectors.size(); ++i)
@@ -414,7 +445,7 @@ void ARFFDeserializer::read_helper()
 		break;
 		case Attribute::STRING:
 		{
-			auto casted_vec = shogun::get<std::vector<std::string>>(vec);
+			auto casted_vec = shogun::get<std::vector<std::basic_string<CharType>>>(vec);
 			index_t max_string_length = 0;
 			for (const auto& el : casted_vec)
 			{
@@ -438,43 +469,63 @@ void ARFFDeserializer::read_helper()
 	}
 }
 
+template <typename ScalarType>
+void ARFFDeserializer::read_string_dispatcher()
+{
+	switch(m_string_primitive_type)
+	{
+		case EPrimitiveType::PT_UINT8:
+		{
+			read_helper<ScalarType, char>();
+		}
+		break;
+		case EPrimitiveType::PT_UINT16:
+		{
+			read_helper<ScalarType, char>();
+		}
+		break;
+		default:
+			SG_SERROR("The provided type for string parsing is not valid!\n")
+	}
+}
+
 void ARFFDeserializer::read()
 {
 	switch (m_primitive_type)
 	{
 	case EPrimitiveType::PT_INT8:
 	{
-		read_helper<int8_t, char>();
+		read_string_dispatcher<int8_t>();
 	}
 	break;
 	case EPrimitiveType::PT_INT16:
 	{
-		read_helper<int16_t, char>();
+		read_string_dispatcher<int16_t>();
 	}
 	break;
 	case EPrimitiveType::PT_INT32:
 	{
-		read_helper<int32_t, char>();
+		read_string_dispatcher<int32_t>();
 	}
 	break;
 	case EPrimitiveType::PT_INT64:
 	{
-		read_helper<int64_t, char>();
+		read_string_dispatcher<int64_t>();
 	}
 	break;
 	case EPrimitiveType::PT_FLOAT32:
 	{
-		read_helper<float32_t, char>();
+		read_string_dispatcher<float32_t>();
 	}
 	break;
 	case EPrimitiveType::PT_FLOAT64:
 	{
-		read_helper<float64_t, char>();
+		read_string_dispatcher<float64_t>();
 	}
 	break;
 	case EPrimitiveType::PT_FLOATMAX:
 	{
-		read_helper<floatmax_t, char>();
+		read_string_dispatcher<floatmax_t>();
 	}
 	break;
 	default:
@@ -485,10 +536,8 @@ void ARFFDeserializer::read()
 template <typename ScalarType, typename CharType>
 void ARFFDeserializer::reserve_vector_memory(
     size_t line_count,
-    std::vector < variant<
-                      std::vector<ScalarType>,
-                      std::vector<std::basic_string<CharType>>>> &
-        v)
+    std::vector<variant<
+        std::vector<ScalarType>, std::vector<std::basic_string<CharType>>>>& v)
 {
 	VectorResizeVisitor visitor{line_count};
 	for (auto& vec : v)
