@@ -185,7 +185,7 @@ class CCombinedFeatures : public CFeatures
 
 	protected:
 		/** feature array */
-		CDynamicObjectArray* feature_array;
+		std::vector<CFeatures*> feature_array;
 
 		/** number of vectors
 		 * must match between sub features

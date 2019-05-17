@@ -34,7 +34,6 @@ CFeatures* CCombinedFeatures::duplicate() const
 
 CCombinedFeatures::~CCombinedFeatures()
 {
-	SG_UNREF(feature_array);
 }
 
 CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
@@ -42,7 +41,7 @@ CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
 	REQUIRE(
 	    idx < get_num_feature_obj() && idx>=0, "Feature index (%d) must be within [%d, %d]",
 	    idx, 0, get_num_feature_obj()-1);
-	return (CFeatures*) feature_array->get_element(idx);
+	return feature_array.at(idx);
 }
 
 void CCombinedFeatures::list_feature_objs() const
@@ -129,7 +128,8 @@ bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
 	}
 
 	num_vec=n;
-	return feature_array->insert_element(obj, idx);
+	feature_array.insert(feature_array.begin()+idx, obj);
+	return true;
 }
 
 bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
@@ -146,27 +146,25 @@ bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 	num_vec=n;
 
 	int num_feature_obj = get_num_feature_obj();
-	feature_array->push_back(obj);
-	return num_feature_obj+1 == feature_array->get_num_elements();
+	feature_array.push_back(obj);
+	return num_feature_obj+1 == feature_array.size();
 }
 
 bool CCombinedFeatures::delete_feature_obj(int32_t idx)
 {
-	return feature_array->delete_element(idx);
+	feature_array.erase(feature_array.begin()+idx);
+	return true;
 }
 
 int32_t CCombinedFeatures::get_num_feature_obj() const
 {
-	return feature_array->get_num_elements();
+	return feature_array.size();
 }
 
 void CCombinedFeatures::init()
 {
-	feature_array = new CDynamicObjectArray();
-	SG_REF(feature_array);
-
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
-	SG_ADD(&feature_array, "feature_array", "Feature array.");
+	watch_param("feature_array", &feature_array);
 }
 
 CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
@@ -299,10 +297,10 @@ void CCombinedFeatures::remove_all_subsets()
 CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)
 {
 	/* this is returned with the results of copy_subset of sub-features */
-	CCombinedFeatures* result=new CCombinedFeatures();
+	auto* result=new CCombinedFeatures();
 
 	/* map to only copy same feature objects once */
-	CMap<CFeatures*, CFeatures*>* processed=new CMap<CFeatures*, CFeatures*>();
+	auto* processed=new CMap<CFeatures*, CFeatures*>();
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CFeatures* current=get_feature_obj(f_idx);
