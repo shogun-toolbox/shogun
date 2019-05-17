@@ -51,9 +51,6 @@ float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> ve
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(output)
-	// write access is internally between output[start..stop] so the following
-	// line is necessary to write to output[0...(stop-start-1)]
-	output-=start;
 	ASSERT(start>=0)
 	ASSERT(start<stop)
 	ASSERT(stop<=get_num_vectors())
@@ -81,7 +78,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #endif
 
 		int32_t t_start=thread_num*step;
-		int32_t t_stop=(thread_num==num_threads) ? stop : (thread_num+1)*step;
+		int32_t t_stop=(thread_num==num_threads) ? num_vectors : (thread_num+1)*step;
 
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
@@ -93,9 +90,9 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #endif
 		{
 			if (alphas)
-				output[i]=alphas[i]*this->dense_dot(i, vec, dim)+b;
+				output[i]=alphas[i]*this->dense_dot(i + start, vec, dim)+b;
 			else
-				output[i]=this->dense_dot(i, vec, dim)+b;
+				output[i]=this->dense_dot(i + start, vec, dim)+b;
 			pb.print_progress();
 		}
 	}
