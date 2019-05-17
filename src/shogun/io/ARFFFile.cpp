@@ -144,9 +144,9 @@ void ARFFDeserializer::read_helper()
 					++it;
 				if (it == inner_string.end())
 					SG_SERROR(
-						"Encountered unbalanced parenthesis in attribute "
-						"declaration on line %d: \"%s\"\n",
-						m_line_number, m_current_line.c_str())
+					    "Encountered unbalanced parenthesis in attribute "
+					    "declaration on line %d: \"%s\"\n",
+					    m_line_number, m_current_line.c_str())
 				name = {begin, it};
 				type = trim({std::next(it), inner_string.end()});
 			}
@@ -156,10 +156,10 @@ void ARFFDeserializer::read_helper()
 				while (!std::isspace(*it))
 					++it;
 				if (it == inner_string.end() && it != inner_string.end())
-				SG_SERROR(
-						"Expected at least two elements in attribute "
-						"declaration on line %d: \"%s\"",
-						m_line_number, m_current_line.c_str())
+					SG_SERROR(
+					    "Expected at least two elements in attribute "
+					    "declaration on line %d: \"%s\"",
+					    m_line_number, m_current_line.c_str())
 				name = {begin, it};
 				type = trim({std::next(it), inner_string.end()});
 			}
@@ -191,7 +191,7 @@ void ARFFDeserializer::read_helper()
 				});
 				m_attribute_names.emplace_back(processed_name);
 				m_nominal_attributes.emplace_back(
-						std::make_pair(name, attributes));
+				    std::make_pair(name, attributes));
 				m_attributes.push_back(Attribute::NOMINAL);
 				data_vectors.emplace_back(std::vector<ScalarType>{});
 				return;
@@ -292,7 +292,7 @@ void ARFFDeserializer::read_helper()
 	auto pos = m_stream->tellg();
 	auto approx_data_line_count = std::count(
 	    std::istreambuf_iterator<char>(*m_stream),
-		std::istreambuf_iterator<char>(), '\n');
+	    std::istreambuf_iterator<char>(), '\n');
 	reserve_vector_memory(approx_data_line_count, data_vectors);
 	m_stream->seekg(pos);
 
@@ -310,6 +310,11 @@ void ARFFDeserializer::read_helper()
 		// assumes that until EOF we should expect comma delimited values
 		std::vector<std::basic_string<CharType>> elems;
 		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
+		if (elems.size() != m_attributes.size())
+			SG_SERROR(
+			    "Unexpected number of values on line %d, expected %d "
+			    "values, but found %d.\n",
+			    m_line_number, m_attributes.size(), elems.size())
 		// only parse rows that do not contain missing values
 		if (std::find(elems.begin(), elems.end(), m_missing_value_string) ==
 		    elems.end())
@@ -390,12 +395,6 @@ void ARFFDeserializer::read_helper()
 					    .emplace_back(elems[i]);
 				}
 			}
-			if (i != m_attributes.size())
-				SG_SERROR(
-				    "Unexpected number of values on line %d, expected %d "
-				    "values, "
-				    "but found %d.\n",
-				    m_line_number, m_attributes.size(), i)
 			++m_row_count;
 		}
 	};
@@ -445,7 +444,8 @@ void ARFFDeserializer::read_helper()
 		break;
 		case Attribute::STRING:
 		{
-			auto casted_vec = shogun::get<std::vector<std::basic_string<CharType>>>(vec);
+			auto casted_vec =
+			    shogun::get<std::vector<std::basic_string<CharType>>>(vec);
 			index_t max_string_length = 0;
 			for (const auto& el : casted_vec)
 			{
@@ -472,20 +472,20 @@ void ARFFDeserializer::read_helper()
 template <typename ScalarType>
 void ARFFDeserializer::read_string_dispatcher()
 {
-	switch(m_string_primitive_type)
+	switch (m_string_primitive_type)
 	{
-		case EPrimitiveType::PT_UINT8:
-		{
-			read_helper<ScalarType, char>();
-		}
-		break;
-		case EPrimitiveType::PT_UINT16:
-		{
-			read_helper<ScalarType, char>();
-		}
-		break;
-		default:
-			SG_SERROR("The provided type for string parsing is not valid!\n")
+	case EPrimitiveType::PT_UINT8:
+	{
+		read_helper<ScalarType, char>();
+	}
+	break;
+	case EPrimitiveType::PT_UINT16:
+	{
+		read_helper<ScalarType, char>();
+	}
+	break;
+	default:
+		SG_SERROR("The provided type for string parsing is not valid!\n")
 	}
 }
 
