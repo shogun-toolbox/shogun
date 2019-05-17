@@ -11,6 +11,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/io/ARFFFile.h>
 #include <shogun/io/SGIO.h>
 
 #include <memory>
@@ -351,17 +352,19 @@ namespace shogun
 		get_dataset(const std::string& id, const std::string& api_key);
 
 		/**
-		 * Returns ALL the features of the dataset, potentially also the labels column
+		 * Returns ALL the features of the dataset, potentially also the labels
+		 * column
 		 * @return the features
 		 */
-		std::shared_ptr<CCombinedFeatures> get_features() noexcept;
+		std::shared_ptr<CFeatures> get_features() noexcept;
 
 		/**
 		 * Returns the dataset features
 		 * @param label_name the name of the attribute containing the label
 		 * @return the features
 		 */
-		std::shared_ptr<CCombinedFeatures> get_features(const std::string& label_name);
+		std::shared_ptr<CFeatures>
+		get_features(const std::string& label_name);
 
 		/**
 		 * Returns the dataset labels if m_default_target_attribute is not empty
@@ -379,10 +382,15 @@ namespace shogun
 		 * Returns the type of all attributes/features in the ARFF file
 		 * @return
 		 */
-		// TODO: replace with actual enum values
-		SG_FORCED_INLINE std::vector<int> get_feature_types() const noexcept
+		SG_FORCED_INLINE std::vector<ARFFDeserializer::Attribute>
+		get_feature_types() const noexcept
 		{
 			return m_feature_types;
+		}
+
+		SG_FORCED_INLINE std::string get_default_target_attribute() const noexcept
+		{
+			return m_default_target_attribute;
 		}
 
 	protected:
@@ -392,7 +400,6 @@ namespace shogun
 		}
 
 	private:
-
 		void get_data();
 
 		std::string m_name;
@@ -426,7 +433,7 @@ namespace shogun
 
 		std::shared_ptr<CCombinedFeatures> m_cached_features;
 		std::vector<std::string> m_feature_names;
-		std::vector<int> m_feature_types; // TODO: replace int with type enum
+		std::vector<ARFFDeserializer::Attribute> m_feature_types;
 	};
 
 	/**
@@ -558,6 +565,7 @@ namespace shogun
 		std::shared_ptr<OpenMLData> m_data;
 	};
 
+	class OpenMLRun;
 	/**
 	 * The Shogun OpenML extension to run models from an OpenMLFlow
 	 * and convert models to OpenMLFlow.
@@ -565,6 +573,7 @@ namespace shogun
 	class ShogunOpenML
 	{
 	public:
+		friend class OpenMLRun;
 		/**
 		 * Instantiates a SGObject from an OpenMLFlow.
 		 *
@@ -586,11 +595,13 @@ namespace shogun
 		model_to_flow(const std::shared_ptr<CSGObject>& model);
 
 	protected:
-		CLabels* run_model_on_fold(
+		static std::shared_ptr<CLabels> run_model_on_fold(
 		    const std::shared_ptr<CSGObject>& model,
-		    const std::shared_ptr<OpenMLTask>& task, CFeatures* X_train,
-		    index_t repeat_number, index_t fold_number, CLabels* y_train,
-		    CFeatures* X_test);
+		    const std::shared_ptr<OpenMLTask>& task,
+		    const std::shared_ptr<CFeatures>& X_train,
+		    index_t repeat_number, index_t fold_number,
+		    const std::shared_ptr<CLabels>& y_train,
+		    const std::shared_ptr<CFeatures>& X_test);
 
 	private:
 		/**
