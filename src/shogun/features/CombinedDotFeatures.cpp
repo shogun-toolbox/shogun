@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-const float64_t CCombinedDotFeatures::initial_weight = 1.0;
+constexpr float64_t CCombinedDotFeatures::initial_weight = 1.0;
 
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
@@ -23,9 +23,10 @@ CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 	update_dim_feature_space_and_num_vec();
 }
 
-CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
-: CDotFeatures(orig), num_vectors(orig.num_vectors),
-	num_dimensions(orig.num_dimensions)
+CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures& orig)
+    : CDotFeatures(orig), feature_array(orig.feature_array),
+      feature_weights(orig.feature_weights), num_vectors(orig.num_vectors),
+      num_dimensions(orig.num_dimensions)
 {
 	init();
 }
