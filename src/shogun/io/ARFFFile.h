@@ -74,7 +74,7 @@ namespace shogun
 			    std::find_if(s.rbegin(), s.rend(), trim_func).base(), s.end());
 		}
 
-		auto lambda_is_space = [](const auto& val) {
+		const auto lambda_is_space = [](const auto& val) {
 			return !std::isspace(val);
 		};
 		/**
