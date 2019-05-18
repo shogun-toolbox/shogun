@@ -62,9 +62,9 @@ namespace shogun
 			return m_split;
 		}
 
-		std::vector<std::vector<int64_t>> get_train_indices() const;
+		std::vector<std::vector<std::vector<int32_t>>> get_train_indices() const;
 
-		std::vector<std::vector<int64_t>> get_test_indices() const;
+		std::vector<std::vector<std::vector<int32_t>>> get_test_indices() const;
 
 #ifndef SWIG
 		SG_FORCED_INLINE TaskType
@@ -79,8 +79,8 @@ namespace shogun
 	private:
 		static TaskType get_task_from_string(const std::string& task_type);
 
-		std::vector<std::vector<int64_t>>
-		get_indices(const std::vector<std::vector<int64_t>>& idx) const;
+		std::vector<std::vector<std::vector<int32_t>>>
+		get_indices(const std::array<std::vector<int32_t>, 3>& idx) const;
 
 		std::string m_task_id;
 		std::string m_task_name;
