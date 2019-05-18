@@ -26,6 +26,8 @@
 %rename(MemoryMappedFile) CMemoryMappedFile;
 
 %shared_ptr(shogun::OpenMLFlow)
+%shared_ptr(shogun::OpenMLRun)
+%shared_ptr(shogun::OpenMLTask)
 
 %include <shogun/io/File.h>
 %include <shogun/io/streaming/StreamingFile.h>
@@ -121,7 +123,9 @@ namespace shogun
 
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
-%include <shogun/io/OpenMLFlow.h>
+%include <shogun/io/openml/OpenMLFlow.h>
+%include <shogun/io/openml/OpenMLRun.h>
+%include <shogun/io/openml/ShogunOpenML.h>
 %include <shogun/io/SerializableFile.h>
 %include <shogun/io/SerializableAsciiFile.h>
 %include <shogun/io/SerializableHdf5File.h>
