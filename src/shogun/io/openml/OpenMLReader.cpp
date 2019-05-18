@@ -51,7 +51,7 @@ const char* OpenMLReader::flow_file = "/flow/{}";
 /* TASK API */
 const char* OpenMLReader::task_file = "/task/{}";
 /* SPLIT API */
-const char* OpenMLReader::get_split = "/get/{}";
+const char* OpenMLReader::get_split = "";
 
 const std::unordered_map<std::string, std::string>
 		OpenMLReader::m_format_options = {{"xml", xml_server},

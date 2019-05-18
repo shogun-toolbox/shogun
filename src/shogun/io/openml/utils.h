@@ -44,10 +44,14 @@ namespace shogun
 		static SG_FORCED_INLINE void emplace_string_to_map(
 		    const rapidjson::GenericValue<rapidjson::UTF8<char>>& v,
 		    std::unordered_map<std::string, std::string>& param_dict,
-		    const std::string& name)
+		    const std::string& name, bool required = false)
 		{
 			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
 				param_dict.emplace(name, v[name.c_str()].GetString());
+			else if (required)
+				SG_SERROR(
+				    "The field \"%s\" is expected to be a string!\n",
+				    name.c_str())
 			else
 				param_dict.emplace(name, "");
 		}

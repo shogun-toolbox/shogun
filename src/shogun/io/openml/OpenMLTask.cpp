@@ -118,20 +118,31 @@ OpenMLTask::get_task_from_string(const std::string& task_type)
 	SG_SERROR("OpenMLTask does not support \"%s\"", task_type.c_str())
 }
 
-std::vector<std::vector<int64_t>> OpenMLTask::get_train_indices() const
+std::vector<std::vector<std::vector<int32_t>>>
+OpenMLTask::get_train_indices() const
 {
 	return get_indices(m_split->get_train_idx());
 }
 
-std::vector<std::vector<int64_t>> OpenMLTask::get_test_indices() const
+std::vector<std::vector<std::vector<int32_t>>>
+OpenMLTask::get_test_indices() const
 {
 	return get_indices(m_split->get_test_idx());
 }
 
-std::vector<std::vector<int64_t>>
-OpenMLTask::get_indices(const std::vector<std::vector<int64_t>>& idx) const
+std::vector<std::vector<std::vector<int32_t>>>
+OpenMLTask::get_indices(const std::array<std::vector<int32_t>, 3>& idx) const
 {
-	SG_SNOTIMPLEMENTED
-	std::vector<std::vector<int64_t>> result;
+	// result = (n_repeats, n_folds, ?) where is the number of indices in a
+	// given fold
+	std::vector<std::vector<std::vector<int32_t>>> result(
+	    m_split->get_num_repeats(),
+	    std::vector<std::vector<int32_t>>(
+	        m_split->get_num_folds(), std::vector<int32_t>{}));
+	for (int i = 0; i < idx[0].size(); ++i)
+	{
+		// result[repeat][fold].push_back(data_index)
+		result[idx[1][i]][idx[2][i]].push_back(idx[0][i]);
+	}
 	return result;
 }
