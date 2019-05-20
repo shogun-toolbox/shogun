@@ -310,7 +310,7 @@ std::shared_ptr<CLabels> ShogunOpenML::run_model_on_fold(
 		{
 			if (auto machine = std::dynamic_pointer_cast<CMachine>(model_clone))
 			{
-				// TODO: refactor. more useless clones until smart pointers are merged
+				// TODO: refactor! more useless clones until smart pointers are merged
 				machine->put("labels", y_train->clone()->as<CLabels>());
 				auto tmp = X_train.get();
 				machine->train(tmp);

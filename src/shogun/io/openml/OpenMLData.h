@@ -90,6 +90,7 @@ namespace shogun
 		 */
 		std::shared_ptr<CLabels> get_labels();
 
+
 		/**
 		 * Returns the dataset labels given the label_name
 		 * @return the labels
@@ -155,6 +156,8 @@ namespace shogun
 		std::shared_ptr<CCombinedFeatures> m_cached_features;
 		std::vector<std::string> m_feature_names;
 		std::vector<ARFFDeserializer::Attribute> m_feature_types;
+		std::shared_ptr<CLabels> m_cached_labels;
+		std::string m_cached_label_name;
 	};
 
 } // namespace shogun
