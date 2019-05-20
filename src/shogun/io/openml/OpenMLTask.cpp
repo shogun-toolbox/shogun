@@ -118,13 +118,13 @@ OpenMLTask::get_task_from_string(const std::string& task_type)
 	SG_SERROR("OpenMLTask does not support \"%s\"", task_type.c_str())
 }
 
-std::vector<std::vector<std::vector<int32_t>>>
+std::vector<std::vector<std::vector<index_t>>>
 OpenMLTask::get_train_indices() const
 {
 	return get_indices(m_split->get_train_idx());
 }
 
-std::vector<std::vector<std::vector<int32_t>>>
+std::vector<std::vector<std::vector<index_t>>>
 OpenMLTask::get_test_indices() const
 {
 	return get_indices(m_split->get_test_idx());

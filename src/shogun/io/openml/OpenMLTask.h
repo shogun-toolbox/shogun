@@ -62,9 +62,19 @@ namespace shogun
 			return m_split;
 		}
 
-		std::vector<std::vector<std::vector<int32_t>>> get_train_indices() const;
+		std::vector<std::vector<std::vector<index_t>>> get_train_indices() const;
 
-		std::vector<std::vector<std::vector<int32_t>>> get_test_indices() const;
+		std::vector<std::vector<std::vector<index_t>>> get_test_indices() const;
+
+		int32_t get_num_fold() const noexcept
+		{
+			return m_split->get_num_folds();
+		}
+
+		int32_t get_num_repeats() const noexcept
+		{
+			return m_split->get_num_repeats();
+		}
 
 #ifndef SWIG
 		SG_FORCED_INLINE TaskType
