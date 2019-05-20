@@ -28,7 +28,8 @@ CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures& orig)
       feature_weights(orig.feature_weights), num_vectors(orig.num_vectors),
       num_dimensions(orig.num_dimensions)
 {
-	init();
+	register_params();
+	update_dim_feature_space_and_num_vec();
 }
 
 CFeatures* CCombinedDotFeatures::duplicate() const
@@ -134,67 +135,52 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 
 void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
-	if (stop<=start)
-		return;
+	ASSERT(stop > start)
 	ASSERT(dim==num_dimensions)
 
 	uint32_t offs=0;
-	bool first=true;
 	int32_t num=stop-start;
-	float64_t* tmp=SG_MALLOC(float64_t, num);
+	SGVector<float64_t> tmp(num);
+	std::fill(output, output+num, 0);
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
-		if (first)
-		{
-			f->dense_dot_range(output, start, stop, alphas, vec+offs, f_dim, b);
-			first=false;
-		}
-		else
-		{
-			f->dense_dot_range(tmp, start, stop, alphas, vec+offs, f_dim, b);
-			for (int32_t i=0; i<num; i++)
-				output[i]+=tmp[i];
-		}
+
+		f->dense_dot_range(tmp.vector, start, stop, alphas, vec+offs, f_dim, b);
+		for (int32_t i=0; i<num; i++)
+			output[i] += get_subfeature_weight(f_idx) * tmp[i];
+
 		offs += f_dim;
 
 		SG_UNREF(f);
 	}
-	SG_FREE(tmp);
 }
 
 void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
-	if (num<=0)
-		return;
+	ASSERT(num > 0)
 	ASSERT(dim==num_dimensions)
 
 	uint32_t offs=0;
-	bool first=true;
-	float64_t* tmp=SG_MALLOC(float64_t, num);
+
+	SGVector<float64_t> tmp(num);
+	std::fill(output, output+num, 0);
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
-		if (first)
-		{
-			f->dense_dot_range_subset(sub_index, num, output, alphas, vec+offs, f_dim, b);
-			first=false;
-		}
-		else
-		{
-			f->dense_dot_range_subset(sub_index, num, tmp, alphas, vec+offs, f_dim, b);
-			for (int32_t i=0; i<num; i++)
-				output[i]+=tmp[i];
-		}
+
+		f->dense_dot_range_subset(sub_index, num, tmp.vector, alphas, vec+offs, f_dim, b);
+		for (int32_t i=0; i<num; i++)
+			output[i] += get_subfeature_weight(f_idx) * tmp[i];
+
 		offs += f_dim;
 
 		SG_UNREF(f);
 	}
-	SG_FREE(tmp);
 }
 
 void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
@@ -345,7 +331,9 @@ float64_t CCombinedDotFeatures::get_subfeature_weight(index_t idx) const
 
 void CCombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
 {
-	ASSERT(idx >= 0 && (size_t)idx < feature_weights.size())
+	if(idx < 0 || (size_t)idx >= feature_weights.size())
+		SG_ERROR("Index (%d) is out of bounds", idx);
+
 	feature_weights[idx] = weight;
 }
 
@@ -353,7 +341,11 @@ void CCombinedDotFeatures::init()
 {
 	feature_array=new CDynamicObjectArray();
 	SG_REF(feature_array);
+	register_params();
+}
 
+void CCombinedDotFeatures::register_params()
+{
 	SG_ADD(
 	    &num_dimensions, "num_dimensions", "Total number of dimensions.");
 	SG_ADD(
@@ -361,4 +353,3 @@ void CCombinedDotFeatures::init()
 	SG_ADD(&feature_array, "feature_array", "Feature array.");
 	watch_param("feature_weights", &feature_weights);
 }
-

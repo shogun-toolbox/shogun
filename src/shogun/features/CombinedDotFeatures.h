@@ -277,6 +277,7 @@ class CCombinedDotFeatures : public CDotFeatures
 
 	private:
 		void init();
+		void register_params();
 
 	protected:
 		/** feature array */
