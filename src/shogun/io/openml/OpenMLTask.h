@@ -62,7 +62,8 @@ namespace shogun
 			return m_split;
 		}
 
-		std::vector<std::vector<std::vector<index_t>>> get_train_indices() const;
+		std::vector<std::vector<std::vector<index_t>>>
+		get_train_indices() const;
 
 		std::vector<std::vector<std::vector<index_t>>> get_test_indices() const;
 
@@ -76,14 +77,16 @@ namespace shogun
 			return m_split->get_num_repeats();
 		}
 
-#ifndef SWIG
-		SG_FORCED_INLINE TaskType
+		std::string get_task_name() const noexcept
+		{
+			return m_task_name;
+		}
 
-		get_task_type() const noexcept
+#ifndef SWIG
+		SG_FORCED_INLINE TaskType get_task_type() const noexcept
 		{
 			return m_task_type;
 		}
-
 #endif // SWIG
 
 	private:

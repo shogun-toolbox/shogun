@@ -9,10 +9,8 @@
 #include <shogun/labels/RegressionLabels.h>
 
 #include <shogun/io/openml/OpenMLData.h>
-#include <shogun/io/openml/OpenMLReader.h>
+#include <shogun/io/openml/OpenMLFile.h>
 #include <shogun/io/openml/utils.h>
-
-#include <rapidjson/document.h>
 
 using namespace shogun;
 using namespace shogun::openml_detail;
@@ -22,14 +20,10 @@ std::shared_ptr<OpenMLData>
 OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 {
 	// description
-	Document document;
-	auto reader = OpenMLReader(api_key);
+	auto reader = OpenMLFile(api_key);
 	auto return_string = reader.get("dataset_description", "json", id);
 
-	document.Parse(return_string.c_str());
-	check_response(document, "data_set_description");
-
-	const Value& dataset_description = document["data_set_description"];
+	auto& dataset_description = check_response<BACKEND_FORMAT::JSON>(return_string, "data_set_description");
 
 	auto name = return_if_possible<std::string>(
 	    "name", dataset_description.GetObject());
@@ -82,9 +76,9 @@ OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 	std::vector<std::unordered_map<std::string, std::vector<std::string>>>
 	    param_vector;
 	return_string = reader.get("data_features", "json", id);
-	document.Parse(return_string.c_str());
-	check_response(document, "data_features");
-	const Value& dataset_features = document["data_features"];
+
+	auto& dataset_features = check_response<BACKEND_FORMAT::JSON>(return_string, "data_features");
+
 	for (const auto& param : dataset_features["feature"].GetArray())
 	{
 		std::unordered_map<std::string, std::vector<std::string>> param_map;
@@ -105,9 +99,9 @@ OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 	// qualities
 	std::vector<std::unordered_map<std::string, std::string>> qualities_vector;
 	return_string = reader.get("data_qualities", "json", id);
-	document.Parse(return_string.c_str());
-	check_response(document, "data_qualities");
-	const Value& data_qualities = document["data_qualities"];
+
+	auto& data_qualities = check_response<BACKEND_FORMAT::JSON>(return_string, "data_qualities");
+
 	for (const auto& param : data_qualities["quality"].GetArray())
 	{
 		std::unordered_map<std::string, std::string> param_map;
@@ -154,7 +148,7 @@ std::shared_ptr<CFeatures> OpenMLData::get_features(const std::string& label)
 	for (const auto type : feat_type_copy)
 	{
 		if (type == ARFFDeserializer::Attribute::STRING)
-			SG_SERROR("Currently cannot process string features!\n")
+			SG_SNOTIMPLEMENTED
 	}
 	//	auto result = std::make_shared<CDenseFeatures>();
 	std::shared_ptr<CDenseFeatures<float64_t>> result;
@@ -259,7 +253,7 @@ std::shared_ptr<CLabels> OpenMLData::get_labels(const std::string& label_name)
 
 void OpenMLData::get_data()
 {
-	auto reader = OpenMLReader(m_api_key);
+	auto reader = OpenMLFile(m_api_key);
 	std::shared_ptr<std::istream> ss =
 	    std::make_shared<std::istringstream>(reader.get(m_url));
 

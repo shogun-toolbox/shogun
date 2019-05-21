@@ -9,7 +9,7 @@
 #include <shogun/features/StringFeatures.h>
 
 #include <shogun/io/ARFFFile.h>
-#include <shogun/io/openml/OpenMLReader.h>
+#include <shogun/io/openml/OpenMLFile.h>
 #include <shogun/io/openml/OpenMLSplit.h>
 
 using namespace shogun;
@@ -17,7 +17,7 @@ using namespace shogun;
 std::shared_ptr<OpenMLSplit>
 OpenMLSplit::get_split(const std::string& split_url, const std::string& api_key)
 {
-	auto reader = OpenMLReader(api_key);
+	auto reader = OpenMLFile(api_key);
 	auto return_string = reader.get(split_url);
 
 	if (return_string == "Task not providing datasplits.")

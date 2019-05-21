@@ -46,7 +46,9 @@ namespace shogun {
 		from_filesystem(const std::string& directory);
 
 		static std::shared_ptr<OpenMLRun> run_flow_on_task(
-				std::shared_ptr<OpenMLFlow> flow, std::shared_ptr<OpenMLTask> task);
+				std::shared_ptr<OpenMLFlow> flow,
+				std::shared_ptr<OpenMLTask> task,
+				bool avoid_duplicate_runs=true);
 
 		static std::shared_ptr<OpenMLRun> run_model_on_task(
 				std::shared_ptr<CSGObject> model, std::shared_ptr<OpenMLTask> task);

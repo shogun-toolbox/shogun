@@ -7,14 +7,53 @@
 #ifndef SHOGUN_OPENMLFLOW_H
 #define SHOGUN_OPENMLFLOW_H
 
-#include <shogun/io/SGIO.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/base/variant.h>
 
 #include <string>
 #include <unordered_map>
 
-
 namespace shogun
 {
+	/**
+	 * OpenML representation of a parameter
+	 */
+	struct OpenMLParameterValues
+	{
+		/** name of parameter */
+		std::string name;
+		/** id of flow parameter belongs to  */
+		std::string component;
+		/** value of parameter or a nested object */
+		shogun::variant<
+		    std::string, std::vector<std::shared_ptr<OpenMLParameterValues>>>
+		    value;
+
+		OpenMLParameterValues(
+		    const std::string& name_, const std::string& component_,
+		    shogun::variant<
+		        std::string,
+		        std::vector<std::shared_ptr<OpenMLParameterValues>>>
+		        value_)
+		    : name(name_), component(component_), value(std::move(value_))
+		{
+		}
+	};
+
+	/**
+	 * OpenML description of a flow parameter
+	 */
+	struct OpenMLFlowParameter
+	{
+		/** name of parameter */
+		std::string name;
+		/** primitive type of parameter */
+		std::string data_type;
+		/** the default value, i.e. the value published to OpenML */
+		std::string default_value;
+		/** the parameter description */
+		std::string description;
+	};
 	/**
 	 * Handles OpenML flows. A flow contains the information
 	 * required to instantiate a model.
@@ -28,8 +67,7 @@ namespace shogun
 		    std::unordered_map<std::string, std::shared_ptr<OpenMLFlow>>;
 		/** alias for parameter type, map of maps with information specific to a
 		 * parameter */
-		using parameters_type = std::unordered_map<
-		    std::string, std::unordered_map<std::string, std::string>>;
+		using parameters_type = std::unordered_map<std::string, OpenMLFlowParameter>;
 
 		/**
 		 * The OpenMLFlow constructor. This constructor is rarely used by the
@@ -45,10 +83,12 @@ namespace shogun
 		 * for each parameter name
 		 */
 		OpenMLFlow(
-		    const std::string& name, const std::string& description,
-		    const std::string& model, components_type components,
+		    const std::string& flow_id, const std::string& name,
+		    const std::string& description, const std::string& model,
+		    const std::string& external_version, components_type components,
 		    parameters_type parameters)
-		    : m_name(name), m_description(description), m_class_name(model),
+		    : m_flow_id(flow_id), m_name(name), m_description(description),
+		      m_class_name(model), m_external_version(external_version),
 		      m_parameters(std::move(parameters)),
 		      m_components(std::move(components))
 		{
@@ -85,6 +125,11 @@ namespace shogun
 		 */
 		void dump() const;
 
+		bool exists_on_server();
+
+		std::vector<std::shared_ptr<OpenMLParameterValues>>
+		obtain_parameter_values(const std::shared_ptr<CSGObject>& model);
+
 		/**
 		 * Gets a subflow, i.e. a kernel in a machine
 		 * @param name the name of the subflow, not the flow ID
@@ -102,40 +147,60 @@ namespace shogun
 		}
 
 #ifndef SWIG
-		SG_FORCED_INLINE parameters_type
-
-		get_parameters() const noexcept
+		SG_FORCED_INLINE parameters_type get_parameters() const noexcept
 		{
 			return m_parameters;
 		}
 
-		SG_FORCED_INLINE components_type
-
-		get_components() const noexcept
+		SG_FORCED_INLINE components_type get_components() const noexcept
 		{
 			return m_components;
 		}
 
-		SG_FORCED_INLINE std::string
-
-		get_class_name() const noexcept
+		SG_FORCED_INLINE std::string get_class_name() const noexcept
 		{
 			return m_class_name;
+		}
+
+		SG_FORCED_INLINE std::string get_version() const noexcept
+		{
+			return m_external_version;
+		}
+
+		SG_FORCED_INLINE std::string get_name() const noexcept
+		{
+			return m_name;
+		}
+
+		SG_FORCED_INLINE std::string get_flow_id() const noexcept
+		{
+			return m_flow_id;
+		}
+
+		SG_FORCED_INLINE void set_model(std::shared_ptr<CSGObject> model) noexcept
+		{
+			m_model = model;
 		}
 
 #endif // SWIG
 
 	private:
+		/** flow unique id */
+		std::string m_flow_id;
 		/** name field of the flow */
 		std::string m_name;
 		/** description field of the flow */
 		std::string m_description;
 		/** the class_name field of the flow */
 		std::string m_class_name;
+		/** the external version, e.g. "shogun=7.0.0" */
+		std::string m_external_version;
 		/** the parameter field of the flow (optional) */
 		parameters_type m_parameters;
 		/** the components fields of the flow (optional) */
 		components_type m_components;
+		/** the associated model (optional) */
+		std::shared_ptr<CSGObject> m_model;
 	};
 } // namespace shogun
 

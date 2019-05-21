@@ -1,3 +1,5 @@
+#include <utility>
+
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
@@ -22,12 +24,14 @@ class StringToShogun : public AnyVisitor
 {
 public:
 	explicit StringToShogun(std::shared_ptr<CSGObject> model)
-			: m_model(model), m_parameter(""), m_string_val(""){};
+	    : m_model(std::move(model)), m_parameter(""),
+	      m_string_val(""){SG_SDEBUG("Debugging StringToShogun\n")};
 
 	StringToShogun(
-			std::shared_ptr<CSGObject> model, const std::string& parameter,
-			const std::string& string_val)
-			: m_model(model), m_parameter(parameter), m_string_val(string_val){};
+	    std::shared_ptr<CSGObject> model, const std::string& parameter,
+	    const std::string& string_val)
+	    : m_model(std::move(model)), m_parameter(parameter),
+	      m_string_val(string_val){SG_SDEBUG("Debugging StringToShogun\n")};
 
 	void on(bool* v) final
 	{
@@ -53,11 +57,11 @@ public:
 				// it's an option, i.e. internally represented
 				// as an enum but in swig exposed as a string
 				m_string_val.erase(
-						std::remove_if(
-								m_string_val.begin(), m_string_val.end(),
-								// remove quotes
-								[](const auto& val) { return val == '\"'; }),
-						m_string_val.end());
+				    std::remove_if(
+				        m_string_val.begin(), m_string_val.end(),
+				        // remove quotes
+				        [](const auto& val) { return val == '\"'; }),
+				    m_string_val.end());
 				m_model->put(m_parameter, m_string_val);
 			}
 		}
@@ -93,7 +97,7 @@ public:
 	void on(long double* v)
 	{
 		SG_SDEBUG(
-				"long double: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		    "long double: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 		if (!is_null())
 		{
 			floatmax_t result = std::stold(m_string_val);
@@ -103,38 +107,38 @@ public:
 	void on(CSGObject** v) final
 	{
 		SG_SDEBUG(
-				"CSGObject: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		    "CSGObject: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 	}
 	void on(SGVector<int>* v) final
 	{
 		SG_SDEBUG(
-				"SGVector<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		    "SGVector<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 	}
 	void on(SGVector<float>* v) final
 	{
 		SG_SDEBUG(
-				"SGVector<float>: %s=%s\n", m_parameter.c_str(),
-				m_string_val.c_str())
+		    "SGVector<float>: %s=%s\n", m_parameter.c_str(),
+		    m_string_val.c_str())
 	}
 	void on(SGVector<double>* v) final
 	{
 		SG_SDEBUG(
-				"SGVector<double>: %s=%s\n", m_parameter.c_str(),
-				m_string_val.c_str())
+		    "SGVector<double>: %s=%s\n", m_parameter.c_str(),
+		    m_string_val.c_str())
 	}
 	void on(SGMatrix<int>* mat) final
 	{
 		SG_SDEBUG(
-				"SGMatrix<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
+		    "SGMatrix<int>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())
 	}
 	void on(SGMatrix<float>* mat) final
 	{
 		SG_SDEBUG(
-				"SGMatrix<float>: %s=%s\n", m_parameter.c_str(),
-				m_string_val.c_str())
+		    "SGMatrix<float>: %s=%s\n", m_parameter.c_str(),
+		    m_string_val.c_str())
 	}
 	void on(SGMatrix<double>* mat) final{SG_SDEBUG(
-				"SGMatrix<double>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())}
+	    "SGMatrix<double>: %s=%s\n", m_parameter.c_str(), m_string_val.c_str())}
 
 	/**
 	 * In OpenML "null" is an empty parameter value field.
@@ -169,7 +173,7 @@ private:
  * @return the instantiated object using a factory
  */
 std::shared_ptr<CSGObject> instantiate_model_from_factory(
-		const std::string& factory_name, const std::string& algo_name)
+    const std::string& factory_name, const std::string& algo_name)
 {
 	if (factory_name == "machine")
 		return std::shared_ptr<CSGObject>(machine(algo_name));
@@ -190,9 +194,9 @@ std::shared_ptr<CSGObject> instantiate_model_from_factory(
  * @param parameter_name the name of nested_obj
  */
 void cast_and_put(
-		const std::shared_ptr<CSGObject>& obj,
-		const std::shared_ptr<CSGObject>& nested_obj,
-		const std::string& parameter_name)
+    const std::shared_ptr<CSGObject>& obj,
+    const std::shared_ptr<CSGObject>& nested_obj,
+    const std::string& parameter_name)
 {
 	if (auto casted_obj = std::dynamic_pointer_cast<CMachine>(nested_obj))
 	{
@@ -218,7 +222,7 @@ void cast_and_put(
 }
 
 std::shared_ptr<CSGObject> ShogunOpenML::flow_to_model(
-		std::shared_ptr<OpenMLFlow> flow, bool initialize_with_defaults)
+    std::shared_ptr<OpenMLFlow> flow, bool initialize_with_defaults)
 {
 	auto params = flow->get_parameters();
 	auto components = flow->get_components();
@@ -237,7 +241,7 @@ std::shared_ptr<CSGObject> ShogunOpenML::flow_to_model(
 		{
 			Any any_val = obj_param.at(param.first)->get_value();
 			std::string name = param.first;
-			std::string val_as_string = param.second.at("default_value");
+			std::string val_as_string = param.second.default_value;
 			visitor->set_parameter_name(name);
 			visitor->set_string_value(val_as_string);
 			any_val.visit(visitor.get());
@@ -247,7 +251,7 @@ std::shared_ptr<CSGObject> ShogunOpenML::flow_to_model(
 	for (const auto& component : components)
 	{
 		std::shared_ptr<CSGObject> nested_obj =
-				flow_to_model(component.second, initialize_with_defaults);
+		    flow_to_model(component.second, initialize_with_defaults);
 		cast_and_put(obj, nested_obj, component.first);
 	}
 
@@ -280,61 +284,199 @@ ShogunOpenML::get_class_info(const std::string& class_name)
 			class_components.emplace_back(std::string(begin, std::next(it)));
 	}
 
-	if (class_components[0] == "shogun" && class_components.size() == 3)
+	if (class_components.empty())
+		SG_SERROR(
+		    "Error parsing flow class name \"%s\"!\n", class_name.c_str());
+
+	if (class_components.size() == 3 && class_components[0] == "shogun")
 		result = std::make_pair(class_components[1], class_components[2]);
-	else if (class_components[0] == "shogun" && class_components.size() != 3)
+	else if (class_components.size() != 3 && class_components[0] == "shogun")
 		SG_SERROR("Invalid class name format %s.\n", class_name.c_str())
 	else
 		SG_SERROR(
-				"The provided flow is not meant for shogun deserialisation! The "
-				"required library is \"%s\".\n",
-				class_components[0].c_str())
+		    "The provided flow is not meant for shogun deserialisation! The "
+		    "required library is \"%s\".\n",
+		    class_components[0].c_str())
 
 	return result;
 }
 
-std::shared_ptr<CLabels> ShogunOpenML::run_model_on_fold(
-		const std::shared_ptr<CSGObject>& model,
-		const std::shared_ptr<OpenMLTask>& task,
-		const std::shared_ptr<CFeatures>& X_train, index_t repeat_number,
-		index_t fold_number, const std::shared_ptr<CLabels>& y_train,
-		const std::shared_ptr<CFeatures>& X_test)
+std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
+    const std::shared_ptr<CMachine>& machine,
+    const std::shared_ptr<OpenMLTask>& task,
+    const std::shared_ptr<CFeatures>& features,
+    const std::shared_ptr<CLabels>& labels, const SGVector<index_t>& train_idx,
+    const SGVector<index_t>& test_idx, index_t repeat_idx, index_t fold_idx)
 {
 	auto task_type = task->get_task_type();
-	auto model_clone = std::shared_ptr<CSGObject>(model->clone());
 
 	switch (task_type)
 	{
-		case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
-		case OpenMLTask::TaskType::SUPERVISED_REGRESSION:
-		{
-			if (auto machine = std::dynamic_pointer_cast<CMachine>(model_clone))
-			{
-				// TODO: refactor! more useless clones until smart pointers are merged
-				machine->put("labels", y_train->clone()->as<CLabels>());
-				auto tmp = X_train.get();
-				machine->train(tmp);
-				if (X_test)
-					return std::shared_ptr<CLabels>(machine->apply(X_test.get()));
-				else
-					return std::shared_ptr<CLabels>(machine->apply(X_train.get()));
-			}
-			else
-				SG_SERROR("The provided model is not a trainable machine!\n")
-		}
-			break;
-		case OpenMLTask::TaskType::LEARNING_CURVE:
-			SG_SNOTIMPLEMENTED
-		case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
-			SG_SNOTIMPLEMENTED
-		case OpenMLTask::TaskType::CLUSTERING:
-			SG_SNOTIMPLEMENTED
-		case OpenMLTask::TaskType::MACHINE_LEARNING_CHALLENGE:
-			SG_SNOTIMPLEMENTED
-		case OpenMLTask::TaskType::SURVIVAL_ANALYSIS:
-			SG_SNOTIMPLEMENTED
-		case OpenMLTask::TaskType::SUBGROUP_DISCOVERY:
-			SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
+	case OpenMLTask::TaskType::SUPERVISED_REGRESSION:
+	{
+		// copied/adapted from crossvalidation
+		auto fold = std::make_unique<CrossValidationFoldStorage>();
+		auto* cloned_machine = machine->clone()->as<CMachine>();
+
+		// TODO while these are not used through const interfaces,
+		//  we unfortunately have to clone, even though these could be
+		//  shared
+		auto* features_clone = features->clone()->as<CFeatures>();
+		auto* labels_clone = labels->clone()->as<CLabels>();
+		// auto* evaluation_criterion =
+		// (CEvaluation*)m_evaluation_criterion->clone();
+
+		/* evtl. update xvalidation output class */
+		fold->set_run_index(repeat_idx);
+		fold->set_fold_index(fold_idx);
+
+		/* set feature and label subset for training */
+		features_clone->add_subset(train_idx);
+		labels_clone->add_subset(train_idx);
+
+		SG_SDEBUG(
+		    "train set repeat %d fold %d: %s\n", repeat_idx, fold_idx,
+		    train_idx.to_string().c_str())
+
+		/* train machine on training features and remove subset */
+		SG_SDEBUG("starting training\n")
+		cloned_machine->set_labels(labels_clone);
+		cloned_machine->train(features_clone);
+		SG_SDEBUG("finished training\n")
+
+		/* evtl. update xvalidation output class */
+		fold->set_train_indices(train_idx);
+		auto* fold_machine = cloned_machine->clone()->as<CMachine>();
+		fold->set_trained_machine(fold_machine);
+		SG_UNREF(fold_machine)
+
+		features_clone->remove_subset();
+		labels_clone->remove_subset();
+
+		/* set features and label subset for testing */
+		features_clone->add_subset(test_idx);
+		labels_clone->add_subset(test_idx);
+
+		SG_SDEBUG(
+		    "test set repeat %d fold %d: %s\n", repeat_idx, fold_idx,
+		    test_idx.to_string().c_str())
+
+		/* apply machine to test features and remove subset */
+		SG_SDEBUG("starting evaluation\n")
+		SG_SDEBUG("%p\n", features_clone)
+		CLabels* result_labels = cloned_machine->apply(features_clone);
+		SG_SDEBUG("finished evaluation\n")
+		features_clone->remove_subset();
+		SG_REF(result_labels);
+
+		/* evaluate */
+		// results[i] = evaluation_criterion->evaluate(result_labels, labels);
+		// SG_DEBUG("result on fold %d is %f\n", i, results[i])
+
+		/* evtl. update xvalidation output class */
+		fold->set_test_indices(test_idx);
+		fold->set_test_result(result_labels);
+		auto* true_labels = (CLabels*)labels->clone();
+		fold->set_test_true_result(true_labels);
+		SG_UNREF(true_labels)
+		fold->post_update_results();
+		// fold->set_evaluation_result(results[i]);
+
+		/* clean up, remove subsets */
+		labels->remove_subset();
+		SG_UNREF(cloned_machine);
+		SG_UNREF(features_clone);
+		SG_UNREF(labels_clone);
+		// SG_UNREF(evaluation_criterion);
+		SG_UNREF(result_labels);
+		return fold;
+	}
+	break;
+	case OpenMLTask::TaskType::LEARNING_CURVE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::CLUSTERING:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::MACHINE_LEARNING_CHALLENGE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SURVIVAL_ANALYSIS:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUBGROUP_DISCOVERY:
+		SG_SNOTIMPLEMENTED
+	}
+	return nullptr;
+}
+
+std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
+    const std::shared_ptr<CMachine>& machine,
+    const std::shared_ptr<OpenMLTask>& task,
+    const std::shared_ptr<CFeatures>& features,
+    const std::shared_ptr<CLabels>& labels)
+{
+	auto task_type = task->get_task_type();
+
+	switch (task_type)
+	{
+	case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
+	case OpenMLTask::TaskType::SUPERVISED_REGRESSION:
+	{
+		auto fold = std::make_unique<CrossValidationFoldStorage>();
+		auto* cloned_machine = machine->clone()->as<CMachine>();
+		auto* features_clone = features->clone()->as<CFeatures>();
+		auto* labels_clone = labels->clone()->as<CLabels>();
+		fold->set_run_index(0);
+		fold->set_fold_index(0);
+
+		/* train machine on training features */
+		SG_SDEBUG("starting training\n")
+		cloned_machine->set_labels(labels_clone);
+		cloned_machine->train(features_clone);
+		SG_SDEBUG("finished training\n")
+
+		auto* fold_machine = cloned_machine->clone()->as<CMachine>();
+		fold->set_trained_machine(fold_machine);
+		SG_UNREF(fold_machine)
+
+		/* apply machine to test features */
+		SG_SDEBUG("starting evaluation\n")
+		SG_SDEBUG("%p\n", features_clone)
+		CLabels* result_labels = cloned_machine->apply(features_clone);
+		SG_SDEBUG("finished evaluation\n")
+
+		/* evaluate */
+		// results[i] = evaluation_criterion->evaluate(result_labels, labels);
+		// SG_DEBUG("result on fold %d is %f\n", i, results[i])
+
+		/* evtl. update xvalidation output class */
+		fold->set_test_result(result_labels);
+		auto* true_labels = (CLabels*)labels->clone();
+		fold->set_test_true_result(true_labels);
+		SG_UNREF(true_labels)
+		fold->post_update_results();
+		// fold->set_evaluation_result(results[i]);
+
+		// cleanup
+		SG_UNREF(cloned_machine);
+		SG_UNREF(features_clone);
+		SG_UNREF(labels_clone);
+		// SG_UNREF(evaluation_criterion);
+		SG_UNREF(result_labels);
+		return fold;
+	}
+	case OpenMLTask::TaskType::LEARNING_CURVE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::CLUSTERING:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::MACHINE_LEARNING_CHALLENGE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SURVIVAL_ANALYSIS:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUBGROUP_DISCOVERY:
+		SG_SNOTIMPLEMENTED
 	}
 	return nullptr;
 }
