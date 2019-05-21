@@ -15,64 +15,96 @@ namespace shogun
 {
 	namespace openml_detail
 	{
+		enum class BACKEND_FORMAT
+		{
+			JSON = 0,
+			XML = 1,
+		};
+
 		/**
 		 * Checks the returned response from OpenML in JSON format
 		 * @param doc the parsed OpenML JSON format response
 		 */
-		static void
-		check_response(const rapidjson::Document& doc, const std::string& type)
+		template <
+		    BACKEND_FORMAT FormatT,
+		    typename std::enable_if_t<FormatT == BACKEND_FORMAT::JSON>* =
+		        nullptr>
+		const rapidjson::Value&
+		check_response(const std::string& val, const std::string& root_name)
 		{
+			rapidjson::Document doc;
+			doc.Parse(val.c_str());
+
 			if (SG_UNLIKELY(doc.HasMember("error")))
 			{
 				const rapidjson::Value& root = doc["error"];
 				SG_SERROR(
 				    "Server error %s: %s\n", root["code"].GetString(),
 				    root["message"].GetString())
-				return;
 			}
 			REQUIRE(
-			    doc.HasMember(type.c_str()),
-			    "Unexpected format of OpenML %s.\n", type.c_str());
+			    doc.HasMember(root_name.c_str()),
+			    "Unexpected format of OpenML %s.\n", root_name.c_str());
+
+			return doc[root_name.c_str()];
 		}
 
 		/**
-		 * Helper function to add JSON objects as string in map
-		 * @param v a RapidJSON GenericValue, i.e. string
-		 * @param param_dict the map to write to
-		 * @param name the name of the key
+		 * Checks the returned response from OpenML in XML format
+		 * @param doc the parsed OpenML XML format response
 		 */
-		static SG_FORCED_INLINE void emplace_string_to_map(
-		    const rapidjson::GenericValue<rapidjson::UTF8<char>>& v,
-		    std::unordered_map<std::string, std::string>& param_dict,
-		    const std::string& name, bool required = false)
+		template <
+		    BACKEND_FORMAT FormatT,
+		    typename std::enable_if_t<FormatT == BACKEND_FORMAT::XML>* =
+		        nullptr>
+		void check_response(const std::string& val, const std::string& type)
 		{
-			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
-				param_dict.emplace(name, v[name.c_str()].GetString());
-			else if (required)
-				SG_SERROR(
-				    "The field \"%s\" is expected to be a string!\n",
-				    name.c_str())
-			else
-				param_dict.emplace(name, "");
+			SG_SNOTIMPLEMENTED
 		}
 
-		/**
-		 * Helper function to add JSON objects as string in map
-		 * @param v a RapidJSON GenericObject, i.e. array
-		 * @param param_dict the map to write to
-		 * @param name the name of the key
-		 */
-		static SG_FORCED_INLINE void emplace_string_to_map(
+		template <typename T>
+		static SG_FORCED_INLINE void add_string_to_struct(
 		    const rapidjson::GenericObject<
 		        true, rapidjson::GenericValue<rapidjson::UTF8<char>>>& v,
-		    std::unordered_map<std::string, std::string>& param_dict,
-		    const std::string& name)
+		    const std::string& name, T& custom_struct)
 		{
 			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
-				param_dict.emplace(name, v[name.c_str()].GetString());
-			else
-				param_dict.emplace(name, "");
+				custom_struct = v[name.c_str()].GetString();
 		}
+
+		template <typename T>
+		static SG_FORCED_INLINE void add_string_to_struct(
+		    const rapidjson::GenericValue<rapidjson::UTF8<char>>& v,
+		    const std::string& name, T& custom_struct)
+		{
+			if (v[name.c_str()].GetType() == rapidjson::Type::kStringType)
+				custom_struct = v[name.c_str()].GetString();
+		}
+
+		template <typename T>
+		SG_FORCED_INLINE T must_return(
+		    const std::string& name,
+			const rapidjson::GenericValue<rapidjson::UTF8<char>>& v)
+		{
+			SG_SNOTIMPLEMENTED
+		}
+
+		template <>
+		SG_FORCED_INLINE std::string must_return<std::string>(
+				const std::string& name,
+				const rapidjson::GenericValue<rapidjson::UTF8<char>>& v)
+		{
+			if (v.HasMember(name.c_str()) && v[name.c_str()].IsString())
+				return v[name.c_str()].GetString();
+			if (v.HasMember(name.c_str()) && !v[name.c_str()].IsString())
+				SG_SERROR(
+					"Found member \"%s\" but it is not a string", name.c_str())
+			if (!v.HasMember(name.c_str()))
+				SG_SERROR(
+					"\"%s\" is not a member of the given object", name.c_str())
+			return nullptr;
+		}
+
 
 		template <typename T>
 		SG_FORCED_INLINE T return_if_possible(
@@ -96,8 +128,6 @@ namespace shogun
 				    "Found member \"%s\" but it is not a string", name.c_str())
 			if (!v.HasMember(name.c_str()))
 				return "";
-			SG_SERROR(
-			    "\"%s\" is not a member of the given object", name.c_str())
 			return nullptr;
 		}
 

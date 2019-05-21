@@ -8,6 +8,7 @@
 #define SHOGUN_SHOGUNOPENML_H
 
 #include <shogun/base/SGObject.h>
+#include <shogun/evaluation/CrossValidationStorage.h>
 
 #include <shogun/io/openml/OpenMLFlow.h>
 #include <shogun/io/openml/OpenMLTask.h>
@@ -44,12 +45,21 @@ namespace shogun
 		model_to_flow(const std::shared_ptr<CSGObject>& model);
 
 	protected:
-		static std::shared_ptr<CLabels> run_model_on_fold(
-		    const std::shared_ptr<CSGObject>& model,
-		    const std::shared_ptr<OpenMLTask>& task,
-		    const std::shared_ptr<CFeatures>& X_train, index_t repeat_number,
-		    index_t fold_number, const std::shared_ptr<CLabels>& y_train,
-		    const std::shared_ptr<CFeatures>& X_test);
+		static std::unique_ptr<CrossValidationFoldStorage> run_model_on_fold(
+				const std::shared_ptr<CMachine>& machine,
+				const std::shared_ptr<OpenMLTask>& task,
+				const std::shared_ptr<CFeatures>& features,
+				const std::shared_ptr<CLabels>& labels,
+				const SGVector<index_t>& train_idx,
+				const SGVector<index_t>& test_id,
+				index_t repeat_number,
+				index_t fold_number);
+
+		static std::unique_ptr<CrossValidationFoldStorage> run_model_on_fold(
+				const std::shared_ptr<CMachine>& machine,
+				const std::shared_ptr<OpenMLTask>& task,
+				const std::shared_ptr<CFeatures>& features,
+				const std::shared_ptr<CLabels>& labels);
 
 	private:
 		/**

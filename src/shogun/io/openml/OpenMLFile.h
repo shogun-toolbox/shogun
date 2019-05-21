@@ -20,11 +20,11 @@ namespace shogun
 	/**
 	 * Reads OpenML streams which can be downloaded with this function.
 	 */
-	class OpenMLReader
+	class OpenMLFile
 	{
 
 	public:
-		explicit OpenMLReader(const std::string& api_key) : m_api_key(api_key)
+		explicit OpenMLFile(const std::string& api_key) : m_api_key(api_key)
 		{
 		}
 
@@ -93,7 +93,7 @@ namespace shogun
 				std::string args_string = std::accumulate(
 				    args_vec.begin() + 1, args_vec.end(), args_vec.front(),
 				    [](std::string s0, std::string& s1) {
-					    return s0 += "/" + s1;
+					    return s0 += "/" + encode_string(s1);
 				    });
 				request_path += args_string;
 			}
@@ -113,11 +113,14 @@ namespace shogun
 			return m_curl_response_buffer;
 #else
 			SG_SERROR(
-			    "This function is only available with the CURL library!\n")
+			    "Please compile shogun with libcurl to query the OpenML server!\n")
 #endif // HAVE_CURL
 		}
 
 	private:
+
+		static std::string encode_string(const std::string& s);
+
 		/** the raw buffer as a C++ string */
 		std::string m_curl_response_buffer;
 
@@ -158,6 +161,7 @@ namespace shogun
 
 		/* FLOW API */
 		static const char* flow_file;
+		static const char* flow_exists;
 
 		/* TASK API */
 		static const char* task_file;
@@ -173,6 +177,9 @@ namespace shogun
 	{
 	public:
 		OpenMLWritter(const std::string& api_key) : m_api_key(api_key){};
+
+		template <typename... Args>
+		bool post(const std::string& request, const std::string& format, const std::string& message, Args... args);
 
 	private:
 		/** the user API key, likely to be needed to write to OpenML */
