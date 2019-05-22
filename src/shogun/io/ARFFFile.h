@@ -9,7 +9,8 @@
 
 #include <shogun/base/init.h>
 #include <shogun/base/variant.h>
-#include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/DataType.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
@@ -43,7 +44,7 @@ namespace shogun
 		 * @param rhs a string with the characters to compare against the lhs
 		 * @return whether the character of the lhs is in the rhs
 		 */
-		SG_FORCED_INLINE bool contains(char lhs, const std::string& rhs)
+		SG_FORCED_INLINE bool is_part_of(char lhs, const std::string& rhs)
 		{
 			auto result = rhs.find(lhs);
 			return result != std::string::npos;
@@ -110,17 +111,17 @@ namespace shogun
 		{
 			auto it = s.begin();
 			auto begin = s.begin();
-			while (contains(*it, delimiters))
+			while (is_part_of(*it, delimiters))
 			{
 				++it;
 				begin = it;
 			}
 			while (it != s.end())
 			{
-				if (contains(*it, delimiters))
+				if (is_part_of(*it, delimiters))
 				{
 				}
-				else if (contains(*it, quotes))
+				else if (is_part_of(*it, quotes))
 				{
 					auto quote_type = *it;
 					++it;
@@ -138,7 +139,7 @@ namespace shogun
 				else
 				{
 					begin = it;
-					while (!contains(*it, delimiters) && it != s.end())
+					while (!is_part_of(*it, delimiters) && it != s.end())
 					{
 						++it;
 					}
@@ -385,6 +386,8 @@ namespace shogun
 				    "have the right permissions to open it.\n",
 				    filename.c_str())
 			}
+			m_features = new CList(true);
+			SG_REF(m_features)
 			m_stream = std::unique_ptr<std::istream>(file_stream);
 		}
 #ifndef SWIG
@@ -404,6 +407,13 @@ namespace shogun
 		    : m_stream(stream), m_primitive_type(primitive_type),
 		      m_string_primitive_type(string_primitive_type)
 		{
+			m_features = new CList(true);
+			SG_REF(m_features)
+		}
+
+		~ARFFDeserializer()
+		{
+			SG_UNREF(m_features)
 		}
 #endif // SWIG
 		/**
@@ -411,20 +421,6 @@ namespace shogun
 		 *
 		 */
 		void read();
-
-		/**
-		 * Templated parser helper for string container primitive type.
-		 *
-		 */
-		template <typename ScalarType>
-		void read_string_dispatcher();
-
-		/**
-		 * Templated parser helper.
-		 *
-		 */
-		template <typename ScalarType, typename CharType>
-		void read_helper();
 
 		/**
 		 * Returns string parsed in @relation line
@@ -445,11 +441,12 @@ namespace shogun
 		}
 
 		/**
-		 * Get combined features from parsed data.
+		 * Get vector of features from parsed data.
 		 * @return
 		 */
-		std::shared_ptr<CCombinedFeatures> get_features() const noexcept
+		CList* get_features() const noexcept
 		{
+			SG_REF(m_features)
 			return m_features;
 		}
 
@@ -461,7 +458,42 @@ namespace shogun
 			return m_attributes;
 		}
 
+		/**
+		 * Returns the nominal values in the order of encoding.
+		 * For example for an ARFF file with "@ATTRIBUTE class
+		 * {Iris-setosa,Iris-versicolor,Iris-virginica}"
+		 * get_nominal_values("class") returns the vector
+		 * {"Iris-setosa","Iris-versicolor","Iris-virginica"}
+		 * @return nominal values
+		 */
+		std::vector<std::string>
+		get_nominal_values(const std::string& feature_name) const
+		{
+
+			for (const auto& nom_att : m_nominal_attributes)
+			{
+				if (nom_att.first == feature_name)
+					return nom_att.second;
+			}
+			SG_SERROR("The provided feature name is not a nominal feature!\n")
+			return std::vector<std::string>{};
+		}
+
 	private:
+		/**
+		 * Templated parser helper for string container primitive type.
+		 *
+		 */
+		template <typename ScalarType>
+		void read_string_dispatcher();
+
+		/**
+		 * Templated parser helper.
+		 *
+		 */
+		template <typename ScalarType, typename CharType>
+		void read_helper();
+
 		/**
 		 * Processes a chunk. A chunk is defined as a set of lines that
 		 * are processed in the same way. A chunk ends when the func
@@ -583,7 +615,7 @@ namespace shogun
 		    m_nominal_attributes;
 
 		/** the parsed features */
-		std::shared_ptr<CCombinedFeatures> m_features;
+		CList* m_features;
 	};
 } // namespace shogun
 

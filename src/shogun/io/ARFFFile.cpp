@@ -135,7 +135,7 @@ void ARFFDeserializer::read_helper()
 			left_trim(
 			    inner_string, [](auto val) { return !std::isspace(val); });
 			auto it = inner_string.begin();
-			if (contains(*it, "\"\'"))
+			if (is_part_of(*it, "\"\'"))
 			{
 				auto quote_type = *it;
 				++it;
@@ -419,7 +419,6 @@ void ARFFDeserializer::read_helper()
 	process_chunk(read_data, check_data, true);
 
 	// transform data into a feature object
-	m_features = std::make_shared<CCombinedFeatures>();
 	index_t row_count = shogun::visit(VectorSizeVisitor{}, data_vectors[0]);
 	for (int i = 0; i < data_vectors.size(); ++i)
 	{
@@ -439,7 +438,7 @@ void ARFFDeserializer::read_helper()
 			    mat.matrix, casted_vec.data(),
 			    casted_vec.size() * sizeof(ScalarType));
 			auto* feat = new CDenseFeatures<ScalarType>(mat);
-			m_features->append_feature_obj(feat);
+			m_features->append_element(feat);
 		}
 		break;
 		case Attribute::STRING:
@@ -463,7 +462,7 @@ void ARFFDeserializer::read_helper()
 			}
 			auto* feat =
 			    new CStringFeatures<CharType>(strings, EAlphabet::RAWBYTE);
-			m_features->append_feature_obj(feat);
+			m_features->append_element(feat);
 		}
 		}
 	}
@@ -481,7 +480,7 @@ void ARFFDeserializer::read_string_dispatcher()
 	break;
 	case EPrimitiveType::PT_UINT16:
 	{
-		read_helper<ScalarType, char>();
+		SG_SNOTIMPLEMENTED
 	}
 	break;
 	default:
