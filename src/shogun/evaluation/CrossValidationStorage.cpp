@@ -132,8 +132,9 @@ void CrossValidationStorage::post_init()
 void CrossValidationStorage::append_fold_result(
     CrossValidationFoldStorage* result)
 {
-	SG_REF(result);
-	m_folds_results.push_back(result);
+	auto cloned = dynamic_cast<CrossValidationFoldStorage*>(result->clone());
+	SG_REF(cloned)
+	m_folds_results.push_back(cloned);
 }
 
 void CrossValidationStorage::print_result()
