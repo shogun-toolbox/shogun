@@ -49,6 +49,8 @@
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
+#include <shogun/lib/observers/ObservedValue.h>
+
 namespace shogun
 {
 
@@ -856,6 +858,12 @@ void CSGObject::observe(const Some<ObservedValue> value) const
 	m_subscriber_params->on_next(value);
 }
 
+void CSGObject::observe(ObservedValue* value) const
+{
+	auto somed_value = Some<ObservedValue>::from_raw(value);
+	m_subscriber_params->on_next(somed_value);
+}
+
 class CSGObject::ParameterObserverList
 {
 public:
@@ -1210,12 +1218,4 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
-}
-
-ObservedValue::ObservedValue(const int64_t step, const std::string& name)
-    : CSGObject(), m_step(step), m_name(name), m_any_value(Any())
-{
-	SG_ADD(&m_step, "step", "Step");
-	this->watch_param(
-	    "name", &m_name, AnyParameterProperties("Name of the observed value"));
 }
