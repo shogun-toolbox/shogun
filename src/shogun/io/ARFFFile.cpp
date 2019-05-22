@@ -133,7 +133,7 @@ void ARFFDeserializer::read_helper()
 			auto inner_string =
 			    m_current_line.substr(strlen(m_attribute_string));
 			left_trim(
-			    inner_string, [](auto val) { return !std::isspace(val); });
+			    inner_string, [](const auto& val) { return !std::isspace(val); });
 			auto it = inner_string.begin();
 			if (is_part_of(*it, "\"\'"))
 			{
@@ -186,7 +186,7 @@ void ARFFDeserializer::read_helper()
 				split(
 				    type.substr(1, type.size() - 2), ", ",
 				    std::back_inserter(attributes), "\'\"");
-				auto processed_name = trim(name, [](auto val) {
+				auto processed_name = trim(name, [](const auto& val) {
 					return !std::isspace(val) && val != '\'' && val != '\"';
 				});
 				m_attribute_names.emplace_back(processed_name);
@@ -267,7 +267,7 @@ void ARFFDeserializer::read_helper()
 				SG_SERROR(
 				    "Unexpected format in @ATTRIBUTE on line %d: %s\n",
 				    m_line_number, m_current_line.c_str());
-			auto processed_name = trim(name, [](auto val) {
+			auto processed_name = trim(name, [](const auto& val) {
 				return !std::isspace(val) && val != '\'' && val != '\"';
 			});
 			m_attribute_names.emplace_back(processed_name);
@@ -296,19 +296,21 @@ void ARFFDeserializer::read_helper()
 	reserve_vector_memory(approx_data_line_count, data_vectors);
 	m_stream->seekg(pos);
 
+	std::vector<std::basic_string<CharType>> elems;
+	elems.reserve(m_attributes.size());
+
 	// read the @data section
-	auto read_data = [this, &data_vectors]() {
+	auto read_data = [this, &data_vectors, &elems]() {
 		// it's a comment and can be skipped
-		if (SG_UNLIKELY(m_current_line.substr(0, 1) == m_comment_string))
+		if (m_current_line.substr(0, 1) == m_comment_string)
 			return;
 		// it's the data string (i.e. @data"), does not provide information
-		if (SG_UNLIKELY(
-		        to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
-		        m_data_string))
+		if (to_lower(m_current_line.substr(0, strlen(m_data_string))) ==
+		    m_data_string)
 			return;
 
 		// assumes that until EOF we should expect comma delimited values
-		std::vector<std::basic_string<CharType>> elems;
+		elems.clear();
 		split(m_current_line, ",", std::back_inserter(elems), "\'\"");
 		if (elems.size() != m_attributes.size())
 			SG_SERROR(
@@ -321,8 +323,7 @@ void ARFFDeserializer::read_helper()
 		{
 			auto nominal_pos = m_nominal_attributes.begin();
 			auto date_pos = m_date_formats.begin();
-			int i = 0;
-			for (; i < elems.size(); ++i)
+			for (int i = 0; i < elems.size(); ++i)
 			{
 				Attribute type = m_attributes[i];
 				switch (type)
@@ -437,8 +438,7 @@ void ARFFDeserializer::read_helper()
 			memcpy(
 			    mat.matrix, casted_vec.data(),
 			    casted_vec.size() * sizeof(ScalarType));
-			auto* feat = new CDenseFeatures<ScalarType>(mat);
-			m_features->append_element(feat);
+			m_features.emplace_back(new CDenseFeatures<ScalarType>(mat));
 		}
 		break;
 		case Attribute::STRING:
@@ -460,9 +460,8 @@ void ARFFDeserializer::read_helper()
 				    (casted_vec.size() + 1) * sizeof(CharType));
 				strings.strings[j] = current;
 			}
-			auto* feat =
-			    new CStringFeatures<CharType>(strings, EAlphabet::RAWBYTE);
-			m_features->append_element(feat);
+			m_features.emplace_back(
+			    new CStringFeatures<CharType>(strings, EAlphabet::RAWBYTE));
 		}
 		}
 	}

@@ -143,7 +143,7 @@ namespace shogun
 					{
 						++it;
 					}
-					auto token = std::string(begin, it);
+					std::basic_string<T> token{begin, it};
 					if (!is_blank(token))
 						*(result++) = token;
 				}
@@ -166,7 +166,7 @@ namespace shogun
 			std::string result;
 			std::transform(
 			    line.begin(), line.end(), std::back_inserter(result),
-			    [](auto val) { return std::tolower(val); });
+			    [](const auto& val) { return std::tolower(val); });
 			return result;
 		}
 
@@ -386,8 +386,6 @@ namespace shogun
 				    "have the right permissions to open it.\n",
 				    filename.c_str())
 			}
-			m_features = new CList(true);
-			SG_REF(m_features)
 			m_stream = std::unique_ptr<std::istream>(file_stream);
 		}
 #ifndef SWIG
@@ -396,7 +394,7 @@ namespace shogun
 		 * This constructors copies the stream and takes care
 		 * of proper deletion.
 		 *
-		 * @param filename the input stream
+		 * @param stream the input stream
 		 * @param primitive_type the type to parse the scalars in, i.e. numeric
 		 * attributes
 		 */
@@ -407,18 +405,10 @@ namespace shogun
 		    : m_stream(stream), m_primitive_type(primitive_type),
 		      m_string_primitive_type(string_primitive_type)
 		{
-			m_features = new CList(true);
-			SG_REF(m_features)
-		}
-
-		~ARFFDeserializer()
-		{
-			SG_UNREF(m_features)
 		}
 #endif // SWIG
 		/**
 		 * Parse the file.
-		 *
 		 */
 		void read();
 
@@ -441,13 +431,74 @@ namespace shogun
 		}
 
 		/**
-		 * Get vector of features from parsed data.
-		 * @return
+		 * Get list of features from parsed data. The label name indicates the
+		 * column to be excluded, i.e. it's a label and not a feature.
+		 * @return a list of features
 		 */
-		CList* get_features() const noexcept
+		CList* get_features(const std::string& label_name) const
 		{
-			SG_REF(m_features)
-			return m_features;
+			auto find_label = std::find(
+			    m_attribute_names.begin(), m_attribute_names.end(), label_name);
+			if (find_label == m_attribute_names.end())
+				SG_SERROR(
+				    "The provided label \"%s\" was not found!\n",
+				    label_name.c_str())
+
+			auto result = new CList(true);
+			SG_REF(result)
+
+			int idx = 0;
+			int label_idx =
+			    std::distance(m_attribute_names.begin(), find_label);
+			for (const auto& feat : m_features)
+			{
+				if (idx != label_idx)
+				{
+					auto* feat_i = feat.get();
+					result->append_element(feat_i);
+				}
+				++idx;
+			}
+
+			return result;
+		}
+
+		/**
+		 * Get list of features from parsed data.
+		 * @return a list of features
+		 */
+		CList* get_features() const
+		{
+			auto result = new CList(true);
+			SG_REF(result)
+
+			for (const auto& feat : m_features)
+			{
+				auto* feat_i = feat.get();
+				result->append_element(feat_i);
+			}
+
+			return result;
+		}
+
+		/**
+		 * Get feature by name.
+		 * @return the requested feature if it exists.
+		 */
+		CFeatures* get_feature(const std::string& feature_name) const
+		{
+			auto find_feature = std::find(
+			    m_attribute_names.begin(), m_attribute_names.end(),
+			    feature_name);
+			if (find_feature == m_attribute_names.end())
+				SG_SERROR(
+				    "The provided label \"%s\" was not found!\n",
+				    feature_name.c_str())
+			int feature_idx =
+			    std::distance(m_attribute_names.begin(), find_feature);
+			auto* result = m_features[feature_idx].get();
+			SG_REF(result)
+			return result;
 		}
 
 		/**
@@ -615,7 +666,7 @@ namespace shogun
 		    m_nominal_attributes;
 
 		/** the parsed features */
-		CList* m_features;
+		std::vector<std::shared_ptr<CFeatures>> m_features;
 	};
 } // namespace shogun
 
