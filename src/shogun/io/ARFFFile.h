@@ -340,6 +340,22 @@ namespace shogun
 		}
 	}  // namespace arff_detail
 #endif // SWIG
+
+	/**
+	 * The attributes supported in the ARFF format
+	 */
+	enum class Attribute
+	{
+		NUMERIC = 0,
+		INTEGER = 1,
+		REAL = 2,
+		STRING = 3,
+		DATE = 4,
+		NOMINAL = 5
+	};
+
+	class ARFFSerializer;
+
 	/**
 	 * ARFFDeserializer parses files in the ARFF format.
 	 * For information about this format see
@@ -348,19 +364,7 @@ namespace shogun
 	class ARFFDeserializer
 	{
 	public:
-		/**
-		 * The attributes supported in the ARFF format
-		 */
-		enum class Attribute
-		{
-			NUMERIC = 0,
-			INTEGER = 1,
-			REAL = 2,
-			STRING = 3,
-			DATE = 4,
-			NOMINAL = 5
-		};
-
+		friend class ARFFSerializer;
 		/**
 		 * ARFFDeserializer constructor with a filename.
 		 * Performs a check to see if a file can be streamed.
@@ -530,6 +534,20 @@ namespace shogun
 			return std::vector<std::string>{};
 		}
 
+	protected:
+		/** character used in file to comment out a line */
+		static const char* m_comment_string;
+		/** characters to declare relations, i.e. @relation */
+		static const char* m_relation_string;
+		/** characters to declare attributes, i.e. @attribute */
+		static const char* m_attribute_string;
+		/** characters to declare data fields, i.e. @data */
+		static const char* m_data_string;
+		/** the default C++ date format specified by the ARFF standard */
+		static const char* m_default_date_format;
+		/** missing data */
+		static const char* m_missing_value_string;
+
 	private:
 		/**
 		 * Templated parser helper for string container primitive type.
@@ -621,18 +639,6 @@ namespace shogun
 		        std::vector<ScalarType>,
 		        std::vector<std::basic_string<CharType>>>>& v);
 
-		/** character used in file to comment out a line */
-		static const char* m_comment_string;
-		/** characters to declare relations, i.e. @relation */
-		static const char* m_relation_string;
-		/** characters to declare attributes, i.e. @attribute */
-		static const char* m_attribute_string;
-		/** characters to declare data fields, i.e. @data */
-		static const char* m_data_string;
-		/** the default C++ date format specified by the ARFF standard */
-		static const char* m_default_date_format;
-		/** missing data */
-		static const char* m_missing_value_string;
 		/** the name of the attributes */
 		std::vector<std::string> m_attribute_names;
 
@@ -668,6 +674,65 @@ namespace shogun
 		/** the parsed features */
 		std::vector<std::shared_ptr<CFeatures>> m_features;
 	};
+
+	/**
+	 * ARFFSerializer writes out files in the ARFF format.
+	 * For information about this format see
+	 * https://waikato.github.io/weka-wiki/arff_stable/
+	 */
+	class ARFFSerializer
+	{
+	public:
+		/**
+		 * The ARFFSerializer constructor.
+		 *
+		 * @param name the name of the dataset
+		 * @param feature_list a list with individual features
+		 * @param attributes a map of the feature names to the ARFF type the
+		 * features translate to
+		 * @param nominal_mapping a mapping of nominal features to a vector of
+		 * strings whose index will be used to infer the nominal value
+		 */
+		ARFFSerializer(
+		    const std::string& name, CList* feature_list,
+		    const std::vector<std::pair<std::string, Attribute>>& attributes,
+		    const std::unordered_map<std::string, std::vector<std::string>>&
+		        nominal_mapping)
+		    : m_name(name), m_attributes(attributes),
+		      m_nominal_mapping(nominal_mapping)
+		{
+			SG_REF(feature_list)
+			m_feature_list = feature_list;
+		}
+
+#ifndef SWIG
+		/**
+		 * Writes out features to an output stream.
+		 * @return the output stream
+		 */
+		std::unique_ptr<std::ostringstream> write();
+#endif // SWIG
+
+		/**
+		 * Writes out features with the provided information
+		 * used in the constructor.
+		 *
+		 * @param filename the file to write to
+		 */
+		void write(const std::string& filename);
+
+	private:
+		/** the name of the dataset */
+		std::string m_name;
+		/** the list of features to write out */
+		CList* m_feature_list;
+		/** the attributes */
+		std::vector<std::pair<std::string, Attribute>> m_attributes;
+		/** the nominal attributes, if any */
+		std::unordered_map<std::string, std::vector<std::string>>
+		    m_nominal_mapping;
+	};
+
 } // namespace shogun
 
 #endif // SHOGUN_ARFFFILE_H
