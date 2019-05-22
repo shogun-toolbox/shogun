@@ -36,7 +36,6 @@
 #ifndef SHOGUN_PARAMETEROBSERVERCV_H
 #define SHOGUN_PARAMETEROBSERVERCV_H
 
-#include <shogun/base/SGObject.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/lib/observers/observers_utils.h>

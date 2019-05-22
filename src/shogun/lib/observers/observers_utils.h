@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef SHOGUN_OBSERVEDVALUE_H
-#define SHOGUN_OBSERVEDVALUE_H
+#ifndef SHOGUN_OBSERVEDVALUEUTILS_H
+#define SHOGUN_OBSERVEDVALUEUTILS_H
 
 #include <chrono>
 #include <utility>
@@ -41,4 +41,4 @@ namespace shogun
 	}
 }
 
-#endif // SHOGUN_OBSERVEDVALUE_H
+#endif //SHOGUN_OBSERVEDVALUEUTILS_H
