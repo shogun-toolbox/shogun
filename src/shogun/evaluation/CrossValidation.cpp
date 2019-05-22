@@ -189,6 +189,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->put("train_indices", inverse_subset_indices);
 			auto fold_machine = (CMachine*)m_machine->clone();
+			SG_REF(fold_machine)
 			fold->put("trained_machine", fold_machine);
 			SG_UNREF(fold_machine)
 
