@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/lib/List.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/util/converters.h>

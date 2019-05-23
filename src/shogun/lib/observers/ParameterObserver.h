@@ -40,6 +40,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/observers/observers_utils.h>
 
 namespace shogun
