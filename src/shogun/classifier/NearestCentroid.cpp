@@ -9,7 +9,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/iterators/DotIterator.h>
-
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 
 namespace shogun{
@@ -72,18 +72,16 @@ namespace shogun{
 			num_per_class[current_class]++;
 		}
 
+		SGVector<float64_t> scale(num_classes);
 		for (int32_t i=0 ; i<num_classes ; i++)
 		{
-			auto target = centroids.get_column(i);
 			int32_t total = num_per_class[i];
-			float64_t scale = 0;
 			if(total>1)
-				scale = 1.0/((float64_t)(total-1));
+				scale[i] = 1.0/((float64_t)(total-1));
 			else
-				scale = 1.0/(float64_t)total;
-
-			target.scale(scale);
+				scale[i] = 1.0/(float64_t)total;
 		}
+		linalg::scale(centroids, centroids, scale);
 
 		auto centroids_feats = some<CDenseFeatures<float64_t>>(centroids);
 
