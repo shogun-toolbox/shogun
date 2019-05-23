@@ -193,6 +193,16 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_SCALE
 
+#define BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE(Type, Container)                \
+	void LinalgBackendEigen::scale(                                            \
+	    const Container<Type>& a, const SGVector<Type>& alphas,                \
+	    Container<Type>& result) const                                         \
+	{                                                                          \
+		scale_impl(a, alphas, result);                                         \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE
+
 #undef DEFINE_FOR_ALL_PTYPE
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
@@ -485,4 +495,16 @@ void LinalgBackendEigen::scale_impl(
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 	result_eig = alpha * a_eig;
+}
+
+template <typename T>
+void LinalgBackendEigen::scale_impl(
+	const SGMatrix<T>& a, const SGVector<T>& alphas,
+	SGMatrix<T>& result) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	typename SGVector<T>::EigenRowVectorXtMap alphas_eig = alphas;
+
+	result_eig = a_eig.array().rowwise() * alphas_eig.array();
 }

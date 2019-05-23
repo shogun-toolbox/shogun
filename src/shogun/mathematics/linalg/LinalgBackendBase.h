@@ -644,6 +644,21 @@ namespace shogun
 #undef BACKEND_GENERIC_IN_PLACE_SCALE
 
 /**
+ * Wrapper method that scales every matrix column with respective coefficient.
+ *
+ * @see linalg::scale
+ */
+#define BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE(Type, Container)                \
+	virtual void scale(                                                        \
+	    const Container<Type>& a, const SGVector<Type>& alphas,                \
+	    Container<Type>& result) const                                         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE
+
+/**
  * Wrapper method that sets const values to vectors or matrices.
  *
  * @see linalg::set_const
