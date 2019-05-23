@@ -12,6 +12,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 

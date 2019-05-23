@@ -9,6 +9,7 @@
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 
 using namespace shogun;
 
