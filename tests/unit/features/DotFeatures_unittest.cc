@@ -121,3 +121,47 @@ TEST_F(DotFeaturesTest, compute_cov_nocopy)
 	for (index_t i = 0; i < (index_t)cov.size(); ++i)
 		EXPECT_NEAR(cov[i], ref_cov_ab[i], eps);
 }
+
+TEST_F(DotFeaturesTest, dense_dot_range)
+{
+	index_t num_feats = 2;
+	index_t num_vectors = 4;
+	float64_t bias = 25;
+
+	SGMatrix<float64_t> data(num_feats, num_vectors);
+	for (index_t i = 0; i < num_vectors; i++)
+		data.get_column(i).set_const(i);
+	auto feats = some<CDenseFeatures<float64_t>>(data);
+
+	SGVector<float64_t> vec(num_feats);
+	vec.range_fill(1);
+
+	index_t start1 = 0;
+	index_t stop1 = num_vectors - 1;
+	index_t start2 = 1;
+	index_t stop2 = num_vectors;
+
+	SGVector<float64_t> alphas(num_vectors - 1);
+	alphas.range_fill(0);
+
+	SGVector<float64_t> output1(num_vectors - 1);
+	SGVector<float64_t> output2(num_vectors - 1);
+
+	feats->dense_dot_range(
+	    output1.vector, start1, stop1, alphas.vector, vec.vector, num_feats,
+	    bias);
+	feats->dense_dot_range(
+	    output2.vector, start2, stop2, alphas.vector, vec.vector, num_feats,
+	    bias);
+
+	for (index_t i = 0; i < num_vectors - 1; i++)
+	{
+		// output1[i] = alpha[i] * (data[i] dot vec) + bias
+		ASSERT_EQ(
+		    output1[i], i * i * num_feats * ((1 + num_feats) / 2.0) + bias);
+		// output2[i] = alpha[i] * (data[i+1] dot vec) + bias
+		ASSERT_EQ(
+		    output2[i],
+		    i * (i + 1) * num_feats * ((1 + num_feats) / 2.0) + bias);
+	}
+}
