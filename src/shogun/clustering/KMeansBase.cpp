@@ -164,11 +164,12 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	memset(mus.matrix, 0, sizeof(float64_t)*centers_size);
 
 
-	if (mus_initial.matrix)
-		this->put<SGMatrix<float64_t>>("mus", mus_initial);
-	else
+	if (mus_initial.matrix) {
+		mus = mus_initial;
+		observe<SGMatrix<float64_t>>(0, "mus");
+	} else {
 		set_random_centers();
-
+	}
 	SG_UNREF(lhs);
 }
 
