@@ -1034,7 +1034,21 @@ protected:
 	void observe(const Some<ObservedValue> value) const;
 
 	/**
-	 * Observe a parameter value given some information
+	 * Observe a parameter value given custom properties for the Any.
+	 * If no observer is attached this command will do nothing.
+	 * @tparam T type of the parameter
+	 * @param step time step
+	 * @param name name of the observed value
+	 * @param value observed value
+	 * @param properties AnyParameterProperties used to register the observed value.
+	 */
+	template <class T>
+	void observe(const int64_t step, const std::string& name, const T& value,
+						  const AnyParameterProperties properties) const;
+
+	/**
+	 * Observe a parameter value given some information.
+	 * If no observer is attached this command will do nothing.
 	 * @tparam T value of the parameter
 	 * @param step step
 	 * @param name name of the observed value
@@ -1048,6 +1062,7 @@ protected:
 
 	/**
 	 * Observe a registered tag.
+	 * If no observer is attached this command will do nothing.
 	 * @tparam T type of the tag
 	 * @param step step
 	 * @param name tag's name
@@ -1346,22 +1361,31 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
 }
 
 template <class T>
+void CSGObject::observe(const int64_t step, const std::string &name, const T& value,
+								 const AnyParameterProperties properties) const
+{
+	// If there are no observers attached, do not create/emit anything.
+	if (get_num_subscriptions() == 0) return;
+	
+	auto obs = some<ObservedValueTemplated<T>>(step, name, static_cast<T>(clone_utils::clone(value)), properties);
+	this->observe(obs);
+}
+
+template <class T>
 void CSGObject::observe(
 	const int64_t step, const std::string& name, const std::string& description,
 	const T value) const
 {
-	auto obs = some<ObservedValueTemplated<T>>(step, name, description, value);
-	this->observe(obs);
+	this->observe(step, name, value,
+						   AnyParameterProperties(description, ParameterProperties::READONLY));
 }
 
 template <class T>
 void CSGObject::observe(const int64_t step, const std::string& name) const
 {
 	auto param = this->get_parameter(BaseTag(name));
-	auto cloned = any_cast<T>(param.get_value());
-	auto obs = some<ObservedValueTemplated<T>>(
-		step, name, static_cast<T>(clone_utils::clone(cloned)), param.get_properties());
-	this->observe(obs);
+	this->observe(
+		step, name, any_cast<T>(param.get_value()), param.get_properties());
 }
 
 

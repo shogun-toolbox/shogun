@@ -90,6 +90,12 @@ void CrossValidationFoldStorage::print_result()
 {
 }
 
+CSGObject *CrossValidationFoldStorage::create_empty() const {
+	auto clone = new CrossValidationFoldStorage();
+	SG_REF(clone)
+	return clone;
+}
+
 /** CrossValidationStorage **/
 
 CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
@@ -126,10 +132,17 @@ void CrossValidationStorage::post_init()
 void CrossValidationStorage::append_fold_result(
     CrossValidationFoldStorage* result)
 {
-	SG_REF(result);
-	m_folds_results.push_back(result);
+	auto cloned = dynamic_cast<CrossValidationFoldStorage*>(result->clone());
+	SG_REF(cloned)
+	m_folds_results.push_back(cloned);
 }
 
 void CrossValidationStorage::print_result()
 {
+}
+
+CSGObject *CrossValidationStorage::create_empty() const {
+	auto clone = new CrossValidationStorage();
+	SG_REF(clone)
+	return clone;
 }
