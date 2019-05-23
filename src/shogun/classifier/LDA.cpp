@@ -11,9 +11,11 @@
 #include <shogun/classifier/LDA.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
+
 #include <vector>
 
 using namespace Eigen;

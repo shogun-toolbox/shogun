@@ -15,6 +15,7 @@
 #include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/LeastAngleRegression.h>

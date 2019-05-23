@@ -6,6 +6,7 @@
  */
 
 #include <shogun/lib/observers/ParameterObserverLogger.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/type_case.h>
 
 using namespace shogun;
