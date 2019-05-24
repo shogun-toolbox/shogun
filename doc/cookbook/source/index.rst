@@ -135,3 +135,13 @@ Evaluation
     :caption: Evaluation
 
     examples/evaluation/**
+
+Observable Models
+-----------------
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+    :caption: Observable Models
+
+    examples/observers/**
