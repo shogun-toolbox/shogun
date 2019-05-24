@@ -88,22 +88,22 @@ std::shared_ptr<OpenMLRun> OpenMLRun::run_flow_on_task(
 	SG_SDEBUG("End of openml run: %s\n", xval_storage->to_string().c_str());
 
 	return std::make_shared<OpenMLRun>(
-	    nullptr,                    // uploader
-	    nullptr,                    // uploader_name
-	    nullptr,                    // setup_id
-	    nullptr,                    // setup_string
-	    nullptr,                    // parameter_settings
+	    std::string{},              // uploader
+	    std::string{},              // uploader_name
+	    std::string{},              // setup_id
+	    std::string{},              // setup_string
+	    std::string{},              // parameter_settings
 	    std::vector<float64_t>{},   // evaluations
 	    std::vector<float64_t>{},   // fold_evaluations
 	    std::vector<float64_t>{},   // sample_evaluations
-	    nullptr,                    // data_content
+	    std::string{},              // data_content
 	    std::vector<std::string>{}, // output_files
 	    task,                       // task
 	    flow,                       // flow
-	    nullptr,                    // run_id
+	    std::string{},              // run_id
 	    model,                      // model
 	    std::vector<std::string>{}, // tags
-	    nullptr                     // predictions_url
+	    std::string{}               // predictions_url
 	);
 }
 
