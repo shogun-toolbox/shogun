@@ -650,25 +650,33 @@ void CSGObject::create_parameter(
 
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	if (!self->map[_tag].get_properties().has_property(
-	        ParameterProperties::READONLY))
-		self->update(_tag, value);
-	else
-	{
+	auto any_param = self->map[_tag];
+	auto pprop = any_param.get_properties();
+	if (pprop.has_property(ParameterProperties::READONLY))
 		SG_ERROR(
-		    "%s::%s is marked as read-only and cannot be modified", get_name(),
-		    _tag.name().c_str());
+		    "%s::%s is marked as read-only and cannot be modified!\n",
+		    get_name(), _tag.name().c_str());
+	if (pprop.has_property(ParameterProperties::CONSTRAIN))
+	{
+		if (!any_param.get_constrain_function()(value))
+			SG_ERROR(
+			    "%s::%s cannot be updated because of its constraint!\n",
+			    get_name(), _tag.name().c_str())
 	}
-	self->map[_tag].get_properties().remove_property(ParameterProperties::AUTO);
+	self->update(_tag, value);
+	pprop.remove_property(ParameterProperties::AUTO);
 }
 
 AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
-	if (parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
+	if (parameter.get_properties().has_property(
+	        ParameterProperties::RUNFUNCTION))
 	{
-		SG_ERROR("The parameter %s::%s is registered as a function, "
-		   "use the run method instead", get_name(), _tag.name().c_str())
+		SG_ERROR(
+		    "The parameter %s::%s is registered as a function, "
+		    "use the .run() method instead!\n",
+		    get_name(), _tag.name().c_str())
 	}
 	if (parameter.get_value().empty())
 	{
@@ -682,16 +690,19 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
-	if (!parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
+	if (!parameter.get_properties().has_property(
+	        ParameterProperties::RUNFUNCTION))
 	{
-		SG_ERROR("The parameter %s::%s is not registered as a function, "
-				 "use the get method instead", get_name(), _tag.name().c_str())
+		SG_ERROR(
+		    "The parameter %s::%s is not registered as a function, "
+		    "use the .get() method instead",
+		    get_name(), _tag.name().c_str())
 	}
 	if (parameter.get_value().empty())
 	{
 		SG_ERROR(
-				"There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
-				get_name());
+		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+		    get_name());
 	}
 	return parameter;
 }

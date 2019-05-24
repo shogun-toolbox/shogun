@@ -25,7 +25,8 @@ namespace shogun
 		MODEL = 1u << 2,
 		AUTO = 1u << 10,
 		READONLY = 1u << 11,
-		RUNFUNCTION = 1u << 12
+		RUNFUNCTION = 1u << 12,
+		CONSTRAIN = 1u << 13
 	};
 
 	static const std::list<std::pair<ParameterProperties, std::string>>
@@ -137,9 +138,17 @@ namespace shogun
 		      m_init_function(std::move(auto_init))
 		{
 		}
+		AnyParameter(
+		    const Any& value, AnyParameterProperties properties,
+		    std::function<bool(Any)> constrain_function)
+		    : m_value(value), m_properties(properties),
+		      m_constrain_function(std::move(constrain_function))
+		{
+		}
 		AnyParameter(const AnyParameter& other)
 		    : m_value(other.m_value), m_properties(other.m_properties),
-		      m_init_function(other.m_init_function)
+		      m_init_function(other.m_init_function),
+		      m_constrain_function(other.m_constrain_function)
 		{
 		}
 
@@ -168,6 +177,11 @@ namespace shogun
 			return m_init_function;
 		}
 
+		const std::function<bool(Any)>& get_constrain_function() const noexcept
+		{
+			return m_constrain_function;
+		}
+
 		/** Equality operator which compares value but not properties.
 		 * @return true if value of other parameter equals own */
 		inline bool operator==(const AnyParameter& other) const
@@ -185,6 +199,7 @@ namespace shogun
 		Any m_value;
 		AnyParameterProperties m_properties;
 		std::shared_ptr<params::AutoInit> m_init_function;
+		std::function<bool(Any)> m_constrain_function;
 	};
 } // namespace shogun
 

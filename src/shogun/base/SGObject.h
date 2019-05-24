@@ -122,6 +122,29 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
+#define SG_ADD_CONSTRAINT(param, name, description, param_properties, ...)     \
+	{                                                                          \
+		static_assert(                                                         \
+		    static_cast<bool>(                                                 \
+		        (param_properties)&ParameterProperties::CONSTRAIN),            \
+		    "Expected param to have ParameterProperty::CONSTRAIN");            \
+		AnyParameterProperties pprop =                                         \
+		    AnyParameterProperties(description, param_properties);             \
+		this->m_parameters->add(param, name, description);                     \
+		this->watch_param(                                                     \
+		    name, param,                                                       \
+		    [](auto val) {                                                     \
+			    auto casted_val =                                              \
+			        any_cast<std::remove_pointer<decltype(param)>::type>(val); \
+			    return make_composer(__VA_ARGS__).run(casted_val);             \
+		    },                                                                 \
+		    pprop);                                                            \
+		if (pprop.get_model_selection())                                       \
+			this->m_model_selection_parameters->add(param, name, description); \
+		if (pprop.get_gradient())                                              \
+			this->m_gradient_parameters->add(param, name, description);        \
+	}
+
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
 
 /*******************************************************************************
@@ -852,10 +875,33 @@ protected:
 	void watch_param(
 			const std::string& name, T* value,
 			std::shared_ptr<params::AutoInit> auto_init,
-			AnyParameterProperties properties = AnyParameterProperties())
+			AnyParameterProperties properties)
 	{
 		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(auto_init)));
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties,
+				std::move(auto_init)));
+	}
+	/** Puts a pointer to some parameter into the parameter map.
+	 * The parameter is the constrained to the rules provided to
+	 * make_composer.
+	 *
+	 * @param name name of the parameter
+	 * @param value pointer to the parameter value
+	 * @param constrain_function a function pointer that checks if
+	 * a given value is within the provided constraints
+	 * @param properties properties of the parameter (e.g. if model
+	 * selection is supported)
+	 */
+	template <typename T>
+	void watch_param(
+		const std::string& name, T* value,
+		std::function<bool(Any)>&& constrain_function,
+		AnyParameterProperties properties)
+	{
+		BaseTag tag(name);
+		create_parameter(
+			tag, AnyParameter(
+					 make_any_ref(value), properties, constrain_function));
 	}
 
 	/** Puts a pointer to some parameter array into the parameter map.
