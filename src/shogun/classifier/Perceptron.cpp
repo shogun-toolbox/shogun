@@ -74,9 +74,11 @@ void CPerceptron::iteration()
 		{
 			converged = false;
 			const auto gradient = learn_rate * true_label;
-			put("bias", bias + gradient);
+			bias += gradient;
 			v.add(gradient, w);
-			put("w", w);
+
+			observe<SGVector<float64_t>>(m_current_iteration, "w");
+			observe<float64_t>(m_current_iteration, "bias");
 		}
 	}
 	m_complete = converged;
