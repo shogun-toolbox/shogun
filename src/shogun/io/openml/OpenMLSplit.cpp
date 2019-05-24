@@ -29,27 +29,18 @@ OpenMLSplit::get_split(const std::string& split_url, const std::string& api_key)
 	arff_parser.read();
 	auto arff_features = arff_parser.get_features();
 	REQUIRE(
-	    arff_features->get_num_feature_obj() == 4,
+	    arff_features.size() == 4,
 	    "Expected a ARFF file with 4 attributes: type, rowid, repeat and "
 	    "fold.\n")
 
-	auto train_test_feat =
-	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(0));
-	auto rowid_feat =
-	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(1));
-	auto repeat_feat =
-	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(2));
-	auto fold_feat =
-	    std::shared_ptr<CFeatures>(arff_features->get_feature_obj(3));
-
-	auto type_vector = nominal_feature_to_vector(train_test_feat);
-	auto rowid_vector = dense_feature_to_vector(rowid_feat);
-	auto repeat_vector = dense_feature_to_vector(repeat_feat);
-	auto fold_vector = dense_feature_to_vector(fold_feat);
+	auto type_vector = nominal_feature_to_vector(arff_features[0]);
+	auto rowid_vector = dense_feature_to_vector(arff_features[1]);
+	auto repeat_vector = dense_feature_to_vector(arff_features[2]);
+	auto fold_vector = dense_feature_to_vector(arff_features[3]);
 
 	std::array<std::vector<int32_t>, 3> train_idx, test_idx;
 
-	for (int i = 0; i < train_test_feat->get_num_vectors(); ++i)
+	for (int i = 0; i < arff_features[0]->get_num_vectors(); ++i)
 	{
 		if (type_vector[i] == LabelType::TRAIN)
 		{

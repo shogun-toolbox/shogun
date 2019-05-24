@@ -23,7 +23,8 @@ OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 	auto reader = OpenMLFile(api_key);
 	auto return_string = reader.get("dataset_description", "json", id);
 
-	auto& dataset_description = check_response<BACKEND_FORMAT::JSON>(return_string, "data_set_description");
+	auto& dataset_description = check_response<BACKEND_FORMAT::JSON>(
+	    return_string, "data_set_description");
 
 	auto name = return_if_possible<std::string>(
 	    "name", dataset_description.GetObject());
@@ -77,7 +78,8 @@ OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 	    param_vector;
 	return_string = reader.get("data_features", "json", id);
 
-	auto& dataset_features = check_response<BACKEND_FORMAT::JSON>(return_string, "data_features");
+	auto& dataset_features =
+	    check_response<BACKEND_FORMAT::JSON>(return_string, "data_features");
 
 	for (const auto& param : dataset_features["feature"].GetArray())
 	{
@@ -100,7 +102,8 @@ OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 	std::vector<std::unordered_map<std::string, std::string>> qualities_vector;
 	return_string = reader.get("data_qualities", "json", id);
 
-	auto& data_qualities = check_response<BACKEND_FORMAT::JSON>(return_string, "data_qualities");
+	auto& data_qualities =
+	    check_response<BACKEND_FORMAT::JSON>(return_string, "data_qualities");
 
 	for (const auto& param : data_qualities["quality"].GetArray())
 	{
@@ -129,14 +132,16 @@ OpenMLData::get_dataset(const std::string& id, const std::string& api_key)
 
 std::shared_ptr<CFeatures> OpenMLData::get_features() noexcept
 {
-	if (!m_cached_features)
-		get_data();
-	return m_cached_features;
+	//	if (!m_cached_features)
+	//		get_data();
+	//	return m_cached_features;
+	SG_SNOTIMPLEMENTED
+	return nullptr;
 }
 
 std::shared_ptr<CFeatures> OpenMLData::get_features(const std::string& label)
 {
-	if (!m_cached_features)
+	if (m_cached_features.empty())
 		get_data();
 	auto find_label =
 	    std::find(m_feature_names.begin(), m_feature_names.end(), label);
@@ -147,39 +152,42 @@ std::shared_ptr<CFeatures> OpenMLData::get_features(const std::string& label)
 	feat_type_copy.erase(feat_type_copy.begin() + col_idx);
 	for (const auto type : feat_type_copy)
 	{
-		if (type == ARFFDeserializer::Attribute::STRING)
+		if (type == Attribute::STRING)
 			SG_SNOTIMPLEMENTED
 	}
-	//	auto result = std::make_shared<CDenseFeatures>();
+
 	std::shared_ptr<CDenseFeatures<float64_t>> result;
 	bool first = true;
+	size_t n_examples = 0;
 	for (int i = 0; i < m_feature_types.size(); ++i)
 	{
 		if (i != col_idx && first)
 		{
-			result.reset(m_cached_features->get_feature_obj(i)
-			                 ->as<CDenseFeatures<float64_t>>());
+			result.reset(m_cached_features[0]->as<CDenseFeatures<float64_t>>());
+			n_examples = result->get_num_vectors();
 			first = false;
 		}
 		if (i != col_idx)
-			result.reset(
-			    result
-			        ->create_merged_copy(m_cached_features->get_feature_obj(i))
-			        ->as<CDenseFeatures<float64_t>>());
+		{
+			REQUIRE(
+			    n_examples == m_cached_features[i]->get_num_vectors(),
+			    "Expected all features to have the same number of examples!\n")
+			result.reset(result->create_merged_copy(m_cached_features[i].get())
+			                 ->as<CDenseFeatures<float64_t>>());
+		}
 	}
+
+	REQUIRE(n_examples != 0, "No features extracted!\n")
 
 	// need to copy data as result is only in the stack and the data
 	// will be gone at the end of the function
-	auto* copy_feat = SG_MALLOC(
-	    float64_t,
-	    m_feature_types.size() * m_cached_features->get_num_vectors());
+	auto* copy_feat = SG_MALLOC(float64_t, m_feature_types.size() * n_examples);
 	memcpy(
 	    copy_feat, result->get_feature_matrix().data(),
-	    m_feature_types.size() * m_cached_features->get_num_vectors());
+	    m_feature_types.size() * m_cached_features.size());
 
 	result = std::make_shared<CDenseFeatures<float64_t>>(
-	    copy_feat, m_feature_types.size(),
-	    m_cached_features->get_num_vectors());
+	    copy_feat, m_feature_types.size(), n_examples);
 
 	return result;
 }
@@ -197,7 +205,7 @@ std::shared_ptr<CLabels> OpenMLData::get_labels(const std::string& label_name)
 	if (m_cached_labels && label_name == m_cached_label_name)
 		return m_cached_labels;
 
-	if (!m_cached_features)
+	if (m_cached_features.empty())
 		get_data();
 
 	auto find_label =
@@ -207,16 +215,16 @@ std::shared_ptr<CLabels> OpenMLData::get_labels(const std::string& label_name)
 		    "Requested label \"%s\" not in the dataset!\n", label_name.c_str())
 	auto col_idx = std::distance(m_feature_names.begin(), find_label);
 
-	auto target_label_as_feat =
-	    std::shared_ptr<CFeatures>(m_cached_features->get_feature_obj(col_idx));
+	std::shared_ptr<CFeatures> target_label_as_feat =
+	    m_cached_features[col_idx];
 
 	switch (m_feature_types[col_idx])
 	{
 	// real features
-	case ARFFDeserializer::Attribute::REAL:
-	case ARFFDeserializer::Attribute::NUMERIC:
-	case ARFFDeserializer::Attribute::INTEGER:
-	case ARFFDeserializer::Attribute::DATE:
+	case Attribute::REAL:
+	case Attribute::NUMERIC:
+	case Attribute::INTEGER:
+	case Attribute::DATE:
 	{
 		auto casted_feat = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(
 		    target_label_as_feat);
@@ -228,7 +236,7 @@ std::shared_ptr<CLabels> OpenMLData::get_labels(const std::string& label_name)
 	}
 	break;
 		// nominal features
-	case ARFFDeserializer::Attribute::NOMINAL:
+	case Attribute::NOMINAL:
 	{
 		auto casted_feat = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(
 		    target_label_as_feat);

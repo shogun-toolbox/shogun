@@ -11,8 +11,8 @@
 #include <shogun/io/ARFFFile.h>
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 namespace shogun
 {
@@ -90,7 +90,6 @@ namespace shogun
 		 */
 		std::shared_ptr<CLabels> get_labels();
 
-
 		/**
 		 * Returns the dataset labels given the label_name
 		 * @return the labels
@@ -101,16 +100,14 @@ namespace shogun
 		 * Returns the type of all attributes/features in the ARFF file
 		 * @return
 		 */
-		SG_FORCED_INLINE std::vector<ARFFDeserializer::Attribute>
-
-		get_feature_types() const noexcept
+		SG_FORCED_INLINE std::vector<Attribute> get_feature_types() const
+		    noexcept
 		{
 			return m_feature_types;
 		}
 
-		SG_FORCED_INLINE std::string
-
-		get_default_target_attribute() const noexcept
+		SG_FORCED_INLINE std::string get_default_target_attribute() const
+		    noexcept
 		{
 			return m_default_target_attribute;
 		}
@@ -153,9 +150,9 @@ namespace shogun
 		    m_param_qualities;
 		std::string m_api_key;
 
-		std::shared_ptr<CCombinedFeatures> m_cached_features;
+		std::vector<std::shared_ptr<CFeatures>> m_cached_features;
 		std::vector<std::string> m_feature_names;
-		std::vector<ARFFDeserializer::Attribute> m_feature_types;
+		std::vector<Attribute> m_feature_types;
 		std::shared_ptr<CLabels> m_cached_labels;
 		std::string m_cached_label_name;
 	};
