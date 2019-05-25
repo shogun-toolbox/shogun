@@ -70,7 +70,7 @@ public:
 	 * @param idx_rhs index of right hand side vector
 	 */
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs)
+			int32_t idx_rhs) const
 	{
 
 		//lookup tasks
@@ -94,7 +94,7 @@ public:
 	 * @param vec vector with containing task_id for each example
 	 * @return number of unique task ids
 	 */
-	int32_t get_num_unique_tasks(std::vector<int32_t> vec) {
+	int32_t get_num_unique_tasks(std::vector<int32_t> vec) const noexcept {
 
 		//sort
 		std::sort(vec.begin(), vec.end());
@@ -136,7 +136,7 @@ public:
 
 
 	/** derive similarity from distance with plif */
-	float64_t compute_task_similarity(int32_t task_a, int32_t task_b)
+	float64_t compute_task_similarity(int32_t task_a, int32_t task_b) const
 	{
 
 		float64_t distance = get_task_distance(task_a, task_b);
@@ -216,7 +216,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return distance between tasks
 	 */
-	float64_t get_task_distance(int32_t task_lhs, int32_t task_rhs)
+	float64_t get_task_distance(int32_t task_lhs, int32_t task_rhs) const
 	{
 
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
@@ -247,7 +247,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs) const
 	{
 
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
@@ -276,7 +276,7 @@ public:
 	/**
 	 *  @param idx index of MKL weight to get
 	 */
-	float64_t get_beta(int32_t idx)
+	float64_t get_beta(int32_t idx) const
 	{
 
 		return betas[idx];
@@ -299,7 +299,7 @@ public:
 	/**
 	 *  @return number of kernel weights (support points)
 	 */
-	int32_t get_num_betas()
+	int32_t get_num_betas() const noexcept
 	{
 
 		return num_betas;

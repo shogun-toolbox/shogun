@@ -89,7 +89,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 		{
 			float64_t sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
 			return value/sqrt_both;
@@ -99,7 +99,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
 			return value/sqrtdiag_lhs[idx_lhs];
 		}
@@ -108,17 +108,20 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
 			return value/sqrtdiag_rhs[idx_rhs];
 		}
 
-    public:
+		/** @return object name */
+		virtual const char* get_name() const { return "SqrtDiagKernelNormalizer"; }
+
+    protected:
 		/**
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num) const
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
@@ -142,10 +145,6 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			return (v!=NULL);
 		}
 
-		/** @return object name */
-		virtual const char* get_name() const { return "SqrtDiagKernelNormalizer"; }
-
-    protected:
 		/** sqrt diagonal left-hand side */
 		float64_t* sqrtdiag_lhs;
 

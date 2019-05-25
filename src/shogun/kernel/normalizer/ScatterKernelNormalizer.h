@@ -77,7 +77,7 @@ public:
 	 *
 	 * @return testing class (-1 disabled, 0...class otherwise)
 	 */
-	int32_t get_testing_class()
+	int32_t get_testing_class() const noexcept
 	{
 		return m_testing_class;
 	}
@@ -97,7 +97,7 @@ public:
 	 * @param idx_rhs index of right hand side vector
 	 */
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs)
+			int32_t idx_rhs) const
 	{
 		value=m_normalizer->normalize(value, idx_lhs, idx_rhs);
 		float64_t c=m_const_offdiag;
@@ -120,7 +120,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -130,7 +130,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
