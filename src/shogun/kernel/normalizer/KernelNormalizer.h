@@ -71,20 +71,28 @@ class CKernelNormalizer : public CSGObject
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)=0;
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const=0;
 
 		/** normalize only the left hand side vector
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)=0;
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const=0;
 
 		/** normalize only the right hand side vector
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)=0;
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const=0;
 
+		/** getter for normalizer type
+		 */
+		ENormalizerType get_normalizer_type() const noexcept
+		{
+			return m_type;
+		}
+
+	protected:
 		/** register the parameters
 		 */
 		virtual void register_params()
@@ -92,13 +100,6 @@ class CKernelNormalizer : public CSGObject
 			SG_ADD_OPTIONS(
 			    (machine_int_t*)&m_type, "m_type", "Normalizer type.",
 			    ParameterProperties::NONE, SG_OPTIONS(N_REGULAR, N_MULTITASK));
-		}
-
-		/** getter for normalizer type
-		 */
-		ENormalizerType get_normalizer_type()
-		{
-			return m_type;
 		}
 
 		/** setter for normalizer type
@@ -109,7 +110,6 @@ class CKernelNormalizer : public CSGObject
 			m_type = type;
 		}
 
-	protected:
 		/** normalizer type */
 		ENormalizerType m_type;
 };
