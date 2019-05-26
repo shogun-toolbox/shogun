@@ -19,11 +19,11 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	    get_name(), predicted->get_num_labels(),
 	    ground_truth->get_num_labels());
 
-	auto predicted_binary = binary_labels(predicted);
-	auto ground_truth_binary = binary_labels(ground_truth);
+	auto predicted_binary = predicted->as<CBinaryLabels>();
+	auto ground_truth_binary = ground_truth->as<CBinaryLabels>();
 
 	ground_truth->ensure_valid();
-	compute_scores(predicted_binary.get(), ground_truth_binary.get());
+	compute_scores(predicted_binary, ground_truth_binary);
 	switch (m_type)
 	{
 		case ACCURACY:

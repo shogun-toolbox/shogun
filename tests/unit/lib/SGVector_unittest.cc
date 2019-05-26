@@ -468,3 +468,12 @@ TEST(SGVectorTest, as)
 		EXPECT_EQ((int32_t)data[i], vec_int[i]);
 	}
 }
+
+TEST(SGVectorTest, count_unique)
+{
+	EXPECT_EQ(SGVector<int32_t>().count_unique(), 0);
+	EXPECT_EQ(SGVector<int32_t>({0,0,0,0}).count_unique(),1);
+	EXPECT_EQ(SGVector<int32_t>({ 0, 0, 1, 2}).count_unique(), 3);
+	EXPECT_EQ(SGVector<float64_t>({ 0, 0, 1, 2}).count_unique(), 3);
+	EXPECT_EQ(SGVector<float64_t>({ 0, 0.001, 1.0, 1.0, 2.1}).count_unique(), 4);
+}

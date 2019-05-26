@@ -50,7 +50,8 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	struct svm_node* x_space;
 
-	ASSERT(m_labels && m_labels->get_num_labels())
+	REQUIRE(m_labels && m_labels->get_num_labels(), "No labels provided.\n")
+	REQUIRE(kernel, "No kernel provided.\n")
 
 	if (data)
 	{
@@ -94,7 +95,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
-	auto labels = binary_labels(m_labels);
+	auto labels = m_labels->as<CBinaryLabels>();
 	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.y[i] = labels->get_label(i);

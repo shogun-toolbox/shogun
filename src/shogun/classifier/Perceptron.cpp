@@ -60,7 +60,7 @@ void CPerceptron::iteration()
 	bool converged = true;
 	SGVector<float64_t> w = get_w();
 
-	auto labels = binary_labels(m_labels)->get_int_labels();
+	auto labels = m_labels->as<CBinaryLabels>()->get_int_labels();
 	auto iter_train_labels = labels.begin();
 
 	for (const auto& v : DotIterator(features))

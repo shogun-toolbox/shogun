@@ -16,8 +16,8 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	int32_t length = predicted->get_num_labels();
-	auto predicted_mc = multiclass_labels(predicted);
-	auto ground_truth_mc = multiclass_labels(ground_truth);
+	auto predicted_mc = predicted->as<CMulticlassLabels>();
+	auto ground_truth_mc = ground_truth->as<CMulticlassLabels>();
 	int32_t correct = 0;
 	if (m_ignore_rejects)
 	{

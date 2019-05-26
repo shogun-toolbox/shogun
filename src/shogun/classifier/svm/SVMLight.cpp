@@ -310,7 +310,7 @@ void CSVMLight::svm_learn()
 	int32_t trainpos=0, trainneg=0 ;
 	ASSERT(m_labels)
 
-	SGVector<int32_t> lab = binary_labels(m_labels)->get_int_labels();
+	SGVector<int32_t> lab = m_labels->as<CBinaryLabels>()->get_int_labels();
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen)
 	int32_t* label=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);

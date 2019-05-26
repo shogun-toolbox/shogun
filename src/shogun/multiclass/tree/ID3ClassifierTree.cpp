@@ -145,7 +145,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 		best_feature_values[i] = (feats->get_feature_vector(i))[best_feature_index];
 
 	CMulticlassLabels* best_feature_labels = new CMulticlassLabels(best_feature_values);
-	SGVector<float64_t> best_labels_unique = best_feature_labels->get_unique_labels();
+	SGVector<float64_t> best_labels_unique = best_feature_labels->get_labels().unique();
 
 	for (int32_t i=0; i<best_labels_unique.vlen; i++)
 	{
@@ -225,7 +225,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 		attribute_values[i] = (feats->get_feature_vector(i))[attr_no];
 
 	CMulticlassLabels* attribute_labels = new CMulticlassLabels(attribute_values);
-	SGVector<float64_t> attr_val_unique = attribute_labels->get_unique_labels();
+	SGVector<float64_t> attr_val_unique = attribute_labels->get_labels().unique();
 
 	for (int32_t i=0; i<attr_val_unique.vlen; i++)
 	{
@@ -264,16 +264,16 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 
 float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 {
-	SGVector<float64_t> log_ratios = SGVector<float64_t>
-			(labels->get_unique_labels().size());
+	auto unique = labels->get_labels().unique();
+	SGVector<float64_t> log_ratios = SGVector<float64_t>(unique.size());
 
-	for (int32_t i=0;i<labels->get_unique_labels().size();i++)
+	for (int32_t i=0;i<unique.size();i++)
 	{
 		int32_t count = 0;
 
 		for (int32_t j=0;j<labels->get_num_labels();j++)
 		{
-			if (labels->get_unique_labels()[i] == labels->get_label(j))
+			if (unique[i] == labels->get_label(j))
 					count++;
 		}
 

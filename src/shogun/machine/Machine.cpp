@@ -10,6 +10,8 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/labels/MappedBinaryLabels.h>
+#include <shogun/labels/MappedMulticlassLabels.h>
 
 using namespace shogun;
 
@@ -53,6 +55,20 @@ bool CMachine::train(CFeatures* data)
 		if (m_labels == NULL)
 			SG_ERROR("%s@%p: No labels given", get_name(), this)
 
+		CLabels* potentially_mapped = m_labels;
+		switch (get_machine_problem_type())
+		{
+			case PT_BINARY:
+				potentially_mapped = MappedLabels<CBinaryLabels>::wrap_if_necessary<CMappedBinaryLabels>(m_labels);
+				break;
+			case PT_MULTICLASS:
+				potentially_mapped = MappedLabels<CMulticlassLabels>::wrap_if_necessary<CMappedMulticlassLabels>(m_labels);
+				break;
+			default:
+				// do nothing: mapping not yet implemented
+				break;
+		}
+		set_labels(potentially_mapped);
 		m_labels->ensure_valid(get_name());
 	}
 
@@ -105,10 +121,6 @@ bool CMachine::train_locked()
 
 void CMachine::set_labels(CLabels* lab)
 {
-    if (lab != NULL)
-        if (!is_label_valid(lab))
-            SG_ERROR("Invalid label for %s", get_name())
-
 	SG_REF(lab);
 	SG_UNREF(m_labels);
 	m_labels = lab;
@@ -201,12 +213,14 @@ CLabels* CMachine::apply(CFeatures* data)
 	{
 		case PT_BINARY:
 			result=apply_binary(data);
+			result=invert_labels_if_possible<CMappedBinaryLabels>(m_labels, result);
 			break;
 		case PT_REGRESSION:
 			result=apply_regression(data);
 			break;
 		case PT_MULTICLASS:
 			result=apply_multiclass(data);
+			result=invert_labels_if_possible<CMappedMulticlassLabels>(m_labels, result);
 			break;
 		case PT_STRUCTURED:
 			result=apply_structured(data);

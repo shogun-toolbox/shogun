@@ -57,7 +57,7 @@ void CNewtonSVM::init_model(CFeatures* data)
 
 	ASSERT(features)
 
-	SGVector<float64_t> train_labels = binary_labels(m_labels)->get_labels();
+	SGVector<float64_t> train_labels = m_labels->as<CBinaryLabels>()->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -144,7 +144,7 @@ void CNewtonSVM::iteration()
 
 void CNewtonSVM::line_search_linear(const SGVector<float64_t> d)
 {
-	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
+	SGVector<float64_t> Y = m_labels->as<CBinaryLabels>()->get_labels();
 	SGVector<float64_t> outz(x_n);
 	SGVector<float64_t> temp1(x_n);
 	SGVector<float64_t> temp1forout(x_n);
@@ -215,7 +215,7 @@ void CNewtonSVM::line_search_linear(const SGVector<float64_t> d)
 void CNewtonSVM::obj_fun_linear()
 {
 	SGVector<float64_t> weights = get_w();
-	SGVector<float64_t> v = binary_labels(m_labels)->get_labels();
+	SGVector<float64_t> v = m_labels->as<CBinaryLabels>()->get_labels();
 
 	for (int32_t i=0; i<x_n; i++)
 	{

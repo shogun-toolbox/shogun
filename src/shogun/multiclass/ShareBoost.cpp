@@ -138,7 +138,7 @@ void CShareBoost::compute_pred(const float64_t *W)
 
 void CShareBoost::compute_rho()
 {
-	auto lab = multiclass_labels(m_labels);
+	auto lab = m_labels->as<CMulticlassLabels>();
 
 	for (int32_t i=0; i < m_rho.num_rows; ++i)
 	{ // i loop classes
@@ -163,7 +163,7 @@ void CShareBoost::compute_rho()
 int32_t CShareBoost::choose_feature()
 {
 	SGVector<float64_t> l1norm(m_fea.num_rows);
-	auto lab = multiclass_labels(m_labels);
+	auto lab = m_labels->as<CMulticlassLabels>();
 	for (int32_t j=0; j < m_fea.num_rows; ++j)
 	{
 		if (std::find(&m_activeset[0], &m_activeset[m_activeset.vlen], j) !=

@@ -8,6 +8,7 @@
 
 #include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Statistics.h>
@@ -63,14 +64,13 @@ CBinaryLabels::CBinaryLabels(CFile * loader) : CDenseLabels(loader)
 
 bool CBinaryLabels::is_valid() const
 {
-	if (!CDenseLabels::is_valid())
-		return false;
+//	if (!CDenseLabels::is_valid())
+//		return false;
 
-	int32_t subset_size = get_num_labels();
-	for (int32_t i = 0; i < subset_size; i++)
+	for (auto i : range(get_num_labels()))
 	{
-		int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-		if (m_labels[real_i] != +1.0 && m_labels[real_i] != -1.0)
+		auto val = get_label(i);
+		if (val != +1.0 && val != -1.0)
 			return false;
 	}
 	return true;
@@ -138,29 +138,3 @@ CLabels* CBinaryLabels::duplicate() const
 {
 	return new CBinaryLabels(*this);
 }
-
-namespace shogun
-{
-	Some<CBinaryLabels> binary_labels(CLabels* orig)
-	{
-		REQUIRE(orig, "No labels provided.\n");
-		try
-		{
-			switch (orig->get_label_type())
-			{
-			case LT_BINARY:
-				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
-			default:
-				SG_SNOTIMPLEMENTED
-			}
-		}
-		catch (const ShogunException& e)
-		{
-			SG_SERROR(
-			    "Cannot convert %s to binary labels: %s\n", orig->get_name(),
-			    e.what());
-		}
-
-		return Some<CBinaryLabels>::from_raw(nullptr);
-	}
-} // namespace shogun

@@ -2,6 +2,8 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/base/range.h>
+
 
 using namespace shogun;
 
@@ -95,20 +97,21 @@ SGVector<float64_t> CMulticlassLabels::get_confidences_for_class(int32_t i)
 
 bool CMulticlassLabels::is_valid() const
 {
-	if (!CDenseLabels::is_valid())
-		return false;
+	// check labels are integers
+	for (auto i : range(get_num_labels()))
+	{
+		auto label = get_label(i);
 
-	int32_t subset_size=get_num_labels();
-    for (int32_t i=0; i<subset_size; i++)
-    {
-        int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-		int32_t label = int64_t(m_labels[real_i]);
-
-		if (label<0 || float64_t(label)!=m_labels[real_i])
-		{
+		if (label<0 || label != int64_t(label))
 			return false;
-		}
 	}
+
+	// check labels are contiguous
+	auto uniq = get_labels().unique();
+	for (auto i : range(uniq.size()))
+		if (i != uniq[i])
+			return false;
+
 	return true;
 }
 
@@ -152,24 +155,9 @@ CBinaryLabels* CMulticlassLabels::get_binary_for_class(int32_t i)
 	return new CBinaryLabels(binary_labels);
 }
 
-SGVector<float64_t> CMulticlassLabels::get_unique_labels()
-{
-	/* extract all labels (copy because of possible subset) */
-	SGVector<float64_t> unique_labels=get_labels_copy();
-	unique_labels.vlen=SGVector<float64_t>::unique(unique_labels.vector, unique_labels.vlen);
-
-	SGVector<float64_t> result(unique_labels.vlen);
-	sg_memcpy(result.vector, unique_labels.vector,
-			sizeof(float64_t)*unique_labels.vlen);
-
-	return result;
-}
-
-
 int32_t CMulticlassLabels::get_num_classes()
 {
-	SGVector<float64_t> unique=get_unique_labels();
-	return unique.vlen;
+	return get_labels().count_unique();
 }
 
 CLabels* CMulticlassLabels::shallow_subset_copy()
@@ -205,66 +193,3 @@ CLabels* CMulticlassLabels::duplicate() const
 {
 	return new CMulticlassLabels(*this);
 }
-
-namespace shogun
-{
-	SG_FORCED_INLINE Some<CMulticlassLabels> to_multiclass(CDenseLabels* orig)
-	{
-		auto result_vector = orig->get_labels();
-		std::set<int32_t> unique(result_vector.begin(), result_vector.end());
-		// potentially convert to [0,1, ..., num_classes-1] if not in that form
-		// TODO: remove this once multiclass labels can be any discrete set
-		auto min = (*std::min_element(unique.begin(), unique.end()));
-		auto max = (*std::max_element(unique.begin(), unique.end()));
-		if (!(min == 0 && max == (index_t)unique.size() - 1))
-		{
-			// print conversion table for users
-			SG_SWARNING(
-			    "Converting non-contiguous multiclass labels to "
-			    "contiguous version:\n",
-			    unique.size() - 1);
-			std::for_each(
-			    unique.begin(), unique.end(), [&unique](int32_t old_label) {
-				    auto new_label =
-				        std::distance(unique.begin(), unique.find(old_label));
-				    SG_SWARNING("Converting %d to %d.\n", old_label, new_label);
-				});
-
-			SGVector<float64_t> converted(result_vector.vlen);
-			std::transform(
-			    result_vector.begin(), result_vector.end(), converted.begin(),
-			    [&unique](int32_t old_label) {
-				    return std::distance(
-				        unique.begin(), unique.find(old_label));
-				});
-			result_vector = converted;
-		}
-		return some<CMulticlassLabels>(result_vector);
-	}
-
-	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
-	{
-		REQUIRE(orig, "No labels provided.\n");
-		try
-		{
-			switch (orig->get_label_type())
-			{
-			case LT_MULTICLASS:
-				return Some<CMulticlassLabels>::from_raw(
-				    (CMulticlassLabels*)orig);
-			case LT_BINARY:
-				return to_multiclass((CBinaryLabels*)orig);
-			default:
-				SG_SNOTIMPLEMENTED
-			}
-		}
-		catch (const ShogunException& e)
-		{
-			SG_SERROR(
-			    "Cannot convert %s to multiclass labels: %s\n",
-			    orig->get_name(), e.what());
-		}
-
-		return Some<CMulticlassLabels>::from_raw(nullptr);
-	}
-} // namespace shogun

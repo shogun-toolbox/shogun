@@ -487,6 +487,9 @@ template<class T> class SGVector : public SGReferencedData
 		/** Returns new vector with sorted unique elements of current */
 		SGVector<T> unique();
 
+		/** Counts the number of unique elements, using ==, in-place */
+		int32_t count_unique();
+
 		// get the values of the vector in a string representation
 		std::string to_string() const;
 

@@ -30,7 +30,7 @@ CMPDSVM::~CMPDSVM()
 
 bool CMPDSVM::train_machine(CFeatures* data)
 {
-	auto labels = binary_labels(m_labels);
+	auto labels = m_labels->as<CBinaryLabels>();
 
 	ASSERT(kernel)
 

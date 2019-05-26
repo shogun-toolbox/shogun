@@ -197,11 +197,12 @@ float64_t CDenseLabels::get_label(int32_t idx) const
 int32_t CDenseLabels::get_int_label(int32_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	ASSERT(m_labels.vector && idx<get_num_labels())
-	if (m_labels.vector[real_num] != float64_t((int32_t(m_labels.vector[real_num]))))
-		SG_ERROR("label[%d]=%g is not an integer\n", m_labels.vector[real_num])
+	ASSERT(idx<get_num_labels())
+	auto label = get_label(real_num);
+	if (label != float64_t((int32_t(label))))
+		SG_ERROR("label[%d]=%g is not an integer\n", label)
 
-	return int32_t(m_labels.vector[real_num]);
+	return int32_t(label);
 }
 
 int32_t CDenseLabels::get_num_labels() const

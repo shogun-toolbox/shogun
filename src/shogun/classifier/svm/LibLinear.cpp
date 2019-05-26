@@ -139,10 +139,10 @@ bool CLibLinear::train_machine(CFeatures* data)
 	double Cp = get_C1();
 	double Cn = get_C2();
 
-	auto labels = binary_labels(m_labels);
+	auto labels = m_labels->as<CBinaryLabels>();
 	for (int32_t i = 0; i < prob.l; i++)
 	{
-		prob.y[i] = labels->get_int_label(i);
+		prob.y[i] = labels->get_label(i);
 		if (prob.y[i] == +1)
 			Cs[i] = get_C1();
 		else if (prob.y[i] == -1)

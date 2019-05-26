@@ -108,7 +108,7 @@ namespace shogun
 		 *
 		 * @return labels, a copy if a subset is set
 		 */
-		SGVector<float64_t> get_labels() const;
+		virtual SGVector<float64_t> get_labels() const;
 
 		/** get label
 		 *
@@ -117,7 +117,7 @@ namespace shogun
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		float64_t get_label(int32_t idx) const;
+		virtual float64_t get_label(int32_t idx) const;
 
 		/** get label
 		 *

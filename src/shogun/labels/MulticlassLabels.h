@@ -94,21 +94,13 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CBinaryLabels* get_binary_for_class(int32_t i);
 
-		/** get unique labels (new SGVector)
-		 *
-		 * possible with subset
-		 *
-		 * @return unique labels
-		 */
-		SGVector<float64_t> get_unique_labels();
-
 		/** return number of classes (for multiclass)
 		 *
 		 * possible with subset
 		 *
 		 * @return number of classes
 		 */
-		int32_t get_num_classes();
+		virtual int32_t get_num_classes();
 
 		/** returns multiclass confidences
 		 *
@@ -161,9 +153,5 @@ class CMulticlassLabels : public CDenseLabels
 		/** multiclass confidences */
 		SGMatrix<float64_t> m_multiclass_confidences;
 };
-
-#ifndef SWIG
-Some<CMulticlassLabels> multiclass_labels(CLabels* orig);
-#endif // SWIG
 }
 #endif

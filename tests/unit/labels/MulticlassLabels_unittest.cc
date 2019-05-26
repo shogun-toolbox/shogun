@@ -72,29 +72,6 @@ TEST_F(MulticlassLabels, confidences)
 	SG_UNREF(labels);
 }
 
-TEST_F(MulticlassLabels, multiclass_labels_from_multiclass)
-{
-	auto labels = some<CMulticlassLabels>(labels_true);
-	auto labels2 = multiclass_labels(labels);
-	EXPECT_EQ(labels.get(), labels2.get());
-}
-
-TEST_F(MulticlassLabels, multiclass_labels_from_binary_not_contiguous)
-{
-	// delete this test once multiclass labels dont need to be contiguous,
-	// i.e. [0,1,2,3,4,...], anymore
-	auto labels = some<CBinaryLabels>(labels_true.size());
-	labels->set_labels({0, 1, 3});
-	auto converted = multiclass_labels(labels);
-	ASSERT_NE(converted.get(), nullptr);
-	EXPECT_TRUE(converted->get_labels().equals({0, 1, 2}));
-
-	labels->set_labels({-1, 1, 1});
-	auto converted2 = multiclass_labels(labels);
-	ASSERT_NE(converted2.get(), nullptr);
-	EXPECT_TRUE(converted2->get_labels().equals({0, 1, 1}));
-}
-
 TEST_F(MulticlassLabels, view)
 {
 	auto labels = some<CMulticlassLabels>(labels_true);

@@ -100,7 +100,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, CMath::random()%num_classes);
 
-		SGVector<float64_t> classes=labels->get_unique_labels();
+		SGVector<float64_t> classes=labels->get_labels().unique();
 
 		/*No. of labels belonging to one class*/
 		SGVector<index_t> class_labels(num_classes);

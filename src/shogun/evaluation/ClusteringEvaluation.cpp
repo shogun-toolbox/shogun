@@ -39,8 +39,8 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
 	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 
-	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_unique_labels();
-	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
+	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_labels().unique();
+	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_labels().unique();
 
 	SGVector<int32_t> predicted_ilabels=((CMulticlassLabels*) predicted)->get_int_labels();
 	SGVector<int32_t> groundtruth_ilabels=((CMulticlassLabels*) ground_truth)->get_int_labels();

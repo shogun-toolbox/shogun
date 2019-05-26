@@ -199,7 +199,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	}
 
 	// if all samples belong to the same class
-	if (class_labels->get_unique_labels().size()==1)
+	if (class_labels->get_num_classes()==1)
 		return node;
 
 	// if no feature is left
@@ -655,16 +655,17 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 
 float64_t CC45ClassifierTree::entropy(CMulticlassLabels* labels, SGVector<float64_t> weights)
 {
-	SGVector<float64_t> log_ratios(labels->get_unique_labels().size());
+	auto unique = labels->get_labels().unique();
+	SGVector<float64_t> log_ratios(unique.size());
 	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
 
-	for (int32_t i=0;i<labels->get_unique_labels().size();i++)
+	for (int32_t i=0;i<unique.size();i++)
 	{
 		int32_t count=0;
 		float64_t weight_count=0.;
 		for (int32_t j=0;j<labels->get_num_labels();j++)
 		{
-			if (labels->get_unique_labels()[i]==labels->get_label(j))
+			if (unique[i]==labels->get_label(j))
 			{
 				weight_count+=weights[j];
 				count++;

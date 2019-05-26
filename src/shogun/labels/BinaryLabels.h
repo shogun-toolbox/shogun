@@ -13,7 +13,6 @@
 
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/LabelTypes.h>
-#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -129,8 +128,5 @@ public:
 #endif
 };
 
-#ifndef SWIG
-Some<CBinaryLabels> binary_labels(CLabels* orig);
-#endif // SWIG
 }
 #endif

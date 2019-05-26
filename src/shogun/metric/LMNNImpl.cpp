@@ -67,7 +67,7 @@ void CLMNNImpl::check_training_setup(
 
 void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
 {
-	CMulticlassLabels* y = multiclass_labels(labels);
+	CMulticlassLabels* y = labels->as<CMulticlassLabels>();
 	SGVector<int32_t> int_labels = y->get_int_labels();
 
 	// back-up initial values because they will be overwritten by unique
@@ -112,7 +112,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 	// get the number of features
 	int32_t d = x->get_num_features();
 	SGMatrix<index_t> target_neighbors(k, x->get_num_vectors());
-	SGVector<float64_t> unique_labels = y->get_unique_labels();
+	SGVector<float64_t> unique_labels = y->get_labels().unique();
 	SGVector<index_t> idxsmap(x->get_num_vectors());
 
 	for (index_t i = 0; i < unique_labels.vlen; ++i)
@@ -417,7 +417,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(
 	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
 
 	// get a vector with unique label values
-	SGVector<float64_t> unique = y->get_unique_labels();
+	SGVector<float64_t> unique = y->get_labels().unique();
 
 	// for each label except from the largest one
 	for (index_t i = 0; i < unique.vlen-1; ++i)

@@ -48,7 +48,7 @@ void CAveragedPerceptron::init_model(CFeatures* data)
 	}
 	ASSERT(features)
 
-	SGVector<int32_t> train_labels = binary_labels(m_labels)->get_int_labels();
+	SGVector<int32_t> train_labels = m_labels->as<CBinaryLabels>()->get_int_labels();
 	int32_t num_feat = features->get_dim_feature_space();
 	int32_t num_vec = features->get_num_vectors();
 	ASSERT(num_vec == train_labels.vlen)
@@ -68,7 +68,7 @@ void CAveragedPerceptron::iteration()
 	bool converged = true;
 	
 	SGVector<float64_t> w = get_w();
-	auto labels = binary_labels(m_labels)->get_int_labels();
+	auto labels = m_labels->as<CBinaryLabels>()->get_int_labels();
 	auto iter_train_labels = labels.begin();
 	
 	int32_t num_vec = features->get_num_vectors();

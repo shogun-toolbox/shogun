@@ -98,10 +98,3 @@ TEST_F(BinaryLabels, set_values_labels_from_constructor)
 
 	SG_UNREF(labels);
 }
-
-TEST_F(BinaryLabels, binary_labels_from_binary)
-{
-	auto labels = some<CBinaryLabels>(probabilities, 0.5);
-	auto labels2 = binary_labels(labels);
-	EXPECT_EQ(labels, labels2);
-}

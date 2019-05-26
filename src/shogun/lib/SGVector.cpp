@@ -17,9 +17,12 @@
 
 #include <algorithm>
 #include <limits>
+#include <set>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/util/converters.h>
+
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -760,6 +763,21 @@ SGVector<T> SGVector<T>::unique()
 	auto new_size = unique(result.data(), result.size());
 	result.resize_vector(new_size);
 	return result;
+}
+
+template <class T>
+int32_t SGVector<T>::count_unique()
+{
+	std::set<T> s;
+	std::copy(begin(), end(), std::inserter(s, s.end()));
+	return utils::safe_convert<int32_t>(s.size());
+}
+
+template <>
+int32_t SGVector<complex128_t>::count_unique()
+{
+	SG_SNOTIMPLEMENTED
+	return 0;
 }
 
 template <>

@@ -14,6 +14,7 @@
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
+#include <shogun/labels/MappedMulticlassLabels.h>
 #include <vector>
 
 using namespace Eigen;
@@ -66,7 +67,6 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
-	;
 
 	bool lda_more_efficient = (m_method == AUTO_LDA && num_vec <= num_feat);
 
@@ -79,7 +79,8 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 template <typename ST>
 bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 {
-	auto labels = multiclass_labels(m_labels);
+	auto labels = some<CMappedMulticlassLabels>(m_labels);
+
 	REQUIRE(
 	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
 	    labels->get_num_classes())
@@ -113,7 +114,8 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 template <typename ST>
 bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 {
-	auto labels = multiclass_labels(m_labels);
+	auto labels = Some<CMulticlassLabels>::from_raw(MappedLabels<CMulticlassLabels>::wrap_if_necessary<CMappedMulticlassLabels>(m_labels));
+
 	REQUIRE(
 	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
 	    labels->get_num_classes())
