@@ -12,7 +12,8 @@ using namespace shogun;
 ObservedValue::ObservedValue(const int64_t step, const std::string& name)
 		: CSGObject(), m_step(step), m_name(name), m_any_value(Any())
 {
-	SG_ADD(&m_step, "step", "Step");
+	SG_ADD(&m_step, "step", "Step", ParameterProperties::READONLY);
 	this->watch_param(
-			"name", &m_name, AnyParameterProperties("Name of the observed value"));
+			"name", &m_name,
+			AnyParameterProperties("Name of the observed value", ParameterProperties::READONLY));
 }
