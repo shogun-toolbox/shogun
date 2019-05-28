@@ -92,9 +92,9 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
-		if (pprop.get_model_selection())                                       \
+		if (pprop.has_property(ParameterProperties::HYPER))                    \
 			this->m_model_selection_parameters->add(param, name, description); \
-		if (pprop.get_gradient())                                              \
+		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
@@ -107,9 +107,9 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, auto_init, pprop);                      \
-		if (pprop.get_model_selection())                                       \
+		if (pprop.has_property(ParameterProperties::HYPER))                    \
 			this->m_model_selection_parameters->add(param, name, description); \
-		if (pprop.get_gradient())                                              \
+		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 

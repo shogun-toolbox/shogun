@@ -16,21 +16,6 @@
 
 namespace shogun
 {
-
-	/** model selection availability */
-	enum EModelSelectionAvailability
-	{
-		MS_NOT_AVAILABLE = 0,
-		MS_AVAILABLE = 1,
-	};
-
-	/** gradient availability */
-	enum EGradientAvailability
-	{
-		GRADIENT_NOT_AVAILABLE = 0,
-		GRADIENT_AVAILABLE = 1
-	};
-
 	/** parameter properties */
 	enum class ParameterProperties
 	{
@@ -65,35 +50,16 @@ namespace shogun
 		 */
 		AnyParameterProperties()
 		    : m_description("No description given"),
-		      m_model_selection(MS_NOT_AVAILABLE),
-		      m_gradient(GRADIENT_NOT_AVAILABLE),
 		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
-		/** Constructor
+		/** Constructor with description and all parameters set to false
 		 * @param description parameter description
-		 * @param hyperparameter set to true for parameters that determine
-		 * how training is performed, e.g. regularisation parameters
-		 * @param gradient set to true for parameters required for gradient
-		 * updates
-		 * @param model set to true for parameters used in inference, e.g.
-		 * weights and bias
 		 * */
 		AnyParameterProperties(
-		    const std::string& description,
-		    EModelSelectionAvailability hyperparameter = MS_NOT_AVAILABLE,
-		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE,
-		    bool model = false)
-		    : m_description(description), m_model_selection(hyperparameter),
-		      m_gradient(gradient)
+				const std::string& description)
+				: m_description(description), m_attribute_mask(ParameterProperties::NONE)
 		{
-			m_attribute_mask = ParameterProperties::NONE;
-			if (hyperparameter)
-				m_attribute_mask |= ParameterProperties::HYPER;
-			if (gradient)
-				m_attribute_mask |= ParameterProperties::GRADIENT;
-			if (model)
-				m_attribute_mask |= ParameterProperties::MODEL;
 		}
 		/** Mask constructor
 		 * @param description parameter description
@@ -107,31 +73,12 @@ namespace shogun
 		/** Copy contructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
 		    : m_description(other.m_description),
-		      m_model_selection(other.m_model_selection),
-		      m_gradient(other.m_gradient),
 		      m_attribute_mask(other.m_attribute_mask)
 		{
 		}
 		const std::string& get_description() const
 		{
 			return m_description;
-		}
-		EModelSelectionAvailability get_model_selection() const
-		{
-			return static_cast<EModelSelectionAvailability>(
-			    static_cast<int32_t>(
-			        m_attribute_mask & ParameterProperties::HYPER) > 0);
-		}
-		EGradientAvailability get_gradient() const
-		{
-			return static_cast<EGradientAvailability>(
-			    static_cast<int32_t>(
-			        m_attribute_mask & ParameterProperties::GRADIENT) > 0);
-		}
-		bool get_model() const
-		{
-			return static_cast<bool>(
-			    m_attribute_mask & ParameterProperties::MODEL);
 		}
 		bool has_property(const ParameterProperties other) const
 		{
@@ -164,8 +111,6 @@ namespace shogun
 
 	private:
 		std::string m_description;
-		EModelSelectionAvailability m_model_selection;
-		EGradientAvailability m_gradient;
 		ParameterProperties m_attribute_mask;
 	};
 
