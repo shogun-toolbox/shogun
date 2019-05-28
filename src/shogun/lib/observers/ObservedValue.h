@@ -37,7 +37,7 @@ namespace shogun {
 		* Return a any version of the stored type.
 		* @return the any value.
 		*/
-		virtual Any get_any() const {
+		virtual const Any& get_any() const {
 			return m_any_value;
 		}
 
