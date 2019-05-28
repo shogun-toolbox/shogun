@@ -14,6 +14,7 @@
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
+#include <shogun/base/composition.h>
 #include <shogun/base/macros.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
@@ -107,11 +108,8 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
-#define SG_ADD5(param, name, description, param_properties, auto_init)         \
+#define SG_ADD5(param, name, description, param_properties, auto_or_constraint)\
 	{                                                                          \
-		static_assert(                                                         \
-		    static_cast<bool>((param_properties)&ParameterProperties::AUTO),   \
-		    "Expected param to have ParameterProperty::AUTO");                 \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
@@ -119,29 +117,6 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		if (pprop.has_property(ParameterProperties::HYPER))                    \
 			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
-			this->m_gradient_parameters->add(param, name, description);        \
-	}
-
-#define SG_ADD_CONSTRAINT(param, name, description, param_properties, ...)     \
-	{                                                                          \
-		static_assert(                                                         \
-		    static_cast<bool>(                                                 \
-		        (param_properties)&ParameterProperties::CONSTRAIN),            \
-		    "Expected param to have ParameterProperty::CONSTRAIN");            \
-		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, param_properties);             \
-		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(                                                     \
-		    name, param,                                                       \
-		    [](auto val) {                                                     \
-			    auto casted_val =                                              \
-			        any_cast<std::remove_pointer<decltype(param)>::type>(val); \
-			    return make_composer(__VA_ARGS__).run(casted_val);             \
-		    },                                                                 \
-		    pprop);                                                            \
-		if (pprop.get_model_selection())                                       \
-			this->m_model_selection_parameters->add(param, name, description); \
-		if (pprop.get_gradient())                                              \
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
@@ -877,13 +852,18 @@ protected:
 			std::shared_ptr<params::AutoInit> auto_init,
 			AnyParameterProperties properties)
 	{
+		REQUIRE(
+				properties.has_property(ParameterProperties::AUTO),
+				"Expected param to have ParameterProperty::AUTO");
 		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any_ref(value), properties,
-				std::move(auto_init)));
+		create_parameter(
+				tag,
+				AnyParameter(
+						make_any_ref(value), properties, std::move(auto_init)));
 	}
 	/** Puts a pointer to some parameter into the parameter map.
-	 * The parameter is the constrained to the rules provided to
-	 * make_composer.
+	 * The parameter is the constrained to the rules from the
+	 * Composer.
 	 *
 	 * @param name name of the parameter
 	 * @param value pointer to the parameter value
@@ -892,16 +872,25 @@ protected:
 	 * @param properties properties of the parameter (e.g. if model
 	 * selection is supported)
 	 */
-	template <typename T>
+	template <typename T1, typename T2>
 	void watch_param(
-		const std::string& name, T* value,
-		std::function<bool(Any)>&& constrain_function,
-		AnyParameterProperties properties)
+			const std::string& name, T1* value,
+			Composer<T2>&& constrain_function,
+			AnyParameterProperties properties)
 	{
+		REQUIRE(
+				properties.has_property(ParameterProperties::CONSTRAIN),
+				"Expected param to have ParameterProperty::CONSTRAIN");
 		BaseTag tag(name);
 		create_parameter(
-			tag, AnyParameter(
-					 make_any_ref(value), properties, constrain_function));
+				tag, AnyParameter(
+						make_any_ref(value), properties,
+						[constrain_function](const auto& val) {
+							std::string result;
+							auto casted_val = any_cast<T1>(val);
+							constrain_function.run(casted_val, result);
+							return result;
+						}));
 	}
 
 	/** Puts a pointer to some parameter array into the parameter map.

@@ -650,18 +650,20 @@ void CSGObject::create_parameter(
 
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	auto any_param = self->map[_tag];
-	auto pprop = any_param.get_properties();
+	auto& pprop = self->map[_tag].get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
 		SG_ERROR(
 		    "%s::%s is marked as read-only and cannot be modified!\n",
 		    get_name(), _tag.name().c_str());
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
 	{
-		if (!any_param.get_constrain_function()(value))
+		auto msg = self->map[_tag].get_constrain_function()(value);
+		if (!msg.empty())
+		{
 			SG_ERROR(
-			    "%s::%s cannot be updated because of its constraint!\n",
-			    get_name(), _tag.name().c_str())
+					"%s::%s cannot be updated because it must be: %s!\n",
+					get_name(), _tag.name().c_str(), msg.c_str())
+		}
 	}
 	self->update(_tag, value);
 	pprop.remove_property(ParameterProperties::AUTO);

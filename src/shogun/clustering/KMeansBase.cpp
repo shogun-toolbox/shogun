@@ -5,7 +5,6 @@
  */
 
 #include <shogun/base/Parallel.h>
-#include <shogun/base/composition.h>
 #include <shogun/clustering/KMeansBase.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/EuclideanDistance.h>
@@ -326,10 +325,10 @@ void CKMeansBase::init()
 	SG_ADD(
 	    &max_iter, "max_iter", "Maximum number of iterations",
 	    ParameterProperties::HYPER);
-	SG_ADD_CONSTRAINT(
+	SG_ADD(
 	    &k, "k", "k, the number of clusters",
 	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
-	    positive<>());
+	    SG_CONSTRAINT(positive<>()));
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data");
 	SG_ADD(&fixed_centers, "fixed_centers", "Use fixed centers");
 	SG_ADD(&R, "radiuses", "Cluster radiuses");
