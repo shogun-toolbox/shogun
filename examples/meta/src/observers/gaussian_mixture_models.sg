@@ -1,0 +1,35 @@
+File f_feats_train = csv_file("../../data/classifier_4class_2d_linear_features_train.dat")
+
+Math:init_random(1)
+
+#![create_features]
+Features features_train = features(f_feats_train)
+#![create_features]
+
+#![create_gmm_instance]
+int num_components = 3
+GMM gmm(num_components)
+#![create_gmm_instance]
+
+#![add_observer]
+ParameterObserver obs = parameter_observer("ParameterObserverLogger")
+gmm.subscribe(obs)
+#![add_observer]
+
+#![train_sample]
+gmm.put("features", features_train)
+gmm.train_em()
+#![train_sample]
+
+#![training_smem]
+obs.clear()
+gmm.train_smem()
+#![training_smem]
+
+#![extract_params]
+int num_observations = obs.get_int("num_observations")
+ObservedValue obs_val = obs.get_observation(num_observations-1)
+RealVector coeff =  obs_val.get_real_vector("coefficients")
+real log_likelihood = obs_val.get_real("log_likelihood")
+RealVector coef = gmm.get_real_vector("coefficients")
+#![extract_params]
