@@ -202,7 +202,12 @@ namespace shogun
 			return m_properties;
 		}
 
-		const std::shared_ptr<params::AutoInit>& get_init_function() const
+		void set_init_function(std::shared_ptr<params::AutoInit> func)
+		{
+			m_init_function = func;
+		}
+
+		std::shared_ptr<params::AutoInit> get_init_function() const
 		{
 			return m_init_function;
 		}
