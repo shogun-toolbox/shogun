@@ -185,6 +185,10 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		pb.print_progress();
 		max_likelihood(alpha, min_cov);
 
+		this->observe<float64_t>(iter, "log_likelihood", "Log Likelihood", log_likelihood_cur);
+		this->observe<SGVector<float64_t>>(iter, "coefficients", "Mixture Coefficients", alpha);
+		this->observe<std::vector<CGaussian*>>(iter, "gaussians", "Gaussians Components", m_components);
+
 		iter++;
 	}
 	pb.complete();
@@ -335,6 +339,11 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		}
 		if (!better_found)
 			break;
+
+		this->observe<float64_t>(iter, "log_likelihood", "Log Likelihood", cur_likelihood);
+		this->observe<SGVector<float64_t>>(iter, "coefficients");
+		this->observe<std::vector<CGaussian*>>(iter, "gaussians", "Gaussians Components",m_components);
+
 		iter++;
 		pb.print_progress();
 	}
@@ -826,5 +835,5 @@ void CGMM::register_params()
 	//TODO serialization broken
 	//m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
 	SG_ADD(
-	    &m_coefficients, "m_coefficients", "Mixture coefficients.");
+	    &m_coefficients, "coefficients", "Mixture coefficients.");
 }
