@@ -11,8 +11,19 @@
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/lib/observers/ParameterObserverLogger.h>
 
 using namespace shogun;
+
+void check_consistency_observable(const CKMeans * kmeans, ParameterObserver * observer)
+{
+	auto total_observations = observer->get<int32_t>("num_observations");
+	auto observation = observer->get_observation(total_observations-1);
+	auto centers = observation->get<SGMatrix<float64_t>>("mus");
+
+	EXPECT_TRUE(centers.equals(kmeans->get<SGMatrix<float64_t>>("cluster_centers")));
+}
 
 TEST(KMeans, manual_center_initialization_test)
 {
@@ -39,6 +50,9 @@ TEST(KMeans, manual_center_initialization_test)
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(2, distance,initial_centers);
 
+	CParameterObserverLogger * observer = new CParameterObserverLogger();
+	clustering->subscribe(observer);
+
 	for (int32_t loop=0; loop<10; loop++)
 	{
 		clustering->train(features);
@@ -59,10 +73,14 @@ TEST(KMeans, manual_center_initialization_test)
 		EXPECT_EQ(5, learnt_centers_matrix(1,0));
 		EXPECT_EQ(5, learnt_centers_matrix(1,1));
 
+		check_consistency_observable(clustering, observer);
 		SG_UNREF(learnt_centers);
 		SG_UNREF(result);
 	}
 
+	clustering->unsubscribe(observer);
+
+	SG_UNREF(observer)
 	SG_UNREF(clustering);
 	SG_UNREF(features);
 }
