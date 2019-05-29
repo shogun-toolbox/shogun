@@ -4,7 +4,6 @@
  * Authors: Gil Hoben
  */
 
-#include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/io/openml/OpenMLFile.h>
 #include <shogun/io/openml/OpenMLRun.h>
 #include <shogun/io/openml/ShogunOpenML.h>
@@ -47,7 +46,7 @@ std::shared_ptr<OpenMLRun> OpenMLRun::run_flow_on_task(
 		SG_SERROR("INTERNAL ERROR: failed to cast model to machine!\n")
 	}
 
-	auto* xval_storage = new CrossValidationStorage();
+	auto xval_storage = std::make_shared<CrossValidationStorage>();
 
 	if (task->get_split()->contains_splits())
 	{
@@ -64,11 +63,12 @@ std::shared_ptr<OpenMLRun> OpenMLRun::run_flow_on_task(
 			for (auto fold_idx : range(task->get_num_fold()))
 			{
 				SGVector<index_t> train_i_idx(
-				    train_idx[repeat_idx][fold_idx].data(),
-				    train_idx[repeat_idx][fold_idx].size());
+				    train_idx[repeat_idx][fold_idx].begin(),
+				    train_idx[repeat_idx][fold_idx].end());
 				SGVector<index_t> test_i_idx(
-				    train_idx[repeat_idx][fold_idx].data(),
-				    train_idx[repeat_idx][fold_idx].size());
+				    test_idx[repeat_idx][fold_idx].begin(),
+				    test_idx[repeat_idx][fold_idx].end());
+
 				xval_storage->append_fold_result(
 				    ShogunOpenML::run_model_on_fold(
 				        machine, task, features, labels, train_i_idx,
@@ -93,9 +93,7 @@ std::shared_ptr<OpenMLRun> OpenMLRun::run_flow_on_task(
 	    std::string{},              // setup_id
 	    std::string{},              // setup_string
 	    std::string{},              // parameter_settings
-	    std::vector<float64_t>{},   // evaluations
-	    std::vector<float64_t>{},   // fold_evaluations
-	    std::vector<float64_t>{},   // sample_evaluations
+	    xval_storage,               // xval_storage
 	    std::string{},              // data_content
 	    std::vector<std::string>{}, // output_files
 	    task,                       // task
@@ -119,7 +117,10 @@ void OpenMLRun::to_filesystem(const std::string& directory) const
 	SG_SNOTIMPLEMENTED
 }
 
-void OpenMLRun::publish() const
+void OpenMLRun::publish() const {SG_SNOTIMPLEMENTED}
+
+std::unique_ptr<std::ostream> OpenMLRun::to_xml() const
 {
-	SG_SNOTIMPLEMENTED
+
+	return std::unique_ptr<std::ostream>();
 }

@@ -8,6 +8,7 @@
 #define SHOGUN_OPENMLRUN_H
 
 #include <shogun/base/SGObject.h>
+#include <shogun/evaluation/CrossValidationStorage.h>
 
 #include <shogun/io/openml/OpenMLFlow.h>
 #include <shogun/io/openml/OpenMLTask.h>
@@ -20,9 +21,7 @@ namespace shogun {
 				const std::string& uploader, const std::string& uploader_name,
 				const std::string& setup_id, const std::string& setup_string,
 				const std::string& parameter_settings,
-				std::vector<float64_t> evaluations,
-				std::vector<float64_t> fold_evaluations,
-				std::vector<float64_t> sample_evaluations,
+				std::shared_ptr<CrossValidationStorage> xval_storage,
 				const std::string& data_content,
 				std::vector<std::string> output_files,
 				std::shared_ptr<OpenMLTask> task, std::shared_ptr<OpenMLFlow> flow,
@@ -31,9 +30,7 @@ namespace shogun {
 				: m_uploader(uploader), m_uploader_name(uploader_name),
 				  m_setup_id(setup_id), m_setup_string(setup_string),
 				  m_parameter_settings(parameter_settings),
-				  m_evaluations(std::move(evaluations)),
-				  m_fold_evaluations(std::move(fold_evaluations)),
-				  m_sample_evaluations(std::move(sample_evaluations)),
+				  m_xval_storage(xval_storage),
 				  m_data_content(data_content),
 				  m_output_files(std::move(output_files)), m_task(std::move(task)),
 				  m_flow(std::move(flow)), m_run_id(run_id),
@@ -55,6 +52,8 @@ namespace shogun {
 
 		void to_filesystem(const std::string& directory) const;
 
+		std::unique_ptr<std::ostream> to_xml() const;
+
 		void publish() const;
 
 	private:
@@ -63,9 +62,7 @@ namespace shogun {
 		std::string m_setup_id;
 		std::string m_setup_string;
 		std::string m_parameter_settings;
-		std::vector<float64_t> m_evaluations;
-		std::vector<float64_t> m_fold_evaluations;
-		std::vector<float64_t> m_sample_evaluations;
+		std::shared_ptr<CrossValidationStorage> m_xval_storage;
 		std::string m_data_content;
 		std::vector<std::string> m_output_files;
 		std::shared_ptr<OpenMLTask> m_task;

@@ -6,6 +6,8 @@
  * Authors: Gil Hoben
  */
 
+#include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/evaluation/MeanAbsoluteError.h>
 #include <shogun/util/factory.h>
 
 #include <shogun/io/openml/ShogunOpenML.h>
@@ -310,6 +312,30 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
 {
 	auto task_type = task->get_task_type();
 
+	CEvaluation* evaluation_criterion = nullptr;
+
+	switch (task_type)
+	{
+	case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
+		evaluation_criterion = new CAccuracyMeasure();
+		break;
+	case OpenMLTask::TaskType::SUPERVISED_REGRESSION:
+		evaluation_criterion = new CMeanAbsoluteError();
+		break;
+	case OpenMLTask::TaskType::LEARNING_CURVE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::CLUSTERING:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::MACHINE_LEARNING_CHALLENGE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SURVIVAL_ANALYSIS:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUBGROUP_DISCOVERY:
+		SG_SNOTIMPLEMENTED
+	}
+
 	switch (task_type)
 	{
 	case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
@@ -324,8 +350,6 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
 		//  shared
 		auto* features_clone = features->clone()->as<CFeatures>();
 		auto* labels_clone = labels->clone()->as<CLabels>();
-		// auto* evaluation_criterion =
-		// (CEvaluation*)m_evaluation_criterion->clone();
 
 		/* evtl. update xvalidation output class */
 		fold->set_run_index(repeat_idx);
@@ -371,8 +395,10 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
 		SG_REF(result_labels);
 
 		/* evaluate */
-		// results[i] = evaluation_criterion->evaluate(result_labels, labels);
-		// SG_DEBUG("result on fold %d is %f\n", i, results[i])
+		auto result =
+		    evaluation_criterion->evaluate(result_labels, labels_clone);
+		SG_SINFO(
+		    "result on repeat %d fold %d is %f\n", repeat_idx, fold_idx, result)
 
 		/* evtl. update xvalidation output class */
 		fold->set_test_indices(test_idx);
@@ -381,18 +407,17 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
 		fold->set_test_true_result(true_labels);
 		SG_UNREF(true_labels)
 		fold->post_update_results();
-		// fold->set_evaluation_result(results[i]);
+		fold->set_evaluation_result(result);
 
 		/* clean up, remove subsets */
 		labels->remove_subset();
 		SG_UNREF(cloned_machine);
 		SG_UNREF(features_clone);
 		SG_UNREF(labels_clone);
-		// SG_UNREF(evaluation_criterion);
 		SG_UNREF(result_labels);
+		delete evaluation_criterion;
 		return fold;
 	}
-	break;
 	case OpenMLTask::TaskType::LEARNING_CURVE:
 		SG_SNOTIMPLEMENTED
 	case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
@@ -416,6 +441,30 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
     const std::shared_ptr<CLabels>& labels)
 {
 	auto task_type = task->get_task_type();
+
+	CEvaluation* evaluation_criterion = nullptr;
+
+	switch (task_type)
+	{
+	case OpenMLTask::TaskType::SUPERVISED_CLASSIFICATION:
+		evaluation_criterion = new CAccuracyMeasure();
+		break;
+	case OpenMLTask::TaskType::SUPERVISED_REGRESSION:
+		evaluation_criterion = new CMeanAbsoluteError();
+		break;
+	case OpenMLTask::TaskType::LEARNING_CURVE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUPERVISED_DATASTREAM_CLASSIFICATION:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::CLUSTERING:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::MACHINE_LEARNING_CHALLENGE:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SURVIVAL_ANALYSIS:
+		SG_SNOTIMPLEMENTED
+	case OpenMLTask::TaskType::SUBGROUP_DISCOVERY:
+		SG_SNOTIMPLEMENTED
+	}
 
 	switch (task_type)
 	{
@@ -446,8 +495,9 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
 		SG_SDEBUG("finished evaluation\n")
 
 		/* evaluate */
-		// results[i] = evaluation_criterion->evaluate(result_labels, labels);
-		// SG_DEBUG("result on fold %d is %f\n", i, results[i])
+		auto result =
+		    evaluation_criterion->evaluate(result_labels, labels_clone);
+		SG_SINFO("result is %f\n", result)
 
 		/* evtl. update xvalidation output class */
 		fold->set_test_result(result_labels);
@@ -455,14 +505,14 @@ std::unique_ptr<CrossValidationFoldStorage> ShogunOpenML::run_model_on_fold(
 		fold->set_test_true_result(true_labels);
 		SG_UNREF(true_labels)
 		fold->post_update_results();
-		// fold->set_evaluation_result(results[i]);
+		fold->set_evaluation_result(result);
 
 		// cleanup
 		SG_UNREF(cloned_machine);
 		SG_UNREF(features_clone);
 		SG_UNREF(labels_clone);
-		// SG_UNREF(evaluation_criterion);
 		SG_UNREF(result_labels);
+		delete evaluation_criterion;
 		return fold;
 	}
 	case OpenMLTask::TaskType::LEARNING_CURVE:

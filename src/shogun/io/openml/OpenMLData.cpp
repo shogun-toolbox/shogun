@@ -186,10 +186,8 @@ std::shared_ptr<CFeatures> OpenMLData::get_features(const std::string& label)
 	    copy_feat, result->get_feature_matrix().data(),
 	    m_feature_types.size() * m_cached_features.size());
 
-	result = std::make_shared<CDenseFeatures<float64_t>>(
+	return std::make_shared<CDenseFeatures<float64_t>>(
 	    copy_feat, m_feature_types.size(), n_examples);
-
-	return result;
 }
 
 std::shared_ptr<CLabels> OpenMLData::get_labels()
