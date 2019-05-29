@@ -17,7 +17,7 @@ steps:
 
 - bash: |
     brew update
-    brew install ccache pkg-config arpack eigen glpk hdf5 json-c lapack lzo nlopt snappy xz
+    brew install ccache pkg-config arpack eigen glpk hdf5 json-c lapack lzo nlopt snappy xz libomp
   displayName: Install dependencies
 
 - script: sudo $(CONDA)/bin/conda install mkl-devel -y -q

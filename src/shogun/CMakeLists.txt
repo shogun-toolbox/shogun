@@ -200,6 +200,8 @@ if (OPENMP_FOUND)
   SHOGUN_COMPILE_OPTS(${OpenMP_CXX_FLAGS})
   if (CMAKE_COMPILER_IS_GNUCC)
     SHOGUN_LINK_LIBS(gomp)
+  else ()
+    SHOGUN_LINK_LIBS(OpenMP::OpenMP_CXX)
   endif()
 endif()
 
