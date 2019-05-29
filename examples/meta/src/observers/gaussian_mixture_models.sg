@@ -19,6 +19,7 @@ gmm.subscribe(obs)
 #![train_sample]
 gmm.put("features", features_train)
 gmm.train_em()
+RealVector output = gmm.sample()
 #![train_sample]
 
 #![training_smem]
@@ -26,10 +27,14 @@ obs.clear()
 gmm.train_smem()
 #![training_smem]
 
-#![extract_params]
+#![extract_coeff]
 int num_observations = obs.get_int("num_observations")
-ObservedValue obs_val = obs.get_observation(num_observations-1)
-RealVector coeff =  obs_val.get_real_vector("coefficients")
-real log_likelihood = obs_val.get_real("log_likelihood")
-RealVector coef = gmm.get_real_vector("coefficients")
-#![extract_params]
+ObservedValue obs_val = obs.get_observation(num_observations-2)
+RealVector observed_coeff =  obs_val.get_real_vector("coefficients")
+RealVector coeff = gmm.get_real_vector("coefficients")
+#![extract_coeff]
+
+#![extract_likelihood]
+ObservedValue obs_val_2 = obs.get_observation(num_observations-3)
+real log_likelihood = obs_val_2.get_real("log_likelihood")
+#![extract_likelihood]
