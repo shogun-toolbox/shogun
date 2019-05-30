@@ -224,7 +224,7 @@ void BaggingMachine::set_machine_parameters(std::shared_ptr<Machine> m, SGVector
 
 void BaggingMachine::register_parameters()
 {
-	SG_ADD(&m_features, kFeatures, "Train features for bagging");
+	SG_ADD(&m_machine, "machine", "Machine used")
 	SG_ADD(
 	    &m_num_bags, kNBags, "Number of bags", ParameterProperties::HYPER);
 	SG_ADD(
@@ -242,36 +242,6 @@ void BaggingMachine::register_parameters()
 	watch_method(kOobError, &BaggingMachine::get_oob_error);
 }
 
-void BaggingMachine::set_num_bags(int32_t num_bags)
-{
-	m_num_bags = num_bags;
-}
-
-int32_t BaggingMachine::get_num_bags() const
-{
-	return m_num_bags;
-}
-
-void BaggingMachine::set_bag_size(int32_t bag_size)
-{
-	m_bag_size = bag_size;
-}
-
-int32_t BaggingMachine::get_bag_size() const
-{
-	return m_bag_size;
-}
-
-std::shared_ptr<Machine> BaggingMachine::get_machine() const
-{
-	return m_machine;
-}
-
-void BaggingMachine::set_machine(std::shared_ptr<Machine> machine)
-{
-	m_machine = std::move(machine);
-}
-
 void BaggingMachine::init()
 {
 	m_machine = nullptr;
@@ -284,17 +254,8 @@ void BaggingMachine::init()
 	m_oob_evaluation_metric = nullptr;
 }
 
-void BaggingMachine::set_combination_rule(std::shared_ptr<CombinationRule> rule)
-{
-	m_combination_rule = std::move(rule);
-}
 
-std::shared_ptr<CombinationRule> BaggingMachine::get_combination_rule() const
-{
-	return m_combination_rule;
-}
-
-float64_t BaggingMachine::get_oob_error() const
+float64_t BaggingMachine::get_oob_error(Evaluation* eval) const
 {
 	require(
 	    m_oob_evaluation_metric, "Out of bag evaluation metric is not set!");

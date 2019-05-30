@@ -95,10 +95,10 @@ TEST_F(RandomForestTest, classify_nominal_test)
 	auto c =
 	    std::make_shared<RandomForest>(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
-	auto mv = std::make_shared<MajorityVote>();
-	c->set_combination_rule(mv);
-	env()->set_num_threads(1);
-	c->put("seed", seed);
+    auto mv = std::make_shared<MajorityVote>();
+    c->put("combination_rule", mv);
+    env()->set_num_threads(1);
+    c->put("seed", seed);
 	c->train(weather_features_train);
 
 	auto result =
@@ -128,10 +128,10 @@ TEST_F(RandomForestTest, classify_non_nominal_test)
 	auto c =
 	    std::make_shared<RandomForest>(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
-	auto mv = std::make_shared<MajorityVote>();
-	c->set_combination_rule(mv);
-	env()->set_num_threads(1);
-	c->put("seed", seed);
+    auto mv = std::make_shared<MajorityVote>();
+	c->put("combination_rule", mv);
+    env()->set_num_threads(1);
+    c->put("seed", seed);
 	c->train(weather_features_train);
 
 	auto result =
@@ -172,9 +172,9 @@ TEST_F(RandomForestTest, score_compare_sklearn_toydata)
 	ft[1] = false;
 	c->set_feature_types(ft);
 
-	auto mr = std::make_shared<MeanRule>();
-	c->set_combination_rule(mr);
-	c->put("seed", seed);
+    auto mv = std::make_shared<MeanRule>();
+    c->put("combination_rule", mr);
+    c->put("seed", seed);
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_train);
@@ -232,8 +232,8 @@ TEST_F(RandomForestTest, score_consistent_with_binary_trivial_data)
 	c->set_feature_types(ft);
 
 	auto mr = std::make_shared<MeanRule>();
-	c->set_combination_rule(mr);
-	c->put("seed", seed);
+    c->put("combination_rule", mr);
+    c->put("seed", seed);
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_test);

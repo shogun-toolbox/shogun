@@ -44,65 +44,6 @@ namespace shogun
 		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
-		/**
-		 * Set number of bags/machine to create
-		 *
-		 * @param num_bags number of bags
-		 */
-		void set_num_bags(int32_t num_bags);
-
-		/**
-		 * Get number of bags/machines
-		 *
-		 * @return number of bags
-		 */
-		int32_t get_num_bags() const;
-
-		/**
-		 * Set number of feature vectors to use
-		 * for each bag/machine
-		 *
-		 * @param bag_size number of vectors to use for a bag
-		 */
-		virtual void set_bag_size(int32_t bag_size);
-
-		/**
-		 * Get number of feature vectors that are use
-		 * for training each bag/machine
-		 *
-		 * @return number of vectors used for training for each bag.
-		 */
-		virtual int32_t get_bag_size() const;
-
-		/**
-		 * Get machine for bagging
-		 *
-		 * @return machine that is being used in bagging
-		 */
-		std::shared_ptr<Machine> get_machine() const;
-
-		/**
-		 * Set machine to use in bagging
-		 *
-		 * @param machine the machine to use for bagging
-		 */
-		virtual void set_machine(std::shared_ptr<Machine> machine);
-
-		/**
-		 * Set the combination rule to use for aggregating the classification
-		 * results
-		 *
-		 * @param rule combination rule
-		 */
-		void set_combination_rule(std::shared_ptr<CombinationRule> rule);
-
-		/**
-		 * Get the combination rule that is used for aggregating the results
-		 *
-		 * @return CombinationRule
-		 */
-		std::shared_ptr<CombinationRule> get_combination_rule() const;
-
 		/** get classifier type
 		 *
 		 * @return classifier type CT_BAGGING
@@ -210,7 +151,7 @@ namespace shogun
 		static constexpr std::string_view kMachine = "machine";
 		static constexpr std::string_view kOobError = "oob_error";
 		static constexpr std::string_view kOobEvaluationMetric = "oob_evaluation_metric";
-#endif	
+#endif
 	};
 } // namespace shogun
 

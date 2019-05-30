@@ -47,7 +47,7 @@ RandomForest::RandomForest(int32_t rand_numfeats, int32_t num_bags)
 {
 	init();
 
-	set_num_bags(num_bags);
+	m_num_bags = num_bags;
 
 	if (rand_numfeats>0)
 		m_machine->as<RandomCARTree>()->set_feature_subset_size(rand_numfeats);
@@ -60,7 +60,7 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 	m_features=std::move(features);
 	set_labels(std::move(labels));
 
-	set_num_bags(num_bags);
+	m_num_bags = num_bags;
 
 	if (rand_numfeats>0)
 		m_machine->as<RandomCARTree>()->set_feature_subset_size(rand_numfeats);
@@ -75,7 +75,7 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 	set_labels(std::move(labels));
 	m_weights=weights;
 
-	set_num_bags(num_bags);
+	m_num_bags = num_bags;
 
 	if (rand_numfeats>0)
 		m_machine->as<RandomCARTree>()->set_feature_subset_size(rand_numfeats);
