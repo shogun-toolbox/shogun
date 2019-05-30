@@ -13,6 +13,10 @@
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/evaluation/Evaluation.h>
+#include <shogun/evaluation/BinaryClassEvaluation.h>
+#include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/evaluation/MeanSquaredError.h>
 
 #include <utility>
 
@@ -255,7 +259,7 @@ void BaggingMachine::init()
 }
 
 
-float64_t BaggingMachine::get_oob_error(Evaluation* eval) const
+float64_t BaggingMachine::get_oob_error() const
 {
 	require(
 	    m_oob_evaluation_metric, "Out of bag evaluation metric is not set!");
@@ -329,9 +333,8 @@ float64_t BaggingMachine::get_oob_error(Evaluation* eval) const
 			error("Unsupported label type");
 	}
 
-
 	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
-	float64_t res = m_oob_evaluation_metric->evaluate(predicted, m_labels);
+    float64_t res = m_oob_evaluation_metric->evaluate(predicted, m_labels);
 	m_labels->remove_subset();
 
 	return res;
