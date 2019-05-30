@@ -172,7 +172,7 @@ TEST_F(RandomForestTest, score_compare_sklearn_toydata)
 	ft[1] = false;
 	c->set_feature_types(ft);
 
-    auto mv = std::make_shared<MeanRule>();
+    auto mr = std::make_shared<MeanRule>();
     c->put("combination_rule", mr);
     c->put("seed", seed);
 	c->train(features_train);
