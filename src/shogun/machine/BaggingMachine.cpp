@@ -207,12 +207,18 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 
 #pragma omp critical
 		{
+
 		// get out of bag indexes
 		auto oob = get_oob_indices(idx);
 		m_oob_indices.push_back(oob);
 
 		// add trained machine to bag array
 		m_bags.push_back(c);
+
+		// observe some variables
+        auto oob_error = this->get_oob_error();
+        this->observe<Machine*>(i, "trained_machine", "Trained machine for this bag", c);
+        this->observe<float64_t>(i, "oob_error", "Out-of-bag Error", oob_error);
 		}
 
 		pb.print_progress();
