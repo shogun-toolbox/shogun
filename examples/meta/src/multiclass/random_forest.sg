@@ -19,7 +19,7 @@ MajorityVote m_vote()
 
 #![create_instance]
 RandomForest rand_forest(features_train, labels_train, 100)
-rand_forest.put("combination_rule", m_vote)
+rand_forest.put("combination_rule", as_combination_rule(m_vote))
 #![create_instance]
 
 #![train_and_apply]

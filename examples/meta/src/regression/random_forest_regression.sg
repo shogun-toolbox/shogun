@@ -17,7 +17,7 @@ MeanRule mean_rule()
 
 #![create_instance]
 RandomForest rand_forest(features_train, labels_train, 5)
-rand_forest.put("combination_rule", mean_rule)
+rand_forest.put("combination_rule", as_combination_rule(mean_rule))
 #![create_instance]
 
 #![train_and_apply]
