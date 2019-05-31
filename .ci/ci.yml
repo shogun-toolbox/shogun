@@ -133,6 +133,11 @@ jobs:
     ccacheArtifactName: 'ccache-macos'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
     commonMacOSCMakeFlags: '-DBUILD_EXAMPLES=OFF -DBUNDLE_JSON=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF'
+    openMPMacOSCMakeFlags:
+      '-DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp"
+      -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp"
+      -DOpenMP_CXX_LIB_NAMES="omp" -DOpenMP_C_LIB_NAMES="omp"
+      -DOpenMP_omp_LIBRARY="/usr/local/opt/libomp/lib/libomp.dylib"'
 
   pool:
     vmImage: xcode9-macos10.13
@@ -148,7 +153,7 @@ jobs:
         cmakeOptions: '$(commonMacOSCMakeFlags)'
       MKL:
         use_mkl: true
-        cmakeOptions: '$(commonMacOSCMakeFlags) -DBLAS_LIBRARIES=$(CONDA)/lib/libmkl_core.dylib -DLAPACK_LIBRARIES=$(CONDA)/lib/libmkl_core.dylib -DBLA_VENDOR=Intel'
+        cmakeOptions: '$(commonMacOSCMakeFlags) $(openMPMacOSCMakeFlags) -DBLAS_LIBRARIES=$(CONDA)/lib/libmkl_core.dylib -DLAPACK_LIBRARIES=$(CONDA)/lib/libmkl_core.dylib -DBLA_VENDOR=Intel'
 
 - job: windows_libshogun
   displayName: Windows
