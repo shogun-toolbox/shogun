@@ -13,7 +13,6 @@ namespace shogun
 {
 
 	// all shogun base classes for put/add templates
-<<<<<<< HEAD
 	class Machine;
 	class Kernel;
 	class Distance;

@@ -159,7 +159,6 @@ TEST_F(BaggingMachineTest, output_binary)
     c->put("num_bag", 10);
     c->put("combination_rule", cv);
     c->put("seed", seed);
-
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_test);
