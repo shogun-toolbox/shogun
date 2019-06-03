@@ -784,31 +784,27 @@ public:
 	}
 
 protected:
-	void sg_add_auto_func(AnyParameter& any_pprop, std::shared_ptr<params::AutoInit> func)
+	template <ParameterProperties PPVal, typename ...Args, std::enable_if_t<!static_cast<bool>(PPVal&ParameterProperties::AUTO)>* = nullptr>
+	void sg_add_auto_func(AnyParameter& any_pprop, Args&&... args)
 	{
-		any_pprop.set_init_function(std::move(func));
 	}
 
-	template <typename ...Args>
+	template <ParameterProperties PPVal, typename ...Args, std::enable_if_t<static_cast<bool>(PPVal&ParameterProperties::AUTO)>* = nullptr>
 	void sg_add_auto_func(AnyParameter& any_pprop, Args&&... args)
 	{
 		static_assert(sg_is_any_base_of<params::AutoInit, Args...>::value,
 				"Expected a params::AutoInit function when passing param with"
 				" ParameterProperty::AUTO!");
 		constexpr size_t idx = get_idx_from_pack<params::AutoInit, Args...>::idx;
-		any_pprop.set_init_function(std::get<idx>(std::forward_as_tuple(args...)));
+		any_pprop.set_init_function(std::move(std::get<idx>(std::forward_as_tuple(args...))));
 	}
 
-	template <typename T, typename ...Args>
-	void sg_add(T* value, const std::string& name, const std::string& description,
-			ParameterProperties pprop, Args&& ...args)
+	template <ParameterProperties pprop, typename T, typename ...Args>
+	void sg_add(T* value, const std::string& name, const std::string& description, Args&& ...args)
 	{
 		auto any_pprop = AnyParameterProperties(description, pprop);
 		auto anyp = AnyParameter(make_any_ref(value), any_pprop);
-		if (any_pprop.has_property(ParameterProperties::AUTO))
-		{
-			sg_add_auto_func(anyp, args...);
-		}
+		sg_add_auto_func<pprop>(anyp, args...);
 
 		BaseTag tag(name);
 		create_parameter(tag, anyp);

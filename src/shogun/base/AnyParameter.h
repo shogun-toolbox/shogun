@@ -204,7 +204,7 @@ namespace shogun
 
 		void set_init_function(std::shared_ptr<params::AutoInit> func)
 		{
-			m_init_function = func;
+			m_init_function = std::move(func);
 		}
 
 		std::shared_ptr<params::AutoInit> get_init_function() const

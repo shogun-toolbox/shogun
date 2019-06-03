@@ -57,13 +57,8 @@ void SigmoidKernel::init()
 	gamma = 0.0;
 	coef0 = 0.0;
 
-	sg_add(&gamma, "gamma", "Scaler for the dot product.",
-		   ParameterProperties::HYPER | ParameterProperties::AUTO,
-		   std::make_shared<params::GammaFeatureNumberInit>(this));
-
-//	SG_ADD(
-//	    &gamma, "gamma", "Scaler for the dot product.",
-//	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-//	    std::make_shared<params::GammaFeatureNumberInit>(this));
-	SG_ADD(&coef0, "coef0", "Coefficient 0.", ParameterProperties::HYPER);
+	sg_add<ParameterProperties::HYPER | ParameterProperties::AUTO>(
+	    &gamma, "gamma", "Scaler for the dot product.",
+	    std::make_shared<params::GammaFeatureNumberInit>(this));
+	sg_add<ParameterProperties::HYPER>(&coef0, "coef0", "Coefficient 0.");
 }
