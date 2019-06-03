@@ -23,7 +23,9 @@ RealVector output = gmm.sample()
 #![train_sample]
 
 #![training_smem]
-obs.clear()
+gmm.unsubscribe(obs)
+ParameterObserver obs_smem = parameter_observer("ParameterObserverLogger")
+gmm.subscribe(obs_smem)
 gmm.train_smem()
 #![training_smem]
 
