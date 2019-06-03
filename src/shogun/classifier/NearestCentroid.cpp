@@ -63,10 +63,10 @@ namespace shogun{
 		SGMatrix<float64_t> centroids(num_feats, num_classes);
 		SGVector<int64_t> num_per_class(num_classes);
 
-		auto iter_labels = multiclass_labels->get_int_labels().begin();
-		for(const auto& current : DotIterator(dense_data))
+		auto iter_labels = multiclass_labels->get_labels().begin();
+		for (const auto& current : DotIterator(dense_data))
 		{
-			const auto current_class = *(iter_labels++);
+			const auto current_class = static_cast<int32_t>(*(iter_labels++));
 			auto target = centroids.get_column(current_class);
 			current.add(1, target);
 			num_per_class[current_class]++;
