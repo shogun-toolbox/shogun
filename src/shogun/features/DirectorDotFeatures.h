@@ -78,7 +78,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 dense vector
 		 */
-		virtual float64_t dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2)
+		virtual float64_t dot(int32_t vec_idx1, const SGVector<float64_t> vec2)
 		{
 			SG_NOTIMPLEMENTED
 			return 0;
@@ -105,7 +105,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 		{
-			return dense_dot_sgvec(vec_idx1, SGVector<float64_t>((float64_t*) vec2, vec2_len, false));
+			return dot(vec_idx1, SGVector<float64_t>((float64_t*) vec2, vec2_len, false));
 		}
 
 		/** add vector 1 multiplied with alpha to dense vector2
