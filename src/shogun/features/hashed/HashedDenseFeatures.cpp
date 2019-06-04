@@ -121,7 +121,8 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+float64_t CHashedDenseFeatures<ST>::dot(
+	int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	ASSERT(vec2.vlen == dim)
 

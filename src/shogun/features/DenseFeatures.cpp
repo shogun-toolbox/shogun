@@ -630,10 +630,11 @@ GET_FEATURE_TYPE(F_DREAL, float64_t)
 GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 #undef GET_FEATURE_TYPE
 
-template<typename ST>
-float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1,const SGVector<float64_t> vec2) const
+template <typename ST>
+float64_t
+CDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-    ASSERT(vec2.vlen == num_features)
+	ASSERT(vec2.vlen == num_features)
 
 	int32_t vlen;
 	bool vfree;
@@ -650,10 +651,11 @@ float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1,const SGVector<float64_t> vec
 	return result;
 }
 
-template<>
-float64_t CDenseFeatures<bool>::dot(int32_t vec_idx1,const SGVector<float64_t> vec2) const
+template <>
+float64_t CDenseFeatures<bool>::dot(
+	int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-    ASSERT(vec2.vlen == num_features)
+	ASSERT(vec2.vlen == num_features)
 
 	int32_t vlen;
 	bool vfree;
@@ -670,8 +672,9 @@ float64_t CDenseFeatures<bool>::dot(int32_t vec_idx1,const SGVector<float64_t> v
 	return result;
 }
 
-template<>
-float64_t CDenseFeatures<float64_t>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+template <>
+float64_t CDenseFeatures<float64_t>::dot(
+	int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	ASSERT(vec2.vlen == num_features)
 

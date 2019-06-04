@@ -166,10 +166,13 @@ uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& 
 	return img;
 }
 
-float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+float64_t
+CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	if (vec2.vlen != vec_nDim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2.vlen, vec_nDim)
+		SG_ERROR(
+		    "Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2.vlen,
+		    vec_nDim)
 
 	int32_t ww;
 	int32_t hh;

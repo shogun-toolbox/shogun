@@ -390,9 +390,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 dense vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const;
+		virtual float64_t
+		dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const;
 
-		#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for sparse features */
 		struct sparse_feature_iterator
 		{
