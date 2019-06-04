@@ -139,10 +139,10 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx
 float64_t
 CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	if (vec2.vlen != m_output_dimensions)
-		SG_ERROR(
-		    "Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n",
-		    vec2.vlen, m_output_dimensions)
+	REQUIRE(
+	    vec2.vlen == m_output_dimensions,
+	    "Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n",
+	    vec2.vlen, m_output_dimensions)
 
 	int32_t len;
 	bool do_free;

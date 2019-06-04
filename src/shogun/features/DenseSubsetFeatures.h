@@ -142,8 +142,8 @@ public:
 	virtual float64_t
 	dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 	{
-		if (m_idx.vlen != vec2.vlen)
-			SG_ERROR("Cannot dot vectors of different length\n")
+		REQUIRE(
+			m_idx.vlen == vec2.vlen, "Cannot dot vectors of different length\n")
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 
 		float64_t sum=0;

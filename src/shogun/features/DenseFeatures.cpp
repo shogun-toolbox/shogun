@@ -634,60 +634,9 @@ template <typename ST>
 float64_t
 CDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	ASSERT(vec2.vlen == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	ST* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template <>
-float64_t CDenseFeatures<bool>::dot(
-	int32_t vec_idx1, const SGVector<float64_t> vec2) const
-{
-	ASSERT(vec2.vlen == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	bool* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] ? vec2[i] : 0;
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template <>
-float64_t CDenseFeatures<float64_t>::dot(
-	int32_t vec_idx1, const SGVector<float64_t> vec2) const
-{
-	ASSERT(vec2.vlen == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-	SGVector<float64_t> sg_vec1(vec1, vlen, false);
-
-	ASSERT(vlen == num_features)
-	float64_t result = linalg::dot(sg_vec1, vec2);
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
+	SGVector<ST> vec1 = get_feature_vector(vec_idx1);
+	float64_t result = linalg::dot(vec1, vec2, allow_cast{});
+	free_feature_vector(vec1);
 	return result;
 }
 
