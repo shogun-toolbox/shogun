@@ -121,10 +121,9 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2,
-	int32_t vec2_len) const
+float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	ASSERT(vec2_len == dim)
+	ASSERT(vec2.vlen == dim)
 
 	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx1);
 

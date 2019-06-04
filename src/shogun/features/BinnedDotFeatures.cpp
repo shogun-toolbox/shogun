@@ -115,9 +115,9 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 
 }
 
-float64_t CBinnedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	assert_shape(vec2_len);
+	assert_shape(vec2.vlen);
 
 	float64_t result=0;
 	double sum=0;

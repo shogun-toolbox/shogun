@@ -136,10 +136,10 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx
 	return sum;
 }
 
-float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	if (vec2_len != m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
+	if (vec2.vlen != m_output_dimensions)
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2.vlen, m_output_dimensions)
 
 	int32_t len;
 	bool do_free;
@@ -148,7 +148,7 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 
 	int cnt=0;
 	float64_t sum=0;
-	for (int j=0; j<vec2_len; j++)
+	for (int j=0; j<vec2.vlen; j++)
 	{
 		float64_t output=m_multinomial_coefficients[j];
 		for (int k=0; k<m_degree; k++)
@@ -164,6 +164,7 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 	m_feat->free_feature_vector(vec, len, do_free);
 	return sum;
 }
+
 void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != m_output_dimensions)

@@ -631,10 +631,9 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 #undef GET_FEATURE_TYPE
 
 template<typename ST>
-float64_t CDenseFeatures<ST>::dense_dot(int32_t vec_idx1,
-        const float64_t* vec2, int32_t vec2_len) const
+float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1,const SGVector<float64_t> vec2) const
 {
-    ASSERT(vec2_len == num_features)
+    ASSERT(vec2.vlen == num_features)
 
 	int32_t vlen;
 	bool vfree;
@@ -651,10 +650,10 @@ float64_t CDenseFeatures<ST>::dense_dot(int32_t vec_idx1,
 	return result;
 }
 
-template<> float64_t CDenseFeatures<bool>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+template<>
+float64_t CDenseFeatures<bool>::dot(int32_t vec_idx1,const SGVector<float64_t> vec2) const
 {
-	ASSERT(vec2_len == num_features)
+    ASSERT(vec2.vlen == num_features)
 
 	int32_t vlen;
 	bool vfree;
@@ -671,10 +670,10 @@ template<> float64_t CDenseFeatures<bool>::dense_dot(
 	return result;
 }
 
-template<> float64_t CDenseFeatures<float64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+template<>
+float64_t CDenseFeatures<float64_t>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	ASSERT(vec2_len == num_features)
+	ASSERT(vec2.vlen == num_features)
 
 	int32_t vlen;
 	bool vfree;
@@ -682,8 +681,7 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 	SGVector<float64_t> sg_vec1(vec1, vlen, false);
 
 	ASSERT(vlen == num_features)
-	SGVector<float64_t> tmp(const_cast<float64_t*>(vec2), vec2_len, false);
-	float64_t result = linalg::dot(sg_vec1, tmp);
+	float64_t result = linalg::dot(sg_vec1, vec2);
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 

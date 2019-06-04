@@ -72,17 +72,13 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	return linalg::dot(vec1, vec2);
 }
 
-float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	ASSERT(vec2_len == spec_size)
+	ASSERT(vec2.vlen == spec_size)
 	ASSERT(vec_idx1 < num_strings)
 	SGVector<float64_t> vec1(k_spectrum[vec_idx1], spec_size, false);
-	SGVector<float64_t> vec2_wrapper(const_cast<float64_t*>(vec2), vec2_len, false);
-	float64_t result=0;
 
-	linalg::dot(vec1, vec2_wrapper);
-
-	return result;
+	return linalg::dot(vec1, vec2);
 }
 
 void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const

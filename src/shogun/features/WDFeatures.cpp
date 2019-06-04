@@ -113,10 +113,10 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 	return sum/CMath::sq(normalization_const);
 }
 
-float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t CWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
+	if (vec2.vlen != w_dim)
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2.vlen, w_dim)
 
 	float64_t sum=0;
 	int32_t lim=CMath::min(degree, string_length);

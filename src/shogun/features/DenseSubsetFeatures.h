@@ -139,14 +139,14 @@ public:
 	 * @param vec2 pointer to real valued vector
 	 * @param vec2_len length of real valued vector
 	 */
-	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+	virtual float64_t dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 	{
-		if (m_idx.vlen != vec2_len)
+		if (m_idx.vlen != vec2.vlen)
 			SG_ERROR("Cannot dot vectors of different length\n")
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 
 		float64_t sum=0;
-		for (int32_t i=0; i < vec2_len; ++i)
+		for (int32_t i=0; i < vec2.vlen; ++i)
 			sum += vec1[m_idx[i]] * vec2[i];
 
 		return sum;

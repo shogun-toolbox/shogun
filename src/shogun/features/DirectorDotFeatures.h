@@ -97,17 +97,6 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 			SG_NOTIMPLEMENTED
 		}
 
-		/** compute dot product between vector1 and a dense vector
-		 *
-		 * @param vec_idx1 index of first vector
-		 * @param vec2 pointer to real valued vector
-		 * @param vec2_len length of real valued vector
-		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
-		{
-			return dot(vec_idx1, SGVector<float64_t>((float64_t*) vec2, vec2_len, false));
-		}
-
 		/** add vector 1 multiplied with alpha to dense vector2
 		 *
 		 * @param alpha scalar alpha

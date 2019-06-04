@@ -457,13 +457,11 @@ template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
 	return 0.0;
 }
 
-template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	REQUIRE(vec2, "dense_dot(vec_idx1=%d,vec2_len=%d): vec2 must not be NULL\n",
-		vec_idx1, vec2_len);
-	REQUIRE(vec2_len>=get_num_features(),
-		"dense_dot(vec_idx1=%d,vec2_len=%d): vec2_len should contain number of features %d %d\n",
-		vec_idx1, vec2_len, get_num_features());
+	REQUIRE(vec2.vlen>=get_num_features(),
+		"dot(vec_idx1=%d,vec2_len=%d): vec2_len should contain number of features %d %d\n",
+		vec_idx1, vec2.vlen, get_num_features());
 
 	float64_t result=0;
 	SGSparseVector<ST> sv=get_sparse_feature_vector(vec_idx1);
@@ -474,9 +472,9 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 			"sparse_matrix[%d] check failed (matrix features %d >= vector dimension %d)\n",
 			vec_idx1, get_num_features(), sv.get_num_dimensions());
 
-		REQUIRE(vec2_len >= sv.get_num_dimensions(),
+		REQUIRE(vec2.vlen >= sv.get_num_dimensions(),
 			"sparse_matrix[%d] check failed (dense vector dimension %d >= vector dimension %d)\n",
-			vec_idx1, vec2_len, sv.get_num_dimensions());
+			vec_idx1, vec2.vlen, sv.get_num_dimensions());
 
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
 			result+=vec2[sv.features[i].feat_index]*sv.features[i].entry;
@@ -487,8 +485,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 	return result;
 }
 
-template<> float64_t CSparseFeatures<complex128_t>::dense_dot(int32_t vec_idx1,
-	const float64_t* vec2, int32_t vec2_len) const
+template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	SG_NOTIMPLEMENTED;
 	return 0.0;
