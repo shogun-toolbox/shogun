@@ -11,8 +11,8 @@
 #include <shogun/lib/any.h>
 #include <shogun/lib/bitmask_operators.h>
 
-#include <memory>
 #include <list>
+#include <memory>
 
 namespace shogun
 {
@@ -43,13 +43,15 @@ namespace shogun
 		RUNFUNCTION = 1u << 12
 	};
 
-	static const std::list<std::pair<ParameterProperties, std::string>> kParameterPropNames = {
-		{ParameterProperties::NONE, "NONE"},
-		{ParameterProperties::HYPER, "HYPER"},
-		{ParameterProperties::GRADIENT, "GRADIENT"},
-		{ParameterProperties::MODEL, "MODEL"},
-		{ParameterProperties::AUTO, "AUTO"},
-		{ParameterProperties::READONLY, "READONLY"}};
+	static const std::list<std::pair<ParameterProperties, std::string>>
+	    kParameterPropNames = {
+	        {ParameterProperties::NONE, "NONE"},
+	        {ParameterProperties::HYPER, "HYPER"},
+	        {ParameterProperties::GRADIENT, "GRADIENT"},
+	        {ParameterProperties::MODEL, "MODEL"},
+	        {ParameterProperties::AUTO, "AUTO"},
+	        {ParameterProperties::READONLY, "READONLY"},
+	        {ParameterProperties::RUNFUNCTION, "RUNFUNCTION"}};
 
 	enableEnumClassBitmask(ParameterProperties);
 
@@ -148,13 +150,13 @@ namespace shogun
 		std::string to_string() const
 		{
 			std::stringstream ss;
-			ss << "Description: "<< m_description << " with attributes: [";
+			ss << "Description: " << m_description << " with attributes: [";
 			bool first_attrib = true;
-			for (const auto& it: kParameterPropNames)
+			for (const auto& it : kParameterPropNames)
 			{
 				if (has_property(it.first))
 				{
-					ss << (first_attrib ? "": " | ") << it.second;
+					ss << (first_attrib ? "" : " | ") << it.second;
 					first_attrib = false;
 				}
 			}
@@ -175,17 +177,18 @@ namespace shogun
 		AnyParameter() : m_value(), m_properties()
 		{
 		}
-		explicit AnyParameter(const Any& value) : m_value(value), m_properties()
+		explicit AnyParameter(Any&& value)
+		    : m_value(std::move(value)), m_properties()
 		{
 		}
-		AnyParameter(const Any& value, AnyParameterProperties properties)
-		    : m_value(value), m_properties(properties)
+		AnyParameter(Any&& value, const AnyParameterProperties& properties)
+		    : m_value(std::move(value)), m_properties(properties)
 		{
 		}
 		AnyParameter(
-		    const Any& value, AnyParameterProperties properties,
+		    Any&& value, const AnyParameterProperties& properties,
 		    std::shared_ptr<params::AutoInit> auto_init)
-		    : m_value(value), m_properties(properties),
+		    : m_value(std::move(value)), m_properties(properties),
 		      m_init_function(std::move(auto_init))
 		{
 		}
