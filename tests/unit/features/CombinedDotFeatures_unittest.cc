@@ -76,19 +76,30 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	CDenseFeatures<float64_t>* feat_3 = new CDenseFeatures<float64_t>(data_3);
 
 	comb_feat_1->append_feature_obj(feat_1);
+	comb_feat_1->set_subfeature_weight(0, 1);
 	comb_feat_1->append_feature_obj(feat_2);
+	comb_feat_1->set_subfeature_weight(1, 2);
 	comb_feat_1->append_feature_obj(feat_3);
+	comb_feat_1->set_subfeature_weight(2, 3);
+
 	comb_feat_2->append_feature_obj(feat_3);
+	comb_feat_2->set_subfeature_weight(0, 3);
 	comb_feat_2->append_feature_obj(feat_1);
+	comb_feat_2->set_subfeature_weight(1, 1);
 	comb_feat_2->append_feature_obj(feat_2);
+	comb_feat_2->set_subfeature_weight(2, 2);
 
 	SG_SINFO("Beginning dot() testing");
 	int32_t result = comb_feat_1->dot(0, comb_feat_2, 0);
-	EXPECT_EQ(result, -5);
+	// comb_feat_1[0] dot comb_feat_2[0] =
+	//		feat_1_weight * feat_3_weight * (feat_1 dot feat_3) +
+	//		feat_2_weight * feat_1_weight * (feat_2 dot feat_1) +
+	//		feat_3_weight * feat_2_weight * (feat_3 dot feat_2) +
+	EXPECT_EQ(result, 1*3*10 - 2*1*5 - 3*2*10);
 	result = comb_feat_1->dot(1,comb_feat_2,1);
-	EXPECT_EQ(result, -50);
+	EXPECT_EQ(result, 1*3*100 - 2*1*50 - 3*2*100);
 	result = comb_feat_1->dot(0,comb_feat_2,1);
-	EXPECT_EQ(result, -14);
+	EXPECT_EQ(result, 1*3*28 - 2*1*14 - 3*2*28);
 	SG_SINFO("Completed dot() testing");
 
 	SG_SINFO("Beginning dense_dot() testing");
@@ -97,7 +108,7 @@ TEST(CombinedDotFeaturesTest, dot_products)
 		vector[i] = 10 + i;
 
 	result = comb_feat_1->dense_dot(1, vector, 9);
-	EXPECT_EQ(result, 376);
+	EXPECT_EQ(result, 1 * 134 - 2 * 170 + 3 * 412);
 	SG_SINFO("Completed dense_dot() testing");
 
 	delete [] vector;
@@ -146,5 +157,45 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 		ASSERT_EQ(nnz[nnz_index++], value);
 
 	comb_feat->free_feature_iterator(itcomb);
+	SG_UNREF(comb_feat);
+}
+
+TEST(CombinedDotFeaturesTest, feature_weights)
+{
+	index_t num_subfeats = 20;
+	index_t insert_pos = 10;
+
+	std::vector<CDenseFeatures<float64_t>*> feats(num_subfeats);
+	for (index_t i = 0; i < num_subfeats; i++)
+		feats[i] = new CDenseFeatures<float64_t>();
+
+	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+	// test get_subfeature_weight & set_subfeature_weight
+	for (index_t i = 0; i < num_subfeats; i++)
+	{
+		comb_feat->append_feature_obj(feats[i]);
+		comb_feat->set_subfeature_weight(i, i);
+	}
+	auto subfeat_weights = comb_feat->get_subfeature_weights();
+	for (index_t i = 0; i < num_subfeats; i++)
+	{
+		EXPECT_EQ(comb_feat->get_subfeature_weight(i), i);
+		EXPECT_EQ(subfeat_weights[i], i);
+	}
+
+	// test insert_feature_obj
+	auto* inserted_feat = new CDenseFeatures<float64_t>();
+	comb_feat->insert_feature_obj(inserted_feat, insert_pos);
+	comb_feat->set_subfeature_weight(10, -1);
+	for (index_t i = 0; i < insert_pos; i++)
+	{
+		EXPECT_EQ(comb_feat->get_subfeature_weight(i), i);
+	}
+	EXPECT_EQ(comb_feat->get_subfeature_weight(insert_pos), -1);
+	for (index_t i = insert_pos+1; i < num_subfeats; i++)
+	{
+		EXPECT_EQ(comb_feat->get_subfeature_weight(i), i - 1);
+	}
+
 	SG_UNREF(comb_feat);
 }
