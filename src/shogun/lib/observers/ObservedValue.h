@@ -9,27 +9,29 @@
 
 #include <shogun/base/SGObject.h>
 
-namespace shogun {
+namespace shogun
+{
 
-	template<class T>
+	template <class T>
 	class ObservedValueTemplated;
 
 	/**
- 	* Observed value which is emitted by algorithms.
- 	*/
-	class ObservedValue : public CSGObject {
+	* Observed value which is emitted by algorithms.
+	*/
+	class ObservedValue : public CSGObject
+	{
 	public:
 		/**
 		 * Constructor
 		 * @param step step
 		 * @param name name of the observed value
 		 */
-		ObservedValue(const int64_t step, const std::string &name);
+		ObservedValue(const int64_t step, const std::string& name);
 
 		/**
 		 * Destructor
 		 */
-		~ObservedValue() {};
+		~ObservedValue(){};
 
 #ifndef SWIG
 
@@ -37,14 +39,16 @@ namespace shogun {
 		* Return a any version of the stored type.
 		* @return the any value.
 		*/
-		virtual const Any& get_any() const {
+		virtual const Any& get_any() const
+		{
 			return m_any_value;
 		}
 
 #endif
 
 		/** @return object name */
-		virtual const char *get_name() const {
+		virtual const char* get_name() const
+		{
 			return "ObservedValue";
 		}
 
@@ -58,4 +62,4 @@ namespace shogun {
 	};
 }
 
-#endif //SHOGUN_OBSERVEDVALUE_H
+#endif // SHOGUN_OBSERVEDVALUE_H

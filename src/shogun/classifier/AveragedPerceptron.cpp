@@ -8,8 +8,8 @@
 #include <shogun/classifier/AveragedPerceptron.h>
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 

@@ -46,7 +46,8 @@ class ObservedValue;
 class ParameterObserver;
 class CDynamicObjectArray;
 
-template <class T> class ObservedValueTemplated;
+template <class T>
+class ObservedValueTemplated;
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -141,13 +142,13 @@ public:
 	typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
 	/** Definition of observable */
 	typedef rxcpp::observable<Some<ObservedValue>,
-			rxcpp::dynamic_observable<Some<ObservedValue>>>
-			SGObservable;
+		                      rxcpp::dynamic_observable<Some<ObservedValue>>>
+		SGObservable;
 	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
-			Some<ObservedValue>,
-			rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
-			SGSubscriber;
+		Some<ObservedValue>,
+		rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
+		SGSubscriber;
 
 	/** default constructor */
 	CSGObject();
@@ -378,8 +379,8 @@ public:
 			if (!parameter_value.cloneable())
 			{
 				SG_ERROR(
-						"Cannot put parameter %s::%s.\n", get_name(),
-						_tag.name().c_str());
+					"Cannot put parameter %s::%s.\n", get_name(),
+					_tag.name().c_str());
 			}
 			try
 			{
@@ -388,10 +389,10 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-						"Cannot put parameter %s::%s of type %s, incompatible "
-								"provided type %s.\n",
-						get_name(), _tag.name().c_str(), exc.actual().c_str(),
-						exc.expected().c_str());
+					"Cannot put parameter %s::%s of type %s, incompatible "
+					"provided type %s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str());
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
@@ -399,11 +400,10 @@ public:
 		else
 		{
 			SG_ERROR(
-					"Parameter %s::%s does not exist.\n", get_name(),
-					_tag.name().c_str());
+				"Parameter %s::%s does not exist.\n", get_name(),
+				_tag.name().c_str());
 		}
 	}
-
 
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
@@ -1072,7 +1072,7 @@ protected:
 	 * Observe a parameter value, given a pointer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(ObservedValue * value) const;
+	void observe(ObservedValue* value) const;
 
 	/**
 	 * Observe a parameter value given custom properties for the Any.
@@ -1087,12 +1087,14 @@ protected:
 	template <class T>
 	void observe(
 		const int64_t step, const std::string& name, const T& value,
-		const AnyParameterProperties properties) const;
+		const AnyParameterProperties properties) const
 	{
 		// If there are no observers attached, do not create/emit anything.
-		if (get_num_subscriptions() == 0) return;
+		if (get_num_subscriptions() == 0)
+			return;
 
-		auto obs = new ObservedValueTemplated<T>(step, name, static_cast<T>(clone_utils::clone(value)), properties);
+		auto obs = new ObservedValueTemplated<T>(
+			step, name, static_cast<T>(clone_utils::clone(value)), properties);
 		this->observe(obs);
 	}
 
@@ -1110,8 +1112,9 @@ protected:
 		const int64_t step, const std::string& name,
 		const std::string& description, const T value) const
 	{
-		this->observe(step, name, value,
-					  AnyParameterProperties(description, ParameterProperties::READONLY));
+		this->observe(
+			step, name, value,
+			AnyParameterProperties(description, ParameterProperties::READONLY));
 	}
 
 	/**
@@ -1126,7 +1129,9 @@ protected:
 	{
 		auto param = this->get_parameter(BaseTag(name));
 		auto cloned = any_cast<T>(param.get_value());
-		this->observe(step, name, static_cast<T>(clone_utils::clone(cloned)), param.get_properties());
+		this->observe(
+			step, name, static_cast<T>(clone_utils::clone(cloned)),
+			param.get_properties());
 	}
 
 	/**
