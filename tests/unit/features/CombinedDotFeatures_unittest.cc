@@ -199,3 +199,53 @@ TEST(CombinedDotFeaturesTest, feature_weights)
 
 	SG_UNREF(comb_feat);
 }
+
+TEST(CombinedDotFeaturesTest, dense_dot_range)
+{
+	index_t num_subfeats = 20;
+	index_t num_vectors = 10;
+	index_t dim = 10;
+	float64_t b = 23;
+
+	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+
+	// first vector is [0, 1, ..., dim-1]
+	// second vector is [0, 2,..., 2*dim-2], and so on
+	SGMatrix<float64_t> data(dim, num_vectors);
+	for(index_t r = 0; r < dim; r++)
+		for(index_t c = 0; c < num_vectors; c++)
+			data(r, c) = r * (c + 1);
+	
+	// the stacked ith vector is the same as the ith vector but
+	// repeated num_subfeats times
+	for (index_t i = 0; i < num_subfeats; i++)
+	{
+		comb_feat->append_feature_obj(new CDenseFeatures<float64_t>(data));
+		comb_feat->set_subfeature_weight(i, i);
+	}
+
+	float64_t* output = new float64_t[num_vectors];
+	float64_t* alphas = new float64_t[num_vectors];
+	std::iota(alphas, alphas + num_vectors, 0);
+
+	// vec = [0, 1, ..., dim-1] repeated num_subfets times
+	float64_t* vec = new float64_t[dim * num_subfeats];
+	for(index_t i = 0; i < num_subfeats; i++)
+		std::iota(vec + i*dim, vec + (i+1)*dim, 0);
+
+	comb_feat->dense_dot_range(
+	    output, 0, num_vectors, alphas, vec, dim * num_subfeats, b);
+	// output[i] = alphas[i] * subfeat_weight_sum * (feature_vector(i) dot vec)
+	//			 = alphas[i] * subfeat_weight_sum * sum_{j = 0}^{j = dim-1} j^2
+	float64_t sum = (dim / 6.0) * (dim - 1) * (2 * dim - 1);
+	float64_t weights_sum = num_subfeats * (num_subfeats - 1) / 2.0;
+	for (index_t i = 0; i < num_vectors; i++)
+	{
+		EXPECT_EQ(output[i], alphas[i] * (i + 1) * weights_sum * sum + b);
+	}
+
+	SG_UNREF(comb_feat);
+	delete[] output;
+	delete[] alphas;
+	delete[] vec;
+}
