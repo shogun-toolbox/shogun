@@ -7,7 +7,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 
-
 using namespace shogun;
 
 TEST(ObservedValue, set_correct)
