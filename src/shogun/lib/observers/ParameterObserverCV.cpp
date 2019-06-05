@@ -35,8 +35,8 @@
 
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
-#include <shogun/lib/observers/ParameterObserverCV.h>
 #include <shogun/lib/observers/ObservedValue.h>
+#include <shogun/lib/observers/ParameterObserverCV.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/util/converters.h>
