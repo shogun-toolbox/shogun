@@ -169,7 +169,8 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	//========================================
 	int32_t nloop=0;
 	auto pb = SG_PROGRESS(range(0, max_active_allowed));
-	while (m_num_active < max_active_allowed && max_corr/n_vec > m_epsilon && !stop_cond)
+	while (m_num_active < max_active_allowed && max_corr / n_vec > m_epsilon &&
+	       !stop_cond)
 	{
 		COMPUTATION_CONTROLLERS
 
@@ -294,11 +295,14 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 				// stopping with interpolated beta
 				stop_cond = true;
 				lasso_cond = false;
-				ST l1_prev = (ST) SGVector<ST>::onenorm(m_beta_path_t[nloop].vector, n_fea);
-				ST s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
+				ST l1_prev = (ST)SGVector<ST>::onenorm(
+				    m_beta_path_t[nloop].vector, n_fea);
+				ST s = (m_max_l1_norm - l1_prev) / (l1 - l1_prev);
 
-				typename SGVector<ST>::EigenVectorXtMap map_beta(beta.vector, n_fea);
-				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(m_beta_path_t[nloop].vector, n_fea);
+				typename SGVector<ST>::EigenVectorXtMap map_beta(
+				    beta.vector, n_fea);
+				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(
+				    m_beta_path_t[nloop].vector, n_fea);
 				map_beta = (1-s)*map_beta_prev + s*map_beta;
 			}
 		}
@@ -335,11 +339,12 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	pb.complete();
 
 	//copy m_beta_path_t (of type ST) into m_beta_path
-	//do also a cast to float64_t
-	for(index_t i = 0; i < m_beta_path_t.size(); ++i)
+	// do also a cast to float64_t
+	for (index_t i = 0; i < m_beta_path_t.size(); ++i)
 	{
 		SGVector<float64_t> va(m_beta_path_t[i].vlen);
-		for(index_t p = 0; p < m_beta_path_t[i].vlen; ++p){
+		for (index_t p = 0; p < m_beta_path_t[i].vlen; ++p)
+		{
 			va.set_element(static_cast<float64_t>(m_beta_path_t[i][p]), p);
 		}
 		m_beta_path.push_back(va);
