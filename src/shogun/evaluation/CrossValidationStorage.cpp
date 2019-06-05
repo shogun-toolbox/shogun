@@ -90,7 +90,8 @@ void CrossValidationFoldStorage::print_result()
 {
 }
 
-CSGObject *CrossValidationFoldStorage::create_empty() const {
+CSGObject* CrossValidationFoldStorage::create_empty() const
+{
 	auto clone = new CrossValidationFoldStorage();
 	SG_REF(clone)
 	return clone;
@@ -141,7 +142,8 @@ void CrossValidationStorage::print_result()
 {
 }
 
-CSGObject *CrossValidationStorage::create_empty() const {
+CSGObject* CrossValidationStorage::create_empty() const
+{
 	auto clone = new CrossValidationStorage();
 	SG_REF(clone)
 	return clone;
