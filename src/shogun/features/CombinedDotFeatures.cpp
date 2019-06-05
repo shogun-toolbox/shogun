@@ -141,14 +141,14 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	uint32_t offs=0;
 	int32_t num=stop-start;
 	SGVector<float64_t> tmp(num);
-	std::fill(output, output+num, 0);
+	std::fill(output, output+num, b);
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
 
-		f->dense_dot_range(tmp.vector, start, stop, alphas, vec+offs, f_dim, b);
+		f->dense_dot_range(tmp.vector, start, stop, alphas, vec+offs, f_dim, 0);
 		for (int32_t i=0; i<num; i++)
 			output[i] += get_subfeature_weight(f_idx) * tmp[i];
 
