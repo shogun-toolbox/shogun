@@ -73,13 +73,12 @@ namespace shogun
 		};
 
 	protected:
-
 		/**
 		 * Overridden create_empty() since this class
 		 * has no create() method inside class_list.h
 		 * @return an empty CrossValidationFoldStorage object SG_REF'ed
 		 */
-		virtual CSGObject *create_empty() const;
+		virtual CSGObject* create_empty() const;
 
 		/** Current run index is written here */
 		index_t m_current_run_index;
@@ -139,13 +138,12 @@ namespace shogun
 		virtual void append_fold_result(CrossValidationFoldStorage* result);
 
 	protected:
-
 		/**
 		 * Overridden create_empty() since this class
 		 * has no create() method inside class_list.h
 		 * @return an empty CrossValidationStorage object SG_REF'ed
 		 */
-		virtual CSGObject *create_empty() const;
+		virtual CSGObject* create_empty() const;
 
 		/** number of runs is initialised here */
 		index_t m_num_runs;

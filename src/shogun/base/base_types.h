@@ -70,8 +70,10 @@ namespace shogun
 	};
 
 	// General type traits to recognize SGMatrix and SGVectors.
-	template <typename T> class SGMatrix;
-	template <typename T> class SGVector;
+	template <typename T>
+	class SGMatrix;
+	template <typename T>
+	class SGVector;
 
 	template <typename>
 	struct is_sg_vector : std::false_type
