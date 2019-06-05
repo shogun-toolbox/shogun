@@ -135,9 +135,16 @@ void CKMeansBase::compute_cluster_variances()
 void CKMeansBase::initialize_training(CFeatures* data)
 {
 	REQUIRE(distance, "Distance is not provided\n")
-	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)\n")
-	REQUIRE(max_iter > 0, "The number of iterations provided (%i) must be greater than 0\n", max_iter)
-	REQUIRE(k > 0, "The number of clusters provided (%i) must be greater than 0\n", k)
+	REQUIRE(
+	    distance->get_feature_type() == F_DREAL,
+	    "Distance's features type (%d) should be of type REAL (%d)\n")
+	REQUIRE(
+	    max_iter > 0,
+	    "The number of iterations provided (%i) must be greater than 0\n",
+	    max_iter)
+	REQUIRE(
+	    k > 0, "The number of clusters provided (%i) must be greater than 0\n",
+	    k)
 
 	if (data)
 		distance->init(data, data);
@@ -163,11 +170,13 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	/* cluster_centers=zeros(dimensions, k) ; */
 	memset(mus.matrix, 0, sizeof(float64_t)*centers_size);
 
-
-	if (mus_initial.matrix) {
+	if (mus_initial.matrix)
+	{
 		mus = mus_initial;
 		observe<SGMatrix<float64_t>>(0, "mus");
-	} else {
+	}
+	else
+	{
 		set_random_centers();
 	}
 	SG_UNREF(lhs);

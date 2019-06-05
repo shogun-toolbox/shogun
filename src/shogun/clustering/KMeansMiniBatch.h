@@ -44,7 +44,10 @@ class CKMeansMiniBatch : public CKMeansBase
 		virtual ~CKMeansMiniBatch();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KMeansMiniBatch"; }
+		virtual const char* get_name() const
+		{
+			return "KMeansMiniBatch";
+		}
 
 	protected:
 
