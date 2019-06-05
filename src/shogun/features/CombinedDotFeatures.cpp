@@ -167,14 +167,15 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 	uint32_t offs=0;
 
 	SGVector<float64_t> tmp(num);
-	std::fill(output, output+num, 0);
+	std::fill(output, output + num, b);
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
 
-		f->dense_dot_range_subset(sub_index, num, tmp.vector, alphas, vec+offs, f_dim, b);
+		f->dense_dot_range_subset(
+			sub_index, num, tmp.vector, alphas, vec+offs, f_dim, 0);
 		for (int32_t i=0; i<num; i++)
 			output[i] += get_subfeature_weight(f_idx) * tmp[i];
 
@@ -204,7 +205,7 @@ void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 	combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
 
 	it->f=get_feature_obj(0);
-	it->iterator_idx=0;
+	it->iterator_idx = 0;
 	it->iterator=it->f->get_feature_iterator(vector_index);
 	it->vector_index=vector_index;
 	return it;
@@ -231,7 +232,7 @@ bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, vo
 
 		it->f->free_feature_iterator(it->iterator);
 		SG_UNREF(it->f);
-		it->f=get_feature_obj(it->iterator_idx);
+		it->f = get_feature_obj(it->iterator_idx);
 		if (it->f)
 			it->iterator=it->f->get_feature_iterator(it->vector_index);
 		else

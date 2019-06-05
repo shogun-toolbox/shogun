@@ -212,10 +212,10 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 	// first vector is [0, 1, ..., dim-1]
 	// second vector is [0, 2,..., 2*dim-2], and so on
 	SGMatrix<float64_t> data(dim, num_vectors);
-	for(index_t r = 0; r < dim; r++)
-		for(index_t c = 0; c < num_vectors; c++)
+	for (index_t r = 0; r < dim; r++)
+		for (index_t c = 0; c < num_vectors; c++)
 			data(r, c) = r * (c + 1);
-	
+
 	// the stacked ith vector is the same as the ith vector but
 	// repeated num_subfeats times
 	for (index_t i = 0; i < num_subfeats; i++)
@@ -230,8 +230,8 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 
 	// vec = [0, 1, ..., dim-1] repeated num_subfets times
 	float64_t* vec = new float64_t[dim * num_subfeats];
-	for(index_t i = 0; i < num_subfeats; i++)
-		std::iota(vec + i*dim, vec + (i+1)*dim, 0);
+	for (index_t i = 0; i < num_subfeats; i++)
+		std::iota(vec + i * dim, vec + (i + 1) * dim, 0);
 
 	comb_feat->dense_dot_range(
 	    output, 0, num_vectors, alphas, vec, dim * num_subfeats, b);
@@ -259,8 +259,8 @@ TEST(CombinedDotFeaturesTest, add_to_dense_vec)
 	float64_t alpha = 3;
 
 	SGMatrix<float64_t> data(dim, num_vectors);
-		for (int j = 0; j < num_vectors * dim; j++)
-			data[j] = (j%2 == 0)? j : -j;
+	for (int j = 0; j < num_vectors * dim; j++)
+		data[j] = (j % 2 == 0) ? j : -j;
 
 	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
 	for (index_t i = 0; i < num_subfeats; i++)
@@ -273,15 +273,17 @@ TEST(CombinedDotFeaturesTest, add_to_dense_vec)
 	float64_t* vec2 = new float64_t[dim * num_subfeats];
 	std::iota(vec, vec + dim * num_subfeats, 0);
 	std::iota(vec2, vec2 + dim * num_subfeats, 0);
-	comb_feat->add_to_dense_vec(alpha, vec_idx1, vec, dim * num_subfeats, false);
-	comb_feat->add_to_dense_vec(alpha, vec_idx1, vec2, dim * num_subfeats, true);
-	
+	comb_feat->add_to_dense_vec(
+	    alpha, vec_idx1, vec, dim * num_subfeats, false);
+	comb_feat->add_to_dense_vec(
+	    alpha, vec_idx1, vec2, dim * num_subfeats, true);
+
 	for (index_t i = 0; i < dim * num_subfeats; i++)
 	{
-		SCOPED_TRACE(i);
-		float64_t subfeat_weight = comb_feat->get_subfeature_weight(i/dim);
-		EXPECT_EQ(vec[i], i + alpha * subfeat_weight * data(int(i % dim), vec_idx1));
-		EXPECT_EQ(vec2[i], i + alpha * subfeat_weight * std::abs(data(int(i % dim), vec_idx1)));
+		float64_t subfeat_weight = comb_feat->get_subfeature_weight(i / dim);
+		float64_t feat_val = data(int(i % dim), vec_idx1);
+		EXPECT_EQ(vec[i], i + alpha * subfeat_weight * feat_val);
+		EXPECT_EQ(vec2[i], i + alpha * subfeat_weight * std::abs(feat_val));
 	}
 
 	SG_UNREF(comb_feat);
