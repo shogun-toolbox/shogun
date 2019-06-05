@@ -55,21 +55,24 @@ CParameterObserverCV::~CParameterObserverCV()
 
 void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 {
-	try {
+	try
+	{
 		CrossValidationStorage* recalled_value =
-				dynamic_cast<CrossValidationStorage*>(
-						value.first->get(value.first->get<std::string>("name")));
+		    dynamic_cast<CrossValidationStorage*>(
+		        value.first->get(value.first->get<std::string>("name")));
 		SG_REF(recalled_value);
 
 		/* Print information on screen if enabled*/
 		if (m_verbose)
 			print_observed_value(recalled_value);
-
-	} catch (ShogunException e)
+	}
+	catch (ShogunException e)
 	{
-		SG_PRINT("%s: Received an observed value named %s which is a not a CrossValidationStorage object"
-						 ", therefore it was ignored.", this->get_name(),
-				 value.first->get<std::string>("name").c_str())
+		SG_PRINT(
+		    "%s: Received an observed value named %s which is a not a "
+		    "CrossValidationStorage object"
+		    ", therefore it was ignored.",
+		    this->get_name(), value.first->get<std::string>("name").c_str())
 	}
 }
 

@@ -111,8 +111,8 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 	set_w(w);
 	set_bias(-0.5 * sign * (m_neg + m_pos));
 
-	observe<SGVector<float64_t >>(0,"w");
-	observe<float64_t>(1,"bias");
+	observe<SGVector<float64_t>>(0, "w");
+	observe<float64_t>(1, "bias");
 
 	return true;
 }
@@ -155,12 +155,13 @@ bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 		w[i] = (float64_t)w_st[i];
 
 	set_w(w);
-	set_bias(static_cast<float64_t>(
-					 0.5 * (linalg::dot(w_neg, class_mean[0]) -
-							linalg::dot(w_pos, class_mean[1]))));
+	set_bias(
+	    static_cast<float64_t>(
+	        0.5 * (linalg::dot(w_neg, class_mean[0]) -
+	               linalg::dot(w_pos, class_mean[1]))));
 
-	observe<SGVector<float64_t >>(0,"w");
-	observe<float64_t>(1,"bias");
+	observe<SGVector<float64_t>>(0, "w");
+	observe<float64_t>(1, "bias");
 
 	return true;
 }
