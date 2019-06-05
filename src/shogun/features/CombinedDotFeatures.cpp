@@ -204,7 +204,7 @@ void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 	combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
 
 	it->f=get_feature_obj(0);
-	iterator_idx=0;
+	it->iterator_idx=0;
 	it->iterator=it->f->get_feature_iterator(vector_index);
 	it->vector_index=vector_index;
 	return it;
@@ -219,10 +219,11 @@ bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, vo
 	{
 		if (it->f->get_next_feature(index, value, it->iterator))
 		{
+			value *= get_subfeature_weight(it->iterator_idx);
 			return true;
 		}
 
-		if (++iterator_idx == get_num_feature_obj())
+		if (++(it->iterator_idx) == get_num_feature_obj())
 		{
 			index = -1;
 			break;
@@ -230,7 +231,7 @@ bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, vo
 
 		it->f->free_feature_iterator(it->iterator);
 		SG_UNREF(it->f);
-		it->f=get_feature_obj(iterator_idx);
+		it->f=get_feature_obj(it->iterator_idx);
 		if (it->f)
 			it->iterator=it->f->get_feature_iterator(it->vector_index);
 		else

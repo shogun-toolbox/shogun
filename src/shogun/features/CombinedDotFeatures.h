@@ -164,6 +164,8 @@ class CCombinedDotFeatures : public CDotFeatures
 			CDotFeatures* f;
 			/** pointer to combined feature iterator */
 			void* iterator;
+			/// idx for iterator
+			int32_t iterator_idx;
 			/** the index of the vector over whose components to iterate over */
 			int32_t vector_index;
 		};
@@ -284,8 +286,6 @@ class CCombinedDotFeatures : public CDotFeatures
 		CDynamicObjectArray* feature_array;
 		std::vector<float64_t> feature_weights;
 		static const float64_t initial_weight;
-		/// idx for iterator
-		int32_t iterator_idx;
 		/// total number of vectors
 		int32_t num_vectors;
 		/// total number of dimensions
