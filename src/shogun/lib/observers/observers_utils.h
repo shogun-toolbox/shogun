@@ -41,4 +41,4 @@ namespace shogun
 	}
 }
 
-#endif //SHOGUN_OBSERVEDVALUEUTILS_H
+#endif // SHOGUN_OBSERVEDVALUEUTILS_H

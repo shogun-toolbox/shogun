@@ -9,14 +9,16 @@
 
 #include <shogun/lib/observers/ObservedValue.h>
 
-namespace shogun {
+namespace shogun
+{
 
 	/**
- 	* Templated specialisation of ObservedValue that stores the actual data.
- 	* @tparam T the type of the observed value
- 	*/
-	template<class T>
-	class ObservedValueTemplated : public ObservedValue {
+	* Templated specialisation of ObservedValue that stores the actual data.
+	* @tparam T the type of the observed value
+	*/
+	template <class T>
+	class ObservedValueTemplated : public ObservedValue
+	{
 
 	public:
 		/**
@@ -26,12 +28,14 @@ namespace shogun {
 		 * @param value the observed value
 		 */
 		ObservedValueTemplated(
-				const int64_t step, const std::string &name,
-				const std::string &description, const T value)
-				: ObservedValue(step, name), m_observed_value(value) {
+		    const int64_t step, const std::string& name,
+		    const std::string& description, const T value)
+		    : ObservedValue(step, name), m_observed_value(value)
+		{
 			this->watch_param(
-					name, &m_observed_value,
-					AnyParameterProperties(description, ParameterProperties::READONLY));
+			    name, &m_observed_value,
+			    AnyParameterProperties(
+			        description, ParameterProperties::READONLY));
 			m_any_value = make_any(m_observed_value);
 		}
 
@@ -43,9 +47,10 @@ namespace shogun {
 		 * @param properties properties of that observed value
 		 */
 		ObservedValueTemplated(
-				const int64_t step, const std::string &name, const T value,
-				const AnyParameterProperties properties)
-				: ObservedValue(step, name), m_observed_value(value) {
+		    const int64_t step, const std::string& name, const T value,
+		    const AnyParameterProperties properties)
+		    : ObservedValue(step, name), m_observed_value(value)
+		{
 			this->watch_param(name, &m_observed_value, properties);
 			m_any_value = make_any(m_observed_value);
 		}
@@ -53,7 +58,7 @@ namespace shogun {
 		/**
 		 * Destructor
 		 */
-		~ObservedValueTemplated() {};
+		~ObservedValueTemplated(){};
 
 	private:
 		/**
@@ -61,6 +66,5 @@ namespace shogun {
 		 */
 		T m_observed_value;
 	};
-
 }
-#endif //SHOGUN_OBSERVEDVALUETEMPLATED_H
+#endif // SHOGUN_OBSERVEDVALUETEMPLATED_H
