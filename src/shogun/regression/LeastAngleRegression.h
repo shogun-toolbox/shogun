@@ -131,7 +131,8 @@ public:
 	SGVector<float64_t> get_w_for_var(int32_t num_var)
 	{
 		SGVector<float64_t> w = get_w();
-		return SGVector<float64_t>(m_beta_path[m_beta_idx[num_var]].vector, w.vlen, false);
+		return SGVector<float64_t>(
+			m_beta_path[m_beta_idx[num_var]].vector, w.vlen, false);
 	}
 
 	/** get classifier type

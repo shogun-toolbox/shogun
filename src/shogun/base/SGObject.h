@@ -27,10 +27,10 @@
 #include <shogun/lib/tag.h>
 
 #include <map>
+#include <shogun/util/clone.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <shogun/util/clone.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -1040,11 +1040,13 @@ protected:
 	 * @param step time step
 	 * @param name name of the observed value
 	 * @param value observed value
-	 * @param properties AnyParameterProperties used to register the observed value.
+	 * @param properties AnyParameterProperties used to register the observed
+	 * value.
 	 */
 	template <class T>
-	void observe(const int64_t step, const std::string& name, const T& value,
-						  const AnyParameterProperties properties) const;
+	void observe(
+		const int64_t step, const std::string& name, const T& value,
+		const AnyParameterProperties properties) const;
 
 	/**
 	 * Observe a parameter value given some information.
@@ -1361,13 +1363,16 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
 }
 
 template <class T>
-void CSGObject::observe(const int64_t step, const std::string &name, const T& value,
-								 const AnyParameterProperties properties) const
+void CSGObject::observe(
+	const int64_t step, const std::string& name, const T& value,
+	const AnyParameterProperties properties) const
 {
 	// If there are no observers attached, do not create/emit anything.
-	if (get_num_subscriptions() == 0) return;
-	
-	auto obs = some<ObservedValueTemplated<T>>(step, name, static_cast<T>(clone_utils::clone(value)), properties);
+	if (get_num_subscriptions() == 0)
+		return;
+
+	auto obs = some<ObservedValueTemplated<T>>(
+		step, name, static_cast<T>(clone_utils::clone(value)), properties);
 	this->observe(obs);
 }
 
@@ -1376,8 +1381,9 @@ void CSGObject::observe(
 	const int64_t step, const std::string& name, const std::string& description,
 	const T value) const
 {
-	this->observe(step, name, value,
-						   AnyParameterProperties(description, ParameterProperties::READONLY));
+	this->observe(
+		step, name, value,
+		AnyParameterProperties(description, ParameterProperties::READONLY));
 }
 
 template <class T>
@@ -1387,7 +1393,5 @@ void CSGObject::observe(const int64_t step, const std::string& name) const
 	this->observe(
 		step, name, any_cast<T>(param.get_value()), param.get_properties());
 }
-
-
 }
 #endif // __SGOBJECT_H__
