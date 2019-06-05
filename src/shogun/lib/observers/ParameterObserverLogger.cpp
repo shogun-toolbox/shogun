@@ -5,6 +5,7 @@
  *
  */
 
+#include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/observers/ParameterObserverLogger.h>
 #include <shogun/lib/type_case.h>
@@ -39,37 +40,18 @@ void CParameterObserverLogger::on_next_impl(const TimedObservedValue& value)
 	auto name = value.first->get<std::string>("name");
 	auto any_val = value.first->get_any();
 
-	auto pf_n = [&](auto v) {
-		SG_PRINT(
-		    "[%lu] Received a value called \"%s\" which contains: %s\n",
-		    convert_to_millis(value.second), name.c_str(),
-		    std::to_string(v).c_str());
-	};
+	std::stringstream stream;
+	ToStringVisitor visitor(&stream);
 
-	auto pf_sgvector = [&](auto v) {
-		SG_PRINT(
-		    "[%lu] Received a vector called \"%s\" which contains: %s\n",
-		    convert_to_millis(value.second), name.c_str(),
-		    v.to_string().c_str());
-	};
-
-	auto pf_sgmatrix = [&](auto v) {
-		SG_PRINT(
-		    "[%lu] Received a matrix called \"%s\" which contains: %s\n",
-		    convert_to_millis(value.second), name.c_str(),
-		    v.to_string().c_str());
-	};
-
-	try
+	if (any_val.visitable())
 	{
-		sg_any_dispatch(
-		    any_val, sg_all_typemap, pf_n, pf_sgvector, pf_sgmatrix);
+		any_val.visit(&visitor);
+	} else {
+		stream << "{function}";
 	}
-	catch (ShogunException e)
-	{
-		SG_PRINT(
-		    "[%lu] Received a value called \"%s\" which contains: %s\n",
-		    convert_to_millis(value.second), name.c_str(),
-		    value.first->to_string().c_str())
-	}
+
+	SG_PRINT(
+			"[%lu] Received a value called \"%s\" which contains: %s\n",
+			convert_to_millis(value.second), name.c_str(),
+			stream.str().c_str());
 }
