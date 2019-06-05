@@ -249,3 +249,42 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 	delete[] alphas;
 	delete[] vec;
 }
+
+TEST(CombinedDotFeaturesTest, add_to_dense_vec)
+{
+	index_t num_subfeats = 20;
+	index_t num_vectors = 10;
+	index_t dim = 10;
+	index_t vec_idx1 = 5;
+	float64_t alpha = 3;
+
+	SGMatrix<float64_t> data(dim, num_vectors);
+		for (int j = 0; j < num_vectors * dim; j++)
+			data[j] = (j%2 == 0)? j : -j;
+
+	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+	for (index_t i = 0; i < num_subfeats; i++)
+	{
+		comb_feat->append_feature_obj(new CDenseFeatures<float64_t>(data));
+		comb_feat->set_subfeature_weight(i, i);
+	}
+
+	float64_t* vec = new float64_t[dim * num_subfeats];
+	float64_t* vec2 = new float64_t[dim * num_subfeats];
+	std::iota(vec, vec + dim * num_subfeats, 0);
+	std::iota(vec2, vec2 + dim * num_subfeats, 0);
+	comb_feat->add_to_dense_vec(alpha, vec_idx1, vec, dim * num_subfeats, false);
+	comb_feat->add_to_dense_vec(alpha, vec_idx1, vec2, dim * num_subfeats, true);
+	
+	for (index_t i = 0; i < dim * num_subfeats; i++)
+	{
+		SCOPED_TRACE(i);
+		float64_t subfeat_weight = comb_feat->get_subfeature_weight(i/dim);
+		EXPECT_EQ(vec[i], i + alpha * subfeat_weight * data(int(i % dim), vec_idx1));
+		EXPECT_EQ(vec2[i], i + alpha * subfeat_weight * std::abs(data(int(i % dim), vec_idx1)));
+	}
+
+	SG_UNREF(comb_feat);
+	delete[] vec;
+	delete[] vec2;
+}
