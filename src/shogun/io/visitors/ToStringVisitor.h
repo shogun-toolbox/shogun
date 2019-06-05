@@ -10,6 +10,8 @@
 
 #include <shogun/base/range.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 
 #include <sstream>
 
