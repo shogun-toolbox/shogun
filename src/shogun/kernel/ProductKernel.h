@@ -224,9 +224,6 @@ class CProductKernel : public CKernel
 				if (!get_num_subkernels())
 				{
 					initialized=true;
-#ifdef USE_SVMLIGHT
-					cache_reset();
-#endif //USE_SVMLIGHT
 				}
 			}
 			else
@@ -241,9 +238,6 @@ class CProductKernel : public CKernel
 				if (!get_num_subkernels())
 				{
 					initialized=true;
-#ifdef USE_SVMLIGHT
-					cache_reset();
-#endif //USE_SVMLIGHT
 				}
 			}
 			else

@@ -39,6 +39,7 @@
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CachedKernel.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>

@@ -61,22 +61,12 @@ void CCommUlongStringKernel::remove_lhs()
 {
 	delete_optimization();
 
-#ifdef SVMLIGHT
-	if (lhs)
-		cache_reset();
-#endif
-
 	lhs = NULL ;
 	rhs = NULL ;
 }
 
 void CCommUlongStringKernel::remove_rhs()
 {
-#ifdef SVMLIGHT
-	if (rhs)
-		cache_reset();
-#endif
-
 	rhs = lhs;
 }
 

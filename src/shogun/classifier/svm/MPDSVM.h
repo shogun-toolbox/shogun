@@ -13,6 +13,7 @@
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/kernel/CachedKernel.h>
 
 namespace shogun
 {

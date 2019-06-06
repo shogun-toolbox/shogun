@@ -46,6 +46,8 @@ CSVMLightOneClass::CSVMLightOneClass()
 
 bool CSVMLightOneClass::train_machine(CFeatures* data)
 {
+	init_cache();
+
 	//certain setup params
 	mkl_converged=false;
 	verbosity=1 ;
@@ -115,16 +117,13 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
+		for (auto& kn : cached_subkernels)
 		{
-			CKernel* kn =  ((CCombinedKernel*) kernel)->get_kernel(k_idx);
-			// allocate kernel cache but clean up beforehand
-			kn->resize_kernel_cache(kn->get_cache_size());
-			SG_UNREF(kn);
+			kn.resize_kernel_cache(kn->get_cache_size());
 		}
 	}
 
-	kernel->resize_kernel_cache(kernel->get_cache_size());
+	cached_kernel.resize_kernel_cache(kernel->get_cache_size());
 
 	// train the svm
 	svm_learn();
@@ -146,7 +145,7 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 	}
 
 	if (use_kernel_cache)
-		kernel->kernel_cache_cleanup();
+		cached_kernel.kernel_cache_cleanup();
 
 	return true ;
 }

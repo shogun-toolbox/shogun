@@ -71,6 +71,8 @@ EMachineType CSVRLight::get_classifier_type()
 
 bool CSVRLight::train_machine(CFeatures* data)
 {
+	init_cache();
+
 	//certain setup params
 	verbosity=1;
 	init_margin=0.15;
@@ -185,18 +187,11 @@ void CSVRLight::svr_learn()
   totdoc*=2;
 
   //prepare kernel cache for regression (i.e. cachelines are twice of current size)
-  kernel->resize_kernel_cache( kernel->get_cache_size(), true);
+  cached_kernel.resize_kernel_cache(kernel->get_cache_size(), true);
 
-  if (kernel->get_kernel_type() == K_COMBINED)
+  for (auto& kn : cached_subkernels)
   {
-	  CCombinedKernel* k = (CCombinedKernel*) kernel;
-
-	  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
-	  {
-		  CKernel* kn = k->get_kernel(k_idx);
-		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
-		  SG_UNREF(kn);
-	  }
+  	kn.resize_kernel_cache( kernel->get_cache_size(), true);
   }
 
   timing_profile.time_kernel=0;
@@ -252,7 +247,7 @@ void CSVRLight::svr_learn()
 	model->alpha[0]=0;
 	model->totdoc=totdoc;
 
-	model->kernel=kernel;
+	model->kernel=&cached_kernel;
 
 	model->sv_num=1;
 	model->loo_error=-1;
@@ -488,7 +483,7 @@ void CSVRLight::update_linear_component(
 		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
-					kernel->get_kernel_row(i,active2dnum,aicache);
+					cached_kernel.get_kernel_row(i,active2dnum,aicache);
 					for(ii=0;(j=active2dnum[ii])>=0;ii++)
 						lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
@@ -512,23 +507,19 @@ void CSVRLight::update_linear_component_mkl(
 	if ((kernel->get_kernel_type()==K_COMBINED) &&
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k = (CCombinedKernel*) kernel;
-
 		int32_t n = 0, i, j ;
 
-		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
+		for(auto& kn : cached_subkernels)
 		{
-			CKernel* kn = k->get_kernel(k_idx);
 			for(i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
 				{
-					kn->get_kernel_row(i,NULL,aicache, true);
+					kn.get_kernel_row(i,NULL,aicache, true);
 					for(j=0;j<num;j++)
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(float64_t)label[i];
 				}
 			}
-			SG_UNREF(kn);
 			n++ ;
 		}
 	}
@@ -724,7 +715,7 @@ void CSVRLight::reactivate_inactive_examples(
 		  compute_index(changed,totdoc,changed2dnum);
 
 		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
-			  CKernelMachine::kernel->get_kernel_row(i,inactive2dnum,aicache);
+			  cached_kernel.get_kernel_row(i,inactive2dnum,aicache);
 			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
 				  lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 		  }

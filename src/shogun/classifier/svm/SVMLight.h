@@ -27,6 +27,7 @@
 #ifdef USE_SVMLIGHT
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/lib/common.h>
+#include <shogun/kernel/CachedKernel.h>
 
 namespace shogun
 {
@@ -56,7 +57,7 @@ int32_t    *index;
 /** number of training documents */
 int32_t    totdoc;
 /** kernel */
-CKernel* kernel;
+CachedKernel* kernel;
 
 /* the following values are not written to file */
 /** leave-one-out estimates */
@@ -649,6 +650,8 @@ protected:
 	virtual bool train_machine(CFeatures* data=NULL);
 
  protected:
+  void init_cache();
+
   /** model */
   MODEL* model;
   /** learn parameters */
@@ -685,6 +688,9 @@ protected:
   bool use_kernel_cache;
   /** mkl converged */
   bool mkl_converged;
+
+  CachedKernel cached_kernel;
+  std::vector<CachedKernel> cached_subkernels;
 };
 }
 #endif //USE_SVMLIGHT

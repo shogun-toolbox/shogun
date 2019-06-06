@@ -61,7 +61,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_REACTIVATE_LINADD
 {
-	CKernel* kernel;
+	CachedKernel* kernel;
 	float64_t* lin;
 	float64_t* last_lin;
 	int32_t* active;
@@ -77,12 +77,12 @@ struct S_THREAD_PARAM_SVMLIGHT
 	int32_t start, end;
 	int32_t * active2dnum ;
 	int32_t * docs ;
-	CKernel* kernel ;
+	CachedKernel* kernel ;
 };
 
 struct S_THREAD_PARAM_REACTIVATE_VANILLA
 {
-	CKernel* kernel;
+	CachedKernel* kernel;
 	float64_t* lin;
 	float64_t* aicache;
 	float64_t* a;
@@ -111,7 +111,7 @@ void* CSVMLight::update_linear_component_linadd_helper(void* p)
 	int32_t jj=0, j=0 ;
 
 	for (jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++)
-		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
+		params->lin[j]+=(*params->kernel)->compute_optimized(params->docs[j]);
 
 	return NULL ;
 }
@@ -165,6 +165,25 @@ void CSVMLight::init()
 	mkl_converged=false;
 }
 
+void CSVMLight::init_cache()
+{
+	cached_kernel.set_kernel(kernel);
+	cached_subkernels.clear();
+
+	if(kernel && kernel->get_kernel_type() == K_COMBINED)
+	{
+		auto* combined_kernel = static_cast<CCombinedKernel*>(kernel);
+		index_t num_subkernels = combined_kernel->get_num_kernels();
+		cached_subkernels.reserve(num_subkernels);
+		for (index_t k_idx = 0; k_idx < num_subkernels; k_idx++)
+		{
+			CKernel* kn = combined_kernel->get_kernel(k_idx);
+			cached_subkernels.emplace_back(kn);
+			SG_UNREF(kn);
+		}
+	}
+}
+
 CSVMLight::~CSVMLight()
 {
 
@@ -184,6 +203,8 @@ CSVMLight::~CSVMLight()
 
 bool CSVMLight::train_machine(CFeatures* data)
 {
+	init_cache();
+
 	//certain setup params
 	mkl_converged=false;
 	verbosity=1 ;
@@ -254,19 +275,12 @@ bool CSVMLight::train_machine(CFeatures* data)
 
 	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache)
 
-	if (kernel->get_kernel_type() == K_COMBINED)
+	for(auto& kn : cached_subkernels)
 	{
-
-		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
-		{
-			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
-			// allocate kernel cache but clean up beforehand
-			kn->resize_kernel_cache(kn->get_cache_size());
-			SG_UNREF(kn);
-		}
+		kn.resize_kernel_cache(kn->get_cache_size());
 	}
 
-	kernel->resize_kernel_cache(kernel->get_cache_size());
+	cached_kernel.resize_kernel_cache(kernel->get_cache_size());
 
 	// train the svm
 	svm_learn();
@@ -288,7 +302,7 @@ bool CSVMLight::train_machine(CFeatures* data)
 	}
 
 	if (use_kernel_cache)
-		kernel->kernel_cache_cleanup();
+		cached_kernel.kernel_cache_cleanup();
 
 	return true ;
 }
@@ -379,9 +393,7 @@ void CSVMLight::svm_learn()
 	model->supvec[0]=0;  /* element 0 reserved and empty for now */
 	model->alpha[0]=0;
 	model->totdoc=totdoc;
-
-	model->kernel=kernel;
-
+	model->kernel=&cached_kernel;
 	model->sv_num=1;
 	model->loo_error=-1;
 	model->loo_recall=-1;
@@ -444,34 +456,30 @@ void CSVMLight::svm_learn()
 				(!((CCombinedKernel*) kernel)->get_append_subkernel_weights())
 		   )
 		{
-			CCombinedKernel* k = (CCombinedKernel*) kernel;
-			for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
+			for (auto& kn : cached_subkernels)
 			{
-				CKernel* kn = k->get_kernel(k_idx);
 				for (i=0;i<totdoc;i++)     // fill kernel cache with unbounded SV
 					if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i])
-							&& (kn->kernel_cache_space_available()))
-						kn->cache_kernel_row(i);
+							&& (kn.kernel_cache_space_available()))
+						kn.cache_kernel_row(i);
 
 				for (i=0;i<totdoc;i++)     // fill rest of kernel cache with bounded SV
 					if((alpha[i]==learn_parm->svm_cost[i])
-							&& (kn->kernel_cache_space_available()))
-						kn->cache_kernel_row(i);
-
-				SG_UNREF(kn);
+							&& (kn.kernel_cache_space_available()))
+						kn.cache_kernel_row(i);
 			}
 		}
 		else
 		{
 			for (i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
 				if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i])
-						&& (kernel->kernel_cache_space_available()))
-					kernel->cache_kernel_row(i);
+						&& (cached_kernel.kernel_cache_space_available()))
+					cached_kernel.cache_kernel_row(i);
 
 			for (i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
 				if((alpha[i]==learn_parm->svm_cost[i])
-						&& (kernel->kernel_cache_space_available()))
-					kernel->cache_kernel_row(i);
+						&& (cached_kernel.kernel_cache_space_available()))
+					cached_kernel.cache_kernel_row(i);
 		}
 	}
     compute_index(index,totdoc,index2dnum);
@@ -625,7 +633,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   terminate=0;
 
 
-  kernel->set_time(iteration);  /* for lru cache */
+  cached_kernel.set_time(iteration);  /* for lru cache */
 
   for (i=0;i<totdoc;i++) {    /* various inits */
     chosen[i]=0;
@@ -654,7 +662,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 #endif
 	  COMPUTATION_CONTROLLERS
 	  if(use_kernel_cache)
-		  kernel->set_time(iteration);  /* for lru cache */
+		  cached_kernel.set_time(iteration);  /* for lru cache */
 
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
@@ -769,16 +777,13 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 				  (!((CCombinedKernel*) kernel)->get_append_subkernel_weights())
 			 )
 		  {
-			  CCombinedKernel* k = (CCombinedKernel*) kernel;
-			  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
-			  {
-				  CKernel* kn = k->get_kernel(k_idx);
-				  kn->cache_multiple_kernel_rows(working2dnum, choosenum);
-				  SG_UNREF(kn);
-			  }
+				for(auto& kn : cached_subkernels)
+				{
+					kn.cache_multiple_kernel_rows(working2dnum, choosenum);
+				}
 		  }
 		  else
-			  kernel->cache_multiple_kernel_rows(working2dnum, choosenum);
+			  cached_kernel.cache_multiple_kernel_rows(working2dnum, choosenum);
 	  }
 
 	  if(verbosity>=2) t2=get_runtime();
@@ -894,11 +899,11 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 
 		  inactivenum=totdoc-activenum;
 
-		  if (use_kernel_cache && (supvecnum>kernel->get_max_elems_cache())
-				  && ((kernel->get_activenum_cache()-activenum)>CMath::max((int32_t)(activenum/10),(int32_t) 500))) {
+		  if (use_kernel_cache && (supvecnum>cached_kernel.get_max_elems_cache())
+				  && ((cached_kernel.get_activenum_cache()-activenum)>CMath::max((int32_t)(activenum/10),(int32_t) 500))) {
 
-			  kernel->kernel_cache_shrink(totdoc, CMath::min((int32_t) (kernel->get_activenum_cache()-activenum),
-						  (int32_t) (kernel->get_activenum_cache()-supvecnum)),
+			  cached_kernel.kernel_cache_shrink(totdoc, CMath::min((int32_t) (cached_kernel.get_activenum_cache()-activenum),
+						  (int32_t) (cached_kernel.get_activenum_cache()-supvecnum)),
 					  shrink_state->active);
 		  }
 	  }
@@ -1498,7 +1503,7 @@ void CSVMLight::update_linear_component(
 
 					for (int32_t t=0; t<num_threads-1; t++)
 					{
-						params[t].kernel = kernel ;
+						params[t].kernel = &cached_kernel ;
 						params[t].lin = lin ;
 						params[t].docs = docs ;
 						params[t].active2dnum=active2dnum ;
@@ -1533,7 +1538,7 @@ void CSVMLight::update_linear_component(
 		else {
 			for (jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
-					kernel->get_kernel_row(i,active2dnum,aicache);
+					cached_kernel.get_kernel_row(i,active2dnum,aicache);
 					for (ii=0;(j=active2dnum[ii])>=0;ii++)
 						lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
@@ -1558,24 +1563,20 @@ void CSVMLight::update_linear_component_mkl(
 	if ((kernel->get_kernel_type()==K_COMBINED) &&
 			 (!((CCombinedKernel*) kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k = (CCombinedKernel*) kernel;
-
 		int32_t n = 0, i, j ;
 
-		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
+		for (auto& kn : cached_subkernels)
 		{
-			CKernel* kn = k->get_kernel(k_idx);
 			for (i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
 				{
-					kn->get_kernel_row(i,NULL,aicache, true);
+					kn.get_kernel_row(i,NULL,aicache, true);
 					for (j=0;j<num;j++)
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
 			}
 
-			SG_UNREF(kn);
 			n++ ;
 		}
 	}
@@ -1673,7 +1674,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 
 		for (int32_t t=0; t<num_threads-1; t++)
 		{
-			params[t].kernel = kernel;
+			params[t].kernel = &cached_kernel;
 			params[t].W = W;
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
@@ -1701,11 +1702,11 @@ void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 {
 	S_THREAD_PARAM_SVMLIGHT* params = (S_THREAD_PARAM_SVMLIGHT*) p;
 
-	int32_t num_kernels=params->kernel->get_num_subkernels();
+	int32_t num_kernels=(*params->kernel)->get_num_subkernels();
 
 	// determine contributions of different kernels
 	for (int32_t i=params->start; i<params->end; i++)
-		params->kernel->compute_by_subkernel(i,&(params->W[i*num_kernels]));
+		(*params->kernel)->compute_by_subkernel(i,&(params->W[i*num_kernels]));
 
 	return NULL ;
 }
@@ -1792,7 +1793,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 		if(cache_only)
 		{
 			if (use_kernel_cache)
-				valid=(kernel->kernel_cache_check(j));
+				valid=(cached_kernel.kernel_cache_check(j));
 			else
 				valid = 1 ;
 		}
@@ -1818,7 +1819,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 		working2dnum[inum+choosenum]=i;
 		choosenum+=1;
 		if (use_kernel_cache)
-			kernel->kernel_cache_touch(i);
+			cached_kernel.kernel_cache_touch(i);
         /* make sure it does not get kicked */
 		/* out of cache */
 	}
@@ -1829,7 +1830,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 		if(cache_only)
 		{
 			if (use_kernel_cache)
-				valid=(kernel->kernel_cache_check(j));
+				valid=(cached_kernel.kernel_cache_check(j));
 			else
 				valid = 1 ;
 		}
@@ -1856,7 +1857,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 		working2dnum[inum+choosenum]=i;
 		choosenum+=1;
 		if (use_kernel_cache)
-			kernel->kernel_cache_touch(i); /* make sure it does not get kicked */
+			cached_kernel.kernel_cache_touch(i); /* make sure it does not get kicked */
 		/* out of cache */
 	}
 	working2dnum[inum+choosenum]=-1; /* complete index */
@@ -1899,7 +1900,7 @@ int32_t CSVMLight::select_next_qp_subproblem_rand(
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
 	if (use_kernel_cache)
-		kernel->kernel_cache_touch(i); /* make sure it does not get kicked */
+		cached_kernel.kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   }
 
@@ -1924,7 +1925,7 @@ int32_t CSVMLight::select_next_qp_subproblem_rand(
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
 	if (use_kernel_cache)
-		kernel->kernel_cache_touch(i); /* make sure it does not get kicked */
+		cached_kernel.kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   }
   working2dnum[inum+choosenum]=-1; /* complete index */
@@ -2066,7 +2067,7 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 {
 	S_THREAD_PARAM_REACTIVATE_LINADD* params = (S_THREAD_PARAM_REACTIVATE_LINADD*) p;
 
-	CKernel* k = params->kernel;
+	auto k = params->kernel;
 	float64_t* lin = params->lin;
 	float64_t* last_lin = params->last_lin;
 	int32_t* active = params->active;
@@ -2077,7 +2078,7 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 	for (int32_t i=start;i<end;i++)
 	{
 		if (!active[i])
-			lin[i] = last_lin[i]+k->compute_optimized(docs[i]);
+			lin[i] = last_lin[i]+(*k)->compute_optimized(docs[i]);
 
 		last_lin[i]=lin[i];
 	}
@@ -2089,7 +2090,7 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 {
 	S_THREAD_PARAM_REACTIVATE_VANILLA* params = (S_THREAD_PARAM_REACTIVATE_VANILLA*) p;
 	ASSERT(params)
-	ASSERT(params->kernel)
+	ASSERT(params->kernel->get_kernel())
 	ASSERT(params->lin)
 	ASSERT(params->aicache)
 	ASSERT(params->a)
@@ -2098,7 +2099,7 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 	ASSERT(params->inactive2dnum)
 	ASSERT(params->label)
 
-	CKernel* k = params->kernel;
+	auto k = params->kernel;
 	float64_t* lin = params->lin;
 	float64_t* aicache = params->aicache;
 	float64_t* a= params->a;
@@ -2164,7 +2165,7 @@ void CSVMLight::reactivate_inactive_examples(
 			  if (num_threads < 2)
 			  {
 				  S_THREAD_PARAM_REACTIVATE_LINADD params;
-				  params.kernel=kernel;
+				  params.kernel=&cached_kernel;
 				  params.lin=lin;
 				  params.last_lin=shrink_state->last_lin;
 				  params.docs=docs;
@@ -2182,7 +2183,7 @@ void CSVMLight::reactivate_inactive_examples(
 
 				  for (t=0; t<num_threads-1; t++)
 				  {
-					  params[t].kernel=kernel;
+					  params[t].kernel=&cached_kernel;
 					  params[t].lin=lin;
 					  params[t].last_lin=shrink_state->last_lin;
 					  params[t].docs=docs;
@@ -2192,7 +2193,7 @@ void CSVMLight::reactivate_inactive_examples(
 					  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_linadd_helper, (void*)&params[t]);
 				  }
 
-				  params[t].kernel=kernel;
+				  params[t].kernel=&cached_kernel;
 				  params[t].lin=lin;
 				  params[t].last_lin=shrink_state->last_lin;
 				  params[t].docs=docs;
@@ -2301,7 +2302,7 @@ void CSVMLight::reactivate_inactive_examples(
 		  if (num_threads < 2)
 		  {
 			  for (ii=0;(i=changed2dnum[ii])>=0;ii++) {
-				  kernel->get_kernel_row(i,inactive2dnum,aicache);
+				  cached_kernel.get_kernel_row(i,inactive2dnum,aicache);
 				  for (jj=0;(j=inactive2dnum[jj])>=0;jj++)
 					  lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 			  }
@@ -2329,7 +2330,7 @@ void CSVMLight::reactivate_inactive_examples(
 				  int32_t thr;
 				  for (thr=0; thr<num_threads-1; thr++)
 				  {
-					  params[thr].kernel=kernel;
+					  params[thr].kernel=&cached_kernel;
 					  params[thr].lin=&tmp_lin[thr*totdoc];
 					  params[thr].aicache=&tmp_aicache[thr*totdoc];
 					  params[thr].a=a;
@@ -2342,7 +2343,7 @@ void CSVMLight::reactivate_inactive_examples(
 					  pthread_create(&threads[thr], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[thr]);
 				  }
 
-				  params[thr].kernel=kernel;
+				  params[thr].kernel=&cached_kernel;
 				  params[thr].lin=&tmp_lin[thr*totdoc];
 				  params[thr].aicache=&tmp_aicache[thr*totdoc];
 				  params[thr].a=a;
