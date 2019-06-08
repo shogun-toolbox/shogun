@@ -21,15 +21,11 @@ void ToStringVisitor::on(int64_t *v) {
 	stream() << *v;
 }
 
-void ToStringVisitor::on(float *v) {
+void ToStringVisitor::on(int8_t *v) {
 	stream() << *v;
 }
 
-void ToStringVisitor::on(double *v) {
-	stream() << *v;
-}
-
-void ToStringVisitor::on(long double *v) {
+void ToStringVisitor::on(int16_t *v) {
 	stream() << *v;
 }
 
@@ -40,26 +36,55 @@ void ToStringVisitor::on(CSGObject **v) {
 		stream() << "null";
 	}
 }
-void ToStringVisitor::on(SGVector<int> *v) {
-	to_string(v);
+
+void ToStringVisitor::on(char *string) {
+	stream() << *string;
 }
 
-void ToStringVisitor::on(SGVector<float> *v) {
-	to_string(v);
+void ToStringVisitor::on(uint8_t *uint8) {
+	stream() << *uint8;
 }
 
-void ToStringVisitor::on(SGVector<double> *v) {
-	to_string(v);
+void ToStringVisitor::on(uint16_t *uint16) {
+	stream() << *uint16;
 }
 
-void ToStringVisitor::on(SGMatrix<int> *mat) {
-	to_string(mat);
+void ToStringVisitor::on(uint32_t *uint32) {
+	stream() << *uint32;
 }
 
-void ToStringVisitor::on(SGMatrix<float> *mat) {
-	to_string(mat);
+void ToStringVisitor::on(uint64_t *uint64) {
+	stream() << *uint64;
 }
 
-void ToStringVisitor::on(SGMatrix<double> *mat) {
-	to_string(mat);
+void ToStringVisitor::on(complex128_t *complex128) {
+	stream() << *complex128;
+}
+
+void ToStringVisitor::enter_matrix(index_t *rows, index_t *cols) {
+
+}
+
+void ToStringVisitor::enter_vector(index_t *size) {
+
+}
+
+void ToStringVisitor::enter_std_vector(size_t *size) {
+
+}
+
+void ToStringVisitor::enter_map(size_t *size) {
+
+}
+
+void ToStringVisitor::on(float32_t *v) {
+	stream() << *v;
+}
+
+void ToStringVisitor::on(float64_t *v) {
+	stream() << *v;
+}
+
+void ToStringVisitor::on(floatmax_t *v) {
+	stream() << *v;
 }

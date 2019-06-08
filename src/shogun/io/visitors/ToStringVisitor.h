@@ -29,29 +29,41 @@ namespace shogun {
 
 		virtual void on(bool *v);
 
+		virtual void on(int8_t *v);
+
+		virtual void on(int16_t *v);
+
 		virtual void on(int32_t *v);
 
 		virtual void on(int64_t *v);
 
-		virtual void on(float *v);
-
-		virtual void on(double *v);
-
-		virtual void on(long double *v);
+		virtual void on(float32_t *v);
+		virtual void on(float64_t *v);
+		virtual void on(floatmax_t *v);
 
 		virtual void on(CSGObject **v);
 
-		virtual void on(SGVector<int> *v);
+		virtual void on(char *string);
 
-		virtual void on(SGVector<float> *v);
+		virtual void on(uint8_t *uint8);
 
-		virtual void on(SGVector<double> *v);
+		virtual void on(uint16_t *uint16);
 
-		virtual void on(SGMatrix<int> *mat);
+		virtual void on(uint32_t *uint32);
 
-		virtual void on(SGMatrix<float> *mat);
+		virtual void on(uint64_t *uint64);
 
-		virtual void on(SGMatrix<double> *mat);
+		virtual void on(complex128_t *complex128);
+
+		virtual void enter_matrix(index_t *rows, index_t *cols);
+
+		virtual void enter_vector(index_t *size);
+
+		virtual void enter_std_vector(size_t *size);
+
+		virtual void enter_map(size_t *size);
+
+
 
 	private:
 		std::stringstream &stream() {
