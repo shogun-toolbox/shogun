@@ -36,6 +36,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 #include <stdexcept>
+#include <functional>
 
 using namespace shogun;
 
@@ -80,7 +81,7 @@ public:
 class Object : public CSGObject
 {
 public:
-	virtual const char* get_name() const
+	virtual const char* get_name() const override
 	{
 		return "Object";
 	}
@@ -690,6 +691,25 @@ TEST(Any, lazy_cloneable_visitable)
 	EXPECT_FALSE(any.cloneable());
 	EXPECT_FALSE(any.visitable());
 	EXPECT_THROW(any.visit(nullptr), std::logic_error);
+}
+
+TEST(Any, hash_empty)
+{
+	Any empty;
+	EXPECT_EQ(empty.hash(), 0);
+}
+
+TEST(Any, hash_number)
+{
+	uint64_t number = 91;
+	EXPECT_EQ(make_any(number).hash(), std::hash<decltype(number)>{}(number));
+}
+
+TEST(Any, hash_lazy)
+{
+	auto v = 9;
+	auto lazy = make_any<int>([=]() { return v; });
+	EXPECT_EQ(lazy.hash(), 0);
 }
 
 TEST(AnyParameterProperties, api_default)

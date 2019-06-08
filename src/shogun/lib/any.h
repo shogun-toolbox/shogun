@@ -481,6 +481,25 @@ namespace shogun {
 			return true;
 		}
 
+		template <class T>
+		inline uint64_t hash_impl(general, const T&)
+		{
+			return 0;
+		}
+
+		template <class T>
+		inline auto hash_impl(more_important, const T& value)
+		    -> decltype(std::hash<T>{}(value))
+		{
+			return std::hash<T>{}(value);
+		}
+
+		template <class T>
+		uint64_t hash(const T& value)
+		{
+			return hash_impl(maybe_most_important(), value);
+		}
+
 		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
 		inline T clone_impl(general, T& value)
 		{
@@ -782,6 +801,8 @@ namespace shogun {
 		virtual void visit(void* storage, AnyVisitor* visitor) const = 0;
 
 		virtual bool is_functional() const = 0;
+
+		virtual uint64_t hash(void* storage) const = 0;
 	};
 
 	template <typename T>
@@ -886,6 +907,10 @@ namespace shogun {
 		{
 			visitor->on(static_cast<T*>(storage));
 		}
+
+		virtual uint64_t hash(void *storage) const override {
+			return any_detail::hash(value_of(typed_pointer<T>(storage)));
+		}
 	};
 
 	template <typename T>
@@ -950,6 +975,10 @@ namespace shogun {
 		virtual void visit(void* storage, AnyVisitor* visitor) const override
 		{
 			visitor->on(static_cast<T*>(storage));
+		}
+
+		virtual uint64_t hash(void* storage) const override {
+			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}
 	};
 
@@ -1162,6 +1191,12 @@ namespace shogun {
 			return !policy->is_functional();
 		}
 
+		/** @return true if Any object is hashable. */
+		bool hashable() const
+		{
+			return !policy->is_functional();
+		}
+
 		const std::type_info& type_info() const
 		{
 			return policy->type_info();
@@ -1173,6 +1208,18 @@ namespace shogun {
 		std::string type() const
 		{
 			return policy->type();
+		}
+
+		/** Hashes the underlying value, shallow. Uses std::hash.
+		 *
+		 * @return the value of hash function or 0 if hashing is not supported.
+		 */
+		uint64_t hash() const
+		{
+			if (!hashable()) {
+				return 0;
+			}
+			return policy->hash(storage);
 		}
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
