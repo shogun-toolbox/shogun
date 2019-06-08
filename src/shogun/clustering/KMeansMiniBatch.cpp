@@ -9,6 +9,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
+
 
 #ifdef _WIN32
 #undef far
