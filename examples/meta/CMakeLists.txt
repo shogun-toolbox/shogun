@@ -56,6 +56,8 @@ add_custom_command(
         --parser_files_dir ${CMAKE_CURRENT_BINARY_DIR}/parser_files
         --only_generate_parser_files)
 
+add_custom_target(parse_lex_files ALL DEPENDS ${GENERATED_PARSER_FILES})
+
 # list of interfaces for which we dont generate meta examples
 SET(DISABLED_INTERFACES INTERFACE_PERL)
 
@@ -100,7 +102,7 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
         ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py ${GENERATOR_FLAGS}
 		COMMENT "Generating example ${EXAMPLE_NAME_WITH_DIR}"
         DEPENDS ctags ${META_EXAMPLE} ${GENERATOR_DEPENDENCIES}
-            ${GENERATED_PARSER_FILES})
+            parse_lex_files)
 
     LIST(APPEND TRANSLATED_META_EXAMPLES ${EXAMPLE_LISTINGS})
 ENDFOREACH()
