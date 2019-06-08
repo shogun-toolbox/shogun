@@ -7,6 +7,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <random>
 
 #include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCUtil.h>
