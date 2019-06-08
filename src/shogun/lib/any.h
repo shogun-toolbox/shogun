@@ -38,12 +38,18 @@
 #include <shogun/base/init.h>
 
 #include <algorithm>
+#include <cassert>
 #include <limits>
+#include <map>
+#include <unordered_map>
 #include <stdexcept>
 #include <string.h>
 #include <string>
 #include <typeinfo>
 #include <type_traits>
+#include <vector>
+
+#include <shogun/util/traits.h>
 
 namespace shogun {
 
@@ -78,7 +84,13 @@ namespace shogun {
 	template <class T>
 	class SGVector;
 	template <class T>
+	class SGString;
+	template <class T>
+	class SGSparseVector;
+	template <class T>
 	class SGMatrix;
+	template <class T>
+	class SGSparseMatrix;
 
 	class TypeMismatchException : public std::exception
 	{
@@ -124,6 +136,14 @@ namespace shogun {
 		bool equals(const ArrayReference<T, S>& other) const;
 		void reset(const ArrayReference<T, S>& other);
 
+		S* size() const
+		{
+			return m_length;
+		}
+		T** ptr() const
+		{
+			return m_ptr;
+		}
 	private:
 		T** m_ptr;
 		S* m_length;
@@ -148,6 +168,16 @@ namespace shogun {
 		bool equals(const Array2DReference<T, S>& other) const;
 		void reset(const Array2DReference<T, S>& other);
 
+		std::pair<S*, S*> size() const
+		{
+			return std::make_pair(m_rows, m_cols);
+		}
+
+		T** ptr() const
+		{
+			return m_ptr;
+		}
+
 	private:
 		T** m_ptr;
 		S* m_rows;
@@ -170,17 +200,166 @@ namespace shogun {
 		virtual ~AnyVisitor() = default;
 
 		virtual void on(bool*) = 0;
+		virtual void on(char*) = 0;
+		virtual void on(int8_t*) = 0;
+		virtual void on(uint8_t*) = 0;
+		virtual void on(int16_t*) = 0;
+		virtual void on(uint16_t*) = 0;
 		virtual void on(int32_t*) = 0;
+		virtual void on(uint32_t*) = 0;
 		virtual void on(int64_t*) = 0;
-		virtual void on(float*) = 0;
-		virtual void on(double*) = 0;
+		virtual void on(uint64_t*) = 0;
+		virtual void on(float32_t*) = 0;
+		virtual void on(float64_t*) = 0;
+		virtual void on(floatmax_t*) = 0;
+		virtual void on(complex128_t*) = 0;
 		virtual void on(CSGObject**) = 0;
-		virtual void on(SGVector<int>*) = 0;
-		virtual void on(SGVector<float>*) = 0;
-		virtual void on(SGVector<double>*) = 0;
-		virtual void on(SGMatrix<int>*) = 0;
-		virtual void on(SGMatrix<float>*) = 0;
-		virtual void on(SGMatrix<double>*) = 0;
+		virtual void enter_matrix(index_t* rows, index_t* cols) = 0;
+		virtual void enter_vector(index_t* size) = 0;
+		virtual void enter_std_vector(size_t* size) = 0;
+		virtual void enter_map(size_t* size) = 0;
+
+		template<typename T>
+		void on(SGVector<T>* _v)
+		{
+			auto size = _v->vlen;
+			enter_vector(std::addressof(size));
+			if (size != _v->vlen)
+				_v->resize_vector(size);
+			for (auto& _value: *_v)
+				on(std::addressof(_value));
+		}
+
+		template<typename T>
+		void on(SGString<T>* _v)
+		{
+			auto size = _v->slen;
+			enter_vector(std::addressof(size));
+			if (size != _v->slen)
+			{
+				if (_v->string)
+					_v->destroy_string();
+				_v->string = SG_MALLOC(T, size);
+				_v->slen = size;
+			}
+			for (index_t i = 0; i < size; ++i)
+				on(std::addressof(_v->string[i]));
+		}
+
+		template<typename T>
+		void on(SGSparseVector<T>* _v)
+		{
+			auto size = _v->num_feat_entries*2;
+			enter_vector(std::addressof(size));
+			assert(size % 2 == 0);
+			size /= 2;
+			if (size != _v->num_feat_entries)
+				*_v = SGSparseVector<T>(size);
+			for (index_t i = 0; i < size; ++i)
+			{
+				on(std::addressof(_v->features[i].feat_index));
+				on(std::addressof(_v->features[i].entry));
+			}
+		}
+
+		template<typename T>
+		void on(SGSparseMatrix<T>* _m)
+		{
+			//FIXME
+			//_m->num_vectors;
+			//_m->num_features;
+			//_m->sparse_matrix;
+		}
+
+
+		template<class T, class S>
+		void on(ArrayReference<T,S>* _v)
+		{
+			auto size = *(_v->size());
+			enter_vector(std::addressof(size));
+			if (size != *(_v->size()))
+			{
+				*_v->size() = size;
+				if (*_v->ptr() != nullptr)
+					SG_FREE(*_v->ptr());
+				if (size)
+					*_v->ptr() = SG_CALLOC(T, size);
+			}
+			auto ptr = *(_v->ptr());
+			for (S i = 0; i < size; ++i)
+				on(std::addressof(ptr[i]));
+		}
+
+		template<class T, class S>
+		void on(Array2DReference<T,S>* _v)
+		{
+			auto shape = _v->size();
+			S rows = *shape.first;
+			S cols = *shape.second;
+			enter_matrix(shape.first, shape.second);
+			int64_t length = ((int64_t)*shape.first)*(*shape.second);
+			if ((rows != *shape.first) || (cols != *shape.second))
+			{
+				if (*_v->ptr() != nullptr)
+					SG_FREE(*_v->ptr());
+				if (length)
+					*_v->ptr() = SG_MALLOC(T, length);
+			}
+			auto ptr = *(_v->ptr());
+			for (int64_t i = 0; i < length; ++i)
+				on(std::addressof(ptr[i]));
+		}
+
+		template<typename T>
+		void on(SGMatrix<T>* _matrix)
+		{
+			auto rows = _matrix->num_rows;
+			auto cols = _matrix->num_cols;
+			enter_matrix(std::addressof(rows), std::addressof(cols));
+			if ((rows != _matrix->num_rows) || (cols != _matrix->num_cols))
+				*_matrix = SGMatrix<T>(rows, cols);
+			for (auto& _value: *_matrix)
+				on(std::addressof(_value));
+		}
+
+		template<class T>
+		void on(std::vector<T>* _v)
+		{
+			auto size = _v->size();
+			enter_std_vector(std::addressof(size));
+			if (size != _v->size())
+				_v->resize(size);
+			for (auto& _value: *_v)
+				on(std::addressof(_value));
+		}
+
+		template<class T1, class T2>
+		void on(std::map<T1, T2>* _v)
+		{
+			auto size = _v->size();
+			enter_map(std::addressof(size));
+			if (size != _v->size())
+			{
+				// reading
+				_v->clear();
+				for (size_t i = 0; i < size; ++i)
+				{
+					std::pair<T1, T2> p;
+					on(std::addressof(p.first));
+					on(std::addressof(p.second));
+					_v->emplace(p);
+				}
+			}
+			else
+			{
+				// writing
+				for (auto _value: *_v)
+				{
+					on(std::addressof(_value.first));
+					on(std::addressof(_value.second));
+				}
+			}
+		}
 
 		template<class T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
 		void on(T** v)
@@ -253,13 +432,24 @@ namespace shogun {
 		{
 			if (lhs && rhs)
 				return lhs->equals(rhs);
-			else return !lhs && !rhs;
+			else if (!lhs && !rhs)
+				return true;
+			else
+				return false;
 		}
 
 		template <class T>
 		inline bool compare(const T& lhs, const T& rhs)
 		{
 			return compare_impl(maybe_most_important(), lhs, rhs);
+		}
+
+
+		template <class T1, class T2>
+		inline bool compare(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+		{
+			return (compare_impl(maybe_most_important(), lhs.first, rhs.first) &&
+				compare_impl(maybe_most_important(), lhs.second, rhs.second));
 		}
 
 		template <class T>
@@ -270,10 +460,39 @@ namespace shogun {
 			return compare(lhs(), rhs());
 		}
 
+		template <class T,
+			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+		bool compare_impl(
+		    maybe_most_important, const T& lhs, const T& rhs)
+		{
+			if (lhs.size() != rhs.size())
+			{
+				return false;
+			}
+			for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend();
+			     ++l, ++r)
+			{
+				if (!compare(*l, *r))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
 		inline T clone_impl(general, T& value)
 		{
 			return T(value);
+		}
+
+		template<class T1, class T2>
+		inline auto clone_impl(general, const std::pair<T1, T2>& value)
+		{
+			return std::make_pair(
+				clone_impl(maybe_most_important(), value.first),
+				clone_impl(maybe_most_important(), value.second));
 		}
 
 		template <class T>
@@ -312,6 +531,21 @@ namespace shogun {
 			auto cloned = clone_impl(maybe_most_important(), value);
 			mutable_value_of<decltype(cloned)>(storage) = cloned;
 			return cloned;
+		}
+
+		template <class T,
+			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+		inline auto clone(void** storage, const T& value)
+		{
+			T cloned;
+			std::transform(
+				value.cbegin(), value.cend(),
+				std::inserter(cloned, cloned.end()),
+				[](auto o) {
+					return static_cast<typename T::value_type>(
+						clone_impl(maybe_most_important(), o));
+				});
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
 		}
 
 		template <class T, class S>
