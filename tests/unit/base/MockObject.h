@@ -306,12 +306,12 @@ namespace shogun
 			watch_param(
 			    "watched_int", &m_watched,
 			    AnyParameterProperties(
-			        "Integer", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
+			        "Integer"));
 
 			watch_param(
 			    "watched_object", &m_object,
 			    AnyParameterProperties(
-			        "Object", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
+			        "Object"));
 
 			watch_method("some_method", &CMockObject::some_method);
 		}
