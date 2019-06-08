@@ -701,7 +701,7 @@ TEST(Any, hash_empty)
 
 TEST(Any, hash_number)
 {
-	uint64_t number = 91;
+	size_t number = 91;
 	EXPECT_EQ(make_any(number).hash(), std::hash<decltype(number)>{}(number));
 }
 

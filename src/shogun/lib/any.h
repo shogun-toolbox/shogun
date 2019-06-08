@@ -482,7 +482,7 @@ namespace shogun {
 		}
 
 		template <class T>
-		inline uint64_t hash_impl(general, const T&)
+		inline size_t hash_impl(general, const T&)
 		{
 			return 0;
 		}
@@ -496,9 +496,9 @@ namespace shogun {
 
 		template <class T,
 			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
-		uint64_t hash(maybe_most_important, const T& value)
+		size_t hash(maybe_most_important, const T& value)
 		{
-			uint64_t result = 0;
+			size_t result = 0;
 			for (const auto& it: value) {
 				result ^= hash(it);
 			}
@@ -506,7 +506,7 @@ namespace shogun {
 		}
 
 		template <class T>
-		uint64_t hash(const T& value)
+		size_t hash(const T& value)
 		{
 			return hash_impl(maybe_most_important(), value);
 		}
@@ -813,7 +813,7 @@ namespace shogun {
 
 		virtual bool is_functional() const = 0;
 
-		virtual uint64_t hash(void* storage) const = 0;
+		virtual size_t hash(void* storage) const = 0;
 	};
 
 	template <typename T>
@@ -919,7 +919,7 @@ namespace shogun {
 			visitor->on(static_cast<T*>(storage));
 		}
 
-		virtual uint64_t hash(void *storage) const override {
+		virtual size_t hash(void *storage) const override {
 			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}
 	};
@@ -988,7 +988,7 @@ namespace shogun {
 			visitor->on(static_cast<T*>(storage));
 		}
 
-		virtual uint64_t hash(void* storage) const override {
+		virtual size_t hash(void* storage) const override {
 			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}
 	};
@@ -1225,7 +1225,7 @@ namespace shogun {
 		 *
 		 * @return the value of hash function or 0 if hashing is not supported.
 		 */
-		uint64_t hash() const
+		size_t hash() const
 		{
 			if (!hashable()) {
 				return 0;
