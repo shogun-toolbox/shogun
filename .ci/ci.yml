@@ -140,7 +140,7 @@ jobs:
       -DOpenMP_omp_LIBRARY="/usr/local/opt/libomp/lib/libomp.dylib"'
 
   pool:
-    vmImage: xcode9-macos10.13
+    vmImage: macOS-10.14
 
   steps:
   - template: ./macos-steps.yml
