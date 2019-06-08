@@ -14,7 +14,9 @@
 #ifdef HAVE_ARPACK
 	#define TAPKEE_WITH_ARPACK
 #endif
-#define TAPKEE_USE_LGPL_COVERTREE
+#ifdef USE_GPL_SHOGUN
+	#define TAPKEE_USE_LGPL_COVERTREE
+#endif
 #include <shogun/lib/tapkee/tapkee.hpp>
 #include <shogun/lib/tapkee/callbacks/pimpl_callbacks.hpp>
 
@@ -80,7 +82,11 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 #else
 	tapkee::EigenMethod eigen_method = tapkee::Dense;
 #endif
+#ifdef TAPKEE_USE_LGPL_COVERTREE
 	tapkee::NeighborsMethod neighbors_method = tapkee::CoverTree;
+#else
+	tapkee::NeighborsMethod neighbors_method = tapkee::VpTree;
+#endif
 	size_t N = 0;
 
 	switch (parameters.method)
