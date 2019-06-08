@@ -65,7 +65,9 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             // randomly select two positions
             for (int32_t j=0; j < num_classes; ++j)
                 random_sel[j] = j;
-            std::random_shuffle(random_sel.begin(), random_sel.end());
+            std::random_device rng;
+            std::mt19937 urng(rng());
+            std::shuffle(random_sel.begin(), random_sel.end(), urng);
             if (CMath::random(0.0, 1.0) > 0.5)
             {
                 codebook(i, random_sel[0]) = +1;
