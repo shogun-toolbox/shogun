@@ -12,6 +12,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 
 using namespace shogun;
 using namespace Eigen;
