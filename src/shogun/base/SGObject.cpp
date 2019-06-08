@@ -850,116 +850,142 @@ public:
 	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
 	{
 	}
-
 	virtual void on(bool* v)
 	{
-		stream() << (*v ? "true" : "false");
+		stream() << (*v ? "true" : "false") << container_ending();
+	}
+	virtual void on(char* v)
+	{
+		stream() << *v << container_ending();
+	}
+	virtual void on(int8_t* v)
+	{
+		stream() << *v << container_ending();
+	}
+	virtual void on(uint8_t* v)
+	{
+		stream() << *v << container_ending();
+	}
+	virtual void on(int16_t* v)
+	{
+		stream() << *v << container_ending();
+	}
+	virtual void on(uint16_t* v)
+	{
+		stream() << *v << container_ending();
 	}
 	virtual void on(int32_t* v)
 	{
-		stream() << *v;
+		stream() << *v << container_ending();
+	}
+	virtual void on(uint32_t* v)
+	{
+		stream() << *v << container_ending();
 	}
 	virtual void on(int64_t* v)
 	{
-		stream() << *v;
+		stream() << *v << container_ending();
 	}
-	virtual void on(float* v)
+	virtual void on(uint64_t* v)
 	{
-		stream() << *v;
+		stream() << *v << container_ending();
 	}
-	virtual void on(double* v)
+	virtual void on(float32_t* v)
 	{
-		stream() << *v;
+		stream() << *v << container_ending();
 	}
-	virtual void on(long double* v)
+	virtual void on(float64_t* v)
 	{
-		stream() << *v;
+		stream() << *v << container_ending();
+	}
+	virtual void on(floatmax_t* v)
+	{
+		stream() << *v << container_ending();
+	}
+	virtual void on(complex128_t* v)
+	{
+		stream() << *v << container_ending();
 	}
 	virtual void on(CSGObject** v)
 	{
 		if (*v)
 		{
-			stream() << (*v)->get_name() << "(...)";
+			stream() << (*v)->get_name() << "(...)"
+				<< container_ending();
 		}
 		else
 		{
 			stream() << "null";
 		}
 	}
-	virtual void on(SGVector<int>* v)
+	virtual void enter_matrix(index_t* rows, index_t* cols)
 	{
-		to_string(v);
+		stream() << "Matrix(" << *rows << "," << *cols << "): [[";
+		m_remaining.emplace(*rows, *cols);
 	}
-	virtual void on(SGVector<float>* v)
+	virtual void enter_vector(index_t* size)
 	{
-		to_string(v);
+		stream() << "Vector(" << *size << "): [";
+		if (*size == 0)
+			stream() << "]";
+		else
+			m_remaining.emplace(*size, 0LL);
 	}
-	virtual void on(SGVector<double>* v)
+	virtual void enter_std_vector(size_t* size)
 	{
-		to_string(v);
+		stream() << "std::vector(" << *size << "): [";
+		if (*size == 0)
+			stream() << "]";
+		else
+			m_remaining.emplace(*size, 0LL);
 	}
-	virtual void on(SGMatrix<int>* mat)
+	virtual void enter_map(size_t* size)
 	{
-		to_string(mat);
+		stream() << "Map: (";
 	}
-	virtual void on(SGMatrix<float>* mat)
-	{
-		to_string(mat);
-	}
-	virtual void on(SGMatrix<double>* mat)
-	{
-		to_string(mat);
-	}
-
 private:
-	std::stringstream& stream()
+	SG_FORCED_INLINE std::stringstream& stream()
 	{
 		return *m_stream;
 	}
 
-	template <class T>
-	void to_string(SGMatrix<T>* m)
+	SG_FORCED_INLINE std::string container_ending()
 	{
-		if (m)
-		{
-			stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
-			         << "," << m->num_cols << "): [";
-			for (auto col : range(m->num_cols))
-			{
-				stream() << "[";
-				for (auto row : range(m->num_rows))
-				{
-					stream() << (*m)(row, col);
-					if (row < m->num_rows - 1)
-						stream() << ",";
-				}
-				stream() << "]";
-				if (col < m->num_cols)
-					stream() << ",";
-			}
-			stream() << "]";
-		}
-	}
+		if (m_remaining.empty())
+			return "";
 
-	template <class T>
-	void to_string(SGVector<T>* v)
-	{
-		if (v)
+		std::stringstream endings;
+		auto& remaining = std::get<0>(m_remaining.top());
+		if (remaining > 0 && --remaining == 0)
 		{
-			stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
-			         << "): [";
-			for (auto i : range(v->vlen))
+			m_remaining.pop();
+			endings << "]";
+
+			if (m_remaining.empty())
+				return endings.str();
+
+			auto& cols_remaining = std::get<1>(m_remaining.top());
+			if (cols_remaining > 0 && --cols_remaining == 0)
 			{
-				stream() << (*v)[i];
-				if (i < v->vlen - 1)
-					stream() << ",";
+				m_remaining.pop();
+				endings << "]";
 			}
-			stream() << "]";
+			else
+			{
+				m_remaining.emplace(std::get<0>(m_remaining.top()), 0LL);
+				endings << ",[";
+			}
 		}
+		else
+		{
+			endings << ",";
+		}
+		return endings.str();
 	}
 
 private:
 	std::stringstream* m_stream;
+	std::stack<std::tuple<int64_t, int64_t>> m_remaining;
 };
 
 std::string CSGObject::to_string() const
