@@ -42,7 +42,6 @@ ObservedValue observation = logger.get_observation(num_observation-1)
 
 #![read_observation_information]
 string observation_name = observation.get_string("name")
-string observation_description = observation.get_description("beta_path")
 int observation_step = observation.get_long("step")
 RealVector beta_path = observation.get_real_vector("beta_path")
 #![read_observation_information]
