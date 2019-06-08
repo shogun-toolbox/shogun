@@ -494,6 +494,17 @@ namespace shogun {
 			return std::hash<T>{}(value);
 		}
 
+		template <class T,
+			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+		uint64_t hash(maybe_most_important, const T& value)
+		{
+			uint64_t result = 0;
+			for (const auto& it: value) {
+				result ^= hash(it);
+			}
+			return result;
+		}
+
 		template <class T>
 		uint64_t hash(const T& value)
 		{

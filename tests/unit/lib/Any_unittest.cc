@@ -712,6 +712,12 @@ TEST(Any, hash_lazy)
 	EXPECT_EQ(lazy.hash(), 0);
 }
 
+TEST(Any, hash_vector)
+{
+	std::vector<int> values = {1,2,3};
+	EXPECT_EQ(make_any(values).hash(), std::hash<int>{}(1) ^ std::hash<int>{}(2) ^ std::hash<int>{}(3));
+}
+
 TEST(AnyParameterProperties, api_default)
 {
 	AnyParameterProperties params = AnyParameterProperties();
