@@ -21,6 +21,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
@@ -40,6 +41,7 @@ namespace shogun
 	CDistance* distance(const std::string& name);
 	CEvaluation* evaluation(const std::string& name);
 	CKernel* kernel(const std::string& name);
+	CKernelNormalizer* kernel_normalizer(const std::string& name);
 	CMachine* machine(const std::string& name);
 	CMulticlassStrategy* multiclass_strategy(const std::string& name);
 	CECOCEncoder* ecoc_encoder(const std::string& name);
@@ -69,6 +71,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CEvaluation, evaluation)
 	BASE_CLASS_FACTORY(CDistance, distance)
 	BASE_CLASS_FACTORY(CKernel, kernel)
+	BASE_CLASS_FACTORY(CKernelNormalizer, kernel_normalizer)
 	BASE_CLASS_FACTORY(CMachine, machine)
 	BASE_CLASS_FACTORY(CMulticlassStrategy, multiclass_strategy)
 	BASE_CLASS_FACTORY(CECOCEncoder, ecoc_encoder)

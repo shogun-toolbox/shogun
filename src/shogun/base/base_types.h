@@ -30,6 +30,7 @@ namespace shogun
 	class CInference;
 	class CLossFunction;
 	class CTokenizer;
+	class CKernelNormalizer;
 
 	// type trait to enable certain methods only for shogun base types
 	template <class T>
@@ -37,6 +38,7 @@ namespace shogun
 	    : std::integral_constant<
 	          bool, std::is_same<CMachine, T>::value ||
 	                    std::is_same<CKernel, T>::value ||
+	                    std::is_same<CKernelNormalizer, T>::value ||
 	                    std::is_same<CDistance, T>::value ||
 	                    std::is_same<CFeatures, T>::value ||
 	                    std::is_same<CLabels, T>::value ||

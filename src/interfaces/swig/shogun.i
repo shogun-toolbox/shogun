@@ -280,6 +280,7 @@ namespace shogun
 
 PUT_ADD(CMachine)
 PUT_ADD(CKernel)
+PUT_ADD(CKernelNormalizer)
 PUT_ADD(CDistance)
 PUT_ADD(CFeatures)
 PUT_ADD(CLabels)

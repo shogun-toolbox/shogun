@@ -29,8 +29,6 @@
 %rename(Kernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
 
-%rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
-%rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
 %rename(CommWordStringKernel) CCommWordStringKernel;
 
@@ -41,13 +39,9 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 #ifdef USE_GPL_SHOGUN
 %rename(DistantSegmentsKernel) CDistantSegmentsKernel;
 #endif //USE_GPL_SHOGUN
-%rename(DiceKernelNormalizer) CDiceKernelNormalizer;
-%rename(ScatterKernelNormalizer) CScatterKernelNormalizer;
-%rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
 %rename(DirectorKernel) CDirectorKernel;
 %rename(HistogramWordStringKernel) CHistogramWordStringKernel;
-%rename(IdentityKernelNormalizer) CIdentityKernelNormalizer;
 %rename(LinearStringKernel) CLinearStringKernel;
 %rename(SparseSpatialSampleStringKernel) CSparseSpatialSampleStringKernel;
 %rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
@@ -61,12 +55,9 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(PolyMatchWordStringKernel) CPolyMatchWordStringKernel;
 %rename(SalzbergWordStringKernel) CSalzbergWordStringKernel;
 %rename(SimpleLocalityImprovedStringKernel) CSimpleLocalityImprovedStringKernel;
-%rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
-%rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
 %rename(WeightedCommWordStringKernel) CWeightedCommWordStringKernel;
 %rename(WeightedDegreePositionStringKernel) CWeightedDegreePositionStringKernel;
 %rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
-%rename(ZeroMeanCenterKernelNormalizer) CZeroMeanCenterKernelNormalizer;
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
 
 /* Include Class Headers to make them visible from within the target language */
@@ -114,15 +105,6 @@ namespace shogun
 }
 
 %include <shogun/kernel/normalizer/KernelNormalizer.h>
-%include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
-%include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
-%include <shogun/kernel/normalizer/DiceKernelNormalizer.h>
-%include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>
-%include <shogun/kernel/normalizer/VarianceKernelNormalizer.h>
-%include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
-%include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-%include <shogun/kernel/normalizer/TanimotoKernelNormalizer.h>
-%include <shogun/kernel/normalizer/ZeroMeanCenterKernelNormalizer.h>
 %include <shogun/kernel/string/CommUlongStringKernel.h>
 %include <shogun/kernel/string/CommWordStringKernel.h>
 %include <shogun/kernel/CombinedKernel.h>
