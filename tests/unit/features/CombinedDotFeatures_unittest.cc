@@ -31,13 +31,19 @@ TEST(CombinedDotFeaturesTest, test_array_operations)
 	CDenseFeatures<float64_t>* feat_3 = new CDenseFeatures<float64_t>(data_3);
 
 	if (comb_feat->append_feature_obj(feat_1))
+	{
 		EXPECT_EQ(comb_feat->get_num_feature_obj(),1);
+	}
 
 	if (comb_feat->append_feature_obj(feat_2))
+	{
 		EXPECT_EQ(comb_feat->get_num_feature_obj(),2);
+	}
 
 	if (comb_feat->insert_feature_obj(feat_3, 1))
+	{
 		EXPECT_EQ(comb_feat->get_num_feature_obj(),3);
+	}
 
 	comb_feat->delete_feature_obj(0);
 	EXPECT_EQ(comb_feat->get_num_feature_obj(),2);
@@ -94,7 +100,9 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	SG_SINFO("Beginning dense_dot() testing");
 	float64_t* vector = new float64_t[9];
 	for (index_t i=0; i<9; i++)
+	{
 		vector[i] = 10 + i;
+	}
 
 	result = comb_feat_1->dense_dot(1, vector, 9);
 	EXPECT_EQ(result, 376);
@@ -143,7 +151,9 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 	index_t nnz_index=0;
 	void* itcomb = comb_feat->get_feature_iterator(0);
 	while (comb_feat->get_next_feature(index, value, itcomb))
+	{
 		ASSERT_EQ(nnz[nnz_index++], value);
+	}
 
 	comb_feat->free_feature_iterator(itcomb);
 	SG_UNREF(comb_feat);
