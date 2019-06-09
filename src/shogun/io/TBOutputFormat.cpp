@@ -37,27 +37,11 @@
 
 #include <chrono>
 #include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/common.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/tfhistogram/histogram.h>
 #include <shogun/lib/type_case.h>
-#include <vector>
 
 using namespace shogun;
-
-#define CHECK_TYPE_HISTO(type)                                                 \
-	else if (                                                                  \
-	    value.first->get_any().type_info().hash_code() ==                      \
-	    typeid(type).hash_code())                                              \
-	{                                                                          \
-		tensorflow::histogram::Histogram h;                                    \
-		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();     \
-		auto v = any_cast<type>(value.first->get_any());                       \
-		for (auto value_v : v)                                                 \
-			h.Add(value_v);                                                    \
-		h.EncodeToProto(hp, true);                                             \
-		summaryValue->set_allocated_histo(hp);                                 \
-	}
 
 TBOutputFormat::TBOutputFormat(){};
 
@@ -98,33 +82,18 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	summaryValue->set_tag(value.first->get<std::string>("name"));
 	summaryValue->set_node_name(node_name);
 
-	if (value.first->get_any().type_info().hash_code() ==
-	    typeid(std::vector<int8_t>).hash_code())
-	{
-		tensorflow::histogram::Histogram h;
-		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();
-		auto v = any_cast<std::vector<int8_t>>(value.first->get_any());
-		for (auto value_v : v)
+	tensorflow::histogram::Histogram h;
+	tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();
+
+	auto write_summary = [&h](auto val) {
+		for (auto value_v : val)
 			h.Add(value_v);
-		h.EncodeToProto(hp, true);
-		summaryValue->set_allocated_histo(hp);
-	}
-	CHECK_TYPE_HISTO(std::vector<uint8_t>)
-	CHECK_TYPE_HISTO(std::vector<int16_t>)
-	CHECK_TYPE_HISTO(std::vector<uint16_t>)
-	CHECK_TYPE_HISTO(std::vector<int32_t>)
-	CHECK_TYPE_HISTO(std::vector<uint32_t>)
-	CHECK_TYPE_HISTO(std::vector<int64_t>)
-	CHECK_TYPE_HISTO(std::vector<uint64_t>)
-	CHECK_TYPE_HISTO(std::vector<float32_t>)
-	CHECK_TYPE_HISTO(std::vector<float64_t>)
-	CHECK_TYPE_HISTO(std::vector<floatmax_t>)
-	CHECK_TYPE_HISTO(std::vector<char>)
-	else
-	{
-		SG_ERROR(
-		    "Unsupported type %s", value.first->get_any().type_info().name());
-	}
+	};
+
+	sg_any_dispatch(value.first->get_any(), sg_all_typemap, None{}, write_summary);
+
+	h.EncodeToProto(hp, true);
+	summaryValue->set_allocated_histo(hp);
 
 	return e;
 }

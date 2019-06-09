@@ -46,6 +46,7 @@
 #include <tflogger/summary.pb.h>
 #include <utility>
 #include <vector>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -90,7 +91,7 @@ void test_case_scalar_error(T value_val)
 }
 
 template <class T>
-void test_case_vector(std::vector<T> v)
+void test_case_vector(SGVector<T> v)
 {
 	tensorflow::Event event_ex;
 	auto summary = event_ex.mutable_summary();
@@ -109,7 +110,7 @@ void test_case_vector(std::vector<T> v)
 
 	time_point timestamp;
 	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
-	    new ObservedValueTemplated<std::vector<T>>(
+	    new ObservedValueTemplated<SGVector<T>>(
 	        1, "test", "test description", v));
 
 	std::string node_name = "node";
@@ -125,13 +126,13 @@ void test_case_vector(std::vector<T> v)
 }
 
 template <class T>
-void test_case_vector_error(std::vector<T> v)
+void test_case_vector_error(SGVector<T> v)
 {
 	TBOutputFormat tmp;
 
 	time_point timestamp;
 	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
-	    new ObservedValueTemplated<std::vector<T>>(
+	    new ObservedValueTemplated<SGVector<T>>(
 	        1, "test", "test_description", v));
 
 	std::string node_name = "node";
@@ -159,17 +160,17 @@ TEST(TBOutputFormatTest, fail_convert_scalar)
 
 TYPED_TEST(TBOutputFormatTest, convert_all_types_histo)
 {
-	std::vector<TypeParam> v;
-	v.push_back((TypeParam)1);
-	v.push_back((TypeParam)2);
+	SGVector<TypeParam> v(2);
+	v[0] = ((TypeParam)1);
+	v[1] = ((TypeParam)2);
 	test_case_vector<TypeParam>(v);
 };
 
 TEST(TBOutputFormat, fail_convert_histo)
 {
-	std::vector<complex128_t> v;
-	v.push_back((complex128_t)1);
-	v.push_back((complex128_t)2);
+	SGVector<complex128_t> v(2);
+	v[0] = ((complex128_t)1);
+	v[1] = ((complex128_t)2);
 	test_case_vector_error<complex128_t>(v);
 }
 
