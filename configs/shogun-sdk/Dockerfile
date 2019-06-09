@@ -1,10 +1,10 @@
-FROM debian:stretch
+FROM debian:stretch-backports
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get update -qq && apt-get upgrade -y && \
     apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
-    libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev cmake \
+    libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev \
     libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-matplotlib python-scipy \
     python-jinja2 python-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
@@ -20,6 +20,8 @@ RUN apt-get update -qq && apt-get upgrade -y
 RUN pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme codecov
 RUN gem install narray
 RUN cd /usr/bin && ln -s swig3.0 swig && ln -s ccache-swig3.0 ccache-swig
+
+RUN wget -qO- "https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
 
 ADD http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.19.tar.gz /tmp/
 RUN cd /tmp && \

@@ -723,7 +723,7 @@ protected:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void load_serializable_pre() throw (ShogunException);
+	virtual void load_serializable_pre() noexcept(false);
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -732,7 +732,7 @@ protected:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void load_serializable_post() throw (ShogunException);
+	virtual void load_serializable_post() noexcept(false);
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -741,7 +741,7 @@ protected:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void save_serializable_pre() throw (ShogunException);
+	virtual void save_serializable_pre() noexcept(false);
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -750,7 +750,7 @@ protected:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void save_serializable_post() throw (ShogunException);
+	virtual void save_serializable_post() noexcept(false);
 
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by put() and retrieved by

@@ -942,7 +942,7 @@ class CKernel : public CSGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() throw (ShogunException);
+		virtual void load_serializable_post() noexcept(false);
 
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -952,7 +952,7 @@ class CKernel : public CSGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_pre() throw (ShogunException);
+		virtual void save_serializable_pre() noexcept(false);
 
 		/** Can (optionally) be overridden to post-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -962,7 +962,7 @@ class CKernel : public CSGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_post() throw (ShogunException);
+		virtual void save_serializable_post() noexcept(false);
 
 		/** Separate the function of parameter registration
 		 *	This can be the first stage of a *general* framework for

@@ -514,7 +514,7 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
 {
 	SGVector<index_t> index_zero = mu.find(0);
-	SGVector<index_t> index_pos = mu.find_if(std::bind1st(std::less<int32_t>(), 0));
+	SGVector<index_t> index_pos = mu.find_if(std::bind(std::less<int32_t>(), 0, std::placeholders::_1));
 
 	int32_t num_zero = index_zero.vlen;
 	int32_t num_pos  = index_pos.vlen;
@@ -703,7 +703,7 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
 {
 	SGVector<index_t> index_zero = mu.find(0);
-	SGVector<index_t> index_neg = mu.find_if(std::bind1st(std::greater<int32_t>(), 0));
+	SGVector<index_t> index_neg = mu.find_if(std::bind(std::greater<int32_t>(), 0, std::placeholders::_1));
 
 	int32_t num_zero = index_zero.vlen;
 	int32_t num_neg  = index_neg.vlen;

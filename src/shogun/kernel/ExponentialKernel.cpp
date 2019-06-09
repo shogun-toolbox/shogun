@@ -54,7 +54,7 @@ float64_t CExponentialKernel::compute(int32_t idx_a, int32_t idx_b)
 	return exp(-dist/m_width);
 }
 
-void CExponentialKernel::load_serializable_post() throw (ShogunException)
+void CExponentialKernel::load_serializable_post() noexcept(false)
 {
 	CKernel::load_serializable_post();
 }

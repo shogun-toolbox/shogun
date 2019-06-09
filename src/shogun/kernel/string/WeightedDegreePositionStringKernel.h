@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Patrick Pletscher, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Patrick Pletscher, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -685,7 +685,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() throw (ShogunException);
+		virtual void load_serializable_post() noexcept(false);
 
 	private:
 		/** Do basic initialisations like default settings

@@ -9,7 +9,7 @@ steps:
   inputs:
     createCustomEnvironment: True
     environmentName: shogun
-    packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply jinja2 gtest mkl-devel swig'
+    packageSpecs: 'python=3.6.* setuptools numpy scipy eigen snappy zlib ctags ply jinja2 gtest mkl-devel swig'
     createOptions: '-c conda-forge'
     updateConda: false
 

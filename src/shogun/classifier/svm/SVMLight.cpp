@@ -988,7 +988,7 @@ void CSVMLight::clear_index(int32_t *index)
 void CSVMLight::add_to_index(int32_t *index, int32_t elem)
      /* initializes and empties index */
 {
-  register int32_t i;
+  int32_t i;
   for (i=0;index[i] != -1;i++);
   index[i]=elem;
   index[i+1]=-1;
@@ -998,7 +998,7 @@ int32_t CSVMLight::compute_index(
 	int32_t *binfeature, int32_t range, int32_t *index)
      /* create an inverted index of binfeature */
 {
-  register int32_t i,ii;
+  int32_t i,ii;
 
   ii=0;
   for (i=0;i<range;i++) {
@@ -1072,8 +1072,8 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 #ifdef HAVE_PTHREAD
 	else
 	{
-		register int32_t ki,kj,i,j;
-		register float64_t kernel_temp;
+		int32_t ki,kj,i,j;
+		float64_t kernel_temp;
 
 		qp->opt_n=varnum;
 		qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
@@ -1195,8 +1195,8 @@ void CSVMLight::compute_matrices_for_optimization(
 	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
 	float64_t *aicache, QP *qp)
 {
-  register int32_t ki,kj,i,j;
-  register float64_t kernel_temp;
+  int32_t ki,kj,i,j;
+  float64_t kernel_temp;
 
   qp->opt_n=varnum;
   qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
@@ -1449,7 +1449,7 @@ void CSVMLight::update_linear_component(
      /* based on the change of the variables */
      /* in the current working set */
 {
-	register int32_t i=0,ii=0,j=0,jj=0;
+	int32_t i=0,ii=0,j=0,jj=0;
 
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	{
@@ -1936,7 +1936,7 @@ int32_t CSVMLight::select_next_qp_subproblem_rand(
 void CSVMLight::select_top_n(
 	float64_t *selcrit, int32_t range, int32_t* select, int32_t n)
 {
-  register int32_t i,j;
+  int32_t i,j;
 
   for (i=0;(i<n) && (i<range);i++) { /* Initialize with the first n elements */
     for (j=i;j>=0;j--) {
@@ -2130,9 +2130,9 @@ void CSVMLight::reactivate_inactive_examples(
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register int32_t i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
+  int32_t i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
   int32_t *changed,*inactive;
-  register float64_t *a_old,dist;
+  float64_t *a_old,dist;
   float64_t ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
@@ -2430,7 +2430,7 @@ float64_t* CSVMLight::optimize_qp(
 		QP *qp, float64_t *epsilon_crit, int32_t nx, float64_t *threshold,
 		int32_t& svm_maxqpsize)
 {
-	register int32_t i, j, result;
+	int32_t i, j, result;
 	float64_t margin, obj_before, obj_after;
 	float64_t sigdig, dist, epsilon_loqo;
 	int32_t iter;

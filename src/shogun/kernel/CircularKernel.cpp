@@ -50,7 +50,7 @@ bool CCircularKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CCircularKernel::load_serializable_post() throw (ShogunException)
+void CCircularKernel::load_serializable_post() noexcept(false)
 {
 	CKernel::load_serializable_post();
 }

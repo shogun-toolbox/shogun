@@ -212,7 +212,7 @@ class CLinearHMM : public CDistribution
 		virtual const char* get_name() const { return "LinearHMM"; }
 
 	protected:
-		virtual void load_serializable_post() throw (ShogunException);
+		virtual void load_serializable_post() noexcept(false);
 
 	private:
 		void init();
