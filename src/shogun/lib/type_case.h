@@ -21,10 +21,11 @@ namespace shogun
 {
 	typedef Types<
 	    bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
-	    int64_t, uint64_t, float32_t, float64_t, floatmax_t, SGVector<int32_t>,
-	    SGVector<int64_t>, SGVector<float32_t>, SGVector<float64_t>,
-	    SGVector<floatmax_t>, SGMatrix<int32_t>, SGMatrix<int64_t>,
-	    SGMatrix<float32_t>, SGMatrix<float64_t>, SGMatrix<floatmax_t>>
+	    int64_t, uint64_t, float32_t, float64_t, floatmax_t, SGVector<char>,
+	    SGVector<int8_t>, SGVector<int16_t>, SGVector<uint8_t>, SGVector<uint16_t>,
+		SGVector<uint32_t>, SGVector<uint64_t>, SGVector<int32_t>, SGVector<int64_t>,
+		SGVector<float32_t>, SGVector<float64_t>, SGVector<floatmax_t>, SGMatrix<int32_t>,
+		SGMatrix<int64_t>, SGMatrix<float32_t>, SGMatrix<float64_t>, SGMatrix<floatmax_t>>
 	    SG_TYPES;
 
 	enum class TYPE
@@ -44,17 +45,24 @@ namespace shogun
 		T_FLOATMAX = 13,
 		T_SGOBJECT = 14,
 		T_COMPLEX128 = 15,
-		T_SGVECTOR_FLOAT32 = 16,
-		T_SGVECTOR_FLOAT64 = 17,
-		T_SGVECTOR_FLOATMAX = 18,
-		T_SGVECTOR_INT32 = 19,
-		T_SGVECTOR_INT64 = 20,
-		T_SGMATRIX_FLOAT32 = 21,
-		T_SGMATRIX_FLOAT64 = 22,
-		T_SGMATRIX_FLOATMAX = 23,
-		T_SGMATRIX_INT32 = 24,
-		T_SGMATRIX_INT64 = 25,
-		T_UNDEFINED = 26
+		T_SGVECTOR_CHAR = 16,
+		T_SGVECTOR_FLOAT32 = 17,
+		T_SGVECTOR_FLOAT64 = 18,
+		T_SGVECTOR_FLOATMAX = 19,
+		T_SGVECTOR_UINT8 = 20,
+		T_SGVECTOR_INT8 = 21,
+		T_SGVECTOR_INT16 = 22,
+		T_SGVECTOR_UINT16 = 23,
+		T_SGVECTOR_INT32 = 24,
+		T_SGVECTOR_UINT32 = 25,
+		T_SGVECTOR_INT64 = 26,
+		T_SGVECTOR_UINT64 = 27,
+		T_SGMATRIX_FLOAT32 = 28,
+		T_SGMATRIX_FLOAT64 = 29,
+		T_SGMATRIX_FLOATMAX = 30,
+		T_SGMATRIX_INT32 = 31,
+		T_SGMATRIX_INT64 = 32,
+		T_UNDEFINED = 33
 	};
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
 	namespace type_internal
@@ -128,11 +136,18 @@ namespace shogun
 		SG_ADD_PRIMITIVE_TYPE(float64_t, TYPE::T_FLOAT64)
 		SG_ADD_PRIMITIVE_TYPE(floatmax_t, TYPE::T_FLOATMAX)
 		SG_ADD_PRIMITIVE_TYPE(complex128_t, TYPE::T_COMPLEX128)
+		SG_ADD_SGVECTOR_TYPE(SGVector<char>, TYPE::T_SGVECTOR_CHAR)
 		SG_ADD_SGVECTOR_TYPE(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
 		SG_ADD_SGVECTOR_TYPE(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
 		SG_ADD_SGVECTOR_TYPE(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+		SG_ADD_SGVECTOR_TYPE(SGVector<int8_t>, TYPE::T_SGVECTOR_INT8)
+		SG_ADD_SGVECTOR_TYPE(SGVector<int16_t>, TYPE::T_SGVECTOR_INT16)
+		SG_ADD_SGVECTOR_TYPE(SGVector<uint16_t>, TYPE::T_SGVECTOR_UINT16)
+		SG_ADD_SGVECTOR_TYPE(SGVector<uint8_t>, TYPE::T_SGVECTOR_UINT8)
 		SG_ADD_SGVECTOR_TYPE(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
 		SG_ADD_SGVECTOR_TYPE(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+		SG_ADD_SGVECTOR_TYPE(SGVector<uint32_t>, TYPE::T_SGVECTOR_UINT32)
+		SG_ADD_SGVECTOR_TYPE(SGVector<uint64_t>, TYPE::T_SGVECTOR_UINT64)
 		SG_ADD_SGMATRIX_TYPE(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
 		SG_ADD_SGMATRIX_TYPE(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
 		SG_ADD_SGMATRIX_TYPE(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
@@ -416,11 +431,18 @@ static const typemap sg_all_typemap = {
 		ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
 		ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
 		ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
+		ADD_TYPE_TO_MAP(SGVector<char>, TYPE::T_SGVECTOR_CHAR)
 		ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
 		ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
 		ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+		ADD_TYPE_TO_MAP(SGVector<int8_t>, TYPE::T_SGVECTOR_INT8)
+		ADD_TYPE_TO_MAP(SGVector<int16_t>, TYPE::T_SGVECTOR_INT16)
+		ADD_TYPE_TO_MAP(SGVector<uint8_t>, TYPE::T_SGVECTOR_UINT8)
+		ADD_TYPE_TO_MAP(SGVector<uint16_t>, TYPE::T_SGVECTOR_UINT16)
 		ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
 		ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+		ADD_TYPE_TO_MAP(SGVector<uint32_t>, TYPE::T_SGVECTOR_UINT32)
+		ADD_TYPE_TO_MAP(SGVector<uint64_t>, TYPE::T_SGVECTOR_UINT64)
 		ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
 		ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
 		ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
@@ -428,11 +450,18 @@ static const typemap sg_all_typemap = {
 		ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
 };
 static const typemap sg_vector_typemap = {
+		ADD_TYPE_TO_MAP(SGVector<char>, TYPE::T_SGVECTOR_CHAR)
 		ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
 		ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
 		ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+		ADD_TYPE_TO_MAP(SGVector<int8_t>, TYPE::T_SGVECTOR_INT8)
+		ADD_TYPE_TO_MAP(SGVector<int16_t>, TYPE::T_SGVECTOR_INT16)
+		ADD_TYPE_TO_MAP(SGVector<uint8_t>, TYPE::T_SGVECTOR_UINT8)
+		ADD_TYPE_TO_MAP(SGVector<uint16_t>, TYPE::T_SGVECTOR_UINT16)
 		ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
 		ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+		ADD_TYPE_TO_MAP(SGVector<uint32_t>, TYPE::T_SGVECTOR_UINT32)
+		ADD_TYPE_TO_MAP(SGVector<uint64_t>, TYPE::T_SGVECTOR_UINT64)
 };
 static const typemap sg_matrix_typemap = {
 		ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
