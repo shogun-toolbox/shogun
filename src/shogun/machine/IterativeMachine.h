@@ -95,7 +95,7 @@ namespace shogun
 		virtual bool train_machine(CFeatures* data = NULL)
 		{
 			train_machine(data, T::m_labels);
-			return true;
+			return is_complete();
 		}
 
 		virtual void
