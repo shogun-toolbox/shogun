@@ -30,62 +30,15 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/mathematics/linalg/LinalgBackendEigen.h>
-#include <shogun/mathematics/linalg/LinalgEnums.h>
-#include <shogun/mathematics/linalg/LinalgMacros.h>
-
-using namespace shogun;
-
-#define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container)                       \
-	Container<Type> LinalgBackendEigen::cholesky_factor(                       \
-	    const Container<Type>& A, const bool lower) const                      \
-	{                                                                          \
-		return cholesky_factor_impl(A, lower);                                 \
-	}
-DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
-#undef BACKEND_GENERIC_CHOLESKY_FACTOR
-
-#define BACKEND_GENERIC_CHOLESKY_RANK_UPDATE(Type, Container)                  \
-	void LinalgBackendEigen::cholesky_rank_update(                             \
-	    Container<Type>& L, const SGVector<Type>& b, Type alpha,               \
-	    const bool lower) const                                                \
-	{                                                                          \
-		cholesky_rank_update_impl(L, b, alpha, lower);                         \
-	}
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
-#undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
-
-#define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
-	void LinalgBackendEigen::ldlt_factor(                                      \
-	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
-	    SGVector<index_t>& p, const bool lower) const                          \
-	{                                                                          \
-		return ldlt_factor_impl(A, L, d, p, lower);                            \
-	}
-DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
-#undef BACKEND_GENERIC_LDLT_FACTOR
-
-#define BACKEND_GENERIC_SVD(Type, Container)                                   \
-	void LinalgBackendEigen::svd(                                              \
-	    const Container<Type>& A, SGVector<Type> s, Container<Type> U,         \
-	    bool thin_U, linalg::SVDAlgorithm alg) const                           \
-	{                                                                          \
-		return svd_impl(A, s, U, thin_U, alg);                                 \
-	}
-DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
-#undef BACKEND_GENERIC_SVD
-
-#undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_NON_COMPLEX_PTYPE
-#undef DEFINE_FOR_NON_INTEGER_PTYPE
-#undef DEFINE_FOR_NUMERIC_PTYPE
+#ifndef EIGEN_DECOMPOSITION_H
+#define EIGEN_DECOMPOSITION_H
 
 template <typename T>
-SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(
-    const SGMatrix<T>& A, const bool lower) const
+SGMatrix<T> LinalgBackendEigen::cholesky_factor(
+    const SGMatrix<T>& A, const bool lower, derived_tag) const
 {
 	SGMatrix<T> c(A.num_rows, A.num_cols);
-	set_const(c, 0);
+	set_const(c, T(0));
 	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
 	typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
 
@@ -111,11 +64,10 @@ SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(
 	return c;
 }
 
-#include <iostream>
-
 template <typename T>
-void LinalgBackendEigen::cholesky_rank_update_impl(
-    SGMatrix<T>& L, const SGVector<T>& b, T alpha, bool lower) const
+void LinalgBackendEigen::cholesky_rank_update(
+    SGMatrix<T>& L, const SGVector<T>& b, T alpha, bool lower,
+    derived_tag) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
 	typename SGVector<T>::EigenVectorXtMap b_eig = b;
@@ -130,11 +82,11 @@ void LinalgBackendEigen::cholesky_rank_update_impl(
 }
 
 template <typename T>
-void LinalgBackendEigen::ldlt_factor_impl(
+void LinalgBackendEigen::ldlt_factor(
     const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d, SGVector<index_t>& p,
-    const bool lower) const
+    const bool lower, derived_tag) const
 {
-	set_const(L, 0);
+	set_const(L, T(0));
 	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
 	typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
 	typename SGVector<T>::EigenVectorXtMap d_eig = d;
@@ -157,9 +109,9 @@ void LinalgBackendEigen::ldlt_factor_impl(
 }
 
 template <typename T>
-void LinalgBackendEigen::svd_impl(
+void LinalgBackendEigen::svd(
     const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U, bool thin_U,
-    linalg::SVDAlgorithm alg) const
+    linalg::SVDAlgorithm alg, derived_tag) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
 	typename SGVector<T>::EigenVectorXtMap s_eig = s;
@@ -170,12 +122,13 @@ void LinalgBackendEigen::svd_impl(
 	case linalg::SVDAlgorithm::BidiagonalDivideConquer:
 	{
 // Building BDC-SVD templates OOMs on 32 Bit ARM hardware
-#if	(defined(__arm__) || defined (__thumb__) || defined(__TARGET_ARCH_ARM) ||	\
-	 defined(__TARGET_ARCH_THUMB) || defined (_ARM) || defined(_M_ARM) ||		\
-	 defined(_M_ARMT) || defined(__arm)) && !defined(__aarch64__)
-		SG_SWARNING(
-		    "BDC-SVD is not supported on 32 Bit ARM hardware.\n"
-		    "Falling back on Jacobi-SVD.\n")
+#if (                                                                          \
+    defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) ||    \
+    defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) ||        \
+    defined(_M_ARMT) || defined(__arm)) &&                                     \
+    !defined(__aarch64__)
+		SG_SWARNING("BDC-SVD is not supported on 32 Bit ARM hardware.\n"
+		            "Falling back on Jacobi-SVD.\n")
 #elif EIGEN_VERSION_AT_LEAST(3, 3, 0)
 		auto svd_eig =
 		    A_eig.bdcSvd(thin_U ? Eigen::ComputeThinU : Eigen::ComputeFullU);
@@ -183,9 +136,8 @@ void LinalgBackendEigen::svd_impl(
 		U_eig = svd_eig.matrixU().template cast<T>();
 		break;
 #else
-		SG_SWARNING(
-		    "At least Eigen 3.3 is required for BDC-SVD.\n"
-		    "Falling back on Jacobi-SVD.\n")
+		SG_SWARNING("At least Eigen 3.3 is required for BDC-SVD.\n"
+		            "Falling back on Jacobi-SVD.\n")
 #endif
 	}
 
@@ -199,3 +151,5 @@ void LinalgBackendEigen::svd_impl(
 	}
 	}
 }
+
+#endif

@@ -30,41 +30,13 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/linalg/LinalgBackendEigen.h>
-#include <shogun/mathematics/linalg/LinalgMacros.h>
-
-using namespace shogun;
-
-#define BACKEND_GENERIC_EIGEN_SOLVER(Type, Container)                          \
-	void LinalgBackendEigen::eigen_solver(                                     \
-	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
-	    SGMatrix<Type>& eigenvectors) const                                    \
-	{                                                                          \
-		eigen_solver_impl(A, eigenvalues, eigenvectors);                       \
-	}
-DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER, SGMatrix)
-#undef BACKEND_GENERIC_EIGEN_SOLVER
-
-#define BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC(Type, Container)                \
-	void LinalgBackendEigen::eigen_solver_symmetric(                           \
-	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
-	    SGMatrix<Type>& eigenvectors, index_t k) const                         \
-	{                                                                          \
-		eigen_solver_symmetric_impl(A, eigenvalues, eigenvectors, k);          \
-	}
-DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC, SGMatrix)
-#undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
-
-#undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_NON_COMPLEX_PTYPE
-#undef DEFINE_FOR_NON_INTEGER_PTYPE
-#undef DEFINE_FOR_NUMERIC_PTYPE
+#ifndef EIGEN_EIGENSOLVERS_H
+#define EIGEN_EIGENSOLVERS_H
 
 template <typename T>
-void LinalgBackendEigen::eigen_solver_impl(
-    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
-    SGMatrix<T>& eigenvectors) const
+void LinalgBackendEigen::eigen_solver(
+    const SGMatrix<T>& A, SGVector<T>& eigenvalues, SGMatrix<T>& eigenvectors,
+    derived_tag) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
 	typename SGMatrix<T>::EigenMatrixXtMap eigenvectors_eig = eigenvectors;
@@ -87,23 +59,4 @@ void LinalgBackendEigen::eigen_solver_impl(
 	eigenvectors_eig = solver.eigenvectors().real();
 }
 
-void LinalgBackendEigen::eigen_solver_impl(
-    const SGMatrix<complex128_t>& A, SGVector<complex128_t>& eigenvalues,
-    SGMatrix<complex128_t>& eigenvectors) const
-{
-	typename SGMatrix<complex128_t>::EigenMatrixXtMap A_eig = A;
-	typename SGMatrix<complex128_t>::EigenMatrixXtMap eigenvectors_eig =
-	    eigenvectors;
-	typename SGVector<complex128_t>::EigenVectorXtMap eigenvalues_eig =
-	    eigenvalues;
-
-	Eigen::ComplexEigenSolver<typename SGMatrix<complex128_t>::EigenMatrixXt>
-	    solver(A_eig);
-
-	REQUIRE(
-	    solver.info() != Eigen::NumericalIssue,
-	    "The input contains INF or NaN values or overflow occured.\n");
-
-	eigenvalues_eig = solver.eigenvalues();
-	eigenvectors_eig = solver.eigenvectors();
-}
+#endif

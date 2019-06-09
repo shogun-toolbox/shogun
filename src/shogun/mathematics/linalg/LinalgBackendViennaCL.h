@@ -60,229 +60,12 @@ namespace shogun
 		friend struct GPUMemoryViennaCL;
 
 	public:
-// clang-format off
-	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
-	METHODNAME(char, Container); \
-	METHODNAME(uint8_t, Container); \
-	METHODNAME(int16_t, Container); \
-	METHODNAME(uint16_t, Container); \
-	METHODNAME(int32_t, Container); \
-	METHODNAME(uint32_t, Container); \
-	METHODNAME(float32_t, Container); \
-	METHODNAME(float64_t, Container); \
+		/** Constructor */
+		LinalgBackendViennaCL()
+		{
+			set_derived(this);
+		}
 
-	#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container) \
-	METHODNAME(float32_t, Container); \
-	METHODNAME(float64_t, Container); \
-
-	/** Implementation of @see LinalgBackendBase::add */
-	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
-	virtual void add(const Container<Type>& a, const Container<Type>& b, Type alpha, \
-		Type beta, Container<Type>& result) const \
-	{  \
-		add_impl(a, b, alpha, beta, result); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
-	#undef BACKEND_GENERIC_ADD
-
-
-	/** Implementation of @see linalg::cross_entropy */
-	#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container) \
-	virtual Type cross_entropy(const Container<Type>& P, \
-	 	 const Container<Type>& Q) const \
-	{  \
- 		return cross_entropy_impl(P, Q); \
-	}
-  DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
-  #undef BACKEND_GENERIC_CROSS_ENTROPY
-
-	/** Implementation of @see LinalgBackendBase::dot */
-	#define BACKEND_GENERIC_DOT(Type, Container) \
-	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
-	{  \
-		return dot_impl(a, b);  \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
-	#undef BACKEND_GENERIC_DOT
-
-	/** Implementation of @see LinalgBackendBase::element_prod */
-	#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container) \
-	virtual void element_prod(const Container<Type>& a, const Container<Type>& b,\
-		Container<Type>& result, bool transpose_A, bool transpose_B) const \
-	{  \
-		element_prod_impl(a, b, result, transpose_A, transpose_B); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
-
-	/** Implementation of @see LinalgBackendBase::logistic */
-	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
-	virtual void logistic(const Container<Type>& a, Container<Type>& result) const \
-	{  \
-		logistic_impl(a, result); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
-	#undef BACKEND_GENERIC_LOGISTIC
-
-	/** Implementation of @see LinalgBackendBase::matrix_prod */
-	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
-	virtual void matrix_prod(const SGMatrix<Type>& a, const Container<Type>& b,\
-		Container<Type>& result, bool transpose_A, bool transpose_B) const \
-	{  \
-		matrix_prod_impl(a, b, result, transpose_A, transpose_B); \
-	}
-	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
-	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
-
-	/** Implementation of @see LinalgBackendBase::max */
-	#define BACKEND_GENERIC_MAX(Type, Container) \
-	virtual Type max(const Container<Type>& a) const \
-	{  \
-		return max_impl(a); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
-	#undef BACKEND_GENERIC_MAX
-
-	/** Implementation of @see LinalgBackendBase::mean */
-	#define BACKEND_GENERIC_MEAN(Type, Container) \
-	virtual float64_t mean(const Container<Type>& a) const \
-	{  \
-		return mean_impl(a);  \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MEAN, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MEAN, SGMatrix)
-	#undef BACKEND_GENERIC_MEAN
-
-	/** Implementation of @see linalg::multiply_by_logistic_derivative */
-	#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container) \
-	virtual void multiply_by_logistic_derivative(const Container<Type>& a,\
-		Container<Type>& result) const \
-	{  \
-		multiply_by_logistic_derivative_impl(a, result); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
-	#undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
-
-	/** Implementation of @see linalg::multiply_by_rectified_linear_derivative */
-	#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container) \
-	virtual void multiply_by_rectified_linear_derivative(const Container<Type>& a,\
-		Container<Type>& result) const \
-	{  \
-		multiply_by_rectified_linear_derivative_impl(a, result); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
-	#undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
-
-	/** Implementation of @see linalg::rectified_linear */
-	#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container) \
-	virtual void rectified_linear(const Container<Type>& a, Container<Type>& result) const \
-	{  \
-		rectified_linear_impl(a, result); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
-	#undef BACKEND_GENERIC_RECTIFIED_LINEAR
-
-	/** Implementation of @see LinalgBackendBase::scale */
-	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
-	virtual void scale(const Container<Type>& a, Type alpha, Container<Type>& result) const \
-	{  \
-		scale_impl(a, result, alpha); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_SCALE
-
-	/** Implementation of @see LinalgBackendBase::set_const */
-	#define BACKEND_GENERIC_SET_CONST(Type, Container) \
-	virtual void set_const(Container<Type>& a, const Type value) const \
-	{  \
-		set_const_impl(a, value); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
-	#undef BACKEND_GENERIC_SET_CONST
-
-	/** Implementation of @see linalg::softmax */
-	#define BACKEND_GENERIC_SOFTMAX(Type, Container) \
-	virtual void softmax(Container<Type>& a) const \
-	{  \
-		softmax_impl(a); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
-	#undef BACKEND_GENERIC_SOFTMAX
-
-	/** Implementation of @see linalg::squared_error */
-	#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container) \
-	virtual Type squared_error(const Container<Type>& P, const Container<Type>& Q) const \
-	{  \
-		return squared_error_impl(P, Q); \
-	}
-	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
-	#undef BACKEND_GENERIC_SQUARED_ERROR
-
-	/** Implementation of @see LinalgBackendBase::sum */
-	#define BACKEND_GENERIC_SUM(Type, Container) \
-	virtual Type sum(const Container<Type>& a, bool no_diag) const \
-	{  \
-		return sum_impl(a, no_diag);  \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_SUM
-
-	/** Implementation of @see LinalgBackendBase::sum_symmetric */
-	#define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container) \
-	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const \
-	{  \
-		return sum_symmetric_impl(a, no_diag); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_SYMMETRIC_SUM
-
-	/** Implementation of @see LinalgBackendBase::colwise_sum */
-	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
-	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
-	{  \
-		return colwise_sum_impl(a, no_diag); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_COLWISE_SUM
-
-	/** Implementation of @see LinalgBackendBase::rowwise_sum */
-	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
-	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
-	{  \
-		return rowwise_sum_impl(a, no_diag); \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_ROWWISE_SUM
-
-	/** Implementation of @see LinalgBackendBase::to_gpu */
-	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
-	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>& a) const \
-	{  \
-		return to_gpu_impl(a);  \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
-	#undef BACKEND_GENERIC_TO_GPU
-
-	/** Implementation of @see LinalgBackendGPUBase::from_gpu */
-	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
-	virtual void from_gpu(const Container<Type>& a, Type* data) const \
-	{  \
-		return from_gpu_impl(a, data);  \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
-	#undef BACKEND_GENERIC_FROM_GPU
-
-	#undef DEFINE_FOR_ALL_PTYPE
-		// clang-format on
-	private:
 		/** Static cast @see GPUMemoryBase class to @see GPUMemoryViennaCL */
 		template <typename T, template <typename> class Container>
 		GPUMemoryViennaCL<T>* cast_to_viennacl(const Container<T>& a) const
@@ -826,13 +609,15 @@ namespace shogun
 			    *(gpu_ptr->m_data), gpu_ptr->m_offset * sizeof(T),
 			    a.size() * sizeof(T), data);
 		}
-// clang-format off
-#undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_NON_INTEGER_PTYPE
-		// clang-format on
 	};
 }
 
+#else
+// FIXME
+namespace shogun
+{
+	class LinalgBackendViennaCL : public LinalgBackendBase {};
+}
 #endif // HAVE_VIENNACL
 
 #endif // LINALG_BACKEND_VIENNACL_H__

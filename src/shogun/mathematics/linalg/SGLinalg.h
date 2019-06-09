@@ -41,6 +41,7 @@
 
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
+#include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
 
 #include <memory>
 
