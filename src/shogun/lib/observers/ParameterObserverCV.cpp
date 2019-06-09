@@ -48,6 +48,28 @@ ParameterObserverCV::ParameterObserverCV(bool verbose)
 {
 }
 
+ParameterObserverCV::ParameterObserverCV(
+    std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties, bool verbose)
+    : ParameterObserver(parameters, properties), m_verbose(verbose)
+{
+}
+
+ParameterObserverCV::ParameterObserverCV(
+    const std::string& filename, std::vector<std::string>& parameters,std::vector<ParameterProperties>& properties, bool verbose)
+    : ParameterObserver(filename, parameters, properties), m_verbose(verbose)
+{
+}
+
+ParameterObserverCV::ParameterObserverCV(std::vector<std::string> &parameters, bool verbose)
+		: ParameterObserver(parameters), m_verbose(verbose) {
+
+}
+
+ParameterObserverCV::ParameterObserverCV(std::vector<ParameterProperties> &properties, bool verbose)
+		: ParameterObserver(properties), m_verbose(verbose) {
+
+}
+
 ParameterObserverCV::~ParameterObserverCV()
 {
 }

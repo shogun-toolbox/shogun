@@ -52,9 +52,20 @@ namespace shogun
 
 	public:
 		ParameterObserverHistogram();
-		ParameterObserverHistogram(std::vector<std::string>& parameters);
-		ParameterObserverHistogram(
-		    const std::string& filename, std::vector<std::string>& parameters);
+
+        ParameterObserverHistogram(std::vector<std::string> &parameters);
+
+		ParameterObserverHistogram(std::vector<ParameterProperties> &properties);
+
+        ParameterObserverHistogram(
+            std::vector<std::string>& parameters,
+            std::vector<ParameterProperties>& properties);
+
+        ParameterObserverHistogram(
+		    const std::string& filename,
+            std::vector<std::string>& parameters,
+            std::vector<ParameterProperties>& properties);
+
 		~ParameterObserverHistogram();
 
 		virtual void on_error(std::exception_ptr);

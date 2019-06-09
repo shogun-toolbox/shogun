@@ -32,6 +32,7 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include "ParameterObserver.h"
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/observers/ParameterObserver.h>
@@ -49,15 +50,32 @@ ParameterObserver::ParameterObserver()
 	    "num_observations", &ParameterObserver::get_num_observations);
 }
 
-ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
+ParameterObserver::ParameterObserver(std::vector<std::string>& parameters,
+									 std::vector<ParameterProperties>& properties)
     : ParameterObserver()
 {
 	m_observed_parameters = parameters;
+	m_observed_properties = properties;
+}
+
+ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
+: ParameterObserver()
+{
+    m_observed_parameters = parameters;
+}
+
+ParameterObserver::ParameterObserver(std::vector<ParameterProperties>& properties)
+: ParameterObserver()
+{
+    m_observed_properties = properties;
 }
 
 ParameterObserver::ParameterObserver(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserver(parameters)
+		const std::string& filename,
+		std::vector<std::string>& parameters,
+		std::vector<ParameterProperties>& properties
+)
+    : ParameterObserver(parameters, properties)
 {
 }
 
@@ -71,10 +89,24 @@ bool ParameterObserver::filter(const std::string& param)
 	if (m_observed_parameters.size() == 0)
 		return true;
 
-	for (auto v : m_observed_parameters)
-		if (v == param)
-			return true;
-	return false;
+	auto res = std::find(m_observed_parameters.begin(),
+						 m_observed_parameters.end(),
+						 param);
+
+	return res != m_observed_parameters.end();
+}
+
+bool ParameterObserver::filter(const AnyParameterProperties &property) {
+
+	// If there are no specified parameters, then watch everything
+	if (m_observed_properties.size() == 0)
+		return true;
+
+	bool res=false;
+	for (auto p : m_observed_properties)
+		res |= property.has_property(p);
+
+	return res;
 }
 
 index_t ParameterObserver::get_num_observations() const

@@ -51,6 +51,22 @@ namespace shogun
 
 	public:
 		ParameterObserverCV(bool verbose = false);
+
+        ParameterObserverCV(std::vector<std::string> &parameters, bool verbose = false);
+
+		ParameterObserverCV(std::vector<ParameterProperties> &properties,bool verbose = false);
+
+        ParameterObserverCV(
+            std::vector<std::string>& parameters,
+            std::vector<ParameterProperties>& properties,
+            bool verbose = false);
+
+        ParameterObserverCV(
+		    const std::string& filename,
+            std::vector<std::string>& parameters,
+            std::vector<ParameterProperties>& properties,
+            bool verbose = false);
+
 		virtual ~ParameterObserverCV();
 		virtual void on_error(std::exception_ptr ptr);
 		virtual void on_complete();

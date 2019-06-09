@@ -21,7 +21,18 @@ namespace shogun
 	public:
 		ParameterObserverLogger();
 
-		ParameterObserverLogger(std::vector<std::string>& parameters);
+        ParameterObserverLogger(std::vector<std::string> &parameters);
+
+        ParameterObserverLogger(std::vector<ParameterProperties> &properties);
+
+		ParameterObserverLogger(
+            std::vector<std::string> &parameters,
+            std::vector<ParameterProperties> &properties);
+
+		ParameterObserverLogger(
+            const std::string &filename,
+            std::vector<std::string> &parameters,
+			std::vector<ParameterProperties> &properties);
 
 		virtual ~ParameterObserverLogger();
 

@@ -52,10 +52,21 @@ namespace shogun
 
 	public:
 		ParameterObserverScalar();
-		ParameterObserverScalar(std::vector<std::string>& parameters);
-		ParameterObserverScalar(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverScalar();
+
+        ParameterObserverScalar(std::vector<std::string> &parameters);
+
+        ParameterObserverScalar(std::vector<ParameterProperties> &properties);
+
+        ParameterObserverScalar(
+            std::vector<std::string>& parameters,
+            std::vector<ParameterProperties>& properties);
+
+        ParameterObserverScalar(
+		    const std::string& filename,
+            std::vector<std::string>& parameters,
+            std::vector<ParameterProperties>& properties);
+
+        ~ParameterObserverScalar();
 
 		virtual void on_error(std::exception_ptr);
 		virtual void on_complete();

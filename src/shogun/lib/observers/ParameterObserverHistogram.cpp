@@ -47,14 +47,14 @@ ParameterObserverHistogram::ParameterObserverHistogram()
 }
 
 ParameterObserverHistogram::ParameterObserverHistogram(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
+    std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties)
+    : ParameterObserverTensorBoard(parameters, properties)
 {
 }
 
 ParameterObserverHistogram::ParameterObserverHistogram(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
+    const std::string& filename, std::vector<std::string>& parameters,std::vector<ParameterProperties>& properties)
+    : ParameterObserverTensorBoard(filename, parameters, properties)
 {
 }
 
@@ -76,6 +76,16 @@ void ParameterObserverHistogram::on_error(std::exception_ptr)
 
 void ParameterObserverHistogram::on_complete()
 {
+}
+
+ParameterObserverHistogram::ParameterObserverHistogram(std::vector<std::string> &parameters)
+		: ParameterObserverTensorBoard(parameters) {
+
+}
+
+ParameterObserverHistogram::ParameterObserverHistogram(std::vector<ParameterProperties> &properties)
+		: ParameterObserverTensorBoard(properties) {
+
 }
 
 #endif // HAVE_TFLOGGER

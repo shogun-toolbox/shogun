@@ -47,14 +47,14 @@ ParameterObserverScalar::ParameterObserverScalar()
 }
 
 ParameterObserverScalar::ParameterObserverScalar(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
+    std::vector<std::string>& parameters,std::vector<ParameterProperties>& properties)
+    : ParameterObserverTensorBoard(parameters, properties)
 {
 }
 
 ParameterObserverScalar::ParameterObserverScalar(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
+    const std::string& filename, std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties)
+    : ParameterObserverTensorBoard(filename, parameters, properties)
 {
 }
 
@@ -76,6 +76,16 @@ void ParameterObserverScalar::on_error(std::exception_ptr)
 
 void ParameterObserverScalar::on_complete()
 {
+}
+
+ParameterObserverScalar::ParameterObserverScalar(std::vector<std::string> &parameters) : ParameterObserverTensorBoard(
+		parameters) {
+
+}
+
+ParameterObserverScalar::ParameterObserverScalar(std::vector<ParameterProperties> &properties)
+		: ParameterObserverTensorBoard(properties) {
+
 }
 
 #endif // HAVE_TFLOGGER

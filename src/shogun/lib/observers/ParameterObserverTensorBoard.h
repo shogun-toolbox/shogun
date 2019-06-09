@@ -56,7 +56,9 @@ namespace shogun
 		 * Constructor
 		 * @param parameters list of parameters which we want to watch over
 		 */
-		ParameterObserverTensorBoard(std::vector<std::string>& parameters);
+		ParameterObserverTensorBoard(
+			std::vector<std::string>& parameters,
+			std::vector<ParameterProperties>& properties);
 
 		/**
 		 * Constructor
@@ -64,7 +66,13 @@ namespace shogun
 		 * @param parameters list of parameters which we want to watch over
 		 */
 		ParameterObserverTensorBoard(
-		    const std::string& filename, std::vector<std::string>& parameters);
+			const std::string& filename,
+			std::vector<std::string>& parameters,
+			std::vector<ParameterProperties>& properties);
+
+		ParameterObserverTensorBoard(std::vector<std::string> &parameters);
+		ParameterObserverTensorBoard(std::vector<ParameterProperties> &properties);
+
 		/**
 		 * Virtual destructor
 		 */

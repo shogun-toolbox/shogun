@@ -455,7 +455,9 @@ void SGObject::subscribe(const std::shared_ptr<ParameterObserver>& obs)
 	rxcpp::subscription subscription =
 	    m_observable_params
 	        ->filter([obs](std::shared_ptr<ObservedValue> v) {
-		        return obs->filter(v->get<std::string>("name"));
+				auto p = v->get_params().find(v->get<std::string>("name"));
+		        return obs->filter(v->get<std::string>("name"))
+						&& obs->filter(p->second->get_properties());
 		    })
 	        .timestamp()
 	        .subscribe(sub);

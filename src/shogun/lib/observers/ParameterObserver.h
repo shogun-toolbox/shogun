@@ -66,11 +66,30 @@ namespace shogun
 
 		/**
 		 * Constructor
-		 * @param filename name of the generated output file
 		 * @param parameters list of parameters which we want to watch over
 		 */
+		ParameterObserver(std::vector<ParameterProperties>& properties);
+
+
+		/**
+		 * Constructor
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserver(std::vector<std::string>& parameters,
+						  std::vector<ParameterProperties>& properties);
+
+		/**
+		 * Constructor
+		 * @param filename name of the generated output file
+		 * @param parameters list of parameters which we want to watch over
+		 * @param properties list of properties which we want to watch over
+		 */
 		ParameterObserver(
-		    const std::string& filename, std::vector<std::string>& parameters);
+		    const std::string& filename,
+			std::vector<std::string>& parameters,
+			std::vector<ParameterProperties>& properties
+		);
+
 		/**
 		 * Virtual destructor
 		 */
@@ -83,6 +102,8 @@ namespace shogun
 		 * @return true if param is found inside of m_parameters list
 		 */
 		virtual bool filter(const std::string& param);
+
+		virtual bool filter(const AnyParameterProperties& property);
 
 		/**
 		 * Return a single observation from the received ones (not SG_REF).
@@ -155,6 +176,8 @@ namespace shogun
 		 * List of parameter's names we want to monitor
 		 */
 		std::vector<std::string> m_observed_parameters;
+
+		std::vector<ParameterProperties> m_observed_properties;
 
 		/**
 		 * Observations recorded each time we compute on_next()
