@@ -63,6 +63,13 @@ namespace shogun {
 
 		virtual void enter_map(size_t *size);
 
+		virtual void exit_matrix(index_t *rows, index_t *cols);
+
+		virtual void exit_vector(index_t *size);
+
+		virtual void exit_std_vector(size_t *size);
+
+		virtual void exit_map(size_t *size);
 
 
 	private:
