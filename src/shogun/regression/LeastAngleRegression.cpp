@@ -103,20 +103,6 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 }
 
 template <typename ST, typename U>
-<<<<<<< HEAD
-<<<<<<< HEAD
-bool CLeastAngleRegression::train_machine_templated(
-=======
-void CLeastAngleRegression::train_machine_templated(
->>>>>>> a59bb425e... Make train_machine_templated return void
-	const CDenseFeatures<ST>* data)
-{
-	train_machine_templated(data, m_labels);
-}
-
-template <typename ST, typename U>
-=======
->>>>>>> 47e1ee350... LeastAngleRegression f
 void CLeastAngleRegression::train_machine_templated(
 	const CDenseFeatures<ST>* features, CLabels* labels)
 {
