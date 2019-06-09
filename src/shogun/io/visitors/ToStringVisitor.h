@@ -71,6 +71,8 @@ namespace shogun {
 
 		virtual void exit_map(size_t *size);
 
+		virtual void enter_matrix_row(index_t *rows, index_t *cols);
+		virtual void exit_matrix_row(index_t *rows, index_t *cols);
 
 	private:
 		std::stringstream &stream() {

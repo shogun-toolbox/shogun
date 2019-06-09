@@ -62,19 +62,19 @@ void ToStringVisitor::on(complex128_t *complex128) {
 }
 
 void ToStringVisitor::enter_matrix(index_t *rows, index_t *cols) {
-	stream() << "Matrix( ";
+	stream() << "Matrix<"<< *rows << "x" << *cols << ">( ";
 }
 
 void ToStringVisitor::enter_vector(index_t *size) {
-	stream() << "Vector( ";
+	stream() << "Vector<" << *size << ">( ";
 }
 
 void ToStringVisitor::enter_std_vector(size_t *size) {
-	stream() << "Vector( ";
+	stream() << "Vector<" << *size << ">( ";
 }
 
 void ToStringVisitor::enter_map(size_t *size) {
-	stream() << "Map( ";
+	stream() << "Map<" << *size << ">( ";
 }
 
 void ToStringVisitor::on(float32_t *v) {
@@ -103,4 +103,14 @@ void ToStringVisitor::exit_std_vector(size_t *size) {
 
 void ToStringVisitor::exit_map(size_t *size) {
 	stream() << ")";
+}
+
+void ToStringVisitor::enter_matrix_row(index_t *rows, index_t *cols)
+{
+	stream() << "[ ";
+}
+
+void ToStringVisitor::exit_matrix_row(index_t *rows, index_t *cols)
+{
+	stream() << "]\n";
 }
