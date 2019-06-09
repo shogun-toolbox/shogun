@@ -32,83 +32,47 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#ifndef SHOGUN_PARAMETEROBSERVERINTERFACE_H
-#define SHOGUN_PARAMETEROBSERVERINTERFACE_H
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
-#include <stdexcept>
-#include <vector>
+#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 
-#include <shogun/lib/any.h>
-#include <shogun/lib/parameter_observers/ObservedValue.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
 
 namespace shogun
 {
-
 	/**
-	 * Interface for the parameter observer classes
+	 * Implementation of a ParameterObserver which write to file
+	 * histograms, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverInterface
+	class CParameterObserverHistogram : public ParameterObserverTensorBoard
 	{
 
 	public:
-		/**
-		* Default constructor
-		*/
-		ParameterObserverInterface();
-
-		/**
-		 * Constructor
-		 * @param parameters list of parameters which we want to watch over
-		 */
-		ParameterObserverInterface(std::vector<std::string>& parameters);
-
-		/**
-		 * Constructor
-		 * @param filename name of the generated output file
-		 * @param parameters list of parameters which we want to watch over
-		 */
-		ParameterObserverInterface(
+		CParameterObserverHistogram();
+		CParameterObserverHistogram(std::vector<std::string>& parameters);
+		CParameterObserverHistogram(
 		    const std::string& filename, std::vector<std::string>& parameters);
-		/**
-		 * Virtual destructor
-		 */
-		virtual ~ParameterObserverInterface();
+		~CParameterObserverHistogram();
+
+		virtual void on_error(std::exception_ptr);
+		virtual void on_complete();
 
 		/**
-		 * Filter function, check if the parameter name supplied is what
-		 * we want to monitor
-		 * @param param the param name
-		 * @return true if param is found inside of m_parameters list
-		 */
-		virtual bool filter(const std::string& param);
-
-		/**
-		 * Method which will be called when the parameter observable emits a
-		 * value.
-		 * @param value the value emitted by the parameter observable
-		 */
-		virtual void on_next(const TimedObservedValue& value) = 0;
-		/**
-		 * Method which will be called on errors
-		 */
-		virtual void on_error(std::exception_ptr) = 0;
-		/**
-		 * Method which will be called on completion
-		 */
-		virtual void on_complete() = 0;
-
-		/**
-		 * Method useful to empty the observer from
-		 * obseverd value it may have stored.
-		 */
-		virtual void clear(){};
+		* Get class name.
+		* @return class name
+		*/
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverHistogram";
+		}
 
 	protected:
-		/**
-		 * List of parameter's names we want to monitor
-		 */
-		std::vector<std::string> m_parameters;
+		virtual void on_next_impl(const TimedObservedValue& value);
 	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVER_H
+#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#endif // HAVE_TFLOGGER

@@ -12,6 +12,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
@@ -75,6 +76,9 @@ void CPerceptron::iteration()
 			const auto gradient = learn_rate * true_label;
 			bias += gradient;
 			v.add(gradient, w);
+
+			observe<SGVector<float64_t>>(m_current_iteration, "w");
+			observe<float64_t>(m_current_iteration, "bias");
 		}
 	}
 	m_complete = converged;

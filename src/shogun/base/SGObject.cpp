@@ -15,15 +15,15 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/class_list.h>
 #include <shogun/io/SerializableFile.h>
+#include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
-
-#include <shogun/base/class_list.h>
+#include <shogun/lib/observers/ParameterObserver.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,13 +31,16 @@
 
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
+#include <rxcpp/rx-subscription.hpp>
 
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
 #include <stack>
+#include <utility>
 
 #include <shogun/distance/Distance.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
@@ -46,6 +49,8 @@
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+
+#include <shogun/lib/observers/ObservedValue.h>
 
 namespace shogun
 {
@@ -541,6 +546,24 @@ void CSGObject::init()
 	m_subject_params = new SGSubject();
 	m_observable_params = new SGObservable(m_subject_params->get_observable());
 	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
+	m_next_subscription_index = 0;
+
+	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
+}
+
+std::string CSGObject::get_description(const std::string& name) const
+{
+	auto it = this->get_params().find(name);
+	if (it != this->get_params().end())
+	{
+		return it->second.get()->get_properties().get_description();
+	}
+	else
+	{
+		SG_SERROR(
+		    "There is no parameter called '%s' in %s", name.c_str(),
+		    this->get_name());
+	}
 }
 
 void CSGObject::print_modsel_params()
@@ -785,7 +808,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
+void CSGObject::subscribe(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -794,17 +817,52 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
-	auto subscription = m_observable_params
-	                        ->filter([obs](Some<ObservedValue> v) {
-		                        return obs->filter(v->get<std::string>("name"));
-		                    })
-	                        .timestamp()
-	                        .subscribe(sub);
+	rxcpp::subscription subscription =
+	    m_observable_params
+	        ->filter([obs](Some<ObservedValue> v) {
+		        return obs->filter(v->get<std::string>("name"));
+		    })
+	        .timestamp()
+	        .subscribe(sub);
+
+	// Insert the subscription in the list
+	m_subscriptions.insert(
+	    std::make_pair<int64_t, rxcpp::subscription>(
+	        std::move(m_next_subscription_index), std::move(subscription)));
+
+	obs->put("subscription_id", m_next_subscription_index);
+
+	m_next_subscription_index++;
 }
 
-void CSGObject::observe(const Some<ObservedValue> value)
+void CSGObject::unsubscribe(ParameterObserver* obs)
+{
+
+	int64_t index = obs->get<int64_t>("subscription_id");
+
+	// Check if we have such subscription
+	auto it = m_subscriptions.find(index);
+	if (it == m_subscriptions.end())
+		SG_ERROR(
+		    "The object %s does not have any registered parameter observer "
+		    "with index %i",
+		    this->get_name(), index);
+
+	it->second.unsubscribe();
+	m_subscriptions.erase(index);
+
+	obs->put("subscription_id", static_cast<int64_t>(-1));
+}
+
+void CSGObject::observe(const Some<ObservedValue> value) const
 {
 	m_subscriber_params->on_next(value);
+}
+
+void CSGObject::observe(ObservedValue* value) const
+{
+	auto somed_value = Some<ObservedValue>::from_raw(value);
+	m_subscriber_params->on_next(somed_value);
 }
 
 class CSGObject::ParameterObserverList
@@ -844,150 +902,6 @@ bool CSGObject::has(const std::string& name) const
 {
 	return has_parameter(BaseTag(name));
 }
-
-class ToStringVisitor : public AnyVisitor
-{
-public:
-	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
-	{
-	}
-	virtual void on(bool* v)
-	{
-		stream() << (*v ? "true" : "false") << container_ending();
-	}
-	virtual void on(char* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(int8_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(uint8_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(int16_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(uint16_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(int32_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(uint32_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(int64_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(uint64_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(float32_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(float64_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(floatmax_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(complex128_t* v)
-	{
-		stream() << *v << container_ending();
-	}
-	virtual void on(CSGObject** v)
-	{
-		if (*v)
-		{
-			stream() << (*v)->get_name() << "(...)"
-				<< container_ending();
-		}
-		else
-		{
-			stream() << "null";
-		}
-	}
-	virtual void enter_matrix(index_t* rows, index_t* cols)
-	{
-		stream() << "Matrix(" << *rows << "," << *cols << "): [[";
-		m_remaining.emplace(*rows, *cols);
-	}
-	virtual void enter_vector(index_t* size)
-	{
-		stream() << "Vector(" << *size << "): [";
-		if (*size == 0)
-			stream() << "]";
-		else
-			m_remaining.emplace(*size, 0LL);
-	}
-	virtual void enter_std_vector(size_t* size)
-	{
-		stream() << "std::vector(" << *size << "): [";
-		if (*size == 0)
-			stream() << "]";
-		else
-			m_remaining.emplace(*size, 0LL);
-	}
-	virtual void enter_map(size_t* size)
-	{
-		stream() << "Map: (";
-	}
-private:
-	SG_FORCED_INLINE std::stringstream& stream()
-	{
-		return *m_stream;
-	}
-
-	SG_FORCED_INLINE std::string container_ending()
-	{
-		if (m_remaining.empty())
-			return "";
-
-		std::stringstream endings;
-		auto& remaining = std::get<0>(m_remaining.top());
-		if (remaining > 0 && --remaining == 0)
-		{
-			m_remaining.pop();
-			endings << "]";
-
-			if (m_remaining.empty())
-				return endings.str();
-
-			auto& cols_remaining = std::get<1>(m_remaining.top());
-			if (cols_remaining > 0 && --cols_remaining == 0)
-			{
-				m_remaining.pop();
-				endings << "]";
-			}
-			else
-			{
-				m_remaining.emplace(std::get<0>(m_remaining.top()), 0LL);
-				endings << ",[";
-			}
-		}
-		else
-		{
-			endings << ",";
-		}
-		return endings.str();
-	}
-
-private:
-	std::stringstream* m_stream;
-	std::stack<std::tuple<int64_t, int64_t>> m_remaining;
-};
 
 std::string CSGObject::to_string() const
 {

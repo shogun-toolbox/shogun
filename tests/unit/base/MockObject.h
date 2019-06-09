@@ -316,6 +316,13 @@ namespace shogun
 			watch_method("some_method", &CMockObject::some_method);
 		}
 
+		virtual CSGObject* create_empty() const
+		{
+			auto new_instance = new CMockObject();
+			SG_REF(new_instance)
+			return new_instance;
+		};
+
 	private:
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;

@@ -27,6 +27,7 @@
 #include <shogun/lib/tag.h>
 
 #include <map>
+#include <shogun/util/clone.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -41,9 +42,12 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
-class ParameterObserverInterface;
 class ObservedValue;
+class ParameterObserver;
 class CDynamicObjectArray;
+
+template <class T>
+class ObservedValueTemplated;
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -287,6 +291,13 @@ public:
 	 */
 	Version* get_global_version();
 
+	/**
+	 * Return the description of a registered parameter given its name
+	 * @param name parameter's name
+	 * @return description of the parameter as a string
+	 */
+	std::string get_description(const std::string& name) const;
+
 	/** @return vector of names of all parameters which are registered for model
 	 * selection */
 	SGStringList<char> get_modelsel_names();
@@ -358,7 +369,8 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	template <typename T,
+		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
 	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 		if (has_parameter(_tag))
@@ -400,7 +412,8 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	template <typename T,
+		      typename std::enable_if_t<is_string<T>::value>* = nullptr>
 	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 	    std::string val_string(value);
@@ -468,18 +481,19 @@ public:
 	}
 
 #ifndef SWIG
-	/** Typed array getter for an object array class parameter of a Shogun base class
+	/** Typed array getter for an object array class parameter of a Shogun base
+	* class
 	* type, identified by a name and an index.
 	*
-	* Raises an error if parameter does not exist.
+	* Returns nullptr if parameter of desired type does not exist.
 	*
 	* @param name name of the parameter array
 	* @param index index of the element in the array
 	* @return desired element
 	*/
 	template <class T,
-			  class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index) const
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	T* get(const std::string& name, index_t index, std::nothrow_t) const
 	{
 		CSGObject* result = nullptr;
 
@@ -493,11 +507,22 @@ public:
 			return result->as<T>();
 		}
 
-		SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
-				get_name(), name.c_str(), index, demangled_type<T>().c_str());
-
 		return nullptr;
 	}
+
+	template <class T,
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	T* get(const std::string& name, index_t index) const
+	{
+		auto result = this->get<T>(name, index, std::nothrow);
+		if (!result)
+		{
+			SG_ERROR(
+				"Could not get array parameter %s::%s[%d] of type %s\n",
+				get_name(), name.c_str(), index, demangled_type<T>().c_str());
+		}
+		return result;
+	};
 #endif
 
 	/** Untyped getter for an object class parameter, identified by a name.
@@ -704,7 +729,14 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe_to_parameters(ParameterObserverInterface* obs);
+	void subscribe(ParameterObserver* obs);
+
+	/**
+	 * Detach an observer from the current SGObject.
+	 * @param subscription_index the index obtained by calling the subscribe
+	 * procedure
+	 */
+	void unsubscribe(ParameterObserver* obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();
@@ -1022,10 +1054,85 @@ private:
 
 protected:
 	/**
+	 * Return total subscriptions
+	 * @return total number of subscriptions
+	 */
+	index_t get_num_subscriptions() const
+	{
+		return static_cast<index_t>(m_subscriptions.size());
+	}
+
+	/**
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const Some<ObservedValue> value);
+	void observe(const Some<ObservedValue> value) const;
+
+	/**
+	 * Observe a parameter value, given a pointer.
+	 * @param value Observed parameter's value
+	 */
+	void observe(ObservedValue* value) const;
+
+	/**
+	 * Observe a parameter value given custom properties for the Any.
+	 * If no observer is attached this command will do nothing.
+	 * @tparam T type of the parameter
+	 * @param step time step
+	 * @param name name of the observed value
+	 * @param value observed value
+	 * @param properties AnyParameterProperties used to register the observed
+	 * value.
+	 */
+	template <class T>
+	void observe(
+		const int64_t step, const std::string& name, const T& value,
+		const AnyParameterProperties properties) const
+	{
+		// If there are no observers attached, do not create/emit anything.
+		if (get_num_subscriptions() == 0)
+			return;
+
+		auto obs = new ObservedValueTemplated<T>(
+			step, name, static_cast<T>(clone_utils::clone(value)), properties);
+		this->observe(obs);
+	}
+
+	/**
+	 * Observe a parameter value given some information.
+	 * If no observer is attached this command will do nothing.
+	 * @tparam T value of the parameter
+	 * @param step step
+	 * @param name name of the observed value
+	 * @param description description
+	 * @param value observed value
+	 */
+	template <class T>
+	void observe(
+		const int64_t step, const std::string& name,
+		const std::string& description, const T value) const
+	{
+		this->observe(
+			step, name, value,
+			AnyParameterProperties(description, ParameterProperties::READONLY));
+	}
+
+	/**
+	 * Observe a registered tag.
+	 * If no observer is attached this command will do nothing.
+	 * @tparam T type of the tag
+	 * @param step step
+	 * @param name tag's name
+	 */
+	template <class T>
+	void observe(const int64_t step, const std::string& name) const
+	{
+		auto param = this->get_parameter(BaseTag(name));
+		auto cloned = any_cast<T>(param.get_value());
+		this->observe(
+			step, name, static_cast<T>(clone_utils::clone(cloned)),
+			param.get_properties());
+	}
 
 	/**
 	 * Register which params this object can emit.
@@ -1036,50 +1143,69 @@ protected:
 	void register_observable(
 		const std::string& name, const std::string& description);
 
-	/** mapping from strings to enum for SWIG interface */
-	stringToEnumMapType m_string_to_enum_map;
+/**
+ * Get the current step for the observed values.
+ */
+#ifndef SWIG
+		SG_FORCED_INLINE int64_t get_step() const
+		{
+			int64_t step = -1;
+			Tag<int64_t> tag("current_iteration");
+			if (has(tag))
+			{
+				step = get(tag);
+			}
+			return step;
+		}
+#endif
 
-public:
-	/** io */
-	SGIO* io;
+		/** mapping from strings to enum for SWIG interface */
+		stringToEnumMapType m_string_to_enum_map;
 
-	/** parallel */
-	Parallel* parallel;
+	public:
+		/** io */
+		SGIO* io;
 
-	/** version */
-	Version* version;
+		/** parallel */
+		Parallel* parallel;
 
-	/** parameters */
-	Parameter* m_parameters;
+		/** version */
+		Version* version;
 
-	/** model selection parameters */
-	Parameter* m_model_selection_parameters;
+		/** parameters */
+		Parameter* m_parameters;
 
-	/** parameters wrt which we can compute gradients */
-	Parameter* m_gradient_parameters;
+		/** model selection parameters */
+		Parameter* m_model_selection_parameters;
 
-	/** Hash of parameter values*/
-	uint32_t m_hash;
+		/** parameters wrt which we can compute gradients */
+		Parameter* m_gradient_parameters;
 
-private:
+		/** Hash of parameter values*/
+		uint32_t m_hash;
 
-	EPrimitiveType m_generic;
-	bool m_load_pre_called;
-	bool m_load_post_called;
-	bool m_save_pre_called;
-	bool m_save_post_called;
+	private:
+		EPrimitiveType m_generic;
+		bool m_load_pre_called;
+		bool m_load_post_called;
+		bool m_save_pre_called;
+		bool m_save_post_called;
 
-	RefCount* m_refcount;
+		RefCount* m_refcount;
 
-	/** Subject used to create the params observer */
-	SGSubject* m_subject_params;
+		/** Subject used to create the params observer */
+		SGSubject* m_subject_params;
 
-	/** Parameter Observable */
-	SGObservable* m_observable_params;
+		/** Parameter Observable */
+		SGObservable* m_observable_params;
 
-	/** Subscriber used to call onNext, onComplete etc.*/
-	SGSubscriber* m_subscriber_params;
-};
+		/** Subscriber used to call onNext, onComplete etc.*/
+		SGSubscriber* m_subscriber_params;
+
+		/** List of subscription for this SGObject */
+		std::map<int64_t, rxcpp::subscription> m_subscriptions;
+		int64_t m_next_subscription_index;
+	};
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -1127,12 +1253,7 @@ template <typename T>
 CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
 {
 	CSGObject* result = nullptr;
-	try
-	{
-		// there is no "has" that checks for array types, so check implicitly
-		result = obj->get<T>(name, how.m_index);
-	}
-	catch (const std::exception&) {}
+	result = obj->get<T>(name, how.m_index, std::nothrow);
 	return result;
 }
 
@@ -1143,6 +1264,12 @@ CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& 
 	if (auto* result = get_if_possible<CKernel>(obj, name, how))
 		return result;
 	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CMachine>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CLabels>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CEvaluationResult>(obj, name, how))
 		return result;
 
 	return nullptr;
@@ -1158,5 +1285,6 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 #endif //SWIG
+
 }
 #endif // __SGOBJECT_H__

@@ -14,6 +14,7 @@
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/KNN.h>
@@ -185,6 +186,12 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		pb.print_progress();
 		max_likelihood(alpha, min_cov);
 
+		this->observe<float64_t>(
+		    iter, "log_likelihood", "Log Likelihood", log_likelihood_cur);
+		this->observe<SGVector<float64_t>>(
+		    iter, "coefficients", "Mixture Coefficients", alpha);
+		this->observe<std::vector<CGaussian*>>(iter, "components");
+
 		iter++;
 	}
 	pb.complete();
@@ -335,6 +342,12 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		}
 		if (!better_found)
 			break;
+
+		this->observe<float64_t>(
+		    iter, "log_likelihood", "Log Likelihood", cur_likelihood);
+		this->observe<SGVector<float64_t>>(iter, "coefficients");
+		this->observe<std::vector<CGaussian*>>(iter, "components");
+
 		iter++;
 		pb.print_progress();
 	}
@@ -823,8 +836,8 @@ SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 
 void CGMM::register_params()
 {
-	//TODO serialization broken
-	//m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
-	SG_ADD(
-	    &m_coefficients, "m_coefficients", "Mixture coefficients.");
+	this->watch_param(
+	    "components", &m_components,
+	    AnyParameterProperties("Mixture components"));
+	SG_ADD(&m_coefficients, "coefficients", "Mixture coefficients.");
 }

@@ -9,11 +9,13 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/classifier/LDA.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
+
 #include <vector>
 
 using namespace Eigen;
@@ -34,8 +36,13 @@ CLDA::CLDA(
     : CDenseRealDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
 {
 	init();
-	set_features(traindat);
-	set_labels(trainlab);
+
+	features = traindat;
+	SG_REF(features)
+
+	m_labels = trainlab;
+	SG_REF(trainlab)
+
 	m_method = method;
 	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;
@@ -66,7 +73,6 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
-	;
 
 	bool lda_more_efficient = (m_method == AUTO_LDA && num_vec <= num_feat);
 
@@ -103,9 +109,12 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 	// copy w_st into w
 	for (index_t i = 0; i < w.size(); ++i)
 		w[i] = sign * w_st[i];
-	set_w(w);
 
+	set_w(w);
 	set_bias(-0.5 * sign * (m_neg + m_pos));
+
+	observe<SGVector<float64_t>>(0, "w");
+	observe<float64_t>(1, "bias");
 
 	return true;
 }
@@ -146,13 +155,15 @@ bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 	// copy w_st into w
 	for (index_t i = 0; i < w.size(); ++i)
 		w[i] = (float64_t)w_st[i];
-	set_w(w);
 
-	// get the bias.
+	set_w(w);
 	set_bias(
-	    (float64_t)(
+	    static_cast<float64_t>(
 	        0.5 * (linalg::dot(w_neg, class_mean[0]) -
 	               linalg::dot(w_pos, class_mean[1]))));
+
+	observe<SGVector<float64_t>>(0, "w");
+	observe<float64_t>(1, "bias");
 
 	return true;
 }

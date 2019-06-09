@@ -1,0 +1,29 @@
+Math:init_random(1)
+File f_feats_train = csv_file("../../data/classifier_binary_2d_nonlinear_features_train.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+#![create_features]
+
+#![choose_distance]
+Distance d = distance("EuclideanDistance")
+d.init(features_train, features_train)
+#![choose_distance]
+
+#![create_instance_lloyd]
+Machine kmeans = machine("KMeans", k=2, distance=d)
+#![create_instance_lloyd]
+
+#![create_logger]
+ParameterObserver logger = parameter_observer("ParameterObserverLogger")
+kmeans.subscribe(logger)
+#![create_logger]
+
+#![train_dataset]
+kmeans.train()
+#![train_dataset]
+
+#![extract_centers_and_radius]
+RealMatrix c = kmeans.get_real_matrix("cluster_centers")
+RealVector r = kmeans.get_real_vector("radiuses")
+#![extract_centers_and_radius]

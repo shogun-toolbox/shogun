@@ -12,6 +12,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -78,6 +79,8 @@ void CKMeansBase::set_random_centers()
 		lhs->free_feature_vector(vec, cluster_center_i);
 	}
 
+	observe<SGMatrix<float64_t>>(0, "mus");
+
 	SG_UNREF(lhs);
 
 }
@@ -132,8 +135,17 @@ void CKMeansBase::compute_cluster_variances()
 
 void CKMeansBase::initialize_training(CFeatures* data)
 {
-	REQUIRE(distance, "Distance is not provided")
-	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)")
+	REQUIRE(distance, "Distance is not provided\n")
+	REQUIRE(
+	    distance->get_feature_type() == F_DREAL,
+	    "Distance's features type (%d) should be of type REAL (%d)\n")
+	REQUIRE(
+	    max_iter > 0,
+	    "The number of iterations provided (%i) must be greater than 0\n",
+	    max_iter)
+	REQUIRE(
+	    k > 0, "The number of clusters provided (%i) must be greater than 0\n",
+	    k)
 
 	if (data)
 		distance->init(data, data);
@@ -159,12 +171,15 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	/* cluster_centers=zeros(dimensions, k) ; */
 	memset(mus.matrix, 0, sizeof(float64_t)*centers_size);
 
-
 	if (mus_initial.matrix)
+	{
 		mus = mus_initial;
+		observe<SGMatrix<float64_t>>(0, "mus");
+	}
 	else
+	{
 		set_random_centers();
-
+	}
 	SG_UNREF(lhs);
 }
 
@@ -182,43 +197,6 @@ bool CKMeansBase::save(FILE* dstfile)
 	return false;
 }
 
-void CKMeansBase::set_use_kmeanspp(bool kmpp)
-{
-	use_kmeanspp=kmpp;
-}
-
-bool CKMeansBase::get_use_kmeanspp() const
-{
-	return use_kmeanspp;
-}
-
-void CKMeansBase::set_k(int32_t p_k)
-{
-	REQUIRE(p_k>0, "number of clusters should be > 0");
-	this->k=p_k;
-}
-
-int32_t CKMeansBase::get_k()
-{
-	return k;
-}
-
-void CKMeansBase::set_max_iter(int32_t iter)
-{
-	REQUIRE(iter>0, "number of clusters should be > 0");
-	max_iter=iter;
-}
-
-float64_t CKMeansBase::get_max_iter()
-{
-	return max_iter;
-}
-
-SGVector<float64_t> CKMeansBase::get_radiuses()
-{
-	return R;
-}
-
 SGMatrix<float64_t> CKMeansBase::get_cluster_centers() const
 {
 	if (!R.vector)
@@ -229,21 +207,6 @@ SGMatrix<float64_t> CKMeansBase::get_cluster_centers() const
 	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
 	SG_UNREF(lhs);
 	return centers;
-}
-
-int32_t CKMeansBase::get_dimensions()
-{
-	return dimensions;
-}
-
-void CKMeansBase::set_fixed_centers(bool fixed)
-{
-	fixed_centers=fixed;
-}
-
-bool CKMeansBase::get_fixed_centers()
-{
-	return fixed_centers;
 }
 
 void CKMeansBase::store_model_features()
@@ -362,8 +325,10 @@ void CKMeansBase::init()
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", ParameterProperties::HYPER);
 	SG_ADD(&k, "k", "k, the number of clusters", ParameterProperties::HYPER);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data");
+	SG_ADD(&fixed_centers, "fixed_centers", "Use fixed centers");
 	SG_ADD(&R, "radiuses", "Cluster radiuses");
 	SG_ADD(&use_kmeanspp, "kmeanspp", "Whether use kmeans++", ParameterProperties::HYPER);
+	SG_ADD(&mus, "mus", "Cluster centers")
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }

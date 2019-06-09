@@ -25,7 +25,7 @@ gmm.train_smem()
 int component_num = 1
 RealVector nth_mean = gmm.get_nth_mean(component_num)
 RealMatrix nth_cov = gmm.get_nth_cov(component_num)
-RealVector coef = gmm.get_real_vector("m_coefficients")
+RealVector coef = gmm.get_real_vector("coefficients")
 #![extract_params]
 
 #![cluster_output]

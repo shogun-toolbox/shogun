@@ -32,49 +32,53 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
-
-#include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/RefCount.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/util/converters.h>
 
 using namespace shogun;
 
-ParameterObserverHistogram::ParameterObserverHistogram()
-    : ParameterObserverTensorBoard()
+ParameterObserver::ParameterObserver()
+    : m_observed_parameters(), m_subscription_id(-1)
 {
+	SG_ADD(
+	    &m_subscription_id, "subscription_id",
+	    "Id of the subscription to an object.");
+	this->watch_method(
+	    "num_observations", &ParameterObserver::get_num_observations);
 }
 
-ParameterObserverHistogram::ParameterObserverHistogram(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
+ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
+    : ParameterObserver()
 {
+	m_observed_parameters = parameters;
 }
 
-ParameterObserverHistogram::ParameterObserverHistogram(
+ParameterObserver::ParameterObserver(
     const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
+    : ParameterObserver(parameters)
 {
 }
 
-ParameterObserverHistogram::~ParameterObserverHistogram()
+ParameterObserver::~ParameterObserver()
 {
 }
 
-void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
+bool ParameterObserver::filter(const std::string& param)
 {
-	auto node_name = std::string("node");
-	auto format = TBOutputFormat();
-	auto event_value = format.convert_vector(value, node_name);
-	m_writer.writeEvent(event_value);
+	// If there are no specified parameters, then watch everything
+	if (m_observed_parameters.size() == 0)
+		return true;
+
+	for (auto v : m_observed_parameters)
+		if (v == param)
+			return true;
+	return false;
 }
 
-void ParameterObserverHistogram::on_error(std::exception_ptr)
+index_t ParameterObserver::get_num_observations() const
 {
-}
-
-void ParameterObserverHistogram::on_complete()
-{
-}
-
-#endif // HAVE_TFLOGGER
+	return utils::safe_convert<index_t>(m_observations.size());
+};

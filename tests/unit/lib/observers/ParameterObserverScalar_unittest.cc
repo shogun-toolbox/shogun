@@ -32,37 +32,37 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include "ParameterObserverTensorBoard.h"
+#include <shogun/lib/observers/ParameterObserverScalar.h>
+#include <vector>
+
+std::vector<std::string> test_params = {"a", "b", "c", "d"};
 
 using namespace shogun;
 
-ParameterObserverTensorBoard::ParameterObserverTensorBoard()
-    : ParameterObserverInterface(), m_writer("shogun")
+TEST(ParameterObserverScalar, filter_empty)
 {
-	m_writer.init();
+	CParameterObserverScalar tmp;
+	EXPECT_TRUE(tmp.filter("a"));
 }
 
-ParameterObserverTensorBoard::ParameterObserverTensorBoard(
-    std::vector<std::string>& parameters)
-    : ParameterObserverInterface(parameters), m_writer("shogun")
+TEST(ParameterObserverScalar, filter_found)
 {
-	m_writer.init();
+	CParameterObserverScalar tmp{test_params};
+	EXPECT_TRUE(tmp.filter("a"));
+	EXPECT_TRUE(tmp.filter("b"));
+	EXPECT_TRUE(tmp.filter("c"));
+	EXPECT_TRUE(tmp.filter("d"));
 }
 
-ParameterObserverTensorBoard::ParameterObserverTensorBoard(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverInterface(parameters), m_writer(filename.c_str())
+TEST(ParameterObserverScalar, filter_not_found)
 {
-	m_writer.init();
-}
-
-ParameterObserverTensorBoard::~ParameterObserverTensorBoard()
-{
-	m_writer.flush();
-	m_writer.close();
+	CParameterObserverScalar tmp{test_params};
+	EXPECT_FALSE(tmp.filter("k"));
 }
 
 #endif // HAVE_TFLOGGER

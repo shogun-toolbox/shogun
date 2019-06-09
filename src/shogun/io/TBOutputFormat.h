@@ -40,7 +40,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
-#include <shogun/lib/parameter_observers/ObservedValue.h>
+#include <shogun/lib/observers/observers_utils.h>
 #include <tflogger/event.pb.h>
 
 #include <utility>

@@ -13,10 +13,10 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/lib/List.h>
-//#include <shogun/lib/parameter_observers/ObservedValue.h>
-#include <shogun/lib/parameter_observers/ObservedValueTemplated.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/util/converters.h>
 
 using namespace shogun;
 
@@ -99,9 +99,11 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		SG_DEBUG("Creating CrossValidationStorage.\n")
 		CrossValidationStorage* storage = new CrossValidationStorage();
 		SG_REF(storage)
-		storage->set_num_runs(m_num_runs);
-		storage->set_num_folds(m_splitting_strategy->get_num_subsets());
-		storage->set_expose_labels(m_labels);
+		storage->put("num_runs", utils::safe_convert<index_t>(m_num_runs));
+		storage->put(
+		    "num_folds", utils::safe_convert<index_t>(
+		                     m_splitting_strategy->get_num_subsets()));
+		storage->put("labels", m_labels);
 		storage->post_init();
 		SG_DEBUG("Ending CrossValidationStorage initilization.\n")
 
@@ -109,11 +111,10 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		results[i] = evaluate_one_run(i, storage);
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 
-		/* Emit the value*/
+		/* Emit the value */
 		observe(
-		    ObservedValue::make_observation<CrossValidationStorage*>(
-		        i, "cross_validation_run", "One run of CrossValidation",
-		        storage));
+		    i, "cross_validation_run", "One run of CrossValidation",
+		    storage->as<CEvaluationResult>());
 
 		SG_UNREF(storage)
 	}
@@ -172,8 +173,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
-			fold->set_run_index(index);
-			fold->set_fold_index(i);
+			fold->put("run_index", (index_t)index);
+			fold->put("fold_index", i);
 
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
@@ -187,9 +188,10 @@ float64_t CCrossValidation::evaluate_one_run(
 			    m_splitting_strategy->generate_subset_indices(i);
 
 			/* evtl. update xvalidation output class */
-			fold->set_train_indices(inverse_subset_indices);
+			fold->put("train_indices", inverse_subset_indices);
 			auto fold_machine = (CMachine*)m_machine->clone();
-			fold->set_trained_machine(fold_machine);
+			SG_REF(fold_machine)
+			fold->put("trained_machine", fold_machine);
 			SG_UNREF(fold_machine)
 
 			/* produce output for desired indices */
@@ -205,13 +207,13 @@ float64_t CCrossValidation::evaluate_one_run(
 			    m_evaluation_criterion->evaluate(result_labels, m_labels);
 
 			/* evtl. update xvalidation output class */
-			fold->set_test_indices(subset_indices);
-			fold->set_test_result(result_labels);
+			fold->put("test_indices", subset_indices);
+			fold->put("predicted_labels", result_labels);
 			CLabels* true_labels = (CLabels*)m_labels->clone();
-			fold->set_test_true_result(true_labels);
-			SG_UNREF(true_labels)
+			SG_REF(true_labels)
+			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
-			fold->set_evaluation_result(results[i]);
+			fold->put("evaluation_result", results[i]);
 
 			/* remove subset to prevent side effects */
 			m_labels->remove_subset();
@@ -221,6 +223,7 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* clean up */
 			SG_UNREF(result_labels);
+			SG_UNREF(true_labels)
 			SG_UNREF(fold);
 
 			SG_DEBUG("done locked evaluation\n", get_name())
@@ -254,8 +257,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			    (CEvaluation*)m_evaluation_criterion->clone();
 
 			/* evtl. update xvalidation output class */
-			fold->set_run_index(index);
-			fold->set_fold_index(i);
+			fold->put("run_index", (index_t)index);
+			fold->put("fold_index", i);
 
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices =
@@ -281,9 +284,9 @@ float64_t CCrossValidation::evaluate_one_run(
 			SG_DEBUG("finished training\n")
 
 			/* evtl. update xvalidation output class */
-			fold->set_train_indices(inverse_subset_indices);
+			fold->put("train_indices", inverse_subset_indices);
 			auto fold_machine = (CMachine*)machine->clone();
-			fold->set_trained_machine(fold_machine);
+			fold->put("trained_machine", fold_machine);
 			SG_UNREF(fold_machine)
 
 			features->remove_subset();
@@ -318,13 +321,13 @@ float64_t CCrossValidation::evaluate_one_run(
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */
-			fold->set_test_indices(subset_indices);
-			fold->set_test_result(result_labels);
+			fold->put("test_indices", subset_indices);
+			fold->put("predicted_labels", result_labels);
 			CLabels* true_labels = (CLabels*)labels->clone();
-			fold->set_test_true_result(true_labels);
-			SG_UNREF(true_labels)
+			SG_REF(true_labels)
+			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
-			fold->set_evaluation_result(results[i]);
+			fold->put("evaluation_result", results[i]);
 
 			storage->append_fold_result(fold);
 
@@ -335,7 +338,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			SG_UNREF(labels);
 			SG_UNREF(evaluation_criterion);
 			SG_UNREF(result_labels);
-			SG_UNREF(fold)
+			SG_UNREF(true_labels);
+			SG_UNREF(fold);
 		}
 
 		SG_DEBUG("done unlocked evaluation\n", get_name())

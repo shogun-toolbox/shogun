@@ -19,7 +19,7 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_traindat=label_traindat):
     from shogun import machine_evaluation
-    from shogun import ParameterObserverCV
+    from shogun import parameter_observer
     from shogun import MulticlassAccuracy, F1Measure
     from shogun import splitting_strategy
     from shogun import MulticlassLabels
@@ -66,20 +66,20 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
         evaluation_criterion=evaluation_criterium, autolock=False, num_runs=3)
 
     # append cross validation parameter observer
-    multiclass_storage=ParameterObserverCV()
-    cross_validation.subscribe_to_parameters(multiclass_storage)
+    multiclass_storage=parameter_observer("ParameterObserverCV")
+    cross_validation.subscribe(multiclass_storage)
 
     # perform cross-validation
     result=cross_validation.evaluate()
 
     # get first observation and first fold
-    obs = multiclass_storage.get_observations()[0]
-    fold = obs.get_folds_results()[0]
+    obs = multiclass_storage.get_observation(0).get("cross_validation_run")
+    fold = obs.get("folds", 0)
 
     # get fold ROC for first class
     eval_ROC = ROCEvaluation()
-    pred_lab_binary = MulticlassLabels.obtain_from_generic(fold.get_test_result()).get_binary_for_class(0)
-    true_lab_binary = MulticlassLabels.obtain_from_generic(fold.get_test_true_result()).get_binary_for_class(0)
+    pred_lab_binary = MulticlassLabels.obtain_from_generic(fold.get("test_result")).get_binary_for_class(0)
+    true_lab_binary = MulticlassLabels.obtain_from_generic(fold.get("test_true_result").get_binary_for_class(0)
     eval_ROC.evaluate(pred_lab_binary, true_lab_binary)
     print eval_ROC.get_ROC()
 

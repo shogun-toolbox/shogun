@@ -218,6 +218,23 @@ namespace shogun {
 		virtual void enter_vector(index_t* size) = 0;
 		virtual void enter_std_vector(size_t* size) = 0;
 		virtual void enter_map(size_t* size) = 0;
+		virtual void enter_matrix_row(index_t *rows, index_t *cols) =0;
+		virtual void exit_matrix_row(index_t *rows, index_t *cols)=0;
+		virtual void exit_matrix(index_t* rows, index_t* cols) = 0;
+		virtual void exit_vector(index_t* size) = 0;
+		virtual void exit_std_vector(size_t* size) = 0;
+		virtual void exit_map(size_t* size) = 0;
+
+		template <typename T>
+		void on_matrix_row(index_t* rows, index_t* cols, SGMatrix<T>* _v)
+		{
+			enter_matrix_row(rows, cols);
+			for(index_t i=0; i<*rows; i++)
+			{
+				on(std::addressof((*_v)(i, *cols)));
+			}
+			exit_matrix_row(rows, cols);
+		}
 
 		template<typename T>
 		void on(SGVector<T>* _v)
@@ -228,6 +245,7 @@ namespace shogun {
 				_v->resize_vector(size);
 			for (auto& _value: *_v)
 				on(std::addressof(_value));
+			exit_vector(std::addressof(size));
 		}
 
 		template<typename T>
@@ -244,6 +262,7 @@ namespace shogun {
 			}
 			for (index_t i = 0; i < size; ++i)
 				on(std::addressof(_v->string[i]));
+			exit_vector(std::addressof(size));
 		}
 
 		template<typename T>
@@ -260,6 +279,7 @@ namespace shogun {
 				on(std::addressof(_v->features[i].feat_index));
 				on(std::addressof(_v->features[i].entry));
 			}
+			exit_vector(std::addressof(size));
 		}
 
 		template<typename T>
@@ -288,6 +308,7 @@ namespace shogun {
 			auto ptr = *(_v->ptr());
 			for (S i = 0; i < size; ++i)
 				on(std::addressof(ptr[i]));
+			exit_vector(std::addressof(size));
 		}
 
 		template<class T, class S>
@@ -308,6 +329,7 @@ namespace shogun {
 			auto ptr = *(_v->ptr());
 			for (int64_t i = 0; i < length; ++i)
 				on(std::addressof(ptr[i]));
+			exit_matrix(shape.first, shape.second);
 		}
 
 		template<typename T>
@@ -318,8 +340,10 @@ namespace shogun {
 			enter_matrix(std::addressof(rows), std::addressof(cols));
 			if ((rows != _matrix->num_rows) || (cols != _matrix->num_cols))
 				*_matrix = SGMatrix<T>(rows, cols);
-			for (auto& _value: *_matrix)
-				on(std::addressof(_value));
+			for (auto index=0; index < cols; index++) {
+				on_matrix_row(std::addressof(rows), std::addressof(index), _matrix);
+			}
+			exit_matrix(std::addressof(rows), std::addressof(cols));
 		}
 
 		template<class T>
@@ -331,6 +355,7 @@ namespace shogun {
 				_v->resize(size);
 			for (auto& _value: *_v)
 				on(std::addressof(_value));
+			exit_std_vector(std::addressof(size));
 		}
 
 		template<class T1, class T2>
@@ -359,6 +384,7 @@ namespace shogun {
 					on(std::addressof(_value.second));
 				}
 			}
+			exit_map(std::addressof(size));
 		}
 
 		template<class T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>

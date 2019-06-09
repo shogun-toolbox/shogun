@@ -72,11 +72,8 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CCrossValidationResult* result=
-				(CCrossValidationResult*)(m_machine_eval->evaluate());
-
-		if (result->get_result_type() != CROSSVALIDATION_RESULT)
-			SG_ERROR("Evaluation result is not of type CCrossValidationResult!")
+		CCrossValidationResult* result =
+		    m_machine_eval->evaluate()->as<CCrossValidationResult>();
 
 		if (print_state)
 			result->print_result();

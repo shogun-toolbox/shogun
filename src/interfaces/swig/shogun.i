@@ -171,7 +171,13 @@ namespace shogun
 		else
 			$self->put(tag_t, value);
 	}
-	
+
+	/* get method for strings to disambiguate it from get_option */
+	std::string get_string(const std::string& name) const
+	{
+		return $self->get<std::string>(name);
+	}
+
 #ifdef SWIGJAVA
 	// templated since otherwise SWIG doesn't match the typemap for SGMatrix
 	// for the DoubleMatrix hack, X = float64_t and T = SGMatrix<X>
@@ -182,16 +188,16 @@ namespace shogun
 		Tag<SGVector<X>> tag_vec_X(name);
 		Tag<SGVector<int32_t>> tag_vec_int32(name);
 		Tag<SGVector<bool>> tag_vec_bool(name);
-	
+
 		// simplest case: types are as given
 		if ($self->has(tag_input_mat))
 		{
 			$self->put(tag_input_mat, mat);
 			return;
 		}
-	
+
 		// tag didnt match: either it was vector, or has different inner type
-	
+
 		// definitely a matrix, might need to convert values
 		if (mat.num_rows>1 && mat.num_cols>1)
 		{
@@ -225,11 +231,11 @@ namespace shogun
 				return;
 			}
 		}
-		
+
 		// final fall-back in case user did a mistake
 		$self->put(tag_input_mat, mat);
 	}
-	
+
 	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
 	T get_vector_as_matrix_dispatcher(const std::string& name)
 	{
@@ -258,6 +264,7 @@ namespace shogun
 #endif // SWIGJAVA
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;
+%template(get_long) CSGObject::get<int64_t, void>;
 %template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
 %template(get_char_string_list) CSGObject::get<SGStringList<char>, void>;
 %template(get_word_string_list) CSGObject::get<SGStringList<uint16_t>, void>;

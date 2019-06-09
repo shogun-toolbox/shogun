@@ -9,6 +9,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
+
 
 #ifdef _WIN32
 #undef far
@@ -36,25 +38,6 @@ CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64
 
 CKMeansMiniBatch::~CKMeansMiniBatch()
 {
-}
-
-void CKMeansMiniBatch::set_batch_size(int32_t b)
-{
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	batch_size=b;
-}
-
-int32_t CKMeansMiniBatch::get_batch_size() const
-{
-	return batch_size;
-}
-
-void CKMeansMiniBatch::set_mb_params(int32_t b, int32_t t)
-{
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	REQUIRE(t>0, "Parameter number of iterations should be > 0");
-	batch_size=b;
-	max_iter = t;
 }
 
 void CKMeansMiniBatch::minibatch_KMeans()
@@ -110,6 +93,8 @@ void CKMeansMiniBatch::minibatch_KMeans()
 				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
 			}
 		}
+		mus = rhs_mus->get_feature_matrix();
+		observe<SGMatrix<float64_t>>(i, "mus");
 	}
 	SG_UNREF(lhs);
 	distance->replace_rhs(rhs_cache);

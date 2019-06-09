@@ -241,6 +241,7 @@ namespace shogun
 		return Some<T>::from_raw(nullptr);
 	}
 
+#ifndef SWIG
 	template <class T>
 	SG_FORCED_INLINE T wrap(const T& value)
 	{
@@ -263,6 +264,7 @@ namespace shogun
 	{
 		return other;
 	}
+#endif
 };
 
 #endif /* __SG_SOME_H__ */

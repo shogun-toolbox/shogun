@@ -32,37 +32,59 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <gtest/gtest.h>
 
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
+#ifndef SHOGUN_PARAMETEROBSERVERCV_H
+#define SHOGUN_PARAMETEROBSERVERCV_H
 
-#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
-#include <vector>
+#include <shogun/evaluation/CrossValidationStorage.h>
+#include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/lib/observers/observers_utils.h>
 
-std::vector<std::string> test_params = {"a", "b", "c", "d"};
-
-using namespace shogun;
-
-TEST(ParameterObserverScalar, filter_empty)
+namespace shogun
 {
-	ParameterObserverScalar tmp;
-	EXPECT_TRUE(tmp.filter("a"));
+
+	/**
+	 * Base ParameterObserver class for CrossValidation.
+	 */
+	class CParameterObserverCV : public ParameterObserver
+	{
+
+	public:
+		CParameterObserverCV(bool verbose = false);
+		virtual ~CParameterObserverCV();
+		virtual void on_error(std::exception_ptr ptr);
+		virtual void on_complete();
+
+		/**
+		* Get class name.
+		* @return class name
+		*/
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverCV";
+		}
+
+	private:
+		/**
+		 * Print data contained into a CrossValidationStorage object.
+		 * @param value CrossValidationStorage object
+		 */
+		void print_observed_value(CrossValidationStorage* value) const;
+
+		/**
+		 * Print information of a machine
+		 * @param machine given machine
+		 */
+		void print_machine_information(CMachine* machine) const;
+
+	protected:
+		virtual void on_next_impl(const TimedObservedValue& value);
+
+		/**
+		 * enable printing of information
+		 */
+		bool m_verbose;
+	};
 }
 
-TEST(ParameterObserverScalar, filter_found)
-{
-	ParameterObserverScalar tmp{test_params};
-	EXPECT_TRUE(tmp.filter("a"));
-	EXPECT_TRUE(tmp.filter("b"));
-	EXPECT_TRUE(tmp.filter("c"));
-	EXPECT_TRUE(tmp.filter("d"));
-}
-
-TEST(ParameterObserverScalar, filter_not_found)
-{
-	ParameterObserverScalar tmp{test_params};
-	EXPECT_FALSE(tmp.filter("k"));
-}
-
-#endif // HAVE_TFLOGGER
+#endif // SHOGUN_PARAMETEROBSERVERCV_H

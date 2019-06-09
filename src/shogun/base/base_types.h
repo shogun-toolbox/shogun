@@ -19,6 +19,7 @@ namespace shogun
 	class CECOCEncoder;
 	class CECOCDecoder;
 	class CEvaluation;
+	class CEvaluationResult;
 	class CMulticlassStrategy;
 	class CNeuralLayer;
 	class CSplittingStrategy;
@@ -52,7 +53,8 @@ namespace shogun
 	                    std::is_same<CLikelihoodModel, T>::value ||
 	                    std::is_same<CMeanFunction, T>::value ||
 	                    std::is_same<CLossFunction, T>::value ||
-	                    std::is_same<CTokenizer, T>::value>
+	                    std::is_same<CTokenizer, T>::value ||
+	                    std::is_same<CEvaluationResult, T>::value>
 	{
 	};
 
@@ -66,6 +68,33 @@ namespace shogun
 	                  const char*, typename std::decay<T>::type>::value>
 	{
 	};
+
+	// General type traits to recognize SGMatrix and SGVectors.
+	template <typename T>
+	class SGMatrix;
+	template <typename T>
+	class SGVector;
+
+	template <typename>
+	struct is_sg_vector : std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_sg_vector<SGVector<T>> : std::true_type
+	{
+	};
+
+	template <typename>
+	struct is_sg_matrix : std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_sg_matrix<SGMatrix<T>> : std::true_type
+	{
+	};
+
 } // namespace shogun
 
 #endif // BASE_TYPES__H

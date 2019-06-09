@@ -37,6 +37,7 @@
 #define SHOGUN_CROSSVALIDATIONSTORAGE_H
 
 #include <shogun/base/SGObject.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/lib/SGVector.h>
 #include <vector>
 
@@ -50,118 +51,17 @@ namespace shogun
 	/**
 	 * Store information about a single fold run.
 	 */
-	class CrossValidationFoldStorage : public CSGObject
+	class CrossValidationFoldStorage : public CEvaluationResult
 	{
 	public:
 		CrossValidationFoldStorage();
 		virtual ~CrossValidationFoldStorage();
 
-		/** Set run index.
-		 *
-		 * @param run_index index of current run
-		 */
-		virtual void set_run_index(index_t run_index);
-
-		/** Set fold index.
-		 *
-		 * @param fold_index index of current run
-		 */
-		virtual void set_fold_index(index_t fold_index);
-
-		/** Set train indices
-		 *
-		 * @param indices indices used for training
-		 */
-		virtual void set_train_indices(SGVector<index_t> indices);
-
-		/** Set test indices
-		 *
-		 * @param indices indices used for testing/validation
-		 */
-		virtual void set_test_indices(SGVector<index_t> indices);
-
-		/** Set trained machine
-		 *
-		 * @param machine trained machine instance
-		 */
-		virtual void set_trained_machine(CMachine* machine);
-
-		/** Set test result
-		 *
-		 * @param results result labels for test/validation run
-		 */
-		virtual void set_test_result(CLabels* results);
-
-		/** Set test true result
-		 *
-		 * @param results ground truth labels for test/validation run
-		 */
-		virtual void set_test_true_result(CLabels* results);
+		virtual void print_result();
 
 		/** post update test and true results
 		 */
 		virtual void post_update_results();
-
-		/** Set evaluate result
-		 *
-		 * @param result evaluation result
-		 */
-		virtual void set_evaluation_result(float64_t result);
-
-		/**
-		 * Get current run index
-		 * @return index of the current run
-		 */
-		index_t get_current_run_index() const;
-
-		/**
-		 * Get current fold index
-		 * @return index of the current fold
-		 */
-		index_t get_current_fold_index() const;
-
-		/**
-		 * Get train indices.
-		 * @return train indices
-		 */
-		const SGVector<index_t>& get_train_indices() const;
-
-		/**
-		 * Get test indices.
-		 * @return test indices
-		 */
-		const SGVector<index_t>& get_test_indices() const;
-
-		/**
-		 * Get trained machine on this fold
-		 * @return trained machine
-		 */
-		CMachine* get_trained_machine() const;
-
-		/**
-		 * Get test result
-		 * @return test result
-		 */
-		CLabels* get_test_result() const;
-
-		/**
-		 * Get ground truth (correct labels for this fold)
-		 * @return ground truth
-		 */
-		CLabels* get_test_true_result() const;
-
-		/**
-		 * Get the evaluation result of this fold
-		 * @return evaluation result
-		 */
-		float64_t get_evaluation_result() const;
-
-		/**
-		 * Operator == needed for Any comparison
-		 * @param rhs other CrossValidationFoldStorage
-		 * @return true if the objects are the same, false otherwise.
-		 */
-		bool operator==(const CrossValidationFoldStorage& rhs) const;
 
 		/**
 		 * Class name (used for serialization)
@@ -173,6 +73,13 @@ namespace shogun
 		};
 
 	protected:
+		/**
+		 * Overridden create_empty() since this class
+		 * has no create() method inside class_list.h
+		 * @return an empty CrossValidationFoldStorage object SG_REF'ed
+		 */
+		virtual CSGObject* create_empty() const;
+
 		/** Current run index is written here */
 		index_t m_current_run_index;
 
@@ -201,7 +108,7 @@ namespace shogun
 	/**
 	 * This class store some information about CrossValidation runs.
 	 */
-	class CrossValidationStorage : public CSGObject
+	class CrossValidationStorage : public CEvaluationResult
 	{
 	public:
 		/** Constructor */
@@ -209,6 +116,8 @@ namespace shogun
 
 		/** Destructor */
 		virtual ~CrossValidationStorage();
+
+		virtual void print_result();
 
 		/**
 		 * Class name (used for serialization)
@@ -219,21 +128,6 @@ namespace shogun
 			return "CrossValidationStorage";
 		};
 
-		/** Set number of runs.
-		 * @param num_runs number of runs that will be performed
-		 */
-		virtual void set_num_runs(index_t num_runs);
-
-		/** Set number of folds.
-		 * @param num_folds number of folds that will be performed
-		 */
-		virtual void set_num_folds(index_t num_folds);
-
-		/** Set labels before usage.
-		 * @param labels labels to expose to CV output
-		 */
-		virtual void set_expose_labels(CLabels* labels);
-
 		/** Post init action. */
 		virtual void post_init();
 
@@ -243,39 +137,14 @@ namespace shogun
 		 */
 		virtual void append_fold_result(CrossValidationFoldStorage* result);
 
-		/**
-		 * Get number of Cross Validation runs.
-		 * @return Cross Validation's runs
-		 */
-		index_t get_num_runs() const;
-
-		/**
-		 * Get number of folds.
-		 * @return
-		 */
-		index_t get_num_folds() const;
-
-		/**
-		 * Get original labels.
-		 * @return labels
-		 */
-		CLabels* get_expose_labels() const;
-
-		/**
-		 * Get a specific fold result
-		 * @param fold the fold index
-		 * @return the CrossValidationFoldStorage object
-		 */
-		CrossValidationFoldStorage* get_fold(int fold) const;
-
-		/**
-		 * Operator == needed for Any comparison.
-		 * @param rhs other CrossValidationStorage
-		 * @return true if the objects are the same, false otherwise.
-		 */
-		bool operator==(const CrossValidationStorage& rhs) const;
-
 	protected:
+		/**
+		 * Overridden create_empty() since this class
+		 * has no create() method inside class_list.h
+		 * @return an empty CrossValidationStorage object SG_REF'ed
+		 */
+		virtual CSGObject* create_empty() const;
+
 		/** number of runs is initialised here */
 		index_t m_num_runs;
 
@@ -283,10 +152,10 @@ namespace shogun
 		index_t m_num_folds;
 
 		/** Original labels */
-		CLabels* m_expose_labels;
+		CLabels* m_original_labels;
 
 		/** Vector with all the folds results */
-		std::vector<CrossValidationFoldStorage*> m_folds_results;
+		std::vector<CEvaluationResult*> m_folds_results;
 	};
 }
 

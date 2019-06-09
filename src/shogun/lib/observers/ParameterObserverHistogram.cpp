@@ -32,39 +32,50 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/RefCount.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
+
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/lib/observers/ParameterObserverHistogram.h>
 
 using namespace shogun;
 
-ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
+CParameterObserverHistogram::CParameterObserverHistogram()
+    : ParameterObserverTensorBoard()
 {
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
+CParameterObserverHistogram::CParameterObserverHistogram(
     std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserverTensorBoard(parameters)
 {
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
+CParameterObserverHistogram::CParameterObserverHistogram(
     const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
 {
 }
 
-ParameterObserverInterface::~ParameterObserverInterface()
+CParameterObserverHistogram::~CParameterObserverHistogram()
 {
 }
 
-bool ParameterObserverInterface::filter(const std::string& param)
+void CParameterObserverHistogram::on_next_impl(const TimedObservedValue& value)
 {
-	// If there are no specified parameters, then watch everything
-	if (m_parameters.size() == 0)
-		return true;
-
-	for (auto v : m_parameters)
-		if (v == param)
-			return true;
-	return false;
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_vector(value, node_name);
+	m_writer.writeEvent(event_value);
 }
+
+void CParameterObserverHistogram::on_error(std::exception_ptr)
+{
+}
+
+void CParameterObserverHistogram::on_complete()
+{
+}
+
+#endif // HAVE_TFLOGGER

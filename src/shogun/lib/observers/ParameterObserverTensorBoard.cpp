@@ -35,43 +35,35 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
-#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
+using namespace shogun;
 
-namespace shogun
+ParameterObserverTensorBoard::ParameterObserverTensorBoard()
+    : ParameterObserver(), m_writer("shogun")
 {
-	/**
-	 * Implementation of a ParameterObserver which write to file
-	 * histograms, given object emitted from a parameter observable.
-	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard,
-	                                   public CSGObject
-	{
-
-	public:
-		ParameterObserverHistogram();
-		ParameterObserverHistogram(std::vector<std::string>& parameters);
-		ParameterObserverHistogram(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverHistogram();
-
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr);
-		virtual void on_complete();
-
-		/**
-		* Get class name.
-		* @return class name
-		*/
-		virtual const char* get_name() const
-		{
-			return "ParameterObserverHistogram";
-		}
-	};
+	m_writer.init();
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+ParameterObserverTensorBoard::ParameterObserverTensorBoard(
+    std::vector<std::string>& parameters)
+    : ParameterObserver(parameters), m_writer("shogun")
+{
+	m_writer.init();
+}
+
+ParameterObserverTensorBoard::ParameterObserverTensorBoard(
+    const std::string& filename, std::vector<std::string>& parameters)
+    : ParameterObserver(parameters), m_writer(filename.c_str())
+{
+	m_writer.init();
+}
+
+ParameterObserverTensorBoard::~ParameterObserverTensorBoard()
+{
+	m_writer.flush();
+	m_writer.close();
+}
+
 #endif // HAVE_TFLOGGER

@@ -11,6 +11,7 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
@@ -167,6 +168,9 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 				}
 			}
 		}
+
+		observe<SGMatrix<float64_t>>(iter, "mus");
+
 		if (iter%(max_iter/10) == 0)
 			SG_SINFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed)
 	}

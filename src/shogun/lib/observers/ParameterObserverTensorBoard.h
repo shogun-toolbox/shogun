@@ -35,46 +35,48 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
+#ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+#define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 
-using namespace shogun;
+#include <shogun/lib/observers/ParameterObserver.h>
+#include <tflogger/event_logger.h>
 
-ParameterObserverScalar::ParameterObserverScalar()
-    : ParameterObserverTensorBoard()
+namespace shogun
 {
+	class ParameterObserverTensorBoard : public ParameterObserver
+	{
+
+	public:
+		/**
+		* Default constructor
+		*/
+		ParameterObserverTensorBoard();
+
+		/**
+		 * Constructor
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserverTensorBoard(std::vector<std::string>& parameters);
+
+		/**
+		 * Constructor
+		 * @param filename name of the generated output file
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserverTensorBoard(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		/**
+		 * Virtual destructor
+		 */
+		virtual ~ParameterObserverTensorBoard();
+
+	protected:
+		/**
+		* Writer object which will be used to write tensorflow::Event files
+		*/
+		tflogger::EventLogger m_writer;
+	};
 }
 
-ParameterObserverScalar::ParameterObserverScalar(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
-{
-}
-
-ParameterObserverScalar::ParameterObserverScalar(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
-{
-}
-
-ParameterObserverScalar::~ParameterObserverScalar()
-{
-}
-
-void ParameterObserverScalar::on_next(const TimedObservedValue& value)
-{
-	auto node_name = std::string("node");
-	auto format = TBOutputFormat();
-	auto event_value = format.convert_scalar(value, node_name);
-	m_writer.writeEvent(event_value);
-}
-
-void ParameterObserverScalar::on_error(std::exception_ptr)
-{
-}
-
-void ParameterObserverScalar::on_complete()
-{
-}
-
+#endif // SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 #endif // HAVE_TFLOGGER

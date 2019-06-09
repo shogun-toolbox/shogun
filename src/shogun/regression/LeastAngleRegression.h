@@ -88,38 +88,6 @@ public:
 	/** default destructor */
 	virtual ~CLeastAngleRegression();
 
-	/** set max number of non-zero variables for early stopping
-	 *
-	 * @param n 0 means no constraint
-	 */
-	void set_max_non_zero(int32_t n)
-	{
-		m_max_nonz = n;
-	}
-
-	/** get max number of non-zero variables for early stopping
-	 */
-	int32_t get_max_non_zero() const
-	{
-		return m_max_nonz;
-	}
-
-	/** set max l1-norm of estimator for early stopping
-	 *
-	 * @param norm the max l1-norm for beta
-	 */
-	void set_max_l1_norm(float64_t norm)
-	{
-		m_max_l1_norm = norm;
-	}
-
-	/** get max l1-norm of estimator for early stopping
-	 */
-	float64_t get_max_l1_norm() const
-	{
-		return m_max_l1_norm;
-	}
-
 	/** switch estimator
 	 *
 	 * @param num_variable number of non-zero coefficients
@@ -163,7 +131,8 @@ public:
 	SGVector<float64_t> get_w_for_var(int32_t num_var)
 	{
 		SGVector<float64_t> w = get_w();
-		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w.vlen, false);
+		return SGVector<float64_t>(
+			m_beta_path[m_beta_idx[num_var]].vector, w.vlen, false);
 	}
 
 	/** get classifier type
@@ -173,18 +142,6 @@ public:
 	virtual EMachineType get_classifier_type()
 	{
 		return CT_LARS;
-	}
-
-	/** Set epsilon used for early stopping */
-	void set_epsilon(float64_t epsilon)
-	{
-		m_epsilon = epsilon;
-	}
-
-	/** Get epsilon used for early stopping */
-	float64_t get_epsilon()
-	{
-		return m_epsilon;
 	}
 
 	/** @return object name */
@@ -241,7 +198,7 @@ private:
 	int32_t m_max_nonz;  //!< max number of non-zero variables for early stopping
 	float64_t m_max_l1_norm; //!< max l1-norm of beta (estimator) for early stopping
 
-	std::vector<std::vector<float64_t> > m_beta_path;
+	std::vector<SGVector<float64_t>> m_beta_path;
 	std::vector<int32_t> m_beta_idx;
 	std::vector<int32_t> m_active_set;
 	std::vector<bool> m_is_active;

@@ -35,43 +35,47 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERSCALAR_H
-#define SHOGUN_PARAMETEROBSERVERSCALAR_H
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/lib/observers/ParameterObserverScalar.h>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
+using namespace shogun;
 
-namespace shogun
+CParameterObserverScalar::CParameterObserverScalar()
+    : ParameterObserverTensorBoard()
 {
-	/**
-	 * Implementation of a ParameterObserver which write to file
-	 * scalar values, given object emitted from a parameter observable.
-	 */
-	class ParameterObserverScalar : public ParameterObserverTensorBoard,
-	                                public CSGObject
-	{
-
-	public:
-		ParameterObserverScalar();
-		ParameterObserverScalar(std::vector<std::string>& parameters);
-		ParameterObserverScalar(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverScalar();
-
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr);
-		virtual void on_complete();
-
-		/**
-		* Get class name.
-		* @return class name
-		*/
-		virtual const char* get_name() const
-		{
-			return "ParameterObserverScalar";
-		}
-	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERSCALAR_H
+CParameterObserverScalar::CParameterObserverScalar(
+    std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(parameters)
+{
+}
+
+CParameterObserverScalar::CParameterObserverScalar(
+    const std::string& filename, std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
+{
+}
+
+CParameterObserverScalar::~CParameterObserverScalar()
+{
+}
+
+void CParameterObserverScalar::on_next_impl(const TimedObservedValue& value)
+{
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_scalar(value, node_name);
+	m_writer.writeEvent(event_value);
+}
+
+void CParameterObserverScalar::on_error(std::exception_ptr)
+{
+}
+
+void CParameterObserverScalar::on_complete()
+{
+}
+
 #endif // HAVE_TFLOGGER

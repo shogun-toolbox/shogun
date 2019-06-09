@@ -44,26 +44,10 @@ class CKMeansMiniBatch : public CKMeansBase
 		virtual ~CKMeansMiniBatch();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KMeansMiniBatch"; }	
-
-		/** set batch size for mini-batch KMeans
-		 *
-		 *@param b batch size int32_t(greater than 0)
-		 */
-		void set_batch_size(int32_t b);
-
-		/** get batch size for mini-batch KMeans
-		 *
-		 *@return batch size
-		 */
-		int32_t get_batch_size() const;
-
-		/** set batch size and no. of iteration for mini-batch KMeans
-		 *
-		 *@param b batch size
-		 *@param t no. of iterations
-		 */
-		void set_mb_params(int32_t b, int32_t t);
+		virtual const char* get_name() const
+		{
+			return "KMeansMiniBatch";
+		}
 
 	protected:
 
