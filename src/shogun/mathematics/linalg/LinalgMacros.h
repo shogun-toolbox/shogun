@@ -85,3 +85,8 @@
 	METHODNAME(float32_t, Container);                                          \
 	METHODNAME(float64_t, Container);                                          \
 	METHODNAME(floatmax_t, Container);
+
+#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);
