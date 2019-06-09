@@ -5,20 +5,20 @@
 
 namespace shogun
 {
-	namespace utils
+	namespace traits
 	{
+		template<typename... Ts>
+		struct try_to_declare {};
+
 		template<typename T, typename _ = void>
 		struct is_container : std::false_type {};
-
-		template<typename... Ts>
-		struct is_container_helper {};
 
 		template<typename T>
 		struct is_container<
 			T,
 			std::conditional_t<
 				false,
-				is_container_helper<
+				try_to_declare<
 					typename T::value_type,
 					typename T::size_type,
 					typename T::allocator_type,
@@ -33,6 +33,23 @@ namespace shogun
 				void
 				>
 			> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct is_hashable : std::false_type {};
+
+		template<typename T>
+		struct is_hashable<
+			T,
+			std::conditional_t<
+				false,
+				try_to_declare<
+					decltype(std::hash<T>{}(std::declval<T>()))
+				>,
+				void
+			>
+		> : public std::true_type {};
+
+
 	} // namespace utils
 } // namespace shogun
 #endif

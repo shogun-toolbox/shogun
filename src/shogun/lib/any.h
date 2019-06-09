@@ -487,7 +487,7 @@ namespace shogun {
 		}
 
 		template <class T,
-			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+			std::enable_if_t<traits::is_container<T>::value>* = nullptr>
 		bool compare_impl(
 		    maybe_most_important, const T& lhs, const T& rhs)
 		{
@@ -508,33 +508,20 @@ namespace shogun {
 		}
 
 		template <class T>
-		inline size_t hash_impl(general, const T&)
-		{
-			return 0;
-		}
-
-		template <class T>
-		inline auto hash_impl(more_important, const T& value)
-		    -> decltype(std::hash<T>{}(value))
-		{
-			return std::hash<T>{}(value);
-		}
-
-		template <class T,
-			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
-		size_t hash(maybe_most_important, const T& value)
-		{
-			size_t result = 0;
-			for (const auto& it: value) {
-				result ^= hash(it);
-			}
-			return result;
-		}
-
-		template <class T>
 		size_t hash(const T& value)
 		{
-			return hash_impl(maybe_most_important(), value);
+			if constexpr (traits::is_container<T>::value)
+			{
+				size_t result = 0;
+				for (const auto& it: value) {
+					result ^= hash(it);
+				}
+				return result;
+			}
+			if constexpr (traits::is_hashable<T>::value) {
+				return std::hash<T>{}(value);
+			}
+			return 0;
 		}
 
 		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
@@ -590,7 +577,7 @@ namespace shogun {
 		}
 
 		template <class T,
-			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+			std::enable_if_t<traits::is_container<T>::value>* = nullptr>
 		inline auto clone(void** storage, const T& value)
 		{
 			T cloned;
