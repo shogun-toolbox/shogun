@@ -351,6 +351,48 @@ IF (NOT HAVE_STD_VARIANT)
   )
 ENDIF()
 
+CHECK_CXX_SOURCE_COMPILES("
+template<typename... Args>
+auto func(Args... args) {
+    return (args + ...);
+}
+int main()
+{return func(1,2,3);}
+" HAVE_FOLDING_EXPRESSIONS)
+
+IF(NOT HAVE_FOLDING_EXPRESSIONS)
+  MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with folding expression support!")
+ENDIF()
+
+CHECK_CXX_SOURCE_COMPILES("
+int main()
+{
+  if constexpr(true)
+    return 1;
+}
+" HAVE_IF_CONSTEXPR)
+
+IF(NOT HAVE_IF_CONSTEXPR)
+  MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with if constexpr support!")
+ENDIF()
+
+CHECK_CXX_SOURCE_COMPILES("
+int main()
+{
+  if (int value = 1; value==1)
+  {
+    return value;
+  }
+  else
+  {
+    return value - 1;
+  }
+}
+" HAVE_IF_INIT)
+IF(NOT HAVE_IF_INIT)
+  MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with if init-statements support!")
+ENDIF()
+
 SHOGUN_DEPENDENCIES(
   LIBRARY GLPK
   SCOPE PRIVATE
