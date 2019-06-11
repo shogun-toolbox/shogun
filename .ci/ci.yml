@@ -37,8 +37,8 @@ jobs:
     maxParallel: 2
     matrix:
       clang:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: ''
       gcc:
         CC: "gcc"
