@@ -2,7 +2,7 @@ FROM debian:stretch-backports
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get update -qq && apt-get upgrade -y && \
-    apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
+    apt-get install -qq --force-yes --no-install-recommends make gcc-6 g++-6 \
     libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
     libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev \
     libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
