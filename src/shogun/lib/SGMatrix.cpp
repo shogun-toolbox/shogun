@@ -394,7 +394,7 @@ void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 }
 
 template <class T>
-SGMatrix<T> SGMatrix<T>::submatrix(index_t col_start, index_t col_end) const
+SGMatrix<T> SGMatrix<T>::slice(index_t col_start, index_t col_end) const
 {
 	assert_on_cpu();
 	return SGMatrix<T>(
