@@ -8,7 +8,7 @@ RUN apt-get update -qq && apt-get upgrade -y && \
     libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-matplotlib python-scipy \
     python-jinja2 python-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
-    lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
+    lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang-4.0 \
     openjdk-8-jdk ruby ruby-dev python-ply sphinx-doc python-pip \
     exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev lcov \
     protobuf-compiler libprotobuf-dev scala googletest gnupg dirmngr
