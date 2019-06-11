@@ -334,8 +334,9 @@ float64_t CCombinedDotFeatures::get_subfeature_weight(index_t idx) const
 
 void CCombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
 {
-	if(idx < 0 || (size_t)idx >= feature_weights.size())
-		SG_ERROR("Index (%d) is out of bounds", idx);
+	REQUIRE(
+	    idx >= 0 && (size_t)idx < feature_weights.size(),
+	    "Index (%d) is out of bounds", idx);
 
 	feature_weights[idx] = weight;
 }
