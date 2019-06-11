@@ -482,14 +482,14 @@ TEST(SGVectorTest, slice)
 	SGVector<float64_t> vec(vlen);
 	vec.range_fill();
 
-	SGVector<float64_t> sliced_vec = vec(l, h);
+	auto sliced_vec = vec.slice(l, h);
 	EXPECT_EQ(sliced_vec.size(), h - l);
 	for (index_t i = 0; i < h - l; i++)
 	{
 		EXPECT_EQ(vec[i + l], sliced_vec[i]);
 	}
 
-	SGVector<float64_t> sliced_vec2 = sliced_vec(l2, h2);
+	auto sliced_vec2 = sliced_vec.slice(l2, h2);
 	EXPECT_EQ(sliced_vec2.size(), h2 - l2);
 	for (index_t i = 0; i < h2 - l2; i++)
 	{
@@ -497,7 +497,7 @@ TEST(SGVectorTest, slice)
 	}
 
 	sliced_vec.set_const(c1);
-	SGVector<float64_t> sliced_vec3 = sliced_vec2(0, -1);
+	auto sliced_vec3 = sliced_vec2.slice(0, sliced_vec2.vlen);
 	EXPECT_EQ(sliced_vec2, sliced_vec3);
 	sliced_vec3.set_const(c2);
 
