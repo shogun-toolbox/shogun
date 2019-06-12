@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/base/range.h>
 
 namespace shogun
 {
@@ -116,6 +117,12 @@ class CDotFeatures : public CFeatures
 		 * note that the result will be written to output[0...(stop-start-1)]
 		 */
 		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const;
+
+		virtual void
+		dot(SGVector<float64_t> output, IntRange feat_range,
+		    const SGVector<float64_t> vec,
+		    const SGVector<float64_t> alphas = SGVector<float64_t>(),
+		    float64_t b = 0) const;
 
 		/** Compute the dot product for a subset of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b

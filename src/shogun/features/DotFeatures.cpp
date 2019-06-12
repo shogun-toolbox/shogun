@@ -48,19 +48,18 @@ float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> ve
 	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
 }
 
-void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
+void CDotFeatures::dot(
+    SGVector<float64_t> output, IntRange feat_range,
+    const SGVector<float64_t> vec, const SGVector<float64_t> alphas,
+    float64_t b) const
 {
-	ASSERT(output)
-	ASSERT(start>=0)
-	ASSERT(start<stop)
-	ASSERT(stop<=get_num_vectors())
+	ASSERT(feat_range.m_begin >= 0)
+	ASSERT(feat_range.m_end <= get_num_vectors())
 
-	int32_t num_vectors=stop-start;
-	ASSERT(num_vectors>0)
-
+	int32_t num_vectors = feat_range.distance();
 	int32_t num_threads;
 	int32_t step;
-	auto pb = SG_PROGRESS(range(num_vectors));
+
 #pragma omp parallel shared(num_threads, step)
 	{
 #ifdef HAVE_OPENMP
@@ -70,33 +69,30 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 			step=num_vectors/num_threads;
 			num_threads--;
 		}
+
 		int32_t thread_num=omp_get_thread_num();
+		IntRange _range(
+		    thread_num * step, std::min(num_vectors, (thread_num + 1) * step));
 #else
-		num_threads=0;
-		step=num_vectors;
-		int32_t thread_num=0;
+		IntRange& _range = feat_range;
 #endif
-
-		int32_t t_start=thread_num*step;
-		int32_t t_stop=(thread_num==num_threads) ? num_vectors : (thread_num+1)*step;
-
-#ifdef WIN32
-		for (int32_t i=t_start; i<t_stop; i++)
-#else
-		// TODO: replace with the new signal
-		// for (int32_t i=t_start; i<t_stop &&
-		//		!CSignal::cancel_computations(); i++)
-		for (int32_t i = t_start; i < t_stop; i++)
-#endif
-		{
-			if (alphas)
-				output[i]=alphas[i]*this->dense_dot(i + start, vec, dim)+b;
-			else
-				output[i]=this->dense_dot(i + start, vec, dim)+b;
-			pb.print_progress();
-		}
+		for (auto i : _range)
+			output[i] = dense_dot_sgvec(i + feat_range.m_begin, vec) + b;
 	}
-	pb.complete();
+
+	if (alphas.size() != 0)
+		linalg::element_prod(output, alphas, output);
+}
+
+void CDotFeatures::dense_dot_range(
+    float64_t* output, int32_t start, int32_t stop, float64_t* alphas,
+    float64_t* vec, int32_t dim, float64_t b) const
+{
+	SGVector<float64_t> output_sgvec(output, stop - start, false);
+	SGVector<float64_t> vec_sgvec(vec, dim, false);
+	SGVector<float64_t> alphas_sgvec(alphas, stop - start, false);
+
+	dot(output_sgvec, IntRange(start, stop), vec_sgvec, alphas_sgvec, b);
 }
 
 void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
