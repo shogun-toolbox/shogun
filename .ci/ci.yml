@@ -39,7 +39,7 @@ jobs:
       clang:
         CC: "clang-4.0"
         CXX: "clang++-4.0"
-        cmakeOptions: '-DCLANG_DEFAULT_CXX_STDLIB=libc++'
+        cmakeOptions: ''
       gcc:
         CC: "gcc"
         CXX: "g++"
