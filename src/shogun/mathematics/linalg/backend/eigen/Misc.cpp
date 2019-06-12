@@ -93,6 +93,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGMatrix)
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
+#undef DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64
 
 template <typename T>
 void LinalgBackendEigen::center_matrix_impl(SGMatrix<T>& A) const

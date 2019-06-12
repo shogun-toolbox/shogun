@@ -52,7 +52,7 @@ DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
 	{                                                                          \
 		cholesky_rank_update_impl(L, b, alpha, lower);                         \
 	}
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
+DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
 
 #define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
@@ -79,6 +79,7 @@ DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
+#undef DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64
 
 template <typename T>
 SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(

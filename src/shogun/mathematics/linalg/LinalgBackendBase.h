@@ -43,6 +43,7 @@
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
+#include <shogun/mathematics/linalg/LinalgMacros.h>
 
 namespace shogun
 {
@@ -54,47 +55,6 @@ namespace shogun
 	{
 	public:
 		virtual ~LinalgBackendBase() = default;
-#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container)                            \
-	METHODNAME(bool, Container);                                               \
-	METHODNAME(char, Container);                                               \
-	METHODNAME(int8_t, Container);                                             \
-	METHODNAME(uint8_t, Container);                                            \
-	METHODNAME(int16_t, Container);                                            \
-	METHODNAME(uint16_t, Container);                                           \
-	METHODNAME(int32_t, Container);                                            \
-	METHODNAME(uint32_t, Container);                                           \
-	METHODNAME(int64_t, Container);                                            \
-	METHODNAME(uint64_t, Container);                                           \
-	METHODNAME(float32_t, Container);                                          \
-	METHODNAME(float64_t, Container);                                          \
-	METHODNAME(floatmax_t, Container);                                         \
-	METHODNAME(complex128_t, Container);
-
-#define DEFINE_FOR_NON_COMPLEX_PTYPE(METHODNAME, Container)                    \
-	METHODNAME(bool, Container);                                               \
-	METHODNAME(char, Container);                                               \
-	METHODNAME(int8_t, Container);                                             \
-	METHODNAME(uint8_t, Container);                                            \
-	METHODNAME(int16_t, Container);                                            \
-	METHODNAME(uint16_t, Container);                                           \
-	METHODNAME(int32_t, Container);                                            \
-	METHODNAME(uint32_t, Container);                                           \
-	METHODNAME(int64_t, Container);                                            \
-	METHODNAME(uint64_t, Container);                                           \
-	METHODNAME(float32_t, Container);                                          \
-	METHODNAME(float64_t, Container);                                          \
-	METHODNAME(floatmax_t, Container);
-
-#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
-	METHODNAME(float32_t, Container);                                          \
-	METHODNAME(float64_t, Container);                                          \
-	METHODNAME(floatmax_t, Container);
-
-#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container)                    \
-	METHODNAME(float32_t, Container);                                          \
-	METHODNAME(float64_t, Container);                                          \
-	METHODNAME(floatmax_t, Container);                                         \
-	METHODNAME(complex128_t, Container);
 
 /**
  * Wrapper method of add operation the operation result = alpha*a + beta*b.
@@ -246,7 +206,7 @@ namespace shogun
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
+		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
 
 /**
@@ -346,6 +306,21 @@ namespace shogun
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
+#undef BACKEND_GENERIC_DOT
+
+/**
+ * Wrapper method of vector dot-product that works with generic vectors.
+ *
+ * @see linalg::dot
+ */
+#define BACKEND_GENERIC_DOT(Type, Container)                                   \
+	virtual linalg::promote<float64_t, Type>::type dot(                        \
+	    const Container<float64_t>& a, const Container<Type>& b) const         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64(BACKEND_GENERIC_DOT, SGVector)
 #undef BACKEND_GENERIC_DOT
 
 /**
