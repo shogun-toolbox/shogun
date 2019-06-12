@@ -72,7 +72,7 @@ jobs:
       python:
         CC: "clang-6.0"
         CXX: "clang++-6.0"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON'
         interfaceName: 'python'
       java:
         CC: "clang-6.0"
@@ -112,7 +112,7 @@ jobs:
     targetPrefix: '$(build.binariesDirectory)/opt'
     libshogunArtifactName: 'libshogun-$(CC)'
     libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar'
-    commonSWIGCMakeFlags: '-DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON'
+    commonSWIGCMakeFlags: '-DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
     ccacheDir: '$(build.binariesDirectory)/ccache'
     ccacheArtifactName: 'ccache-$(interfaceName)'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
