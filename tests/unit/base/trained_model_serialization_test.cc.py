@@ -4,6 +4,10 @@
 #
 # Authors: Michele Mazzoni, Sergey Lisitsyn
 
+import sys
+if sys.version_info < (3, 0):
+    import codecs
+    open = codecs.open
 
 # Classes to ignore: mostly because default initialization isn't enough
 # to setup the machine for training (i.e. Multitask and DomainAdaptation),
