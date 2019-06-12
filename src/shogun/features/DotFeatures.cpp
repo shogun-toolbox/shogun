@@ -24,14 +24,14 @@ using namespace shogun;
 
 
 CDotFeatures::CDotFeatures(int32_t size)
-	:CFeatures(size), combined_weight(1.0)
+	:CFeatures(size)
 {
 	init();
 }
 
 
 CDotFeatures::CDotFeatures(const CDotFeatures & orig)
-	:CFeatures(orig), combined_weight(orig.combined_weight)
+	:CFeatures(orig)
 {
 	init();
 }
@@ -375,7 +375,4 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(
 void CDotFeatures::init()
 {
 	set_property(FP_DOT);
-	SG_ADD(
-	    &combined_weight, "combined_weight",
-	    "Feature weighting in combined dot features.");
 }
