@@ -10,7 +10,7 @@ IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
   SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads\;-py3")
   SET(PYTHON3 1)
 ELSE()
-  SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads")
+  MESSAGE(FATAL_ERROR "Python interface of shogun requires Python version 3!")
 ENDIF()
 
 # SWIG-generated Python-wrappers fail to build

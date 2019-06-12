@@ -9,9 +9,7 @@
 %{
 // needed for support of new buffer protocol in python 2.6 and later
 // doesn't make sense for python3
-#if (PY_VERSION_HEX < 0x02060000) || (PY_VERSION_HEX >= 0x03000000)
 #define Py_TPFLAGS_HAVE_NEWBUFFER 0
-#endif
 %}
 
 %define BUFFER_VECTOR_INFO(type_name)
@@ -112,12 +110,7 @@ int parse_tuple_item(PyObject* item, Py_ssize_t length,
 	if (PySlice_Check(item))
 	{
 		PySlice_GetIndicesEx(
-#if PY_VERSION_HEX >= 0x03020000
-          item,
-#else
-          (PySliceObject *) item,
-#endif
-			length, ilow, ihigh, step, slicelength);
+          item,	length, ilow, ihigh, step, slicelength);
 		get_slice_in_bounds(ilow, ihigh, length);
 
 		return 2;
