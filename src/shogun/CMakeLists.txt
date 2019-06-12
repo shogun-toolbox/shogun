@@ -269,7 +269,17 @@ if (NOT MSVC)
     # FIXME: add support for aligned new
     # this is c++17
     #CHECK_CXX_COMPILER_FLAG("-faligned-new" HAVE_ALIGNED_NEW)
-    check_function_exists("std::aligned_alloc" HAVE_STD_ALIGNED_ALLOC)
+    CHECK_CXX_SOURCE_COMPILES("
+    #include <cstdio>
+    #include <cstdlib>
+
+    int main()
+    {
+        int* p2 = static_cast<int*>(std::aligned_alloc(1024, 1024));
+        std::free(p2);
+        return 0;
+    }
+    " HAVE_STD_ALIGNED_ALLOC)
 
     if (NOT HAVE_STD_ALIGNED_ALLOC)
       if (MSVC)

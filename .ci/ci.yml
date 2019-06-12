@@ -39,11 +39,11 @@ jobs:
       clang:
         CC: "clang-6.0"
         CXX: "clang++-6.0"
-        cmakeOptions: ''
+        cmakeOptions: '-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
       gcc:
         CC: "gcc-7"
         CXX: "g++-7"
-        cmakeOptions: ''
+        cmakeOptions: '-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-debian'
@@ -72,7 +72,7 @@ jobs:
       python:
         CC: "clang-6.0"
         CXX: "clang++-6.0"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON'
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
         interfaceName: 'python'
       java:
         CC: "clang-6.0"
