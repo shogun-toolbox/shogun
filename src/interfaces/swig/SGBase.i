@@ -255,11 +255,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %inline %{
 	static void _swig_monkey_patch(PyObject *type, PyObject *name, PyObject *object) {
 		PyObject *dict = NULL;
-#if PY_VERSION_HEX>=0x03000000
 		if (!PyUnicode_Check(name))
-#else
-		if (!PyString_Check(name))
-#endif
 			{
 				PyErr_SetString(PyExc_TypeError, "name is not a string");
 				return;

@@ -33,28 +33,13 @@ static int array_dimensions(const PyObject* a)  { return PyArray_NDIM((const PyA
 static const char* typecode_string(PyObject* py_obj) {
   if (py_obj == NULL          ) return "C NULL value";
   if (PyCallable_Check(py_obj)) return "callable";
-
-#if PY_VERSION_HEX >= 0x03000000
   if (PyUnicode_Check( py_obj)) return "unicode";
-#else
-  if (PyString_Check(  py_obj)) return "string";
-#endif
-
-#if PY_VERSION_HEX >= 0x03000000
   if (PyLong_Check(    py_obj)) return "int";
-#else
-  if (PyInt_Check(     py_obj)) return "int";
-#endif
   if (PyFloat_Check(   py_obj)) return "float";
   if (PyDict_Check(    py_obj)) return "dict";
   if (PyList_Check(    py_obj)) return "list";
   if (PyTuple_Check(   py_obj)) return "tuple";
   if (PyModule_Check(  py_obj)) return "module";
-
-#if PY_VERSION_HEX < 0x03000000
-  if (PyFile_Check(    py_obj)) return "file";
-  if (PyInstance_Check(py_obj)) return "instance";
-#endif
 
   return "unknown type";
 }
@@ -195,11 +180,7 @@ static int is_pystring_list(PyObject* obj, int typecode)
 
             if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
-#if PY_VERSION_HEX >= 0x03000000
                 if (!PyUnicode_Check(o))
-#else
-				if (!PyString_Check(o) && !PyUnicode_Check(o))
-#endif
                 {
                     result=0;
                     break;
@@ -382,34 +363,11 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
             PyObject *o = PyList_GetItem(list,i);
             if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
-#if PY_VERSION_HEX >= 0x03000000
                 if (PyUnicode_Check(o))
-#else
-				if (PyString_Check(o) || PyUnicode_Check(o))
-#endif
                 {
                     PyObject *tmp = nullptr;
-#if PY_VERSION_HEX >= 0x03000000
                     Py_ssize_t len = -1;
                     const char* str = PyUnicode_AsUTF8AndSize(o, &len);
-#else
-                    Py_ssize_t len = -1;
-                    const char* str = nullptr;
-                    if (PyString_Check(o))
-                    {
-                        len = PyString_Size(o);
-                        str = PyString_AsString(o);
-                    }
-                    else
-                    {
-                        tmp = PyUnicode_AsUTF8String(o);
-                        if (tmp != nullptr)
-                        {
-                            str = PyString_AsString(tmp);
-                            len = PyUnicode_GetSize(o);
-                        }
-                    }
-#endif
                     if (str == nullptr)
                     {
                         PyErr_SetString(PyExc_TypeError, "Error converting string content.");
@@ -509,11 +467,7 @@ static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int t
             {
                 /* This path is only taking if str[i].string is a char*. However this cast is
                    required to build through for non char types. */
-#if PY_VERSION_HEX >= 0x03000000
 				s=PyUnicode_FromStringAndSize((char*) str[i].string, str[i].slen);
-#else
-				s=PyString_FromStringAndSize((char*) str[i].string, str[i].slen);
-#endif
             }
             else
             {
@@ -604,13 +558,8 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
     }
 
     /* get array dimensions */
-#if PY_VERSION_HEX >= 0x03000000
     index_t num_feat=PyLong_AsLong(PyTuple_GetItem(shape, 0));
     index_t num_vec=PyLong_AsLong(PyTuple_GetItem(shape, 1));
-#else
-    index_t num_feat=PyInt_AsLong(PyTuple_GetItem(shape, 0));
-    index_t num_vec=PyInt_AsLong(PyTuple_GetItem(shape, 1));
-#endif
 
     /* get indptr array */
     int is_new_object_indptr=0;
@@ -1219,11 +1168,7 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 	static void _rename_python_function(PyObject *type, PyObject *old_name, PyObject *new_name) {
 		PyObject *dict = NULL,
 				 *func_obj = NULL;
-#if PY_VERSION_HEX>=0x03000000
 		if (!PyUnicode_Check(old_name) || !PyUnicode_Check(new_name))
-#else
-		if (!PyString_Check(old_name) || !PyString_Check(new_name))
-#endif
 			{
 				PyErr_SetString(PyExc_TypeError, "'old_name' and 'new_name' have to be strings");
 				return;
