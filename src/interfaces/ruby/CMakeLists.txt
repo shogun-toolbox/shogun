@@ -12,6 +12,7 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/shogun.rb.in"
 GENERATE_INTERFACE_TARGET(ruby ${CMAKE_CURRENT_SOURCE_DIR} ${RUBY_LIBRARY})
 set_target_properties(interface_ruby PROPERTIES PREFIX "")
 target_compile_definitions(interface_ruby PRIVATE NARRAY_LIB="${RUBY_NARRAY_LIBRARY}")
+target_compile_options(interface_ruby PRIVATE "-Wno-register")
 
 SET(INTERFACE_RUBY_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
