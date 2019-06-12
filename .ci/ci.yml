@@ -70,28 +70,28 @@ jobs:
     maxParallel: 7
     matrix:
       python:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON'
         interfaceName: 'python'
       java:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_JAVA=ON'
         interfaceName: 'java'
       csharp:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_CSHARP=ON'
         interfaceName: 'csharp'
       r:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
         interfaceName: 'r'
       lua:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_LUA=ON'
         interfaceName: 'lua'
       octave:
@@ -100,8 +100,8 @@ jobs:
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_OCTAVE=ON'
         interfaceName: 'octave'
       ruby:
-        CC: "clang"
-        CXX: "clang++"
+        CC: "clang-4.0"
+        CXX: "clang++-4.0"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_RUBY=ON'
         interfaceName: 'ruby'
 
