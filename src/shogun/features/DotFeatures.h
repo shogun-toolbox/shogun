@@ -140,18 +140,6 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual int32_t get_nnz_features_for_vector(int32_t num) const=0;
 
-		/** get combined feature weight
-		 *
-		 * @return combined feature weight
-		 */
-		inline float64_t get_combined_feature_weight() { return combined_weight; }
-
-		/** set combined kernel weight
-		 *
-		 * @param nw new combined feature weight
-		 */
-		inline void set_combined_feature_weight(float64_t nw) { combined_weight=nw; }
-
 		/** compute the feature matrix in feature space
 		 *
 		 * @return computed feature matrix
@@ -240,11 +228,6 @@ class CDotFeatures : public CFeatures
 
 	private:
 		void init();
-
-	protected:
-
-		/// feature weighting in combined dot features
-		float64_t combined_weight;
 };
 }
 #endif // _DOTFEATURES_H___

@@ -15,6 +15,11 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DotFeatures.h>
 
+namespace std
+{
+	template class vector<float64_t>;
+}
+
 namespace shogun
 {
 class CFeatures;
@@ -159,6 +164,8 @@ class CCombinedDotFeatures : public CDotFeatures
 			CDotFeatures* f;
 			/** pointer to combined feature iterator */
 			void* iterator;
+			/// idx for iterator
+			int32_t iterator_idx;
 			/** the index of the vector over whose components to iterate over */
 			int32_t vector_index;
 		};
@@ -242,13 +249,26 @@ class CCombinedDotFeatures : public CDotFeatures
 		/** get subfeature weights
 		 *
 		 */
-		virtual SGVector<float64_t> get_subfeature_weights();
+		virtual SGVector<float64_t> get_subfeature_weights() const;
 
 		/** set subfeature weights
 		 *
 		 * @param weights new subfeature weights
 		 */
-		virtual void set_subfeature_weights(SGVector<float64_t> weights);
+		virtual void set_subfeature_weights(const SGVector<float64_t>& weights);
+
+		/** get weight of subfeature given by idx
+		 *
+		 * @param idx index of the subfeature
+		 * @return weight of the subfeature
+		 */
+		float64_t get_subfeature_weight(index_t idx) const;
+
+		/** set weight of subfeature given by idx
+		 *
+		 * @param idx index of the subfeature
+		 */
+		void set_subfeature_weight(index_t idx, float64_t weight);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "CombinedDotFeatures"; }
@@ -259,13 +279,13 @@ class CCombinedDotFeatures : public CDotFeatures
 
 	private:
 		void init();
+		void register_params();
 
 	protected:
 		/** feature array */
 		CDynamicObjectArray* feature_array;
-
-		/// idx for iterator
-		int32_t iterator_idx;
+		std::vector<float64_t> feature_weights;
+		static const float64_t initial_weight;
 		/// total number of vectors
 		int32_t num_vectors;
 		/// total number of dimensions
