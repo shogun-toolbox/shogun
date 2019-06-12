@@ -37,6 +37,7 @@
 #define __SG_RANGE_H__
 
 #include <iterator>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
@@ -61,6 +62,7 @@ namespace shogun
 		 */
 		Range(T rbegin, T rend) : m_begin(rbegin), m_end(rend)
 		{
+			REQUIRE(rbegin < rend, "Range beginning has to be less than its end\n");
 		}
 
 		/** @class Iterator spawned by @ref Range. */
@@ -117,11 +119,18 @@ namespace shogun
 			return Iterator(m_end);
 		}
 
-	private:
+		/** Returns the distance between the end of the range
+		 * and its beginning
+		 */ 
+		T distance() const
+		{
+			return m_end - m_begin;
+		}
+
 		/** begin of range */
-		T m_begin;
+		const T m_begin;
 		/** end of range */
-		T m_end;
+		const T m_end;
 	};
 
 	/** Creates @ref Range with specified upper bound.
@@ -152,6 +161,8 @@ namespace shogun
 	{
 		return Range<T>(rbegin, rend);
 	}
+
+	using IntRange = Range<int32_t>;
 }
 
 #endif /* __SG_RANGE_H__ */
