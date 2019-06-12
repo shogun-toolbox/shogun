@@ -150,8 +150,10 @@ void* operator new(size_t size, std::align_val_t al)
 		size += align - rem;
 #if defined(USE_TCMALLOC)
 	void *p = tc_new_aligned_nothrow(size, align);
+#elif HAVE_STD_ALIGNED_ALLOC
+	void *p = std::aligned_alloc(size, align);
 #else
-	void *p = aligned_alloc(size, align);
+	#error "HAVE_ALIGNED_NEW requires an aligned mem allocator!"
 #endif
 
 #ifdef TRACE_MEMORY_ALLOCS
@@ -220,7 +222,7 @@ void* sg_aligned_malloc(size_t size, size_t al)
 #else
 
 #ifdef HAVE_STD_ALIGNED_ALLOC
-	void* p = aligned_alloc(al, size);
+	void* p = std::aligned_alloc(al, size);
 #else
 
 #ifdef _MSC_VER
