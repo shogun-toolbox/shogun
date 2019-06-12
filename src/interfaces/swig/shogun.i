@@ -8,6 +8,7 @@
    conflicting macros in AssertMacros.h of Carbon-framework.
    Won't cause harm on other distros. */
 %{
+#define register 
 #if defined(__APPLE__)
 #define __ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES 0
 #endif // defined(__APPLE__)
