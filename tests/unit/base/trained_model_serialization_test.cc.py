@@ -47,13 +47,13 @@ def read_defined_guards(config_file):
 
 
 def is_guarded(include, defined_guards):
-    with open(include) as header:
+    with open(include, encoding='utf-8') as header:
         guards = re.findall('#ifdef (\w+)', header.read().lower())
         return any([g not in defined_guards for g in guards])
 
 
 def ignore_in_class_list(include):
-    with open(include) as header:
+    with open(include, encoding='utf-8') as header:
         return 'IGNORE_IN_CLASSLIST' in header.read()
 
 
@@ -77,7 +77,7 @@ def get_shogun_classes(tags):
         inherits_str = 'inherits:'
         symbol, location = attrs[0], attrs[1]
         base = attrs[-1][len(inherits_str):] if attrs[-1].startswith(inherits_str) else None
-        
+
         # parse mixings from declaration, using declarations of the like of
         # /^class CNewtonSVM : public CIterativeMachine<CLinearMachine>$/;"
         mixin = None
