@@ -210,7 +210,11 @@ void* sg_malloc(size_t size
 }
 
 #ifdef HAVE_ALIGNED_MALLOC
-void* sg_aligned_malloc(size_t size, size_t al)
+void* sg_aligned_malloc(size_t size, size_t al
+#ifdef TRACE_MEMORY_ALLOCS
+        , const char* file, int line
+#endif
+)
 {
 	/* the value of size shall be an integral multiple of alignment.  */
 	if (std::size_t rem = size & (al - 1))
