@@ -1204,6 +1204,18 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
   }
 %}
 
+#if SWIG_VERSION >= 0x04000
+%pythoncode %{
+  _sg_object = SGObject
+  __version__ = Version_get_version_main()
+%}
+#else
+%pythoncode %{
+  _sg_object = _shogun.SGObject
+  __version__ = _shogun.Version_get_version_main()
+%}
+#endif
+
 %pythoncode %{
 import sys
 
@@ -1276,8 +1288,8 @@ for factory in _FACTORIES:
 _internal_getter_methods = []
 for getter in _GETTERS:
     _private_getter = "_{}".format(getter)
-    _rename_python_function(_shogun.SGObject, getter, _private_getter)
-    _internal_getter_methods.append(_shogun.SGObject.__dict__[_private_getter])
+    _rename_python_function(_sg_object, getter, _private_getter)
+    _internal_getter_methods.append(_sg_object.__dict__[_private_getter])
 
 def _internal_get_param(self, name, *args):
     """
@@ -1300,8 +1312,6 @@ def _internal_get_param(self, name, *args):
         raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 
 _swig_monkey_patch(SGObject, "get", _internal_get_param)
-
-__version__ = _shogun.Version_get_version_main()
 %}
 
 #endif /* HAVE_PYTHON */
