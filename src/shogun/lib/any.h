@@ -469,7 +469,7 @@ namespace shogun {
 			{
 				return compare(lhs.first, rhs.first) && compare(lhs.second, rhs.second);
 			}
-			if constexpr (std::is_function<T>::value)
+			if constexpr (traits::is_functional<T>::value)
 			{
 				return compare(lhs(), rhs());
 			}
@@ -606,18 +606,6 @@ namespace shogun {
 			static Empty empty;
 			return empty;
 		}
-
-		template <class T>
-		struct has_result_type
-		{
-			typedef char yes[1];
-			typedef char no[2];
-			template <class C>
-			static yes& test(typename C::result_type*);
-			template <class C>
-			static no& test(...);
-			static bool const value = (sizeof(test<T>(0)) == sizeof(yes));
-		};
 
 		template <class T>
 		T get_value(const void* storage, bool is_functional)
@@ -845,7 +833,7 @@ namespace shogun {
 
 		virtual bool is_functional() const override
 		{
-			return any_detail::has_result_type<T>::value;
+			return traits::is_functional<T>::value;
 		}
 	};
 
