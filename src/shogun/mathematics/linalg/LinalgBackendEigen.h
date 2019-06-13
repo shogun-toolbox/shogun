@@ -553,16 +553,8 @@ namespace shogun
 		T cross_entropy_impl(const SGMatrix<T>& p, const SGMatrix<T>& q) const;
 
 		/** Eigen3 vector dot-product method */
-		template <typename T>
-		T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const;
-
- 		template <typename T, typename U,
-			typename = std::enable_if_t<std::is_same<typename linalg::promote<T, U>::type, T>::value>>
-		T dot_impl(const SGVector<T>& a, const SGVector<U>& b) const;
-
- 		template <typename T, typename U,
-			typename = std::enable_if_t<std::is_same<typename linalg::promote<T, U>::type, U>::value>>
-		U dot_impl(const SGVector<T>& a, const SGVector<U>& b) const;
+		template <typename T, typename U, typename TU = typename linalg::promote<T, U>::type>
+		TU dot_impl(const SGVector<T>& a, const SGVector<U>& b) const;
 
 		/** Eigen3 eigenvalues and eigenvectors computation for real matrices.
 		 */

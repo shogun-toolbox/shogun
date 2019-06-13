@@ -358,25 +358,21 @@ void LinalgBackendEigen::add_scalar_impl(SGMatrix<T>& a, T b) const
 	a_eig = a_eig.array() + b;
 }
 
-template <typename T>
-T LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
+template <typename T, typename U, typename TU>
+TU LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<U>& b) const
 {
-	return (typename SGVector<T>::EigenVectorXtMap(a))
-	    .dot(typename SGVector<T>::EigenVectorXtMap(b));
-}
-
-template <typename T, typename U, typename >
-T LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<U>& b) const
-{
-	return (typename SGVector<T>::EigenVectorXtMap(a))
+	if constexpr (std::is_same<T, U>::value)
+		return (typename SGVector<T>::EigenVectorXtMap(a))
+	    	.dot(typename SGVector<U>::EigenVectorXtMap(b));
+	else if constexpr (std::is_same<T, TU>::value)
+		return (typename SGVector<T>::EigenVectorXtMap(a))
 			.dot(typename SGVector<U>::EigenVectorXtMap(b).template cast<T>());
-}
-
-template <typename T, typename U, typename >
-U LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<U>& b) const
-{
-	return (typename SGVector<T>::EigenVectorXtMap(a).template cast<U>())
+	else if constexpr (std::is_same<U, TU>::value)
+		return (typename SGVector<T>::EigenVectorXtMap(a).template cast<U>())
 			.dot(typename SGVector<U>::EigenVectorXtMap(b));
+	else
+		return (typename SGVector<T>::EigenVectorXtMap(a).template cast<TU>())
+			.dot(typename SGVector<U>::EigenVectorXtMap(b).template cast<TU>());
 }
 
 /* Helper method to compute elementwise product with Eigen */
