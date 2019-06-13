@@ -11,6 +11,7 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/base/subset_iterators.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/File.h>
@@ -63,6 +64,8 @@ class DotFeatures;
 template<class ST> class DenseFeatures: public DotFeatures
 {
 public:
+    using iterator = SubsetIterator<CDenseFeatures<ST>>;
+
 	/** constructor
 	 *
 	 * @param size cache size
@@ -133,6 +136,27 @@ public:
 	 * @return feature vector
 	 */
 	SGVector<ST> get_feature_vector(int32_t num) const;
+
+	/**
+	 * Returns an iterator to the first vector of features.
+	 */
+	iterator begin() noexcept
+	{
+		return SubsetIterator(this);
+	}
+
+	/**
+	 * Returns an iterator to the element following the end of features.
+	 */
+	iterator end() noexcept
+	{
+		if (auto stack = get_subset_stack()->get_last_subset();
+			stack == nullptr)
+			return SubsetIterator(this, get_num_vectors());
+		else
+			return SubsetIterator(
+				this, stack->get_subset_idx().size());
+	}
 
 	/** free feature vector
 	 *
