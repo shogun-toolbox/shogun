@@ -53,7 +53,9 @@ template <class T>
 SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
 {
-	matrix=SG_CALLOC(T, ((int64_t) nrows)*ncols);
+	matrix=SG_ALIGNED_MALLOC(
+		T, ((int64_t) nrows)*ncols, alignment::container_alignment);
+	std::fill_n(matrix, ((int64_t) nrows)*ncols, 0);
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
@@ -355,7 +357,7 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 	REQUIRE(ncols > 0, "Number of cols (%d) has to be positive!\n", ncols);
 
 	auto size=int64_t(nrows)*ncols;
-	T* result=SG_MALLOC(T, size);
+	T* result=SG_ALIGNED_MALLOC(T, size, alignment::container_alignment);
 	sg_memcpy(result, matrix, size*sizeof(T));
 	return result;
 }
@@ -364,7 +366,8 @@ template <class T>
 void SGMatrix<T>::transpose_matrix(T*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	/* this should be done in-place! Heiko */
-	T* transposed=SG_MALLOC(T, int64_t(num_vec)*num_feat);
+	T* transposed=SG_ALIGNED_MALLOC(
+		T, int64_t(num_vec)*num_feat, alignment::container_alignment);
 	for (int64_t i=0; i<num_vec; i++)
 	{
 		for (int64_t j=0; j<num_feat; j++)

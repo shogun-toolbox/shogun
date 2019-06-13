@@ -50,6 +50,8 @@ void operator delete(void *p, std::align_val_t al);
 void operator delete[](void *p, std::align_val_t al);
 #endif // HAVE_ALIGNED_NEW
 #define SG_ALIGNED_MALLOC(type, len, al) sg_aligned_malloc<type>(size_t(len), al)
+#else
+#define SG_ALIGNED_MALLOC(type, len, al) sg_generic_malloc<type>(size_t(len))
 #endif // HAVE_ALIGNED_MALLOC
 
 #define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len))
@@ -130,6 +132,11 @@ T* sg_aligned_malloc(size_t len, size_t al)
 	return (T*) sg_aligned_malloc(sizeof(T)*len, al);
 }
 #endif // HAVE_ALIGNED_MALLOC
+
+namespace alignment
+{
+	static constexpr index_t container_alignment = 16;
+}
 
 void* get_copy(void* src, size_t len);
 char* get_strdup(const char* str);

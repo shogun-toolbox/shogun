@@ -88,7 +88,8 @@ template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len), gpu_ptr(NULL)
 {
-	vector=SG_CALLOC(T, len);
+	vector=SG_ALIGNED_MALLOC(T, len, alignment::container_alignment);
+	std::fill_n(vector, len, 0);
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
@@ -271,7 +272,7 @@ T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 
 	REQUIRE(len > 0, "Number of elements (%d) has to be positive!\n", len);
 
-	T* result = SG_MALLOC(T, len);
+	T* result = SG_ALIGNED_MALLOC(T, len, alignment::container_alignment);
 	sg_memcpy(result, vec, sizeof(T)*len);
 	return result;
 }
@@ -887,7 +888,7 @@ void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, co
 
 	if (matrix!=NULL)
 		SG_FREE(matrix);
-	matrix=SG_MALLOC(T, nrows*ncols);
+	matrix=SG_ALIGNED_MALLOC(T, nrows*ncols, alignment::container_alignment);
 
 	if (fortran_order)
 	{
