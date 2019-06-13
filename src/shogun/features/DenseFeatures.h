@@ -336,6 +336,21 @@ public:
 	 */
 	SGVector<ST> dot(const SGVector<ST>& other) const;
 
+	/** Compute the dot product for a range of vectors. This function makes
+	 * use of dense_dot alphas[i] * sparse[i]^T * w + b
+	 *
+	 * @param output result for the given vector range
+	 * @param feat_range the range of feature vectors
+	 * @param vec dense vector to compute dot product with
+	 * @param alphas scalars to multiply with
+	 * @param b bias
+	 */
+	virtual void
+	dot(SGVector<float64_t> output, IntRange feat_range,
+		const SGVector<float64_t> vec,
+		const SGVector<float64_t> alphas = SGVector<float64_t>(),
+		float64_t b = 0) const;
+
 	/** compute dot product between vector1 and a dense vector
 	 *
 	 * possible with subset

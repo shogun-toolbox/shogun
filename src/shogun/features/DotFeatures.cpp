@@ -66,10 +66,9 @@ void CDotFeatures::dot(
 		#pragma omp single
 		{
 			num_threads=omp_get_num_threads();
-			step=num_vectors/num_threads;
+			step=(num_vectors + num_threads - 1)/num_threads;
 			num_threads--;
 		}
-
 		int32_t thread_num=omp_get_thread_num();
 		IntRange _range(
 		    thread_num * step, std::min(num_vectors, (thread_num + 1) * step));
@@ -93,7 +92,7 @@ void CDotFeatures::dense_dot_range(
 	SGVector<float64_t> output_sgvec(output, stop - start, false);
 	SGVector<float64_t> vec_sgvec(vec, dim, false);
 	SGVector<float64_t> alphas_sgvec;
-	if(alphas)
+	if (alphas)
 		alphas_sgvec = SGVector<float64_t>(alphas, stop - start, false);
 
 	dot(output_sgvec, IntRange(start, stop), vec_sgvec, alphas_sgvec, b);
