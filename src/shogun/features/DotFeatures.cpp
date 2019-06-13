@@ -77,11 +77,13 @@ void CDotFeatures::dot(
 		IntRange& _range = feat_range;
 #endif
 		for (auto i : _range)
-			output[i] = dense_dot_sgvec(i + feat_range.m_begin, vec) + b;
+			output[i] = dense_dot_sgvec(i + feat_range.m_begin, vec);
 	}
 
 	if (alphas.size() != 0)
 		linalg::element_prod(output, alphas, output);
+	if (b != 0)
+		linalg::add_scalar(output, b);
 }
 
 void CDotFeatures::dense_dot_range(
@@ -90,7 +92,9 @@ void CDotFeatures::dense_dot_range(
 {
 	SGVector<float64_t> output_sgvec(output, stop - start, false);
 	SGVector<float64_t> vec_sgvec(vec, dim, false);
-	SGVector<float64_t> alphas_sgvec(alphas, stop - start, false);
+	SGVector<float64_t> alphas_sgvec;
+	if(alphas)
+		alphas_sgvec = SGVector<float64_t>(alphas, stop - start, false);
 
 	dot(output_sgvec, IntRange(start, stop), vec_sgvec, alphas_sgvec, b);
 }

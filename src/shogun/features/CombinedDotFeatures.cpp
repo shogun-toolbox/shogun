@@ -133,23 +133,24 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 	return result;
 }
 
-void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
+void CCombinedDotFeatures::dot(
+    SGVector<float64_t> output, IntRange feat_range,
+    const SGVector<float64_t> vec, const SGVector<float64_t> alphas,
+    float64_t b) const
 {
-	ASSERT(stop > start)
-	ASSERT(dim==num_dimensions)
-
-	uint32_t offs=0;
-	int32_t num=stop-start;
+	int32_t offs=0;
+	int32_t num=feat_range.distance();
 	SGVector<float64_t> tmp(num);
-	std::fill(output, output + num, b);
+	output.set_const(b);
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
 
-		f->dense_dot_range(
-		    tmp.vector, start, stop, alphas, vec + offs, f_dim, 0);
+		SGVector<float64_t> sliced_vec(vec.vector, f_dim, offs); 
+		f->dot(tmp, feat_range, sliced_vec, alphas, 0);
+
 		for (int32_t i=0; i<num; i++)
 			output[i] += get_subfeature_weight(f_idx) * tmp[i];
 

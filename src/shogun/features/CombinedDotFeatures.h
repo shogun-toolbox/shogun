@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/base/range.h>
 
 namespace std
 {
@@ -94,16 +95,16 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * alphas[i] * sparse[i]^T * w + b
 		 *
 		 * @param output result for the given vector range
-		 * @param start start vector range from this idx
-		 * @param stop stop vector range at this idx
-		 * @param alphas scalars to multiply with, may be NULL
+		 * @param feat_range the range of feature vectors
 		 * @param vec dense vector to compute dot product with
-		 * @param dim length of the dense vector
+		 * @param alphas scalars to multiply with
 		 * @param b bias
 		 */
-		virtual void dense_dot_range(float64_t* output, int32_t start,
-				int32_t stop, float64_t* alphas, float64_t* vec,
-				int32_t dim, float64_t b) const;
+		virtual void
+		dot(SGVector<float64_t> output, IntRange feat_range,
+		    const SGVector<float64_t> vec,
+		    const SGVector<float64_t> alphas = SGVector<float64_t>(),
+		    float64_t b = 0) const;
 
 		/** Compute the dot product for a subset of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b

@@ -62,7 +62,9 @@ namespace shogun
 		 */
 		Range(T rbegin, T rend) : m_begin(rbegin), m_end(rend)
 		{
-			REQUIRE(rbegin < rend, "Range beginning has to be less than its end\n");
+			REQUIRE(
+			    rbegin <= rend,
+			    "Range beginning has to be less than or equal to its end\n");
 		}
 
 		/** @class Iterator spawned by @ref Range. */
@@ -128,9 +130,9 @@ namespace shogun
 		}
 
 		/** begin of range */
-		const T m_begin;
+		T m_begin;
 		/** end of range */
-		const T m_end;
+		T m_end;
 	};
 
 	/** Creates @ref Range with specified upper bound.
