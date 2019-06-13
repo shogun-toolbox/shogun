@@ -106,7 +106,7 @@ template<class T> class SGVector : public SGReferencedData
 			vlen(std::distance(beginIt, endIt)),
 			gpu_ptr(nullptr)
 		{
-			vector = SG_MALLOC(T, vlen);
+			vector = SG_ALIGNED_MALLOC(T, vlen, alignment::container_alignment);
 			std::copy(beginIt, endIt, vector);
 			m_on_gpu.store(false, std::memory_order_release);
 		}
