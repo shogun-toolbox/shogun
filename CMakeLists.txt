@@ -47,6 +47,47 @@ if (MSVC)
 	endif()
 endif()
 
+#### check for c++17 features - not all compilers support c++17 in 2019
+include(CheckCXXSourceCompiles)
+
+CHECK_CXX_SOURCE_COMPILES("
+template<typename... Args>
+auto func(Args... args) {
+    return (args + ...);
+}
+int main()
+{return func(1,2,3);}
+" HAVE_FOLDING_EXPRESSIONS)
+
+IF(NOT HAVE_FOLDING_EXPRESSIONS)
+	MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with folding expression support!")
+ENDIF()
+
+CHECK_CXX_SOURCE_COMPILES("
+int main()
+{
+  if constexpr(true)
+    return 1;
+}
+" HAVE_IF_CONSTEXPR)
+
+IF(NOT HAVE_IF_CONSTEXPR)
+	MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with if constexpr support!")
+ENDIF()
+
+CHECK_CXX_SOURCE_COMPILES("
+int main()
+{
+  if (int value = 1; value==1)
+  {
+    return value;
+  }
+}
+" HAVE_IF_INIT)
+IF(NOT HAVE_IF_INIT)
+	MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with if init-statements support!")
+ENDIF()
+
 ############# minimum library versions ###################
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
 
