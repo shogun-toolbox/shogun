@@ -3,6 +3,7 @@
 // remove min and max macros (see numeric_limits<T>::max())
 #define NOMINMAX
 #include <Windows.h>
+#include <assert.h>
 #include <direct.h>
 #include <errno.h>
 #include <fcntl.h>
