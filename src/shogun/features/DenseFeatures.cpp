@@ -865,7 +865,8 @@ SGVector<ST> CDenseFeatures<ST>::dot(const SGVector<ST>& other) const
 	return linalg::matrix_prod(get_feature_matrix(), other, false);
 }
 
-void CDenseFeatures::dot(
+template <typename ST>
+void CDenseFeatures<ST>::dot(
 	SGVector<float64_t> output, IntRange feat_range,
 	const SGVector<float64_t> vec, const SGVector<float64_t> alphas,
 	float64_t b) const
@@ -878,8 +879,17 @@ void CDenseFeatures::dot(
 
 	auto sliced_matrix =
 		feature_matrix.submatrix(feat_range.m_begin, feat_range.m_end);
-	
-	return linalg::matrix_prod(sliced_matrix, vec, output, false);
+
+	if constexpr (std::is_same<ST, float64_t>::value)
+		linalg::matrix_prod(sliced_matrix, vec, output, true);
+	else
+		linalg::matrix_prod(
+			sliced_matrix.template as<float64_t>(), vec, output, true);
+
+	if (alphas.size() != 0)
+		linalg::element_prod(output, alphas, output);
+	if (b != 0)
+		linalg::add_scalar(output, b);
 }
 
 template class CDenseFeatures<bool>;

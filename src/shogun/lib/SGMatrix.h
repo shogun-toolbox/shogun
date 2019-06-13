@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <atomic>
+#include <algorithm>
 
 namespace Eigen
 {
@@ -133,6 +134,15 @@ template<class T> class SGMatrix : public SGReferencedData
 		virtual ~SGMatrix();
 
 #ifndef SWIG // SWIG should skip this parts
+		/** @return a (copied) typed matrix with same content */
+		template <class X>
+		SGMatrix<X> as() const
+		{
+			SGMatrix<X> mat(num_rows, num_cols, true);
+			std::copy_n(matrix, num_rows * num_cols, mat.begin());
+			return mat;
+		}
+
 		/** Get a column vector
 		 * @param col column index
 		 * @return the column vector for index col
