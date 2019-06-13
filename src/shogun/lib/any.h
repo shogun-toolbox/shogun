@@ -422,13 +422,7 @@ namespace shogun {
 		};
 
 		template <class T>
-		auto compare_impl(by_default, const T& lhs, const T& rhs) = delete;
-
-		template <class T>
-		bool compare_impl_eq(const T& lhs, const T& rhs)
-		{
-			return lhs == rhs;
-		}
+		bool compare_impl_eq(const T& lhs, const T& rhs) = delete;
 		template <>
 		bool compare_impl_eq(const float32_t& lhs, const float32_t& rhs);
 		template <>
@@ -439,72 +433,63 @@ namespace shogun {
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
 		template <class T>
-		auto compare_impl(general, const T& lhs, const T& rhs)
-		    -> decltype(lhs == rhs)
+		bool compare(const T& lhs, const T& rhs)
 		{
-			return compare_impl_eq(lhs, rhs);
-		}
-
-		template <class T>
-		auto compare_impl(more_important, const T& lhs, const T& rhs)
-		    -> decltype(lhs.equals(rhs))
-		{
-			return lhs.equals(rhs);
-		}
-
-		template <class T>
-		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
-		    -> decltype(lhs->equals(rhs))
-		{
-			if (lhs && rhs)
-				return lhs->equals(rhs);
-			else if (!lhs && !rhs)
-				return true;
-			else
-				return false;
-		}
-
-		template <class T>
-		inline bool compare(const T& lhs, const T& rhs)
-		{
-			return compare_impl(maybe_most_important(), lhs, rhs);
-		}
-
-
-		template <class T1, class T2>
-		inline bool compare(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
-		{
-			return (compare_impl(maybe_most_important(), lhs.first, rhs.first) &&
-				compare_impl(maybe_most_important(), lhs.second, rhs.second));
-		}
-
-		template <class T>
-		bool compare_impl(
-		    maybe_most_important, const std::function<T()>& lhs,
-		    const std::function<T()>& rhs)
-		{
-			return compare(lhs(), rhs());
-		}
-
-		template <class T,
-			std::enable_if_t<traits::is_container<T>::value>* = nullptr>
-		bool compare_impl(
-		    maybe_most_important, const T& lhs, const T& rhs)
-		{
-			if (lhs.size() != rhs.size())
+			if constexpr (std::is_same<T, float32_t>::value)
 			{
-				return false;
+				return compare_impl_eq(lhs, rhs);
 			}
-			for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend();
-			     ++l, ++r)
+			if constexpr (std::is_same<T, float64_t>::value)
 			{
-				if (!compare(*l, *r))
+				return compare_impl_eq(lhs, rhs);
+			}
+			if constexpr (std::is_same<T, floatmax_t>::value)
+			{
+				return compare_impl_eq(lhs, rhs);
+			}
+			if constexpr (std::is_same<T, complex128_t>::value)
+			{
+				return compare_impl_eq(lhs, rhs);
+			}
+			if constexpr (traits::is_container<T>::value)
+			{
+				if (lhs.size() != rhs.size())
 				{
 					return false;
 				}
+				for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend(); ++l, ++r)
+				{
+					if (!compare(*l, *r))
+					{
+						return false;
+					}
+				}
 			}
-
-			return true;
+			if constexpr (traits::is_pair<T>::value)
+			{
+				return compare(lhs.first, rhs.first) && compare(lhs.second, rhs.second);
+			}
+			if constexpr (std::is_function<T>::value)
+			{
+				return compare(lhs(), rhs());
+			}
+			if constexpr (traits::has_equals<T>::value)
+			{
+				return lhs.equals(rhs);
+			}
+			if constexpr (traits::has_equals_ptr<T>::value)
+			{
+				if (lhs && rhs)
+					return lhs->equals(rhs);
+				else if (!lhs && !rhs)
+					return true;
+				else
+					return false;
+			}
+			if constexpr (traits::is_comparable<T>::value)
+			{
+				return (lhs == rhs);
+			}
 		}
 
 		template <class T>

@@ -49,7 +49,67 @@ namespace shogun
 			>
 		> : public std::true_type {};
 
+		template<typename T, typename _ = void>
+		struct is_pair : std::false_type {};
 
-	} // namespace utils
+		template<typename T>
+		struct is_pair<
+			T,
+			std::conditional_t<
+				false,
+				try_to_declare<
+					decltype(std::declval<T>().first),
+					decltype(std::declval<T>().second)
+				>,
+				void
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct has_equals : std::false_type {};
+
+		template<typename T>
+		struct has_equals<
+			T,
+			std::conditional_t<
+				false,
+				try_to_declare<
+					decltype(std::declval<T>().equals(std::declval<T>()))
+				>,
+				void
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct has_equals_ptr : std::false_type {};
+
+		template<typename T>
+		struct has_equals_ptr<
+			T,
+			std::conditional_t<
+				false,
+				try_to_declare<
+					decltype(std::declval<T>()->equals(std::declval<T>()))
+				>,
+				void
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct is_comparable : std::false_type {};
+
+		template<typename T>
+		struct is_comparable<
+			T,
+			std::conditional_t<
+				false,
+				try_to_declare<
+					decltype(std::declval<T>() == std::declval<T>())
+				>,
+				void
+			>
+		> : public std::true_type {};
+
+	} // namespace traits
 } // namespace shogun
 #endif
