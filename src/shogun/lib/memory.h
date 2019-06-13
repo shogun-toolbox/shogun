@@ -51,6 +51,11 @@ void operator delete[](void *p, std::align_val_t al);
 #endif // HAVE_ALIGNED_NEW
 #define SG_ALIGNED_MALLOC(type, len, al) sg_aligned_malloc<type>(size_t(len), al)
 #else
+#ifdef _MSC_VER
+#pragma message("Aligned malloc is not available")
+#elif defined(__GNUC__) || defined(__clang__)
+#warning "Aligned malloc is not available"
+#endif
 #define SG_ALIGNED_MALLOC(type, len, al) sg_generic_malloc<type>(size_t(len))
 #endif // HAVE_ALIGNED_MALLOC
 
