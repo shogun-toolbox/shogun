@@ -361,18 +361,10 @@ void LinalgBackendEigen::add_scalar_impl(SGMatrix<T>& a, T b) const
 template <typename T, typename U, typename TU>
 TU LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<U>& b) const
 {
-	if constexpr (std::is_same<T, U>::value)
-		return (typename SGVector<T>::EigenVectorXtMap(a))
-	    	.dot(typename SGVector<U>::EigenVectorXtMap(b));
-	else if constexpr (std::is_same<T, TU>::value)
-		return (typename SGVector<T>::EigenVectorXtMap(a))
-			.dot(typename SGVector<U>::EigenVectorXtMap(b).template cast<T>());
-	else if constexpr (std::is_same<U, TU>::value)
-		return (typename SGVector<T>::EigenVectorXtMap(a).template cast<U>())
-			.dot(typename SGVector<U>::EigenVectorXtMap(b));
-	else
-		return (typename SGVector<T>::EigenVectorXtMap(a).template cast<TU>())
-			.dot(typename SGVector<U>::EigenVectorXtMap(b).template cast<TU>());
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<U>::EigenVectorXtMap b_eig = b;
+
+	return a_eig.template cast<TU>().dot(b_eig.template cast<TU>());
 }
 
 /* Helper method to compute elementwise product with Eigen */

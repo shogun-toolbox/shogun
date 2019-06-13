@@ -43,22 +43,7 @@ namespace shogun
 		template <typename T, typename U>
 		struct promote
 		{
-			constexpr static bool is_one_complex =
-				std::is_same<T, complex128_t>::value ||
-				std::is_same<U, complex128_t>::value;
-
- 			constexpr static bool is_one_floating =
-				std::is_floating_point<T>::value ||
-				std::is_floating_point<U>::value;
-
- 			using complex_type =
-				std::conditional_t<std::is_same<T, complex128_t>::value, T, U>;
-			using floating_type =
-				std::conditional_t<std::is_floating_point<T>::value, T, U>;
-			using bigger_type = std::conditional_t<(sizeof(T) > sizeof(U)), T, U>;
-
- 			using type = std::conditional_t < is_one_complex, complex_type,
-				std::conditional_t<is_one_floating, floating_type, bigger_type>>;
+			using type = decltype(T{} + U{});
 		};
 		
 		/**
