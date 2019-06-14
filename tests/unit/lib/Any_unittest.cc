@@ -693,6 +693,15 @@ TEST(Any, lazy_cloneable_visitable)
 	EXPECT_THROW(any.visit(nullptr), std::logic_error);
 }
 
+TEST(Any, lazy_compare_no_args)
+{
+	bool called = false;
+	auto l = make_any<void>([&]() { called = true; });
+	auto r = make_any<void>([&]() { called = true; });
+	EXPECT_NE(l, r);
+	EXPECT_EQ(called, false);
+}
+
 TEST(Any, hash_empty)
 {
 	Any empty;

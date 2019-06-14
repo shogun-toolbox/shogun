@@ -96,9 +96,13 @@ namespace shogun
 		struct is_functional<
 			T,
 			when_exists<
-				decltype(std::declval<T>()())
+				decltype(std::declval<T>()()),
+				typename T::result_type
 			>
 		> : public std::true_type {};
+
+		template<typename T>
+		using returns_void = std::is_same<typename T::result_type, void>;
 
 	} // namespace traits
 } // namespace shogun

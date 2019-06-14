@@ -439,19 +439,19 @@ namespace shogun {
 			{
 				return compare_impl_eq(lhs, rhs);
 			}
-			if constexpr (std::is_same<T, float64_t>::value)
+			else if constexpr (std::is_same<T, float64_t>::value)
 			{
 				return compare_impl_eq(lhs, rhs);
 			}
-			if constexpr (std::is_same<T, floatmax_t>::value)
+			else if constexpr (std::is_same<T, floatmax_t>::value)
 			{
 				return compare_impl_eq(lhs, rhs);
 			}
-			if constexpr (std::is_same<T, complex128_t>::value)
+			else if constexpr (std::is_same<T, complex128_t>::value)
 			{
 				return compare_impl_eq(lhs, rhs);
 			}
-			if constexpr (traits::is_container<T>::value)
+			else if constexpr (traits::is_container<T>::value)
 			{
 				if (lhs.size() != rhs.size())
 				{
@@ -465,19 +465,26 @@ namespace shogun {
 					}
 				}
 			}
-			if constexpr (traits::is_pair<T>::value)
+			else if constexpr (traits::is_pair<T>::value)
 			{
 				return compare(lhs.first, rhs.first) && compare(lhs.second, rhs.second);
 			}
-			if constexpr (traits::is_functional<T>::value)
+			else if constexpr (traits::is_functional<T>::value)
 			{
-				return compare(lhs(), rhs());
+				if constexpr (!traits::returns_void<T>::value)
+				{
+					return compare(lhs(), rhs());
+				}
+				else
+				{
+					return false;
+				}
 			}
-			if constexpr (traits::has_equals<T>::value)
+			else if constexpr (traits::has_equals<T>::value)
 			{
 				return lhs.equals(rhs);
 			}
-			if constexpr (traits::has_equals_ptr<T>::value)
+			else if constexpr (traits::has_equals_ptr<T>::value)
 			{
 				if (lhs && rhs)
 					return lhs->equals(rhs);
@@ -486,9 +493,13 @@ namespace shogun {
 				else
 					return false;
 			}
-			if constexpr (traits::is_comparable<T>::value)
+			else if constexpr (traits::is_comparable<T>::value)
 			{
 				return (lhs == rhs);
+			}
+			else
+			{
+				return false;
 			}
 		}
 
@@ -503,10 +514,13 @@ namespace shogun {
 				}
 				return result;
 			}
-			if constexpr (traits::is_hashable<T>::value) {
+			else if constexpr (traits::is_hashable<T>::value) {
 				return std::hash<T>{}(value);
 			}
-			return 0;
+			else
+			{
+				return 0;
+			}
 		}
 
 		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
