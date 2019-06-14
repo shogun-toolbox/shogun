@@ -15,6 +15,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace Eigen;
 
@@ -731,7 +732,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 		s=ldlt.solve(s);
 	}
 
-	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+	S = linalg::transpose_matrix(S);
 
 	if( !precision_matrix )
 	{
@@ -806,7 +807,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	// permute the samples back with x=P^-1*xP
 	s=llt.permutationPinv()*s;
 
-	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+	S = linalg::transpose_matrix(S);
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
 	for( int32_t i=0; i<N; ++i )

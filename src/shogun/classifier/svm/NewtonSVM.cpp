@@ -91,7 +91,6 @@ void CNewtonSVM::iteration()
 		sgv = features->get_computed_dot_feature_vector(sv[k]);
 		sg_memcpy(&Xsv.matrix[k * x_d], sgv.data(), sizeof(float64_t) * (x_d));
 	}
-	Xsv = linalg::transpose_matrix(Xsv);
 
 	SGMatrix<float64_t> lcrossdiag(x_d + 1, x_d + 1);
 	SGVector<float64_t> vector(x_d + 1);
@@ -103,9 +102,9 @@ void CNewtonSVM::iteration()
 	SGMatrix<float64_t>::create_diagonal_matrix(
 	    lcrossdiag.data(), vector.data(), x_d + 1);
 	SGMatrix<float64_t> Xsv2(x_d, x_d);
-	linalg::matrix_prod(Xsv, Xsv, Xsv2, true);
+	linalg::matrix_prod(Xsv, Xsv, Xsv2, false, true);
 
-	SGVector<float64_t> sum = linalg::colwise_sum(Xsv);
+	SGVector<float64_t> sum = linalg::rowwise_sum(Xsv);
 
 	SGMatrix<float64_t> Xsv2sum(x_d + 1, x_d + 1);
 
