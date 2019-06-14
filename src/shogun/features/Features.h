@@ -277,7 +277,7 @@ class Features : public SGObject
 		 *
 		 * @return subset stack
 		 */
-		virtual std::shared_ptr<SubsetStack> get_subset_stack();
+		virtual std::shared_ptr<SubsetStack> get_subset_stack() const;
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
