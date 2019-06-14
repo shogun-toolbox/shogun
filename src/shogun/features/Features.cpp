@@ -185,7 +185,7 @@ void Features::remove_all_subsets()
 	subset_changed_post();
 }
 
-std::shared_ptr<SubsetStack> Features::get_subset_stack()
+std::shared_ptr<SubsetStack> Features::get_subset_stack() const
 {
 
 	return m_subset_stack;
