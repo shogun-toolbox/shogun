@@ -22,6 +22,7 @@ Let's start with the includes!
 #include <shogun/multiclass/MulticlassLibSVM.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/kernel/LinearKernel.h>
+#include <shogun/mathematics/linalg/LinalgNamespace>
 
 // for measuring time
 #include <omp.h>
@@ -191,7 +192,7 @@ We start with creating the training data as the ```DenseFeatures```.
 
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
-    SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
+    shogun_traindata = linalg::transpose_matrix(shogun_traindata);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
 
@@ -220,7 +221,7 @@ Now we are ready to initialize the SVM for Shogun. We train it here!
 Prepare the testing data.
 ```CPP
     SGMatrix<float64_t> shogun_testdata=CV2SGFactory::get_sgmatrix<float64_t>(testdata);
-    SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);
+    shogun_testdata = linalg::transpose_matrix(shogun_testdata);
     CDenseFeatures<float64_t>* testfeatures=new CDenseFeatures<float64_t>(shogun_testdata);
 ```
 

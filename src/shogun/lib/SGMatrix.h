@@ -329,10 +329,6 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Clone matrix */
 		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);
 
-		/** Transpose matrix */
-		static void transpose_matrix(
-			T*& matrix, int32_t& num_feat, int32_t& num_vec);
-
 		/** Create diagonal matrix */
 		static void create_diagonal_matrix(T* matrix, T* v,int32_t size);
 

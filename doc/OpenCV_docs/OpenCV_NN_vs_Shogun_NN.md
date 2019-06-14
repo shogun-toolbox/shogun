@@ -15,6 +15,7 @@ Let's start with the includes!
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/lib/OpenCV/CV2SGFactory.h>
+#include <shogun/mathematics/linalg/LinalgNamespace>
 
 // standard library.
 #include <iostream>
@@ -222,7 +223,7 @@ As usual, we start with creating a ```DenseFeatures``` object with the training 
 
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
-    SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
+    shogun_traindata = linalg::transpose_matrix(shogun_traindata);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
 
@@ -238,7 +239,7 @@ The training responses are in an object of type ```MulticlassLabels```.
 Prepare the testing data.
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGFactory::get_sgmatrix<float64_t>(testdata);
-    SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);
+    shogun_testdata = linalg::transpose_matrix(shogun_testdata);
     CDenseFeatures<float64_t>* testfeatures = new CDenseFeatures<float64_t>(shogun_testdata);
 ```
 

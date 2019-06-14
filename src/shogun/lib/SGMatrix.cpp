@@ -363,24 +363,6 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 }
 
 template <class T>
-void SGMatrix<T>::transpose_matrix(T*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	/* this should be done in-place! Heiko */
-	T* transposed=SG_ALIGNED_MALLOC(
-		T, int64_t(num_vec)*num_feat, alignment::container_alignment);
-	for (int64_t i=0; i<num_vec; i++)
-	{
-		for (int64_t j=0; j<num_feat; j++)
-			transposed[i+j*num_vec]=matrix[i*num_feat+j];
-	}
-
-	SG_FREE(matrix);
-	matrix=transposed;
-
-	CMath::swap(num_feat, num_vec);
-}
-
-template <class T>
 void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 {
 	/* Need assert v.size() */
