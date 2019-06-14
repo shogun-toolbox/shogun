@@ -10,6 +10,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -68,9 +69,9 @@ void test_matrix_multiply()
 	SGMatrix<float64_t> A(n, m);
 	SGVector<float64_t>::range_fill_vector(A.matrix, m*n);
 	SGMatrix<float64_t>::display_matrix(I, "I");
-	SGMatrix<float64_t>::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
+	A = linalg::transpose_matrix(A);
 	SGMatrix<float64_t>::display_matrix(A, "A transposed");
-	SGMatrix<float64_t>::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
+	A = linalg::transpose_matrix(A);
 	SGMatrix<float64_t>::display_matrix(A, "A");
 
 	SG_SPRINT("multiply A by I and check result\n");

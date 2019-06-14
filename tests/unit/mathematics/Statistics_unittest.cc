@@ -8,6 +8,7 @@
 #include <math.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -160,7 +161,7 @@ TEST(Statistics, sample_from_gaussian_dense1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
+	samples = linalg::transpose_matrix(samples); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
@@ -197,7 +198,7 @@ TEST(Statistics, sample_from_gaussian_dense2)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
+	samples = linalg::transpose_matrix(samples); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
@@ -259,7 +260,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
+	samples = linalg::transpose_matrix(samples); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
