@@ -430,23 +430,7 @@ namespace shogun {
 		template <class T>
 		bool compare(const T& lhs, const T& rhs)
 		{
-			if constexpr (std::is_same<T, float32_t>::value)
-			{
-				return compare_impl_eq(lhs, rhs);
-			}
-			else if constexpr (std::is_same<T, float64_t>::value)
-			{
-				return compare_impl_eq(lhs, rhs);
-			}
-			else if constexpr (std::is_same<T, floatmax_t>::value)
-			{
-				return compare_impl_eq(lhs, rhs);
-			}
-			else if constexpr (std::is_same<T, complex128_t>::value)
-			{
-				return compare_impl_eq(lhs, rhs);
-			}
-			else if constexpr (traits::is_container<T>::value)
+			if constexpr (traits::is_container<T>::value)
 			{
 				if (lhs.size() != rhs.size())
 				{
@@ -494,7 +478,7 @@ namespace shogun {
 			}
 			else
 			{
-				return false;
+				return compare_impl_eq(lhs, rhs);
 			}
 		}
 
