@@ -256,16 +256,6 @@ int32_t CSGObject::unref()
 	}
 }
 
-#ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Map.h>
-extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
-
-void CSGObject::list_memory_allocs()
-{
-	shogun::list_memory_allocs();
-}
-#endif
-
 CSGObject * CSGObject::shallow_copy() const
 {
 	SG_NOTIMPLEMENTED
@@ -511,24 +501,8 @@ void CSGObject::save_serializable_post() noexcept(false)
 	m_save_post_called = true;
 }
 
-#ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Map.h>
-extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
-#endif
-
 void CSGObject::init()
 {
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-	{
-		int32_t idx=sg_mallocs->index_of(this);
-		if (idx>-1)
-		{
-			MemoryBlock* b=sg_mallocs->get_element_ptr(idx);
-			b->set_sgobject();
-		}
-	}
-#endif
 
 	io = NULL;
 	parallel = NULL;

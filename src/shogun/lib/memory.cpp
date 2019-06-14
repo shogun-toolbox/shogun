@@ -24,68 +24,6 @@
 
 using namespace shogun;
 
-#ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Map.h>
-extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
-
-MemoryBlock::MemoryBlock() : ptr(NULL), size(0), file(NULL),
-	line(-1), is_sgobject(false)
-{
-}
-
-MemoryBlock::MemoryBlock(void* p) : ptr(p), size(0), file(NULL),
-	line(-1), is_sgobject(false)
-{
-}
-
-MemoryBlock::MemoryBlock(void* p, size_t sz, const char* fname, int linenr) :
-	ptr(p), size(sz), file(fname), line(linenr), is_sgobject(false)
-{
-}
-
-MemoryBlock::MemoryBlock(const MemoryBlock &b)
-{
-	ptr=b.ptr;
-	size=b.size;
-	file=b.file;
-	line=b.line;
-	is_sgobject=b.is_sgobject;
-}
-
-
-bool MemoryBlock::operator==(const MemoryBlock &b) const
-{
-	return ptr==b.ptr;
-}
-
-void MemoryBlock::display()
-{
-	if (line!=-1)
-	{
-		printf("Memory block at %p of size %lld bytes (allocated in %s line %d)\n",
-				ptr, (long long int) size, file, line);
-	}
-	else
-	{
-		if (is_sgobject)
-		{
-			CSGObject* obj=(CSGObject*) ptr;
-			printf("SGObject '%s' at %p of size %lld bytes with %d ref's\n",
-					obj->get_name(), obj, (long long int) size, obj->ref_count());
-		}
-		else
-		{
-			printf("Object at %p of size %lld bytes\n",
-					ptr, (long long int) size);
-		}
-	}
-}
-
-void MemoryBlock::set_sgobject()
-{
-	is_sgobject=true;
-}
-#endif
 
 SG_FORCED_INLINE bool allocation_error(void *p, size_t size, const char* op_str)
 {
@@ -107,11 +45,6 @@ void* operator new(size_t size)
 #else
 	void *p=std::malloc(size);
 #endif
-
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->add(p, MemoryBlock(p,size));
-#endif
 	if (!p)
 		allocation_error(p, size, "new()");
 	return p;
@@ -119,11 +52,6 @@ void* operator new(size_t size)
 
 void operator delete(void *p) noexcept
 {
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->remove(p);
-#endif
-
 #if defined(USE_TCMALLOC)
 	tc_free(p);
 #else
@@ -156,10 +84,6 @@ void* operator new(size_t size, std::align_val_t al)
 	#error "HAVE_ALIGNED_NEW requires an aligned mem allocator!"
 #endif
 
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->add(p, MemoryBlock(p,size));
-#endif
 	if (!p)
 		allocation_error(p, size, "new");
 
@@ -186,11 +110,7 @@ void operator delete[](void *p, std::align_val_t al)
 
 namespace shogun
 {
-void* sg_malloc(size_t size
-#ifdef TRACE_MEMORY_ALLOCS
-		, const char* file, int line
-#endif
-)
+void* sg_malloc(size_t size)
 {
 #if defined(USE_JEMALLOC)
 	void* p=je_malloc(size);
@@ -199,10 +119,6 @@ void* sg_malloc(size_t size
 #else
 	void* p=std::malloc(size);
 #endif
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
-#endif
 	if (!p)
 		allocation_error(p, size, "malloc");
 
@@ -210,11 +126,7 @@ void* sg_malloc(size_t size
 }
 
 #ifdef HAVE_ALIGNED_MALLOC
-void* sg_aligned_malloc(size_t size, size_t al
-#ifdef TRACE_MEMORY_ALLOCS
-        , const char* file, int line
-#endif
-)
+void* sg_aligned_malloc(size_t size, size_t al)
 {
 	/* the value of size shall be an integral multiple of alignment.  */
 	if (std::size_t rem = size & (al - 1))
@@ -241,11 +153,6 @@ void* sg_aligned_malloc(size_t size, size_t al
 #endif
 #endif // HAVE_STD_ALIGNED_ALLOC
 #endif // USE_JEMALLOC || USE_TCMALLOC
-
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
-#endif
 	if (!p)
 		allocation_error(p, size, "aligned_malloc");
 
@@ -253,11 +160,7 @@ void* sg_aligned_malloc(size_t size, size_t al
 }
 #endif // HAVE_ALIGNED_MALLOC
 
-void* sg_calloc(size_t num, size_t size
-#ifdef TRACE_MEMORY_ALLOCS
-		, const char* file, int line
-#endif
-)
+void* sg_calloc(size_t num, size_t size)
 {
 #if defined(USE_JEMALLOC)
 	void* p=je_calloc(num, size);
@@ -267,10 +170,6 @@ void* sg_calloc(size_t num, size_t size
 	void* p=calloc(num, size);
 #endif
 
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
-#endif
 	if (!p)
 		allocation_error(p, size, "calloc");
 	return p;
@@ -278,11 +177,6 @@ void* sg_calloc(size_t num, size_t size
 
 void  sg_free(void* ptr)
 {
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->remove(ptr);
-#endif
-
 #if defined(USE_JEMALLOC)
 	je_free(ptr);
 #elif defined(USE_TCMALLOC)
@@ -292,11 +186,7 @@ void  sg_free(void* ptr)
 #endif
 }
 
-void* sg_realloc(void* ptr, size_t size
-#ifdef TRACE_MEMORY_ALLOCS
-		, const char* file, int line
-#endif
-)
+void* sg_realloc(void* ptr, size_t size)
 {
 #if defined(USE_JEMALLOC)
 	void* p=je_realloc(ptr, size);
@@ -306,41 +196,11 @@ void* sg_realloc(void* ptr, size_t size
 	void* p=realloc(ptr, size);
 #endif
 
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->remove(ptr);
-
-	if (sg_mallocs)
-		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
-#endif
-
 	if (!p && (size || !ptr))
 		allocation_error(p, size, "realloc");
 
 	return p;
 }
-
-#ifdef TRACE_MEMORY_ALLOCS
-void list_memory_allocs()
-{
-	MemoryBlock* temp;
-	if (sg_mallocs)
-	{
-		int32_t num=sg_mallocs->get_num_elements();
-		int32_t size=sg_mallocs->get_array_size();
-		printf("%d Blocks are allocated:\n", num);
-
-
-		for (int32_t i=0; i<size; i++)
-		{
-			temp=sg_mallocs->get_element_ptr(i);
-			if (temp!=NULL)
-				temp->display();
-		}
-	}
-}
-#endif
-
 }
 
 void* shogun::get_copy(void* src, size_t len)
