@@ -7,16 +7,16 @@
 #ifndef SHOGUN_SUBSET_ITERATORS_H
 #define SHOGUN_SUBSET_ITERATORS_H
 
-#include <shogun/features/Features.h>
-#include <shogun/labels/Labels.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
 	template <typename T>
 	class CDenseFeatures;
 
-	//    template <typename T>
-	//    class CDenseLabels;
+	class CFeatures;
+	class CLabels;
 
 	template <typename T>
 	struct return_type_subset_iterator
@@ -29,16 +29,10 @@ namespace shogun
 		using type = SGVector<T>;
 	};
 
-	//    template <typename T>
-	//    struct return_type_subset_iterator<CDenseLabels<T>>
-	//    {
-	//        using type = T;
-	//    };
-
 	template <
 	    typename T, std::enable_if<
-	                    (std::is_base_of<T, CFeatures>::value) ||
-	                    (std::is_base_of<T, CLabels>::value)>* = nullptr>
+	                    (std::is_base_of_v<T, CFeatures>) ||
+	                    (std::is_base_of_v<T, CLabels>)>* = nullptr>
 	class SubsetIterator
 	{
 	public:
@@ -107,5 +101,37 @@ namespace shogun
 		SGVector<index_t> m_argsorted_subset;
 		SGVector<index_t>::iterator m_argsorted_subset_iter;
 	};
+
+	template <template <typename> class IterableSubsetContainer, typename T>
+	class SubsetIteratorBase
+	{
+	public:
+		using iterator = SubsetIterator<IterableSubsetContainer<T>>;
+
+		/**
+		 * Returns an iterator to the first vector of features.
+		 */
+		iterator begin() noexcept
+		{
+			return SubsetIterator(
+			    static_cast<IterableSubsetContainer<T>*>(this));
+		}
+
+		/**
+		 * Returns an iterator to the element following the end of features.
+		 */
+		iterator end() noexcept
+		{
+			auto this_casted = static_cast<IterableSubsetContainer<T>*>(this);
+			if (auto stack = this_casted->get_subset_stack()->get_last_subset();
+			    stack == nullptr)
+				return SubsetIterator(
+				    this_casted, this_casted->get_num_vectors());
+			else
+				return SubsetIterator(
+				    this_casted, stack->get_subset_idx().size());
+		}
+	};
+
 } // namespace shogun
 #endif // SHOGUN_SUBSET_ITERATORS_H
