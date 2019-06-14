@@ -40,12 +40,24 @@ namespace shogun
 
 	namespace linalg
 	{
+		/**
+		 * Finds the type resulting from adding two values of different
+		 * types
+		 */
 		template <typename T, typename U>
 		struct promote
 		{
 			using type = decltype(T{} + U{});
 		};
-		
+
+		/**
+		 * A tag to enable casting in operations between two containers of
+		 * different scalar types
+		 */
+		struct allow_cast
+		{
+		};
+
 		/**
 		 * Enum for choosing the algorithm used to calculate SVD.
 		 * The <em>bidiagonal divide and conquer</em> algorithm

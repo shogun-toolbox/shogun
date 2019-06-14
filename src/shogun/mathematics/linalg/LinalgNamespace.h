@@ -845,13 +845,22 @@ namespace shogun
 		 * represented
 		 * as \f$\sum_i a_i b_i\f$
 		 */
-		template <typename T, typename U, typename TU = typename promote<T, U>::type>
-		TU dot(const SGVector<T>& a, const SGVector<U>& b)
+		template <
+		    typename T, typename U, typename TU = typename promote<T, U>::type,
+		    typename Tag = void*>
+		TU dot(const SGVector<T>& a, const SGVector<U>& b, Tag tag = {})
 		{
 			REQUIRE(
 			    a.vlen == b.vlen,
 			    "Length of vector a (%d) doesn't match vector b (%d).\n",
 			    a.vlen, b.vlen);
+
+			static_assert(
+			    std::is_same<T, U>::value ||
+			        std::is_same<Tag, allow_cast>::value,
+			    "LinalgNamespace::dot: Error. unmatching operands types "
+			    "require allow_cast tag");
+
 			return infer_backend(a, b)->dot(a, b);
 		}
 
