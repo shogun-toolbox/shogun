@@ -53,7 +53,8 @@
 
 namespace shogun {
 
-	namespace any_detail{
+	namespace any_detail
+	{
 		std::string demangled_type_helper(const char *name);
 	}
 
@@ -73,12 +74,6 @@ namespace shogun {
 	std::string demangled_type(const char* name) {
 		return any_detail::demangled_type_helper(name);
 	}
-
-	enum class PolicyType
-	{
-		OWNING,
-		NON_OWNING
-	};
 
 	class CSGObject;
 	template <class T>
@@ -758,6 +753,8 @@ namespace shogun {
 		 */
 		virtual void set(void** storage, const void* v) const = 0;
 
+		virtual bool should_inherit_storage() const = 0;
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -789,7 +786,7 @@ namespace shogun {
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const = 0;
+		virtual bool matches_policy(const BaseAnyPolicy* other) const = 0;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -798,11 +795,6 @@ namespace shogun {
 		 */
 		virtual bool
 		equals(const void* storage, const void* other_storage) const = 0;
-
-		/** Returns the type of policy.
-		 * @return type of policy
-		 */
-		virtual PolicyType policy_type() const = 0;
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
@@ -867,6 +859,11 @@ namespace shogun {
 			*(storage) = new T(value_of(typed_pointer<T>(v)));
 		}
 
+		virtual bool should_inherit_storage() const override
+		{
+			return false;
+		}
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -888,7 +885,7 @@ namespace shogun {
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const override;
+		virtual bool matches_policy(const BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -902,11 +899,6 @@ namespace shogun {
 			const T& typed_other_storage =
 			    value_of(typed_pointer<T>(other_storage));
 			return compare(typed_storage, typed_other_storage);
-		}
-
-		virtual PolicyType policy_type() const override
-		{
-			return PolicyType::OWNING;
 		}
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
@@ -937,6 +929,11 @@ namespace shogun {
 			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
 		}
 
+		virtual bool should_inherit_storage() const override
+		{
+			return true;
+		}
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -957,7 +954,7 @@ namespace shogun {
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const override;
+		virtual bool matches_policy(const BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -971,11 +968,6 @@ namespace shogun {
 			const T& typed_other_storage =
 			    value_of(typed_pointer<T>(other_storage));
 			return compare(typed_storage, typed_other_storage);
-		}
-
-		virtual PolicyType policy_type() const override
-		{
-			return PolicyType::NON_OWNING;
 		}
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
@@ -1010,7 +1002,7 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool NonOwningAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
+	bool NonOwningAnyPolicy<T>::matches_policy(const BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -1024,7 +1016,7 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool PointerValueAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
+	bool PointerValueAnyPolicy<T>::matches_policy(const BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -1053,7 +1045,7 @@ namespace shogun {
 		}
 
 		/** Base constructor */
-		Any(BaseAnyPolicy* the_policy, void* the_storage)
+		Any(const BaseAnyPolicy* the_policy, void* the_storage)
 		    : policy(the_policy), storage(the_storage)
 		{
 		}
@@ -1095,15 +1087,11 @@ namespace shogun {
 				    other.policy->type(), policy->type());
 			}
 			policy->clear(&storage);
-			if (other.policy->policy_type() == PolicyType::NON_OWNING)
+			if (other.policy->should_inherit_storage())
 			{
 				policy = other.policy;
-				storage = other.storage;
 			}
-			else
-			{
-				policy->set(&storage, other.storage);
-			}
+			set_or_inherit(other);
 			return *(this);
 		}
 
@@ -1227,9 +1215,6 @@ namespace shogun {
 		 */
 		size_t hash() const
 		{
-			if (!hashable()) {
-				return 0;
-			}
 			return policy->hash(storage);
 		}
 
@@ -1245,11 +1230,10 @@ namespace shogun {
 			}
 			policy->visit(storage, visitor);
 		}
-
 	private:
 		void set_or_inherit(const Any& other)
 		{
-			if (other.policy->policy_type() == PolicyType::NON_OWNING)
+			if (other.policy->should_inherit_storage())
 			{
 				storage = other.storage;
 			}
@@ -1260,7 +1244,7 @@ namespace shogun {
 		}
 
 	private:
-		BaseAnyPolicy* policy;
+		const BaseAnyPolicy* policy;
 		void* storage;
 	};
 
