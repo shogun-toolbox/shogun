@@ -721,6 +721,16 @@ TEST(Any, hash_lazy)
 	EXPECT_EQ(lazy.hash(), 0);
 }
 
+TEST(Any, special_compare)
+{
+	EXPECT_EQ(any_detail::has_special_compare<float32_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<float64_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<floatmax_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<complex128_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<int>::value, false);
+	EXPECT_EQ(any_detail::has_special_compare<Object>::value, false);
+}
+
 TEST(Any, hash_vector)
 {
 	std::vector<int> values = {1,2,3};

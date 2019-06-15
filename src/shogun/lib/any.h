@@ -427,10 +427,42 @@ namespace shogun {
 		template <>
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
+		template<typename T, typename _ = void>
+		struct has_special_compare : std::false_type {};
+
+		template<typename T>
+		struct has_special_compare<
+			T,
+			traits::when_exists<
+				decltype(compare_impl_eq(std::declval<T>(), std::declval<T>()))
+			>
+		> : public std::true_type {};
+
 		template <class T>
 		bool compare(const T& lhs, const T& rhs)
 		{
-			if constexpr (traits::is_container<T>::value)
+			if constexpr (traits::has_equals_ptr<T>::value)
+			{
+				if (lhs && rhs)
+					return lhs->equals(rhs);
+				else if (!lhs && !rhs)
+					return true;
+				else
+					return false;
+			}
+			else if constexpr (traits::has_equals<T>::value)
+			{
+				return lhs.equals(rhs);
+			}
+			else if constexpr (has_special_compare<T>::value)
+			{
+				return compare_impl_eq(lhs, rhs);
+			}
+			else if constexpr (traits::is_comparable<T>::value)
+			{
+				return (lhs == rhs);
+			}
+			else if constexpr (traits::is_container<T>::value)
 			{
 				if (lhs.size() != rhs.size())
 				{
@@ -459,42 +491,31 @@ namespace shogun {
 					return false;
 				}
 			}
-			else if constexpr (traits::has_equals<T>::value)
+			else if constexpr (std::is_same<T, Empty>::value)
 			{
-				return lhs.equals(rhs);
-			}
-			else if constexpr (traits::has_equals_ptr<T>::value)
-			{
-				if (lhs && rhs)
-					return lhs->equals(rhs);
-				else if (!lhs && !rhs)
-					return true;
-				else
-					return false;
-			}
-			else if constexpr (traits::is_comparable<T>::value)
-			{
-				return (lhs == rhs);
+				return true;
 			}
 			else
 			{
-				return compare_impl_eq(lhs, rhs);
+				// we assert something that is false to see the type T
+				static_assert(std::is_same<T, Empty>::value, "Comparison is not supported");
 			}
 		}
 
 		template <class T>
 		size_t hash(const T& value)
 		{
-			if constexpr (traits::is_container<T>::value)
+			if constexpr (traits::is_hashable<T>::value)
+			{
+				return std::hash<T>{}(value);
+			}
+			else if constexpr (traits::is_container<T>::value)
 			{
 				size_t result = 0;
 				for (const auto& it: value) {
 					result ^= hash(it);
 				}
 				return result;
-			}
-			else if constexpr (traits::is_hashable<T>::value) {
-				return std::hash<T>{}(value);
 			}
 			else
 			{
