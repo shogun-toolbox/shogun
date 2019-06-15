@@ -26,10 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Map.h>
-shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
-#endif
 
 #ifdef HAVE_PROTOBUF
 #include <google/protobuf/stubs/common.h>
@@ -78,12 +74,6 @@ namespace shogun
 		if (!sg_signal)
 			sg_signal = std::unique_ptr<CSignal>(new shogun::CSignal());
 
-#ifdef TRACE_MEMORY_ALLOCS
-		if (!sg_mallocs)
-			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
-
-		SG_REF(sg_mallocs);
-#endif
 		SG_REF(sg_io);
 		SG_REF(sg_parallel);
 		SG_REF(sg_version);
@@ -112,13 +102,6 @@ namespace shogun
 
 	void exit_shogun()
 	{
-#ifdef TRACE_MEMORY_ALLOCS
-		list_memory_allocs();
-		shogun::CMap<void*, shogun::MemoryBlock>* mallocs=sg_mallocs;
-		sg_mallocs=NULL;
-		SG_UNREF(mallocs);
-#endif
-
 		SG_UNREF(sg_rand);
 		SG_UNREF(sg_version);
 		SG_UNREF(sg_parallel);

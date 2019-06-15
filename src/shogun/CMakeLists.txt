@@ -226,8 +226,6 @@ ENDIF()
 CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
 
 ###### MALLOC LIBRARY ###########
-#Trace memory allocs
-OPTION(TRACE_MEMORY_ALLOCS "Memory allocation tracing" OFF)
 if (NOT MSVC)
   SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
   if (MALLOC_REPLACEMENT MATCHES "Jemalloc")
