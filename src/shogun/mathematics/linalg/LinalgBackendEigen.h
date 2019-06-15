@@ -113,7 +113,8 @@ namespace shogun
 	virtual void cholesky_rank_update(                                         \
 	    Container<Type>& L, const SGVector<Type>& b, Type alpha,               \
 	    const bool lower) const;
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
+		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
+			BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
 
 /** Implementation of @see LinalgBackendBase::rank_update */
@@ -172,6 +173,13 @@ namespace shogun
 #define BACKEND_GENERIC_DOT(Type, Container)                                   \
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
+#undef BACKEND_GENERIC_DOT
+
+/** Implementation of @see LinalgBackendBase::dot */
+#define BACKEND_GENERIC_DOT(Type, Container)                                   \
+	virtual typename linalg::promote<float64_t, Type>::type dot(               \
+	    const Container<float64_t>& a, const Container<Type>& b) const;
+		DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64(BACKEND_GENERIC_DOT, SGVector)
 #undef BACKEND_GENERIC_DOT
 
 /** Implementation of @see LinalgBackendBase::eigen_solver */
@@ -441,6 +449,7 @@ namespace shogun
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
+#undef DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64
 
 	private:
 		/** Eigen3 vector result = alpha*A + beta*B method */
@@ -544,8 +553,8 @@ namespace shogun
 		T cross_entropy_impl(const SGMatrix<T>& p, const SGMatrix<T>& q) const;
 
 		/** Eigen3 vector dot-product method */
-		template <typename T>
-		T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const;
+		template <typename T, typename U, typename TU = typename linalg::promote<T, U>::type>
+		TU dot_impl(const SGVector<T>& a, const SGVector<U>& b) const;
 
 		/** Eigen3 eigenvalues and eigenvectors computation for real matrices.
 		 */

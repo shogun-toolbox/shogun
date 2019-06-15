@@ -131,6 +131,15 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGMatrix)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 #undef BACKEND_GENERIC_DOT
 
+#define BACKEND_GENERIC_DOT(Type, Container)                                   \
+	typename linalg::promote<float64_t, Type>::type LinalgBackendEigen::dot(   \
+	    const Container<float64_t>& a, const Container<Type>& b) const         \
+	{                                                                          \
+		return dot_impl(a, b);                                                 \
+	}
+DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64(BACKEND_GENERIC_DOT, SGVector)
+#undef BACKEND_GENERIC_DOT
+
 #define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD(Type, Container)          \
 	void LinalgBackendEigen::element_prod(                                     \
 	    const Container<Type>& a, const Container<Type>& b,                    \
@@ -197,6 +206,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
+#undef DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64
 
 template <typename T>
 void LinalgBackendEigen::add_impl(
@@ -348,11 +358,13 @@ void LinalgBackendEigen::add_scalar_impl(SGMatrix<T>& a, T b) const
 	a_eig = a_eig.array() + b;
 }
 
-template <typename T>
-T LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
+template <typename T, typename U, typename TU>
+TU LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<U>& b) const
 {
-	return (typename SGVector<T>::EigenVectorXtMap(a))
-	    .dot(typename SGVector<T>::EigenVectorXtMap(b));
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<U>::EigenVectorXtMap b_eig = b;
+
+	return a_eig.template cast<TU>().dot(b_eig.template cast<TU>());
 }
 
 /* Helper method to compute elementwise product with Eigen */
