@@ -4,17 +4,16 @@
  * Authors: Gil Hoben
  */
 
-#ifndef __COMPOSITION_H__
-#define __COMPOSITION_H__
+#ifndef __CONSTRAINT_H__
+#define __CONSTRAINT_H__
 
 #include <string>
 #include <tuple>
 
 namespace shogun
 {
-	namespace composition_detail
+	namespace constraint_detail
 	{
-#ifdef __cpp_fold_expressions // The C++17 version
 		template <typename T, typename... Args, std::size_t... Idx>
 		bool apply_helper(
 		    T&& val, std::tuple<Args...> funcs, std::index_sequence<Idx...>)
@@ -29,7 +28,6 @@ namespace shogun
 		{
 			return apply_helper(val, funcs, std::index_sequence_for<Args...>{});
 		}
-#else // the C++14 version
 
 		// taken from
 		// https://stackoverflow.com/questions/10626856/how-to-split-a-tuple
@@ -51,34 +49,6 @@ namespace shogun
 			return tail_impl(std::make_index_sequence<sizeof...(Ts) - 1u>(), t);
 		}
 
-		template <
-		    size_t N, typename T1, typename T2,
-		    std::enable_if_t<N == 1>* = nullptr>
-		bool apply_helper(T1&& val, T2&& func)
-		{
-			return head(func)(val);
-		}
-
-		template <
-		    size_t N, typename T1, typename T2,
-		    std::enable_if_t<(N > 1)>* = nullptr>
-		bool apply_helper(T1&& val, T2&& func)
-		{
-			return head(func)(val) &&
-			       apply_helper<std::tuple_size<T2>::value - 1>(
-			           val, tail(func));
-		}
-
-		/**
-		 * Compile time composition with tuples.
-		 */
-		template <typename T, typename... Args>
-		bool apply(T&& val, std::tuple<Args...> funcs)
-		{
-			return apply_helper<std::tuple_size<std::tuple<Args...>>::value>(
-			    val, funcs);
-		}
-#endif
 		template <size_t N, typename T, std::enable_if_t<N == 1>* = nullptr>
 		void get_error_helper(T&& func, std::string& result)
 		{
@@ -107,7 +77,7 @@ namespace shogun
 			    funcs, result);
 			return result;
 		}
-	} // namespace composition_detail
+	} // namespace constraint_detail
 	/**
 	 * The base class of all constraints. The call operator calls the check pure
 	 * virtual class member with a value to be checked. See derived classes for
@@ -209,24 +179,24 @@ namespace shogun
 	};
 
 	/**
-	 * Composer helper class that invokes apply using class member functions
+	 * Constraint helper class that invokes apply using class member functions
 	 * m_funcs. If any of the functions returns false then it retrieves
 	 * the error and passes it to the buffer.
 	 */
 	template <typename... Args>
-	class Composer
+	class Constraint
 	{
 	public:
-		Composer(std::tuple<Args...> funcs) : m_funcs(funcs)
+		Constraint(std::tuple<Args...> funcs) : m_funcs(funcs)
 		{
 		}
 
 		template <typename T>
 		bool run(T val, std::string& buffer) const
 		{
-			if (!composition_detail::apply(val, m_funcs))
+			if (!constraint_detail::apply(val, m_funcs))
 			{
-				buffer = composition_detail::get_error(m_funcs);
+				buffer = constraint_detail::get_error(m_funcs);
 				return false;
 			}
 			return true;
@@ -237,19 +207,19 @@ namespace shogun
 	};
 
 	/**
-	 * A helper function to make a new Composer instance.
+	 * A helper function to make a new Constraint instance.
 	 * @tparam Args the types of args
 	 * @param args the constraints
-	 * @return the new Composer instance
+	 * @return the new Constraint instance
 	 */
 	template <typename... Args>
-	Composer<Args...> make_composer(Args... args)
+	Constraint<Args...> make_constraint(Args... args)
 	{
-		return Composer<Args...>(std::forward_as_tuple(args...));
+		return Constraint<Args...>(std::forward_as_tuple(args...));
 	}
 
 } // namespace shogun
 
-#define SG_CONSTRAINT(...) make_composer(__VA_ARGS__)
+#define SG_CONSTRAINT(...) make_constraint(__VA_ARGS__)
 
-#endif // __COMPOSITION_H__
+#endif // __CONSTRAIN_H__

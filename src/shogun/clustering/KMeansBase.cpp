@@ -335,6 +335,7 @@ void CKMeansBase::init()
 	SG_ADD(
 	    &use_kmeanspp, "kmeanspp", "Whether use kmeans++",
 	    ParameterProperties::HYPER);
+	SG_ADD(&mus, "mus", "Cluster centers");
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }

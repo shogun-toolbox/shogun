@@ -14,7 +14,7 @@
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
-#include <shogun/base/composition.h>
+#include <shogun/base/constraint.h>
 #include <shogun/base/macros.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
@@ -113,7 +113,7 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(name, param, auto_init, pprop);                      \
+		this->watch_param(name, param, auto_or_constraint, pprop);             \
 		if (pprop.has_property(ParameterProperties::HYPER))                    \
 			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
@@ -875,7 +875,7 @@ protected:
 	template <typename T1, typename T2>
 	void watch_param(
 			const std::string& name, T1* value,
-			Composer<T2>&& constrain_function,
+			Constraint<T2>&& constrain_function,
 			AnyParameterProperties properties)
 	{
 		REQUIRE(
