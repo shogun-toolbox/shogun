@@ -1654,6 +1654,42 @@ namespace shogun
 		}
 
 		/**
+		 * Scales every column of the matrix A with the respective coefficient
+		 * of alphas. i.e. result.column(i) = A.column(i) * alphas(i)
+		 * User should pass an appropriately pre-allocated memory matrix
+		 * Or pass the operands argument A as a result
+		 *
+		 * @param A First matrix
+		 * @param alpha Scale factor
+		 * @param result The scaled matrix
+		 */
+		template <typename T>
+		void scale(
+		    const SGMatrix<T>& A, SGMatrix<T>& result,
+		    const SGVector<T>& alphas)
+		{
+			REQUIRE(
+			    (A.num_rows == result.num_rows),
+			    "Number of rows of matrix A "
+			    "(%d) must match matrix "
+			    "result (%d).\n",
+			    A.num_rows, result.num_rows);
+			REQUIRE(
+			    (A.num_cols == result.num_cols),
+			    "Number of columns of matrix "
+			    "A (%d) must match matrix "
+			    "result (%d).\n",
+			    A.num_cols, result.num_cols);
+			REQUIRE(
+			    (A.num_cols == alphas.vlen),
+			    "Number of columns of matrix "
+			    "A (%d) must match vector "
+			    "alphas (%d).\n",
+			    A.num_cols, alphas.vlen);
+			infer_backend(A, result)->scale(A, alphas, result);
+		}
+
+		/**
 		 * Performs the operation B = alpha * A on vectors or matrices
 		 * This version returns the result in a newly created vector or matrix.
 		 *
