@@ -299,3 +299,40 @@ TEST(DenseFeaturesTest, view)
 			    feature_matrix_subset2(i, j), data(i, subset1[subset2[j]]));
 	}
 }
+
+TEST(DenseFeaturesTest, iterator)
+{
+    SGVector<float64_t> vals(20);
+    vals.range_fill();
+    auto mat = SGMatrix(vals, 5, 4);
+    auto subset = SGVector{1,0,2,4,1,3,1,1,2};
+    auto ordered_subset = SGVector{0,1,1,1,1,2,2,3,4};
+    auto feat = some<CDenseFeatures<float64_t>>(mat);
+    int counter = 0;
+    feat->add_subset(subset);
+    for (auto iter: *feat)
+    {
+        int i = 0;
+        for (const auto& val: iter)
+        {
+            EXPECT_EQ(val, mat[ordered_subset[counter]*5+i]);
+            i++;
+        }
+        counter++;
+    }
+}
+
+TEST(DenseFeaturesTest, const_iterator)
+{
+    SGVector<float64_t> vals(20);
+    vals.range_fill();
+    auto mat = SGMatrix(vals, 5, 4);
+    const auto feat = some<CDenseFeatures<float64_t>>(mat);
+    int counter = 0;
+    for (const auto& iter: *feat)
+    {
+        for (int i = 0; i<5;++i)
+            EXPECT_EQ(iter[i], mat[counter*5+i]);
+        counter++;
+    }
+}
