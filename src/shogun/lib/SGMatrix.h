@@ -151,7 +151,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * @param col_end column index (excluded)
 		 * @return the submatrix
 		 */
-		SGMatrix<T> submatrix(index_t col_start, index_t col_end) const;
+		SGMatrix<T> slice(index_t col_start, index_t col_end) const;
 
 		/** Map a column to a SGVector
 		 * \warning The returned SGVector is non-owning!

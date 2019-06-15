@@ -144,7 +144,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			rf->free_feature_vector(vec, i);
 		}
 
-		Map<MatrixXd> Em_M(m_M.submatrix(m_dim * k, m_dim * (k + 1)));
+		Map<MatrixXd> Em_M(m_M.slice(m_dim * k, m_dim * (k + 1)));
 		A = X*Em_M;
 
 		for (int i = 0; i < num_vecs; i++)

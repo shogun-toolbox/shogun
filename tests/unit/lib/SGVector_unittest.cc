@@ -468,3 +468,46 @@ TEST(SGVectorTest, as)
 		EXPECT_EQ((int32_t)data[i], vec_int[i]);
 	}
 }
+
+TEST(SGVectorTest, slice)
+{
+	index_t vlen = 100;
+	index_t l = 20;
+	index_t h = 50;
+	index_t l2 = 10;
+	index_t h2 = 20;
+	index_t c1 = 0;
+	index_t c2 = 1;
+
+	SGVector<float64_t> vec(vlen);
+	vec.range_fill();
+
+	auto sliced_vec = vec.slice(l, h);
+	EXPECT_EQ(sliced_vec.size(), h - l);
+	for (index_t i = 0; i < h - l; i++)
+	{
+		EXPECT_EQ(vec[i + l], sliced_vec[i]);
+	}
+
+	auto sliced_vec2 = sliced_vec.slice(l2, h2);
+	EXPECT_EQ(sliced_vec2.size(), h2 - l2);
+	for (index_t i = 0; i < h2 - l2; i++)
+	{
+		EXPECT_EQ(sliced_vec[i + l2], sliced_vec2[i]);
+	}
+
+	sliced_vec.set_const(c1);
+	auto sliced_vec3 = sliced_vec2.slice(0, sliced_vec2.vlen);
+	EXPECT_EQ(sliced_vec2, sliced_vec3);
+	sliced_vec3.set_const(c2);
+
+	for (index_t i = 0; i < vlen; i++)
+	{
+		if (i < l || i >= h)
+			EXPECT_EQ(vec[i], i);
+		else if (i < l + l2 || i >= l + h2)
+			EXPECT_EQ(vec[i], sliced_vec[i - l]);
+		else
+			EXPECT_EQ(vec[i], sliced_vec2[i - l - l2]);
+	}
+}
