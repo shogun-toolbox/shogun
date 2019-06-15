@@ -46,6 +46,21 @@
 	METHODNAME(floatmax_t, Container);                                         \
 	METHODNAME(complex128_t, Container);
 
+#define DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64(METHODNAME, Container)             \
+	METHODNAME(bool, Container);                                               \
+	METHODNAME(char, Container);                                               \
+	METHODNAME(int8_t, Container);                                             \
+	METHODNAME(uint8_t, Container);                                            \
+	METHODNAME(int16_t, Container);                                            \
+	METHODNAME(uint16_t, Container);                                           \
+	METHODNAME(int32_t, Container);                                            \
+	METHODNAME(uint32_t, Container);                                           \
+	METHODNAME(int64_t, Container);                                            \
+	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);                                         \
+	METHODNAME(complex128_t, Container);
+
 #define DEFINE_FOR_NON_COMPLEX_PTYPE(METHODNAME, Container)                    \
 	METHODNAME(bool, Container);                                               \
 	METHODNAME(char, Container);                                               \
