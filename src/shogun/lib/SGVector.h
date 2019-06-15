@@ -270,6 +270,13 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void resize_vector(int32_t n);
 
+		/** Returns a view of the vector from l inclusive to h exclusive
+		 *
+		 * @param l slice start index (inclusive)
+		 * @param h slice end index (exclusive)
+		 */
+		SGVector<T> slice(index_t l, index_t h) const;
+
 		/** Operator overload for vector read only access
 		 *
 		 * @param index dimension to access
