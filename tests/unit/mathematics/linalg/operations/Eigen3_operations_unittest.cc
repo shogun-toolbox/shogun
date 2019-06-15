@@ -1653,6 +1653,27 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_scale_in_place)
 		EXPECT_NEAR(alpha * i, A[i], get_epsilon<TypeParam>());
 }
 
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_scale_cols_in_place)
+{
+	const TypeParam alpha = 2;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<TypeParam> A(nrows, ncols);
+
+	for(index_t r = 0; r < nrows; ++r)
+		for(index_t c = 0; c < ncols; ++c)
+			A(r, c) = c * nrows + r;
+
+	SGVector<TypeParam> alphas(ncols);
+	alphas.range_fill(1);
+
+	scale(A, A, alphas);
+
+	for(index_t r = 0; r < nrows; ++r)
+		for(index_t c = 0; c < ncols; ++c)
+			EXPECT_EQ(A(r, c), alphas[c] * (c * nrows + r));
+}
+
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_set_const)
 {
 	const index_t size = 5;

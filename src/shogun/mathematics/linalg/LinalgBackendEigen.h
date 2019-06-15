@@ -331,6 +331,14 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_SCALE
 
+/** Implementation of @see linalg::scale */
+#define BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE(Type, Container)                \
+	virtual void scale(                                                        \
+	    const Container<Type>& a, const SGVector<Type>& alphas,                \
+	    Container<Type>& result) const
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE
+
 /** Implementation of @see LinalgBackendBase::set_const */
 #define BACKEND_GENERIC_SET_CONST(Type, Container)                             \
 	virtual void set_const(Container<Type>& a, const Type value) const;
@@ -750,6 +758,11 @@ namespace shogun
 		template <typename T>
 		void
 		scale_impl(const SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const;
+
+		template <typename T>
+		void scale_impl(
+		    const SGMatrix<T>& a, const SGVector<T>& alphas,
+		    SGMatrix<T>& result) const;
 
 		/** Eigen3 set const method */
 		template <typename T>
