@@ -178,10 +178,6 @@ public:
 	 */
 	int32_t unref();
 
-#ifdef TRACE_MEMORY_ALLOCS
-	static void list_memory_allocs();
-#endif
-
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */

@@ -89,7 +89,6 @@
 #cmakedefine LINUX 1
 
 #cmakedefine USE_SWIG_DIRECTORS 1
-#cmakedefine TRACE_MEMORY_ALLOCS 1
 #cmakedefine USE_JEMALLOC 1
 #cmakedefine USE_TCMALLOC 1
 #cmakedefine HAVE_ALIGNED_MALLOC 1
