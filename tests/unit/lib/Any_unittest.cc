@@ -693,6 +693,15 @@ TEST(Any, lazy_cloneable_visitable)
 	EXPECT_THROW(any.visit(nullptr), std::logic_error);
 }
 
+TEST(Any, lazy_compare_no_args)
+{
+	bool called = false;
+	auto l = make_any<void>([&]() { called = true; });
+	auto r = make_any<void>([&]() { called = true; });
+	EXPECT_NE(l, r);
+	EXPECT_EQ(called, false);
+}
+
 TEST(Any, hash_empty)
 {
 	Any empty;
@@ -710,6 +719,16 @@ TEST(Any, hash_lazy)
 	auto v = 9;
 	auto lazy = make_any<int>([=]() { return v; });
 	EXPECT_EQ(lazy.hash(), 0);
+}
+
+TEST(Any, special_compare)
+{
+	EXPECT_EQ(any_detail::has_special_compare<float32_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<float64_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<floatmax_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<complex128_t>::value, true);
+	EXPECT_EQ(any_detail::has_special_compare<int>::value, false);
+	EXPECT_EQ(any_detail::has_special_compare<Object>::value, false);
 }
 
 TEST(Any, hash_vector)

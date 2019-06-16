@@ -53,7 +53,8 @@
 
 namespace shogun {
 
-	namespace any_detail{
+	namespace any_detail
+	{
 		std::string demangled_type_helper(const char *name);
 	}
 
@@ -73,12 +74,6 @@ namespace shogun {
 	std::string demangled_type(const char* name) {
 		return any_detail::demangled_type_helper(name);
 	}
-
-	enum class PolicyType
-	{
-		OWNING,
-		NON_OWNING
-	};
 
 	class CSGObject;
 	template <class T>
@@ -422,13 +417,7 @@ namespace shogun {
 		};
 
 		template <class T>
-		auto compare_impl(by_default, const T& lhs, const T& rhs) = delete;
-
-		template <class T>
-		bool compare_impl_eq(const T& lhs, const T& rhs)
-		{
-			return lhs == rhs;
-		}
+		bool compare_impl_eq(const T& lhs, const T& rhs) = delete;
 		template <>
 		bool compare_impl_eq(const float32_t& lhs, const float32_t& rhs);
 		template <>
@@ -438,103 +427,100 @@ namespace shogun {
 		template <>
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
-		template <class T>
-		auto compare_impl(general, const T& lhs, const T& rhs)
-		    -> decltype(lhs == rhs)
-		{
-			return compare_impl_eq(lhs, rhs);
-		}
+		template<typename T, typename _ = void>
+		struct has_special_compare : std::false_type {};
+
+		template<typename T>
+		struct has_special_compare<
+			T,
+			traits::when_exists<
+				decltype(compare_impl_eq(std::declval<T>(), std::declval<T>()))
+			>
+		> : public std::true_type {};
 
 		template <class T>
-		auto compare_impl(more_important, const T& lhs, const T& rhs)
-		    -> decltype(lhs.equals(rhs))
+		bool compare(const T& lhs, const T& rhs)
 		{
-			return lhs.equals(rhs);
-		}
-
-		template <class T>
-		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
-		    -> decltype(lhs->equals(rhs))
-		{
-			if (lhs && rhs)
-				return lhs->equals(rhs);
-			else if (!lhs && !rhs)
-				return true;
-			else
-				return false;
-		}
-
-		template <class T>
-		inline bool compare(const T& lhs, const T& rhs)
-		{
-			return compare_impl(maybe_most_important(), lhs, rhs);
-		}
-
-
-		template <class T1, class T2>
-		inline bool compare(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
-		{
-			return (compare_impl(maybe_most_important(), lhs.first, rhs.first) &&
-				compare_impl(maybe_most_important(), lhs.second, rhs.second));
-		}
-
-		template <class T>
-		bool compare_impl(
-		    maybe_most_important, const std::function<T()>& lhs,
-		    const std::function<T()>& rhs)
-		{
-			return compare(lhs(), rhs());
-		}
-
-		template <class T,
-			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
-		bool compare_impl(
-		    maybe_most_important, const T& lhs, const T& rhs)
-		{
-			if (lhs.size() != rhs.size())
+			if constexpr (traits::has_equals_ptr<T>::value)
 			{
-				return false;
+				if (lhs && rhs)
+					return lhs->equals(rhs);
+				else if (!lhs && !rhs)
+					return true;
+				else
+					return false;
 			}
-			for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend();
-			     ++l, ++r)
+			else if constexpr (traits::has_equals<T>::value)
 			{
-				if (!compare(*l, *r))
+				return lhs.equals(rhs);
+			}
+			else if constexpr (has_special_compare<T>::value)
+			{
+				return compare_impl_eq(lhs, rhs);
+			}
+			else if constexpr (traits::is_comparable<T>::value)
+			{
+				return (lhs == rhs);
+			}
+			else if constexpr (traits::is_container<T>::value)
+			{
+				if (lhs.size() != rhs.size())
+				{
+					return false;
+				}
+				for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend(); ++l, ++r)
+				{
+					if (!compare(*l, *r))
+					{
+						return false;
+					}
+				}
+			}
+			else if constexpr (traits::is_pair<T>::value)
+			{
+				return compare(lhs.first, rhs.first) && compare(lhs.second, rhs.second);
+			}
+			else if constexpr (traits::is_functional<T>::value)
+			{
+				if constexpr (!traits::returns_void<T>::value)
+				{
+					return compare(lhs(), rhs());
+				}
+				else
 				{
 					return false;
 				}
 			}
-
-			return true;
-		}
-
-		template <class T>
-		inline size_t hash_impl(general, const T&)
-		{
-			return 0;
-		}
-
-		template <class T>
-		inline auto hash_impl(more_important, const T& value)
-		    -> decltype(std::hash<T>{}(value))
-		{
-			return std::hash<T>{}(value);
-		}
-
-		template <class T,
-			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
-		size_t hash(maybe_most_important, const T& value)
-		{
-			size_t result = 0;
-			for (const auto& it: value) {
-				result ^= hash(it);
+			else if constexpr (std::is_same<T, Empty>::value)
+			{
+				return true;
 			}
-			return result;
+			else
+			{
+				// we assert something that is false to see the type T
+				static_assert(std::is_same<T, Empty>::value, "Comparison is not supported");
+			}
 		}
 
 		template <class T>
 		size_t hash(const T& value)
 		{
-			return hash_impl(maybe_most_important(), value);
+			if constexpr (traits::is_hashable<T>::value)
+			{
+				return std::hash<T>{}(value);
+			}
+			else if constexpr (traits::is_container<T>::value)
+			{
+				size_t result = 0;
+				for (const auto& it: value) {
+					result ^= hash(it);
+				}
+				return result;
+			}
+			else
+			{
+				return 0;
+			}
 		}
 
 		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
@@ -590,7 +576,7 @@ namespace shogun {
 		}
 
 		template <class T,
-			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+			std::enable_if_t<traits::is_container<T>::value>* = nullptr>
 		inline auto clone(void** storage, const T& value)
 		{
 			T cloned;
@@ -634,18 +620,6 @@ namespace shogun {
 			static Empty empty;
 			return empty;
 		}
-
-		template <class T>
-		struct has_result_type
-		{
-			typedef char yes[1];
-			typedef char no[2];
-			template <class C>
-			static yes& test(typename C::result_type*);
-			template <class C>
-			static no& test(...);
-			static bool const value = (sizeof(test<T>(0)) == sizeof(yes));
-		};
 
 		template <class T>
 		T get_value(const void* storage, bool is_functional)
@@ -784,6 +758,8 @@ namespace shogun {
 		 */
 		virtual void set(void** storage, const void* v) const = 0;
 
+		virtual bool should_inherit_storage() const = 0;
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -815,7 +791,7 @@ namespace shogun {
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const = 0;
+		virtual bool matches_policy(const BaseAnyPolicy* other) const = 0;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -824,11 +800,6 @@ namespace shogun {
 		 */
 		virtual bool
 		equals(const void* storage, const void* other_storage) const = 0;
-
-		/** Returns the type of policy.
-		 * @return type of policy
-		 */
-		virtual PolicyType policy_type() const = 0;
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
@@ -873,7 +844,7 @@ namespace shogun {
 
 		virtual bool is_functional() const override
 		{
-			return any_detail::has_result_type<T>::value;
+			return traits::is_functional<T>::value;
 		}
 	};
 
@@ -891,6 +862,11 @@ namespace shogun {
 		virtual void set(void** storage, const void* v) const override
 		{
 			*(storage) = new T(value_of(typed_pointer<T>(v)));
+		}
+
+		virtual bool should_inherit_storage() const override
+		{
+			return false;
 		}
 
 		/** Clones value provided by from into storage
@@ -914,7 +890,7 @@ namespace shogun {
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const override;
+		virtual bool matches_policy(const BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -928,11 +904,6 @@ namespace shogun {
 			const T& typed_other_storage =
 			    value_of(typed_pointer<T>(other_storage));
 			return compare(typed_storage, typed_other_storage);
-		}
-
-		virtual PolicyType policy_type() const override
-		{
-			return PolicyType::OWNING;
 		}
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
@@ -963,6 +934,11 @@ namespace shogun {
 			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
 		}
 
+		virtual bool should_inherit_storage() const override
+		{
+			return true;
+		}
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -983,7 +959,7 @@ namespace shogun {
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const override;
+		virtual bool matches_policy(const BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -997,11 +973,6 @@ namespace shogun {
 			const T& typed_other_storage =
 			    value_of(typed_pointer<T>(other_storage));
 			return compare(typed_storage, typed_other_storage);
-		}
-
-		virtual PolicyType policy_type() const override
-		{
-			return PolicyType::NON_OWNING;
 		}
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
@@ -1036,7 +1007,7 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool NonOwningAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
+	bool NonOwningAnyPolicy<T>::matches_policy(const BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -1050,7 +1021,7 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool PointerValueAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
+	bool PointerValueAnyPolicy<T>::matches_policy(const BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -1079,7 +1050,7 @@ namespace shogun {
 		}
 
 		/** Base constructor */
-		Any(BaseAnyPolicy* the_policy, void* the_storage)
+		Any(const BaseAnyPolicy* the_policy, void* the_storage)
 		    : policy(the_policy), storage(the_storage)
 		{
 		}
@@ -1121,15 +1092,11 @@ namespace shogun {
 				    other.policy->type(), policy->type());
 			}
 			policy->clear(&storage);
-			if (other.policy->policy_type() == PolicyType::NON_OWNING)
+			if (other.policy->should_inherit_storage())
 			{
 				policy = other.policy;
-				storage = other.storage;
 			}
-			else
-			{
-				policy->set(&storage, other.storage);
-			}
+			set_or_inherit(other);
 			return *(this);
 		}
 
@@ -1253,9 +1220,6 @@ namespace shogun {
 		 */
 		size_t hash() const
 		{
-			if (!hashable()) {
-				return 0;
-			}
 			return policy->hash(storage);
 		}
 
@@ -1271,11 +1235,10 @@ namespace shogun {
 			}
 			policy->visit(storage, visitor);
 		}
-
 	private:
 		void set_or_inherit(const Any& other)
 		{
-			if (other.policy->policy_type() == PolicyType::NON_OWNING)
+			if (other.policy->should_inherit_storage())
 			{
 				storage = other.storage;
 			}
@@ -1286,7 +1249,7 @@ namespace shogun {
 		}
 
 	private:
-		BaseAnyPolicy* policy;
+		const BaseAnyPolicy* policy;
 		void* storage;
 	};
 
