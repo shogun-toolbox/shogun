@@ -23,30 +23,34 @@ namespace shogun
 
 	template <typename T>
 	class CDenseFeatures;
+    class CDenseLabels;
 
 	class CFeatures;
 	class CLabels;
 
-	template <typename T>
+	template <typename Container, typename T>
 	struct return_type_subset_iterator
 	{
 	};
 
-	template <typename T>
-	struct return_type_subset_iterator<CDenseFeatures<T>>
+	template <typename T1, typename T2>
+	struct return_type_subset_iterator<CDenseFeatures<T1>, T2>
 	{
-		using type = SGVector<T>;
+		using type = SGVector<T1>;
 	};
 
-	template <template <typename> class IterableSubsetContainer, typename ST>
+    template <typename T>
+    struct return_type_subset_iterator<CDenseLabels, T>
+    {
+        using type = float64_t;
+    };
+
+
+    template <class IterableSubsetContainer, typename ST>
 	class SubsetIteratorBase
 	{
 	public:
-		template <
-		    typename T, bool is_const = false,
-		    std::enable_if<
-		        (std::is_base_of_v<T, CFeatures>) ||
-		        (std::is_base_of_v<T, CLabels>)>* = nullptr>
+		template <typename T, bool is_const = false>
 		class subset_iterator
 		{
 		public:
@@ -54,20 +58,20 @@ namespace shogun
 			using value_type = typename std::conditional_t<
 			    is_const,
 			    const typename return_type_subset_iterator<
-			        remove_cvptr_t<T>>::type,
-			    typename return_type_subset_iterator<remove_cvptr_t<T>>::type>;
+			        remove_cvptr_t<T>, T>::type,
+			    typename return_type_subset_iterator<remove_cvptr_t<T>, T>::type>;
 			using difference_type = index_t;
 			// not a reference but is used by stl algorithms to check type
 			using reference = typename std::conditional_t<
 			    is_const,
 			    const typename return_type_subset_iterator<
-			        remove_cvptr_t<T>>::type,
-			    typename return_type_subset_iterator<remove_cvptr_t<T>>::type>;
+			        remove_cvptr_t<T>, T>::type,
+			    typename return_type_subset_iterator<remove_cvptr_t<T>, T>::type>;
 			using pointer = typename std::conditional_t<
 			    is_const,
 			    const typename return_type_subset_iterator<
-			        remove_cvptr_t<T>>::type*,
-			    typename return_type_subset_iterator<remove_cvptr_t<T>>::type*>;
+			        remove_cvptr_t<T>, T>::type*,
+			    typename return_type_subset_iterator<remove_cvptr_t<T>, T>::type*>;
 
 			using internal_pointer = typename std::conditional_t<
 			    is_const, const remove_cvptr_t<T>*, remove_cvptr_t<T>*>;
@@ -138,9 +142,8 @@ namespace shogun
 		 */
 		auto begin()
 		{
-			auto* this_casted = static_cast<IterableSubsetContainer<ST>*>(this);
-			return subset_iterator<decltype(this_casted)>(
-			    static_cast<IterableSubsetContainer<ST>*>(this));
+			auto* this_casted = static_cast<IterableSubsetContainer*>(this);
+			return subset_iterator<decltype(this_casted)>(this_casted);
 		}
 
 		/**
@@ -149,11 +152,22 @@ namespace shogun
 		 */
 		auto end()
 		{
-			auto* this_casted = static_cast<IterableSubsetContainer<ST>*>(this);
+			auto* this_casted = static_cast<IterableSubsetContainer*>(this);
 			if (auto stack = this_casted->get_subset_stack()->get_last_subset();
 			    stack == nullptr)
-				return subset_iterator<decltype(this_casted)>(
-				    this_casted, this_casted->get_num_vectors());
+			{
+				if constexpr (std::is_base_of<
+				                  CFeatures,
+				                  remove_cvptr_t<IterableSubsetContainer>>::
+				                  value)
+					return subset_iterator<decltype(this_casted)>(
+					    this_casted, this_casted->get_num_vectors());
+				if constexpr (std::is_base_of<
+				                  CLabels, remove_cvptr_t<
+				                               IterableSubsetContainer>>::value)
+					return subset_iterator<decltype(this_casted)>(
+					    this_casted, this_casted->get_num_labels());
+			}
 			else
 				return subset_iterator<decltype(this_casted)>(
 				    this_casted, stack->get_subset_idx().size());
@@ -165,7 +179,7 @@ namespace shogun
 		auto begin() const
 		{
 			const auto* this_casted =
-			    static_cast<const IterableSubsetContainer<ST>*>(this);
+			    static_cast<const IterableSubsetContainer*>(this);
 			return subset_iterator<decltype(this_casted), true>(this_casted);
 		}
 
@@ -176,11 +190,22 @@ namespace shogun
 		auto end() const
 		{
 			const auto* this_casted =
-			    static_cast<const IterableSubsetContainer<ST>*>(this);
+			    static_cast<const IterableSubsetContainer*>(this);
 			if (auto stack = this_casted->get_subset_stack()->get_last_subset();
 			    stack == nullptr)
-				return subset_iterator<decltype(this_casted), true>(
-				    this_casted, this_casted->get_num_vectors());
+			{
+				if constexpr (std::is_base_of<
+				                  CFeatures,
+				                  remove_cvptr_t<IterableSubsetContainer>>::
+				                  value)
+					return subset_iterator<decltype(this_casted), true>(
+					    this_casted, this_casted->get_num_vectors());
+				if constexpr (std::is_base_of<
+				                  CLabels, remove_cvptr_t<
+				                               IterableSubsetContainer>>::value)
+					return subset_iterator<decltype(this_casted), true>(
+					    this_casted, this_casted->get_num_labels());
+			}
 			else
 				return subset_iterator<decltype(this_casted), true>(
 				    this_casted, stack->get_subset_idx().size());
