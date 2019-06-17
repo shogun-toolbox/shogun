@@ -61,7 +61,7 @@ class DotFeatures;
  * See comments to find out whether it is supported for that method.
  * See also Features class documentation
  */
-template<class ST> class CDenseFeatures: public CDotFeatures, public SubsetIteratorBase<CDenseFeatures, ST>
+template<class ST> class CDenseFeatures: public CDotFeatures, public SubsetIteratorBase<CDenseFeatures<ST>, ST>
 {
 public:
 	/** constructor

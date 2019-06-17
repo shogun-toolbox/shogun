@@ -34,6 +34,7 @@
 #define LDA_SOLVER_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/base/zip_iterator.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/config.h>
@@ -106,32 +107,31 @@ namespace shogun
 	void LDASolver<T>::compute_means()
 	{
 		index_t num_class = m_labels->get_num_classes();
-		auto data = m_features->get_feature_matrix();
 
 		m_class_mean = std::vector<SGVector<T>>(num_class);
 		m_class_count = std::vector<index_t>(num_class);
 		for (index_t i = 0; i < num_class; ++i)
 		{
-			m_class_mean[i] = SGVector<T>(data.num_rows);
+			m_class_mean[i] = SGVector<T>(m_features->get_num_features());
 			linalg::zero(m_class_mean[i]);
 		}
-		m_mean = SGVector<T>(data.num_rows);
+		m_mean = SGVector<T>(m_features->get_num_features());
 		linalg::zero(m_mean);
 
-		// calculate the total mean and the classes' mean.
-		for (index_t i = 0; i < data.num_cols; ++i)
+		for (const auto& [data_i, label_i]: zip_iterator(m_features, m_labels))
 		{
-			index_t c = (index_t)m_labels->get_label(i);
+			index_t c = static_cast<index_t>(label_i);
 			++m_class_count[c];
-			linalg::add_col_vec(data, i, m_class_mean[c], m_class_mean[c]);
+			linalg::add(data_i, m_class_mean[c], m_class_mean[c]);
 		}
+
 		for (index_t i = 0; i < num_class; ++i)
 		{
 			linalg::add(m_mean, m_class_mean[i], m_mean);
 			linalg::scale(
 			    m_class_mean[i], m_class_mean[i], 1 / (T)m_class_count[i]);
 		}
-		linalg::scale(m_mean, m_mean, 1 / (T)data.num_cols);
+		linalg::scale(m_mean, m_mean, 1 / (T)m_features->get_num_vectors());
 	}
 
 	template <typename T>
@@ -167,6 +167,13 @@ namespace shogun
 			    centered_class_col[c], data.get_column(i));
 			++centered_class_col[c];
 		}
+//        for (const auto& [data_i, label_i]: zip_iterator(m_features, m_labels))
+//        {
+//            index_t c = static_cast<size_t>(label_i);
+//            centered_class[c].set_column(
+//                    centered_class_col[c], data_i);
+//            ++centered_class_col[c];
+//        }
 		for (index_t i = 0; i < num_class; ++i)
 		{
 			auto tmp = linalg::matrix_prod(
