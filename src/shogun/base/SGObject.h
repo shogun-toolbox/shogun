@@ -442,6 +442,10 @@ public:
 	void put(const std::string& name, T* value)
 	{
 		put(Tag<T*>(name), value);
+
+		std::string callback_fun = name + "_callback";
+		if (has(callback_fun))
+			run(callback_fun);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -555,6 +559,27 @@ public:
 	void put(const std::string& name, Some<T> value)
 	{
 		put(name, value.get());
+
+		std::string callback_fun = name + "_callback";
+		if (has(callback_fun))
+			run(callback_fun);
+	}
+
+	/** Typed setter for a non-object class parameter, identified by a name.
+	 * This version doesn't run the callback function
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter along with type information
+	 */
+	template <
+		typename T,
+		typename T2 = typename std::enable_if<
+		    !std::is_base_of<
+		        CSGObject, typename std::remove_pointer<T>::type>::value,
+		    T>::type>
+	void put_quietly(const std::string& name, T value)
+	{
+		put(Tag<T>(name), value);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -584,6 +609,10 @@ public:
 	void put(const std::string& name, T value)
 	{
 		put(Tag<T>(name), value);
+
+		std::string callback_fun = name + "_callback";
+		if (has(callback_fun))
+			run(callback_fun);
 	}
 
 #ifndef SWIG
@@ -671,12 +700,21 @@ public:
 	 */
 	virtual std::string to_string() const;
 
+#ifndef SWIG // SWIG should skip this part
 	/** Returns map of parameter names and AnyParameter pairs
 	 * of the object.
 	 *
 	 */
-#ifndef SWIG // SWIG should skip this part
 	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
+
+	/** Calls a function on every parameter of type T with the name of the
+	 * parameter and the parameter itself as arguments
+	 *
+	 * @param operation the function to be called
+	 */
+	template <typename T>
+	void for_each_param_of_type(
+		std::function<void(const std::string&, T*)> operation);
 #endif
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
@@ -971,6 +1009,22 @@ protected:
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
+	}
+
+	/** Puts a pointer to a free function into the parameter map.
+	 * The free function can be invoked using CSGObject::run(name).
+	 *
+	 * @param name name of the parameter
+	 * @param method pointer to the method
+	 */
+	template <typename T>
+	void watch_method(const std::string& name, std::function<T()> function)
+	{
+		BaseTag tag(name);
+		AnyParameterProperties properties(
+			"free function",
+			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY);
+		create_parameter(tag, AnyParameter(make_any(function), properties));
 	}
 #endif
 

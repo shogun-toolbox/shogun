@@ -50,6 +50,7 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 #include <shogun/lib/observers/ObservedValue.h>
+#include <shogun/util/visitors/FilterVisitor.h>
 
 #include <shogun/util/hash.h>
 
@@ -848,6 +849,27 @@ bool CSGObject::equals(const CSGObject* other) const
 	SG_SDEBUG("All parameters of %s equal.\n", this->get_name());
 	return true;
 }
+
+template <typename T>
+void CSGObject::for_each_param_of_type(
+    std::function<void(const std::string&, T*)> operation)
+{
+	auto visitor = std::make_unique<FilterVisitor<T>>(operation);
+	const auto& param_map = self->map;
+
+	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
+		Any any_param = pair.second.get_value();
+		if (any_param.visitable())
+		{
+			const std::string name = pair.first.name();
+			visitor->set_name(name);
+			any_param.visit(visitor.get());
+		}
+	});
+}
+
+template void shogun::CSGObject::for_each_param_of_type<CSGObject*>(
+    std::function<void(const std::string&, CSGObject**)>);
 
 CSGObject* CSGObject::create_empty() const
 {
