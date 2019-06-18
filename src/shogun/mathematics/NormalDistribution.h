@@ -5,14 +5,24 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
+#include <array>
+#include <type_traits>
+
 namespace shogun
 {
+	template <typename T>
 	class NormalDistribution
+	{
+		static_assert(
+		    !std::is_same<T, float64_t>::value,
+		    "shogun::NormalDistribution is specialized only for float64_t");
+	};
+
+	template <>
+	class NormalDistribution<float64_t>
 	{
 	public:
 		NormalDistribution(float64_t mean = 0, float64_t stddev = 1);
-
-		~NormalDistribution();
 
 		template <typename PRNG>
 		float64_t operator()(PRNG& prng) const
@@ -108,44 +118,44 @@ namespace shogun
 		 * Gaussian probability density function, denormailised, that is, y =
 		 * e^-(x^2/2).
 		 */
-		float64_t GaussianPdfDenorm(float64_t x) const;
+		static float64_t GaussianPdfDenorm(float64_t x);
 
 		/**
 		 * Inverse function of GaussianPdfDenorm(x)
 		 */
-		float64_t GaussianPdfDenormInv(float64_t y) const;
+		static float64_t GaussianPdfDenormInv(float64_t y);
 
 	private:
 		/** Number of blocks */
-		int32_t m_blockCount; //= 128;
+		static constexpr int32_t m_blockCount = 128;
 
 		/** Right hand x coord of the base rectangle, thus also the left hand x
 		 * coord of the tail */
-		float64_t m_R; //= 3.442619855899;
+		static constexpr float64_t m_R = 3.442619855899;
 
 		/** Area of each rectangle (pre-determined/computed for 128 blocks). */
-		float64_t m_A; // = 9.91256303526217e-3;
+		static constexpr float64_t m_A = 9.91256303526217e-3;
 
 		/** Scale factor for converting a UInt with range [0,0xffffffff] to a
 		 * double with range [0,1]. */
-		float64_t m_uint32ToU; // = 1.0 / (float64_t)UINT32_MAX;
+		static constexpr float64_t m_uint32ToU = 1.0 / (float64_t)UINT32_MAX;
+
+		/** top-right position ox rectangle i */
+		std::array<float64_t, m_blockCount + 1> m_x;
+		std::array<float64_t, m_blockCount> m_y;
 
 		/** Area A divided by the height of B0 */
 		float64_t m_A_div_y0;
-
-		/** top-right position ox rectangle i */
-		float64_t* m_x;
-		float64_t* m_y;
 
 		/** The proprtion of each segment that is entirely within the
 		distribution, expressed as uint where a value of 0 indicates 0% and
 		uint.MaxValue 100%. Expressing this as an integer allows some floating
 		points operations to be replaced with integer ones.
 		*/
-		uint32_t* m_xComp;
+		std::array<uint32_t, m_blockCount> m_xComp;
 
-		float64_t m_mean;
-		float64_t m_stddev;
+		const float64_t m_mean;
+		const float64_t m_stddev;
 	};
 } // namespace shogun
 

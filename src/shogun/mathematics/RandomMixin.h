@@ -1,6 +1,7 @@
 #ifndef __RANDOMMIXIN_H__
 #define __RANDOMMIXIN_H__
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>
 
 #include <random>
@@ -30,13 +31,19 @@ namespace shogun
 		void set_seed(const int32_t seed)
 		{
 			m_seed = seed;
-			reinit();
+			reinit_prng();
 			set_seed_callback(this, seed);
 		}
 
-		void reinit()
+		bool reinit_prng()
 		{
 			m_prng = PRNG(m_seed);
+			return true;
+		}
+
+		int32_t seed()
+		{
+			return m_seed;
 		}
 
 	private:
@@ -44,10 +51,14 @@ namespace shogun
 		{
 			set_random_seed();
 
+			using this_t = RandomMixin<Parent, PRNG, RandomDevice>;
+
 			Parent::watch_param("seed", &m_seed);
-			Parent::template watch_method<void>("seed_callback", [&]() {
-				reinit();
+			Parent::watch_method("reinit_prng", &this_t::reinit_prng);
+			Parent::template watch_method<bool>("seed_callback", [&]() {
+				reinit_prng();
 				set_seed_callback(this, m_seed);
+				return true;
 			});
 		}
 
@@ -64,7 +75,7 @@ namespace shogun
 			    if ((*param)->has("seed"))
 			    {
 				    (*param)->put_quietly("seed", seed);
-				    (*param)->run("reinit");
+				    (*param)->run("reinit_prng");
 			    }
 			    set_seed_callback(*param, seed);
 		    });

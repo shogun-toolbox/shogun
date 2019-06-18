@@ -6,21 +6,10 @@
 
 using namespace shogun;
 
-NormalDistribution::NormalDistribution(float64_t mean, float64_t stddev)
+NormalDistribution<float64_t>::NormalDistribution(
+    float64_t mean, float64_t stddev)
+    : m_mean(mean), m_stddev(stddev)
 {
-	m_mean = mean;
-	m_stddev = stddev;
-
-	/** init ziggurat variables */
-	m_blockCount = 128;
-	m_R = 3.442619855899;
-	m_A = 9.91256303526217e-3;
-	m_uint32ToU = 1.0 / (float64_t)std::numeric_limits<uint32_t>::max();
-
-	m_x = SG_MALLOC(float64_t, m_blockCount + 1);
-	m_y = SG_MALLOC(float64_t, m_blockCount);
-	m_xComp = SG_MALLOC(uint32_t, m_blockCount);
-
 	// Initialise rectangle position data.
 	// m_x[i] and m_y[i] describe the top-right position ox Box i.
 
@@ -74,19 +63,12 @@ NormalDistribution::NormalDistribution(float64_t mean, float64_t stddev)
 	ASSERT(std::abs(1.0 - m_y[m_blockCount - 1]) < 1e-10);
 }
 
-NormalDistribution::~NormalDistribution()
-{
-	SG_FREE(m_x);
-	SG_FREE(m_y);
-	SG_FREE(m_xComp);
-}
-
-float64_t NormalDistribution::GaussianPdfDenorm(float64_t x) const
+float64_t NormalDistribution<float64_t>::GaussianPdfDenorm(float64_t x)
 {
 	return std::exp(-(x * x * 0.5));
 }
 
-float64_t NormalDistribution::GaussianPdfDenormInv(float64_t y) const
+float64_t NormalDistribution<float64_t>::GaussianPdfDenormInv(float64_t y)
 {
 	// Operates over the y range (0,1], which happens to be the y range of the
 	// pdf, with the exception that it does not include y=0, but we would never
