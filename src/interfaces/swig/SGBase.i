@@ -27,6 +27,7 @@ import org.jblas.*;
 %typemap(javacode) shogun::CSGObject
 %{
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+/* TODO: enable once shared_ptr is merged
     ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
     JsonSerializer jsonSerializer = new JsonSerializer();
     jsonSerializer.attach(byteArrayOS);
@@ -34,9 +35,11 @@ public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
 
     String obj_serialized = byteArrayOS.as_string();
     out.write(obj_serialized.getBytes());
+*/
 }
 
 public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+/* TODO: enable once shared_ptr is merged
     StringBuffer sb = new StringBuffer();
     int ch;
     while ((ch=in.read()) != -1) {
@@ -46,6 +49,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     JsonDeserializer jsonDeserializer = new JsonDeserializer();
     jsonDeserializer.attach(bis);
     this.deserialize(jsonDeserializer);
+*/
 }
     %}
 #endif
