@@ -18,6 +18,10 @@
 // TODO: microsoft should really start supporting c++11
 #define IS_FINITE(x) _finite(x)
 #else
+// TODO: there must be a better way to fix this
+#ifdef SWIGRUBY
+#undef isfinite
+#endif
 #include <cmath>
 #define IS_FINITE(x) std::isfinite(x)
 #endif
