@@ -565,23 +565,6 @@ public:
 			run(callback_fun);
 	}
 
-	/** Typed setter for a non-object class parameter, identified by a name.
-	 * This version doesn't run the callback function
-	 *
-	 * @param name name of the parameter
-	 * @param value value of the parameter along with type information
-	 */
-	template <
-		typename T,
-		typename T2 = typename std::enable_if<
-		    !std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value,
-		    T>::type>
-	void put_quietly(const std::string& name, T value)
-	{
-		put(Tag<T>(name), value);
-	}
-
 	/** Typed appender for an object class parameter of a Shogun base class
 	* type,
 	* identified by a name.
