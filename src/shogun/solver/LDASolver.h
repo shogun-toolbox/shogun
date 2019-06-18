@@ -120,7 +120,7 @@ namespace shogun
 
 		for (const auto& [data_i, label_i]: zip_iterator(m_features, m_labels))
 		{
-			index_t c = static_cast<index_t>(label_i);
+			auto c = static_cast<index_t>(label_i);
 			++m_class_count[c];
 			linalg::add(data_i, m_class_mean[c], m_class_mean[c]);
 		}
@@ -138,16 +138,13 @@ namespace shogun
 	void LDASolver<T>::compute_within_cov()
 	{
 		index_t num_features = m_features->get_num_features();
-		index_t num_vectors = m_features->get_num_vectors();
 		index_t num_class = m_labels->get_num_classes();
 
-		auto data = m_features->get_feature_matrix().clone();
+		auto data = static_cast<CDenseFeatures<T>*>(m_features->clone());
 
 		// Center data with respect to each data point's class
-		for (index_t i = 0; i < data.num_cols; ++i)
-			linalg::add_col_vec(
-			    data, i, m_class_mean[m_labels->get_label(i)], data, (T)1.0,
-			    (T)-1.0);
+		for (auto [data_i, label_i]: zip_iterator(data, m_labels))
+			linalg::add(data_i, m_class_mean[label_i], data_i, static_cast<T>(1), static_cast<T>(-1));
 
 		// holds the feature matrix for each class
 		std::vector<SGMatrix<T>> centered_class(num_class);
@@ -160,20 +157,13 @@ namespace shogun
 			centered_class[i] = SGMatrix<T>(num_features, m_class_count[i]);
 			linalg::zero(centered_class[i]);
 		}
-		for (index_t i = 0; i < num_vectors; ++i)
+		for (const auto& [data_i, label_i]: zip_iterator(data, m_labels))
 		{
-			index_t c = (index_t)m_labels->get_label(i);
+			auto c = static_cast<index_t>(label_i);
 			centered_class[c].set_column(
-			    centered_class_col[c], data.get_column(i));
+					centered_class_col[c], data_i);
 			++centered_class_col[c];
 		}
-//        for (const auto& [data_i, label_i]: zip_iterator(m_features, m_labels))
-//        {
-//            index_t c = static_cast<size_t>(label_i);
-//            centered_class[c].set_column(
-//                    centered_class_col[c], data_i);
-//            ++centered_class_col[c];
-//        }
 		for (index_t i = 0; i < num_class; ++i)
 		{
 			auto tmp = linalg::matrix_prod(

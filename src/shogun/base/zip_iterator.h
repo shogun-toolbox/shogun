@@ -7,11 +7,21 @@
 #ifndef SHOGUN_ZIP_ITERATOR_H
 #define SHOGUN_ZIP_ITERATOR_H
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
 namespace shogun
 {
+	template <typename T>
+	struct is_shared_ptr : public std::false_type
+	{
+	};
+	template <typename T>
+	struct is_shared_ptr<std::shared_ptr<T>> : public std::true_type
+	{
+	};
+
 	template <typename... Args1, typename... Args2, size_t... Idx>
 	bool compare_containers(
 	    std::tuple<Args1...> container1, std::tuple<Args2...> container2,
@@ -21,11 +31,35 @@ namespace shogun
 		    (std::get<Idx>(container1) == std::get<Idx>(container2)) && ...);
 	}
 
+	template <typename T>
+	auto get_begin(T& container) -> decltype(container.begin())
+	{
+		return container.begin();
+	}
+
+	template <typename T>
+	auto get_begin(T& container) -> decltype(container->begin())
+	{
+		return container->begin();
+	}
+
+	template <typename T>
+	auto get_end(T& container) -> decltype(container.end())
+	{
+		return container.end();
+	}
+
+	template <typename T>
+	auto get_end(T& container) -> decltype(container->end())
+	{
+		return container->end();
+	}
+
 	template <typename... Args>
 	class zip_iterator
 	{
 	public:
-		zip_iterator(Args*... args)
+		zip_iterator(Args... args)
 		{
 			m_iterator_tuples = std::forward_as_tuple(args...);
 		}
@@ -39,11 +73,11 @@ namespace shogun
 			{
 			}
 
-			auto operator++()
+			ZipIterator<ZipTypeArgs...> operator++()
 			{
 				return std::apply(
 				    [](auto&... container) {
-					    return std::make_tuple(container++...);
+					    return std::make_tuple(++container...);
 				    },
 				    m_value_tuple);
 			}
@@ -85,7 +119,16 @@ namespace shogun
 		{
 			return ZipIterator(std::apply(
 			    [](auto... container) {
-				    return std::make_tuple(container->begin()...);
+				    return std::make_tuple(get_begin(container)...);
+			    },
+			    m_iterator_tuples));
+		}
+
+		auto begin() const
+		{
+			return ZipIterator(std::apply(
+			    [](const auto&... container) {
+				    return std::make_tuple(get_begin(container)...);
 			    },
 			    m_iterator_tuples));
 		}
@@ -94,13 +137,22 @@ namespace shogun
 		{
 			return ZipIterator(std::apply(
 			    [](auto... container) {
-				    return std::make_tuple(container->end()...);
+				    return std::make_tuple(get_end(container)...);
+			    },
+			    m_iterator_tuples));
+		}
+
+		auto end() const
+		{
+			return ZipIterator(std::apply(
+			    [](const auto&... container) {
+				    return std::make_tuple(get_end(container)...);
 			    },
 			    m_iterator_tuples));
 		}
 
 	private:
-		std::tuple<Args*...> m_iterator_tuples;
+		std::tuple<Args...> m_iterator_tuples;
 	};
 } // namespace shogun
 
