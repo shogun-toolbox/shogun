@@ -80,6 +80,50 @@ namespace shogun
 		private:
 			pointer m_ptr;
 		};
+
+    template<typename T>
+    class ConstRandomIterator
+    {
+    public:
+        // iterator traits
+        using difference_type = std::ptrdiff_t;
+        using value_type = const T;
+        using pointer = const T*;
+        using reference = const T&;
+        using iterator_category = std::random_access_iterator_tag;
+
+        explicit ConstRandomIterator(pointer ptr) : m_ptr(ptr) {}
+        ConstRandomIterator() : m_ptr(nullptr) {}
+
+        ConstRandomIterator& operator++() { m_ptr++; return *this; }
+        ConstRandomIterator operator++(int) { ConstRandomIterator retval = *this; m_ptr++; return retval;}
+        ConstRandomIterator& operator--() { m_ptr--; return *this; }
+        ConstRandomIterator operator--(int) { ConstRandomIterator retval = *this; m_ptr--; return retval;}
+
+        bool operator==(const ConstRandomIterator& other) const { return m_ptr == other.m_ptr; }
+        bool operator!=(const ConstRandomIterator& other) const { return m_ptr != other.m_ptr; }
+
+        reference operator*() {return *m_ptr;}
+        pointer operator->() { return m_ptr; }
+
+        ConstRandomIterator &operator += (difference_type d) { m_ptr += d; return *this; }
+        ConstRandomIterator &operator -= (difference_type d) { m_ptr -= d; return *this; }
+
+        ConstRandomIterator operator + (difference_type d) const { return ConstRandomIterator(m_ptr+d); }
+        ConstRandomIterator operator - (difference_type d) const { return ConstRandomIterator(m_ptr-d); }
+
+        reference operator [] (difference_type d) const { return m_ptr[d]; }
+
+        bool operator < (const ConstRandomIterator &other) const { return m_ptr < other.m_ptr; }
+        bool operator > (const ConstRandomIterator &other) const { return m_ptr > other.m_ptr; }
+        bool operator <= (const ConstRandomIterator &other) const { return m_ptr <= other.m_ptr; }
+        bool operator >= (const ConstRandomIterator &other) const { return m_ptr >= other.m_ptr; }
+
+        difference_type operator - (const ConstRandomIterator &other) const { return m_ptr - other.m_ptr; }
+
+    private:
+        pointer m_ptr;
+    };
 }
 
 #endif
