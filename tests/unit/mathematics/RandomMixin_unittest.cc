@@ -2,30 +2,25 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/RandomMixin.h>
-#include <shogun/base/some.h>
 #include <gtest/gtest.h>
+#include "../base/MockObject.h"
 
 #include <memory>
+#include <array>
 
 using namespace shogun;
 
-class MockObject : public CSGObject
+class MockNonRandom : public CMockObject
+{
+};
+
+class MockRandom : public RandomMixin<CMockObject>
 {
 public:
-	const char* get_name() const override
+	auto sample() -> decltype(m_prng())
 	{
-		return "MockObject";
+		return m_prng();
 	}
-};
-
-class MockNonRandom : public MockObject
-{
-};
-
-class MockRandom : public RandomMixin<MockObject>
-{
-public:
-	std::mt19937_64& m_prng = RandomMixin<MockObject>::m_prng;
 };
 
 class OneLevelNested : public MockRandom
@@ -118,28 +113,30 @@ public:
 	MockNonRandom* obj4;
 };
 
-TEST(RandomMixin, basic_test)
+TEST(RandomMixin, reproducibility_test)
 {
 	auto mock_random = std::make_unique<MockRandom>();
 	mock_random->put("seed", 123);
 	EXPECT_EQ(mock_random->get<int32_t>("seed"), 123);
 
-	auto random_value = mock_random->m_prng();
-	auto random_value2 = mock_random->m_prng();
+	std::array<float64_t, 100> values1;
+	for(auto& val : values1)
+		val = mock_random->sample();
 
 	mock_random->put("seed", 345);
 	EXPECT_EQ(mock_random->get<int32_t>("seed"), 345);
 
-	auto random_value3 = mock_random->m_prng();
-	auto random_value4 = mock_random->m_prng();
+	std::array<float64_t, 100> values2;
+	for(auto& val : values2)
+		val = mock_random->sample();
 
 	mock_random->put("seed", 123);
-	EXPECT_EQ(mock_random->m_prng(), random_value);
-	EXPECT_EQ(mock_random->m_prng(), random_value2);
+	for(auto& val : values1)
+		EXPECT_EQ(mock_random->sample(), val);
 
 	mock_random->put("seed", 345);
-	EXPECT_EQ(mock_random->m_prng(), random_value3);
-	EXPECT_EQ(mock_random->m_prng(), random_value4);
+	for(auto& val : values2)
+		EXPECT_EQ(mock_random->sample(), val);
 }
 
 TEST(RandomMixin, one_level_nesting_test)
@@ -151,9 +148,9 @@ TEST(RandomMixin, one_level_nesting_test)
 	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
 	EXPECT_EQ(obj->obj3->get<int32_t>("seed"), 123);
 	
-	auto random_value = obj->m_prng();
-	EXPECT_EQ(random_value, obj->obj1->m_prng());
-	EXPECT_EQ(random_value, obj->obj3->m_prng());
+	auto random_value = obj->sample();
+	EXPECT_EQ(random_value, obj->obj1->sample());
+	EXPECT_EQ(random_value, obj->obj3->sample());
 }
 
 TEST(RandomMixin, two_level_nesting_test)

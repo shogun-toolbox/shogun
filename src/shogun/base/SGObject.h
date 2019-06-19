@@ -956,7 +956,8 @@ protected:
 	{
 		BaseTag tag(name);
 		AnyParameterProperties properties(
-			"Dynamic parameter", ParameterProperties::READONLY);
+			"Dynamic parameter",
+			ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
