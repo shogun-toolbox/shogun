@@ -983,11 +983,10 @@ protected:
 	template <typename T, typename S>
 	void watch_method(
 		const std::string& name, T (S::*method)() const,
-		AnyParameterProperties properties =
-		    AnyParameterProperties("Dynamic parameter"))
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Dynamic parameter", ParameterProperties::READONLY))
 	{
 		BaseTag tag(name);
-		properties.add_property(ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
@@ -1004,10 +1003,10 @@ protected:
 	void watch_method(
 		const std::string& name, T (S::*method)(),
 		AnyParameterProperties properties = AnyParameterProperties(
-		    "Non-const function", ParameterProperties::RUNFUNCTION))
+		    "Non-const function", ParameterProperties::RUNFUNCTION,
+		    ParameterProperties::READONLY))
 	{
 		BaseTag tag(name);
-		properties.add_property(ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
@@ -1023,10 +1022,10 @@ protected:
 	void watch_method(
 		const std::string& name, std::function<T()> function,
 		AnyParameterProperties properties = AnyParameterProperties(
-		    "free function", ParameterProperties::RUNFUNCTION))
+		    "free function", ParameterProperties::RUNFUNCTION,
+		    ParameterProperties::READONLY))
 	{
 		BaseTag tag(name);
-		properties.add_property(ParameterProperties::READONLY);
 		create_parameter(tag, AnyParameter(make_any(function), properties));
 	}
 #endif

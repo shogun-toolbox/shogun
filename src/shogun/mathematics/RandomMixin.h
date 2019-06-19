@@ -18,7 +18,6 @@ namespace shogun
 		RandomMixin(T... args) : Parent(args...)
 		{
 			init();
-			m_seed = 0;
 		}
 
 		int32_t seed()
@@ -29,6 +28,8 @@ namespace shogun
 	private:
 		void init()
 		{
+			m_seed = 0;
+
 			Parent::watch_param("seed", &m_seed);
 			Parent::template watch_method<bool>(
 			    "seed_callback",
@@ -39,7 +40,8 @@ namespace shogun
 			    },
 			    AnyParameterProperties(
 			        "seed callback function",
-			        ParameterProperties::CALLBACKFUNCTION));
+			        ParameterProperties::CALLBACKFUNCTION |
+			        ParameterProperties::READONLY));
 		}
 
 		int32_t m_seed;
