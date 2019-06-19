@@ -313,7 +313,8 @@ TEST(DenseFeaturesTest, iterator)
     feat->add_subset(subset);
     for (auto iter: *feat)
     {
-        for (auto [test, truth]: zip_iterator(iter, mat.get_column(ordered_subset[counter])))
+        auto tmp = mat.get_column(ordered_subset[counter]);
+        for (auto [test, truth]: zip_iterator(iter, tmp))
             EXPECT_EQ(test, truth);
         ++counter;
     }
@@ -328,7 +329,8 @@ TEST(DenseFeaturesTest, const_iterator)
     int counter = 0;
     for (const auto& iter: *feat)
     {
-        for (auto [test, truth]: zip_iterator(iter, mat.get_column(counter)))
+        auto tmp =  mat.get_column(counter);
+        for (auto [test, truth]: zip_iterator(iter, tmp))
             EXPECT_EQ(test, truth);
         ++counter;
     }
