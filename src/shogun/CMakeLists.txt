@@ -226,74 +226,71 @@ ENDIF()
 CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
 
 ###### MALLOC LIBRARY ###########
-if (NOT MSVC)
-  SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
-  if (MALLOC_REPLACEMENT MATCHES "Jemalloc")
-    include(external/Jemalloc)
+SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
+if (MALLOC_REPLACEMENT MATCHES "Jemalloc")
+  include(external/Jemalloc)
 
-    SET(USE_JEMALLOC 1)
-    SET(HAVE_ALIGNED_MALLOC 1)
-    SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
-    target_include_directories(libshogun PRIVATE ${Jemalloc_INCLUDE_DIR})
-    target_include_directories(shogun PRIVATE ${Jemalloc_INCLUDE_DIR})
-    target_link_libraries(shogun PRIVATE ${Jemalloc_LIBRARIES})
-    if (EXISTS shogun-static)
-      target_link_libraries(shogun-static PRIVATE ${Jemalloc_LIBRARIES})
-    endif()
-  elseif(MALLOC_REPLACEMENT MATCHES "TCMalloc")
-    include(external/TCMalloc)
+  SET(USE_JEMALLOC 1)
+  SET(HAVE_ALIGNED_MALLOC 1)
+  SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
+  target_include_directories(libshogun PRIVATE ${Jemalloc_INCLUDE_DIR})
+  target_include_directories(shogun PRIVATE ${Jemalloc_INCLUDE_DIR})
+  target_link_libraries(shogun PRIVATE ${Jemalloc_LIBRARIES})
+  if (EXISTS shogun-static)
+    target_link_libraries(shogun-static PRIVATE ${Jemalloc_LIBRARIES})
+  endif()
+elseif(MALLOC_REPLACEMENT MATCHES "TCMalloc")
+  include(external/TCMalloc)
 
-    SET(USE_TCMALLOC 1)
-    SET(HAVE_ALIGNED_MALLOC 1)
-    SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
-    target_include_directories(libshogun PRIVATE ${TCMalloc_INCLUDE_DIR})
-    target_include_directories(shogun PRIVATE ${TCMalloc_INCLUDE_DIR})
-    target_link_libraries(shogun PRIVATE ${TCMalloc_LIBRARIES})
-    if (EXISTS shogun-static)
-      target_link_libraries(shogun-static PRIVATE ${TCMalloc_LIBRARIES})
-    endif()
-  elseif(MALLOC_REPLACEMENT MATCHES "Hoard")
-    find_package(Hoard)
-    if (Hoard_FOUND)
-      SET(USE_HOARD 1)
-      SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Hoard_LIBRARIES})
-    else ()
-    message(FATAL_ERROR "Unable to use hoard malloc: library not found")
-    endif ()
-  else()
-    message(STATUS "Using system's malloc")
-    include(CheckCXXCompilerFlag)
+  SET(USE_TCMALLOC 1)
+  SET(HAVE_ALIGNED_MALLOC 1)
+  SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
+  target_include_directories(libshogun PRIVATE ${TCMalloc_INCLUDE_DIR})
+  target_include_directories(shogun PRIVATE ${TCMalloc_INCLUDE_DIR})
+  target_link_libraries(shogun PRIVATE ${TCMalloc_LIBRARIES})
+  if (EXISTS shogun-static)
+    target_link_libraries(shogun-static PRIVATE ${TCMalloc_LIBRARIES})
+  endif()
+elseif(MALLOC_REPLACEMENT MATCHES "Hoard")
+  find_package(Hoard)
+  if (Hoard_FOUND)
+    SET(USE_HOARD 1)
+    SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Hoard_LIBRARIES})
+  else ()
+  message(FATAL_ERROR "Unable to use hoard malloc: library not found")
+  endif ()
+else()
+  message(STATUS "Using system's malloc")
+  include(CheckCXXCompilerFlag)
 
-    # FIXME: add support for aligned new
-    # this is c++17
-    #CHECK_CXX_COMPILER_FLAG("-faligned-new" HAVE_ALIGNED_NEW)
-    CHECK_CXX_SOURCE_COMPILES("
-    #include <cstdio>
-    #include <cstdlib>
+  # FIXME: add support for aligned new
+  # this is c++17
+  #CHECK_CXX_COMPILER_FLAG("-faligned-new" HAVE_ALIGNED_NEW)
+  CHECK_CXX_SOURCE_COMPILES("
+  #include <cstdio>
+  #include <cstdlib>
 
-    int main()
-    {
-        int* p2 = static_cast<int*>(std::aligned_alloc(1024, 1024));
-        std::free(p2);
-        return 0;
-    }
-    " HAVE_STD_ALIGNED_ALLOC)
+  int main()
+  {
+      int* p2 = static_cast<int*>(std::aligned_alloc(1024, 1024));
+      std::free(p2);
+      return 0;
+  }
+  " HAVE_STD_ALIGNED_ALLOC)
 
-    if (NOT HAVE_STD_ALIGNED_ALLOC)
-      if (MSVC)
-        SET(HAVE_ALIGNED_MALLOC 1)
-      else()
-        check_function_exists("posix_memalign" HAVE_POSIX_MEMALIGN)
-        if (HAVE_POSIX_MEMALIGN)
-          SET(HAVE_ALIGNED_MALLOC 1)
-        endif()
-      endif()
-    else()
+  if (NOT HAVE_STD_ALIGNED_ALLOC)
+    if (MSVC)
       SET(HAVE_ALIGNED_MALLOC 1)
+    else()
+      check_function_exists("posix_memalign" HAVE_POSIX_MEMALIGN)
+      if (HAVE_POSIX_MEMALIGN)
+        SET(HAVE_ALIGNED_MALLOC 1)
+      endif()
     endif()
+  else()
+    SET(HAVE_ALIGNED_MALLOC 1)
   endif()
 endif()
-
 
 ############################ external dependencies
 
