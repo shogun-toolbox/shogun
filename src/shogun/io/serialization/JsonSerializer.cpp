@@ -162,6 +162,11 @@ public:
 		m_json_writer.EndArray();
 		close_container();
 	}
+	void on(std::string* v) override
+	{
+		SG_SDEBUG("writing std::string with value %s\n", v->c_str());
+		m_json_writer.String(v->c_str());
+	}
 	void on(CSGObject** v) override
 	{
 		if (*v)

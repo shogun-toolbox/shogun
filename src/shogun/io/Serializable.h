@@ -72,11 +72,10 @@ public:
 	 * @param value Value to serialize as CSGObject.
 	 * @param value_name Name under which value is registered.
 	*/
-	CSerializable(T value, const char* value_name=""): CSGObject()
+	CSerializable(T value, const char* value_name=""): CSGObject(), m_name(value_name)
 	{
 		init();
 		m_value = value;
-		//FIXME: add support for std::string serialization
 	}
 
 	/**
@@ -95,11 +94,13 @@ private:
 		set_generic<typename extract_value_type<T>::value_type>();
 		m_value = 0;
 		SG_ADD(&m_value, "value", "Serialized value");
+		watch_param("name", &m_name);
 	}
 
 protected:
 	/** Serialized value. */
 	T m_value;
+	std::string m_name;
 };
 
 // FIXME: once the class factory is refactored this should be dropped and

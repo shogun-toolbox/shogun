@@ -79,6 +79,10 @@ namespace shogun
 				{
 					static_cast<T*>(this)->on_complex(m_s, v);
 				}
+				void on(std::string* v) override
+				{
+					m_s.text1b(*v, 48);
+				}
 				void enter_matrix(index_t* rows, index_t* cols) override
 				{
 					m_s.value4b(*rows);
