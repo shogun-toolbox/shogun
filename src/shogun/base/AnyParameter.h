@@ -96,6 +96,10 @@ namespace shogun
 		{
 			m_attribute_mask &= ~other;
 		}
+		void add_property(const ParameterProperties other)
+		{
+			m_attribute_mask |= other;
+		}
 		std::string to_string() const
 		{
 			std::stringstream ss;

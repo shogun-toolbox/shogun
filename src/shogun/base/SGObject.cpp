@@ -639,11 +639,16 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	return parameter;
 }
 
-AnyParameter CSGObject::get_function(const BaseTag& _tag) const
+AnyParameter CSGObject::get_function(
+    const BaseTag& _tag, const ParameterProperties function_property) const
 {
 	const auto& parameter = self->get(_tag);
+<<<<<<< HEAD
 	if (!parameter.get_properties().has_property(
 	        ParameterProperties::RUNFUNCTION))
+=======
+	if (!parameter.get_properties().has_property(function_property))
+>>>>>>> Add CALLBACKFUNCTION property
 	{
 		SG_ERROR(
 		    "The parameter %s::%s is not registered as a function, "
