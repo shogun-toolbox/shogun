@@ -18,6 +18,7 @@ namespace shogun
 		RandomMixin(T... args) : Parent(args...)
 		{
 			init();
+			m_seed = 0;
 		}
 
 		int32_t seed()
@@ -28,16 +29,17 @@ namespace shogun
 	private:
 		void init()
 		{
-			set_random_seed();
-
-			using this_t = RandomMixin<Parent, PRNG, RandomDevice>;
-
 			Parent::watch_param("seed", &m_seed);
-			Parent::template watch_method<bool>("seed_callback", [&]() {
-				m_prng = PRNG(m_seed);
-				seed_callback(this, m_seed);
-				return true;
-			});
+			Parent::template watch_method<bool>(
+			    "seed_callback",
+			    [&]() {
+				    m_prng = PRNG(m_seed);
+				    seed_callback(this, m_seed);
+				    return true;
+			    },
+			    AnyParameterProperties(
+			        "seed callback function",
+			        ParameterProperties::CALLBACKFUNCTION));
 		}
 
 		int32_t m_seed;
