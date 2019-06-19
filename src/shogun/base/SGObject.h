@@ -442,10 +442,6 @@ public:
 	void put(const std::string& name, T* value)
 	{
 		put(Tag<T*>(name), value);
-
-		std::string callback_fun = name + "_callback";
-		if (has(callback_fun))
-			run_callback(callback_fun);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -559,10 +555,6 @@ public:
 	void put(const std::string& name, Some<T> value)
 	{
 		put(name, value.get());
-
-		std::string callback_fun = name + "_callback";
-		if (has(callback_fun))
-			run_callback(callback_fun);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -592,10 +584,6 @@ public:
 	void put(const std::string& name, T value)
 	{
 		put(Tag<T>(name), value);
-
-		std::string callback_fun = name + "_callback";
-		if (has(callback_fun))
-			run_callback(callback_fun);
 	}
 
 #ifndef SWIG
@@ -676,23 +664,6 @@ public:
 			SG_ERROR("Failed to run function %s::%s", get_name(), name.c_str())
 		}
 	}
-
-#ifndef SWIG // SWIG should skip this part
-	/**
-	 *
-	 * @param name name of the parameter
-	 * @return value of the parameter corresponding to the input name and type
-	 */
-	void run_callback(const std::string& name) const noexcept(false)
-	{
-		Tag<bool> tag(name);
-		auto param = get_function(tag, ParameterProperties::CALLBACKFUNCTION);
-		if (!any_cast<bool>(param.get_value()))
-		{
-			SG_ERROR("Failed to run function %s::%s", get_name(), name.c_str())
-		}
-	}
-#endif // SWIG
 
 	/** Returns string representation of the object that contains
 	 * its name and parameters.
@@ -981,12 +952,11 @@ protected:
 	 * @param method pointer to the method
 	 */
 	template <typename T, typename S>
-	void watch_method(
-		const std::string& name, T (S::*method)() const,
-		AnyParameterProperties properties = AnyParameterProperties(
-		    "Dynamic parameter", ParameterProperties::READONLY))
+	void watch_method(const std::string& name, T (S::*method)() const)
 	{
 		BaseTag tag(name);
+		AnyParameterProperties properties(
+			"Dynamic parameter", ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
@@ -1000,34 +970,24 @@ protected:
 	 * @param method pointer to the method
 	 */
 	template <typename T, typename S>
-	void watch_method(
-		const std::string& name, T (S::*method)(),
-		AnyParameterProperties properties = AnyParameterProperties(
-		    "Non-const function", ParameterProperties::RUNFUNCTION,
-		    ParameterProperties::READONLY))
+	void watch_method(const std::string& name, T (S::*method)())
 	{
 		BaseTag tag(name);
+		AnyParameterProperties properties(
+			"Non-const function",
+			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
 	}
 
-	/** Puts a pointer to a free function into the parameter map.
-	 * The free function can be invoked using CSGObject::run(name).
+	/** Adds a callback function to a parameter identified by its name
 	 *
 	 * @param name name of the parameter
-	 * @param method pointer to the method
+	 * @param method pointer to the function
 	 */
-	template <typename T>
-	void watch_method(
-		const std::string& name, std::function<T()> function,
-		AnyParameterProperties properties = AnyParameterProperties(
-		    "free function", ParameterProperties::RUNFUNCTION,
-		    ParameterProperties::READONLY))
-	{
-		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any(function), properties));
-	}
+	void add_callback_function(
+		const std::string& name, std::function<void()> method);
 #endif
 
 public:
@@ -1141,9 +1101,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	AnyParameter get_function(
-		const BaseTag& _tag, const ParameterProperties function_property =
-		                         ParameterProperties::RUNFUNCTION) const;
+	AnyParameter get_function(const BaseTag& _tag) const;
 
 	class Self;
 	Unique<Self> self;

@@ -28,20 +28,14 @@ namespace shogun
 	private:
 		void init()
 		{
-			m_seed = 0;
+			std::random_device rd;
+			m_seed = rd();
 
 			Parent::watch_param("seed", &m_seed);
-			Parent::template watch_method<bool>(
-			    "seed_callback",
-			    [&]() {
-				    m_prng = PRNG(m_seed);
-				    seed_callback(this, m_seed);
-				    return true;
-			    },
-			    AnyParameterProperties(
-			        "seed callback function",
-			        ParameterProperties::CALLBACKFUNCTION |
-			        ParameterProperties::READONLY));
+			Parent::add_callback_function("seed", [&]() {
+				m_prng = PRNG(m_seed);
+				seed_callback(this, m_seed);
+			});
 		}
 
 		int32_t m_seed;

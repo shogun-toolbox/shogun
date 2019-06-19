@@ -161,6 +161,9 @@ namespace shogun
 		void set_value(const Any& value)
 		{
 			m_value = value;
+
+			for (auto& method : m_callback_functions)
+				method();
 		}
 
 		AnyParameterProperties& get_properties()
@@ -178,10 +181,16 @@ namespace shogun
 			return m_init_function;
 		}
 
+<<<<<<< HEAD
 		const std::function<std::string(Any)>& get_constrain_function() const
 		    noexcept
 		{
 			return m_constrain_function;
+=======
+		void add_callback_function(std::function<void()> method)
+		{
+			m_callback_functions.push_back(method);
+>>>>>>> Change how callback functions work
 		}
 
 		/** Equality operator which compares value but not properties.
@@ -201,7 +210,11 @@ namespace shogun
 		Any m_value;
 		AnyParameterProperties m_properties;
 		std::shared_ptr<params::AutoInit> m_init_function;
+<<<<<<< HEAD
 		std::function<std::string(Any)> m_constrain_function;
+=======
+		std::vector<std::function<void()>> m_callback_functions;
+>>>>>>> Change how callback functions work
 	};
 } // namespace shogun
 
