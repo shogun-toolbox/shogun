@@ -38,12 +38,7 @@ FILE(GLOB META_INTEGRATION_REFERENCES ${CMAKE_CURRENT_BINARY_DIR}/reference_resu
 FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	# assume a structure <target_language>/<category>/result.dat
 	get_filename_component(NAME ${REFERENCE_FILE} NAME_WE)
-	IF(${CMAKE_VERSION} VERSION_LESS 2.8.12)
-	    get_filename_component(FULL_DIR ${REFERENCE_FILE} PATH)
-	ELSE()
-	    # only supported from >2.8.11
-	    get_filename_component(FULL_DIR ${REFERENCE_FILE} DIRECTORY)
-	ENDIF()
+	get_filename_component(FULL_DIR ${REFERENCE_FILE} DIRECTORY)
 	get_filename_component(REL_DIR ${FULL_DIR} NAME)
 	set(NAME_WITH_DIR "${REL_DIR}-${NAME}")
 
@@ -61,7 +56,10 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 			AddMetaIntegrationTest(java INTERFACE_JAVA)
 			#AddMetaIntegrationTest(r INTERFACE_R) # currently we have the r meta examples disabled, so no generated results that can be tested
 			AddMetaIntegrationTest(octave INTERFACE_OCTAVE)
-			AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
+			# TODO: remove once string features typemap is fixed
+			IF (NOT ${NAME} STREQUAL "string_features")
+				AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
+			ENDIF()
 			#AddMetaIntegrationTest(ruby INTERFACE_RUBY) # disabled due to potential swig bug, see https://github.com/shogun-toolbox/shogun/issues/4177
 			AddMetaIntegrationTest(scala INTERFACE_SCALA)
 			#AddMetaIntegrationTest(lua INTERFACE_LUA) # currently doesn't have meta examples
