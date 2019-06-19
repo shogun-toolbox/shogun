@@ -74,8 +74,8 @@ namespace shogun
 				// need to keep this variable so that the vector destructor
 				// isn't called
 				m_argsorted_subset = CMath::argsort(ptr->get_subset_stack()
-                                                            ->get_last_subset()
-                                                            ->get_subset_idx());
+				                                        ->get_last_subset()
+				                                        ->get_subset_idx());
 				m_argsorted_subset_iter = m_argsorted_subset.begin() + idx;
 			}
 
@@ -169,6 +169,18 @@ namespace shogun
 				m_ptr = ptr;
 			}
 
+			subset_iterator(const subset_iterator<T, is_const>& other)
+			{
+				m_idx_holder = other.m_idx_holder;
+				m_ptr = other.m_ptr;
+			}
+
+			subset_iterator(subset_iterator<T, is_const>&& other) noexcept
+			{
+				m_idx_holder = std::move(other.m_idx_holder);
+				m_ptr = other.m_ptr;
+			}
+
 			subset_iterator<T, is_const>& operator++()
 			{
 				m_idx_holder->increment();
@@ -218,10 +230,7 @@ namespace shogun
 		auto begin()
 		{
 			auto* this_casted = static_cast<IterableSubsetContainer*>(this);
-			if (this_casted->get_subset_stack()->get_last_subset() != nullptr)
-				return subset_iterator<decltype(this_casted)>(this_casted);
-			else
-				return subset_iterator<decltype(this_casted)>(this_casted);
+			return subset_iterator<decltype(this_casted)>(this_casted);
 		}
 
 		/**

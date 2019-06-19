@@ -44,6 +44,7 @@ template<class T> class SGVector : public SGReferencedData
 
 	public:
 		typedef RandomIterator<T> iterator;
+		typedef ConstRandomIterator<T> const_iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
@@ -176,6 +177,12 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Returns an iterator to the element following the last element of the container. */
 		iterator end() noexcept { return iterator(vector + vlen); }
+
+		/** Returns a const iterator to the first element of the container. */
+		const_iterator begin() const noexcept { return const_iterator(vector); }
+
+		/** Returns a const iterator to the element following the last element of the container. */
+		const_iterator end() const noexcept { return const_iterator(vector + vlen); }
 
 		SGVector<T>& operator=(const SGVector<T>&);
 
