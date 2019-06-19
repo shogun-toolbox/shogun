@@ -458,10 +458,6 @@ namespace shogun {
 			{
 				return compare_impl_eq(lhs, rhs);
 			}
-			else if constexpr (traits::is_comparable<T>::value)
-			{
-				return (lhs == rhs);
-			}
 			else if constexpr (traits::is_container<T>::value)
 			{
 				if (lhs.size() != rhs.size())
@@ -475,10 +471,15 @@ namespace shogun {
 						return false;
 					}
 				}
+				return true;
 			}
 			else if constexpr (traits::is_pair<T>::value)
 			{
 				return compare(lhs.first, rhs.first) && compare(lhs.second, rhs.second);
+			}
+			else if constexpr (traits::is_comparable<T>::value)
+			{
+				return (lhs == rhs);
 			}
 			else if constexpr (traits::is_functional<T>::value)
 			{
