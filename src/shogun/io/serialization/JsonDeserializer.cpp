@@ -125,6 +125,11 @@ public:
 		v->imag(complex_pair[1].GetDouble());
 		m_value_stack.pop();
 	}
+	void on(std::string* v) override
+	{
+		*v = next_element<std::string>(&ValueType::GetString);
+		SG_SDEBUG("reading std::string: %s", v->c_str());
+	}
 	void on(CSGObject** v) override
 	{
 		SG_SDEBUG("reading SGObject: ");

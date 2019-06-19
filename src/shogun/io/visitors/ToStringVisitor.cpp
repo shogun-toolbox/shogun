@@ -29,6 +29,10 @@ void ToStringVisitor::on(int16_t *v) {
 	stream() << *v << " ";
 }
 
+void ToStringVisitor::on(std::string *v) {
+	stream() << *v << " ";
+}
+
 void ToStringVisitor::on(CSGObject **v) {
 	if (*v) {
 		stream() << (*v)->get_name() << "(...) ";
