@@ -11,6 +11,8 @@
 %rename(StreamingFile) CStreamingFile;
 %rename(CSVFile) CCSVFile;
 %rename(LibSVMFile) CLibSVMFile;
+%rename(Serializer) CSerializer;
+%rename(Deserializer) CDeserializer;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
 %rename(BitserySerializer) CBitserySerializer;
 %rename(BitseryDeserializer) CBitseryDeserializer;

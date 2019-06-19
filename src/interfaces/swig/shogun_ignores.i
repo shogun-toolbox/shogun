@@ -173,8 +173,10 @@
 %ignore shogun::CSGDQN_combine_and_clip;
 %ignore shogun::CSGDQN_compute_ratio;
 
-%ignore shogun::io::CSerializer;
-%ignore shogun::io::CDeserializer;
+%ignore shogun::io::CSerializer::attach;
+%ignore shogun::io::CSerializer::stream;
+%ignore shogun::io::CDeserializer::attach;
+%ignore shogun::io::CDeserializer::stream;
 
 %ignore shogun::CMosek;
 
