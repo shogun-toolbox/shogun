@@ -201,7 +201,7 @@ def serialization_string_kernels(n_data, num_shifts, size):
 
     # assert outputs are close
     for i in range(len(out)):
-        assert abs(out[i] - out2[i] < 0.000001)
+        assert (abs(out[i] - out2[i]) < 0.000001)
 
     #print("all checks passed.")
 

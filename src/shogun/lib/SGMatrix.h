@@ -16,8 +16,9 @@
 #include <shogun/util/iterators.h>
 #include <shogun/lib/SGReferencedData.h>
 
-#include <memory>
 #include <atomic>
+#include <initializer_list>
+#include <memory>
 
 namespace Eigen
 {
@@ -115,6 +116,18 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * @param ncols number of columns in the matrix
 		 */
 		SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols);
+
+		/**
+		 * Constructor for creating SGMatrix with an initializer list.
+		 * As an example:
+		 *  SGMatrix<T> m {{1.0, 1.0}, {2.0, 2.0}};
+		 *
+		 * Each element in the initializer list is a column vector as SGMatrix
+		 * is column oriented!
+		 *
+		 * @param list initializer list of initializer lists
+		 */
+		SGMatrix(const std::initializer_list<std::initializer_list<T>>& list);
 
 		/** Wraps a matrix around the data of an Eigen3 matrix */
 		SGMatrix(EigenMatrixXt& mat);

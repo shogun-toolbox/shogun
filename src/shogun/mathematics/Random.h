@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Viktor Gal, Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -88,89 +88,86 @@ namespace shogun
 				return random_64() & ((uint64_t(-1)<<1)>>1);
 			}
 
-			/** generate an unsigned 64bit integer in the range
+			/** generate an unsigned 64bit signed value in the range
 			 * [min_value, max_value] (closed interval!)
 			 *
 			 * @param min_value minimum value
 			 * @param max_value maximum value
 			 * @return random number
 			 */
-			inline uint64_t random(uint64_t min_value, uint64_t max_value)
+			template <typename I>
+			inline typename std::enable_if_t<
+				std::is_integral<I>::value &&
+				std::is_unsigned<I>::value &&
+				sizeof(I) >= 8, I>
+			random(I min_value, I max_value) const
 			{
 				return min_value + random_64() % (max_value-min_value+1);
 			}
 
-			/** generate an signed 64bit integer in the range
+			/** generate an signed 64bit signed value in the range
 			 * [min_value, max_value] (closed interval!)
 			 *
 			 * @param min_value minimum value
 			 * @param max_value maximum value
 			 * @return random number
 			 */
-			inline int64_t random(int64_t min_value, int64_t max_value)
+			template <typename I>
+			inline typename std::enable_if_t<
+				std::is_integral<I>::value &&
+				std::is_signed<I>::value &&
+				sizeof(I) >= 8, I>
+			random(I min_value, I max_value) const
 			{
 				return min_value + random_s64() % (max_value-min_value+1);
 			}
 
-			/** generate an unsigned signed 32bit integer in the range
+			/** generate an signed 32bit signed value in the range
 			 * [min_value, max_value] (closed interval!)
 			 *
 			 * @param min_value minimum value
 			 * @param max_value maximum value
 			 * @return random number
 			 */
-			inline uint32_t random(uint32_t min_value, uint32_t max_value)
-			{
-				return min_value + random_32() % (max_value-min_value+1);
-			}
-
-			/** generate an signed 32bit integer in the range
-			 * [min_value, max_value] (closed interval!)
-			 *
-			 * @param min_value minimum value
-			 * @param max_value maximum value
-			 * @return random number
-			 */
-			inline int32_t random(int32_t min_value, int32_t max_value)
+			template <typename I>
+			inline typename std::enable_if_t<
+				std::is_integral<I>::value &&
+				std::is_signed<I>::value &&
+				sizeof(I) == 4, I>
+			random(I min_value, I max_value) const
 			{
 				return min_value + random_s32() % (max_value-min_value+1);
 			}
 
-			/** generate an 32bit floating point number in the range
+			/** generate an unsigned 32bit signed value in the range
 			 * [min_value, max_value] (closed interval!)
 			 *
 			 * @param min_value minimum value
 			 * @param max_value maximum value
 			 * @return random number
 			 */
-			inline float32_t random(float32_t min_value, float32_t max_value)
+			template <typename I>
+			inline typename std::enable_if_t<
+				std::is_integral<I>::value &&
+				std::is_unsigned<I>::value &&
+				sizeof(I) == 4, I>
+			random(I min_value, I max_value) const
 			{
-				return min_value + ((max_value-min_value) * static_cast<float32_t>(random_close()));
+				return min_value + random_32() % (max_value-min_value+1);
 			}
 
-			/** generate an 64bit floating point number in the range
+			/** generate an floating point value in the range
 			 * [min_value, max_value] (closed interval!)
 			 *
 			 * @param min_value minimum value
 			 * @param max_value maximum value
 			 * @return random number
 			 */
-			inline float64_t random(float64_t min_value, float64_t max_value)
+			template <typename I>
+			inline typename std::enable_if_t<std::is_floating_point<I>::value, I>
+			random(I min_value, I max_value) const
 			{
-				return min_value + ((max_value-min_value) * random_close());
-			}
-
-			/** generate an 96-128bit floating point number (depending on the
-			 * size of floatmax_t) in the range
-			 * [min_value, max_value] (closed interval!)
-			 *
-			 * @param min_value minimum value
-			 * @param max_value maximum value
-			 * @return random number
-			 */
-			inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
-			{
-				return min_value + ((max_value-min_value) * random_close());
+				return min_value + ((max_value-min_value) * static_cast<I>(random_close()));
 			}
 
 			/**

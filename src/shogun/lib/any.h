@@ -209,6 +209,7 @@ namespace shogun {
 		virtual void on(floatmax_t*) = 0;
 		virtual void on(complex128_t*) = 0;
 		virtual void on(CSGObject**) = 0;
+		virtual void on(std::string*) = 0;
 		virtual void enter_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void enter_vector(index_t* size) = 0;
 		virtual void enter_std_vector(size_t* size) = 0;

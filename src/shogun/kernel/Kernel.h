@@ -872,6 +872,7 @@ class CKernel : public CSGObject
 		 * @return object casted to CKernel, NULL if not possible
 		 */
 		static CKernel* obtain_from_generic(CSGObject* kernel);
+
 	protected:
 		/** set property
 		 *

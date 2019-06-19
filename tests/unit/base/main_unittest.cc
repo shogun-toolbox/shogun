@@ -84,7 +84,6 @@ int main(int argc, char** argv)
 	::testing::AddGlobalTestEnvironment(regression_test_env);
 
 	init_shogun_with_defaults();
-	sg_io->set_loglevel(MSG_WARN);
 
 	int ret = RUN_ALL_TESTS();
 	exit_shogun();

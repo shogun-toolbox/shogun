@@ -14,7 +14,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 
-#include <dirent.h>
 #include <string.h>
 #include <locale.h>
 #include <sys/types.h>
@@ -67,16 +66,6 @@ enum EMessageLocation
 
 #ifdef DARWIN
 #include <Availability.h>
-#ifndef __MAC_10_8
-#define __MAC_10_8 1080
-#endif
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_8
-#define CONST_DIRENT_T struct dirent
-#else
-#define CONST_DIRENT_T const struct dirent
-#endif // Lion or earlier
-#else //DARWIN
-#define CONST_DIRENT_T const struct dirent
 #endif //DARWIN
 
 #define SG_SET_LOCALE_C setlocale(LC_ALL, "C")
@@ -453,34 +442,6 @@ class SGIO
 				sg_io->disable_syntax_highlighting();
 		}
 
-		/** set directory name
-		 *
-		 * @param dirname new directory name
-		 */
-		static inline void set_dirname(const char* dirname)
-		{
-#ifdef _MSC_VER
-			strncpy_s(directory_name, FBUFSIZE, dirname, strlen(dirname));
-#else
-			strncpy(directory_name, dirname, FBUFSIZE);
-#endif
-		}
-
-		/** concatenate directory and filename
-		 * ( non thread safe )
-		 *
-		 * @param filename new filename
-		 * @return concatenated directory and filename
-		 */
-        static char* concat_filename(const char* filename);
-
-		/** filter
-		 *
-		 * @param d directory entry
-		 * @return 1 if d is a readable file
-		 */
-		static int filter(CONST_DIRENT_T* d);
-
 		/**
 		 * Return a C string from the substring
 		 * @param s substring
@@ -580,11 +541,6 @@ class SGIO
 		static const char* message_strings_highlighted[NUM_LOG_LEVELS];
 		/** message strings */
 		static const char* message_strings[NUM_LOG_LEVELS];
-
-        /** file buffer */
-        static char file_buffer[FBUFSIZE];
-        /** directory name (for filter function) */
-        static char directory_name[FBUFSIZE];
 
 	private:
 		RefCount* m_refcount;

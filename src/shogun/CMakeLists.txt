@@ -144,11 +144,6 @@ IF (${USE_GPL_SHOGUN})
     target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
 ENDIF()
 
-# add bundled libraries to dependency
-if(SHOGUN_DEPENDS)
-  add_dependencies(libshogun ${SHOGUN_DEPENDS})
-endif()
-
 # add target for static library if enabled
 if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
@@ -163,7 +158,7 @@ if (LIBSHOGUN_BUILD_STATIC)
   ENDIF()
 
   if(MSVC)
-    target_link_libraries(shogun-static PUBLIC winmm.lib)
+    target_link_libraries(shogun-static PUBLIC winmm.lib Shlwapi.lib)
   endif()
 ENDIF()
 
@@ -176,15 +171,8 @@ IF(MSVC)
     )
   ENDIF()
 
-  # bundle dirent
-  include(external/MSDirent)
-  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
-    $<BUILD_INTERFACE:${MSDIRENT_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include/shogun/third_party/MSDirent>
-  )
-
-  target_link_libraries(shogun PUBLIC winmm)
-  target_link_libraries(shogun_deps INTERFACE winmm)
+  target_link_libraries(shogun PUBLIC winmm Shlwapi)
+  target_link_libraries(shogun_deps INTERFACE winmm Shlwapi)
 ENDIF()
 
 ########################### compiler capabilities
@@ -362,6 +350,11 @@ SHOGUN_DEPENDENCIES(
   CONFIG_FLAG USE_GLPK)
 
 SHOGUN_DEPENDENCIES(
+  LIBRARY LibArchive
+  SCOPE PRIVATE
+  CONFIG_FLAG HAVE_LIBARCHIVE)
+
+SHOGUN_DEPENDENCIES(
   LIBRARY CPLEX
   SCOPE PRIVATE
   CONFIG_FLAG USE_CPLEX)
@@ -403,27 +396,12 @@ IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
   ENDFOREACH()
 ENDIF()
 
-# JSON
-OPTION(BUNDLE_JSON "Bundle JSON" OFF)
-IF(BUNDLE_JSON)
-  # FIXME: BUNDLING IS NOT PROPER!
-  # see how eigen is being done
-  include(external/JSON)
-  SET(HAVE_JSON 1)
-  LIST(APPEND INCLUDES ${JSON_INCLUDE_DIRS})
-  SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${JSON_LDFLAGS})
-ELSE()
-  SHOGUN_DEPENDENCIES(
-    LIBRARY JSON
-    SCOPE PUBLIC
-    CONFIG_FLAG HAVE_JSON
-    VERSION 0.11)
-ENDIF()
+# RapidJSON
+include(external/RapidJSON)
+SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE ${RAPIDJSON_INCLUDE_DIR})
 
-SHOGUN_DEPENDENCIES(
-  LIBRARY LibXml2
-  SCOPE PUBLIC
-  CONFIG_FLAG HAVE_XML)
+include(external/bitsery)
+SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE ${BITSERY_INCLUDE_DIR})
 
 if (NOT WIN32)
   # FIXME: HDF5 linking on WIN32 is broken.
@@ -541,6 +519,11 @@ OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
 #kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles
 OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles" ON)
+
+# add bundled libraries to dependency
+if(SHOGUN_DEPENDS)
+  add_dependencies(libshogun ${SHOGUN_DEPENDS})
+endif()
 
 OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
 ################## linker optimisations

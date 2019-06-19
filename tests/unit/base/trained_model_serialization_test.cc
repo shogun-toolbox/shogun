@@ -7,8 +7,11 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableHdf5File.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/BitserySerializer.h>
+#include <shogun/io/serialization/BitseryDeserializer.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/stream/FileOutputStream.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
@@ -28,11 +31,9 @@ class TrainedModelSerializationFixture : public ::testing::Test
 protected:
 	void SetUp()
 	{
+		fs = io::FileSystemRegistry::instance();
 		machine = new T();
 		SG_REF(machine)
-
-		deserialized_machine = new T();
-		SG_REF(deserialized_machine)
 
 		this->load_data(this->machine->get_machine_problem_type());
 	}
@@ -95,14 +96,18 @@ protected:
 		           ".XXXXXX";
 		generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-		CSerializableHdf5File* file =
-		    new CSerializableHdf5File(filename.c_str(), 'w');
-		cmachine->set_store_model_features(store_model_features);
-		bool save_success = cmachine->save_serializable(file);
-		file->close();
-		SG_FREE(file);
+		SG_REF(cmachine);
+		if (fs->file_exists(filename))
+			return false;
+		std::unique_ptr<io::WritableFile> file;
+		if (fs->new_writable_file(filename, &file))
+			return false;
+		auto fos = some<io::CFileOutputStream>(file.get());
+		auto serializer = some<io::CBitserySerializer>();
+		serializer->attach(fos);
+		serializer->write(wrap<CSGObject>(cmachine));
 
-		return save_success;
+		return true;
 	}
 
 	bool test_serialization(bool store_model_features = false)
@@ -116,7 +121,7 @@ protected:
 		if (!serialize_machine(machine, filename, store_model_features))
 			return false;
 
-		if (!deserialize_machine(deserialized_machine, filename))
+		if (!deserialize_machine(filename))
 			return false;
 
 		auto deserialized_predictions =
@@ -129,23 +134,29 @@ protected:
 		return true;
 	}
 
-	bool deserialize_machine(CMachine* cmachine, std::string filename)
+	bool deserialize_machine(std::string filename)
 	{
-		CSerializableHdf5File* file =
-		    new CSerializableHdf5File(filename.c_str(), 'r');
-		bool load_success = cmachine->load_serializable(file);
+		std::unique_ptr<io::RandomAccessFile> raf;
+		if (fs->new_random_access_file(filename, &raf))
+			return false;
+		auto fis = some<io::CFileInputStream>(raf.get());
+		auto deserializer = some<io::CBitseryDeserializer>();
+		deserializer->attach(fis);
+		auto deser_obj = deserializer->read_object();
+		bool delete_success = !fs->delete_file(filename);
 
-		file->close();
-		SG_FREE(file);
-		int delete_success = unlink(filename.c_str());
-
-		return load_success && (delete_success == 0);
+		deserialized_machine = dynamic_cast<T*>(deser_obj.get());
+		if (deserialized_machine == nullptr)
+			return false;
+		SG_REF(deserialized_machine);
+		return delete_success;
 	}
 
 	CDenseFeatures<float64_t> *train_feats, *test_feats;
 	CLabels* train_labels;
 	T* machine;
 	T* deserialized_machine;
+	io::FileSystemRegistry* fs;
 };
 
 #include "trained_model_serialization_test.h"

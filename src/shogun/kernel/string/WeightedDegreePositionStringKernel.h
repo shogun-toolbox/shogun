@@ -596,6 +596,16 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/// cleanup POIM2
 		void cleanup_POIM2();
 
+		/** Can (optionally) be overridden to post-initialize some
+		 *  member variables which are not PARAMETER::ADD'ed.  Make
+		 *  sure that at first the overridden method
+		 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void load_serializable_post() noexcept(false);
+
 	protected:
 		/** create emtpy tries */
 		void create_empty_tries();
@@ -677,16 +687,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
-		/** Can (optionally) be overridden to post-initialize some
-		 *  member variables which are not PARAMETER::ADD'ed.  Make
-		 *  sure that at first the overridden method
-		 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
-		 *
-		 *  @exception ShogunException Will be thrown if an error
-		 *                             occurres.
-		 */
-		virtual void load_serializable_post() noexcept(false);
-
 	private:
 		/** Do basic initialisations like default settings
 		 * and registering parameters */
@@ -742,7 +742,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		bool block_computation;
 
 		/** (internal) block weights */
-		float64_t* block_weights;
+		SGVector<float64_t> block_weights;
 		/** WeightedDegree kernel type */
 		EWDKernType type;
 		/** which degree */

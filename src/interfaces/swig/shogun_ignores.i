@@ -173,40 +173,10 @@
 %ignore shogun::CSGDQN_combine_and_clip;
 %ignore shogun::CSGDQN_compute_ratio;
 
-%ignore shogun::CSerializableFile::read_cont_begin;
-%ignore shogun::CSerializableFile::read_cont_end;
-%ignore shogun::CSerializableFile::read_item_begin;
-%ignore shogun::CSerializableFile::read_item_end;
-%ignore shogun::CSerializableFile::read_scalar;
-%ignore shogun::CSerializableFile::read_sgserializable_begin;
-%ignore shogun::CSerializableFile::read_sgserializable_end;
-%ignore shogun::CSerializableFile::read_sparse_begin;
-%ignore shogun::CSerializableFile::read_sparse_end;
-%ignore shogun::CSerializableFile::read_sparseentry_begin;
-%ignore shogun::CSerializableFile::read_sparseentry_end;
-%ignore shogun::CSerializableFile::read_string_begin;
-%ignore shogun::CSerializableFile::read_string_end;
-%ignore shogun::CSerializableFile::read_stringentry_begin;
-%ignore shogun::CSerializableFile::read_stringentry_end;
-%ignore shogun::CSerializableFile::read_type_begin;
-%ignore shogun::CSerializableFile::read_type_end;
-%ignore shogun::CSerializableFile::write_cont_begin;
-%ignore shogun::CSerializableFile::write_cont_end;
-%ignore shogun::CSerializableFile::write_item_begin;
-%ignore shogun::CSerializableFile::write_item_end;
-%ignore shogun::CSerializableFile::write_scalar;
-%ignore shogun::CSerializableFile::write_sgserializable_begin;
-%ignore shogun::CSerializableFile::write_sgserializable_end;
-%ignore shogun::CSerializableFile::write_sparse_begin;
-%ignore shogun::CSerializableFile::write_sparse_end;
-%ignore shogun::CSerializableFile::write_sparseentry_begin;
-%ignore shogun::CSerializableFile::write_sparseentry_end;
-%ignore shogun::CSerializableFile::write_string_begin;
-%ignore shogun::CSerializableFile::write_string_end;
-%ignore shogun::CSerializableFile::write_stringentry_begin;
-%ignore shogun::CSerializableFile::write_stringentry_end;
-%ignore shogun::CSerializableFile::write_type_begin;
-%ignore shogun::CSerializableFile::write_type_end;
+%ignore shogun::io::CSerializer::attach;
+%ignore shogun::io::CSerializer::stream;
+%ignore shogun::io::CDeserializer::attach;
+%ignore shogun::io::CDeserializer::stream;
 
 %ignore shogun::CMosek;
 

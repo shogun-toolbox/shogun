@@ -261,32 +261,20 @@ class Translator:
             storing
         """
         storage = "sg_storage"
-        storageFile = "sg_storage_file"
+        storageFormat = "sg_serializer"
 
-        # TODO: handle directories
-        storageFilename = {
-            "Expr": {"StringLiteral": "{}.dat".format(programName)}
-        }
-        # 'w'
-        storageFilemode = {"Expr": {"CharLiteral": 'w'}}
         storageComment = {"Comment": " Serialize output for integration testing (automatically generated)"}
         storageInit = {"Init": [{"ObjectType": "DynamicObjectArray"},
                                 {"Identifier": storage},
                                 {"ArgumentList": []}]}
-        storageFileInit = {
-            "Init": [{"ObjectType": "SerializableAsciiFile"},
-                     {"Identifier": storageFile},
-                     {"ArgumentList": [storageFilename, storageFilemode]}]
-        }
 
         statementList.append({"Statement": "\n"})
         statementList.append(storageComment)
         statementList.append({"Statement": storageInit})
-        statementList.append({"Statement": storageFileInit})
 
         for vartypeAST, varname in varsToStore:
             # avoid storing itself
-            if varname in (storage, storageFile):
+            if varname in (storage, storageFormat):
                 continue
 
             varnameExpr = {"Expr": {"StringLiteral": varname}}
@@ -316,13 +304,30 @@ class Translator:
             expression = {"Expr": methodCall}
             statementList.append({"Statement": expression})
 
+
+        storageFormatInit = {
+            "Init": [{"ObjectType": "JsonSerializer"},
+                     {"Identifier": storageFormat},
+                     {"ArgumentList": []}]
+        }
+
+        # TODO: handle directories
+        storageFilename = {
+            "Expr": {"StringLiteral": "{}.dat".format(programName)}
+        }
+
+        # serialize(storageFilename, storage, serializer);
         storageSerialize = {
-            "Expr": {"MethodCall": [
-                {"Identifier": storage},
-                {"Identifier": "save_serializable"},
-                {"ArgumentList": [{"Expr": {"Identifier": storageFile}}]}
+            "Expr": {"GlobalCall": [
+                {"Identifier": "serialize"},
+                {"ArgumentList": [
+                    storageFilename,
+                    {"Expr": {"Identifier": storage}},
+                    {"Expr": {"Identifier": storageFormat}}
+                ]}
             ]}
         }
+        statementList.append({"Statement": storageFormatInit})
         statementList.append({"Statement": storageSerialize})
 
     def dependenciesString(self, allClasses, interfacedClasses, enums,

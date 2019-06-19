@@ -87,8 +87,8 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 	SGMatrix<float64_t> data_2(dim, n_2);
 	std::iota(data_2.matrix, data_2.matrix + data_2.size(), data_2.size());
 
-	auto features_1=some<CDenseFeatures<float64_t> >(data_1);
-	auto features_2=some<CDenseFeatures<float64_t> >(data_2);
+	auto features_1=some<CDenseFeatures<float64_t>>(data_1);
+	auto features_2=some<CDenseFeatures<float64_t>>(data_2);
 
 	SGVector<index_t> subset_1(n_1/2);
 	subset_1.random(0, n_1-1);

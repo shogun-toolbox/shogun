@@ -41,13 +41,18 @@ class RefCount;
 class SGIO;
 class Parallel;
 class Parameter;
-class CSerializableFile;
+class ParameterObserverInterface;
 class ObservedValue;
 class ParameterObserver;
 class CDynamicObjectArray;
 
 template <class T>
 class ObservedValueTemplated;
+	namespace io
+	{
+		class CDeserializer;
+		class CSerializer;
+	}
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -223,33 +228,22 @@ public:
 	 */
 	void unset_generic();
 
-	/** prints registered parameters out
-	 *
-	 *	@param prefix prefix for members
-	 */
-	virtual void print_serializable(const char* prefix="");
-
 	/** Save this object to file.
 	 *
-	 * @param file where to save the object; will be closed during
-	 * returning if PREFIX is an empty string.
-	 * @param prefix prefix for members
+	 * @param ser where to save the object;
 	 * @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool save_serializable(CSerializableFile* file,
-			const char* prefix="");
+	virtual bool serialize(io::CSerializer* ser);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
 	 *  be used!
 	 *
-	 *  @param file where to load from
-	 *  @param prefix prefix for members
+	 *  @param deser where to load from
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool load_serializable(CSerializableFile* file,
-			const char* prefix="");
+	virtual bool deserialize(io::CDeserializer* deser);
 
 	/** set the io object
 	 *
@@ -743,7 +737,7 @@ public:
 		return m_string_to_enum_map;
 	}
 
-protected:
+public:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
@@ -780,6 +774,27 @@ protected:
 	 */
 	virtual void save_serializable_post() noexcept(false);
 
+	inline bool get_load_serializable_pre() const
+	{
+		return m_load_pre_called;
+	}
+
+	inline bool get_load_serializable_post() const
+	{
+		return m_load_post_called;
+	}
+
+	inline bool get_save_serializable_pre() const
+	{
+		return m_save_pre_called;
+	}
+
+	inline bool get_save_serializable_post() const
+	{
+		return m_save_post_called;
+	}
+
+protected:
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by put() and retrieved by
 	 * get().
@@ -955,6 +970,7 @@ public:
 	std::string string_enum_reverse_lookup(
 			const std::string& param, machine_int_t value) const;
 
+	void visit_parameter(const BaseTag& _tag, AnyVisitor* v) const;
 protected:
 	/** Returns an empty instance of own type.
 	 *

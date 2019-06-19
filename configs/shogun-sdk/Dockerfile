@@ -8,14 +8,14 @@ RUN printf "deb http://ppa.launchpad.net/timsc/swig-3.0.12/ubuntu xenial main\nd
 
 RUN apt-get update -qq && apt-get upgrade -y && \
     apt-get install -qq --force-yes --no-install-recommends make gcc-7 g++-7 swig \
-    libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
+    libc6-dev libbz2-dev ccache libarpack2-dev libatlas-base-dev \
     libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev \
-    libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
+    libnlopt-dev liblpsolve55-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev python3-dev python3-numpy python3-matplotlib python3-scipy \
     python3-jinja2 python3-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang-6.0 \
     openjdk-8-jdk ruby ruby-dev python3-ply sphinx-doc python3-pip \
-    exuberant-ctags clang-format-3.8 libcolpack-dev lcov \
+    exuberant-ctags clang-format-3.8 libcolpack-dev rapidjson-dev lcov \
     protobuf-compiler libprotobuf-dev googletest
 RUN apt-get -t stretch-backports install -qq --force-yes --no-install-recommends cmake
 

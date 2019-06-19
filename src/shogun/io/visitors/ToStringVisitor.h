@@ -41,6 +41,8 @@ namespace shogun {
 		virtual void on(float64_t *v);
 		virtual void on(floatmax_t *v);
 
+		virtual void on(std::string *v);
+
 		virtual void on(CSGObject **v);
 
 		virtual void on(char *string);

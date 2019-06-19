@@ -335,7 +335,6 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			CKernel::set_subkernel_weights(weights);
 		}
 
-	protected:
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 		 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
@@ -388,6 +387,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			CKernel::save_serializable_post();
 		}
 
+protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
 		 * in the corresponding feature object
