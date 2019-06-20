@@ -5,7 +5,7 @@
 
 namespace shogun
 {
-	namespace random
+	namespace rng
 	{
 		/** Reorders the elements in [first,  last) randomly
 		 *

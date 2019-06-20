@@ -39,9 +39,6 @@
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/RandomMixin.h>
-#include <shogun/mathematics/NormalDistribution.h>
-
 
 namespace shogun
 {
@@ -60,7 +57,7 @@ namespace shogun
  * \f$\Sigma=LL^T\f$.
  */
 
-class CGaussianDistribution: public RandomMixin<CProbabilityDistribution>
+class CGaussianDistribution: public CProbabilityDistribution
 {
 public:
 	/** Default constructor */
@@ -136,8 +133,6 @@ private:
 	void init();
 
 protected:
-	NormalDistribution<float64_t> m_normal_dist;
-
 	/** Mean */
 	SGVector<float64_t> m_mean;
 

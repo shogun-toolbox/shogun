@@ -14,6 +14,8 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
+#include <shogun/mathematics/RandomMixin.h>
+
 
 namespace shogun
 {
@@ -22,7 +24,7 @@ class CDistanceMachine;
 /**
   Base Class for different KMeans clustering implementations.
   */
-class CKMeansBase : public CDistanceMachine
+class CKMeansBase : public RandomMixin<CDistanceMachine>
 {
 	public:
 		/** default constructor */

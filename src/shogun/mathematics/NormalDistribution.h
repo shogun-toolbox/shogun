@@ -77,7 +77,7 @@ namespace shogun
 				// 'tail' path (above).
 				float64_t x = u2 * m_uint32ToU * m_x[i];
 				if (m_y[i - 1] +
-				        ((m_y[i] - m_y[i - 1]) * random::random_half_open(prng)) <
+				        ((m_y[i] - m_y[i - 1]) * rng::random_half_open(prng)) <
 				    GaussianPdfDenorm(x))
 				{
 					return x * sign;
@@ -97,8 +97,8 @@ namespace shogun
 			float64_t m_R_reciprocal = 1.0 / m_R;
 			do
 			{
-				x = -std::log(random::random_half_open(prng)) * m_R_reciprocal;
-				y = -std::log(random::random_half_open(prng));
+				x = -std::log(rng::random_half_open(prng)) * m_R_reciprocal;
+				y = -std::log(rng::random_half_open(prng));
 			} while (y + y < x * x);
 			return m_R + x;
 		}
