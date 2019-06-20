@@ -119,14 +119,14 @@ TEST(RandomMixin, reproducibility_test)
 	mock_random->put("seed", 123);
 	EXPECT_EQ(mock_random->get<int32_t>("seed"), 123);
 
-	std::array<float64_t, 100> values1;
+	std::array<decltype(mock_random->sample()), 100> values1;
 	for(auto& val : values1)
 		val = mock_random->sample();
 
 	mock_random->put("seed", 345);
 	EXPECT_EQ(mock_random->get<int32_t>("seed"), 345);
 
-	std::array<float64_t, 100> values2;
+	std::array<decltype(mock_random->sample()), 100> values2;
 	for(auto& val : values2)
 		val = mock_random->sample();
 

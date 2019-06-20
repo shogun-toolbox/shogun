@@ -4,6 +4,7 @@
 #include <shogun/lib/Lock.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 #include <array>
 #include <type_traits>
@@ -76,7 +77,7 @@ namespace shogun
 				// 'tail' path (above).
 				float64_t x = u2 * m_uint32ToU * m_x[i];
 				if (m_y[i - 1] +
-				        ((m_y[i] - m_y[i - 1]) * random_half_open(prng)) <
+				        ((m_y[i] - m_y[i - 1]) * random::random_half_open(prng)) <
 				    GaussianPdfDenorm(x))
 				{
 					return x * sign;
@@ -96,22 +97,10 @@ namespace shogun
 			float64_t m_R_reciprocal = 1.0 / m_R;
 			do
 			{
-				x = -std::log(random_half_open(prng)) * m_R_reciprocal;
-				y = -std::log(random_half_open(prng));
+				x = -std::log(random::random_half_open(prng)) * m_R_reciprocal;
+				y = -std::log(random::random_half_open(prng));
 			} while (y + y < x * x);
 			return m_R + x;
-		}
-
-		/**
-		 * Get random
-		 *
-		 * @return a float64_t random from [0,1) interval
-		 */
-		template <typename PRNG>
-		float64_t random_half_open(PRNG& prng) const
-		{
-			return (prng() - PRNG::min()) /
-			       (PRNG::max() - PRNG::min() + float64_t(1.0));
 		}
 
 		/**
