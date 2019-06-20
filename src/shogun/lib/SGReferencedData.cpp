@@ -22,6 +22,11 @@ SGReferencedData::SGReferencedData(const SGReferencedData &orig)
 	ref();
 }
 
+SGReferencedData::SGReferencedData(SGReferencedData&& orig) noexcept: m_refcount(orig.m_refcount)
+{
+    orig.m_refcount = nullptr;
+}
+
 SGReferencedData& SGReferencedData::operator= (const SGReferencedData &orig)
 {
 	if (this == &orig)

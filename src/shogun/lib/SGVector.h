@@ -82,6 +82,9 @@ template<class T> class SGVector : public SGReferencedData
 		/** Copy constructor */
 		SGVector(const SGVector &orig);
 
+		/** Move constructor */
+		SGVector(SGVector&& orig) noexcept;
+
 		/** Check whether data is stored on GPU
 		 *
 		 * @return true if vector is on GPU

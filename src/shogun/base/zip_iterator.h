@@ -7,6 +7,7 @@
 #ifndef SHOGUN_ZIP_ITERATOR_H
 #define SHOGUN_ZIP_ITERATOR_H
 
+#include <shogun/base/macros.h>
 #include <tuple>
 
 namespace shogun
@@ -14,62 +15,65 @@ namespace shogun
 	namespace zip_iterator_detail
 	{
 		template <typename... Args1, typename... Args2, size_t... Idx>
-		bool iterators_equal(
-		    std::tuple<Args1...>& container1,
-		    const std::tuple<Args2...>& container2, std::index_sequence<Idx...>)
+		SG_FORCED_INLINE bool iterators_equal(
+		    std::tuple<Args1...>& iterators1,
+		    const std::tuple<Args2...>& iterators2, std::index_sequence<Idx...>)
 		{
 			return (
-			    (std::get<Idx>(container1) == std::get<Idx>(container2)) &&
+			    (std::get<Idx>(iterators1) == std::get<Idx>(iterators2)) &&
 			    ...);
 		}
 
 		template <typename... Args, size_t... Idx>
-		void increment_iterators(
-		    std::tuple<Args...>& container, std::index_sequence<Idx...>)
+		SG_FORCED_INLINE void increment_iterators(
+		    std::tuple<Args...>& iterators, std::index_sequence<Idx...>)
 		{
-			((++std::get<Idx>(container)), ...);
+			((++std::get<Idx>(iterators)), ...);
 		}
 
 		template <typename... Args, size_t... Idx>
-		auto dereference_iterators(
-		    std::tuple<Args...>& container, std::index_sequence<Idx...>)
+		SG_FORCED_INLINE auto dereference_iterators(
+		    std::tuple<Args...>& iterators, std::index_sequence<Idx...>)
 		{
-			return std::make_tuple(*(std::get<Idx>(container))...);
+			return std::make_tuple(*(std::get<Idx>(iterators))...);
 		}
 
 		template <typename T>
-		auto get_begin(T& container) -> decltype(container.begin())
+		SG_FORCED_INLINE auto get_begin(T& container)
+		    -> decltype(container.begin())
 		{
 			return container.begin();
 		}
 
 		template <typename T>
-		auto get_begin(T& container) -> decltype(container->begin())
+		SG_FORCED_INLINE auto get_begin(T& container)
+		    -> decltype(container->begin())
 		{
 			return container->begin();
 		}
 
 		template <typename T>
-		auto get_end(T& container) -> decltype(container.end())
+		SG_FORCED_INLINE auto get_end(T& container) -> decltype(container.end())
 		{
 			return container.end();
 		}
 
 		template <typename T>
-		auto get_end(T& container) -> decltype(container->end())
+		SG_FORCED_INLINE auto get_end(T& container)
+		    -> decltype(container->end())
 		{
 			return container->end();
 		}
 
 		template <typename... Args, size_t... Idx>
-		auto containers_begin(
+		SG_FORCED_INLINE auto containers_begin(
 		    std::tuple<Args...>& container, std::index_sequence<Idx...>)
 		{
 			return std::make_tuple((get_begin(std::get<Idx>(container)))...);
 		}
 
 		template <typename... Args, size_t... Idx>
-		auto containers_end(
+		SG_FORCED_INLINE auto containers_end(
 		    std::tuple<Args...>& container, std::index_sequence<Idx...>)
 		{
 			return std::make_tuple((get_end(std::get<Idx>(container)))...);
@@ -83,27 +87,29 @@ namespace shogun
 		{
 		}
 
-		template <typename... ZipTypeArgs>
+		template <typename... IteratorTypes>
 		class ZipIterator
 		{
 		public:
 			using iterator_category = std::forward_iterator_tag;
 
-			ZipIterator(std::tuple<ZipTypeArgs...>&& values)
-			    : m_value_tuple(std::move(values))
+
+			ZipIterator(std::tuple<IteratorTypes...>&& iterators)
+			    : m_iterators_tuple(std::move(iterators))
 			{
 			}
 
-			ZipIterator<ZipTypeArgs...>& operator++()
+			ZipIterator<IteratorTypes...>& operator++()
 			{
 				zip_iterator_detail::increment_iterators(
-				    m_value_tuple, std::index_sequence_for<ZipTypeArgs...>{});
+				    m_iterators_tuple,
+				    std::index_sequence_for<IteratorTypes...>{});
 				return *this;
 			}
 
-			const ZipIterator<ZipTypeArgs...> operator++(int)
+			const ZipIterator<IteratorTypes...> operator++(int)
 			{
-				ZipIterator<ZipTypeArgs...> retval(this);
+				ZipIterator<IteratorTypes...> retval(this);
 				++(this);
 				return retval;
 			}
@@ -111,14 +117,15 @@ namespace shogun
 			auto operator*()
 			{
 				return zip_iterator_detail::dereference_iterators(
-				    m_value_tuple, std::index_sequence_for<ZipTypeArgs...>{});
+				    m_iterators_tuple,
+				    std::index_sequence_for<IteratorTypes...>{});
 			}
 
 			bool operator==(const ZipIterator& other)
 			{
 				return zip_iterator_detail::iterators_equal(
-				    m_value_tuple, other.m_value_tuple,
-				    std::index_sequence_for<ZipTypeArgs...>{});
+				    m_iterators_tuple, other.m_iterators_tuple,
+				    std::index_sequence_for<IteratorTypes...>{});
 			}
 
 			bool operator!=(const ZipIterator& other)
@@ -127,15 +134,16 @@ namespace shogun
 			}
 
 		private:
-			std::tuple<ZipTypeArgs...> m_value_tuple;
+			std::tuple<IteratorTypes...> m_iterators_tuple;
 		};
 
 		// conveniently gcc doesn't need a deduction guide
 		// however there is a bug where "subobjects" cannot have a deduction
 		// guide in gcc
 #ifdef __clang__
-		template <typename... ZipTypeArgs>
-		ZipIterator(std::tuple<ZipTypeArgs...>)->ZipIterator<ZipTypeArgs...>;
+		template <typename... IteratorTypes>
+		ZipIterator(std::tuple<IteratorTypes...>)
+		    ->ZipIterator<IteratorTypes...>;
 #endif
 
 		auto begin()
