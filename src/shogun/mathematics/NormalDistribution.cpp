@@ -6,6 +6,11 @@
 
 using namespace shogun;
 
+NormalDistribution<float64_t>::NormalDistribution(param_type param)
+    : NormalDistribution(param.mean, param.stddev)
+{
+}
+
 NormalDistribution<float64_t>::NormalDistribution(
     float64_t mean, float64_t stddev)
     : m_mean(mean), m_stddev(stddev)

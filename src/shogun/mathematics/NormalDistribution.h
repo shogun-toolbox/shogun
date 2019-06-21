@@ -1,7 +1,6 @@
 #ifndef __NORMALDISTRIBUTION_H__
 #define __NORMALDISTRIBUTION_H__
 
-#include <shogun/lib/Lock.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/RandomNamespace.h>
@@ -15,7 +14,7 @@ namespace shogun
 	class NormalDistribution
 	{
 		static_assert(
-		    !std::is_same<T, float64_t>::value,
+		    std::is_same<T, float64_t>::value,
 		    "shogun::NormalDistribution is specialized only for float64_t");
 	};
 
@@ -23,12 +22,44 @@ namespace shogun
 	class NormalDistribution<float64_t>
 	{
 	public:
+		using result_type = float64_t;
+		struct param_type
+		{
+			float64_t mean;
+			float64_t stddev;
+			using distribution_type = NormalDistribution<float64_t>;
+		};
+
+	public:
+		NormalDistribution(param_type param);
+
 		NormalDistribution(float64_t mean = 0, float64_t stddev = 1);
 
 		template <typename PRNG>
 		float64_t operator()(PRNG& prng) const
 		{
 			return m_mean + (std_normal_distrib(prng) * m_stddev);
+		}
+
+		template <typename PRNG>
+		float64_t operator()(PRNG& prng, param_type param)
+		{
+			return param.mean + (std_normal_distrib(prng) * param.stddev);
+		}
+
+		param_type param() const
+		{
+			return param_type{m_mean, m_stddev};
+		}
+
+		void param(param_type param)
+		{
+			m_mean = param.mean;
+			m_stddev = param.stddev;
+		}
+
+		void reset()
+		{
 		}
 
 	protected:
@@ -143,8 +174,8 @@ namespace shogun
 		*/
 		std::array<uint32_t, m_blockCount> m_xComp;
 
-		const float64_t m_mean;
-		const float64_t m_stddev;
+		float64_t m_mean;
+		float64_t m_stddev;
 	};
 } // namespace shogun
 

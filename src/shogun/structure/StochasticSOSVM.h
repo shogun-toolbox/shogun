@@ -114,7 +114,7 @@ private:
 	bool m_do_weighted_averaging;
 
 	/** random seed */
-	uint32_t m_rand_seed;
+	int32_t m_rand_seed;
 
 	/** If set to 0, the algorithm computes the objective after each full
 	 * pass trough the data. If in (0,100) logging happens at a
