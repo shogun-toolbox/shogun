@@ -14,6 +14,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {

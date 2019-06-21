@@ -9,6 +9,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -17,12 +18,12 @@ template<class T> class SGVector;
 /** @brief Abstract template base class that provides an interface for sampling
  * the trace of a linear operator using an abstract sample method
  */
-class CTraceSampler : public CSGObject
+class CTraceSampler : public RandomMixin<CSGObject>
 {
 public:
 	/** default constructor */
 	CTraceSampler()
-	: CSGObject()
+	: RandomMixin<CSGObject>()
 	{
 		init();
 
@@ -35,7 +36,7 @@ public:
 	 * @param dimension the dimension of the sample vectors
 	 */
 	CTraceSampler(index_t dimension)
-	: CSGObject()
+	: RandomMixin<CSGObject>()
 	{
 		init();
 
@@ -56,7 +57,7 @@ public:
 	 * @param idx the index which determines which sample to draw
 	 * @return the sample vector
 	 */
-	virtual SGVector<float64_t> sample(index_t idx) const = 0;
+	virtual SGVector<float64_t> sample(index_t idx) = 0;
 
 	/**
 	 * abstract method for initializing the sampler, number of samples etc,

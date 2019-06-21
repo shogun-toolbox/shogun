@@ -185,7 +185,7 @@ void CProbingSampler::precompute()
 	SG_DEBUG("Leaving\n");
 }
 
-SGVector<float64_t> CProbingSampler::sample(index_t idx) const
+SGVector<float64_t> CProbingSampler::sample(index_t idx)
 {
 	REQUIRE(idx<m_num_samples, "Given index (%d) must be smaller than "
 			"number of samples to draw (%d)\n", idx, m_num_samples);
@@ -197,7 +197,7 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 	{
 		if (m_coloring_vector[i]==idx)
 		{
-			float64_t x=sg_rand->std_normal_distrib();
+			float64_t x=m_normal_dist(m_prng);
 			s[i]=(x>0)-(x<0);
 		}
 	}

@@ -39,7 +39,7 @@ using namespace shogun;
 
 CStochasticGBMachine::CStochasticGBMachine(CMachine* machine, CLossFunction* loss, int32_t num_iterations,
 						float64_t learning_rate, float64_t subset_fraction)
-: CMachine()
+: RandomMixin<CMachine>()
 {
 	init();
 
@@ -282,7 +282,7 @@ CStochasticGBMachine::get_subset(
 	int32_t subset_size=m_subset_frac*(f->get_num_vectors());
 	SGVector<index_t> idx(f->get_num_vectors());
 	idx.range_fill();
-	CMath::permute(idx);
+	random::shuffle(idx, m_prng);
 
 	SGVector<index_t> subset(subset_size);
 	sg_memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));

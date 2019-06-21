@@ -41,7 +41,7 @@ namespace {
 
 };
 
-CFastICA::CFastICA() : CICAConverter()
+CFastICA::CFastICA() : RandomMixin<CICAConverter>()
 {
 	init();
 }
@@ -116,7 +116,7 @@ void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 		for (int i = 0; i < m; i++)
 		{
 			for (int j = 0; j < m; j++)
-				m_mixing_matrix(i,j) = CMath::randn_double();
+				m_mixing_matrix(i,j) = normal_dist(m_prng);
 		}
 	}
 

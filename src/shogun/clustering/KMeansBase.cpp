@@ -67,7 +67,7 @@ void CKMeansBase::set_random_centers()
 
 	SGVector<int32_t> temp=SGVector<int32_t>(lhs_size);
 	SGVector<int32_t>::range_fill_vector(temp, lhs_size, 0);
-	rng::shuffle(temp, m_prng);
+	random::shuffle(temp, m_prng);
 
 	for (int32_t i=0; i<k; i++)
 	{
@@ -234,7 +234,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	min_dist.zero();
 
 	/* First center is chosen at random */
-	int32_t mu=rng::random((int32_t) 0, lhs_size-1, m_prng);
+	int32_t mu=random::random((int32_t) 0, lhs_size-1, m_prng);
 	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
@@ -268,7 +268,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 			float64_t temp_dist=0.0;
 			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);
 			int32_t new_center=0;
-			float64_t prob=rng::random(0.0, 1.0, m_prng);
+			float64_t prob=random::random(0.0, 1.0, m_prng);
 			prob=prob*sum;
 
 			for(int32_t j=0; j<lhs_size; j++)

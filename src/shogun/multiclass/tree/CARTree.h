@@ -37,6 +37,7 @@
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/CARTreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -76,7 +77,7 @@ namespace shogun
  * have gone from the node. \n
  * cf. http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-cart.htm
  */
-class CCARTree : public CTreeMachine<CARTreeNodeData>
+class CCARTree : public RandomMixin<CTreeMachine<CARTreeNodeData>>
 {
 public:
 	/** default constructor */

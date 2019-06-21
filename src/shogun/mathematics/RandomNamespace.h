@@ -1,11 +1,15 @@
+#ifndef __RANDOM_NAMESPACE_H__
+#define __RANDOM_NAMESPACE_H__
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
 #include <algorithm>
+#include <random>
 
 namespace shogun
 {
-	namespace rng
+	namespace random
 	{
 		/** Reorders the elements in [first,  last) randomly
 		 *
@@ -22,9 +26,8 @@ namespace shogun
 		 *
 		 * @param container the container holding the elements
 		 */
-		template <
-		    template <typename> class Container, typename T, typename PRNG>
-		static inline void shuffle(Container<T>& container, PRNG& prng)
+		template <typename Container, typename PRNG>
+		static inline void shuffle(Container& container, PRNG& prng)
 		{
 			shuffle(container.begin(), container.end(), prng);
 		}
@@ -42,7 +45,8 @@ namespace shogun
 		                       typename PRNG::result_type>::type>
 		static inline I random_pos(PRNG& prng)
 		{
-			return (prng() - PRNG::min()) & ((PRNG::result_type(-1) << 1) >> 1);
+			return (prng() - PRNG::min()) &
+			       ((typename PRNG::result_type(-1) << 1) >> 1);
 		}
 
 		/**
@@ -77,8 +81,7 @@ namespace shogun
 		 */
 		template <
 		    typename PRNG, typename U,
-		    typename std::enable_if_t<
-		        std::is_same<U, typename PRNG::result_type>::value>* = nullptr>
+		    typename std::enable_if_t<std::is_unsigned<U>::value>* = nullptr>
 		static inline U random(U min_value, U max_value, PRNG& prng)
 		{
 			return min_value +
@@ -94,9 +97,7 @@ namespace shogun
 		 */
 		template <
 		    typename PRNG, typename S,
-		    typename std::enable_if_t<std::is_same<
-		        S, typename std::make_signed<
-		               typename PRNG::result_type>::type>::value>* = nullptr>
+		    typename std::enable_if_t<std::is_signed<S>::value>* = nullptr>
 		static inline S random(S min_value, S max_value, PRNG& prng)
 		{
 			return min_value + random_pos(prng) % (max_value - min_value + 1);
@@ -117,3 +118,5 @@ namespace shogun
 		}
 	} // namespace random
 } // namespace shogun
+
+#endif // __RANDOM_NAMESPACE_H__

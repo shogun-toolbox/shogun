@@ -62,7 +62,8 @@ struct CQuadraticTimeMMD::Self
 	void init_kernel();
 	SGMatrix<float32_t> get_kernel_matrix();
 
-	SGVector<float64_t> sample_null_spectrum();
+	template <typename PRNG>
+	SGVector<float64_t> sample_null_spectrum(PRNG& prng);
 	SGVector<float64_t> sample_null_permutation();
 	SGVector<float64_t> gamma_fit_null();
 
@@ -96,6 +97,8 @@ struct CQuadraticTimeMMD::Self
 	VarianceH0 variance_h0_job;
 	VarianceH1 variance_h1_job;
 	PermutationMMD permutation_job;
+	
+	NormalDistribution<float64_t> normal_dist;
 
 	static constexpr bool DEFAULT_PRECOMPUTE = true;
 	static constexpr index_t DEFAULT_NUM_EIGENVALUES = 10;
@@ -179,7 +182,7 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	return precomputed_kernel->get_float32_kernel_matrix();
 }
 
-CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
+CQuadraticTimeMMD::CQuadraticTimeMMD() : RandomMixin<CMMD>()
 {
 	init();
 }
@@ -366,7 +369,8 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	return null_samples;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
+template <typename PRNG>
+SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum(PRNG& prng)
 {
 	SG_SDEBUG("Entering\n");
 	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
@@ -404,7 +408,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 		float64_t null_sample=0;
 		for (index_t j=0; j<num_eigenvalues; ++j)
 		{
-			float64_t z_j=CMath::randn_double();
+			float64_t z_j=normal_dist(prng);
 			float64_t multiple=CMath::sq(z_j);
 
 			/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/
@@ -571,7 +575,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	switch (get_null_approximation_method())
 	{
 		case NAM_MMD2_SPECTRUM:
-			null_samples=self->sample_null_spectrum();
+			null_samples=self->sample_null_spectrum(m_prng);
 			break;
 		case NAM_PERMUTATION:
 			null_samples=self->sample_null_permutation();

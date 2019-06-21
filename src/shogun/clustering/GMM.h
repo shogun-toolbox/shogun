@@ -12,6 +12,8 @@
 #include <shogun/distributions/Distribution.h>
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/lib/common.h>
+#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 #include <vector>
 
@@ -30,7 +32,7 @@ namespace shogun
  * The SMEM algorithm is described here:
  * http://mlg.eng.cam.ac.uk/zoubin/papers/uedanc.pdf
  */
-class CGMM : public CDistribution
+class CGMM : public RandomMixin<CDistribution>
 {
 	public:
 		/** default constructor */
@@ -242,6 +244,7 @@ class CGMM : public CDistribution
 		std::vector<CGaussian*> m_components;
 		/** Mixture coefficients */
 		SGVector<float64_t> m_coefficients;
+		NormalDistribution<float64_t> m_normal_dist;
 };
 }
 #endif //_GMM_H__

@@ -34,6 +34,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
 
 using namespace Eigen;
@@ -44,13 +45,13 @@ const float64_t CCARTree::EQ_DELTA=1e-7;
 const float64_t CCARTree::MIN_SPLIT_GAIN=1e-7;
 
 CCARTree::CCARTree()
-: CTreeMachine<CARTreeNodeData>()
+: RandomMixin<CTreeMachine<CARTreeNodeData>>()
 {
 	init();
 }
 
 CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type)
-: CTreeMachine<CARTreeNodeData>()
+: RandomMixin<CTreeMachine<CARTreeNodeData>>()
 {
 	init();
 	set_feature_types(attribute_types);
@@ -58,7 +59,7 @@ CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type)
 }
 
 CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune)
-: CTreeMachine<CARTreeNodeData>()
+: RandomMixin<CTreeMachine<CARTreeNodeData>>()
 {
 	init();
 	set_feature_types(attribute_types);
@@ -568,7 +569,7 @@ index_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	if (subset_size)
 	{
 		num_feats=subset_size;
-		CMath::permute(idx);
+		random::shuffle(idx, m_prng);
 	}
 
 	float64_t max_gain=MIN_SPLIT_GAIN;

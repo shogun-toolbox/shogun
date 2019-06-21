@@ -16,22 +16,24 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/optimization/liblinear/tron.h>
+#include <shogun/mathematics/RandomNamespace.h>
+
 
 using namespace shogun;
 
-CLibLinear::CLibLinear() : CLinearMachine()
+CLibLinear::CLibLinear() : RandomMixin<CLinearMachine>()
 {
 	init();
 }
 
-CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l) : CLinearMachine()
+CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l) : RandomMixin<CLinearMachine>()
 {
 	init();
 	set_liblinear_solver_type(l);
 }
 
 CLibLinear::CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-    : CLinearMachine()
+    : RandomMixin<CLinearMachine>()
 {
 	init();
 	set_C(C, C);
@@ -336,7 +338,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		for (i = 0; i < active_size; i++)
 		{
-			int j = CMath::random(i, active_size - 1);
+			int j = random::random(i, active_size - 1, m_prng);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -549,7 +551,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = CMath::random(j, active_size - 1);
+			int i = random::random(j, active_size - 1, m_prng);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -924,7 +926,7 @@ void CLibLinear::solve_l1r_lr(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = CMath::random(j, active_size - 1);
+			int i = random::random(j, active_size - 1, m_prng);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -1273,7 +1275,7 @@ void CLibLinear::solve_l2r_lr_dual(
 	{
 		for (i = 0; i < l; i++)
 		{
-			int j = CMath::random(i, l - 1);
+			int j = random::random(i, l - 1, m_prng);
 			CMath::swap(index[i], index[j]);
 		}
 		int newton_iter = 0;

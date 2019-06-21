@@ -441,22 +441,24 @@ template <class T> class DynArray
 			current_num_elements=0;
 		}
 
-		/** randomizes the array (not thread safe!) */
-		void shuffle()
+		T* begin()
 		{
-			for (index_t i=0; i<=current_num_elements-1; ++i)
-				std::swap(
-					array[i], 
-					array[CMath::random(i, current_num_elements - 1)]);
+			return array;
 		}
 
-		/** randomizes the array with external random state */
-		void shuffle(CRandom * rand)
+		T* end()
 		{
-			for (index_t i=0; i<=current_num_elements-1; ++i)
-				std::swap(
-					array[i], 
-					array[rand->random(i, current_num_elements - 1)]);
+			return array + current_num_elements;
+		}
+
+		const T* begin() const
+		{
+			return array;
+		}
+
+		const T* end() const
+		{
+			return array + current_num_elements;
 		}
 
 		/** set array with a constant */

@@ -16,14 +16,14 @@
 using namespace shogun;
 
 CBaggingMachine::CBaggingMachine()
-	: CMachine()
+	: RandomMixin<CMachine>()
 {
 	init();
 	register_parameters();
 }
 
 CBaggingMachine::CBaggingMachine(CFeatures* features, CLabels* labels)
-	: CMachine()
+	: RandomMixin<CMachine>()
 {
 	init();
 	register_parameters();
@@ -176,7 +176,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
-		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
+		rnd_indicies.matrix[i] = random::random(0, m_bag_size-1, m_prng);
 
 	auto pb = SG_PROGRESS(range(m_num_bags));
 #pragma omp parallel for

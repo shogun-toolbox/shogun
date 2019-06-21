@@ -12,6 +12,7 @@
 #ifdef HAVE_COLPACK
 
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 namespace shogun
 {
@@ -86,7 +87,7 @@ public:
 	 * @param idx the index
 	 * @return the sample vector
 	 */
-	virtual SGVector<float64_t> sample(index_t idx) const;
+	virtual SGVector<float64_t> sample(index_t idx);
 
 	/** precompute method that sets the num_samples of the base */
 	virtual void precompute();
@@ -112,6 +113,8 @@ private:
 
 	/** coloring variant */
 	EColoringVariant m_coloring;
+
+	NormalDistribution<float64_t> m_normal_dist;
 
 	/** flag to avoid repeated precompute */
 	bool m_is_precomputed;

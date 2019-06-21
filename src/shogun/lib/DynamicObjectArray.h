@@ -21,7 +21,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/Serializable.h>
 #include <shogun/util/converters.h>
-
+#include <shogun/mathematics/RandomNamespace.h>
 
 
 namespace shogun
@@ -322,22 +322,14 @@ class CDynamicObjectArray : public CSGObject
 		/** @return underlying array of pointers */
 		inline CSGObject** get_array() { return m_array.data(); }
 
-		/** shuffles the array (not thread safe!) */
-		inline void shuffle()
+		inline auto begin()
 		{
-			auto rng = std::default_random_engine {};
-			std::shuffle(m_array.begin(), m_array.end(), rng); 
+			return m_array.begin();
 		}
 
-		/** shuffles the array with external random state */
-		inline void shuffle(CRandom * rand)
+		inline auto end()
 		{
-			using DiffType = decltype(m_array)::difference_type;
-			auto first = m_array.begin();
-			auto last = m_array.end();
-			DiffType n = last - first;
-			for (DiffType i = n-1; i > 0; --i)
-				std::swap(first[i], first[rand->random(DiffType(0), i)]);
+			return m_array.end();
 		}
 
 		/** @return object name */

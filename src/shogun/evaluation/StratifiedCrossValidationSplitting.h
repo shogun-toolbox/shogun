@@ -44,9 +44,6 @@ public:
 	/** implementation of the stratified cross-validation splitting strategy */
 	virtual void build_subsets();
 
-	/** custom rng if using cross validation across different threads */
-	CRandom * m_rng;
-
 protected:
 	/* check for "stupid" combinations of label numbers and num_subsets.
 	 * if there are of a class less labels than num_subsets, the class will not

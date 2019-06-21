@@ -38,6 +38,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 #include <tuple>
 
@@ -52,7 +53,7 @@ namespace shogun
  * A concise description of the algorithm implemented can be found in the following link :
  * http://en.wikipedia.org/wiki/Gradient_boosting#Algorithm
  */
-class CStochasticGBMachine : public CMachine
+class CStochasticGBMachine : public RandomMixin<CMachine>
 {
 public:
 	/** Constructor

@@ -41,6 +41,7 @@
 #include <shogun/lib/DynamicArray.h>
 
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -66,7 +67,7 @@ CEPInferenceMethod::CEPInferenceMethod()
 
 CEPInferenceMethod::CEPInferenceMethod(CKernel* kernel, CFeatures* features,
 		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
-		: CInference(kernel, features, mean, labels, model)
+		: RandomMixin<CInference>(kernel, features, mean, labels, model)
 {
 	init();
 }
@@ -238,7 +239,7 @@ void CEPInferenceMethod::update()
 		sweep++;
 
 		// shuffle random permutation
-		CMath::permute(v);
+		random::shuffle(v, m_prng);
 
 		for (index_t j=0; j<n; j++)
 		{

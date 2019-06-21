@@ -88,6 +88,11 @@ namespace shogun
 			return map.at(tag);
 		}
 
+		const AnyParameter& at(const BaseTag& tag) const
+		{
+			return map.at(tag);
+		}
+
 		AnyParameter get(const BaseTag& tag) const
 		{
 			if(!has(tag))

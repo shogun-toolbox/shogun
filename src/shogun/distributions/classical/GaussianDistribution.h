@@ -39,6 +39,7 @@
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -57,7 +58,7 @@ namespace shogun
  * \f$\Sigma=LL^T\f$.
  */
 
-class CGaussianDistribution: public CProbabilityDistribution
+class CGaussianDistribution: public RandomMixin<CProbabilityDistribution>
 {
 public:
 	/** Default constructor */
@@ -87,7 +88,7 @@ public:
 	 * @return matrix with samples (column vectors)
 	 */
 	virtual SGMatrix<float64_t> sample(int32_t num_samples,
-			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>()) const;
+			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>());
 
 	/** Computes the log-pdf for all provided samples. That is
 	 *

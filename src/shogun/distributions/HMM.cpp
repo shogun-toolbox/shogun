@@ -7,6 +7,7 @@
  */
 #include <shogun/distributions/HMM.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/Signal.h>
@@ -19,7 +20,7 @@
 #include <time.h>
 #include <ctype.h>
 
-#define VAL_MACRO log((default_value == 0) ? (CMath::random(MIN_RAND, MAX_RAND)) : default_value)
+#define VAL_MACRO log((default_value == 0) ? (random::random(MIN_RAND, MAX_RAND, m_prng)) : default_value)
 #define ARRAY_SIZE 65336
 
 using namespace shogun;
@@ -179,7 +180,7 @@ CHMM::CHMM()
 }
 
 CHMM::CHMM(CHMM* h)
-: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
@@ -193,7 +194,7 @@ CHMM::CHMM(CHMM* h)
 }
 
 CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
-: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -209,7 +210,7 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 CHMM::CHMM(
 	CStringFeatures<uint16_t>* obs, int32_t p_N, int32_t p_M,
 	float64_t p_PSEUDO)
-: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -224,7 +225,7 @@ CHMM::CHMM(
 }
 
 CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
-: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=0;
@@ -276,7 +277,7 @@ CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
 CHMM::CHMM(
 	int32_t p_N, float64_t* p, float64_t* q, int32_t num_trans,
 	float64_t* a_trans)
-: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
 
@@ -384,7 +385,7 @@ CHMM::CHMM(
 
 
 CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
-: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
@@ -2449,7 +2450,7 @@ void CHMM::init_model_random()
 		sum=0;
 		for (j=0; j<N; j++)
 		{
-			set_a(i,j, CMath::random(MIN_RAND, 1.0));
+			set_a(i,j, random::random(MIN_RAND, 1.0, m_prng));
 
 			sum+=get_a(i,j);
 		}
@@ -2462,7 +2463,7 @@ void CHMM::init_model_random()
 	sum=0;
 	for (i=0; i<N; i++)
 	{
-		set_p(i, CMath::random(MIN_RAND, 1.0));
+		set_p(i, random::random(MIN_RAND, 1.0, m_prng));
 
 		sum+=get_p(i);
 	}
@@ -2474,7 +2475,7 @@ void CHMM::init_model_random()
 	sum=0;
 	for (i=0; i<N; i++)
 	{
-		set_q(i, CMath::random(MIN_RAND, 1.0));
+		set_q(i, random::random(MIN_RAND, 1.0, m_prng));
 
 		sum+=get_q(i);
 	}
@@ -2488,7 +2489,7 @@ void CHMM::init_model_random()
 		sum=0;
 		for (j=0; j<M; j++)
 		{
-			set_b(i,j, CMath::random(MIN_RAND, 1.0));
+			set_b(i,j, random::random(MIN_RAND, 1.0, m_prng));
 
 			sum+=get_b(i,j);
 		}
@@ -2529,7 +2530,7 @@ void CHMM::init_model_defined()
 
 	//initialize a values that have to be learned
 	float64_t *R=SG_MALLOC(float64_t, N);
-	for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
+	for (r=0; r<N; r++) R[r]=random::random(MIN_RAND,1.0, m_prng);
 	i=0; sum=0; k=i;
 	j=model->get_learn_a(i,0);
 	while (model->get_learn_a(i,0)!=-1 || k<i)
@@ -2550,14 +2551,14 @@ void CHMM::init_model_defined()
 			j=model->get_learn_a(i,0);
 			k=i;
 			sum=0;
-			for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
+			for (r=0; r<N; r++) R[r]=random::random(MIN_RAND,1.0, m_prng);
 		}
 	}
 	SG_FREE(R); R=NULL ;
 
 	//initialize b values that have to be learned
 	R=SG_MALLOC(float64_t, M);
-	for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
+	for (r=0; r<M; r++) R[r]=random::random(MIN_RAND,1.0, m_prng);
 	i=0; sum=0; k=0 ;
 	j=model->get_learn_b(i,0);
 	while (model->get_learn_b(i,0)!=-1 || k<i)
@@ -2579,7 +2580,7 @@ void CHMM::init_model_defined()
 			j=model->get_learn_b(i,0);
 			k=i;
 			sum=0;
-			for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
+			for (r=0; r<M; r++) R[r]=random::random(MIN_RAND,1.0, m_prng);
 		}
 	}
 	SG_FREE(R); R=NULL ;
@@ -2625,7 +2626,7 @@ void CHMM::init_model_defined()
 	sum=0;
 	while (model->get_learn_p(i)!=-1)
 	{
-		set_p(model->get_learn_p(i),CMath::random(MIN_RAND,1.0)) ;
+		set_p(model->get_learn_p(i),random::random(MIN_RAND,1.0, m_prng)) ;
 		sum+=get_p(model->get_learn_p(i)) ;
 		i++ ;
 	} ;
@@ -2641,7 +2642,7 @@ void CHMM::init_model_defined()
 	sum=0;
 	while (model->get_learn_q(i)!=-1)
 	{
-		set_q(model->get_learn_q(i),CMath::random(MIN_RAND,1.0)) ;
+		set_q(model->get_learn_q(i),random::random(MIN_RAND,1.0, m_prng)) ;
 		sum+=get_q(model->get_learn_q(i)) ;
 		i++ ;
 	} ;

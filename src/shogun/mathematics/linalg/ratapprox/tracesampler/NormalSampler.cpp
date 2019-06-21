@@ -34,13 +34,13 @@ void CNormalSampler::precompute()
 	m_num_samples=1;
 }
 
-SGVector<float64_t> CNormalSampler::sample(index_t idx) const
+SGVector<float64_t> CNormalSampler::sample(index_t idx)
 {
 	// ignore idx since it doesnt matter, all samples are independent
 	SGVector<float64_t> s(m_dimension);
 
 	for (index_t i=0; i<m_dimension; ++i)
-		s[i]=sg_rand->std_normal_distrib();
+		s[i]=m_normal_dist(m_prng);
 
 	return s;
 }

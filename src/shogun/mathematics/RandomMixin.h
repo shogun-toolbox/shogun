@@ -30,6 +30,7 @@ namespace shogun
 		{
 			std::random_device rd;
 			m_seed = rd();
+			m_prng = PRNG(m_seed);
 
 			Parent::watch_param("seed", &m_seed);
 			Parent::add_callback_function("seed", [&]() {

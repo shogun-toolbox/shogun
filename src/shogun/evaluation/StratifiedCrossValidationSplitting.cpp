@@ -9,21 +9,19 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
 	CSplittingStrategy()
 {
-	m_rng = sg_rand;
 }
 
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
-
-	m_rng = sg_rand;
 }
 
 void CStratifiedCrossValidationSplitting::check_labels() const
@@ -95,7 +93,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 				label_indices.get_element(i);
 
 		// external random state important for threads
-		current->shuffle(m_rng);
+		random::shuffle(current->begin(), current->end(), m_prng);
 
 		SG_UNREF(current);
 	}
@@ -123,5 +121,5 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets (external random state important for threads) */
-	m_subset_indices->shuffle(m_rng);
+	random::shuffle(m_subset_indices->begin(), m_subset_indices->end(), m_prng);
 }
