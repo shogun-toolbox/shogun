@@ -35,18 +35,19 @@
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
 CNeuralLayer::CNeuralLayer()
-: CSGObject()
+: RandomMixin<CSGObject>()
 {
 	init();
 }
 
 
 CNeuralLayer::CNeuralLayer(int32_t num_neurons)
-: CSGObject()
+: RandomMixin<CSGObject>()
 {
 	init();
 	m_num_neurons = num_neurons;
@@ -96,7 +97,7 @@ void CNeuralLayer::dropout_activations()
 		int32_t len = m_num_neurons*m_batch_size;
 		for (int32_t i=0; i<len; i++)
 		{
-			m_dropout_mask[i] = CMath::random(0.0,1.0) >= dropout_prop;
+			m_dropout_mask[i] = random::random(0.0,1.0,m_prng) >= dropout_prop;
 			m_activations[i] *= m_dropout_mask[i];
 		}
 	}

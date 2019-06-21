@@ -11,6 +11,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -31,7 +32,7 @@ namespace shogun
  * * Q(+1) = 1/K + (K-2)/K * P(+1)
  * * Q(-1) = 1/K + (K-2)/K * P(-1)
  */
-class CECOCRandomSparseEncoder: public CECOCEncoder
+class CECOCRandomSparseEncoder: public RandomMixin<CECOCEncoder>
 {
 public:
     /** constructor

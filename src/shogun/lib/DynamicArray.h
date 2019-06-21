@@ -537,22 +537,12 @@ template <class T> class CDynamicArray :public CSGObject
 			return *this;
 		}
 
-		T* begin()
+		inline auto begin()
 		{
 			return m_array.begin();
 		}
 
-		T* end()
-		{
-			return m_array.end();
-		}
-
-		const T* begin() const
-		{
-			return m_array.begin();
-		}
-
-		const T* end() const
+		inline auto end()
 		{
 			return m_array.end();
 		}

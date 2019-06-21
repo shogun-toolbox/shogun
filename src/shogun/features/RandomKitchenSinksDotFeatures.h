@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/features/DotFeatures.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -43,7 +44,7 @@ namespace shogun
  *	http://www.shloosl.com/~ali/random-features/
  *	https://research.microsoft.com/apps/video/dl.aspx?id=103390&l=i
  */
-class CRandomKitchenSinksDotFeatures : public CDotFeatures
+class CRandomKitchenSinksDotFeatures : public RandomMixin<CDotFeatures>
 {
 public:
 

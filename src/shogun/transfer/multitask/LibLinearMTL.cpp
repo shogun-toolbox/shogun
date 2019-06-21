@@ -18,19 +18,20 @@
 #include <shogun/lib/Time.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/transfer/multitask/LibLinearMTL.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
 
 	CLibLinearMTL::CLibLinearMTL()
-: CLinearMachine()
+: RandomMixin<CLinearMachine>()
 {
 	init();
 }
 
 CLibLinearMTL::CLibLinearMTL(
 		float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
+: RandomMixin<CLinearMachine>()
 {
 	init();
 	C1=C;
@@ -260,7 +261,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = CMath::random(i, active_size-1);
+			int j = random::random(i, active_size-1, m_prng);
 			CMath::swap(index[i], index[j]);
 		}
 

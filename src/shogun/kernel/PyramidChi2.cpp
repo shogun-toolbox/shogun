@@ -10,6 +10,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
@@ -28,7 +29,7 @@ CPyramidChi2::CPyramidChi2(
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
-: CDotKernel(size), num_cells(num_cells2),weights(NULL),
+: RandomMixin<CDotKernel>(size), num_cells(num_cells2),weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	 num_randfeats_forwidthcomputation(-1)
 {
@@ -81,7 +82,7 @@ CPyramidChi2::CPyramidChi2(
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
-: CDotKernel(size), num_cells(num_cells2), weights(NULL),
+: RandomMixin<CDotKernel>(size), num_cells(num_cells2), weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	  num_randfeats_forwidthcomputation(-1)
 {
@@ -154,7 +155,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			if (num_randfeats_forwidthcomputation >0)
 			{
 				for(int32_t i=0; i< numind;++i)
-					featindices[i]=CMath::random(0, ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1);
+					featindices[i]=random::random(0, ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1, m_prng);
 			}
 			else
 			{

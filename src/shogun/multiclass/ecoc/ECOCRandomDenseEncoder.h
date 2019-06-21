@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -17,7 +18,7 @@ namespace shogun
 /** Generate random ECOC codebook containing +1 and -1, and
  * select the best one.
  */
-class CECOCRandomDenseEncoder: public CECOCEncoder
+class CECOCRandomDenseEncoder: public RandomMixin<CECOCEncoder>
 {
 public:
 	/** Default constructor */

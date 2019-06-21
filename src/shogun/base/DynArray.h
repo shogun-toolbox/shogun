@@ -33,6 +33,9 @@ template <class T> class DynArray
 	friend class CCommUlongStringKernel;
 
 	public:
+		typedef RandomIterator<T> iterator;
+
+	public:
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
@@ -441,24 +444,14 @@ template <class T> class DynArray
 			current_num_elements=0;
 		}
 
-		T* begin()
+		iterator begin()
 		{
-			return array;
+			return iterator(array);
 		}
 
-		T* end()
+		iterator end()
 		{
-			return array + current_num_elements;
-		}
-
-		const T* begin() const
-		{
-			return array;
-		}
-
-		const T* end() const
-		{
-			return array + current_num_elements;
+			return iterator(array + current_num_elements);
 		}
 
 		/** set array with a constant */

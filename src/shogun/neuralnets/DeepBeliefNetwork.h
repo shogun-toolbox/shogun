@@ -40,6 +40,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/neuralnets/RBM.h>
 #include <shogun/lib/SGMatrixList.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -87,7 +88,7 @@ class CNeuralLayer;
  * neural network
  *
  */
-class CDeepBeliefNetwork : public CSGObject
+class CDeepBeliefNetwork : public RandomMixin<CSGObject>
 {
 public:
 	/** default constructor */

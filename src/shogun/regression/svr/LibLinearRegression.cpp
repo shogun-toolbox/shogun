@@ -12,20 +12,21 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/regression/svr/LibLinearRegression.h>
 
 using namespace shogun;
 
 CLibLinearRegression::CLibLinearRegression() :
-	CLinearMachine()
+	RandomMixin<CLinearMachine>()
 {
 	register_parameters();
 	init_defaults();
 }
 
 CLibLinearRegression::CLibLinearRegression(float64_t C, CDotFeatures* feats, CLabels* labs) :
-	CLinearMachine()
+	RandomMixin<CLinearMachine>()
 {
 	register_parameters();
 	init_defaults();
@@ -231,7 +232,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 		for(i=0; i<active_size; i++)
 		{
-			int j = CMath::random(i, active_size-1);
+			int j = random::random(i, active_size-1, m_prng);
 			CMath::swap(index[i], index[j]);
 		}
 

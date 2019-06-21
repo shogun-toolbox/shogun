@@ -11,6 +11,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -26,7 +27,7 @@ namespace shogun
  * [3] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
-class CStochasticSOSVM : public CLinearStructuredOutputMachine
+class CStochasticSOSVM : public RandomMixin<CLinearStructuredOutputMachine>
 {
 public:
 	/** default constructor */

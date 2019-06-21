@@ -38,6 +38,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -107,7 +108,7 @@ enum ENNOptimizationMethod
  * When implemnting new layer types, the function check_gradients() can be used
  * to make sure the gradient computations are correct.
  */
-class CNeuralNetwork : public CMachine
+class CNeuralNetwork : public RandomMixin<CMachine>
 {
 friend class CDeepBeliefNetwork;
 

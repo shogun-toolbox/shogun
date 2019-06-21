@@ -8,6 +8,9 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/structure/Plif.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
+#include <random>
 
 using namespace shogun;
 
@@ -242,8 +245,9 @@ SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 	return monotonicity;
 }
 
+template <typename PRNG>
 CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
-	int32_t num_features, int32_t num_noise_features)
+	int32_t num_features, int32_t num_noise_features, PRNG& prng)
 {
 	// Number of different states
 	int32_t num_states = 2;
@@ -272,16 +276,16 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 		lab.zero();
 		rnb = num_blocks[0] +
 		      std::ceil(
-		          (num_blocks[1] - num_blocks[0]) * CMath::random(0.0, 1.0)) -
+		          (num_blocks[1] - num_blocks[0]) * random::random(0.0, 1.0, prng)) -
 		      1;
 
 		for ( int32_t j = 0 ; j < rnb ; ++j )
 		{
 			rl = block_len[0] +
 			     std::ceil(
-			         (block_len[1] - block_len[0]) * CMath::random(0.0, 1.0)) -
+			         (block_len[1] - block_len[0]) * random::random(0.0, 1.0, prng)) -
 			     1;
-			rp = std::ceil((exm_len - rl) * CMath::random(0.0, 1.0));
+			rp = std::ceil((exm_len - rl) * random::random(0.0, 1.0, prng));
 
 			for ( int32_t idx = rp-1 ; idx < rp+rl ; ++idx )
 			{
@@ -303,12 +307,13 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t >   d2(d1.vlen);
 	SGVector< int32_t >   lf;
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
+	NormalDistribution<float64_t> normal_dist;
 
 	distort.range_fill();
 	for ( int32_t i = 0 ; i < num_features ; ++i )
 	{
 		lf = ll;
-		CMath::permute(distort);
+		random::shuffle(distort, prng);
 
 		for ( int32_t j = 0 ; j < d1.vlen ; ++j )
 			d1[j] = distort[j];
@@ -321,7 +326,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 
 		int32_t idx = i*signal.num_cols;
 		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
-			signal[idx++] = lf[j] + noise_std*CMath::normal_random((float64_t)0.0, 1.0);
+			signal[idx++] = lf[j] + noise_std*normal_dist(prng);
 	}
 
 	// Substitute some features by pure noise
@@ -329,7 +334,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	{
 		int32_t idx = i*signal.num_cols;
 		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
-			signal[idx++] = noise_std*CMath::normal_random((float64_t)0.0, 1.0);
+			signal[idx++] = noise_std*normal_dist(prng);
 	}
 
 	CMatrixFeatures< float64_t >* features =
@@ -338,4 +343,20 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	int32_t num_obs = 0; // continuous observations, dummy value
 	bool use_plifs = true;
 	return new CHMSVMModel(features, labels, SMT_TWO_STATE, num_obs, use_plifs);
+}
+
+template CHMSVMModel* CTwoStateModel::simulate_data<std::mt19937_64>(int32_t num_exm, int32_t exm_len,
+	int32_t num_features, int32_t num_noise_features, std::mt19937_64& prng);
+
+CHMSVMModel* CTwoStateModel::simulate_data(
+		int32_t num_exm, int32_t exm_len, int32_t num_features,
+		int32_t num_noise_features, int32_t seed)
+{
+	if(seed == -1)
+	{
+		std::random_device rd;
+		seed = rd();
+	}
+	std::mt19937_64 prng(seed); 
+	return CTwoStateModel::simulate_data(num_exm, exm_len, num_features, num_noise_features, prng);
 }

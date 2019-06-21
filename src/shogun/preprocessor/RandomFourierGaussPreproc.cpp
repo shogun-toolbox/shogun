@@ -8,6 +8,7 @@
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <vector>
 #include <algorithm>
 
@@ -59,7 +60,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 }
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
-	CDensePreprocessor<float64_t> () {
+	RandomMixin<CDensePreprocessor<float64_t>> () {
 	dim_feature_space = 1000;
 	dim_input_space = 0;
 	cur_dim_input_space = 0;
@@ -102,7 +103,7 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		const CRandomFourierGaussPreproc & feats) :
-	CDensePreprocessor<float64_t> () {
+	RandomMixin<CDensePreprocessor<float64_t>> () {
 
 	randomcoeff_multiplicative=NULL;
 	randomcoeff_additive=NULL;
@@ -242,7 +243,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	cur_kernelwidth=kernelwidth;
 
 	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
-		randomcoeff_additive[i] = CMath::random((float64_t) 0.0, 2 * pi);
+		randomcoeff_additive[i] = random::random((float64_t) 0.0, 2 * pi, m_prng);
 	}
 
 	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
@@ -251,8 +252,8 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 			float64_t s = 2;
 			while ((s >= 1) ) {
 				// Marsaglia polar for gaussian
-				x1 = CMath::random((float64_t) -1.0, (float64_t) 1.0);
-				x2 = CMath::random((float64_t) -1.0, (float64_t) 1.0);
+				x1 = random::random((float64_t) -1.0, (float64_t) 1.0, m_prng);
+				x2 = random::random((float64_t) -1.0, (float64_t) 1.0, m_prng);
 				s=x1*x1+x2*x2;
 			}
 

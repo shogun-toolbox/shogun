@@ -9,11 +9,12 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/StochasticSOSVM.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
 CStochasticSOSVM::CStochasticSOSVM()
-: CLinearStructuredOutputMachine()
+: RandomMixin<CLinearStructuredOutputMachine>()
 {
 	init();
 }
@@ -23,7 +24,7 @@ CStochasticSOSVM::CStochasticSOSVM(
 		CStructuredLabels* labs,
 		bool do_weighted_averaging,
 		bool verbose)
-: CLinearStructuredOutputMachine(model, labs)
+: RandomMixin<CLinearStructuredOutputMachine>(model, labs)
 {
 	REQUIRE(model != NULL && labs != NULL,
 		"%s::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
@@ -105,7 +106,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		m_debug_multiplier = 100;
 	}
 
-	CMath::init_random(m_rand_seed);
+	put("seed", m_rand_seed);
 
 	// Main loop
 	int32_t k = 0;
@@ -114,7 +115,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		for (int32_t si = 0; si < N; ++si)
 		{
 			// 1) Picking random example
-			int32_t i = CMath::random(0, N-1);
+			int32_t i = random::random(0, N-1, m_prng);
 
 			// 2) solve the loss-augmented inference for point i
 			CResultSet* result = m_model->argmax(m_w, i);

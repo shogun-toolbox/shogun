@@ -116,6 +116,16 @@ namespace shogun
 		{
 			return min_value + ((max_value - min_value) * random_close(prng));
 		}
+
+		/** Fills a container with random values in the range [min, max]
+		 */
+		template <typename Container, typename T, typename PRNG>
+		static inline void fill_random(Container& container, T min, T max, PRNG& prng)
+		{
+			for(auto& val : container)
+				val = random(min, max, prng);
+		}
+
 	} // namespace random
 } // namespace shogun
 

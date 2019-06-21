@@ -42,6 +42,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicArray.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -119,7 +120,7 @@ enum ERBMVisibleUnitType
  * will be stored in visible_state[15:21,:]. Note that the groups are numbered
  * by the order in which they where added to the RBM using add_visible_group()
  */
-class CRBM : public CSGObject
+class CRBM : public RandomMixin<CSGObject>
 {
 friend class CDeepBeliefNetwork;
 

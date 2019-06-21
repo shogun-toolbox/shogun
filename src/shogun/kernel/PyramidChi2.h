@@ -14,6 +14,7 @@
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -24,7 +25,7 @@ namespace shogun
  *
  *
  */
-class CPyramidChi2 : public CDotKernel
+class CPyramidChi2 : public RandomMixin<CDotKernel>
 {
 public:
 	/** default constructor protected to avoid its usage */

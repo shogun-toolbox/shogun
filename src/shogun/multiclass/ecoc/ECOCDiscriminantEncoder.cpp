@@ -10,6 +10,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace std;
 using namespace shogun;
@@ -133,7 +134,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     if (part1.size() <= 1)
         return MI;
 
-    int32_t iclas = CMath::random(0, int32_t(part1.size()-1));
+    int32_t iclas = random::random(0, int32_t(part1.size()-1), m_prng);
     int32_t clas = part1[iclas];
 
     // move clas from part1 to part2

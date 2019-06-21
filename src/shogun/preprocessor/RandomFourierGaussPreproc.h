@@ -12,6 +12,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomMixin.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 
 namespace shogun {
@@ -41,7 +42,7 @@ namespace shogun {
  * 2c) set_dim_input_space(const int32_t dim);
  * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
  */
-class CRandomFourierGaussPreproc: public CDensePreprocessor<float64_t> {
+class CRandomFourierGaussPreproc: public RandomMixin<CDensePreprocessor<float64_t>> {
 public:
 	/** default constructor */
 	CRandomFourierGaussPreproc();

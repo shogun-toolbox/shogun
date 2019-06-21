@@ -11,6 +11,8 @@
 
 #include <shogun/structure/StateModel.h>
 #include <shogun/structure/HMSVMModel.h>
+#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 namespace shogun
 {
@@ -164,7 +166,14 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return a model that contains the data simulated
 		 */
-		static CHMSVMModel* simulate_data(int32_t num_exm, int32_t exm_len, int32_t num_features, int32_t num_noise_features);
+		template <typename PRNG>
+		static CHMSVMModel* simulate_data(
+			int32_t num_exm, int32_t exm_len, int32_t num_features,
+			int32_t num_noise_features, PRNG& prng);
+
+		static CHMSVMModel* simulate_data(
+			int32_t num_exm, int32_t exm_len, int32_t num_features,
+			int32_t num_noise_features, int32_t seed = -1);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "TwoStateModel"; }
