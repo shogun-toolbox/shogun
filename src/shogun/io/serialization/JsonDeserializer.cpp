@@ -364,15 +364,15 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _
 	return obj;
 }
 
-CJsonDeserializer::CJsonDeserializer() : CDeserializer()
+JsonDeserializer::JsonDeserializer() : Deserializer()
 {
 }
 
-CJsonDeserializer::~CJsonDeserializer()
+JsonDeserializer::~JsonDeserializer()
 {
 }
 
-Some<CSGObject> CJsonDeserializer::read_object()
+Some<CSGObject> JsonDeserializer::read_object()
 {
 	CIStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
@@ -386,7 +386,7 @@ Some<CSGObject> CJsonDeserializer::read_object()
 	);
 }
 
-void CJsonDeserializer::read(CSGObject* _this)
+void JsonDeserializer::read(CSGObject* _this)
 {
 	CIStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!

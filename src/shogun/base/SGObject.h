@@ -50,8 +50,8 @@ template <class T>
 class ObservedValueTemplated;
 	namespace io
 	{
-		class CDeserializer;
-		class CSerializer;
+		class Deserializer;
+		class Serializer;
 	}
 
 #ifndef SWIG
@@ -233,7 +233,7 @@ public:
 	 * @param ser where to save the object;
 	 * @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool serialize(io::CSerializer* ser);
+	virtual bool serialize(io::Serializer* ser);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -243,7 +243,7 @@ public:
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool deserialize(io::CDeserializer* deser);
+	virtual bool deserialize(io::Deserializer* deser);
 
 	/** set the io object
 	 *

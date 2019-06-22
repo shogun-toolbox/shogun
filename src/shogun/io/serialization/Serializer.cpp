@@ -11,20 +11,20 @@
 using namespace shogun;
 using namespace shogun::io;
 
-CSerializer::CSerializer() : CSGObject(), m_stream(empty<COutputStream>())
+Serializer::Serializer() : m_stream(empty<COutputStream>())
 {
 }
 
-CSerializer::~CSerializer()
+Serializer::~Serializer()
 {
 }
 
-void CSerializer::attach(Some<COutputStream> stream)
+void Serializer::attach(Some<COutputStream> stream)
 {
     m_stream = stream;
 }
 
-Some<COutputStream> CSerializer::stream() const
+Some<COutputStream> Serializer::stream() const
 {
 	REQUIRE(m_stream, "Serializer has no stream, attach() it to a stream");
 	return m_stream;
@@ -54,7 +54,7 @@ void shogun::io::post_serialize(CSGObject* obj) noexcept(false)
 	}
 }
 
-void shogun::io::serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer)
+void shogun::io::serialize(const std::string& _path, CSGObject* _obj, Serializer* _serializer)
 {
 	auto fs = io::FileSystemRegistry::instance();
 	std::error_condition ec;

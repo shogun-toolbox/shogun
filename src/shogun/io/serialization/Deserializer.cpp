@@ -11,20 +11,20 @@
 using namespace shogun;
 using namespace shogun::io;
 
-CDeserializer::CDeserializer() : CSGObject(), m_stream(empty<CInputStream>())
+Deserializer::Deserializer() : m_stream(empty<CInputStream>())
 {
 }
 
-CDeserializer::~CDeserializer()
+Deserializer::~Deserializer()
 {
 }
 
-void CDeserializer::attach(Some<CInputStream> stream)
+void Deserializer::attach(Some<CInputStream> stream)
 {
 	m_stream = stream;
 }
 
-Some<CInputStream> CDeserializer::stream() const
+Some<CInputStream> Deserializer::stream() const
 {
 	REQUIRE(m_stream, "Deserializer has no stream, attach() it to a stream");
 	return m_stream;
@@ -54,7 +54,7 @@ void shogun::io::post_deserialize(CSGObject* obj) noexcept(false)
 	}
 }
 
-CSGObject* shogun::io::deserialize(const std::string& _path, CDeserializer* _deser)
+CSGObject* shogun::io::deserialize(const std::string& _path, Deserializer* _deser)
 {
 	auto fs = io::FileSystemRegistry::instance();
 	std::error_condition ec;

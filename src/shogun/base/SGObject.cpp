@@ -386,14 +386,14 @@ void CSGObject::unset_generic()
 	m_generic = PT_NOT_GENERIC;
 }
 
-bool CSGObject::serialize(io::CSerializer* ser)
+bool CSGObject::serialize(io::Serializer* ser)
 {
 	REQUIRE(ser != nullptr, "Serializer format object should be non-null\n");
 	ser->write(wrap(this));
 	return true;
 }
 
-bool CSGObject::deserialize(io::CDeserializer* deser)
+bool CSGObject::deserialize(io::Deserializer* deser)
 {
 	REQUIRE(deser != nullptr, "Deserializer format object should be non-null\n");
 	deser->read(this);

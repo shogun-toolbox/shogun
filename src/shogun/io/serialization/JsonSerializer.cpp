@@ -315,15 +315,15 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGOb
 
 using JsonWriter = Writer<COutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
 
-CJsonSerializer::CJsonSerializer() : CSerializer()
+JsonSerializer::JsonSerializer() : Serializer()
 {
 }
 
-CJsonSerializer::~CJsonSerializer()
+JsonSerializer::~JsonSerializer()
 {
 }
 
-void CJsonSerializer::write(Some<CSGObject> object) noexcept(false)
+void JsonSerializer::write(Some<CSGObject> object) noexcept(false)
 {
 	COutputStreamAdapter adapter { stream() };
 	JsonWriter writer(adapter);

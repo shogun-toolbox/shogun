@@ -12,11 +12,11 @@ namespace shogun
 {
 	namespace io
 	{
-		class CDeserializer : public CSGObject
+		class Deserializer
 		{
 		public:
-			CDeserializer();
-			virtual ~CDeserializer();
+			Deserializer();
+			virtual ~Deserializer();
 			virtual void attach(Some<CInputStream> stream);
 			virtual Some<CSGObject> read_object() = 0;
 			virtual void read(CSGObject* _this) = 0;
@@ -26,7 +26,7 @@ namespace shogun
 			Some<CInputStream> m_stream;
 		};
 
-		CSGObject* deserialize(const std::string& _path, CDeserializer* _deser);
+		CSGObject* deserialize(const std::string& _path, Deserializer* _deser);
 		void pre_deserialize(CSGObject* obj) noexcept(false);
 		void post_deserialize(CSGObject* obj) noexcept(false);
 

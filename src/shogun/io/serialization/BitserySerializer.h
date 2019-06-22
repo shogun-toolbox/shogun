@@ -11,17 +11,12 @@ namespace shogun
 {
 	namespace io
 	{
-		class CBitserySerializer : public CSerializer
+		class BitserySerializer : public Serializer
 		{
 		public:
-			CBitserySerializer();
-			~CBitserySerializer() override;
+			BitserySerializer();
+			~BitserySerializer() override;
 			virtual void write(Some<CSGObject> object) noexcept(false);
-
-			virtual const char* get_name() const
-			{
-				return "BitserySerializer";
-			}
 		};
 	}
 }

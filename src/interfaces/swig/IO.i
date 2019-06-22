@@ -11,14 +11,8 @@
 %rename(StreamingFile) CStreamingFile;
 %rename(CSVFile) CCSVFile;
 %rename(LibSVMFile) CLibSVMFile;
-%rename(Serializer) CSerializer;
-%rename(Deserializer) CDeserializer;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
-%rename(BitserySerializer) CBitserySerializer;
-%rename(BitseryDeserializer) CBitseryDeserializer;
 %newobject BitseryDeserializer::read;
-%rename(JsonSerializer) CJsonSerializer;
-%rename(JsonDeserializer) CJsonDeserializer;
 %newobject JsonDeserializer::read;
 %rename(ByteArrayInputStream) CByteArrayInputStream;
 %rename(ByteArrayOutputStream) CByteArrayOutputStream;

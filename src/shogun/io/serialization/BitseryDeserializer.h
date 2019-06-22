@@ -18,11 +18,6 @@ namespace shogun
 			~CBitseryDeserializer() override;
 			Some<CSGObject> read_object() override;
 			void read(CSGObject* _this) override;
-
-			const char* get_name() const override
-			{
-				return "BitseryDeserializer";
-			}
 		};
 	}
 }

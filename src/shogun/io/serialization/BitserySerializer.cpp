@@ -126,15 +126,15 @@ void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CS
 using OutputAdapter = AdapterWriter<OutputStreamAdapter, bitsery::DefaultConfig>;
 using BitserySerializer = BasicSerializer<OutputAdapter>;
 
-CBitserySerializer::CBitserySerializer() : CSerializer()
+BitserySerializer::BitserySerializer() : Serializer()
 {
 }
 
-CBitserySerializer::~CBitserySerializer()
+BitserySerializer::~BitserySerializer()
 {
 }
 
-void CBitserySerializer::write(Some<CSGObject> object) noexcept(false)
+void BitserySerializer::write(Some<CSGObject> object) noexcept(false)
 {
 	OutputStreamAdapter adapter { stream() };
  	BitserySerializer serializer {std::move(adapter)};
