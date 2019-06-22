@@ -36,6 +36,7 @@
 #include <shogun/lib/SGVector.h>
 
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 
@@ -62,10 +63,11 @@ void CNeuralLinearLayer::initialize_parameters(SGVector<float64_t> parameters,
 		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
+	NormalDistribution<float64_t> normal_dist;
 	for (int32_t i=0; i<m_num_parameters; i++)
 	{
 		// random the parameters
-		parameters[i] = CMath::normal_random(0.0, sigma);
+		parameters[i] = normal_dist(m_prng, {0.0, sigma});
 
 		// turn regularization off for the biases, on for the weights
 		parameter_regularizable[i] = (i>=m_num_neurons);

@@ -233,8 +233,9 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	SGVector<float64_t> min_dist=SGVector<float64_t>(lhs_size);
 	min_dist.zero();
 
+	UniformIntDistribution<int32_t> uniform_int_dist(0, lhs_size-1);
 	/* First center is chosen at random */
-	int32_t mu=random::random((int32_t) 0, lhs_size-1, m_prng);
+	int32_t mu=uniform_int_dist(m_prng);
 	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
@@ -254,6 +255,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 #endif //HAVE_LINALG
 	int32_t n_rands = 2 + int32_t(std::log(k));
 
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	/* Choose centers with weighted probability */
 	for(int32_t i=1; i<k; i++)
 	{
@@ -268,7 +270,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 			float64_t temp_dist=0.0;
 			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);
 			int32_t new_center=0;
-			float64_t prob=random::random(0.0, 1.0, m_prng);
+			float64_t prob=uniform_real_dist(m_prng);
 			prob=prob*sum;
 
 			for(int32_t j=0; j<lhs_size; j++)

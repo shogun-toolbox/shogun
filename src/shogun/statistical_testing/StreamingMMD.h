@@ -37,6 +37,7 @@
 #include <functional>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -52,15 +53,16 @@ namespace internal
 
 class KernelManager;
 class MaxTestPower;
-class MaxCrossValidation;
+template <typename> class MaxCrossValidation;
 class WeightedMaxTestPower;
 
 }
 
-class CStreamingMMD : public CMMD
+class CStreamingMMD : public RandomMixin<CMMD>
 {
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;
+	template <typename U>
 	friend class internal::MaxCrossValidation;
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;

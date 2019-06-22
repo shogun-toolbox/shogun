@@ -11,6 +11,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Set.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace shogun;
 
@@ -195,11 +196,11 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 	 * range */
 	if (m_values)
 	{
-
+		UniformIntDistribution<int32_t> uniform_int_dist(0, m_values_length-1);
 		index_t i = 0;
 
 		if (is_rand)
-			i = CMath::random(0, m_values_length-1);
+			i = uniform_int_dist(m_prng);
 
 		Parameter* p=new Parameter();
 
@@ -212,7 +213,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < param_vect->vlen; j++)
 			{
 				if (is_rand)
-					i = CMath::random(0, m_values_length-1);
+					i = uniform_int_dist(m_prng);
 				(*param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add(param_vect, m_node_name);
@@ -225,7 +226,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < *m_vector_length; j++)
 			{
 				if (is_rand)
-					i = CMath::random(0, m_values_length-1);
+					i = uniform_int_dist(m_prng);
 				(param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
@@ -240,7 +241,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < param_vect->vlen; j++)
 			{
 				if (is_rand)
-					i = CMath::random(0, m_values_length-1);
+					i = uniform_int_dist(m_prng);
 				(*param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add(param_vect, m_node_name);
@@ -253,7 +254,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < *m_vector_length; j++)
 			{
 				if (is_rand)
-					i = CMath::random(0, m_values_length-1);
+					i = uniform_int_dist(m_prng);
 				(param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);

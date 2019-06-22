@@ -10,6 +10,7 @@
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 #include <shogun/evaluation/Evaluation.h>
 
@@ -175,8 +176,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	m_oob_indices = new CDynamicObjectArray();
 
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
+	UniformIntDistribution<int32_t> uniform_int_dist(0, m_bag_size-1);
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
-		rnd_indicies.matrix[i] = random::random(0, m_bag_size-1, m_prng);
+		rnd_indicies.matrix[i] = uniform_int_dist(m_prng);
 
 	auto pb = SG_PROGRESS(range(m_num_bags));
 #pragma omp parallel for

@@ -8,7 +8,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/RandomFourierDotFeatures.h>
 #include <shogun/mathematics/NormalDistribution.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 namespace shogun {
 
@@ -85,6 +85,7 @@ float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_
 SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector()
 {
 	NormalDistribution<float64_t> normal_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 2 * CMath::PI);
 	SGVector<float64_t> vec(feats->get_dim_feature_space()+1);
 	switch (kernel)
 	{
@@ -95,7 +96,7 @@ SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector(
 				         std::sqrt(2.0) * normal_dist(m_prng);
 			}
 
-			vec[vec.vlen-1] = random::random(0.0, 2 * CMath::PI, m_prng);
+			vec[vec.vlen-1] = uniform_real_dist(m_prng);
 			break;
 
 		default:

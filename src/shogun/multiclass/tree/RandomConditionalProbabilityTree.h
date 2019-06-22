@@ -11,6 +11,7 @@
 
 #include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 namespace shogun
 {
@@ -21,7 +22,7 @@ class CRandomConditionalProbabilityTree: public RandomMixin<CConditionalProbabil
 {
 public:
     /** constructor */
-	CRandomConditionalProbabilityTree() {}
+	CRandomConditionalProbabilityTree() : m_uniform_real_dist(0.0, 1.0) {}
 
     /** destructor */
 	virtual ~CRandomConditionalProbabilityTree() {}
@@ -36,6 +37,9 @@ protected:
 	 * @return true if should go left, false otherwise
 	 */
 	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex);
+
+private:
+	UniformRealDistribution<float64_t> m_uniform_real_dist;
 };
 
 } /* shogun */

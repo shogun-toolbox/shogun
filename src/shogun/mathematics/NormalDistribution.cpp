@@ -13,7 +13,8 @@ NormalDistribution<float64_t>::NormalDistribution(param_type param)
 
 NormalDistribution<float64_t>::NormalDistribution(
     float64_t mean, float64_t stddev)
-    : m_mean(mean), m_stddev(stddev)
+    : m_mean(mean), m_stddev(stddev),
+	  m_uniform_real_dist(0, 1)
 {
 	// Initialise rectangle position data.
 	// m_x[i] and m_y[i] describe the top-right position ox Box i.

@@ -45,6 +45,7 @@
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
@@ -355,8 +356,9 @@ void CDeepBeliefNetwork::reset_chain()
 {
 	SGMatrix<float64_t> s = m_states[m_num_layers-2];
 
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (int32_t i=0; i<s.num_rows*s.num_cols; i++)
-		s[i] = random::random(0.0,1.0, m_prng) > 0.5;
+		s[i] = uniform_real_dist(m_prng) > 0.5;
 }
 
 CNeuralNetwork* CDeepBeliefNetwork::convert_to_neural_network(
@@ -436,9 +438,10 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 
 	if (sample_states && index>0)
 	{
+		UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 		int32_t len = m_layer_sizes->element(index)*m_batch_size;
 		for (int32_t i=0; i<len; i++)
-			result[i] = random::random(0.0,1.0, m_prng) < result[i];
+			result[i] = uniform_real_dist(m_prng) < result[i];
 	}
 }
 
@@ -467,8 +470,9 @@ void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 
 	if (sample_states && index>0)
 	{
+		UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 		for (int32_t i=0; i<len; i++)
-			result[i] = random::random(0.0,1.0, m_prng) < result[i];
+			result[i] = uniform_real_dist(m_prng) < result[i];
 	}
 }
 

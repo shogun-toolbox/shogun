@@ -803,7 +803,9 @@ SGVector<float64_t> CGMM::sample()
 {
 	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
 			"must be positive\n", m_components.size());
-	float64_t rand_num = random::random(0.0, 1.0, m_prng);
+	
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
+	float64_t rand_num = uniform_real_dist(m_prng);
 	float64_t cum_sum=0;
 	for (auto i: range(m_coefficients.vlen))
 	{

@@ -17,6 +17,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 
 using namespace shogun;
@@ -326,6 +327,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
+	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -338,7 +340,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		for (i = 0; i < active_size; i++)
 		{
-			int j = random::random(i, active_size - 1, m_prng);
+			int j = uniform_int_dist(m_prng, {i, active_size - 1});
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -540,6 +542,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
+	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -551,7 +554,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = random::random(j, active_size - 1, m_prng);
+			int i = uniform_int_dist(m_prng, {j, active_size - 1});
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -915,6 +918,7 @@ void CLibLinear::solve_l1r_lr(
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
+	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -926,7 +930,7 @@ void CLibLinear::solve_l1r_lr(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = random::random(j, active_size - 1, m_prng);
+			int i = uniform_int_dist(m_prng, {j, active_size - 1});
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -1270,12 +1274,13 @@ void CLibLinear::solve_l2r_lr_dual(
 		index[i] = i;
 	}
 
+	UniformIntDistribution<int> uniform_int_dist;
 	auto pb = SG_PROGRESS(range(10));
 	while (iter < max_iter)
 	{
 		for (i = 0; i < l; i++)
 		{
-			int j = random::random(i, l - 1, m_prng);
+			int j = uniform_int_dist(m_prng, {i, l - 1});
 			CMath::swap(index[i], index[j]);
 		}
 		int newton_iter = 0;

@@ -54,7 +54,7 @@ using std::unique_ptr;
 
 struct CQuadraticTimeMMD::Self
 {
-	Self(CQuadraticTimeMMD&);
+	Self(CQuadraticTimeMMD&, CQuadraticTimeMMD::prng_type& prng);
 
 	void init_statistic_job();
 	void init_permutation_job();
@@ -99,12 +99,13 @@ struct CQuadraticTimeMMD::Self
 	PermutationMMD permutation_job;
 	
 	NormalDistribution<float64_t> normal_dist;
+	CQuadraticTimeMMD::prng_type& prng;
 
 	static constexpr bool DEFAULT_PRECOMPUTE = true;
 	static constexpr index_t DEFAULT_NUM_EIGENVALUES = 10;
 };
 
-CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd)
+CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd, CQuadraticTimeMMD::prng_type& _prng) : owner(mmd), prng(_prng)
 {
 	is_kernel_initialized=false;
 	precompute=DEFAULT_PRECOMPUTE;
@@ -189,7 +190,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD() : RandomMixin<CMMD>()
 
 void CQuadraticTimeMMD::init()
 {
-	self=unique_ptr<Self>(new Self(*this));
+	self=unique_ptr<Self>(new Self(*this, m_prng));
 	self->multi_kernel = shared_ptr<CMultiKernelQuadraticTimeMMD>(
 	    new CMultiKernelQuadraticTimeMMD(this));
 }
@@ -350,7 +351,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	if (precompute)
 	{
 		SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
-		result=permutation_job(kernel_matrix);
+		result=permutation_job(kernel_matrix, prng);
 	}
 	else
 	{
@@ -358,7 +359,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 		if (kernel->get_kernel_type()==K_CUSTOM)
 			SG_SINFO("Precompute is turned off, but provided kernel is already precomputed!\n");
 		auto kernel_functor=internal::Kernel(kernel);
-		result=permutation_job(kernel_functor);
+		result=permutation_job(kernel_functor, prng);
 	}
 
 	SGVector<float64_t> null_samples(result.vlen);

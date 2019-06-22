@@ -70,7 +70,8 @@ struct CrossValidationMMD : PermutationMMD
 		init();
 	}
 
-	void operator()(const KernelManager& kernel_mgr)
+	template <typename PRNG>
+	void operator()(const KernelManager& kernel_mgr, PRNG& prng)
 	{
 		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
 			"Number of rows in the measure matrix (was %d), has to be >= %d*%d = %d!\n",
@@ -118,7 +119,7 @@ struct CrossValidationMMD : PermutationMMD
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(m_permuted_inds);
+						random::shuffle(m_permuted_inds, prng);
 
 						m_stack->add_subset(m_permuted_inds);
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();

@@ -18,7 +18,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/transfer/multitask/LibLinearMTL.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace shogun;
 
@@ -250,6 +250,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
+	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < max_iterations)
 	{
 		COMPUTATION_CONTROLLERS
@@ -261,7 +262,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = random::random(i, active_size-1, m_prng);
+			int j = uniform_int_dist(m_prng, {i, active_size-1});
 			CMath::swap(index[i], index[j]);
 		}
 

@@ -53,7 +53,9 @@ class WithinBlockPermutation
 	typedef float32_t return_type;
 public:
 	WithinBlockPermutation(index_t, index_t, EStatisticType);
-	return_type operator()(const SGMatrix<return_type>& kernel_matrix);
+
+	template <typename PRNG>
+	return_type operator()(const SGMatrix<return_type>& kernel_matrix, PRNG& prng);
 //	return_type operator()(const CGPUMatrix<return_type>& kernel_matrix);
 private:
 	void add_term(float32_t, index_t, index_t);

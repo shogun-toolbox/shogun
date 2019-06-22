@@ -78,8 +78,8 @@ namespace shogun
 			T result;
 			do
 			{
-				auto fraction = T(
-				    (prng() - PRNG::min())) / (PRNG::max() - PRNG::min());
+				auto fraction =
+				    T(prng() - PRNG::min()) / (PRNG::max() - PRNG::min());
 				result = fraction * required_range;
 			} while (result >= required_range);
 

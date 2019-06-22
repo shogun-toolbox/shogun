@@ -1179,7 +1179,7 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 
 	// divide data into V folds randomly
 	SGVector<index_t> subid(num_vecs);
-	random::fill_random(subid, 0, folds-1, m_prng);
+	random::fill_array(subid, (int32_t)0, folds-1, m_prng);
 
 	// for each fold subset
 	std::vector<float64_t> r_cv;

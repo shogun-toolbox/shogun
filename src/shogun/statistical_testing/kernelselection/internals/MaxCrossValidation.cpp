@@ -49,29 +49,37 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-MaxCrossValidation::MaxCrossValidation(KernelManager& km, CMMD* est, const index_t& M, const index_t& K, const float64_t& alp)
-: KernelSelection(km, est), num_runs(M), num_folds(K),  alpha(alp)
+template <typename PRNG>
+MaxCrossValidation<PRNG>::MaxCrossValidation(
+    KernelManager& km, CMMD* est, const index_t& M, const index_t& K,
+    const float64_t& alp, PRNG& _prng)
+    : KernelSelection(km, est), num_runs(M), num_folds(K), alpha(alp),
+      prng(_prng)
 {
 	REQUIRE(num_runs>0, "Number of runs (%d) must be positive!\n", num_runs);
 	REQUIRE(num_folds>0, "Number of folds (%d) must be positive!\n", num_folds);
 	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold (%f) has to be in [0, 1]!\n", alpha);
 }
 
-MaxCrossValidation::~MaxCrossValidation()
+template <typename PRNG>
+MaxCrossValidation<PRNG>::~MaxCrossValidation()
 {
 }
 
-SGVector<float64_t> MaxCrossValidation::get_measure_vector()
+template <typename PRNG>
+SGVector<float64_t> MaxCrossValidation<PRNG>::get_measure_vector()
 {
 	return measures;
 }
 
-SGMatrix<float64_t> MaxCrossValidation::get_measure_matrix()
+template <typename PRNG>
+SGMatrix<float64_t> MaxCrossValidation<PRNG>::get_measure_matrix()
 {
 	return rejections;
 }
 
-void MaxCrossValidation::init_measures()
+template <typename PRNG>
+void MaxCrossValidation<PRNG>::init_measures()
 {
 	const index_t num_kernels=kernel_mgr.num_kernels();
 	if (rejections.num_rows!=num_folds*num_runs || rejections.num_cols!=num_kernels)
@@ -82,7 +90,8 @@ void MaxCrossValidation::init_measures()
 	std::fill(measures.data(), measures.data()+measures.size(), 0);
 }
 
-void MaxCrossValidation::compute_measures()
+template <typename PRNG>
+void MaxCrossValidation<PRNG>::compute_measures()
 {
 	SG_SDEBUG("Performing %d fold cross-validattion!\n", num_folds);
 	const auto num_kernels=kernel_mgr.num_kernels();
@@ -109,7 +118,7 @@ void MaxCrossValidation::compute_measures()
 			auto precomputed_distance=estimator->compute_joint_distance(distance);
 			kernel_mgr.set_precomputed_distance(precomputed_distance);
 			SG_UNREF(distance);
-			compute(kernel_mgr);
+			compute(kernel_mgr, prng);
 			kernel_mgr.unset_precomputed_distance();
 			SG_UNREF(precomputed_distance);
 		}
@@ -124,7 +133,7 @@ void MaxCrossValidation::compute_measures()
 				kernel->init(samples_p_and_q, samples_p_and_q);
 			}
 
-			compute(kernel_mgr);
+			compute(kernel_mgr, prng);
 
 			for (auto k=0; k<num_kernels; ++k)
 			{
@@ -165,7 +174,8 @@ void MaxCrossValidation::compute_measures()
 	}
 }
 
-CKernel* MaxCrossValidation::select_kernel()
+template <typename PRNG>
+CKernel* MaxCrossValidation<PRNG>::select_kernel()
 {
 	init_measures();
 	compute_measures();
@@ -173,4 +183,9 @@ CKernel* MaxCrossValidation::select_kernel()
 	auto max_idx=std::distance(measures.vector, max_element);
 	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);
 	return kernel_mgr.kernel_at(max_idx);
+}
+
+namespace shogun
+{
+	template class MaxCrossValidation<std::mt19937_64>;
 }

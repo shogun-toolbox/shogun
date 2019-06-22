@@ -81,12 +81,12 @@ void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(CDistance* dis
 	}
 }
 
-CMultiKernelQuadraticTimeMMD::CMultiKernelQuadraticTimeMMD() : CSGObject()
+CMultiKernelQuadraticTimeMMD::CMultiKernelQuadraticTimeMMD() : RandomMixin<CSGObject>()
 {
 	self=unique_ptr<Self>(new Self(nullptr));
 }
 
-CMultiKernelQuadraticTimeMMD::CMultiKernelQuadraticTimeMMD(CQuadraticTimeMMD* owner) : CSGObject()
+CMultiKernelQuadraticTimeMMD::CMultiKernelQuadraticTimeMMD(CQuadraticTimeMMD* owner) : RandomMixin<CSGObject>()
 {
 	self=unique_ptr<Self>(new Self(owner));
 }
@@ -260,7 +260,7 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 	self->permutation_job.m_n_y=ny;
    	self->permutation_job.m_num_null_samples=num_null_samples;
 	self->permutation_job.m_stype=stype;
-	SGMatrix<float32_t> result=self->permutation_job(kernel_mgr);
+	SGMatrix<float32_t> result=self->permutation_job(kernel_mgr, m_prng);
 
 	kernel_mgr.unset_precomputed_distance();
 
@@ -293,7 +293,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& 
 	self->permutation_job.m_n_y=ny;
    	self->permutation_job.m_num_null_samples=num_null_samples;
 	self->permutation_job.m_stype=stype;
-	SGVector<float64_t> result=self->permutation_job.p_value(kernel_mgr);
+	SGVector<float64_t> result=self->permutation_job.p_value(kernel_mgr, m_prng);
 
 	kernel_mgr.unset_precomputed_distance();
 

@@ -45,11 +45,12 @@ template <typename T> class SGVector;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <typename PRNG>
 class MaxCrossValidation : public KernelSelection
 {
 public:
-	MaxCrossValidation(KernelManager&, CMMD*, const index_t&, const index_t&, const float64_t&);
-	MaxCrossValidation(const MaxCrossValidation& other)=delete;
+	MaxCrossValidation(KernelManager&, CMMD*, const index_t&, const index_t&, const float64_t&, PRNG&);
+	MaxCrossValidation(const MaxCrossValidation<PRNG>& other)=delete;
 	~MaxCrossValidation();
 	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
 	virtual CKernel* select_kernel() override;
@@ -63,6 +64,8 @@ protected:
 	const float64_t alpha;
 	SGMatrix<float64_t> rejections;
 	SGVector<float64_t> measures;
+
+	PRNG& prng;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

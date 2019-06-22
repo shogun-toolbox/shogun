@@ -212,13 +212,6 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void range_fill(T start=0);
 
-		/** Create random vector
-		 *
-		 * @param min_value [min_value,max_value]
-		 * @param max_value
-		 */
-		void random(T min_value, T max_value);
-
 		/** For a sorted (ascending) vector, gets the index after the first
 		 * element that is smaller than the given one
 		 *
@@ -239,8 +232,6 @@ template<class T> class SGVector : public SGReferencedData
 		/** Range fill vector */
 		static void range_fill_vector(T* vec, int32_t len, T start=0);
 
-		/** Random vector */
-		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
 #endif // SWIG // SWIG should skip this part
 
 		/** Get element at index

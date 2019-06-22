@@ -242,18 +242,20 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 
 	cur_kernelwidth=kernelwidth;
 
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 2 * pi);
 	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
-		randomcoeff_additive[i] = random::random((float64_t) 0.0, 2 * pi, m_prng);
+		randomcoeff_additive[i] = uniform_real_dist(m_prng);
 	}
 
+	uniform_real_dist.param({-1.0, 1.0});
 	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
 		for (int32_t k = 0; k < cur_dim_input_space; ++k) {
 			float64_t x1,x2;
 			float64_t s = 2;
 			while ((s >= 1) ) {
 				// Marsaglia polar for gaussian
-				x1 = random::random((float64_t) -1.0, (float64_t) 1.0, m_prng);
-				x2 = random::random((float64_t) -1.0, (float64_t) 1.0, m_prng);
+				x1 = uniform_real_dist(m_prng);
+				x2 = uniform_real_dist(m_prng);
 				s=x1*x1+x2*x2;
 			}
 

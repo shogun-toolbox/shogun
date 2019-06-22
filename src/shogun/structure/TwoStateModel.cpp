@@ -9,6 +9,7 @@
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/structure/Plif.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <random>
 
@@ -269,23 +270,23 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t > ll(num_exm*exm_len);
 	ll.zero();
 	int32_t rnb, rl, rp;
-
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for ( int32_t i = 0 ; i < num_exm ; ++i)
 	{
 		SGVector< int32_t > lab(exm_len);
 		lab.zero();
 		rnb = num_blocks[0] +
 		      std::ceil(
-		          (num_blocks[1] - num_blocks[0]) * random::random(0.0, 1.0, prng)) -
+		          (num_blocks[1] - num_blocks[0]) * uniform_real_dist(prng)) -
 		      1;
 
 		for ( int32_t j = 0 ; j < rnb ; ++j )
 		{
 			rl = block_len[0] +
 			     std::ceil(
-			         (block_len[1] - block_len[0]) * random::random(0.0, 1.0, prng)) -
+			         (block_len[1] - block_len[0]) * uniform_real_dist(prng)) -
 			     1;
-			rp = std::ceil((exm_len - rl) * random::random(0.0, 1.0, prng));
+			rp = std::ceil((exm_len - rl) * uniform_real_dist(prng));
 
 			for ( int32_t idx = rp-1 ; idx < rp+rl ; ++idx )
 			{

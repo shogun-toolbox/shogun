@@ -37,6 +37,9 @@
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
+#include <shogun/mathematics/RandomNamespace.h>
+
+#include <random>
 
 using namespace shogun;
 using namespace internal;
@@ -75,12 +78,13 @@ void WithinBlockPermutation::add_term(float32_t val, index_t i, index_t j)
 	}
 }
 
-float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km)
+template <typename PRNG>
+float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km, PRNG& prng)
 {
 	SG_SDEBUG("Entering!\n");
 
 	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
-	CMath::permute(permuted_inds);
+	random::shuffle(permuted_inds, prng);
 	for (int i=0; i<permuted_inds.vlen; ++i)
 		inverted_permuted_inds[permuted_inds[i]]=i;
 
@@ -128,3 +132,6 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km)
 	SG_SDEBUG("Leaving!\n");
 	return terms.term[0]+terms.term[1]-2*terms.term[2];
 }
+
+template float32_t WithinBlockPermutation::operator()<std::mt19937_64>(const SGMatrix<float32_t>& km, std::mt19937_64& prng);
+

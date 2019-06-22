@@ -41,71 +41,36 @@ namespace shogun
 			shuffle(container.begin(), container.end(), prng);
 		}
 
-		/**
-		 * Get random
-		 * @return a float64_t random from [0,1] interval
+		/** Fills a container with random values in the range [min, max]
 		 */
-		template <typename PRNG>
-		static inline float64_t random_close(PRNG& prng)
+		template <typename Iterator, typename T, typename PRNG, typename std::enable_if_t<std::is_integral<T>::value>* = nullptr>
+		static inline void
+		fill_array(Iterator first, Iterator last, T min, T max, PRNG& prng)
 		{
-			UniformRealDistribution<float64_t> dist(
-			    0, std::nextafter(1.0, std::numeric_limits<float64_t>::max()));
-			return dist(prng);
+			UniformIntDistribution<T> uniform_int_dist(min, max);
+			for (auto it = first; it != last; ++it)
+				*it = uniform_int_dist(prng);
 		}
 
-		/**
-		 * Get random
-		 *
-		 * @return a float64_t random from [0,1) interval
+		/** Fills a container with random values in the range [min, max]
 		 */
-		template <typename PRNG>
-		static inline float64_t random_half_open(PRNG& prng)
+		template <typename Iterator, typename T, typename PRNG, typename std::enable_if_t<std::is_floating_point<T>::value>* = nullptr>
+		static inline void
+		fill_array(Iterator first, Iterator last, T min, T max, PRNG& prng)
 		{
-			UniformRealDistribution<float64_t> dist(0, 1);
-			return dist(prng);
-		}
-
-		/** generate a signed value in the range
-		 * [min_value, max_value] (closed interval!)
-		 *
-		 * @param min_value minimum value
-		 * @param max_value maximum value
-		 * @return random number
-		 */
-		template <
-		    typename PRNG, typename I,
-		    typename std::enable_if_t<std::is_integral<I>::value>* = nullptr>
-		static inline I random(I min_value, I max_value, PRNG& prng)
-		{
-			UniformIntDistribution<I> dist(min_value, max_value);
-			return dist(prng);
-		}
-
-		/** generate a floating point value in the range
-		 * [min_value, max_value] (closed interval!)
-		 *
-		 * @param min_value minimum value
-		 * @param max_value maximum value
-		 * @return random number
-		 */
-		template <typename PRNG>
-		static inline float64_t
-		random(float64_t min_value, float64_t max_value, PRNG& prng)
-		{
-			UniformRealDistribution<float64_t> dist(min_value, max_value);
-			return dist(prng);
+			UniformRealDistribution<T> uniform_real_dist(min, max);
+			for (auto it = first; it != last; ++it)
+				*it = uniform_real_dist(prng);
 		}
 
 		/** Fills a container with random values in the range [min, max]
 		 */
 		template <typename Container, typename T, typename PRNG>
 		static inline void
-		fill_random(Container& container, T min, T max, PRNG& prng)
+		fill_array(Container& container, T min, T max, PRNG& prng)
 		{
-			for (auto& val : container)
-				val = random(min, max, prng);
+			fill_array(container.begin(), container.end(), min, max, prng);
 		}
-
 	} // namespace random
 } // namespace shogun
 

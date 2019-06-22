@@ -43,6 +43,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 namespace shogun
 {
@@ -460,6 +461,9 @@ protected:
 
 	/** Parameters */
 	SGVector<float64_t> m_params;
+
+private:
+	UniformRealDistribution<float64_t> m_uniform_prob;
 };
 
 }

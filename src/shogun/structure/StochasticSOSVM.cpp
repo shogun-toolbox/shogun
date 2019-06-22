@@ -9,7 +9,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/StochasticSOSVM.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace shogun;
 
@@ -110,12 +110,13 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 
 	// Main loop
 	int32_t k = 0;
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (auto pi : SG_PROGRESS(range(m_num_iter)))
 	{
 		for (int32_t si = 0; si < N; ++si)
 		{
 			// 1) Picking random example
-			int32_t i = random::random(0, N-1, m_prng);
+			int32_t i = uniform_int_dist(m_prng, {0, N-1});
 
 			// 2) solve the loss-augmented inference for point i
 			CResultSet* result = m_model->argmax(m_w, i);

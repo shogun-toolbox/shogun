@@ -12,7 +12,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/regression/svr/LibLinearRegression.h>
 
@@ -225,6 +225,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	}
 
 	auto pb = SG_PROGRESS(range(10));
+	UniformIntDistribution<int> uniform_int_dist;
 	while(iter < m_max_iter)
 	{
 		Gmax_new = 0;
@@ -232,7 +233,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 		for(i=0; i<active_size; i++)
 		{
-			int j = random::random(i, active_size-1, m_prng);
+			int j = uniform_int_dist(m_prng, {i, active_size-1});
 			CMath::swap(index[i], index[j]);
 		}
 

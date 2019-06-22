@@ -14,7 +14,6 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -40,8 +39,9 @@ public:
 	 *
 	 * @return a matrix of (dim+1)-dimension vector points, where vector[dim] corrresponds to the class of the point
 	 */
+	template <typename PRNG>
 	static SGMatrix<float64_t> generate_checkboard_data(int32_t num_classes,
-		int32_t dim, int32_t num_points, float64_t overlap);
+		int32_t dim, int32_t num_points, float64_t overlap, PRNG& prng);
 
 	/** Takes each m samples from two distributions p and q, where each element
 	 * is standard normally distributed, except for the first dimension of q,
@@ -56,8 +56,9 @@ public:
 	 * Make sure that its dimensions fit
 	 * @return matrix with concatenated samples,first p then q
 	 */
+	template <typename PRNG>
 	static SGMatrix<float64_t> generate_mean_data(index_t m, index_t dim,
-			float64_t mean_shift,
+			float64_t mean_shift, PRNG& prng,
 			SGMatrix<float64_t> target=SGMatrix<float64_t>());
 
 	/** Produces samples as in source (g) from Table 3 in [1].
@@ -81,8 +82,9 @@ public:
 	 * Make sure that its dimensions fit
 	 * @return TODO
 	 */
+	template <typename PRNG>
 	static SGMatrix<float64_t> generate_sym_mix_gauss(index_t m,
-			float64_t d, float64_t angle,
+			float64_t d, float64_t angle, PRNG& prng,
 			SGMatrix<float64_t> target=SGMatrix<float64_t>());
 
 	/** Produces samples of gaussians
@@ -102,7 +104,6 @@ public:
 private:
 	/** registers all parameters and initializes variables with defaults */
 	void init();
-
 };
 
 }

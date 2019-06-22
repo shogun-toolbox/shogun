@@ -5,7 +5,7 @@
  */
 
 #include <shogun/structure/FactorGraphDataGenerator.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
@@ -126,12 +126,13 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 	SG_REF(fg);
 
 	// Add factors
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (int32_t y = 0; y < N; ++y)
 		for (int32_t x = 0; x < N; ++x)
 		{
 			SGVector<float64_t> data(2);
-			data[0] = random::random(0.0, 1.0, m_prng);
-			data[1] = random::random(0.0, 1.0, m_prng);
+			data[0] = uniform_real_dist(m_prng);
+			data[1] = uniform_real_dist(m_prng);
 
 			SGVector<int32_t> var_index(1);
 			var_index[0] = y * N + x;
@@ -147,10 +148,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = random::random(0.0, 1.0, m_prng);//E(0,0)->A
-				float64_t C = random::random(0.0, 1.0, m_prng);//E(1,0)->C
-				float64_t B = random::random(0.0, 1.0, m_prng);//E(0,1)->B
-				float64_t D = random::random(0.0, 1.0, m_prng);//E(1,1)->D
+				float64_t A = uniform_real_dist(m_prng);//E(0,0)->A
+				float64_t C = uniform_real_dist(m_prng);//E(1,0)->C
+				float64_t B = uniform_real_dist(m_prng);//E(0,1)->B
+				float64_t D = uniform_real_dist(m_prng);//E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -170,10 +171,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = random::random(0.0, 1.0, m_prng);//E(0,0)->A
-				float64_t C = random::random(0.0, 1.0, m_prng);//E(1,0)->C
-				float64_t B = random::random(0.0, 1.0, m_prng);//E(0,1)->B
-				float64_t D = random::random(0.0, 1.0, m_prng);//E(1,1)->D
+				float64_t A = uniform_real_dist(m_prng);//E(0,0)->A
+				float64_t C = uniform_real_dist(m_prng);//E(1,0)->C
+				float64_t B = uniform_real_dist(m_prng);//E(0,1)->B
+				float64_t D = uniform_real_dist(m_prng);//E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);

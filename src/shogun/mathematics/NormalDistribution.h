@@ -3,7 +3,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 #include <array>
 #include <type_traits>
@@ -108,7 +108,7 @@ namespace shogun
 				// 'tail' path (above).
 				float64_t x = u2 * m_uint32ToU * m_x[i];
 				if (m_y[i - 1] +
-				        ((m_y[i] - m_y[i - 1]) * random::random_half_open(prng)) <
+				        ((m_y[i] - m_y[i - 1]) * m_uniform_real_dist(prng)) <
 				    GaussianPdfDenorm(x))
 				{
 					return x * sign;
@@ -128,8 +128,8 @@ namespace shogun
 			float64_t m_R_reciprocal = 1.0 / m_R;
 			do
 			{
-				x = -std::log(random::random_half_open(prng)) * m_R_reciprocal;
-				y = -std::log(random::random_half_open(prng));
+				x = -std::log(m_uniform_real_dist(prng)) * m_R_reciprocal;
+				y = -std::log(m_uniform_real_dist(prng));
 			} while (y + y < x * x);
 			return m_R + x;
 		}
@@ -174,6 +174,7 @@ namespace shogun
 		*/
 		std::array<uint32_t, m_blockCount> m_xComp;
 
+		UniformRealDistribution<float64_t> m_uniform_real_dist;
 		float64_t m_mean;
 		float64_t m_stddev;
 	};

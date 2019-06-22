@@ -14,6 +14,9 @@ namespace shogun
 	class RandomMixin : public Parent
 	{
 	public:
+		using prng_type = PRNG;
+
+	public:
 		template <typename... T>
 		RandomMixin(T... args) : Parent(args...)
 		{
@@ -32,6 +35,7 @@ namespace shogun
 			m_seed = rd();
 			m_prng = PRNG(m_seed);
 
+			ASSERT(!Parent::has("seed"));
 			Parent::watch_param("seed", &m_seed);
 			Parent::add_callback_function("seed", [&]() {
 				m_prng = PRNG(m_seed);
