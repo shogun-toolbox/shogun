@@ -43,7 +43,7 @@ TEST(NormalDistribution, normal_distribution_test)
 	    linalg::std_deviation(SGMatrix<float64_t>(samples), false)[0];
 
 	EXPECT_NEAR(mean, calculated_mean, 0.05);
-	EXPECT_NEAR(calculated_stddev, stddev, 0.05);
+	EXPECT_NEAR(stddev, calculated_stddev, 0.05);
 	EXPECT_NEAR(percentage_stddev_away, 0.6827, 0.05);
 	EXPECT_NEAR(percentage_2stddev_away, 0.9545, 0.05);
 }

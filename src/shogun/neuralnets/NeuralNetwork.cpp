@@ -35,10 +35,10 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
-#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
@@ -572,15 +572,11 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 	SGMatrix<float64_t> x(m_num_inputs,1);
 	SGMatrix<float64_t> y(get_num_outputs(),1);
 
-	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
-
-	for (int32_t i=0; i<x.num_rows; i++)
-		x[i] = uniform_real_dist(m_prng);
+	random::fill_array(x.begin(), x.begin() + x.num_rows, 0.0, 1.0, m_prng);
 
 	// the outputs are set up in the form of a probability distribution (in case
 	// that is required by the output layer, i.e softmax)
-	for (int32_t i=0; i<y.num_rows; i++)
-		y[i] = uniform_real_dist(m_prng);
+	random::fill_array(y.begin(), y.begin() + y.num_rows, 0.0, 1.0, m_prng);
 
 	float64_t y_sum = SGVector<float64_t>::sum(y.matrix, y.num_rows);
 	for (int32_t i=0; i<y.num_rows; i++)

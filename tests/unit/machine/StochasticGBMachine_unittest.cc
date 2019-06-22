@@ -36,6 +36,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/loss/SquaredLoss.h>
 #include <shogun/machine/StochasticGBMachine.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
 
 using namespace shogun;
@@ -51,8 +52,8 @@ protected:
 	void load_sinusoid_samples()
 	{
 		SGMatrix<float64_t> mat(dim, num_train_samples);
-		SGVector<float64_t>::random_vector(
-		    mat.matrix, num_train_samples, 0, 15);
+		random::fill_array(
+		    mat.matrix, mat.matrix + num_train_samples, 0, 15, prng);
 
 		SGVector<float64_t> labels(num_train_samples);
 		for (int32_t i = 0; i < num_train_samples; i++)
@@ -106,11 +107,13 @@ public:
 	Some<CRegressionLabels> train_labels;
 	Some<CRegressionLabels> test_labels;
 
+	std::mt19937_64 prng;
+
 	StochasticGBMachine()
 	    : train_feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
 	      test_feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
 	      train_labels(Some<CRegressionLabels>::from_raw(nullptr)),
-	      test_labels(Some<CRegressionLabels>::from_raw(nullptr))
+	      test_labels(Some<CRegressionLabels>::from_raw(nullptr)), prng(0)
 	{
 	}
 };

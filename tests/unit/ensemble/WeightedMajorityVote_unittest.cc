@@ -2,6 +2,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -37,10 +38,12 @@ TEST(WeightedMajorityVote, combine_matrix)
 {
 	int32_t num_vectors = 20;
 	int32_t num_classifiers = 5;
+	std::mt19937_64 prng(57);
+
 	SGMatrix<float64_t> ensemble_matrix(num_vectors, num_classifiers);
 	SGVector<float64_t> expected(num_vectors);
 	SGVector<float64_t> weights(num_classifiers);
-	weights.random(0.5, 2.0);
+	random::fill_array(weights, 0.5, 2.0, prng);
 	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
 
 	expected.zero();
@@ -58,8 +61,10 @@ TEST(WeightedMajorityVote, combine_matrix)
 TEST(WeightedMajorityVote, binary_combine_vector)
 {
 	int32_t num_classifiers = 50;
+	std::mt19937_64 prng(57);
+
 	SGVector<float64_t> weights(num_classifiers);
-	weights.random(0.5, 2.0);
+	random::fill_array(weights, 0.5, 2.0, prng);
 	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> expected(2);
@@ -92,8 +97,10 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 TEST(WeightedMajorityVote, multiclass_combine_vector)
 {
 	int32_t num_classifiers = 10;
+	std::mt19937_64 prng(57);
+
 	SGVector<float64_t> weights(num_classifiers);
-	weights.random(0.5, 2.0);
+	random::fill_array(weights, 0.5, 2.0, prng);
 	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> hist(3);

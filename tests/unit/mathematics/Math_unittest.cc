@@ -10,6 +10,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
@@ -411,9 +412,10 @@ TEST(CMath, permute_with_random)
 
 TEST(CMath,misc)
 {
-	CMath::init_random(17);
+	std::mt19937_64 prng(17);
+
 	SGVector<float64_t> a(10);
-	a.random(-1024.0, 1024.0);
+	random::fill_array(a, -1024.0, 1024.0, prng);
 
 	/* test, min, max */
 	int arg_max = 0;

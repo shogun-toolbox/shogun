@@ -185,7 +185,5 @@ CKernel* MaxCrossValidation<PRNG>::select_kernel()
 	return kernel_mgr.kernel_at(max_idx);
 }
 
-namespace shogun
-{
-	template class MaxCrossValidation<std::mt19937_64>;
-}
+
+template class shogun::internal::MaxCrossValidation<std::mt19937_64>;

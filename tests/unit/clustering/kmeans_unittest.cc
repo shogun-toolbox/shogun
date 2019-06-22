@@ -235,6 +235,7 @@ TEST(KMeans, random_centers_init)
 	SG_REF(features);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(3, distance);
+	clustering->put("seed", 2556);
 
 	clustering->train(features);
 	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();

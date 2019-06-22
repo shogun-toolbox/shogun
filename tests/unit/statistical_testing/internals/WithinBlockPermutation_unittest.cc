@@ -45,11 +45,15 @@
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
 
+#include <functional>
+
 using namespace shogun;
 using namespace Eigen;
 
 TEST(WithinBlockPermutation, biased_full)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
@@ -78,7 +82,8 @@ TEST(WithinBlockPermutation, biased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_BIASED_FULL);
+	using namespace std::placeholders;
+    operation compute=std::bind(shogun::internal::mmd::WithinBlockPermutation(n, m, ST_BIASED_FULL), _1, prng);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -119,6 +124,8 @@ TEST(WithinBlockPermutation, biased_full)
 
 TEST(WithinBlockPermutation, unbiased_full)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
@@ -147,7 +154,8 @@ TEST(WithinBlockPermutation, unbiased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_UNBIASED_FULL);
+    using namespace std::placeholders;
+    operation compute=std::bind(shogun::internal::mmd::WithinBlockPermutation(n, m, ST_UNBIASED_FULL), _1, prng);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -188,6 +196,8 @@ TEST(WithinBlockPermutation, unbiased_full)
 
 TEST(WithinBlockPermutation, unbiased_incomplete)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=10;
 
@@ -215,7 +225,8 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, ST_UNBIASED_INCOMPLETE);
+    using namespace std::placeholders;
+    operation compute=std::bind(shogun::internal::mmd::WithinBlockPermutation(n, n, ST_UNBIASED_INCOMPLETE), _1, prng);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 

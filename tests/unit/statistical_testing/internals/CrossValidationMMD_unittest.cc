@@ -51,6 +51,8 @@ using namespace mmd;
 
 TEST(CrossValidationMMD, biased_full)
 {
+	std::mt19937_64 prng(67);
+
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -92,7 +94,7 @@ TEST(CrossValidationMMD, biased_full)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 	sg_rand->set_seed(12345);
-	cv(kernel_mgr);
+	cv(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
 	SGVector<int64_t> dummy_labels_p(n);
@@ -129,7 +131,7 @@ TEST(CrossValidationMMD, biased_full)
 					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
-				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
+				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), prng);
 
 				EXPECT_EQ(cv.m_rejections(current_run*num_folds+current_fold, k), p_value<alpha);
 
@@ -146,6 +148,8 @@ TEST(CrossValidationMMD, biased_full)
 
 TEST(CrossValidationMMD, unbiased_full)
 {
+	std::mt19937_64 prng(57);
+
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -187,7 +191,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 	sg_rand->set_seed(12345);
-	cv(kernel_mgr);
+	cv(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
 	SGVector<int64_t> dummy_labels_p(n);
@@ -224,7 +228,7 @@ TEST(CrossValidationMMD, unbiased_full)
 					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
-				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
+				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), prng);
 
 				EXPECT_EQ(cv.m_rejections(current_run*num_folds+current_fold, k), p_value<alpha);
 
@@ -241,6 +245,8 @@ TEST(CrossValidationMMD, unbiased_full)
 
 TEST(CrossValidationMMD, unbiased_incomplete)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t n=18;
 	const index_t m=18;
 	const index_t dim=2;
@@ -282,7 +288,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 	sg_rand->set_seed(12345);
-	cv(kernel_mgr);
+	cv(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
 	SGVector<int64_t> dummy_labels_p(n);
@@ -319,7 +325,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
-				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
+				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), prng);
 
 				EXPECT_EQ(cv.m_rejections(current_run*num_folds+current_fold, k), p_value<alpha);
 

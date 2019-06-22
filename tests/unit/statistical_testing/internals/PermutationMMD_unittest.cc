@@ -59,6 +59,8 @@ using Eigen::PermutationMatrix;
 
 TEST(PermutationMMD, biased_full_single_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
@@ -93,7 +95,7 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix);
+	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	auto compute_mmd=ComputeMMD();
 	compute_mmd.m_n_x=n;
@@ -139,6 +141,8 @@ TEST(PermutationMMD, biased_full_single_kernel)
 
 TEST(PermutationMMD, unbiased_full_single_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
@@ -173,7 +177,7 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix);
+	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	auto compute_mmd=ComputeMMD();
 	compute_mmd.m_n_x=n;
@@ -219,6 +223,8 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 
 TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=10;
 	const index_t num_null_samples=5;
@@ -252,7 +258,7 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix);
+	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	auto compute_mmd=ComputeMMD();
 	compute_mmd.m_n_x=n;
@@ -298,6 +304,8 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 
 TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t dim=2;
 	const index_t n=8;
 	const index_t m=8;
@@ -332,10 +340,10 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix);
+	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	sg_rand->set_seed(12345);
-	SGVector<float32_t> result_2=permutation_mmd(Kernel(kernel));
+	SGVector<float32_t> result_2=permutation_mmd(Kernel(kernel), prng);
 
 	EXPECT_TRUE(result_1.size()==result_2.size());
 	for (auto i=0; i<result_1.size(); ++i)
@@ -346,6 +354,8 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 
 TEST(PermutationMMD, biased_full_multi_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -388,7 +398,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr);
+	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
 	ASSERT_EQ(null_samples.num_cols, num_kernels);
@@ -399,7 +409,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
 		sg_rand->set_seed(12345);
-		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>());
+		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
 
 		ASSERT_EQ(curr_null_samples.size(), null_samples.num_rows);
 		for (auto i=0; i<num_null_samples; ++i)
@@ -412,6 +422,8 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 TEST(PermutationMMD, unbiased_full_multi_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -454,7 +466,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr);
+	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
 	ASSERT_EQ(null_samples.num_cols, num_kernels);
@@ -465,7 +477,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
 		sg_rand->set_seed(12345);
-		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>());
+		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
 
 		ASSERT_EQ(curr_null_samples.size(), null_samples.num_rows);
 		for (auto i=0; i<num_null_samples; ++i)
@@ -478,6 +490,8 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 {
+	std::mt19937_64 prng(17);
+
 	const index_t n=18;
 	const index_t m=18;
 	const index_t dim=2;
@@ -520,7 +534,7 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
 	sg_rand->set_seed(12345);
-	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr);
+	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
 	ASSERT_EQ(null_samples.num_cols, num_kernels);
@@ -531,7 +545,7 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
 		sg_rand->set_seed(12345);
-		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>());
+		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
 
 		ASSERT_EQ(curr_null_samples.size(), null_samples.num_rows);
 		for (auto i=0; i<num_null_samples; ++i)

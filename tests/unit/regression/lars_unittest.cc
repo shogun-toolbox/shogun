@@ -37,6 +37,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -358,6 +359,8 @@ TEST(LeastAngleRegression, lars_template_test_floatmax)
 #ifndef USE_VIENNACL_GLOBAL
 TEST(LeastAngleRegression, cholesky_insert)
 {
+	std::mt19937_64 prng(117);
+
 	class lars_helper: public CLeastAngleRegression
 	{
 		public:
@@ -374,7 +377,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 	SGMatrix<float64_t> matnew(num_vec, num_feats);
 
 	SGVector<float64_t> vec(num_vec);
-	vec.random(0.0,1.0);
+	random::fill_array(vec,0.0,1.0,prng);
 	Map<VectorXd> map_vec(vec.vector, vec.size());
 
 	for (index_t i=0; i<num_vec; i++)
@@ -411,6 +414,8 @@ TEST(LeastAngleRegression, cholesky_insert)
 
 TEST(LeastAngleRegression, ols_equivalence)
 {
+	std::mt19937_64 prng(127);
+
 	int32_t n_feat=25, n_vec=100;
 	SGMatrix<float64_t> data(n_feat, n_vec);
 	for (index_t i=0; i<n_feat; i++)
@@ -420,7 +425,7 @@ TEST(LeastAngleRegression, ols_equivalence)
 	}
 
 	SGVector<float64_t> lab=SGVector<float64_t>(n_vec);
-	lab.random(0.0,1.0);
+	random::fill_array(lab,0.0,1.0,prng);
 	float64_t mean=linalg::mean(lab);
 
 	for (index_t i=0; i<lab.size(); i++)

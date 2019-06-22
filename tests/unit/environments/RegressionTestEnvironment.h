@@ -39,6 +39,9 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
+
+#include <random>
 
 using namespace shogun;
 using namespace std;
@@ -50,11 +53,12 @@ private:
 	const index_t n_train = 20, n_test = 15, n_dim = 4;
 	CDenseFeatures<float64_t> *features_train, *features_test;
 	CRegressionLabels *labels_train, *labels_test;
+	std::mt19937_64 prng;
 
 public:
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(57);
+		prng = std::mt19937_64(57);
 
 		SGMatrix<float64_t> feat_train_data =
 		    CDataGenerator::generate_gaussians(n_train, 1, n_dim);
@@ -63,7 +67,7 @@ public:
 		    CDataGenerator::generate_gaussians(n_test, 1, n_dim);
 
 		SGVector<float64_t> w(n_dim);
-		w.random(-1, 1);
+		random::fill_array(w, -1.0, 1.0, prng);
 
 		SGVector<float64_t> label_train_data =
 		    linalg::matrix_prod(feat_train_data, w, true);

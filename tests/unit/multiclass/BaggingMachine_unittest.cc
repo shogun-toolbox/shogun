@@ -129,6 +129,8 @@ TEST_F(BaggingMachine, classify_CART)
 	cart->set_feature_types(ft);
 
 	auto c = some<CBaggingMachine>(features_train, labels_train);
+	c->put("seed", 5555);
+	cart->put("seed", 5555);
 
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);

@@ -8,6 +8,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/ajd/QDiag.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 
 #include <random>
@@ -29,6 +30,7 @@ TEST(CQDiag, diagonalize)
 	SGNDArray< float64_t > C(C_dims, 3);
 
 	std::mt19937_64 prng(17);
+	UniformIntDistribution<int> uniform_int_dist(1, 5);
 
 	for (int i = 0; i < C_dims[2]; i++)
 	{
@@ -36,8 +38,7 @@ TEST(CQDiag, diagonalize)
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(random::random(1,5,prng));
-
+			tmp(j,j) *= CMath::abs(uniform_int_dist(prng));
 	}
 
 	// Mixing and demixing matrices
