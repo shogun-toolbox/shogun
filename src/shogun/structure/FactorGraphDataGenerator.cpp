@@ -101,7 +101,8 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 
 CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N)
 {
-	put("seed", 17);
+	uint32_t seed = 17;
+	put("seed", seed);
 
 	// ftype
 	SGVector<int32_t> card(2);

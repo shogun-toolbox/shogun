@@ -14,7 +14,7 @@ namespace shogun
 	{
 		static_assert(
 		    std::is_floating_point<T>::value,
-		    "shogun::UniformIntDistribution is "
+		    "shogun::UniformRealDistribution is "
 		    "specialized only for floating point types");
 
 	public:

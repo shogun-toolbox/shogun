@@ -267,6 +267,7 @@ void CBaggingMachine::register_parameters()
 	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors");
 	SG_ADD(
 	    &m_oob_indices, "oob_indices", "OOB indices for each machine");
+	SG_ADD(&m_machine, "machine", "machine to use for bagging");
 }
 
 void CBaggingMachine::set_num_bags(int32_t num_bags)

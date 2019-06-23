@@ -434,11 +434,8 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	if (buffer.num_rows==0)
 	buffer = SGMatrix<float64_t>(m_num_hidden, m_batch_size);
 
-	UniformIntDistribution<int32_t> uniform_int_dist(0, m_num_visible-1);
 	SGVector<int32_t> indices(m_batch_size);
-	for (int32_t i=0; i<m_batch_size; i++)
-		indices[i] = uniform_int_dist(m_prng);
-
+	random::fill_array(indices, 0, m_num_visible, m_prng);
 
 	float64_t f1 = free_energy(visible, buffer);
 

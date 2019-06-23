@@ -62,8 +62,7 @@ struct CQuadraticTimeMMD::Self
 	void init_kernel();
 	SGMatrix<float32_t> get_kernel_matrix();
 
-	template <typename PRNG>
-	SGVector<float64_t> sample_null_spectrum(PRNG& prng);
+	SGVector<float64_t> sample_null_spectrum();
 	SGVector<float64_t> sample_null_permutation();
 	SGVector<float64_t> gamma_fit_null();
 
@@ -370,8 +369,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	return null_samples;
 }
 
-template <typename PRNG>
-SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum(PRNG& prng)
+SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 {
 	SG_SDEBUG("Entering\n");
 	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
@@ -576,7 +574,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	switch (get_null_approximation_method())
 	{
 		case NAM_MMD2_SPECTRUM:
-			null_samples=self->sample_null_spectrum(m_prng);
+			null_samples=self->sample_null_spectrum();
 			break;
 		case NAM_PERMUTATION:
 			null_samples=self->sample_null_permutation();

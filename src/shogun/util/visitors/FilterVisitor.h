@@ -2,16 +2,15 @@
 #define SHOGUN_FILTERVISITOR_H
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 #include <functional>
-
+#include <iostream>
 namespace shogun
 {
-
 	template <typename T>
 	class FilterVisitor : public AnyVisitor
 	{
-
 	public:
 		FilterVisitor(std::function<void(const std::string&, T*)> operation)
 		    : AnyVisitor(), m_operation(operation)
@@ -21,20 +20,28 @@ namespace shogun
 		template <typename U>
 		void on_impl(U* v)
 		{
-			if constexpr (std::is_pointer<U>::value)
-				if (!*v)
-					return;
-
 			if constexpr (std::is_same<T, U>::value)
 				m_operation(m_name, v);
 
-			if constexpr (std::is_base_of<
-			                  typename std::remove_pointer<U>::type,
-			                  typename std::remove_pointer<T>::type>::value)
+			if constexpr (std::is_pointer<U>::value)
 			{
-				auto obj = dynamic_cast<T>(*v);
-				if (obj)
-					m_operation(m_name, &obj);
+				if constexpr (std::is_base_of<
+								typename std::remove_pointer<U>::type,
+								typename std::remove_pointer<T>::type>::value)
+				{
+					// this is misleading, since it returns a pointer to this local
+					// variable, instead of the original one
+					auto obj = dynamic_cast<T>(*v);
+					if (obj)
+						m_operation(m_name, &obj);
+				}
+
+				auto* dyn_obj_array = dynamic_cast<CDynamicObjectArray*>(*v);
+				if(dyn_obj_array)
+				{
+					for(auto sub_object : *dyn_obj_array)
+						on(&sub_object);
+				}
 			}
 			return;
 		}
@@ -81,7 +88,8 @@ namespace shogun
 
 		virtual void on(CSGObject** v) override
 		{
-			on_impl(v);
+			if(*v && v)
+				on_impl(v);
 		}
 
 		virtual void on(std::string* v) override

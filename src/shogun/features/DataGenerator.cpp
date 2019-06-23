@@ -134,13 +134,13 @@ SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
 	rot(1, 1) = std::cos(angle);
 
 	NormalDistribution<float64_t> normal_dist;
-	UniformIntDistribution<int32_t> uniform_real_dist(0, 1);
+	UniformIntDistribution<int32_t> uniform_int_dist(0, 1);
 	/* generate signal in each dimension which is an equal mixture of two
 	 * Gaussians */
 	for (index_t i=0; i<m; ++i)
 	{
-		result(0,i)=normal_dist(prng) + (uniform_real_dist(prng) ? d : -d);
-		result(1,i)=normal_dist(prng) + (uniform_real_dist(prng) ? d : -d);
+		result(0,i)=normal_dist(prng) + (uniform_int_dist(prng) ? d : -d);
+		result(1,i)=normal_dist(prng) + (uniform_int_dist(prng) ? d : -d);
 	}
 
 	/* rotate result */
@@ -154,7 +154,8 @@ template SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss<std::mt19937
 		float64_t d, float64_t angle, std::mt19937_64& prng, SGMatrix<float64_t> target);
 
 
-SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, index_t dim)
+template <typename PRNG>
+SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, index_t dim, PRNG& prng)
 {
 	/* evtl. allocate space */
 	SGMatrix<float64_t> result =
@@ -174,6 +175,7 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 				mean[k] *= -1;
 		}
 		CGaussian* g = new CGaussian(mean, cov, DIAG);
+		g->put("seed", (int32_t) prng());
 		for (index_t j = 0; j < m; ++j)
 		{
 			SGVector<float64_t> v = g->sample();
@@ -185,3 +187,7 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 
 	return result;
 }
+
+template SGMatrix<float64_t> CDataGenerator::generate_gaussians<std::mt19937_64>(
+	index_t m, index_t n, index_t dim, std::mt19937_64& prng);
+

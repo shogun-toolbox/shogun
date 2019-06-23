@@ -348,16 +348,3 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 
 template CHMSVMModel* CTwoStateModel::simulate_data<std::mt19937_64>(int32_t num_exm, int32_t exm_len,
 	int32_t num_features, int32_t num_noise_features, std::mt19937_64& prng);
-
-CHMSVMModel* CTwoStateModel::simulate_data(
-		int32_t num_exm, int32_t exm_len, int32_t num_features,
-		int32_t num_noise_features, int32_t seed)
-{
-	if(seed == -1)
-	{
-		std::random_device rd;
-		seed = rd();
-	}
-	std::mt19937_64 prng(seed); 
-	return CTwoStateModel::simulate_data(num_exm, exm_len, num_features, num_noise_features, prng);
-}

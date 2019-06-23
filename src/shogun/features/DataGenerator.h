@@ -97,7 +97,8 @@ public:
 	 * @return dim times (m*n) matrix with concatenated samples first m number
 	 * of the first gaussian, m number of second etc.
 	 */
-	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim);
+	template <typename PRNG>
+	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim, PRNG& prng);
 
 	virtual const char* get_name() const { return "DataGenerator"; }
 

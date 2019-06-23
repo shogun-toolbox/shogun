@@ -63,11 +63,11 @@ void CNeuralLinearLayer::initialize_parameters(SGVector<float64_t> parameters,
 		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
-	NormalDistribution<float64_t> normal_dist;
+	NormalDistribution<float64_t> normal_dist(0.0, sigma);
 	for (int32_t i=0; i<m_num_parameters; i++)
 	{
 		// random the parameters
-		parameters[i] = normal_dist(m_prng, {0.0, sigma});
+		parameters[i] = normal_dist(m_prng);
 
 		// turn regularization off for the biases, on for the weights
 		parameter_regularizable[i] = (i>=m_num_neurons);

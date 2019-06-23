@@ -54,7 +54,7 @@ namespace mmd
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct CrossValidationMMD : PermutationMMD
 {
-	CrossValidationMMD(index_t n_x, index_t n_y, index_t num_folds, index_t num_null_samples)
+	CrossValidationMMD(index_t n_x, index_t n_y, index_t num_folds, index_t num_null_samples, int32_t seed=-1)
 	{
 		ASSERT(n_x>0 && n_y>0);
 		ASSERT(num_folds>0);
@@ -67,7 +67,7 @@ struct CrossValidationMMD : PermutationMMD
 		m_num_runs=DEFAULT_NUM_RUNS;
 		m_alpha=DEFAULT_ALPHA;
 
-		init();
+		init(seed);
 	}
 
 	template <typename PRNG>
@@ -187,7 +187,7 @@ struct CrossValidationMMD : PermutationMMD
 		}
 	}
 
-	void init()
+	void init(int32_t seed)
 	{
 		SGVector<int64_t> dummy_labels_x(m_n_x);
 		SGVector<int64_t> dummy_labels_y(m_n_y);
@@ -196,6 +196,9 @@ struct CrossValidationMMD : PermutationMMD
 		auto instance_y=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_y), m_num_folds);
 		m_kfold_x=unique_ptr<CCrossValidationSplitting>(instance_x);
 		m_kfold_y=unique_ptr<CCrossValidationSplitting>(instance_y);
+		if(seed != -1)
+			m_kfold_x->put("seed", seed);
+			m_kfold_y->put("seed", seed);
 
 		m_stack=unique_ptr<CSubsetStack>(new CSubsetStack());
 
