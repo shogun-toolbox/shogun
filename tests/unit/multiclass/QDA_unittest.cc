@@ -18,10 +18,12 @@ using namespace shogun;
 #ifdef HAVE_LAPACK
 TEST(QDA, train_and_apply)
 {
+	std::mt19937_64 prng(240);
+
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
-	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
+	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS,prng);
 	for( int i = 0 ; i < CLASSES ; ++i )
 		for( int j = 0 ; j < NUM ; ++j )
 			lab[i*NUM+j] = double(i);

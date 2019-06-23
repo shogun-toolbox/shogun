@@ -63,6 +63,7 @@ void generate_data(SGMatrix<float64_t>& mat, SGVector<float64_t> &lab)
 TEST(CrossValidation_multithread, LibSVM_unlocked)
 {
 	int32_t num=100;
+	int32_t seed = 1;
 	SGMatrix<float64_t> mat(2, num);
 
 	/* training labels +/- 1 for each cluster */
@@ -70,8 +71,6 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 
 	/*create simple linearly separable data*/
 	generate_data(mat, lab);
-
-	sg_rand->set_seed(1);
 
 	for (index_t i=0; i<num/2; ++i)
 		lab.vector[i]-=1;
@@ -95,6 +94,7 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 	index_t n_folds=4;
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
+	splitting->put("seed", seed);
 
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
@@ -123,6 +123,7 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 TEST(CrossValidation_multithread, KNN)
 {
 	int32_t num=100;
+	int32_t seed = 1;
 	SGMatrix<float64_t> mat(2, num);
 
 	SGVector<float64_t> lab(num);
@@ -145,6 +146,7 @@ TEST(CrossValidation_multithread, KNN)
 	index_t n_folds=4;
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
+	splitting->put("seed", seed);
 
 	CCrossValidation* cross=new CCrossValidation(knn, features, labels,
 			splitting, eval_crit);

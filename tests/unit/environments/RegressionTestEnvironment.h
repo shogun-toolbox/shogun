@@ -53,18 +53,17 @@ private:
 	const index_t n_train = 20, n_test = 15, n_dim = 4;
 	CDenseFeatures<float64_t> *features_train, *features_test;
 	CRegressionLabels *labels_train, *labels_test;
-	std::mt19937_64 prng;
 
 public:
 	virtual void SetUp()
 	{
-		prng = std::mt19937_64(57);
+		std::mt19937_64 prng(57);
 
 		SGMatrix<float64_t> feat_train_data =
-		    CDataGenerator::generate_gaussians(n_train, 1, n_dim);
+		    CDataGenerator::generate_gaussians(n_train, 1, n_dim, prng);
 
 		SGMatrix<float64_t> feat_test_data =
-		    CDataGenerator::generate_gaussians(n_test, 1, n_dim);
+		    CDataGenerator::generate_gaussians(n_test, 1, n_dim, prng);
 
 		SGVector<float64_t> w(n_dim);
 		random::fill_array(w, -1.0, 1.0, prng);

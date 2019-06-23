@@ -41,6 +41,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
@@ -59,13 +60,14 @@ using Eigen::PermutationMatrix;
 
 TEST(PermutationMMD, biased_full_single_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed = 17;
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
 	const index_t num_null_samples=5;
 	const auto stype=ST_BIASED_FULL;
+
+	std::mt19937_64 prng(seed);
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -94,7 +96,7 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	auto compute_mmd=ComputeMMD();
@@ -104,13 +106,13 @@ TEST(PermutationMMD, biased_full_single_kernel)
 
 	Map<MatrixXf> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
 	SGVector<float32_t> result_2(num_null_samples);
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		PermutationMatrix<Dynamic, Dynamic> perm(kernel_matrix.num_rows);
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-		CMath::permute(perminds);
+		random::shuffle(perminds, prng);
 		MatrixXf permuted = perm.transpose()*map*perm;
 		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute_mmd(permuted_km);
@@ -122,7 +124,7 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);
-		CMath::permute(inds);
+		random::shuffle(inds, prng);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
 		kernel_matrix=kernel->get_kernel_matrix<float32_t>();
@@ -141,13 +143,14 @@ TEST(PermutationMMD, biased_full_single_kernel)
 
 TEST(PermutationMMD, unbiased_full_single_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed=12345;
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
 	const index_t num_null_samples=5;
 	const auto stype=ST_UNBIASED_FULL;
+
+	std::mt19937_64 prng(seed);
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -176,7 +179,7 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	auto compute_mmd=ComputeMMD();
@@ -186,13 +189,13 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 
 	Map<MatrixXf> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
 	SGVector<float32_t> result_2(num_null_samples);
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		PermutationMatrix<Dynamic, Dynamic> perm(kernel_matrix.num_rows);
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-		CMath::permute(perminds);
+		random::shuffle(perminds, prng);
 		MatrixXf permuted = perm.transpose()*map*perm;
 		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute_mmd(permuted_km);
@@ -200,11 +203,11 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 
 	SGVector<index_t> inds(kernel_matrix.num_rows);
 	SGVector<float32_t> result_3(num_null_samples);
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);
-		CMath::permute(inds);
+		random::shuffle(inds, prng);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
 		kernel_matrix=kernel->get_kernel_matrix<float32_t>();
@@ -223,12 +226,13 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 
 TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed=12345;
 	const index_t dim=2;
 	const index_t n=10;
 	const index_t num_null_samples=5;
 	const auto stype=ST_UNBIASED_INCOMPLETE;
+	
+	std::mt19937_64 prng(seed);
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -257,7 +261,7 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	auto compute_mmd=ComputeMMD();
@@ -267,13 +271,13 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 
 	Map<MatrixXf> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
 	SGVector<float32_t> result_2(num_null_samples);
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		PermutationMatrix<Dynamic, Dynamic> perm(kernel_matrix.num_rows);
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-		CMath::permute(perminds);
+		random::shuffle(perminds, prng);
 		MatrixXf permuted = perm.transpose()*map*perm;
 		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute_mmd(permuted_km);
@@ -281,11 +285,11 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 
 	SGVector<index_t> inds(kernel_matrix.num_rows);
 	SGVector<float32_t> result_3(num_null_samples);
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);
-		CMath::permute(inds);
+		random::shuffle(inds, prng);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
 		kernel_matrix=kernel->get_kernel_matrix<float32_t>();
@@ -304,13 +308,14 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 
 TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed=17;
 	const index_t dim=2;
 	const index_t n=8;
 	const index_t m=8;
 	const index_t num_null_samples=5;
 	const auto stype=ST_BIASED_FULL;
+
+	std::mt19937_64 prng(seed);
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -339,10 +344,10 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGVector<float32_t> result_2=permutation_mmd(Kernel(kernel), prng);
 
 	EXPECT_TRUE(result_1.size()==result_2.size());
@@ -354,8 +359,7 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 
 TEST(PermutationMMD, biased_full_multi_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed = 12345;
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -365,8 +369,13 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	const float64_t difference=0.5;
 	const auto stype=ST_BIASED_FULL;
 
+	std::mt19937_64 prng(seed);
+
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -397,7 +406,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -408,7 +417,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
-		sg_rand->set_seed(12345);
+		prng.seed(seed);
 		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
 
 		ASSERT_EQ(curr_null_samples.size(), null_samples.num_rows);
@@ -422,8 +431,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 TEST(PermutationMMD, unbiased_full_multi_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed = 12345;
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -433,8 +441,13 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	const float64_t difference=0.5;
 	const auto stype=ST_UNBIASED_FULL;
 
+	std::mt19937_64 prng(seed);
+
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -465,7 +478,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -476,7 +489,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
-		sg_rand->set_seed(12345);
+		prng.seed(seed);
 		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
 
 		ASSERT_EQ(curr_null_samples.size(), null_samples.num_rows);
@@ -490,8 +503,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 {
-	std::mt19937_64 prng(17);
-
+	const index_t seed=12345;
 	const index_t n=18;
 	const index_t m=18;
 	const index_t dim=2;
@@ -501,8 +513,13 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	const float64_t difference=0.5;
 	const auto stype=ST_UNBIASED_INCOMPLETE;
 
+	std::mt19937_64 prng(seed);
+
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -533,7 +550,7 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
+	prng.seed(seed);
 	SGMatrix<float32_t> null_samples=permutation_mmd(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -544,7 +561,7 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
-		sg_rand->set_seed(12345);
+		prng.seed(seed);
 		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
 
 		ASSERT_EQ(curr_null_samples.size(), null_samples.num_rows);

@@ -45,9 +45,9 @@ class MultiLabelTestEnvironment : public ::testing::Environment
 public:
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(17);
+		std::mt19937_64 prng(17);
 		mMulticlassFixture = std::shared_ptr<GaussianCheckerboard>(
-		    new GaussianCheckerboard(100, 3, 3));
+		    new GaussianCheckerboard(100, 3, 3, prng));
 	}
 
 	std::shared_ptr<GaussianCheckerboard> getMulticlassFixture() const

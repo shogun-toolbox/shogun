@@ -48,12 +48,13 @@ protected:
 	const int32_t num_test_samples = 10;
 	const int32_t dim = 1;
 	const float64_t epsilon = 1e-8;
+	std::mt19937_64 prng;
 
 	void load_sinusoid_samples()
 	{
 		SGMatrix<float64_t> mat(dim, num_train_samples);
 		random::fill_array(
-		    mat.matrix, mat.matrix + num_train_samples, 0, 15, prng);
+		    mat.matrix, mat.matrix + num_train_samples, 0.0, 15.0, prng);
 
 		SGVector<float64_t> labels(num_train_samples);
 		for (int32_t i = 0; i < num_train_samples; i++)
@@ -96,7 +97,7 @@ protected:
 
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(10);
+		prng.seed(835);
 		load_sinusoid_samples();
 		load_test_data();
 	}
@@ -107,8 +108,6 @@ public:
 	Some<CRegressionLabels> train_labels;
 	Some<CRegressionLabels> test_labels;
 
-	std::mt19937_64 prng;
-
 	StochasticGBMachine()
 	    : train_feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
 	      test_feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
@@ -118,35 +117,40 @@ public:
 	}
 };
 
+#include <iostream>
 TEST_F(StochasticGBMachine, sinusoid_curve_fitting)
 {
+	const int32_t seed = 2855;
+
 	SGVector<bool> ft(1);
 	ft[0]=false;
 	CCARTree* tree=new CCARTree(ft);
 	tree->set_max_depth(2);
 	CSquaredLoss* sq=new CSquaredLoss();
-
 	auto sgbm = some<CStochasticGBMachine>(tree, sq, 100, 0.1, 1.0);
+	sgbm->put("seed", seed);
+
 	sgbm->set_labels(train_labels);
 	sgbm->train(train_feats);
 
 	auto ret_labels = wrap(sgbm->apply_regression(test_feats));
 	SGVector<float64_t> ret=ret_labels->get_labels();
 
-	EXPECT_NEAR(ret[0],-0.943157980,epsilon);
-	EXPECT_NEAR(ret[1],0.769725470,epsilon);
-	EXPECT_NEAR(ret[2],-0.065691733,epsilon);
-	EXPECT_NEAR(ret[3],0.251266829,epsilon);
-	EXPECT_NEAR(ret[4],-0.577155330,epsilon);
-	EXPECT_NEAR(ret[5],0.113875818,epsilon);
-	EXPECT_NEAR(ret[6],0.427405429,epsilon);
-	EXPECT_NEAR(ret[7],-0.098310066,epsilon);
-	EXPECT_NEAR(ret[8],-0.416565932,epsilon);
-	EXPECT_NEAR(ret[9],0.542023083,epsilon);
+	EXPECT_NEAR(ret[0],-0.900765958,epsilon);
+	EXPECT_NEAR(ret[1],0.7853974107,epsilon);
+	EXPECT_NEAR(ret[2],-0.3759740238,epsilon);
+	EXPECT_NEAR(ret[3],0.124319836,epsilon);
+	EXPECT_NEAR(ret[4],-0.7288767951,epsilon);
+	EXPECT_NEAR(ret[5],0.06000890273,epsilon);
+	EXPECT_NEAR(ret[6],0.6541251248,epsilon);
+	EXPECT_NEAR(ret[7],-0.09211134041,epsilon);
+	EXPECT_NEAR(ret[8],-0.617577998,epsilon);
+	EXPECT_NEAR(ret[9],0.5959804888,epsilon);
 }
 
 TEST_F(StochasticGBMachine, sinusoid_curve_fitting_subset_fraction)
 {
+	const int32_t seed = 2855;
 	const float64_t fraction = 0.6;
 
 	SGVector<bool> ft(1);
@@ -156,20 +160,21 @@ TEST_F(StochasticGBMachine, sinusoid_curve_fitting_subset_fraction)
 	CSquaredLoss* sq = new CSquaredLoss();
 
 	auto sgbm = some<CStochasticGBMachine>(tree, sq, 100, 0.1, fraction);
+	sgbm->put("seed", seed);
 	sgbm->set_labels(train_labels);
 	sgbm->train(train_feats);
 
 	auto ret_labels = wrap(sgbm->apply_regression(test_feats));
 	SGVector<float64_t> ret = ret_labels->get_labels();
 
-	EXPECT_NEAR(ret[0], -0.820852887, epsilon);
-	EXPECT_NEAR(ret[1], 0.734408678, epsilon);
-	EXPECT_NEAR(ret[2], -0.054018279, epsilon);
-	EXPECT_NEAR(ret[3], 0.320758624, epsilon);
-	EXPECT_NEAR(ret[4], -0.647308515, epsilon);
-	EXPECT_NEAR(ret[5], 0.176879142, epsilon);
-	EXPECT_NEAR(ret[6], 0.477927403, epsilon);
-	EXPECT_NEAR(ret[7], -0.137899854, epsilon);
-	EXPECT_NEAR(ret[8], -0.4258681695, epsilon);
-	EXPECT_NEAR(ret[9], 0.5964289106, epsilon);
+	EXPECT_NEAR(ret[0], -0.5489844395, epsilon);
+	EXPECT_NEAR(ret[1], 0.6958692923, epsilon);
+	EXPECT_NEAR(ret[2], -0.299800903, epsilon);
+	EXPECT_NEAR(ret[3], 0.1621379041, epsilon);
+	EXPECT_NEAR(ret[4], -0.5489844395, epsilon);
+	EXPECT_NEAR(ret[5], 0.06062667309, epsilon);
+	EXPECT_NEAR(ret[6], 0.612491047, epsilon);
+	EXPECT_NEAR(ret[7], -0.131144988, epsilon);
+	EXPECT_NEAR(ret[8], -0.4408978052, epsilon);
+	EXPECT_NEAR(ret[9], 0.5380825978, epsilon);
 }

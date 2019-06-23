@@ -11,6 +11,8 @@
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/mathematics/Math.h>
 
+#include <random>
+
 using namespace shogun;
 
 
@@ -20,11 +22,13 @@ public:
 	CDenseFeatures<float64_t>* train_feats;
 	CDenseFeatures<float64_t>* test_feats;
 	CBinaryLabels* ground_truth;
+	std::mt19937_64 prng;
 
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(1);
+		prng = std::mt19937_64(17);
 	}
+
 	virtual void TearDown()
 	{
 		SG_UNREF(train_feats);
@@ -116,11 +120,9 @@ protected:
 	void generate_data_l2()
 	{
 		index_t num_samples = 50;
-		sg_rand->set_seed(5);
-
 
 		SGMatrix<float64_t> data =
-			CDataGenerator::generate_gaussians(num_samples, 2, 2);
+			CDataGenerator::generate_gaussians(num_samples, 2, 2, prng);
 
 		CDenseFeatures<float64_t> features(data);
 

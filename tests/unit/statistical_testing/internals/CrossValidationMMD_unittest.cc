@@ -51,7 +51,8 @@ using namespace mmd;
 
 TEST(CrossValidationMMD, biased_full)
 {
-	std::mt19937_64 prng(67);
+	int32_t seed = 42;
+	std::mt19937_64 prng(seed);
 
 	const index_t n=24;
 	const index_t m=15;
@@ -67,6 +68,9 @@ TEST(CrossValidationMMD, biased_full)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME: CMeanShiftDataGenerator is of Feature type, which is immutable
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -88,12 +92,11 @@ TEST(CrossValidationMMD, biased_full)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples);
+	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, seed);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
-	sg_rand->set_seed(12345);
 	cv(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -102,12 +105,13 @@ TEST(CrossValidationMMD, biased_full)
 
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
+	kfold_p->put("seed", seed);
+	kfold_q->put("seed", seed);
 
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
@@ -148,7 +152,8 @@ TEST(CrossValidationMMD, biased_full)
 
 TEST(CrossValidationMMD, unbiased_full)
 {
-	std::mt19937_64 prng(57);
+	int32_t seed = 42;
+	std::mt19937_64 prng(seed);
 
 	const index_t n=24;
 	const index_t m=15;
@@ -164,6 +169,9 @@ TEST(CrossValidationMMD, unbiased_full)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME: CMeanShiftDataGenerator is of Feature type, which is immutable
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -185,12 +193,11 @@ TEST(CrossValidationMMD, unbiased_full)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples);
+	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, seed);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
-	sg_rand->set_seed(12345);
 	cv(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -199,12 +206,13 @@ TEST(CrossValidationMMD, unbiased_full)
 
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
+	kfold_p->put("seed", seed);
+	kfold_q->put("seed", seed);
 
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
@@ -245,7 +253,8 @@ TEST(CrossValidationMMD, unbiased_full)
 
 TEST(CrossValidationMMD, unbiased_incomplete)
 {
-	std::mt19937_64 prng(17);
+	int32_t seed = 8709;
+	std::mt19937_64 prng(seed);
 
 	const index_t n=18;
 	const index_t m=18;
@@ -261,6 +270,9 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME: CMeanShiftDataGenerator is of Feature type, which is immutable
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -282,12 +294,11 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples);
+	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, seed);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
-	sg_rand->set_seed(12345);
 	cv(kernel_mgr, prng);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -296,12 +307,13 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
+	kfold_p->put("seed", seed);
+	kfold_q->put("seed", seed);
 
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	sg_rand->set_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);

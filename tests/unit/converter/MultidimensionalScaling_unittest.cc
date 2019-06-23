@@ -9,11 +9,13 @@ using namespace shogun;
 #ifdef HAVE_LAPACK
 TEST(MultidimensionaScalingTest,distance_preserving)
 {
+	std::mt19937_64 prng(24);
+
 	const index_t n_samples = 10;
 	const index_t n_gaussians = 5;
 	const index_t n_dimensions = 5;
 	CDenseFeatures<float64_t>* high_dimensional_features =
-		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions));
+		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions, prng));
 
 	CDistance* euclidean_distance =
 		new CEuclideanDistance(high_dimensional_features, high_dimensional_features);

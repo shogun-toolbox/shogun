@@ -20,7 +20,11 @@ using namespace Eigen;
 
 TEST(CustomKernelTest,add_row_subset)
 {
+	index_t seed = 17;
 	index_t m=3;
+
+	std::mt19937_64 prng(seed);
+
 	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(0, 2);
 	CFeatures* feats=gen->get_streamed_features(m);
 	SG_REF(feats);
@@ -35,7 +39,7 @@ TEST(CustomKernelTest,add_row_subset)
 	index_t num_runs=10;
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CMath::permute(inds);
+		random::shuffle(inds, prng);
 
 		feats->add_subset(inds);
 		custom->add_row_subset(inds);
@@ -62,12 +66,18 @@ TEST(CustomKernelTest,add_row_subset)
 
 TEST(CustomKernelTest,add_row_subset_constructor)
 {
+	index_t seed = 17;
 	index_t n=4;
+
+	std::mt19937_64 prng(seed);
+
 	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(1, 2, 0);
 	CDenseFeatures<float64_t>* feats=
 			(CDenseFeatures<float64_t>*)gen->get_streamed_features(n);
 	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);
 	CCustomKernel* main_kernel=new CCustomKernel(gaussian);
+	// FIXME
+	gen->CSGObject::put("seed", seed);
 
 	/* create custom kernel copy of gaussien and assert equalness */
 	SGMatrix<float64_t> kmg=gaussian->get_kernel_matrix();
@@ -91,7 +101,7 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	 * from this, assert equalness */
 	SGVector<index_t> inds(n);
 	inds.range_fill();
-	CMath::permute(inds);
+	random::shuffle(inds, prng);
 	main_kernel->add_row_subset(inds);
 	SGMatrix<float64_t> main_subset_matrix=main_kernel->get_kernel_matrix();
 	main_kernel->remove_row_subset();
@@ -132,8 +142,11 @@ void generate_data(SGMatrix<float64_t> &data)
 
 TEST(CustomKernelTest,index_features_subset)
 {
+	index_t seed = 17;
 	float64_t epsilon=1e-7;
 	index_t n=5;
+
+	std::mt19937_64 prng(seed);
 
 	// Generate the features
 	SGMatrix<float64_t> data(3,n);
@@ -162,9 +175,9 @@ TEST(CustomKernelTest,index_features_subset)
 	SGVector<index_t> r_idx(n);
 	SGVector<index_t> c_idx(n);
 	r_idx.range_fill();
-	CMath::permute(r_idx);
+	random::shuffle(r_idx, prng);
 	c_idx.range_fill();
-	CMath::permute(c_idx);
+	random::shuffle(c_idx, prng);
 
 	/* Create IndexFeatures instances */
 	CIndexFeatures * feat_r_idx = new CIndexFeatures(r_idx);
