@@ -82,7 +82,7 @@ namespace shogun
 				result = prng() - PRNG::min();
 			} while (result >= max_val);
 
-			return (result % required_range) + m_min;
+			return (result % required_range) + min;
 		}
 
 		T m_min;
