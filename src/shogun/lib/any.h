@@ -827,6 +827,11 @@ namespace shogun {
 
 		virtual bool is_functional() const = 0;
 
+		virtual bool is_visitable() const
+		{
+			return !is_functional();
+		}
+
 		virtual size_t hash(void* storage) const = 0;
 	};
 
@@ -862,6 +867,12 @@ namespace shogun {
 		virtual bool is_functional() const override
 		{
 			return traits::is_functional<T>::value;
+		}
+
+		// FIXME: temporary hack
+		virtual bool is_visitable() const override
+		{
+			return traits::is_visitable<T>::value;
 		}
 	};
 
@@ -1209,7 +1220,7 @@ namespace shogun {
 		/** @return true if Any object is visitable. */
 		bool visitable() const
 		{
-			return !policy->is_functional();
+			return policy->is_visitable();
 		}
 
 		/** @return true if Any object is hashable. */

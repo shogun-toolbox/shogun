@@ -6,6 +6,7 @@
 
 #include <random>
 #include <iterator>
+#include <type_traits>
 
 namespace shogun
 {
@@ -68,8 +69,10 @@ namespace shogun
 		PRNG& m_prng;
 		// FIXME: PRNG is not cloneable since it is 'functional'
 		// this is a trick to solve this;
+		// FIXME: PRNG is not serializable
 		struct PRNGWrapper
 		{
+			using not_visitable = std::true_type;
 			PRNG prng;
 			inline bool operator==(const PRNGWrapper& other) const
 			{

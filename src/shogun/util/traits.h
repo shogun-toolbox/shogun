@@ -101,6 +101,12 @@ namespace shogun
 			>
 		> : public std::true_type {};
 
+		template<typename T, typename _ = void>
+		struct is_visitable : public std::conditional_t<is_functional<T>::value, std::false_type, std::true_type> {};
+
+		template<typename T>
+		struct is_visitable<T, when_exists<typename T::not_visitable>> : public std::false_type {};
+
 		template<typename T>
 		using returns_void = std::is_same<typename T::result_type, void>;
 
