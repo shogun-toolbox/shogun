@@ -8,17 +8,18 @@
 #include <shogun/preprocessor/RescaleFeatures.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
+#include <random>
+
 using namespace shogun;
 
 TEST(RescaleFeatures, transform)
 {
-	std::mt19937_64 prng(17);
-
+	int32_t seed = 12345;
 	index_t num_features = 3;
 	index_t num_vectors = 10;
 	SGVector<float64_t> min(num_features), range(num_features);
 	SGVector<float64_t> v(num_features*num_vectors), ev;
-	sg_rand->set_seed(12345);
+	std::mt19937_64 prng(seed);
 	random::fill_array(v, -1024, 1024, prng);
 	ev = v.clone();
 

@@ -34,6 +34,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/multiclass/tree/CARTree.h>
 
+#include <random>
+
 using namespace shogun;
 
 #define sunny 1.
@@ -542,7 +544,9 @@ TEST(CARTree, form_t1_test)
 
 TEST(CARTree,cv_prune_simple)
 {
-	sg_rand->set_seed(10);
+	int32_t seed = 10;
+	std::mt19937_64 prng(seed);
+
 	SGMatrix<float64_t> data(2,20);
 	data(0,0)=2;
 	data(1,0)=2;

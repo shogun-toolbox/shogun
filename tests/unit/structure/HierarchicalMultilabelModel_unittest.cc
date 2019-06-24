@@ -11,19 +11,26 @@
 #include <shogun/structure/HierarchicalMultilabelModel.h>
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
 TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 {
+	int32_t seed = 100;
 	int32_t dim_features = 3;
 	int32_t num_samples = 2;
+
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist(-100, 100);
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
 
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = uniform_int_dist(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -75,14 +82,16 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 
 TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 {
+	int32_t seed = 100;
 	int32_t dim_features = 3;
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
-
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist(-100, 100);
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = uniform_int_dist(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -201,14 +210,16 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 
 TEST(HierarchicalMultilabelModel, argmax)
 {
+	int32_t seed = 100;
 	int32_t dim_features = 3;
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
-
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist(-100, 100);
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = uniform_int_dist(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -239,9 +250,10 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 	SGVector<float64_t> w(model->get_dim());
 
+	uniform_int_dist.param({-1, 1});
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = CMath::random(-1, 1);
+		w[i] = uniform_int_dist(prng);
 	}
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);
@@ -310,14 +322,16 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 {
+	int32_t seed = 100;
 	int32_t dim_features = 3;
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
-
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist(-100, 100);
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = uniform_int_dist(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -348,9 +362,10 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 
 	SGVector<float64_t> w(model->get_dim());
 
+	uniform_int_dist.param({-1, 1});
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = CMath::random(-1, 1);
+		w[i] = uniform_int_dist(prng);
 	}
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);

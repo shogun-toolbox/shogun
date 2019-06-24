@@ -319,18 +319,18 @@ TEST(LinearTimeMMD, compute_variance_null)
 
 TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 {
+	const int32_t seed=668;
 	const index_t m=20;
 	const index_t n=30;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
@@ -338,6 +338,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_num_samples_p(m);
@@ -360,18 +361,18 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 
 TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 {
+	const int32_t seed=375;
 	const index_t m=20;
 	const index_t n=30;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
@@ -379,6 +380,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_num_samples_p(m);
@@ -396,23 +398,23 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.060947882185221292, 1E-6);
+	EXPECT_NEAR(p_value_gaussian, 0.057382194681067755, 1E-6);
 }
 
 TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 {
+	const int32_t seed=12345;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
@@ -420,6 +422,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_num_samples_p(m);
@@ -437,5 +440,5 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.40645354706402292, 1E-6);
+	EXPECT_NEAR(p_value_gaussian, 0.46123518919938689, 1E-6);
 }

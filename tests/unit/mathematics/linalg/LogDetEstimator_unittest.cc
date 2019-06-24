@@ -28,6 +28,9 @@
 #include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 using namespace Eigen;
@@ -144,12 +147,15 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 #ifdef HAVE_LAPACK
 TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 {
+	const int32_t seed=10;
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value=CMath::abs(sg_rand->std_normal_distrib())*1000;
+		float64_t value=CMath::abs(normal_dist(prng))*1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -228,12 +234,15 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 {
+	const int32_t seed = 21;
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value=CMath::abs(sg_rand->std_normal_distrib())*1000;
+		float64_t value=CMath::abs(normal_dist(prng))*1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -307,6 +316,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 
 TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 {
+	int32_t seed = 12;
 	float64_t difficulty=2;
 	float64_t accuracy=1E-5;
 	float64_t min_eigenvalue=0.001;
@@ -319,9 +329,11 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+		diag[i]=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)
 			+min_eigenvalue;
 	}
 	op->set_diagonal(diag);
@@ -362,6 +374,7 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 
 TEST(LogDetEstimator, sample_ratapp_big_matrix)
 {
+	int32_t seed = 12;
 	float64_t difficulty=2;
 	float64_t accuracy=1E-5;
 	float64_t min_eigenvalue=0.001;
@@ -372,9 +385,11 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		sm(i,i)=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+		sm(i,i)=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)
 			+min_eigenvalue;
 	}
 	// set its subdiagonal

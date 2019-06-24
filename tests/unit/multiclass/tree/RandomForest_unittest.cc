@@ -36,7 +36,10 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/machine/RandomForest.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <stdio.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -204,19 +207,19 @@ TEST_F(RandomForest, score_compare_sklearn_toydata)
 
 TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 {
-	int32_t seed = 211;
-
+	int32_t seed = 1137;
 	// Generates data for y = x1 > 5 as decision boundary
 	int32_t num_train = 10;
 	int32_t num_test = 10;
 	int32_t num_trees = 10;
 
-	sg_rand->set_seed(42);
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	SGMatrix<float64_t> data_B(1, num_train, false);
 
 	for (auto i = 0; i < num_train; ++i)
 	{
-		data_B(0, i) = i < 5 ? CMath::random(0, 5) : CMath::random(5, 10);
+		data_B(0, i) = i < 5 ? uniform_int_dist(prng, {0, 5}) : uniform_int_dist(prng, {5, 10});
 	}
 	CDenseFeatures<float64_t>* features_train =
 	    new CDenseFeatures<float64_t>(data_B);
@@ -229,7 +232,7 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 
 	for (auto i = 0; i < num_test; ++i)
 	{
-		test_data(0, i) = i < 5 ? CMath::random(0, 4) : CMath::random(6, 10);
+		test_data(0, i) = i < 5 ? uniform_int_dist(prng, {0, 4}) : uniform_int_dist(prng, {6, 10});
 	}
 
 	CDenseFeatures<float64_t>* features_test =

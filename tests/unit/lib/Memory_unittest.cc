@@ -5,6 +5,9 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -64,10 +67,13 @@ static void clone(T* dest, T const * const src, size_t size)
 
 TEST(MemoryTest, sg_memcpy)
 {
+	const int32_t seed = 100;
 	const index_t size = 10;
 	auto src = SG_CALLOC(float64_t, size);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
-		src[i]=CMath::randn_double();
+		src[i]=normal_dist(prng);
 
 	auto dest = SG_CALLOC(float64_t, size);
 

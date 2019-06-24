@@ -14,6 +14,9 @@
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/Hash.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -73,6 +76,7 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 
 TEST(HashedDocDotFeaturesTest, dense_dot_test)
 {
+	int32_t seed = 12;
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
@@ -110,9 +114,11 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	CSparseFeatures<float64_t>* converted_docs =
 	    (CSparseFeatures<float64_t>*)converter->transform(doc_collection);
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	SGVector<float64_t> vec(dimension);
 	for (index_t i=0; i<dimension; i++)
-		vec[i] = CMath::random(-dimension, dimension);
+		vec[i] = uniform_int_dist(prng, {-dimension, dimension});
 
 	for (index_t i=0; i<3; i++)
 	{

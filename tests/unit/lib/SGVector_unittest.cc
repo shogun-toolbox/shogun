@@ -5,7 +5,10 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/eigen3.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -56,11 +59,14 @@ TEST(SGVectorTest,ctor)
 
 TEST(SGVectorTest, ctor_from_matrix)
 {
+	const int32_t seed = 100;
 	const index_t n_rows = 5, n_cols = 4;
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = normal_dist(prng);
 
 	auto vec = SGVector<float64_t>(mat);
 
@@ -94,10 +100,12 @@ TEST(SGVectorTest,setget)
 
 TEST(SGVectorTest,add)
 {
-	std::mt19937_64 prng(17);
+	const int32_t seed = 17;
 
 	SGVector<float64_t> a(10);
 	SGVector<float64_t> b(10);
+
+	std::mt19937_64 prng(seed);
 	random::fill_array(a, 0.0, 1024.0, prng);
 	random::fill_array(b, 0.0, 1024.0, prng);
 	float64_t* b_clone = SGVector<float64_t>::clone_vector(b.vector, b.vlen);

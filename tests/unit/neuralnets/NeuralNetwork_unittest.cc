@@ -54,9 +54,8 @@ using namespace shogun;
  */
 TEST(NeuralNetwork, backpropagation_linear)
 {
+	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
-
-	CMath::init_random(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -66,6 +65,7 @@ TEST(NeuralNetwork, backpropagation_linear)
 	layers->append_element(new CNeuralLinearLayer(5));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -86,9 +86,8 @@ TEST(NeuralNetwork, backpropagation_linear)
  */
 TEST(NeuralNetwork, neural_layers_builder)
 {
+	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
-
-	CMath::init_random(10);
 
 	CNeuralLayers* layers = new CNeuralLayers();
 	layers->input(5)
@@ -98,6 +97,7 @@ TEST(NeuralNetwork, neural_layers_builder)
 	      ->linear(5)
 	      ->linear(4);
 	CNeuralNetwork* network = new CNeuralNetwork(layers->done());
+	network->put("seed", seed);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -121,9 +121,8 @@ TEST(NeuralNetwork, neural_layers_builder)
  */
 TEST(NeuralNetwork, backpropagation_logistic)
 {
+	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
-
-	CMath::init_random(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -133,6 +132,7 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	layers->append_element(new CNeuralLogisticLayer(5));
 	layers->append_element(new CNeuralLogisticLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -153,9 +153,8 @@ TEST(NeuralNetwork, backpropagation_logistic)
  */
 TEST(NeuralNetwork, backpropagation_softmax)
 {
+	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
-
-	CMath::init_random(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -165,6 +164,7 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	layers->append_element(new CNeuralLinearLayer(5));
 	layers->append_element(new CNeuralSoftmaxLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -185,9 +185,8 @@ TEST(NeuralNetwork, backpropagation_softmax)
  */
 TEST(NeuralNetwork, backpropagation_rectified_linear)
 {
+	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
-
-	CMath::init_random(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -197,6 +196,7 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	layers->append_element(new CNeuralRectifiedLinearLayer(5));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -217,9 +217,8 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
  */
 TEST(NeuralNetwork, backpropagation_convolutional)
 {
+	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
-
-	CMath::init_random(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(6,4));
@@ -232,6 +231,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1, RE_NORMAL));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -250,7 +250,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 /** tests a neural network on the binary XOR problem */
 TEST(NeuralNetwork, binary_classification)
 {
-	CMath::init_random(100);
+	int32_t seed = 127;
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -281,6 +281,8 @@ TEST(NeuralNetwork, binary_classification)
 	layers->append_element(new CNeuralLogisticLayer(1));
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
+
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -309,7 +311,7 @@ TEST(NeuralNetwork, binary_classification)
  */
 TEST(NeuralNetwork, multiclass_classification)
 {
-	CMath::init_random(100);
+	int32_t seed = 100;
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -340,6 +342,7 @@ TEST(NeuralNetwork, multiclass_classification)
 	layers->append_element(new CNeuralLogisticLayer(2));
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -368,7 +371,7 @@ TEST(NeuralNetwork, multiclass_classification)
 /** tests a neural network on a very simple regression problem */
 TEST(NeuralNetwork, regression)
 {
-	CMath::init_random(100);
+	int32_t seed = 100;
 
 	int32_t N = 20;
 	SGMatrix<float64_t> inputs_matrix(1,N);
@@ -391,6 +394,7 @@ TEST(NeuralNetwork, regression)
 	layers->append_element(new CNeuralLinearLayer(1));
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 	network->quick_connect();
 	network->initialize_neural_network(1e-6);
 
@@ -414,7 +418,7 @@ TEST(NeuralNetwork, regression)
  */
 TEST(NeuralNetwork, gradient_descent)
 {
-	CMath::init_random(100);
+	int32_t seed = 100;
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -445,6 +449,7 @@ TEST(NeuralNetwork, gradient_descent)
 	layers->append_element(new CNeuralLogisticLayer(1));
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->put("seed", seed);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 

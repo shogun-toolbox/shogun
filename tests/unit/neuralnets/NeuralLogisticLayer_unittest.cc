@@ -49,10 +49,12 @@ using NeuralLogisticLayerTest = NeuralLayerTestFixture;
  */
 TEST_F(NeuralLogisticLayerTest, compute_activations)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize logistic layer
 	CNeuralLogisticLayer layer(9);
@@ -89,10 +91,12 @@ TEST_F(NeuralLogisticLayerTest, compute_activations)
  */
 TEST_F(NeuralLogisticLayerTest, compute_local_gradients)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
 	CNeuralLogisticLayer layer(9);
@@ -103,7 +107,7 @@ TEST_F(NeuralLogisticLayerTest, compute_local_gradients)
 
 	// initialize output
 	auto y = create_rand_matrix<float64_t>(
-	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0);
+	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0, prng);
 
 	// compute the layer's local gradients
 	layer.compute_local_gradients(y);

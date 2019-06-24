@@ -34,19 +34,26 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 using namespace internal;
 
 TEST(SelfAdjointKernelFunctor, kernel)
 {
+	const int32_t seed=17;
 	const index_t dim=3;
 	const index_t num_vec=8;
 	const float64_t sigma=0.1;
+	
+	std::mt19937_64 prng(seed);
 
 	SGMatrix<float64_t> data(dim, num_vec);
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 0.1);
 	for (auto i=0; i<dim*num_vec; ++i)
-		data.matrix[i]=sg_rand->random(0.0, 0.1);
+		data.matrix[i]=uniform_real_dist(prng);
 	auto feats=some<CDenseFeatures<float64_t> >(data);
 
 	auto kernel=some<CGaussianKernel>(10, 2*sigma*sigma);

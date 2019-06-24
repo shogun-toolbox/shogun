@@ -4,12 +4,14 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-
+#include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/eigen3.h>
 
 #ifdef HAVE_VIENNACL
 #include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
 #endif
+
+#include <random>
 
 using namespace shogun;
 
@@ -250,16 +252,18 @@ TEST(SGMatrixTest,get_diagonal_vector_rectangular_matrix)
 
 TEST(SGMatrixTest,is_symmetric_float32_false_old_plus_eps)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j)=normal_dist(prng);
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -287,16 +291,18 @@ TEST(SGMatrixTest,is_symmetric_float32_false_old_plus_eps)
 
 TEST(SGMatrixTest,is_symmetric_float32_false_old_minus_eps)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j)=normal_dist(prng);
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -324,14 +330,17 @@ TEST(SGMatrixTest,is_symmetric_float32_false_old_minus_eps)
 
 TEST(SGMatrixTest,is_symmetric_float32_true)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
+
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j)=normal_dist(prng);
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -340,16 +349,18 @@ TEST(SGMatrixTest,is_symmetric_float32_true)
 
 TEST(SGMatrixTest,is_symmetric_float64_false_old_plus_eps)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j)=normal_dist(prng);
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -377,16 +388,18 @@ TEST(SGMatrixTest,is_symmetric_float64_false_old_plus_eps)
 
 TEST(SGMatrixTest,is_symmetric_float64_false_old_minus_eps)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j)=normal_dist(prng);
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -414,14 +427,16 @@ TEST(SGMatrixTest,is_symmetric_float64_false_old_minus_eps)
 
 TEST(SGMatrixTest,is_symmetric_float64_true)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j)=normal_dist(prng);
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -430,16 +445,18 @@ TEST(SGMatrixTest,is_symmetric_float64_true)
 
 TEST(SGMatrixTest,is_symmetric_complex128_false_old_plus_eps)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j)=complex128_t(normal_dist(prng), normal_dist(prng));
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -475,16 +492,18 @@ TEST(SGMatrixTest,is_symmetric_complex128_false_old_plus_eps)
 
 TEST(SGMatrixTest,is_symmetric_complex128_false_old_minus_eps)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j)=complex128_t(normal_dist(prng), normal_dist(prng));
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -520,14 +539,17 @@ TEST(SGMatrixTest,is_symmetric_complex128_false_old_minus_eps)
 
 TEST(SGMatrixTest,is_symmetric_complex128_true)
 {
+	const int32_t seed = 100;
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j)=complex128_t(normal_dist(prng), normal_dist(prng));
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -566,6 +588,7 @@ TEST(SGMatrixTest, from_eigen3)
 
 TEST(SGMatrixTest, equals)
 {
+	const int32_t seed = 100;
 	const index_t size=10;
 	SGMatrix<float32_t> mat, copy;
 
@@ -573,9 +596,10 @@ TEST(SGMatrixTest, equals)
 	EXPECT_TRUE(mat.equals(copy));
 
 	mat=SGMatrix<float32_t>(size, size);
-	CMath::init_random(100);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i]=normal_dist(prng);
 
 	EXPECT_TRUE(mat.equals(mat));
 	EXPECT_FALSE(mat.equals(copy));
@@ -583,19 +607,23 @@ TEST(SGMatrixTest, equals)
 	copy=SGMatrix<float32_t>(size, size);
 	EXPECT_FALSE(mat.equals(copy));
 
-	CMath::init_random(100);
+	prng.seed(seed);
 	for (int64_t i=0; i<copy.size(); ++i)
-		copy.matrix[i]=CMath::randn_float();
+		copy.matrix[i]=normal_dist(prng);
 
 	EXPECT_TRUE(mat.equals(copy));
 }
 
 TEST(SGMatrixTest, clone)
 {
+	const int32_t seed = 100;
 	const index_t size=10;
+
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	SGMatrix<float32_t> mat(size, size);
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i]=normal_dist(prng);
 
 	SGMatrix<float32_t> copy=mat.clone();
 
@@ -615,9 +643,13 @@ TEST(SGMatrixTest, clone_empty)
 
 TEST(SGMatrixTest, set_const)
 {
+	const int32_t seed = 100;
 	const index_t size=10;
 	SGMatrix<float64_t> mat(size, size);
-	const auto value=CMath::randn_double();
+
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
+	const auto value=normal_dist(prng);
 	mat.set_const(value);
 
 	for (int64_t i=0; i<mat.size(); ++i)
@@ -626,10 +658,14 @@ TEST(SGMatrixTest, set_const)
 
 TEST(SGMatrixTest, max_single)
 {
+	const int32_t seed = 100;
 	const index_t size=10;
+
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	SGMatrix<float32_t> mat(size, size);
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i]=normal_dist(prng);
 
 	auto max=mat.max_single();
 	for (int64_t i=0; i<mat.size(); ++i)
@@ -638,13 +674,16 @@ TEST(SGMatrixTest, max_single)
 
 TEST(SGMatrixTest, get_slice)
 {
+	const int32_t seed = 100;
 	const index_t n_rows = 6, n_cols = 8;
 	const index_t start_col = 2, end_col = 5;
 	const index_t n_subcols = end_col - start_col;
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < n_rows * n_cols; ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = normal_dist(prng);
 
 	auto sub = mat.slice(start_col, end_col);
 
@@ -657,12 +696,15 @@ TEST(SGMatrixTest, get_slice)
 
 TEST(SGMatrixTest, get_column)
 {
+	const int32_t seed = 100;
 	const index_t n_rows = 6, n_cols = 8;
 	const index_t col = 4;
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < n_rows * n_cols; ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = normal_dist(prng);
 
 	auto vec = mat.get_column_vector(col);
 
@@ -672,14 +714,17 @@ TEST(SGMatrixTest, get_column)
 
 TEST(SGMatrixTest, set_column)
 {
+	const int32_t seed = 100;
 	const index_t n_rows = 6, n_cols = 8;
 	const index_t col = 4;
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	SGVector<float64_t> vec(n_rows);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i = 0; i < n_rows; ++i)
-		vec[i] = CMath::randn_double();
+		vec[i] = normal_dist(prng);
 
 	mat.set_column(col, vec);
 

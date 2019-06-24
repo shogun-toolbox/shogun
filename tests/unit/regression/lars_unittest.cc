@@ -37,7 +37,9 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
-#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
+#include <random>
 
 using namespace Eigen;
 using namespace shogun;
@@ -359,7 +361,8 @@ TEST(LeastAngleRegression, lars_template_test_floatmax)
 #ifndef USE_VIENNACL_GLOBAL
 TEST(LeastAngleRegression, cholesky_insert)
 {
-	std::mt19937_64 prng(117);
+	int32_t seed = 117;
+	std::mt19937_64 prng(seed);
 
 	class lars_helper: public CLeastAngleRegression
 	{
@@ -380,11 +383,12 @@ TEST(LeastAngleRegression, cholesky_insert)
 	random::fill_array(vec,0.0,1.0,prng);
 	Map<VectorXd> map_vec(vec.vector, vec.size());
 
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (index_t i=0; i<num_vec; i++)
 	{
 		for (index_t j=0; j<num_feats-1; j++)
 		{
-			mat(i,j)=CMath::random(0.0,1.0);
+			mat(i,j)=uniform_real_dist(prng);
 			matnew(i,j)=mat(i,j);
 		}
 	}
@@ -414,14 +418,16 @@ TEST(LeastAngleRegression, cholesky_insert)
 
 TEST(LeastAngleRegression, ols_equivalence)
 {
-	std::mt19937_64 prng(127);
+	int32_t seed = 127;
+	std::mt19937_64 prng(seed);
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 
 	int32_t n_feat=25, n_vec=100;
 	SGMatrix<float64_t> data(n_feat, n_vec);
 	for (index_t i=0; i<n_feat; i++)
 	{
 		for (index_t j=0; j<n_vec; j++)
-			data(i,j)=CMath::random(0.0,1.0);
+			data(i,j)=uniform_real_dist(prng);
 	}
 
 	SGVector<float64_t> lab=SGVector<float64_t>(n_vec);

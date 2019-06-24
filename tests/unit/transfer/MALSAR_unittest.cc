@@ -24,10 +24,10 @@ typedef std::pair<SplittedFeatures, CBinaryLabels*> SplittedDataset;
 #ifdef HAVE_LAPACK
 SplittedDataset generate_data()
 {
-	std::mt19937_64 prng(24);
-
+	int32_t seed = 5;
 	index_t num_samples = 50;
-	CMath::init_random(5);
+
+	std::mt19937_64 prng(24);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2, prng);
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);

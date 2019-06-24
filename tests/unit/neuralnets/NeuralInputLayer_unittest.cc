@@ -32,16 +32,21 @@
  */
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include <gtest/gtest.h>
+
+#include <random>
 
 using namespace shogun;
 
 TEST(NeuralInputLayer, compute_activations)
 {
-	CMath::init_random(100);
+	int32_t seed = 100;
+	std::mt19937_64 prng(seed);
+	UniformRealDistribution<float64_t> uniform_real_dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+		x[i] = uniform_real_dist(prng);
 
 	CNeuralInputLayer layer(5, 4);
 	layer.set_batch_size(x.num_cols);

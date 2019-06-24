@@ -10,7 +10,9 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/converter/HashedDocConverter.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
+#include <random>
 
 using namespace shogun;
 
@@ -75,6 +77,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 
 TEST(StreamingHashedDocFeaturesTest, dot_tests)
 {
+	int32_t seed = 12;
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
@@ -107,9 +110,11 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 			tokenizer, 5);
 	feats->start_parser();
 
+	std::mt19937_64 prng(seed);
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	SGVector<float32_t> dense_vec(32);
 	for (index_t j=0; j<32; j++)
-		dense_vec[j] = CMath::random(0.0, 1.0);
+		dense_vec[j] = uniform_real_dist(prng, {0.0, 1.0});
 
 	index_t i = 0;
 	while (feats->get_next_example())

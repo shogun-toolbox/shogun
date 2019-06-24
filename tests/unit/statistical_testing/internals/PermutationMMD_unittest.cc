@@ -60,7 +60,7 @@ using Eigen::PermutationMatrix;
 
 TEST(PermutationMMD, biased_full_single_kernel)
 {
-	const index_t seed = 17;
+	const index_t seed = 12345;
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
@@ -120,7 +120,7 @@ TEST(PermutationMMD, biased_full_single_kernel)
 
 	SGVector<index_t> inds(kernel_matrix.num_rows);
 	SGVector<float32_t> result_3(num_null_samples);
-	sg_rand->set_seed(12345);
+	prng.seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);

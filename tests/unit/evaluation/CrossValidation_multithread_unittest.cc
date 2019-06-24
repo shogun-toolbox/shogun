@@ -42,16 +42,20 @@
 #include <shogun/multiclass/KNN.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
-void generate_data(SGMatrix<float64_t>& mat, SGVector<float64_t> &lab)
+template <typename PRNG>
+void generate_data(SGMatrix<float64_t>& mat, SGVector<float64_t> &lab, PRNG& prng)
 {
 	int32_t num=lab.size();
-
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<num; i++)
 	{
-		mat(0,i)=i<num/2 ? 0+(CMath::randn_double()*4) : 100+(CMath::randn_double()*4)	;
+		mat(0,i)=i<num/2 ? 0+(normal_dist(prng)*4) : 100+(normal_dist(prng)*4)	;
 		mat(1,i)=i;
 	}
 
@@ -62,15 +66,16 @@ void generate_data(SGMatrix<float64_t>& mat, SGVector<float64_t> &lab)
 
 TEST(CrossValidation_multithread, LibSVM_unlocked)
 {
+	int32_t seed = 100;
 	int32_t num=100;
-	int32_t seed = 1;
 	SGMatrix<float64_t> mat(2, num);
 
 	/* training labels +/- 1 for each cluster */
 	SGVector<float64_t> lab(num);
 
 	/*create simple linearly separable data*/
-	generate_data(mat, lab);
+	std::mt19937_64 prng(seed);
+	generate_data(mat, lab, prng);
 
 	for (index_t i=0; i<num/2; ++i)
 		lab.vector[i]-=1;
@@ -122,14 +127,15 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 
 TEST(CrossValidation_multithread, KNN)
 {
+	int32_t seed = 100;
 	int32_t num=100;
-	int32_t seed = 1;
 	SGMatrix<float64_t> mat(2, num);
 
 	SGVector<float64_t> lab(num);
 
 	/*create simple linearly separable data*/
-	generate_data(mat, lab);
+	std::mt19937_64 prng(seed);
+	generate_data(mat, lab, prng);
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
 
 	CDenseFeatures<float64_t>* features=

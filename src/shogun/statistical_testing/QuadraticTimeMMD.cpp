@@ -192,6 +192,7 @@ void CQuadraticTimeMMD::init()
 	self=unique_ptr<Self>(new Self(*this, m_prng));
 	self->multi_kernel = shared_ptr<CMultiKernelQuadraticTimeMMD>(
 	    new CMultiKernelQuadraticTimeMMD(this));
+	watch_param("multi_kernel", &(self->multi_kernel));
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()

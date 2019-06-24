@@ -14,20 +14,26 @@
 #include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/DirectSparseLinearSolver.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 using namespace Eigen;
 
 TEST(DirectSparseLinearSolver, solve)
 {
+	const int32_t seed = 10;
 	const index_t size=100000;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(sm);
 	SGVector<float64_t> diag(size);
 	float64_t difficulty=5;
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)+0.0001;
+		diag[i]=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)+0.0001;
 	A->set_diagonal(diag);
 
 	CDirectSparseLinearSolver* linear_solver=new CDirectSparseLinearSolver();

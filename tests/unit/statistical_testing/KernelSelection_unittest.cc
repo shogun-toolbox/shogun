@@ -44,18 +44,20 @@ using namespace shogun;
 
 TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 {
+	const int32_t seed = 12345;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -79,21 +81,23 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 
 TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 {
+	const int32_t seed=2;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -116,6 +120,7 @@ TEST(
     KernelSelectionMaxMMD,
     quadratic_time_single_kernel_dense_unequal_train_test_ratio)
 {
+	const int32_t seed = 12345;
 	const index_t m = 10;
 	const index_t n = 20;
 	const index_t dim = 1;
@@ -123,15 +128,16 @@ TEST(
 	const index_t num_kernels = 10;
 	const float64_t train_test_ratio = 4;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p = some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q = some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto feats_p = gen_p->get_streamed_features(m);
 	auto feats_q = gen_q->get_streamed_features(n);
 
 	auto mmd = some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -150,18 +156,20 @@ TEST(
 #ifdef USE_GPL_SHOGUN
 TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 {
+	const int32_t seed = 12345;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -191,18 +199,20 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 
 TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 {
+	const int32_t seed = 12345;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -226,18 +236,20 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 
 TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 {
+	int32_t seed = 9;
 	const index_t m=10;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -261,18 +273,20 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 #ifdef USE_GPL_SHOGUN
 TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 {
+	const int32_t seed = 12345;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -302,6 +316,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 
 TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 {
+	const int32_t seed = 12345;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=1;
@@ -312,14 +327,16 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	const float64_t train_test_ratio=3;
 	const float64_t alpha=0.05;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
+
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -343,6 +360,7 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 
 TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 {
+	const int32_t seed = 12345;
 	const index_t m=8;
 	const index_t n=12;
 	const index_t dim=1;
@@ -353,14 +371,16 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 	const float64_t train_test_ratio=3;
 	const float64_t alpha=0.05;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
+
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -382,18 +402,20 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 
 TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 {
+	const int32_t seed = 12345;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -416,18 +438,20 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 
 TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 {
+	const int32_t seed = 12345;
 	const index_t m=5;
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	sg_rand->set_seed(12345);
-
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
