@@ -74,7 +74,7 @@ struct CKernelSelectionStrategy::Self
 	const static index_t default_num_folds;
 	const static float64_t default_alpha;
 
-	CKernelSelectionStrategy::prng_type prng;
+	CKernelSelectionStrategy::prng_type& prng;
 };
 
 const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=KSM_AUTO;
@@ -101,7 +101,8 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	case KSM_CROSS_VALIDATION:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!\n");
-		policy=std::make_unique<MaxCrossValidation<decltype(prng)>>(kernel_mgr, estimator,
+		using prng_type = CKernelSelectionStrategy::prng_type;
+		policy=std::make_unique<MaxCrossValidation<prng_type>>(kernel_mgr, estimator,
 			num_runs, num_folds, alpha, prng);
 	}
 	break;

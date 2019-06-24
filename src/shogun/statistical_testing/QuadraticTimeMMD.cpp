@@ -45,6 +45,7 @@
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 #include <shogun/statistical_testing/internals/mmd/VarianceH0.h>
 #include <shogun/statistical_testing/internals/mmd/VarianceH1.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 using namespace internal;
@@ -67,7 +68,12 @@ struct CQuadraticTimeMMD::Self
 	SGVector<float64_t> gamma_fit_null();
 
 	CQuadraticTimeMMD& owner;
-	shared_ptr<CMultiKernelQuadraticTimeMMD> multi_kernel;
+	CMultiKernelQuadraticTimeMMD* multi_kernel;
+
+	~Self()
+	{
+		SG_UNREF(multi_kernel);
+	}
 
 	/**
 	 * Whether to precompute the kernel matrix. by default this is true.
@@ -182,7 +188,7 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	return precomputed_kernel->get_float32_kernel_matrix();
 }
 
-CQuadraticTimeMMD::CQuadraticTimeMMD() : RandomMixin<CMMD>()
+CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
 {
 	init();
 }
@@ -190,8 +196,8 @@ CQuadraticTimeMMD::CQuadraticTimeMMD() : RandomMixin<CMMD>()
 void CQuadraticTimeMMD::init()
 {
 	self=unique_ptr<Self>(new Self(*this, m_prng));
-	self->multi_kernel = shared_ptr<CMultiKernelQuadraticTimeMMD>(
-	    new CMultiKernelQuadraticTimeMMD(this));
+	self->multi_kernel = new CMultiKernelQuadraticTimeMMD(this);
+	SG_REF(self->multi_kernel);
 	watch_param("multi_kernel", &(self->multi_kernel));
 }
 
@@ -587,7 +593,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 
 CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
 {
-	CMultiKernelQuadraticTimeMMD* result = self->multi_kernel.get();
+	CMultiKernelQuadraticTimeMMD* result = self->multi_kernel;
 	SG_REF(result);
 	return result;
 }

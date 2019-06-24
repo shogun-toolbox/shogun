@@ -26,9 +26,7 @@ namespace shogun
 			UniformIntDistribution<diff_t> dist;
 			diff_t n = last - first;
 			for (diff_t i = n - 1; i > 0; --i)
-			{
 				std::swap(first[i], first[dist(prng, {0, i})]);
-			}
 		}
 
 		/** Reorders a container of elements randomly

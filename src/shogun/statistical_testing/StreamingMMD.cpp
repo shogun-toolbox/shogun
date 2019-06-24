@@ -388,7 +388,7 @@ SGVector<float64_t> CStreamingMMD::Self::sample_null()
 	return statistic;
 }
 
-CStreamingMMD::CStreamingMMD() : RandomMixin<CMMD>()
+CStreamingMMD::CStreamingMMD() : CMMD()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::initParallel();

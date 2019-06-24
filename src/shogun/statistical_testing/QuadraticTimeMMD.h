@@ -34,8 +34,6 @@
 
 #include <memory>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/mathematics/RandomMixin.h>
-#include <shogun/mathematics/NormalDistribution.h>
 
 
 namespace shogun
@@ -97,7 +95,7 @@ template <typename> class SGVector;
  * [2]: Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
  * A fast, consistent kernel two-sample test.
  */
-class CQuadraticTimeMMD : public RandomMixin<CMMD>
+class CQuadraticTimeMMD : public CMMD
 {
 	friend class CMultiKernelQuadraticTimeMMD;
 

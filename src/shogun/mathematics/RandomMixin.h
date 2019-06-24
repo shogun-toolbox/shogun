@@ -22,13 +22,23 @@ namespace shogun
 	template <typename Parent, typename PRNG = std::mt19937_64>
 	class RandomMixin : public Parent
 	{
+	private:
+		using this_t = RandomMixin<Parent, PRNG>;
+
 	public:
 		using prng_type = PRNG;
 
 		template <typename... T>
-		RandomMixin(T... args) : Parent(args...), m_prng(prng_wrapper.prng)
+		RandomMixin(T... args) : Parent(args...)
 		{
 			init();
+		}
+
+		virtual CSGObject* clone() const override
+		{
+			auto clone = dynamic_cast<this_t*>(Parent::clone());
+			clone->m_prng = m_prng;
+			return clone;
 		}
 
 	private:
@@ -52,33 +62,19 @@ namespace shogun
 		{
 			init_random_seed();
 
-			Parent::watch_param("prng", &prng_wrapper);
 			Parent::watch_param(_seed::seed_key, &m_seed);
 			Parent::add_callback_function(_seed::seed_key, [&]() {
 				m_prng = PRNG(m_seed);
 				seed_callback(this, m_seed);
 			});
 
-			using this_t = RandomMixin<Parent, PRNG>;
 			Parent::watch_method(_seed::random_seed_key, &this_t::set_random_seed);
 		}
 
 		int32_t m_seed;
 
 	protected:
-		PRNG& m_prng;
-		// FIXME: PRNG is not cloneable since it is 'functional'
-		// this is a trick to solve this;
-		// FIXME: PRNG is not serializable
-		struct PRNGWrapper
-		{
-			using not_visitable = std::true_type;
-			PRNG prng;
-			inline bool operator==(const PRNGWrapper& other) const
-			{
-				return prng == other.prng;
-			}
-		} prng_wrapper;
+		PRNG m_prng;
 	};
 
 	static inline void seed_callback(CSGObject* obj, int32_t seed)

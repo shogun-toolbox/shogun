@@ -37,7 +37,6 @@
 #include <functional>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
-#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -58,7 +57,7 @@ class WeightedMaxTestPower;
 
 }
 
-class CStreamingMMD : public RandomMixin<CMMD>
+class CStreamingMMD : public CMMD
 {
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;

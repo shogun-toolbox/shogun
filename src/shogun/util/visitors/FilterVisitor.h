@@ -5,7 +5,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 
 #include <functional>
-#include <iostream>
+
 namespace shogun
 {
 	template <typename T>

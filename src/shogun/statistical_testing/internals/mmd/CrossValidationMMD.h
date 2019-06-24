@@ -196,10 +196,11 @@ struct CrossValidationMMD : PermutationMMD
 		auto instance_y=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_y), m_num_folds);
 		m_kfold_x=unique_ptr<CCrossValidationSplitting>(instance_x);
 		m_kfold_y=unique_ptr<CCrossValidationSplitting>(instance_y);
-		if(seed != -1)
-			m_kfold_x->put("seed", seed);
-			m_kfold_y->put("seed", seed);
-
+		m_kfold_x->put("seed", seed);
+		m_kfold_y->put("seed", seed);
+		instance_x->put("seed", seed);
+		instance_y->put("seed", seed);
+	
 		m_stack=unique_ptr<CSubsetStack>(new CSubsetStack());
 
 		const index_t size=m_n_x+m_n_y;
