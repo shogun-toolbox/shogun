@@ -17,7 +17,7 @@
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/mathematics/RandomNamespace.h>
+
 
 using namespace shogun;
 
@@ -31,8 +31,6 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	std::mt19937_64 prng(0);
-
 	int32_t num_clusters=4;
 	int32_t num_features=11;
 	int32_t dim_features=3;
@@ -41,7 +39,8 @@ int main(int argc, char **argv)
 
 	/* build random cluster centers */
 	SGMatrix<float64_t> cluster_centers(dim_features, num_clusters);
-	random::fill_random(cluster_centers, -10.0, 10.0, prng);
+	SGVector<float64_t>::random_vector(cluster_centers.matrix, dim_features*num_clusters,
+			-10.0, 10.0);
 	SGMatrix<float64_t>::display_matrix(cluster_centers.matrix, cluster_centers.num_rows,
 			cluster_centers.num_cols, "cluster centers");
 

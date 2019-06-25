@@ -96,6 +96,7 @@ TEST_F(NeuralSoftmaxLayerTest, compute_error)
 
 	// initialize the softmax layer
 	CNeuralSoftmaxLayer layer(9);
+	layer.put("seed", seed);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =

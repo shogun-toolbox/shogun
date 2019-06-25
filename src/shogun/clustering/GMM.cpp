@@ -119,6 +119,7 @@ bool CGMM::train(CFeatures* data)
 	return true;
 }
 
+#include <iostream>
 float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
 	if (!features)
@@ -133,6 +134,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	if (m_components[0]->get_mean().vector==NULL)
 	{
 		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
+		init_k_means->put("seed", (int32_t) m_prng());
 		init_k_means->train(dotdata);
 		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
@@ -154,6 +156,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	auto pb = SG_PROGRESS(range(max_iter));
 	while (iter<max_iter)
 	{
+		std::cout << iter << '\n';
 		log_likelihood_prev=log_likelihood_cur;
 		log_likelihood_cur=0;
 
@@ -311,6 +314,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				{
 					candidates_checked++;
 					CGMM* candidate=new CGMM(m_components, m_coefficients, true);
+					candidate->put("seed", (int32_t) m_prng());
 					candidate->train(features);
 					candidate->partial_em(split_ind[i], merge_ind[j]/int32_t(m_components.size()), merge_ind[j]%int32_t(m_components.size()), min_cov, max_em_iter, min_change);
 					float64_t cand_likelihood=candidate->train_em(min_cov, max_em_iter, min_change);
@@ -496,6 +500,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	}
 
 	CGMM* partial_candidate=new CGMM(components, coefficients);
+	partial_candidate->put("seed", (int32_t) m_prng());
 	partial_candidate->train(features);
 
 	float64_t log_likelihood_prev=0;

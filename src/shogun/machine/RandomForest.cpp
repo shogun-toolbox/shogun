@@ -183,6 +183,7 @@ bool CRandomForest::train_machine(CFeatures* data)
 void CRandomForest::init()
 {
 	m_machine=new CRandomCARTree();
+	SG_REF(m_machine);
 	m_weights=SGVector<float64_t>();
 
 	SG_ADD(&m_weights,"m_weights","weights");

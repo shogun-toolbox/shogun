@@ -9,6 +9,7 @@ Features features_train = features(f_feats_train)
 #![create_gmm_instance]
 int num_components = 3
 GMM gmm(num_components)
+gmm.put("seed", 100)
 #![create_gmm_instance]
 
 #![add_observer]
