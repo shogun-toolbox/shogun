@@ -278,7 +278,7 @@ SGMatrix<ST> DenseFeatures<ST>::get_feature_matrix() const
 }
 
 template <class ST>
-void DenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column_offset) const
+void DenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST>& target, index_t column_offset) const
 {
 	require(column_offset>=0, "Column offset ({}) cannot be negative!", column_offset);
 	require(!target.equals(feature_matrix), "Source and target feature matrices cannot be the same");
