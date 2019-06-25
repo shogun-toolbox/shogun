@@ -140,12 +140,16 @@ namespace shogun
 		index_t num_features = m_features->get_num_features();
 		index_t num_class = m_labels->get_num_classes();
 
-		auto data = static_cast<CDenseFeatures<T>*>(m_features->clone());
+		auto mean_matrix = SGMatrix<T>(num_features, m_features->get_num_vectors());
+		linalg::zero(mean_matrix);
 
 		// Center data with respect to each data point's class
-		for (auto [data_i, label_i]: zip_iterator(data, m_labels))
-			linalg::add(data_i, m_class_mean[label_i], data_i, static_cast<T>(1), static_cast<T>(-1));
-
+		size_t counter = 0;
+		for (const auto& [data_i, label_i]: zip_iterator(m_features, m_labels))
+		{
+            mean_matrix.set_column(counter, linalg::add(m_class_mean.at(label_i), data_i, static_cast<T>(1), static_cast<T>(-1)));
+            ++counter;
+        }
 		// holds the feature matrix for each class
 		std::vector<SGMatrix<T>> centered_class(num_class);
 		std::vector<index_t> centered_class_col(num_class);
@@ -157,12 +161,14 @@ namespace shogun
 			centered_class[i] = SGMatrix<T>(num_features, m_class_count[i]);
 			linalg::zero(centered_class[i]);
 		}
-		for (const auto& [data_i, label_i]: zip_iterator(data, m_labels))
+		counter=0;
+		for (const auto& label_i: *m_labels)
 		{
 			auto c = static_cast<index_t>(label_i);
 			centered_class[c].set_column(
-					centered_class_col[c], data_i);
+					centered_class_col[c], mean_matrix.get_column(counter));
 			++centered_class_col[c];
+			++counter;
 		}
 		for (index_t i = 0; i < num_class; ++i)
 		{

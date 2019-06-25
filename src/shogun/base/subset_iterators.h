@@ -46,73 +46,6 @@ namespace shogun
 		{
 			using type = float64_t;
 		};
-
-		class SubsetIteratorHelperAbstract
-		{
-		public:
-			SubsetIteratorHelperAbstract(index_t idx) : m_idx(idx)
-			{
-			}
-			virtual void increment() = 0;
-			virtual index_t get() = 0;
-			SG_FORCED_INLINE index_t get_idx() const
-			{
-				return m_idx;
-			}
-
-		protected:
-			index_t m_idx;
-		};
-
-		class SubsetIteratorHelperSubset : public SubsetIteratorHelperAbstract
-		{
-		public:
-			template <typename T>
-			SubsetIteratorHelperSubset(T* ptr, int idx)
-			    : SubsetIteratorHelperAbstract(idx)
-			{
-				// need to keep this variable so that the vector destructor
-				// isn't called
-				m_argsorted_subset = CMath::argsort(ptr->get_subset_stack()
-				                                        ->get_last_subset()
-				                                        ->get_subset_idx());
-				m_argsorted_subset_iter = m_argsorted_subset.begin() + idx;
-			}
-
-			void increment() final
-			{
-				m_argsorted_subset_iter++;
-				m_idx++;
-			}
-
-			index_t get() final
-			{
-				return *m_argsorted_subset_iter;
-			}
-
-		private:
-			SGVector<index_t> m_argsorted_subset;
-			SGVector<index_t>::iterator m_argsorted_subset_iter;
-		};
-
-		class SubsetIteratorHelperLinear : public SubsetIteratorHelperAbstract
-		{
-		public:
-			SubsetIteratorHelperLinear(index_t idx)
-			    : SubsetIteratorHelperAbstract(idx)
-			{
-			}
-
-			void increment() final
-			{
-				this->m_idx++;
-			}
-
-			index_t get() final
-			{
-				return m_idx;
-			}
-		};
 	} // namespace subset_iterator_detail
 
 	template <class IterableSubsetContainer, typename ST>
@@ -154,36 +87,23 @@ namespace shogun
 
 			subset_iterator(internal_pointer ptr, index_t idx = 0)
 			{
-				if (ptr->get_subset_stack()->get_last_subset() != nullptr)
-				{
-					m_idx_holder = std::make_shared<
-					    subset_iterator_detail::SubsetIteratorHelperSubset>(
-					    ptr, idx);
-				}
-				else
-				{
-					m_idx_holder = std::make_shared<
-					    subset_iterator_detail::SubsetIteratorHelperLinear>(
-					    idx);
-				}
 				m_ptr = ptr;
+				m_idx = idx;
 			}
 
-			subset_iterator(const subset_iterator<T, is_const>& other)
+			subset_iterator(const subset_iterator<T, is_const>& other):  m_idx(other.m_idx), m_ptr(other.m_ptr)
 			{
-				m_idx_holder = other.m_idx_holder;
-				m_ptr = other.m_ptr;
 			}
 
-			subset_iterator(subset_iterator<T, is_const>&& other) noexcept
+			subset_iterator(subset_iterator<T, is_const>&& other) noexcept: m_idx(other.m_idx), m_ptr(other.m_ptr)
 			{
-				m_idx_holder = std::move(other.m_idx_holder);
-				m_ptr = other.m_ptr;
+			    other.m_idx = -1;
+				other.m_ptr = nullptr;
 			}
 
 			subset_iterator<T, is_const>& operator++()
 			{
-				m_idx_holder->increment();
+				++m_idx;
 				return *this;
 			}
 
@@ -197,7 +117,7 @@ namespace shogun
 			bool operator==(const subset_iterator<T, is_const>& other)
 			{
 				return m_ptr == other.m_ptr &&
-				       m_idx_holder->get_idx() == other.m_idx_holder->get_idx();
+				       m_idx == other.m_idx;
 			}
 
 			bool operator!=(const subset_iterator<T, is_const>& other)
@@ -210,56 +130,17 @@ namespace shogun
 				if constexpr (std::is_base_of<
 				                  CFeatures, subset_iterator_detail::
 				                                 remove_cvptr_t<T>>::value)
-					return m_ptr->get_feature_vector(m_idx_holder->get());
+					return m_ptr->get_feature_vector(m_idx);
 				if constexpr (std::is_base_of<
 				                  CLabels, subset_iterator_detail::
 				                               remove_cvptr_t<T>>::value)
-					return m_ptr->get_label(m_idx_holder->get());
+					return m_ptr->get_label(m_idx);
 			}
 
 		private:
-			std::shared_ptr<
-			    subset_iterator_detail::SubsetIteratorHelperAbstract>
-			    m_idx_holder;
+			index_t m_idx;
 			internal_pointer m_ptr;
 		};
-
-		/**
-		 * Returns an iterator to the first vector of features/labels.
-		 */
-		auto begin()
-		{
-			auto* this_casted = static_cast<IterableSubsetContainer*>(this);
-			return subset_iterator<decltype(this_casted)>(this_casted);
-		}
-
-		/**
-		 * Returns an iterator to the element following the end of
-		 * features/labels.
-		 */
-		auto end()
-		{
-			auto* this_casted = static_cast<IterableSubsetContainer*>(this);
-			if (auto stack = this_casted->get_subset_stack()->get_last_subset();
-			    stack == nullptr)
-			{
-				if constexpr (std::is_base_of<
-				                  CFeatures,
-				                  subset_iterator_detail::remove_cvptr_t<
-				                      IterableSubsetContainer>>::value)
-					return subset_iterator<decltype(this_casted)>(
-					    this_casted, this_casted->get_num_vectors());
-				if constexpr (std::is_base_of<
-				                  CLabels,
-				                  subset_iterator_detail::remove_cvptr_t<
-				                      IterableSubsetContainer>>::value)
-					return subset_iterator<decltype(this_casted)>(
-					    this_casted, this_casted->get_num_labels());
-			}
-			else
-				return subset_iterator<decltype(this_casted)>(
-				    this_casted, stack->get_subset_idx().size());
-		}
 
 		/**
 		 * Returns a const iterator to the first vector of features/labels.
@@ -272,7 +153,7 @@ namespace shogun
 		}
 
 		/**
-		 * Returns a const iterator to the element following the end of
+		 * Returns a const iterator to the "vector" following the end of
 		 * features/labels.
 		 */
 		auto end() const

@@ -68,7 +68,7 @@ void Labels::remove_all_subsets()
 	m_subset_stack->remove_all_subsets();
 }
 
-std::shared_ptr<SubsetStack> Labels::get_subset_stack()
+std::shared_ptr<SubsetStack> Labels::get_subset_stack() const
 {
 
 	return m_subset_stack;

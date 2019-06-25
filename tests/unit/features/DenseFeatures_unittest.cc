@@ -307,13 +307,12 @@ TEST(DenseFeaturesTest, iterator)
     vals.range_fill();
     auto mat = SGMatrix(vals, 5, 4);
     auto subset = SGVector{1,0,2,3,1,3,1,1,2};
-    auto ordered_subset = SGVector{0,1,1,1,1,2,2,3,3};
     auto feat = some<CDenseFeatures<float64_t>>(mat);
     int counter = 0;
     feat->add_subset(subset);
     for (auto iter: *feat)
     {
-        auto tmp = mat.get_column(ordered_subset[counter]);
+        auto tmp = mat.get_column(subset[counter]);
         for (auto [test, truth]: zip_iterator(iter, tmp))
             EXPECT_EQ(test, truth);
         ++counter;

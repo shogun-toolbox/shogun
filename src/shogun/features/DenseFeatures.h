@@ -541,7 +541,7 @@ protected:
 	 * offset, it throws an error. It then copies into the target matrix, starting
 	 * from base + (colum_offset * num_features) location.
 	 */
-	void copy_feature_matrix(SGMatrix<ST> target, index_t column_offset=0) const;
+	void copy_feature_matrix(SGMatrix<ST>& target, index_t column_offset=0) const;
 
 	/// number of vectors in cache
 	int32_t num_vectors;
