@@ -142,6 +142,9 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Copy constructor */
 		SGMatrix(const SGMatrix &orig);
 
+		/** Move constructor */
+		SGMatrix(SGMatrix&& orig) noexcept;
+
 		/** Empty destructor */
 		virtual ~SGMatrix();
 
@@ -173,11 +176,17 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		SGVector<T> get_column(index_t col) const;
 
-		/** Copy the content of a vector into a column
+		/** Copy the content of a vector lvalue reference into a column
 		 * @param col column index
 		 * @param vec vector
 		 */
-		void set_column(index_t col, const SGVector<T> vec);
+		void set_column(index_t col, const SGVector<T>& vec);
+
+        /** Copy the content of a vector rvalue reference into a column
+         * @param col column index
+         * @param vec vector
+         */
+        void set_column(index_t col, SGVector<T>&& vec);
 
 		/** Get a row vector
 		 *
