@@ -11,7 +11,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/subset_iterators.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/File.h>
@@ -19,6 +18,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/common.h>
+#include <shogun/util/container_iterators.h>
 
 namespace shogun {
 template<class ST> class StringFeatures;
@@ -61,7 +61,7 @@ class DotFeatures;
  * See comments to find out whether it is supported for that method.
  * See also Features class documentation
  */
-template<class ST> class CDenseFeatures: public CDotFeatures, public SubsetIteratorBase<CDenseFeatures<ST>, ST>
+template<class ST> class CDenseFeatures: public CDotFeatures, public SGContainerIteratorBase<CDenseFeatures<ST>, ST>
 {
 public:
 	/** constructor

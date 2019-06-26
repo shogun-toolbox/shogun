@@ -108,9 +108,9 @@ SGMatrix<T>::SGMatrix(SGMatrix&& orig) noexcept
 	  num_rows(orig.num_rows), num_cols(orig.num_cols),
 	  gpu_ptr(std::move(orig.gpu_ptr))
 {
-    orig.matrix = nullptr;
-    orig.num_rows = 0;
-    orig.num_cols = 0;
+	orig.matrix = nullptr;
+	orig.num_rows = 0;
+	orig.num_cols = 0;
 	m_on_gpu.store(orig.m_on_gpu.load(
 			std::memory_order_acquire), std::memory_order_release);
 }

@@ -11,11 +11,11 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/subset_iterators.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/features/SubsetStack.h>
+#include <shogun/util/container_iterators.h>
 
 namespace shogun
 {

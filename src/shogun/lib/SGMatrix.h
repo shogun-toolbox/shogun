@@ -182,11 +182,11 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		void set_column(index_t col, const SGVector<T>& vec);
 
-        /** Copy the content of a vector rvalue reference into a column
-         * @param col column index
-         * @param vec vector
-         */
-        void set_column(index_t col, SGVector<T>&& vec);
+		/** Copy the content of a vector rvalue reference into a column
+		 * @param col column index
+		 * @param vec vector
+		 */
+		void set_column(index_t col, SGVector<T>&& vec);
 
 		/** Get a row vector
 		 *
