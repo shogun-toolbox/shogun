@@ -72,6 +72,7 @@ public:
 	void train_with_solver_simple(
 		LIBLINEAR_SOLVER_TYPE llst, bool biasEnable, bool l1, SGVector<float64_t> t_w, bool C_value=false) //C_value only for L2R_L1LOSS_SVC_DUAL
 	{
+		int32_t seed = 100;
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = llst;
 
 		if (l1)
@@ -91,6 +92,7 @@ public:
 			ll->set_C(0.1,0.1); //Only in the case of L2R_L1LOSS_SVC_DUAL
 		ll->set_labels(ground_truth);
 		ll->set_liblinear_solver_type(liblinear_solver_type);
+		ll->put("seed", seed);
 		ll->train();
 
 		auto pred = ll->apply_binary(test_feats);
