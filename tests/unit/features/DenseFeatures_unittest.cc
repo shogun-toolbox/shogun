@@ -14,6 +14,7 @@
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/lib/View.h>
+#include <shogun/util/zip_iterator.h>
 
 #include <random>
 
