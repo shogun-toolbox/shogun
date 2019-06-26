@@ -16,7 +16,6 @@
 #include <shogun/lib/SGString.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 

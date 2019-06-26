@@ -15,7 +15,8 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/Parallel.h>
-#include <shogun/mathematics/Random.h>
+#include <shogun/base/init.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <algorithm>
 #include <numeric>

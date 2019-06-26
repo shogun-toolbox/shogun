@@ -16,6 +16,7 @@ Machine classifier = machine("LibLinear", seed=1)
 
 #![choose_strategy]
 ECOCEncoder encoder=ecoc_encoder("ECOCRandomDenseEncoder")
+encoder.put("seed", 1)
 ECOCDecoder decoder=ecoc_decoder("ECOCHDDecoder")
 MulticlassStrategy rnd_dense_strategy=multiclass_strategy("ECOCStrategy", encoder=encoder, decoder=decoder)
 #![choose_strategy]

@@ -610,11 +610,13 @@ void CSGObject::create_parameter(
 
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	auto& pprop = self->map[_tag].get_properties();
+	auto& param = self->at(_tag);
+	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
 		SG_ERROR(
 		    "%s::%s is marked as read-only and cannot be modified!\n",
 		    get_name(), _tag.name().c_str());
+
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
 	{
 		auto msg = self->map[_tag].get_constrain_function()(value);
@@ -626,6 +628,9 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 		}
 	}
 	self->update(_tag, value);
+	for (auto& method : param.get_callbacks())
+		method();
+
 	pprop.remove_property(ParameterProperties::AUTO);
 }
 
@@ -697,7 +702,7 @@ void CSGObject::add_callback_function(
 	    tag.name().c_str(), get_name());
 
 	auto& param = self->at(tag);
-	param.add_callback_function(function);
+	param.add_callback_function(std::move(function));
 }
 
 void CSGObject::subscribe(ParameterObserver* obs)

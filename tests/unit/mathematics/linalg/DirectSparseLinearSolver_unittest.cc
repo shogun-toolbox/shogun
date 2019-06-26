@@ -11,7 +11,6 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/DirectSparseLinearSolver.h>
 #include <shogun/mathematics/NormalDistribution.h>
