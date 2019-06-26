@@ -316,7 +316,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 
 TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 {
-	const int32_t seed = 12345;
+	const int32_t seed = 123;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=1;

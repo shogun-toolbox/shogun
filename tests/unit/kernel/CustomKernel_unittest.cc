@@ -76,7 +76,6 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 			(CDenseFeatures<float64_t>*)gen->get_streamed_features(n);
 	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);
 	CCustomKernel* main_kernel=new CCustomKernel(gaussian);
-	// FIXME
 	gen->CSGObject::put("seed", seed);
 
 	/* create custom kernel copy of gaussien and assert equalness */

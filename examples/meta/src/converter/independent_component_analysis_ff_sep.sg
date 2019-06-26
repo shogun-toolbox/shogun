@@ -1,7 +1,5 @@
 File f_feats = csv_file("../../data/ica_2_sources.dat")
 
-Math:init_random(1)
-
 #![create_features]
 Features feats = features(f_feats)
 #![create_features]

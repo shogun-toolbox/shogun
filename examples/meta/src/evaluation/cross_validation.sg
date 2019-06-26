@@ -2,7 +2,6 @@ File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_t
 File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
 File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
 File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
-Math:init_random(2)
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -17,11 +16,11 @@ real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
-Machine svm = machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, C2=C, liblinear_solver_type="L2R_L2LOSS_SVC")
+Machine svm = machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, C2=C, liblinear_solver_type="L2R_L2LOSS_SVC", seed=2)
 #![create_instance]
 
 #![create_cross_validation]
-SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2)
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2, seed=2)
 Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
 MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=features_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, autolock=False, num_runs=2)
 #![create_cross_validation]
@@ -42,7 +41,6 @@ File reg_feats_train = csv_file("../../data/regression_1d_linear_features_train.
 File reg_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
 File reg_lab_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
 File reg_lab_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
-Math:init_random(2)
 
 #![create_features_REGRESSION]
 Features reg_features_train = features(reg_feats_train)
@@ -58,7 +56,7 @@ Machine lrr = machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
 
 #![create_cross_validation_REGRESSION]
 Evaluation MSE_evaluation = evaluation("MeanSquaredError")
-SplittingStrategy splitting = splitting_strategy("CrossValidationSplitting", labels=reg_labels_train, num_subsets=2)
+SplittingStrategy splitting = splitting_strategy("CrossValidationSplitting", labels=reg_labels_train, num_subsets=2, seed=2)
 MachineEvaluation cross_validation = machine_evaluation("CrossValidation", machine=lrr, features=reg_features_train, labels=reg_labels_train, splitting_strategy=splitting, evaluation_criterion=MSE_evaluation, autolock=False, num_runs=2)
 #![create_cross_validation_REGRESSION]
 

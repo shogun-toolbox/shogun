@@ -373,7 +373,6 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	// FIXME
 	gen_p->CSGObject::put("seed", seed);
 	gen_q->CSGObject::put("seed", seed);
 
@@ -445,7 +444,6 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	// FIXME
 	gen_p->CSGObject::put("seed", seed);
 	gen_q->CSGObject::put("seed", seed);
 
@@ -517,7 +515,6 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	// FIXME
 	gen_p->CSGObject::put("seed", seed);
 	gen_q->CSGObject::put("seed", seed);
 

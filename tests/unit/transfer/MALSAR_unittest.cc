@@ -24,7 +24,6 @@ typedef std::pair<SplittedFeatures, CBinaryLabels*> SplittedDataset;
 #ifdef HAVE_LAPACK
 SplittedDataset generate_data()
 {
-	int32_t seed = 5;
 	index_t num_samples = 50;
 
 	std::mt19937_64 prng(24);

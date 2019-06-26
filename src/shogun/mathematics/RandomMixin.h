@@ -4,12 +4,41 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>
 
-#include <random>
 #include <iterator>
+#include <random>
 #include <type_traits>
 
 namespace shogun
 {
+	namespace random
+	{
+		/** Seeds an SGObject using a random number generator as a seed source
+		 */
+		template <
+		    typename T, typename PRNG,
+		    std::enable_if_t<std::is_base_of<
+		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        nullptr>
+		static inline void seed(T* object, PRNG& prng)
+		{
+			if (object->has("seed"))
+				object->put("seed", (int32_t)prng());
+		}
+
+		/** Seeds an SGObject using a specific seed
+		 */
+		template <
+		    typename T,
+		    std::enable_if_t<std::is_base_of<
+		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        nullptr>
+		static inline void seed(T* object, int32_t seed)
+		{
+			if (object->has("seed"))
+				object->put("seed", seed);
+		}
+	} // namespace random
+
 	static inline void seed_callback(CSGObject*, int32_t);
 	static inline void random_seed_callback(CSGObject*);
 
@@ -17,7 +46,7 @@ namespace shogun
 	{
 		static constexpr auto seed_key = "seed";
 		static constexpr auto random_seed_key = "set_random_seed";
-	}
+	} // namespace _seed
 
 	template <typename Parent, typename PRNG = std::mt19937_64>
 	class RandomMixin : public Parent
@@ -46,7 +75,9 @@ namespace shogun
 		{
 			typename PRNG::result_type random_data[PRNG::state_size];
 			std::random_device source;
-			std::generate(std::begin(random_data), std::end(random_data), std::ref(source));
+			std::generate(
+			    std::begin(random_data), std::end(random_data),
+			    std::ref(source));
 			std::seed_seq seeds(std::begin(random_data), std::end(random_data));
 			m_prng = PRNG(seeds);
 		}
@@ -68,12 +99,38 @@ namespace shogun
 				seed_callback(this, m_seed);
 			});
 
-			Parent::watch_method(_seed::random_seed_key, &this_t::set_random_seed);
+			Parent::watch_method(
+			    _seed::random_seed_key, &this_t::set_random_seed);
+		}
+
+	protected:
+		/** Seeds an SGObject using a random number generator as a seed source
+		 * This is useful with non constant methods to generate different
+		 * results on each invocation
+		 */
+		template <
+		    typename T,
+		    std::enable_if_t<std::is_base_of<
+		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        nullptr>
+		inline void seed(T* object)
+		{
+			random::seed(object, m_prng);
+		}
+
+		/** Seeds an SGObject with the current seed
+		 */
+		template <
+		    typename T,
+		    std::enable_if_t<std::is_base_of<
+		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        nullptr>
+		inline void seed(T* object) const
+		{
+			random::seed(object, m_seed);
 		}
 
 		int32_t m_seed;
-
-	protected:
 		PRNG m_prng;
 	};
 

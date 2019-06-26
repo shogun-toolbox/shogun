@@ -82,15 +82,6 @@ public:
 	 */
 	void set_debug_multiplier(int32_t multiplier);
 
-	/** @return rand seed */
-	uint32_t get_rand_seed() const;
-
-	/** set random seed
-	 *
-	 * @param rand_seed random seed
-	 */
-	void set_rand_seed(uint32_t rand_seed);
-
 protected:
 	/** train primal SO-SVM
 	 *
@@ -112,9 +103,6 @@ private:
 
 	/** Whether to use weighted averaging of the iterates */
 	bool m_do_weighted_averaging;
-
-	/** random seed */
-	int32_t m_rand_seed;
 
 	/** If set to 0, the algorithm computes the objective after each full
 	 * pass trough the data. If in (0,100) logging happens at a

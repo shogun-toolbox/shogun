@@ -1,6 +1,7 @@
 #ifndef __RANDOM_NAMESPACE_H__
 #define __RANDOM_NAMESPACE_H__
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
@@ -36,12 +37,14 @@ namespace shogun
 		template <typename Container, typename PRNG>
 		static inline void shuffle(Container& container, PRNG& prng)
 		{
-			shuffle(container.begin(), container.end(), prng);
+			random::shuffle(container.begin(), container.end(), prng);
 		}
 
 		/** Fills a container with random values in the range [min, max]
 		 */
-		template <typename Iterator, typename T, typename PRNG, typename std::enable_if_t<std::is_integral<T>::value>* = nullptr>
+		template <
+		    typename Iterator, typename T, typename PRNG,
+		    typename std::enable_if_t<std::is_integral<T>::value>* = nullptr>
 		static inline void
 		fill_array(Iterator first, Iterator last, T min, T max, PRNG& prng)
 		{
@@ -52,7 +55,10 @@ namespace shogun
 
 		/** Fills a container with random values in the range [min, max]
 		 */
-		template <typename Iterator, typename T, typename PRNG, typename std::enable_if_t<std::is_floating_point<T>::value>* = nullptr>
+		template <
+		    typename Iterator, typename T, typename PRNG,
+		    typename std::enable_if_t<std::is_floating_point<T>::value>* =
+		        nullptr>
 		static inline void
 		fill_array(Iterator first, Iterator last, T min, T max, PRNG& prng)
 		{

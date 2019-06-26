@@ -490,7 +490,6 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	SGMatrix<float64_t> feats_train;
 
 	// Generate random data
-	put("seed", 10); // fix the random seed
 	generate_data(4, 12, 8, feats_train, labels_train);
 
 	int32_t num_sample_train  = labels_train.num_cols;

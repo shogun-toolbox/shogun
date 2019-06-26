@@ -51,9 +51,7 @@ using namespace mmd;
 
 TEST(CrossValidationMMD, biased_full)
 {
-	int32_t seed = 42;
-	std::mt19937_64 prng(seed);
-
+	const int32_t seed = 5;
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -66,8 +64,11 @@ TEST(CrossValidationMMD, biased_full)
 	const float64_t alpha=0.05;
 	const auto stype=ST_BIASED_FULL;
 
+	std::mt19937_64 prng(seed);
+
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	// FIXME: Random Refactor PR
 	// FIXME: CMeanShiftDataGenerator is of Feature type, which is immutable
 	gen_p->CSGObject::put("seed", seed);
 	gen_q->CSGObject::put("seed", seed);
@@ -92,7 +93,7 @@ TEST(CrossValidationMMD, biased_full)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, seed);
+	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, prng);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
 	cv.m_num_runs=num_runs;
@@ -145,16 +146,13 @@ TEST(CrossValidationMMD, biased_full)
 			}
 		}
 	}
-
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);
 }
 
 TEST(CrossValidationMMD, unbiased_full)
 {
-	int32_t seed = 42;
-	std::mt19937_64 prng(seed);
-
+	const int32_t seed = 5;
 	const index_t n=24;
 	const index_t m=15;
 	const index_t dim=2;
@@ -167,9 +165,10 @@ TEST(CrossValidationMMD, unbiased_full)
 	const float64_t alpha=0.05;
 	const auto stype=ST_UNBIASED_FULL;
 
+	std::mt19937_64 prng(seed);
+
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	// FIXME: CMeanShiftDataGenerator is of Feature type, which is immutable
 	gen_p->CSGObject::put("seed", seed);
 	gen_q->CSGObject::put("seed", seed);
 
@@ -193,7 +192,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, seed);
+	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, prng);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
 	cv.m_num_runs=num_runs;
@@ -253,9 +252,7 @@ TEST(CrossValidationMMD, unbiased_full)
 
 TEST(CrossValidationMMD, unbiased_incomplete)
 {
-	int32_t seed = 8709;
-	std::mt19937_64 prng(seed);
-
+	const int32_t seed = 445;
 	const index_t n=18;
 	const index_t m=18;
 	const index_t dim=2;
@@ -268,9 +265,10 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	const float64_t alpha=0.05;
 	const auto stype=ST_UNBIASED_INCOMPLETE;
 
+	std::mt19937_64 prng(seed);
+
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	// FIXME: CMeanShiftDataGenerator is of Feature type, which is immutable
 	gen_p->CSGObject::put("seed", seed);
 	gen_q->CSGObject::put("seed", seed);
 
@@ -294,7 +292,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, seed);
+	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples, prng);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
 	cv.m_num_runs=num_runs;

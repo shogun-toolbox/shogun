@@ -36,7 +36,6 @@ namespace shogun
 	Parallel* sg_parallel=NULL;
 	SGIO* sg_io=NULL;
 	Version* sg_version=NULL;
-	CRandom* sg_rand=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
@@ -67,8 +66,6 @@ namespace shogun
 			sg_parallel=new shogun::Parallel();
 		if (!sg_version)
 			sg_version = new shogun::Version();
-		if (!sg_rand)
-			sg_rand = new shogun::CRandom();
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
 		if (!sg_signal)
@@ -77,7 +74,6 @@ namespace shogun
 		SG_REF(sg_io);
 		SG_REF(sg_parallel);
 		SG_REF(sg_version);
-		SG_REF(sg_rand);
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -102,7 +98,6 @@ namespace shogun
 
 	void exit_shogun()
 	{
-		SG_UNREF(sg_rand);
 		SG_UNREF(sg_version);
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
@@ -173,19 +168,6 @@ namespace shogun
 	{
 		SG_REF(sg_version);
 		return sg_version;
-	}
-
-	void set_global_rand(CRandom* rand)
-	{
-		SG_REF(rand);
-		SG_UNREF(sg_rand);
-		sg_rand=rand;
-	}
-
-	CRandom* get_global_rand()
-	{
-		SG_REF(sg_rand);
-		return sg_rand;
 	}
 
 	CSignal* get_global_signal()

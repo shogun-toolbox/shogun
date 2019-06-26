@@ -3,8 +3,6 @@ File f_feats_test = csv_file("../../data/classifier_binary_2d_nonlinear_features
 File f_labels_train = csv_file("../../data/classifier_binary_2d_nonlinear_labels_train.dat")
 File f_labels_test = csv_file("../../data/classifier_binary_2d_nonlinear_labels_test.dat")
 
-Math:init_random(1)
-
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
@@ -24,6 +22,7 @@ NeuralLayer relu = layer("NeuralRectifiedLinearLayer", num_neurons=10)
 network.add("layers", relu)
 NeuralLayer softmax = layer("NeuralSoftmaxLayer", num_neurons=2)
 network.add("layers", softmax)
+network.put("seed", 1)
 #![add_layers]
 
 #![train_and_apply]

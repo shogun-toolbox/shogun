@@ -106,7 +106,7 @@ void MaxCrossValidation<PRNG>::compute_measures()
 		auto Ny=estimator->get_num_samples_q();
 		auto num_null_samples=estimator->get_num_null_samples();
 		auto stype=estimator->get_statistic_type();
-		CrossValidationMMD compute(Nx, Ny, num_folds, num_null_samples);
+		CrossValidationMMD compute(Nx, Ny, num_folds, num_null_samples, prng);
 		compute.m_stype=stype;
 		compute.m_alpha=alpha;
 		compute.m_num_runs=num_runs;

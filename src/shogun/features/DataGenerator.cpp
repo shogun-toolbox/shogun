@@ -175,7 +175,7 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 				mean[k] *= -1;
 		}
 		CGaussian* g = new CGaussian(mean, cov, DIAG);
-		g->put("seed", (int32_t) prng());
+		random::seed(g, prng);
 		for (index_t j = 0; j < m; ++j)
 		{
 			SGVector<float64_t> v = g->sample();

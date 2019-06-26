@@ -44,13 +44,11 @@ void CStochasticSOSVM::init()
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
 	SG_ADD(&m_do_weighted_averaging, "do_weighted_averaging", "Do weighted averaging");
 	SG_ADD(&m_debug_multiplier, "debug_multiplier", "Debug multiplier");
-	SG_ADD(&m_rand_seed, "rand_seed", "Random seed");
 
 	m_lambda = 1.0;
 	m_num_iter = 50;
 	m_do_weighted_averaging = true;
 	m_debug_multiplier = 0;
-	m_rand_seed = 1;
 }
 
 CStochasticSOSVM::~CStochasticSOSVM()
@@ -105,8 +103,6 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		debug_iter = N;
 		m_debug_multiplier = 100;
 	}
-
-	put("seed", m_rand_seed);
 
 	// Main loop
 	int32_t k = 0;
@@ -226,14 +222,3 @@ void CStochasticSOSVM::set_debug_multiplier(int32_t multiplier)
 {
 	m_debug_multiplier = multiplier;
 }
-
-uint32_t CStochasticSOSVM::get_rand_seed() const
-{
-	return m_rand_seed;
-}
-
-void CStochasticSOSVM::set_rand_seed(uint32_t rand_seed)
-{
-	m_rand_seed = rand_seed;
-}
-

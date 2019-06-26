@@ -2,7 +2,6 @@ File f_feats_train    = csv_file("../../data/regression_1d_linear_features_train
 File f_feats_test     = csv_file("../../data/regression_1d_linear_features_test.dat")
 File f_labels_train   = csv_file("../../data/regression_1d_linear_labels_train.dat")
 File f_labels_test    = csv_file("../../data/regression_1d_linear_labels_test.dat")
-Math:init_random(1)
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -17,6 +16,7 @@ MeanRule mean_rule()
 
 #![create_instance]
 RandomForest rand_forest(features_train, labels_train, 5)
+rand_forest.put("seed", 1)
 rand_forest.set_combination_rule(mean_rule)
 #![create_instance]
 

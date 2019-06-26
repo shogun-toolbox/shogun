@@ -1,5 +1,3 @@
-Math:init_random(10)
-
 File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
 File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
 File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
@@ -14,7 +12,7 @@ Labels labels_test = labels(f_labels_test)
 
 #![create_pipeline]
 Transformer subMean = transformer("PruneVarSubMean")
-Machine svm = machine("LibLinear")
+Machine svm = machine("LibLinear", seed=10)
 
 PipelineBuilder builder = pipeline()
 builder.over(subMean)
@@ -22,7 +20,7 @@ Pipeline pipeline = builder.then(svm)
 #![create_pipeline]
 
 #![create_cross_validation]
-SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2)
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2, seed=10)
 Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
 Machine pipeline_as_machine = as_machine(pipeline)
 MachineEvaluation cross = machine_evaluation("CrossValidation", machine=pipeline_as_machine, features=feats_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, autolock=False, num_runs=2)

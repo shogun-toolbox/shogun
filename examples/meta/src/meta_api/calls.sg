@@ -1,6 +1,3 @@
-# static call
-Math:init_random(1)
-
 # global function call
 get_global_io()
 

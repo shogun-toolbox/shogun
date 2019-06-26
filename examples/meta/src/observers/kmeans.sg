@@ -1,4 +1,3 @@
-Math:init_random(1)
 File f_feats_train = csv_file("../../data/classifier_binary_2d_nonlinear_features_train.dat")
 
 #![create_features]
@@ -11,7 +10,7 @@ d.init(features_train, features_train)
 #![choose_distance]
 
 #![create_instance_lloyd]
-Machine kmeans = machine("KMeans", k=2, distance=d)
+Machine kmeans = machine("KMeans", k=2, distance=d, seed=1)
 #![create_instance_lloyd]
 
 #![create_logger]
