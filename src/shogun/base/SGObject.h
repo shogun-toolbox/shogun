@@ -861,6 +861,8 @@ protected:
 				AnyParameter(
 						make_any_ref(value), properties, std::move(auto_init)));
 	}
+
+#ifndef SWIG
 	/** Puts a pointer to some parameter into the parameter map.
 	 * The parameter is the constrained to the rules from the
 	 * Composer.
@@ -872,10 +874,10 @@ protected:
 	 * @param properties properties of the parameter (e.g. if model
 	 * selection is supported)
 	 */
-	template <typename T1, typename T2>
+	template <typename T1, typename ...Args>
 	void watch_param(
 			const std::string& name, T1* value,
-			Constraint<T2>&& constrain_function,
+			Constraint<Args...>&& constrain_function,
 			AnyParameterProperties properties)
 	{
 		REQUIRE(
@@ -892,6 +894,7 @@ protected:
 							return result;
 						}));
 	}
+#endif
 
 	/** Puts a pointer to some parameter array into the parameter map.
 	 *

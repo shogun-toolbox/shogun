@@ -16,7 +16,7 @@ namespace shogun
 	{
 		template <typename T, typename... Args, std::size_t... Idx>
 		bool apply_helper(
-		    T&& val, std::tuple<Args...> funcs, std::index_sequence<Idx...>)
+		    T&& val, const std::tuple<Args...>& funcs, std::index_sequence<Idx...>)
 		{
 			return (std::get<Idx>(funcs)(std::forward<T>(val)) && ...);
 		}
@@ -24,7 +24,7 @@ namespace shogun
 		 * Compile time composition with tuples.
 		 */
 		template <typename T, typename... Args>
-		bool apply(T&& val, std::tuple<Args...> funcs)
+		bool apply(T&& val, const std::tuple<Args...>& funcs)
 		{
 			return apply_helper(val, funcs, std::index_sequence_for<Args...>{});
 		}
@@ -56,25 +56,24 @@ namespace shogun
 		}
 
 		template <size_t N, typename T, std::enable_if_t<N == 2>* = nullptr>
-		void get_error_helper(T&& func, std::string& result)
+		void get_error_helper(const T& func, std::string& result)
 		{
 			result += head(func).error_msg() + " and ";
-			apply_helper<1>(tail(func), result);
+            get_error_helper<1>(tail(func), result);
 		}
 
 		template <size_t N, typename T, std::enable_if_t<(N > 2)>* = nullptr>
-		void get_error_helper(T&& func, std::string& result)
+		void get_error_helper(const T& func, std::string& result)
 		{
 			result += head(func).error_msg() + ", ";
-			apply_helper<std::tuple_size<T>::value - 1>(tail(func), result);
+            get_error_helper<std::tuple_size<T>::value - 1u>(tail(func), result);
 		}
 
 		template <typename... Args>
-		std::string get_error(std::tuple<Args...> funcs)
+		std::string get_error(const std::tuple<Args...>& funcs)
 		{
 			std::string result;
-			get_error_helper<std::tuple_size<std::tuple<Args...>>::value>(
-			    funcs, result);
+			get_error_helper<sizeof...(Args)>(funcs, result);
 			return result;
 		}
 	} // namespace constraint_detail
@@ -89,7 +88,7 @@ namespace shogun
 	{
 	public:
 		generic_checker(T val) : m_val(val){};
-		bool operator()(T val)
+		bool operator()(T val) const
 		{
 			return check(val);
 		};
@@ -187,7 +186,7 @@ namespace shogun
 	class Constraint
 	{
 	public:
-		Constraint(std::tuple<Args...> funcs) : m_funcs(funcs)
+		Constraint(std::tuple<Args...>&& funcs) : m_funcs(std::move(funcs))
 		{
 		}
 
@@ -213,7 +212,7 @@ namespace shogun
 	 * @return the new Constraint instance
 	 */
 	template <typename... Args>
-	Constraint<Args...> make_constraint(Args... args)
+	Constraint<Args...> make_constraint(Args&&... args)
 	{
 		return Constraint<Args...>(std::forward_as_tuple(args...));
 	}
