@@ -77,9 +77,16 @@ namespace shogun
     %template(TreeMachineWithC45TreeNodeData) CTreeMachine<C45TreeNodeData>;
     %template(TreeMachineWithCARTreeNodeData) CTreeMachine<CARTreeNodeData>;
     %template(TreeMachineWithCHAIDTreeNodeData) CTreeMachine<CHAIDTreeNodeData>;
+
+    /** Instantiate RandomMixin */
+    %template(RandomMixinTreeMachine) RandomMixin<CTreeMachine<CARTreeNodeData>, std::mt19937_64>;
 }
 
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinConditionalProbTree) shogun::RandomMixin<shogun::CConditionalProbabilityTree, std::mt19937_64>;
+
 %include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RelaxedTree.h>
@@ -97,11 +104,23 @@ namespace shogun
 %include <shogun/machine/MulticlassMachine.h>
 %include <shogun/machine/NativeMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinLinearMulticlass) shogun::RandomMixin<shogun::CLinearMulticlassMachine, std::mt19937_64>;
+
 %include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/multiclass/MulticlassSVM.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinMulticlassSVM) shogun::RandomMixin<shogun::CMulticlassSVM, std::mt19937_64>;
+
 %include <shogun/classifier/mkl/MKLMulticlass.h>
 
 %include <shogun/multiclass/ecoc/ECOCEncoder.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinECOCEncoder) shogun::RandomMixin<shogun::CECOCEncoder, std::mt19937_64>;
+
 %include <shogun/multiclass/ecoc/ECOCDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
 %include <shogun/multiclass/ecoc/ECOCOVOEncoder.h>

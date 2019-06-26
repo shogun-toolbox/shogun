@@ -444,6 +444,7 @@ template <class T> class DynArray
 			current_num_elements=0;
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		iterator begin()
 		{
 			return iterator(array);
@@ -453,6 +454,7 @@ template <class T> class DynArray
 		{
 			return iterator(array + current_num_elements);
 		}
+#endif
 
 		/** set array with a constant */
 		void set_const(const T& const_element)

@@ -35,6 +35,7 @@ def run_clustering(data, k):
 	distance = sg.distance('EuclideanDistance')
 	distance.init(fea, fea)
 	kmeans=KMeans(k, distance)
+	kmeans.put("seed", 1)
 
 	# print("Running clustering...")
 	kmeans.train()
@@ -59,9 +60,6 @@ def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	from shogun import ClusteringAccuracy, ClusteringMutualInformation
 	from shogun import MulticlassLabels
 	from shogun import Math
-
-	# reproducable results
-	Math.init_random(1)
 
 	centroids = run_clustering(features, ncenters)
 	gnd_hat = assign_labels(features, centroids, ncenters)

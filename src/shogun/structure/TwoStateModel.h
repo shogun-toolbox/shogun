@@ -163,6 +163,7 @@ class CTwoStateModel : public CStateModel
 		 * @param exm_len length of each sample sequence
 		 * @param num_features features dimension
 		 * @param num_noise_features number of features to be pure noise
+		 * @param prng random number generator
 		 *
 		 * @return a model that contains the data simulated
 		 */
@@ -170,6 +171,22 @@ class CTwoStateModel : public CStateModel
 		static CHMSVMModel* simulate_data(
 			int32_t num_exm, int32_t exm_len, int32_t num_features,
 			int32_t num_noise_features, PRNG& prng);
+
+		/**
+		 * generates simulated data. The features are generated from the label
+		 * sequence swapping some of the labels and adding noise
+		 *
+		 * @param num_exm number of sample pairs (sequence of features, sequence of labels) to generate
+		 * @param exm_len length of each sample sequence
+		 * @param num_features features dimension
+		 * @param num_noise_features number of features to be pure noise
+		 * @param seed seed for the random number generator
+		 *
+		 * @return a model that contains the data simulated
+		 */
+		static CHMSVMModel* simulate_data(
+			int32_t num_exm, int32_t exm_len, int32_t num_features,
+			int32_t num_noise_features, int32_t seed=-1);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "TwoStateModel"; }

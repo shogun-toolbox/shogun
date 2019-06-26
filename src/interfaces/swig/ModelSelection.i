@@ -24,6 +24,10 @@
 %rename(ParameterCombination) CParameterCombination;
 
 %include <shogun/modelselection/ModelSelection.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinModelSelection) shogun::RandomMixin<shogun::CModelSelection, std::mt19937_64>;
+
 %include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/modelselection/RandomSearchModelSelection.h>
 %include <shogun/modelselection/ParameterCombination.h>

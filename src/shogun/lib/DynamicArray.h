@@ -537,6 +537,7 @@ template <class T> class CDynamicArray :public CSGObject
 			return *this;
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		inline auto begin()
 		{
 			return m_array.begin();
@@ -546,6 +547,7 @@ template <class T> class CDynamicArray :public CSGObject
 		{
 			return m_array.end();
 		}
+#endif // SWIG
 
 		/** display this array */
 		inline void display_array()

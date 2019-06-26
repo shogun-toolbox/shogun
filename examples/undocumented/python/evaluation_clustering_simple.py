@@ -7,11 +7,11 @@ from numpy import *
 
 def run_clustering(data, k):
 	from shogun import KMeans
-	from shogun import Math_init_random
 
 	distance = sg.distance('EuclideanDistance')
 	distance.init(data, data)
 	kmeans=KMeans(k, distance)
+	kmeans.put("seed", 1)
 
 	#print("Running clustering...")
 	kmeans.train()
@@ -36,14 +36,12 @@ def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	from shogun import MulticlassLabels, GaussianBlobsDataGenerator
 	from shogun import Math
 
-	# reproducable results
-	Math.init_random(1)
-
 	# produce sone Gaussian blobs to cluster
 	ncenters=sqrt_num_blobs**2
 	stretch=1
 	angle=1
 	gen=GaussianBlobsDataGenerator(sqrt_num_blobs, distance, stretch, angle)
+	gen.put("seed", 1)
 	features=gen.get_streamed_features(n_data)
 	X=features.get("feature_matrix")
 

@@ -322,6 +322,7 @@ class CDynamicObjectArray : public CSGObject
 		/** @return underlying array of pointers */
 		inline CSGObject** get_array() { return m_array.data(); }
 
+#ifndef SWIG // SWIG should skip this part
 		inline auto begin()
 		{
 			return m_array.begin();
@@ -331,6 +332,7 @@ class CDynamicObjectArray : public CSGObject
 		{
 			return m_array.end();
 		}
+#endif // SWIG
 
 		/** @return object name */
 		virtual const char* get_name() const

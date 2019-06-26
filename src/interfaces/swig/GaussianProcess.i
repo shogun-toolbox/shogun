@@ -58,6 +58,10 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/machine/gp/LikelihoodModel.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinLikelihoodModel) shogun::RandomMixin<shogun::CLikelihoodModel, std::mt19937_64>;
+
 %include <shogun/machine/gp/ProbitLikelihood.h>
 %include <shogun/machine/gp/LogitLikelihood.h>
 %include <shogun/machine/gp/SoftMaxLikelihood.h>
@@ -79,6 +83,10 @@
 %include <shogun/machine/gp/ConstMean.h>
 
 %include <shogun/machine/gp/Inference.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinInference) shogun::RandomMixin<shogun::CInference, std::mt19937_64>;
+
 %include <shogun/machine/gp/LaplaceInference.h>
 %include <shogun/machine/gp/SparseInference.h>
 %include <shogun/machine/gp/SingleSparseInference.h>

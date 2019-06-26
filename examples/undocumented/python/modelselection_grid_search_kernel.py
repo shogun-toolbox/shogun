@@ -75,8 +75,7 @@ parameter_list = [[3,20,3]]
 
 def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# init seed for reproducability
-	Math.init_random(1)
-	random.seed(1);
+	random.seed(1)
 
 	# create some (non-sense) data
 	matrix=random.rand(dim_vectors, num_vectors)
@@ -95,7 +94,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# splitting strategy
 	splitting = splitting_strategy(
 		"StratifiedCrossValidationSplitting", labels=labels,
-		num_subsets=num_subsets)
+		num_subsets=num_subsets, seed=1)
 
 	# accuracy evaluation
 	evaluation_criterion=ContingencyTableEvaluation(ACCURACY)

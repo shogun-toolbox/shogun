@@ -103,6 +103,10 @@
 %include <shogun/structure/SOSVMHelper.h>
 %include <shogun/machine/StructuredOutputMachine.h>
 %include <shogun/machine/LinearStructuredOutputMachine.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinLinearStructured) shogun::RandomMixin<shogun::CLinearStructuredOutputMachine, std::mt19937_64>;
+
 %include <shogun/machine/KernelStructuredOutputMachine.h>
 
 #ifdef USE_GPL_SHOGUN

@@ -42,12 +42,6 @@ namespace shogun
 	static inline void seed_callback(CSGObject*, int32_t);
 	static inline void random_seed_callback(CSGObject*);
 
-	namespace _seed
-	{
-		static constexpr auto seed_key = "seed";
-		static constexpr auto random_seed_key = "set_random_seed";
-	} // namespace _seed
-
 	template <typename Parent, typename PRNG = std::mt19937_64>
 	class RandomMixin : public Parent
 	{
@@ -93,14 +87,14 @@ namespace shogun
 		{
 			init_random_seed();
 
-			Parent::watch_param(_seed::seed_key, &m_seed);
-			Parent::add_callback_function(_seed::seed_key, [&]() {
+			Parent::watch_param("seed", &m_seed);
+			Parent::add_callback_function("seed", [&]() {
 				m_prng = PRNG(m_seed);
 				seed_callback(this, m_seed);
 			});
 
 			Parent::watch_method(
-			    _seed::random_seed_key, &this_t::set_random_seed);
+			    "set_random_seed", &this_t::set_random_seed);
 		}
 
 	protected:
@@ -138,8 +132,8 @@ namespace shogun
 	{
 		obj->for_each_param_of_type<CSGObject*>(
 		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has(_seed::seed_key))
-				    (*param)->put(_seed::seed_key, seed);
+			    if ((*param)->has("seed"))
+				    (*param)->put("seed", seed);
 			    else
 				    seed_callback(*param, seed);
 		    });
@@ -149,8 +143,8 @@ namespace shogun
 	{
 		obj->for_each_param_of_type<CSGObject*>(
 		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has(_seed::seed_key))
-				    (*param)->run(_seed::random_seed_key);
+			    if ((*param)->has("seed"))
+				    (*param)->run("set_random_seed");
 			    else
 				    random_seed_callback(*param);
 		    });
