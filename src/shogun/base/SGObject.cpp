@@ -51,6 +51,8 @@
 
 #include <shogun/lib/observers/ObservedValue.h>
 
+#include <shogun/util/hash.h>
+
 namespace shogun
 {
 
@@ -330,29 +332,17 @@ void CSGObject::update_parameter_hash()
 {
 	SG_DEBUG("entering\n")
 
-	uint32_t carry=0;
-	uint32_t length=0;
-
-	m_hash=0;
-	get_parameter_incremental_hash(m_hash, carry, length);
-	m_hash=CHash::FinalizeIncrementalMurmurHash3(m_hash, carry, length);
+	m_hash = hash();
 
 	SG_DEBUG("leaving\n")
 }
 
-bool CSGObject::parameter_hash_changed()
+bool CSGObject::parameter_hash_changed() const
 {
 	SG_DEBUG("entering\n")
 
-	uint32_t hash=0;
-	uint32_t carry=0;
-	uint32_t length=0;
-
-	get_parameter_incremental_hash(hash, carry, length);
-	hash=CHash::FinalizeIncrementalMurmurHash3(hash, carry, length);
-
 	SG_DEBUG("leaving\n")
-	return (m_hash!=hash);
+	return (m_hash!=hash());
 }
 
 Parallel* CSGObject::get_global_parallel()
@@ -539,47 +529,6 @@ index_t CSGObject::get_modsel_param_index(const char* param_name)
 	}
 
 	return index;
-}
-
-void CSGObject::get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
-		uint32_t& total_length)
-{
-	for (index_t i=0; i<m_parameters->get_num_parameters(); i++)
-	{
-		TParameter* p=m_parameters->get_parameter(i);
-
-		SG_DEBUG("Updating hash for parameter %s.%s\n", get_name(), p->m_name);
-
-		if (p->m_datatype.m_ptype == PT_SGOBJECT)
-		{
-			if (p->m_datatype.m_ctype == CT_SCALAR)
-			{
-				CSGObject* child = *((CSGObject**)(p->m_parameter));
-
-				if (child)
-				{
-					child->get_parameter_incremental_hash(hash, carry,
-							total_length);
-				}
-			}
-			else if (p->m_datatype.m_ctype==CT_VECTOR ||
-					p->m_datatype.m_ctype==CT_SGVECTOR)
-			{
-				CSGObject** child=(*(CSGObject***)(p->m_parameter));
-
-				for (index_t j=0; j<*(p->m_datatype.m_length_y); j++)
-				{
-					if (child[j])
-					{
-						child[j]->get_parameter_incremental_hash(hash, carry,
-								total_length);
-					}
-				}
-			}
-		}
-		else
-			p->get_incremental_hash(hash, carry, total_length);
-	}
 }
 
 void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict)
@@ -956,4 +905,9 @@ void CSGObject::visit_parameter(const BaseTag& _tag, AnyVisitor* v) const
 {
 	auto p = get_parameter(_tag);
 	p.get_value().visit(v);
+}
+
+size_t CSGObject::hash() const
+{
+	return std::hash<CSGObject>{}(*this);
 }

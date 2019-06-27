@@ -383,7 +383,7 @@ namespace shogun {
 			exit_map(std::addressof(size));
 		}
 
-		template<class T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
+		template<class T, std::enable_if_t<std::is_base_of_v<CSGObject, T>, T>* = nullptr>
 		void on(T** v)
 		{
 			on((CSGObject**)v);
@@ -436,6 +436,17 @@ namespace shogun {
 			T,
 			traits::when_exists<
 				decltype(compare_impl_eq(std::declval<T>(), std::declval<T>()))
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct has_hash : std::false_type {};
+
+		template<typename T>
+		struct has_hash<
+			T,
+			traits::when_exists<
+				decltype(std::declval<T>().hash())
 			>
 		> : public std::true_type {};
 
@@ -510,6 +521,10 @@ namespace shogun {
 			if constexpr (traits::is_hashable<T>::value)
 			{
 				return std::hash<T>{}(value);
+			}
+			else if constexpr (has_hash<T>::value)
+			{
+				return value.hash();
 			}
 			else if constexpr (traits::is_container<T>::value)
 			{
