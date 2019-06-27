@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Soeren Sonnenburg, Heiko Strathmann, Jacob Walker, 
+ * Authors: Evgeniy Andreev, Soeren Sonnenburg, Heiko Strathmann, Jacob Walker,
  *          Yuyu Zhang, Evan Shelhamer, Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -104,7 +104,7 @@ public:
 	 */
 	void add(const T& element)
 	{
-		int32_t index=hash(element);
+		int32_t index=hash_element(element);
 		if (chain_search(index, element)==NULL)
 		{
 			insert_key(index, element);
@@ -118,7 +118,7 @@ public:
 	 */
 	bool contains(const T& element)
 	{
-		int32_t index=hash(element);
+		int32_t index=hash_element(element);
 		if (chain_search(index, element)!=NULL)
 			return true;
 
@@ -131,7 +131,7 @@ public:
 	 */
 	void remove(const T& element)
 	{
-		int32_t index=hash(element);
+		int32_t index=hash_element(element);
 		CSetNode<T>* result=chain_search(index, element);
 
 		if (result!=NULL)
@@ -148,7 +148,7 @@ public:
 	 */
 	int32_t index_of(const T& element)
 	{
-		int32_t index=hash(element);
+		int32_t index=hash_element(element);
 		CSetNode<T>* result=chain_search(index, element);
 
 		if (result!=NULL)
@@ -211,7 +211,7 @@ private:
 	/** Returns hash of key
 	 * MurmurHash used
 	 */
-	int32_t hash(const T& element)
+	int32_t hash_element(const T& element)
 	{
 		return CHash::MurmurHash3((uint8_t*)(&element), sizeof(element), 0xDEADBEEF) % hash_size;
 	}

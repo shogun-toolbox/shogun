@@ -226,6 +226,8 @@ public:
 	 */
 	void unset_generic();
 
+	virtual size_t hash() const;
+
 	/** Save this object to file.
 	 *
 	 * @param ser where to save the object;
@@ -979,7 +981,7 @@ public:
 	/**
 	 * @return whether parameter combination has changed since last update
 	 */
-	virtual bool parameter_hash_changed();
+	virtual bool parameter_hash_changed() const;
 
 	/** Deep comparison of two objects.
 	 *
@@ -1084,17 +1086,6 @@ private:
 	 * @return value of the parameter identified by the input tag
 	 */
 	AnyParameter get_function(const BaseTag& _tag) const;
-
-	/** Gets an incremental hash of all parameters as well as the parameters of
-	 * CSGObject children of the current object's parameters.
-	 *
-	 * @param hash the computed hash returned by reference
-	 * @param carry value for Murmur3 incremental hash
-	 * @param total_length total byte length of all hashed parameters so
-	 * far. Byte length of parameters will be added to the total length
-	 */
-	void get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
-			uint32_t& total_length);
 
 	class Self;
 	Unique<Self> self;
@@ -1232,7 +1223,7 @@ protected:
 		Parameter* m_gradient_parameters;
 
 		/** Hash of parameter values*/
-		uint32_t m_hash;
+		size_t m_hash;
 
 	private:
 		EPrimitiveType m_generic;
