@@ -154,9 +154,9 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 			if (num_randfeats_forwidthcomputation >0)
 			{
-				UniformIntDistribution<index_t> uniform_int_dist(0, ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1);
-				for(int32_t i=0; i< numind;++i)
-					featindices[i]=uniform_int_dist(m_prng);
+				random::fill_array(
+					featindices, featindices + numind, 0,
+					((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1, m_prng);
 			}
 			else
 			{

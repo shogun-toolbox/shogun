@@ -15,7 +15,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomMixin.h>
-#include <shogun/mathematics/NormalDistribution.h>
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -241,8 +240,6 @@ class CGaussian : public RandomMixin<CDistribution>
 		SGVector<float64_t> m_mean;
 		/** covariance type */
 		ECovType m_cov_type;
-
-		NormalDistribution<float64_t> m_normal_dist;
 };
 }
 #endif //_GAUSSIAN_H__

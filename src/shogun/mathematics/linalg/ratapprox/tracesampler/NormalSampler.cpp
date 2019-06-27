@@ -7,6 +7,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 namespace shogun
 {
@@ -37,9 +38,10 @@ SGVector<float64_t> CNormalSampler::sample(index_t idx)
 {
 	// ignore idx since it doesnt matter, all samples are independent
 	SGVector<float64_t> s(m_dimension);
+	NormalDistribution<float64_t> normal_dist;
 
 	for (index_t i=0; i<m_dimension; ++i)
-		s[i]=m_normal_dist(m_prng);
+		s[i]=normal_dist(m_prng);
 
 	return s;
 }

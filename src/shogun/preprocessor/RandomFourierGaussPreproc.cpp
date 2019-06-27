@@ -242,12 +242,11 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 
 	cur_kernelwidth=kernelwidth;
 
-	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 2 * pi);
-	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
-		randomcoeff_additive[i] = uniform_real_dist(m_prng);
-	}
-
-	uniform_real_dist.param({-1.0, 1.0});
+	random::fill_array(
+	    randomcoeff_additive, randomcoeff_additive + cur_dim_feature_space, 0.0,
+	    2 * pi, m_prng);
+	
+	UniformRealDistribution<float64_t> uniform_real_dist(-1.0, 1.0);
 	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
 		for (int32_t k = 0; k < cur_dim_input_space; ++k) {
 			float64_t x1,x2;

@@ -13,7 +13,6 @@
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/RandomMixin.h>
-#include <shogun/mathematics/NormalDistribution.h>
 
 #include <vector>
 
@@ -244,7 +243,6 @@ class CGMM : public RandomMixin<CDistribution>
 		std::vector<CGaussian*> m_components;
 		/** Mixture coefficients */
 		SGVector<float64_t> m_coefficients;
-		NormalDistribution<float64_t> m_normal_dist;
 };
 }
 #endif //_GMM_H__

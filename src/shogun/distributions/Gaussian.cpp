@@ -12,6 +12,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 using namespace linalg;
@@ -404,9 +405,10 @@ SGVector<float64_t> CGaussian::sample()
 	}
 
 	SGVector<float64_t> random_vec(m_mean.vlen);
+	NormalDistribution<float64_t> normal_dist;
 
 	for (int32_t i = 0; i < m_mean.vlen; i++)
-		random_vec.vector[i] = m_normal_dist(m_prng);
+		random_vec.vector[i] = normal_dist(m_prng);
 
 	if (m_cov_type == FULL)
 	{

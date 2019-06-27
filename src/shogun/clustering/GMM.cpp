@@ -18,6 +18,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/multiclass/KNN.h>
 #include <vector>
 
@@ -426,10 +427,11 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	linalg::add(components[1]->get_mean(), components[2]->get_mean(), mean, alpha1, alpha2);
 	components[1]->set_mean(mean);
 
+	NormalDistribution<float64_t> normal_dist;
 	for (int32_t i=0; i<dim_n; i++)
 	{
-		components[2]->get_mean().vector[i]=components[0]->get_mean().vector[i]+m_normal_dist(m_prng)*noise_mag;
-		components[0]->get_mean().vector[i]=components[0]->get_mean().vector[i]+m_normal_dist(m_prng)*noise_mag;
+		components[2]->get_mean().vector[i]=components[0]->get_mean().vector[i]+normal_dist(m_prng)*noise_mag;
+		components[0]->get_mean().vector[i]=components[0]->get_mean().vector[i]+normal_dist(m_prng)*noise_mag;
 	}
 
 	coefficients.vector[1]=coefficients.vector[1]+coefficients.vector[2];

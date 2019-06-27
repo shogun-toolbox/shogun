@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
-#include <shogun/mathematics/NormalDistribution.h>
 
 namespace shogun
 {
@@ -45,8 +44,6 @@ public:
 	{
 		return "NormalSampler";
 	}
-private:
-	NormalDistribution<float64_t> m_normal_dist;
 };
 
 }

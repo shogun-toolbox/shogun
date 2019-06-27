@@ -158,7 +158,7 @@ TEST(RBM, free_energy_gradients)
 
 TEST(RBM, pseudo_likelihood_binary)
 {
-	int32_t seed = 18;
+	int32_t seed = 20;
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;
 	int32_t batch_size = 1;

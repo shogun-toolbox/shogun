@@ -11,8 +11,6 @@
 #include <shogun/converter/ica/ICAConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/RandomMixin.h>
-#include <shogun/mathematics/NormalDistribution.h>
-
 
 namespace shogun
 {
@@ -63,7 +61,6 @@ class CFastICA: public RandomMixin<CICAConverter>
 
 		/** whiten */
 		bool whiten;
-		NormalDistribution<float64_t> normal_dist;
 
 };
 }

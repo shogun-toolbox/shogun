@@ -11,6 +11,7 @@
 #include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -112,7 +113,7 @@ void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 	if (m_mixing_matrix.num_rows != m || m_mixing_matrix.num_cols != m)
 	{
 		m_mixing_matrix = SGMatrix<float64_t>(m,m);
-
+		NormalDistribution<float64_t> normal_dist;
 		for (int i = 0; i < m; i++)
 		{
 			for (int j = 0; j < m; j++)

@@ -10,10 +10,10 @@
 #include <shogun/features/DataGenerator.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/distributions/Gaussian.h>
-#include <shogun/mathematics/RandomMixin.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 #include <random>
 
@@ -48,6 +48,7 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 	SGMatrix<float64_t> points(dim+1, num_points);
 	int32_t points_idx = 0;
 	NormalDistribution<float64_t> normal_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (int32_t class_idx=0; class_idx<num_classes; class_idx++)
 	{
 		SGVector<float64_t> class_dim_centers(dim);
@@ -64,7 +65,7 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 					if ((points(i, p)>(grid_idx[i]+1)*cell_size) ||
 							(points(i, p)<grid_idx[i]*cell_size))
 					{
-						if (!(normal_dist(prng, {0.0, 1.0})<overlap))
+						if (!(uniform_real_dist(prng)<overlap))
 							continue;
 					}
 					break;

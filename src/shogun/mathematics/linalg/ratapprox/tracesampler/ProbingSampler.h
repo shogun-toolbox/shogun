@@ -12,7 +12,6 @@
 #ifdef HAVE_COLPACK
 
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
-#include <shogun/mathematics/NormalDistribution.h>
 
 namespace shogun
 {
@@ -113,8 +112,6 @@ private:
 
 	/** coloring variant */
 	EColoringVariant m_coloring;
-
-	NormalDistribution<float64_t> m_normal_dist;
 
 	/** flag to avoid repeated precompute */
 	bool m_is_precomputed;
