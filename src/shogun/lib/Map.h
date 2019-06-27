@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Jacob Walker, Sergey Lisitsyn, Soeren Sonnenburg, 
+ * Authors: Evgeniy Andreev, Jacob Walker, Sergey Lisitsyn, Soeren Sonnenburg,
  *          Yuyu Zhang, Bjoern Esser, Wu Lin
  */
 
@@ -96,7 +96,7 @@ public:
 	 */
 	int32_t add(const K& key, const T& data)
 	{
-		int32_t index=hash(key);
+		int32_t index=hash_key(key);
 		if (chain_search(index, key)==NULL)
 		{
 			lock.lock();
@@ -117,7 +117,7 @@ public:
 	 */
 	bool contains(const K& key)
 	{
-		int32_t index=hash(key);
+		int32_t index=hash_key(key);
 		if (chain_search(index, key)!=NULL)
 			return true;
 
@@ -130,7 +130,7 @@ public:
 	 */
 	void remove(const K& key)
 	{
-		int32_t index=hash(key);
+		int32_t index=hash_key(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
 		if (result!=NULL)
@@ -149,7 +149,7 @@ public:
 	 */
 	int32_t index_of(const K& key)
 	{
-		int32_t index=hash(key);
+		int32_t index=hash_key(key);
 		CMapNode<K ,T>* result=chain_search(index, key);
 
 		if (result!=NULL)
@@ -166,7 +166,7 @@ public:
 	 */
 	T get_element(const K& key)
 	{
-		int32_t index=hash(key);
+		int32_t index=hash_key(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
 		if (result!=NULL)
@@ -187,7 +187,7 @@ public:
 	 */
 	void set_element(const K& key, const T& data)
 	{
-		int32_t index=hash(key);
+		int32_t index=hash_key(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
 		lock.lock();
@@ -286,7 +286,7 @@ private:
 	/** Returns hash of key
 	 * MurmurHash used
 	 */
-	int32_t hash(const K& key)
+	int32_t hash_key(const K& key)
 	{
 		return get_hash_value(key) % hash_size;
 	}
