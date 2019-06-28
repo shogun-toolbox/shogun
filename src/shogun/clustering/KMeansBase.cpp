@@ -4,13 +4,13 @@
  * Authors: Saurabh Mahindre, Heiko Strathmann, Pan Deng, Viktor Gal
  */
 
+#include <shogun/base/Parallel.h>
 #include <shogun/clustering/KMeansBase.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <shogun/labels/Labels.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 
@@ -317,19 +317,25 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 void CKMeansBase::init()
 {
-	max_iter=300;
-	k=8;
-	dimensions=0;
-	fixed_centers=false;
-	use_kmeanspp=false;
-	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", ParameterProperties::HYPER);
-	SG_ADD(&k, "k", "k, the number of clusters", ParameterProperties::HYPER);
+	max_iter = 300;
+	k = 8;
+	dimensions = 0;
+	fixed_centers = false;
+	use_kmeanspp = false;
+	SG_ADD(
+	    &max_iter, "max_iter", "Maximum number of iterations",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &k, "k", "k, the number of clusters",
+	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
+	    SG_CONSTRAINT(positive<>()));
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data");
 	SG_ADD(&fixed_centers, "fixed_centers", "Use fixed centers");
 	SG_ADD(&R, "radiuses", "Cluster radiuses");
-	SG_ADD(&use_kmeanspp, "kmeanspp", "Whether use kmeans++", ParameterProperties::HYPER);
-	SG_ADD(&mus, "mus", "Cluster centers")
+	SG_ADD(
+	    &use_kmeanspp, "kmeanspp", "Whether use kmeans++",
+	    ParameterProperties::HYPER);
+	SG_ADD(&mus, "mus", "Cluster centers");
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }
-
