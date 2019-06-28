@@ -25,7 +25,8 @@ namespace shogun
 		MODEL = 1u << 2,
 		AUTO = 1u << 10,
 		READONLY = 1u << 11,
-		RUNFUNCTION = 1u << 12
+		RUNFUNCTION = 1u << 12,
+		CONSTRAIN = 1u << 13
 	};
 
 	static const std::list<std::pair<ParameterProperties, std::string>>
@@ -36,7 +37,8 @@ namespace shogun
 	        {ParameterProperties::MODEL, "MODEL"},
 	        {ParameterProperties::AUTO, "AUTO"},
 	        {ParameterProperties::READONLY, "READONLY"},
-	        {ParameterProperties::RUNFUNCTION, "RUNFUNCTION"}};
+	        {ParameterProperties::RUNFUNCTION, "RUNFUNCTION"},
+	        {ParameterProperties::CONSTRAIN, "CONSTRAIN"}};
 
 	enableEnumClassBitmask(ParameterProperties);
 
@@ -86,11 +88,11 @@ namespace shogun
 		{
 			return static_cast<bool>(m_attribute_mask & other);
 		}
-		bool compare_mask(const ParameterProperties other) const
+		bool compare_mask(ParameterProperties other) const
 		{
 			return m_attribute_mask == other;
 		}
-		void remove_property(const ParameterProperties other)
+		void remove_property(ParameterProperties other)
 		{
 			m_attribute_mask &= ~other;
 		}
@@ -137,9 +139,17 @@ namespace shogun
 		      m_init_function(std::move(auto_init))
 		{
 		}
+		AnyParameter(
+		    Any&& value, const AnyParameterProperties& properties,
+		    std::function<std::string(Any)> constrain_function)
+		    : m_value(std::move(value)), m_properties(properties),
+		      m_constrain_function(std::move(constrain_function))
+		{
+		}
 		AnyParameter(const AnyParameter& other)
 		    : m_value(other.m_value), m_properties(other.m_properties),
-		      m_init_function(other.m_init_function)
+		      m_init_function(other.m_init_function),
+		      m_constrain_function(other.m_constrain_function)
 		{
 		}
 
@@ -163,9 +173,15 @@ namespace shogun
 			return m_properties;
 		}
 
-		std::shared_ptr<params::AutoInit> get_init_function() const
+		const std::shared_ptr<params::AutoInit>& get_init_function() const
 		{
 			return m_init_function;
+		}
+
+		const std::function<std::string(Any)>& get_constrain_function() const
+		    noexcept
+		{
+			return m_constrain_function;
 		}
 
 		/** Equality operator which compares value but not properties.
@@ -185,6 +201,7 @@ namespace shogun
 		Any m_value;
 		AnyParameterProperties m_properties;
 		std::shared_ptr<params::AutoInit> m_init_function;
+		std::function<std::string(Any)> m_constrain_function;
 	};
 } // namespace shogun
 
