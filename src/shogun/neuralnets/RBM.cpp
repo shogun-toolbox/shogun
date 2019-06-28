@@ -88,12 +88,9 @@ void CRBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
 
 void CRBM::initialize_neural_network(float64_t sigma)
 {
-	NormalDistribution<float64_t> normal_dist(0.0, sigma);
 	m_num_params = m_num_visible + m_num_hidden + m_num_visible*m_num_hidden;
 	m_params = SGVector<float64_t>(m_num_params);
-
-	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = normal_dist(m_prng);
+	random::fill_array(m_params, NormalDistribution<float64_t>(0.0, sigma), m_prng);
 }
 
 void CRBM::set_batch_size(int32_t batch_size)

@@ -405,10 +405,7 @@ SGVector<float64_t> CGaussian::sample()
 	}
 
 	SGVector<float64_t> random_vec(m_mean.vlen);
-	NormalDistribution<float64_t> normal_dist;
-
-	for (int32_t i = 0; i < m_mean.vlen; i++)
-		random_vec.vector[i] = normal_dist(m_prng);
+	random::fill_array(random_vec, NormalDistribution<float64_t>(), m_prng);
 
 	if (m_cov_type == FULL)
 	{

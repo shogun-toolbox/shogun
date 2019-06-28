@@ -520,15 +520,10 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 
 	// TODO: replace with the new signal
 	// while(iter < max_iter && !CSignal::cancel_computations())
-	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < max_iter)
 	{
 		double stopping = -CMath::INFTY;
-		for(i=0;i<active_size;i++)
-		{
-			int j = uniform_int_dist(prng, {i, active_size-1});
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, prng);
 		for(s=0;s<active_size;s++)
 		{
 			i = index[s];

@@ -327,7 +327,6 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
-	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -338,11 +337,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		PGmax_new = -CMath::INFTY;
 		PGmin_new = CMath::INFTY;
 
-		for (i = 0; i < active_size; i++)
-		{
-			int j = uniform_int_dist(m_prng, {i, active_size - 1});
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, m_prng);
 
 		for (s = 0; s < active_size; s++)
 		{
@@ -542,7 +537,6 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
-	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -552,11 +546,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		Gmax_new = 0;
 
-		for (j = 0; j < active_size; j++)
-		{
-			int i = uniform_int_dist(m_prng, {j, active_size - 1});
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, m_prng);
 
 		for (s = 0; s < active_size; s++)
 		{
@@ -918,7 +908,6 @@ void CLibLinear::solve_l1r_lr(
 
 	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
-	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -928,11 +917,7 @@ void CLibLinear::solve_l1r_lr(
 
 		Gmax_new = 0;
 
-		for (j = 0; j < active_size; j++)
-		{
-			int i = uniform_int_dist(m_prng, {j, active_size - 1});
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, m_prng);
 
 		for (s = 0; s < active_size; s++)
 		{
@@ -1274,15 +1259,10 @@ void CLibLinear::solve_l2r_lr_dual(
 		index[i] = i;
 	}
 
-	UniformIntDistribution<int> uniform_int_dist;
 	auto pb = SG_PROGRESS(range(10));
 	while (iter < max_iter)
 	{
-		for (i = 0; i < l; i++)
-		{
-			int j = uniform_int_dist(m_prng, {i, l - 1});
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+l, m_prng);
 		int newton_iter = 0;
 		double Gmax = 0;
 		for (s = 0; s < l; s++)

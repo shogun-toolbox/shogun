@@ -13,6 +13,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 namespace shogun
 {
@@ -61,12 +62,7 @@ class CQDiag : public RandomMixin<CApproxJointDiagonalizer>
 			int N = C.dims[0];
 			auto V = SGMatrix<float64_t>(N,N);
 
-			NormalDistribution<float64_t> normal_dist;
-			for (int i = 0; i < N; i++)
-			{
-				for (int j = 0; j < N; j++)
-					V(i,j) = normal_dist(prng);
-			}
+			random::fill_array(V, NormalDistribution<float64_t>(), prng);
 			return diagonalize_impl(C, V, eps, itermax);
 		}
 

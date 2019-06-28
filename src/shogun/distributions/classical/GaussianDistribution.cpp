@@ -10,6 +10,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -86,11 +87,9 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	}
 	else
 	{
-		NormalDistribution<float64_t> normal_dist;
 		/* allocate memory and sample from std normal */
 		samples=SGMatrix<float64_t>(m_dimension, num_samples);
-		for (index_t i=0; i<m_dimension*num_samples; ++i)
-			samples.matrix[i]=normal_dist(m_prng);
+		random::fill_array(samples, NormalDistribution<float64_t>(), m_prng);
 	}
 
 	/* map into desired Gaussian covariance */

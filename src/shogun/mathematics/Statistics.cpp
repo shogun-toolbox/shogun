@@ -16,6 +16,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/NormalDistribution.h>
 
@@ -721,12 +722,9 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
 
-	NormalDistribution<float64_t> normal_dist;
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j )
-		for( int32_t i=0; i<dim; ++i )
-			S(i,j)=normal_dist(prng);
+	random::fill_array(S, NormalDistribution<float64_t>(), prng);
 
 	// the cholesky factorization c=L*U
 	MatrixXd U=c.llt().matrixU();
@@ -790,12 +788,9 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	SimplicialLLT<MatrixType> llt;
 
-	NormalDistribution<float64_t> normal_dist;
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j )
-		for( int32_t i=0; i<dim; ++i )
-			S(i,j)=normal_dist(prng);
+	random::fill_array(S, NormalDistribution<float64_t>(), prng);
 
 	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 

@@ -121,7 +121,6 @@ bool CGMM::train(CFeatures* data)
 	return true;
 }
 
-#include <iostream>
 float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
 	if (!features)

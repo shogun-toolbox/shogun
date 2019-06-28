@@ -113,12 +113,7 @@ void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 	if (m_mixing_matrix.num_rows != m || m_mixing_matrix.num_cols != m)
 	{
 		m_mixing_matrix = SGMatrix<float64_t>(m,m);
-		NormalDistribution<float64_t> normal_dist;
-		for (int i = 0; i < m; i++)
-		{
-			for (int j = 0; j < m; j++)
-				m_mixing_matrix(i,j) = normal_dist(m_prng);
-		}
+		random::fill_array(m_mixing_matrix, NormalDistribution<float64_t>(), m_prng);
 	}
 
 	Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);

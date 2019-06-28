@@ -99,16 +99,12 @@ SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
 	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
 			dim, 2*m, target);
 
-	NormalDistribution<float64_t> normal_dist;
 	/* fill matrix with normal data */
-	for (index_t i=0; i<2*m; ++i)
+	random::fill_array(result, NormalDistribution<float64_t>(), prng);
+	/* mean shift for second half */
+	for (index_t i=m; i<2*m; ++i)
 	{
-		for (index_t j=0; j<dim; ++j)
-			result(j,i)=normal_dist(prng);
-
-		/* mean shift for second half */
-		if (i>=m)
-			result(0,i)+=mean_shift;
+		result(0,i)+=mean_shift;
 	}
 
 	return result;

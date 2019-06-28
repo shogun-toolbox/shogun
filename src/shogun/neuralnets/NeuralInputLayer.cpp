@@ -33,6 +33,7 @@
 
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
@@ -72,10 +73,10 @@ void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 	}
 	if (gaussian_noise > 0)
 	{
-		NormalDistribution<float64_t> normal_dist(0.0, gaussian_noise);
 		int32_t len = m_num_neurons*m_batch_size;
-		for (int32_t k=0; k<len; k++)
-			m_activations[k] += normal_dist(m_prng);
+		random::fill_array(
+			m_activations.matrix, m_activations.matrix+len,
+			NormalDistribution<float64_t>(0.0, gaussian_noise), m_prng);
 	}
 }
 
