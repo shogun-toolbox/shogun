@@ -304,14 +304,13 @@ namespace shogun
 			register_param("float", decimal);
 
 			watch_param(
-			    "watched_int", &m_watched,
-			    AnyParameterProperties(
-			        "Integer"));
+			    "watched_int", &m_watched, AnyParameterProperties("Integer"));
 
 			watch_param(
-			    "watched_object", &m_object,
-			    AnyParameterProperties(
-			        "Object"));
+			    "watched_object", &m_object, AnyParameterProperties("Object"));
+			SG_ADD(
+			    &m_constrained_parameter, "constrained_parameter", "Mock parameter to test constraints.",
+                ParameterProperties::CONSTRAIN, SG_CONSTRAINT(positive<>(), less_than(10)));
 
 			watch_method("some_method", &CMockObject::some_method);
 		}
@@ -326,7 +325,8 @@ namespace shogun
 	private:
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
+		int32_t m_constrained_parameter = 1;
 
 		CMockObject* m_object = nullptr;
 	};
-}
+} // namespace shogun

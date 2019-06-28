@@ -616,3 +616,13 @@ TEST(SGObject, unsubscribe_observer_failure)
 
 	EXPECT_THROW(obj->unsubscribe(param_obs_not_in), ShogunException);
 }
+
+TEST(SGObject, constrained_parameter)
+{
+    auto obj = some<CMockObject>();
+    obj->put("constrained_parameter", 1);
+    EXPECT_EQ(obj->get<int32_t>("constrained_parameter"), 1);
+    EXPECT_THROW(obj->put("constrained_parameter", 0), ShogunException);
+    EXPECT_THROW(obj->put("constrained_parameter", 10), ShogunException);
+    EXPECT_EQ(obj->get<int32_t>("constrained_parameter"), 1);
+}
