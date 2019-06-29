@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CClusteringMutualInformation::evaluate_impl(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)

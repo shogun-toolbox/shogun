@@ -16,6 +16,25 @@
 using namespace shogun;
 using namespace std;
 
+CClusteringEvaluation::CClusteringEvaluation() : CEvaluation()
+{
+	m_use_best_map = true;
+	SG_ADD(&m_use_best_map, "use_best_map",
+		"Find best match between predicted labels and the ground truth");
+}
+
+float64_t CClusteringEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+{
+	if(m_use_best_map)
+		predicted = best_map(predicted, ground_truth);
+	else
+		SG_REF(predicted);
+	float64_t result = evaluate_impl(predicted,ground_truth);
+	SG_UNREF(predicted);
+	return result;
+}
+
+
 int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	int32_t match_count=0;
@@ -33,7 +52,7 @@ int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t
 	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }
 
-void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
+CLabels* CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
@@ -75,6 +94,10 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 		}
 	}
 
+	auto result = new CMulticlassLabels(predicted->get_num_labels());
+	SG_REF(result);
 	for (int32_t i= 0; i < predicted_ilabels.vlen; ++i)
-		((CMulticlassLabels*) predicted)->set_int_label(i, label_map[predicted_ilabels[i]]);
+		result->set_int_label(i, label_map[predicted_ilabels[i]]);
+
+	return result;
 }

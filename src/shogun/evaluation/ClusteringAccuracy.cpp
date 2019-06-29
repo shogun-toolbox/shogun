@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-float64_t CClusteringAccuracy::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CClusteringAccuracy::evaluate_impl(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
