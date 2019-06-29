@@ -157,7 +157,6 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	auto pb = SG_PROGRESS(range(max_iter));
 	while (iter<max_iter)
 	{
-		std::cout << iter << '\n';
 		log_likelihood_prev=log_likelihood_cur;
 		log_likelihood_cur=0;
 

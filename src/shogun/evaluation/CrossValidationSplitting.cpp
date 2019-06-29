@@ -12,13 +12,13 @@
 using namespace shogun;
 
 CCrossValidationSplitting::CCrossValidationSplitting() :
-	CSplittingStrategy()
+	RandomMixin<CSplittingStrategy>()
 {
 }
 
 CCrossValidationSplitting::CCrossValidationSplitting(
 		CLabels* labels, index_t num_subsets) :
-	CSplittingStrategy(labels, num_subsets)
+	RandomMixin<CSplittingStrategy>(labels, num_subsets)
 {
 }
 

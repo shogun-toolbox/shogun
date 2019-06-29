@@ -35,6 +35,7 @@
 #define __TIMESERIESSPLITTING_H_
 
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/mathematics/RandomMixin.h>
 #include <shogun/lib/config.h>
 
 namespace shogun
@@ -53,7 +54,7 @@ namespace shogun
 	 * The two splits are \f$ S1 = [5,6,7,8,9] \f$ and \f$ S2 = [8,9]\f$
 	 */
 
-	class CTimeSeriesSplitting : public CSplittingStrategy
+	class CTimeSeriesSplitting : public RandomMixin<CSplittingStrategy>
 	{
 	public:
 		/** constructor */

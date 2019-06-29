@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -20,7 +21,7 @@ class CLabels;
  * CSplittingStrategy. Produces subset index sets of equal size (at most one
  * difference)
  */
-class CCrossValidationSplitting: public CSplittingStrategy
+class CCrossValidationSplitting: public RandomMixin<CSplittingStrategy>
 {
 public:
 	/** constructor */

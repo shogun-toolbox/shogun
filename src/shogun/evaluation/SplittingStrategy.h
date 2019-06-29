@@ -13,7 +13,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -37,7 +36,7 @@ class CLabels;
  *
  * Calling the method agains means that the indices are rebuilt.
  */
-class CSplittingStrategy: public RandomMixin<CSGObject>
+class CSplittingStrategy: public CSGObject
 {
 public:
 	/** constructor */
