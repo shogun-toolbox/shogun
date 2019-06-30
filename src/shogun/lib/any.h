@@ -450,6 +450,17 @@ namespace shogun {
 			>
 		> : public std::true_type {};
 
+		template<typename T, typename _ = void>
+		struct has_reset : std::false_type {};
+
+		template<typename T>
+		struct has_reset<
+			T,
+			traits::when_exists<
+				decltype(std::declval<T>().reset(std::declval<T>()))
+			>
+		> : public std::true_type {};
+
 		template <class T>
 		bool compare(const T& lhs, const T& rhs)
 		{
@@ -572,53 +583,37 @@ namespace shogun {
 		}
 
 		template <class T>
-		inline T& mutable_value_of(void** ptr)
+		constexpr T& mutable_value_of(void** ptr)
 		{
 			return *static_cast<T*>(*ptr);
 		}
 
 		template <class T>
-		inline T const* typed_pointer(const void* ptr)
+		constexpr T const* typed_pointer(const void* ptr)
 		{
 			return static_cast<T const*>(ptr);
 		}
 
 		template <class T>
-		inline auto clone(void** storage, T& value)
-		    -> decltype(clone_impl(maybe_most_important(), value))
+		inline void clone(void** storage, const T& value)
 		{
-			auto cloned = clone_impl(maybe_most_important(), value);
-			mutable_value_of<decltype(cloned)>(storage) = cloned;
-			return cloned;
-		}
-
-		template <class T,
-			std::enable_if_t<traits::is_container<T>::value>* = nullptr>
-		inline auto clone(void** storage, const T& value)
-		{
-			T cloned;
-			std::transform(
-				value.cbegin(), value.cend(),
-				std::inserter(cloned, cloned.end()),
-				[](auto o) {
-					return static_cast<typename T::value_type>(
-						clone_impl(maybe_most_important(), o));
-				});
-			mutable_value_of<decltype(cloned)>(storage) = cloned;
-		}
-
-		template <class T, class S>
-		inline auto clone(void** storage, const ArrayReference<T, S>& value)
-		{
-			auto existing = mutable_value_of<ArrayReference<T, S>>(storage);
-			existing.reset(value);
-		}
-
-		template <class T, class S>
-		inline auto clone(void** storage, const Array2DReference<T, S>& value)
-		{
-			auto existing = mutable_value_of<Array2DReference<T, S>>(storage);
-			existing.reset(value);
+			if constexpr (has_reset<T>::value) {
+				auto existing = mutable_value_of<T>(storage);
+				existing.reset(value);
+			} else if constexpr (traits::is_container<T>::value) {
+				T cloned;
+				std::transform(
+					value.cbegin(), value.cend(),
+					std::inserter(cloned, cloned.end()),
+					[](auto o) {
+						return static_cast<typename T::value_type>(
+							clone_impl(maybe_most_important(), o));
+					});
+				mutable_value_of<decltype(cloned)>(storage) = cloned;
+			} else {
+				auto cloned = clone_impl(maybe_most_important(), value);
+				mutable_value_of<decltype(cloned)>(storage) = cloned;
+			}
 		}
 
 		template <class T>
