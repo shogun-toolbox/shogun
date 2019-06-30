@@ -141,7 +141,7 @@ bool CSGDQN::train(CFeatures* data)
 			ASSERT(w.vlen==v.vlen)
 			float64_t eta = 1.0/t;
 			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
-			float64_t z = y * features->dense_dot(i, w.vector, w.vlen);
+			float64_t z = y * features->dot(i, w);
 			if(updateB==true)
 			{
 				if (z < 1 || is_log_loss)
@@ -150,7 +150,7 @@ bool CSGDQN::train(CFeatures* data)
 					float64_t loss_1=-loss->first_derivative(z,1);
 					SGVector<float64_t>::vector_multiply(result,Bc,v.vector,w.vlen);
 					SGVector<float64_t>::add(w.vector,eta*loss_1*y,result,1.0,w.vector,w.vlen);
-					float64_t z2 = y * features->dense_dot(i, w.vector, w.vlen);
+					float64_t z2 = y * features->dot(i, w);
 					float64_t diffloss = -loss->first_derivative(z2,1) - loss_1;
 					if(diffloss)
 					{

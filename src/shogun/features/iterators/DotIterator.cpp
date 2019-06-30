@@ -38,7 +38,7 @@ namespace shogun
 	float64_t
 	DotIterator::feature_vector::dot(const SGVector<float64_t>& v) const
 	{
-		return m_features->dense_dot(m_idx, v.vector, v.vlen);
+		return m_features->dot(m_idx, v);
 	}
 
 	void DotIterator::feature_vector::add(

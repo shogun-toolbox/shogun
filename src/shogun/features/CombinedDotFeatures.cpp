@@ -125,8 +125,8 @@ float64_t CCombinedDotFeatures::dot(
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t dim = f->get_dim_feature_space();
-		result += f->dense_dot(vec_idx1, &vec2[offs], dim) *
-		          f->get_combined_feature_weight();
+		result += f->dot(vec_idx1, vec2.slice(offs, offs+dim)) *
+		          get_subfeature_weight(f_idx);
 		offs += dim;
 
 		SG_UNREF(f);

@@ -344,7 +344,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			i = index[s];
 			int32_t yi = y[i];
 
-			G = prob->x->dense_dot(i, w.vector, n);
+			G = prob->x->dot(i, w.slice(0, n));
 			if (prob->use_bias)
 				G += w.vector[n];
 
@@ -1272,7 +1272,7 @@ void CLibLinear::solve_l2r_lr_dual(
 			double C = upper_bound[GETI(i)];
 			double ywTx = 0, xisq = xTx[i];
 
-			ywTx = prob->x->dense_dot(i, w.vector, w_size);
+			ywTx = prob->x->dot(i, w.slice(0, w_size));
 			if (prob->use_bias)
 				ywTx += w.vector[w_size];
 

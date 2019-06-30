@@ -49,8 +49,6 @@ template <class T> class CCache;
 template <class ST> class CSparseFeatures : public CDotFeatures
 {
 	public:
-		using CDotFeatures::dense_dot;
-
 		/** constructor
 		 *
 		 * @param size cache size

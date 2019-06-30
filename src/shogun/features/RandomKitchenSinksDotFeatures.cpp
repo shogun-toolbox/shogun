@@ -107,7 +107,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(
 	int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	SG_DEBUG("entering dense_dot()\n");
-	ASSERT(vec2.vlen == get_dim_feature_space());
+	ASSERT(vec2.size() == get_dim_feature_space());
 
 	float64_t dot_product = 0;
 	for (index_t i=0; i<num_samples; i++)
@@ -194,8 +194,8 @@ SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::get_random_coefficients()
 
 float64_t CRandomKitchenSinksDotFeatures::dot(index_t vec_idx, index_t par_idx) const
 {
-	return feats->dense_dot(vec_idx, random_coeff.get_column_vector(par_idx),
-					feats->get_dim_feature_space());
+	auto vec2 = random_coeff.get_column(par_idx).slice(0, feats->get_dim_feature_space());
+	return feats->dot(vec_idx, vec2);
 }
 
 float64_t CRandomKitchenSinksDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const

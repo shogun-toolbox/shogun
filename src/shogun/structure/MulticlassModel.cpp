@@ -89,7 +89,7 @@ CResultSet* CMulticlassModel::argmax(
 
 	for ( int32_t c = 0 ; c < m_num_classes ; ++c )
 	{
-		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
+		score = df->dot(feat_idx, w.slice(c*feats_dim, c*feats_dim + feats_dim));
 		if ( training )
 			score += delta_loss(feat_idx, c);
 

@@ -99,12 +99,7 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 float64_t CHashedDocDotFeatures::dot(
 	int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
-}
-
-float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == CMath::pow(2,num_bits))
+	ASSERT(vec2.size() == CMath::pow(2,num_bits))
 
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 

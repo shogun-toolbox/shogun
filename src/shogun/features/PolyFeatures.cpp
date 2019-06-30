@@ -140,9 +140,9 @@ float64_t
 CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	REQUIRE(
-	    vec2.vlen == m_output_dimensions,
+	    vec2.size() == m_output_dimensions,
 	    "Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n",
-	    vec2.vlen, m_output_dimensions)
+	    vec2.size(), m_output_dimensions)
 
 	int32_t len;
 	bool do_free;
@@ -151,7 +151,7 @@ CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 
 	int cnt=0;
 	float64_t sum=0;
-	for (int j = 0; j < vec2.vlen; j++)
+	for (int j = 0; j < vec2.size(); j++)
 	{
 		float64_t output=m_multinomial_coefficients[j];
 		for (int k=0; k<m_degree; k++)

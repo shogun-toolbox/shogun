@@ -153,7 +153,7 @@ void CNewtonSVM::line_search_linear(const SGVector<float64_t> d)
 	SGVector<float64_t> Xd(x_n);
 	SGVector<float64_t> weights = get_w();
 	for (int32_t i=0; i<x_n; i++)
-		Xd[i] = features->dense_dot(i, d.data(), x_d);
+		Xd[i] = features->dot(i, d.slice(0, x_d));
 
 	linalg::add_scalar(Xd, d[x_d]);
 

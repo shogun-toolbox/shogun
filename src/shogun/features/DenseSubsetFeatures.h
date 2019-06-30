@@ -120,14 +120,14 @@ public:
 		if (dsf == NULL)
 			SG_ERROR("Require DenseSubsetFeatures of the same kind to perform dot\n")
 
-		if (m_idx.vlen != dsf->m_idx.vlen)
+		if (m_idx.size() != dsf->m_idx.size())
 			SG_ERROR("Cannot dot vectors of different length\n")
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		SGVector<ST> vec2 = dsf->m_fea->get_feature_vector(vec_idx2);
 
 		float64_t sum = 0;
-		for (int32_t i=0; i < m_idx.vlen; ++i)
+		for (int32_t i=0; i < m_idx.size(); ++i)
 			sum += vec1[m_idx[i]] * vec2[dsf->m_idx[i]];
 
 		return sum;

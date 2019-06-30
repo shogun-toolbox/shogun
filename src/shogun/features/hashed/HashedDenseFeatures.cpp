@@ -124,16 +124,16 @@ template <class ST>
 float64_t CHashedDenseFeatures<ST>::dot(
 	int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
-	ASSERT(vec2.vlen == dim)
+	ASSERT(vec2.size() == dim)
 
 	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx1);
 
 	float64_t result = 0;
 
-	int32_t hash_cache_size = use_quadratic ? vec.vlen : 0;
+	int32_t hash_cache_size = use_quadratic ? vec.size() : 0;
 	SGVector<uint32_t> hash_cache(hash_cache_size);
 
-	for (index_t i=0; i<vec.vlen; i++)
+	for (index_t i=0; i<vec.size(); i++)
 	{
 		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &i, sizeof (index_t), i);
 		if (use_quadratic)

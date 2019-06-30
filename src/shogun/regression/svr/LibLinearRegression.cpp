@@ -243,7 +243,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			G = -y[i] + lambda[GETI(i)]*beta[i];
 			H = QD[i] + lambda[GETI(i)];
 
-			G += prob->x->dense_dot(i, w.vector, w_size);
+			G += prob->x->dot(i, w);
 			if (prob->use_bias)
 				G+=w.vector[w_size];
 
