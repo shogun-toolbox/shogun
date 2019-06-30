@@ -16,6 +16,8 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 	from shogun import ECOCStrategy, LinearMulticlassMachine
 	from shogun import MulticlassAccuracy
 	from shogun import MulticlassLabels
+	from shogun import ecoc_encoder
+	from shogun import ecoc_decoder
 	import shogun as sg
 
 	def nonabstract_class(name):
@@ -48,13 +50,13 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 	#print((format_str % ('s', 's', 's')) % ('encoder', 'decoder', 'codelen', 'time', 'accuracy'))
 
 	def run_ecoc(ier, idr):
-		encoder = getattr(shogun, encoders[ier])()
-		decoder = getattr(shogun, decoders[idr])()
+		encoder = ecoc_encoder(encoders[ier])
+		decoder = ecoc_decoder(decoders[idr])
 
 		# whether encoder is data dependent
-		if hasattr(encoder, 'set_labels'):
-		    encoder.set_labels(gnd_train)
-		    encoder.set_features(fea_train)
+		if encoder.has('labels'):
+		    encoder.put('labels', gnd_train)
+		    encoder.put('features', fea_train)
 
 		strategy = ECOCStrategy(encoder, decoder)
 		classifier = LinearMulticlassMachine(strategy, fea_train, base_classifier, gnd_train)

@@ -80,7 +80,7 @@ protected:
     SGMatrix<int32_t> m_codebook;
     int32_t m_code_idx;
     CLabels *m_labels;
-    CDenseFeatures<float64_t> *m_features;
+    CFeatures *m_features;
     SGMatrix<float64_t> m_feats;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };

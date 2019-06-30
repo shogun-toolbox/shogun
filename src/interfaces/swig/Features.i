@@ -91,10 +91,6 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
-
-/** Instantiate RandomMixin */
-%template(RandomMixinDotFeatures) shogun::RandomMixin<shogun::CDotFeatures, std::mt19937_64>;
-
 %include <shogun/features/DirectorDotFeatures.h>
 %include <shogun/features/BinnedDotFeatures.h>
 %include <shogun/features/streaming/StreamingFeatures.h>
@@ -366,8 +362,9 @@ namespace shogun
 #endif
 #ifdef USE_FLOAT64
     %template(StreamingRealFeatures) CStreamingDenseFeatures<float64_t>;
+
     /** Instantiate RandomMixin */
-    %template(RandomMixinStreamingRealFeatures) RandomMixin<CStreamingDenseFeatures<float64_t>, std::mt19937_64>;
+    %template(RandomMixinStreamingDense) shogun::RandomMixin<shogun::CStreamingDenseFeatures<float64_t>, std::mt19937_64>;
 #endif
 }
 

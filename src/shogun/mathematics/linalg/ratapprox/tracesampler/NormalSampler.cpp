@@ -14,13 +14,13 @@ namespace shogun
 {
 
 CNormalSampler::CNormalSampler()
-	: CTraceSampler()
+	: RandomMixin<CTraceSampler>()
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CNormalSampler::CNormalSampler(index_t dimension)
-	: CTraceSampler(dimension)
+	: RandomMixin<CTraceSampler>(dimension)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
@@ -35,7 +35,7 @@ void CNormalSampler::precompute()
 	m_num_samples=1;
 }
 
-SGVector<float64_t> CNormalSampler::sample(index_t idx)
+SGVector<float64_t> CNormalSampler::sample(index_t idx) const
 {
 	// ignore idx since it doesnt matter, all samples are independent
 	SGVector<float64_t> s(m_dimension);

@@ -182,6 +182,7 @@ namespace shogun
 		    noexcept
 		{
 			return m_constrain_function;
+		}
 
 		void add_callback_function(std::function<void()>&& method)
 		{

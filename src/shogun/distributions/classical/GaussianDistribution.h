@@ -88,7 +88,7 @@ public:
 	 * @return matrix with samples (column vectors)
 	 */
 	virtual SGMatrix<float64_t> sample(int32_t num_samples,
-			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>());
+			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>()) const;
 
 	/** Computes the log-pdf for all provided samples. That is
 	 *

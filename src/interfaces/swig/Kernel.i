@@ -74,9 +74,6 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 
 %include <shogun/kernel/DotKernel.h>
 
-/** Instantiate RandomMixin */
-%template(RandomMixinDotKernel) shogun::RandomMixin<shogun::CDotKernel, std::mt19937_64>;
-
 /* Templated Class SparseKernel */
 %include <shogun/kernel/SparseKernel.h>
 namespace shogun

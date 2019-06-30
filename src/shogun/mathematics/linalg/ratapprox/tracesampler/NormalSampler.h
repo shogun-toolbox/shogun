@@ -9,6 +9,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -16,7 +17,7 @@ template<class T> class SGVector;
 
 /** @brief Class that provides a sample method for Gaussian samples
  */
-class CNormalSampler : public CTraceSampler
+class CNormalSampler : public RandomMixin<CTraceSampler>
 {
 public:
 	/** default constructor */
@@ -34,7 +35,7 @@ public:
 	 * @param idx the index (this is effectively ignored)
 	 * @return the sample vector
 	 */
-	virtual SGVector<float64_t> sample(index_t idx);
+	virtual SGVector<float64_t> sample(index_t idx) const;
 
 	/** precompute method that sets the num_samples of the base */
 	virtual void precompute();

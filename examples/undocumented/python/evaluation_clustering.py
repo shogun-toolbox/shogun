@@ -29,18 +29,17 @@ parameter_list = [[fea, gnd_raw, 10]]
 
 
 def run_clustering(data, k):
-	from shogun import KMeans
+	from shogun import machine
 
 	fea = sg.features(data)
 	distance = sg.distance('EuclideanDistance')
 	distance.init(fea, fea)
-	kmeans=KMeans(k, distance)
-	kmeans.put("seed", 1)
+	kmeans=machine("KMeans", k=k, distance=distance, seed=1)
 
 	# print("Running clustering...")
 	kmeans.train()
 
-	return kmeans.get_cluster_centers()
+	return kmeans.get("cluster_centers")
 
 def assign_labels(data, centroids, ncenters):
 	from shogun import MulticlassLabels

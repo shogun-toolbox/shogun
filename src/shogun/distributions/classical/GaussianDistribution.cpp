@@ -66,7 +66,7 @@ CGaussianDistribution::~CGaussianDistribution()
 }
 
 SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
-		SGMatrix<float64_t> pre_samples)
+		SGMatrix<float64_t> pre_samples) const
 {
 	REQUIRE(num_samples>0, "Number of samples (%d) must be positive\n",
 			num_samples);

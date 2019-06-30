@@ -26,7 +26,7 @@ using namespace ColPack;
 namespace shogun
 {
 
-CProbingSampler::CProbingSampler() : CTraceSampler()
+CProbingSampler::CProbingSampler() : RandomMixin<CTraceSampler>()
 {
 	init();
 }
@@ -34,7 +34,7 @@ CProbingSampler::CProbingSampler() : CTraceSampler()
 CProbingSampler::CProbingSampler(
 	CSparseMatrixOperator<float64_t>* matrix_operator, int64_t power,
 	EOrderingVariant ordering, EColoringVariant coloring)
-	: CTraceSampler(matrix_operator->get_dimension())
+	: RandomMixin<CTraceSampler>(matrix_operator->get_dimension())
 {
 	init();
 
@@ -185,7 +185,7 @@ void CProbingSampler::precompute()
 	SG_DEBUG("Leaving\n");
 }
 
-SGVector<float64_t> CProbingSampler::sample(index_t idx)
+SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 {
 	REQUIRE(idx<m_num_samples, "Given index (%d) must be smaller than "
 			"number of samples to draw (%d)\n", idx, m_num_samples);

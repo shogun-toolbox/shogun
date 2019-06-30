@@ -6,28 +6,27 @@ from numpy import *
 #from pylab import *
 
 def run_clustering(data, k):
-	from shogun import KMeans
+	from shogun import machine
 
 	distance = sg.distance('EuclideanDistance')
 	distance.init(data, data)
-	kmeans=KMeans(k, distance)
-	kmeans.put("seed", 1)
+	kmeans=machine("KMeans", k=k, distance=distance, seed=1)
 
 	#print("Running clustering...")
 	kmeans.train()
 
-	return kmeans.get_cluster_centers()
+	return kmeans.get("cluster_centers")
 
 def assign_labels(data, centroids, ncenters):
 	from shogun import MulticlassLabels
-	from shogun import KNN
+	from shogun import machine
 	from numpy import arange
 
 	labels = MulticlassLabels(arange(0.,ncenters))
 	fea_centroids = sg.features(centroids)
 	distance = sg.distance('EuclideanDistance')
 	distance.init(fea_centroids, fea_centroids)
-	knn = KNN(1, distance, labels)
+	knn = machine("KNN", k=1, distance=distance, labels=labels)
 	knn.train()
 	return knn.apply(data)
 

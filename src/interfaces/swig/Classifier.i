@@ -73,22 +73,10 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
-
-/** Instantiate RandomMixin */
-%template(RandomMixinMachine) shogun::RandomMixin<shogun::CMachine, std::mt19937_64>;
-
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>
-
-/** Instantiate RandomMixin */
-%template(RandomMixinDistanceMachine) shogun::RandomMixin<shogun::CDistanceMachine, std::mt19937_64>;
-
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/machine/LinearMachine.h>
-
-/** Instantiate RandomMixin */
-%template(RandomMixinLinearMachine) shogun::RandomMixin<shogun::CLinearMachine, std::mt19937_64>;
-
 %include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
 #ifdef USE_GPL_SHOGUN

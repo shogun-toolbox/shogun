@@ -16,7 +16,7 @@ ConstMean mean_function()
 #![create_appropriate_kernel_and_mean_function]
 
 #![create_instance]
-SoftMaxLikelihood gauss_likelihood()
+LikelihoodModel gauss_likelihood = gp_likelihood("SoftMaxLikelihood")
 gauss_likelihood.put("seed", 1)
 MultiLaplaceInferenceMethod inference_method(k, features_train, mean_function, labels_train, gauss_likelihood)
 GaussianProcessClassification gp_classifier(inference_method)

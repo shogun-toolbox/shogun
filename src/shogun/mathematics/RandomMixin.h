@@ -19,23 +19,10 @@ namespace shogun
 		    std::enable_if_t<std::is_base_of<
 		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
 		        nullptr>
-		static inline void seed(T* object, PRNG& prng)
+		static inline void seed(T* object, PRNG&& prng)
 		{
 			if (object->has("seed"))
 				object->put("seed", (int32_t)prng());
-		}
-
-		/** Seeds an SGObject using a specific seed
-		 */
-		template <
-		    typename T,
-		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
-		        nullptr>
-		static inline void seed(T* object, int32_t seed)
-		{
-			if (object->has("seed"))
-				object->put("seed", seed);
 		}
 	} // namespace random
 
@@ -99,20 +86,7 @@ namespace shogun
 
 	protected:
 		/** Seeds an SGObject using a random number generator as a seed source
-		 * This is useful with non constant methods to generate different
-		 * results on each invocation
-		 */
-		template <
-		    typename T,
-		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
-		        nullptr>
-		inline void seed(T* object)
-		{
-			random::seed(object, m_prng);
-		}
-
-		/** Seeds an SGObject with the current seed
+		 * This is intended to seed non-parameter SGObjects created inside methods
 		 */
 		template <
 		    typename T,
@@ -121,11 +95,11 @@ namespace shogun
 		        nullptr>
 		inline void seed(T* object) const
 		{
-			random::seed(object, m_seed);
+			random::seed(object, m_prng);
 		}
 
 		int32_t m_seed;
-		PRNG m_prng;
+		mutable PRNG m_prng;
 	};
 
 	static inline void seed_callback(CSGObject* obj, int32_t seed)

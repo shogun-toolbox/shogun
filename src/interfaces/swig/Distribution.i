@@ -36,8 +36,4 @@
 %include <shogun/distributions/KernelDensity.h>
 %include <shogun/clustering/GMM.h>
 %include <shogun/distributions/classical/ProbabilityDistribution.h>
-
-/** Instantiate RandomMixin */
-%template(RandomMixinProbabilityDistribution) shogun::RandomMixin<shogun::CProbabilityDistribution, std::mt19937_64>;
-
 %include <shogun/distributions/classical/GaussianDistribution.h>

@@ -657,21 +657,8 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (!parameter.get_properties().has_property(
 	        ParameterProperties::RUNFUNCTION))
-=======
-	if (!parameter.get_properties().has_property(function_property))
->>>>>>> Add CALLBACKFUNCTION property
-=======
-	if (!parameter.get_properties().has_property(
-	        ParameterProperties::RUNFUNCTION))
->>>>>>> Change how callback functions work
-=======
-	if (!parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
->>>>>>> Test NormalDistribution
 	{
 		SG_ERROR(
 		    "The parameter %s::%s is not registered as a function, "
