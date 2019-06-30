@@ -60,7 +60,7 @@ TEST(LBPPyrDotFeatures, dense_dot_test)
 	SGVector<float64_t> tmp(vec.vlen);
 	for (index_t i=0; i<vec.vlen; i++)
 		tmp[i] = vec[i];
-	float64_t result = lbp_feat->dense_dot(0, tmp.vector, vec.vlen);
+	float64_t result = lbp_feat->dot(0, tmp);
 	EXPECT_EQ(result, correct_result);
 
 	SG_UNREF(lbp_feat);
