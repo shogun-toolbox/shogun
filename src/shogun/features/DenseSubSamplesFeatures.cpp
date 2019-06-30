@@ -139,7 +139,7 @@ template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
 
 template <class ST>
 float64_t CDenseSubSamplesFeatures<ST>::dot(
-	int32_t vec_idx1, const SGVector<float64_t> vec2) const
+	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	check_bound(vec_idx1);
 	return m_fea->dot(m_idx[vec_idx1], vec2);

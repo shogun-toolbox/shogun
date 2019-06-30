@@ -87,7 +87,6 @@ bool CLinearKernel::delete_optimization()
 float64_t CLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized())
-	float64_t result = ((CDotFeatures*) rhs)->
-		dense_dot(idx, normal.vector, normal.size());
+	float64_t result = ((CDotFeatures*) rhs)->dot(idx, normal);
 	return normalizer->normalize_rhs(result, idx);
 }

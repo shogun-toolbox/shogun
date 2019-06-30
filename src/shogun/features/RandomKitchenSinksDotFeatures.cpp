@@ -104,7 +104,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df
 }
 
 float64_t CRandomKitchenSinksDotFeatures::dot(
-	int32_t vec_idx1, const SGVector<float64_t> vec2) const
+	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	SG_DEBUG("entering dense_dot()\n");
 	ASSERT(vec2.size() == get_dim_feature_space());

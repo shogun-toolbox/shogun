@@ -154,7 +154,7 @@ float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, i
 }
 
 float64_t CHashedWDFeaturesTransposed::dot(
-    int32_t vec_idx1, const SGVector<float64_t> vec2) const
+    int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	REQUIRE(
 	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim=%d, w_dim=%d\n",

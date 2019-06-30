@@ -186,7 +186,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) cons
 }
 
 float64_t
-CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	REQUIRE(
 	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim=%d, w_dim=%d\n",

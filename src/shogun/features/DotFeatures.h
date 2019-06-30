@@ -83,7 +83,7 @@ class CDotFeatures : public CFeatures
 		 * @param vec2 dense vector
 		 */
 		virtual float64_t
-		dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const = 0;
+		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const = 0;
 
 		/** compute dot product between vector1 and a dense vector
 		 *

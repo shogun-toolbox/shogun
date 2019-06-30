@@ -74,7 +74,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 * @param vec2 dense vector
 		 */
 		virtual float64_t
-		dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const;
+		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 		/** add vector 1 multiplied with alpha to dense vector2
 		 *

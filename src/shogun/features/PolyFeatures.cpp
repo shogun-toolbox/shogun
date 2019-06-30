@@ -137,7 +137,7 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx
 }
 
 float64_t
-CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	REQUIRE(
 	    vec2.size() == m_output_dimensions,

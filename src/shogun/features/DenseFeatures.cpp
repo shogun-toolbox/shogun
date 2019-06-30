@@ -632,7 +632,7 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 
 template <typename ST>
 float64_t
-CDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+CDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	SGVector<ST> vec1 = get_feature_vector(vec_idx1);
 	float64_t result = linalg::dot(vec2, vec1, linalg::allow_cast{});

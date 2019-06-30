@@ -167,7 +167,7 @@ uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& 
 }
 
 float64_t
-CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	REQUIRE(
 	    vec2.size() == vec_nDim,

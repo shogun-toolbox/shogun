@@ -140,7 +140,7 @@ public:
 	 * @param vec2_len length of real valued vector
 	 */
 	virtual float64_t
-	dot(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 	{
 		REQUIRE(
 			m_idx.vlen == vec2.vlen, "Cannot dot vectors of different length\n")
