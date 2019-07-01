@@ -346,8 +346,8 @@ TEST(Any, equals_null_pointer)
 
 TEST(Any, equals_value)
 {
-	Simple a;
-	Simple b;
+	SimpleValue a;
+	SimpleValue b;
 	EXPECT_EQ(make_any(a), make_any(b));
 	EXPECT_EQ(make_any(b), make_any(a));
 }

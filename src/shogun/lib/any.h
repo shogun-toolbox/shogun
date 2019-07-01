@@ -401,22 +401,6 @@ namespace shogun {
 	namespace any_detail
 	{
 
-		struct by_default
-		{
-		};
-
-		struct general : by_default
-		{
-		};
-
-		struct more_important : general
-		{
-		};
-
-		struct maybe_most_important : more_important
-		{
-		};
-
 		template <class T>
 		bool compare_impl_eq(const T& lhs, const T& rhs) = delete;
 		template <>
@@ -460,6 +444,18 @@ namespace shogun {
 				decltype(std::declval<T>().reset(std::declval<T>()))
 			>
 		> : public std::true_type {};
+
+		template <class T>
+		constexpr T& mutable_value_of(void** ptr)
+		{
+			return *static_cast<T*>(*ptr);
+		}
+
+		template <class T>
+		constexpr T const* typed_pointer(const void* ptr)
+		{
+			return static_cast<T const*>(ptr);
+		}
 
 		template <class T>
 		bool compare(const T& lhs, const T& rhs)
@@ -551,67 +547,55 @@ namespace shogun {
 			}
 		}
 
-		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
-		inline T clone_impl(general, T& value)
-		{
-			return T(value);
-		}
-
-		template<class T1, class T2>
-		inline auto clone_impl(general, const std::pair<T1, T2>& value)
-		{
-			return std::make_pair(
-				clone_impl(maybe_most_important(), value.first),
-				clone_impl(maybe_most_important(), value.second));
-		}
-
 		template <class T>
-		inline auto clone_impl(more_important, const T& value)
-		    -> decltype(value.clone())
+		T clone_value(const T& value)
 		{
-			return value.clone();
-		}
+			if constexpr (traits::has_clone_ptr<T>::value)
+			{
+				if (!value)
+					return nullptr;
 
-		template <class T>
-		inline auto clone_impl(maybe_most_important, T* value)
-		    -> decltype(static_cast<void*>(value->clone()))
-		{
-			if (!value)
-				return nullptr;
-
-			return static_cast<void*>(value->clone());
-		}
-
-		template <class T>
-		constexpr T& mutable_value_of(void** ptr)
-		{
-			return *static_cast<T*>(*ptr);
-		}
-
-		template <class T>
-		constexpr T const* typed_pointer(const void* ptr)
-		{
-			return static_cast<T const*>(ptr);
+				return dynamic_cast<T>(value->clone());
+			}
+			else if constexpr (traits::has_clone<T>::value)
+			{
+				return value.clone();
+			}
+			else if constexpr (traits::is_pair<T>::value)
+			{
+				return std::make_pair(clone_value(value.first), clone_value(value.second));
+			}
+			else if constexpr (std::is_copy_constructible<T>::value)
+			{
+				return T(value);
+			}
+			else
+			{
+				// we assert something that is false to see the type T
+				static_assert(std::is_same<T, Empty>::value, "Clone is not supported");
+			}
 		}
 
 		template <class T>
 		inline void clone(void** storage, const T& value)
 		{
-			if constexpr (has_reset<T>::value) {
+			if constexpr (has_reset<T>::value)
+			{
 				auto existing = mutable_value_of<T>(storage);
 				existing.reset(value);
-			} else if constexpr (traits::is_container<T>::value) {
+			}
+			else if constexpr (traits::is_container<T>::value)
+			{
 				T cloned;
 				std::transform(
 					value.cbegin(), value.cend(),
 					std::inserter(cloned, cloned.end()),
-					[](auto o) {
-						return static_cast<typename T::value_type>(
-							clone_impl(maybe_most_important(), o));
-					});
+					[](auto o) { return clone_value(o); });
 				mutable_value_of<decltype(cloned)>(storage) = cloned;
-			} else {
-				auto cloned = clone_impl(maybe_most_important(), value);
+			}
+			else
+			{
+				auto cloned = clone_value(value);
 				mutable_value_of<decltype(cloned)>(storage) = cloned;
 			}
 		}
@@ -679,10 +663,7 @@ namespace shogun {
 		template <class T>
 		inline void copy_array(T* begin, T* end, T* dst)
 		{
-			std::transform(begin, end, dst, [](const T& value) {
-				return static_cast<T>(
-				    clone_impl(maybe_most_important(), value));
-			});
+			std::transform(begin, end, dst, [](auto value) { return clone_value(value); });
 		}
 
 	}

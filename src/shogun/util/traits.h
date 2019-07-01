@@ -79,6 +79,28 @@ namespace shogun
 		> : public std::true_type {};
 
 		template<typename T, typename _ = void>
+		struct has_clone : std::false_type {};
+
+		template<typename T>
+		struct has_clone<
+			T,
+			when_exists<
+				decltype(std::declval<T>().clone())
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct has_clone_ptr : std::false_type {};
+
+		template<typename T>
+		struct has_clone_ptr<
+			T,
+			when_exists<
+				decltype(std::declval<T>()->clone())
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
 		struct is_comparable : std::false_type {};
 
 		template<typename T>
