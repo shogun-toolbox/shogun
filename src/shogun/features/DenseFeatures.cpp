@@ -606,8 +606,7 @@ template<class ST> void CDenseFeatures<ST>::init()
 	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.");
 	SG_ADD(&num_features, "num_features", "Number of features.");
 	SG_ADD(&feature_matrix, "feature_matrix",
-			"Matrix of feature vectors / 1 vector per column.",
-			ParameterProperties::READONLY);
+			"Matrix of feature vectors / 1 vector per column.");
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\
