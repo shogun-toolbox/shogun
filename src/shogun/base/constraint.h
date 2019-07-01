@@ -177,13 +177,15 @@ namespace shogun
 		}
 	};
 
+	class ConstraintBase {};
+
 	/**
 	 * Constraint helper class that invokes apply using class member functions
 	 * m_funcs. If any of the functions returns false then it retrieves
 	 * the error and passes it to the buffer.
 	 */
 	template <typename... Args>
-	class Constraint
+	class Constraint: ConstraintBase
 	{
 	public:
 		Constraint(std::tuple<Args...>&& funcs) : m_funcs(std::move(funcs))

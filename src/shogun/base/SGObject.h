@@ -784,28 +784,59 @@ public:
 	}
 
 protected:
-	template <ParameterProperties PPVal, typename ...Args, std::enable_if_t<!static_cast<bool>(PPVal&ParameterProperties::AUTO)>* = nullptr>
-	void sg_add_auto_func(AnyParameter& any_pprop, Args&&... args)
-	{
-	}
 
-	template <ParameterProperties PPVal, typename ...Args, std::enable_if_t<static_cast<bool>(PPVal&ParameterProperties::AUTO)>* = nullptr>
+	template <
+			ParameterProperties PPVal, typename... Args,
+			std::enable_if_t<
+					static_cast<bool>(PPVal& ParameterProperties::AUTO)>* = nullptr>
 	void declare_auto_func(AnyParameter& any_pprop, Args&&... args)
 	{
-		static_assert(sg_is_any_base_of<params::AutoInit, Args...>::value,
+		static_assert(
+				sg_is_any_base_of<params::AutoInit, Args...>::value,
 				"Expected a params::AutoInit function when passing param with"
 				" ParameterProperty::AUTO!");
-		constexpr size_t idx = get_idx_from_pack<params::AutoInit, Args...>::idx;
-		any_pprop.set_init_function(std::move(std::get<idx>(std::forward_as_tuple(args...))));
+		constexpr size_t idx =
+				get_idx_from_pack<params::AutoInit, Args...>::idx;
+		any_pprop.set_init_function(
+				std::move(std::get<idx>(std::forward_as_tuple(args...))));
 	}
 
-	template <ParameterProperties pprop, typename T, typename ...Args>
-	void declare(T* value, const std::string& name, const std::string& description, Args&& ...args)
+	template <
+			ParameterProperties PPVal, typename ValueType, typename... Args,
+			std::enable_if_t<static_cast<bool>(
+					PPVal& ParameterProperties::CONSTRAIN)>* = nullptr>
+	void declare_constraint_func(AnyParameter& any_pprop, Args&&... args)
+	{
+		static_assert(
+				sg_is_any_base_of<ConstraintBase, Args...>::value,
+				"Expected a Constraint object when passing param with"
+				" ParameterProperty::CONSTRAIN!");
+		constexpr size_t idx =
+				get_idx_from_pack<ConstraintBase, Args...>::idx;
+		auto func = [constrain_function = std::move(
+				std::get<idx>(std::forward_as_tuple(args...)))](
+				const auto& val) {
+			std::string result;
+			auto casted_val = any_cast<ValueType>(val);
+			constrain_function.run(casted_val, result);
+			return result;
+		};
+		any_pprop.set_constrain_function(std::move(func));
+	}
+
+	template <ParameterProperties pprop, typename T, typename... Args>
+	void declare(
+			T* value, const std::string& name, const std::string& description,
+			Args&&... args)
 	{
 		auto any_pprop = AnyParameterProperties(description, pprop);
 		auto anyp = AnyParameter(make_any_ref(value), any_pprop);
-		if constexpr (static_cast<bool>(pprop&ParameterProperties::AUTO))
-            declare_auto_func<pprop>(anyp, args...);
+		if constexpr (static_cast<bool>(pprop & ParameterProperties::AUTO))
+			declare_auto_func<pprop>(anyp, std::forward<Args&&>(args)...);
+		if constexpr (static_cast<bool>(
+				pprop & ParameterProperties::CONSTRAIN))
+			declare_constraint_func<pprop, T>(
+					anyp, std::forward<Args&&>(args)...);
 
 		BaseTag tag(name);
 		create_parameter(tag, anyp);

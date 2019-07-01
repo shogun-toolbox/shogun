@@ -15,14 +15,21 @@ namespace shogun
 		using type = T;
 	};
 
-	template <template <typename> class Container, typename T>
-	struct get_container_underlying<Container<T>>
+	template <typename T>
+	struct get_container_underlying<std::shared_ptr<T>>
 	{
 		using type = T;
 	};
 
 	template <typename T>
-	using get_container_underlying_t = typename get_container_underlying<typename std::remove_reference<T>::type>::type;
+	struct get_container_underlying<std::unique_ptr<T>>
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	using get_container_underlying_t = typename get_container_underlying<
+	    typename std::remove_reference<T>::type>::type;
 
 	template <typename T, typename... Rest>
 	struct sg_is_any_base_of : std::false_type
@@ -30,15 +37,17 @@ namespace shogun
 	};
 
 	template <typename T, typename First>
-	struct sg_is_any_base_of<T, First> : std::is_base_of<T, get_container_underlying_t<First>>
+	struct sg_is_any_base_of<T, First>
+	    : std::is_base_of<T, get_container_underlying_t<First>>
 	{
 	};
 
 	template <typename T, typename First, typename... Rest>
 	struct sg_is_any_base_of<T, First, Rest...>
 	    : std::integral_constant<
-	          bool, std::is_base_of<T, get_container_underlying_t<First>>::value ||
-	                    sg_is_any_base_of<T, Rest...>::value>
+	          bool,
+	          std::is_base_of<T, get_container_underlying_t<First>>::value ||
+	              sg_is_any_base_of<T, Rest...>::value>
 	{
 	};
 
@@ -51,7 +60,9 @@ namespace shogun
 	template <typename T, size_t size, typename First>
 	struct get_idx_from_pack_helper<T, false, size, First>
 	{
-		static_assert(std::is_base_of<T, get_container_underlying_t<First>>::value, "Could not find type in pack!\n");
+		static_assert(
+		    std::is_base_of<T, get_container_underlying_t<First>>::value,
+		    "Could not find type in pack!\n");
 		constexpr static size_t idx = size;
 	};
 
@@ -65,14 +76,16 @@ namespace shogun
 	struct get_idx_from_pack_helper<T, false, size, First, Rest...>
 	{
 		constexpr static size_t idx = get_idx_from_pack_helper<
-				T, std::is_base_of<T, get_container_underlying_t<First>>::value, size, Rest...>::idx;
+		    T, std::is_base_of<T, get_container_underlying_t<First>>::value,
+		    size, Rest...>::idx;
 	};
 
 	template <typename T, typename First, typename... Rest>
 	struct get_idx_from_pack
 	{
 		constexpr static size_t idx = get_idx_from_pack_helper<
-				T, std::is_base_of<T, get_container_underlying_t<First>>::value, sizeof...(Rest), Rest...>::idx;
+		    T, std::is_base_of<T, get_container_underlying_t<First>>::value,
+		    sizeof...(Rest), Rest...>::idx;
 	};
 
 } // namespace shogun

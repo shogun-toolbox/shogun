@@ -207,6 +207,11 @@ namespace shogun
 			m_init_function = std::move(func);
 		}
 
+		void set_constrain_function(std::function<std::string(Any)>&& func)
+		{
+			m_constrain_function = std::move(func);
+		}
+
 		std::shared_ptr<params::AutoInit> get_init_function() const
 		{
 			return m_init_function;

@@ -276,9 +276,10 @@ namespace shogun
 
 			watch_param(
 			    "watched_object", &m_object, AnyParameterProperties("Object"));
-			SG_ADD(
-			    &m_constrained_parameter, "constrained_parameter", "Mock parameter to test constraints.",
-                ParameterProperties::CONSTRAIN, SG_CONSTRAINT(positive<>(), less_than(10)));
+			declare<ParameterProperties::CONSTRAIN>(
+			    &m_constrained_parameter, "constrained_parameter",
+			    "Mock parameter to test constraints.",
+			    SG_CONSTRAINT(positive<>(), less_than(10)));
 
 			watch_method("some_method", &MockObject::some_method);
 		}

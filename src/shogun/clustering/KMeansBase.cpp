@@ -307,10 +307,8 @@ void KMeansBase::init()
 	SG_ADD(
 	    &max_iter, "max_iter", "Maximum number of iterations",
 	    ParameterProperties::HYPER);
-	SG_ADD(
-	    &k, "k", "k, the number of clusters",
-	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
-	    SG_CONSTRAINT(positive<>()));
+	declare<ParameterProperties::HYPER | ParameterProperties::CONSTRAIN>(
+	    &k, "k", "k, the number of clusters", SG_CONSTRAINT(positive<>()));
 	SG_ADD(
 	    &dimensions, "dimensions", "Dimensions of data",
 	    ParameterProperties::READONLY);
