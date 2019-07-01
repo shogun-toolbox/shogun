@@ -52,6 +52,8 @@ CFeatures::~CFeatures()
 
 void CFeatures::init()
 {
+	set_default_mask(ParameterProperties::READONLY);
+
 	SG_ADD(&properties, "properties", "Feature properties");
 	SG_ADD(&cache_size, "cache_size", "Size of cache in MB");
 

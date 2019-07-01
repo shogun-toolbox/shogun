@@ -88,8 +88,10 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
+		auto pprop =                                                           \
+		    AnyParameterProperties(description, this->m_default_mask);         \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(name, param, AnyParameterProperties(description));   \
+		this->watch_param(name, param, pprop);                                 \
 	}
 
 #define SG_ADD4(param, name, description, param_properties)                    \
@@ -98,8 +100,10 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		    !static_cast<bool>((param_properties)&ParameterProperties::AUTO),  \
 		    "Expected a lambda when passing param with "                       \
 		    "ParameterProperty::AUTO");                                        \
+		auto mask = param_properties;                                          \
+		mask |= this->m_default_mask;                                          \
 		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, param_properties);             \
+		    AnyParameterProperties(description, mask);                         \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
 		if (pprop.has_property(ParameterProperties::HYPER))                    \
@@ -108,10 +112,13 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
-#define SG_ADD5(param, name, description, param_properties, auto_or_constraint)\
+#define SG_ADD5(                                                               \
+    param, name, description, param_properties, auto_or_constraint)            \
 	{                                                                          \
+		auto mask = param_properties;                                          \
+		mask |= this->m_default_mask;                                          \
 		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, param_properties);             \
+		    AnyParameterProperties(description, mask);                         \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, auto_or_constraint, pprop);             \
 		if (pprop.has_property(ParameterProperties::HYPER))                    \
@@ -1025,6 +1032,20 @@ protected:
 
 	/** Initialises all parameters with ParameterProperties::AUTO flag */
 	void init_auto_params();
+
+	/**
+	 * Set a default mask value that is added to any other mask
+	 * passed to watch_param. The default mask is by default
+	 * ParameterProperties::NONE.
+	 * @param mask the default mask
+	 */
+	void set_default_mask(ParameterProperties mask) noexcept
+	{
+		m_default_mask = mask;
+	}
+
+	/** The default mask for all registered parameters */
+	ParameterProperties m_default_mask = ParameterProperties::NONE;
 
 private:
 	void set_global_objects();
