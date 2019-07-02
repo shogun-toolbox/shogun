@@ -42,12 +42,12 @@
 
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/distributions/classical/GaussianDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
 
-CSoftMaxLikelihood::CSoftMaxLikelihood() : CLikelihoodModel()
+CSoftMaxLikelihood::CSoftMaxLikelihood() : RandomMixin<CLikelihoodModel>()
 {
 	init();
 }
@@ -309,6 +309,7 @@ SGVector<float64_t> CSoftMaxLikelihood::mc_sampler(index_t num_samples, SGVector
 	SGMatrix<float64_t> Sigma, SGVector<float64_t> y) const
 {
 	CGaussianDistribution *gen=new CGaussianDistribution (mean, Sigma);
+	seed(gen);
 
 	//category by samples
 	SGMatrix<float64_t> samples=gen->sample(num_samples);

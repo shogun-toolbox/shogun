@@ -16,14 +16,14 @@
 using namespace shogun;
 
 CMulticlassLibLinear::CMulticlassLibLinear() :
-	CLinearMulticlassMachine()
+	RandomMixin<CLinearMulticlassMachine>()
 {
 	register_parameters();
 	init_defaults();
 }
 
 CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
-	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),features,NULL,labs)
+	RandomMixin<CLinearMulticlassMachine>(new CMulticlassOneVsRestStrategy(),features,(CMachine*)NULL,labs)
 {
 	register_parameters();
 	init_defaults();
@@ -122,7 +122,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 
 	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
 	                       m_max_iter,m_max_train_time,m_train_state);
-	solver.solve();
+	solver.solve(m_prng);
 
 	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)

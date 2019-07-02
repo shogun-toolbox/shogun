@@ -10,6 +10,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace std;
 using namespace shogun;
@@ -38,13 +39,15 @@ void CECOCDiscriminantEncoder::init()
     // parameters
 
     SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS");
+    SG_ADD(&m_labels, "labels", "Labels");
+    SG_ADD(&m_features, "features", "Features")
 }
 
 void CECOCDiscriminantEncoder::set_features(CFeatures *features)
 {
     SG_REF(features);
     SG_UNREF(m_features);
-    m_features = features->as<CDenseFeatures<float64_t>>();
+    m_features = features;
 }
 
 void CECOCDiscriminantEncoder::set_labels(CLabels *labels)
@@ -59,7 +62,7 @@ SGMatrix<int32_t> CECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
     if (!m_features || !m_labels)
         SG_ERROR("Need features and labels to learn the codebook")
 
-    m_feats = m_features->get_feature_matrix();
+    m_feats = m_features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
     m_codebook = SGMatrix<int32_t>(m_num_trees * (num_classes-1), num_classes);
     m_codebook.zero();
     m_code_idx = 0;
@@ -133,7 +136,8 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     if (part1.size() <= 1)
         return MI;
 
-    int32_t iclas = CMath::random(0, int32_t(part1.size()-1));
+    UniformIntDistribution<int32_t> uniform_int_dist(0, int32_t(part1.size()-1));
+    int32_t iclas = uniform_int_dist(m_prng);
     int32_t clas = part1[iclas];
 
     // move clas from part1 to part2

@@ -329,18 +329,18 @@ TEST(QuadraticTimeMMD, compute_variance_h1)
 
 TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 {
+	const int32_t seed=22;
 	const index_t m=20;
 	const index_t n=30;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -352,6 +352,7 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -369,18 +370,18 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 
 TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 {
+	const int32_t seed=22;
 	const index_t m=20;
 	const index_t n=30;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -392,6 +393,7 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -409,18 +411,18 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 
 TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 {
+	const int32_t seed=22;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -432,6 +434,7 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -449,18 +452,18 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 
 TEST(QuadraticTimeMMD, perform_test_spectrum)
 {
+	const int32_t seed=18;
 	const index_t m=20;
 	const index_t n=30;
 	const index_t dim=3;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
 
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -472,6 +475,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -501,6 +505,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 
 TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 {
+	const int32_t seed=12345;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=3;
@@ -526,11 +531,15 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 	mmd->set_num_null_samples(num_null_samples);
 	mmd->set_null_approximation_method(NAM_PERMUTATION);
 
-	sg_rand->set_seed(12345);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
+	mmd->put("seed", seed);
 	SGVector<float64_t> result_1=mmd->sample_null();
 
 	mmd->precompute_kernel_matrix(false);
-	sg_rand->set_seed(12345);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
+	mmd->put("seed", seed);
 	SGVector<float64_t> result_2=mmd->sample_null();
 
 	ASSERT_EQ(result_1.size(), result_2.size());
@@ -540,21 +549,24 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 
 TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 {
+	const int32_t seed=1;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=1;
 	const index_t num_kernels=10;
 
 	float64_t difference=0.5;
-	sg_rand->set_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
@@ -580,21 +592,24 @@ TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 
 TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 {
+	const int32_t seed=12345;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=1;
 	const index_t num_kernels=10;
 
 	float64_t difference=0.5;
-	sg_rand->set_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
@@ -620,21 +635,24 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 
 TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 {
+	const int32_t seed=12345;
 	const index_t m=20;
 	const index_t n=20;
 	const index_t dim=1;
 	const index_t num_kernels=10;
 
 	float64_t difference=0.5;
-	sg_rand->set_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -663,6 +681,7 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 
 TEST(QuadraticTimeMMD, multikernel_perform_test)
 {
+	const int32_t seed=654;
 	const index_t m=8;
 	const index_t n=12;
 	const index_t dim=1;
@@ -675,6 +694,8 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	gen_p->CSGObject::put("seed", seed);
+	gen_q->CSGObject::put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
@@ -690,7 +711,7 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 		mmd->multikernel()->add_kernel(new CGaussianKernel(cache_size, tau));
 	}
 
-	sg_rand->set_seed(12345);
+	mmd->put("seed", seed);
 	SGVector<bool> rejections_multiple=mmd->multikernel()->perform_test(alpha);
 	mmd->multikernel()->cleanup();
 
@@ -699,7 +720,7 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->set_kernel(new CGaussianKernel(cache_size, tau));
-		sg_rand->set_seed(12345);
+		mmd->put("seed", seed);
 		rejections_single[i]=mmd->perform_test(alpha);
 	}
 

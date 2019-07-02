@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/converter/ica/ICAConverter.h>
 #include <shogun/features/Features.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -25,7 +26,7 @@ class CFeatures;
  * Algorithms and Applications, Neural Networks, 13(4-5), 2000,
  * pp. 411-430`
  */
-class CFastICA: public CICAConverter
+class CFastICA: public RandomMixin<CICAConverter>
 {
 	public:
 

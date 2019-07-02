@@ -2,9 +2,11 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGString.h>
-#include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 #include <cstdio>
+#include <random>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -18,12 +20,15 @@ using namespace shogun;
 
 TEST(ProtobufFileTest, vector_int32)
 {
-	CRandom* rand=new CRandom();
-
+	int32_t seed = 100;
 	int32_t len=1024*1024;
 	SGVector<int32_t> data(len);
+
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist(0, len);
+
 	for (int32_t i=0; i<len; i++)
-		data[i]=(int32_t) rand->random(0, len);
+		data[i]=(int32_t) uniform_int_dist(prng);
 
 	CProtobufFile* fin;
 	CProtobufFile* fout;
@@ -42,18 +47,20 @@ TEST(ProtobufFileTest, vector_int32)
 		EXPECT_EQ(data_from_file[i], data[i]);
 	}
 	SG_UNREF(fin);
-	SG_UNREF(rand);
 	unlink("ProtobufFileTest_vector_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, vector_float64)
 {
-	CRandom* rand=new CRandom();
-
+	int32_t seed = 100;
 	int32_t len=1024*1024;
 	SGVector<float64_t> data(len);
+
+	std::mt19937_64 prng(seed);
+  	UniformRealDistribution<float64_t> uniform_real_dist(0., 1.);
+
 	for (int32_t i=0; i<len; i++)
-		data[i]=(float64_t) rand->random(0, 1);
+		data[i]=(float64_t) uniform_real_dist(prng);
 
 	CProtobufFile* fin;
 	CProtobufFile* fout;
@@ -72,21 +79,23 @@ TEST(ProtobufFileTest, vector_float64)
 		EXPECT_NEAR(data_from_file[i], data[i], 1E-14);
 	}
 	SG_UNREF(fin);
-	SG_UNREF(rand);
 	unlink("ProtobufFileTest_vector_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, matrix_int32)
 {
-	CRandom* rand=new CRandom();
-
+	int32_t seed = 100;
 	int32_t num_rows=1024;
 	int32_t num_cols=512;
 	SGMatrix<int32_t> data(num_rows, num_cols);
+
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist(0, num_rows);
+
 	for (int32_t i=0; i<num_rows; i++)
 	{
 		for (int32_t j=0; j<num_cols; j++)
-			data(i, j)=(int32_t) rand->random(0, num_rows);
+			data(i, j)=uniform_int_dist(prng);
 	}
 
 	CProtobufFile* fin;
@@ -109,21 +118,23 @@ TEST(ProtobufFileTest, matrix_int32)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
 	unlink("ProtobufFileTest_matrix_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, matrix_float64)
 {
-	CRandom* rand=new CRandom();
-
+	int32_t seed = 100;
 	int32_t num_rows=1024;
 	int32_t num_cols=512;
 	SGMatrix<float64_t> data(num_rows, num_cols);
+
+	std::mt19937_64 prng(seed);
+  	UniformRealDistribution<float64_t> uniform_real_dist(0., 1.);
+
 	for (int32_t i=0; i<num_rows; i++)
 	{
 		for (int32_t j=0; j<num_cols; j++)
-			data(i, j)=(float64_t) rand->random(0, 1);
+			data(i, j)=(float64_t) uniform_real_dist(prng);
 	}
 
 	CProtobufFile* fin;
@@ -146,23 +157,24 @@ TEST(ProtobufFileTest, matrix_float64)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
 	unlink("ProtobufFileTest_matrix_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, sparse_matrix_int32)
 {
+	int32_t seed = 100;
 	int32_t max_num_entries=512;
 	int32_t max_entry_value=1024;
-	CRandom* rand=new CRandom();
 
 	int32_t num_vec=1024;
 	int32_t num_feat=0;
 
 	SGSparseVector<int32_t>* data=SG_MALLOC(SGSparseVector<int32_t>, num_vec);
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist(0, max_entry_value);
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		data[i]=SGSparseVector<int32_t>(rand->random(0, max_num_entries));
+		data[i]=SGSparseVector<int32_t>(uniform_int_dist(prng));
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
 			int32_t feat_index=(j+1)*2;
@@ -170,7 +182,7 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 				num_feat=feat_index;
 
 			data[i].features[j].feat_index=feat_index-1;
-			data[i].features[j].entry=rand->random(0, max_entry_value);
+			data[i].features[j].entry=uniform_int_dist(prng);
 		}
 	}
 
@@ -200,8 +212,6 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
-
 	SG_FREE(data);
 	SG_FREE(data_from_file);
 
@@ -210,16 +220,18 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 
 TEST(ProtobufFileTest, sparse_matrix_float64)
 {
+	int32_t seed = 100;
 	int32_t max_num_entries=512;
-	CRandom* rand=new CRandom();
-
 	int32_t num_vec=1024;
 	int32_t num_feat=0;
 
 	SGSparseVector<float64_t>* data=SG_MALLOC(SGSparseVector<float64_t>, num_vec);
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist(0, max_num_entries);
+  	UniformRealDistribution<float64_t> uniform_real_dist(0., 1.);
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		data[i]=SGSparseVector<float64_t>(rand->random(0, max_num_entries));
+		data[i]=SGSparseVector<float64_t>(uniform_int_dist(prng));
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
 			int32_t feat_index=(j+1)*2;
@@ -227,7 +239,7 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 				num_feat=feat_index;
 
 			data[i].features[j].feat_index=feat_index-1;
-			data[i].features[j].entry=rand->random(0., 1.);
+			data[i].features[j].entry=uniform_real_dist(prng);
 		}
 	}
 
@@ -257,8 +269,6 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
-
 	SG_FREE(data);
 	SG_FREE(data_from_file);
 
@@ -267,16 +277,18 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 
 TEST(ProtobufFileTest, DISABLED_string_list_char)
 {
-	CRandom* rand=new CRandom();
-
+	int32_t seed = 100;
 	int32_t num_str=1024;
 	int32_t max_string_len=1024;
+
 	SGString<char>* strings=SG_MALLOC(SGString<char>, num_str);
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (int32_t i=0; i<num_str; i++)
 	{
-		strings[i]=SGString<char>((int32_t) rand->random(1, max_string_len));
+		strings[i]=SGString<char>(uniform_int_dist(prng, {1, max_string_len}));
 		for (int32_t j=0; j<strings[i].slen; j++)
-			strings[i].string[j]=(char) rand->random(0, 255);
+			strings[i].string[j]=(char) uniform_int_dist(prng, {0, 255});
 	}
 
 	CProtobufFile* fin;
@@ -300,8 +312,6 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
-
 	SG_FREE(strings);
 	SG_FREE(data_from_file);
 	unlink("ProtobufFileTest_string_list_char_output.txt");

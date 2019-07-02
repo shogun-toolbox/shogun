@@ -50,10 +50,12 @@ using NeuralRectifiedLinearLayerTest = NeuralLayerTestFixture;
  */
 TEST_F(NeuralRectifiedLinearLayerTest, compute_activations)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the rectified linear layer
 	CNeuralRectifiedLinearLayer layer(9);
@@ -87,11 +89,13 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_activations)
  */
 TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x1, x2;
 	CNeuralInputLayer *input1, *input2;
-	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
-	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
+	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0, prng);
 
 	// initialize the hidden rectified linear layer
 	CNeuralLinearLayer* layer_hid = new CNeuralRectifiedLinearLayer(5);
@@ -102,7 +106,7 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 	    layer_hid, input_indices_hid, x1.num_cols, 0.01, true);
 
 	// initialize the output layer
-	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0);
+	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0, prng);
 	CNeuralLinearLayer layer_out(y.num_rows);
 	SGVector<int32_t> input_indices_out(1);
 	input_indices_out[0] = 2;

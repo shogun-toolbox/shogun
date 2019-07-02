@@ -13,7 +13,7 @@ CBaseMulticlassMachine::CBaseMulticlassMachine()
 	m_machines = new CDynamicObjectArray();
 	SG_REF(m_machines);
 
-	SG_ADD((CSGObject**)&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
+	SG_ADD(&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
 }
 
 CBaseMulticlassMachine::~CBaseMulticlassMachine()

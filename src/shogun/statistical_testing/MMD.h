@@ -37,6 +37,7 @@
 #include <functional>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/TwoSampleTest.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -117,7 +118,7 @@ template <typename> class SGVector;
  * Sivaraman Balakrishnan, Massimiliano Pontil, Kenji Fukumizu: Optimal kernel choice
  * for large-scale two-sample tests. NIPS 2012: 1214-1222.
  */
-class CMMD : public CTwoSampleTest
+class CMMD : public RandomMixin<CTwoSampleTest>
 {
 public:
 	/** Default constructor */

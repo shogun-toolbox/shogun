@@ -184,6 +184,16 @@ namespace shogun
 			return m_constrain_function;
 		}
 
+		void add_callback_function(std::function<void()>&& method)
+		{
+			m_callback_functions.push_back(std::move(method));
+		}
+
+		const auto& get_callbacks() const
+		{
+			return m_callback_functions;
+		}
+
 		/** Equality operator which compares value but not properties.
 		 * @return true if value of other parameter equals own */
 		inline bool operator==(const AnyParameter& other) const
@@ -202,6 +212,7 @@ namespace shogun
 		AnyParameterProperties m_properties;
 		std::shared_ptr<params::AutoInit> m_init_function;
 		std::function<std::string(Any)> m_constrain_function;
+		std::vector<std::function<void()>> m_callback_functions;
 	};
 } // namespace shogun
 

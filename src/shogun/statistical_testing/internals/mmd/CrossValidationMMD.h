@@ -40,6 +40,7 @@
 #include <shogun/features/SubsetStack.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using std::unique_ptr;
 
@@ -54,7 +55,8 @@ namespace mmd
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct CrossValidationMMD : PermutationMMD
 {
-	CrossValidationMMD(index_t n_x, index_t n_y, index_t num_folds, index_t num_null_samples)
+	template <typename PRNG>
+	CrossValidationMMD(index_t n_x, index_t n_y, index_t num_folds, index_t num_null_samples, PRNG& prng)
 	{
 		ASSERT(n_x>0 && n_y>0);
 		ASSERT(num_folds>0);
@@ -67,10 +69,11 @@ struct CrossValidationMMD : PermutationMMD
 		m_num_runs=DEFAULT_NUM_RUNS;
 		m_alpha=DEFAULT_ALPHA;
 
-		init();
+		init(prng);
 	}
 
-	void operator()(const KernelManager& kernel_mgr)
+	template <typename PRNG>
+	void operator()(const KernelManager& kernel_mgr, PRNG& prng)
 	{
 		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
 			"Number of rows in the measure matrix (was %d), has to be >= %d*%d = %d!\n",
@@ -118,7 +121,7 @@ struct CrossValidationMMD : PermutationMMD
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(m_permuted_inds);
+						random::shuffle(m_permuted_inds, prng);
 
 						m_stack->add_subset(m_permuted_inds);
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
@@ -186,16 +189,22 @@ struct CrossValidationMMD : PermutationMMD
 		}
 	}
 
-	void init()
+	template <typename PRNG>
+	void init(PRNG& prng)
 	{
 		SGVector<int64_t> dummy_labels_x(m_n_x);
 		SGVector<int64_t> dummy_labels_y(m_n_y);
 
 		auto instance_x=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_x), m_num_folds);
 		auto instance_y=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_y), m_num_folds);
+		random::seed(instance_x, prng);
+		random::seed(instance_y, prng);
+
 		m_kfold_x=unique_ptr<CCrossValidationSplitting>(instance_x);
 		m_kfold_y=unique_ptr<CCrossValidationSplitting>(instance_y);
-
+		random::seed(m_kfold_x.get(), prng);
+		random::seed(m_kfold_y.get(), prng);
+	
 		m_stack=unique_ptr<CSubsetStack>(new CSubsetStack());
 
 		const index_t size=m_n_x+m_n_y;

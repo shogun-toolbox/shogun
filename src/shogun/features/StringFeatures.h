@@ -618,7 +618,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * not possible with subset
 		 */
 		virtual void create_random(float64_t* hist, int32_t rows, int32_t cols,
-				int32_t num_vec);
+				int32_t num_vec, int32_t seed=0);
 
 		/** Creates a new CFeatures instance containing copies of the elements
 		 * which are specified by the provided indices.

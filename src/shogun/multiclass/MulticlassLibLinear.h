@@ -13,6 +13,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -31,7 +32,7 @@ namespace shogun
     state can be forced to clear using
     reset_train_state() method.
  */
-class CMulticlassLibLinear : public CLinearMulticlassMachine
+class CMulticlassLibLinear : public RandomMixin<CLinearMulticlassMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

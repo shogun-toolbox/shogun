@@ -12,6 +12,7 @@
 #ifdef HAVE_COLPACK
 
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -49,7 +50,7 @@ template<class T> class CSparseMatrixOperator;
  * greedy graph coloring. It depends on an external library ColPack (used
  * under GPL2+) for graph coloring related things.
  */
-class CProbingSampler : public CTraceSampler
+class CProbingSampler : public RandomMixin<CTraceSampler>
 {
 public:
 	/** default constructor */

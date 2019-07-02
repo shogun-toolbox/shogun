@@ -36,7 +36,10 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/machine/RandomForest.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <stdio.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -50,7 +53,6 @@ public:
 
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(1);
 		load_toy_data();
 	}
 
@@ -93,12 +95,14 @@ public:
 
 TEST_F(RandomForest, classify_nominal_test)
 {
+	int32_t seed = 2343;
 	CRandomForest* c =
 	    new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
 	c->parallel->set_num_threads(1);
+	c->put("seed", seed);
 	c->train(weather_features_train);
 
 	CMulticlassLabels* result =
@@ -112,7 +116,7 @@ TEST_F(RandomForest, classify_nominal_test)
 	EXPECT_EQ(1.0,res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
+	EXPECT_NEAR(0.7142857,c->get_oob_error(eval),1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
@@ -121,6 +125,8 @@ TEST_F(RandomForest, classify_nominal_test)
 
 TEST_F(RandomForest, classify_non_nominal_test)
 {
+	int32_t seed = 2343;
+
 	weather_ft[0] = false;
 	weather_ft[1] = false;
 	weather_ft[2] = false;
@@ -132,6 +138,7 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
 	c->parallel->set_num_threads(1);
+	c->put("seed", seed);
 	c->train(weather_features_train);
 
 	CMulticlassLabels* result =
@@ -155,7 +162,7 @@ TEST_F(RandomForest, classify_non_nominal_test)
 
 TEST_F(RandomForest, score_compare_sklearn_toydata)
 {
-	sg_rand->set_seed(1);
+	int32_t seed = 211;
 	// Comparison with sklearn's RandomForest probability outputs
 	// https://github.com/scikit-learn/scikit-learn/blob/6f70202ef9beefd3db9bb028755a0c38b4c5c8e7/sklearn/ensemble/tests/test_voting_classifier.py#L143
 	float64_t data_A[] = {-1.1, -1.5, -1.2, -1.4, -3.4, -2.2, 1.1, 1.2};
@@ -178,6 +185,7 @@ TEST_F(RandomForest, score_compare_sklearn_toydata)
 
 	CMeanRule* mr = new CMeanRule();
 	c->set_combination_rule(mr);
+	c->put("seed", seed);
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_train);
@@ -199,17 +207,19 @@ TEST_F(RandomForest, score_compare_sklearn_toydata)
 
 TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 {
+	int32_t seed = 1137;
 	// Generates data for y = x1 > 5 as decision boundary
 	int32_t num_train = 10;
 	int32_t num_test = 10;
 	int32_t num_trees = 10;
 
-	sg_rand->set_seed(42);
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	SGMatrix<float64_t> data_B(1, num_train, false);
 
 	for (auto i = 0; i < num_train; ++i)
 	{
-		data_B(0, i) = i < 5 ? CMath::random(0, 5) : CMath::random(5, 10);
+		data_B(0, i) = i < 5 ? uniform_int_dist(prng, {0, 5}) : uniform_int_dist(prng, {5, 10});
 	}
 	CDenseFeatures<float64_t>* features_train =
 	    new CDenseFeatures<float64_t>(data_B);
@@ -222,7 +232,7 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 
 	for (auto i = 0; i < num_test; ++i)
 	{
-		test_data(0, i) = i < 5 ? CMath::random(0, 4) : CMath::random(6, 10);
+		test_data(0, i) = i < 5 ? uniform_int_dist(prng, {0, 4}) : uniform_int_dist(prng, {6, 10});
 	}
 
 	CDenseFeatures<float64_t>* features_test =
@@ -236,6 +246,7 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 
 	CMeanRule* mr = new CMeanRule();
 	c->set_combination_rule(mr);
+	c->put("seed", seed);
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_test);

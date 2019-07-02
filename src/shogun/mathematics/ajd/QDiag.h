@@ -9,9 +9,11 @@
 
 #include <shogun/lib/config.h>
 
-
 #include <shogun/mathematics/ajd/ApproxJointDiagonalizer.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 namespace shogun
 {
@@ -25,7 +27,7 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 54(9), 3270-3278.
  *
  */
-class CQDiag : public CApproxJointDiagonalizer
+class CQDiag : public RandomMixin<CApproxJointDiagonalizer>
 {
 	public:
 
@@ -47,9 +49,22 @@ class CQDiag : public CApproxJointDiagonalizer
 		 * @return V the matrix that best diagonalizes C
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
-							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
+							SGMatrix<float64_t> V0,
 							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
+
+		template <typename PRNG>
+		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
+							PRNG& prng,
+							double eps=CMath::MACHINE_EPSILON,
+							int itermax=200)
+		{
+			int N = C.dims[0];
+			auto V = SGMatrix<float64_t>(N,N);
+
+			random::fill_array(V, NormalDistribution<float64_t>(), prng);
+			return diagonalize_impl(C, V, eps, itermax);
+		}
 
 		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
@@ -63,12 +78,22 @@ class CQDiag : public CApproxJointDiagonalizer
 						   double eps=CMath::MACHINE_EPSILON,
 						   int itermax=200)
 		{
-			m_V = diagonalize(C,V0,eps,itermax);
+			int N = C.dims[0];
+			if(V0.num_rows != N || V0.num_cols != N)
+				m_V = diagonalize(C,m_prng,eps,itermax);
+			else
+				m_V = diagonalize(C, V0, eps, itermax);
 			return m_V;
 		}
 
 		/** @return object name */
 		virtual const char* get_name() const { return "QDiag"; }
+	
+	private:
+		static SGMatrix<float64_t> diagonalize_impl(SGNDArray<float64_t>& C,
+					SGMatrix<float64_t>& V,
+					double eps,
+					int itermax);
 };
 }
 #endif //QDIAG_H_

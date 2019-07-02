@@ -49,10 +49,12 @@ using NeuralSoftmaxLayerTest = NeuralLayerTestFixture;
  */
 TEST_F(NeuralSoftmaxLayerTest, compute_activations)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
 	CNeuralSoftmaxLayer layer(9);
@@ -85,20 +87,23 @@ TEST_F(NeuralSoftmaxLayerTest, compute_activations)
  */
 TEST_F(NeuralSoftmaxLayerTest, compute_error)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the softmax layer
 	CNeuralSoftmaxLayer layer(9);
+	layer.put("seed", seed);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
 	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
 
 	// initialize output
-	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0);
+	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0, prng);
 
 	// make sure y is in the form of a probability distribution
 	auto sum_vect = shogun::linalg::colwise_sum(y);
@@ -129,10 +134,12 @@ TEST_F(NeuralSoftmaxLayerTest, compute_error)
  */
 TEST_F(NeuralSoftmaxLayerTest, compute_local_gradients)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, true);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng, true);
 
 	// initialize the layer
 	CNeuralSoftmaxLayer layer(9);
@@ -143,7 +150,7 @@ TEST_F(NeuralSoftmaxLayerTest, compute_local_gradients)
 
 	// initialize the output
 	auto y = create_rand_matrix<float64_t>(
-	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0);
+	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0, prng);
 
 	// make sure y is in the form of a probability distribution
 	auto sum_vect = shogun::linalg::colwise_sum(y);

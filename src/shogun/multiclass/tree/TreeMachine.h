@@ -58,7 +58,11 @@ public:
 	CTreeMachine() : CBaseMulticlassMachine()
 	{
 		m_root=NULL;
-		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure");
+		// FIXME: Add m_root to the parameter list.
+		// the problem is "CARTree"/"RandomCARTree" can't be cloned because
+		// they inherit from TreeMachine which is templated and can't be
+		// created in class_list
+		// SG_ADD((CSGObject**)&m_root,"m_root", "tree structure");
 	}
 
 	/** destructor */

@@ -3,8 +3,6 @@ File f_feats_test = csv_file("../../data/mnist_3class_256d_features_test.dat")
 File f_labels_train = csv_file("../../data/mnist_3class_256d_labels_train.dat")
 File f_labels_test = csv_file("../../data/mnist_3class_256d_labels_test.dat")
 
-Math:init_random(10)
-
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
@@ -25,6 +23,7 @@ NeuralLayer conv2 = layer("NeuralConvolutionalLayer", num_maps=3, radius_x=2, ra
 network.add("layers", conv2)
 NeuralLayer softmax = layer("NeuralSoftmaxLayer", num_neurons=3)
 network.add("layers", softmax)
+network.put("seed", 10)
 #![add_layers]
 
 #![train_and_apply]

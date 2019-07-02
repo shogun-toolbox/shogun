@@ -13,6 +13,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -65,7 +66,7 @@ enum EMSParamType
  * get_combinations method. It generates a set of trees (different kind than
  * this one) that contain the instantiated parameter combinations.
  */
-class CModelSelectionParameters: public CSGObject
+class CModelSelectionParameters: public RandomMixin<CSGObject>
 {
 public:
 	/** constructor for a root node */

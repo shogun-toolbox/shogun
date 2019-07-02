@@ -38,10 +38,12 @@
 #include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 
-CRBM::CRBM() : CSGObject()
+CRBM::CRBM() : RandomMixin<CSGObject>()
 {
 	init();
 }
@@ -53,7 +55,7 @@ CRBM::CRBM(int32_t num_hidden)
 }
 
 CRBM::CRBM(int32_t num_hidden, int32_t num_visible,
-	ERBMVisibleUnitType visible_unit_type) : CSGObject()
+	ERBMVisibleUnitType visible_unit_type) : RandomMixin<CSGObject>()
 {
 	init();
 	m_num_hidden = num_hidden;
@@ -88,9 +90,7 @@ void CRBM::initialize_neural_network(float64_t sigma)
 {
 	m_num_params = m_num_visible + m_num_hidden + m_num_visible*m_num_hidden;
 	m_params = SGVector<float64_t>(m_num_params);
-
-	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = CMath::normal_random(0.0,sigma);
+	random::fill_array(m_params, NormalDistribution<float64_t>(0.0, sigma), m_prng);
 }
 
 void CRBM::set_batch_size(int32_t batch_size)
@@ -268,7 +268,7 @@ void CRBM::reset_chain()
 {
 	for (int32_t i=0; i<m_num_visible; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			visible_state(i,j) = CMath::random(0.0,1.0) > 0.5;
+			visible_state(i,j) = m_uniform_prob(m_prng) > 0.5;
 }
 
 float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t > buffer)
@@ -432,9 +432,7 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	buffer = SGMatrix<float64_t>(m_num_hidden, m_batch_size);
 
 	SGVector<int32_t> indices(m_batch_size);
-	for (int32_t i=0; i<m_batch_size; i++)
-		indices[i] = CMath::random(0,m_num_visible-1);
-
+	random::fill_array(indices, 0, m_num_visible-1, m_prng);
 
 	float64_t f1 = free_energy(visible, buffer);
 
@@ -523,7 +521,7 @@ void CRBM::sample_hidden(SGMatrix< float64_t > mean, SGMatrix< float64_t > resul
 {
 	int32_t length = result.num_rows*result.num_cols;
 	for (int32_t i=0; i<length; i++)
-		result[i] = CMath::random(0.0,1.0) < mean[i];
+		result[i] = m_uniform_prob(m_prng) < mean[i];
 }
 
 void CRBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
@@ -543,7 +541,7 @@ void CRBM::sample_visible(int32_t index,
 	{
 		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			for (int32_t j=0; j<m_batch_size; j++)
-				result(i+offset,j) = CMath::random(0.0,1.0) < mean(i+offset,j);
+				result(i+offset,j) = m_uniform_prob(m_prng) < mean(i+offset,j);
 	}
 
 	if (m_visible_group_types->element(index)==RBMVUT_SOFTMAX)
@@ -552,9 +550,10 @@ void CRBM::sample_visible(int32_t index,
 			for (int32_t j=0; j<m_batch_size; j++)
 				result(i+offset,j) = 0;
 
+		UniformIntDistribution<int32_t> uniform_int_dist(0, 1);
 		for (int32_t j=0; j<m_batch_size; j++)
 		{
-			int32_t r = CMath::random(0.0,1.0);
+			int32_t r = uniform_int_dist(m_prng);
 			float64_t sum = 0;
 			for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			{
@@ -625,6 +624,8 @@ void CRBM::init()
 	SG_REF(m_visible_state_offsets);
 	m_num_params = 0;
 	m_batch_size = 0;
+
+	m_uniform_prob.param({0.0, 1.0});
 
 	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps");
 	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD");

@@ -8,6 +8,9 @@
 #include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -62,7 +65,7 @@ TEST(CombinedFeaturesTest,create_merged_copy)
 {
 	/* create two matrices, feature objects for them, call create_merged_copy,
 	 * and check if it worked */
-
+	int32_t seed = 100;
 	index_t n_1=3;
 	index_t n_2=4;
 	index_t dim=2;
@@ -72,10 +75,11 @@ TEST(CombinedFeaturesTest,create_merged_copy)
 		data_1.matrix[i]=i;
 
 //	data_1.display_matrix("data_1");
-
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	SGMatrix<float64_t> data_2(dim,n_2);
 	for (index_t i=0; i<dim*n_2; ++i)
-		data_2.matrix[i]=CMath::randn_double();
+		data_2.matrix[i]=normal_dist(prng);
 
 //	data_1.display_matrix("data_2");
 

@@ -348,6 +348,10 @@ namespace std {
 %include <shogun/base/init.h>
 #endif
 %include <shogun/base/SGObject.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinSGObject) shogun::RandomMixin<shogun::CSGObject, std::mt19937_64>;
+
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>

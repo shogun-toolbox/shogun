@@ -34,6 +34,9 @@
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -41,13 +44,14 @@ using namespace shogun;
 
 TEST(MixtureModel,gaussian_mixture_model)
 {
-	sg_rand->set_seed(2);
+	std::mt19937_64 prng(28);
 	SGMatrix<float64_t> data(1,400);
 
+	NormalDistribution<float64_t> normal_dist;
 	for (int32_t i=0;i<100;i++)
-		data(0,i)=CMath::randn_double();
+		data(0,i)=normal_dist(prng);
 	for (int32_t i=100;i<400;i++)
-		data(0,i)=CMath::randn_double()+10;
+		data(0,i)=normal_dist(prng)+10;
 
 	auto feats=some<CDenseFeatures<float64_t>>(data);
 
@@ -80,16 +84,16 @@ TEST(MixtureModel,gaussian_mixture_model)
 	SGMatrix<float64_t> cov=outg->get_cov();
 
 	float64_t eps=1e-8;
-	EXPECT_NEAR(m[0],9.863760378,eps);
-	EXPECT_NEAR(cov(0,0),0.956568199,eps);
+	EXPECT_NEAR(m[0],10.00922977,eps);
+	EXPECT_NEAR(cov(0,0),0.96363983,eps);
 
 	distr = comps->get_element(1)->as<CDistribution>();
 	outg = distr->as<CGaussian>();
 	m=outg->get_mean();
 	cov=outg->get_cov();
 
-	EXPECT_NEAR(m[0],-0.208122793,eps);
-	EXPECT_NEAR(cov(0,0),1.095106568,eps);
+	EXPECT_NEAR(m[0],-0.159334860,eps);
+	EXPECT_NEAR(cov(0,0),1.075649391,eps);
 }
 
 #endif /* HAVE_LAPACK */

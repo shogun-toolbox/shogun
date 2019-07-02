@@ -18,19 +18,27 @@
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 using namespace Eigen;
 
 TEST(LanczosEigenSolver, compute)
 {
+	const int32_t seed = 10;
 	const int32_t size=4;
 	SGMatrix<float64_t> m(size, size);
-	m.set_const(CMath::random(50.0, 100.0));
+	std::mt19937_64 prng(seed);
+
+	UniformRealDistribution<float64_t> uniform_real_dist;
+	m.set_const(uniform_real_dist(prng, {50.0, 100.0}));
 
 	// Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=CMath::random(100.0, 10000.0);
+		m(i,i)=uniform_real_dist(prng, {100.0, 10000.0});
 
 	// Creating sparse linear operator to use with Lanczos
 	CSparseFeatures<float64_t> feat(m);
@@ -69,6 +77,7 @@ TEST(LanczosEigenSolver, compute)
 
 TEST(LanczosEigenSolver, compute_big_diag_matrix)
 {
+	int32_t seed = 10;
 	float64_t difficulty=4;
 	float64_t min_eigenvalue=0.0001;
 
@@ -80,9 +89,11 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+		diag[i]=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)
 			+min_eigenvalue;
 	}
 	op->set_diagonal(diag);

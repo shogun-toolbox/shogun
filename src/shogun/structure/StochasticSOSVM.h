@@ -11,6 +11,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -26,7 +27,7 @@ namespace shogun
  * [3] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
-class CStochasticSOSVM : public CLinearStructuredOutputMachine
+class CStochasticSOSVM : public RandomMixin<CLinearStructuredOutputMachine>
 {
 public:
 	/** default constructor */
@@ -81,15 +82,6 @@ public:
 	 */
 	void set_debug_multiplier(int32_t multiplier);
 
-	/** @return rand seed */
-	uint32_t get_rand_seed() const;
-
-	/** set random seed
-	 *
-	 * @param rand_seed random seed
-	 */
-	void set_rand_seed(uint32_t rand_seed);
-
 protected:
 	/** train primal SO-SVM
 	 *
@@ -111,9 +103,6 @@ private:
 
 	/** Whether to use weighted averaging of the iterates */
 	bool m_do_weighted_averaging;
-
-	/** random seed */
-	uint32_t m_rand_seed;
 
 	/** If set to 0, the algorithm computes the objective after each full
 	 * pass trough the data. If in (0,100) logging happens at a

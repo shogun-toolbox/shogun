@@ -12,18 +12,19 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 using namespace linalg;
 
-CGaussian::CGaussian() : CDistribution(), m_constant(0), m_d(), m_u(), m_mean(), m_cov_type(FULL)
+CGaussian::CGaussian() : RandomMixin<CDistribution>(), m_constant(0), m_d(), m_u(), m_mean(), m_cov_type(FULL)
 {
 	register_params();
 }
 
 CGaussian::CGaussian(
     const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type)
-    : CDistribution()
+    : RandomMixin<CDistribution>()
 {
 	ASSERT(mean.vlen==cov.num_rows)
 	ASSERT(cov.num_rows==cov.num_cols)
@@ -404,9 +405,7 @@ SGVector<float64_t> CGaussian::sample()
 	}
 
 	SGVector<float64_t> random_vec(m_mean.vlen);
-
-	for (int32_t i = 0; i < m_mean.vlen; i++)
-		random_vec.vector[i] = CMath::randn_double();
+	random::fill_array(random_vec, NormalDistribution<float64_t>(), m_prng);
 
 	if (m_cov_type == FULL)
 	{

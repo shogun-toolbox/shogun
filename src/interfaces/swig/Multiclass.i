@@ -77,6 +77,9 @@ namespace shogun
     %template(TreeMachineWithC45TreeNodeData) CTreeMachine<C45TreeNodeData>;
     %template(TreeMachineWithCARTreeNodeData) CTreeMachine<CARTreeNodeData>;
     %template(TreeMachineWithCHAIDTreeNodeData) CTreeMachine<CHAIDTreeNodeData>;
+
+    /** Instantiate RandomMixin */
+    %template(RandomMixinTreeMachine) RandomMixin<CTreeMachine<CARTreeNodeData>, std::mt19937_64>;
 }
 
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>

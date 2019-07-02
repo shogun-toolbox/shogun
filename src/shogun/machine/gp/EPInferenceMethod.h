@@ -38,6 +38,7 @@
 
 
 #include <shogun/machine/gp/Inference.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -49,7 +50,7 @@ namespace shogun
  * Approximate Bayesian Inference. PhD thesis, Massachusetts Institute of
  * Technology
  */
-class CEPInferenceMethod : public CInference
+class CEPInferenceMethod : public RandomMixin<CInference>
 {
 public:
 	/** default constructor */

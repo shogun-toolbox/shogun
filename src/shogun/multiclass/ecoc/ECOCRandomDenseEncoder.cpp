@@ -9,16 +9,17 @@
 
 #include <shogun/multiclass/ecoc/ECOCRandomDenseEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCUtil.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
-CECOCRandomDenseEncoder::CECOCRandomDenseEncoder() : CECOCEncoder()
+CECOCRandomDenseEncoder::CECOCRandomDenseEncoder() : RandomMixin<CECOCEncoder>()
 {
 	init();
 }
 
 CECOCRandomDenseEncoder::CECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone)
-: CECOCEncoder()
+: RandomMixin<CECOCEncoder>()
 {
     if (!check_probability(pposone))
         SG_ERROR("invalid probability of +1")
@@ -58,6 +59,7 @@ SGMatrix<int32_t> CECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
     int32_t best_dist = 0;
 
     SGMatrix<int32_t> codebook(codelen, num_classes);
+    UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
     int32_t n_iter = 0;
     while (true)
     {
@@ -67,7 +69,7 @@ SGMatrix<int32_t> CECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
         {
             for (int32_t j=0; j < num_classes; ++j)
             {
-                float64_t randval = CMath::random(0.0, 1.0);
+                float64_t randval = uniform_real_dist(m_prng);
                 if (randval > m_pposone)
                     codebook(i, j) = -1;
                 else

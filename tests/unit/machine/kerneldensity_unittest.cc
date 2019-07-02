@@ -32,6 +32,10 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/KernelDensity.h>
+#include <shogun/mathematics/RandomNamespace.h>
+
+#include <cmath>
+#include <random>
 
 using namespace shogun;
 
@@ -169,14 +173,15 @@ TEST(KernelDensity,dual_tree)
 
 TEST(KernelDensity,dual_tree_single_tree_equivalence)
 {
-	sg_rand->set_seed(1);
+	int32_t seed = 1;
+	std::mt19937_64 prng(seed);
 
 	SGMatrix<float64_t> data(5,100);
-	sg_rand->fill_array_oo(data.matrix,500);
+	random::fill_array(data, std::nextafter(0.0, 1.0), 1.0, prng);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	SGMatrix<float64_t> test(5,20);
-	sg_rand->fill_array_oo(test.matrix,100);
+	random::fill_array(test, std::nextafter(0.0, 1.0), 1.0, prng);
 	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
 
 

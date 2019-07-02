@@ -78,10 +78,13 @@ TEST(GraphCut, graph_cut_chain)
 // potentials are randomly generated
 TEST(GraphCut, graph_cut_random)
 {
+	int32_t seed = 10;
+
 	SGVector<int32_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
+	fg_test_data->put("seed", seed);
 	SG_REF(fg_test_data);
 	CFactorGraph* fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
 

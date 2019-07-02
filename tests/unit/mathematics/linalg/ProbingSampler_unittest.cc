@@ -10,12 +10,14 @@
 #include <ColPack/ColPackHeaders.h>
 
 #include <vector>
+#include <random>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace std;
 using namespace shogun;
@@ -78,6 +80,7 @@ TEST(ProbingSampler, get_coloring_vector)
 
 TEST(ProbingSampler, probing_samples_big_diag_matrix)
 {
+	int32_t seed = 12;
 	float64_t difficulty=3;
 	float64_t min_eigenvalue=0.0001;
 
@@ -89,9 +92,11 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+		diag[i]=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)
 			+min_eigenvalue;
 	}
 	op->set_diagonal(diag);

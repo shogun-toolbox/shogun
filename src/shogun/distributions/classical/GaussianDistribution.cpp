@@ -9,18 +9,20 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
 
-CGaussianDistribution::CGaussianDistribution() : CProbabilityDistribution()
+CGaussianDistribution::CGaussianDistribution() : RandomMixin<CProbabilityDistribution>()
 {
 	init();
 }
 
 CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 		SGMatrix<float64_t> cov, bool cov_is_factor) :
-				CProbabilityDistribution(mean.vlen)
+				RandomMixin<CProbabilityDistribution>(mean.vlen)
 {
 	REQUIRE(cov.num_rows==cov.num_cols, "Covariance must be square but is "
 			"%dx%d\n", cov.num_rows, cov.num_cols);
@@ -87,8 +89,7 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	{
 		/* allocate memory and sample from std normal */
 		samples=SGMatrix<float64_t>(m_dimension, num_samples);
-		for (index_t i=0; i<m_dimension*num_samples; ++i)
-			samples.matrix[i]=sg_rand->std_normal_distrib();
+		random::fill_array(samples, NormalDistribution<float64_t>(), m_prng);
 	}
 
 	/* map into desired Gaussian covariance */

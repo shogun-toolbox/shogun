@@ -46,6 +46,8 @@
 
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/machine/gp/LikelihoodModel.h>
+#include <shogun/distributions/classical/GaussianDistribution.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -76,7 +78,7 @@ enum EMCSamplerType
  * and then using the samplers to estimate the predictive marginal distribution.
  *
  */
-class CSoftMaxLikelihood : public CLikelihoodModel
+class CSoftMaxLikelihood : public RandomMixin<CLikelihoodModel>
 {
 public:
 	/** default constructor */

@@ -12,6 +12,9 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/machine/Machine.h>
+#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/RandomNamespace.h>
+
 
 namespace shogun
 {
@@ -22,7 +25,7 @@ namespace shogun
 	 * @brief: Bagging algorithm
 	 * i.e. bootstrap aggregating
 	 */
-	class CBaggingMachine : public CMachine
+	class CBaggingMachine : public RandomMixin<CMachine>
 	{
 		public:
 			/** default ctor */

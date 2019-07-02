@@ -12,28 +12,36 @@
 #include <shogun/evaluation/TimeSeriesSplitting.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
 TEST(SplittingStrategy,standard)
 {
+	int32_t seed = 12;
 	index_t fold_sizes;
 	index_t num_labels;
 	index_t num_subsets;
 	index_t runs=100;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	while (runs-->0)
 	{
 		fold_sizes=0;
-		num_labels=CMath::random(10, 150);
-		num_subsets=CMath::random(1, 5);
+		num_labels=uniform_int_dist(prng, {10, 150});
+		num_subsets=uniform_int_dist(prng, {1, 5});
 		index_t desired_size=CMath::round(
 				(float64_t)num_labels/(float64_t)num_subsets);
 
 		/* build labels */
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, CMath::random(-10.0, 10.0));
+			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
 		/* build splitting strategy */
 		CCrossValidationSplitting* splitting=
@@ -85,20 +93,23 @@ TEST(SplittingStrategy,standard)
 
 TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 {
+	int32_t seed = 12;
 	index_t num_labels, num_classes, num_subsets, fold_sizes;
 	index_t runs=50;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	while (runs-->0)
 	{
 		fold_sizes=0;
-		num_labels=CMath::random(11, 100);
-		num_classes=CMath::random(2, 10);
-		num_subsets=CMath::random(1, 10);
+		num_labels=uniform_int_dist(prng, {11, 100});
+		num_classes=uniform_int_dist(prng, {2, 10});
+		num_subsets=uniform_int_dist(prng, {1, 10});
 
 		/* build labels */
 		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, CMath::random()%num_classes);
+			labels->set_label(i, prng()%num_classes);
 
 		SGVector<float64_t> classes=labels->get_unique_labels();
 
@@ -164,19 +175,22 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 
 TEST(SplittingStrategy,stratified_subset_label_ratio)
 {
+	int32_t seed = 12;
 	index_t num_labels, num_classes, num_subsets;
 	index_t runs=50;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	while (runs-->0)
 	{
-		num_labels=CMath::random(11, 100);
-		num_classes=CMath::random(2, 10);
-		num_subsets=CMath::random(1, 10);
+		num_labels=uniform_int_dist(prng, {11, 100});
+		num_classes=uniform_int_dist(prng, {2, 10});
+		num_subsets=uniform_int_dist(prng, {1, 10});
 
 		/* build labels */
 		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, CMath::random()%num_classes);
+			labels->set_label(i, prng()%num_classes);
 
 		/*No. of labels belonging to one class*/
 		SGVector<index_t> class_labels(num_classes);
@@ -237,18 +251,22 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 
 TEST(SplittingStrategy,LOO)
 {
+	int32_t seed = 12;
 	index_t num_labels, fold_sizes;
 	index_t runs=10;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	while (runs-->0)
 	{
 		fold_sizes=0;
-		num_labels=CMath::random(10, 50);
+		num_labels=uniform_int_dist(prng, {10, 50});
 
 		/* build labels */
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, CMath::random(-10.0, 10.0));
+			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
 		/* build Leave one out splitting strategy */
 		CLOOCrossValidationSplitting* splitting=
@@ -297,19 +315,23 @@ TEST(SplittingStrategy,LOO)
 
 TEST(SplittingStrategy, timeseries_subset_linear_splits)
 {
+	int32_t seed = 20;
 	index_t num_labels, num_subsets, min_subset_size, base_size;
 	index_t runs = 10;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	while (runs-- > 0)
 	{
-		num_labels = CMath::random(50, 150);
-		num_subsets = CMath::random(1, 5);
-		min_subset_size = CMath::random(1, 6);
+		num_labels = uniform_int_dist(prng, {50, 150});
+		num_subsets = uniform_int_dist(prng, {1, 5});
+		min_subset_size = uniform_int_dist(prng, {1, 6});
 		base_size = num_labels / num_subsets;
 
 		CRegressionLabels* labels = new CRegressionLabels(num_labels);
 		for (index_t i = 0; i < num_labels; ++i)
-			labels->set_label(i, CMath::random(-10.0, 10.0));
+			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
 		CTimeSeriesSplitting* splitting =
 		    new CTimeSeriesSplitting(labels, num_subsets);
@@ -337,18 +359,22 @@ TEST(SplittingStrategy, timeseries_subset_linear_splits)
 
 TEST(SplittingStrategy, timeseries_subsets_future_leak)
 {
+	int32_t seed = 12;
 	index_t num_labels, num_subsets, min_subset_size;
 	index_t runs = 10;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	while (runs-- > 0)
 	{
-		num_labels = CMath::random(50, 150);
-		num_subsets = CMath::random(1, 5);
-		min_subset_size = CMath::random(1, 7);
+		num_labels = uniform_int_dist(prng, {50, 150});
+		num_subsets = uniform_int_dist(prng, {1, 5});
+		min_subset_size = uniform_int_dist(prng, {1, 7});
 
 		CRegressionLabels* labels = new CRegressionLabels(num_labels);
 		for (index_t i = 0; i < num_labels; ++i)
-			labels->set_label(i, CMath::random(-10.0, 10.0));
+			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
 		CTimeSeriesSplitting* splitting =
 		    new CTimeSeriesSplitting(labels, num_subsets);

@@ -6,18 +6,20 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
 CMeanShiftDataGenerator::CMeanShiftDataGenerator() :
-		CStreamingDenseFeatures<float64_t>()
+		RandomMixin<CStreamingDenseFeatures<float64_t>>()
 {
 	init();
 }
 
 CMeanShiftDataGenerator::CMeanShiftDataGenerator(float64_t mean_shift,
 		index_t dimension, index_t dimension_shift) :
-				CStreamingDenseFeatures<float64_t>()
+				RandomMixin<CStreamingDenseFeatures<float64_t>>()
 {
 	init();
 	set_mean_shift_model(mean_shift, dimension, dimension_shift);
@@ -60,8 +62,7 @@ bool CMeanShiftDataGenerator::get_next_example()
 	SGVector<float64_t> result=SGVector<float64_t>(m_dimension);
 
 	/* fill with std normal data */
-	for (index_t i=0; i<m_dimension; ++i)
-		result[i]=CMath::randn_double();
+	random::fill_array(result, NormalDistribution<float64_t>(), m_prng);
 
 	/* mean shift in selected dimension */
 	result[m_dimension_shift]+=m_mean_shift;

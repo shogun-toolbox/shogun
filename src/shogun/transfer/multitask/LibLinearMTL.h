@@ -16,6 +16,7 @@
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 #include <map>
 
@@ -83,7 +84,7 @@ class MappedSparseMatrix
 
 
 /** @brief class to implement LibLinear */
-class CLibLinearMTL : public CLinearMachine
+class CLibLinearMTL : public RandomMixin<CLinearMachine>
 {
 	public:
 		/** default constructor  */

@@ -37,6 +37,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 
 namespace shogun
@@ -54,12 +55,12 @@ struct PermutationMMD : ComputeMMD
 	{
 	}
 
-	template <class Kernel>
-	SGVector<float32_t> operator()(const Kernel& kernel)
+	template <class Kernel, class PRNG>
+	SGVector<float32_t> operator()(const Kernel& kernel, PRNG& prng)
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);
 		ASSERT(m_num_null_samples>0);
-		precompute_permutation_inds();
+		precompute_permutation_inds(prng);
 
 		const index_t size=m_n_x+m_n_y;
 		SGVector<float32_t> null_samples(m_num_null_samples);
@@ -86,11 +87,12 @@ struct PermutationMMD : ComputeMMD
 		return null_samples;
 	}
 
-	SGMatrix<float32_t> operator()(const KernelManager& kernel_mgr)
+	template <class PRNG>
+	SGMatrix<float32_t> operator()(const KernelManager& kernel_mgr, PRNG& prng)
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);
 		ASSERT(m_num_null_samples>0);
-		precompute_permutation_inds();
+		precompute_permutation_inds(prng);
 
 		const index_t size=m_n_x+m_n_y;
 		SGMatrix<float32_t> null_samples(m_num_null_samples, kernel_mgr.num_kernels());
@@ -133,19 +135,20 @@ struct PermutationMMD : ComputeMMD
 		return null_samples;
 	}
 
-	template <class Kernel>
-	float64_t p_value(const Kernel& kernel)
+	template <class Kernel, class PRNG>
+	float64_t p_value(const Kernel& kernel, PRNG& prng)
 	{
 		auto statistic=ComputeMMD::operator()(kernel);
-		auto null_samples=operator()(kernel);
+		auto null_samples=operator()(kernel, prng);
 		return compute_p_value(null_samples, statistic);
 	}
 
-	SGVector<float64_t> p_value(const KernelManager& kernel_mgr)
+	template <class PRNG>
+	SGVector<float64_t> p_value(const KernelManager& kernel_mgr, PRNG& prng)
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);
 		ASSERT(m_num_null_samples>0);
-		precompute_permutation_inds();
+		precompute_permutation_inds(prng);
 
 		const index_t size=m_n_x+m_n_y;
 		SGVector<float32_t> null_samples(m_num_null_samples);
@@ -196,14 +199,15 @@ struct PermutationMMD : ComputeMMD
 		return result;
 	}
 
-	inline void precompute_permutation_inds()
+	template <class PRNG>
+	inline void precompute_permutation_inds(PRNG& prng)
 	{
 		ASSERT(m_num_null_samples>0);
 		allocate_permutation_inds();
 		for (auto n=0; n<m_num_null_samples; ++n)
 		{
 			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-			CMath::permute(m_permuted_inds);
+			random::shuffle(m_permuted_inds, prng);
 			if (m_save_inds)
 			{
 				auto offset=n*m_permuted_inds.size();

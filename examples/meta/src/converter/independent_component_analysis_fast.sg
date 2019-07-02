@@ -1,13 +1,11 @@
 File f_feats = csv_file("../../data/ica_2_sources.dat")
 
-Math:init_random(1)
-
 #![create_features]
 Features feats = features(f_feats)
 #![create_features]
 
 #![set_parameters]
-Transformer ica = transformer("FastICA", max_iter=200, tol=0.00001)
+Transformer ica = transformer("FastICA", max_iter=200, tol=0.00001, seed=1)
 #![set_parameters]
 
 #![apply_convert]

@@ -678,12 +678,21 @@ public:
 	 */
 	virtual std::string to_string() const;
 
+#ifndef SWIG // SWIG should skip this part
 	/** Returns map of parameter names and AnyParameter pairs
 	 * of the object.
 	 *
 	 */
-#ifndef SWIG // SWIG should skip this part
 	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
+
+	/** Calls a function on every parameter of type T with the name of the
+	 * parameter and the parameter itself as arguments
+	 *
+	 * @param operation the function to be called
+	 */
+	template <typename T>
+	void for_each_param_of_type(
+		std::function<void(const std::string&, T*)> operation);
 #endif
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
@@ -979,6 +988,14 @@ protected:
 			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
 	}
+
+	/** Adds a callback function to a parameter identified by its name
+	 *
+	 * @param name name of the parameter
+	 * @param method pointer to the function
+	 */
+	void add_callback_function(
+		const std::string& name, std::function<void()> method);
 #endif
 
 public:

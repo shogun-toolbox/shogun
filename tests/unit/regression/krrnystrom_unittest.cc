@@ -35,6 +35,9 @@
 #include <shogun/regression/KRRNystrom.h>
 #include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/base/some.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -44,6 +47,7 @@ using namespace shogun;
  */
 TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 {
+	int32_t seed = 10;
 	/* data matrix dimensions */
 	index_t num_vectors=10;
 	index_t num_features=1;
@@ -54,10 +58,12 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
 	SGMatrix<float64_t> test_dat(num_features, num_vectors);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist(0.0, 1.0);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i]=i+CMath::normal_random(0, 1.0);
+		lab.vector[i]=i+normal_dist(prng);
 		train_dat.matrix[i]=i;
 		test_dat.matrix[i]=i;
 	}
@@ -106,6 +112,7 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
  */
 TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 {
+	int32_t seed=10;
 	/* data matrix dimensions */
 	index_t num_vectors=100;
 	index_t num_features=1;
@@ -117,11 +124,13 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
 	SGMatrix<float64_t> test_dat(num_features, num_vectors);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist(0.0, 1.0);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
 		float64_t point=(float64_t)i*10/num_vectors;
-		lab.vector[i]=point+CMath::normal_random(0, 1.0);
+		lab.vector[i]=point+normal_dist(prng);
 		train_dat.matrix[i]=point;
 		test_dat.matrix[i]=point;
 	}

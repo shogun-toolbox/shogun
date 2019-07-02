@@ -49,14 +49,16 @@ using NeuralLinearLayerTest = NeuralLayerTestFixture;
  */
 TEST_F(NeuralLinearLayerTest, compute_activations)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
 	CNeuralInputLayer* input1;
-	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	SGMatrix<float64_t> x2;
 	CNeuralInputLayer* input2;
-	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
+	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
 	CNeuralLinearLayer layer(9);
@@ -94,14 +96,16 @@ TEST_F(NeuralLinearLayerTest, compute_activations)
  */
 TEST_F(NeuralLinearLayerTest, compute_error)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
+	std::mt19937_64 prng(seed);
 	CNeuralInputLayer* input1;
-	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	SGMatrix<float64_t> x2;
 	CNeuralInputLayer* input2;
-	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
+	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
 	CNeuralLinearLayer layer(9);
@@ -113,7 +117,7 @@ TEST_F(NeuralLinearLayerTest, compute_error)
 
 	// initialize output
 	auto y = create_rand_matrix<float64_t>(
-	    layer.get_num_neurons(), x1.num_cols, 0.0, 1.0);
+	    layer.get_num_neurons(), x1.num_cols, 0.0, 1.0, prng);
 
 	// get the layer's activations and error
 	SGMatrix<float64_t> A = layer.get_activations();
@@ -133,10 +137,12 @@ TEST_F(NeuralLinearLayerTest, compute_error)
  */
 TEST_F(NeuralLinearLayerTest, compute_local_gradients)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
 	CNeuralLinearLayer layer(9);
@@ -147,7 +153,7 @@ TEST_F(NeuralLinearLayerTest, compute_local_gradients)
 
 	// initialize output
 	auto y = create_rand_matrix<float64_t>(
-	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0);
+	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0, prng);
 
 	// compute the layer's local gradients
 	layer.compute_local_gradients(y);
@@ -183,14 +189,16 @@ TEST_F(NeuralLinearLayerTest, compute_local_gradients)
  */
 TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_output)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
 	CNeuralInputLayer* input1;
-	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	SGMatrix<float64_t> x2;
 	CNeuralInputLayer* input2;
-	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
+	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
 	CNeuralLinearLayer layer(9);
@@ -202,7 +210,7 @@ TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_output)
 
 	// initialize output
 	auto y = create_rand_matrix<float64_t>(
-	    layer.get_num_neurons(), x1.num_cols, 0.0, 1.0);
+	    layer.get_num_neurons(), x1.num_cols, 0.0, 1.0, prng);
 
 	// compute parameter gradients
 	SGVector<float64_t> gradients(layer.get_num_parameters());
@@ -242,14 +250,16 @@ TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_output)
  */
 TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_hidden)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
 	CNeuralInputLayer* input1;
-	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	SGMatrix<float64_t> x2;
 	CNeuralInputLayer* input2;
-	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
+	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0, prng);
 
 	// initialize the hidden layer
 	auto layer_hid = new CNeuralLinearLayer(5);
@@ -268,7 +278,7 @@ TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_hidden)
 
 	// initialize output
 	auto y = create_rand_matrix<float64_t>(
-	    layer_out.get_num_neurons(), x1.num_cols, 0.0, 1.0);
+	    layer_out.get_num_neurons(), x1.num_cols, 0.0, 1.0, prng);
 
 	// compute gradients
 	layer_hid->get_activation_gradients().zero();

@@ -12,6 +12,8 @@
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 #include <shogun/io/LibSVMFile.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include "../utils/Utils.h"
 
 using namespace shogun;
@@ -21,20 +23,24 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   char fname[] = "StreamingSparseFeatures_parse_file.XXXXXX";
   generate_temp_filename(fname);
 
+  int32_t seed = 100;
   int32_t max_num_entries=20;
   int32_t max_label_value=1;
   float64_t max_entry_value=1;
-  CRandom* rand=new CRandom();
 
   int32_t num_vec=10;
   int32_t num_feat=0;
+
+  std::mt19937_64 prng(seed);
+  UniformIntDistribution<int32_t> uniform_int_dist;
+  UniformRealDistribution<float64_t> uniform_real_dist;
 
   SGSparseVector<float64_t>* data=SG_MALLOC(SGSparseVector<float64_t>, num_vec);
   float64_t* labels=SG_MALLOC(float64_t, num_vec);
   for (int32_t i=0; i<num_vec; i++)
   {
-    data[i]=SGSparseVector<float64_t>(rand->random(0, max_num_entries));
-    labels[i]=(float64_t) rand->random(-max_label_value, max_label_value);
+    data[i]=SGSparseVector<float64_t>(uniform_int_dist(prng, {0, max_num_entries}));
+    labels[i]=(float64_t) uniform_int_dist(prng, {-max_label_value, max_label_value});
     for (int32_t j=0; j<data[i].num_feat_entries; j++)
     {
       int32_t feat_index=(j+1)*2;
@@ -42,13 +48,12 @@ TEST(StreamingSparseFeaturesTest, parse_file)
         num_feat=feat_index;
 
       data[i].features[j].feat_index=feat_index-1;
-      data[i].features[j].entry=rand->random(0., max_entry_value);
+      data[i].features[j].entry=uniform_real_dist(prng, {0.0, max_entry_value});
     }
   }
   CLibSVMFile* fout = new CLibSVMFile(fname, 'w', NULL);
   fout->set_sparse_matrix(data, num_feat, num_vec, labels);
   SG_UNREF(fout);
-  SG_UNREF(rand);
 
   CStreamingAsciiFile *file = new CStreamingAsciiFile(fname);
   CStreamingSparseFeatures<float64_t> *stream_features =

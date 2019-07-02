@@ -48,10 +48,12 @@ using NeuralLeakyRectifiedLayerTest = NeuralLayerTestFixture;
  */
 TEST_F(NeuralLeakyRectifiedLayerTest, compute_activations)
 {
+	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::mt19937_64 prng(seed);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize leaky rectified linear layer
 	CNeuralLeakyRectifiedLinearLayer layer(9);

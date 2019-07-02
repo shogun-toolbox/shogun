@@ -11,6 +11,10 @@
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
+#include <random>
 
 using namespace Eigen;
 
@@ -53,23 +57,27 @@ TEST(SubsequenceStringKernel, compute)
 
 TEST(SubsequenceStringKernel, psd_random_feat)
 {
+	const int32_t seed = 12;
 	const index_t num_strings=10;
 	const index_t max_len=20;
 	const index_t min_len=max_len/2;
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	SGStringList<char> list(num_strings, max_len);
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t cur_len=CMath::random(min_len, max_len);
+		index_t cur_len=uniform_int_dist(prng, {min_len, max_len});
 		SGString<char> str(cur_len);
 		for (index_t l=0; l<cur_len; ++l)
-			str.string[l]=char(CMath::random('A','Z'));
+			str.string[l]=char(uniform_int_dist(prng, {'A','Z'}));
 		list.strings[i]=str;
 	}
 
 	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
-	int32_t s_len=CMath::random(1, min_len);
-	float64_t lambda=CMath::random(0.0, 1.0);
+	int32_t s_len=uniform_int_dist(prng, {1, min_len});
+	float64_t lambda=uniform_real_dist(prng, {0.0, 1.0});
 	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, s_len, lambda);
 
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();

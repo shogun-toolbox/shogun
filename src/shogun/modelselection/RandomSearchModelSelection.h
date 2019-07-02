@@ -12,6 +12,7 @@
 
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -20,7 +21,7 @@ class CModelSelectionParameters;
 /** @brief Model selection class which searches for the best model by a random
  * search. See CModelSelection for details.
  */
-class CRandomSearchModelSelection : public CModelSelection
+class CRandomSearchModelSelection : public RandomMixin<CModelSelection>
 {
 public:
 	/** constructor */

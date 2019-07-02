@@ -35,6 +35,7 @@
 #include <memory>
 #include <shogun/base/SGObject.h>
 #include <shogun/statistical_testing/TestEnums.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -52,7 +53,7 @@ class KernelManager;
 
 }
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class CKernelSelectionStrategy : public CSGObject
+class CKernelSelectionStrategy : public RandomMixin<CSGObject>
 {
 	friend class CMMD;
 	friend class CStreamingMMD;

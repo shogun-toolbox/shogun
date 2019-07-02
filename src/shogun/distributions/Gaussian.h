@@ -14,6 +14,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -40,7 +41,7 @@ enum ECovType
  * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
  * The actual computations depend on the type of covariance used.
  */
-class CGaussian : public CDistribution
+class CGaussian : public RandomMixin<CDistribution>
 {
 	public:
 		/** default constructor */

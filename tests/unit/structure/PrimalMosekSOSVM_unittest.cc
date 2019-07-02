@@ -10,15 +10,20 @@
 #include <shogun/features/FactorGraphFeatures.h>
 #include <shogun/labels/FactorGraphLabels.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include <gtest/gtest.h>
+
+#include <random>
 
 using namespace shogun;
 
 #ifdef USE_MOSEK
 TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 {
+	int32_t seed = 17;
 	int32_t num_samples = 10;
-	CMath::init_random(17);
+
+	std::mt19937_64 prng(seed);
 
 	// define factor type
 	SGVector<int32_t> card(2);
@@ -43,6 +48,7 @@ TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
 	SG_REF(labels);
 
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (int32_t n = 0; n < num_samples; ++n)
 	{
 		// factor graph
@@ -53,8 +59,8 @@ TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 
 		// add factors
 		SGVector<float64_t> data1(2);
-		data1[0] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
-		data1[1] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
+		data1[0] = 2.0 * uniform_real_dist(prng) - 1.0;
+		data1[1] = 2.0 * uniform_real_dist(prng) - 1.0;
 		SGVector<int32_t> var_index1(2);
 		var_index1[0] = 0;
 		var_index1[1] = 1;
@@ -62,8 +68,8 @@ TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 		fg->add_factor(fac1);
 
 		SGVector<float64_t> data2(2);
-		data2[0] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
-		data2[1] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
+		data2[0] = 2.0 * uniform_real_dist(prng) - 1.0;
+		data2[1] = 2.0 * uniform_real_dist(prng) - 1.0;
 		SGVector<int32_t> var_index2(2);
 		var_index2[0] = 1;
 		var_index2[1] = 2;

@@ -225,15 +225,6 @@ void SGVector<T>::range_fill(T start)
 
 COMPLEX128_ERROR_ONEARG(range_fill)
 
-template<class T>
-void SGVector<T>::random(T min_value, T max_value)
-{
-	assert_on_cpu();
-	random_vector(vector, vlen, min_value, max_value);
-}
-
-COMPLEX128_ERROR_TWOARGS(random)
-
 template <class T>
 index_t SGVector<T>::find_position_to_insert(T element)
 {
@@ -524,20 +515,6 @@ void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
 	for (int32_t i=0; i<n; i++)
 		vec1[i]+=scalar*vec2[i];
 #endif
-}
-
-template <class T>
-	void SGVector<T>::random_vector(T* vec, int32_t len, T min_value, T max_value)
-	{
-		for (int32_t i=0; i<len; i++)
-			vec[i]=CMath::random(min_value, max_value);
-	}
-
-template <>
-void SGVector<complex128_t>::random_vector(complex128_t* vec, int32_t len,
-	complex128_t min_value, complex128_t max_value)
-{
-	SG_SNOTIMPLEMENTED
 }
 
 template <>

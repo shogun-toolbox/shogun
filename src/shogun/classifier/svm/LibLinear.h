@@ -14,6 +14,8 @@
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
+#include <shogun/mathematics/RandomMixin.h>
+
 
 namespace shogun
 {
@@ -57,7 +59,7 @@ namespace shogun
 	 *
 	 * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
 	 * */
-	class CLibLinear : public CLinearMachine
+	class CLibLinear : public RandomMixin<CLinearMachine>
 	{
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)

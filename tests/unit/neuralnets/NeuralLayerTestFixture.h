@@ -12,25 +12,39 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 #include <gtest/gtest.h>
 
 #include <memory>
 #include <tuple>
+#include <type_traits>
 
 using namespace shogun;
 
 class NeuralLayerTestFixture : public ::testing::Test
 {
 public:
-	template <typename T>
+	template <typename T, typename PRNG>
 	auto create_rand_matrix(
-	    int32_t num_rows, int32_t num_cols, T lower_bound, T upper_bound)
+	    int32_t num_rows, int32_t num_cols, T lower_bound, T upper_bound, PRNG& prng)
 	{
 		auto data_batch = SGMatrix<T>(num_rows, num_cols);
-		for (size_t i = 0; i < num_rows * num_cols; i++)
+		if constexpr (std::is_floating_point<T>::value)
 		{
-			data_batch[i] = CMath::random(lower_bound, upper_bound);
+			UniformRealDistribution<T> uniform_real_dist(lower_bound, upper_bound);
+			for (size_t i = 0; i < num_rows * num_cols; i++)
+			{
+				data_batch[i] = uniform_real_dist(prng);
+			}
+		}
+		else if constexpr (std::is_integral<T>::value)
+		{
+			UniformIntDistribution<T> uniform_int_dist(lower_bound, upper_bound);
+			for (size_t i = 0; i < num_rows * num_cols; i++)
+			{
+				data_batch[i] = uniform_int_dist(prng);
+			}
 		}
 		return data_batch;
 	}
@@ -50,13 +64,13 @@ public:
 	 * other layer
 	 * @return: The randomized dataset and corresponding Neural input layer
 	 */
-	template <typename T>
+	template <typename T, typename PRNG>
 	auto setup_input_layer(
 	    int32_t num_features, int32_t num_samples, T lower_bound, T upper_bound,
-	    bool add_to_layers = true)
+	    PRNG& prng, bool add_to_layers = true)
 	{
 		auto data_batch = create_rand_matrix(
-		    num_features, num_samples, lower_bound, upper_bound);
+		    num_features, num_samples, lower_bound, upper_bound, prng);
 		auto input_layer = new CNeuralInputLayer(data_batch.num_rows);
 		input_layer->set_batch_size(data_batch.num_cols);
 		input_layer->compute_activations(data_batch);

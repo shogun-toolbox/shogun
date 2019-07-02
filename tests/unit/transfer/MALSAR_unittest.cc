@@ -25,9 +25,10 @@ typedef std::pair<SplittedFeatures, CBinaryLabels*> SplittedDataset;
 SplittedDataset generate_data()
 {
 	index_t num_samples = 50;
-	CMath::init_random(5);
+
+	std::mt19937_64 prng(24);
 	SGMatrix<float64_t> data =
-		CDataGenerator::generate_gaussians(num_samples, 2, 2);
+		CDataGenerator::generate_gaussians(num_samples, 2, 2, prng);
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);
 
 	SGVector<index_t> train_idx(num_samples), test_idx(num_samples);

@@ -2,8 +2,11 @@
 
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 #include "utils/Utils.h"
+
+#include <random>
 
 using namespace shogun;
 
@@ -56,12 +59,15 @@ TYPED_TEST(CDynamicArrayFixture, resize_array)
 
 TYPED_TEST(CDynamicArrayFixture, set_array)
 {
+	int32_t seed = 12;
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	this->wrapper_array->reset_array();
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 0);
 	TypeParam* array = SG_MALLOC(TypeParam, 5);
 	for (int32_t i = 0; i < 5; i++)
 	{
-		array[i] = (TypeParam)CMath::random(1, 10);
+		array[i] = (TypeParam)uniform_int_dist(prng, {1, 10});
 	}
 	this->wrapper_array->set_array(array, 5);
 
@@ -75,10 +81,14 @@ TYPED_TEST(CDynamicArrayFixture, set_array)
 
 TYPED_TEST(CDynamicArrayFixture, const_set_array)
 {
+	int32_t seed = 12;
+
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	TypeParam* array = SG_MALLOC(TypeParam, 5);
 	for (int32_t i = 0; i < 5; i++)
 	{
-		array[i] = (TypeParam)CMath::random(1, 10);
+		array[i] = (TypeParam)uniform_int_dist(prng, {1, 10});
 	}
 	const TypeParam* const_array = array;
 	this->wrapper_array->reset_array();

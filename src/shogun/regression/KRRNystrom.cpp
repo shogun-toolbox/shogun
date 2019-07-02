@@ -38,13 +38,13 @@
 using namespace shogun;
 using namespace Eigen;
 
-CKRRNystrom::CKRRNystrom() : CKernelRidgeRegression()
+CKRRNystrom::CKRRNystrom() : RandomMixin<CKernelRidgeRegression>()
 {
 	init();
 }
 
 CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab)
-: CKernelRidgeRegression(tau, k, lab)
+: RandomMixin<CKernelRidgeRegression>(tau, k, lab)
 {
 	init();
 
@@ -64,7 +64,7 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 	int32_t n=kernel->get_num_vec_lhs();
 	SGVector<int32_t> temp(n);
 	temp.range_fill();
-	CMath::permute(temp);
+	random::shuffle(temp, m_prng);
 	SGVector<int32_t> col(m_num_rkhs_basis);
 	for (index_t i=0; i<m_num_rkhs_basis; ++i)
 		col[i]=temp[i];

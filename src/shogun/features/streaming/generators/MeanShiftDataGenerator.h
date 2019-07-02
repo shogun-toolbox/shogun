@@ -11,6 +11,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -28,7 +29,7 @@ namespace shogun
  * multivariate isotropic Gaussian in a certain dimensions, where one selected
  * dimension has its mean shifted by some value.
  */
-class CMeanShiftDataGenerator: public CStreamingDenseFeatures<float64_t>
+class CMeanShiftDataGenerator: public RandomMixin<CStreamingDenseFeatures<float64_t>>
 {
 public:
 	/** Constructor */

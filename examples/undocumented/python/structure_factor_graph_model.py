@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+from numpy import random
 from shogun import TableFactorType
 
 # create the factor type with GT parameters
@@ -25,7 +26,7 @@ def gen_data(ftype, num_samples, show_data = False):
 	from shogun import FactorGraphObservation, FactorGraphLabels, FactorGraphFeatures
 	from shogun import MAPInference, TREE_MAX_PROD
 
-	Math.init_random(17)
+	random.seed(1)
 
 	samples = FactorGraphFeatures(num_samples)
 	labels = FactorGraphLabels(num_samples)
@@ -34,27 +35,27 @@ def gen_data(ftype, num_samples, show_data = False):
 		vc = np.array([2,2,2], np.int32)
 		fg = FactorGraph(vc)
 
-		data1 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
+		data1 = np.array([2.0*random.random_sample()-1.0 for i in range(2)])
 		vind1 = np.array([0,1], np.int32)
 		fac1 = Factor(ftype[0], vind1, data1)
 		fg.add_factor(fac1)
 
-		data2 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
+		data2 = np.array([2.0*random.random_sample()-1.0 for i in range(2)])
 		vind2 = np.array([1,2], np.int32)
 		fac2 = Factor(ftype[0], vind2, data2)
 		fg.add_factor(fac2)
 
-		data3 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
+		data3 = np.array([2.0*random.random_sample()-1.0 for i in range(2)])
 		vind3 = np.array([0], np.int32)
 		fac3 = Factor(ftype[1], vind3, data3)
 		fg.add_factor(fac3)
 
-		data4 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
+		data4 = np.array([2.0*random.random_sample()-1.0 for i in range(2)])
 		vind4 = np.array([1], np.int32)
 		fac4 = Factor(ftype[1], vind4, data4)
 		fg.add_factor(fac4)
 
-		data5 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
+		data5 = np.array([2.0*random.random_sample()-1.0 for i in range(2)])
 		vind5 = np.array([2], np.int32)
 		fac5 = Factor(ftype[1], vind5, data5)
 		fg.add_factor(fac5)

@@ -51,7 +51,6 @@ const float64_t CMath::F_MIN_VAL64=(DBL_MIN * DBL_EPSILON);
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
 #endif
-uint32_t CMath::seed = 0;
 
 CMath::CMath()
 : CSGObject()

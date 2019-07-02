@@ -39,6 +39,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -84,7 +85,7 @@ template <class T> class SGVector;
  * m_activation_gradients: size m_num_neurons*m_batch_size
  * m_local_gradients: size m_num_neurons*m_batch_size
  */
-class CNeuralLayer : public CSGObject
+class CNeuralLayer : public RandomMixin<CSGObject>
 {
 public:
 	/** default constructor */

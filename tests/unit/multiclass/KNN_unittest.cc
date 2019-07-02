@@ -7,14 +7,15 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DataGenerator.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
+template <typename PRNG>
 void generate_knn_data(SGMatrix<float64_t>& feat, SGVector<float64_t>& lab,
-	   	int32_t num, int32_t classes, int32_t feats)
+	   	int32_t num, int32_t classes, int32_t feats, PRNG& prng)
 {
-	CMath::init_random(1);
-	feat = CDataGenerator::generate_gaussians(num,classes,feats);
+	feat = CDataGenerator::generate_gaussians(num,classes,feats, prng);
 	for( int32_t i = 0 ; i < classes ; ++i )
 		for( int32_t j = 0 ; j < num ; ++j )
 			lab[i*num+j] = double(i);
@@ -26,17 +27,19 @@ class KNNTest : public ::testing::Test
 protected:
 	virtual void SetUp()
 	{
+		std::mt19937_64 prng(37);
+
 		SGVector<float64_t> lab(classes*num);
 		SGMatrix<float64_t> feat(feats, classes*num);
 
-		generate_knn_data(feat, lab, num, classes, feats);
+		generate_knn_data(feat, lab, num, classes, feats, prng);
 
 		train = SGVector<index_t>(index_t(num*classes*0.75));
 		test = SGVector<index_t>(index_t(num*classes*0.25));
 
 		//generate random subset for train and test data
-		train.random(0, classes*num-1);
-		test.random(0, classes*num-1);
+		random::fill_array(train, 0, classes*num-1, prng);
+		random::fill_array(test, 0, classes*num-1, prng);
 
 		labels = new CMulticlassLabels(lab);
 		SG_REF(labels);
@@ -137,6 +140,8 @@ TEST_F(KNNTest, lsh_solver_sparse)
 
 TEST(KNN, classify_multiple_brute)
 {
+	std::mt19937_64 prng(17);
+
 	int32_t num = 50;
 	int32_t feats = 2;
 	int32_t classes = 3;
@@ -144,11 +149,11 @@ TEST(KNN, classify_multiple_brute)
 	SGVector< float64_t > lab(classes*num);
 	SGMatrix< float64_t > feat(feats, classes*num);
 
-	generate_knn_data(feat, lab, num, classes, feats);
+	generate_knn_data(feat, lab, num, classes, feats, prng);
 	SGVector<index_t> train (int32_t(num*classes*0.75));
 	SGVector<index_t> test (int32_t(num*classes*0.25));
-	train.random(0, classes*num-1);
-	test.random(0, classes*num-1);
+	random::fill_array(train, 0, classes*num-1, prng);
+	random::fill_array(test, 0, classes*num-1, prng);
 
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
@@ -185,6 +190,7 @@ TEST(KNN, classify_multiple_brute)
 
 TEST(KNN, classify_multiple_kdtree)
 {
+	std::mt19937_64 prng(17);
 
 	int32_t num = 50;
 	int32_t feats = 2;
@@ -193,11 +199,11 @@ TEST(KNN, classify_multiple_kdtree)
 	SGVector< float64_t > lab(classes*num);
 	SGMatrix< float64_t > feat(feats, classes*num);
 
-	generate_knn_data(feat, lab, num, classes, feats);
+	generate_knn_data(feat, lab, num, classes, feats, prng);
 	SGVector<index_t> train (int32_t(num*classes*0.75));
 	SGVector<index_t> test (int32_t(num*classes*0.25));
-	train.random(0, classes*num-1);
-	test.random(0, classes*num-1);
+	random::fill_array(train, 0, classes*num-1, prng);
+	random::fill_array(test, 0, classes*num-1, prng);
 
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);

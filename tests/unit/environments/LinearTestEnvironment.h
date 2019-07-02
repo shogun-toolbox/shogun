@@ -12,6 +12,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 
+#include <random>
+
 using namespace shogun;
 using namespace std;
 using ::testing::Environment;
@@ -20,13 +22,13 @@ class LinearTestEnvironment : public ::testing::Environment
 public:
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(17);
+		std::mt19937_64 prng(125);
 		SGVector<float64_t> coefficients(1);
 		float64_t bias = 2.0;
 		coefficients[0] = 3.0;
 
 		mBinaryLabelData = std::shared_ptr<GaussianCheckerboard>(
-			new GaussianCheckerboard(100, 2, 2));
+			new GaussianCheckerboard(100, 2, 2, prng));
 		// generate linear regression data y = 3x + 2
 		one_dimensional_regression_data_with_bias = std::shared_ptr<LinearRegressionDataGenerator>(
 				new LinearRegressionDataGenerator(100, coefficients, bias, 0.95));

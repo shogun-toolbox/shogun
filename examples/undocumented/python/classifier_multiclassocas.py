@@ -4,7 +4,6 @@ parameter_list = [[10,3,15,2.1,1,1e-5,1],[20,4,15,2.2,2,1e-5,2]]
 
 def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,epsilon=1e-5,seed=1):
 	from shogun import MulticlassLabels
-	from shogun import Math_init_random
 	try:
 		from shogun import MulticlassOCAS
 	except ImportError:
@@ -14,7 +13,6 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 
 	# reproducible results
 	random.seed(seed)
-	Math_init_random(seed)
 
 	# generate some training data where each class pair is linearly separable
 	label_train=array([mod(x,num_class) for x in range(num_vec)],dtype="float64")

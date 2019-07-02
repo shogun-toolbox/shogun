@@ -34,6 +34,7 @@
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 
@@ -129,6 +130,7 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 	int32_t num_parameters_per_map =
 		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
 
+	NormalDistribution<float64_t> normal_dist;
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
 		float64_t* map_params = parameters.vector+m*num_parameters_per_map;
@@ -139,16 +141,17 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 		{
 			if (m_initialization_mode == NORMAL)
 			{
-				map_params[i] = CMath::normal_random(0.0, sigma);
+				map_params[i] = normal_dist(m_prng, {0.0, sigma});
 				// turn off regularization for the bias, on for the rest of the parameters
 				map_param_regularizable[i] = (i != 0);
 			}
 			else // for the case when m_initialization_mode = RE_NORMAL
 			{
-				map_params[i] = CMath::normal_random(
-				    0.0, std::sqrt(
+				map_params[i] = normal_dist(
+					m_prng,
+				    {0.0, std::sqrt(
 				             2.0 / (m_input_height * m_input_width *
-				                    m_input_num_channels)));
+				                    m_input_num_channels))});
 				// initialize b=0
 				map_param_regularizable[i] = 0;
 			}

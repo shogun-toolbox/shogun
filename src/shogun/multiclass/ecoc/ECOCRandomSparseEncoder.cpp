@@ -11,6 +11,8 @@
 
 #include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCUtil.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
@@ -56,7 +58,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
     SGMatrix<int32_t> codebook(codelen, num_classes);
     std::vector<int32_t> random_sel(num_classes);
     int32_t n_iter = 0;
-
+    UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
     while (true)
     {
         // fill codebook
@@ -66,10 +68,8 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             // randomly select two positions
             for (int32_t j=0; j < num_classes; ++j)
                 random_sel[j] = j;
-            std::random_device rng;
-            std::mt19937 urng(rng());
-            std::shuffle(random_sel.begin(), random_sel.end(), urng);
-            if (CMath::random(0.0, 1.0) > 0.5)
+            random::shuffle(random_sel.begin(), random_sel.end(), m_prng);
+            if (uniform_real_dist(m_prng) > 0.5)
             {
                 codebook(i, random_sel[0]) = +1;
                 codebook(i, random_sel[1]) = -1;
@@ -83,7 +83,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             // assign the remaining positions
             for (int32_t j=2; j < num_classes; ++j)
             {
-                float64_t randval = CMath::random(0.0, 1.0);
+                float64_t randval = uniform_real_dist(m_prng);
                 if (randval > m_pzero)
                 {
                     if (randval > m_pzero+m_pposone)

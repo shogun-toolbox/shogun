@@ -8,12 +8,18 @@
 
 #include "shogun/features/DotFeatures_benchmark.h"
 #include "shogun/features/RandomFourierDotFeatures.h"
+#include "shogun/mathematics/UniformIntDistribution.h"
+#include <random>
 
 namespace shogun
 {
 
 static std::shared_ptr<CRandomFourierDotFeatures> createRandomData(const benchmark::State& state)
 {
+	std::random_device rd;
+	std::mt19937_64 prng(rd());
+	UniformIntDistribution<index_t> uniform_int_dist(0, 1);
+ 
 	index_t num_dim = state.range(0);
 	index_t num_vecs = 10000;
 
@@ -22,7 +28,7 @@ static std::shared_ptr<CRandomFourierDotFeatures> createRandomData(const benchma
 	{
 		for (index_t j=0; j<num_dim; j++)
 		{
-			mat(j,i) = CMath::random(0,1) + 0.5;
+			mat(j,i) = uniform_int_dist(prng) + 0.5;
 		}
 	}
 	auto dense_feats = new CDenseFeatures<float64_t>(mat);

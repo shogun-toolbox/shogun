@@ -3,6 +3,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/LaRank.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -10,6 +11,7 @@ using namespace shogun;
 
 TEST(LaRank,train)
 {
+	int32_t seed = 100;
 	index_t num_vec=10;
 	index_t num_feat=3;
 	index_t num_class=num_feat; // to make data easy
@@ -20,13 +22,15 @@ TEST(LaRank,train)
 	SGMatrix<float64_t> matrix_test(num_class, num_vec);
 	CMulticlassLabels* labels=new CMulticlassLabels(num_vec);
 	CMulticlassLabels* labels_test=new CMulticlassLabels(num_vec);
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<num_vec; ++i)
 	{
 		index_t label=i%num_class;
 		for (index_t j=0; j<num_feat; ++j)
 		{
-			matrix(j,i)=CMath::randn_double();
-			matrix_test(j,i)=CMath::randn_double();
+			matrix(j,i)=normal_dist(prng);
+			matrix_test(j,i)=normal_dist(prng);
 			labels->set_label(i, label);
 			labels_test->set_label(i, label);
 		}

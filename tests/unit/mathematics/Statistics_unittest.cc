@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
@@ -142,6 +143,7 @@ TEST(Statistics, log_det_test_3)
 // covariance matrix.
 TEST(Statistics, sample_from_gaussian_dense1)
 {
+	std::mt19937_64 prng(17);
 
 	int32_t N=1000;
 	int32_t dim=100;
@@ -157,7 +159,7 @@ TEST(Statistics, sample_from_gaussian_dense1)
 	c=MatrixXd::Random(dim, dim)*0.005+MatrixXd::Constant(dim, dim, 0.01);
 	c=c*c.transpose()+MatrixXd::Identity(dim, dim)*0.01;
 
-	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N);
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, prng, N);
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
@@ -178,6 +180,7 @@ TEST(Statistics, sample_from_gaussian_dense1)
 // covariance matrix. Using precision_matrix instead
 TEST(Statistics, sample_from_gaussian_dense2)
 {
+	std::mt19937_64 prng(17);
 
 	int32_t N=1000;
 	int32_t dim=100;
@@ -193,8 +196,7 @@ TEST(Statistics, sample_from_gaussian_dense2)
 	c=MatrixXd::Random(dim, dim)*0.5+MatrixXd::Constant(dim, dim, 1);
 	c=c*c.transpose()+MatrixXd::Identity(dim, dim);
 
-	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N,
-		true);
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, prng, N, true);
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
@@ -215,6 +217,7 @@ TEST(Statistics, sample_from_gaussian_dense2)
 // covariance matrix. Using precision_matrix instead
 TEST(Statistics, sample_from_gaussian_sparse1)
 {
+	std::mt19937_64 prng(17);
 
 	int32_t N=1000;
 	int32_t dim=100;
@@ -256,7 +259,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	mu=VectorXd::Constant(dim, 1, 5.0);
 
-	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N);
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, prng, N);
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
@@ -719,9 +722,10 @@ TEST(Statistics,log_det_general_test_4)
 
 TEST(Statistics, vector_mean_test)
 {
-	CMath::init_random(17);
+	std::mt19937_64 prng(17);
+
 	SGVector<float64_t> a(10);
-	a.random(-1024.0, 1024.0);
+	random::fill_array(a, -1024.0, 1024.0, prng);
 	floatmax_t sum_a=0;
 	for(int i=0; i<a.vlen; i++)
 		sum_a+=a[i];

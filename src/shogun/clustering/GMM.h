@@ -12,6 +12,7 @@
 #include <shogun/distributions/Distribution.h>
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/lib/common.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 #include <vector>
 
@@ -30,7 +31,7 @@ namespace shogun
  * The SMEM algorithm is described here:
  * http://mlg.eng.cam.ac.uk/zoubin/papers/uedanc.pdf
  */
-class CGMM : public CDistribution
+class CGMM : public RandomMixin<CDistribution>
 {
 	public:
 		/** default constructor */
