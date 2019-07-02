@@ -3,9 +3,6 @@
 
 #cmakedefine MACHINE "@MACHINE@"
 
-#cmakedefine SFMT_MEXP @SFMT_MEXP@
-#cmakedefine DSFMT_MEXP @DSFMT_MEXP@
-
 #cmakedefine HAVE_HDF5 1
 #cmakedefine HAVE_CURL 1
 #cmakedefine HAVE_DOXYGEN 1
@@ -97,10 +94,6 @@
 
 /* does the compiler support abi::__cxa_demangle */
 #cmakedefine HAVE_CXA_DEMANGLE 1
-
-/* random related defines */
-#cmakedefine HAVE_ARC4RANDOM 1
-#cmakedefine DEV_RANDOM "@DEV_RANDOM@"
 
 #ifdef __CLING__
 #pragma cling add_library_path(@SHOGUN_CLING_LIBRARY_DIR@)
