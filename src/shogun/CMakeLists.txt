@@ -488,22 +488,6 @@ SHOGUN_DEPENDENCIES(
   SCOPE PRIVATE
   CONFIG_FLAG HAVE_ARPREC)
 
-###### checks for random
-# PRNG settings
-SET(MEXP "19937" CACHE STRING "PRNG Mersenne exponent")
-SET(SFMT_MEXP ${MEXP})
-SET(DSFMT_MEXP ${MEXP})
-
-CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
-IF(NOT HAVE_ARC4RANDOM)
-    # assume that /dev/random is non-blocking if /dev/urandom does not exist
-    if(EXISTS /dev/urandom)
-      set(DEV_RANDOM "/dev/urandom" CACHE INTERNAL "" FORCE)
-    elseif( EXISTS /dev/random )
-      set(DEV_RANDOM "/dev/random" CACHE INTERNAL "" FORCE)
-    endif()
-ENDIF()
-
 ############################ HMM
 OPTION(USE_HMMDEBUG "HMM debug mode" OFF)
 OPTION(USE_HMMCACHE "HMM cache" ON)
