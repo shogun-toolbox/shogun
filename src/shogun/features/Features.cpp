@@ -51,12 +51,12 @@ void Features::init()
 {
 	set_default_mask(ParameterProperties::READONLY);
 
-	SG_ADD(&properties, "properties", "Feature properties");
-	SG_ADD(&cache_size, "cache_size", "Size of cache in MB");
+	declare(&properties, "properties", "Feature properties");
+	declare(&cache_size, "cache_size", "Size of cache in MB");
 
-	SG_ADD(&preproc, "preproc", "Array of preprocessors.");
+	declare(&preproc, "preproc", "Array of preprocessors.");
 
-	SG_ADD((std::shared_ptr<SGObject>*)&m_subset_stack, "subset_stack", "Stack of subsets");
+	declare((std::shared_ptr<SGObject>*)&m_subset_stack, "subset_stack", "Stack of subsets");
 
 	m_subset_stack=std::make_shared<SubsetStack>();
 

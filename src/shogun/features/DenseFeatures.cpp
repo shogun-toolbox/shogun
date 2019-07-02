@@ -595,9 +595,9 @@ template<class ST> void DenseFeatures<ST>::init()
 	set_generic<ST>();
 
 	/* not store number of vectors in subset */
-	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.");
-	SG_ADD(&num_features, "num_features", "Number of features.");
-	SG_ADD(&feature_matrix, "feature_matrix",
+	declare(&num_vectors, "num_vectors", "Number of vectors.");
+    declare(&num_features, "num_features", "Number of features.");
+    declare(&feature_matrix, "feature_matrix",
 			"Matrix of feature vectors / 1 vector per column.");
 }
 

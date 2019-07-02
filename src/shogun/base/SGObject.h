@@ -824,12 +824,13 @@ protected:
 		any_pprop.set_constrain_function(std::move(func));
 	}
 
-	template <ParameterProperties pprop, typename T, typename... Args>
+	template <ParameterProperties pprop = ParameterProperties::NONE, typename T, typename... Args>
 	void declare(
 			T* value, const std::string& name, const std::string& description,
 			Args&&... args)
 	{
-		auto any_pprop = AnyParameterProperties(description, pprop);
+	    auto mask = pprop | m_default_mask;
+		auto any_pprop = AnyParameterProperties(description, mask);
 		auto anyp = AnyParameter(make_any_ref(value), any_pprop);
 		if constexpr (static_cast<bool>(pprop & ParameterProperties::AUTO))
 			declare_auto_func<pprop>(anyp, std::forward<Args&&>(args)...);
