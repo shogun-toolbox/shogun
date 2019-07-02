@@ -13,20 +13,27 @@
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
+#include <shogun/mathematics/NormalDistribution.h>
 #include "../utils/Utils.h"
+
+#include <random>
 
 using namespace shogun;
 
 TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 {
+	int32_t seed = 17;
 	index_t n=20;
 	index_t dim=2;
 	char fname[] = "StreamingDenseFeatures_reading.XXXXXX";
 	generate_temp_filename(fname);
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
+
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
-		data.matrix[i] = sg_rand->std_normal_distrib();
+		data.matrix[i] = normal_dist(prng);
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
 	CCSVFile* saved_features = new CCSVFile(fname, 'w');
@@ -64,12 +71,16 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 
 TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 {
+	int32_t seed = 17;
 	index_t n=20;
 	index_t dim=2;
 
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
+
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
-		data.matrix[i] = sg_rand->std_normal_distrib();
+		data.matrix[i] = normal_dist(prng);
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
 	CStreamingDenseFeatures<float64_t>* feats = new CStreamingDenseFeatures<float64_t>(orig_feats);
@@ -96,12 +107,16 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 
 TEST(StreamingDenseFeaturesTest, reset_stream)
 {
+	int32_t seed = 17;
 	index_t n=20;
 	index_t dim=2;
+	
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
-		data.matrix[i]=sg_rand->std_normal_distrib();
+		data.matrix[i]=normal_dist(prng);
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
 	CStreamingDenseFeatures<float64_t>* feats=new CStreamingDenseFeatures<float64_t>(orig_feats);

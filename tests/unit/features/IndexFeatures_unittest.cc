@@ -30,6 +30,7 @@
 
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -56,13 +57,16 @@ TEST(IndexFeaturesTest,basic_create)
 TEST(IndexFeaturesTest,subset_copy)
 {
 	index_t vlen = 10;
+	int32_t seed = 17;
+	std::mt19937_64 prng(seed);
+
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
-	CMath::permute(index_vector);
+	random::shuffle(index_vector, prng);
 
 	SGVector<index_t> sub_idx(vlen/2);
 	sub_idx.range_fill();
-	CMath::permute(sub_idx);
+	random::shuffle(sub_idx, prng);
 
 	CIndexFeatures* index_features = new CIndexFeatures(index_vector);
 

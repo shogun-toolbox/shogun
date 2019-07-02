@@ -34,6 +34,7 @@
 
 #include <memory>
 #include <shogun/base/SGObject.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -62,7 +63,7 @@ class MaxTestPower;
  * call the CQuadraticTimeMMD::multikernel() method to get an instance of this
  * class.
  */
-class CMultiKernelQuadraticTimeMMD : public CSGObject
+class CMultiKernelQuadraticTimeMMD : public RandomMixin<CSGObject>
 {
 	friend class CQuadraticTimeMMD;
 	friend class internal::MaxMeasure;

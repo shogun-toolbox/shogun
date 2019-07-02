@@ -1,17 +1,18 @@
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
 
-void generate_random_ensemble_matrix(SGMatrix<float64_t>& em)
+void generate_random_ensemble_matrix(SGMatrix<float64_t>& em, std::mt19937_64& prng)
 {
 	/* generate random ensemble classification matrix */
 	for (index_t i = 0; i < em.num_cols; ++i)
 	{
 		float64_t* v = em.get_column_vector(i);
-		SGVector<float64_t>::random_vector(v, em.num_rows, 0.0, 50.0);
+		random::fill_array(v, v + em.num_rows, 0.0, 50.0, prng);
 	}
 }
 
@@ -19,11 +20,13 @@ TEST(MeanRule, combine_matrix)
 {
 	int32_t num_vectors = 20;
 	int32_t num_classifiers = 5;
+	std::mt19937_64 prng(32);
+
 	CMeanRule* mr = new CMeanRule();
 	SGMatrix<float64_t> ensemble_matrix(num_vectors, num_classifiers);
 	SGVector<float64_t> expected(num_vectors);
 
-	generate_random_ensemble_matrix(ensemble_matrix);
+	generate_random_ensemble_matrix(ensemble_matrix, prng);
 
 	/* calculate expected values */
 	for(index_t i = 0; i < ensemble_matrix.num_rows; i++)
@@ -46,9 +49,12 @@ TEST(MeanRule, combine_matrix)
 TEST(MeanRule, combine_vector)
 {
 	int32_t vector_size = 20;
+	std::mt19937_64 prng(32);
+
 	CMeanRule* mr = new CMeanRule();
 	SGVector<float64_t> test_labels(vector_size);
-	test_labels.random(0.0, 50.0);
+
+	random::fill_array(test_labels, 0.0, 50.0, prng);
 
 	float64_t expected = SGVector<float64_t>::sum(test_labels);
 	expected /= (float64_t)vector_size;

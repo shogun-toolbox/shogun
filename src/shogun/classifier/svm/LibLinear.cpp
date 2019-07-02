@@ -16,22 +16,25 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/optimization/liblinear/tron.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+
 
 using namespace shogun;
 
-CLibLinear::CLibLinear() : CLinearMachine()
+CLibLinear::CLibLinear() : RandomMixin<CLinearMachine>()
 {
 	init();
 }
 
-CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l) : CLinearMachine()
+CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l) : RandomMixin<CLinearMachine>()
 {
 	init();
 	set_liblinear_solver_type(l);
 }
 
 CLibLinear::CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-    : CLinearMachine()
+    : RandomMixin<CLinearMachine>()
 {
 	init();
 	set_C(C, C);
@@ -334,11 +337,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		PGmax_new = -CMath::INFTY;
 		PGmin_new = CMath::INFTY;
 
-		for (i = 0; i < active_size; i++)
-		{
-			int j = CMath::random(i, active_size - 1);
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, m_prng);
 
 		for (s = 0; s < active_size; s++)
 		{
@@ -547,11 +546,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		Gmax_new = 0;
 
-		for (j = 0; j < active_size; j++)
-		{
-			int i = CMath::random(j, active_size - 1);
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, m_prng);
 
 		for (s = 0; s < active_size; s++)
 		{
@@ -922,11 +917,7 @@ void CLibLinear::solve_l1r_lr(
 
 		Gmax_new = 0;
 
-		for (j = 0; j < active_size; j++)
-		{
-			int i = CMath::random(j, active_size - 1);
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, m_prng);
 
 		for (s = 0; s < active_size; s++)
 		{
@@ -1271,11 +1262,7 @@ void CLibLinear::solve_l2r_lr_dual(
 	auto pb = SG_PROGRESS(range(10));
 	while (iter < max_iter)
 	{
-		for (i = 0; i < l; i++)
-		{
-			int j = CMath::random(i, l - 1);
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+l, m_prng);
 		int newton_iter = 0;
 		double Gmax = 0;
 		for (s = 0; s < l; s++)

@@ -7,13 +7,19 @@
 #include "shogun/mathematics/Math.h"
 #include <benchmark/benchmark.h>
 #include "shogun/lib/SGMatrix.h"
+#include "shogun/mathematics/UniformIntDistribution.h"
 
+#include <random>
 
 namespace shogun
 {
 
 static SGMatrix<float64_t> createRandomData(const benchmark::State& state)
 {
+	std::random_device rd;
+	std::mt19937_64 prng(rd());
+	UniformIntDistribution<index_t> uniform_int_dist(0, 1);
+ 
 	index_t num_dim = state.range(0);
 	index_t num_vecs = state.range(0);
 
@@ -22,7 +28,7 @@ static SGMatrix<float64_t> createRandomData(const benchmark::State& state)
 	{
 		for (index_t j=0; j<num_dim; j++)
 		{
-			mat(j,i) = CMath::random(0,1) + 0.5;
+			mat(j,i) = uniform_int_dist(prng) + 0.5;
 		}
 	}
 	return mat;

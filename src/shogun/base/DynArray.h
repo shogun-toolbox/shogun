@@ -33,6 +33,9 @@ template <class T> class DynArray
 	friend class CCommUlongStringKernel;
 
 	public:
+		typedef RandomIterator<T> iterator;
+
+	public:
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
@@ -441,23 +444,17 @@ template <class T> class DynArray
 			current_num_elements=0;
 		}
 
-		/** randomizes the array (not thread safe!) */
-		void shuffle()
+#ifndef SWIG // SWIG should skip this part
+		iterator begin()
 		{
-			for (index_t i=0; i<=current_num_elements-1; ++i)
-				std::swap(
-					array[i], 
-					array[CMath::random(i, current_num_elements - 1)]);
+			return iterator(array);
 		}
 
-		/** randomizes the array with external random state */
-		void shuffle(CRandom * rand)
+		iterator end()
 		{
-			for (index_t i=0; i<=current_num_elements-1; ++i)
-				std::swap(
-					array[i], 
-					array[rand->random(i, current_num_elements - 1)]);
+			return iterator(array + current_num_elements);
 		}
+#endif
 
 		/** set array with a constant */
 		void set_const(const T& const_element)

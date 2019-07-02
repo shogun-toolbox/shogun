@@ -40,6 +40,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/lib/Time.h>
@@ -454,7 +455,8 @@ bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double min
 	return false;
 }
 
-void Solver_MCSVM_CS::solve()
+template <typename PRNG>
+void Solver_MCSVM_CS::solve(PRNG& prng)
 {
 	int i, m, s, k;
 	int iter = 0;
@@ -521,11 +523,7 @@ void Solver_MCSVM_CS::solve()
 	while (iter < max_iter)
 	{
 		double stopping = -CMath::INFTY;
-		for(i=0;i<active_size;i++)
-		{
-			int j = CMath::random(i, active_size-1);
-			CMath::swap(index[i], index[j]);
-		}
+		random::shuffle(index, index+active_size, prng);
 		for(s=0;s<active_size;s++)
 		{
 			i = index[s];
@@ -695,6 +693,8 @@ void Solver_MCSVM_CS::solve()
 
 	SG_FREE(tx);
 }
+
+template void Solver_MCSVM_CS::solve<std::mt19937_64>(std::mt19937_64& prng);
 
 //
 // Interface functions

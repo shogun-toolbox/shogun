@@ -16,6 +16,11 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace Eigen;
 
@@ -318,7 +323,8 @@ float64_t CStatistics::entropy(float64_t* p, int32_t len)
 	return (float64_t)e;
 }
 
-SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
+template <typename PRNG>
+SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N, PRNG& prng)
 {
 	REQUIRE(sample_size<N,
 			"sample size should be less than number of indices\n");
@@ -326,6 +332,7 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	int32_t i, rnd;
 	int32_t* permuted_idxs=SG_MALLOC(int32_t,sample_size);
 
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	// reservoir sampling
 	for (i=0; i<N; i++)
 		idxs[i]=i;
@@ -333,7 +340,7 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 		permuted_idxs[i]=idxs[i];
 	for (i=sample_size; i<N; i++)
 	{
-		rnd=CMath::random(1, i);
+		rnd=uniform_int_dist(prng, {1, i});
 		if (rnd<sample_size)
 			permuted_idxs[rnd]=idxs[i];
 	}
@@ -343,6 +350,8 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	CMath::qsort(result);
 	return result;
 }
+
+template SGVector<int32_t> CStatistics::sample_indices<std::mt19937_64>(int32_t sample_size, int32_t N, std::mt19937_64& prng);
 
 float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
 		float64_t std_deviation)
@@ -699,8 +708,9 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 	return retval;
 }
 
+template <typename PRNG>
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
-	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+	SGMatrix<float64_t> cov, PRNG& prng, int32_t N, bool precision_matrix)
 {
 	REQUIRE(cov.num_rows>0, "Number of covariance rows must be positive!\n");
 	REQUIRE(cov.num_cols>0,"Number of covariance cols must be positive!\n");
@@ -714,9 +724,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j )
-		for( int32_t i=0; i<dim; ++i )
-			S(i,j)=CMath::randn_double();
+	random::fill_array(S, NormalDistribution<float64_t>(), prng);
 
 	// the cholesky factorization c=L*U
 	MatrixXd U=c.llt().matrixU();
@@ -749,8 +757,12 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	return S;
 }
 
+template SGMatrix<float64_t> CStatistics::sample_from_gaussian<std::mt19937_64>(SGVector<float64_t> mean,
+	SGMatrix<float64_t> cov, std::mt19937_64& prng, int32_t N, bool precision_matrix);
+
+template <typename PRNG>
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
- SGSparseMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+ SGSparseMatrix<float64_t> cov, PRNG& prng, int32_t N, bool precision_matrix)
 {
 	REQUIRE(cov.num_vectors>0,
 		"CStatistics::sample_from_gaussian(): \
@@ -778,9 +790,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j )
-		for( int32_t i=0; i<dim; ++i )
-			S(i,j)=CMath::randn_double();
+	random::fill_array(S, NormalDistribution<float64_t>(), prng);
 
 	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 
@@ -815,6 +825,10 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	return S;
 }
+
+template SGMatrix<float64_t> CStatistics::sample_from_gaussian<std::mt19937_64>(SGVector<float64_t> mean,
+	SGSparseMatrix<float64_t> cov, std::mt19937_64& prng, int32_t N, bool precision_matrix);
+
 
 CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
     SGVector<float64_t> scores, SGVector<float64_t> labels, index_t maxiter,

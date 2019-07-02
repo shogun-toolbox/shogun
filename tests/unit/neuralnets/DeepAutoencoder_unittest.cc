@@ -39,19 +39,21 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
 TEST(DeepAutoencoder, pre_train)
 {
-	CMath::init_random(10);
-
+	int32_t seed = 10;
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
 
+	std::mt19937_64 prng(seed);
+	UniformRealDistribution<float64_t> uniform_real_dist(-1.0, 1.0);
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		data[i] = CMath::random(-1.0,1.0);
+		data[i] = uniform_real_dist(prng);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(num_features));
@@ -83,7 +85,7 @@ TEST(DeepAutoencoder, pre_train)
 
 TEST(DeepAutoencoder, convert_to_neural_network)
 {
-	CMath::init_random(100);
+	const int32_t seed = 100;
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(10));
@@ -96,9 +98,11 @@ TEST(DeepAutoencoder, convert_to_neural_network)
 
 	CNeuralNetwork* nn = ae.convert_to_neural_network();
 
+	std::mt19937_64 prng(seed);
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	SGMatrix<float64_t> x(10, 3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(0.0,1.0);
+		x[i] = uniform_real_dist(prng);
 
 	CDenseFeatures<float64_t> f(x);
 

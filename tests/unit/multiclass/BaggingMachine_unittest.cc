@@ -27,7 +27,6 @@ public:
 	SGVector<bool> ft;
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(1);
 		load_toy_data();
 	}
 
@@ -83,6 +82,7 @@ TEST_F(BaggingMachine, mock_train)
 
 	int32_t bag_size = 20;
 	int32_t num_bags = 10;
+	int32_t seed = 25;
 
 	NiceMock<MockCFeatures> features; features.ref();
 	NiceMock<MockCLabels> labels; labels.ref();
@@ -95,6 +95,7 @@ TEST_F(BaggingMachine, mock_train)
 	bm->set_bag_size(bag_size);
 	bm->set_num_bags(num_bags);
 	bm->set_combination_rule(mv);
+	bm->put("seed", seed);
 
 	ON_CALL(mm, train_machine(_))
 		.WillByDefault(Return(true));
@@ -124,6 +125,8 @@ TEST_F(BaggingMachine, mock_train)
 
 TEST_F(BaggingMachine, classify_CART)
 {
+	int32_t seed = 555;
+
 	CCARTree* cart=new CCARTree();
 	CMajorityVote* cv=new CMajorityVote();
 	cart->set_feature_types(ft);
@@ -135,6 +138,7 @@ TEST_F(BaggingMachine, classify_CART)
 	c->set_bag_size(14);
 	c->set_num_bags(10);
 	c->set_combination_rule(cv);
+	c->put("seed", seed);
 	c->train(features_train);
 
 	CMulticlassLabels* result = c->apply_multiclass(features_test);
@@ -152,18 +156,21 @@ TEST_F(BaggingMachine, classify_CART)
 	SG_UNREF(result);
 }
 
+#include <iostream>
 TEST_F(BaggingMachine, output_binary)
 {
-	CCARTree* cart = new CCARTree();
-	CMeanRule* cv = new CMeanRule();
+	int32_t seed = -1051963731;
 
+	auto cart = some<CCARTree>();
+	auto cv = some<CMeanRule>();
 	cart->set_feature_types(ft);
 	auto c = some<CBaggingMachine>(features_train, labels_train);
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);
-	c->set_combination_rule(cv);
+	c->set_combination_rule(cv.get());
+	c->put("seed", seed);
 	c->train(features_train);
 
 	CBinaryLabels* result = c->apply_binary(features_test);
@@ -187,6 +194,7 @@ TEST_F(BaggingMachine, output_binary)
 
 TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
 {
+	int32_t seed = 24;
 
 	auto cart = new CCARTree();
 	auto cv = new CMajorityVote();
@@ -197,6 +205,7 @@ TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
 	c->set_bag_size(14);
 	c->set_num_bags(10);
 	c->set_combination_rule(cv);
+	c->put("seed", seed);
 	c->train(features_train);
 
 	CMulticlassLabels* result = c->apply_multiclass(features_test);

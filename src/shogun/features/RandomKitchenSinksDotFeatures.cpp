@@ -14,7 +14,7 @@ namespace shogun
 class CRKSFunctions;
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures()
-	: CDotFeatures()
+	: RandomMixin<CDotFeatures>()
 {
 	init(NULL, 0);
 }

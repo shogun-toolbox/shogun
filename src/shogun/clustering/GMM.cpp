@@ -17,18 +17,20 @@
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/multiclass/KNN.h>
 #include <vector>
 
 using namespace shogun;
 using namespace std;
 
-CGMM::CGMM() : CDistribution(), m_components(),	m_coefficients()
+CGMM::CGMM() : RandomMixin<CDistribution>(), m_components(),	m_coefficients()
 {
 	register_params();
 }
 
-CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_coefficients()
+CGMM::CGMM(int32_t n, ECovType cov_type) : RandomMixin<CDistribution>(), m_components(), m_coefficients()
 {
 	m_coefficients = SGVector<float64_t>(n);
 	m_components = vector<CGaussian*>(n);
@@ -43,7 +45,7 @@ CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_co
 	register_params();
 }
 
-CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy) : CDistribution()
+CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy) : RandomMixin<CDistribution>()
 {
 	ASSERT(int32_t(components.size())==coefficients.vlen)
 
@@ -133,6 +135,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	if (m_components[0]->get_mean().vector==NULL)
 	{
 		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
+		seed(init_k_means);
 		init_k_means->train(dotdata);
 		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
@@ -311,6 +314,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				{
 					candidates_checked++;
 					CGMM* candidate=new CGMM(m_components, m_coefficients, true);
+					seed(candidate);
 					candidate->train(features);
 					candidate->partial_em(split_ind[i], merge_ind[j]/int32_t(m_components.size()), merge_ind[j]%int32_t(m_components.size()), min_cov, max_em_iter, min_change);
 					float64_t cand_likelihood=candidate->train_em(min_cov, max_em_iter, min_change);
@@ -421,10 +425,11 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	linalg::add(components[1]->get_mean(), components[2]->get_mean(), mean, alpha1, alpha2);
 	components[1]->set_mean(mean);
 
+	NormalDistribution<float64_t> normal_dist;
 	for (int32_t i=0; i<dim_n; i++)
 	{
-		components[2]->get_mean().vector[i]=components[0]->get_mean().vector[i]+CMath::randn_double()*noise_mag;
-		components[0]->get_mean().vector[i]=components[0]->get_mean().vector[i]+CMath::randn_double()*noise_mag;
+		components[2]->get_mean().vector[i]=components[0]->get_mean().vector[i]+normal_dist(m_prng)*noise_mag;
+		components[0]->get_mean().vector[i]=components[0]->get_mean().vector[i]+normal_dist(m_prng)*noise_mag;
 	}
 
 	coefficients.vector[1]=coefficients.vector[1]+coefficients.vector[2];
@@ -496,6 +501,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	}
 
 	CGMM* partial_candidate=new CGMM(components, coefficients);
+	seed(partial_candidate);
 	partial_candidate->train(features);
 
 	float64_t log_likelihood_prev=0;
@@ -803,7 +809,9 @@ SGVector<float64_t> CGMM::sample()
 {
 	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
 			"must be positive\n", m_components.size());
-	float64_t rand_num = CMath::random(0.0, 1.0);
+	
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
+	float64_t rand_num = uniform_real_dist(m_prng);
 	float64_t cum_sum=0;
 	for (auto i: range(m_coefficients.vlen))
 	{

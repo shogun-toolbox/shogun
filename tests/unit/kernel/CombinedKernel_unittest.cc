@@ -12,6 +12,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
@@ -49,8 +50,9 @@ TEST(CombinedKernelTest,test_array_operations)
 
 TEST(CombinedKernelTest, test_subset_mixed)
 {
-
 	int n_runs = 10;
+	int32_t seed = 17;
+	std::mt19937_64 prng(seed);
 
 	auto gen = new CMeanShiftDataGenerator(0, 2);
 	auto feats = wrap(gen->get_streamed_features(n_runs));
@@ -82,7 +84,7 @@ TEST(CombinedKernelTest, test_subset_mixed)
 
 	for (index_t i = 0; i < n_runs; ++i)
 	{
-		CMath::permute(inds);
+		random::shuffle(inds, prng);
 
 		feats_combined->add_subset(inds);
 		combined->init(feats_combined, feats_combined);
@@ -119,8 +121,9 @@ TEST(CombinedKernelTest, test_subset_mixed)
 
 TEST(CombinedKernelTest, test_subset_combined_only)
 {
-
 	int n_runs = 10;
+	int32_t seed = 17;
+	std::mt19937_64 prng(seed);
 
 	auto gen = new CMeanShiftDataGenerator(0, 2);
 	CFeatures* feats = gen->get_streamed_features(n_runs);
@@ -141,7 +144,7 @@ TEST(CombinedKernelTest, test_subset_combined_only)
 
 	for (index_t i = 0; i < n_runs; ++i)
 	{
-		CMath::permute(inds);
+		random::shuffle(inds, prng);
 
 		feats->add_subset(inds);
 		combined->init(feats, feats);

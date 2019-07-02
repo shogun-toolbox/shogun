@@ -26,6 +26,9 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/util/converters.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -306,6 +309,7 @@ TEST(SGObject,ref_unref_simple)
 TEST(SGObject,equals_complex_equal)
 {
 	/* create some easy regression data: 1d noisy sine wave */
+	int32_t seed = 12;
 	index_t n=100;
 	float64_t x_range=6;
 
@@ -313,9 +317,11 @@ TEST(SGObject,equals_complex_equal)
 	SGMatrix<float64_t> X_test(1, n);
 	SGVector<float64_t> Y(n);
 
+	std::mt19937_64 prng(seed);
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	for (index_t  i=0; i<n; ++i)
 	{
-		X[i]=CMath::random(0.0, x_range);
+		X[i]=uniform_real_dist(prng, {0.0, x_range});
 		X_test[i]=(float64_t)i / n*x_range;
 		Y[i] = std::sin(X[i]);
 	}

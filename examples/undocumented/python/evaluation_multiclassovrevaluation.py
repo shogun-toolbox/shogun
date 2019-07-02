@@ -10,10 +10,9 @@ def evaluation_multiclassovrevaluation(train_fname=traindat, label_fname=label_t
 	from shogun import MulticlassLabels, Math
 	import shogun as sg
 
-	Math.init_random(1)
 	ground_truth_labels = MulticlassLabels(sg.csv_file(label_fname))
 	svm = sg.machine("MulticlassLibLinear", C=1.0,
-					labels=ground_truth_labels)
+					labels=ground_truth_labels, seed=1)
 	svm.parallel.set_num_threads(1)
 	svm.train(sg.features(sg.csv_file(train_fname)))
 	predicted_labels = svm.apply()

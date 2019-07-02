@@ -9,6 +9,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/preprocessor/StringPreprocessor.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1439,8 +1440,10 @@ template<class ST> void CStringFeatures<ST>::get_histogram(float64_t** hist, int
 	*cols=slen;
 }
 
-template<class ST> void CStringFeatures<ST>::create_random(float64_t* hist, int32_t rows, int32_t cols, int32_t num_vec)
+template<class ST> 
+void CStringFeatures<ST>::create_random(float64_t* hist, int32_t rows, int32_t cols, int32_t num_vec, int32_t seed)
 {
+	std::mt19937_64 prng(seed);
 	ASSERT(rows == get_num_symbols())
 	cleanup();
 	float64_t* randoms=SG_MALLOC(float64_t, cols);
@@ -1451,7 +1454,7 @@ template<class ST> void CStringFeatures<ST>::create_random(float64_t* hist, int3
 		sf[i].string=SG_MALLOC(ST, cols);
 		sf[i].slen=cols;
 
-		SGVector<float64_t>::random_vector(randoms, cols, 0.0, 1.0);
+		random::fill_array(randoms, randoms + cols, 0.0, 1.0, prng);
 
 		for (int32_t j=0; j<cols; j++)
 		{

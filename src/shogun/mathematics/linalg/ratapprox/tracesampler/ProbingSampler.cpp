@@ -16,9 +16,9 @@
 #include <shogun/lib/SGString.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace Eigen;
 using namespace ColPack;
@@ -26,7 +26,7 @@ using namespace ColPack;
 namespace shogun
 {
 
-CProbingSampler::CProbingSampler() : CTraceSampler()
+CProbingSampler::CProbingSampler() : RandomMixin<CTraceSampler>()
 {
 	init();
 }
@@ -34,7 +34,7 @@ CProbingSampler::CProbingSampler() : CTraceSampler()
 CProbingSampler::CProbingSampler(
 	CSparseMatrixOperator<float64_t>* matrix_operator, int64_t power,
 	EOrderingVariant ordering, EColoringVariant coloring)
-	: CTraceSampler(matrix_operator->get_dimension())
+	: RandomMixin<CTraceSampler>(matrix_operator->get_dimension())
 {
 	init();
 
@@ -193,11 +193,12 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 	SGVector<float64_t> s(m_dimension);
 	s.set_const(0.0);
 
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<m_dimension; ++i)
 	{
 		if (m_coloring_vector[i]==idx)
 		{
-			float64_t x=sg_rand->std_normal_distrib();
+			float64_t x=normal_dist(m_prng);
 			s[i]=(x>0)-(x<0);
 		}
 	}

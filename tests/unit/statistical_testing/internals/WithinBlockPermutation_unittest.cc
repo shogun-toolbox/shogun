@@ -44,15 +44,21 @@
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
+#include <shogun/mathematics/RandomNamespace.h>
+
+#include <functional>
 
 using namespace shogun;
 using namespace Eigen;
 
 TEST(WithinBlockPermutation, biased_full)
 {
+	const int32_t seed = 13860;
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
+
+	std::mt19937_64 prng(seed);
 
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 
@@ -78,8 +84,8 @@ TEST(WithinBlockPermutation, biased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_BIASED_FULL);
-	sg_rand->set_seed(12345);
+	using namespace std::placeholders;
+    operation compute=std::bind(shogun::internal::mmd::WithinBlockPermutation(n, m, ST_BIASED_FULL), _1, prng);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
@@ -94,8 +100,7 @@ TEST(WithinBlockPermutation, biased_full)
 	PermutationMatrix<Dynamic, Dynamic> perm(mat.num_rows);
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-	sg_rand->set_seed(12345);
-	CMath::permute(perminds);
+	random::shuffle(perminds, prng);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 	auto result_2=compute(permuted_km);
@@ -104,8 +109,7 @@ TEST(WithinBlockPermutation, biased_full)
 	// shuffled samples, then compute a biased-full statistic on this matrix
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
-	sg_rand->set_seed(12345);
-	CMath::permute(inds);
+	random::shuffle(inds, prng);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
 	mat=kernel->get_kernel_matrix<float32_t>();
@@ -119,9 +123,12 @@ TEST(WithinBlockPermutation, biased_full)
 
 TEST(WithinBlockPermutation, unbiased_full)
 {
+	const int32_t seed = 65500;
 	const index_t dim=2;
 	const index_t n=13;
 	const index_t m=7;
+
+	std::mt19937_64 prng(seed);
 
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 
@@ -147,8 +154,8 @@ TEST(WithinBlockPermutation, unbiased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_UNBIASED_FULL);
-	sg_rand->set_seed(12345);
+    using namespace std::placeholders;
+    operation compute=std::bind(shogun::internal::mmd::WithinBlockPermutation(n, m, ST_UNBIASED_FULL), _1, prng);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
@@ -163,8 +170,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	PermutationMatrix<Dynamic, Dynamic> perm(mat.num_rows);
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-	sg_rand->set_seed(12345);
-	CMath::permute(perminds);
+	random::shuffle(perminds, prng);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 	auto result_2=compute(permuted_km);
@@ -173,8 +179,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	// shuffled samples, then compute unbiased-full statistic on this matrix
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
-	sg_rand->set_seed(12345);
-	CMath::permute(inds);
+	random::shuffle(inds, prng);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
 	mat=kernel->get_kernel_matrix<float32_t>();
@@ -188,8 +193,11 @@ TEST(WithinBlockPermutation, unbiased_full)
 
 TEST(WithinBlockPermutation, unbiased_incomplete)
 {
+	const int32_t seed = 323068;
 	const index_t dim=2;
 	const index_t n=10;
+
+	std::mt19937_64 prng(seed);
 
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 
@@ -215,8 +223,8 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, ST_UNBIASED_INCOMPLETE);
-	sg_rand->set_seed(12345);
+    using namespace std::placeholders;
+    operation compute=std::bind(shogun::internal::mmd::WithinBlockPermutation(n, n, ST_UNBIASED_INCOMPLETE), _1, prng);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
@@ -231,8 +239,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	PermutationMatrix<Dynamic, Dynamic> perm(mat.num_rows);
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-	sg_rand->set_seed(12345);
-	CMath::permute(perminds);
+	random::shuffle(perminds, prng);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 	auto result_2=compute(permuted_km);
@@ -241,8 +248,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	// shuffled samples, then compute uniased-incomplete statistic on this matrix
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
-	sg_rand->set_seed(12345);
-	CMath::permute(inds);
+	random::shuffle(inds, prng);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
 	mat=kernel->get_kernel_matrix<float32_t>();

@@ -33,6 +33,7 @@
 #define _KRRNYSTROM_H__
 
 #include <shogun/regression/KernelRidgeRegression.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun {
 
@@ -61,7 +62,7 @@ namespace shogun {
  * subsampled uniformly. To implement another sampling method one has to
  * override the method 'subsample_indices'.
  */
-class CKRRNystrom : public CKernelRidgeRegression
+class CKRRNystrom : public RandomMixin<CKernelRidgeRegression>
 {
 public:
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);

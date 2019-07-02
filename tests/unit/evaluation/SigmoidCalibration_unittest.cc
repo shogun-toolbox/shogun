@@ -10,7 +10,6 @@ using namespace shogun;
 
 TEST(SigmoidCalibrationTest, binary_calibration)
 {
-	CMath::init_random(8);
 	SGVector<float64_t> preds(10), labs(10);
 
 	preds.vector[0] = 0.6;

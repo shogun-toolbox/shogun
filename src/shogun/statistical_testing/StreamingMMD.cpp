@@ -50,12 +50,14 @@
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <functional>
+
 using namespace shogun;
 using namespace internal;
 
 struct CStreamingMMD::Self
 {
-	Self(CStreamingMMD& cmmd);
+	Self(CStreamingMMD& cmmd, CStreamingMMD::prng_type& prng);
 
 	void create_statistic_job();
 	void create_variance_job();
@@ -81,14 +83,17 @@ struct CStreamingMMD::Self
 	std::function<float32_t(const SGMatrix<float32_t>&)> statistic_job;
 	std::function<float32_t(const SGMatrix<float32_t>&)> permutation_job;
 	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
+
+	CStreamingMMD::prng_type& prng;
 };
 
-CStreamingMMD::Self::Self(CStreamingMMD& cmmd) : owner(cmmd),
+CStreamingMMD::Self::Self(CStreamingMMD& cmmd, CStreamingMMD::prng_type& _prng) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
 	statistic_type(ST_UNBIASED_FULL),
 	variance_estimation_method(VEM_DIRECT),
 	null_approximation_method(NAM_MMD1_GAUSSIAN),
-	statistic_job(nullptr), variance_job(nullptr)
+	statistic_job(nullptr), variance_job(nullptr),
+	prng(_prng)
 {
 }
 
@@ -114,7 +119,9 @@ void CStreamingMMD::Self::create_statistic_job()
 	mmd.m_stype=statistic_type;
 
 	statistic_job=mmd;
-	permutation_job=mmd::WithinBlockPermutation(Bx, By, statistic_type);
+
+	using namespace std::placeholders;
+	permutation_job=std::bind(mmd::WithinBlockPermutation(Bx, By, statistic_type), _1, prng);
 }
 
 void CStreamingMMD::Self::create_variance_job()
@@ -386,7 +393,7 @@ CStreamingMMD::CStreamingMMD() : CMMD()
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::initParallel();
 #endif
-	self=std::unique_ptr<Self>(new Self(*this));
+	self=std::unique_ptr<Self>(new Self(*this, m_prng));
 }
 
 CStreamingMMD::~CStreamingMMD()

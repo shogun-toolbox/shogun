@@ -5,10 +5,11 @@
  */
 
 #include <shogun/structure/FactorGraphDataGenerator.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
-CFactorGraphDataGenerator::CFactorGraphDataGenerator(): CSGObject()
+CFactorGraphDataGenerator::CFactorGraphDataGenerator(): RandomMixin<CSGObject>()
 {}
 
 CFactorGraph* CFactorGraphDataGenerator::simple_chain_graph()
@@ -100,8 +101,6 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 
 CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N)
 {
-	CMath::init_random(17);
-
 	// ftype
 	SGVector<int32_t> card(2);
 	card[0] = 2;
@@ -125,12 +124,13 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 	SG_REF(fg);
 
 	// Add factors
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (int32_t y = 0; y < N; ++y)
 		for (int32_t x = 0; x < N; ++x)
 		{
 			SGVector<float64_t> data(2);
-			data[0] = CMath::random(0.0, 1.0);
-			data[1] = CMath::random(0.0, 1.0);
+			data[0] = uniform_real_dist(m_prng);
+			data[1] = uniform_real_dist(m_prng);
 
 			SGVector<int32_t> var_index(1);
 			var_index[0] = y * N + x;
@@ -146,10 +146,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = CMath::random(0.0, 1.0);//E(0,0)->A
-				float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
-				float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
-				float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
+				float64_t A = uniform_real_dist(m_prng);//E(0,0)->A
+				float64_t C = uniform_real_dist(m_prng);//E(1,0)->C
+				float64_t B = uniform_real_dist(m_prng);//E(0,1)->B
+				float64_t D = uniform_real_dist(m_prng);//E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -169,10 +169,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = CMath::random(0.0, 1.0);//E(0,0)->A
-				float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
-				float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
-				float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
+				float64_t A = uniform_real_dist(m_prng);//E(0,0)->A
+				float64_t C = uniform_real_dist(m_prng);//E(1,0)->C
+				float64_t B = uniform_real_dist(m_prng);//E(0,1)->B
+				float64_t D = uniform_real_dist(m_prng);//E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -351,7 +351,7 @@ void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_fea
 		// generate feature vector
 		SGVector<int32_t> random_indices(len_feat);
 		random_indices.range_fill();
-		CMath::permute(random_indices);
+		random::shuffle(random_indices, m_prng);
 		SGVector<float64_t> v_feat(len_feat);
 		v_feat.zero();
 
@@ -490,7 +490,6 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	SGMatrix<float64_t> feats_train;
 
 	// Generate random data
-	sg_rand->set_seed(10); // fix the random seed
 	generate_data(4, 12, 8, feats_train, labels_train);
 
 	int32_t num_sample_train  = labels_train.num_cols;

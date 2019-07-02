@@ -13,24 +13,17 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 						double eps, int itermax)
 {
 	int N = C.dims[0];
+	ASSERT(V0.num_rows == N && V0.num_cols == N);
+
+	auto V = V0.clone();
+	return diagonalize_impl(C, V, eps, itermax);
+}
+
+SGMatrix<float64_t> CQDiag::diagonalize_impl(SGNDArray<float64_t>& C, SGMatrix<float64_t>& V,
+						double eps, int itermax)
+{
+	int N = C.dims[0];
 	int T = C.dims[2];
-
-	SGMatrix<float64_t> V;
-	if (V0.num_rows == N && V0.num_cols == N)
-	{
-		V = V0.clone();
-	}
-	else
-	{
-		V = SGMatrix<float64_t>(N,N);
-
-		for (int i = 0; i < N; i++)
-		{
-			for (int j = 0; j < N; j++)
-				V(i,j) = CMath::randn_double();
-		}
-	}
-
 	std::vector<float64_t> p(T,1.0/T);
 
 	MatrixXd C0 = MatrixXd::Identity(N,N);

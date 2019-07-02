@@ -10,7 +10,12 @@
 #include <numeric>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/lib/View.h>
+
+#include <random>
 
 namespace shogun
 {
@@ -36,7 +41,7 @@ TEST(DenseFeaturesTest,create_merged_copy)
 {
 	/* create two matrices, feature objects for them, call create_merged_copy,
 	 * and check if it worked */
-
+	int32_t seed = 10;
 	index_t n_1=3;
 	index_t n_2=4;
 	index_t dim=2;
@@ -46,10 +51,11 @@ TEST(DenseFeaturesTest,create_merged_copy)
 		data_1.matrix[i]=i;
 
 	//data_1.display_matrix("data_1");
-
+	std::mt19937_64 prng(seed);
+	NormalDistribution<float64_t> normal_dist;
 	SGMatrix<float64_t> data_2(dim,n_2);
 	for (index_t i=0; i<dim*n_2; ++i)
-		data_2.matrix[i]=CMath::randn_double();
+		data_2.matrix[i]=normal_dist(prng);
 
 	//data_2.display_matrix("data_2");
 
@@ -80,6 +86,7 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 	const index_t n_1=10;
 	const index_t n_2=15;
 	const index_t dim=2;
+	std::mt19937_64 prng(57);
 
 	SGMatrix<float64_t> data_1(dim, n_1);
 	std::iota(data_1.matrix, data_1.matrix + data_1.size(), 1);
@@ -91,12 +98,12 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 	auto features_2=some<CDenseFeatures<float64_t>>(data_2);
 
 	SGVector<index_t> subset_1(n_1/2);
-	subset_1.random(0, n_1-1);
+	random::fill_array(subset_1, 0, n_1-1, prng);
 	features_1->add_subset(subset_1);
 	auto active_data_1=features_1->get_feature_matrix();
 
 	SGVector<index_t> subset_2(n_2/3);
-	subset_2.random(0, n_2-1);
+	random::fill_array(subset_2, 0, n_2-1, prng);
 	features_2->add_subset(subset_2);
 	auto active_data_2=features_2->get_feature_matrix();
 
@@ -122,6 +129,7 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 
 TEST(DenseFeaturesTest, copy_dimension_subset)
 {
+	int32_t seed = 12;
 	index_t dim=5;
 	index_t n=10;
 
@@ -132,8 +140,10 @@ TEST(DenseFeaturesTest, copy_dimension_subset)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 
 	SGVector<index_t> dims(dim/2);
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i]=CMath::random(0, dim-1);
+		dims[i]=uniform_int_dist(prng, {0, dim-1});
 
 	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
 		features->copy_dimension_subset(dims);
@@ -152,6 +162,7 @@ TEST(DenseFeaturesTest, copy_dimension_subset)
 
 TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
 {
+	int32_t seed = 12;
 	index_t dim=5;
 	index_t n=10;
 
@@ -161,15 +172,17 @@ TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	SGVector<index_t> inds(n/2);
 	for (index_t i=0; i<inds.vlen; ++i)
-		inds[i]=CMath::random(0, n-1);
+		inds[i]=uniform_int_dist(prng, {0, n-1});
 
 	features->add_subset(inds);
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i]=CMath::random(0, dim-1);
+		dims[i]=uniform_int_dist(prng, {0, dim-1});
 
 	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
 		features->copy_dimension_subset(dims);
@@ -189,11 +202,12 @@ TEST(DenseFeaturesTest, shallow_copy_subset_data)
 {
 	index_t dim=5;
 	index_t n=10;
+	std::mt19937_64 prng(57);
 
 	SGMatrix<float64_t> data(dim, n);
 	std::iota(data.data(), data.data()+data.size(), 1);
 	SGVector<index_t> inds(n/2);
-	inds.random(0, n-1);
+	random::fill_array(inds, 0, n-1, prng);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	features->add_subset(inds);
@@ -217,11 +231,12 @@ TEST(DenseFeaturesTest, copy_feature_matrix)
 {
 	index_t dim=5;
 	index_t n=10;
+	std::mt19937_64 prng(57);
 
 	SGMatrix<float64_t> data(dim, n);
 	std::iota(data.data(), data.data()+data.size(), 1);
 	SGVector<index_t> inds(n/2);
-	inds.random(0, n-1);
+	random::fill_array(inds, 0, n-1, prng);
 
 	auto features=some<CDenseFeaturesMock>(data);
 	features->add_subset(inds);

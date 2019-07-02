@@ -26,11 +26,13 @@
 #include <shogun/features/FactorGraphFeatures.h>
 #include <shogun/labels/FactorGraphLabels.h>
 
+#include <shogun/mathematics/RandomMixin.h>
+
 namespace shogun
 {
 /** @brief Class CFactorGraphDataGenerator Create factor graph data for  multiple unit tests
  */
-class CFactorGraphDataGenerator: public CSGObject
+class CFactorGraphDataGenerator: public RandomMixin<CSGObject>
 {
 public:
 	/** Constructor */

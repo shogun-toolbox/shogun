@@ -55,7 +55,7 @@ using namespace internal;
 
 struct CKernelSelectionStrategy::Self
 {
-	Self();
+	Self(CKernelSelectionStrategy::prng_type& _prng);
 
 	KernelManager kernel_mgr;
 	std::unique_ptr<KernelSelection> policy;
@@ -73,6 +73,8 @@ struct CKernelSelectionStrategy::Self
 	const static index_t default_num_runs;
 	const static index_t default_num_folds;
 	const static float64_t default_alpha;
+
+	CKernelSelectionStrategy::prng_type& prng;
 };
 
 const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=KSM_AUTO;
@@ -81,8 +83,8 @@ const index_t CKernelSelectionStrategy::Self::default_num_runs=10;
 const index_t CKernelSelectionStrategy::Self::default_num_folds=3;
 const float64_t CKernelSelectionStrategy::Self::default_alpha=0.05;
 
-CKernelSelectionStrategy::Self::Self() : policy(nullptr), method(default_method),
-	weighted(default_weighted), num_runs(default_num_runs), num_folds(default_num_folds), alpha(default_alpha)
+CKernelSelectionStrategy::Self::Self(CKernelSelectionStrategy::prng_type& _prng) : policy(nullptr), method(default_method),
+	weighted(default_weighted), num_runs(default_num_runs), num_folds(default_num_folds), alpha(default_alpha), prng(_prng)
 {
 }
 
@@ -99,8 +101,9 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	case KSM_CROSS_VALIDATION:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!\n");
-		policy=std::unique_ptr<MaxCrossValidation>(new MaxCrossValidation(kernel_mgr, estimator,
-			num_runs, num_folds, alpha));
+		using prng_type = CKernelSelectionStrategy::prng_type;
+		policy=std::make_unique<MaxCrossValidation<prng_type>>(kernel_mgr, estimator,
+			num_runs, num_folds, alpha, prng);
 	}
 	break;
 	case KSM_MAXIMIZE_MMD:
@@ -167,7 +170,7 @@ CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method
 
 void CKernelSelectionStrategy::init()
 {
-	self=std::unique_ptr<Self>(new Self());
+	self=std::unique_ptr<Self>(new Self(m_prng));
 }
 
 CKernelSelectionStrategy::~CKernelSelectionStrategy()

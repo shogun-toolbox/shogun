@@ -42,13 +42,14 @@ using namespace shogun;
 class GaussianCheckerboard
 {
 public:
+	template <typename PRNG>
 	GaussianCheckerboard(
 	    const int32_t num_samples, const int32_t num_labels,
-	    const int32_t num_dim)
+	    const int32_t num_dim, PRNG& prng)
 	{
 		ASSERT(num_labels > 1)
 		SGMatrix<float64_t> data = CDataGenerator::generate_gaussians(
-		    num_samples, num_labels, num_dim);
+		    num_samples, num_labels, num_dim, prng);
 		CDenseFeatures<float64_t> features(data);
 
 		set_size = data.num_cols / 2;

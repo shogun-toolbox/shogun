@@ -38,25 +38,33 @@
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/NormalDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
-void get_data(SGMatrix<float64_t>& mat, SGVector<float64_t>& vec)
+template <typename PRNG>
+void get_data(SGMatrix<float64_t>& mat, SGVector<float64_t>& vec, PRNG& prng)
 {
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = normal_dist(prng);
 
 	for (index_t i = 0; i < vec.size(); ++i)
-		vec[i] = CMath::randn_double();
+		vec[i] = normal_dist(prng);
 }
 
 TEST(DotIterator, dot)
 {
+	const int32_t seed = 100;
 	const index_t n_rows = 6, n_cols = 8;
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	SGVector<float64_t> vec(n_rows);
-	get_data(mat, vec);
+
+	std::mt19937_64 prng(seed);
+	get_data(mat, vec, prng);
 
 	auto feats = some<CDenseFeatures<float64_t>>(mat);
 
@@ -72,11 +80,14 @@ TEST(DotIterator, dot)
 
 TEST(DotIterator, add)
 {
+	const int32_t seed = 100;
 	const index_t n_rows = 6, n_cols = 8;
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	SGVector<float64_t> alphas(n_cols);
-	get_data(mat, alphas);
+
+	std::mt19937_64 prng(seed);
+	get_data(mat, alphas, prng);
 
 	auto vec = SGVector<float64_t>(mat.num_rows);
 	auto res = SGVector<float64_t>(mat.num_rows);

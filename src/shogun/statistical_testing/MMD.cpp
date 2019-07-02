@@ -116,20 +116,26 @@ struct CMMD::Self
 		num_null_samples = DEFAULT_NUM_NULL_SAMPLES;
 		stype = DEFAULT_STYPE;
 		null_approximation_method = DEFAULT_NULL_APPROXIMATION_METHOD;
-		strategy=unique_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy());
+		strategy = new CKernelSelectionStrategy();
+		SG_REF(strategy);
+	}
+
+	~Self()
+	{
+		SG_UNREF(strategy);
 	}
 
 	index_t num_null_samples;
 	EStatisticType stype;
 	ENullApproximationMethod null_approximation_method;
-	std::unique_ptr<CKernelSelectionStrategy> strategy;
+	CKernelSelectionStrategy* strategy;
 
 	static constexpr index_t DEFAULT_NUM_NULL_SAMPLES = 250;
 	static constexpr EStatisticType DEFAULT_STYPE = ST_UNBIASED_FULL;
 	static constexpr ENullApproximationMethod DEFAULT_NULL_APPROXIMATION_METHOD = NAM_PERMUTATION;
 };
 
-CMMD::CMMD() : CTwoSampleTest()
+CMMD::CMMD() : RandomMixin<CTwoSampleTest>()
 {
 	init();
 }
@@ -140,6 +146,7 @@ void CMMD::init()
 	Eigen::initParallel();
 #endif
 	self=unique_ptr<Self>(new Self());
+	watch_param("strategy", &(self->strategy));
 }
 
 CMMD::~CMMD()
@@ -164,7 +171,7 @@ void CMMD::set_kernel_selection_strategy(machine_int_t method, index_t num_runs,
 
 CKernelSelectionStrategy const * CMMD::get_kernel_selection_strategy() const
 {
-	return self->strategy.get();
+	return self->strategy;
 }
 
 void CMMD::add_kernel(CKernel* kernel)

@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -22,7 +23,7 @@ class CLabels;
  * the label ratio of the specified labels. Do not use for regression since it
  * may be impossible to distribute nice in that case
  */
-class CStratifiedCrossValidationSplitting: public CSplittingStrategy
+class CStratifiedCrossValidationSplitting: public RandomMixin<CSplittingStrategy>
 {
 public:
 	/** constructor */
@@ -43,9 +44,6 @@ public:
 
 	/** implementation of the stratified cross-validation splitting strategy */
 	virtual void build_subsets();
-
-	/** custom rng if using cross validation across different threads */
-	CRandom * m_rng;
 
 protected:
 	/* check for "stupid" combinations of label numbers and num_subsets.

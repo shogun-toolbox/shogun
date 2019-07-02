@@ -14,17 +14,20 @@
 #include <shogun/features/DataGenerator.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 
 #ifdef HAVE_LAPACK
 TEST(IsomapTest,DISABLED_distance_preserving_max_k)
 {
+	std::mt19937_64 prng(24);
+
 	const index_t n_samples = 5;
 	const index_t n_gaussians = 5;
 	const index_t n_dimensions = 5;
 	CDenseFeatures<float64_t>* high_dimensional_features =
-		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions));
+		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions, prng));
 
 	CDistance* euclidean_distance =
 		new CEuclideanDistance(high_dimensional_features, high_dimensional_features);
@@ -87,12 +90,14 @@ void check_similarity_of_sets(const std::set<index_t>& first_set, const std::set
  * for dimensionality reduction - basically, a set of points, randomly
  * sampled from a hyperplane.
  */
-void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill);
+template <typename PRNG>
+void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill, PRNG&);
 
 
 // Disabled as randomly fails on travis
 TEST(DISABLED_IsomapTest,neighbors_preserving)
 {
+	const int32_t seed = 100;
 	const index_t n_samples = 30;
 	const index_t n_dimensions = 3;
 	const index_t n_target_dimensions = 2;
@@ -100,8 +105,8 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 	const float64_t required_similarity_level = 0.8;
 
 	SGMatrix<float64_t> high_dimensional_matrix = SGMatrix<float64_t>::get_allocated_matrix(n_dimensions, n_samples);
-
-	fill_matrix_with_test_data(high_dimensional_matrix);
+	std::mt19937_64 prng(seed);
+	fill_matrix_with_test_data(high_dimensional_matrix, prng);
 
 	CDenseFeatures<float64_t>* high_dimensional_features =
 		new CDenseFeatures<float64_t>(high_dimensional_matrix);
@@ -203,16 +208,18 @@ void check_similarity_of_sets(const std::set<index_t>& first_set,const std::set<
 	"#similarElements/#total < minimal similarity level.";
 }
 
-void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill)
+template <typename PRNG>
+void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill, PRNG& prng)
 {
 	index_t num_cols = matrix_to_fill.num_cols, num_rows = matrix_to_fill.num_rows;
+	NormalDistribution<float64_t> normal_dist;
 	for (index_t i = 0; i < num_cols; ++i)
 	{
 		for (index_t j = 0; j < num_rows - 1; ++j)
 		{
 			matrix_to_fill(j, i) = i;
 		}
-		matrix_to_fill(num_rows - 1, i) = CMath::randn_double();
+		matrix_to_fill(num_rows - 1, i) = normal_dist(prng);
 	}
 }
 

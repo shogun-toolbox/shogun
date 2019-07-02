@@ -1,8 +1,10 @@
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 #include <cstdio>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -10,10 +12,10 @@ using namespace shogun;
 
 TEST(LibSVMFileTest, sparse_matrix_int32)
 {
+	int32_t seed = 100;
 	int32_t max_num_entries = 512;
 	int32_t max_label_value = 1;
 	int32_t max_entry_value = 1024;
-	CRandom * rand = new CRandom();
 
 	int32_t num_vec = 10;
 	int32_t num_feat = 0;
@@ -30,13 +32,15 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	labels[2][1] = 0.1;
 	labels[2][2] = 0.0;
 
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (int32_t i = 0; i < num_vec; i++)
 	{
-		data[i] = SGSparseVector<int32_t>(rand->random(0, max_num_entries));
+		data[i] = SGSparseVector<int32_t>(uniform_int_dist(prng, {0, max_num_entries}));
 		if (i > 2)
 		{
 			labels[i] = SGVector<float64_t>(1);
-			labels[i][0] = rand->random(-max_label_value, max_label_value);
+			labels[i][0] = uniform_int_dist(prng, {-max_label_value, max_label_value});
 		}
 		for (int32_t j = 0; j < data[i].num_feat_entries; j++)
 		{
@@ -47,7 +51,7 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 			}
 
 			data[i].features[j].feat_index = feat_index - 1;
-			data[i].features[j].entry = rand->random(0, max_entry_value);
+			data[i].features[j].entry = uniform_int_dist(prng, {0, max_entry_value});
 		}
 	}
 
@@ -85,7 +89,6 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	}
 	SG_UNREF(fin);
 
-	SG_UNREF(rand);
 	SG_FREE(data);
 	SG_FREE(labels);
 	SG_FREE(data_from_file);
@@ -96,9 +99,9 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 
 TEST(LibSVMFileTest, sparse_matrix_float64)
 {
+	int32_t seed = 100;
 	int32_t max_num_entries = 512;
 	int32_t max_label_value = 1;
-	CRandom * rand = new CRandom();
 
 	int32_t num_vec = 1024;
 	int32_t num_feat = 0;
@@ -115,13 +118,16 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 	labels[2][1] = 0.1;
 	labels[2][2] = 0.0;
 
+	std::mt19937_64 prng(seed);
+  	UniformIntDistribution<int32_t> uniform_int_dist;
+  	UniformRealDistribution<float64_t> uniform_real_dist(0., 1.);
 	for (int32_t i = 0; i < num_vec; i++)
 	{
-		data[i] = SGSparseVector<float64_t>(rand->random(0, max_num_entries));
+		data[i] = SGSparseVector<float64_t>(uniform_int_dist(prng, {0, max_num_entries}));
 		if (i > 2)
 		{
 			labels[i] = SGVector<float64_t>(1);
-			labels[i][0] = rand->random(-max_label_value, max_label_value);
+			labels[i][0] = uniform_int_dist(prng, {-max_label_value, max_label_value});
 		}
 
 		for (int32_t j = 0; j < data[i].num_feat_entries; j++)
@@ -133,7 +139,7 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 			}
 
 			data[i].features[j].feat_index = feat_index - 1;
-			data[i].features[j].entry = rand->random(0., 1.);
+			data[i].features[j].entry = uniform_real_dist(prng);
 		}
 	}
 
@@ -171,7 +177,6 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 	}
 	SG_UNREF(fin);
 
-	SG_UNREF(rand);
 	SG_FREE(data);
 	SG_FREE(labels);
 	SG_FREE(data_from_file);

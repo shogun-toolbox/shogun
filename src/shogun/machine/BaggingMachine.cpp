@@ -10,20 +10,21 @@
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 #include <shogun/evaluation/Evaluation.h>
 
 using namespace shogun;
 
 CBaggingMachine::CBaggingMachine()
-	: CMachine()
+	: RandomMixin<CMachine>()
 {
 	init();
 	register_parameters();
 }
 
 CBaggingMachine::CBaggingMachine(CFeatures* features, CLabels* labels)
-	: CMachine()
+	: RandomMixin<CMachine>()
 {
 	init();
 	register_parameters();
@@ -175,9 +176,8 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	m_oob_indices = new CDynamicObjectArray();
 
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
-	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
-		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
-
+	random::fill_array(rnd_indicies, 0, m_bag_size-1, m_prng);
+	
 	auto pb = SG_PROGRESS(range(m_num_bags));
 #pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
@@ -265,6 +265,7 @@ void CBaggingMachine::register_parameters()
 	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors");
 	SG_ADD(
 	    &m_oob_indices, "oob_indices", "OOB indices for each machine");
+	SG_ADD(&m_machine, "machine", "machine to use for bagging");
 }
 
 void CBaggingMachine::set_num_bags(int32_t num_bags)

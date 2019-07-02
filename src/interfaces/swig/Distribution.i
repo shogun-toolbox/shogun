@@ -24,6 +24,10 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinDistribution) shogun::RandomMixin<shogun::CDistribution, std::mt19937_64>;
+
 %include <shogun/distributions/Histogram.h>
 %include <shogun/distributions/HMM.h>
 %include <shogun/distributions/LinearHMM.h>

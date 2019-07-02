@@ -14,11 +14,13 @@ using namespace shogun;
 /* Basic test for manifold sculpting, that just checks that it works anyhow */
 TEST(ManifoldSculptingTest,DISABLED_basic)
 {
+	std::mt19937_64 prng(24);
+
 	const index_t n_samples = 15;
 	const index_t n_dimensions = 3;
 	const index_t n_target_dimensions = 2;
 	CDenseFeatures<float64_t>* high_dimensional_features =
-		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, 1, n_dimensions));
+		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, 1, n_dimensions, prng));
 
 	CManifoldSculpting* embedder =
 		new CManifoldSculpting();

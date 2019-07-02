@@ -52,7 +52,7 @@ namespace internal
 
 class KernelManager;
 class MaxTestPower;
-class MaxCrossValidation;
+template <typename> class MaxCrossValidation;
 class WeightedMaxTestPower;
 
 }
@@ -61,6 +61,7 @@ class CStreamingMMD : public CMMD
 {
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;
+	template <typename U>
 	friend class internal::MaxCrossValidation;
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;

@@ -49,6 +49,8 @@ public:
 			const float64_t bias_value,
 			const float64_t train_split)
 	{
+		std::mt19937_64 prng(77);
+
 		n_dim = coefficient_values.size();
 		bias = bias_value;
 
@@ -57,9 +59,9 @@ public:
 
 		coefficients = SGVector<float64_t>(coefficient_values);
 		SGMatrix<float64_t> feat_train_data = CDataGenerator::generate_gaussians(
-				train_size, 1, n_dim);
+				train_size, 1, n_dim, prng);
 		SGMatrix<float64_t> feat_test_data = CDataGenerator::generate_gaussians(
-				test_size, 1, n_dim);
+				test_size, 1, n_dim, prng);
 
 		SGVector<float64_t> label_train_data =
 				linalg::matrix_prod(feat_train_data, coefficients, true);

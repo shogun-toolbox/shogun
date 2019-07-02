@@ -13,18 +13,19 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
 
 CKMeansBase::CKMeansBase()
-: CDistanceMachine()
+: RandomMixin<CDistanceMachine>()
 {
 	init();
 }
 
 CKMeansBase::CKMeansBase(int32_t k_, CDistance* d, bool use_kmpp)
-: CDistanceMachine()
+: RandomMixin<CDistanceMachine>()
 {
 	init();
 	k=k_;
@@ -33,7 +34,7 @@ CKMeansBase::CKMeansBase(int32_t k_, CDistance* d, bool use_kmpp)
 }
 
 CKMeansBase::CKMeansBase(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
-: CDistanceMachine()
+: RandomMixin<CDistanceMachine>()
 {
 	init();
 	k = k_i;
@@ -66,7 +67,7 @@ void CKMeansBase::set_random_centers()
 
 	SGVector<int32_t> temp=SGVector<int32_t>(lhs_size);
 	SGVector<int32_t>::range_fill_vector(temp, lhs_size, 0);
-	CMath::permute(temp);
+	random::shuffle(temp, m_prng);
 
 	for (int32_t i=0; i<k; i++)
 	{
@@ -232,8 +233,9 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	SGVector<float64_t> min_dist=SGVector<float64_t>(lhs_size);
 	min_dist.zero();
 
+	UniformIntDistribution<int32_t> uniform_int_dist(0, lhs_size-1);
 	/* First center is chosen at random */
-	int32_t mu=CMath::random((int32_t) 0, lhs_size-1);
+	int32_t mu=uniform_int_dist(m_prng);
 	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
@@ -253,6 +255,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 #endif //HAVE_LINALG
 	int32_t n_rands = 2 + int32_t(std::log(k));
 
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	/* Choose centers with weighted probability */
 	for(int32_t i=1; i<k; i++)
 	{
@@ -267,7 +270,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 			float64_t temp_dist=0.0;
 			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);
 			int32_t new_center=0;
-			float64_t prob=CMath::random(0.0, 1.0);
+			float64_t prob=uniform_real_dist(m_prng);
 			prob=prob*sum;
 
 			for(int32_t j=0; j<lhs_size; j++)

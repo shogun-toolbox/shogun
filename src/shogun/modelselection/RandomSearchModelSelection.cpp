@@ -15,7 +15,7 @@
 
 using namespace shogun;
 
-CRandomSearchModelSelection::CRandomSearchModelSelection() : CModelSelection()
+CRandomSearchModelSelection::CRandomSearchModelSelection() : RandomMixin<CModelSelection>()
 {
 	set_ratio(0.5);
 }
@@ -23,7 +23,7 @@ CRandomSearchModelSelection::CRandomSearchModelSelection() : CModelSelection()
 CRandomSearchModelSelection::CRandomSearchModelSelection(
 		CMachineEvaluation* machine_eval,
 		CModelSelectionParameters* model_parameters, float64_t ratio)
-		: CModelSelection(machine_eval, model_parameters)
+		: RandomMixin<CModelSelection>(machine_eval, model_parameters)
 {
 	set_ratio(ratio);
 }
@@ -42,7 +42,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
 	int32_t n_all_combinations=all_combinations->get_num_elements();
-	SGVector<index_t> combinations_indices=CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations);
+	SGVector<index_t> combinations_indices=CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations, m_prng);
 
 	CDynamicObjectArray* combinations=new CDynamicObjectArray();
 

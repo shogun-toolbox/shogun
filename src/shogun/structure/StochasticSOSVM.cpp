@@ -9,11 +9,12 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/StochasticSOSVM.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace shogun;
 
 CStochasticSOSVM::CStochasticSOSVM()
-: CLinearStructuredOutputMachine()
+: RandomMixin<CLinearStructuredOutputMachine>()
 {
 	init();
 }
@@ -23,7 +24,7 @@ CStochasticSOSVM::CStochasticSOSVM(
 		CStructuredLabels* labs,
 		bool do_weighted_averaging,
 		bool verbose)
-: CLinearStructuredOutputMachine(model, labs)
+: RandomMixin<CLinearStructuredOutputMachine>(model, labs)
 {
 	REQUIRE(model != NULL && labs != NULL,
 		"%s::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
@@ -43,13 +44,11 @@ void CStochasticSOSVM::init()
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
 	SG_ADD(&m_do_weighted_averaging, "do_weighted_averaging", "Do weighted averaging");
 	SG_ADD(&m_debug_multiplier, "debug_multiplier", "Debug multiplier");
-	SG_ADD(&m_rand_seed, "rand_seed", "Random seed");
 
 	m_lambda = 1.0;
 	m_num_iter = 50;
 	m_do_weighted_averaging = true;
 	m_debug_multiplier = 0;
-	m_rand_seed = 1;
 }
 
 CStochasticSOSVM::~CStochasticSOSVM()
@@ -105,16 +104,15 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		m_debug_multiplier = 100;
 	}
 
-	CMath::init_random(m_rand_seed);
-
 	// Main loop
 	int32_t k = 0;
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (auto pi : SG_PROGRESS(range(m_num_iter)))
 	{
 		for (int32_t si = 0; si < N; ++si)
 		{
 			// 1) Picking random example
-			int32_t i = CMath::random(0, N-1);
+			int32_t i = uniform_int_dist(m_prng, {0, N-1});
 
 			// 2) solve the loss-augmented inference for point i
 			CResultSet* result = m_model->argmax(m_w, i);
@@ -224,14 +222,3 @@ void CStochasticSOSVM::set_debug_multiplier(int32_t multiplier)
 {
 	m_debug_multiplier = multiplier;
 }
-
-uint32_t CStochasticSOSVM::get_rand_seed() const
-{
-	return m_rand_seed;
-}
-
-void CStochasticSOSVM::set_rand_seed(uint32_t rand_seed)
-{
-	m_rand_seed = rand_seed;
-}
-

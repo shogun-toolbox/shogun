@@ -50,6 +50,7 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 #include <shogun/lib/observers/ObservedValue.h>
+#include <shogun/util/visitors/FilterVisitor.h>
 
 #include <shogun/util/hash.h>
 
@@ -80,6 +81,16 @@ namespace shogun
 				    tag.name().c_str())
 			}
 			map.at(tag).set_value(value);
+		}
+
+		AnyParameter& at(const BaseTag& tag)
+		{
+			return map.at(tag);
+		}
+
+		const AnyParameter& at(const BaseTag& tag) const
+		{
+			return map.at(tag);
 		}
 
 		AnyParameter get(const BaseTag& tag) const
@@ -599,11 +610,13 @@ void CSGObject::create_parameter(
 
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	auto& pprop = self->map[_tag].get_properties();
+	auto& param = self->at(_tag);
+	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
 		SG_ERROR(
 		    "%s::%s is marked as read-only and cannot be modified!\n",
 		    get_name(), _tag.name().c_str());
+
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
 	{
 		auto msg = self->map[_tag].get_constrain_function()(value);
@@ -615,6 +628,9 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 		}
 	}
 	self->update(_tag, value);
+	for (auto& method : param.get_callbacks())
+		method();
+
 	pprop.remove_property(ParameterProperties::AUTO);
 }
 
@@ -661,6 +677,19 @@ AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 bool CSGObject::has_parameter(const BaseTag& _tag) const
 {
 	return self->has(_tag);
+}
+
+void CSGObject::add_callback_function(
+    const std::string& name, std::function<void()> function)
+{
+	REQUIRE(function, "Function object is not callable");
+	BaseTag tag(name);
+	REQUIRE(
+	    has_parameter(tag), "There is no parameter called \"%s\" in %s\n",
+	    tag.name().c_str(), get_name());
+
+	auto& param = self->at(tag);
+	param.add_callback_function(std::move(function));
 }
 
 void CSGObject::subscribe(ParameterObserver* obs)
@@ -848,6 +877,27 @@ bool CSGObject::equals(const CSGObject* other) const
 	SG_SDEBUG("All parameters of %s equal.\n", this->get_name());
 	return true;
 }
+
+template <typename T>
+void CSGObject::for_each_param_of_type(
+    std::function<void(const std::string&, T*)> operation)
+{
+	auto visitor = std::make_unique<FilterVisitor<T>>(operation);
+	const auto& param_map = self->map;
+
+	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
+		Any any_param = pair.second.get_value();
+		if (any_param.visitable())
+		{
+			const std::string name = pair.first.name();
+			visitor->set_name(name);
+			any_param.visit(visitor.get());
+		}
+	});
+}
+
+template void shogun::CSGObject::for_each_param_of_type<CSGObject*>(
+    std::function<void(const std::string&, CSGObject**)>);
 
 CSGObject* CSGObject::create_empty() const
 {

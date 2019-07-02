@@ -8,6 +8,9 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/hashed/HashedDenseFeatures.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -304,6 +307,7 @@ TEST(HashedDenseFeaturesTest, quadratic_add_to_dense)
 
 TEST(HashedDenseFeaturesTest, dense_comparison)
 {
+	int32_t seed = 12;
 	index_t n=3;
 	index_t dim=10;
 
@@ -318,9 +322,11 @@ TEST(HashedDenseFeaturesTest, dense_comparison)
 	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim);
 	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
 
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	SGVector<float64_t> dense_vec(hashing_dim);
 	for (index_t i=0; i<hashing_dim; i++)
-		dense_vec[i] = CMath::random(-hashing_dim, hashing_dim);
+		dense_vec[i] = uniform_int_dist(prng, {-hashing_dim, hashing_dim});
 
 	for (index_t i=0; i<n; i++)
 		EXPECT_EQ(h_feats->dot(i, h_feats, i), d_feats->dot(i, d_feats, i));

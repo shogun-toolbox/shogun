@@ -33,23 +33,23 @@
 
 #include <shogun/evaluation/TimeSeriesSplitting.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
-CTimeSeriesSplitting::CTimeSeriesSplitting() : CSplittingStrategy()
+CTimeSeriesSplitting::CTimeSeriesSplitting() : RandomMixin<CSplittingStrategy>()
 {
 	init();
 }
 
 CTimeSeriesSplitting::CTimeSeriesSplitting(CLabels* labels, index_t num_subsets)
-    : CSplittingStrategy(labels, num_subsets)
+    : RandomMixin<CSplittingStrategy>(labels, num_subsets)
 {
 	init();
 }
 
 void CTimeSeriesSplitting::init()
 {
-	m_rng = sg_rand;
 	m_min_subset_size = 1;
 	SG_ADD(&m_min_subset_size, "min_subset_size", 
 			"The minimum subset size for test set")
@@ -84,7 +84,7 @@ void CTimeSeriesSplitting::build_subsets()
 		SG_UNREF(current);
 	}
 
-	m_subset_indices->shuffle(m_rng);
+	random::shuffle(m_subset_indices->begin(), m_subset_indices->end(), m_prng);
 }
 
 void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)

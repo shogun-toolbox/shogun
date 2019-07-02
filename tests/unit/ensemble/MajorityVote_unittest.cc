@@ -2,16 +2,21 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <gtest/gtest.h>
+
+#include <random>
 
 using namespace shogun;
 
 extern void generate_random_ensemble_matrix(SGMatrix<float64_t>& em,
 	SGVector<float64_t>& expected_cv,
-	const SGVector<float64_t>& w);
+	const SGVector<float64_t>& w, std::mt19937_64&);
 
 TEST(MajorityVote, combine_matrix)
 {
+	std::mt19937_64 prng(32);
+
 	int32_t num_vectors = 20;
 	int32_t num_classifiers = 5;
 	SGMatrix<float64_t> ensemble_matrix(num_vectors, num_classifiers);
@@ -22,7 +27,7 @@ TEST(MajorityVote, combine_matrix)
 	expected.zero();
 	w.set_const(1.0);
 
-	generate_random_ensemble_matrix(ensemble_matrix, expected, w);
+	generate_random_ensemble_matrix(ensemble_matrix, expected, w, prng);
 	SGVector<float64_t> cv = mv->combine(ensemble_matrix);
 
 	EXPECT_EQ(num_vectors, cv.vlen);
@@ -35,6 +40,8 @@ TEST(MajorityVote, combine_matrix)
 
 TEST(MajorityVote, binary_combine_vector)
 {
+	std::mt19937_64 prng(2);
+
 	int32_t num_classifiers = 50;
 	CMajorityVote* mv = new CMajorityVote();
 	SGVector<float64_t> v(num_classifiers);
@@ -45,9 +52,10 @@ TEST(MajorityVote, binary_combine_vector)
 	expected.zero();
 	v.zero();
 
+	UniformIntDistribution<int32_t> uniform_int_dist(0, 1);
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
-		int32_t r = sg_rand->random(0, 1);
+		int32_t r = uniform_int_dist(prng);
 		v[i] = (r == 0) ? -1 : r;
 
 		if (max < ++expected[r])
@@ -65,6 +73,8 @@ TEST(MajorityVote, binary_combine_vector)
 
 TEST(MajorityVote, multiclass_combine_vector)
 {
+	std::mt19937_64 prng(2);
+
 	int32_t num_classifiers = 10;
 	CMajorityVote* mv = new CMajorityVote();
 	SGVector<float64_t> v(num_classifiers);
@@ -75,9 +85,10 @@ TEST(MajorityVote, multiclass_combine_vector)
 
 	int64_t max_label = -1;
 	int64_t max = -1;
+	UniformIntDistribution<int32_t> uniform_int_dist(0, 2);
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
-		v[i] = sg_rand->random(0, 2);
+		v[i] = uniform_int_dist(prng);
 		if (max < ++hist[index_t(v[i])])
 		{
 			max = hist[index_t(v[i])];

@@ -1,5 +1,3 @@
-Math:init_random(1)
-
 File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
 
 #![create_features]
@@ -13,7 +11,7 @@ Transformer pca = transformer("PCA")
 
 #![create_machine]
 Distance d = distance("EuclideanDistance", lhs=feats_train, rhs=feats_train)
-Machine kmeans = machine("KMeans", distance=d, k=2)
+Machine kmeans = machine("KMeans", distance=d, k=2, seed=1)
 #![create_machine]
 
 

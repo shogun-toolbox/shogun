@@ -30,6 +30,10 @@
 %include <shogun/statistical_testing/TwoDistributionTest.h>
 %include <shogun/statistical_testing/IndependenceTest.h>
 %include <shogun/statistical_testing/TwoSampleTest.h>
+
+/** Instantiate RandomMixin */
+%template(RandomMixinTwoSampleTest) shogun::RandomMixin<shogun::CTwoSampleTest, std::mt19937_64>;
+
 %include <shogun/statistical_testing/MMD.h>
 %include <shogun/statistical_testing/StreamingMMD.h>
 %include <shogun/statistical_testing/LinearTimeMMD.h>

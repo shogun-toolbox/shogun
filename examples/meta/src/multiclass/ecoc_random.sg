@@ -1,5 +1,3 @@
-Math:init_random(1)
-
 CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
 CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
@@ -13,11 +11,12 @@ Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_classifier]
-Machine classifier = machine("LibLinear")
+Machine classifier = machine("LibLinear", seed=1)
 #![create_classifier]
 
 #![choose_strategy]
 ECOCEncoder encoder=ecoc_encoder("ECOCRandomDenseEncoder")
+encoder.put("seed", 1)
 ECOCDecoder decoder=ecoc_decoder("ECOCHDDecoder")
 MulticlassStrategy rnd_dense_strategy=multiclass_strategy("ECOCStrategy", encoder=encoder, decoder=decoder)
 #![choose_strategy]

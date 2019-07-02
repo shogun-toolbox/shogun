@@ -7,9 +7,11 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/ajd/JADiagOrth.h>
-
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
+
 #include <iostream>
+#include <random>
 
 using namespace Eigen;
 
@@ -20,6 +22,7 @@ using namespace shogun;
 
 TEST(CJADiagOrth, diagonalize)
 {
+	int32_t seed = 17;
 	// Generating diagonal matrices
 	index_t * C_dims = SG_MALLOC(index_t, 3);
 	C_dims[0] = 10;
@@ -27,15 +30,15 @@ TEST(CJADiagOrth, diagonalize)
 	C_dims[2] = 30;
 	SGNDArray< float64_t > C(C_dims, 3);
 
-	CMath::init_random(17);
-
+	std::mt19937_64 prng(seed);
+	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(CMath::random(1,5));
+			tmp(j,j) *= CMath::abs(uniform_int_dist(prng, {1,5}));
 
 	}
 

@@ -15,6 +15,7 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -28,7 +29,7 @@ namespace shogun
  *   Application Dependent Design of Error Correcting Output Codes. TPAMI 2006.
  *
  */
-class CECOCDiscriminantEncoder: public CECOCEncoder
+class CECOCDiscriminantEncoder: public RandomMixin<CECOCEncoder>
 {
 public:
     /** constructor */
@@ -79,7 +80,7 @@ protected:
     SGMatrix<int32_t> m_codebook;
     int32_t m_code_idx;
     CLabels *m_labels;
-    CDenseFeatures<float64_t> *m_features;
+    CFeatures *m_features;
     SGMatrix<float64_t> m_feats;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };

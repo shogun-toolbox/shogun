@@ -13,6 +13,7 @@
 #include <shogun/io/stream/FileOutputStream.h>
 #include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
@@ -43,9 +44,11 @@ public:
 
 TEST_F(BinaryLabels, serialization)
 {
+	std::mt19937_64 prng(47);
+
 	auto labels = some<CBinaryLabels>(10);
 	SGVector<float64_t> lab = SGVector<float64_t>(labels->get_num_labels());
-	lab.random(1, 10);
+	random::fill_array(lab, 1, 10, prng);
 	labels->set_values(lab);
 	labels->set_labels(lab);
 

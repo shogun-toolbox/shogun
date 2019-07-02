@@ -10,7 +10,8 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
-
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 #ifdef _WIN32
 #undef far
@@ -106,9 +107,10 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
 	chosen.zero();
 	int32_t ch=0;
+	UniformIntDistribution<int32_t> uniform_int_dist(0, num-1);
 	while (ch<b)
 	{
-		const int32_t n=CMath::random(0,num-1);
+		const int32_t n=uniform_int_dist(m_prng);
 		if (chosen[n]==0)
 		{
 			chosen[n]+=1;

@@ -5,18 +5,20 @@
  */
 
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/NormalDistribution.h>
 
 using namespace shogun;
 
 CGaussianBlobsDataGenerator::CGaussianBlobsDataGenerator() :
-		CStreamingDenseFeatures<float64_t>()
+		RandomMixin<CStreamingDenseFeatures<float64_t>>()
 {
 	init();
 }
 
 CGaussianBlobsDataGenerator::CGaussianBlobsDataGenerator(index_t sqrt_num_blobs,
 		float64_t distance, float64_t stretch, float64_t angle) :
-		CStreamingDenseFeatures<float64_t>()
+		RandomMixin<CStreamingDenseFeatures<float64_t>>()
 {
 	init();
 	set_blobs_model(sqrt_num_blobs, distance, stretch, angle);
@@ -80,13 +82,15 @@ bool CGaussianBlobsDataGenerator::get_next_example()
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(2);
 
+	UniformIntDistribution<index_t> uniform_int_dist(0, m_sqrt_num_blobs-1);
 	/* sample latent distribution to compute offsets */
-	index_t x_offset=CMath::random(0, m_sqrt_num_blobs-1)*m_distance;
-	index_t y_offset=CMath::random(0, m_sqrt_num_blobs-1)*m_distance;
+	index_t x_offset=uniform_int_dist(m_prng)*m_distance;
+	index_t y_offset=uniform_int_dist(m_prng)*m_distance;
 
+	NormalDistribution<float64_t> normal_dist;
 	/* sample from std Gaussian */
-	float64_t x=CMath::randn_double();
-	float64_t y=CMath::randn_double();
+	float64_t x=normal_dist(m_prng);
+	float64_t y=normal_dist(m_prng);
 
 	/* transform through cholesky and add offset */
 	result[0]=m_cholesky(0, 0)*x+m_cholesky(0, 1)*y+x_offset;

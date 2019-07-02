@@ -15,7 +15,10 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
-#include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
+#include <random>
 
 using namespace shogun;
 
@@ -26,11 +29,12 @@ using namespace Eigen;
 template<class MatrixType>
 void GenerateMatrix(float64_t sparseLevel, int32_t m, int32_t n, int32_t randSeed, MatrixType* matrix)
 {
-	CRandom randGenerator(randSeed);
+	std::mt19937_64 prng(randSeed);
+	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 	for (index_t i=0; i<m; ++i)
 		for (index_t j=0; j<n; ++j)
 		{
-			float64_t randomNumber=randGenerator.random(0.0,1.0);
+			float64_t randomNumber=uniform_real_dist(prng);
 			if (randomNumber<=sparseLevel)
 				(*matrix)(i,j)=randomNumber*100;
 		}

@@ -6,28 +6,27 @@ from numpy import *
 #from pylab import *
 
 def run_clustering(data, k):
-	from shogun import KMeans
-	from shogun import Math_init_random
+	from shogun import machine
 
 	distance = sg.distance('EuclideanDistance')
 	distance.init(data, data)
-	kmeans=KMeans(k, distance)
+	kmeans=machine("KMeans", k=k, distance=distance, seed=1)
 
 	#print("Running clustering...")
 	kmeans.train()
 
-	return kmeans.get_cluster_centers()
+	return kmeans.get("cluster_centers")
 
 def assign_labels(data, centroids, ncenters):
 	from shogun import MulticlassLabels
-	from shogun import KNN
+	from shogun import machine
 	from numpy import arange
 
 	labels = MulticlassLabels(arange(0.,ncenters))
 	fea_centroids = sg.features(centroids)
 	distance = sg.distance('EuclideanDistance')
 	distance.init(fea_centroids, fea_centroids)
-	knn = KNN(1, distance, labels)
+	knn = machine("KNN", k=1, distance=distance, labels=labels)
 	knn.train()
 	return knn.apply(data)
 
@@ -36,14 +35,12 @@ def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	from shogun import MulticlassLabels, GaussianBlobsDataGenerator
 	from shogun import Math
 
-	# reproducable results
-	Math.init_random(1)
-
 	# produce sone Gaussian blobs to cluster
 	ncenters=sqrt_num_blobs**2
 	stretch=1
 	angle=1
 	gen=GaussianBlobsDataGenerator(sqrt_num_blobs, distance, stretch, angle)
+	gen.put("seed", 1)
 	features=gen.get_streamed_features(n_data)
 	X=features.get("feature_matrix")
 

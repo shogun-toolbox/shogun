@@ -299,7 +299,10 @@ class Solver_MCSVM_CS
 		                double *w0, double eps, int max_iter,
 		                double train_time, mcsvm_state* given_state);
 		~Solver_MCSVM_CS();
-		void solve();
+	
+		template <typename PRNG>
+		void solve(PRNG& prng);
+
 	private:
 		void solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new);
 		bool be_shrunk(int i, int m, int yi, double alpha_i, double minG);
