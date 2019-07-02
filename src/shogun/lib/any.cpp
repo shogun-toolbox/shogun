@@ -1,34 +1,7 @@
 /*
- * Copyright (c) 2018, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
- * All rights reserved.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  1. Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- *  3. Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * Written (W) 2018 Heiko Strathmann
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Gil Hoben
  */
 
 #include <shogun/lib/any.h>
@@ -86,4 +59,149 @@ namespace shogun
 			SG_UNREF(obj);
 		}
 	}
+
+	void Any::set_or_inherit(const Any& other)
+	{
+		if (other.policy->should_inherit_storage())
+		{
+			storage = other.storage;
+		}
+		else
+		{
+			policy->set(&storage, other.storage);
+		}
+	}
+
+	Any::Any() : Any(owning_policy<Empty>(), nullptr)
+	{
+	}
+
+	Any::Any(const BaseAnyPolicy* the_policy, void* the_storage)
+		: policy(the_policy), storage(the_storage)
+	{
+	}
+
+	Any::Any(const Any& other) : Any(other.policy, nullptr)
+	{
+		set_or_inherit(other);
+	}
+
+	/** Move constructor */
+	Any::Any(Any&& other) : Any(other.policy, nullptr)
+	{
+		set_or_inherit(other);
+	}
+
+	Any::~Any()
+	{
+		policy->clear(&storage);
+	}
+
+	Any& Any::operator=(const Any& other)
+	{
+		if (empty())
+		{
+			policy = other.policy;
+			set_or_inherit(other);
+			return *(this);
+		}
+		if (!policy->matches_policy(other.policy))
+		{
+			throw TypeMismatchException(
+				other.policy->type(), policy->type());
+		}
+		policy->clear(&storage);
+		if (other.policy->should_inherit_storage())
+		{
+			policy = other.policy;
+		}
+		set_or_inherit(other);
+		return *(this);
+	}
+
+	Any& Any::clone_from(const Any& other)
+	{
+		if (!other.cloneable())
+		{
+			throw std::logic_error("Tried to clone non-cloneable Any");
+		}
+		if (empty())
+		{
+			policy = other.policy;
+			set_or_inherit(other);
+			return *(this);
+		}
+		if (!policy->matches_policy(other.policy))
+		{
+			throw TypeMismatchException(
+				other.policy->type(), policy->type());
+		}
+		policy->clone(&storage, other.storage);
+		return *(this);
+	}
+
+	bool Any::empty() const
+	{
+		return has_type<Empty>();
+	}
+
+	bool Any::cloneable() const
+	{
+		return !policy->is_functional();
+	}
+
+	bool Any::visitable() const
+	{
+		return !policy->is_functional();
+	}
+
+	bool Any::hashable() const
+	{
+		return !policy->is_functional();
+	}
+
+	const std::type_info& Any::type_info() const
+	{
+		return policy->type_info();
+	}
+
+	std::string Any::type() const
+	{
+		return policy->type();
+	}
+
+	size_t Any::hash() const
+	{
+		return policy->hash(storage);
+	}
+
+	void Any::visit(AnyVisitor* visitor) const
+	{
+		if (!visitable())
+		{
+			throw std::logic_error("Tried to visit non-visitable Any");
+		}
+		policy->visit(storage, visitor);
+	}
+
+	bool operator==(const Any& lhs, const Any& rhs)
+	{
+		if (lhs.empty() || rhs.empty())
+		{
+			return lhs.empty() && rhs.empty();
+		}
+		if (!lhs.policy->matches_policy(rhs.policy))
+		{
+			return false;
+		}
+		void* lhs_storage = lhs.storage;
+		void* rhs_storage = rhs.storage;
+		return lhs.policy->equals(lhs_storage, rhs_storage);
+	}
+
+	bool operator!=(const Any& lhs, const Any& rhs)
+	{
+		return !(lhs == rhs);
+	}
+
 }
