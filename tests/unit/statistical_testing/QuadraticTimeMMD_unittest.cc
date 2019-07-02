@@ -339,8 +339,8 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -380,8 +380,8 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -421,8 +421,8 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -462,8 +462,8 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	// streaming data generator for mean shift distributions
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// stream some data from generator
 	CFeatures* features_p=gen_p->get_streamed_features(m);
@@ -531,14 +531,14 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 	mmd->set_num_null_samples(num_null_samples);
 	mmd->set_null_approximation_method(NAM_PERMUTATION);
 
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 	mmd->put("seed", seed);
 	SGVector<float64_t> result_1=mmd->sample_null();
 
 	mmd->precompute_kernel_matrix(false);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 	mmd->put("seed", seed);
 	SGVector<float64_t> result_2=mmd->sample_null();
 
@@ -559,8 +559,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
@@ -602,8 +602,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
@@ -645,8 +645,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
@@ -694,8 +694,8 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	CFeatures* features_p=gen_p->get_streamed_features(m);
 	CFeatures* features_q=gen_q->get_streamed_features(n);
