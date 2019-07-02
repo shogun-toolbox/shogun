@@ -1,35 +1,8 @@
 /*
- * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
- * All rights reserved.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  1. Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- *  3. Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * Written (W) 2016 Sergey Lisitsyn
- * Written (W) 2016 Sanuj Sharma
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Gil Hoben, Sanuj Sharma,
+ *          Wuwei Lin, Giovanni De Toni
  */
 
 #ifndef _ANY_H_
@@ -1038,15 +1011,13 @@ namespace shogun {
 	public:
 
 		/** Empty value constructor */
-		Any() : Any(owning_policy<Empty>(), nullptr)
-		{
-		}
+		Any();
 
-		/** Base constructor */
-		Any(const BaseAnyPolicy* the_policy, void* the_storage)
-		    : policy(the_policy), storage(the_storage)
-		{
-		}
+		~Any();
+		Any(const Any& other);
+		Any(Any&& other);
+
+		Any(const BaseAnyPolicy* the_policy, void* the_storage);
 
 		/** Constructor to copy value */
 		template <typename T>
@@ -1055,84 +1026,27 @@ namespace shogun {
 			policy->set(&storage, &v);
 		}
 
-		/** Copy constructor */
-		Any(const Any& other) : Any(other.policy, nullptr)
-		{
-			set_or_inherit(other);
-		}
-
-		/** Move constructor */
-		Any(Any&& other) : Any(other.policy, nullptr)
-		{
-			set_or_inherit(other);
-		}
-
 		/** Assignment operator
 		 * @param other another Any object
 		 * @return Any object
 		 */
-		Any& operator=(const Any& other)
-		{
-			if (empty())
-			{
-				policy = other.policy;
-				set_or_inherit(other);
-				return *(this);
-			}
-			if (!policy->matches_policy(other.policy))
-			{
-				throw TypeMismatchException(
-				    other.policy->type(), policy->type());
-			}
-			policy->clear(&storage);
-			if (other.policy->should_inherit_storage())
-			{
-				policy = other.policy;
-			}
-			set_or_inherit(other);
-			return *(this);
-		}
+		Any& operator=(const Any& other);
 
-		Any& clone_from(const Any& other)
-		{
-			if (!other.cloneable())
-			{
-				throw std::logic_error("Tried to clone non-cloneable Any");
-			}
-			if (empty())
-			{
-				policy = other.policy;
-				set_or_inherit(other);
-				return *(this);
-			}
-			if (!policy->matches_policy(other.policy))
-			{
-				throw TypeMismatchException(
-				    other.policy->type(), policy->type());
-			}
-			policy->clone(&storage, other.storage);
-			return *(this);
-		}
+		Any& clone_from(const Any& other);
 
 		/** Equality operator
 		 * @param lhs Any object on left hand side
 		 * @param rhs Any object on right hand side
 		 * @return true if both are equal
 		 */
-		friend inline bool operator==(const Any& lhs, const Any& rhs);
+		friend bool operator==(const Any& lhs, const Any& rhs);
 
 		/** Inequality operator
 		 * @param lhs Any object on left hand side
 		 * @param rhs Any object on right hand side
 		 * @return false if both are equal
 		 */
-		friend inline bool operator!=(const Any& lhs, const Any& rhs);
-
-		/** Destructor */
-		~Any()
-		{
-			policy->clear(&storage);
-		}
+		friend bool operator!=(const Any& lhs, const Any& rhs);
 
 		/** Casts hidden value to provided type, fails otherwise.
 		 * @return type-casted value
@@ -1171,100 +1085,44 @@ namespace shogun {
 		}
 
 		/** @return true if Any object is empty. */
-		bool empty() const
-		{
-			return has_type<Empty>();
-		}
+		bool empty() const;
 
 		/** @return true if Any object is cloneable. */
-		bool cloneable() const
-		{
-			return !policy->is_functional();
-		}
+		bool cloneable() const;
 
 		/** @return true if Any object is visitable. */
-		bool visitable() const
-		{
-			return !policy->is_functional();
-		}
+		bool visitable() const;
 
 		/** @return true if Any object is hashable. */
-		bool hashable() const
-		{
-			return !policy->is_functional();
-		}
+		bool hashable() const;
 
-		const std::type_info& type_info() const
-		{
-			return policy->type_info();
-		}
+		const std::type_info& type_info() const;
 
-		/** Returns type-name of policy as string.
-		 * @return name of type class
-		 */
-		std::string type() const
-		{
-			return policy->type();
-		}
+		std::string type() const;
 
 		/** Hashes the underlying value, shallow. Uses std::hash.
 		 *
 		 * @return the value of hash function or 0 if hashing is not supported.
 		 */
-		size_t hash() const
-		{
-			return policy->hash(storage);
-		}
+		size_t hash() const;
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
 		 * @param visitor visitor object to use
 		 */
-		void visit(AnyVisitor* visitor) const
-		{
-			if (!visitable())
-			{
-				throw std::logic_error("Tried to visit non-visitable Any");
-			}
-			policy->visit(storage, visitor);
-		}
+		void visit(AnyVisitor* visitor) const;
+
 	private:
-		void set_or_inherit(const Any& other)
-		{
-			if (other.policy->should_inherit_storage())
-			{
-				storage = other.storage;
-			}
-			else
-			{
-				policy->set(&storage, other.storage);
-			}
-		}
+		void set_or_inherit(const Any& other);
 
 	private:
 		const BaseAnyPolicy* policy;
 		void* storage;
 	};
 
-	inline bool operator==(const Any& lhs, const Any& rhs)
-	{
-		if (lhs.empty() || rhs.empty())
-		{
-			return lhs.empty() && rhs.empty();
-		}
-		if (!lhs.policy->matches_policy(rhs.policy))
-		{
-			return false;
-		}
-		void* lhs_storage = lhs.storage;
-		void* rhs_storage = rhs.storage;
-		return lhs.policy->equals(lhs_storage, rhs_storage);
-	}
+	bool operator==(const Any& lhs, const Any& rhs);
 
-	inline bool operator!=(const Any& lhs, const Any& rhs)
-	{
-		return !(lhs == rhs);
-	}
+	bool operator!=(const Any& lhs, const Any& rhs);
 
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object
