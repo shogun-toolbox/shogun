@@ -329,8 +329,8 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
@@ -371,8 +371,8 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
@@ -413,8 +413,8 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;

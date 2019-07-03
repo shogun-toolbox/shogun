@@ -373,8 +373,8 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -444,8 +444,8 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
@@ -515,8 +515,8 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);

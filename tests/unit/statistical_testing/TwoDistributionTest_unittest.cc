@@ -134,8 +134,8 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mock_obj=some<CTwoDistributionTestMock>();
 	mock_obj->set_p(gen_p);
@@ -147,8 +147,8 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	auto distance=mock_obj->compute_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
 	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
 	euclidean_distance->init(feats_p, feats_q);
@@ -172,8 +172,8 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mock_obj=some<CTwoDistributionTestMock>();
 	mock_obj->set_p(gen_p);
@@ -185,8 +185,8 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
 	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
 

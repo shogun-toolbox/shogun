@@ -53,8 +53,8 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
 	mmd->put("seed", seed);
@@ -90,8 +90,8 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
@@ -130,8 +130,8 @@ TEST(
 
 	auto gen_p = some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q = some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p = gen_p->get_streamed_features(m);
 	auto feats_q = gen_q->get_streamed_features(n);
@@ -165,8 +165,8 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
 	mmd->put("seed", seed);
@@ -208,8 +208,8 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
 	mmd->put("seed", seed);
@@ -245,8 +245,8 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CQuadraticTimeMMD>();
 	mmd->put("seed", seed);
@@ -282,8 +282,8 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
 	mmd->put("seed", seed);
@@ -329,8 +329,8 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
@@ -373,8 +373,8 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
@@ -411,8 +411,8 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CQuadraticTimeMMD>();
 	mmd->put("seed", seed);
@@ -447,8 +447,8 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-	gen_p->CSGObject::put("seed", seed);
-	gen_q->CSGObject::put("seed", seed);
+	gen_p->put("seed", seed);
+	gen_q->put("seed", seed);
 
 	auto mmd=some<CLinearTimeMMD>();
 	mmd->put("seed", seed);
