@@ -202,15 +202,15 @@ CResultSet * CMultilabelCLRModel::argmax(SGVector<float64_t> w, int32_t feat_idx
 	float64_t score = 0, calibrated_score = 0;
 
 	// last label (m_num_class + 1)th label is the calibrated/virtual label
-	calibrated_score = dot_feats->dense_dot(feat_idx, w.vector + m_num_classes * feats_dim,
-	                                        feats_dim);
+	calibrated_score = dot_feats->dot(feat_idx, w.slice(m_num_classes * feats_dim,
+	                                        m_num_classes * feats_dim + feats_dim));
 
 	SGVector<float64_t> class_product(m_num_classes);
 
 	for (index_t i = 0; i < m_num_classes; i++)
 	{
-		score = dot_feats->dense_dot(feat_idx, w.vector + i * feats_dim,
-		                             feats_dim);
+		score = dot_feats->dot(feat_idx, w.slice(i * feats_dim,
+		                             i * feats_dim + feats_dim));
 		class_product[i] = score - calibrated_score;
 	}
 

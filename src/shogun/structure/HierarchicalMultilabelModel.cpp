@@ -244,8 +244,8 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 		int32_t node = nodes_to_traverse->get_element(0);
 		nodes_to_traverse->delete_element(0);
 
-		float64_t score = dot_feats->dense_dot(feat_idx, w.vector + node * feats_dim,
-		                                       feats_dim);
+		float64_t score = dot_feats->dot(feat_idx, w.slice(node * feats_dim,
+		                                       node * feats_dim + feats_dim));
 
 		// if the score is greater than zero, then all the children nodes are
 		// to be traversed next

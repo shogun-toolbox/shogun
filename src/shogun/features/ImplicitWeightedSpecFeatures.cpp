@@ -166,9 +166,10 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
 		return result;
 }
 
-float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t CImplicitWeightedSpecFeatures::dot(
+    int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	ASSERT(vec2_len == spec_size)
+	ASSERT(vec2.size() == spec_size)
 	ASSERT(vec_idx1 < num_strings)
 
 	float64_t result=0;

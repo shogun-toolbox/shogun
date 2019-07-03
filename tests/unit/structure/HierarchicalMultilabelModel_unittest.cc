@@ -264,8 +264,9 @@ TEST(HierarchicalMultilabelModel, argmax)
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
 		int32_t label = slabel_1[i];
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * dim_features, dim_features);
+		float64_t score = features->dot(
+		    0,
+		    w.slice(label * dim_features, label * dim_features + dim_features));
 
 		// score for ROOT should be greater than 0
 		if (label == 0)
@@ -277,8 +278,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 		// zero
 		else
 		{
-			float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-			                    w.vector, dim_features);
+			float64_t score_0 = features->dot(0, w.slice(0, dim_features));
 			EXPECT_GE(score_0, 0);
 			EXPECT_GE(score, 0);
 		}
@@ -292,8 +292,9 @@ TEST(HierarchicalMultilabelModel, argmax)
 	for (index_t i = 0; i < slabel_2.vlen; i++)
 	{
 		int32_t label = slabel_2[i];
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * dim_features, dim_features);
+		float64_t score = features->dot(
+		    0,
+		    w.slice(label * dim_features, label * dim_features + dim_features));
 
 		// score for ROOT should be greater than 0
 		if (label == 0)
@@ -305,8 +306,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 		// zero
 		else
 		{
-			float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-			                    w.vector, dim_features);
+			float64_t score_0 = features->dot(0, w.slice(0, dim_features));
 			EXPECT_GE(score_0, 0);
 			EXPECT_GE(score, 0);
 		}
@@ -383,12 +383,12 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		// if node is not the ROOT, then along with the score
 		// of that node, the score for its parent should also be greater than
 		// zero
-		float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-		                    w.vector, dim_features);
+		float64_t score_0 = features->dot(0, w.slice(0, dim_features));
 		EXPECT_GE(score_0, 0);
 
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * dim_features, dim_features);
+		float64_t score = features->dot(
+		    0,
+		    w.slice(label * dim_features, label * dim_features + dim_features));
 		EXPECT_GE(score, 0);
 	}
 
@@ -407,12 +407,12 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		// if node is not the ROOT, then along with the score
 		// of that node, the score for its parent should also be greater than
 		// zero
-		float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-		                    w.vector, dim_features);
+		float64_t score_0 = features->dot(0, w.slice(0, dim_features));
 		EXPECT_GE(score_0, 0);
 
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * dim_features, dim_features);
+		float64_t score = features->dot(
+		    0,
+		    w.slice(label * dim_features, label * dim_features + dim_features));
 		EXPECT_GE(score, 0);
 	}
 

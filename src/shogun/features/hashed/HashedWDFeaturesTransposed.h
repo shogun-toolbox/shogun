@@ -70,10 +70,10 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		/** compute dot product between vector1 and a dense vector
 		 *
 		 * @param vec_idx1 index of first vector
-		 * @param vec2 pointer to real valued vector
-		 * @param vec2_len length of real valued vector
+		 * @param vec2 dense vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const;
+		virtual float64_t
+		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 		/** Compute the dot product for a range of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b

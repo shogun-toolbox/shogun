@@ -132,14 +132,13 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 */
 		virtual const char* get_name() const { return "LBPPyrDotFeatures"; }
 
-		/** compute dot product of vector with index arg1
-		 *  with an given second vector
+		/** compute dot product between vector1 and a dense vector
 		 *
 		 * @param vec_idx1 index of first vector
-		 * @param vec2 second vector
-		 * @param vec2_len length of second vector
+		 * @param vec2 dense vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const;
+		virtual float64_t
+		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 		/** compute alpha*x+vec2
 		 *

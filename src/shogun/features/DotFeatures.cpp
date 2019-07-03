@@ -43,11 +43,6 @@ CDotFeatures::CDotFeatures(CFile* loader)
 	init();
 }
 
-float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> vec2) const
-{
-	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
-}
-
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(output)
@@ -57,6 +52,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0)
+	SGVector<float64_t> sgvec(vec, dim, false);
 
 	int32_t num_threads;
 	int32_t step;
@@ -90,9 +86,9 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #endif
 		{
 			if (alphas)
-				output[i]=alphas[i]*this->dense_dot(i + start, vec, dim)+b;
+				output[i]=alphas[i]*this->dot(i + start, sgvec)+b;
 			else
-				output[i]=this->dense_dot(i + start, vec, dim)+b;
+				output[i]=this->dot(i + start, sgvec)+b;
 			pb.print_progress();
 		}
 	}
@@ -104,6 +100,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	ASSERT(sub_index)
 	ASSERT(output)
 
+	SGVector<float64_t> sgvec(vec, dim, false);
 	auto pb = SG_PROGRESS(range(num));
 	int32_t num_threads;
 	int32_t step;
@@ -136,9 +133,9 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 #endif
 		{
 			if (alphas)
-				output[i]=alphas[sub_index[i]]*this->dense_dot(sub_index[i], vec, dim)+b;
+				output[i]=alphas[sub_index[i]]*this->dot(sub_index[i], sgvec)+b;
 			else
-				output[i]=this->dense_dot(sub_index[i], vec, dim)+b;
+				output[i]=this->dot(sub_index[i], sgvec)+b;
 			pb.print_progress();
 		}
 	}

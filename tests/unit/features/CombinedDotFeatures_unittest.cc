@@ -108,18 +108,17 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	EXPECT_EQ(result, 1*3*28 - 2*1*14 - 3*2*28);
 	SG_SINFO("Completed dot() testing");
 
-	SG_SINFO("Beginning dense_dot() testing");
-	float64_t* vector = new float64_t[9];
+	SG_SINFO("Beginning dot() testing");
+	SGVector<float64_t> vector(9);
 	for (index_t i=0; i<9; i++)
 	{
 		vector[i] = 10 + i;
 	}
 
-	result = comb_feat_1->dense_dot(1, vector, 9);
+	result = comb_feat_1->dot(1, vector);
 	EXPECT_EQ(result, 1 * 134 - 2 * 170 + 3 * 412);
 	SG_SINFO("Completed dense_dot() testing");
 
-	delete [] vector;
 	SG_UNREF(comb_feat_1);
 	SG_UNREF(comb_feat_2);
 }
