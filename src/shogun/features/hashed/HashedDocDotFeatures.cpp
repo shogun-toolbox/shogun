@@ -9,6 +9,8 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/mathematics/Math.h>
 
+#include <cmath>
+
 namespace shogun
 {
 CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<char>* docs,
@@ -96,14 +98,10 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	return result;
 }
 
-float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2) const
+float64_t CHashedDocDotFeatures::dot(
+	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
-}
-
-float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == CMath::pow(2,num_bits))
+	ASSERT(vec2.size() == std::pow(2,num_bits))
 
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 

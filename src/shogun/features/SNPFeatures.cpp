@@ -185,10 +185,12 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) cons
 	return total;
 }
 
-float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t
+CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
+	REQUIRE(
+	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim=%d, w_dim=%d\n",
+	    vec2.size(), w_dim)
 
 	float64_t sum=0;
 	int32_t len;

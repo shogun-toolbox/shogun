@@ -116,7 +116,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	{
 		SGVector<float64_t> ones(D);
 		SGVector<float64_t>::fill_vector(ones.vector, ones.vlen, 1);
-		float64_t dot = r_feats->dense_dot(i, ones.vector, ones.vlen);
+		float64_t dot = r_feats->dot(i, ones);
 		EXPECT_NEAR(dot, vec[i], e);
 	}
 	SG_UNREF(r_feats);

@@ -49,7 +49,7 @@ CLinearMachine::~CLinearMachine()
 
 float64_t CLinearMachine::apply_one(int32_t vec_idx)
 {
-	return features->dense_dot(vec_idx, m_w.vector, m_w.vlen) + bias;
+	return features->dot(vec_idx, m_w) + bias;
 }
 
 CRegressionLabels* CLinearMachine::apply_regression(CFeatures* data)

@@ -286,8 +286,8 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
                 float64_t sim = it->second;
 
 				// fetch vector
-				float64_t* tmp_w = V.get_column_vector(e_i);
-				inner_sum += sim * yi * prob->x->dense_dot(i, tmp_w, n);
+				SGVector<float64_t> tmp_w = V.get_column(e_i);
+				inner_sum += sim * yi * prob->x->dot(i, tmp_w);
 
 				//possibly deal with bias
 				//if (prob->use_bias)
@@ -471,8 +471,8 @@ return obj
 	for(int32_t i=0; i<num_vec; i++)
 	{
 		int32_t ti = task_indicator_lhs[i];
-		float64_t* w_t = W.get_column_vector(ti);
-		float64_t residual = ((CBinaryLabels*)m_labels)->get_label(i) * features->dense_dot(i, w_t, w_size);
+		SGVector<float64_t> w_t = W.get_column(ti);
+		float64_t residual = ((CBinaryLabels*)m_labels)->get_label(i) * features->dot(i, w_t);
 
 		// hinge loss
 		obj += C1 * CMath::max(0.0, 1 - residual);

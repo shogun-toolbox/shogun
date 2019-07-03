@@ -224,14 +224,17 @@ TEST(MultilabelCLRModel, argmax)
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	// calibrated/virtual label is considered to be last label
-	float64_t calibrated_score = ((CDotFeatures *)features)->dense_dot(0,
-	                             w.vector + labels->get_num_classes() * DIMS, DIMS);
+	float64_t calibrated_score = features->dot(
+	    0, w.slice(
+	           labels->get_num_classes() * DIMS,
+	           labels->get_num_classes() * DIMS + DIMS));
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
 		int32_t label = slabel_1[i];
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * DIMS, DIMS) - calibrated_score;
+		float64_t score =
+		    features->dot(0, w.slice(label * DIMS, label * DIMS + DIMS)) -
+		    calibrated_score;
 
 		// true label in this case is lab_2
 		if (label != lab_2[0])
@@ -253,8 +256,7 @@ TEST(MultilabelCLRModel, argmax)
 
 	for (index_t i = 0; i < labels->get_num_classes(); i++)
 	{
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + i * DIMS, DIMS);
+		float64_t score = features->dot(0, w.slice(i * DIMS, i * DIMS + DIMS));
 
 		bool present = false;
 

@@ -137,11 +137,12 @@ template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
 	return res;
 }
 
-template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dense_dot(
-	int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+template <class ST>
+float64_t CDenseSubSamplesFeatures<ST>::dot(
+	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	check_bound(vec_idx1);
-	return m_fea->dense_dot(m_idx[vec_idx1], vec2, vec2_len);
+	return m_fea->dot(m_idx[vec_idx1], vec2);
 }
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::check_bound(int32_t index) const

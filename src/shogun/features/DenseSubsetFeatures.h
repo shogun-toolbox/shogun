@@ -120,14 +120,14 @@ public:
 		if (dsf == NULL)
 			SG_ERROR("Require DenseSubsetFeatures of the same kind to perform dot\n")
 
-		if (m_idx.vlen != dsf->m_idx.vlen)
+		if (m_idx.size() != dsf->m_idx.size())
 			SG_ERROR("Cannot dot vectors of different length\n")
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		SGVector<ST> vec2 = dsf->m_fea->get_feature_vector(vec_idx2);
 
 		float64_t sum = 0;
-		for (int32_t i=0; i < m_idx.vlen; ++i)
+		for (int32_t i=0; i < m_idx.size(); ++i)
 			sum += vec1[m_idx[i]] * vec2[dsf->m_idx[i]];
 
 		return sum;
@@ -139,14 +139,15 @@ public:
 	 * @param vec2 pointer to real valued vector
 	 * @param vec2_len length of real valued vector
 	 */
-	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+	virtual float64_t
+	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 	{
-		if (m_idx.vlen != vec2_len)
-			SG_ERROR("Cannot dot vectors of different length\n")
+		REQUIRE(
+			m_idx.vlen == vec2.vlen, "Cannot dot vectors of different length\n")
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 
 		float64_t sum=0;
-		for (int32_t i=0; i < vec2_len; ++i)
+		for (int32_t i = 0; i < vec2.vlen; ++i)
 			sum += vec1[m_idx[i]] * vec2[i];
 
 		return sum;

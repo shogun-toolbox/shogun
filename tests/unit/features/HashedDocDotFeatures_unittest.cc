@@ -127,7 +127,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 		for (index_t j=0; j<dimension; j++)
 			converter_result += sv[j] * vec[j];
 
-		float64_t features_result = hddf->dense_dot(i, vec.vector, dimension);
+		float64_t features_result = hddf->dot(i, vec);
 		EXPECT_EQ(features_result, converter_result);
 	}
 
@@ -216,9 +216,9 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 		dot_product += i * vec[i];
 	}
 
-	float64_t hashed_dot_product = hddf->dense_dot(0, dense_vec.vector, dense_vec.vlen);
+	float64_t hashed_dot_product = hddf->dot(0, dense_vec);
 	EXPECT_EQ(hashed_dot_product, dot_product);
-	float64_t sparse_dot_product = sf->dense_dot(0, dense_vec.vector, dense_vec.vlen);
+	float64_t sparse_dot_product = sf->dot(0, dense_vec);
 	EXPECT_EQ(sparse_dot_product, dot_product);
 
 	SG_UNREF(sf);

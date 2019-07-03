@@ -154,7 +154,7 @@ TEST(HashedSparseFeaturesTest, dense_dot)
 		for (index_t j=0; j<hashing_dim; j++)
 			dot_product += tmp[j] * tmp[j];
 
-		float64_t feat_dot = h_feats->dense_dot(i, tmp.vector, tmp.vlen);
+		float64_t feat_dot = h_feats->dot(i, tmp);
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
@@ -219,7 +219,7 @@ TEST(HashedSparseFeaturesTest, quadratic_dense_dot)
 		for (index_t j=0; j<hashing_dim; j++)
 			dot_product += tmp[j] * tmp[j];
 
-		float64_t feat_dot = h_feats->dense_dot(i, tmp.vector, tmp.vlen);
+		float64_t feat_dot = h_feats->dot(i, tmp);
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
