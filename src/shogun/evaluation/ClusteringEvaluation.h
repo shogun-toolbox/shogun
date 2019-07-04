@@ -21,7 +21,7 @@ class CClusteringEvaluation: public CEvaluation
 {
 public:
 	/** constructor */
-	CClusteringEvaluation(): CEvaluation() {}
+	CClusteringEvaluation();
 
 	/** destructor */
 	virtual ~CClusteringEvaluation() {}
@@ -33,15 +33,22 @@ public:
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 */
-	void best_map(CLabels* predicted, CLabels* ground_truth);
+	CLabels* best_map(CLabels* predicted, CLabels* ground_truth);
 
 	/** evaluate labels
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
+	float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 protected:
+	/** implementation of label evaluation
+	 * @param predicted labels for evaluating
+	 * @param ground_truth labels assumed to be correct
+	 * @return evaluation result
+	 */
+	virtual float64_t evaluate_impl(CLabels* predicted, CLabels* ground_truth) = 0;
+
 	/** find number of matches in the two labels sequence.
 	 *
 	 * For each index i, if l1[i] == m1 and l2[i] == m2, then we get a match.
@@ -57,6 +64,11 @@ protected:
 	 * @see find_match_count
 	 */
 	int32_t find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2);
+
+private:
+	// A flag to find best match between predicted labels and the ground truth
+	// before evaluation
+	bool m_use_best_map;
 };
 
 } // namespace shogun

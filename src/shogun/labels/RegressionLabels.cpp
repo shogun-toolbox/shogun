@@ -1,5 +1,6 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
@@ -57,6 +58,9 @@ namespace shogun
 			case LT_REGRESSION:
 				return Some<CRegressionLabels>::from_raw(
 				    orig->as<CRegressionLabels>());
+			case LT_BINARY:
+				return some<CRegressionLabels>(
+					orig->as<CBinaryLabels>()->get_labels());
 			default:
 				SG_SNOTIMPLEMENTED
 			}

@@ -25,16 +25,6 @@ public:
 	/** destructor */
 	virtual ~CClusteringMutualInformation() {}
 
-	/** evaluate labels
-	 * Make sure to call CClusteringEvaluation::best_map to map the predicted label
-	 * before calculating mutual information.
-	 *
-	 * @param predicted labels for evaluating
-	 * @param ground_truth labels assumed to be correct
-	 * @return evaluation result
-	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
-
 	/** @return whether criterium has to be maximized or minimized */
 	virtual EEvaluationDirection get_evaluation_direction() const
 	{
@@ -50,6 +40,16 @@ public:
 	{
 		return "ClusteringMutualInformation";
 	}
+protected:
+	/** evaluate labels
+	 * Make sure to call CClusteringEvaluation::best_map to map the predicted label
+	 * before calculating mutual information.
+	 *
+	 * @param predicted labels for evaluating
+	 * @param ground_truth labels assumed to be correct
+	 * @return evaluation result
+	 */
+	virtual float64_t evaluate_impl(CLabels* predicted, CLabels* ground_truth);
 };
 
 }
