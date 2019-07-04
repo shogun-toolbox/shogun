@@ -44,9 +44,9 @@ namespace shogun
 			init();
 		}
 
-		virtual CSGObject* clone() const override
+		virtual CSGObject* clone(ParameterProperties pp = ParameterProperties::ALL) const override
 		{
-			auto clone = dynamic_cast<this_t*>(Parent::clone());
+			auto clone = dynamic_cast<this_t*>(Parent::clone(pp));
 			clone->m_prng = m_prng;
 			return clone;
 		}

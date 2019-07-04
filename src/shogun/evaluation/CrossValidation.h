@@ -13,6 +13,7 @@
 
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -121,18 +122,8 @@ namespace shogun
 	 * report,
 	 * HP Laboratories.] for details on this subject.
 	 *
-	 * Cross validation tries to lock underlying machines if that is possible to
-	 * speed up computations. Can be turned off by the set_autolock()  method.
-	 * Locking in general may speed up things (eg for kernel machines the kernel
-	 * matrix is precomputed), however, it is not always supported.
-	 *
-	 * Crossvalidation runs with current number of threads
-	 * (Parallel::set_num_threads) for unlocked case, and currently duplicates
-	 * all
-	 * objects (might be changed later).
-	 *
 	 */
-	class CCrossValidation : public CMachineEvaluation
+	class CCrossValidation : public RandomMixin<CMachineEvaluation>
 	{
 	public:
 		/** constructor */
@@ -144,25 +135,23 @@ namespace shogun
 		 * @param labels labels that correspond to the features
 		 * @param splitting_strategy splitting strategy to use
 		 * @param evaluation_criterion evaluation criterion to use
-		 * @param autolock whether machine should be auto-locked before
 		 * evaluation
 		 */
 		CCrossValidation(
 		    CMachine* machine, CFeatures* features, CLabels* labels,
 		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		    CEvaluation* evaluation_criterion);
 
 		/** constructor, for use with custom kernels (no features)
 		 * @param machine learning machine to use
 		 * @param labels labels that correspond to the features
 		 * @param splitting_strategy splitting strategy to use
 		 * @param evaluation_criterion evaluation criterion to use
-		 * @param autolock autolock
 		 */
 		CCrossValidation(
 		    CMachine* machine, CLabels* labels,
 		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		    CEvaluation* evaluation_criterion);
 
 		/** destructor */
 		virtual ~CCrossValidation();
@@ -184,10 +173,8 @@ namespace shogun
 		 * Does the actual evaluation.
 		 * @return the cross-validation result
 		 */
-		virtual CEvaluationResult* evaluate_impl();
+		virtual CEvaluationResult* evaluate_impl() const override;
 
-	protected:
-	protected:
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then
 		 * calculates
@@ -197,8 +184,7 @@ namespace shogun
 		 *
 		 * @return evaluation result of one cross-validation run
 		 */
-		virtual float64_t
-		evaluate_one_run(int64_t index, CrossValidationStorage* storage);
+		float64_t evaluate_one_run(int64_t index) const;
 
 		/** number of evaluation runs for one fold */
 		int32_t m_num_runs;

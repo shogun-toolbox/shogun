@@ -92,18 +92,6 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual float64_t apply_one(int32_t num);
 
-	protected:
-		/** Ensures cluster centers are in lhs of underlying distance
-		 *
-		 * NOT IMPLEMENTED!
-		 * Base method. Is called automatically after train because flag is
-		 * always true for distance machines.
-		 * Since every distance machine has to make sure that
-		 * cluster centers are in lhs of distance variable, it is unimplemented
-		 * here and HAS to be implemented in subclasses.
-		 */
-		virtual void store_model_features();
-
 	private:
 		void init();
 

@@ -14,7 +14,6 @@ Distance d = distance("EuclideanDistance", lhs=feats_train, rhs=feats_train)
 Machine kmeans = machine("KMeans", distance=d, k=2, seed=1)
 #![create_machine]
 
-
 #![create_pipeline]
 PipelineBuilder builder()
 builder.over(subMean)

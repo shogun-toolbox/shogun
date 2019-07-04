@@ -58,7 +58,7 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     cross_validation = machine_evaluation(
         "CrossValidation", machine=classifier, features=features,
         labels=labels, splitting_strategy=splitting_strategy,
-        evaluation_criterion=evaluation_criterium, autolock=False)
+        evaluation_criterion=evaluation_criterium)
 
     # model selection instance
     model_selection=GridSearchModelSelection(cross_validation, param_tree_root)

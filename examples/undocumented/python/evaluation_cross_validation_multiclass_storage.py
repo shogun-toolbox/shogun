@@ -63,7 +63,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     cross_validation = machine_evaluation(
         "CrossValidation", machine=svm, features=comb_features,
         labels=labels, splitting_strategy=splitting_strategy,
-        evaluation_criterion=evaluation_criterium, autolock=False, num_runs=3)
+        evaluation_criterion=evaluation_criterium, num_runs=3)
 
     # append cross validation parameter observer
     multiclass_storage=parameter_observer("ParameterObserverCV")

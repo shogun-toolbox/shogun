@@ -41,8 +41,10 @@ TEST(DynamicObjectArray,clone)
 	// Something relatively simple to add
 	CSubset * subset = new CSubset();
 	orig_array->append_element(subset);
+	EXPECT_EQ(orig_array->get_num_elements(), 1);
 
 	CDynamicObjectArray * cloned_array = (CDynamicObjectArray*) orig_array->clone();
+	EXPECT_EQ(cloned_array->get_num_elements(), 1);
 	// Expand the cloned array into reserved space to check if the cloned
 	// array has correctly allocated memory
 	for (index_t i=0; i < 100; ++i)

@@ -28,10 +28,10 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 	init();
 
-	// Call to init creates new preproc arrays.
-	SG_UNREF(preproc);
-	preproc = orig.preproc;
-	SG_REF(preproc);
+	// TODO this should be a shallow copy
+	auto old_preproc = preproc;
+	preproc = make_clone(preproc);
+	SG_UNREF(old_preproc);
 }
 
 CFeatures::CFeatures(CFile* loader)

@@ -185,6 +185,10 @@ bool CKMeans::train_machine(CFeatures* data)
 	initialize_training(data);
 	Lloyd_KMeans(mus, k);
 	compute_cluster_variances();
+	auto cluster_centres = new CDenseFeatures<float64_t>(mus);
+	SG_REF(cluster_centres);
+	auto old = distance->replace_lhs(cluster_centres);
+	SG_UNREF(old);
 	return true;
 }
 

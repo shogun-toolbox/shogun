@@ -94,9 +94,6 @@ class CKMeansBase : public RandomMixin<CDistanceMachine>
 		/** Initialize training for KMeans algorithms */
 		void initialize_training(CFeatures* data=NULL);
 
-		/** Ensures cluster centers are in lhs of underlying distance */
-		virtual void store_model_features();
-
 		/** K-Means++ algorithm to initialize cluster centers
 		*
 		* @return initial cluster centers: matrix (k columns, dim rows)

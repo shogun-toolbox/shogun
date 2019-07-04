@@ -58,7 +58,7 @@ def modelselection_random_search_liblinear (traindat=traindat, label_traindat=la
     cross_validation = machine_evaluation(
         "CrossValidation", machine=classifier, features=features,
         labels=labels, splitting_strategy=splitting_strategy,
-        evaluation_criterion=evaluation_criterium, autolock=False)
+        evaluation_criterion=evaluation_criterium)
 
     # model selection instance
     model_selection=RandomSearchModelSelection(cross_validation, param_tree_root, 0.5)

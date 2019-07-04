@@ -89,7 +89,7 @@ protected:
 	}
 
 	bool serialize_machine(
-	    CMachine* cmachine, std::string& filename, bool store_model_features)
+	    CMachine* cmachine, std::string& filename)
 	{
 		std::string class_name = cmachine->get_name();
 		filename = "shogun-unittest-trained-model-serialization-" + class_name +
@@ -110,7 +110,7 @@ protected:
 		return true;
 	}
 
-	bool test_serialization(bool store_model_features = false)
+	bool test_serialization()
 	{
 		machine->set_labels(train_labels);
 		machine->train(train_feats);
@@ -118,7 +118,7 @@ protected:
 		auto predictions = wrap<CLabels>(machine->apply(test_feats));
 
 		std::string filename;
-		if (!serialize_machine(machine, filename, store_model_features))
+		if (!serialize_machine(machine, filename))
 			return false;
 
 		if (!deserialize_machine(filename))
@@ -185,8 +185,5 @@ TYPED_TEST(TrainedKernelMachineSerialization, Test)
 {
 	CGaussianKernel* kernel = new CGaussianKernel(2.0);
 	this->machine->set_kernel(kernel);
-	for (auto store_model_features : {false, true})
-	{
-		EXPECT_TRUE(this->test_serialization(store_model_features));
-	}
+	EXPECT_TRUE(this->test_serialization());
 }

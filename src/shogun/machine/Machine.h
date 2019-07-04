@@ -131,13 +131,6 @@ enum EProblemType
  * A machine needs to override the train() function for training,
  * the functions apply(idx) (optionally apply() to predict on the
  * whole set of examples) and the load and save routines.
- *
- * Machines may support locking. This means that given some data, the machine
- * can be locked on this data to speed up computations. E.g. a kernel machine
- * may precompute its kernel. Only train_locked and apply_locked are available
- * when locked. There are methods for checking whether a machine supports
- * locking.
- *
  */
 class CMachine : public CStoppableSGObject
 {
@@ -160,14 +153,6 @@ class CMachine : public CStoppableSGObject
 		 * @return whether training was successful
 		 */
 		virtual bool train(CFeatures* data=NULL);
-
-#ifndef SWIG // SWIG should skip this part
-		/** Trains a locked machine on a set of indices. Error if machine is
-		 * not locked
-		 * @return whether training was successful
-		 */
-		virtual bool train_locked();
-#endif
 
 		/** apply machine to data
 		 * if data is not specified apply to the current features
@@ -230,83 +215,12 @@ class CMachine : public CStoppableSGObject
 		 */
 		ESolverType get_solver_type();
 
-		/** Setter for store-model-features-after-training flag
-		 *
-		 * @param store_model whether model should be stored after
-		 * training
-		 */
-		virtual void set_store_model_features(bool store_model);
-
-#ifndef SWIG // SWIG should skip this part
-		/** Trains a locked machine on a set of indices. Error if machine is
-		 * not locked
-		 *
-		 * NOT IMPLEMENTED
-		 *
-		 * @param indices index vector (of locked features) that is used for training
-		 * @return whether training was successful
-		 */
-		virtual bool train_locked(SGVector<index_t> indices)
-		{
-			SG_ERROR("train_locked(SGVector<index_t>) is not yet implemented "
-					"for %s\n", get_name());
-			return false;
-		}
-#endif // SWIG // SWIG should skip this part
-
 		/** applies to one vector */
 		virtual float64_t apply_one(int32_t i)
 		{
 			SG_NOTIMPLEMENTED
 			return 0.0;
 		}
-
-#ifndef SWIG // SWIG should skip this part
-		/** Applies a locked machine on a set of indices. Error if machine is
-		 * not locked
-		 *
-		 * @param indices index vector (of locked features) that is predicted
-		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices);
-
-		/** applies a locked machine on a set of indices for binary problems */
-		virtual CBinaryLabels* apply_locked_binary(
-				SGVector<index_t> indices);
-		/** applies a locked machine on a set of indices for regression problems */
-		virtual CRegressionLabels* apply_locked_regression(
-				SGVector<index_t> indices);
-		/** applies a locked machine on a set of indices for multiclass problems */
-		virtual CMulticlassLabels* apply_locked_multiclass(
-				SGVector<index_t> indices);
-		/** applies a locked machine on a set of indices for structured problems */
-		virtual CStructuredLabels* apply_locked_structured(
-				SGVector<index_t> indices);
-		/** applies a locked machine on a set of indices for latent problems */
-		virtual CLatentLabels* apply_locked_latent(
-				SGVector<index_t> indices);
-#endif // SWIG // SWIG should skip this part
-
-		/** Locks the machine on given labels and data. After this call, only
-		 * train_locked and apply_locked may be called
-		 *
-		 * Only possible if supports_locking() returns true
-		 *
-		 * @param labs labels used for locking
-		 * @param features features used for locking
-		 */
-		virtual void data_lock(CLabels* labs, CFeatures* features);
-
-		/** post lock */
-		virtual void post_lock(CLabels* labs, CFeatures* features) { };
-
-		/** Unlocks a locked machine and restores previous state */
-		virtual void data_unlock();
-
-		/** @return whether this machine supports locking */
-		virtual bool supports_locking() const { return false; }
-
-		/** @return whether this machine is locked */
-		bool is_data_locked() const { return m_data_locked; }
 
 		/** returns type of problem machine solves */
 		virtual EProblemType get_machine_problem_type() const
@@ -383,23 +297,6 @@ class CMachine : public CStoppableSGObject
 			return false;
 		}
 
-		/** Stores feature data of underlying model.
-		 * After this method has been called, it is possible to change
-		 * the machine's feature data and call apply(), which is then performed
-		 * on the training feature data that is part of the machine's model.
-		 *
-		 * Base method, has to be implemented in order to allow cross-validation
-		 * and model selection.
-		 *
-		 * NOT IMPLEMENTED! Has to be done in subclasses
-		 */
-		virtual void store_model_features()
-		{
-			SG_ERROR("Model storage and therefore unlocked Cross-Validation and"
-					" Model-Selection is not supported for %s. Locked may"
-					" work though.\n", get_name());
-		}
-
 		/** check whether the labels is valid.
 		 *
 		 * Subclasses can override this to implement their check of label types.
@@ -420,12 +317,6 @@ class CMachine : public CStoppableSGObject
 
 		/** solver type */
 		ESolverType m_solver_type;
-
-		/** whether model features should be stored after training */
-		bool m_store_model_features;
-
-		/** whether data is locked */
-		bool m_data_locked;
 };
 }
 #endif // _MACHINE_H__

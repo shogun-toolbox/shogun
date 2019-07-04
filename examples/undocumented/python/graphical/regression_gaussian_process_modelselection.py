@@ -59,7 +59,7 @@ def regression_gaussian_process_modelselection (n=100, n_test=100, \
 	grad = machine_evaluation(
 		"GradientEvaluation", machine=gp, features=feats_train,
 		labels=labels, evaluation_criterion=GradientCriterion(),
-		autolock=False, differentiable_function=inf)
+		differentiable_function=inf)
 
 	# handles all of the above structures in memory
 	grad_search = GradientModelSelection(grad)

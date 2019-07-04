@@ -71,7 +71,7 @@ CSplittingStrategy::~CSplittingStrategy()
 	SG_UNREF(m_subset_indices);
 }
 
-SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx)
+SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{
@@ -95,7 +95,7 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 	return result;
 }
 
-SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx)
+SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{

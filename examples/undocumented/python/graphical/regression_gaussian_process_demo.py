@@ -268,8 +268,6 @@ def run_demo():
     grad_search=GradientModelSelection(
 			root, grad);
 
-    grad.set_autolock(0);
-
     best_combination=grad_search.select_model(1);
 
     gp.set_return_type(GaussianProcessRegression.GP_RETURN_COV);

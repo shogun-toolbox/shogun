@@ -159,7 +159,7 @@ class Form(QMainWindow):
         grad = machine_evaluation(
                 machine=gp, features=feat_train, labels=labels,
                 evaluation_criterion=crit,
-                differentiable_function=inf, autolock=False)
+                differentiable_function=inf)
 
         gp.print_modsel_params();
 

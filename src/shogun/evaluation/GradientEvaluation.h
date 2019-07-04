@@ -60,7 +60,7 @@ public:
 	*
 	* @return differentiable function
 	*/
-	inline CDifferentiableFunction* get_function()
+	inline CDifferentiableFunction* get_function() const
 	{
 		SG_REF(m_diff);
 		return m_diff;
@@ -74,17 +74,17 @@ private:
 	 *
 	 * @return GradientResult containing value and gradient
 	 */
-	virtual CEvaluationResult* evaluate_impl();
+	virtual CEvaluationResult* evaluate_impl() const;
 
 	/** updates parameter dictionary of differentiable function */
-	void update_parameter_dictionary();
+	void update_parameter_dictionary() const;
 
 private:
 	/** differentiable function */
 	CDifferentiableFunction* m_diff;
 
 	/** parameter dictionary of differentiable function */
-	CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
+	mutable CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */

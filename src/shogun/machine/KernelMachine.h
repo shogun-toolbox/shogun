@@ -40,11 +40,6 @@ class CFeatures;
  *
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * in a training procedure.
- *
- * Kernel machines support locking. This means that given some data, the machine
- * can be locked. When this is done, the kernel matrix is computed and stored in
- * a custom kernel. Speeds up cross-validation. Only train_locked and
- * apply_locked are available when locked.
  */
 class CKernelMachine : public CMachine
 {
@@ -226,59 +221,13 @@ class CKernelMachine : public CMachine
 		 */
 		virtual float64_t apply_one(int32_t num);
 
-#ifndef SWIG // SWIG should skip this part
-
-		/** This precomputes the kernel matrix and stores it
+		/** Stores feature data of the SV indices and sets it to the lhs of the
+		 * underlying kernel. Then, all SV indices are set to identity.
 		 *
-		 *  @param indices index vector (of locked features) that is used for
-+		 *  training
-		 *  @return whether training was successful
+		 * May be overwritten by subclasses in case the model should be stored
+		 * differently.
 		 */
-		virtual bool train_locked(SGVector<index_t> indices);
-
-		/** Applies a locked machine on a set of indices. Error if machine is
-		 * not locked. Binary case
-		 *
-		 * @param indices index vector (of locked features) that is predicted
-		 * @return resulting labels
-		 */
-
-		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
-
-		/** Applies a locked machine on a set of indices. Error if machine is
-		 * not locked. Binary case
-		 *
-		 * @param indices index vector (of locked features) that is predicted
-		 * @return resulting labels
-		 */
-		virtual CRegressionLabels* apply_locked_regression(
-				SGVector<index_t> indices);
-
-		/** Applies a locked machine on a set of indices. Error if machine is
-		 * not locked
-		 *
-		 * @param indices index vector (of locked features) that is predicted
-		 * @return raw output of machine
-		 */
-		virtual SGVector<float64_t> apply_locked_get_output(
-				SGVector<index_t> indices);
-#endif // SWIG // SWIG should skip this part
-
-		/** Locks the machine on given labels and data. After this call, only
-		 * train_locked and apply_locked may be called.
-		 *
-		 * Computes kernel matrix to speed up train/apply calls
-		 *
-		 * @param labs labels used for locking
-		 * @param features features used for locking
-		 */
-		virtual void data_lock(CLabels* labs, CFeatures* features=NULL);
-
-		/** Unlocks a locked machine and restores previous state */
-		virtual void data_unlock();
-
-		/** @return whether machine supports locking */
-		virtual bool supports_locking() const;
+		virtual void store_model_features();
 
 	protected:
 
@@ -289,13 +238,6 @@ class CKernelMachine : public CMachine
 		 */
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
-		/** Stores feature data of the SV indices and sets it to the lhs of the
-		 * underlying kernel. Then, all SV indices are set to identity.
-		 *
-		 * May be overwritten by subclasses in case the model should be stored
-		 * differently.
-		 */
-		virtual void store_model_features();
 
 	private:
 		/** register parameters and do misc init */
@@ -304,12 +246,6 @@ class CKernelMachine : public CMachine
 	protected:
 		/** kernel */
 		CKernel* kernel;
-
-		/** is filled with pre-computed custom kernel on data lock */
-		CCustomKernel* m_custom_kernel;
-
-		/** old kernel is stored here on data lock */
-		CKernel* m_kernel_backup;
 
 		/** if batch computation is enabled */
 		bool use_batch_computation;

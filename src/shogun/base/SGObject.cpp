@@ -110,8 +110,12 @@ namespace shogun
 			ParametersMap result;
 			std::copy_if(
 			    map.cbegin(), map.cend(), std::inserter(result, result.end()),
-			    [&pprop](const std::pair<BaseTag, AnyParameter>& each) {
-				    return each.second.get_properties().has_property(pprop);
+			    [&pprop](const auto& each) {
+					auto p = each.second.get_properties();
+					// if the filter mask is ALL, also include parameters with no set properties (NONE)
+				    return p.has_property(pprop) ||
+								(pprop==ParameterProperties::ALL &&
+								p.compare_mask(ParameterProperties::NONE));
 			    });
 			return result;
 		}
@@ -339,7 +343,7 @@ void CSGObject::set_global_parallel(Parallel* new_parallel)
 	sg_parallel=new_parallel;
 }
 
-void CSGObject::update_parameter_hash()
+void CSGObject::update_parameter_hash() const
 {
 	SG_DEBUG("entering\n")
 
@@ -457,6 +461,7 @@ std::string CSGObject::get_description(const std::string& name) const
 		SG_SERROR(
 		    "There is no parameter called '%s' in %s", name.c_str(),
 		    this->get_name());
+		return "";
 	}
 }
 
@@ -563,7 +568,7 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-CSGObject* CSGObject::clone() const
+CSGObject* CSGObject::clone(ParameterProperties pp) const
 {
 	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), this);
 	SG_DEBUG("Constructing an empty instance of %s.\n", get_name());
@@ -578,7 +583,7 @@ CSGObject* CSGObject::clone() const
 	          "CSGObject::create_empty() overridden.\n",
 	    get_name());
 
-	for (const auto &it : self->map)
+	for (const auto &it : self->filter(pp))
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();

@@ -44,10 +44,6 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver)
 
 void CKNN::init()
 {
-	/* do not store model features by default (CDistanceMachine::apply(...) is
-	 * overwritten */
-	set_store_model_features(false);
-
 	m_k=3;
 	m_q=1.0;
 	m_num_classes=0;
@@ -290,18 +286,6 @@ bool CKNN::save(FILE* dstfile)
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
-}
-
-void CKNN::store_model_features()
-{
-	CFeatures* d_lhs=distance->get_lhs();
-	CFeatures* d_rhs=distance->get_rhs();
-
-	/* copy lhs of underlying distance */
-	distance->init(d_lhs->duplicate(), d_rhs);
-
-	SG_UNREF(d_lhs);
-	SG_UNREF(d_rhs);
 }
 
 void CKNN::init_solver(KNN_SOLVER knn_solver)

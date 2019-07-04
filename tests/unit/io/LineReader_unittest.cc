@@ -62,7 +62,7 @@ TEST(LineReaderTest, read_yourself)
 	}
 
 	// now read lines using getline
-	// and check it on equality
+	// and check them for equality
 	rewind(fin);
 	lines_count=0;
 	while (fgets(temp_string.vector, temp_string.vlen, fin)!=NULL)

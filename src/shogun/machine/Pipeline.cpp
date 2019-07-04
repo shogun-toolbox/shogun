@@ -225,17 +225,7 @@ namespace shogun
 		return shogun::get<CMachine*>(m_stages.back().second);
 	}
 
-	void CPipeline::set_store_model_features(bool store_model)
-	{
-		get_machine()->set_store_model_features(store_model);
-	}
-
-	void CPipeline::store_model_features()
-	{
-		get_machine()->store_model_features();
-	}
-
-	CSGObject* CPipeline::clone() const
+	CSGObject* CPipeline::clone(ParameterProperties pp) const
 	{
 		auto result = CMachine::clone()->as<CPipeline>();
 		for (auto&& stage : m_stages)
@@ -244,7 +234,7 @@ namespace shogun
 			    [&](auto object) {
 				    result->m_stages.emplace_back(
 				        stage.first,
-				        object->clone()
+				        object->clone(pp)
 				            ->template as<typename std::remove_pointer<decltype(
 				                object)>::type>());
 				},

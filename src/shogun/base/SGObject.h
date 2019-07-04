@@ -1000,7 +1000,7 @@ protected:
 
 public:
 	/** Updates the hash of current parameter combination */
-	virtual void update_parameter_hash();
+	virtual void update_parameter_hash() const;
 
 	/**
 	 * @return whether parameter combination has changed since last update
@@ -1016,13 +1016,10 @@ public:
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
-	 * Calling equals on the cloned object always returns true although none
-	 * of the memory of both objects overlaps.
 	 *
-	 * @return an identical copy of the given object, which is disjoint in memory.
-	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
+	 * @return Cloned object
 	 */
-	virtual CSGObject* clone() const;
+	virtual CSGObject* clone(ParameterProperties pp = ParameterProperties::ALL) const;
 
 	/**
 	 * Looks up the option name of a parameter given the enum value.
@@ -1261,7 +1258,7 @@ protected:
 		Parameter* m_gradient_parameters;
 
 		/** Hash of parameter values*/
-		size_t m_hash;
+		mutable size_t m_hash;
 
 	private:
 		EPrimitiveType m_generic;
@@ -1285,6 +1282,24 @@ protected:
 		std::map<int64_t, rxcpp::subscription> m_subscriptions;
 		int64_t m_next_subscription_index;
 	};
+
+template <class T>
+T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
+{
+	REQUIRE(orig, "No object provided.\n");
+	auto clone = orig->clone(pp);
+	ASSERT(clone);
+	return static_cast<T*>(clone);
+}
+
+template <class T>
+const T* make_clone(const T* orig, ParameterProperties pp = ParameterProperties::ALL)
+{
+	REQUIRE(orig, "No object provided.\n");
+	auto clone = orig->clone(pp);
+	ASSERT(clone);
+	return static_cast<const T*>(clone);
+}
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

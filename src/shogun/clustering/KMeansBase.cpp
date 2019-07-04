@@ -200,26 +200,7 @@ bool CKMeansBase::save(FILE* dstfile)
 
 SGMatrix<float64_t> CKMeansBase::get_cluster_centers() const
 {
-	if (!R.vector)
-		return SGMatrix<float64_t>();
-
-	CDenseFeatures<float64_t>* lhs=
-		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
-	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
-	SG_UNREF(lhs);
-	return centers;
-}
-
-void CKMeansBase::store_model_features()
-{
-	/* set lhs of underlying distance to cluster centers */
-	CDenseFeatures<float64_t>* cluster_centers=new CDenseFeatures<float64_t>(
-			mus);
-
-	/* store cluster centers in lhs of distance variable */
-	CFeatures* rhs=distance->get_rhs();
-	distance->init(cluster_centers, rhs);
-	SG_UNREF(rhs);
+	return mus;
 }
 
 SGMatrix<float64_t> CKMeansBase::kmeanspp()
