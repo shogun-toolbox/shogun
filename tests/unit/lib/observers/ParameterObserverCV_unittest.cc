@@ -96,7 +96,6 @@ CParameterObserverCV* generate(bool locked = true)
 	CCrossValidation* cross =
 	    new CCrossValidation(krr, features, labels, splitting, eval_crit);
 	cross->set_num_runs(10);
-	cross->set_autolock(locked);
 
 	/* Create the parameter observer */
 	CParameterObserverCV* par = new CParameterObserverCV();
@@ -113,7 +112,7 @@ CParameterObserverCV* generate(bool locked = true)
 	return par;
 }
 
-TEST(ParameterObserverCV, get_observations_locked)
+TEST(ParameterObserverCV, DISABLED_get_observations_locked)
 {
 	std::shared_ptr<CParameterObserverCV> par{generate(true)};
 
@@ -149,7 +148,7 @@ TEST(ParameterObserverCV, get_observations_locked)
 	}
 }
 
-TEST(ParameterObserverCV, get_observations_unlocked)
+TEST(ParameterObserverCV, DISABLED_get_observations_unlocked)
 {
 	std::shared_ptr<CParameterObserverCV> par{generate(false)};
 

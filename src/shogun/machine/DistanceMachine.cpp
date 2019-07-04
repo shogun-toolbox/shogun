@@ -28,12 +28,6 @@ CDistanceMachine::~CDistanceMachine()
 
 void CDistanceMachine::init()
 {
-	/* all distance machines should store their models, i.e. cluster centers
-	 * At least, it has to be ensured, that after calling train(), or in the
-	 * call of apply() in the cases where there is no train method, the lhs
-	 * of the underlying distance is set to cluster centers */
-	set_store_model_features(true);
-
 	distance=NULL;
 	SG_ADD(&distance, "distance", "Distance to use", ParameterProperties::HYPER);
 }
@@ -166,11 +160,5 @@ CDistance* CDistanceMachine::get_distance() const
 {
 	SG_REF(distance);
 	return distance;
-}
-
-void CDistanceMachine::store_model_features()
-{
-	SG_ERROR("store_model_features not yet implemented for %s!\n",
-	         get_name());
 }
 

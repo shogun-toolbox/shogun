@@ -17,16 +17,34 @@
 namespace shogun
 {
 	/** parameter properties */
-	enum class ParameterProperties
+	enum class ParameterProperties : uint32_t
 	{
 		NONE = 0,
+
+		// influence training but not changed in training (e.g. kernel
+		// bandwidth), could be learned by model selection
 		HYPER = 1u << 0,
+
+		// gradient available/implemented
 		GRADIENT = 1u << 1,
+
+		// result/outcome of training
 		MODEL = 1u << 2,
+
+		// influence training, but no hyper parameter of model (e.g. batch size, bias used)
+		SETTING = 1u << 3,
+
+		// has automatically computed value
 		AUTO = 1u << 10,
+
 		READONLY = 1u << 11,
+
+		// an executable function
 		RUNFUNCTION = 1u << 12,
-		CONSTRAIN = 1u << 13
+
+		CONSTRAIN = 1u << 13,
+
+		ALL = std::numeric_limits<uint32_t>::max(),
 	};
 
 	static const std::list<std::pair<ParameterProperties, std::string>>
@@ -34,7 +52,8 @@ namespace shogun
 	        {ParameterProperties::NONE, "NONE"},
 	        {ParameterProperties::HYPER, "HYPER"},
 	        {ParameterProperties::GRADIENT, "GRADIENT"},
-	        {ParameterProperties::MODEL, "MODEL"},
+			{ParameterProperties::MODEL, "MODEL"},
+			{ParameterProperties::SETTING, "SETTING"},
 	        {ParameterProperties::AUTO, "AUTO"},
 	        {ParameterProperties::READONLY, "READONLY"},
 	        {ParameterProperties::RUNFUNCTION, "RUNFUNCTION"},

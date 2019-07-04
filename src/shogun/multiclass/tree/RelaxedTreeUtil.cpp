@@ -20,8 +20,6 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 	SGMatrix<float64_t> conf_mat(num_classes, num_classes), tmp_mat(num_classes, num_classes);
 	conf_mat.zero();
 
-	machine->set_store_model_features(true);
-
 	for (int32_t i=0; i < N_splits; ++i)
 	{
 		// subset for training

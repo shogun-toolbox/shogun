@@ -53,13 +53,15 @@ void CLibLinearRegression::register_parameters()
 	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_epsilon, "epsilon", "tolerance of termination criterion",
-	    ParameterProperties::HYPER);
-	SG_ADD(&m_max_iter, "max_iterations", "max number of iterations");
-	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used");
+	    ParameterProperties::SETTING);
+	SG_ADD(&m_max_iter, "max_iterations", "max number of iterations",
+			ParameterProperties::SETTING);
+	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used",
+			ParameterProperties::SETTING);
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_liblinear_regression_type,
 	    "liblinear_regression_type", "Type of LibLinear regression.",
-	    ParameterProperties::NONE,
+	    ParameterProperties::SETTING,
 	    SG_OPTIONS(L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL, L2R_L2LOSS_SVR_DUAL));
 }
 

@@ -93,7 +93,6 @@ void test_svmlight()
 	CSVM* svm=new CSVMLight(C, kernel, labels_train);
 //	CSVM* svm=new CLibSVM(C, kernel, labels_train);
 	svm->parallel->set_num_threads(1);
-	svm->set_store_model_features(false);
 	svm->train(feats_train);
 	SGVector<float64_t> alphas=svm->get_alphas();
 	SGVector<index_t> svs=svm->get_support_vectors();

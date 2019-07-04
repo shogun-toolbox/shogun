@@ -217,7 +217,6 @@ CRelaxedTree::bnode_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_
 	{
 		CSVM *svm = new CLibSVM();
 		SG_REF(svm);
-		svm->set_store_model_features(true);
 
 		SGVector<int32_t> mu = train_node_with_initialization(*it, classes, svm);
 		float64_t score = compute_score(mu, svm);

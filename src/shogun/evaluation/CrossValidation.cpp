@@ -16,31 +16,29 @@
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/util/converters.h>
+#include <shogun/lib/View.h>
 
 using namespace shogun;
 
-CCrossValidation::CCrossValidation() : CMachineEvaluation()
+CCrossValidation::CCrossValidation() : RandomMixin<CMachineEvaluation>()
 {
 	init();
 }
 
 CCrossValidation::CCrossValidation(
     CMachine* machine, CFeatures* features, CLabels* labels,
-    CSplittingStrategy* splitting_strategy, CEvaluation* evaluation_criterion,
-    bool autolock)
-    : CMachineEvaluation(
-          machine, features, labels, splitting_strategy, evaluation_criterion,
-          autolock)
+    CSplittingStrategy* splitting_strategy, CEvaluation* evaluation_criterion)
+    : RandomMixin<CMachineEvaluation>(
+          machine, features, labels, splitting_strategy, evaluation_criterion)
 {
 	init();
 }
 
 CCrossValidation::CCrossValidation(
     CMachine* machine, CLabels* labels, CSplittingStrategy* splitting_strategy,
-    CEvaluation* evaluation_criterion, bool autolock)
-    : CMachineEvaluation(
-          machine, labels, splitting_strategy, evaluation_criterion, autolock)
+    CEvaluation* evaluation_criterion)
+    : RandomMixin<CMachineEvaluation>(
+          machine, labels, splitting_strategy, evaluation_criterion)
 {
 	init();
 }
@@ -56,67 +54,16 @@ void CCrossValidation::init()
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions");
 }
 
-CEvaluationResult* CCrossValidation::evaluate_impl()
+CEvaluationResult* CCrossValidation::evaluate_impl() const
 {
-	/* if for some reason the do_unlock_frag is set, unlock */
-	if (m_do_unlock)
-	{
-		m_machine->data_unlock();
-		m_do_unlock = false;
-	}
-
-	/* set labels in any case (no locking needs this) */
-	m_machine->set_labels(m_labels);
-
-	if (m_autolock)
-	{
-		/* if machine supports locking try to do so */
-		if (m_machine->supports_locking())
-		{
-			/* only lock if machine is not yet locked */
-			if (!m_machine->is_data_locked())
-			{
-				m_machine->data_lock(m_labels, m_features);
-				m_do_unlock = true;
-			}
-		}
-		else
-		{
-			SG_WARNING(
-			    "%s does not support locking. Autolocking is skipped. "
-			    "Set autolock flag to false to get rid of warning.\n",
-			    m_machine->get_name());
-		}
-	}
-
 	SGVector<float64_t> results(m_num_runs);
 
 	/* perform all the x-val runs */
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
 	for (auto i : SG_PROGRESS(range(m_num_runs)))
 	{
-		/* evtl. update xvalidation output class */
-		SG_DEBUG("Creating CrossValidationStorage.\n")
-		CrossValidationStorage* storage = new CrossValidationStorage();
-		SG_REF(storage)
-		storage->put("num_runs", utils::safe_convert<index_t>(m_num_runs));
-		storage->put(
-		    "num_folds", utils::safe_convert<index_t>(
-		                     m_splitting_strategy->get_num_subsets()));
-		storage->put("labels", m_labels);
-		storage->post_init();
-		SG_DEBUG("Ending CrossValidationStorage initilization.\n")
-
-		SG_DEBUG("entering cross-validation run %d \n", i)
-		results[i] = evaluate_one_run(i, storage);
-		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
-
-		/* Emit the value */
-		observe(
-		    i, "cross_validation_run", "One run of CrossValidation",
-		    storage->as<CEvaluationResult>());
-
-		SG_UNREF(storage)
+		results[i] = evaluate_one_run(i);
+		SG_INFO("Result of cross-validation run %d/%d is %f\n", i+1, m_num_runs, results[i])
 	}
 
 	/* construct evaluation result */
@@ -126,13 +73,6 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		result->set_std_dev(CStatistics::std_deviation(results));
 	else
 		result->set_std_dev(0);
-
-	/* unlock machine if it was locked in this method */
-	if (m_machine->is_data_locked() && m_do_unlock)
-	{
-		m_machine->data_unlock();
-		m_do_unlock = false;
-	}
 
 	SG_REF(result);
 	return result;
@@ -146,203 +86,57 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs = num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run(
-    int64_t index, CrossValidationStorage* storage)
+float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
 	index_t num_subsets = m_splitting_strategy->get_num_subsets();
 
 	SG_DEBUG("building index sets for %d-fold cross-validation\n", num_subsets)
-
-	/* build index sets */
 	m_splitting_strategy->build_subsets();
 
-	/* results array */
 	SGVector<float64_t> results(num_subsets);
 
-	/* different behavior whether data is locked or not */
-	if (m_machine->is_data_locked())
+	#pragma omp parallel for shared(results)
+	for (auto i = 0; i<num_subsets; ++i)
 	{
-		m_machine->set_store_model_features(true);
-		SG_DEBUG("starting locked evaluation\n", get_name())
-		/* do actual cross-validation */
-		for (auto i : SG_PROGRESS(range(num_subsets)))
-		{
-			COMPUTATION_CONTROLLERS
+		// only need to clone hyperparameters and settings of machine
+		// model parameters are inferred/learned during training
+		auto machine = make_clone(m_machine,
+				ParameterProperties::HYPER | ParameterProperties::SETTING);
 
-			/* evtl. update xvalidation output class */
-			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
-			SG_REF(fold)
-			fold->put("run_index", (index_t)index);
-			fold->put("fold_index", i);
+		SGVector<index_t> idx_train =
+			m_splitting_strategy->generate_subset_inverse(i);
 
-			/* index subset for training, will be freed below */
-			SGVector<index_t> inverse_subset_indices =
-			    m_splitting_strategy->generate_subset_inverse(i);
+		SGVector<index_t> idx_test =
+			m_splitting_strategy->generate_subset_indices(i);
 
-			/* train machine on training features */
-			m_machine->train_locked(inverse_subset_indices);
+		auto features_train = view(m_features, idx_train);
+		auto labels_train = view(m_labels, idx_train);
+		auto features_test = view(m_features, idx_test);
+		auto labels_test = view(m_labels, idx_test);
+		SG_REF(features_train);
+		SG_REF(labels_train);
+		SG_REF(features_test);
+		SG_REF(labels_test);
 
-			/* feature subset for testing */
-			SGVector<index_t> subset_indices =
-			    m_splitting_strategy->generate_subset_indices(i);
+		auto evaluation_criterion = make_clone(m_evaluation_criterion);
 
-			/* evtl. update xvalidation output class */
-			fold->put("train_indices", inverse_subset_indices);
-			auto fold_machine = (CMachine*)m_machine->clone();
-			SG_REF(fold_machine)
-			fold->put("trained_machine", fold_machine);
-			SG_UNREF(fold_machine)
+		machine->set_labels(labels_train);
+		machine->train(features_train);
 
-			/* produce output for desired indices */
-			CLabels* result_labels = m_machine->apply_locked(subset_indices);
-			SG_REF(result_labels);
+		auto result_labels = machine->apply(features_test);
+		SG_REF(result_labels);
 
-			/* set subset for testing labels */
-			m_labels->add_subset(subset_indices);
+		results[i] = evaluation_criterion->evaluate(result_labels, labels_test);
+		SG_INFO("Result of cross-validation fold %d/%d is %f\n", i+1, num_subsets, results[i])
 
-			/* evaluate against own labels */
-			m_evaluation_criterion->set_indices(subset_indices);
-			results[i] =
-			    m_evaluation_criterion->evaluate(result_labels, m_labels);
-
-			/* evtl. update xvalidation output class */
-			fold->put("test_indices", subset_indices);
-			fold->put("predicted_labels", result_labels);
-			CLabels* true_labels = (CLabels*)m_labels->clone();
-			SG_REF(true_labels)
-			fold->put("ground_truth_labels", true_labels);
-			fold->post_update_results();
-			fold->put("evaluation_result", results[i]);
-
-			/* remove subset to prevent side effects */
-			m_labels->remove_subset();
-
-			/* Save fold into storage */
-			storage->append_fold_result(fold);
-
-			/* clean up */
-			SG_UNREF(result_labels);
-			SG_UNREF(true_labels)
-			SG_UNREF(fold);
-
-			SG_DEBUG("done locked evaluation\n", get_name())
-		}
-	}
-	else
-	{
-		SG_DEBUG("starting unlocked evaluation\n", get_name())
-		/* tell machine to store model internally
-		 * (otherwise changing subset of features will kaboom the classifier) */
-		m_machine->set_store_model_features(true);
-
-		/* do actual cross-validation */
-
-		// TODO parallel xvalidation needs some serious fixing, see #3743
-		//#pragma omp parallel for
-		for (index_t i = 0; i < num_subsets; ++i)
-		{
-			COMPUTATION_CONTROLLERS
-
-			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
-			SG_REF(fold)
-
-			auto machine = (CMachine*)m_machine->clone();
-
-			// TODO while these are not used through const interfaces,
-			// we unfortunately have to clone, even though these could be shared
-			auto features = (CFeatures*)m_features->clone();
-			auto labels = (CLabels*)m_labels->clone();
-			auto evaluation_criterion =
-			    (CEvaluation*)m_evaluation_criterion->clone();
-
-			/* evtl. update xvalidation output class */
-			fold->put("run_index", (index_t)index);
-			fold->put("fold_index", i);
-
-			/* set feature subset for training */
-			SGVector<index_t> inverse_subset_indices =
-			    m_splitting_strategy->generate_subset_inverse(i);
-
-			features->add_subset(inverse_subset_indices);
-
-			/* set label subset for training */
-			labels->add_subset(inverse_subset_indices);
-
-			SG_DEBUG("training set %d:\n", i)
-			if (io->get_loglevel() == MSG_DEBUG)
-			{
-				SGVector<index_t>::display_vector(
-				    inverse_subset_indices.vector, inverse_subset_indices.vlen,
-				    "training indices");
-			}
-
-			/* train machine on training features and remove subset */
-			SG_DEBUG("starting training\n")
-			machine->set_labels(labels);
-			machine->train(features);
-			SG_DEBUG("finished training\n")
-
-			/* evtl. update xvalidation output class */
-			fold->put("train_indices", inverse_subset_indices);
-			auto fold_machine = (CMachine*)machine->clone();
-			fold->put("trained_machine", fold_machine);
-			SG_UNREF(fold_machine)
-
-			features->remove_subset();
-			labels->remove_subset();
-
-			/* set feature subset for testing (subset method that stores
-			 * pointer) */
-			SGVector<index_t> subset_indices =
-			    m_splitting_strategy->generate_subset_indices(i);
-			features->add_subset(subset_indices);
-
-			/* set label subset for testing */
-			labels->add_subset(subset_indices);
-
-			SG_DEBUG("test set %d:\n", i)
-			if (io->get_loglevel() == MSG_DEBUG)
-			{
-				SGVector<index_t>::display_vector(
-				    subset_indices.vector, subset_indices.vlen, "test indices");
-			}
-
-			/* apply machine to test features and remove subset */
-			SG_DEBUG("starting evaluation\n")
-			SG_DEBUG("%p\n", features)
-			CLabels* result_labels = machine->apply(features);
-			SG_DEBUG("finished evaluation\n")
-			features->remove_subset();
-			SG_REF(result_labels);
-
-			/* evaluate */
-			results[i] = evaluation_criterion->evaluate(result_labels, labels);
-			SG_DEBUG("result on fold %d is %f\n", i, results[i])
-
-			/* evtl. update xvalidation output class */
-			fold->put("test_indices", subset_indices);
-			fold->put("predicted_labels", result_labels);
-			CLabels* true_labels = (CLabels*)labels->clone();
-			SG_REF(true_labels)
-			fold->put("ground_truth_labels", true_labels);
-			fold->post_update_results();
-			fold->put("evaluation_result", results[i]);
-
-			storage->append_fold_result(fold);
-
-			/* clean up, remove subsets */
-			labels->remove_subset();
-			SG_UNREF(machine);
-			SG_UNREF(features);
-			SG_UNREF(labels);
-			SG_UNREF(evaluation_criterion);
-			SG_UNREF(result_labels);
-			SG_UNREF(true_labels);
-			SG_UNREF(fold);
-		}
-
-		SG_DEBUG("done unlocked evaluation\n", get_name())
+		SG_UNREF(machine);
+		SG_UNREF(features_train);
+		SG_UNREF(labels_train);
+		SG_UNREF(features_test);
+		SG_UNREF(labels_test);
+		SG_UNREF(evaluation_criterion);
+		SG_UNREF(result_labels);
 	}
 
 	/* build arithmetic mean of results */

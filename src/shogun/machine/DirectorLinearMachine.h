@@ -41,7 +41,6 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		 * @param data training data (parameter can be avoided if distance or
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data).
-		 * If flag is set, model features will be stored after training.
 		 *
 		 * @return whether training was successful
 		 */
@@ -128,79 +127,6 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		 * @return classifier type NONE
 		 */
 		virtual EMachineType get_classifier_type() { return CT_DIRECTORLINEAR; }
-
-		/** Setter for store-model-features-after-training flag
-		 *
-		 * @param store_model whether model should be stored after
-		 * training
-		 */
-		virtual void set_store_model_features(bool store_model)
-		{
-			CLinearMachine::set_store_model_features(store_model);
-		}
-
-#ifndef SWIG // SWIG should skip this part
-		/** Trains a locked machine on a set of indices. Error if machine is
-		 * not locked
-		 *
-		 * NOT IMPLEMENTED
-		 *
-		 * @param indices index vector (of locked features) that is used for training
-		 * @return whether training was successful
-		 */
-		virtual bool train_locked(SGVector<index_t> indices)
-		{
-			return CLinearMachine::train_locked(indices);
-		}
-
-		/** Applies a locked machine on a set of indices. Error if machine is
-		 * not locked
-		 *
-		 * @param indices index vector (of locked features) that is predicted
-		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices)
-		{
-			return CLinearMachine::apply_locked(indices);
-		}
-
-		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices)
-		{
-			return CLinearMachine::apply_locked_binary(indices);
-		}
-
-		virtual CRegressionLabels* apply_locked_regression(
-				SGVector<index_t> indices)
-		{
-			return CLinearMachine::apply_locked_regression(indices);
-		}
-
-		using CLinearMachine::apply_locked_multiclass;
-#endif // SWIG // SWIG should skip this part
-
-		/** Locks the machine on given labels and data. After this call, only
-		 * train_locked and apply_locked may be called
-		 *
-		 * Only possible if supports_locking() returns true
-		 *
-		 * @param labs labels used for locking
-		 * @param features features used for locking
-		 */
-		virtual void data_lock(CLabels* labs, CFeatures* features)
-		{
-			CLinearMachine::data_lock(labs, features);
-		}
-
-		/** Unlocks a locked machine and restores previous state */
-		virtual void data_unlock()
-		{
-			CLinearMachine::data_unlock();
-		}
-
-		/** @return whether this machine supports locking */
-		virtual bool supports_locking() const
-		{
-			return CLinearMachine::supports_locking();
-		}
 
 		//TODO change to pure virtual
 		virtual EProblemType get_machine_problem_type() const

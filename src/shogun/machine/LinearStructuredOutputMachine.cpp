@@ -71,6 +71,3 @@ void CLinearStructuredOutputMachine::register_parameters()
 	SG_ADD(&m_w, "m_w", "Weight vector", ParameterProperties::MODEL);
 }
 
-void CLinearStructuredOutputMachine::store_model_features()
-{
-}

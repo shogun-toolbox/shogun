@@ -61,7 +61,7 @@ public:
 	 *
 	 * Error if there are no index sets
 	 */
-	SGVector<index_t> generate_subset_indices(index_t subset_idx);
+	SGVector<index_t> generate_subset_indices(index_t subset_idx) const;
 
 	/** generates a newly created SGVector<index_t> with inverse indices of the
 	 * subset with the desired index. inverse here means all other indices.
@@ -72,7 +72,7 @@ public:
 	 *
 	 * Error if there are no index sets
 	 */
-	SGVector<index_t> generate_subset_inverse(index_t subset_idx);
+	SGVector<index_t> generate_subset_inverse(index_t subset_idx) const;
 
 	/** @return number of subsets. */
 	index_t get_num_subsets() const;

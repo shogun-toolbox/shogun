@@ -826,9 +826,9 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 	}
 }
 
-CSGObject * CAlphabet::clone() const
+CSGObject * CAlphabet::clone(ParameterProperties pp) const
 {
-	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone();
+	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone(pp);
 	alph_clone->init_map_table();
 	alph_clone->copy_histogram(this);
 	return alph_clone;

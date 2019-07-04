@@ -211,12 +211,6 @@ class CKNN : public CDistanceMachine
 		}
 
 	protected:
-		/** Stores feature data of underlying model.
-		 *
-		 * Replaces lhs and rhs of underlying distance with copies of themselves
-		 */
-		virtual void store_model_features();
-
 		/** classify all examples with nearest neighbor (k=1)
 		 * @return classified labels
 		 */

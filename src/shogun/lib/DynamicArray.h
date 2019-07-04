@@ -608,9 +608,9 @@ template <class T> class CDynamicArray :public CSGObject
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
 
-		virtual CSGObject* clone() const
+		virtual CSGObject* clone(ParameterProperties pp) const override
 		{
-			CDynamicArray * cloned = (CDynamicArray*) CSGObject::clone();
+			CDynamicArray * cloned = (CDynamicArray*) CSGObject::clone(pp);
 			// Since the array vector is registered with
 			// current_num_elements as size (see parameter
 			// registration) the cloned version has less memory

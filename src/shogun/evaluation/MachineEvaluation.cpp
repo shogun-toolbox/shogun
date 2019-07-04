@@ -34,7 +34,6 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
 	m_labels = labels;
 	m_splitting_strategy = splitting_strategy;
 	m_evaluation_criterion = evaluation_criterion;
-	m_autolock = autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_features);
@@ -53,7 +52,6 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
 	m_labels = labels;
 	m_splitting_strategy = splitting_strategy;
 	m_evaluation_criterion = evaluation_criterion;
-	m_autolock = autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_labels);
@@ -77,8 +75,6 @@ void CMachineEvaluation::init()
 	m_labels = NULL;
 	m_splitting_strategy = NULL;
 	m_evaluation_criterion = NULL;
-	m_do_unlock = false;
-	m_autolock = true;
 	m_cancel_computation = false;
 	m_pause_computation_flag = false;
 
@@ -89,14 +85,9 @@ void CMachineEvaluation::init()
 			"Used splitting strategy");
 	SG_ADD(&m_evaluation_criterion, "evaluation_criterion",
 			"Used evaluation criterion");
-	SG_ADD(&m_do_unlock, "do_unlock",
-			"Whether machine should be unlocked after evaluation");
-	SG_ADD(&m_autolock, "autolock",
-			"Whether machine should automatically try to be locked before ");
-
 }
 
-CEvaluationResult* CMachineEvaluation::evaluate()
+CEvaluationResult* CMachineEvaluation::evaluate() const
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name())
 
@@ -115,10 +106,7 @@ CEvaluationResult* CMachineEvaluation::evaluate()
 	              "attached\n",
 	    get_name());
 
-	auto sub = connect_to_signal_handler();
 	CEvaluationResult* result = evaluate_impl();
-	sub.unsubscribe();
-	reset_computation_variables();
 
 	SG_DEBUG("leaving %s::evaluate()\n", get_name())
 	return result;
@@ -130,7 +118,7 @@ CMachine* CMachineEvaluation::get_machine() const
 	return m_machine;
 }
 
-EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
+EEvaluationDirection CMachineEvaluation::get_evaluation_direction() const
 {
 	return m_evaluation_criterion->get_evaluation_direction();
 }

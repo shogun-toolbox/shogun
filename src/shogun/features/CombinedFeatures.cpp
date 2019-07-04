@@ -20,11 +20,27 @@ CCombinedFeatures::CCombinedFeatures()
 }
 
 CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures& orig)
-: CFeatures(0)
+: CFeatures(orig)
 {
 	init();
-	//TODO copy features
+
+	// appending below uses this, mem error otherwise if not done first
 	num_vec=orig.num_vec;
+
+	for (auto i : range(orig.get_num_feature_obj()))
+	{
+		auto f = orig.get_feature_obj(i);
+		append_feature_obj(f->duplicate());
+		SG_UNREF(f);
+	}
+
+	if (orig.m_subset_stack)
+	{
+		auto old = m_subset_stack;
+		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
+		SG_REF(m_subset_stack);
+		SG_UNREF(old);
+	}
 }
 
 CFeatures* CCombinedFeatures::duplicate() const
@@ -173,8 +189,6 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 {
 	/* TODO, if all features are the same, only one copy should be created
 	 * in memory */
-	SG_WARNING("Heiko Strathmann: FIXME, unefficient!\n")
-
 	SG_DEBUG("entering %s::create_merged_copy()\n", get_name())
 	if (get_feature_type()!=other->get_feature_type() ||
 			get_feature_class()!=other->get_feature_class() ||
