@@ -334,6 +334,7 @@ namespace std {
 %include <shogun/base/SGObject.h>
 
 /** Instantiate RandomMixin */
+%template(SeedableSGObject) shogun::Seedable<shogun::CSGObject>;
 %template(RandomMixinSGObject) shogun::RandomMixin<shogun::CSGObject, std::mt19937_64>;
 
 %include <shogun/io/SGIO.h>

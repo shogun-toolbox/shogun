@@ -3,6 +3,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>
+#include <shogun/mathematics/Seedable.h>
 
 #include <iterator>
 #include <random>
@@ -26,11 +27,10 @@ namespace shogun
 		}
 	} // namespace random
 
-	static inline void seed_callback(CSGObject*, int32_t);
 	static inline void random_seed_callback(CSGObject*);
 
 	template <typename Parent, typename PRNG = std::mt19937_64>
-	class RandomMixin : public Parent
+	class RandomMixin : public Seedable<Parent>
 	{
 	private:
 		using this_t = RandomMixin<Parent, PRNG>;
@@ -39,7 +39,7 @@ namespace shogun
 		using prng_type = PRNG;
 
 		template <typename... T>
-		RandomMixin(T... args) : Parent(args...)
+		RandomMixin(T... args) : Seedable<Parent>(args...)
 		{
 			init();
 		}
@@ -74,10 +74,8 @@ namespace shogun
 		{
 			init_random_seed();
 
-			Parent::watch_param("seed", &m_seed);
 			Parent::add_callback_function("seed", [&]() {
-				m_prng = PRNG(m_seed);
-				seed_callback(this, m_seed);
+				m_prng = PRNG(Seedable<Parent>::m_seed);
 			});
 
 			Parent::watch_method(
@@ -98,20 +96,8 @@ namespace shogun
 			random::seed(object, m_prng);
 		}
 
-		int32_t m_seed;
 		mutable PRNG m_prng;
 	};
-
-	static inline void seed_callback(CSGObject* obj, int32_t seed)
-	{
-		obj->for_each_param_of_type<CSGObject*>(
-		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has("seed"))
-				    (*param)->put("seed", seed);
-			    else
-				    seed_callback(*param, seed);
-		    });
-	}
 
 	static inline void random_seed_callback(CSGObject* obj)
 	{
