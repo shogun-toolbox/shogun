@@ -41,7 +41,7 @@ MixtureModel::MixtureModel()
 	init();
 }
 
-MixtureModel::MixtureModel(std::shared_ptr<DynamicObjectArray> components, SGVector<float64_t> weights)
+MixtureModel::MixtureModel(std::vector<std::shared_ptr<Distribution>> components, SGVector<float64_t> weights)
 {
 	init();
 	m_components=components;
@@ -56,9 +56,9 @@ MixtureModel::~MixtureModel()
 
 bool MixtureModel::train(std::shared_ptr<Features> data)
 {
-	require(m_components->get_num_elements()>0,"mixture componenents not specified");
-	require(m_components->get_num_elements()==m_weights.vlen,"number of weights ({}) does  not"
-		" match number of components ({})",m_weights.vlen,m_components->get_num_elements());
+	require(m_components.size()>0,"mixture componenents not specified");
+	require(m_components.size()==m_weights.vlen,"number of weights ({}) does  not"
+		" match number of components ({})",m_weights.vlen,m_components.size());
 
 	// set training features
 	if (data)
@@ -73,9 +73,9 @@ bool MixtureModel::train(std::shared_ptr<Features> data)
 	}
 
 	// set training points in all components of the mixture
-	for (int32_t i=0;i<m_components->get_num_elements();i++)
+	for (auto& comp_sgobj : m_components)
 	{
-		auto comp=m_components->get_element<Distribution>(i);
+		auto comp=comp_sgobj->as<Distribution>();
 		comp->set_features(features);
 
 
@@ -87,7 +87,7 @@ bool MixtureModel::train(std::shared_ptr<Features> data)
 
 	// set data for EM
 	auto em=std::make_shared<EMMixtureModel>();
-	em->data.alpha=SGMatrix<float64_t>(num_vectors,m_components->get_num_elements());
+	em->data.alpha=SGMatrix<float64_t>(num_vectors,m_components.size());
 	em->data.components=m_components;
 	em->data.weights=m_weights;
 
@@ -120,10 +120,10 @@ float64_t MixtureModel::get_log_likelihood_example(int32_t num_example)
 	require(features->get_feature_class() == C_DENSE,"Dense features required");
 	require(features->get_feature_type() == F_DREAL,"Real features required");
 
-	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
-	for (int32_t i=0;i<m_components->get_num_elements();i++)
+	SGVector<float64_t> log_likelihood_component(m_components.size());
+	for (int32_t i=0;i<m_components.size();i++)
 	{
-		auto ith_comp=m_components->get_element<Distribution>(i);
+		auto ith_comp=m_components[i]->as<Distribution>();
 		log_likelihood_component[i] =
 		    ith_comp->get_log_likelihood_example(num_example) +
 		    std::log(m_weights[i]);
@@ -144,27 +144,27 @@ void MixtureModel::set_weights(SGVector<float64_t> weights)
 	m_weights=weights;
 }
 
-std::shared_ptr<DynamicObjectArray> MixtureModel::get_components() const
+std::vector<std::shared_ptr<Distribution>> MixtureModel::get_components() const
 {
 
 	return m_components;
 }
 
-void MixtureModel::set_components(std::shared_ptr<DynamicObjectArray> components)
+void MixtureModel::set_components(std::vector<std::shared_ptr<Distribution>> components)
 {
 	m_components=components;
 }
 
 index_t MixtureModel::get_num_components() const
 {
-	return m_components->get_num_elements();
+	return m_components.size();
 }
 
 std::shared_ptr<Distribution> MixtureModel::get_component(index_t index) const
 {
 	require(index<get_num_components(),"index supplied ({}) is greater than total mixture components ({})"
-																				,index,get_num_components());
-	return m_components->get_element<Distribution>(index);
+		,index,get_num_components());
+	return m_components[index]-as<Distribution>();
 }
 
 void MixtureModel::set_max_iters(int32_t max_iters)
@@ -203,12 +203,11 @@ SGVector<float64_t> MixtureModel::cluster(SGVector<float64_t> point)
 
 void MixtureModel::init()
 {
-	m_components=NULL;
 	m_weights=SGVector<float64_t>();
 	m_conv_tol=1e-8;
 	m_max_iters=1000;
 
-	SG_ADD((std::shared_ptr<SGObject>*)&m_components,"m_components","components of mixture");
+	SG_ADD(&m_components,"m_components","components of mixture");
 	SG_ADD(&m_weights,"m_weights","weights of components");
 	SG_ADD(&m_conv_tol,"m_conv_tol","convergence tolerance");
 	SG_ADD(&m_max_iters,"m_max_iters","max number of iterations");

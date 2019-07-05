@@ -53,7 +53,7 @@ class MixtureModel : public Distribution
 		 * @param components individual distributions forming the mixture (parameters must be initialized)
 		 * @param weights initial \f$w_m\f$ ie. weights of individual distributions
 		 */
-		MixtureModel(std::shared_ptr<DynamicObjectArray> components, SGVector<float64_t> weights);
+		MixtureModel(std::vector<std::shared_ptr<Distribution>> components, SGVector<float64_t> weights);
 
 		/* destructor */
 		~MixtureModel();
@@ -111,13 +111,13 @@ class MixtureModel : public Distribution
 		 *
 		 * @return components
 		 */
-		std::shared_ptr<DynamicObjectArray> get_components() const;
+		std::vector<std::shared_ptr<Distribution>> get_components() const;
 
 		/** set components
 		 *
 		 * @param components mixture components
 		 */
-		void set_components(std::shared_ptr<DynamicObjectArray> components);
+		void set_components(std::vector<std::shared_ptr<Distribution>> components);
 
 		/** get number of components
 		 *
@@ -175,7 +175,7 @@ class MixtureModel : public Distribution
 
 	private:
 		/** array of components */
-		std::shared_ptr<DynamicObjectArray> m_components;
+		std::vector<std::shared_ptr<Distribution>> m_components;
 
 		/** weights */
 		SGVector<float64_t> m_weights;
