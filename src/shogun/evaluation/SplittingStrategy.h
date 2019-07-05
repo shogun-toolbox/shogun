@@ -12,7 +12,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
@@ -99,7 +98,7 @@ protected:
 	std::shared_ptr<Labels> m_labels;
 
 	/** subset indices */
-	std::shared_ptr<DynamicObjectArray> m_subset_indices;
+	std::vector<std::vector<index_t>> m_subset_indices;
 
 	/** additional variable to store number of index subsets */
 	index_t m_num_subsets;

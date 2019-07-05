@@ -35,11 +35,8 @@ SplittingStrategy::SplittingStrategy(std::shared_ptr<Labels> labels, int32_t num
 
 void SplittingStrategy::reset_subsets()
 {
-	m_subset_indices=std::make_shared<DynamicObjectArray>(m_num_subsets);
-
 	/* construct all arrays */
-	for (index_t i=0; i<m_num_subsets; ++i)
-		m_subset_indices->append_element(std::make_shared<DynamicArray<index_t>>());
+	m_subset_indices.resize(m_num_subsets);
 
 	m_is_filled=false;
 }
@@ -47,7 +44,7 @@ void SplittingStrategy::reset_subsets()
 void SplittingStrategy::init()
 {
 	m_labels=NULL;
-	m_subset_indices=NULL;
+	m_subset_indices.clear();
 
 	m_is_filled=false;
 	m_num_subsets=0;
@@ -77,13 +74,13 @@ SGVector<index_t> SplittingStrategy::generate_subset_indices(index_t subset_idx)
 	}
 
 	/* construct SGVector copy from index vector */
-	auto to_copy=m_subset_indices->get_element_safe<DynamicArray<index_t>>(subset_idx);
+	auto to_copy=m_subset_indices.at(subset_idx);
 
-	index_t num_elements=to_copy->get_num_elements();
+	index_t num_elements=to_copy.size();
 	SGVector<index_t> result(num_elements, true);
 
 	/* copy data */
-	sg_memcpy(result.vector, to_copy->get_array(), sizeof(index_t)*num_elements);
+	sg_memcpy(result.vector, to_copy.data(), sizeof(index_t)*num_elements);
 
 
 
@@ -99,16 +96,16 @@ SGVector<index_t> SplittingStrategy::generate_subset_inverse(index_t subset_idx)
 				get_name(), get_name());
 	}
 
-	auto to_invert=m_subset_indices->get_element_safe<DynamicArray<index_t>>(subset_idx);
+	auto to_invert=m_subset_indices.at(subset_idx);
 
 	SGVector<index_t> result(
-			m_labels->get_num_labels()-to_invert->get_num_elements(), true);
+			m_labels->get_num_labels()-to_invert.size(), true);
 
 	index_t index=0;
 	for (index_t i=0; i<m_labels->get_num_labels(); ++i)
 	{
 		/* add i to inverse indices if it is not in the to be inverted set */
-		if (to_invert->find_element(i)==-1)
+		if (std::find(to_invert.begin(), to_invert.end(), i)==to_invert.end())
 			result.vector[index++]=i;
 	}
 

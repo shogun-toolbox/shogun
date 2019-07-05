@@ -66,9 +66,8 @@ void StratifiedCrossValidationSplitting::build_subsets()
 	auto classes = dense_labels->get_labels().unique();
 
 	/* for every label, build set for indices */
-	DynamicObjectArray label_indices;
-	for (auto i : range(classes.size()))
-		label_indices.append_element(std::make_shared<DynamicArray<index_t>>());
+	std::vector<std::vector<index_t>> label_indices;
+	label_indices.resize(classes.size());
 
 	/* fill set with indices, for each label type ... */
 	for (auto i : range(classes.size()))
@@ -78,21 +77,20 @@ void StratifiedCrossValidationSplitting::build_subsets()
 		{
 			if (dense_labels->get_label(j) == classes[i])
 			{
-				auto current=label_indices.get_element<DynamicArray<index_t>>(i);
-				current->append_element(j);
+				label_indices[i].push_back(j);
 
 			}
 		}
 	}
 
 	/* shuffle created label sets */
-	for (index_t i=0; i<label_indices.get_num_elements(); ++i)
+	for (index_t i=0; i<label_indices.size(); ++i)
 	{
 		auto current=
-				label_indices.get_element<DynamicArray<index_t>>(i);
+				label_indices[i];
 
 		// external random state important for threads
-		random::shuffle(current->begin(), current->end(), m_prng);
+		random::shuffle(current, m_prng);
 
 
 	}
@@ -103,14 +101,14 @@ void StratifiedCrossValidationSplitting::build_subsets()
 	{
 		/* current index set for current label */
 		auto current=
-				label_indices.get_element<DynamicArray<index_t>>(i);
+				label_indices[i];
 
-		for (index_t j=0; j<current->get_num_elements(); ++j)
+		for (index_t j=0; j<current.size(); ++j)
 		{
 			auto next=
-					m_subset_indices->get_element<DynamicArray<index_t>>(target_set++);
-			next->append_element(current->get_element(j));
-			target_set%=m_subset_indices->get_num_elements();
+					m_subset_indices[target_set++];
+			next.push_back(current[j]);
+			target_set%=m_subset_indices.size();
 
 		}
 
@@ -120,5 +118,5 @@ void StratifiedCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets (external random state important for threads) */
-	random::shuffle(m_subset_indices->begin(), m_subset_indices->end(), m_prng);
+	random::shuffle(m_subset_indices, m_prng);
 }
