@@ -62,12 +62,12 @@ void TimeSeriesSplitting::build_subsets()
 
 	SGVector<index_t> indices(m_labels->get_num_labels());
 	indices.range_fill();
-	index_t num_subsets = m_subset_indices->get_num_elements();
+	index_t num_subsets = m_subset_indices.size();
 	index_t split_index;
 
 	for (auto i = 0; i < num_subsets; ++i)
 	{
-		auto current =m_subset_indices->get_element<DynamicArray<index_t>>(i);
+		auto current =m_subset_indices[i];
 
 		if (i == num_subsets - 1)
 			split_index = indices.vlen - m_min_subset_size;
@@ -77,18 +77,18 @@ void TimeSeriesSplitting::build_subsets()
 		/* filling current with indices on right end  */
 		for (auto k = split_index; k < indices.vlen; ++k)
 		{
-			current->append_element(indices.vector[k]);
+			current.push_back(indices.vector[k]);
 		}
 
 
 	}
 
-	random::shuffle(m_subset_indices->begin(), m_subset_indices->end(), m_prng);
+	random::shuffle(m_subset_indices, m_prng);
 }
 
 void TimeSeriesSplitting::set_min_subset_size(index_t min_size)
 {
-	index_t num_subsets = m_subset_indices->get_num_elements();
+	index_t num_subsets = m_subset_indices.size();
 	index_t num_labels = m_labels->get_num_labels();
 
 	/* min_size should be less than difference between number of labels
