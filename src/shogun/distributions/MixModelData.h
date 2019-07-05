@@ -34,10 +34,11 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
+class Distribution;
+
 /** @brief This structure is used for storing data required for using the generic Expectation Maximization (EM)  implemented
  * by the template class CEMBase for mixture models like gaussian mixture model, multinomial mixture model etc. The EM
  * specialized for mixture models is implemented by the class CEMMixtureModel which uses this MixModelData structure.
@@ -47,14 +48,13 @@ struct MixModelData
 	/** allocated belongingness matrix */
 	SGMatrix<float64_t> alpha;
 	/** components of mixture */
-	std::shared_ptr<DynamicObjectArray> components;
+	std::vector<std::shared_ptr<Distribution>> components;
 	/** weights of mixture */
 	SGVector<float64_t> weights;
 
 	MixModelData()
 	{
 		alpha=SGMatrix<float64_t>();
-		components=NULL;
 		weights=SGVector<float64_t>();
 	}
 };
