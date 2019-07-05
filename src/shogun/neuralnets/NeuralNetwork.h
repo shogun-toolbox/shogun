@@ -43,7 +43,6 @@
 namespace shogun
 {
 template<class T> class DenseFeatures;
-class DynamicObjectArray;
 class NeuralLayer;
 
 /** optimization method for neural networks */
@@ -63,7 +62,7 @@ enum ENNOptimizationMethod
  * The network can be constructed as any arbitrary directed acyclic graph.
  *
  * How to use the network:
- * 	- Prepare a DynamicObjectArray of NeuralLayer-based objects that specify
+ * 	- Prepare an array of NeuralLayer-based objects that specify
  * the type of layers used in the network. The array must contain at least one
  * input layer. The last layer in the array is treated as the output layer.
  * Also note that forward propagation is performed in the order at which the
@@ -122,7 +121,7 @@ public:
 	 * the network. Must contain at least one input layer. The last layer in
 	 * the array is treated as the output layer
 	 */
-	NeuralNetwork(std::shared_ptr<DynamicObjectArray> layers);
+	NeuralNetwork(const std::vector<std::shared_ptr<NeuralLayer>>& layers);
 
 	/** Sets the layers of the network
 	 *
@@ -130,7 +129,8 @@ public:
 	 * the network. Must contain at least one input layer. The last layer in
 	 * the array is treated as the output layer
 	 */
-	virtual void set_layers(std::shared_ptr<DynamicObjectArray> layers);
+	virtual void
+	set_layers(const std::vector<std::shared_ptr<NeuralLayer>>& layers);
 
 	/** Connects layer i as input to layer j. In order for forward and
 	 * backpropagation to work correctly, i must be less that j
@@ -232,7 +232,7 @@ public:
 	int32_t get_num_outputs();
 
 	/** Returns an array holding the network's layers */
-	std::shared_ptr<DynamicObjectArray> get_layers();
+	const std::vector<std::shared_ptr<NeuralLayer>>& get_layers();
 
 	virtual const char* get_name() const { return "NeuralNetwork";}
 
@@ -593,7 +593,7 @@ protected:
 	int32_t m_num_layers;
 
 	/** network's layers */
-	std::shared_ptr<DynamicObjectArray> m_layers;
+	std::vector<std::shared_ptr<NeuralLayer>> m_layers;
 
 	/** Describes the connections in the network: if there's a connection from
 	 * layer i to layer j then m_adj_matrix(i,j) = 1.

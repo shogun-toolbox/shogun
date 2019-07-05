@@ -36,7 +36,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 
 namespace shogun
@@ -117,7 +116,7 @@ public:
 
 	/** Finalizes
 	 */
-	std::shared_ptr<DynamicObjectArray> done();
+	const std::vector<std::shared_ptr<NeuralLayer>>& done();
 
 	/** Clears the constructed layers.
 	 */
@@ -132,7 +131,7 @@ public:
 	virtual const char* get_name() const;
 
 private:
-	std::shared_ptr<DynamicObjectArray> m_layers;
+	std::vector<std::shared_ptr<NeuralLayer>> m_layers;
 };
 
 }

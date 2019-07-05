@@ -74,16 +74,16 @@ void RBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
 	m_num_visible_groups++;
 	m_num_visible += num_units;
 
-	m_visible_group_sizes->append_element(num_units);
-	m_visible_group_types->append_element(unit_type);
+	m_visible_group_sizes.push_back(num_units);
+	m_visible_group_types.push_back(unit_type);
 
-	int32_t n = m_visible_state_offsets->get_num_elements();
+	int32_t n = m_visible_state_offsets.size();
 
 	if (n==0)
-		m_visible_state_offsets->append_element(0);
+		m_visible_state_offsets.push_back(0);
 	else
-		m_visible_state_offsets->append_element(
-			m_visible_state_offsets->element(n-1)+m_visible_group_sizes->element(n-1));
+		m_visible_state_offsets.push_back(
+		    m_visible_state_offsets[n - 1] + m_visible_group_sizes[n - 1]);
 }
 
 void RBM::initialize_neural_network(float64_t sigma)
@@ -200,10 +200,10 @@ std::shared_ptr<DenseFeatures< float64_t >> RBM::sample_group(int32_t V,
 
 	sample(num_gibbs_steps, batch_size);
 
-	SGMatrix<float64_t> result(m_visible_group_sizes->element(V), m_batch_size);
+	SGMatrix<float64_t> result(m_visible_group_sizes[V], m_batch_size);
 
-	int32_t offset = m_visible_state_offsets->element(V);
-	for (int32_t i=0; i<m_visible_group_sizes->element(V); i++)
+	int32_t offset = m_visible_state_offsets[V];
+	for (int32_t i = 0; i < m_visible_group_sizes[V]; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
 			result(i,j) = visible_state(i+offset,j);
 
@@ -220,9 +220,9 @@ void RBM::sample_with_evidence(
 
 	SGMatrix<float64_t> evidence_matrix = evidence->get_feature_matrix();
 
-	int32_t offset = m_visible_state_offsets->element(E);
+	int32_t offset = m_visible_state_offsets[E];
 
-	for (int32_t i=0; i<m_visible_group_sizes->element(E); i++)
+	for (int32_t i = 0; i < m_visible_group_sizes[E]; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
 			visible_state(i+offset,j) = evidence_matrix(i,j);
 
@@ -238,7 +238,7 @@ void RBM::sample_with_evidence(
 					sample_visible(k, visible_state, visible_state);
 		}
 
-		for (int32_t i=0; i<m_visible_group_sizes->element(E); i++)
+		for (int32_t i = 0; i < m_visible_group_sizes[E]; i++)
 			for (int32_t j=0; j<m_batch_size; j++)
 				visible_state(i+offset,j) = evidence_matrix(i,j);
 	}
@@ -254,10 +254,10 @@ std::shared_ptr<DenseFeatures< float64_t >> RBM::sample_group_with_evidence(int3
 
 	sample_with_evidence(E, evidence, num_gibbs_steps);
 
-	SGMatrix<float64_t> result(m_visible_group_sizes->element(V), m_batch_size);
+	SGMatrix<float64_t> result(m_visible_group_sizes[V], m_batch_size);
 
-	int32_t offset = m_visible_state_offsets->element(V);
-	for (int32_t i=0; i<m_visible_group_sizes->element(V); i++)
+	int32_t offset = m_visible_state_offsets[V];
+	for (int32_t i = 0; i < m_visible_group_sizes[V]; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
 			result(i,j) = visible_state(i+offset,j);
 
@@ -304,11 +304,11 @@ float64_t RBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t > 
 
 	for (int32_t k=0; k<m_num_visible_groups; k++)
 	{
-		if (m_visible_group_types->element(k) == RBMVUT_GAUSSIAN)
+		if (m_visible_group_types[k] == RBMVUT_GAUSSIAN)
 		{
-			int32_t offset = m_visible_state_offsets->element(k);
+			int32_t offset = m_visible_state_offsets[k];
 
-			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+			for (int32_t i = 0; i < m_visible_group_sizes[k]; i++)
 				for (int32_t j=0; j<m_batch_size; j++)
 					F += 0.5*Math::pow(visible(i+offset,j),2)/m_batch_size;
 		}
@@ -423,7 +423,7 @@ float64_t RBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	SGMatrix< float64_t > buffer)
 {
 	for (int32_t k=0; k<m_num_visible_groups; k++)
-		if (m_visible_group_types->element(k)!=RBMVUT_BINARY)
+		if (m_visible_group_types[k] != RBMVUT_BINARY)
 			error("Pseudo-likelihood is only supported for binary visible units");
 
 	set_batch_size(visible.num_cols);
@@ -480,23 +480,23 @@ void RBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resul
 
 	for (int32_t k=0; k<m_num_visible_groups; k++)
 	{
-		int32_t offset = m_visible_state_offsets->element(k);
+		int32_t offset = m_visible_state_offsets[k];
 
-		if (m_visible_group_types->element(k)==RBMVUT_BINARY)
+		if (m_visible_group_types[k] == RBMVUT_BINARY)
 		{
-			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+			for (int32_t i = 0; i < m_visible_group_sizes[k]; i++)
 				for (int32_t j=0; j<m_batch_size; j++)
 					result(i + offset, j) =
 					    1.0 / (1.0 + std::exp(-1.0 * result(i + offset, j)));
 		}
-		if (m_visible_group_types->element(k)==RBMVUT_SOFTMAX)
+		if (m_visible_group_types[k] == RBMVUT_SOFTMAX)
 		{
 			// to avoid exponentiating large numbers, the maximum activation is
 			// subtracted from all the activations and the computations are done
 			// in thelog domain
 
 			float64_t max = result(offset,0);
-			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+			for (int32_t i = 0; i < m_visible_group_sizes[k]; i++)
 				for (int32_t j=0; j<m_batch_size; j++)
 					if (result(i+offset,j) > max)
 						max = result(i+offset,j);
@@ -504,12 +504,12 @@ void RBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resul
 			for (int32_t j=0; j<m_batch_size; j++)
 			{
 				float64_t sum = 0;
-				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+				for (int32_t i = 0; i < m_visible_group_sizes[k]; i++)
 					sum += std::exp(result(i + offset, j) - max);
 
 				float64_t normalizer = std::log(sum);
 
-				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+				for (int32_t i = 0; i < m_visible_group_sizes[k]; i++)
 					result(i + offset, j) =
 					    std::exp(result(i + offset, j) - max - normalizer);
 			}
@@ -535,18 +535,18 @@ void RBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > resul
 void RBM::sample_visible(int32_t index,
 	SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
 {
-	int32_t offset = m_visible_state_offsets->element(index);
+	int32_t offset = m_visible_state_offsets[index];
 
-	if (m_visible_group_types->element(index)==RBMVUT_BINARY)
+	if (m_visible_group_types[index] == RBMVUT_BINARY)
 	{
-		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
+		for (int32_t i = 0; i < m_visible_group_sizes[index]; i++)
 			for (int32_t j=0; j<m_batch_size; j++)
 				result(i+offset,j) = m_uniform_prob(m_prng) < mean(i+offset,j);
 	}
 
-	if (m_visible_group_types->element(index)==RBMVUT_SOFTMAX)
+	if (m_visible_group_types[index] == RBMVUT_SOFTMAX)
 	{
-		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
+		for (int32_t i = 0; i < m_visible_group_sizes[index]; i++)
 			for (int32_t j=0; j<m_batch_size; j++)
 				result(i+offset,j) = 0;
 
@@ -555,7 +555,7 @@ void RBM::sample_visible(int32_t index,
 		{
 			int32_t r = uniform_int_dist(m_prng);
 			float64_t sum = 0;
-			for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
+			for (int32_t i = 0; i < m_visible_group_sizes[index]; i++)
 			{
 				sum += mean(i+offset,j);
 				if (r<=sum)
@@ -616,11 +616,11 @@ void RBM::init()
 	m_num_hidden = 0;
 	m_num_visible = 0;
 	m_num_visible_groups = 0;
-	m_visible_group_sizes = std::make_shared<DynamicArray<int32_t>>();
+	m_visible_group_sizes.clear();
 
-	m_visible_group_types = std::make_shared<DynamicArray<int32_t>>();
+	m_visible_group_types.clear();
 
-	m_visible_state_offsets = std::make_shared<DynamicArray<int32_t>>();
+	m_visible_state_offsets.clear();
 
 	m_num_params = 0;
 	m_batch_size = 0;

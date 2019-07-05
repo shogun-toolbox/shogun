@@ -143,7 +143,7 @@ bool CombinedFeatures::append_feature_obj(std::shared_ptr<Features> obj)
 	num_vec=n;
 
 	int num_feature_obj = get_num_feature_obj();
-	feature_array.push_back(obj);
+	feature_array.push_back(std::move(obj));
 	return num_feature_obj+1 == feature_array.size();
 }
 

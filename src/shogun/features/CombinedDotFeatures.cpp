@@ -246,7 +246,7 @@ bool CombinedDotFeatures::append_feature_obj(std::shared_ptr<DotFeatures> obj)
 {
 	ASSERT(obj)
 	int n = get_num_feature_obj();
-	feature_array.push_back(obj);
+	feature_array.push_back(std::move(obj));
 	feature_weights.push_back(initial_weight);
 	update_dim_feature_space_and_num_vec();
 	return n+1==get_num_feature_obj();

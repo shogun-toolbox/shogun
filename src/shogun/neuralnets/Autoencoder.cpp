@@ -35,7 +35,6 @@
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
@@ -53,10 +52,10 @@ Autoencoder::Autoencoder(int32_t num_inputs, std::shared_ptr<NeuralLayer> hidden
 	if (decoding_layer==NULL)
 		decoding_layer = std::make_shared<NeuralLinearLayer>(num_inputs);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(num_inputs));
-	layers->append_element(hidden_layer);
-	layers->append_element(decoding_layer);
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(num_inputs));
+	layers.push_back(hidden_layer);
+	layers.push_back(decoding_layer);
 
 	set_layers(layers);
 
@@ -77,10 +76,11 @@ Autoencoder::Autoencoder(
 {
 	init();
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(input_width, input_height, input_num_channels));
-	layers->append_element(hidden_layer);
-	layers->append_element(decoding_layer);
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(
+	    input_width, input_height, input_num_channels));
+	layers.push_back(hidden_layer);
+	layers.push_back(decoding_layer);
 
 	set_layers(layers);
 

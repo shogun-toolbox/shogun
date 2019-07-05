@@ -36,7 +36,6 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
@@ -58,7 +57,7 @@ DeepBeliefNetwork::DeepBeliefNetwork(
 	int32_t num_visible_units, ERBMVisibleUnitType unit_type) : RandomMixin<SGObject>()
 {
 	init();
-	m_layer_sizes->append_element(num_visible_units);
+	m_layer_sizes.push_back(num_visible_units);
 	m_num_layers++;
 	m_visible_units_type = unit_type;
 }
@@ -70,7 +69,7 @@ DeepBeliefNetwork::~DeepBeliefNetwork()
 
 void DeepBeliefNetwork::add_hidden_layer(int32_t num_units)
 {
-	m_layer_sizes->append_element(num_units);
+	m_layer_sizes.push_back(num_units);
 	m_num_layers++;
 }
 
@@ -83,12 +82,12 @@ void DeepBeliefNetwork::initialize_neural_network(float64_t sigma)
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
 		m_bias_index_offsets[i] = m_num_params;
-		m_num_params += m_layer_sizes->element(i);
+		m_num_params += m_layer_sizes[i];
 
 		if (i<m_num_layers-1)
 		{
 			m_weights_index_offsets[i] = m_num_params;
-			m_num_params += m_layer_sizes->element(i+1)*m_layer_sizes->element(i);
+			m_num_params += m_layer_sizes[i + 1] * m_layer_sizes[i];
 		}
 	}
 
@@ -144,7 +143,7 @@ void DeepBeliefNetwork::set_batch_size(int32_t batch_size)
 	m_states = SGMatrixList<float64_t>(m_num_layers);
 
 	for (int32_t i=0; i<m_num_layers; i++)
-		m_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes->element(i), m_batch_size));
+		m_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes[i], m_batch_size));
 
 	reset_chain();
 }
@@ -162,11 +161,11 @@ void DeepBeliefNetwork::pre_train(std::shared_ptr<DenseFeatures< float64_t >> fe
 void DeepBeliefNetwork::pre_train(int32_t index,
 	std::shared_ptr<DenseFeatures< float64_t >> features)
 {
-	auto rbm = std::make_shared<RBM>(m_layer_sizes->element(index+1));
+	auto rbm = std::make_shared<RBM>(m_layer_sizes[index + 1]);
 	if (index == 0)
-		rbm->add_visible_group(m_layer_sizes->element(index), m_visible_units_type);
+		rbm->add_visible_group(m_layer_sizes[index], m_visible_units_type);
 	else
-		rbm->add_visible_group(m_layer_sizes->element(index), RBMVUT_BINARY);
+		rbm->add_visible_group(m_layer_sizes[index], RBMVUT_BINARY);
 	rbm->initialize_neural_network(m_sigma);
 
 	rbm->cd_num_steps = pt_cd_num_steps[index];
@@ -213,9 +212,9 @@ void DeepBeliefNetwork::pre_train(int32_t index,
 void DeepBeliefNetwork::train(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	require(features != NULL, "Invalid (NULL) feature pointer");
-	require(features->get_num_features()==m_layer_sizes->element(0),
+	require(features->get_num_features()==m_layer_sizes[0],
 		"Number of features ({}) must match the DBN's number of visible units "
-		"({})", features->get_num_features(), m_layer_sizes->element(0));
+		"({})", features->get_num_features(), m_layer_sizes[0]);
 
 	SGMatrix<float64_t> inputs = features->get_feature_matrix();
 
@@ -244,16 +243,16 @@ void DeepBeliefNetwork::train(std::shared_ptr<DenseFeatures<float64_t>> features
 
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
-		wake_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes->element(i), m_batch_size));
-		psleep_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes->element(i), m_batch_size));
-		pwake_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes->element(i), m_batch_size));
+		wake_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes[i], m_batch_size));
+		psleep_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes[i], m_batch_size));
+		pwake_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes[i], m_batch_size));
 	}
 
-	auto top_rbm = std::make_shared<RBM>(m_layer_sizes->element(m_num_layers-1));
+	auto top_rbm = std::make_shared<RBM>(m_layer_sizes[m_num_layers - 1]);
 	if (m_num_layers > 2)
-		top_rbm->add_visible_group(m_layer_sizes->element(m_num_layers-2), RBMVUT_BINARY);
+		top_rbm->add_visible_group(m_layer_sizes[m_num_layers - 2], RBMVUT_BINARY);
 	else
-		top_rbm->add_visible_group(m_layer_sizes->element(0), m_visible_units_type);
+		top_rbm->add_visible_group(m_layer_sizes[0], m_visible_units_type);
 
 	top_rbm->initialize_neural_network();
 	top_rbm->m_params = SGVector<float64_t>(
@@ -325,7 +324,7 @@ std::shared_ptr<DenseFeatures< float64_t >> DeepBeliefNetwork::transform(
 	SGMatrix<float64_t> transformed_feature_matrix = features->get_feature_matrix();
 	for (int32_t h=1; h<=i; h++)
 	{
-		SGMatrix<float64_t> m(m_layer_sizes->element(h), features->get_num_vectors());
+		SGMatrix<float64_t> m(m_layer_sizes[h], features->get_num_vectors());
 		up_step(h, m_params, transformed_feature_matrix, m, false);
 		transformed_feature_matrix = m;
 	}
@@ -364,15 +363,16 @@ void DeepBeliefNetwork::reset_chain()
 std::shared_ptr<NeuralNetwork> DeepBeliefNetwork::convert_to_neural_network(
 	std::shared_ptr<NeuralLayer> output_layer, float64_t sigma)
 {
-	auto layers = std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
 
-	layers->append_element(std::make_shared<NeuralInputLayer>(m_layer_sizes->element(0)));
+	layers.push_back(std::make_shared<NeuralInputLayer>(m_layer_sizes[0]));
 
 	for (int32_t i=1; i<m_num_layers; i++)
-		layers->append_element(std::make_shared<NeuralLogisticLayer>(m_layer_sizes->element(i)));
+		layers.push_back(
+		    std::make_shared<NeuralLogisticLayer>(m_layer_sizes[i]));
 
 	if (output_layer!=NULL)
-		layers->append_element(output_layer);
+		layers.push_back(output_layer);
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 
@@ -402,20 +402,20 @@ void DeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 
 	EMatrix In(input.matrix, input.num_rows, input.num_cols);
 	EMatrix Out(result.matrix, result.num_rows, result.num_cols);
-	EVector B(get_biases(index,params).vector, m_layer_sizes->element(index));
+	EVector B(get_biases(index, params).vector, m_layer_sizes[index]);
 
 	Out.colwise() = B;
 
 	if (index < m_num_layers-1)
 	{
 		EMatrix W(get_weights(index,params).matrix,
-			m_layer_sizes->element(index+1), m_layer_sizes->element(index));
+			m_layer_sizes[index + 1], m_layer_sizes[index]);
 		Out += W.transpose()*In;
 	}
 
 	if (index > 0 || (index==0 && m_visible_units_type==RBMVUT_BINARY))
 	{
-		int32_t len = m_layer_sizes->element(index)*m_batch_size;
+		int32_t len = m_layer_sizes[index] * m_batch_size;
 		for (int32_t i=0; i<len; i++)
 			result[i] = 1.0 / (1.0 + std::exp(-1.0 * result[i]));
 	}
@@ -427,11 +427,11 @@ void DeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 		for (int32_t j=0; j<m_batch_size; j++)
 		{
 			float64_t sum = 0;
-			for (int32_t i=0; i<m_layer_sizes->element(0); i++)
+			for (int32_t i = 0; i < m_layer_sizes[0]; i++)
 				sum += std::exp(Out(i, j) - max);
 
 			float64_t normalizer = std::log(sum);
-			for (int32_t k=0; k<m_layer_sizes->element(0); k++)
+			for (int32_t k = 0; k < m_layer_sizes[0]; k++)
 				Out(k, j) = std::exp(Out(k, j) - max - normalizer);
 		}
 	}
@@ -439,7 +439,7 @@ void DeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 	if (sample_states && index>0)
 	{
 		UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
-		int32_t len = m_layer_sizes->element(index)*m_batch_size;
+		int32_t len = m_layer_sizes[index] * m_batch_size;
 		for (int32_t i=0; i<len; i++)
 			result[i] = uniform_real_dist(m_prng) < result[i];
 	}
@@ -453,14 +453,14 @@ void DeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 
 	EMatrix In(input.matrix, input.num_rows, input.num_cols);
 	EMatrix Out(result.matrix, result.num_rows, result.num_cols);
-	EVector C(get_biases(index, params).vector, m_layer_sizes->element(index));
+	EVector C(get_biases(index, params).vector, m_layer_sizes[index]);
 
 	Out.colwise() = C;
 
 	if (index>0)
 	{
 		EMatrix W(get_weights(index-1, params).matrix,
-			m_layer_sizes->element(index), m_layer_sizes->element(index-1));
+			m_layer_sizes[index], m_layer_sizes[index - 1]);
 		Out += W*In;
 	}
 
@@ -522,8 +522,8 @@ void DeepBeliefNetwork::wake_sleep(SGMatrix< float64_t > data, std::shared_ptr<R
 			pwake_states[i].num_rows, pwake_states[i].num_cols);
 
 		EMatrix WG_gen(get_weights(i,gen_gradients).matrix,
-			m_layer_sizes->element(i+1), m_layer_sizes->element(i));
-		EVector BG_gen(get_biases(i,gen_gradients).vector, m_layer_sizes->element(i));
+			m_layer_sizes[i + 1], m_layer_sizes[i]);
+		EVector BG_gen(get_biases(i,gen_gradients).vector, m_layer_sizes[i]);
 
 		pwake_i = pwake_i - wake_i;
 		BG_gen = pwake_i.rowwise().sum()/m_batch_size;
@@ -541,8 +541,8 @@ void DeepBeliefNetwork::wake_sleep(SGMatrix< float64_t > data, std::shared_ptr<R
 			sleep_states[i-1].num_rows, sleep_states[i-1].num_cols);
 
 		EMatrix WG_rec(get_weights(i-1,rec_gradients).matrix,
-			m_layer_sizes->element(i), m_layer_sizes->element(i-1));
-		EVector BG_rec(get_biases(i,rec_gradients).vector, m_layer_sizes->element(i));
+			m_layer_sizes[i], m_layer_sizes[i - 1]);
+		EVector BG_rec(get_biases(i,rec_gradients).vector, m_layer_sizes[i]);
 
 		psleep_i = psleep_i - sleep_i;
 		BG_rec = psleep_i.rowwise().sum()/m_batch_size;
@@ -555,10 +555,10 @@ SGMatrix< float64_t > DeepBeliefNetwork::get_weights(int32_t index,
 {
 	if (p.vlen==0)
 		return SGMatrix<float64_t>(m_params.vector+m_weights_index_offsets[index],
-			m_layer_sizes->element(index+1), m_layer_sizes->element(index), false);
+			m_layer_sizes[index+1], m_layer_sizes[index], false);
 	else
 		return SGMatrix<float64_t>(p.vector+m_weights_index_offsets[index],
-			m_layer_sizes->element(index+1), m_layer_sizes->element(index), false);
+			m_layer_sizes[index+1], m_layer_sizes[index], false);
 }
 
 SGVector< float64_t > DeepBeliefNetwork::get_biases(int32_t index,
@@ -566,10 +566,11 @@ SGVector< float64_t > DeepBeliefNetwork::get_biases(int32_t index,
 {
 	if (p.vlen==0)
 		return SGVector<float64_t>(m_params.vector+m_bias_index_offsets[index],
-			m_layer_sizes->element(index), false);
+			m_layer_sizes[index], false);
 	else
 		return SGVector<float64_t>(p.vector+m_bias_index_offsets[index],
-			m_layer_sizes->element(index), false);;
+			m_layer_sizes[index], false);
+	;
 }
 
 void DeepBeliefNetwork::init()
@@ -585,16 +586,14 @@ void DeepBeliefNetwork::init()
 
 	m_visible_units_type = RBMVUT_BINARY;
 	m_num_layers = 0;
-	m_layer_sizes = std::make_shared<DynamicArray<int32_t>>();
+	m_layer_sizes.clear();
 
 	m_batch_size = 0;
 	m_num_params = 0;
 	m_sigma = 0.01;
 
 	SG_ADD(&m_num_layers, "num_layers", "Number of layers");
-	SG_ADD(
-	    (std::shared_ptr<SGObject>*)&m_layer_sizes, "layer_sizes",
-	    "Size of each hidden layer");
+	SG_ADD(&m_layer_sizes, "layer_sizes", "Size of each hidden layer");
 
 	SG_ADD(&m_params, "params", "Parameters of the network");
 	SG_ADD(&m_num_params, "num_params", "Number of parameters");

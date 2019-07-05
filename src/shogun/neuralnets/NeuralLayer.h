@@ -38,7 +38,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
@@ -107,8 +106,9 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
-			SGVector<int32_t> input_indices);
+	virtual void initialize_neural_layer(
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+		SGVector<int32_t> input_indices);
 
 	/** Sets the batch_size and allocates memory for m_activations and
 	 * m_input_gradients accordingly. Must be called before forward or backward
@@ -162,8 +162,9 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(SGVector<float64_t> parameters,
-			std::shared_ptr<DynamicObjectArray> layers) { }
+	virtual void compute_activations(
+		SGVector<float64_t> parameters,
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers) { }
 
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
@@ -195,7 +196,7 @@ public:
 	 */
 	virtual void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> targets,
-			std::shared_ptr<DynamicObjectArray> layers,
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 			SGVector<float64_t> parameter_gradients) { }
 
 	/** Computes the error between the layer's current activations and the given
