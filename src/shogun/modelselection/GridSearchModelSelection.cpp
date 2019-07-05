@@ -36,7 +36,7 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 
 	/* Retrieve all possible parameter combinations */
 	auto combinations=
-			m_model_parameters->get_combinations()->as<DynamicObjectArray>();
+			m_model_parameters->get_combinations();
 
 	auto best_result=std::make_shared<CrossValidationResult>();
 
@@ -56,9 +56,9 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 	auto machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
-	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
+	for (auto i : SG_PROGRESS(range(combinations.size())))
 	{
-		auto current_combination=combinations->get_element<ParameterCombination>(i);
+		auto current_combination=combinations[i];
 
 		/* eventually print */
 		if (print_state)
@@ -86,7 +86,7 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 
 
 				best_combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 
 
@@ -95,7 +95,7 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 			else
 			{
 				auto combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 			}
 		}
@@ -107,7 +107,7 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 
 
 				best_combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 
 
@@ -116,7 +116,7 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 			else
 			{
 				auto combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 			}
 		}

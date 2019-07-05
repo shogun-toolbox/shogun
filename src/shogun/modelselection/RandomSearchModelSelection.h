@@ -11,7 +11,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/modelselection/ModelSelection.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
