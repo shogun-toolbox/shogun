@@ -12,7 +12,6 @@
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/evaluation/Evaluation.h>
 
 using namespace shogun;
@@ -148,7 +147,7 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 	m_all_oob_idx.zero();
 
 
-	m_oob_indices = std::make_shared<DynamicObjectArray>();
+	m_oob_indices.clear();
 
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
 	random::fill_array(rnd_indicies, 0, m_bag_size - 1, m_prng);
@@ -204,7 +203,7 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 		{
 		// get out of bag indexes
 		auto oob = get_oob_indices(idx);
-		m_oob_indices->push_back(oob);
+		m_oob_indices.push_back(oob);
 
 		// add trained machine to bag array
 		m_bags.push_back(c);
@@ -315,11 +314,9 @@ float64_t BaggingMachine::get_oob_error() const
 	for (index_t i = 0; i < m_bags.size(); i++)
 	{
 		auto m = m_bags.at(i);
-		auto current_oob
-			= m_oob_indices->get_element<DynamicArray<index_t>>(i);
+		auto current_oob = m_oob_indices[i];
 
-		SGVector<index_t> oob(
-		    current_oob->get_array(), current_oob->get_num_elements(), false);
+		SGVector<index_t> oob(current_oob.data(), current_oob.size(), false);
 		m_features->add_subset(oob);
 
 		auto l = m->apply(m_features);
@@ -378,7 +375,7 @@ float64_t BaggingMachine::get_oob_error() const
 	return res;
 }
 
-std::shared_ptr<DynamicArray<index_t>> BaggingMachine::get_oob_indices(const SGVector<index_t>& in_bag)
+std::vector<index_t> BaggingMachine::get_oob_indices(const SGVector<index_t>& in_bag)
 {
 	SGVector<bool> out_of_bag(m_features->get_num_vectors());
 	out_of_bag.set_const(true);
@@ -387,13 +384,13 @@ std::shared_ptr<DynamicArray<index_t>> BaggingMachine::get_oob_indices(const SGV
 	for (index_t i = 0; i < in_bag.vlen; i++)
 		out_of_bag[in_bag[i]] &= false;
 
-	auto oob = std::make_shared<DynamicArray<index_t>>();
+	std::vector<index_t> oob;
 	// store the indicies of vectors that are out of the bag
 	for (index_t i = 0; i < out_of_bag.vlen; i++)
 	{
 		if (out_of_bag[i])
 		{
-			oob->push_back(i);
+			oob.push_back(i);
 			m_all_oob_idx[i] = true;
 		}
 	}

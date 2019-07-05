@@ -227,10 +227,10 @@ protected:
 	float64_t m_learning_rate;
 
 	/** array of weak learners */
-	std::shared_ptr<DynamicObjectArray> m_weak_learners;
+	std::vector<std::shared_ptr<Machine>> m_weak_learners;
 
 	/** gamma - weak learner weights */
-	std::shared_ptr<DynamicArray<float64_t>> m_gamma;
+	std::vector<float64_t> m_gamma;
 #ifndef SWIG
 public:
 	static constexpr std::string_view kMachine = "machine";
