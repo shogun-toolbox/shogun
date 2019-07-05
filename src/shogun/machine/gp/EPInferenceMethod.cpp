@@ -38,7 +38,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/lib/DynamicArray.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/RandomNamespace.h>

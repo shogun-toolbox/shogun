@@ -32,8 +32,8 @@
 #include <shogun/lib/View.h>
 #include <shogun/machine/StochasticGBMachine.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace shogun;
 
@@ -144,9 +144,9 @@ std::shared_ptr<RegressionLabels> StochasticGBMachine::apply_regression(std::sha
 	retlabs.fill_vector(retlabs.vector,retlabs.vlen,0);
 	for (int32_t i=0;i<m_num_iter;i++)
 	{
-		float64_t gamma=m_gamma->get_element(i);
+		float64_t gamma=m_gamma[i];
 
-		auto machine=m_weak_learners->get_element<Machine>(i);
+		auto machine=m_weak_learners[i];
 		REQUIRE(machine,"%d element of the array of weak learners is NULL. This is not expected\n",i)
 
 		auto dlabels=machine->apply_regression(feats);
@@ -193,13 +193,13 @@ bool StochasticGBMachine::train_machine(std::shared_ptr<Features> data)
 
 		// fit learner
 		auto wlearner = fit_model(feats_iter, pres);
-		m_weak_learners->push_back(wlearner);
+		m_weak_learners.push_back(wlearner);
 
 		// compute multiplier
 		auto hm = wlearner->apply_regression(feats_iter);
 
 		float64_t gamma = compute_multiplier(interf_iter, hm, labels_iter);
-		m_gamma->push_back(gamma);
+		m_gamma.push_back(gamma);
 
 		// update intermediate function value
 		auto dlabels=wlearner->apply_regression(feats);
@@ -221,13 +221,13 @@ float64_t StochasticGBMachine::compute_multiplier(
 {
 	REQUIRE(f->get_num_labels()==hm->get_num_labels(),"The number of labels in both input parameters should be equal\n")
 
-	auto instance=std::make_shared<DynamicObjectArray>();
-	instance->push_back(labs);
-	instance->push_back(f);
-	instance->push_back(hm);
-	instance->push_back(m_loss);
+	auto instance=std::vector<std::shared_ptr<SGObject>>();
+	instance.push_back(labs);
+	instance.push_back(f);
+	instance.push_back(hm);
+	instance.push_back(m_loss);
 
-	float64_t ret=get_gamma(instance.get());
+	float64_t ret=get_gamma(&instance);
 
 
 	return ret;
@@ -281,11 +281,11 @@ StochasticGBMachine::get_subset(
 void StochasticGBMachine::initialize_learners()
 {
 
-	m_weak_learners=std::make_shared<DynamicObjectArray>();
+	m_weak_learners.clear();
 
 
 
-	m_gamma=std::make_shared<DynamicArray<float64_t>>();
+	m_gamma.clear();
 
 }
 
@@ -305,19 +305,19 @@ float64_t StochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parame
 												const float64_t step)
 {
 	REQUIRE(obj,"object cannot be NULL\n")
-	auto objects=(DynamicObjectArray*)obj;
-	REQUIRE((objects->get_num_elements()==2) || (objects->get_num_elements()==4),"Number of elements in obj array"
-	" (%d) does not match expectations(2 or 4)\n",objects->get_num_elements())
+	auto& objects = *(std::vector<std::shared_ptr<SGObject>>*)(obj);
+	REQUIRE((objects.size()==2) || (objects.size()==4),"Number of elements in obj array"
+	" (%d) does not match expectations(2 or 4)\n",objects.size())
 
-	if (objects->get_num_elements()==2)
+	if (objects.size()==2)
 	{
 		// extract labels
-		auto lab=objects->get_element<DenseLabels>(0);
+		auto lab=objects[0]->as<DenseLabels>();
 		REQUIRE(lab,"0 index element of objects is NULL\n")
 		SGVector<float64_t> labels=lab->get_labels();
 
 		// extract loss function
-		auto lossf =objects->get_element<LossFunction>(1);
+		auto lossf =objects[1]->as<LossFunction>();
 		REQUIRE(lossf,"1 index element of objects is NULL\n")
 
 		*gradient=0;
@@ -334,22 +334,22 @@ float64_t StochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parame
 	}
 
 	// extract labels
-	auto lab=objects->get_element<DenseLabels>(0);
+	auto lab=objects[0]->as<DenseLabels>();
 	REQUIRE(lab,"0 index element of objects is NULL\n")
 	SGVector<float64_t> labels=lab->get_labels();
 
 	// extract f
-	auto func=objects->get_element<DenseLabels>(1);
+	auto func=objects[1]->as<DenseLabels>();
 	REQUIRE(func,"1 index element of objects is NULL\n")
 	SGVector<float64_t> f=func->get_labels();
 
 	// extract hm
-	auto delta=objects->get_element<DenseLabels>(2);
+	auto delta=objects[2]->as<DenseLabels>();
 	REQUIRE(delta,"2 index element of objects is NULL\n")
 	SGVector<float64_t> hm=delta->get_labels();
 
 	// extract loss function
-	auto lossf=objects->get_element<LossFunction>(3);
+	auto lossf=objects[3]->as<LossFunction>();
 	REQUIRE(lossf,"3 index element of objects is NULL\n")
 
 	*gradient=0;
@@ -375,10 +375,10 @@ void StochasticGBMachine::init()
 	m_subset_frac=0;
 	m_learning_rate=0;
 
-	m_weak_learners=std::make_shared<DynamicObjectArray>();
+	m_weak_learners.clear();
 
 
-	m_gamma=std::make_shared<DynamicArray<float64_t>>();
+	m_gamma.clear();
 
 
 	SG_ADD((std::shared_ptr<SGObject>*)&m_machine,"m_machine","machine");
@@ -386,6 +386,6 @@ void StochasticGBMachine::init()
 	SG_ADD(&m_num_iter,"m_num_iter","number of iterations");
 	SG_ADD(&m_subset_frac,"m_subset_frac","subset fraction");
 	SG_ADD(&m_learning_rate,"m_learning_rate","learning rate");
-	SG_ADD((std::shared_ptr<SGObject>*)&m_weak_learners,"m_weak_learners","array of weak learners");
-	SG_ADD((std::shared_ptr<SGObject>*)&m_gamma,"m_gamma","array of learner weights");
+	SG_ADD(&m_weak_learners,"m_weak_learners","array of weak learners");
+	SG_ADD(&m_gamma,"m_gamma","array of learner weights");
 }
