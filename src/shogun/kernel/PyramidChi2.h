@@ -15,6 +15,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 namespace shogun
 {
