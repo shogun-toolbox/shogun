@@ -10,8 +10,9 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
@@ -120,8 +121,8 @@ public:
 	 * trees
 	 * @result result set of tree combinations
 	 */
-	static std::shared_ptr<DynamicObjectArray> leaf_sets_multiplication(
-			const DynamicObjectArray& sets,
+	static std::vector<std::shared_ptr<ParameterCombination>> leaf_sets_multiplication(
+			const std::vector<std::vector<std::shared_ptr<ParameterCombination>>>& sets,
 			std::shared_ptr<const ParameterCombination> new_root);
 
 	/** Sets specific parameter to specified value.
@@ -158,10 +159,10 @@ public:
 
 		bool result = false;
 
-		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+		for (index_t i = 0; i < m_child_nodes.size(); ++i)
 		{
 			auto child =
-					m_child_nodes->get_element<ParameterCombination>(i);
+					m_child_nodes[i];
 
 			if (!match)
 				 result |= child->set_parameter(name, value, parent, index);
@@ -191,7 +192,7 @@ public:
 	 */
 	bool has_children() const
 	{
-		return m_child_nodes->get_num_elements()>0;
+		return !m_child_nodes.empty();
 	}
 
 	/** Returns a newly created array with pointers to newly created Parameter
@@ -201,9 +202,9 @@ public:
 	 * @param set_2 array of Parameter instances
 	 * @return result array with all combinations
 	 */
-	static DynArray<Parameter*>* parameter_set_multiplication(
-			const DynArray<Parameter*>& set_1,
-			const DynArray<Parameter*>& set_2);
+	static std::vector<Parameter*> parameter_set_multiplication(
+			const std::vector<Parameter*>& set_1,
+			const std::vector<Parameter*>& set_2);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const
@@ -263,9 +264,10 @@ protected:
 	 * @return set of trees with the given root as root and all combinations
 	 * of the trees in the sets as children
 	 */
-	static std::shared_ptr<DynamicObjectArray> non_value_tree_multiplication(
-				std::shared_ptr<const DynamicObjectArray> sets,
-				std::shared_ptr<const ParameterCombination> new_root);
+	static std::vector<std::shared_ptr<ParameterCombination>>
+	non_value_tree_multiplication(
+		const std::vector<std::vector<std::shared_ptr<ParameterCombination>>>& sets,
+		std::shared_ptr<const ParameterCombination> new_root);
 
 	/** Takes a set of sets of trees and extracts all trees with a given name.
 	 * Assumes that in a (inner) set, all trees have the same name on their
@@ -275,8 +277,10 @@ protected:
 	 * @param desired_name tree with this name is searched
 	 * @return set of trees with the desired name
 	 */
-	static std::shared_ptr<DynamicObjectArray> extract_trees_with_name(
-			std::shared_ptr<const DynamicObjectArray> sets, const char* desired_name);
+	static std::vector<std::shared_ptr<ParameterCombination>>
+	extract_trees_with_name(
+		const std::vector<std::vector<std::shared_ptr<ParameterCombination>>>& sets,
+		const char* desired_name);
 
 	/** Gets parameter by name in current node.
 	 *
@@ -323,7 +327,7 @@ protected:
 	Parameter* m_param;
 
 	/** child parameters */
-	std::shared_ptr<DynamicObjectArray> m_child_nodes;
+	std::vector<std::shared_ptr<ParameterCombination>> m_child_nodes;
 
 	/** total length of the parameters in combination */
 	uint32_t m_parameters_length;
