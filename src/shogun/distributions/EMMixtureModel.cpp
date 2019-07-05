@@ -74,7 +74,7 @@ void EMMixtureModel::maximization_step()
 	float64_t sum_weights=0;
 	for (int32_t j=0;j<data.alpha.num_cols;j++)
 	{
-		auto jth_component=data.components[j]->as<Distribution>();
+		auto jth_component=data.components[j];
 
 		// update mean covariance of components
 		SGVector<float64_t> alpha_j(data.alpha.matrix+j*data.alpha.num_rows, data.alpha.num_rows, false);
