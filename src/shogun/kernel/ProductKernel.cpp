@@ -201,13 +201,13 @@ bool ProductKernel::precompute_subkernels()
 	if (get_num_subkernels()==0)
 		return false;
 
-	auto new_kernel_array=std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<Kernel>> new_kernel_array;
+	new_kernel_array.reserve(get_num_subkernels());
 
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
 	{
 		auto k=get_kernel(k_idx);
-		new_kernel_array->append_element(std::make_shared<CustomKernel>(k));
-
+		new_kernel_array.push_back(std::make_shared<CustomKernel>(k));
 	}
 
 
@@ -222,10 +222,10 @@ void ProductKernel::init()
 	initialized=false;
 
 	properties=KP_NONE;
-	kernel_array=std::make_shared<DynamicObjectArray>();
+	kernel_array.clear();
 
-
-	SG_ADD((std::shared_ptr<SGObject>*) &kernel_array, "kernel_array", "Array of kernels",
+	SG_ADD(
+	    &kernel_array, "kernel_array", "Array of kernels",
 	    ParameterProperties::HYPER);
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used");
 }

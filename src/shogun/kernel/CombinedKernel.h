@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/List.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -126,7 +125,7 @@ class CombinedKernel : public Kernel
 		{
 			if (idx < get_num_kernels())
 			{
-				return std::static_pointer_cast<Kernel>(kernel_array->get_element(idx));
+				return kernel_array[idx];
 			}
 			else
 			{
@@ -153,12 +152,18 @@ class CombinedKernel : public Kernel
 		inline bool insert_kernel(std::shared_ptr<Kernel> k, int32_t idx)
 		{
 			ASSERT(k)
+			REQUIRE(
+			    idx >= 0 && idx < get_num_kernels(),
+			    "Index idx (%d) is out of range (0-%d)", idx,
+			    get_num_kernels());
+
 			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_array->insert_element(k, idx);
+			kernel_array[idx] = k;
+			return true;
 		}
 
 		/** check if all sub-kernels have given property
@@ -171,14 +176,14 @@ class CombinedKernel : public Kernel
 			if (p != KP_LINADD)
 				return Kernel::has_property(p);
 
-			if (!kernel_array || !kernel_array->get_num_elements())
+			if (kernel_array.empty())
 				return false;
 
 			bool all_linadd = true;
-			for (auto i : range(kernel_array->get_num_elements()))
+			for (auto i : range(kernel_array.size()))
 			{
-				auto cur = kernel_array->get_element(i);
-				all_linadd &= (std::static_pointer_cast<Kernel>(cur))->has_property(p);
+				auto& cur = kernel_array[i];
+				all_linadd &= cur->has_property(p);
 
 				if (!all_linadd)
 					break;
@@ -201,7 +206,7 @@ class CombinedKernel : public Kernel
 				unset_property(KP_LINADD);
 
 			int n = get_num_kernels();
-			kernel_array->push_back(k);
+			kernel_array.push_back(k);
 
 			if(enable_subkernel_weight_opt && n+1==get_num_kernels())
 				enable_subkernel_weight_learning();
@@ -217,7 +222,12 @@ class CombinedKernel : public Kernel
 		 */
 		inline bool delete_kernel(int32_t idx)
 		{
-			bool succesful_deletion = kernel_array->delete_element(idx);
+			REQUIRE(
+			    idx >= 0 && idx < kernel_array.size(),
+			    "Index idx (%d) is out of range (0-%d)", idx,
+			    kernel_array.size());
+
+			kernel_array.erase(kernel_array.begin() + idx);
 
 			if (get_num_kernels()==0)
 			{
@@ -225,10 +235,10 @@ class CombinedKernel : public Kernel
 				num_rhs=0;
 			}
 
-			if(enable_subkernel_weight_opt && succesful_deletion && get_num_kernels()>0)
+			if (enable_subkernel_weight_opt && get_num_kernels() > 0)
 				enable_subkernel_weight_learning();
 
-			return succesful_deletion;
+			return true;
 		}
 
 		/** check if subkernel weights are appended
@@ -268,7 +278,7 @@ class CombinedKernel : public Kernel
 		 */
 		int32_t get_num_kernels()
 		{
-			return kernel_array->get_num_elements();
+			return kernel_array.size();
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -409,7 +419,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return kernel array
 		 */
-		inline std::shared_ptr<DynamicObjectArray> get_array()
+		inline std::vector<std::shared_ptr<Kernel>> get_array()
 		{
 
 			return kernel_array;
@@ -505,7 +515,7 @@ class CombinedKernel : public Kernel
 
 	protected:
 		/** list of kernels */
-		std::shared_ptr<DynamicObjectArray> kernel_array;
+		std::vector<std::shared_ptr<Kernel>> kernel_array;
 		/** support vector count */
 		int32_t   sv_count;
 		/** support vector index */
