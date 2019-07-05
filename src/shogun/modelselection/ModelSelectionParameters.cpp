@@ -9,7 +9,6 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/lib/Set.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 
@@ -41,7 +40,7 @@ void ModelSelectionParameters::init()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
-	m_child_nodes=std::make_shared<DynamicObjectArray>();
+	m_child_nodes.clear();
 
 	m_value_type=MSPT_NONE;
 	m_values=NULL;
@@ -85,7 +84,7 @@ void ModelSelectionParameters::append_child(std::shared_ptr<ModelSelectionParame
 		}
 	}
 
-	m_child_nodes->append_element(child);
+	m_child_nodes.push_back(child);
 }
 
 void ModelSelectionParameters::build_values(float64_t min, float64_t max,
@@ -286,7 +285,7 @@ std::shared_ptr<ParameterCombination> ModelSelectionParameters::get_single_combi
 		error("Illegal ModelSelectionParameters node type.");
 
 	/* Incorporate SGObject and root nodes with children*/
-	if (m_child_nodes->get_num_elements())
+	if (m_child_nodes.size())
 	{
 
 		if (m_sgobject)
@@ -300,10 +299,9 @@ std::shared_ptr<ParameterCombination> ModelSelectionParameters::get_single_combi
 		else
 			new_root = std::make_shared<ParameterCombination>();
 
-		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+		for (index_t i = 0; i < m_child_nodes.size(); ++i)
 		{
-			auto current =
-				m_child_nodes->get_element<ModelSelectionParameters>(i);
+			auto current = m_child_nodes[i];
 
 			auto c = current->get_single_combination(is_rand);
 
@@ -338,7 +336,8 @@ std::shared_ptr<ParameterCombination> ModelSelectionParameters::get_single_combi
 
 
 
-std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
+std::vector<std::shared_ptr<ParameterCombination>>
+ModelSelectionParameters::get_combinations(
 		index_t num_prefix)
 {
 	char* prefix=SG_MALLOC(char, num_prefix+1);
@@ -348,7 +347,7 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 
 	SG_DEBUG("{}------>entering ModelSelectionParameters::get_combinations() "
 			"for \"{}\"", prefix, m_node_name ? m_node_name : "root");
-	auto result=std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<parametercombination>> result;
 
 	/* value case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
@@ -378,7 +377,7 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 				break;
 			}
 
-			result->append_element(std::make_shared<ParameterCombination>(p));
+			result.push_back(std::make_shared<ParameterCombination>(p));
 		}
 
 		SG_DEBUG("{}------>leaving ModelSelectionParameters::get_combinations()"
@@ -398,34 +397,37 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 		error("{}Illegal ModelSelectionParameters node type.", prefix);
 
 	/* only consider combinations if this node has children */
-	if (m_child_nodes->get_num_elements())
+	if (m_child_nodes.size())
 	{
 		/* split value and non-value child combinations */
-		DynamicObjectArray value_children;
-		DynamicObjectArray non_value_children;
+		std::vector<std::shared_ptr<ModelSelectionParameters>>
+		value_children;
 
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+		std::vector<std::shared_ptr<ModelSelectionParameters>>
+		non_value_children;
+
+		for (index_t i=0; i<m_child_nodes.size(); ++i)
 		{
-			auto current=
-					m_child_nodes->get_element<ModelSelectionParameters>(i);
+			auto& current = m_child_nodes[i];
 
 			/* split children with values and children with other */
 			if (current->m_values)
-				value_children.append_element(current);
+				value_children.push_back(current);
 			else
-				non_value_children.append_element(current);
+				non_value_children.push_back(current);
 
 
 		}
 
 		/* extract all tree sets of all value children */
-		DynamicObjectArray value_node_sets;
-		for (index_t i=0; i<value_children.get_num_elements(); ++i)
+		std::vector<std::vector<std::shared_ptr<ParameterCombination>>>
+		value_node_sets;
+		for (index_t i=0; i<value_children.size(); ++i)
 		{
 			/* recursively get all combinations in a new array */
 			auto value_child=
-					value_children.get_element<ModelSelectionParameters>(i);
-			value_node_sets.append_element(value_child->get_combinations(
+					value_children[i];
+			value_node_sets.push_back(value_child->get_combinations(
 					num_prefix+1));
 
 		}
@@ -452,28 +454,27 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 
 
 
-		if (!non_value_children.get_num_elements())
-			*result=*value_combinations;
+		if (!non_value_children.size())
+			result=value_combinations;
 		/* in the other case, the non-values have also to be treated, but
 		 * combined iteratively */
 		else
 		{
 			/* extract all tree sets of non-value nodes */
 //			io::print("{}extracting combinations of non-value nodes\n", prefix);
-			auto non_value_combinations=
-					std::make_shared<DynamicObjectArray>();
-			for (index_t i=0; i<non_value_children.get_num_elements(); ++i)
+			std::vector<std::vector<std::shared_ptr<ParameterCombination>>>
+			non_value_combinations;
+			for (index_t i=0; i<non_value_children.size(); ++i)
 			{
 				/* recursively get all combinations in a new array */
-				auto non_value_child=
-						non_value_children.get_element<ModelSelectionParameters>(i);
+				auto non_value_child = non_value_children[i];
 
 //				io::print("{}\tcurrent non-value child\n", prefix);
 //				non_value_child->print_tree(num_prefix+1);
 
 				auto current_combination=
 						non_value_child->get_combinations(num_prefix+2);
-				non_value_combinations->append_element(current_combination);
+				non_value_combinations.push_back(current_combination);
 
 
 //				io::print("{}\tcombinations of non-value nodes:\n", prefix);
@@ -491,7 +492,7 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 			/* Now, combine combinations of value and non-value nodes */
 
 			/* if there are only non-value children, nothing is combined */
-			if (!value_combinations->get_num_elements())
+			if (!value_combinations.size())
 			{
 				/* non-value children have to be multipied first, then, all
 				 * these products are just appended */
@@ -514,14 +515,12 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 
 
 
-				non_value_combinations=non_value_products;
-
 				/* append all non-value combinations to result */
-				for (index_t i=0; i<non_value_combinations->get_num_elements(); ++i)
+				for (index_t i=0; i<non_value_products.size(); ++i)
 				{
 					auto current=
-							non_value_combinations->get_element<ParameterCombination>(i);
-					result->append_element(current);
+							non_value_products[i];
+					result.push_back(current);
 
 				}
 			}
@@ -547,18 +546,16 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 
 
 
-				non_value_combinations=non_value_products;
-
-				for (index_t i=0; i<value_combinations->get_num_elements(); ++i)
+				for (index_t i=0; i<value_combinations.size(); ++i)
 				{
 					auto current_value_tree=
-							value_combinations->get_element<ParameterCombination>(i);
+							value_combinations[i];
 
 					for (index_t j=0; j
-							<non_value_combinations->get_num_elements(); ++j)
+							<non_value_combinations.size(); ++j)
 				{
 						auto current_non_value_tree=
-								non_value_combinations->get_element<ParameterCombination>(j);
+								non_value_products[j];
 
 						/* copy current value tree and add all childs of non-
 						 * value combination. Then add new node to result */
@@ -566,7 +563,7 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 								current_value_tree->copy_tree();
 
 						value_copy->merge_with(current_non_value_tree);
-						result->append_element(value_copy);
+						result.push_back(value_copy);
 
 
 					}
@@ -591,12 +588,12 @@ std::shared_ptr<DynamicObjectArray> ModelSelectionParameters::get_combinations(
 			Parameter* p=new Parameter();
 			//FIXME
 			//p->add(&(ms_sgobject.get()), m_node_name);
-			result->append_element(std::make_shared<ParameterCombination>(p));
+			result.push_back(std::make_shared<ParameterCombination>(p));
 		}
 	}
 
 //	io::print("{}result is a set of {} elements:\n", prefix,
-//			result->get_num_elements());
+//			result.size());
 //	for (index_t i=0; i<result->get_num_elements(); ++i)
 //	{
 //		CParameterCombination* current=(CParameterCombination*)
@@ -630,10 +627,10 @@ void ModelSelectionParameters::print_tree(int prefix_num)
 		/* now recursively print successors */
 
 		/* cast safe because only ModelSelectionParameters are added to list */
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+		for (index_t i=0; i<m_child_nodes.size(); ++i)
 		{
 			auto child=
-				m_child_nodes->get_element<ModelSelectionParameters>(i);
+				m_child_nodes[i];
 			child->print_tree(prefix_num+1);
 
 		}

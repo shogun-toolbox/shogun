@@ -39,15 +39,15 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 
 	/* Retrieve all possible parameter combinations */
 	auto all_combinations=
-			std::static_pointer_cast<DynamicObjectArray>(m_model_parameters->get_combinations());
+			m_model_parameters->get_combinations();
 
-	int32_t n_all_combinations=all_combinations->get_num_elements();
+	int32_t n_all_combinations=all_combinations.size();
 	SGVector<index_t> combinations_indices=Statistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations, m_prng);
 
-	auto combinations=std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<ParameterCombination>> combinations;
 
 	for (int32_t i=0; i<combinations_indices.vlen; i++)
-		combinations->append_element(all_combinations->get_element(i));
+		combinations.push_back(all_combinations[i]);
 
 	auto best_result=std::make_shared<CrossValidationResult>();
 
@@ -67,10 +67,10 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 	auto machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
-	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
+	for (auto i : SG_PROGRESS(range(combinations.size())))
 	{
 		auto current_combination=
-				combinations->get_element<ParameterCombination>(i);
+				combinations[i];
 
 		/* eventually print */
 		if (print_state)
@@ -95,7 +95,7 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 			if (result->get_mean() > best_result->get_mean())
 			{
 				best_combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 
 
@@ -104,7 +104,7 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 			else
 			{
 				auto combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 			}
 		}
@@ -116,7 +116,7 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 
 
 				best_combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 
 
@@ -125,7 +125,7 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 			else
 			{
 				auto combination=
-						combinations->get_element<ParameterCombination>(i);
+						combinations[i];
 
 			}
 		}
