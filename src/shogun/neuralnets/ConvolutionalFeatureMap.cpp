@@ -33,7 +33,6 @@
 
 #include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 #include <shogun/neuralnets/NeuralLayer.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
@@ -76,7 +75,7 @@ CConvolutionalFeatureMap::CConvolutionalFeatureMap(
 
 void CConvolutionalFeatureMap::compute_activations(
 	SGVector< float64_t > parameters,
-	std::shared_ptr<DynamicObjectArray> layers,
+	const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 	SGVector< int32_t > input_indices,
 	SGMatrix<float64_t> activations)
 {
@@ -94,8 +93,7 @@ void CConvolutionalFeatureMap::compute_activations(
 	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		auto layer =
-			layers->get_element<NeuralLayer>(input_indices[l]);
+		auto& layer = layers[input_indices[l]];
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 
@@ -129,11 +127,12 @@ void CConvolutionalFeatureMap::compute_activations(
 	}
 }
 
+
 void CConvolutionalFeatureMap::compute_gradients(
 	SGVector< float64_t > parameters,
 	SGMatrix<float64_t> activations,
 	SGMatrix< float64_t > activation_gradients,
-	std::shared_ptr<DynamicObjectArray> layers,
+	const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 	SGVector< int32_t > input_indices,
 	SGVector< float64_t > parameter_gradients)
 {
@@ -169,8 +168,7 @@ void CConvolutionalFeatureMap::compute_gradients(
 	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		auto layer =
-			layers->get_element<NeuralLayer>(input_indices[l]);
+		auto layer = layers[input_indices[l]];
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 

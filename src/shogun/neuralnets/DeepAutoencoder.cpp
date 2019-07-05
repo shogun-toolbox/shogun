@@ -32,7 +32,6 @@
  */
 
 #include <shogun/neuralnets/DeepAutoencoder.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 
 #include <shogun/neuralnets/NeuralLinearLayer.h>
@@ -49,8 +48,9 @@ DeepAutoencoder::DeepAutoencoder() : Autoencoder()
 	init();
 }
 
-DeepAutoencoder::DeepAutoencoder(std::shared_ptr<DynamicObjectArray> layers, float64_t sigma):
-Autoencoder()
+DeepAutoencoder::DeepAutoencoder(
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers, float64_t sigma)
+    : Autoencoder()
 {
 	set_layers(layers);
 	init();
@@ -171,17 +171,16 @@ std::shared_ptr<DenseFeatures< float64_t >> DeepAutoencoder::reconstruct(
 std::shared_ptr<NeuralNetwork> DeepAutoencoder::convert_to_neural_network(
 	std::shared_ptr<NeuralLayer> output_layer, float64_t sigma)
 {
-	auto layers = std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
 	for (int32_t i=0; i<=(m_num_layers-1)/2; i++)
 	{
 		auto layer = get_layer(i)->clone()->as<NeuralLayer>();
 		layer->autoencoder_position = NLAP_NONE;
-		layers->append_element(layer);
-
+		layers.push_back(layer);
 	}
 
 	if (output_layer != NULL)
-		layers->append_element(output_layer);
+		layers.push_back(output_layer);
 
 	auto net = std::make_shared<NeuralNetwork>(layers);
 	net->quick_connect();

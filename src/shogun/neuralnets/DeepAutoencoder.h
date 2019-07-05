@@ -97,7 +97,9 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * weights
 	 */
-	DeepAutoencoder(std::shared_ptr<DynamicObjectArray> layers, float64_t sigma = 0.01);
+	DeepAutoencoder(
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+		float64_t sigma = 0.01);
 
 	virtual ~DeepAutoencoder() {}
 

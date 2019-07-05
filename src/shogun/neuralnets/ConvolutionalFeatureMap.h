@@ -57,7 +57,6 @@ enum EConvMapActivationFunction
 
 template <class T> class SGVector;
 template <class T> class SGMatrix;
-class DynamicObjectArray;
 
 /** @brief Handles convolution and gradient calculation for a single feature
  * map in a convolutional neural network
@@ -97,7 +96,7 @@ public:
 	 * @param activations Matrix in which the activations are to be stored
 	 */
 	void compute_activations(SGVector<float64_t> parameters,
-			std::shared_ptr<DynamicObjectArray> layers,
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 			SGVector<int32_t> input_indices,
 			SGMatrix<float64_t> activations);
 
@@ -116,7 +115,7 @@ public:
 	void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> activations,
 			SGMatrix<float64_t> activation_gradients,
-			std::shared_ptr<DynamicObjectArray> layers,
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 			SGVector<int32_t> input_indices,
 			SGVector<float64_t> parameter_gradients);
 
