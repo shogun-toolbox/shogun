@@ -230,24 +230,23 @@ void CombinedDotFeatures::free_feature_iterator(void* iterator)
 
 std::shared_ptr<DotFeatures> CombinedDotFeatures::get_feature_obj(int32_t idx) const
 {
-	return feature_array->get_element<DotFeatures>(idx);
+	return feature_array[idx]->as<DotFeatures>();
 }
 
 bool CombinedDotFeatures::insert_feature_obj(std::shared_ptr<DotFeatures> obj, int32_t idx)
 {
 	ASSERT(obj)
-	bool result=feature_array->insert_element(obj, idx);
-	auto iterator = feature_weights.begin() + idx;
-	feature_weights.insert(iterator, initial_weight);
+	feature_array.insert(feature_array.begin() + idx, obj);
+	feature_weights.insert(feature_weights.begin() + idx, initial_weight);
 	update_dim_feature_space_and_num_vec();
-	return result;
+	return true;
 }
 
 bool CombinedDotFeatures::append_feature_obj(std::shared_ptr<DotFeatures> obj)
 {
 	ASSERT(obj)
 	int n = get_num_feature_obj();
-	feature_array->push_back(obj);
+	feature_array.push_back(obj);
 	feature_weights.push_back(initial_weight);
 	update_dim_feature_space_and_num_vec();
 	return n+1==get_num_feature_obj();
@@ -255,17 +254,20 @@ bool CombinedDotFeatures::append_feature_obj(std::shared_ptr<DotFeatures> obj)
 
 bool CombinedDotFeatures::delete_feature_obj(int32_t idx)
 {
-	bool succesful_deletion = feature_array->delete_element(idx);
-	if (succesful_deletion)
-		update_dim_feature_space_and_num_vec();
-	auto iterator = feature_weights.begin() + idx;
-	feature_weights.erase(iterator);
-	return succesful_deletion;
+	REQUIRE(
+	    idx >= 0 && idx < feature_array.size(),
+	    "Index idx (%d) is out of range (0-%d)", idx, feature_array.size());
+
+	feature_array.erase(feature_array.begin() + idx);
+	update_dim_feature_space_and_num_vec();
+
+	feature_weights.erase(feature_weights.begin() + idx);
+	return true;
 }
 
 int32_t CombinedDotFeatures::get_num_feature_obj() const
 {
-	return feature_array->get_num_elements();
+	return feature_array.size();
 }
 
 int32_t CombinedDotFeatures::get_nnz_features_for_vector(int32_t num) const
@@ -317,7 +319,7 @@ void CombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
 
 void CombinedDotFeatures::init()
 {
-	feature_array=std::make_shared<DynamicObjectArray>();
+	feature_array.clear();
 	register_params();
 }
 

@@ -18,7 +18,6 @@
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/lib/List.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/base/range.h>
 

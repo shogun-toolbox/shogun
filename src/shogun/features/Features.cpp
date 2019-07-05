@@ -10,7 +10,6 @@
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 #include <string.h>
 

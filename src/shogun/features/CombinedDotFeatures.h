@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DotFeatures.h>
 
 namespace std
@@ -23,7 +22,6 @@ namespace std
 namespace shogun
 {
 class Features;
-class DynamicObjectArray;
 /** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.
@@ -280,7 +278,7 @@ class CombinedDotFeatures : public DotFeatures
 
 	protected:
 		/** feature array */
-		std::shared_ptr<DynamicObjectArray> feature_array;
+		std::vector<std::shared_ptr<Features>> feature_array;
 		std::vector<float64_t> feature_weights;
 		static const float64_t initial_weight;
 		/// total number of vectors

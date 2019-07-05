@@ -15,8 +15,7 @@ FactorGraphFeatures::FactorGraphFeatures(): FactorGraphFeatures(0)
 FactorGraphFeatures::FactorGraphFeatures(int32_t num_samples)
 {
 	init();
-	m_samples = std::make_shared<DynamicObjectArray>(num_samples);
-
+	m_samples.reserve(num_samples);
 }
 
 FactorGraphFeatures::~FactorGraphFeatures()
@@ -42,34 +41,25 @@ EFeatureClass FactorGraphFeatures::get_feature_class() const
 
 int32_t FactorGraphFeatures::get_num_vectors() const
 {
-	if (m_samples == NULL)
-		return 0;
-	else
-		return m_samples->get_array_size();
+	return m_samples.size();
 }
 
 bool FactorGraphFeatures::add_sample(std::shared_ptr<FactorGraph> example)
 {
-	if (m_samples != NULL)
-	{
-		m_samples->push_back(example);
-		return true;
-	}
-	else
-		return false;
+	m_samples.push_back(example);
+	return true;
 }
 
 std::shared_ptr<FactorGraph> FactorGraphFeatures::get_sample(index_t idx)
 {
 	require(m_samples != NULL, "{}::get_sample(): m_samples is NULL!", get_name());
 	require(idx >= 0 && idx < get_num_vectors(), "{}::get_sample(): out of index!", get_name());
-
-	return m_samples->get_element<FactorGraph>(idx);
+	return m_samples[idx];
 }
 
 void FactorGraphFeatures::init()
 {
-	SG_ADD((std::shared_ptr<SGObject>*) &m_samples, "samples", "Array of examples");
+	SG_ADD(&m_samples, "samples", "Array of examples");
 }
 
 std::shared_ptr<FactorGraphFeatures> FactorGraphFeatures::obtain_from_generic(std::shared_ptr<Features> base_feats)
