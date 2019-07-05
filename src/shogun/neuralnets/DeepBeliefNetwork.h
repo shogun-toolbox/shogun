@@ -48,8 +48,6 @@ template <class T> class SGVector;
 template <class T> class SGMatrix;
 template <class T> class SGMatrixList;
 template <class T> class DenseFeatures;
-template <class T> class DynamicArray;
-class DynamicObjectArray;
 class NeuralNetwork;
 class NeuralLayer;
 
@@ -349,7 +347,7 @@ protected:
 	int32_t m_num_layers;
 
 	/** Size of each layer */
-	std::shared_ptr<DynamicArray<int32_t>> m_layer_sizes;
+	std::vector<int32_t> m_layer_sizes;
 
 	/** States of each layer */
 	SGMatrixList<float64_t> m_states;

@@ -79,12 +79,11 @@ void NeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 		m_convolution_output.num_rows, m_convolution_output.num_cols);
 }
 
-
-void NeuralConvolutionalLayer::initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
-		SGVector< int32_t > input_indices)
+void NeuralConvolutionalLayer::initialize_neural_layer(
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+    SGVector<int32_t> input_indices)
 {
-	auto first_input_layer =
-		layers->get_element<NeuralLayer>(input_indices[0]);
+	auto& first_input_layer = layers[input_indices[0]];
 
 	m_input_width = first_input_layer->get_width();
 	m_input_height = first_input_layer->get_height();
@@ -109,8 +108,7 @@ void NeuralConvolutionalLayer::initialize_neural_layer(std::shared_ptr<DynamicOb
 	m_input_num_channels = 0;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		auto layer =
-			layers->get_element<NeuralLayer>(input_indices[l]);
+		auto& layer = layers[input_indices[l]];
 
 		m_input_num_channels += layer->get_num_neurons()/(m_input_height*m_input_width);
 
@@ -161,7 +159,7 @@ void NeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> paramet
 
 void NeuralConvolutionalLayer::compute_activations(
 		SGVector<float64_t> parameters,
-		std::shared_ptr<DynamicObjectArray> layers)
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers)
 {
 	int32_t num_parameters_per_map =
 		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
@@ -187,7 +185,7 @@ void NeuralConvolutionalLayer::compute_activations(
 void NeuralConvolutionalLayer::compute_gradients(
 		SGVector<float64_t> parameters,
 		SGMatrix<float64_t> targets,
-		std::shared_ptr<DynamicObjectArray> layers,
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 		SGVector<float64_t> parameter_gradients)
 {
 	if (targets.num_rows != 0)

@@ -46,8 +46,9 @@ NeuralLinearLayer(num_neurons)
 {
 }
 
-void NeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
-		std::shared_ptr<DynamicObjectArray> layers)
+void NeuralSoftmaxLayer::compute_activations(
+    SGVector<float64_t> parameters,
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers)
 {
 	NeuralLinearLayer::compute_activations(parameters, layers);
 

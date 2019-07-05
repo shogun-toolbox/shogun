@@ -59,15 +59,16 @@ NeuralLayer::~NeuralLayer()
 {
 }
 
-void NeuralLayer::initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
-		SGVector< int32_t > input_indices)
+void NeuralLayer::initialize_neural_layer(
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+    SGVector<int32_t> input_indices)
 {
 	m_input_indices = input_indices;
 	m_input_sizes = SGVector<int32_t>(input_indices.vlen);
 
 	for (int32_t i=0; i<m_input_sizes.vlen; i++)
 	{
-		auto layer = layers->get_element<NeuralLayer>(m_input_indices[i]);
+		auto& layer = layers[m_input_indices[i]];
 		m_input_sizes[i] = layer->get_num_neurons();
 	}
 }

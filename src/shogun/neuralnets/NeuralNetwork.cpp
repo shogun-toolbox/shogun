@@ -33,8 +33,8 @@
 
 #include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
@@ -48,18 +48,16 @@ NeuralNetwork::NeuralNetwork()
 	init();
 }
 
-NeuralNetwork::NeuralNetwork(std::shared_ptr<DynamicObjectArray> layers)
+NeuralNetwork::NeuralNetwork(
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers)
 {
 	init();
 	set_layers(layers);
 }
 
-void NeuralNetwork::set_layers(std::shared_ptr<DynamicObjectArray> layers)
+void NeuralNetwork::set_layers(
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers)
 {
-	require(layers, "Layers should not be NULL");
-
-
-
 	m_layers = layers;
 	init_adj_matrix();
 }
@@ -72,7 +70,7 @@ void NeuralNetwork::connect(int32_t i, int32_t j)
 
 void NeuralNetwork::init_adj_matrix()
 {
-	m_num_layers = m_layers->get_num_elements();
+	m_num_layers = m_layers.size();
 	m_adj_matrix = SGMatrix<bool>(m_num_layers, m_num_layers);
 
 	m_num_inputs = 0;
@@ -735,7 +733,7 @@ SGVector<float64_t>* NeuralNetwork::get_layer_parameters(int32_t i)
 
 std::shared_ptr<NeuralLayer> NeuralNetwork::get_layer(int32_t i)
 {
-	return m_layers->get_element<NeuralLayer>(i);
+	return m_layers[i];
 }
 
 template <class T>
@@ -750,7 +748,7 @@ int32_t NeuralNetwork::get_num_outputs()
 	return get_layer(m_num_layers-1)->get_num_neurons();
 }
 
-std::shared_ptr<DynamicObjectArray> NeuralNetwork::get_layers()
+const std::vector<std::shared_ptr<NeuralLayer>>& NeuralNetwork::get_layers()
 {
 
 	return m_layers;
@@ -773,7 +771,7 @@ void NeuralNetwork::init()
 	m_epsilon = 1.0e-5;
 	m_num_inputs = 0;
 	m_num_layers = 0;
-	m_layers = NULL;
+	m_layers.clear();
 	m_total_num_parameters = 0;
 	m_batch_size = 1;
 	m_lbfgs_temp_inputs = NULL;
@@ -781,8 +779,7 @@ void NeuralNetwork::init()
 	m_is_training = false;
 	m_auto_quick_initialize = false;
 	m_sigma = 0.01f;
-	m_layers = std::make_shared<DynamicObjectArray>();
-
+	m_layers.clear();
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_optimization_method, "optimization_method",
@@ -822,7 +819,7 @@ void NeuralNetwork::init()
 	SG_ADD(
 	    &m_param_regularizable, "param_regularizable",
 	    "Parameter Regularizable");
-	SG_ADD(&m_layers, "layers", "DynamicObjectArray of NeuralNetwork objects");
+	SG_ADD(&m_layers, "layers", "Array of NeuralNetwork objects");
 	SG_ADD(
 	    &m_auto_quick_initialize, "auto_quick_initialize",
 	    "auto_quick_initialize");
