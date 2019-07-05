@@ -81,7 +81,7 @@ protected:
 /** @brief Class FactorGraphLabels used e.g. in the application of Structured Output
  * (SO) learning with the FactorGraphModel. Each of the labels is represented by a
  * graph. Each label is of type FactorGraphObservation and all of them are stored in
- * a DynamicObjectArray. */
+ * a container. */
 class FactorGraphLabels : public StructuredLabels
 {
 	public:

@@ -12,7 +12,6 @@
 
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/LabelTypes.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/lib/StructuredDataTypes.h>
 
@@ -65,7 +64,7 @@ class StructuredLabels : public Labels
 		 *
 		 * @return labels
 		 */
-		std::shared_ptr<DynamicObjectArray> get_labels() const;
+		std::vector<std::shared_ptr<StructuredData>> get_labels() const;
 
 		/** get label object for specified index
 		 *
@@ -117,7 +116,7 @@ class StructuredLabels : public Labels
 
 	protected:
 		/** the vector of labels */
-		std::shared_ptr<DynamicObjectArray> m_labels;
+		std::vector<std::shared_ptr<StructuredData>> m_labels;
 
 		/** the structured data type the labels are composed of */
 		EStructuredDataType m_sdt;
