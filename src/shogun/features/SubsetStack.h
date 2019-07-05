@@ -13,7 +13,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/Subset.h>
 
 

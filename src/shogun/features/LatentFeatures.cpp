@@ -16,8 +16,7 @@ LatentFeatures::LatentFeatures():LatentFeatures(10)
 LatentFeatures::LatentFeatures(int32_t num_samples)
 {
 	init();
-	m_samples = std::make_shared<DynamicObjectArray>(num_samples);
-
+	m_samples.reserve(num_samples);
 }
 
 LatentFeatures::~LatentFeatures()
@@ -43,37 +42,26 @@ EFeatureClass LatentFeatures::get_feature_class() const
 
 int32_t LatentFeatures::get_num_vectors() const
 {
-	if (m_samples == NULL)
-		return 0;
-	else
-		return m_samples->get_array_size();
+	return m_samples.size();
 }
 
 bool LatentFeatures::add_sample(std::shared_ptr<Data> example)
 {
-	ASSERT(m_samples != NULL)
-	if (m_samples != NULL)
-	{
-		m_samples->push_back(example);
-		return true;
-	}
-	else
-		return false;
+	m_samples.push_back(example);
+	return true;
 }
 
 std::shared_ptr<Data> LatentFeatures::get_sample(index_t idx)
 {
-	ASSERT(m_samples != NULL)
 	if (idx < 0 || idx >= this->get_num_vectors())
 		error("Out of index!");
 
-	return m_samples->get_element<Data>(idx);
-
+	return m_samples[idx];
 }
 
 void LatentFeatures::init()
 {
-	SG_ADD((std::shared_ptr<SGObject>*) &m_samples, "samples", "Array of examples");
+	SG_ADD(&m_samples, "samples", "Array of examples");
 }
 
 std::shared_ptr<LatentFeatures> LatentFeatures::obtain_from_generic(std::shared_ptr<Features> base_feats)

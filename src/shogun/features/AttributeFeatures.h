@@ -9,7 +9,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/features/Features.h>
-#include <shogun/base/DynArray.h>
 
 namespace shogun
 {
@@ -130,7 +129,7 @@ protected:
 
 protected:
 	///list of attributes (sorted)
-	DynArray<T_ATTRIBUTE> features;
+	std::vector<T_ATTRIBUTE> features;
 };
 }
 #endif

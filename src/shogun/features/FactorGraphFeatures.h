@@ -85,7 +85,7 @@ class FactorGraphFeatures : public Features
 
 	protected:
 		/** array of FactorGraph */
-		std::shared_ptr<DynamicObjectArray> m_samples;
+		std::vector<std::shared_ptr<FactorGraph>> m_samples;
 
 	private:
 		/** init function for the object */

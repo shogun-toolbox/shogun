@@ -83,7 +83,7 @@ namespace shogun
 			static std::shared_ptr<LatentFeatures> obtain_from_generic(std::shared_ptr<Features> base_feats);
 		protected:
 			/** array of Data */
-			std::shared_ptr<DynamicObjectArray> m_samples;
+			std::vector<std::shared_ptr<Data>> m_samples;
 
 		private:
 			/** init function for the object */
