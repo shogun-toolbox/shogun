@@ -41,7 +41,6 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 
@@ -448,13 +447,13 @@ protected:
 	int32_t m_num_visible_groups;
 
 	/** Type of each visible unit group */
-	std::shared_ptr<DynamicArray<int32_t>> m_visible_group_types;
+	std::vector<int32_t> m_visible_group_types;
 
 	/** Size of each visible unit group */
-	std::shared_ptr<DynamicArray<int32_t>> m_visible_group_sizes;
+	std::vector<int32_t> m_visible_group_sizes;
 
 	/** Row offsets for accessing the states of each visible unit groups */
-	std::shared_ptr<DynamicArray<int32_t>> m_visible_state_offsets;
+	std::vector<int32_t> m_visible_state_offsets;
 
 	/** Number of parameters */
 	int32_t m_num_params;

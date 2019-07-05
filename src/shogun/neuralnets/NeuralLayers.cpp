@@ -42,7 +42,7 @@
 
 using namespace shogun;
 
-NeuralLayers::NeuralLayers() : SGObject(), m_layers(std::make_shared<DynamicObjectArray>())
+NeuralLayers::NeuralLayers() : SGObject()
 {
 }
 
@@ -83,11 +83,11 @@ std::shared_ptr<NeuralLayers> NeuralLayers::softmax(int32_t size)
 
 std::shared_ptr<NeuralLayers> NeuralLayers::with_layer(std::shared_ptr<NeuralLayer> layer)
 {
-	m_layers->push_back(layer);
+	m_layers.push_back(layer);
 	return shared_from_this()->as<NeuralLayers>();
 }
 
-std::shared_ptr<DynamicObjectArray> NeuralLayers::done()
+const std::vector<std::shared_ptr<NeuralLayer>>& NeuralLayers::done()
 {
 
 	return m_layers;
@@ -95,12 +95,12 @@ std::shared_ptr<DynamicObjectArray> NeuralLayers::done()
 
 void NeuralLayers::clear()
 {
-	m_layers->clear_array();
+	m_layers.clear();
 }
 
 bool NeuralLayers::empty()
 {
-	return (m_layers->get_array_size() == 0);
+	return m_layers.empty();
 }
 
 const char* NeuralLayers::get_name() const

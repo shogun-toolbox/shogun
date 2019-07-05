@@ -69,7 +69,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			std::shared_ptr<DynamicObjectArray> layers);
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers);
 
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients.

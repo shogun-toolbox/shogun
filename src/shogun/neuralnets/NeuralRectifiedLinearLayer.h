@@ -69,8 +69,9 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(SGVector<float64_t> parameters,
-			std::shared_ptr<DynamicObjectArray> layers);
+	virtual void compute_activations(
+		SGVector<float64_t> parameters,
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers);
 
 	/** Computes
 	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]

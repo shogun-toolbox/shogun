@@ -49,8 +49,9 @@ NeuralLayer(num_neurons)
 {
 }
 
-void NeuralLinearLayer::initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
-		SGVector< int32_t > input_indices)
+void NeuralLinearLayer::initialize_neural_layer(
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+    SGVector<int32_t> input_indices)
 {
 	NeuralLayer::initialize_neural_layer(layers, input_indices);
 
@@ -74,8 +75,9 @@ void NeuralLinearLayer::initialize_parameters(SGVector<float64_t> parameters,
 	}
 }
 
-void NeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
-		std::shared_ptr<DynamicObjectArray> layers)
+void NeuralLinearLayer::compute_activations(
+    SGVector<float64_t> parameters,
+    const std::vector<std::shared_ptr<NeuralLayer>>& layers)
 {
 	float64_t* biases = parameters.vector;
 
@@ -90,8 +92,7 @@ void NeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 	int32_t weights_index_offset = m_num_neurons;
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
-		auto layer =
-			layers->get_element<NeuralLayer>(m_input_indices[l]);
+		auto& layer = layers[m_input_indices[l]];
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
@@ -106,10 +107,10 @@ void NeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 }
 
 void NeuralLinearLayer::compute_gradients(
-		SGVector<float64_t> parameters,
+    	SGVector<float64_t> parameters,
 		SGMatrix<float64_t> targets,
-		std::shared_ptr<DynamicObjectArray> layers,
-		SGVector<float64_t> parameter_gradients)
+    	const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+    	SGVector<float64_t> parameter_gradients)
 {
 	compute_local_gradients(targets);
 
@@ -134,8 +135,7 @@ void NeuralLinearLayer::compute_gradients(
 	int32_t weights_index_offset = m_num_neurons;
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
-		auto layer =
-			layers->get_element<NeuralLayer>(m_input_indices[l]);
+		auto& layer = layers[m_input_indices[l]];
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		float64_t* weight_gradients = parameter_gradients.vector +
