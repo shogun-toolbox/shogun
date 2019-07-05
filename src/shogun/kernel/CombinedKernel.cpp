@@ -10,7 +10,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
@@ -706,14 +705,13 @@ bool CombinedKernel::precompute_subkernels()
 	if (get_num_kernels()==0)
 		return false;
 
-	auto new_kernel_array = std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<Kernel>> new_kernel_array;
+	new_kernel_array.reserve(get_num_kernels());
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
 		auto k = get_kernel(k_idx);
-		new_kernel_array->append_element(std::make_shared<CustomKernel>(k));
-
-
+		new_kernel_array.push_back(std::make_shared<CustomKernel>(k));
 	}
 
 
@@ -733,8 +731,7 @@ void CombinedKernel::init()
 	append_subkernel_weights = false;
 
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	kernel_array=std::make_shared<DynamicObjectArray>();
-
+	kernel_array.clear();
 
 	SG_ADD(&kernel_array, "kernel_array", "Array of kernels.", ParameterProperties::HYPER);
 
@@ -941,7 +938,8 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 	}
 
 	/* creation of CombinedKernels */
-	DynamicObjectArray kernel_array(num_combinations);
+	std::vector<std::shared_ptr<Kernel>> kernel_array;
+	kernel_array.reserve(num_combinations);
 	for (index_t i=0; i<num_combinations; ++i)
 	{
 		auto c_kernel = std::make_shared<CombinedKernel>();
@@ -978,7 +976,7 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 		for (index_t index=kernel_index; index<num_combinations; index+=c_list->get_num_elements())
 		{
 			auto comb_kernel =
-					std::dynamic_pointer_cast<CombinedKernel>(kernel_array.get_element(index));
+			    std::dynamic_pointer_cast<CombinedKernel>(kernel_array[index]);
 			comb_kernel->append_kernel(c_kernel);
 
 		}
@@ -1021,7 +1019,8 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 				for (index_t index=0; index<freq; ++index)
 				{
 					auto comb_kernel =
-							std::dynamic_pointer_cast<CombinedKernel>(kernel_array.get_element(base+index));
+					    std::dynamic_pointer_cast<CombinedKernel>(
+					        kernel_array[base + index]);
 					comb_kernel->append_kernel(c_kernel);
 
 				}
