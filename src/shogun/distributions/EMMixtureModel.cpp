@@ -51,7 +51,7 @@ float64_t EMMixtureModel::expectation_step()
 		// for each component
 		for (int32_t j=0;j<data.alpha.num_cols;j++)
 		{
-			auto jth_component=data.components->get_element<Distribution>(j);
+			auto jth_component=data.components[j];
 			alpha_ij[j] = std::log(data.weights[j]) +
 			              jth_component->get_log_likelihood_example(i);
 
@@ -74,7 +74,7 @@ void EMMixtureModel::maximization_step()
 	float64_t sum_weights=0;
 	for (int32_t j=0;j<data.alpha.num_cols;j++)
 	{
-		auto jth_component=data.components->get_element<Distribution>(j);
+		auto jth_component=data.components[j]->as<Distribution>();
 
 		// update mean covariance of components
 		SGVector<float64_t> alpha_j(data.alpha.matrix+j*data.alpha.num_rows, data.alpha.num_rows, false);
