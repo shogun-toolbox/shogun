@@ -167,8 +167,8 @@ namespace shogun
 		 * NOTE: in_bag is a randomly generated with replacement
 		 * @return the vector of indices
 		 */
-		std::shared_ptr<DynamicArray<index_t>>
-			get_oob_indices(const SGVector<index_t>& in_bag);
+		std::vector<index_t>
+		get_oob_indices(const SGVector<index_t>& in_bag);
 
 	protected:
 		/** bags array */
@@ -193,7 +193,7 @@ namespace shogun
 		SGVector<bool> m_all_oob_idx;
 
 		/** array of oob indices */
-		std::shared_ptr<DynamicObjectArray> m_oob_indices;
+		std::vector<std::vector<index_t>> m_oob_indices;
 
 		/** metric to calculate the oob error */
 		std::shared_ptr<Evaluation> m_oob_evaluation_metric;
