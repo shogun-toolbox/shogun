@@ -10,10 +10,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/DotKernel.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/mathematics/RandomNamespace.h>
 

@@ -10,7 +10,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -21,7 +20,6 @@ namespace shogun
 {
 class Features;
 class CombinedFeatures;
-class DynamicObjectArray;
 
 /** @brief The Product kernel is used to combine a number of kernels into a
  * single ProductKernel object by element multiplication.
@@ -90,7 +88,7 @@ class ProductKernel : public Kernel
 		 */
 		inline std::shared_ptr<Kernel> get_kernel(int32_t idx)
 		{
-			return std::static_pointer_cast<Kernel>( kernel_array->get_element(idx));
+			return kernel_array[idx];
 		}
 
 		/** insert kernel at position idx
@@ -103,12 +101,18 @@ class ProductKernel : public Kernel
 		inline bool insert_kernel(std::shared_ptr<Kernel> k, int32_t idx)
 		{
 			ASSERT(k)
+			REQUIRE(
+			    idx >= 0 && idx < get_num_subkernels(),
+			    "Index idx (%d) is out of range (0-%d)", idx,
+			    get_num_subkernels());
+
 			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_array->insert_element(k, idx);
+			kernel_array[idx] = k;
+			return true;
 		}
 
 		/** append kernel
@@ -125,7 +129,7 @@ class ProductKernel : public Kernel
 				unset_property(KP_LINADD);
 
 			int32_t n = get_num_subkernels();
-			kernel_array->push_back(k);
+			kernel_array.push_back(k);
 			return n+1==get_num_subkernels();
 		}
 
@@ -136,7 +140,13 @@ class ProductKernel : public Kernel
 		 */
 		inline bool delete_kernel(int32_t idx)
 		{
-			return kernel_array->delete_element(idx);
+			REQUIRE(
+			    idx >= 0 && idx < kernel_array.size(),
+			    "Index idx (%d) is out of range (0-%d)", idx,
+			    kernel_array.size());
+
+			kernel_array.erase(kernel_array.begin() + idx);
+			return true;
 		}
 
 		/** get number of subkernels
@@ -145,7 +155,7 @@ class ProductKernel : public Kernel
 		 */
 		inline int32_t get_num_subkernels()
 		{
-		    return kernel_array->get_num_elements();
+			return kernel_array.size();
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -191,7 +201,7 @@ class ProductKernel : public Kernel
 		 *
 		 * @return kernel array
 		 */
-		inline std::shared_ptr<DynamicObjectArray> get_array()
+		inline std::vector<std::shared_ptr<Kernel>> get_array()
 		{
 			
 			return kernel_array;
@@ -255,7 +265,7 @@ class ProductKernel : public Kernel
 
 	protected:
 		/** array of kernels */
-		std::shared_ptr<DynamicObjectArray> kernel_array;
+		std::vector<std::shared_ptr<Kernel>> kernel_array;
 		/** whether kernel is ready to be used */
 		bool initialized;
 };
