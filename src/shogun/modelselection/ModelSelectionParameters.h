@@ -11,9 +11,9 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -126,7 +126,8 @@ public:
 	 * to have a more readable print layout
 	 * @return result all trees of parameter combinations are put into here
 	 */
-	std::shared_ptr<DynamicObjectArray> get_combinations(index_t prefix_num=1);
+	std::vector<std::shared_ptr<ParameterCombination>>
+	get_combinations(index_t prefix_num=1);
 
 	/** Instead of generating an array of combinations, get_single_combination
 	 * generates a single  combination of parameters. The choice of
@@ -185,7 +186,7 @@ protected:
 	 */
 	bool has_children() const
 	{
-		return m_child_nodes->get_num_elements()>0;
+		return !m_child_nodes.empty();
 	}
 
 private:
@@ -194,7 +195,7 @@ private:
 	void* m_values;
 	index_t m_values_length;
 	index_t* m_vector_length;
-	std::shared_ptr<DynamicObjectArray> m_child_nodes;
+	std::vector<std::shared_ptr<ModelSelectionParameters>> m_child_nodes;
 	EMSParamType m_value_type;
 	void*	m_vector;
 };
