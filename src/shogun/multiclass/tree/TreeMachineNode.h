@@ -36,7 +36,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
@@ -105,12 +104,13 @@ public:
 	/** set children
 	 * @param children dynamic array of pointers to children
 	 */
-	virtual void set_children(std::shared_ptr<DynamicObjectArray> children)
+	virtual void set_children(const std::vector<std::shared_ptr<TreeMachineNode<T>>>& children)
 	{
-		m_children->reset_array();
-		for (int32_t i=0; i<children->get_num_elements(); i++)
+		m_children.clear();
+		m_children.reserve(children.size());
+		for (auto& child : children)
 		{
-			add_child(children->get_element<TreeMachineNode<T>>(i));
+			add_child(child);
 		}
 	}
 
@@ -119,14 +119,14 @@ public:
 	 */
 	virtual void add_child(std::shared_ptr<TreeMachineNode<T>> child)
 	{
-		m_children->push_back(child);
+		m_children.push_back(child);
 		child->parent(shared_from_this()->template as<TreeMachineNode<T>>());
 	}
 
 	/** get children
 	 * @return dynamic array of pointers to children
 	 */
-	virtual std::shared_ptr<DynamicObjectArray> get_children()
+	virtual std::vector<std::shared_ptr<TreeMachineNode<T>>> get_children()
 	{
 
 		return m_children;
@@ -141,7 +141,7 @@ private:
 	void init()
 	{
 		m_machine=-1;
-		m_children=std::make_shared<DynamicObjectArray>();
+		m_children.clear();
 
 		SG_ADD((std::shared_ptr<SGObject>*)&m_parent,"m_parent", "Parent node");
 		SG_ADD(&m_machine,"m_machine", "Index of associated machine");
@@ -160,7 +160,7 @@ protected:
 	int32_t m_machine;
 
 	/** Dynamic array of pointers to children */
-	std::shared_ptr<DynamicObjectArray> m_children;
+	std::vector<std::shared_ptr<TreeMachineNode<T>>> m_children;
 };
 
 } /* namespace shogun */

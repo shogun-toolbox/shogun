@@ -289,11 +289,11 @@ void ID3ClassifierTree::prune_tree_machine(std::shared_ptr<DenseFeatures<float64
 	SGMatrix<float64_t> feature_matrix = feats->get_feature_matrix();
 	auto children = current->get_children();
 
-	for (int32_t i=0; i<children->get_num_elements(); i++)
+	for (int32_t i=0; i<children.size(); i++)
 	{
 		// count number of feature vectors which transit into the child
 		int32_t count = 0;
-		auto child = children->get_element<node_t>(i);
+		auto child = children[i];
 
 		for (int32_t j=0; j<feature_matrix.num_cols; j++)
 		{
@@ -339,8 +339,8 @@ void ID3ClassifierTree::prune_tree_machine(std::shared_ptr<DenseFeatures<float64
 
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
 	{
-		auto null_children = std::make_shared<DynamicObjectArray>();
-		current->set_children(null_children);
+		// set no children
+		current->set_children({});
 	}
 }
 
@@ -363,12 +363,12 @@ std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass_from_curre
 		auto children = node->get_children();
 
 		// traverse the subtree until leaf node is reached
-		while (children->get_num_elements())
+		while (children.size())
 		{
 			bool flag = false;
-			for (int32_t j=0; j<children->get_num_elements(); j++)
+			for (int32_t j=0; j<children.size(); j++)
 			{
-				auto child = children->get_element<node_t>(j);
+				auto child = children[j];
 				if (child->data.transit_if_feature_value
 						== sample[node->data.attribute_id])
 				{

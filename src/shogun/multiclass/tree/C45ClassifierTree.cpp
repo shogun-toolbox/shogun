@@ -427,11 +427,11 @@ void C45ClassifierTree::prune_tree_from_current_node(std::shared_ptr<DenseFeatur
 
 	if (m_nominal[current->data.attribute_id])
 	{
-		for (int32_t i=0; i<children->get_num_elements(); i++)
+		for (int32_t i=0; i<children.size(); i++)
 		{
 			// count number of feature vectors which transit into the child
 			int32_t count=0;
-			auto child=children->get_element<node_t>(i);
+			auto child=children[i];
 
 			for (int32_t j=0; j<feature_matrix.num_cols; j++)
 			{
@@ -467,11 +467,11 @@ void C45ClassifierTree::prune_tree_from_current_node(std::shared_ptr<DenseFeatur
 	}
 	else
 	{
-		require(children->get_num_elements()==2,"The chosen attribute in current node is continuous. Expected number of"
-					" children is 2 but current node has {} children.",children->get_num_elements());
+		require(children.size()==2,"The chosen attribute in current node is continuous. Expected number of"
+					" children is 2 but current node has {} children.",children.size());
 
-		auto left_child=children->get_element<node_t>(0);
-		auto right_child=children->get_element<node_t>(1);
+		auto left_child=children[0];
+		auto right_child=children[1];
 
 		int32_t count_left=0;
 		for (int32_t k=0;k<feature_matrix.num_cols;k++)
@@ -528,8 +528,8 @@ void C45ClassifierTree::prune_tree_from_current_node(std::shared_ptr<DenseFeatur
 
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
 	{
-		auto null_children=std::make_shared<DynamicObjectArray>();
-		current->set_children(null_children);
+		// set no children
+		current->set_children({});
 
 	}
 
@@ -683,15 +683,15 @@ std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass_from_curre
 		auto children=node->get_children();
 
 		// traverse the subtree until leaf node is reached
-		while (children->get_num_elements())
+		while (children.size())
 		{
 			bool flag=false;
 			// if nominal attribute check for equality
 			if (m_nominal[node->data.attribute_id])
 			{
-				for (int32_t j=0; j<children->get_num_elements(); j++)
+				for (int32_t j=0; j<children.size(); j++)
 				{
-					auto child=children->get_element<node_t>(j);
+					auto child=children[j];
 					if (!child)
 						error("{} element of children is NULL",j);
 
@@ -717,11 +717,11 @@ std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass_from_curre
 			// if not nominal attribute check if greater or less than threshold
 			else
 			{
-				auto left_child=children->get_element<node_t>(0);
+				auto left_child=children[0];
 				if (!left_child)
 					error("left child is NULL");
 
-				auto right_child=children->get_element<node_t>(1);
+				auto right_child=children[1];
 				if (!right_child)
 					error("right child is NULL");
 

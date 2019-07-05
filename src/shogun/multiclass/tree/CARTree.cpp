@@ -135,7 +135,7 @@ void CARTree::prune_using_test_dataset(std::shared_ptr<DenseFeatures<float64_t>>
 	float64_t min_error=Math::MAX_REAL_NUMBER;
 	for (int32_t i=0;i<m_alphas.size();++i)
 	{
-		auto root=pruned_trees->get_element<bnode_t>(i);
+		auto root=pruned_trees[i];
 		if (root == nullptr)
 			error("{} element is NULL",i);
 
@@ -150,7 +150,7 @@ void CARTree::prune_using_test_dataset(std::shared_ptr<DenseFeatures<float64_t>>
 
 	}
 
-	auto root=pruned_trees->get_element<bnode_t>(min_index);
+	auto root=pruned_trees[min_index];
 	if (root == nullptr)
 		error("{} element is NULL",min_index);
 	this->set_root(root);
@@ -1221,7 +1221,7 @@ void CARTree::prune_by_cross_validation(std::shared_ptr<DenseFeatures<float64_t>
 		for (int32_t j=0;j<m_alphas.size();++j)
 		{
 			alphak.push_back(m_alphas[j]);
-			auto current_root=pruned_trees->get_element<bnode_t>(j);
+			auto current_root=pruned_trees[j];
 			if (!current_root)
 				error("{} element is NULL which should not be",j);
 
@@ -1276,7 +1276,7 @@ void CARTree::prune_by_cross_validation(std::shared_ptr<DenseFeatures<float64_t>
 		}
 	}
 
-	auto best_tree_root=pruned_trees->get_element<bnode_t>(min_index);
+	auto best_tree_root=pruned_trees[min_index];
 	if (best_tree_root==nullptr)
 		error("{} element is NULL which should not be",min_index);
 	this->set_root(best_tree_root);
@@ -1321,11 +1321,11 @@ float64_t CARTree::compute_error(std::shared_ptr<Labels> labels, std::shared_ptr
 	return 0.;
 }
 
-std::shared_ptr<DynamicObjectArray> CARTree::prune_tree(std::shared_ptr<TreeMachine<CARTreeNodeData>> tree)
+std::vector<std::shared_ptr<CARTree::bnode_t>> CARTree::prune_tree(std::shared_ptr<TreeMachine<CARTreeNodeData>> tree)
 {
 	require(tree, "Tree not provided for pruning.");
 
-	auto trees=std::make_shared<DynamicObjectArray>();
+	std::vector<std::shared_ptr<bnode_t>> trees;
 
 	// base tree alpha_k=0
 	m_alphas.clear();
@@ -1338,7 +1338,7 @@ std::shared_ptr<DynamicObjectArray> CARTree::prune_tree(std::shared_ptr<TreeMach
 
 	auto t1_root=t1root->as<bnode_t>();
 	form_t1(t1_root);
-	trees->push_back(t1_root);
+	trees.push_back(t1_root);
 	while(t1_root->data.num_leaves>1)
 	{
 		auto t2=t1->clone_tree();
@@ -1351,7 +1351,7 @@ std::shared_ptr<DynamicObjectArray> CARTree::prune_tree(std::shared_ptr<TreeMach
 		float64_t a_k=find_weakest_alpha(t2_root);
 		m_alphas.push_back(a_k);
 		cut_weakest_link(t2_root,a_k);
-		trees->push_back(t2_root);
+		trees.push_back(t2_root);
 
 		t1=t2;
 		t1_root=t2_root;
@@ -1392,8 +1392,8 @@ void CARTree::cut_weakest_link(std::shared_ptr<bnode_t> node, float64_t alpha)
 	{
 		node->data.num_leaves=1;
 		node->data.weight_minus_branch=node->data.weight_minus_node;
-		auto children=std::make_shared<DynamicObjectArray>();
-		node->set_children(children);
+		// set no children
+		node->set_children({});
 
 
 	}
@@ -1426,8 +1426,8 @@ void CARTree::form_t1(std::shared_ptr<bnode_t> node)
 		if (node->data.weight_minus_node==node->data.weight_minus_branch)
 		{
 			node->data.num_leaves=1;
-			auto children=std::make_shared<DynamicObjectArray>();
-			node->set_children(children);
+			// set no children
+			node->set_children({});
 
 
 		}
