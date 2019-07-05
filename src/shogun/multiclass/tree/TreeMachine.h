@@ -111,9 +111,9 @@ public:
 		clone_root->data=m_root->data;
 		clone_root->machine(m_root->machine());
 		auto children=m_root->get_children();
-		for (int32_t i=0;i<children->get_num_elements();i++)
+		for (int32_t i=0;i<children.size();i++)
 		{
-			auto el=children->get_element(i);
+			auto el=children[i];
 			std::shared_ptr<node_t> child=NULL;
 			if (el!=NULL)
 			{

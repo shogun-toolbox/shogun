@@ -387,9 +387,9 @@ protected:
 	/** cost-complexity pruning
 	 *
 	 * @param tree the tree to be pruned
-	 * @return DynamicObjectArray of pruned trees
+	 * @return array of pruned trees
 	 */
-	std::shared_ptr<DynamicObjectArray> prune_tree(std::shared_ptr<TreeMachine<CARTreeNodeData>> tree);
+	std::vector<std::shared_ptr<bnode_t>> prune_tree(std::shared_ptr<TreeMachine<CARTreeNodeData>> tree);
 
 	/** recursively finds alpha corresponding to weakest link(s)
 	 *

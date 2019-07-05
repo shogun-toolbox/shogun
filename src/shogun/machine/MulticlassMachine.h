@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/machine/BaseMulticlassMachine.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 
 #include <shogun/util/converters.h>
