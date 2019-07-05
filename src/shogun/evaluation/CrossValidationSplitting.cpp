@@ -34,17 +34,17 @@ void CrossValidationSplitting::build_subsets()
 	indices.range_fill();
 	random::shuffle(indices, m_prng);
 
-	index_t num_subsets=m_subset_indices->get_num_elements();
+	index_t num_subsets=m_subset_indices.size();
 
 	/* distribute indices to subsets */
 	index_t current_subset=0;
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		/* fill current subset */
-		auto current=m_subset_indices->get_element<DynamicArray<index_t>>(current_subset);
+		auto current=m_subset_indices[current_subset];
 
 		/* add element of current index */
-		current->append_element(indices.vector[i]);
+		current.push_back(indices.vector[i]);
 
 		/* iterate over subsets */
 		current_subset=(current_subset+1) % num_subsets;
@@ -53,5 +53,5 @@ void CrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets (external random state important for threads) */
-	random::shuffle(m_subset_indices->begin(), m_subset_indices->end(), m_prng);
+	random::shuffle(m_subset_indices, m_prng);
 }
