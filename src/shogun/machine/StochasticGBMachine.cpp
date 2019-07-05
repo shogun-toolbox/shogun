@@ -33,6 +33,7 @@
 #include <shogun/machine/StochasticGBMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace shogun;
 
