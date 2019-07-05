@@ -73,13 +73,13 @@ public:
 	 */
 	void left(std::shared_ptr<BinaryTreeMachineNode> l)
 	{
-		if (this->m_children->get_num_elements()==0)
+		if (this->m_children.empty())
 		{
-			this->m_children->push_back(l);
+			this->m_children.push_back(l);
 		}
 		else
 		{
-			this->m_children->set_element(l,0);
+			this->m_children[0] = l;
 		}
 		l->parent(this->shared_from_this()->template as<TreeMachineNode<T>>());
 	}
@@ -88,10 +88,10 @@ public:
 	 *
 	 * @return left subtree of node
 	 */
-	std::shared_ptr<BinaryTreeMachineNode> left()
+	std::shared_ptr<BinaryTreeMachineNode<T>> left()
 	{
-		if (this->m_children->get_num_elements())
-			return this->m_children->template get_element<BinaryTreeMachineNode>(0);
+		if (!this->m_children.empty())
+			return this->m_children[0]->template as<BinaryTreeMachineNode<T>>();
 
 		return NULL;
 	}
@@ -102,18 +102,18 @@ public:
 	 */
 	void right(std::shared_ptr<BinaryTreeMachineNode> r)
 	{
-		if (this->m_children->get_num_elements()==0)
+		if (this->m_children.empty())
 		{
-			this->m_children->push_back(NULL);
-			this->m_children->push_back(r);
+			this->m_children.push_back(NULL);
+			this->m_children.push_back(r);
 		}
-		else if (this->m_children->get_num_elements()==1)
+		else if (this->m_children.size()==1)
 		{
-			this->m_children->push_back(r);
+			this->m_children.push_back(r);
 		}
 		else
 		{
-			this->m_children->set_element(r,1);
+			this->m_children[1] = r;
 		}
 		r->parent(this->shared_from_this()->template as<TreeMachineNode<T>>());
 	}
@@ -122,10 +122,10 @@ public:
 	 *
 	 * @return right subtree of node
 	 */
-	std::shared_ptr<BinaryTreeMachineNode> right()
+	std::shared_ptr<BinaryTreeMachineNode<T>> right()
 	{
-		if (this->m_children->get_num_elements()==2)
-			return this->m_children->template get_element<BinaryTreeMachineNode>(1);
+		if (this->m_children.size()==2)
+			return this->m_children[1]->template as<BinaryTreeMachineNode<T>>();
 
 		return NULL;
 	}

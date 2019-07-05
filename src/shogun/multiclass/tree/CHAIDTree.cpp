@@ -343,7 +343,7 @@ std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDTree::CHAIDtrain(std::s
 		if (cat_min[i]!=i)
 			continue;
 
-		auto feat_index=std::make_shared<DynamicArray<int32_t>>();
+		std::vector<int32_t> feat_index;
 		for (int32_t j=0;j<num_vecs;j++)
 		{
 			for (int32_t k=0;k<unum;k++)
@@ -351,17 +351,17 @@ std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDTree::CHAIDtrain(std::s
 				if (mat(attr_min,j)==ufeats_best[k])
 				{
 					if (cat_min[k]==i)
-						feat_index->push_back(j);
+						feat_index.push_back(j);
 				}
 			}
 		}
 
-		SGVector<int32_t> subset(feat_index->get_num_elements());
-		SGVector<float64_t> subweights(feat_index->get_num_elements());
-		for (int32_t j=0;j<feat_index->get_num_elements();j++)
+		SGVector<int32_t> subset(feat_index.size());
+		SGVector<float64_t> subweights(feat_index.size());
+		for (int32_t j=0;j<feat_index.size();j++)
 		{
-			subset[j]=feat_index->get_element(j);
-			subweights[j]=weights[feat_index->get_element(j)];
+			subset[j]=feat_index[j];
+			subweights[j]=weights[feat_index[j]];
 		}
 
 		auto feats_train = view(data, subset);
@@ -451,8 +451,8 @@ SGVector<int32_t> CHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats,
 			int32_t cat_index=i;
 
 			// compute p-value
-			auto feat_index=std::make_shared<DynamicArray<int32_t>>();
-			auto feat_cat=std::make_shared<DynamicArray<int32_t>>();
+			std::vector<int32_t> feat_index;
+			std::vector<int32_t> feat_cat;
 			for (int32_t j=0;j<feats.vlen;j++)
 			{
 				for (int32_t k=0;k<inum_cat;k++)
@@ -461,26 +461,26 @@ SGVector<int32_t> CHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats,
 					{
 						if (cat[k]==cat[cat_index])
 						{
-							feat_index->push_back(j);
-							feat_cat->push_back(cat[cat_index]);
+							feat_index.push_back(j);
+							feat_cat.push_back(cat[cat_index]);
 						}
 						else if (cat[k]==cat[cat_index+1])
 						{
-							feat_index->push_back(j);
-							feat_cat->push_back(cat[cat_index+1]);
+							feat_index.push_back(j);
+							feat_cat.push_back(cat[cat_index+1]);
 						}
 					}
 				}
 			}
 
-			SGVector<float64_t> subfeats(feat_index->get_num_elements());
-			SGVector<float64_t> sublabels(feat_index->get_num_elements());
-			SGVector<float64_t> subweights(feat_index->get_num_elements());
-			for (int32_t j=0;j<feat_index->get_num_elements();j++)
+			SGVector<float64_t> subfeats(feat_index.size());
+			SGVector<float64_t> sublabels(feat_index.size());
+			SGVector<float64_t> subweights(feat_index.size());
+			for (int32_t j=0;j<feat_index.size();j++)
 			{
-				subfeats[j]=feat_cat->get_element(j);
-				sublabels[j]=labels[feat_index->get_element(j)];
-				subweights[j]=weights[feat_index->get_element(j)];
+				subfeats[j]=feat_cat[j];
+				sublabels[j]=labels[feat_index[j]];
+				subweights[j]=weights[feat_index[j]];
 			}
 
 			float64_t pvalue=p_value(subfeats,sublabels,subweights);
@@ -569,59 +569,59 @@ SGVector<int32_t> CHAIDTree::merge_categories_nominal(SGVector<float64_t> feats,
 			break;
 
 		// assimilate all category labels left
-		auto leftcat=std::make_shared<DynamicArray<int32_t>>();
+		std::vector<int32_t> leftcat;
 		for (int32_t i=0;i<cat.vlen;i++)
 		{
 			if (cat[i]==i)
-				leftcat->push_back(i);
+				leftcat.push_back(i);
 		}
 
 		// consider all pairs for merging
 		float64_t max_merge_pv=Math::MIN_REAL_NUMBER;
 		int32_t cat1_max=-1;
 		int32_t cat2_max=-1;
-		for (int32_t i=0;i<leftcat->get_num_elements()-1;i++)
+		for (int32_t i=0;i<leftcat.size()-1;i++)
 		{
-			for (int32_t j=i+1;j<leftcat->get_num_elements();j++)
+			for (int32_t j=i+1;j<leftcat.size();j++)
 			{
-				auto feat_index=std::make_shared<DynamicArray<int32_t>>();
-				auto feat_cat=std::make_shared<DynamicArray<int32_t>>();
+				std::vector<int32_t> feat_index;
+				std::vector<int32_t> feat_cat;
 				for (int32_t k=0;k<feats.vlen;k++)
 				{
 					for (int32_t l=0;l<inum_cat;l++)
 					{
 						if (feats[k]==ufeats[l])
 						{
-							if (cat[l]==leftcat->get_element(i))
+							if (cat[l]==leftcat[i])
 							{
-								feat_index->push_back(k);
-								feat_cat->push_back(leftcat->get_element(i));
+								feat_index.push_back(k);
+								feat_cat.push_back(leftcat[i]);
 							}
-							else if (cat[l]==leftcat->get_element(j))
+							else if (cat[l]==leftcat[j])
 							{
-								feat_index->push_back(k);
-								feat_cat->push_back(leftcat->get_element(j));
+								feat_index.push_back(k);
+								feat_cat.push_back(leftcat[j]);
 							}
 						}
 					}
 				}
 
-				SGVector<float64_t> subfeats(feat_index->get_num_elements());
-				SGVector<float64_t> sublabels(feat_index->get_num_elements());
-				SGVector<float64_t> subweights(feat_index->get_num_elements());
-				for (int32_t k=0;k<feat_index->get_num_elements();k++)
+				SGVector<float64_t> subfeats(feat_index.size());
+				SGVector<float64_t> sublabels(feat_index.size());
+				SGVector<float64_t> subweights(feat_index.size());
+				for (int32_t k=0;k<feat_index.size();k++)
 				{
-					subfeats[k]=feat_cat->get_element(k);
-					sublabels[k]=labels[feat_index->get_element(k)];
-					subweights[k]=weights[feat_index->get_element(k)];
+					subfeats[k]=feat_cat[k];
+					sublabels[k]=labels[feat_index[k]];
+					subweights[k]=weights[feat_index[k]];
 				}
 
 				float64_t pvalue=p_value(subfeats,sublabels,subweights);
 				if (pvalue>max_merge_pv)
 				{
 					max_merge_pv=pvalue;
-					cat1_max=leftcat->get_element(i);
-					cat2_max=leftcat->get_element(j);
+					cat1_max=leftcat[i];
+					cat2_max=leftcat[j];
 				}
 
 
@@ -686,7 +686,7 @@ std::shared_ptr<Labels> CHAIDTree::apply_from_current_node(SGMatrix<float64_t> f
 
 		auto children=node->get_children();
 		// while leaf node not reached
-		while(children->get_num_elements()>0)
+		while(children.size()>0)
 		{
 			// find feature class (or index of child node) of chosen vector in current node
 			int32_t index=-1;
@@ -702,7 +702,7 @@ std::shared_ptr<Labels> CHAIDTree::apply_from_current_node(SGMatrix<float64_t> f
 			if (index==-1)
 				break;
 
-			node=children->get_element<node_t>(node->data.feature_class[index]);
+			node=children[node->data.feature_class[index]];
 
 			children=node->get_children();
 		}
@@ -731,40 +731,40 @@ bool CHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t
 	// assimilate category indices other than missing (last cell of cat vector stores category index for missing)
 	// sanity check
 	require(cat[cat.vlen-1]==cat.vlen-1,"last category is expected to be stored for MISSING. Hence it is expected to be un-merged");
-	auto cat_ind=std::make_shared<DynamicArray<int32_t>>();
+	std::vector<int32_t> cat_ind;
 	for (int32_t i=0;i<cat.vlen-1;i++)
 	{
 		if (cat[i]==i)
-			cat_ind->push_back(i);
+			cat_ind.push_back(i);
 	}
 
 	// find most similar category to MISSING
 	float64_t max_pv_pair=Math::MIN_REAL_NUMBER;
 	int32_t cindex_max=-1;
-	for (int32_t i=0;i<cat_ind->get_num_elements();i++)
+	for (int32_t i=0;i<cat_ind.size();i++)
 	{
-		auto feat_index=std::make_shared<DynamicArray<int32_t>>();
+		std::vector<int32_t> feat_index;
 		for (int32_t j=0;j<feats.vlen;j++)
 		{
-			if ((feats[j]==cat_ind->get_element(i)) || feats[j]==MISSING)
-				feat_index->push_back(j);
+			if ((feats[j]==cat_ind[i]) || feats[j]==MISSING)
+				feat_index.push_back(j);
 		}
 
-		SGVector<float64_t> subfeats(feat_index->get_num_elements());
-		SGVector<float64_t> sublabels(feat_index->get_num_elements());
-		SGVector<float64_t> subweights(feat_index->get_num_elements());
-		for (int32_t j=0;j<feat_index->get_num_elements();j++)
+		SGVector<float64_t> subfeats(feat_index.size());
+		SGVector<float64_t> sublabels(feat_index.size());
+		SGVector<float64_t> subweights(feat_index.size());
+		for (int32_t j=0;j<feat_index.size();j++)
 		{
-			subfeats[j]=feats[feat_index->get_element(j)];
-			sublabels[j]=labels[feat_index->get_element(j)];
-			subweights[j]=weights[feat_index->get_element(j)];
+			subfeats[j]=feats[feat_index[j]];
+			sublabels[j]=labels[feat_index[j]];
+			subweights[j]=weights[feat_index[j]];
 		}
 
 		float64_t pvalue=p_value(subfeats,sublabels,subweights);
 		if (pvalue>max_pv_pair)
 		{
 			max_pv_pair=pvalue;
-			cindex_max=cat_ind->get_element(i);
+			cindex_max=cat_ind[i];
 		}
 
 

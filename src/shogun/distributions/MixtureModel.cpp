@@ -73,12 +73,9 @@ bool MixtureModel::train(std::shared_ptr<Features> data)
 	}
 
 	// set training points in all components of the mixture
-	for (auto& comp_sgobj : m_components)
+	for (auto& comp : m_components)
 	{
-		auto comp=comp_sgobj->as<Distribution>();
 		comp->set_features(features);
-
-
 	}
 
 	auto dotdata=std::dynamic_pointer_cast<DotFeatures>(features);
@@ -123,7 +120,7 @@ float64_t MixtureModel::get_log_likelihood_example(int32_t num_example)
 	SGVector<float64_t> log_likelihood_component(m_components.size());
 	for (int32_t i=0;i<m_components.size();i++)
 	{
-		auto ith_comp=m_components[i]->as<Distribution>();
+		auto ith_comp=m_components[i];
 		log_likelihood_component[i] =
 		    ith_comp->get_log_likelihood_example(num_example) +
 		    std::log(m_weights[i]);
@@ -164,7 +161,7 @@ std::shared_ptr<Distribution> MixtureModel::get_component(index_t index) const
 {
 	require(index<get_num_components(),"index supplied ({}) is greater than total mixture components ({})"
 		,index,get_num_components());
-	return m_components[index]-as<Distribution>();
+	return m_components[index];
 }
 
 void MixtureModel::set_max_iters(int32_t max_iters)
