@@ -11,6 +11,7 @@
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <random>
 
 using namespace shogun;

@@ -12,7 +12,6 @@
 
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Data.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
@@ -43,9 +42,9 @@ namespace shogun
 
 			/** get all the stored latent labels
 			 *
-			 * @return the DynamicObjectArray with the latent labels in it
+			 * @return the container with the latent labels in it
 			 */
-			std::shared_ptr<DynamicObjectArray> get_latent_labels() const;
+			std::vector<std::shared_ptr<Data>> get_latent_labels() const;
 
 			/** get the latent label of a given example
 			 *
@@ -110,7 +109,7 @@ namespace shogun
 
 		protected:
 			/** the of Data, the latent labels (h_i) */
-			std::shared_ptr<DynamicObjectArray> m_latent_labels;
+			std::vector<std::shared_ptr<Data>> m_latent_labels;
 			/** the labels (y_i) */
 			std::shared_ptr<Labels> m_labels;
 

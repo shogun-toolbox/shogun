@@ -11,7 +11,7 @@
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
-
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/evaluation/Evaluation.h>
 
 using namespace shogun;

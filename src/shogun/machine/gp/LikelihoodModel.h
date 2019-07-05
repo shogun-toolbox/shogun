@@ -36,10 +36,10 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

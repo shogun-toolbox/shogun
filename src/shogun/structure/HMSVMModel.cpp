@@ -12,6 +12,7 @@
 #include <shogun/structure/Plif.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace shogun;
 

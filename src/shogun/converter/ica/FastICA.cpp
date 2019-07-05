@@ -10,9 +10,9 @@
 
 #include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;
