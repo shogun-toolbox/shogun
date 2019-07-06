@@ -12,7 +12,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 
@@ -394,7 +393,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 		 */
 		void fill_backtracking_table_recursion(
 			Trie* tree, int32_t depth, uint64_t seq, float64_t value,
-			DynArray<ConsensusEntry>* table, float64_t* weights);
+			std::vector<ConsensusEntry>* table, float64_t* weights);
 
 		/** fill backtracking table
 		 *
@@ -405,8 +404,8 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 		 * @param weights weights
 		 */
 		void fill_backtracking_table(
-			int32_t pos, DynArray<ConsensusEntry>* prev,
-			DynArray<ConsensusEntry>* cur, bool cumulative,
+			int32_t pos, std::vector<ConsensusEntry>* prev,
+			std::vector<ConsensusEntry>* cur, bool cumulative,
 			float64_t* weights);
 
 		/** POIMs extract W
@@ -2008,7 +2007,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 	template <class Trie>
 void CTrie<Trie>::fill_backtracking_table_recursion(
 	Trie* tree, int32_t depth, uint64_t seq, float64_t value,
-	DynArray<ConsensusEntry>* table, float64_t* weights)
+	std::vector<ConsensusEntry>* table, float64_t* weights)
 {
 	float64_t w=1.0;
 
@@ -2032,7 +2031,7 @@ void CTrie<Trie>::fill_backtracking_table_recursion(
 				entry.score=value+v;
 				entry.string=seq | ((uint64_t) sym) << (2*(degree-depth-1));
 
-				table->append_element(entry);
+				table->push_back(entry);
 			}
 		}
 	}
@@ -2081,8 +2080,8 @@ float64_t CTrie<Trie>::get_cumulative_score(
 
 	template <class Trie>
 void CTrie<Trie>::fill_backtracking_table(
-	int32_t pos, DynArray<ConsensusEntry>* prev,
-	DynArray<ConsensusEntry>* cur, bool cumulative, float64_t* weights)
+	int32_t pos, std::vector<ConsensusEntry>* prev,
+	std::vector<ConsensusEntry>* cur, bool cumulative, float64_t* weights)
 {
 	ASSERT(pos>=0 && pos<length)
 	ASSERT(!use_compact_terminal_nodes)
@@ -2094,12 +2093,12 @@ void CTrie<Trie>::fill_backtracking_table(
 
 	if (cumulative)
 	{
-		int32_t num_cur=cur->get_num_elements();
+		int32_t num_cur=cur->size();
 		for (int32_t i=0; i<num_cur; i++)
 		{
-			ConsensusEntry entry=cur->get_element(i);
+			ConsensusEntry entry=cur->at(i);
 			entry.score+=get_cumulative_score(pos+1, entry.string, degree-1, weights);
-			cur->set_element(entry,i);
+			cur->at(i) = entry;
 			//io::print("cum: str:0%0llx sc:{} bt:{}\n",entry.string,entry.score,entry.bt);
 		}
 	}
@@ -2108,13 +2107,13 @@ void CTrie<Trie>::fill_backtracking_table(
 	//for each element in cur and update bt table
 	if (prev)
 	{
-		int32_t num_cur=cur->get_num_elements();
-		int32_t num_prev=prev->get_num_elements();
+		int32_t num_cur=cur->size();
+		int32_t num_prev=prev->size();
 
 		for (int32_t i=0; i<num_cur; i++)
 		{
-			//uint64_t str_cur_old= cur->get_element(i).string;
-			uint64_t str_cur= cur->get_element(i).string >> 2;
+			//uint64_t str_cur_old= cur->at(i).string;
+			uint64_t str_cur= cur->at(i).string >> 2;
 			//io::print("...cur:0x%0llx cur_noprfx:0x%0llx...\n", str_cur_old, str_cur);
 
 			int32_t bt=-1;
@@ -2122,15 +2121,15 @@ void CTrie<Trie>::fill_backtracking_table(
 
 			for (int32_t j=0; j<num_prev; j++)
 			{
-				//uint64_t str_prev_old= prev->get_element(j).string;
+				//uint64_t str_prev_old= prev->at(j).string;
 				uint64_t mask=
 					((((uint64_t)0)-1) ^ (((uint64_t) 3) << (2*(degree-1))));
-				uint64_t str_prev=  mask & prev->get_element(j).string;
+				uint64_t str_prev=  mask & prev->at(j).string;
 				//io::print("...prev:0x%0llx prev_nosfx:0x%0llx mask:%0llx...\n", str_prev_old, str_prev,mask);
 
 				if (str_cur == str_prev)
 				{
-					float64_t sc=prev->get_element(j).score+cur->get_element(i).score;
+					float64_t sc=prev->at(j).score+cur->at(i).score;
 					if (bt==-1 || sc>max_score)
 					{
 						bt=j;
@@ -2145,8 +2144,8 @@ void CTrie<Trie>::fill_backtracking_table(
 			ConsensusEntry entry;
 			entry.bt=bt;
 			entry.score=max_score;
-			entry.string=cur->get_element(i).string;
-			cur->set_element(entry, i);
+			entry.string=cur->at(i).string;
+			cur->at(i) = entry;
 			//io::print("entry[{}]: str:0%0llx sc:{} bt:{}\n",i, entry.string,entry.score,entry.bt);
 		}
 	}

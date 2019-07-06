@@ -32,10 +32,10 @@ PlifArray::~PlifArray()
 void PlifArray::add_plif(std::shared_ptr<PlifBase> new_plif)
 {
 	ASSERT(new_plif)
-	m_array.append_element(new_plif) ;
+	m_array.push_back(new_plif) ;
 
 	min_value = -1e6 ;
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 	{
 		ASSERT(m_array[i])
 		if (!m_array[i]->uses_svm_values())
@@ -43,14 +43,14 @@ void PlifArray::add_plif(std::shared_ptr<PlifBase> new_plif)
 	}
 
 	max_value = 1e6 ;
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 		if (!m_array[i]->uses_svm_values())
 			max_value = Math::min(max_value, m_array[i]->get_max_value()) ;
 }
 
 void PlifArray::clear()
 {
-	m_array.clear_array(NULL);
+	m_array.clear();
 	min_value = -1e6 ;
 	max_value = 1e6 ;
 }
@@ -66,7 +66,7 @@ float64_t PlifArray::lookup_penalty(
 		return -Math::INFTY ;
 	}
 	float64_t ret = 0.0 ;
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
 	return ret ;
 }
@@ -82,7 +82,7 @@ float64_t PlifArray::lookup_penalty(
 		return -Math::INFTY ;
 	}
 	float64_t ret = 0.0 ;
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 	{
 		float64_t val = m_array[i]->lookup_penalty(p_value, svm_values) ;
 		ret += val ;
@@ -99,20 +99,20 @@ float64_t PlifArray::lookup_penalty(
 
 void PlifArray::penalty_clear_derivative()
 {
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 		m_array[i]->penalty_clear_derivative() ;
 }
 
 void PlifArray::penalty_add_derivative(
 	float64_t p_value, float64_t* svm_values, float64_t factor)
 {
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 		m_array[i]->penalty_add_derivative(p_value, svm_values, factor) ;
 }
 
 bool PlifArray::uses_svm_values() const
 {
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 		if (m_array[i]->uses_svm_values())
 			return true ;
 	return false ;
@@ -121,15 +121,15 @@ bool PlifArray::uses_svm_values() const
 int32_t PlifArray::get_max_id() const
 {
 	int32_t max_id = 0 ;
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	for (int32_t i=0; i<m_array.size(); i++)
 		max_id = Math::max(max_id, m_array[i]->get_max_id()) ;
 	return max_id ;
 }
 
 void PlifArray::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
-	io::print("get_used_svms: num: {} \n",m_array.get_num_elements());
-	for (int32_t i=0; i<m_array.get_num_elements(); i++)
+	io::print("get_used_svms: num: {} \n",m_array.size());
+	for (int32_t i=0; i<m_array.size(); i++)
 	{
 		m_array[i]->get_used_svms(num_svms, svm_ids);
 	}

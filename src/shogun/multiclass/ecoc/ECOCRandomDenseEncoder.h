@@ -11,6 +11,7 @@
 
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {

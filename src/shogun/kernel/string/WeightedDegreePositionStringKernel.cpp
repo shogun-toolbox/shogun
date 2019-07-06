@@ -19,6 +19,8 @@
 
 #include <shogun/classifier/svm/SVM.h>
 
+#include <vector>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 
@@ -1494,10 +1496,13 @@ char* WeightedDegreePositionStringKernel::compute_consensus(
 
 	//backtracking and scoring table
 	int32_t num_tables=Math::max(1,num_feat-degree+1);
-	DynArray<ConsensusEntry>** table=SG_MALLOC(DynArray<ConsensusEntry>*, num_tables);
+	std::vector<ConsensusEntry>** table=SG_MALLOC(std::vector<ConsensusEntry>*, num_tables);
 
 	for (int32_t i=0; i<num_tables; i++)
-		table[i]=new DynArray<ConsensusEntry>(num_suppvec/10);
+	{
+		table[i]=new std::vector<ConsensusEntry>();
+		table[i]->reserve(num_suppvec/10);
+	}
 
 	//compute consensus via dynamic programming
 	for (auto i : SG_PROGRESS(range(num_tables)))
@@ -1519,24 +1524,24 @@ char* WeightedDegreePositionStringKernel::compute_consensus(
 	}
 
 
-	//int32_t n=table[0]->get_num_elements();
+	//int32_t n=table[0]->size();
 
 	//for (int32_t i=0; i<n; i++)
 	//{
-	//	ConsensusEntry e= table[0]->get_element(i);
+	//	ConsensusEntry e= table[0]->at(i);
 	//	SG_PRint32_t("first: str:0%0llx sc:{} bt:{}\n",e.string,e.score,e.bt);
 	//}
 
-	//n=table[num_tables-1]->get_num_elements();
+	//n=table[num_tables-1]->size();
 	//for (int32_t i=0; i<n; i++)
 	//{
-	//	ConsensusEntry e= table[num_tables-1]->get_element(i);
+	//	ConsensusEntry e= table[num_tables-1]->at(i);
 	//	SG_PRint32_t("last: str:0%0llx sc:{} bt:{}\n",e.string,e.score,e.bt);
 	//}
-	//n=table[num_tables-2]->get_num_elements();
+	//n=table[num_tables-2]->size();
 	//for (int32_t i=0; i<n; i++)
 	//{
-	//	ConsensusEntry e= table[num_tables-2]->get_element(i);
+	//	ConsensusEntry e= table[num_tables-2]->at(i);
 	//	io::print("second last: str:0%0llx sc:{} bt:{}\n",e.string,e.score,e.bt);
 	//}
 
@@ -1545,18 +1550,18 @@ char* WeightedDegreePositionStringKernel::compute_consensus(
 	//backtracking start
 	int32_t max_idx=-1;
 	float32_t max_score=0;
-	int32_t num_elements=table[num_tables-1]->get_num_elements();
+	int32_t num_elements=table[num_tables-1]->size();
 
 	for (int32_t i=0; i<num_elements; i++)
 	{
-		float64_t sc=table[num_tables-1]->get_element(i).score;
+		float64_t sc=table[num_tables-1]->at(i).score;
 		if (sc>max_score || max_idx==-1)
 		{
 			max_idx=i;
 			max_score=sc;
 		}
 	}
-	uint64_t endstr=table[num_tables-1]->get_element(max_idx).string;
+	uint64_t endstr=table[num_tables-1]->at(max_idx).string;
 
 	io::info("max_idx:{} num_el:{} num_feat:{} num_tables:{} max_score:{}", max_idx, num_elements, num_feat, num_tables, max_score);
 
@@ -1568,17 +1573,17 @@ char* WeightedDegreePositionStringKernel::compute_consensus(
 		for (int32_t i=num_tables-1; i>=0; i--)
 		{
 			//io::print("max_idx: {}, i:{}\n", max_idx, i);
-			result[i]=acgt[table[i]->get_element(max_idx).string >> (2*(degree-1)) & 3];
-			max_idx=table[i]->get_element(max_idx).bt;
+			result[i]=acgt[table[i]->at(max_idx).string >> (2*(degree-1)) & 3];
+			max_idx=table[i]->at(max_idx).bt;
 		}
 	}
 
 	//for (int32_t t=0; t<num_tables; t++)
 	//{
-	//	n=table[t]->get_num_elements();
+	//	n=table[t]->size();
 	//	for (int32_t i=0; i<n; i++)
 	//	{
-	//		ConsensusEntry e= table[t]->get_element(i);
+	//		ConsensusEntry e= table[t]->at(i);
 	//		io::print("table[{},{}]: str:0%0llx sc:{:+f} bt:{}\n",t,i, e.string,e.score,e.bt);
 	//	}
 	//}

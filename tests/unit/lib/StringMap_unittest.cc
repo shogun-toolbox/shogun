@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <shogun/lib/StringMap.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 

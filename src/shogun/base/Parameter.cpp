@@ -1526,14 +1526,15 @@ TParameter::is_valid()
   Initializing m_params(1) with small preallocation-size, because Parameter
   will be constructed several times for EACH SGObject instance.
  */
-Parameter::Parameter() : m_params(1)
+Parameter::Parameter()
 {
+	m_params.reserve(1);
 }
 
 Parameter::~Parameter()
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		delete m_params.get_element(i);
+		delete m_params[i];
 }
 
 void
@@ -1554,11 +1555,11 @@ Parameter::add_type(const TSGDataType* type, void* param,
 	}
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
+		if (strcmp(m_params[i]->m_name, name) == 0)
 			error("FATAL: Parameter::add_type(): "
 					 "Double parameter `{}'!", name);
 
-	m_params.append_element(
+	m_params.push_back(
 		new TParameter(type, param, name, description)
 		);
 }
@@ -1571,18 +1572,18 @@ void Parameter::set_from_parameters(Parameter* params)
 		TParameter* current=params->get_parameter(i);
 		TSGDataType current_type=current->m_datatype;
 
-		ASSERT(m_params.get_num_elements())
+		ASSERT(m_params.size())
 
 		/* search for own parameter with same name and check types if found */
 		TParameter* own=NULL;
-		for (index_t j=0; j<m_params.get_num_elements(); ++j)
+		for (index_t j=0; j<m_params.size(); ++j)
 		{
-			own=m_params.get_element(j);
+			own=m_params[j];
 			if (!strcmp(own->m_name, current->m_name))
 			{
 				if (own->m_datatype==current_type)
 				{
-					own=m_params.get_element(j);
+					own=m_params[j];
 					break;
 				}
 				else
@@ -1711,7 +1712,7 @@ void Parameter::add_parameters(Parameter* params)
 
 bool Parameter::contains_parameter(const char* name)
 {
-	for (index_t i=0; i<m_params.get_num_elements(); ++i)
+	for (index_t i=0; i<m_params.size(); ++i)
 	{
 		if (!strcmp(name, m_params[i]->m_name))
 			return true;

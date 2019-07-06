@@ -1,6 +1,5 @@
 #include <shogun/structure/GraphCut.h>
 #include <shogun/structure/FactorGraphDataGenerator.h>
-#include <shogun/base/DynArray.h>
 
 #include <gtest/gtest.h>
 
@@ -33,7 +32,7 @@ TEST(GraphCut, graph_cut_st_graph)
 	int32_t flow = g->compute_maxflow();
 	EXPECT_EQ(flow, 12);
 
-	DynArray<ETerminalType> expected_assignments;
+	std::vector<ETerminalType> expected_assignments;
 	expected_assignments.push_back(SOURCE);
 	expected_assignments.push_back(SOURCE);
 	expected_assignments.push_back(SOURCE);

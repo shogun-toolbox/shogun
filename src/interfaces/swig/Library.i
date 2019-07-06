@@ -285,7 +285,6 @@ namespace shogun
 /* Include Class Headers to make them visible from within the target language */
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
-%include <shogun/base/DynArray.h>
 namespace shogun
 {
 #ifdef USE_CHAR
@@ -318,7 +317,7 @@ namespace shogun
 #ifdef USE_FLOAT64
         %template(DynamicRealArray) DynamicArray<float64_t>;
 #endif
-        %template(DynamicPlifArray) DynArray<shogun::PlifBase*>;
+        %template(DynamicPlifArray) std::vector<shogun::PlifBase*>;
 }
 /* Hash */
 %include <shogun/lib/Hash.h>

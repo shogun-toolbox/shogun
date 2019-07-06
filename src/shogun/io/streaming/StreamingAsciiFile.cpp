@@ -8,7 +8,6 @@
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/base/DynArray.h>
 
 #include <ctype.h>
 
@@ -57,7 +56,7 @@ void StreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 																			\
 		char* ptr_item=NULL;												\
 		char* ptr_data=buffer;												\
-		DynArray<char*>* items=new DynArray<char*>();						\
+		std::vector<char*> items;											\
 																			\
 		while (*ptr_data)													\
 		{																	\
@@ -96,11 +95,10 @@ void StreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 																			\
 		for (int32_t i=0; i<num_feat; i++)									\
 		{																	\
-				char* item=items->get_element(i);							\
+				char* item=items[i];										\
 				vector[i]=conv(item);										\
 				SG_FREE(item);												\
 		}																	\
-		delete items;														\
 		SG_RESET_LOCALE;													\
 }
 
@@ -180,7 +178,7 @@ GET_FLOAT_VECTOR(float64_t)
 																		\
 				char* ptr_item=NULL;									\
 				char* ptr_data=buffer;									\
-				DynArray<char*>* items=new DynArray<char*>();			\
+				std::vector<char*> items;								\
 																		\
 				while (*ptr_data)										\
 				{														\
@@ -213,18 +211,17 @@ GET_FLOAT_VECTOR(float64_t)
 																		\
 				SG_DEBUG("num_feat {}", num_feat)					\
 				/* The first element is the label */					\
-				label=atof(items->get_element(0));						\
+				label=atof(items[0]);									\
 				/* now copy rest of the data into vector */				\
 				if (old_len < num_feat - 1)								\
 						vector=SG_REALLOC(sg_type, vector, old_len, num_feat-1);	\
 																		\
 				for (int32_t i=1; i<num_feat; i++)						\
 				{														\
-						char* item=items->get_element(i);				\
+						char* item=items[i];							\
 						vector[i-1]=conv(item);							\
 						SG_FREE(item);									\
 				}														\
-				delete items;											\
 				num_feat--;												\
 				SG_RESET_LOCALE;										\
 		}
@@ -607,7 +604,7 @@ GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax
 
 template <class T>
 void StreamingAsciiFile::append_item(
-		DynArray<T>* items, char* ptr_data, char* ptr_item)
+		std::vector<T>& items, char* ptr_data, char* ptr_item)
 {
 		require(ptr_data && ptr_item, "Data and Item to append should not be NULL");
 
@@ -617,7 +614,7 @@ void StreamingAsciiFile::append_item(
 		item=strncpy(item, ptr_item, len);
 
 		SG_DEBUG("current {}, len {}, item {}", *ptr_data, len, item)
-		items->append_element(item);
+		items.push_back(item);
 }
 
 void StreamingAsciiFile::set_delimiter(char delimiter)
