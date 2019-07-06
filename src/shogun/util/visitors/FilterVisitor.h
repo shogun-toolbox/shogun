@@ -2,7 +2,6 @@
 #define SHOGUN_FILTERVISITOR_H
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 #include <functional>
 
@@ -34,13 +33,6 @@ namespace shogun
 					auto obj = dynamic_cast<T>(*v);
 					if (obj)
 						m_operation(m_name, &obj);
-				}
-
-				auto* dyn_obj_array = dynamic_cast<DynamicObjectArray*>(*v);
-				if(dyn_obj_array)
-				{
-					for(auto sub_object : *dyn_obj_array)
-						on(&sub_object);
 				}
 			}
 			return;
