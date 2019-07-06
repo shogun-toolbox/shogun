@@ -5,7 +5,6 @@
  */
 
 #include <shogun/structure/BeliefPropagation.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <numeric>
 #include <algorithm>
@@ -135,9 +134,9 @@ void TreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	var_factor_map_type vf_map;
 	auto facs = m_fg->get_factors();
 
-	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
+	for (int32_t fi = 0; fi < facs.size(); fi++)
 	{
-		auto fac = facs->get_element<Factor>(fi);
+		auto& fac = facs[fi];
 		SGVector<int32_t> vars = fac->get_variables();
 		for (int32_t vi = 0; vi < vars.size(); vi++)
 			vf_map.insert(var_factor_map_type::value_type(vars[vi], fi));
@@ -183,7 +182,7 @@ void TreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 		}
 		else // child: var -> parent: factor
 		{
-			auto fac = facs->get_element<Factor>(node->node_id);
+			auto fac = facs[node->node_id];
 			SGVector<int32_t> vars = fac->get_variables();
 
 
@@ -269,7 +268,7 @@ void TreeMaxProduct::bottom_up_pass()
 			int32_t fac_id = m_msg_order[mi]->child;
 			int32_t var_id = m_msg_order[mi]->parent;
 
-			auto fac = facs->get_element<Factor>(fac_id);
+			auto fac = facs[fac_id];
 			auto ftype = fac->get_factor_type();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
@@ -399,7 +398,7 @@ void TreeMaxProduct::top_down_pass()
 			int32_t fac_id = m_msg_order[mi]->child;
 			int32_t var_id = m_msg_order[mi]->parent;
 
-			auto fac = facs->get_element<Factor>(fac_id);
+			auto fac = facs[fac_id];
 			auto ftype = fac->get_factor_type();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
@@ -487,7 +486,7 @@ void TreeMaxProduct::top_down_pass()
 			int32_t var_id = m_msg_order[mi]->child;
 			int32_t fac_id = m_msg_order[mi]->parent;
 
-			auto fac = facs->get_element<Factor>(fac_id);
+			auto fac = facs[fac_id];
 			auto ftype = fac->get_factor_type();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();

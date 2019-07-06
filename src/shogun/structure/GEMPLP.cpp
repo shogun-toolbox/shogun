@@ -15,7 +15,7 @@ GEMPLP::GEMPLP()
 	: MAPInferImpl()
 {
 	m_fg = NULL;
-	m_factors = NULL;
+	m_factors.clear();
 }
 
 GEMPLP::GEMPLP(std::shared_ptr<FactorGraph> fg, Parameter param)
@@ -37,19 +37,19 @@ void GEMPLP::init()
 	SGVector<int32_t> fg_var_sizes = m_fg->get_cardinalities();
 	m_factors = m_fg->get_factors();
 
-	int32_t num_factors = m_factors->get_num_elements();
+	int32_t num_factors = m_factors.size();
 	m_region_intersections.resize(num_factors);
 
 	// get all the intersections
 	for (int32_t i = 0; i < num_factors; i++)
 	{
-		auto factor_i = m_factors->get_element<Factor>(i);
+		auto factor_i = m_factors[i];
 		SGVector<int32_t> region_i = factor_i->get_variables();
 
 
 		for (int32_t j = i; j < num_factors; j++)
 		{
-			auto factor_j = m_factors->get_element<Factor>(j);
+			auto factor_j = m_factors[j];
 			SGVector<int32_t> region_j = factor_j->get_variables();
 
 
@@ -69,7 +69,7 @@ void GEMPLP::init()
 
 	for (int32_t c = 0; c < num_factors; c++)
 	{
-		auto factor_c = m_factors->get_element<Factor>(c);
+		auto factor_c = m_factors[c];
 		SGVector<int32_t> vars_c = factor_c->get_variables();
 
 
@@ -197,9 +197,9 @@ float64_t GEMPLP::inference(SGVector<int32_t> assignment)
 	for (int32_t it = 0; it < m_param.m_max_iter; ++it)
 	{
 		// update message, iterate over all regions
-		for (int32_t c = 0; c < m_factors->get_num_elements(); c++)
+		for (int32_t c = 0; c < m_factors.size(); c++)
 		{
-			auto factor_c =m_factors->get_element<Factor>(c);
+			auto& factor_c =m_factors[c];
 			SGVector<int32_t> vars = factor_c->get_variables();
 
 
@@ -225,9 +225,9 @@ float64_t GEMPLP::inference(SGVector<int32_t> assignment)
 		float64_t int_val = 0;
 
 		// iterates over factors
-		for (int32_t c = 0; c < m_factors->get_num_elements(); c++)
+		for (int32_t c = 0; c < m_factors.size(); c++)
 		{
-			auto factor = m_factors->get_element<Factor>(c);
+			auto factor = m_factors[c];
 			SGVector<int32_t> vars = factor->get_variables();
 			SGVector<int32_t> var_assignment(vars.size());
 
@@ -262,13 +262,11 @@ float64_t GEMPLP::inference(SGVector<int32_t> assignment)
 
 void GEMPLP::update_messages(int32_t id_region)
 {
-	require(m_factors != NULL, "Factors are not set!");
-
-	require(m_factors->get_num_elements() > id_region,
+	require(m_factors.size() > id_region,
 			"Region id ({}) exceeds the factor elements' length ({})!",
-			id_region, m_factors->get_num_elements());
+			id_region, m_factors.size());
 
-	auto factor = m_factors->get_element<Factor>(id_region);
+	auto factor = m_factors[id_region];
 	SGVector<int32_t> vars = factor->get_variables();
 	SGVector<int32_t> cards = factor->get_cardinalities();
 	SGNDArray<float64_t> lam_sum(cards);

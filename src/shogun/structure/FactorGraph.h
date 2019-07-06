@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/labels/FactorGraphLabels.h>
@@ -57,10 +56,11 @@ public:
 	void add_data_source(std::shared_ptr<FactorDataSource> datasource);
 
 	/** @return all the factors */
-	std::shared_ptr<DynamicObjectArray> get_factors() const;
+	std::vector<std::shared_ptr<Factor>> get_factors() const;
 
 	/** @return all the shared data */
-	std::shared_ptr<DynamicObjectArray> get_factor_data_sources() const;
+	std::vector<std::shared_ptr<FactorDataSource>>
+	get_factor_data_sources() const;
 
 	/** @return number of factors */
 	int32_t get_num_factors() const;
@@ -144,10 +144,10 @@ protected:
 	SGVector<int32_t> m_cardinalities;
 
 	/** added factors */
-	std::shared_ptr<DynamicObjectArray> m_factors;
+	std::vector<std::shared_ptr<Factor>> m_factors;
 
 	/** added data sources */
-	std::shared_ptr<DynamicObjectArray> m_datasources;
+	std::vector<std::shared_ptr<FactorDataSource>> m_datasources;
 
 	/** disjoint set */
 	std::shared_ptr<DisjointSet> m_dset;

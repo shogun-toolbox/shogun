@@ -192,7 +192,7 @@ class HMSVMModel : public StructuredModel
 		int32_t m_num_plif_nodes;
 
 		/** PLiF matrix of dimensions (num_states, num_features) */
-		std::shared_ptr<DynamicObjectArray> m_plif_matrix;
+		std::vector<std::shared_ptr<Plif>> m_plif_matrix;
 
 		/** whether to use PLiFs. Otherwise, the observations must be discrete and finite */
 		bool m_use_plifs;

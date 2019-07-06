@@ -66,7 +66,7 @@ DynProg::DynProg(int32_t num_svms /*= 8 */)
 	  m_pos(1),
 	  m_seq_len(0),
 	  m_orf_info(1,2),
-	  m_plif_list(1),
+	  // m_plif_list(1),
 	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2),
 	  m_segment_ids(1),
 	  m_segment_mask(1),
@@ -967,9 +967,9 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
       //   io::print("({}){:0.2f} ",i,seq_array[i]);
 
-		DynamicObjectArray PEN((std::shared_ptr<SGObject>*)Plif_matrix.data(), m_N, m_N, false, false) ; // 2d, PlifBase*
+		auto& PEN = Plif_matrix; // 2d, PlifBase*
 
-		DynamicObjectArray PEN_state_signals((std::shared_ptr<SGObject>*)Plif_state_signals.data(), m_N, max_num_signals, false, false) ; // 2d,  PlifBase*
+		auto& PEN_state_signals = Plif_state_signals; // 2d,  PlifBase*
 
 		DynamicArray<float64_t> seq(m_N, m_seq_len) ; // 2d
 		seq.set_const(0) ;
@@ -1020,7 +1020,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				for (int32_t j=0; j<m_seq_len; j++)
 					for (int32_t k=0; k<max_num_signals; k++)
 					{
-						if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
+						if ((PEN_state_signals[index_N(i,k)]==NULL) && (k==0))
 						{
 							// no plif
 							if (seq_input!=NULL)
@@ -1034,13 +1034,13 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							}
 							break ;
 						}
-						if (PEN_state_signals.element(i,k)!=NULL)
+						if (PEN_state_signals[index_N(i,k)]!=NULL)
 						{
 							if (seq_input!=NULL)
 							{
 								// just one plif
 								if (Math::is_finite(seq_input->element(i,j,k)))
-									seq.element(i,j) += PEN_state_signals.element(i,k)->as<PlifBase>()->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
+									seq.element(i,j) += PEN_state_signals[index_N(i,k)]->as<PlifBase>()->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
 								else
 									// keep infinity values
 									seq.element(i,j) = seq_input->element(i, j, k) ;
@@ -1051,7 +1051,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (Math::is_finite(m_seq_sparse1->get_feature(i,j)))
-										seq.element(i,j) += PEN_state_signals.element(i,k)->as<PlifBase>()->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += PEN_state_signals[index_N(i,k)]->as<PlifBase>()->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse1->get_feature(i, j) ;
@@ -1060,7 +1060,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (Math::is_finite(m_seq_sparse2->get_feature(i,j)))
-										seq.element(i,j) += PEN_state_signals.element(i,k)->as<PlifBase>()->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += PEN_state_signals[index_N(i,k)]->as<PlifBase>()->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse2->get_feature(i, j) ;
@@ -1139,7 +1139,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				{
 					T_STATES ii = elem_list[i] ;
 
-					auto penij=PEN.element(j, ii)->as<PlifBase>() ;
+					auto penij=PEN[index_N(j, ii)]->as<PlifBase>() ;
 					if (penij==NULL)
 					{
 						if (long_transitions)
@@ -1423,7 +1423,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const auto penalty = PEN.element(j,ii)->as<PlifBase>() ;
+						const auto penalty = PEN[index_N(j,ii)]->as<PlifBase>() ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -1590,7 +1590,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const auto penalty = PEN.element(j,ii)->as<PlifBase>() ;
+						const auto penalty = PEN[index_N(j,ii)]->as<PlifBase>() ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -1985,9 +1985,9 @@ void DynProg::best_path_trans_deriv(
 
 	bool use_svm = false ;
 
-	DynamicObjectArray PEN((std::shared_ptr<SGObject>*)Plif_matrix.data(), m_N, m_N, false, false) ; // 2d, PlifBase*
+	auto& PEN = Plif_matrix; // 2d, PlifBase*
 
-	DynamicObjectArray PEN_state_signals((std::shared_ptr<SGObject>*)Plif_state_signals.data(), m_N, max_num_signals, false, false) ; // 2d, PlifBase*
+	auto& PEN_state_signals = Plif_state_signals; // 2d, PlifBase*
 
 	DynamicArray<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
 
@@ -1995,7 +1995,7 @@ void DynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<m_N; j++)
 			{
-				auto penij=PEN.element(i,j)->as<PlifBase>() ;
+				auto penij=PEN[index_N(i,j)]->as<PlifBase>() ;
 				if (penij==NULL)
 					continue ;
 
@@ -2006,7 +2006,7 @@ void DynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<max_num_signals; j++)
 			{
-				auto penij=PEN_state_signals.element(i,j)->as<PlifBase>() ;
+				auto penij=PEN_state_signals[index_N(i,j)]->as<PlifBase>() ;
 				if (penij==NULL)
 					continue ;
 				if (penij->uses_svm_values())
@@ -2167,7 +2167,7 @@ void DynProg::best_path_trans_deriv(
 					int32_t num_current_svms=0;
 					int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
 					io::print("penalties({}, {}), frame:{}  ", from_state, to_state, frame);
-					PEN.element(to_state, from_state)->as<PlifBase>()->get_used_svms(&num_current_svms, svm_ids);
+					PEN[index_N(to_state, from_state)]->as<PlifBase>()->get_used_svms(&num_current_svms, svm_ids);
 					io::print("\n");
 				}
 
@@ -2181,17 +2181,17 @@ void DynProg::best_path_trans_deriv(
 			}
 		}
 
-		if (PEN.element(to_state, from_state)!=NULL)
+		if (PEN[index_N(to_state, from_state)]!=NULL)
 		{
 			float64_t nscore = 0 ;
 			if (is_long_transition)
 			{
-				float64_t pen_value_part1 = PEN.element(to_state, from_state)->as<PlifBase>()->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
-				float64_t pen_value_part2 = PEN.element(to_state, from_state)->as<PlifBase>()->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
+				float64_t pen_value_part1 = PEN[index_N(to_state, from_state)]->as<PlifBase>()->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
+				float64_t pen_value_part2 = PEN[index_N(to_state, from_state)]->as<PlifBase>()->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
 			}
 			else
-				nscore = PEN.element(to_state, from_state)->as<PlifBase>()->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
+				nscore = PEN[index_N(to_state, from_state)]->as<PlifBase>()->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
 
 			if (false)//(nscore<-1e9)
 					io::print("is_long_transition={}  (from_pos={} ({}), to_pos={} ({})=> {:1.5f}\n",
@@ -2220,18 +2220,18 @@ void DynProg::best_path_trans_deriv(
 				io::print("is_long_transition={}  (from_pos={} ({}), to_pos={} ({})=> {:1.5f}, {:1.5f} --- 1: {:1.6f} ({}-{})  2: {:1.6f} ({}-{}) \n",
 						is_long_transition, m_pos[from_pos], from_state, m_pos[to_pos], to_state,
 						nscore, sum_score,
-						PEN.element(to_state, from_state)->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1)*0.5, m_pos[from_pos], m_pos[from_pos_thresh],
-						PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2)*0.5, m_pos[to_pos_thresh], m_pos[to_pos]) ;
+						PEN[index_N(to_state, from_state)]->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1)*0.5, m_pos[from_pos], m_pos[from_pos_thresh],
+						PEN[index_N(to_state, from_state)]->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2)*0.5, m_pos[to_pos_thresh], m_pos[to_pos]) ;
 #endif
 			}
 
 			if (is_long_transition)
 			{
-				PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
-				PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
+				PEN[index_N(to_state, from_state)]->as<PlifBase>()->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
+				PEN[index_N(to_state, from_state)]->as<PlifBase>()->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
 			}
 			else
-				PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
+				PEN[index_N(to_state, from_state)]->as<PlifBase>()->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
 
 			//io::print("m_num_raw_data = {} \n", m_num_raw_data);
 
@@ -2252,7 +2252,7 @@ void DynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
+						PEN[index_N(to_state, from_state)]->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
 
 					}
 					num_intensities = raw_intensities_interval_query(m_pos[to_pos_thresh], m_pos[to_pos],intensities, d);
@@ -2261,7 +2261,7 @@ void DynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
+						PEN[index_N(to_state, from_state)]->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
 
 					}
 					SG_FREE(intensities);
@@ -2282,7 +2282,7 @@ void DynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 1) ;
+						PEN[index_N(to_state, from_state)]->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 1) ;
 
 					}
 					SG_FREE(intensities);
@@ -2297,7 +2297,7 @@ void DynProg::best_path_trans_deriv(
 		//SG_DEBUG("emmission penalty skipped: to_state={} to_pos={} value={:1.2f} score={:1.2f}", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0)
 		for (int32_t k=0; k<max_num_signals; k++)
 		{
-			if ((PEN_state_signals.element(to_state,k)==NULL)&&(k==0))
+			if ((PEN_state_signals[index_N(to_state,k)]==NULL)&&(k==0))
 			{
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG("{}. emmission penalty: to_state={} to_pos={} score={:1.2f} (no signal plif)", i, to_state, to_pos, seq_input.element(to_state, to_pos, k))
@@ -2307,9 +2307,9 @@ void DynProg::best_path_trans_deriv(
 				//	io::print("features({},{}): {}\n",to_state,to_pos,seq_input.element(to_state, to_pos, k));
 				break ;
 			}
-			if (PEN_state_signals.element(to_state, k)!=NULL)
+			if (PEN_state_signals[index_N(to_state, k)]!=NULL)
 			{
-				float64_t nscore = PEN_state_signals.element(to_state,k)->as<PlifBase>()->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
+				float64_t nscore = PEN_state_signals[index_N(to_state,k)]->as<PlifBase>()->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
 				if (false)//(nscore<-1e9)
@@ -2336,7 +2336,7 @@ void DynProg::best_path_trans_deriv(
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG("{}. emmission penalty: to_state={} to_pos={} value={:1.2f} score={:1.2f} k={}", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k)
 #endif
-				PEN_state_signals.element(to_state,k)->as<PlifBase>()->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
+				PEN_state_signals[index_N(to_state,k)]->as<PlifBase>()->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
 			} else
 				break ;
 		}

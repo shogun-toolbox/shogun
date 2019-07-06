@@ -12,7 +12,6 @@
 #include <shogun/structure/Plif.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace shogun;
 
@@ -115,7 +114,7 @@ SGVector< float64_t > HMSVMModel::get_joint_feature_vector(
 
 			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
 			{
-				auto plif = m_plif_matrix->get_element<Plif>(S*f + state_seq[j]);
+				auto& plif = m_plif_matrix[S*f + state_seq[j]];
 				SGVector<float64_t> limits = plif->get_plif_limits();
 				// The number of supporting points smaller or equal than value
 				int32_t count = 0;
@@ -171,9 +170,7 @@ std::shared_ptr<ResultSet> HMSVMModel::argmax(
 
 	if ( m_use_plifs )
 	{
-		require(m_plif_matrix, "PLiF matrix not allocated, has the SO machine been trained with "
-				"the use_plifs option?");
-		require(m_plif_matrix->get_num_elements() == S*D, "Dimension mismatch in PLiF matrix, have the "
+		require(m_plif_matrix.size() == S*D, "Dimension mismatch in PLiF matrix, have the "
 				"feature dimension and/or number of states changed from training to prediction?");
 	}
 
@@ -218,7 +215,7 @@ std::shared_ptr<ResultSet> HMSVMModel::argmax(
 			{
 				for ( int32_t s = 0 ; s < S ; ++s )
 				{
-					auto plif = m_plif_matrix->get_element<Plif>(S*f + s);
+					auto plif = m_plif_matrix[S*f + s];
 					E(s,i) += plif->lookup( x(f,i) );
 
 				}
@@ -497,7 +494,7 @@ void HMSVMModel::init()
 	m_num_aux = 0;
 	m_use_plifs = false;
 	m_state_model = NULL;
-	m_plif_matrix = NULL;
+	m_plif_matrix.clear();
 	m_num_plif_nodes = 0;
 }
 
@@ -542,7 +539,7 @@ void HMSVMModel::init_training()
 	if ( m_use_plifs )
 	{
 		// Initialize PLiF matrix
-		m_plif_matrix = std::make_shared<DynamicObjectArray>(S*D);
+		m_plif_matrix.reserve(S*D);
 
 
 		// Determine the x values for the supporting points of the PLiFs
@@ -586,7 +583,7 @@ void HMSVMModel::init_training()
 				plif->set_plif_limits(limits);
 				plif->set_min_value(-Math::INFTY);
 				plif->set_max_value(Math::INFTY);
-				m_plif_matrix->push_back(plif);
+				m_plif_matrix.push_back(plif);
 			}
 		}
 	}
