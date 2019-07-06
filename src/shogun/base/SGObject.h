@@ -42,7 +42,6 @@ class Parameter;
 class ParameterObserverInterface;
 class ObservedValue;
 class ParameterObserver;
-class DynamicObjectArray;
 
 template <class T>
 class ObservedValueTemplated;
@@ -1299,14 +1298,6 @@ namespace sgo_details
 template <typename T1, typename T2>
 bool dispatch_array_type(const SGObject* obj, std::string_view name, T2&& lambda)
 {
-	Tag<std::shared_ptr<DynamicObjectArray>> tag_array_sg(name);
-	if (obj->has(tag_array_sg))
-	{
-		auto dispatched = obj->get(tag_array_sg);
-		lambda(*dispatched); // is stored as a pointer
-		return true;
-	}
-
 	Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
 	if (obj->has(tag_vector))
 	{
