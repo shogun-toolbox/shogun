@@ -38,7 +38,6 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
@@ -46,6 +45,8 @@
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/neuralnets/NeuralLayers.h>
+
+#include <vector>
 
 using namespace shogun;
 
@@ -57,13 +58,13 @@ TEST(NeuralNetwork, backpropagation_linear)
 	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(5));
-	layers->append_element(std::make_shared<NeuralInputLayer>(7));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(3));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(6));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(5));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(4));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(5));
+	layers.push_back(std::make_shared<NeuralInputLayer>(7));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(3));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(6));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(5));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(4));
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
 
@@ -124,13 +125,13 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(5));
-	layers->append_element(std::make_shared<NeuralInputLayer>(7));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(3));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(6));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(5));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(4));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(5));
+	layers.push_back(std::make_shared<NeuralInputLayer>(7));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(3));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(6));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(5));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(4));
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
 
@@ -156,13 +157,13 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(5));
-	layers->append_element(std::make_shared<NeuralInputLayer>(7));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(3));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(6));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(5));
-	layers->append_element(std::make_shared<NeuralSoftmaxLayer>(4));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(5));
+	layers.push_back(std::make_shared<NeuralInputLayer>(7));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(3));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(6));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(5));
+	layers.push_back(std::make_shared<NeuralSoftmaxLayer>(4));
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
 
@@ -188,13 +189,13 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(5));
-	layers->append_element(std::make_shared<NeuralInputLayer>(7));
-	layers->append_element(std::make_shared<NeuralRectifiedLinearLayer>(3));
-	layers->append_element(std::make_shared<NeuralRectifiedLinearLayer>(6));
-	layers->append_element(std::make_shared<NeuralRectifiedLinearLayer>(5));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(4));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(5));
+	layers.push_back(std::make_shared<NeuralInputLayer>(7));
+	layers.push_back(std::make_shared<NeuralRectifiedLinearLayer>(3));
+	layers.push_back(std::make_shared<NeuralRectifiedLinearLayer>(6));
+	layers.push_back(std::make_shared<NeuralRectifiedLinearLayer>(5));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(4));
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
 
@@ -220,16 +221,16 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	int32_t seed = 10;
 	float64_t tolerance = 1e-9;
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(6,4));
-	layers->append_element(std::make_shared<NeuralInputLayer>(6,4));
-	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(6,4));
+	layers.push_back(std::make_shared<NeuralInputLayer>(6,4));
+	layers.push_back(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
-	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
+	layers.push_back(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
-	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
+	layers.push_back(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1, RE_NORMAL));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(4));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(4));
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
 
@@ -275,10 +276,10 @@ TEST(NeuralNetwork, binary_classification)
 
 	auto labels = std::make_shared<BinaryLabels>(targets_vector);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(2));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(1));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(2));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(2));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(1));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
@@ -333,10 +334,10 @@ TEST(NeuralNetwork, multiclass_classification)
 
 	auto labels = std::make_shared<MulticlassLabels>(targets_vector);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(2));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(2));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(2));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(2));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
@@ -383,10 +384,10 @@ TEST(NeuralNetwork, regression)
 
 	auto labels = std::make_shared<RegressionLabels>(targets_vector);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(1));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(20));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(1));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(1));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(20));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(1));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
@@ -436,10 +437,10 @@ TEST(NeuralNetwork, gradient_descent)
 
 	auto labels = std::make_shared<BinaryLabels>(targets_vector);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(2));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(1));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(2));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(2));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(1));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);

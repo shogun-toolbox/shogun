@@ -13,6 +13,7 @@
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 #include <gtest/gtest.h>
 
@@ -76,7 +77,7 @@ public:
 		input_layer->compute_activations(data_batch);
 		if (add_to_layers)
 		{
-			m_layers->append_element(input_layer);
+			m_layers.push_back(input_layer);
 		}
 		return std::make_tuple(data_batch, input_layer);
 	}
@@ -97,11 +98,11 @@ public:
 	 */
 	auto init_linear_layer(
 	    std::shared_ptr<NeuralLinearLayer> layer, const SGVector<int32_t>& input_indices,
-	    int32_t batch_size, double sigma, bool add_to_layers) const
+	    int32_t batch_size, double sigma, bool add_to_layers)
 	{
 		if (add_to_layers)
 		{
-			m_layers->append_element(layer);
+			m_layers.push_back(layer);
 		}
 		layer->initialize_neural_layer(m_layers, input_indices);
 		SGVector<float64_t> params(layer->get_num_parameters());
@@ -113,12 +114,12 @@ public:
 	}
 
 	// dynamic list of layers
-	std::shared_ptr<DynamicObjectArray> m_layers;
+	std::vector<std::shared_ptr<NeuralLayer>> m_layers;
 
 protected:
 	void SetUp() final
 	{
-		m_layers = std::make_shared<DynamicObjectArray>();
+		m_layers.clear();
 	}
 };
 #endif // NEURAL_LAYER_TEST_FIXTURE_H

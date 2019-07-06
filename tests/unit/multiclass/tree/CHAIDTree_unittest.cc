@@ -169,7 +169,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	auto children=node->get_children();
 
-	node=children->get_element(0)->as<TreeMachineNode<CHAIDTreeNodeData>>();
+	node=children[0];
 
 	EXPECT_EQ(0,node->data.attribute_id);
 	EXPECT_EQ(0.0,node->data.node_label);
@@ -180,7 +180,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	children=node->get_children();
 
-	node=children->get_element<TreeMachineNode<CHAIDTreeNodeData>>(0);
+	node=children[0];
 
 	EXPECT_EQ(3.0,node->data.total_weight);
 	EXPECT_EQ(0.0,node->data.node_label);
@@ -201,7 +201,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	children=node->get_children();
 
-	node=children->get_element<TreeMachineNode<CHAIDTreeNodeData>>(1);
+	node=children[1];
 
 	EXPECT_EQ(3,node->data.attribute_id);
 	EXPECT_EQ(1.0,node->data.node_label);
@@ -211,7 +211,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	children=node->get_children();
 
-	node=children->get_element<TreeMachineNode<CHAIDTreeNodeData>>(0);
+	node=children[0];
 
 	EXPECT_EQ(4.0,node->data.total_weight);
 	EXPECT_EQ(1.0,node->data.node_label);
