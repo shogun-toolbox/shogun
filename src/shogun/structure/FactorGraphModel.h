@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/SGString.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/StructuredModel.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/MAPInference.h>
@@ -63,7 +62,7 @@ public:
 	void del_factor_type(const int32_t ftype_id);
 
 	/** @return pointer to the array of factor types */
-	std::shared_ptr<DynamicObjectArray> get_factor_types() const;
+	std::vector<std::shared_ptr<FactorType>> get_factor_types() const;
 
 	/** get a factor type specified by its id
 	 *
@@ -163,7 +162,7 @@ private:
 
 protected:
 	/** array of factor types */
-	std::shared_ptr<DynamicObjectArray> m_factor_types;
+	std::vector<std::shared_ptr<FactorType>> m_factor_types;
 
 	/** index of factor type */
 	SGVector<int32_t> m_w_map;

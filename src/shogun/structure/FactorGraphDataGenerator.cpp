@@ -6,6 +6,7 @@
 
 #include <shogun/structure/FactorGraphDataGenerator.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 using namespace shogun;
 
