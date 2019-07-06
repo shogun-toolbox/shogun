@@ -81,10 +81,8 @@ void GraphCut::init()
 	m_num_factors_at_order = SGVector<int32_t> (4);
 	m_num_factors_at_order.zero();
 
-	for (int32_t i = 0; i < facs->get_num_elements(); i++)
+	for (auto& fac : facs)
 	{
-		auto fac = facs->get_element<Factor>(i);
-
 		int32_t num_vars = fac->get_num_vars();
 
 
@@ -107,7 +105,7 @@ void GraphCut::init()
 
 	for (int32_t j = 0; j < m_fg->get_num_factors(); j++)
 	{
-		auto fac = facs->get_element<Factor>(j);
+		auto fac = facs[j];
 		add_factor(fac);
 
 	}
@@ -405,7 +403,7 @@ int32_t GraphCut::get_tripleId(SGVector<int32_t> triple)
 	// search for triple in list
 	int32_t counter = m_num_variables;
 
-	for (int32_t i = 0; i < m_triple_list.get_num_elements(); i++)
+	for (int32_t i = 0; i < m_triple_list.size(); i++)
 	{
 		SGVector<int32_t> vec = m_triple_list[i];
 

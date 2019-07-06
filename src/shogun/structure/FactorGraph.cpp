@@ -47,8 +47,8 @@ FactorGraph::~FactorGraph()
 void FactorGraph::register_parameters()
 {
 	SG_ADD(&m_cardinalities, "cardinalities", "Cardinalities");
-	SG_ADD((std::shared_ptr<SGObject>*)&m_factors, "factors", "Factors");
-	SG_ADD((std::shared_ptr<SGObject>*)&m_datasources, "datasources", "Factor data sources");
+	SG_ADD(&m_factors, "factors", "Factors");
+	SG_ADD(&m_datasources, "datasources", "Factor data sources");
 	SG_ADD((std::shared_ptr<SGObject>*)&m_dset, "dset", "Disjoint set");
 	SG_ADD(&m_has_cycle, "has_cycle", "Whether has circle in graph");
 	SG_ADD(&m_num_edges, "num_edges", "Number of edges");
@@ -58,10 +58,8 @@ void FactorGraph::init()
 {
 	m_has_cycle = false;
 	m_num_edges = 0;
-	m_factors = NULL;
-	m_datasources = NULL;
-	m_factors = std::make_shared<DynamicObjectArray>();
-	m_datasources = std::make_shared<DynamicObjectArray>();
+	m_factors.clear();
+	m_datasources.clear();
 
 	// NOTE m_cards cannot be empty
 	m_dset = std::make_shared<DisjointSet>(m_cardinalities.size());
@@ -69,7 +67,7 @@ void FactorGraph::init()
 
 void FactorGraph::add_factor(std::shared_ptr<Factor> factor)
 {
-	m_factors->push_back(factor);
+	m_factors.push_back(factor);
 	m_num_edges += factor->get_variables().size();
 
 	// graph structure changed after adding factors
@@ -79,16 +77,17 @@ void FactorGraph::add_factor(std::shared_ptr<Factor> factor)
 
 void FactorGraph::add_data_source(std::shared_ptr<FactorDataSource> datasource)
 {
-	m_datasources->push_back(datasource);
+	m_datasources.push_back(datasource);
 }
 
-std::shared_ptr<DynamicObjectArray> FactorGraph::get_factors() const
+std::vector<std::shared_ptr<Factor>> FactorGraph::get_factors() const
 {
 
 	return m_factors;
 }
 
-std::shared_ptr<DynamicObjectArray> FactorGraph::get_factor_data_sources() const
+std::vector<std::shared_ptr<FactorDataSource>>
+FactorGraph::get_factor_data_sources() const
 {
 
 	return m_datasources;
@@ -96,7 +95,7 @@ std::shared_ptr<DynamicObjectArray> FactorGraph::get_factor_data_sources() const
 
 int32_t FactorGraph::get_num_factors() const
 {
-	return m_factors->get_num_elements();
+	return m_factors.size();
 }
 
 SGVector<int32_t> FactorGraph::get_cardinalities() const
@@ -127,11 +126,9 @@ int32_t FactorGraph::get_num_vars() const
 
 void FactorGraph::compute_energies()
 {
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		auto fac = m_factors->get_element<Factor>(fi);
 		fac->compute_energies();
-
 	}
 }
 
@@ -140,11 +137,9 @@ float64_t FactorGraph::evaluate_energy(const SGVector<int32_t> state) const
 	ASSERT(state.size() == m_cardinalities.size());
 
 	float64_t energy = 0.0;
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		auto fac = m_factors->get_element<Factor>(fi);
 		energy += fac->evaluate_energy(state);
-
 	}
 	return energy;
 }
@@ -191,9 +186,8 @@ void FactorGraph::connect_components()
 	m_dset->make_sets();
 	bool flag = false;
 
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		auto fac = m_factors->get_element<Factor>(fi);
 		SGVector<int32_t> vars = fac->get_variables();
 
 		int32_t r0 = m_dset->find_set(vars[0]);
@@ -256,9 +250,8 @@ void FactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float6
 	// augment loss to incorrect states in the first factor containing the variable
 	// since += L_i for each variable if it takes wrong state ever
 	// TODO: augment unary factors
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		auto fac = m_factors->get_element<Factor>(fi);
 		SGVector<int32_t> vars = fac->get_variables();
 		for (int32_t vi = 0; vi < vars.size(); vi++)
 		{

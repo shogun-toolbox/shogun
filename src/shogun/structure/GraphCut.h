@@ -11,7 +11,6 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/List.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/structure/MAPInference.h>
@@ -308,7 +307,7 @@ private:
 	/** statistic of the number of the factors at order [1, 2, 3] */
 	SGVector<int32_t> m_num_factors_at_order;
 	/** list of triple nodes, for order-3 factors */
-	DynArray< SGVector<int32_t> > m_triple_list;
+	std::vector< SGVector<int32_t> > m_triple_list;
 
 	/** nodes in the st graph */
 	GCNode*		m_nodes;

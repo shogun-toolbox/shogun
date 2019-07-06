@@ -11,7 +11,6 @@
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/mathematics/NormalDistribution.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <random>
 
 using namespace shogun;
@@ -143,7 +142,7 @@ void TwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_weig
 	}
 }
 
-void TwoStateModel::reshape_emission_params(std::shared_ptr<DynamicObjectArray> plif_matrix,
+void TwoStateModel::reshape_emission_params(const std::vector<std::shared_ptr<Plif>>& plif_matrix,
 		SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes)
 {
 	index_t p_idx, w_idx = m_num_transmission_params;
@@ -157,7 +156,7 @@ void TwoStateModel::reshape_emission_params(std::shared_ptr<DynamicObjectArray> 
 			for ( int32_t i = 0 ; i < num_plif_nodes ; ++i )
 				penalties[p_idx++] = w[w_idx++];
 
-			auto plif = plif_matrix->get_element<Plif>(m_num_states*f + s);
+			auto plif = plif_matrix[m_num_states*f + s];
 			plif->set_plif_penalty(penalties);
 
 		}

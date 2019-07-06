@@ -62,7 +62,7 @@ struct RealNumber : public StructuredData
  * Output (SO) learning to multiclass classification. Each of the labels is
  * represented by a real number and it is required that the values of the labels
  * are in the set {0, 1, ..., num_classes-1}. Each label is of type RealNumber
- * and all of them are stored in a DynamicObjectArray. */
+ * and all of them are stored in a container. */
 class MulticlassSOLabels : public StructuredLabels
 {
 	public:

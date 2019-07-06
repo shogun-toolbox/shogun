@@ -37,12 +37,12 @@ FactorGraphModel::~FactorGraphModel()
 
 void FactorGraphModel::init()
 {
-	SG_ADD((std::shared_ptr<SGObject>*)&m_factor_types, "factor_types", "Array of factor types");
+	SG_ADD(&m_factor_types, "factor_types", "Array of factor types");
 	SG_ADD(&m_w_cache, "w_cache", "Cache of global parameters");
 	SG_ADD(&m_w_map, "w_map", "Parameter mapping");
 
 	m_inf_type = TREE_MAX_PROD;
-	m_factor_types = std::make_shared<DynamicObjectArray>();
+	m_factor_types.clear();
 	m_verbose = false;
 
 
@@ -55,9 +55,8 @@ void FactorGraphModel::add_factor_type(std::shared_ptr<FactorType> ftype)
 
 	// check whether this ftype has been added
 	int32_t id = ftype->get_type_id();
-	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+	for (auto& ft : m_factor_types)
 	{
-		auto ft= m_factor_types->get_element<FactorType>(fi);
 		if (id == ft->get_type_id())
 		{
 			io::print("{}::add_factor_type(): factor_type (id = {}) has been added!\n",
@@ -83,7 +82,7 @@ void FactorGraphModel::add_factor_type(std::shared_ptr<FactorType> ftype)
 	}
 
 	// push factor type
-	m_factor_types->push_back(ftype);
+	m_factor_types.push_back(ftype);
 
 	// initialize w cache
 	fparams_to_w();
@@ -98,14 +97,14 @@ void FactorGraphModel::del_factor_type(const int32_t ftype_id)
 {
 	int w_dim = 0;
 	// delete from m_factor_types
-	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+	for (auto fi = m_factor_types.begin(); fi != m_factor_types.end(); ++fi)
 	{
-		auto ftype = m_factor_types->get_element<FactorType>(fi);
+		auto ftype = *fi;
 		if (ftype_id == ftype->get_type_id())
 		{
 			w_dim = ftype->get_w_dim();
 
-			m_factor_types->delete_element(fi);
+			m_factor_types.erase(fi);
 			break;
 		}
 
@@ -129,7 +128,7 @@ void FactorGraphModel::del_factor_type(const int32_t ftype_id)
 	ASSERT(ind == m_w_map.size());
 }
 
-std::shared_ptr<DynamicObjectArray> FactorGraphModel::get_factor_types() const
+std::vector<std::shared_ptr<FactorType>> FactorGraphModel::get_factor_types() const
 {
 
 	return m_factor_types;
@@ -137,9 +136,8 @@ std::shared_ptr<DynamicObjectArray> FactorGraphModel::get_factor_types() const
 
 std::shared_ptr<FactorType> FactorGraphModel::get_factor_type(const int32_t ftype_id) const
 {
-	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+	for (auto& ftype : m_factor_types)
 	{
-		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		if (ftype_id == ftype->get_type_id())
 			return ftype;
 
@@ -166,15 +164,12 @@ int32_t FactorGraphModel::get_dim() const
 
 SGVector<float64_t> FactorGraphModel::fparams_to_w()
 {
-	require(m_factor_types != NULL, "{}::fparams_to_w(): no factor types!", get_name());
-
 	if (m_w_cache.size() != get_dim())
 		m_w_cache.resize_vector(get_dim());
 
 	int32_t offset = 0;
-	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+	for (auto& ftype : m_factor_types)
 	{
-		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		int32_t w_dim = ftype->get_w_dim();
 		offset += w_dim;
 		SGVector<float64_t> fw = ftype->get_w();
@@ -206,9 +201,8 @@ void FactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 	m_w_cache = w.clone();
 
 	int32_t offset = 0;
-	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+	for (auto& ftype : m_factor_types)
 	{
-		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		int32_t w_dim = ftype->get_w_dim();
 		offset += w_dim;
 		SGVector<float64_t> fw(w_dim);
@@ -240,9 +234,8 @@ SGVector< float64_t > FactorGraphModel::get_joint_feature_vector(int32_t feat_id
 
 	// construct unnormalized psi
 	auto facs = fg->get_factors();
-	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
+	for (auto& fac : facs)
 	{
-		auto fac = facs->get_element<Factor>(fi);
 		auto ftype = fac->get_factor_type();
 		int32_t id = ftype->get_type_id();
 		SGVector<int32_t> w_map = get_params_mapping(id);
@@ -401,7 +394,6 @@ void FactorGraphModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
-	require(m_factor_types != NULL, "{}::init_primal_opt(): no factor types!", get_name());
 
 	int32_t dim_w = get_dim();
 
@@ -413,9 +405,8 @@ void FactorGraphModel::init_primal_opt(
 			SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -Math::INFTY);
 			SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, Math::INFTY);
 
-			for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+			for (auto& ftype : m_factor_types)
 			{
-				auto ftype = m_factor_types->get_element<FactorType>(fi);
 				int32_t w_dim = ftype->get_w_dim();
 				SGVector<int32_t> card = ftype->get_cardinalities();
 
