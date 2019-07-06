@@ -36,6 +36,7 @@ SplittingStrategy::SplittingStrategy(std::shared_ptr<Labels> labels, int32_t num
 void SplittingStrategy::reset_subsets()
 {
 	/* construct all arrays */
+	m_subset_indices.clear();
 	m_subset_indices.resize(m_num_subsets);
 
 	m_is_filled=false;
@@ -74,7 +75,7 @@ SGVector<index_t> SplittingStrategy::generate_subset_indices(index_t subset_idx)
 	}
 
 	/* construct SGVector copy from index vector */
-	auto to_copy=m_subset_indices.at(subset_idx);
+	auto& to_copy = m_subset_indices.at(subset_idx);
 
 	index_t num_elements=to_copy.size();
 	SGVector<index_t> result(num_elements, true);
@@ -96,7 +97,7 @@ SGVector<index_t> SplittingStrategy::generate_subset_inverse(index_t subset_idx)
 				get_name(), get_name());
 	}
 
-	auto to_invert=m_subset_indices.at(subset_idx);
+	auto& to_invert = m_subset_indices.at(subset_idx);
 
 	SGVector<index_t> result(
 			m_labels->get_num_labels()-to_invert.size(), true);

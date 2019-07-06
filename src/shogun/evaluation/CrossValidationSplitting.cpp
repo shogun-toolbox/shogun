@@ -41,7 +41,7 @@ void CrossValidationSplitting::build_subsets()
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		/* fill current subset */
-		auto current=m_subset_indices[current_subset];
+		auto& current = m_subset_indices[current_subset];
 
 		/* add element of current index */
 		current.push_back(indices.vector[i]);
