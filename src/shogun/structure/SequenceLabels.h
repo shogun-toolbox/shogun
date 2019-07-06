@@ -65,7 +65,7 @@ protected:
 /** @brief Class CSequenceLabels used e.g. in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). Each of the
  * labels is represented by a sequence of integers. Each label is of type
- * CSequence and all of them are stored in a DynamicObjectArray. */
+ * CSequence and all of them are stored in a container. */
 class SequenceLabels : public StructuredLabels
 {
 	public:

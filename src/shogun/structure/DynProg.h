@@ -22,7 +22,6 @@
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/distributions/Distribution.h>
 #include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Time.h>
 
 
@@ -558,6 +557,13 @@ protected:
 	virtual const char* get_name() const { return "DynProg"; }
 
 private:
+	/** a helper method to return the index 
+	 * of a 2D array with dim1=m_N
+	 */
+	inline size_t index_N(int32_t i, int32_t j)
+	{
+		return i + m_N * j;
+	}
 
 	T_STATES trans_list_len;
 	T_STATES **trans_list_forward;
@@ -659,7 +665,7 @@ protected:
 	/** segment sum weights */
 	DynamicArray<float64_t> m_segment_sum_weights; // 2d
 	/** Plif list */
-	DynamicObjectArray m_plif_list; // PlifBase*
+	// DynamicObjectArray m_plif_list; // PlifBase*
 	/** a single string (to be segmented) */
 	DynamicArray<char> m_genestr;
 	/**

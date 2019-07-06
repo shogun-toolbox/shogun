@@ -129,7 +129,7 @@ public:
 	/** GEMPLP parameter */
 	Parameter m_param;
 	/** all factors in the graph*/
-	std::shared_ptr<DynamicObjectArray> m_factors;
+	std::vector<std::shared_ptr<Factor>> m_factors;
 	/** all intersections */
 	std::vector<SGVector<int32_t> > m_all_intersections;
 	/** the intersection indices (node indices) on each region */

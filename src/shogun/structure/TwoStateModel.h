@@ -77,7 +77,7 @@ class TwoStateModel : public StateModel
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(std::shared_ptr<DynamicObjectArray> plif_matrix,
+		virtual void reshape_emission_params(const std::vector<std::shared_ptr<Plif>>& plif_matrix,
 			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes);
 
 		/**

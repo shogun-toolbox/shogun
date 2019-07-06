@@ -81,7 +81,7 @@ protected:
 /** @brief Class CMultilabelSOLabels used in the application of Structured
  * Output (SO) learning to Multilabel Classification. Labels are subsets
  * of {0, 1, ..., num_classes-1}. Each of the label if of type CSparseMultilabel and
- * all of them are stored in a DynamicObjectArray.
+ * all of them are stored in a container.
  */
 class MultilabelSOLabels : public StructuredLabels
 {

@@ -7,7 +7,6 @@
 
 #ifdef USE_MOSEK
 
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/List.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -111,12 +110,11 @@ bool CPrimalMosekSOSVM::train_machine(Features* data)
 	// Initialize the list of constraints
 	// Each element in results is a list of ResultSet with the constraints
 	// associated to each training example
-	DynamicObjectArray* results = new DynamicObjectArray(N);
-	SG_REF(results);
+	std::vector<List> results(N);
 	for ( int32_t i = 0 ; i < N ; ++i )
 	{
 		List* list = new List(true);
-		results->push_back(list);
+		results.push_back(list);
 	}
 
 	// Initialize variables used in the loop
@@ -144,7 +142,7 @@ bool CPrimalMosekSOSVM::train_machine(Features* data)
 
 			// Compute the loss associated with the prediction (surrogate loss, max(0, \tilde{H}))
 			float64_t slack = CHingeLoss().loss( compute_loss_arg(result) );
-			List* cur_list = (List*) results->get_element(i);
+			List* cur_list = results[i];
 
 			// Update the list of constraints
 			if ( cur_list->get_num_elements() > 0 )
@@ -216,7 +214,6 @@ bool CPrimalMosekSOSVM::train_machine(Features* data)
 	po_value = mosek->get_primal_objective_value();
 
 	// Free resources
-	SG_UNREF(results);
 	SG_UNREF(mosek);
 	SG_UNREF(model_features);
 	return true;
