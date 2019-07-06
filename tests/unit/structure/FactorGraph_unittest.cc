@@ -1,6 +1,5 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/Factor.h>
@@ -69,7 +68,7 @@ TEST(FactorGraph, compute_energies_data_indep)
 	auto allfac = fg.get_factors();
 	for (int32_t fi = 0; fi < 3; fi++)
 	{
-		auto ft = allfac->get_element<Factor>(fi);
+		auto ft = allfac[fi];
 		SGVector<float64_t> energies = ft->get_energies();
 
 
@@ -317,10 +316,10 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<float64_t> gradients(8);
 	gradients.zero();
 	auto allfac = fg.get_factors();
-	//for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
+	//for (int32_t fi = 0; fi < allfac.size(); fi++)
 	int32_t fi = 0;
 	{
-		auto ft = allfac->get_element<Factor>(fi);
+		auto ft = allfac[fi];
 		ft->compute_gradients(marginals, gradients);
 
 	}
@@ -420,9 +419,9 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SGVector<float64_t> gradients(8);
 	gradients.zero();
 	auto allfac = fg.get_factors();
-	for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
+	for (int32_t fi = 0; fi < allfac.size(); fi++)
 	{
-		auto ft = allfac->get_element<Factor>(fi);
+		auto ft = allfac[fi];
 		ft->compute_gradients(marginals, gradients);
 	}
 
