@@ -655,13 +655,13 @@ void RBM::init()
 	    &m_num_visible_groups, "num_visible_groups",
 	    "Number of Visible Unit Groups");
 	SG_ADD(
-	    (std::shared_ptr<SGObject>*)&m_visible_group_sizes, "visible_group_sizes",
+	    &m_visible_group_sizes, "visible_group_sizes",
 	    "Sizes of Visible Unit Groups");
 	SG_ADD(
-	    (std::shared_ptr<SGObject>*)&m_visible_group_types, "visible_group_types",
+	    &m_visible_group_types, "visible_group_types",
 	    "Types of Visible Unit Groups");
 	SG_ADD(
-	    (std::shared_ptr<SGObject>*)&m_visible_state_offsets, "visible_group_index_offsets",
+	    &m_visible_state_offsets, "visible_group_index_offsets",
 	    "State Index offsets of Visible Unit Groups");
 
 	SG_ADD(&m_num_params, "num_params", "Number of Parameters");
