@@ -109,7 +109,10 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	prob.l=num_vec;
 	prob.x=features;
 	auto labels = regression_labels(m_labels);
-	prob.y = labels->get_labels();
+
+	// store reference to vector locally in order to prevent free-ing
+	auto lab = labels->get_labels();
+	prob.y = lab.data();
 
 	switch (m_liblinear_regression_type)
 	{
