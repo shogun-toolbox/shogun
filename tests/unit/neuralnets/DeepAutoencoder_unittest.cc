@@ -36,7 +36,6 @@
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
@@ -55,12 +54,12 @@ TEST(DeepAutoencoder, pre_train)
 	for (int32_t i=0; i<num_features*num_examples; i++)
 		data[i] = uniform_real_dist(prng);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(num_features));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(15));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(num_features));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(std::make_shared<NeuralInputLayer>(num_features));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(12));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(15));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(12));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(num_features));
 
 	DeepAutoencoder ae(layers);
 
@@ -87,12 +86,11 @@ TEST(DeepAutoencoder, convert_to_neural_network)
 {
 	const int32_t seed = 100;
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(std::make_shared<NeuralInputLayer>(10));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(15));
-	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<NeuralLinearLayer>(10));
+	std::vector<std::shared_ptr<NeuralLayer>> layers;	layers.push_back(std::make_shared<NeuralInputLayer>(10));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(12));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(15));
+	layers.push_back(std::make_shared<NeuralLogisticLayer>(12));
+	layers.push_back(std::make_shared<NeuralLinearLayer>(10));
 
 	DeepAutoencoder ae(layers);
 

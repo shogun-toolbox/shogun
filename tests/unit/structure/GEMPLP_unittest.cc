@@ -100,7 +100,7 @@ TEST(GEMPLP, convert_energy_to_potential)
 	auto mplp = std::make_shared<GEMPLP>(fg);
 
 
-	auto factor = mplp->m_factors->get_element<Factor>(0);
+	auto factor = mplp->m_factors[0];
 
 	SGNDArray<float64_t> message = mplp->convert_energy_to_potential(factor);
 

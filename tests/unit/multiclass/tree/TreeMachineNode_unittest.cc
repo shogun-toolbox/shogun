@@ -31,7 +31,6 @@
 #include <gtest/gtest.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace std;
 using namespace shogun;
@@ -53,13 +52,13 @@ TEST(TreeMachineNode, build_tree)
 
 	root->add_child(child1);
 
-	auto insert_children=std::make_shared<DynamicObjectArray>();
-	insert_children->push_back(child1);
-	insert_children->push_back(child2);
+	std::vector<std::shared_ptr<TreeMachineNode<id3TreeNodeData>>> insert_children;
+	insert_children.push_back(child1);
+	insert_children.push_back(child2);
 	root->set_children(insert_children);
 
 	auto get_children=root->get_children();
-	auto get_child1=get_children->get_element<TreeMachineNode<id3TreeNodeData>>(0);
+	auto get_child1=get_children[0];
 
 	EXPECT_EQ(get_child1->data.attribute_id,1);
 	EXPECT_EQ(get_child1->data.transit_if_feature_value,1.0);
