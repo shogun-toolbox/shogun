@@ -211,9 +211,3 @@ SGMatrix<int32_t> CHierarchical::get_cluster_pairs()
 {
 	return SGMatrix<int32_t>(pairs,2,merges, false);
 }
-
-
-void CHierarchical::store_model_features()
-{
-	/* TODO. Currently does nothing since apply methods are not implemented. */
-}

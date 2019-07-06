@@ -67,8 +67,7 @@ TEST(KMeans, manual_center_initialization_test)
 		EXPECT_EQ(1.000000, result->get_label(2));
 		EXPECT_EQ(1.000000, result->get_label(3));
 
-		CDenseFeatures<float64_t>* learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
-		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
+		SGMatrix<float64_t> learnt_centers_matrix=clustering->get_cluster_centers();
 
 		EXPECT_EQ(0, learnt_centers_matrix(0,0));
 		EXPECT_EQ(2, learnt_centers_matrix(0,1));
@@ -76,7 +75,6 @@ TEST(KMeans, manual_center_initialization_test)
 		EXPECT_EQ(5, learnt_centers_matrix(1,1));
 
 		check_consistency_observable(clustering, observer);
-		SG_UNREF(learnt_centers);
 		SG_UNREF(result);
 	}
 
@@ -170,8 +168,7 @@ TEST(KMeans, minibatch_training_test)
 		clustering->put<int32_t>("max_iter", 1000);
 		clustering->put<int32_t>("batch_size", 4);
 		clustering->train(features);
-		auto learnt_centers=wrap(distance->get_lhs()->as<CDenseFeatures<float64_t>>());
-		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
+		SGMatrix<float64_t> learnt_centers_matrix=clustering->get_cluster_centers();
 
 		EXPECT_NEAR(1, learnt_centers_matrix(0,0), 0.0001);
 		EXPECT_NEAR(500,learnt_centers_matrix(1,0), 0.0001);
@@ -205,10 +202,7 @@ TEST(KMeans, fixed_centers)
 	clustering->put<bool>("fixed_centers", true);
 
 	clustering->train(features);
-	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
-
-	ASSERT_NE(learnt_centers, (CDenseFeatures<float64_t>*)NULL);
-	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
+	auto c=clustering->get_cluster_centers();
 
 	EXPECT_NEAR(c(0,0), 0.0, 10E-12);
 	EXPECT_NEAR(c(1,0), 5.0, 10E-12);
@@ -217,7 +211,6 @@ TEST(KMeans, fixed_centers)
 
 	SG_UNREF(clustering);
 	SG_UNREF(features);
-	SG_UNREF(learnt_centers);
 }
 
 TEST(KMeans, random_centers_init)
@@ -238,9 +231,7 @@ TEST(KMeans, random_centers_init)
 	clustering->put("seed", 2);
 
 	clustering->train(features);
-	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
-	ASSERT_NE(learnt_centers, (CDenseFeatures<float64_t>*)NULL);
-	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
+	SGMatrix<float64_t> c=clustering->get_cluster_centers();
 
 	EXPECT_NE(c(0,0),c(0,1));
 	EXPECT_NE(c(0,0),c(0,2));
@@ -248,7 +239,6 @@ TEST(KMeans, random_centers_init)
 
 	SG_UNREF(clustering);
 	SG_UNREF(features);
-	SG_UNREF(learnt_centers);
 }
 
 TEST(KMeans, random_centers_assign)
@@ -293,6 +283,5 @@ TEST(KMeans, random_centers_assign)
 
 	SG_UNREF(clustering);
 	SG_UNREF(features);
-	SG_UNREF(learnt_centers);
 }
 

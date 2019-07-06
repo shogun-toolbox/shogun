@@ -39,7 +39,7 @@ CGradientEvaluation::~CGradientEvaluation()
 	SG_UNREF(m_parameter_dictionary);
 }
 
-void CGradientEvaluation::update_parameter_dictionary()
+void CGradientEvaluation::update_parameter_dictionary() const
 {
 	SG_UNREF(m_parameter_dictionary);
 
@@ -48,7 +48,7 @@ void CGradientEvaluation::update_parameter_dictionary()
 	SG_REF(m_parameter_dictionary);
 }
 
-CEvaluationResult* CGradientEvaluation::evaluate_impl()
+CEvaluationResult* CGradientEvaluation::evaluate_impl() const
 {
 	if (parameter_hash_changed())
 		update_parameter_dictionary();

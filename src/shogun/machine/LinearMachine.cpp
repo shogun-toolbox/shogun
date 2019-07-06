@@ -119,6 +119,3 @@ CDotFeatures* CLinearMachine::get_features()
 	return features;
 }
 
-void CLinearMachine::store_model_features()
-{
-}

@@ -61,7 +61,7 @@ namespace shogun
 		virtual ~CMachineEvaluation();
 
 		/** @return in which direction is the best evaluation value? */
-		EEvaluationDirection get_evaluation_direction();
+		EEvaluationDirection get_evaluation_direction() const;
 
 		/** method for evaluation. Performs cross-validation.
 		 * Is repeated m_num_runs. If this number is larger than one, a
@@ -71,17 +71,10 @@ namespace shogun
 		 *
 		 * @return result of evaluation (already SG_REF'ed)
 		 */
-		virtual CEvaluationResult* evaluate();
+		virtual CEvaluationResult* evaluate() const;
 
 		/** @return underlying learning machine */
 		CMachine* get_machine() const;
-
-		/** setter for the autolock property. If true, machine will tried to be
-		 * locked before evaluation */
-		void set_autolock(bool autolock)
-		{
-			m_autolock = autolock;
-		}
 
 	protected:
 		/** Initialize Object */
@@ -93,7 +86,7 @@ namespace shogun
 		 * before returning it.
 		 * @return the evaluation result
 		 */
-		virtual CEvaluationResult* evaluate_impl() = 0;
+		virtual CEvaluationResult* evaluate_impl() const = 0;
 
 		/** connect the machine instance to the signal handler */
 	protected:
@@ -111,12 +104,6 @@ namespace shogun
 
 		/** Criterion for evaluation */
 		CEvaluation* m_evaluation_criterion;
-
-		/** whether machine will automatically be locked before evaluation */
-		bool m_autolock;
-
-		/** whether machine should be unlocked after evaluation */
-		bool m_do_unlock;
 	};
 
 } /* namespace shogun */

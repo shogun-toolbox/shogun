@@ -68,12 +68,6 @@ bool CMulticlassSVM::set_svm(int32_t num, CSVM* svm)
 
 bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 {
-	if (is_data_locked())
-	{
-		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
-				"data_lock was called before. Call data_unlock to allow.");
-	}
-
 	if (!m_kernel)
 		SG_ERROR("No kernel assigned!\n")
 

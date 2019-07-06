@@ -76,8 +76,6 @@ CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
 CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
-	SG_UNREF(m_custom_kernel);
-	SG_UNREF(m_kernel_backup);
 }
 
 void CKernelMachine::set_kernel(CKernel* k)
@@ -419,117 +417,6 @@ void CKernelMachine::store_model_features()
 
 }
 
-bool CKernelMachine::train_locked(SGVector<index_t> indices)
-{
-	/* this is asusmed here */
-	ASSERT(m_custom_kernel==kernel)
-
-	/* since its not easily possible to controll the row subsets of the custom
-	 * kernel from outside, we enforce that there is only one row subset by
-	 * removing all of them. Otherwise, they would add up in the stack until
-	 * an error occurs */
-	m_custom_kernel->remove_all_row_subsets();
-
-	/* set custom kernel subset of data to train on */
-	m_custom_kernel->add_row_subset(indices);
-	m_custom_kernel->add_col_subset(indices);
-
-	/* set corresponding labels subset */
-	m_labels->add_subset(indices);
-
-	/* dont do train because model should not be stored (no acutal features)
-	 * and train does data_unlock */
-	bool result = CMachine::train_locked();
-	/* remove last col subset of custom kernel */
-	m_custom_kernel->remove_col_subset();
-
-	/* remove label subset after training */
-	m_labels->remove_subset();
-
-	return result;
-}
-
-CBinaryLabels* CKernelMachine::apply_locked_binary(SGVector<index_t> indices)
-{
-	SGVector<float64_t> outputs = apply_locked_get_output(indices);
-	return new CBinaryLabels(outputs);
-}
-
-CRegressionLabels* CKernelMachine::apply_locked_regression(
-		SGVector<index_t> indices)
-{
-	SGVector<float64_t> outputs = apply_locked_get_output(indices);
-	return new CRegressionLabels(outputs);
-}
-
-SGVector<float64_t> CKernelMachine::apply_locked_get_output(
-		SGVector<index_t> indices)
-{
-	if (!is_data_locked())
-		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n")
-
-	/* we are working on a custom kernel here */
-	ASSERT(m_custom_kernel==kernel)
-
-	int32_t num_inds=indices.vlen;
-	SGVector<float64_t> output(num_inds);
-
-	if (io->get_show_progress())
-		io->enable_progress();
-	else
-		io->disable_progress();
-
-	/* custom kernel never has batch evaluation property so dont do this here */
-	auto pb = SG_PROGRESS(range(0, num_inds));
-	int32_t num_threads;
-	int64_t step;
-#pragma omp parallel shared(num_threads, step)
-	{
-#ifdef HAVE_OPENMP
-#pragma omp single
-		{
-			num_threads = omp_get_num_threads();
-			step = num_inds / num_threads;
-			num_threads--;
-		}
-		int32_t thread_num = omp_get_thread_num();
-#else
-		num_threads = 0;
-		step = num_inds;
-		int32_t thread_num = 0;
-#endif
-		int32_t start = thread_num * step;
-		int32_t end =
-		    (thread_num == num_threads) ? num_inds : (thread_num + 1) * step;
-
-		for (int32_t vec = start; vec < end; vec++)
-		{
-			COMPUTATION_CONTROLLERS
-			pb.print_progress();
-			index_t index = indices[vec];
-			ASSERT(kernel)
-			if (kernel->has_property(KP_LINADD) &&
-			    (kernel->get_is_initialized()))
-			{
-				float64_t score = kernel->compute_optimized(index);
-				output[vec] = score + get_bias();
-			}
-			else
-			{
-				float64_t score = 0;
-				for (int32_t i = 0; i < get_num_support_vectors(); i++)
-					score += kernel->kernel(get_support_vector(i), index) *
-					         get_alpha(i);
-
-				output[vec] = score + get_bias();
-			}
-		}
-	}
-	pb.complete();
-
-	return output;
-}
-
 float64_t CKernelMachine::apply_one(int32_t num)
 {
 	ASSERT(kernel)
@@ -549,82 +436,21 @@ float64_t CKernelMachine::apply_one(int32_t num)
 	}
 }
 
-void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
-{
-	if ( !kernel )
-		SG_ERROR("The kernel is not initialized\n")
-	if (kernel->has_property(KP_KERNCOMBINATION))
-		SG_ERROR("Locking is not supported (yet) with combined kernel. Please disable it in cross validation")
-
-	/* init kernel with data */
-	kernel->init(features, features);
-
-	/* backup reference to old kernel */
-	SG_UNREF(m_kernel_backup)
-	m_kernel_backup=kernel;
-	SG_REF(m_kernel_backup);
-
-	/* unref possible old custom kernel */
-	SG_UNREF(m_custom_kernel);
-
-	/* create custom kernel matrix from current kernel */
-	m_custom_kernel=new CCustomKernel(kernel);
-	SG_REF(m_custom_kernel);
-
-	/* replace kernel by custom kernel */
-	SG_UNREF(kernel);
-	kernel=m_custom_kernel;
-	SG_REF(kernel);
-
-	/* dont forget to call superclass method */
-	CMachine::data_lock(labs, features);
-}
-
-void CKernelMachine::data_unlock()
-{
-	SG_UNREF(m_custom_kernel);
-	m_custom_kernel=NULL;
-
-	/* restore original kernel, possibly delete created one */
-	if (m_kernel_backup)
-	{
-		/* check if kernel was created in train_locked */
-		if (kernel!=m_kernel_backup)
-			SG_UNREF(kernel);
-
-		kernel=m_kernel_backup;
-		m_kernel_backup=NULL;
-	}
-
-	/* dont forget to call superclass method */
-	CMachine::data_unlock();
-}
-
 void CKernelMachine::init()
 {
 	m_bias=0.0;
 	kernel=NULL;
-	m_custom_kernel=NULL;
-	m_kernel_backup=NULL;
 	use_batch_computation=true;
 	use_linadd=true;
 	use_bias=true;
 
 	SG_ADD(&kernel, "kernel", "", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
-			" data lock");
-	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
-			"Kernel backup for data lock");
 	SG_ADD(&use_batch_computation, "use_batch_computation",
-			"Batch computation is enabled.");
-	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.");
-	SG_ADD(&use_bias, "use_bias", "Bias shall be used.");
-	SG_ADD(&m_bias, "m_bias", "Bias term.");
-	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.");
-	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.");
+			"Batch computation is enabled.", ParameterProperties::SETTING);
+	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", ParameterProperties::SETTING);
+	SG_ADD(&use_bias, "use_bias", "Bias shall be used.", ParameterProperties::SETTING);
+	SG_ADD(&m_bias, "m_bias", "Bias term.", ParameterProperties::MODEL);
+	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.", ParameterProperties::MODEL);
+	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", ParameterProperties::MODEL);
 }
 
-bool CKernelMachine::supports_locking() const
-{
-	return true;
-}

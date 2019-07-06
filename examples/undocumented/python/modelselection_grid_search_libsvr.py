@@ -88,10 +88,6 @@ def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_t
     #print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
     print_state=False
-    # lock data before since model selection will not change the kernel matrix
-    # (use with care) This avoids that the kernel matrix is recomputed in every
-    # iteration of the model search
-    predictor.data_lock(labels, features_train)
     best_parameters=model_selection.select_model(print_state)
 
     # print best parameters

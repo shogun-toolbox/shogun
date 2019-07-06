@@ -302,7 +302,7 @@ class CAlphabet : public CSGObject
 		template <class ST>
 		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 
-		virtual CSGObject* clone() const;
+		virtual CSGObject* clone(ParameterProperties pp = ParameterProperties::ALL) const override;
 
 	private:
 		/** Do basic initialisations like default settings

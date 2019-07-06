@@ -106,7 +106,7 @@ TEST_F(BaggingMachine, mock_train)
 	{
 		InSequence s;
 		for (int i = 0; i < num_bags; i++) {
-			EXPECT_CALL(mm, clone())
+			EXPECT_CALL(mm, clone(ParameterProperties::ALL))
 				.Times(1)
 				.WillRepeatedly(Return(&mm));
 

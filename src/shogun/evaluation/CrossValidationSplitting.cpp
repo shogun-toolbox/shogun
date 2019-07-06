@@ -24,6 +24,7 @@ CCrossValidationSplitting::CCrossValidationSplitting(
 
 void CCrossValidationSplitting::build_subsets()
 {
+	REQUIRE(m_labels, "No labels provided.\n");
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();
 	m_is_filled=true;
