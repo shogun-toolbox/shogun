@@ -20,28 +20,28 @@ TaskGroup::~TaskGroup()
 
 void TaskGroup::init()
 {
-	m_tasks = std::make_shared<DynamicObjectArray>(true);
+	m_tasks.clear();
 }
 
 void TaskGroup::append_task(std::shared_ptr<Task> task)
 {
-	m_tasks->append_element(task);
+	m_tasks.push_back(std::move(task));
 }
 
 int32_t TaskGroup::get_num_tasks() const
 {
-	return m_tasks->get_num_elements();
+	return m_tasks.size();
 }
 
 SGVector<index_t>* TaskGroup::get_tasks_indices() const
 {
-	int32_t n_tasks = m_tasks->get_num_elements();
+	int32_t n_tasks = m_tasks.size();
 	SG_DEBUG("Number of tasks = {}", n_tasks)
 
 	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 	{
-		auto task = m_tasks->get_element<Task>(i);
+		auto task = m_tasks[i];
 		tasks_indices[i] = task->get_indices();
 
 	}

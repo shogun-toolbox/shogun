@@ -12,7 +12,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/transfer/multitask/Task.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
@@ -70,7 +69,7 @@ private:
 protected:
 
 	/** tasks of the task group */
-	std::shared_ptr<DynamicObjectArray> m_tasks;
+	std::vector<std::shared_ptr<Task>> m_tasks;
 
 };
 }

@@ -38,6 +38,7 @@
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 #include <random>
 

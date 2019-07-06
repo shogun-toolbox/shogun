@@ -38,6 +38,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace shogun;
 

@@ -70,9 +70,9 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	auto input2 = std::make_shared<NeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
@@ -139,9 +139,9 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 	auto input2 = std::make_shared<NeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers;
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
@@ -200,9 +200,9 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	auto input2 = std::make_shared<NeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
@@ -263,9 +263,9 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	auto input2 = std::make_shared<NeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
@@ -330,9 +330,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	auto input2 = std::make_shared<NeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
@@ -425,9 +425,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	auto input2 = std::make_shared<NeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
@@ -505,8 +505,8 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	auto input1 = std::make_shared<NeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
 
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
@@ -582,8 +582,8 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	auto input1 = std::make_shared<NeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
 
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
@@ -666,9 +666,9 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	for (int32_t i=0; i<input2->get_num_neurons()*b; i++)
 		input2->get_activations()[i] = uniform_real_dist(prng, {-10.0,10.0});
 
-	auto layers = std::make_shared<DynamicObjectArray>();
-	layers->append_element(input1);
-	layers->append_element(input2);
+	std::vector<std::shared_ptr<NeuralLayer>> layers; 
+	layers.push_back(input1);
+	layers.push_back(input2);
 
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;

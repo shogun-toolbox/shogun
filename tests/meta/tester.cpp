@@ -1,5 +1,4 @@
 #include <shogun/base/ShogunEnv.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/io/stream/FileInputStream.h>
