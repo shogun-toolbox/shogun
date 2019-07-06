@@ -29,7 +29,6 @@ template <class T> class DynamicArray;
 template <class T> class DynArray
 {
 	template<class U> friend class DynamicArray;
-	friend class DynamicObjectArray;
 	friend class CommUlongStringKernel;
 
 	public:
