@@ -31,6 +31,7 @@
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {

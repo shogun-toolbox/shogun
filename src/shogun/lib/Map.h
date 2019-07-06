@@ -13,7 +13,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Hash.h>
-#include <shogun/base/DynArray.h>
 
 #include <cstdio>
 
@@ -75,8 +74,9 @@ public:
 		{
 			hash_array[i]=NULL;
 		}
-
-		array=new DynArray<CMapNode<K, T>*>(reserved, tracable);
+		// can't trace memory allocations when using an std::vector
+		array=new std::vector<CMapNode<K, T>*>();
+		array->reserve(reserved);
 	}
 
 	/** Default destructor */
@@ -215,7 +215,7 @@ public:
 	 */
 	int32_t get_array_size() const
 	{
-		return array->get_num_elements();
+		return array->size();
 	}
 
 	/** get element at index as reference
@@ -227,9 +227,9 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		CMapNode<K, T>* result=array->get_element(index);
+		CMapNode<K, T>* result=array->at(index);
 		if (result!=NULL && !is_free(result))
-			return &(array->get_element(index)->data);
+			return &(array->at(index)->data);
 		return NULL;
 	}
 
@@ -242,7 +242,7 @@ public:
 	 */
 	CMapNode<K, T>* get_node_ptr(int32_t index)
 		{
-		return array->get_element(index);
+		return array->at(index);
 		}
 
 	/** @return underlying array of nodes in memory */
@@ -271,11 +271,12 @@ public:
 			hash_array[i] = NULL;
 		}
 
-		array = new DynArray<CMapNode<K, T>*>(128, use_sg_mallocs);
+		array = new std::vector<CMapNode<K, T>*>();
+		array->reserve(128);
 
 		for (int i = 0; i < orig.num_elements; i++)
 		{
-			CMapNode<K, T>* node = orig.array->get_element(i);
+			CMapNode<K, T>* node = orig.array->at(i);
 			add(node->key, node->data);
 		}
 
@@ -329,7 +330,7 @@ private:
 		int32_t new_index;
 		CMapNode<K, T>* new_node;
 
-		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
+		if ((free_index>=array->size()) || (array->at(free_index)==NULL))
 		{
 			// init new node
 			if (use_sg_mallocs)
@@ -340,14 +341,14 @@ private:
 			new (&new_node->key) K();
 			new (&new_node->data) T();
 
-			array->append_element(new_node);
+			array->push_back(new_node);
 
 			new_index=free_index;
 			free_index++;
 		}
 		else
 		{
-			new_node=array->get_element(free_index);
+			new_node=array->at(free_index);
 			ASSERT(is_free(new_node))
 
 			new_index=free_index;
@@ -408,9 +409,9 @@ private:
 	{
 		if (array!=NULL)
 		{
-			for(int32_t i=0; i<array->get_num_elements(); i++)
+			for(int32_t i=0; i<array->size(); i++)
 			{
-				CMapNode<K, T>* element = array->get_element(i);
+				CMapNode<K, T>* element = array->at(i);
 				if (element!=NULL)
 				{
 					element->key.~K();
@@ -461,7 +462,7 @@ protected:
 	CMapNode<K, T>** hash_array;
 
 	/** array for index permission */
-	DynArray<CMapNode<K, T>*>* array;
+	std::vector<CMapNode<K, T>*>* array;
 
 	/** concurrency lock */
 	CLock lock;

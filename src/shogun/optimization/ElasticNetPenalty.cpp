@@ -29,6 +29,7 @@
  *
  */
 #include <shogun/optimization/ElasticNetPenalty.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 

@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/base/DynArray.h>
 
 #ifdef USE_MOSEK
 #include <mosek.h>
@@ -184,7 +183,7 @@ namespace shogun
 			int32_t resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, SGVector<float64_t>&alpha,
 					SGVector<float64_t>& delta, SGVector<float64_t>& gammaG0,
 					SGVector<float64_t>& proximal_rhs, float64_t ***ptr_G,
-					DynArray<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error);
+					std::vector<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error);
 
 			int32_t mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* alpha, int32_t k, float64_t* dual_obj, float64_t rho);
 

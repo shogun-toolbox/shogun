@@ -66,7 +66,6 @@ bool dispatch_array_type(const SGObject* obj, const std::string& name,
 template <class T, class K> class CMap;
 
 struct TParameter;
-template <class T> class DynArray;
 template <class T> class SGStringList;
 
 using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;

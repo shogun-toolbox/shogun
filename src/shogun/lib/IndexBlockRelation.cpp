@@ -7,6 +7,7 @@
 #include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/lib/IndexBlock.h>
 #include <shogun/lib/List.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
