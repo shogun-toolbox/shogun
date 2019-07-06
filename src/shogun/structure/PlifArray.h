@@ -11,7 +11,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/structure/PlifBase.h>
 
 namespace shogun
@@ -40,7 +39,7 @@ class PlifArray: public PlifBase
 		 */
 		int32_t get_num_plifs()
 		{
-			return m_array.get_num_elements();
+			return m_array.size();
 		}
 
 		/** lookup penalty float64_t
@@ -109,8 +108,8 @@ class PlifArray: public PlifBase
 		 */
 		virtual void list_plif() const
 		{
-			io::print("CPlifArray(num_elements={}, min_value={:1.2f}, max_value={:1.2f})\n", m_array.get_num_elements(), min_value, max_value);
-			for (int32_t i=0; i<m_array.get_num_elements(); i++)
+			io::print("CPlifArray(num_elements={}, min_value={:1.2f}, max_value={:1.2f})\n", m_array.size(), min_value, max_value);
+			for (int32_t i=0; i<m_array.size(); i++)
 			{
 				io::print("{}. ", i);
 				m_array[i]->list_plif() ;
@@ -122,7 +121,7 @@ class PlifArray: public PlifBase
 
 	protected:
 		/** plif array */
-		DynArray<std::shared_ptr<PlifBase>> m_array;
+		std::vector<std::shared_ptr<PlifBase>> m_array;
 		/** maximum value */
 		float64_t max_value;
 		/** minimum value */

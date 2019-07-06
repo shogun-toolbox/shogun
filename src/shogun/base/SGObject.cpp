@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
-#include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>

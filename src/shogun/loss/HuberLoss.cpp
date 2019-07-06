@@ -30,6 +30,7 @@
 
 #include <shogun/loss/HuberLoss.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

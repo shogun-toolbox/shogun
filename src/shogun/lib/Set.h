@@ -13,7 +13,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Hash.h>
-#include <shogun/base/DynArray.h>
 
 #include <cstdio>
 
@@ -65,7 +64,8 @@ public:
 			hash_array[i]=NULL;
 		}
 
-		array=new DynArray<CSetNode<T>* >(reserved, tracable);
+		array=new std::vector<CSetNode<T>* >();
+		array->reserve(reserved);
 	}
 
 	/** Default destructor */
@@ -73,14 +73,14 @@ public:
 	{
 		if (array!=NULL)
 		{
-			for(int32_t i=0; i<array->get_num_elements(); i++)
+			for(int32_t i=0; i<array->size(); i++)
 			{
-				if (array->get_element(i)!=NULL)
+				if (array->at(i)!=NULL)
 				{
 					if (use_sg_mallocs)
-						SG_FREE(array->get_element(i));
+						SG_FREE(array->at(i));
 					else
-						free(array->get_element(i));
+						free(array->at(i));
 				}
 			}
 			delete array;
@@ -172,7 +172,7 @@ public:
 	 */
 	int32_t get_array_size() const
 	{
-		return array->get_num_elements();
+		return array->size();
 	}
 
 	/** get set element at index as reference
@@ -184,8 +184,8 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		if (array->get_element(index)!=NULL)
-			return &(array->get_element(index)->element);
+		if (array->at(index)!=NULL)
+			return &(array->at(index)->element);
 		return NULL;
 	}
 
@@ -198,7 +198,7 @@ public:
 	 */
 	CSetNode<T>* get_node_ptr(int32_t index)
 	{
-		return array->get_element(index);
+		return array->at(index);
 	}
 
 	/** @return underlying array of nodes in memory */
@@ -255,7 +255,7 @@ private:
 		int32_t new_index;
 		CSetNode<T>* new_node;
 
-		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
+		if ((free_index>=array->size()) || (array->at(free_index)==NULL))
 		{
 			// init new node
 			if (use_sg_mallocs)
@@ -263,14 +263,14 @@ private:
 			else
 				new_node=(CSetNode<T>*) calloc(1, sizeof(CSetNode<T>));
 
-			array->append_element(new_node);
+			array->push_back(new_node);
 
 			new_index=free_index;
 			free_index++;
 		}
 		else
 		{
-			new_node=array->get_element(free_index);
+			new_node=array->at(free_index);
 			ASSERT(is_free(new_node))
 
 			new_index=free_index;
@@ -341,7 +341,7 @@ protected:
 	CSetNode<T>** hash_array;
 
 	/** array for index permission */
-	DynArray<CSetNode<T>*>* array;
+	std::vector<CSetNode<T>*>* array;
 };
 
 }

@@ -11,7 +11,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 
 namespace shogun
 {
@@ -98,7 +98,7 @@ public:
 	 */
 	virtual int32_t get_num_parameters()
 	{
-		return m_params.get_num_elements();
+		return m_params.size();
 	}
 
 	/** Takes another Parameter instance and sets all parameters of this
@@ -131,7 +131,7 @@ public:
 	 */
 	inline TParameter* get_parameter(int32_t idx)
 	{
-		return m_params.get_element(idx);
+		return m_params[idx];
 	}
 
 	/** Getter for Tparameter elements by name
@@ -143,9 +143,9 @@ public:
 	{
 		TParameter* result=NULL;
 
-		for (index_t i=0; i<m_params.get_num_elements(); ++i)
+		for (index_t i=0; i<m_params.size(); ++i)
 		{
-			result=m_params.get_element(i);
+			result=m_params[i];
 			if (!strcmp(name, result->m_name))
 				break;
 			else
@@ -1521,7 +1521,7 @@ public:
 protected:
 
 	/** array of parameters */
-	DynArray<TParameter*> m_params;
+	std::vector<TParameter*> m_params;
 
 	/** add new type
 	 * @param type type to be added
