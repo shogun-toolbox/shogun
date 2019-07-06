@@ -111,7 +111,7 @@ class ProductKernel : public Kernel
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			kernel_array[idx] = k;
+			kernel_array.insert(kernel_array.begin() + idx, k);
 			return true;
 		}
 
