@@ -86,8 +86,7 @@ void StratifiedCrossValidationSplitting::build_subsets()
 	/* shuffle created label sets */
 	for (index_t i=0; i<label_indices.size(); ++i)
 	{
-		auto current=
-				label_indices[i];
+		auto& current = label_indices[i];
 
 		// external random state important for threads
 		random::shuffle(current, m_prng);
@@ -100,13 +99,11 @@ void StratifiedCrossValidationSplitting::build_subsets()
 	for (auto i : range(classes.size()))
 	{
 		/* current index set for current label */
-		auto current=
-				label_indices[i];
+		auto& current = label_indices[i];
 
 		for (index_t j=0; j<current.size(); ++j)
 		{
-			auto next=
-					m_subset_indices[target_set++];
+			auto& next = m_subset_indices[target_set++];
 			next.push_back(current[j]);
 			target_set%=m_subset_indices.size();
 

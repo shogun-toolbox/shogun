@@ -67,7 +67,7 @@ void TimeSeriesSplitting::build_subsets()
 
 	for (auto i = 0; i < num_subsets; ++i)
 	{
-		auto current =m_subset_indices[i];
+		auto& current = m_subset_indices[i];
 
 		if (i == num_subsets - 1)
 			split_index = indices.vlen - m_min_subset_size;
