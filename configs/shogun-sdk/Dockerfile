@@ -7,7 +7,7 @@ RUN apt-get update -qq && apt-get upgrade -y && \
     libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev \
     libnlopt-dev liblpsolve55-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev python3-dev python3-numpy python3-matplotlib python3-scipy \
-    python3-jinja2 python3-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
+    python3-jinja2 python3-setuptools git-core wget jblas mono-devel cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     openjdk-11-jdk ruby ruby-dev python3-ply sphinx-doc python3-pip \
     exuberant-ctags clang-format libcolpack-dev rapidjson-dev lcov \
