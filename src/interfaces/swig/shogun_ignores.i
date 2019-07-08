@@ -176,7 +176,6 @@
 %ignore shogun::SerializableFile::write_stringentry_end;
 %ignore shogun::SerializableFile::write_type_begin;
 %ignore shogun::SerializableFile::write_type_end;
->>>>>>> drop C prefix
 
 %ignore shogun::CMosek;
 
