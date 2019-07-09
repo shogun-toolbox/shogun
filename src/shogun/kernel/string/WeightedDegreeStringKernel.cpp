@@ -58,9 +58,6 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 
 	degree=d;
 	type=t;
-
-	if (type!=E_EXTERNAL)
-		set_wd_weights_by_type(type);
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(SGVector<float64_t> w)
@@ -85,8 +82,6 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
 {
 	init();
 	degree=d;
-	type=E_WD;
-	set_wd_weights_by_type(type);
 	set_normalizer(new CFirstElementKernelNormalizer());
 	init(l, r);
 }
@@ -137,6 +132,9 @@ void CWeightedDegreeStringKernel::create_empty_tries()
 
 bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
+	if (type != E_EXTERNAL)
+		set_wd_weights_by_type(type);
+	
 	int32_t lhs_changed=(lhs!=l);
 	int32_t rhs_changed=(rhs!=r);
 
@@ -978,6 +976,8 @@ bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 
 void CWeightedDegreeStringKernel::init()
 {
+	type = E_WD;
+
 	weights = NULL;
 	weights_degree = 0;
 	weights_length = 0;

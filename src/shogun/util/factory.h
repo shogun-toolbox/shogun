@@ -134,8 +134,13 @@ namespace shogun
 		switch (primitive_type)
 		{
 		case PT_CHAR:
-			return new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
+		{
+			auto string_feats =
+				new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
+			SG_REF(string_feats);
+			return string_feats;
 			break;
+		}
 		default:
 			SG_SNOTIMPLEMENTED
 		}
