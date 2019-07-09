@@ -52,7 +52,7 @@ steps:
       envVars: |
         CCACHE_DIR=/build/ccache
       workDir: '/build'
-      containerCommand: 'make -s shogun'
+      containerCommand: 'ninja -j1 shogun'
       detached: false
 
 - task: docker@0
@@ -66,7 +66,7 @@ steps:
     envVars: |
       CCACHE_DIR=/build/ccache
     workDir: '/build'
-    containerCommand: 'make -j3 -s all'
+    containerCommand: 'ninja -j3 all'
     detached: false
 
 - task: docker@0
@@ -78,7 +78,7 @@ steps:
       $(build.sourcesDirectory):/src
       $(build.binariesDirectory):/build
     workDir: '/build'
-    containerCommand: 'make install'
+    containerCommand: 'ninja install'
     detached: false
 
 - task: docker@0

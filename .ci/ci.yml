@@ -39,11 +39,11 @@ jobs:
       clang:
         CC: "clang"
         CXX: "clang++"
-        cmakeOptions: '-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
       gcc:
         CC: "gcc"
         CXX: "g++"
-        cmakeOptions: '-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-debian'
@@ -112,7 +112,7 @@ jobs:
     targetPrefix: '$(build.binariesDirectory)/opt'
     libshogunArtifactName: 'libshogun-$(CC)'
     libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar'
-    commonSWIGCMakeFlags: '-DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+    commonSWIGCMakeFlags: '-G "Ninja" -DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
     ccacheDir: '$(build.binariesDirectory)/ccache'
     ccacheArtifactName: 'ccache-$(interfaceName)'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
