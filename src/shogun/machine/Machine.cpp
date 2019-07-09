@@ -37,7 +37,7 @@ bool CMachine::train(CFeatures* data)
 	if (train_require_labels())
 	{
 		if (m_labels == NULL)
-			SG_ERROR("%s@%p: No labels given", get_name(), this)
+			SG_ERROR("No labels provided.\n", get_name())
 
 		m_labels->ensure_valid(get_name());
 	}
@@ -47,7 +47,7 @@ bool CMachine::train(CFeatures* data)
 
 	if (support_feature_dispatching())
 	{
-		REQUIRE(data != NULL, "Features not provided!");
+		REQUIRE(data != NULL, "No features provided.\n");
 		REQUIRE(
 		    data->get_num_vectors() == m_labels->get_num_labels(),
 		    "Number of training vectors (%d) does not match number of "

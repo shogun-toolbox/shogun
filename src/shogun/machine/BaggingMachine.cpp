@@ -309,7 +309,7 @@ void CBaggingMachine::init()
 	m_features = NULL;
 	m_combination_rule = NULL;
 	m_labels = NULL;
-	m_num_bags = 0;
+	m_num_bags = 100;
 	m_bag_size = 0;
 	m_all_oob_idx = SGVector<bool>();
 	m_oob_indices = NULL;

@@ -5,8 +5,9 @@
 #include <set>
 #include <string>
 #include <shogun/base/class_list.h>
+#include <shogun/lib/DataType.h>
 
-namespace
+namespace shogun
 {
 // to have a type for non-template SGObject classes
 struct untemplated_sgobject
