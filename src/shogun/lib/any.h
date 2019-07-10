@@ -1057,8 +1057,7 @@ namespace shogun {
 		{
 			if (has_type<T>())
 			{
-				return any_detail::get_value<T>(
-				    storage, policy->is_functional());
+				return any_detail::get_value<T>(storage, policy->is_functional());
 			}
 			else
 			{
@@ -1070,14 +1069,20 @@ namespace shogun {
 		template <typename T>
 		T cast() const
 		{
+			if (has_type<T>())
+			{
+				return any_detail::get_value<T>(storage, policy->is_functional());
+			}
+
 			const auto source_type = std::type_index{policy->type_info()};
 			const auto destination_type = std::type_index{typeid(T)};
 			if (policy->is_functional()) {
 				throw std::logic_error{"Casting not supported for functional Any"};
 			}
-			if (Any::casting_registry.count({source_type, destination_type}) != 0) {
+			const auto key = std::make_pair(source_type, destination_type);
+			if (Any::casting_registry.count(key)) {
 				T result{};
-				casting_registry[{source_type, destination_type}](storage, &result);
+				casting_registry[key](storage, &result);
 				return result;
 			}
 			else
@@ -1168,6 +1173,13 @@ namespace shogun {
 
 	bool operator!=(const Any& lhs, const Any& rhs);
 
+	template <typename T>
+	inline void register_casts() {
+		if constexpr (std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value) {
+			Any::register_casting<T, CSGObject*>([] (T value) { return dynamic_cast<CSGObject*>(value); });
+		}
+	}
+
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object
 	 * which stores the input object's raw value. It saves the type
@@ -1179,6 +1191,7 @@ namespace shogun {
 	template <typename T>
 	inline Any make_any(const T& v)
 	{
+		register_casts<T>();
 		return Any(v);
 	}
 
@@ -1190,24 +1203,28 @@ namespace shogun {
 	template <typename T>
 	inline Any make_any(std::function<T()> func)
 	{
+		register_casts<T>();
 		return Any(func);
 	}
 
 	template <typename T>
 	inline Any make_any_ref(T* v)
 	{
+		register_casts<T>();
 		return Any(non_owning_policy<T>(), v);
 	}
 
 	template <typename T, typename S>
 	inline Any make_any_ref(T** ptr, S* length)
 	{
+		register_casts<T>();
 		return make_any(ArrayReference<T, S>(ptr, length));
 	}
 
 	template <typename T, typename S>
 	inline Any make_any_ref(T** ptr, S* rows, S* cols)
 	{
+		register_casts<T>();
 		return make_any(Array2DReference<T, S>(ptr, rows, cols));
 	}
 
