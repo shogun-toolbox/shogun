@@ -1076,8 +1076,9 @@ namespace shogun {
 				throw std::logic_error{"Casting not supported for functional Any"};
 			}
 			if (Any::casting_registry.count({source_type, destination_type}) != 0) {
-				T result;
+				T result{};
 				casting_registry[{source_type, destination_type}](storage, &result);
+				return result;
 			}
 			else
 			{
@@ -1135,9 +1136,14 @@ namespace shogun {
 		static void register_casting(std::function<T(F)> casting_function) {
 			const auto source_type = std::type_index{typeid(F)};
 			const auto destination_type = std::type_index{typeid(T)};
+			if (casting_registry.count({source_type, destination_type})) {
+				return;
+			}
 
 			casting_registry[{source_type, destination_type}] = [casting_function] (void* src, void* dst) {
+				assert(src);
 				F* typed_src = reinterpret_cast<F*>(src);
+				assert(dst);
 				T* typed_dst = reinterpret_cast<T*>(dst);
 				(*typed_dst) = casting_function(*typed_src);
 				return true;

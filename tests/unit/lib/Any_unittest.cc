@@ -817,9 +817,10 @@ TEST(Any, compare_object_maps)
 
 TEST(Any, simple_casting)
 {
-	Any::register_casting<bool, int>([] (bool src) -> int { return src; });
-	auto any = make_any(true);
-	EXPECT_EQ(any.cast<int>(), 1);
+	Any::register_casting<float, int>([] (float src) -> int { return src; });
+	float value = 36.0;
+	auto any = make_any<float>(value);
+	EXPECT_EQ(any.cast<int>(), static_cast<int>(value));
 }
 
 TEST(Any, fail_to_cast)
