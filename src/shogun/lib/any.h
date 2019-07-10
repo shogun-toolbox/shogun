@@ -1137,23 +1137,29 @@ namespace shogun {
 		 */
 		void visit(AnyVisitor* visitor) const;
 
-		template <class F, class T>
-		static void register_casting(std::function<T(F)> casting_function) {
-			const auto source_type = std::type_index{typeid(F)};
-			const auto destination_type = std::type_index{typeid(T)};
-			if (casting_registry.count({source_type, destination_type})) {
-				return;
+		template <class State>
+		void visit(State* state=nullptr)
+		{
+			const auto value_type = std::type_index{policy->type_info()};
+			const auto state_type = std::type_index{typeid(State)};
+			if (policy->is_functional()) {
+				throw std::logic_error{"Visit is not supported for functional Any"};
 			}
-
-			casting_registry[{source_type, destination_type}] = [casting_function] (void* src, void* dst) {
-				assert(src);
-				F* typed_src = reinterpret_cast<F*>(src);
-				assert(dst);
-				T* typed_dst = reinterpret_cast<T*>(dst);
-				(*typed_dst) = casting_function(*typed_src);
-				return true;
-			};
+			const auto key = std::make_pair(state_type, value_type);
+			if (Any::visitor_registry.count(key)) {
+				visitor_registry[key](storage, state);
+			}
+			else
+			{
+				throw std::logic_error{"Can't visit"};
+			}
 		}
+
+		template <class From, class To>
+		static void register_caster(std::function<To(From)> caster);
+
+		template <class Type, class State>
+		static void register_visitor(std::function<void(Type, State*)> visitor);
 
 	private:
 		void set_or_inherit(const Any& other);
@@ -1164,26 +1170,67 @@ namespace shogun {
 
 	private:
 		typedef std::type_index TypeIndex;
-		typedef std::function<bool(void*, void*)> CastingFunction;
+
+		typedef std::function<void(void*, void*)> CastingFunction;
 		typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction> CastingRegistry;
 		static CastingRegistry casting_registry;
+
+		typedef std::function<void(void*, void*)> VisitorFunction;
+		typedef std::map<std::pair<TypeIndex, TypeIndex>, VisitorFunction> VisitorRegistry;
+		static VisitorRegistry visitor_registry;
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);
 
 	bool operator!=(const Any& lhs, const Any& rhs);
 
+	template <class From, class To>
+	void Any::register_caster(std::function<To(From)> caster)
+	{
+		const auto key = std::make_pair(std::type_index{typeid(From)}, std::type_index{typeid(To)});
+
+		if (casting_registry.count(key))
+		{
+			return;
+		}
+
+		casting_registry[key] = [caster] (void* src, void* dst)
+		{
+			auto typed_src = static_cast<From*>(src);
+			auto typed_dst = static_cast<To*>(dst);
+			(*typed_dst) = caster(*typed_src);
+		};
+	}
+
+	template <class Type, class State>
+	void Any::register_visitor(std::function<void(Type, State*)> visitor)
+	{
+		const auto key = std::make_pair(std::type_index{typeid(State)}, std::type_index{typeid(Type)});
+
+		if (visitor_registry.count(key))
+		{
+			return;
+		}
+
+		visitor_registry[key] = [visitor] (void* value, void* state)
+		{
+			auto typed_state = static_cast<State*>(state);
+			auto typed_value = static_cast<Type*>(value);
+			visitor(*typed_value, typed_state);
+		};
+	}
+
 	template <typename T>
 	inline void register_casts() {
 		if constexpr (std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value)
 		{
-			Any::register_casting<T, CSGObject*>([] (T value) { return dynamic_cast<CSGObject*>(value); });
+			Any::register_caster<T, CSGObject*>([] (T value) { return dynamic_cast<CSGObject*>(value); });
 		}
 		if constexpr (std::is_arithmetic<T>::value) {
-			Any::register_casting<T, float32_t>([] (T value) { return value; });
-			Any::register_casting<T, float64_t>([] (T value) { return value; });
-			Any::register_casting<T, int32_t>([] (T value) { return value; });
-			Any::register_casting<T, int64_t>([] (T value) { return value; });
+			Any::register_caster<T, float32_t>([] (T value) { return value; });
+			Any::register_caster<T, float64_t>([] (T value) { return value; });
+			Any::register_caster<T, int32_t>([] (T value) { return value; });
+			Any::register_caster<T, int64_t>([] (T value) { return value; });
 		}
 	}
 
