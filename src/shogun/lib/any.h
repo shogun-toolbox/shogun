@@ -1175,8 +1175,15 @@ namespace shogun {
 
 	template <typename T>
 	inline void register_casts() {
-		if constexpr (std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value) {
+		if constexpr (std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value)
+		{
 			Any::register_casting<T, CSGObject*>([] (T value) { return dynamic_cast<CSGObject*>(value); });
+		}
+		if constexpr (std::is_arithmetic<T>::value) {
+			Any::register_casting<T, float32_t>([] (T value) { return value; });
+			Any::register_casting<T, float64_t>([] (T value) { return value; });
+			Any::register_casting<T, int32_t>([] (T value) { return value; });
+			Any::register_casting<T, int64_t>([] (T value) { return value; });
 		}
 	}
 
