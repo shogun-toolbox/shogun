@@ -19,6 +19,7 @@
 #include <string.h>
 #include <string>
 #include <typeinfo>
+#include <typeindex>
 #include <type_traits>
 #include <vector>
 
@@ -1048,7 +1049,7 @@ namespace shogun {
 		 */
 		friend bool operator!=(const Any& lhs, const Any& rhs);
 
-		/** Casts hidden value to provided type, fails otherwise.
+		/** Retrieves value using the provided type. Fails if type do not match.
 		 * @return type-casted value
 		 */
 		template <typename T>
@@ -1056,13 +1057,37 @@ namespace shogun {
 		{
 			if (has_type<T>())
 			{
-				return any_detail::get_value<T>(
-				    storage, policy->is_functional());
+				return any_detail::get_value<T>(storage, policy->is_functional());
 			}
 			else
 			{
 				throw TypeMismatchException(
 				    demangled_type<T>(), policy->type());
+			}
+		}
+
+		template <typename T>
+		T cast() const
+		{
+			if (has_type<T>())
+			{
+				return any_detail::get_value<T>(storage, policy->is_functional());
+			}
+
+			const auto source_type = std::type_index{policy->type_info()};
+			const auto destination_type = std::type_index{typeid(T)};
+			if (policy->is_functional()) {
+				throw std::logic_error{"Casting not supported for functional Any"};
+			}
+			const auto key = std::make_pair(source_type, destination_type);
+			if (Any::casting_registry.count(key)) {
+				T result{};
+				casting_registry[key](storage, &result);
+				return result;
+			}
+			else
+			{
+				throw std::logic_error{"Can't cast into " + demangled_type<T>()};
 			}
 		}
 
@@ -1112,17 +1137,55 @@ namespace shogun {
 		 */
 		void visit(AnyVisitor* visitor) const;
 
+		template <class F, class T>
+		static void register_casting(std::function<T(F)> casting_function) {
+			const auto source_type = std::type_index{typeid(F)};
+			const auto destination_type = std::type_index{typeid(T)};
+			if (casting_registry.count({source_type, destination_type})) {
+				return;
+			}
+
+			casting_registry[{source_type, destination_type}] = [casting_function] (void* src, void* dst) {
+				assert(src);
+				F* typed_src = reinterpret_cast<F*>(src);
+				assert(dst);
+				T* typed_dst = reinterpret_cast<T*>(dst);
+				(*typed_dst) = casting_function(*typed_src);
+				return true;
+			};
+		}
+
 	private:
 		void set_or_inherit(const Any& other);
 
 	private:
 		const BaseAnyPolicy* policy;
 		void* storage;
+
+	private:
+		typedef std::type_index TypeIndex;
+		typedef std::function<bool(void*, void*)> CastingFunction;
+		typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction> CastingRegistry;
+		static CastingRegistry casting_registry;
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);
 
 	bool operator!=(const Any& lhs, const Any& rhs);
+
+	template <typename T>
+	inline void register_casts() {
+		if constexpr (std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value)
+		{
+			Any::register_casting<T, CSGObject*>([] (T value) { return dynamic_cast<CSGObject*>(value); });
+		}
+		if constexpr (std::is_arithmetic<T>::value) {
+			Any::register_casting<T, float32_t>([] (T value) { return value; });
+			Any::register_casting<T, float64_t>([] (T value) { return value; });
+			Any::register_casting<T, int32_t>([] (T value) { return value; });
+			Any::register_casting<T, int64_t>([] (T value) { return value; });
+		}
+	}
 
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object
@@ -1135,6 +1198,7 @@ namespace shogun {
 	template <typename T>
 	inline Any make_any(const T& v)
 	{
+		register_casts<T>();
 		return Any(v);
 	}
 
@@ -1146,24 +1210,28 @@ namespace shogun {
 	template <typename T>
 	inline Any make_any(std::function<T()> func)
 	{
+		register_casts<T>();
 		return Any(func);
 	}
 
 	template <typename T>
 	inline Any make_any_ref(T* v)
 	{
+		register_casts<T>();
 		return Any(non_owning_policy<T>(), v);
 	}
 
 	template <typename T, typename S>
 	inline Any make_any_ref(T** ptr, S* length)
 	{
+		register_casts<T>();
 		return make_any(ArrayReference<T, S>(ptr, length));
 	}
 
 	template <typename T, typename S>
 	inline Any make_any_ref(T** ptr, S* rows, S* cols)
 	{
+		register_casts<T>();
 		return make_any(Array2DReference<T, S>(ptr, rows, cols));
 	}
 

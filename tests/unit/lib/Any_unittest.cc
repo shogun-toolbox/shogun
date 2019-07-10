@@ -815,3 +815,24 @@ TEST(Any, compare_object_maps)
         EXPECT_EQ(any_lhs, any_rhs);
 }
 
+TEST(Any, simple_casting)
+{
+	float value = 36.0;
+	auto any = make_any<float>(value);
+	EXPECT_EQ(any.cast<int>(), static_cast<int>(value));
+}
+
+TEST(Any, fail_to_cast)
+{
+	auto any = make_any<std::string>("dsads");
+	EXPECT_THROW(any.cast<float64_t>(), std::logic_error);
+}
+
+TEST(Any, cast_into_sgobject)
+{
+	Object* ptr = new Object();
+	auto any = make_any(ptr);
+	EXPECT_EQ(any.cast<Object*>(), ptr);
+	EXPECT_EQ(any.cast<CSGObject*>(), ptr);
+	EXPECT_THROW(any.cast<int>(), std::logic_error);
+}

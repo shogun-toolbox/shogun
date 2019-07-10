@@ -72,6 +72,8 @@ namespace shogun
 		}
 	}
 
+	Any::CastingRegistry Any::casting_registry = {};
+
 	Any::Any() : Any(owning_policy<Empty>(), nullptr)
 	{
 	}
