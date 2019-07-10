@@ -821,3 +821,9 @@ TEST(Any, simple_casting)
 	auto any = make_any(true);
 	EXPECT_EQ(any.cast<int>(), 1);
 }
+
+TEST(Any, fail_to_cast)
+{
+	auto any = make_any<std::string>("dsads");
+	EXPECT_THROW(any.cast<float64_t>(), std::logic_error);
+}

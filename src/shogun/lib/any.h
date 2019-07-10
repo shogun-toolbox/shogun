@@ -1151,11 +1151,11 @@ namespace shogun {
 		const BaseAnyPolicy* policy;
 		void* storage;
 
-    private:
-        typedef std::type_index TypeIndex;
-        typedef std::function<bool(void*, void*)> CastingFunction;
-        typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction> CastingRegistry;
-        static CastingRegistry casting_registry;
+	private:
+		typedef std::type_index TypeIndex;
+		typedef std::function<bool(void*, void*)> CastingFunction;
+		typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction> CastingRegistry;
+		static CastingRegistry casting_registry;
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);
