@@ -19,6 +19,7 @@
 #include <string.h>
 #include <string>
 #include <typeinfo>
+#include <typeindex>
 #include <type_traits>
 #include <vector>
 
@@ -1048,7 +1049,7 @@ namespace shogun {
 		 */
 		friend bool operator!=(const Any& lhs, const Any& rhs);
 
-		/** Casts hidden value to provided type, fails otherwise.
+		/** Retrieves value using the provided type. Fails if type do not match.
 		 * @return type-casted value
 		 */
 		template <typename T>
@@ -1063,6 +1064,24 @@ namespace shogun {
 			{
 				throw TypeMismatchException(
 				    demangled_type<T>(), policy->type());
+			}
+		}
+
+		template <typename T>
+		T cast() const
+		{
+			const auto source_type = std::type_index{policy->type_info()};
+			const auto destination_type = std::type_index{typeid(T)};
+			if (policy->is_functional()) {
+				throw std::logic_error{"Casting not supported for functional Any"};
+			}
+			if (Any::casting_registry.count({source_type, destination_type}) != 0) {
+				T result;
+				casting_registry[{source_type, destination_type}](storage, &result);
+			}
+			else
+			{
+				throw std::logic_error{"Can't cast into " + demangled_type<T>()};
 			}
 		}
 
@@ -1112,12 +1131,31 @@ namespace shogun {
 		 */
 		void visit(AnyVisitor* visitor) const;
 
+		template <class F, class T>
+		static void register_casting(std::function<T(F)> casting_function) {
+			const auto source_type = std::type_index{typeid(F)};
+			const auto destination_type = std::type_index{typeid(T)};
+
+			casting_registry[{source_type, destination_type}] = [casting_function] (void* src, void* dst) {
+				F* typed_src = reinterpret_cast<F*>(src);
+				T* typed_dst = reinterpret_cast<T*>(dst);
+				(*typed_dst) = casting_function(*typed_src);
+				return true;
+			};
+		}
+
 	private:
 		void set_or_inherit(const Any& other);
 
 	private:
 		const BaseAnyPolicy* policy;
 		void* storage;
+
+    private:
+        typedef std::type_index TypeIndex;
+        typedef std::function<bool(void*, void*)> CastingFunction;
+        typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction> CastingRegistry;
+        static CastingRegistry casting_registry;
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);

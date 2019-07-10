@@ -815,3 +815,9 @@ TEST(Any, compare_object_maps)
         EXPECT_EQ(any_lhs, any_rhs);
 }
 
+TEST(Any, simple_casting)
+{
+	Any::register_casting<bool, int>([] (bool src) -> int { return src; });
+	auto any = make_any(true);
+	EXPECT_EQ(any.cast<int>(), 1);
+}
