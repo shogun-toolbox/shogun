@@ -836,3 +836,32 @@ TEST(Any, cast_into_sgobject)
 	EXPECT_EQ(any.cast<CSGObject*>(), ptr);
 	EXPECT_THROW(any.cast<int>(), std::logic_error);
 }
+
+TEST(Any, simple_visit)
+{
+	int extracted_value{};
+	struct ExtractVisitor
+	{
+	};
+	Any::register_visitor<int, ExtractVisitor>([&] (auto value, auto visitor) { extracted_value = value; });
+	auto any = make_any<int>(42);
+	any.visit_with<ExtractVisitor>();
+	EXPECT_EQ(any.as<int>(), extracted_value);
+}
+
+TEST(Any, stateful_visit)
+{
+	const std::string initial_value = "hello, world!";
+	struct StringStreamVisitor
+	{
+		std::stringstream ss;
+	};
+	Any::register_visitor<std::string, StringStreamVisitor>([&] (auto value, auto visitor) {
+		(visitor->ss) << value;
+	});
+	auto any = make_any(initial_value);
+	StringStreamVisitor visitor;
+	any.visit_with(&visitor);
+	any.visit_with(&visitor);
+	EXPECT_EQ(visitor.ss.str(), initial_value + initial_value);
+}
