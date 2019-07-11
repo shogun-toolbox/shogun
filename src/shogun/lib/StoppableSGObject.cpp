@@ -5,7 +5,7 @@
 */
 
 #include <rxcpp/rx-lite.hpp>
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/StoppableSGObject.h>
 
@@ -32,7 +32,7 @@ rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 			    this->on_next();
 		},
 	    [this]() { this->on_complete(); });
-	return get_global_signal()->get_observable()->subscribe(subscriber);
+	return env()->signal()->get_observable()->subscribe(subscriber);
 }
 
 void CStoppableSGObject::set_callback(std::function<bool()> callback)

@@ -8,7 +8,6 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/memory.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
@@ -41,18 +40,30 @@ const char* SGIO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "
 	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
+
+void print_default(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
 SGIO::SGIO()
     : target(stdout), show_progress(false), location_info(MSG_NONE),
       syntax_highlight(true), loglevel(MSG_WARN)
 {
 	m_refcount = new RefCount();
+	print_message = &print_default;
+	print_warning = &print_default;
+	print_error = &print_default;
 }
 
 SGIO::SGIO(const SGIO& orig)
     : target(orig.get_target()), show_progress(orig.get_show_progress()),
       location_info(orig.get_location_info()),
       syntax_highlight(orig.get_syntax_highlight()),
-      loglevel(orig.get_loglevel())
+      loglevel(orig.get_loglevel()),
+      print_message(orig.print_message),
+      print_warning(orig.print_warning),
+      print_error(orig.print_error)
 {
 	m_refcount = new RefCount();
 }
@@ -104,21 +115,21 @@ void SGIO::print(EMessageType prio, const std::string& msg) const
 	case MSG_INFO:
 	case MSG_NOTICE:
 	case MSG_MESSAGEONLY:
-		if (sg_print_message)
-			sg_print_message(target, msg.c_str());
+		if (print_message)
+			print_message(target, msg.c_str());
 		break;
 
 	case MSG_WARN:
-		if (sg_print_warning)
-			sg_print_warning(target, msg.c_str());
+		if (print_warning)
+			print_warning(target, msg.c_str());
 		break;
 
 	case MSG_ERROR:
 	case MSG_CRITICAL:
 	case MSG_ALERT:
 	case MSG_EMERGENCY:
-		if (sg_print_error)
-			sg_print_error(target, msg.c_str());
+		if (print_error)
+			print_error(target, msg.c_str());
 		break;
 	default:
 		break;

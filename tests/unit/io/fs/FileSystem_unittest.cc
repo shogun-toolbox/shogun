@@ -5,6 +5,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/fs/FileSystemRegistry.h>
 #include <shogun/io/fs/Path.h>
@@ -18,7 +19,7 @@ public:
 	io::FileSystemRegistry* fs_registry;
 	virtual void SetUp()
 	{
-		fs_registry = io::FileSystemRegistry::instance();
+		fs_registry = env();
 	}
 
 	virtual void TearDown() {}

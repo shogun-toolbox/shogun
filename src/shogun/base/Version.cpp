@@ -30,13 +30,11 @@ const char Version::version_release[128] = VERSION_RELEASE;
 
 Version::Version()
 {
-	m_refcount = new RefCount();
 }
 
 
 Version::~Version()
 {
-	delete m_refcount;
 }
 
 void Version::print_version()
@@ -106,27 +104,4 @@ int32_t Version::get_version_parameter()
 int64_t Version::get_version_in_minutes()
 {
 	return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
-}
-
-int32_t Version::ref()
-{
-	return m_refcount->ref();
-}
-
-int32_t Version::ref_count() const
-{
-	return m_refcount->ref_count();
-}
-
-int32_t Version::unref()
-{
-	int32_t rc = m_refcount->unref();
-
-	if (rc==0)
-	{
-		delete this;
-		return 0;
-	}
-
-	return rc;
 }

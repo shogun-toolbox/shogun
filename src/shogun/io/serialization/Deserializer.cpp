@@ -3,6 +3,7 @@
  * Authors: Sergey Lisitsyn
  */
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/serialization/Deserializer.h>
 #include <shogun/io/ShogunErrc.h>
 #include <shogun/io/fs/FileSystem.h>
@@ -56,7 +57,7 @@ void shogun::io::post_deserialize(CSGObject* obj) noexcept(false)
 
 CSGObject* shogun::io::deserialize(const std::string& _path, CDeserializer* _deser)
 {
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	std::error_condition ec;
 	if ((ec = fs->file_exists(_path)))
 		throw to_system_error(ec);

@@ -60,10 +60,10 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
-			if (this->parallel->get_num_threads()!=1)
+			if (env()->get_num_threads()!=1)
 			{
 				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n")
-				this->parallel->set_num_threads(1);
+				env()->set_num_threads(1);
 			}
 			return CKernel::init(l, r);
 		}

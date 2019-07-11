@@ -7,6 +7,7 @@
 #include <functional>
 #include <gtest/gtest.h>
 #include <rxcpp/rx-lite.hpp>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
 
@@ -26,7 +27,7 @@ public:
 			// Stop if we did more than 5 steps
 			if (m_last_iteration >= 5)
 			{
-				get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+				env()->signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
 				return true;
 			}
 			m_last_iteration++;
@@ -94,7 +95,7 @@ TEST(StoppableSGObject, custom_callback_by_user)
 	function<bool()> callback = [&i]() {
 		if (i >= 3)
 		{
-			get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+			env()->signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
 			return true;
 		}
 		i++;

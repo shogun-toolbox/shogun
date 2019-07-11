@@ -1,4 +1,4 @@
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/some.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/fs/FileSystem.h>
@@ -14,7 +14,7 @@ using namespace std;
 
 static Some<CSGObject> load_object(const string& fname)
 {
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	auto ec = fs->file_exists(fname);
 	if (ec)
 		throw io::to_system_error(ec);
@@ -39,14 +39,13 @@ int main(int argc, const char *argv[])
 	string generated_results_dir = argv[4];
 	string reference_results_dir = argv[5];
 
-	init_shogun_with_defaults();
 	auto fname_full_generated = io::join_path(generated_results_dir, target, rel_dir, name);
 	auto fname_full_reference = io::join_path(reference_results_dir, rel_dir, name);
 	auto a = load_object(fname_full_generated);
 	auto a_ref = load_object(fname_full_reference);
 
 	// allow for lossy serialization format
-	set_global_fequals_epsilon(1e-6);
+	env()->set_global_fequals_epsilon(1e-6);
 	bool loaded_equals_ref = a->equals(a_ref);
 
 	// it is unlikely that the above is true while this is false, however, we
@@ -56,7 +55,7 @@ int main(int argc, const char *argv[])
 	// print comparison output only if different as it it slow
 	if (!loaded_equals_ref || !ref_equals_loaded)
 	{
-		a->get_global_io()->set_loglevel(MSG_DEBUG);
+		env()->io()->set_loglevel(MSG_DEBUG);
 		if (!loaded_equals_ref)
 		{
 			SG_SDEBUG(
@@ -76,7 +75,6 @@ int main(int argc, const char *argv[])
 			fname_full_reference.c_str());
 	}
 
-	exit_shogun();
 	return !(loaded_equals_ref && ref_equals_loaded);
 }
 
