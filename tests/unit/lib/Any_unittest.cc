@@ -845,7 +845,7 @@ TEST(Any, simple_visit)
 	};
 	Any::register_visitor<int, ExtractVisitor>([&] (auto value, auto visitor) { extracted_value = value; });
 	auto any = make_any<int>(42);
-	any.visit<ExtractVisitor>();
+	any.visit_with<ExtractVisitor>();
 	EXPECT_EQ(any.as<int>(), extracted_value);
 }
 
@@ -861,7 +861,7 @@ TEST(Any, stateful_visit)
 	});
 	auto any = make_any(initial_value);
 	StringStreamVisitor visitor;
-	any.visit(&visitor);
-	any.visit(&visitor);
+	any.visit_with(&visitor);
+	any.visit_with(&visitor);
 	EXPECT_EQ(visitor.ss.str(), initial_value + initial_value);
 }

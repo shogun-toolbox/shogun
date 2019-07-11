@@ -1138,7 +1138,7 @@ namespace shogun {
 		void visit(AnyVisitor* visitor) const;
 
 		template <class State>
-		void visit(State* state=nullptr)
+		void visit_with(State* state=nullptr)
 		{
 			const auto value_type = std::type_index{policy->type_info()};
 			const auto state_type = std::type_index{typeid(State)};
