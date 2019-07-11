@@ -74,6 +74,8 @@ namespace shogun
 
 	Any::CastingRegistry Any::casting_registry = {};
 
+	Any::VisitorRegistry Any::visitor_registry = {};
+
 	Any::Any() : Any(owning_policy<Empty>(), nullptr)
 	{
 	}
