@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <shogun/util/traits.h>
+#include <shogun/base/base_types.h>
 
 namespace shogun {
 
@@ -1222,9 +1223,12 @@ namespace shogun {
 
 	template <typename T>
 	inline void register_casts() {
-		if constexpr (std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value)
+		using Derived = std::remove_pointer_t<T>;
+		if constexpr (std::is_base_of_v<CSGObject, Derived>)
 		{
 			Any::register_caster<T, CSGObject*>([] (T value) { return dynamic_cast<CSGObject*>(value); });
+			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>)
+				Any::register_caster<T, base_type<Derived>*>([] (T value) { return dynamic_cast<base_type<Derived>*>(value); });
 		}
 		if constexpr (std::is_arithmetic<T>::value) {
 			Any::register_caster<T, float32_t>([] (T value) { return value; });
