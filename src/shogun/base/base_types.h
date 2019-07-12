@@ -33,6 +33,7 @@ namespace shogun
 	class CTokenizer;
 
 	// type trait to enable certain methods only for shogun base types
+	// FIXME: use sg_interface to populate this trait
 	template <class T>
 	struct is_sg_base
 	    : std::integral_constant<
@@ -94,6 +95,39 @@ namespace shogun
 	struct is_sg_matrix<SGMatrix<T>> : std::true_type
 	{
 	};
+
+	template <typename...>
+	struct type_list{};
+
+	template <typename T>
+	struct type_holder
+	{
+		typedef T type;
+	};
+
+	using sg_inferface = type_list<CMachine, CKernel, CDistance,
+		CFeatures, CLabels, CECOCEncoder, CECOCDecoder, CEvaluation,
+		CEvaluationResult, CMulticlassStrategy, CNeuralLayer,
+		CSplittingStrategy, CLikelihoodModel, CMeanFunction,
+		CDifferentiableFunction, CInference, CLossFunction,
+		CTokenizer>;
+
+	template <typename Derived>
+	constexpr auto find_base(type_list<>)
+	{
+		return type_holder<std::nullptr_t>{};
+	}
+
+	template <typename Derived, typename T, typename... Ts>
+	constexpr auto find_base(type_list<T, Ts...>) {
+	    if constexpr (std::is_base_of_v<T, Derived>)
+	        return type_holder<T>{};
+	    else
+	        return find_base<Derived>(type_list<Ts...>{});
+	}
+
+	template <typename Derived>
+	using base_type = typename decltype(find_base<Derived>(sg_inferface{}))::type;
 
 } // namespace shogun
 
