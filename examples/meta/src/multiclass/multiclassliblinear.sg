@@ -1,0 +1,28 @@
+File fm_train_real = csv_file("../../data/fm_train_real.dat")
+File fm_test_real = csv_file("../../data/fm_test_real.dat")
+File label_train_multiclass = csv_file("../../data/label_train_multiclass.dat")
+
+#![create_features]
+Features feats_train = features(fm_train_real)
+Features feats_test = features(fm_test_real)
+Labels labels_train = labels(label_train_multiclass)
+#![create_features]
+
+#![create_machine]
+Machine classifier = machine("MulticlassLibLinear", C=1.0, labels=labels_train)
+#![create_machine]
+
+#![train_and_apply]
+classifier.train(feats_train)
+Labels labels_train_predict = classifier.apply(feats_train)
+Labels labels_test_predict = classifier.apply(feats_test)
+#![train_and_apply]
+
+#![measure_train_accuracy]
+Evaluation evaluator = evaluation("MulticlassAccuracy")
+real accuracy = evaluator.evaluate(labels_train_predict, labels_train)
+#![measure_train_accuracy]
+
+#![extract_labels]
+RealVector labels_vector = labels_test_predict.get_real_vector("labels")
+#![extract_labels]
