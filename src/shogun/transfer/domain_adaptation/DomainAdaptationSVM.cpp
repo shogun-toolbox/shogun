@@ -45,12 +45,6 @@ void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 	this->presvm=pre_svm;
 	this->B=B_param;
 	this->train_factor=1.0;
-
-	// set bias of parent svm to zero
-	this->presvm->set_bias(0.0);
-
-	// invoke sanity check
-	is_presvm_sane();
 }
 
 bool CDomainAdaptationSVM::is_presvm_sane()
@@ -92,6 +86,12 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	if (m_labels->get_label_type() != LT_BINARY)
 		SG_ERROR("DomainAdaptationSVM requires binary labels\n")
 
+	ASSERT(presvm)
+	// set bias of parent svm to zero
+	this->presvm->set_bias(0.0);
+	// invoke sanity check
+	is_presvm_sane();
+
 	int32_t num_training_points = get_labels()->get_num_labels();
 	CBinaryLabels* labels = (CBinaryLabels*) get_labels();
 
@@ -115,8 +115,6 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	//train SVM
 	bool success = CSVMLight::train_machine();
 	SG_UNREF(labels);
-
-	ASSERT(presvm)
 
 	return success;
 
@@ -179,7 +177,7 @@ void CDomainAdaptationSVM::init()
 	B = 0;
 	train_factor = 1.0;
 
-	SG_ADD((CSGObject**) &presvm, "presvm", "SVM to regularize against.");
+	SG_ADD((CMachine**) &presvm, "presvm", "SVM to regularize against.");
 	SG_ADD(&B, "B", "regularization parameter B.", ParameterProperties::HYPER);
 	SG_ADD(&train_factor, "train_factor",
 			"flag to switch off regularization in training.", ParameterProperties::HYPER);

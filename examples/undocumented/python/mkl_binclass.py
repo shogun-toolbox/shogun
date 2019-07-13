@@ -8,8 +8,9 @@ lm=LoadMatrix()
 
 #only run example if SVMLight is included as LibSVM solver crashes in MKLClassification
 try:
-	from shogun import SVMLight
-except ImportError:
+	from shogun import machine
+	machine("SVMLight")
+except SystemError:
 	print("SVMLight not available")
 	exit(0)
 

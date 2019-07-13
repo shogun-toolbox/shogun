@@ -32,9 +32,10 @@ def classifier_svmlight_linear_term (fm_train_dna=traindna,fm_test_dna=testdna, 
 
     from shogun import StringCharFeatures, BinaryLabels, DNA
     from shogun import WeightedDegreeStringKernel
+    from shogun import machine
     try:
-    	from shogun import SVMLight
-    except ImportError:
+    	machine("SVMLight")
+    except SystemError:
     	print("SVMLight is not available")
     	exit(0)
 
@@ -47,15 +48,14 @@ def classifier_svmlight_linear_term (fm_train_dna=traindna,fm_test_dna=testdna, 
 
     labels=BinaryLabels(label_train_dna)
 
-    svm=SVMLight(C, kernel, labels)
-    svm.set_qpsize(3)
-    svm.set_linear_term(-numpy.array([1,2,3,4,5,6,7,8,7,6], dtype=numpy.double));
-    svm.set_epsilon(epsilon)
+    svm=machine("SVMLight", C1=C, C2=C, kernel=kernel, labels=labels, epsilon=epsilon)
+    svm.put("qpsize", 3)
+    svm.put("linear_term", -numpy.array([1,2,3,4,5,6,7,8,7,6], dtype=numpy.double))
     svm.get_global_parallel().set_num_threads(num_threads)
     svm.train()
 
     kernel.init(feats_train, feats_test)
-    out = svm.apply().get_labels()
+    out = svm.apply()
     return out,kernel
 
 if __name__=='__main__':
