@@ -48,7 +48,7 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 	mkl = MKLMulticlass(C, kernel, labels)
 
 	mkl.set_epsilon(epsilon);
-	mkl.parallel.set_num_threads(num_threads)
+	mkl.get_global_parallel().set_num_threads(num_threads)
 	mkl.set_mkl_epsilon(mkl_epsilon)
 	mkl.set_mkl_norm(mkl_norm)
 

@@ -33,7 +33,7 @@ def classifier_svmlight_batch_linadd (fm_train_dna, fm_test_dna,
 
 	svm=SVMLight(C, kernel, labels)
 	svm.set_epsilon(epsilon)
-	svm.parallel.set_num_threads(num_threads)
+	svm.get_global_parallel().set_num_threads(num_threads)
 	svm.train()
 
 	kernel.init(feats_train, feats_test)

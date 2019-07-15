@@ -12,7 +12,6 @@
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/base/DynArray.h>
-#include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
 
 #include <shogun/structure/FactorGraph.h>

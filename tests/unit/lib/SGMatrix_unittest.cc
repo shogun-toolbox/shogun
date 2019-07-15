@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
@@ -186,7 +187,7 @@ TEST(SGMatrixTest, equals_both_empty)
 #ifdef HAVE_VIENNACL
 TEST(SGMatrixTest,pointer_equal_equal)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	SGMatrix<float64_t> a(3,2), a_gpu;
 	a.zero();
@@ -198,7 +199,7 @@ TEST(SGMatrixTest,pointer_equal_equal)
 
 TEST(SGMatrixTest,pointer_equal_different)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	SGMatrix<float64_t> a(3,2), a_gpu;
 	a.zero();

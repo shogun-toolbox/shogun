@@ -1,6 +1,5 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
 
 #include "environments/LinearTestEnvironment.h"
@@ -83,10 +82,7 @@ int main(int argc, char** argv)
 	regression_test_env = new RegressionTestEnvironment();
 	::testing::AddGlobalTestEnvironment(regression_test_env);
 
-	init_shogun_with_defaults();
-
 	int ret = RUN_ALL_TESTS();
-	exit_shogun();
 
 	return ret;
 }

@@ -35,7 +35,7 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
@@ -217,8 +217,6 @@ public:
 
 class LibSVMKernel;
 
-extern Parallel* sg_parallel;
-
 class LibSVMKernel: public QMatrix {
 public:
 	LibSVMKernel(int32_t l, svm_node * const * x, const svm_parameter& param);
@@ -384,7 +382,7 @@ rxcpp::subscription Solver::connect_to_signal_handler()
 				this->on_next();
 		},
 		[this]() { this->on_complete(); });
-	return get_global_signal()->get_observable()->subscribe(subscriber);
+	return env()->signal()->get_observable()->subscribe(subscriber);
 }
 
 void Solver::reset_computation_variables()

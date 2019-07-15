@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -8,7 +9,7 @@ using namespace linalg;
 
 TEST(LinalgBackendBase, SGVector_to_gpu_without_gpu_backend)
 {
-	sg_linalg->set_gpu_backend(nullptr);
+	env()->linalg()->set_gpu_backend(nullptr);
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size), c;
@@ -25,7 +26,7 @@ TEST(LinalgBackendBase, SGVector_to_gpu_without_gpu_backend)
 
 TEST(LinalgBackendBase, SGMatrix_to_gpu_without_gpu_backend)
 {
-	sg_linalg->set_gpu_backend(nullptr);
+	env()->linalg()->set_gpu_backend(nullptr);
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols), c;

@@ -3,6 +3,7 @@
  * Authors: Sergey Lisitsyn
  */
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/ShogunErrc.h>
 #include <shogun/io/fs/FileSystem.h>
@@ -56,7 +57,7 @@ void shogun::io::post_serialize(CSGObject* obj) noexcept(false)
 
 void shogun::io::serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer)
 {
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	std::error_condition ec;
 	std::unique_ptr<io::WritableFile> file;
 	if ((ec = fs->new_writable_file(_path, &file)))

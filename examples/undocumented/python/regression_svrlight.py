@@ -34,7 +34,7 @@ def regression_svrlight (fm_train=traindat,fm_test=testdat,label_train=label_tra
 
 	svr=SVRLight(C, epsilon, kernel, labels)
 	svr.set_tube_epsilon(tube_epsilon)
-	svr.parallel.set_num_threads(num_threads)
+	svr.get_global_parallel().set_num_threads(num_threads)
 	svr.train(feats_train)
 
 	kernel.init(feats_train, feats_test)

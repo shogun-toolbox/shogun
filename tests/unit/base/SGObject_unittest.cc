@@ -7,6 +7,7 @@
 #include "sg_gtest_utilities.h"
 
 #include "MockObject.h"
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
@@ -352,7 +353,7 @@ TEST(SGObject,equals_complex_equal)
 	std::string filename_gpr {"gpr_instance.json"};
 	std::string filename_predictions {"predictions_instance.json"};
 
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	ASSERT_TRUE(fs->file_exists(filename_gpr));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_FALSE(fs->new_writable_file(filename_gpr, &file));
@@ -383,10 +384,10 @@ TEST(SGObject,equals_complex_equal)
 	auto predictions_copy = deserializer->read_object();
 
 	/* now compare */
-	set_global_fequals_epsilon(1e-10);
+	env()->set_global_fequals_epsilon(1e-10);
 	ASSERT_TRUE(predictions->equals(predictions_copy));
 	ASSERT_TRUE(gpr->equals(gpr_copy));
-	set_global_fequals_epsilon(0);
+	env()->set_global_fequals_epsilon(0);
 	SG_UNREF(predictions);
 	ASSERT_FALSE(fs->delete_file(filename_gpr));
 	ASSERT_FALSE(fs->delete_file(filename_predictions));

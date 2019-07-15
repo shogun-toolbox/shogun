@@ -67,21 +67,6 @@ public:
 	/** get version in minutes */
 	static int64_t get_version_in_minutes();
 
-	/** ref object
-	 * @return ref count
-	 */
-	int32_t ref();
-
-	/** ref count
-	 * @return ref count
-	 */
-	int32_t ref_count() const;
-
-	/** unref object
-	 * @return ref count
-	 */
-	int32_t unref();
-
 protected:
 	/** version release */
 	static const char version_release[128];
@@ -103,9 +88,6 @@ protected:
 	static const int32_t version_minute;
 	/** version parameter */
 	static const int32_t version_parameter;
-
-private:
-	RefCount* m_refcount;
 };
 }
 #endif

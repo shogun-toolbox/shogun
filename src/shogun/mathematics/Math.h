@@ -15,7 +15,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/Parallel.h>
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <algorithm>
@@ -301,7 +301,8 @@ class CMath : public CSGObject
 		    {
 			    // global fequals epsilon might override passed one
 			    // hack for lossy serialization formats
-			    float64_t eps = std::max(eps_, get_global_fequals_epsilon());
+			    float64_t eps = std::max(
+					eps_,env()->fequals_epsilon());
 
 			    const T absA = CMath::abs<T>(a);
 			    const T absB = CMath::abs<T>(b);
@@ -312,7 +313,7 @@ class CMath : public CSGObject
 				    return true;
 
 				// Required for JSON Serialization Tests
-			    if (get_global_fequals_tolerant())
+			    if (env()->fequals_tolerant())
 				    return CMath::fequals_abs<T>(a, b, eps);
 
 			    // handles float32_t and float64_t separately

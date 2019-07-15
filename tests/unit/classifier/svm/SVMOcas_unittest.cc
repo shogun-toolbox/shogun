@@ -24,7 +24,7 @@ TEST(SVMOcasTest,train)
 	CBinaryLabels* ground_truth = (CBinaryLabels*)mockData->get_labels_test();
 
 	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
-	ocas->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	ocas->set_epsilon(1e-5);
 	ocas->train();
 	float64_t objective = ocas->compute_primal_objective();
