@@ -1,0 +1,16 @@
+name: shogun
+channels:
+  - conda-forge
+dependencies:
+  - python=3.6.*
+  - setuptools
+  - numpy
+  - scipy
+  - eigen
+  - snappy
+  - zlib
+  - ctags
+  - ply
+  - jinja2
+  - mkl-devel
+  - swig

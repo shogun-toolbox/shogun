@@ -2,21 +2,18 @@ FIND_PACKAGE(Jinja2)
 
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
-ExternalProject_Get_Property(GoogleMock source_dir)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
 function (add_unit_test_executable EXECUTABLE TARGET SRC)
 	ADD_EXECUTABLE(${EXECUTABLE} ${SRC} utils/Utils.cpp)
-	add_dependencies(${EXECUTABLE} GoogleMock shogun::shogun)
-	target_include_directories(${EXECUTABLE} PRIVATE ${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include)
 	target_link_libraries(${EXECUTABLE} PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
 	IF (SANITIZER_FLAGS)
 		set_target_properties(${EXECUTABLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
-	set_target_properties (${EXECUTABLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-	set_target_properties (${EXECUTABLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-	set_target_properties (${EXECUTABLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+	set_target_properties (${EXECUTABLE} PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+		RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin
+		RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 
 	# In some cases gTest segfaults with GCC >= 6.0.0.  This is a dirty fix.
 	# TODO: Update to gTest-release with proper support for GCC >= 6.0.0.
@@ -73,9 +70,10 @@ ELSE()
 ENDIF()
 
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
-set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+set_target_properties (discover_gtest_tests PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 
 # collect the unittests
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
