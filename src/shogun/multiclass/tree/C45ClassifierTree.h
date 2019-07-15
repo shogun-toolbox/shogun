@@ -32,6 +32,7 @@
 #ifndef _C45CLASSIFIERTREE_H__
 #define _C45CLASSIFIERTREE_H__
 
+#include <shogun/shogun_export.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/multiclass/tree/TreeMachine.h>
@@ -209,7 +210,7 @@ private:
 
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
-	static const float64_t MISSING;
+	static SHOGUN_EXPORT const float64_t MISSING;
 
 private:
 

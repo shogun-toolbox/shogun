@@ -11,7 +11,7 @@ ExternalProject_Add(
         BUILD_COMMAND ""
         )
 
-add_dependencies(libshogun tflogger)
+ADD_SHOGUN_DEPENDENCY(tflogger)
 
 set(TFLogger_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR})
 

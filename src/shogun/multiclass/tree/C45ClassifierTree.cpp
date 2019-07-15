@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <limits>
+
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
@@ -241,7 +243,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 		else
 		{
 			SGVector<float64_t> feature_values(num_vecs);
-			float64_t max_value=Math::MIN_REAL_NUMBER;
+			float64_t max_value=std::numeric_limits<float64_t>::min();
 			for (int32_t k=0; k<num_vecs; k++)
 			{
 				feature_values[k]=(feats->get_feature_vector(k))[i];

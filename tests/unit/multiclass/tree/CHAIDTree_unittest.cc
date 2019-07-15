@@ -33,6 +33,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/multiclass/tree/CHAIDTree.h>
 
+#include <limits>
+
 using namespace shogun;
 
 #define sunny 1.
@@ -159,8 +161,8 @@ TEST(CHAIDTree, test_tree_structure)
 	auto c=std::make_shared<CHAIDTree>(0);
 	c->set_labels(labels);
 	c->set_feature_types(ft);
-	c->set_alpha_merge(Math::MIN_REAL_NUMBER);
-	c->set_alpha_split(Math::MAX_REAL_NUMBER);
+	c->set_alpha_merge(std::numeric_limits<float64_t>::min());
+	c->set_alpha_split(std::numeric_limits<float64_t>::max());
 	c->train(feats);
 
 	auto node=c->get_root();
@@ -253,8 +255,8 @@ TEST(CHAIDTree, test_classify_multiclass)
 	auto c=std::make_shared<CHAIDTree>(0);
 	c->set_labels(labels);
 	c->set_feature_types(ft);
-	c->set_alpha_merge(Math::MIN_REAL_NUMBER);
-	c->set_alpha_split(Math::MAX_REAL_NUMBER);
+	c->set_alpha_merge(std::numeric_limits<float64_t>::min());
+	c->set_alpha_split(std::numeric_limits<float64_t>::max());
 	c->train(feats);
 
 	SGMatrix<float64_t> test(4,5);

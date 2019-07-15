@@ -11,4 +11,4 @@ ExternalProject_Add(
 	INSTALL_COMMAND ""
 )
 
-LIST(APPEND SHOGUN_DEPENDS bitsery)
+ADD_SHOGUN_DEPENDENCY(bitsery)

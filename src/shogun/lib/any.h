@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <shogun/shogun_export.h>
 #include <shogun/base/base_types.h>
 #include <shogun/util/converters.h>
 #include <shogun/util/traits.h>

@@ -5,6 +5,8 @@
  *          Wu Lin, Sergey Lisitsyn, Sanuj Sharma, Josh Klontz,
  *          Shashwat Lal Das, Philippe Tillet, Evan Shelhamer, Saurabh Goyal
  */
+#include <limits>
+
 #include <shogun/lib/config.h>
 
 #include <shogun/mathematics/Math.h>
