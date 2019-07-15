@@ -23,6 +23,7 @@
 #include <type_traits>
 #include <vector>
 
+#include <shogun/util/converters.h>
 #include <shogun/util/traits.h>
 #include <shogun/base/base_types.h>
 
@@ -1230,11 +1231,11 @@ namespace shogun {
 			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>)
 				Any::register_caster<T, base_type<Derived>*>([] (T value) { return dynamic_cast<base_type<Derived>*>(value); });
 		}
-		if constexpr (std::is_arithmetic<T>::value) {
-			Any::register_caster<T, float32_t>([] (T value) { return value; });
-			Any::register_caster<T, float64_t>([] (T value) { return value; });
-			Any::register_caster<T, int32_t>([] (T value) { return value; });
-			Any::register_caster<T, int64_t>([] (T value) { return value; });
+		if constexpr (std::is_arithmetic_v<T>) {
+			Any::register_caster<T, float32_t>([] (T value) { return utils::safe_convert<float32_t>(value); });
+			Any::register_caster<T, float64_t>([] (T value) { return utils::safe_convert<float64_t>(value); });
+			Any::register_caster<T, int32_t>([] (T value) { return utils::safe_convert<int32_t>(value); });
+			Any::register_caster<T, int64_t>([] (T value) { return utils::safe_convert<int64_t>(value); });
 		}
 	}
 
