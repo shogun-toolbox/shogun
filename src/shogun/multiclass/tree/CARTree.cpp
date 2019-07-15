@@ -30,6 +30,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <limits>
+
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomNamespace.h>
@@ -41,7 +43,7 @@
 using namespace Eigen;
 using namespace shogun;
 
-const float64_t CARTree::MISSING=Math::MAX_REAL_NUMBER;
+const float64_t CARTree::MISSING=std::numeric_limits<float64_t>::max();
 const float64_t CARTree::EQ_DELTA=1e-7;
 const float64_t CARTree::MIN_SPLIT_GAIN=1e-7;
 
@@ -154,7 +156,7 @@ void CARTree::prune_using_test_dataset(const std::shared_ptr<DenseFeatures<float
 	auto pruned_trees=prune_tree(shared_from_this()->as<CARTree>());
 
 	int32_t min_index=0;
-	float64_t min_error=Math::MAX_REAL_NUMBER;
+	float64_t min_error=std::numeric_limits<float64_t>::max();
 	for (int32_t i=0;i<m_alphas.size();++i)
 	{
 		auto root=pruned_trees[i];
@@ -1299,7 +1301,7 @@ void CARTree::prune_by_cross_validation(const std::shared_ptr<DenseFeatures<floa
 
 	// find subtree with minimum R_cv
 	int32_t min_index=-1;
-	float64_t min_r_cv=Math::MAX_REAL_NUMBER;
+	float64_t min_r_cv=std::numeric_limits<float64_t>::max();
 	for (int32_t i=0;i<m_alphas.size();++i)
 	{
 		float64_t alpha=0.;
@@ -1439,7 +1441,7 @@ float64_t CARTree::find_weakest_alpha(const std::shared_ptr<bnode_t>& node) cons
 		return *std::min_element(weak_links.begin(), weak_links.end());
 	}
 
-	return Math::MAX_REAL_NUMBER;
+	return std::numeric_limits<float64_t>::max();
 }
 
 void CARTree::cut_weakest_link(const std::shared_ptr<bnode_t>& node, float64_t alpha)

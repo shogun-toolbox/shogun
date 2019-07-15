@@ -20,6 +20,8 @@
 #include <shogun/io/fs/WindowsFileSystem.h>
 #include <shogun/io/ShogunErrc.h>
 
+#pragma comment(lib, "Shlwapi.lib")
+
 using namespace shogun;
 using namespace shogun::io;
 using namespace std;

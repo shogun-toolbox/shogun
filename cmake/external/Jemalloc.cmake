@@ -12,4 +12,4 @@ ExternalProject_Add(
 
 SET(Jemalloc_INCLUDE_DIR ${THIRD_PARTY_DIR}/include/jemalloc)
 SET(Jemalloc_LIBRARIES ${THIRD_PARTY_DIR}/libs/jemalloc/libjemalloc_pic.a)
-add_dependencies(libshogun Jemalloc)
+ADD_SHOGUN_DEPENDENCY(Jemalloc)

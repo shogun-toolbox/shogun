@@ -1,13 +1,14 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Soeren Sonnenburg, Viktor Gal, Yuyu Zhang, 
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Viktor Gal, Yuyu Zhang,
  *          Thoralf Klein, Evan Shelhamer, Sergey Lisitsyn
  */
 
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
+#include <shogun/shogun_export.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
@@ -92,9 +93,9 @@ namespace shogun
 
 	public:
 		/** Observable */
-		static SGSubjectS* m_subject;
-		static SGObservableS* m_observable;
-		static SGSubscriberS* m_subscriber;
+		static SHOGUN_EXPORT SGSubjectS* m_subject;
+		static SHOGUN_EXPORT SGObservableS* m_observable;
+		static SHOGUN_EXPORT SGSubscriberS* m_subscriber;
 };
 }
 #endif // __SIGNAL__H_
