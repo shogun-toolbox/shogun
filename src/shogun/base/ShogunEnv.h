@@ -76,13 +76,13 @@ namespace shogun
 		 * @return linalg object
 		 */
 		SGLinalg* linalg();
-#endif
 
 		/** get the global singnal handler object
 		 *
 		 * @return linalg object
 		 */
 		CSignal* signal();
+#endif
 
 	private:
 		/** Default constructor

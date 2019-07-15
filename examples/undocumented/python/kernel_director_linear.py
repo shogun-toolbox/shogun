@@ -27,7 +27,7 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 
 	feats_train=sg.features(fm_train_real)
 	#feats_train.io.set_loglevel(0)
-	feats_train.parallel.set_num_threads(1)
+	feats_train.get_global_parallel().set_num_threads(1)
 	feats_test=sg.features(fm_test_real)
 
 	kernel=sg.kernel("LinearKernel")
