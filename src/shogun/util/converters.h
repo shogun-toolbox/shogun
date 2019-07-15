@@ -38,6 +38,14 @@ namespace shogun
 				std::common_type<T>
 			>;
 
+		template <typename I, typename J,
+			typename std::enable_if_t<std::is_same_v<bool, J>>* = nullptr>
+		static I safe_convert(J value)
+		{
+			return static_cast<I>(value);
+		}
+
+
 		template <typename I, typename J>
 		static typename std::enable_if_t<
 		    std::is_signed<I>::value && std::is_signed<J>::value, I>
@@ -53,7 +61,7 @@ namespace shogun
 
 		template <typename I, typename J>
 		static typename std::enable_if_t<
-		    std::is_signed<I>::value && std::is_unsigned<J>::value, I>
+		    std::is_signed<I>::value && std::is_unsigned<J>::value && !std::is_same_v<bool,J>, I>
 		safe_convert(J value)
 		{
 			if (value > static_cast<typename try_make_unsigned<I>::type>(
@@ -78,7 +86,7 @@ namespace shogun
 
 		template <typename I, typename J>
 		static typename std::enable_if_t<
-		    std::is_unsigned<I>::value && std::is_unsigned<J>::value, I>
+		    std::is_unsigned<I>::value && std::is_unsigned<J>::value && !std::is_same_v<bool,J>, I>
 		safe_convert(J value)
 		{
 			if (value > std::numeric_limits<I>::max())
