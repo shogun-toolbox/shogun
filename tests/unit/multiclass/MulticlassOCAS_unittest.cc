@@ -22,7 +22,7 @@ TEST(MulticlassOCASTest,train)
   CMulticlassLabels* ground_truth =
 	  (CMulticlassLabels*)mockData->get_labels_test();
   CMulticlassOCAS* mocas = new CMulticlassOCAS(C, train_feats, ground_truth);
-  mocas->parallel->set_num_threads(1);
+  env()->set_num_threads(1);
   mocas->set_epsilon(1e-5);
   mocas->train();
 

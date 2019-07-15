@@ -8,8 +8,7 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
-#include <shogun/base/init.h>
-
+#include <functional>
 #include <algorithm>
 #include <cassert>
 #include <limits>

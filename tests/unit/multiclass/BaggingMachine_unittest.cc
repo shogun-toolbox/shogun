@@ -90,7 +90,7 @@ TEST_F(BaggingMachine, mock_train)
 	NiceMock<MockCMachine> mm; mm.ref();
 	CMajorityVote* mv = new CMajorityVote();
 
-	bm->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	bm->set_machine(&mm);
 	bm->set_bag_size(bag_size);
 	bm->set_num_bags(num_bags);
@@ -133,7 +133,7 @@ TEST_F(BaggingMachine, classify_CART)
 
 	auto c = some<CBaggingMachine>(features_train, labels_train);
 
-	c->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);
@@ -165,7 +165,7 @@ TEST_F(BaggingMachine, output_binary)
 	auto cv = some<CMeanRule>();
 	cart->set_feature_types(ft);
 	auto c = some<CBaggingMachine>(features_train, labels_train);
-	c->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);

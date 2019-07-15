@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -24,7 +25,7 @@ void memory_transfer_test_helper_2(SGVector<T>& a)
 
 TEST(LinalgBackendViennaCL, SGVector_to_gpu_viennacl)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size);
@@ -37,7 +38,7 @@ TEST(LinalgBackendViennaCL, SGVector_to_gpu_viennacl)
 
 TEST(LinalgBackendViennaCL, SGVector_to_gpu_inplace_viennacl)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size);
@@ -53,7 +54,7 @@ TEST(LinalgBackendViennaCL, SGVector_to_gpu_inplace_viennacl)
 
 TEST(LinalgBackendViennaCL, SGMatrix_to_gpu_viennacl)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols);
@@ -67,7 +68,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_to_gpu_viennacl)
 
 TEST(LinalgBackendViennaCL, SGVector_from_gpu_viennacl_on_gpu_flags_check)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size), c(size);
@@ -82,7 +83,7 @@ TEST(LinalgBackendViennaCL, SGVector_from_gpu_viennacl_on_gpu_flags_check)
 
 TEST(LinalgBackendViennaCL, SGVector_from_gpu_viennacl_values_check)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size), c(size);
@@ -97,7 +98,7 @@ TEST(LinalgBackendViennaCL, SGVector_from_gpu_viennacl_values_check)
 
 TEST(LinalgBackendViennaCL, SGMatrix_from_gpu_viennacl_values_check)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols), c;
@@ -114,7 +115,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_from_gpu_viennacl_values_check)
 
 TEST(LinalgBackendViennaCL, SGVector_clone)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b, c;
@@ -135,7 +136,7 @@ TEST(LinalgBackendViennaCL, SGVector_clone)
 
 TEST(LinalgBackendViennaCL, SGMatrix_clone)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), b, c;
@@ -161,7 +162,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_clone)
 
 TEST(LinalgBackendViennaCL, GPU_transfer_multithread)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size);

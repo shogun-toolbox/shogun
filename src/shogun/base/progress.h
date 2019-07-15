@@ -41,7 +41,6 @@
 #include <memory>
 #include <string>
 
-#include <shogun/base/init.h>
 #include <shogun/base/range.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Lock.h>
@@ -742,7 +741,7 @@ namespace shogun
 	    std::string prefix, Range<T> range, SG_PRG_MODE mode = UTF8,
 	    std::function<bool()> condition = []() { return true; })
 	{
-		return PRange<T>(range, *sg_io, prefix, mode, condition);
+		return PRange<T>(range, *SG_IO, prefix, mode, condition);
 	}
 
 	/** Creates @ref PRange given a range that uses the global SGIO
@@ -754,7 +753,7 @@ namespace shogun
 	inline PRange<T> progress(
 	    std::string prefix, Range<T> range, std::function<bool()> condition)
 	{
-		return PRange<T>(range, *sg_io, prefix, UTF8, condition);
+		return PRange<T>(range, *SG_IO, prefix, UTF8, condition);
 	}
 	/** Creates @ref PRange given a range and a stopping condition
 	 *

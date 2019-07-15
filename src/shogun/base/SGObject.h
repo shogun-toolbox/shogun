@@ -252,41 +252,11 @@ public:
 	 */
 	virtual bool deserialize(io::CDeserializer* deser);
 
-	/** set the io object
-	 *
-	 * @param io io object to use
-	 */
-	void set_global_io(SGIO* io);
-
-	/** get the io object
-	 *
-	 * @return io object
-	 */
-	SGIO* get_global_io();
-
-	/** set the parallel object
-	 *
-	 * @param parallel parallel object to use
-	 */
-	void set_global_parallel(Parallel* parallel);
-
 	/** get the parallel object
 	 *
 	 * @return parallel object
 	 */
 	Parallel* get_global_parallel();
-
-	/** set the version object
-	 *
-	 * @param version version object to use
-	 */
-	void set_global_version(Version* version);
-
-	/** get the version object
-	 *
-	 * @return version object
-	 */
-	Version* get_global_version();
 
 	/**
 	 * Return the description of a registered parameter given its name
@@ -1241,12 +1211,6 @@ protected:
 	public:
 		/** io */
 		SGIO* io;
-
-		/** parallel */
-		Parallel* parallel;
-
-		/** version */
-		Version* version;
 
 		/** parameters */
 		Parameter* m_parameters;

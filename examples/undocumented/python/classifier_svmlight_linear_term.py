@@ -51,7 +51,7 @@ def classifier_svmlight_linear_term (fm_train_dna=traindna,fm_test_dna=testdna, 
     svm.set_qpsize(3)
     svm.set_linear_term(-numpy.array([1,2,3,4,5,6,7,8,7,6], dtype=numpy.double));
     svm.set_epsilon(epsilon)
-    svm.parallel.set_num_threads(num_threads)
+    svm.get_global_parallel().set_num_threads(num_threads)
     svm.train()
 
     kernel.init(feats_train, feats_test)

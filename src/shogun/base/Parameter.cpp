@@ -2290,15 +2290,12 @@ TParameter::is_valid()
  */
 Parameter::Parameter() : m_params(1)
 {
-	SG_REF(sg_io);
 }
 
 Parameter::~Parameter()
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		delete m_params.get_element(i);
-
-	SG_UNREF(sg_io);
 }
 
 void

@@ -5,6 +5,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
@@ -94,7 +95,7 @@ protected:
 	{
 		init();
 		this->cv->put("seed", 1);
-		get_global_parallel()->set_num_threads(1);
+		env()->set_num_threads(1);
 		auto result = cv->evaluate()->get<float64_t>("mean");
 		clean();
 		return result;
@@ -104,7 +105,7 @@ protected:
 	{
 		init();
 		this->cv->put("seed", 1);
-		get_global_parallel()->set_num_threads(4);
+		env()->set_num_threads(4);
 		auto result = cv->evaluate()->get<float64_t>("mean");
 		clean();
 		return result;

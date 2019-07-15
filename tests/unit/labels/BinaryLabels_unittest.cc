@@ -6,6 +6,7 @@
  */
 #include "utils/Utils.h"
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
@@ -56,7 +57,7 @@ TEST_F(BinaryLabels, serialization)
 	std::string filename = "serialization-json-CBinaryLabels.XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	ASSERT_TRUE(!fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_TRUE(!fs->new_writable_file(filename, &file));

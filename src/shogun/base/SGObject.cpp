@@ -13,6 +13,7 @@
 
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/class_list.h>
@@ -125,10 +126,6 @@ namespace shogun
 
 	class Parallel;
 
-	extern Parallel* sg_parallel;
-	extern SGIO* sg_io;
-	extern Version* sg_version;
-
 	template<> void CSGObject::set_generic<bool>()
 	{
 		m_generic = PT_BOOL;
@@ -233,8 +230,7 @@ CSGObject::CSGObject() : self(), param_obs_list()
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-    : self(), param_obs_list(), io(orig.io), parallel(orig.parallel),
-      version(orig.version)
+    : self(), param_obs_list(), io(orig.io)
 {
 	init();
 	set_global_objects();
@@ -301,46 +297,13 @@ CSGObject * CSGObject::deep_copy() const
 
 void CSGObject::set_global_objects()
 {
-	if (!sg_io || !sg_parallel || !sg_version)
-	{
-		fprintf(stderr, "call init_shogun() before using the library, dying.\n");
-		exit(1);
-	}
-
-	SG_REF(sg_io);
-	SG_REF(sg_parallel);
-	SG_REF(sg_version);
-
-	io=sg_io;
-	parallel=sg_parallel;
-	version=sg_version;
+	io = env()->io();
+	SG_REF(io);
 }
 
 void CSGObject::unset_global_objects()
 {
-	SG_UNREF(version);
-	SG_UNREF(parallel);
 	SG_UNREF(io);
-}
-
-void CSGObject::set_global_io(SGIO* new_io)
-{
-	SG_REF(new_io);
-	SG_UNREF(sg_io);
-	sg_io=new_io;
-}
-
-SGIO* CSGObject::get_global_io()
-{
-	SG_REF(sg_io);
-	return sg_io;
-}
-
-void CSGObject::set_global_parallel(Parallel* new_parallel)
-{
-	SG_REF(new_parallel);
-	SG_UNREF(sg_parallel);
-	sg_parallel=new_parallel;
 }
 
 void CSGObject::update_parameter_hash() const
@@ -362,21 +325,7 @@ bool CSGObject::parameter_hash_changed() const
 
 Parallel* CSGObject::get_global_parallel()
 {
-	SG_REF(sg_parallel);
-	return sg_parallel;
-}
-
-void CSGObject::set_global_version(Version* new_version)
-{
-	SG_REF(new_version);
-	SG_UNREF(sg_version);
-	sg_version=new_version;
-}
-
-Version* CSGObject::get_global_version()
-{
-	SG_REF(sg_version);
-	return sg_version;
+	return env();
 }
 
 bool CSGObject::is_generic(EPrimitiveType* generic) const
@@ -429,8 +378,6 @@ void CSGObject::init()
 {
 
 	io = NULL;
-	parallel = NULL;
-	version = NULL;
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();

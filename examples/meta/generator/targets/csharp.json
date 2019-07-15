@@ -1,5 +1,5 @@
 {
-    "Program": "using System;\n\npublic class Application {\npublic static void Main() {\nshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
+    "Program": "using System;\n\npublic class Application {\npublic static void Main() {\n$program\n}\n}\n",
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {

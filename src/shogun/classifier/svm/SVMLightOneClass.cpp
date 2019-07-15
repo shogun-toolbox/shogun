@@ -96,7 +96,7 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG("threads = %i\n", parallel->get_num_threads())
+	SG_DEBUG("threads = %i\n", env()->get_num_threads())
 	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
 	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
 	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))

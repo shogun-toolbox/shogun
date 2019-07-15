@@ -5,6 +5,7 @@
  *          Olivier NGuyen, Bjoern Esser, Weijie Lin
  */
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/progress.h>
 #include <shogun/ensemble/CombinationRule.h>
 #include <shogun/ensemble/MeanRule.h>
@@ -189,7 +190,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		CFeatures* features;
 		CLabels* labels;
 
-		if (get_global_parallel()->get_num_threads()==1)
+		if (env()->get_num_threads()==1)
 		{
 			features = m_features;
 			labels = m_labels;
@@ -234,7 +235,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		m_bags->push_back(c);
 		}
 
-		if (get_global_parallel()->get_num_threads()!=1)
+		if (env()->get_num_threads()!=1)
 		{
 			SG_UNREF(features);
 			SG_UNREF(labels);
@@ -341,7 +342,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 
 	/* TODO: add parallel support of applying the OOBs
 	  only possible when add_subset is thread-safe
-	#pragma omp parallel for num_threads(parallel->get_num_threads())
+	#pragma omp parallel for num_threads(env()->get_num_threads())
 	*/
 	for (index_t i = 0; i < m_bags->get_num_elements(); i++)
 	{

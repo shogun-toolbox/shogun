@@ -13,6 +13,7 @@
 #include <system_error>
 #include <vector>
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/macros.h>
 #include <shogun/io/fs/FileSystemRegistry.h>
 #include <string_view>
@@ -195,7 +196,7 @@ namespace shogun
 		  ::shogun::io::detail::FileSystemRegister<factory>(fsr, scheme);
 
 #define REGISTER_FILE_SYSTEM(scheme, factory) \
-	REGISTER_FILE_SYSTEM_FACTORY(FileSystemRegistry::instance(), scheme, factory);
+	REGISTER_FILE_SYSTEM_FACTORY(env(), scheme, factory);
 
 	} // namespace io
 } // namespace shogun

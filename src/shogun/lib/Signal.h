@@ -30,7 +30,7 @@ namespace shogun
 	 *  option bewteen: immediately exit the running method and fall back to
 	 *  the command line, prematurely stop the current algoritmh and do nothing.
 	 */
-	class CSignal : public CSGObject
+	class CSignal
 	{
 	public:
 		typedef rxcpp::subjects::subject<int> SGSubjectS;

@@ -1,9 +1,6 @@
 #include <shogun/mathematics/ajd/JediDiag.h>
 #include <shogun/lib/memory.h>
 
-
-#include <shogun/base/init.h>
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 

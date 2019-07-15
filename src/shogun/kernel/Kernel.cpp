@@ -359,7 +359,7 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 // Fills cache for the rows in key
 void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
-	int32_t nthreads=parallel->get_num_threads();
+	int32_t nthreads=env()->get_num_threads();
 
 	if (nthreads<2)
 	{
@@ -1322,7 +1322,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 
 	result=SG_MALLOC(T, total_num);
 
-	int32_t num_threads=parallel->get_num_threads();
+	int32_t num_threads=env()->get_num_threads();
 	K_THREAD_PARAM<T> params;
 	int64_t step = total_num/num_threads;
 	index_t t = 0;

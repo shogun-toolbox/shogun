@@ -12,6 +12,8 @@
 
 namespace shogun
 {
+	class ShogunEnv;
+
 	namespace io
 	{
 		class FileSystem;
@@ -20,14 +22,10 @@ namespace shogun
 
 		class FileSystemRegistry
 		{
+			friend class shogun::ShogunEnv;
+
 		public:
 			typedef std::function<FileSystem*()> Factory;
-
-
-			static FileSystemRegistry* instance() {
-				static FileSystemRegistry* fsr = new FileSystemRegistry();
-				return fsr;
-			}
 
 			/**
 			 *
