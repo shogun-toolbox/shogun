@@ -1236,6 +1236,9 @@ namespace shogun {
 			Any::register_caster<T, int32_t>([] (T value) { return utils::safe_convert<int32_t>(value); });
 			Any::register_caster<T, int64_t>([] (T value) { return utils::safe_convert<int64_t>(value); });
 		}
+		if constexpr (traits::has_to_string<T>::value) {
+			Any::register_caster<T, std::string>([] (T value) { return std::to_string(value); });
+		}
 	}
 
 	/** Erases value type i.e. converts it to Any
