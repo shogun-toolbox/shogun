@@ -865,3 +865,16 @@ TEST(Any, stateful_visit)
 	any.visit_with(&visitor);
 	EXPECT_EQ(visitor.ss.str(), initial_value + initial_value);
 }
+
+TEST(Any, to_string_using_std)
+{
+	EXPECT_EQ(make_any<int>(0).cast<std::string>(), "0");
+	EXPECT_EQ(make_any<long>(0).cast<std::string>(), "0");
+	EXPECT_EQ(make_any<long long>(0).cast<std::string>(), "0");
+	EXPECT_EQ(make_any<unsigned>(0).cast<std::string>(), "0");
+	EXPECT_EQ(make_any<unsigned long>(0).cast<std::string>(), "0");
+	EXPECT_EQ(make_any<unsigned long long>(0).cast<std::string>(), "0");
+	EXPECT_EQ(make_any<float>(0).cast<std::string>(), "0.000000");
+	EXPECT_EQ(make_any<double>(0).cast<std::string>(), "0.000000");
+	EXPECT_EQ(make_any<long double>(0).cast<std::string>(), "0.000000");
+}
