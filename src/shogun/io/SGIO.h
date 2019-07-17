@@ -19,6 +19,10 @@
 #include <locale.h>
 #include <sys/types.h>
 #include <functional>
+#include <type_traits>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/bundled/printf.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -29,7 +33,6 @@ namespace shogun
 	class RefCount;
 	class SGIO;
 }
-
 
 namespace shogun
 {
@@ -42,13 +45,10 @@ enum EMessageType
 	MSG_GCDEBUG=0,
 	MSG_DEBUG=1,
 	MSG_INFO=2,
-	MSG_NOTICE=3,
-	MSG_WARN=4,
-	MSG_ERROR=5,
-	MSG_CRITICAL=6,
-	MSG_ALERT=7,
-	MSG_EMERGENCY=8,
-	MSG_MESSAGEONLY=9
+	MSG_WARN=3,
+	MSG_ERROR=4,
+	MSG_CRITICAL=5,
+	MSG_MESSAGEONLY=6
 };
 
 /** The io functions can optionally prepend the function name or the line from
@@ -61,7 +61,7 @@ enum EMessageLocation
 	MSG_LINE_AND_FILE=2
 };
 
-#define NUM_LOG_LEVELS 10
+#define NUM_LOG_LEVELS 7
 #define FBUFSIZE 4096
 
 #ifdef DARWIN
@@ -85,58 +85,54 @@ enum EMessageLocation
 
 // printf like functions (with additional severity level)
 // for object derived from CSGObject
-#define SG_GCDEBUG(...) {											\
-	if (SG_UNLIKELY(io->loglevel_above(MSG_GCDEBUG)))				\
-		io->message(MSG_GCDEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+#define _SRC_LOC spdlog::source_loc{__FILE__, __LINE__, __PRETTY_FUNCTION__}
+
+#define SG_GCDEBUG(...) {								\
+	io->message(MSG_GCDEBUG, _SRC_LOC, __VA_ARGS__);	\
 }
 
-#define SG_DEBUG(...) {												\
-	if (SG_UNLIKELY(io->loglevel_above(MSG_DEBUG)))					\
-		io->message(MSG_DEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+#define SG_DEBUG(...) {									\
+	io->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
 }
 
-#define SG_OBJ_DEBUG(o,...) {										\
-	if (SG_UNLIKELY(o->io->loglevel_above(MSG_DEBUG)))				\
-		o->io->message(MSG_DEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+#define SG_OBJ_DEBUG(o,...) {							\
+	o->io->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
 }
 
-
-#define SG_INFO(...) {												\
-	if (SG_UNLIKELY(io->loglevel_above(MSG_INFO)))					\
-		io->message(MSG_INFO, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);		\
+#define SG_INFO(...) {									\
+	io->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);		\
 }
 
-#define SG_CLASS_INFO(c, ...) {										\
-	if (SG_UNLIKELY(c::io->loglevel_above(MSG_INFO)))				\
-		c::io->message(MSG_INFO, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+#define SG_CLASS_INFO(c, ...) {							\
+	c::io->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);	\
 }
 
-#define SG_WARNING(...) { io->message(MSG_WARN, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_WARNING(...) { io->message(MSG_WARN, _SRC_LOC, __VA_ARGS__); }
 #define SG_THROW(ExceptionType, ...)                                           \
 	{                                                                          \
 		io->template error<ExceptionType>(                                     \
-		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
 	}
 #define SG_ERROR(...) SG_THROW(ShogunException, __VA_ARGS__)
 #define SG_OBJ_ERROR(o, ...)                                                   \
 	{                                                                          \
 		o->io->template error<ShogunException>(                                \
-		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
 	}
 #define SG_CLASS_ERROR(c, ...)                                                 \
 	{                                                                          \
 		c::io->template error<ShogunException>(                                \
-		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
 	}
-#define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, __PRETTY_FUNCTION__, __FILE__, __LINE__, \
+#define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, _SRC_LOC, \
 __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 "work or not to the Shogun mailing list.  Thanking you in " \
 "anticipation.  " __VA_ARGS__); }
 
-#define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_NOTIMPLEMENTED { io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_GPL_ONLY { io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
+#define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
+#define SG_NOTIMPLEMENTED { io->not_implemented(_SRC_LOC); }
+#define SG_GPL_ONLY { io->gpl_only(_SRC_LOC); }
 
 #define SG_DONE() {								\
 	if (SG_UNLIKELY(io->get_show_progress()))	\
@@ -147,36 +143,33 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_IO env()->io()
 
 #define SG_SGCDEBUG(...) {											\
-	if (SG_UNLIKELY(SG_IO->loglevel_above(MSG_GCDEBUG)))			\
-		SG_IO->message(MSG_GCDEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);\
+	SG_IO->message(MSG_GCDEBUG, _SRC_LOC, __VA_ARGS__);\
 }
 
 #define SG_SDEBUG(...) {											\
-	if (SG_UNLIKELY(SG_IO->loglevel_above(MSG_DEBUG)))			\
-		SG_IO->message(MSG_DEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+	SG_IO->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
 }
 
 #define SG_SINFO(...) {												\
-	if (SG_UNLIKELY(SG_IO->loglevel_above(MSG_INFO)))				\
-		SG_IO->message(MSG_INFO,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+	SG_IO->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);	\
 }
 
-#define SG_SWARNING(...) { SG_IO->message(MSG_WARN,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SWARNING(...) { SG_IO->message(MSG_WARN, _SRC_LOC, __VA_ARGS__); }
 #define SG_STHROW(Exception, ...)                                              \
 	{                                                                          \
 		SG_IO->template error<Exception>(                                      \
-		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
 	}
 #define SG_SERROR(...) SG_STHROW(ShogunException, __VA_ARGS__)
-#define SG_SPRINT(...) { SG_IO->message(MSG_MESSAGEONLY,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SPRINT(...) { SG_IO->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
 
 #define SG_SDONE() {								\
 	if (SG_UNLIKELY(SG_IO->get_show_progress()))	\
 		SG_IO->done();								\
 }
 
-#define SG_SNOTIMPLEMENTED { SG_IO->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_SGPL_ONLY { SG_IO->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_SNOTIMPLEMENTED { SG_IO->not_implemented(_SRC_LOC); }
+#define SG_SGPL_ONLY { SG_IO->gpl_only(_SRC_LOC); }
 
 #define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\
@@ -249,16 +242,6 @@ class SGIO
 		 */
 		EMessageType get_loglevel() const;
 
-		/** loglevel above
-		 *
-		 * @return whether loglevel is above specified level and thus the
-		 * message should be printed
-		 */
-		inline bool loglevel_above(EMessageType type) const
-		{
-			return loglevel <= type;
-		}
-
 		/** get show_progress
 		 *
 		 * @return if progress bar is shown
@@ -284,42 +267,46 @@ class SGIO
 			return syntax_highlight;
 		}
 
-		/** format a message
-		 *
-		 * optionally prefixed with file name and line number
-		 * from (use -1 in line to disable this)
-		 *
-		 * @param prio message priority
-		 * @param function the function name from where the message is called
-		 * @param file file name from where the message is called
-		 * @param line line number from where the message is called
-		 * @param fmt format string
-		 */
-		std::string format(
-		    EMessageType prio, const char* function, const char* file,
-		    int32_t line, const char* fmt, ...) const;
-
 		/** format and print a message
 		 * @param prio message priority
+		 * @param loc source code location
+		 * @param msg message format
 		 * @param args arguments for formatting message
 		 */
 		template <typename... Args>
-		void message(EMessageType prio, Args&&... args) const;
+		void message(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const;
+
+		/** format and print a message
+		 * @param prio message priority
+		 * @param msg message format
+		 * @param args arguments for formatting message
+		 */
+		template <typename... Args>
+		void message(EMessageType prio, const char* msg, const Args&... args) const
+		{
+			message(prio, spdlog::source_loc{}, msg, args...);
+		}
 
 		/** format and print a message, and then throw an exception
 		 * @tparam ExceptionType type of the exception to throw
 		 * @param prio message priority
+		 * @param loc source code location
 		 * @param args arguments for formatting message
 		 */
 		template <typename Exception, typename... Args>
-		void error(EMessageType prio, Args&&... args) const;
+		void error(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const;
 
-		/** print a message with the print function decided by priority
-		 *
+		/** format and print a message, and then throw an exception
+		 * @tparam ExceptionType type of the exception to throw
 		 * @param prio message priority
-		 * @param msg message
+		 * @param loc source code location
+		 * @param args arguments for formatting message
 		 */
-		void print(EMessageType prio, const std::string& msg) const;
+		template <typename Exception, typename... Args>
+		void error(EMessageType prio, const char* msg, const Args&... args) const
+		{
+			error(prio, spdlog::source_loc{}, msg, args...);
+		}
 
 		/** print 'done' with priority INFO,
 		 * but only if progress bar is enabled
@@ -328,35 +315,28 @@ class SGIO
 		void done();
 
 		/** print error message 'not implemented' */
-		inline void not_implemented(const char* function, const char* file, int32_t line) const
+		inline void not_implemented(const spdlog::source_loc& loc={}) const
 		{
 			error<ShogunException>(
-			    MSG_ERROR, function, file, line,
+			    MSG_ERROR, loc,
 			    "Sorry, not yet implemented .\n");
 		}
 
 		/** print error message 'Only available with GPL parts.' */
-		inline void gpl_only(const char* function, const char* file, int32_t line) const
+		inline void gpl_only(const spdlog::source_loc& loc={}) const
 		{
 			error<ShogunException>(
-			    MSG_ERROR, function, file, line, "This feature is only "
+			    MSG_ERROR, loc, "This feature is only "
 			                                     "available if Shogun is built "
 			                                     "with GPL codes.\n");
 		}
 
 		/** print warning message 'function deprecated' */
-		inline void deprecated(const char* function, const char* file, int32_t line) const
+		inline void deprecated(const spdlog::source_loc& loc={}) const
 		{
-			message(MSG_WARN, function, file, line,
+			message(MSG_WARN, loc,
 					"This function is deprecated and will be removed soon.\n");
 		}
-
-		/** print a buffered message
-		 *
-		 * @param prio message priority
-		 * @param fmt format string
-		 */
-		void buffered_message(EMessageType prio, const char *fmt, ... ) const;
 
 		/** skip leading spaces
 		 *
@@ -371,27 +351,6 @@ class SGIO
 		 * @return string after after skipping leading blanks
 		 */
 		static char* skip_blanks(char* str);
-
-		/** get target
-		 *
-		 * @return file descriptor for target
-		 */
-		inline FILE* get_target() const
-		{
-			return target;
-		}
-
-		/** set target
-		 *
-		 * @param target file descriptor for target
-		 */
-		void set_target(FILE* target);
-
-		/** set target to stderr */
-		inline void set_target_to_stderr() { set_target(stderr); }
-
-		/** set target to stdout */
-		inline void set_target_to_stdout() { set_target(stdout); }
 
 		/** enable progress bar */
 		inline void enable_progress()
@@ -418,30 +377,24 @@ class SGIO
 		 * @param location location info (none, function, ...)
 		 *
 		 */
-		inline void set_location_info(EMessageLocation location)
+		void set_location_info(EMessageLocation location)
 		{
 			location_info = location;
-
-			if (SG_IO!=this)
-				SG_IO->set_location_info(location);
+			update_pattern();
 		}
 
 		/** enable syntax highlighting */
 		inline void enable_syntax_highlighting()
 		{
 			syntax_highlight=true;
-
-			if (SG_IO!=this)
-				SG_IO->enable_syntax_highlighting();
+			update_pattern();
 		}
 
 		/** disable syntax highlighting */
 		inline void disable_syntax_highlighting()
 		{
 			syntax_highlight=false;
-
-			if (SG_IO!=this)
-				SG_IO->disable_syntax_highlighting();
+			update_pattern();
 		}
 
 		/**
@@ -516,17 +469,9 @@ class SGIO
 		inline const char* get_name() { return "SGIO"; }
 
 	protected:
-		/** get message intro
-		 *
-		 * @param prio message priority
-		 * @return message intro or NULL if message is not to be
-		 *         printed
-		 */
-		const char* get_msg_intro(EMessageType prio) const;
+		void update_pattern();
 
 	protected:
-		/** target file */
-		FILE* target;
 		/** if progress bar shall be shown */
 		bool show_progress;
 		/** if each print function should append filename and linenumber of
@@ -535,39 +480,46 @@ class SGIO
 		/** whether syntax highlighting is enabled */
 		bool syntax_highlight;
 
-		/** log level */
-		EMessageType loglevel;
-		/** available log levels */
-		static const EMessageType levels[NUM_LOG_LEVELS];
-		/** message strings syntax highlighted*/
-		static const char* message_strings_highlighted[NUM_LOG_LEVELS];
-		/** message strings */
-		static const char* message_strings[NUM_LOG_LEVELS];
-
 	private:
+		std::shared_ptr<spdlog::logger> logger;
 		RefCount* m_refcount;
-		/// function called to print normal messages
-		std::function<void(FILE*, const char*)> print_message;
-		/// function called to print warning messages
-		std::function<void(FILE*, const char*)> print_warning;
-		/// function called to print error messages
-		std::function<void(FILE*, const char*)> print_error;
 };
 
-template <typename... Args>
-void SGIO::message(EMessageType prio, Args&&... args) const
+namespace sgio_traits
 {
-	const auto& msg = format(prio, std::forward<Args>(args)...);
-	print(prio, msg);
+	template <typename T>
+	constexpr static inline auto cast_pointer_to_void(const T& t)
+	{
+		if constexpr (std::is_pointer<T>::value)
+			return (void *) t;
+		else if constexpr (std::is_array<T>::value)
+			return &t[0];
+		else
+			return t;
+	}
+}
+
+template <typename... Args>
+void SGIO::message(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const
+{
+	// A solution to format using printf style
+	// This is not optimal because it enforces formatting at call site
+	// and the priority is checked twice
+	const auto _prio = static_cast<spdlog::level::level_enum>(prio);
+	if (logger->should_log(_prio))
+	{
+		std::string msg_formatted =
+			fmt::sprintf(msg, sgio_traits::cast_pointer_to_void(args)...);
+		logger->log(loc, _prio, msg_formatted);
+	}
 }
 
 template <typename ExceptionType, typename... Args>
-void SGIO::error(EMessageType prio, Args&&... args) const
+void SGIO::error(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const
 {
 	static_assert(std::is_nothrow_copy_constructible<ExceptionType>::value,
 			  "ExceptionType must be nothrow copy constructible");
-	const auto& msg = format(prio, std::forward<Args>(args)...);
-	print(prio, msg);
+	message(prio, loc, msg, args...);
 	throw ExceptionType(msg);
 }
 }

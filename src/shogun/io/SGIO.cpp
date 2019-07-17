@@ -12,7 +12,10 @@
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/RefCount.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
+#include <sstream>
 #include <stdarg.h>
 #include <ctype.h>
 #include <sys/stat.h>
@@ -29,136 +32,31 @@
 
 using namespace shogun;
 
-const EMessageType SGIO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO, MSG_NOTICE,
-	MSG_WARN, MSG_ERROR, MSG_CRITICAL, MSG_ALERT, MSG_EMERGENCY, MSG_MESSAGEONLY};
-
-const char* SGIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
-	"[NOTICE] \0", "[WARN] \0", "[ERROR] \0",
-	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
-
-const char* SGIO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
-	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
-	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
-
-
-void print_default(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 SGIO::SGIO()
-    : target(stdout), show_progress(false), location_info(MSG_NONE),
-      syntax_highlight(true), loglevel(MSG_WARN)
+    : show_progress(false), location_info(MSG_NONE),
+      syntax_highlight(true)
 {
 	m_refcount = new RefCount();
-	print_message = &print_default;
-	print_warning = &print_default;
-	print_error = &print_default;
+	logger = spdlog::stdout_color_mt("console");
+	update_pattern();
 }
 
 SGIO::SGIO(const SGIO& orig)
-    : target(orig.get_target()), show_progress(orig.get_show_progress()),
+    : show_progress(orig.get_show_progress()),
       location_info(orig.get_location_info()),
       syntax_highlight(orig.get_syntax_highlight()),
-      loglevel(orig.get_loglevel()),
-      print_message(orig.print_message),
-      print_warning(orig.print_warning),
-      print_error(orig.print_error)
+	  logger(orig.logger)
 {
 	m_refcount = new RefCount();
+	update_pattern();
 }
-
-std::string SGIO::format(
-    EMessageType prio, const char* function, const char* file, int32_t line,
-    const char* fmt, ...) const
-{
-	const char* msg_intro=get_msg_intro(prio);
-
-	char str[4096];
-	snprintf(str, sizeof(str), "%s", msg_intro);
-	int len = strlen(msg_intro);
-	char* s = str + len;
-
-	/* file and line are shown for warnings and worse */
-	if (location_info == MSG_LINE_AND_FILE || prio == MSG_WARN ||
-	    prio == MSG_ERROR)
-	{
-		snprintf(s, sizeof(str) - len, "In file %s line %d: ", file, line);
-		len = strlen(str);
-		s = str + len;
-	}
-	else if (location_info == MSG_FUNCTION)
-	{
-		snprintf(s, sizeof(str) - len, "%s: ", function);
-		len = strlen(str);
-		s = str + len;
-	}
-	else if (location_info == MSG_NONE)
-	{
-		;
-	}
-
-	va_list list;
-	va_start(list, fmt);
-	vsnprintf(s, sizeof(str) - len, fmt, list);
-	va_end(list);
-
-	return std::string(str);
-}
-
-void SGIO::print(EMessageType prio, const std::string& msg) const
-{
-	switch (prio)
-	{
-	case MSG_GCDEBUG:
-	case MSG_DEBUG:
-	case MSG_INFO:
-	case MSG_NOTICE:
-	case MSG_MESSAGEONLY:
-		if (print_message)
-			print_message(target, msg.c_str());
-		break;
-
-	case MSG_WARN:
-		if (print_warning)
-			print_warning(target, msg.c_str());
-		break;
-
-	case MSG_ERROR:
-	case MSG_CRITICAL:
-	case MSG_ALERT:
-	case MSG_EMERGENCY:
-		if (print_error)
-			print_error(target, msg.c_str());
-		break;
-	default:
-		break;
-	}
-
-	fflush(target);
-}
-
-void SGIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
-{
-	const char* msg_intro=get_msg_intro(prio);
-
-	if (msg_intro)
-	{
-		fprintf(target, "%s", msg_intro);
-		va_list list;
-		va_start(list,fmt);
-		vfprintf(target,fmt,list);
-		va_end(list);
-	}
-}
-
 
 void SGIO::done()
 {
 	if (!show_progress)
 		return;
 
-	message(MSG_INFO, "", "", -1, "done.\n");
+	message(MSG_INFO, "done.\n");
 }
 
 char* SGIO::skip_spaces(char* str)
@@ -191,33 +89,12 @@ char* SGIO::skip_blanks(char* str)
 
 EMessageType SGIO::get_loglevel() const
 {
-	return loglevel;
+	return static_cast<EMessageType>(logger->level());
 }
 
 void SGIO::set_loglevel(EMessageType level)
 {
-	loglevel=level;
-}
-
-void SGIO::set_target(FILE* t)
-{
-	target=t;
-}
-
-const char* SGIO::get_msg_intro(EMessageType prio) const
-{
-	for (int32_t i=NUM_LOG_LEVELS-1; i>=0; i--)
-	{
-		if (levels[i]==prio)
-		{
-			if (syntax_highlight)
-				return message_strings_highlighted[i];
-			else
-				return message_strings[i];
-		}
-	}
-
-	return nullptr; // unreachable
+	logger->set_level(static_cast<spdlog::level::level_enum>(level));
 }
 
 char* SGIO::c_string_of_substring(substring s)
@@ -299,4 +176,27 @@ int32_t SGIO::unref()
 	}
 
 	return rc;
+}
+
+void SGIO::update_pattern()
+{
+	std::stringstream pattern_builder;
+	pattern_builder << "[%D %T ";
+	switch(location_info)
+	{
+	case MSG_LINE_AND_FILE:
+		pattern_builder << "%@ ";
+		break;
+	case MSG_FUNCTION:
+		pattern_builder << "%! ";
+		break;
+	default:
+		break;
+	}
+	if (syntax_highlight)
+		pattern_builder << "%^%l%$] ";
+	else
+		pattern_builder << "%l] ";
+
+	logger->set_pattern(pattern_builder.str());
 }
