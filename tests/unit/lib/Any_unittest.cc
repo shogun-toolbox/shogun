@@ -76,6 +76,11 @@ public:
 		return true;
 	}
 
+	std::string to_string() const
+	{
+		return "abracadabra";
+	}
+
 	bool cloned = false;
 };
 
@@ -868,13 +873,19 @@ TEST(Any, stateful_visit)
 
 TEST(Any, to_string_using_std)
 {
-	EXPECT_EQ(make_any<int>(0).cast<std::string>(), "0");
-	EXPECT_EQ(make_any<long>(0).cast<std::string>(), "0");
-	EXPECT_EQ(make_any<long long>(0).cast<std::string>(), "0");
-	EXPECT_EQ(make_any<unsigned>(0).cast<std::string>(), "0");
-	EXPECT_EQ(make_any<unsigned long>(0).cast<std::string>(), "0");
-	EXPECT_EQ(make_any<unsigned long long>(0).cast<std::string>(), "0");
-	EXPECT_EQ(make_any<float>(0).cast<std::string>(), "0.000000");
-	EXPECT_EQ(make_any<double>(0).cast<std::string>(), "0.000000");
-	EXPECT_EQ(make_any<long double>(0).cast<std::string>(), "0.000000");
+	EXPECT_EQ(std::to_string(static_cast<int>(0)), make_any<int>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<long>(0)), make_any<long>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<long long>(0)), make_any<long long>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<unsigned>(0)), make_any<unsigned>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<unsigned long>(0)), make_any<unsigned long>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<unsigned long long>(0)), make_any<unsigned long long>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<float>(0)), make_any<float>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<double>(0)), make_any<double>(0).cast<std::string>());
+	EXPECT_EQ(std::to_string(static_cast<long double>(0)), make_any<long double>(0).cast<std::string>());
+}
+
+TEST(Any, own_to_string)
+{
+	SimpleValue value{};
+	EXPECT_EQ(value.to_string(), make_any(value).cast<std::string>());
 }
