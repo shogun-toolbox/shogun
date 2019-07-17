@@ -5,8 +5,8 @@
  *          Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
 #include <iostream>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -331,28 +331,18 @@ void tester()
 	SG_SPRINT( "finished \n");
 }
 
-namespace shogun
-{
-	extern Version* sg_version;
-	extern SGIO* sg_io;
-}
-
 int main()
 {
-	init_shogun(&print_message, &print_warning,
-			&print_error);
 	try
 	{
-		sg_version->print_version();
-		sg_io->set_loglevel(MSG_INFO);
+		env()->print_version();
+		env()->io()->set_loglevel(MSG_INFO);
 		tester();
 	}
 	catch(ShogunException & sh)
 	{
 		printf("%s",sh.what());
 	}
-
-	exit_shogun();
 
 	return 0;
 }

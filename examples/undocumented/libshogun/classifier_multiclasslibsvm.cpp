@@ -2,13 +2,11 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/MulticlassLibSVM.h>
-#include <shogun/base/init.h>
 
 using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
 	index_t num_vec=3;
 	index_t num_feat=2;
 	index_t num_class=2;
@@ -51,7 +49,6 @@ int main(int argc, char** argv)
 	// free up memory
 	SG_UNREF(svm);
 
-	exit_shogun();
 	return 0;
 }
 

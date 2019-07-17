@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/NeighborhoodPreservingEmbedding.h>
 #include <shogun/mathematics/Math.h>
@@ -15,8 +14,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun();
-
 	int N = 100;
 	int dim = 3;
 	float64_t* matrix = new double[N*dim];
@@ -28,12 +25,11 @@ int main(int argc, char** argv)
 	CNeighborhoodPreservingEmbedding* npe = new CNeighborhoodPreservingEmbedding();
 	npe->set_target_dim(2);
 	npe->set_k(15);
-	npe->parallel->set_num_threads(4);
+	npe->get_global_parallel()->set_num_threads(4);
 	auto embedding = npe->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(npe);
 	SG_UNREF(features);
-	exit_shogun();
 	return 0;
 }
 #else //USE_GPL_SHOGUN

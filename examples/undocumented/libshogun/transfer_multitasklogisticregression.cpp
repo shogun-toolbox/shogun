@@ -6,7 +6,6 @@
 #include <shogun/transfer/multitask/Task.h>
 #include <shogun/transfer/multitask/TaskTree.h>
 #include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
@@ -19,8 +18,6 @@ void print_message(FILE* target, const char* str)
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	// create some data
 	SGMatrix<float64_t> matrix(2,4);
 	for (int32_t i=0; i<2*4; i++)
@@ -59,7 +56,6 @@ int main(int argc, char** argv)
 	regressor->get_w().display_vector();
 
 	SG_UNREF(regressor);
-	exit_shogun();
 	return 0;
 }
 #else //USE_GPL_SHOGUN

@@ -6,21 +6,13 @@
 #include <shogun/lib/IndexBlock.h>
 #include <shogun/lib/IndexBlockTree.h>
 #include <shogun/lib/IndexBlockGroup.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	// create some data
 	SGMatrix<float64_t> matrix(4,4);
 	for (int32_t i=0; i<4*4; i++)
@@ -57,7 +49,6 @@ int main(int argc, char** argv)
 	regressor->get_w().display_vector();
 
 	SG_UNREF(regressor);
-	exit_shogun();
 	return 0;
 }
 #else //USE_GPL_SHOGUN

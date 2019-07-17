@@ -1,5 +1,4 @@
 #include <shogun/lib/config.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/io/MLDataHDF5File.h>
@@ -10,7 +9,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
 #if defined(HAVE_HDF5) && defined( HAVE_CURL)
 	CMLDataHDF5File* hdf = NULL;
 	try
@@ -20,7 +18,6 @@ int main(int argc, char** argv)
 	catch (ShogunException& e)
 	{
 		SG_UNREF(hdf);
-		exit_shogun();
 		return 0;
 	}
 	float64_t* mat=NULL;
@@ -39,6 +36,5 @@ int main(int argc, char** argv)
 	SG_FREE(mat);
 	SG_UNREF(hdf);
 #endif // HAVE_CURL && HAVE_HDF5
-	exit_shogun();
 	return 0;
 }

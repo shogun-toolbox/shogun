@@ -4,16 +4,10 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Fernando Iglesias
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 const int32_t num_labels=10;
 const int32_t num_classes=3;
@@ -77,11 +71,7 @@ void test()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

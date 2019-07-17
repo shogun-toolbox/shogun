@@ -1,5 +1,4 @@
 #include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGString.h>
@@ -94,13 +93,9 @@ void create_tree_graph(int hh, int ww)
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
-	//sg_io->set_loglevel(MSG_DEBUG);
+	//env()->io()->set_loglevel(MSG_DEBUG);
 
 	create_tree_graph(30, 30);
-
-	exit_shogun();
 
 	return 0;
 }

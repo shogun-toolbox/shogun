@@ -4,7 +4,6 @@
  * Authors: Soeren Sonnenburg, Thoralf Klein, Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
@@ -92,7 +91,7 @@ void test_svmlight()
 	float64_t C=1;
 	CSVM* svm=new CSVMLight(C, kernel, labels_train);
 //	CSVM* svm=new CLibSVM(C, kernel, labels_train);
-	svm->parallel->set_num_threads(1);
+	svm->get_global_parallel()->set_num_threads(1);
 	svm->train(feats_train);
 	SGVector<float64_t> alphas=svm->get_alphas();
 	SGVector<index_t> svs=svm->get_support_vectors();
@@ -186,12 +185,10 @@ void test_svmlight()
 
 int main()
 {
-	init_shogun_with_defaults();
-//	sg_io->set_loglevel(MSG_DEBUG);
+//	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_svmlight();
 
-	exit_shogun();
 	return 0;
 }
 #else

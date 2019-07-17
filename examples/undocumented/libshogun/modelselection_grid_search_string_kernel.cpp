@@ -5,7 +5,6 @@
  *          Sergey Lisitsyn, Roman Votyakov
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
@@ -20,11 +19,6 @@
 
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 CModelSelectionParameters* create_param_tree()
 {
@@ -65,8 +59,6 @@ CModelSelectionParameters* create_param_tree()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	index_t num_strings=10;
 	index_t max_string_length=20;
 	index_t min_string_length=max_string_length/2;
@@ -155,8 +147,6 @@ int main(int argc, char **argv)
 	SG_UNREF(result);
 	SG_UNREF(best_combination);
 	SG_UNREF(grid_search);
-
-	exit_shogun();
 
 	return 0;
 }

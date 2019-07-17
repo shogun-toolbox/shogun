@@ -5,7 +5,7 @@
  *          Viktor Gal
  */
 
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
@@ -145,12 +145,8 @@ void test()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-	sg_io->set_loglevel(MSG_INFO);
-
+	env()->io()->set_loglevel(MSG_INFO);
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

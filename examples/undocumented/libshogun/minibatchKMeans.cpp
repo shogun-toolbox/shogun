@@ -4,7 +4,6 @@
  * Authors: Bjoern Esser
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
@@ -15,7 +14,6 @@ using namespace shogun;
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
 
 	int32_t dim_features=2;
 
@@ -69,8 +67,6 @@ int main(int argc, char **argv)
 	SG_UNREF(result);
 	SG_UNREF(clustering);
 	SG_UNREF(features);
-
-	exit_shogun();
 
 	return 0;
 }

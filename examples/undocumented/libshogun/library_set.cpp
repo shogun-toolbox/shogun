@@ -1,20 +1,13 @@
 #include <shogun/lib/Set.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 
 using namespace shogun;
 
 #define SIZE 8
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char** argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
 	double v[SIZE] = {0.0,0.1,0.2,0.2,0.3,0.4,0.5,0.5};
 
 	CSet<double>* set = new CSet<double>(SIZE/2, SIZE/2);
@@ -33,6 +26,5 @@ int main(int argc, char** argv)
 	}
 
 	SG_UNREF(set);
-	exit_shogun();
 	return 0;
 }

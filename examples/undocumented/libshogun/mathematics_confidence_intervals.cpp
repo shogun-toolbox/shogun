@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De
  */
 
-#include <shogun/base/init.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
@@ -28,11 +27,7 @@ void test()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

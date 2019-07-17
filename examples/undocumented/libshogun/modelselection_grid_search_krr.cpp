@@ -5,7 +5,6 @@
  *          Sergey Lisitsyn, Soeren Sonnenburg
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Labels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -19,11 +18,6 @@
 #include <shogun/modelselection/ParameterCombination.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 CModelSelectionParameters* create_param_tree()
 {
@@ -153,11 +147,7 @@ void test_cross_validation()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	test_cross_validation();
-
-	exit_shogun();
 
 	return 0;
 }

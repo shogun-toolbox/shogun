@@ -31,8 +31,6 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/base/init.h>
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
@@ -44,8 +42,6 @@ using namespace shogun;
 
 int main(int, char*[])
 {
-	init_shogun_with_defaults();
-
 #ifdef HAVE_LAPACK // for CDataGenerator::generate_gaussian()
 
 	// initialize the random number generator with a fixed seed, for repeatability
@@ -110,6 +106,5 @@ int main(int, char*[])
 
 #endif
 
-	exit_shogun();
 	return 0;
 }

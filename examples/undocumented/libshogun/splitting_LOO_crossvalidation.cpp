@@ -4,7 +4,6 @@
  * Authors: Saurabh Mahindre, Bjoern Esser
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/LOOCrossValidationSplitting.h>
 #include <shogun/labels/RegressionLabels.h>
 
@@ -12,8 +11,6 @@ using namespace shogun;
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	index_t num_labels;
 	index_t runs=10;
 
@@ -67,7 +64,6 @@ int main(int argc, char **argv)
 		SG_UNREF(splitting);
 	}
 
-	exit_shogun();
 
 	return 0;
 }

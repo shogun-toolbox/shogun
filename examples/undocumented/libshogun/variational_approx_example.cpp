@@ -38,7 +38,6 @@
 
 // Eigen3 is required for working with this example
 #include <shogun/lib/config.h>
-#include <shogun/base/init.h>
 #include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
@@ -388,8 +387,6 @@ void test_datasets()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
 	test_datasets();
-	exit_shogun();
 	return 0;
 }

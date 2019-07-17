@@ -1,4 +1,4 @@
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/LatentFeatures.h>
@@ -183,8 +183,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-	sg_io->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	/* check whether the train/test args are given */
 	if (argc < 3)
@@ -211,8 +210,6 @@ int main(int argc, char** argv)
 	SG_SPRINT("Testing with the test set\n");
 	llm.apply(train_feats);
 
-
-	exit_shogun();
 	return 0;
 }
 

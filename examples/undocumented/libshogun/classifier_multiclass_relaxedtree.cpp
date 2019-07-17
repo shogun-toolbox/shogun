@@ -3,7 +3,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/base/init.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
@@ -18,8 +17,6 @@ const char* fname_labels = "../data/7class_example4_train.label";
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	/* dense features from matrix */
 	CCSVFile* feature_file = new CCSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
@@ -63,8 +60,6 @@ int main(int argc, char** argv)
 	SG_UNREF(labels);
 	SG_UNREF(evaluator);
 	SG_UNREF(kernel);
-
-	exit_shogun();
 
 	return 0;
 }

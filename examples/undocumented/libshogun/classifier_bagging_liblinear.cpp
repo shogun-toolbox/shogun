@@ -4,7 +4,6 @@
  * Authors: Viktor Gal, Bjoern Esser
  */
 
-#include <shogun/base/init.h>
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/ensemble/MajorityVote.h>
@@ -17,8 +16,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	float64_t difference = 2.5;
 	index_t dim = 2;
 	index_t num_neg = 20;
@@ -74,8 +71,6 @@ int main(int argc, char** argv)
 	SG_UNREF(pos);
 	SG_UNREF(neg);
 	SG_UNREF(eval);
-
-	exit_shogun();
 
 	return 0;
 }

@@ -4,7 +4,6 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Thoralf Klein, Roman Votyakov
  */
 
-#include <shogun/base/init.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
@@ -13,11 +12,6 @@
 
 using namespace std;
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 void test_parameter_set_multiplication()
 {
@@ -142,12 +136,8 @@ void test_leaf_sets_multiplication()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	test_parameter_set_multiplication();
 	test_leaf_sets_multiplication();
-
-	exit_shogun();
 
 	return 0;
 }

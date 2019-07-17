@@ -1,21 +1,13 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <stdio.h>
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char** argv)
 {
-	init_shogun(&print_message);
-
 	// create some data
 	SGMatrix<float64_t> matrix(2,3);
 	for (int32_t i=0; i<6; i++)
@@ -41,6 +33,5 @@ int main(int argc, char** argv)
 	// free up memory
 	SG_UNREF(kernel);
 
-	exit_shogun();
 	return 0;
 }

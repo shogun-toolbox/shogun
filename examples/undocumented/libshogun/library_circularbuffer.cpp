@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/lib/CircularBuffer.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>
@@ -13,8 +12,6 @@ const int max_line_length = 256;
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	SGVector<char> test_string(const_cast<char* >("all your bayes are belong to us! "), 33, false);
 
 	CCircularBuffer* buffer=new CCircularBuffer(max_line_length);
@@ -43,6 +40,5 @@ int main(int argc, char** argv)
 	SG_UNREF(buffer);
 	SG_UNREF(tokenizer);
 
-	exit_shogun();
 	return 0;
 }

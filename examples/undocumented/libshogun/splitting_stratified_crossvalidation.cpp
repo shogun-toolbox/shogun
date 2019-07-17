@@ -4,21 +4,13 @@
  * Authors: Heiko Strathmann, Soeren Sonnenburg
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	index_t num_labels, num_classes, num_subsets;
 	index_t runs=50;
 
@@ -108,8 +100,6 @@ int main(int argc, char **argv)
 		/* clean up */
 		SG_UNREF(splitting);
 	}
-
-	exit_shogun();
 
 	return 0;
 }

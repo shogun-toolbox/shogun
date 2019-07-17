@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Sergey Lisitsyn, Wu Lin
  */
 
-#include <shogun/base/init.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -14,11 +13,6 @@
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 CModelSelectionParameters* build_complex_example_tree()
 {
@@ -195,8 +189,6 @@ void test_get_combinations(CModelSelectionParameters* tree)
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	CModelSelectionParameters* tree;
 
 	tree=build_root_no_childs_tree();
@@ -233,8 +225,6 @@ int main(int argc, char **argv)
 	SG_REF(tree);
 	test_get_combinations(tree);
 	SG_UNREF(tree);
-
-	exit_shogun();
 
 	return 0;
 }
