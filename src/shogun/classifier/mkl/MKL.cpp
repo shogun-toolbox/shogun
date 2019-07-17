@@ -271,23 +271,25 @@ void CMKL::register_params()
 	rho = 0;
 	lp_initialized = false;
 
-	SG_ADD(&svm, "svm", "wrapper svm");
+	SG_ADD(&svm, "svm", "wrapper svm", ParameterProperties::SETTING);
 	SG_ADD(&C_mkl, "C_mkl", "C mkl", ParameterProperties::HYPER);
-	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl");
+	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl", ParameterProperties::HYPER);
 	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter",
 			ParameterProperties::HYPER);
 	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter",
 			ParameterProperties::HYPER);
 
 	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
-	watch_param("beta_local", &beta_local, &beta_local_size);
+	watch_param("beta_local", &beta_local, &beta_local_size,
+			AnyParameterProperties("subkernel weights on L1 term of elastic net mkl",
+					ParameterProperties::MODEL));
 
-	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps");
-	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon");
+	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps", ParameterProperties::HYPER);
+	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon", ParameterProperties::HYPER);
 	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.");
-	SG_ADD(&w_gap, "w_gap", "gap between interactions");
-	SG_ADD(&rho, "rho", "objective after mkl iterations");
-	SG_ADD(&lp_initialized, "lp_initialized", "if lp is Initialized");
+	SG_ADD(&w_gap, "w_gap", "gap between interactions", ParameterProperties::MODEL);
+	SG_ADD(&rho, "rho", "objective after mkl iterations", ParameterProperties::MODEL);
+	SG_ADD(&lp_initialized, "lp_initialized", "if lp is Initialized", ParameterProperties::SETTING);
 	// Missing: self (3rd party specific, handled in clone())
 }
 
@@ -596,8 +598,8 @@ bool CMKL::perform_mkl_step(
 		else
 			error("Solver type not supported (not compiled in?)");
 
-		w_gap = CMath::abs(1-rho/mkl_objective) ;
-	}
+        w_gap = CMath::abs(1-rho/mkl_objective);
+    }
 
 	kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels, false));
 	SG_FREE(beta);

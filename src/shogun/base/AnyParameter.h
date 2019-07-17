@@ -31,7 +31,8 @@ namespace shogun
 		// result/outcome of training
 		MODEL = 1u << 2,
 
-		// influence training, but no hyper parameter of model (e.g. batch size, bias used)
+		// influence training, but no hyper parameter of model (e.g. batch size,
+		// bias used)
 		SETTING = 1u << 3,
 
 		// has automatically computed value
@@ -52,8 +53,8 @@ namespace shogun
 	        {ParameterProperties::NONE, "NONE"},
 	        {ParameterProperties::HYPER, "HYPER"},
 	        {ParameterProperties::GRADIENT, "GRADIENT"},
-			{ParameterProperties::MODEL, "MODEL"},
-			{ParameterProperties::SETTING, "SETTING"},
+	        {ParameterProperties::MODEL, "MODEL"},
+	        {ParameterProperties::SETTING, "SETTING"},
 	        {ParameterProperties::AUTO, "AUTO"},
 	        {ParameterProperties::READONLY, "READONLY"},
 	        {ParameterProperties::RUNFUNCTION, "RUNFUNCTION"},
@@ -79,9 +80,9 @@ namespace shogun
 		/** Constructor with description and all parameters set to false
 		 * @param description parameter description
 		 * */
-		AnyParameterProperties(
-				const std::string& description)
-				: m_description(description), m_attribute_mask(ParameterProperties::NONE)
+		AnyParameterProperties(const std::string& description)
+		    : m_description(description),
+		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
 		/** Mask constructor
