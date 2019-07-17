@@ -4,7 +4,6 @@
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/LibLinear.h>
@@ -15,11 +14,6 @@
 #include <shogun/lib/SGStringList.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 void print_modsel_parameters(CSGObject* object)
 {
@@ -47,8 +41,6 @@ void print_modsel_parameters(CSGObject* object)
 
 int main(int argc, char** argv)
 {
-	init_shogun(&print_message);
-
 #ifndef HAVE_LAPACK
 	CSGObject* object;
 
@@ -77,7 +69,6 @@ int main(int argc, char** argv)
 	SG_UNREF(object);
 #endif // HAVE_LAPACK
 
-	exit_shogun();
 	return 0;
 }
 

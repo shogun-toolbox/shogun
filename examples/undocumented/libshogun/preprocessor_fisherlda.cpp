@@ -4,8 +4,6 @@
  * Authors: Abhijeet Kislay, Pan Deng, Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
-
 #include <shogun/lib/config.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/preprocessor/FisherLDA.h>
@@ -54,8 +52,6 @@ void test()
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
 	test();
-	exit_shogun();
 	return 0;
 }

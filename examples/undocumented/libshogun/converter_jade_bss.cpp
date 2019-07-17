@@ -5,7 +5,6 @@
  *          Bjoern Esser, Pan Deng
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 
 #include <iostream>
@@ -99,11 +98,7 @@ void test()
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
-
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

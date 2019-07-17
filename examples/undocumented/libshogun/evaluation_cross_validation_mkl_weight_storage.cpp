@@ -4,7 +4,6 @@
  * Authors: Giovanni De Toni, Heiko Strathmann, Thoralf Klein
  */
 
-#include <shogun/base/init.h>
 #include <shogun/base/range.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/classifier/svm/LibSVM.h>
@@ -175,13 +174,10 @@ void test_mkl_cross_validation()
 
 int main()
 {
-	init_shogun_with_defaults();
-
-//	sg_io->set_loglevel(MSG_DEBUG);
+//	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_mkl_cross_validation();
 
-	exit_shogun();
 	return 0;
 }
 

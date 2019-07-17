@@ -1,5 +1,4 @@
 #include <iostream>
-#include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/evaluation/SigmoidCalibration.h>
 #include <shogun/features/DenseFeatures.h>
@@ -36,8 +35,6 @@ void gen_rand_data(SGMatrix<float64_t> features, SGVector<float64_t> labels, flo
 
 int main(int argc, char** argv)
 {
-    init_shogun_with_defaults();
-
     const float64_t svm_C=10;
 
     index_t num_samples=20;
@@ -95,8 +92,6 @@ int main(int argc, char** argv)
 	SG_UNREF(kernel);
 	SG_UNREF(features);
 	SG_UNREF(svm);
-
-	exit_shogun();
 
 	return 0;
 }

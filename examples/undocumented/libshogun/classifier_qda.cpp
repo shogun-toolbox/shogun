@@ -6,7 +6,6 @@
  *          Pan Deng
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/QDA.h>
 #include <shogun/features/DenseFeatures.h>
@@ -55,11 +54,7 @@ void test()
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
-
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

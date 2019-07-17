@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/lib/Hash.h>
 #include <stdio.h>
 
@@ -7,7 +6,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun();
 	uint8_t array[4]={0,1,2,3};
 
 	printf("hash(0)=%0x\n", CHash::MurmurHash3(&array[0], 1, 0xDEADBEAF));
@@ -27,7 +25,6 @@ int main(int argc, char** argv)
 	printf("inc_hash(3)=%0x\n", h);
 	h = CHash::FinalizeIncrementalMurmurHash3(h, carry, 4);
         printf("Final inc_hash(3)=%0x\n", h);
-	exit_shogun();
 	return 0;
 }
 

@@ -4,7 +4,6 @@
  * Authors: Chiyuan Zhang, Fernando Iglesias, Thoralf Klein, Shashwat Lal Das
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>
@@ -15,8 +14,6 @@ using namespace shogun;
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	const char* train_file_name = "../data/7class_example4_train.dense";
 	const char* test_file_name = "../data/7class_example4_test.dense";
 	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
@@ -85,8 +82,6 @@ int main(int argc, char **argv)
 	SG_UNREF(test_file);
 	SG_UNREF(cpt);
 	SG_UNREF(pred);
-
-	exit_shogun();
 
 	return 0;
 }

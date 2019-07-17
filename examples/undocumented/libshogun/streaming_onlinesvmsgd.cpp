@@ -14,8 +14,6 @@ using namespace shogun;
 
 int main()
 {
-	init_shogun_with_defaults();
-
 	// Create a StreamingAsciiFile from the training data
 	char* train_file_name = "../data/train_sparsereal.light";
 	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
@@ -56,8 +54,6 @@ int main()
 	SG_UNREF(train_features);
 	SG_UNREF(train_file);
 	SG_UNREF(sgd);
-
-	exit_shogun();
 
 	return 0;
 }

@@ -8,7 +8,6 @@
 
 #include <shogun/lib/config.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
@@ -130,8 +129,6 @@ int main(int argc, char * argv[])
 	ESolver solver=BMRM;
 	uint32_t feat_dim, num_feat;
 
-	init_shogun_with_defaults();
-
 	if (argc > 1 && argc < 8)
 	{
 		SG_SERROR("Usage: so_multiclass_BMRM <data.in> <feat_dim> <num_feat> <lambda> <icp> <epsilon> <solver> [<cp_models>]\n");
@@ -249,8 +246,6 @@ int main(int argc, char * argv[])
 	// Free memory
 	SG_UNREF(sosvm);
 	SG_UNREF(out);
-
-	exit_shogun();
 
 	return 0;
 }

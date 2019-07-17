@@ -28,7 +28,6 @@
 * either expressed or implied, of the Shogun Development Team.
 */
 
-#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
@@ -87,11 +86,8 @@ void test_custom_kernel_index_subsets()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	test_custom_kernel_index_subsets();
 
-	exit_shogun();
 	return 0;
 }
 

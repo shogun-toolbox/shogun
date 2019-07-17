@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/io/LineReader.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>
@@ -10,8 +9,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	FILE* fin=fopen("../data/label_train_multiclass_digits.dat", "r");
 
 	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
@@ -39,6 +36,5 @@ int main(int argc, char** argv)
 
 	fclose(fin);
 
-	exit_shogun();
 	return 0;
 }

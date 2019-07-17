@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Thoralf Klein
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/SigmoidCalibration.h>
 #include <shogun/labels/BinaryLabels.h>
 
@@ -36,13 +35,10 @@ void test_sigmoid_fitting()
 
 int main()
 {
-	init_shogun_with_defaults();
-
-//	sg_io->set_loglevel(MSG_DEBUG);
+//	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_sigmoid_fitting();
 
-	exit_shogun();
 	return 0;
 }
 

@@ -5,7 +5,6 @@
  *          Evgeniy Andreev, Soumyajit De, Viktor Gal, Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/LinearKernel.h>
@@ -15,11 +14,6 @@
 #include <shogun/evaluation/MeanSquaredError.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 void test_cross_validation()
 {
@@ -114,11 +108,7 @@ void test_cross_validation()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	test_cross_validation();
-
-	exit_shogun();
 
 	return 0;
 }

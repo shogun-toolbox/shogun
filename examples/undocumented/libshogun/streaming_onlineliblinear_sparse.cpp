@@ -5,7 +5,6 @@
  *          Sergey Lisitsyn, Bjoern Esser
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 
@@ -22,8 +21,6 @@ using namespace shogun;
 
 int main(int argc, char* argv[])
 {
-    init_shogun_with_defaults();
-
     float64_t C = 1.0;
     char *train_file_name = (char*)"../data/train_sparsereal.light";
     char *test_file_name = (char*)"../data/test_sparsereal.light";
@@ -130,7 +127,6 @@ int main(int argc, char* argv[])
     }
 
     SG_UNREF(svm);
-    exit_shogun();
 
     return 0;
 }

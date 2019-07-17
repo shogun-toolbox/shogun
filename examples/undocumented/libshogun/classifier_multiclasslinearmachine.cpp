@@ -5,7 +5,7 @@
 #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 
 #define  EPSILON  1e-5
 
@@ -67,13 +67,9 @@ void test()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
-	sg_io->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

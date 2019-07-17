@@ -5,7 +5,6 @@
  *          Evgeniy Andreev, Chiyuan Zhang, Thoralf Klein, Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
@@ -21,16 +20,8 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
-
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	int32_t num_clusters=4;
 	int32_t num_features=11;
 	int32_t dim_features=3;
@@ -100,8 +91,6 @@ int main(int argc, char **argv)
 	SG_UNREF(clustering);
 	SG_UNREF(labels);
 	SG_UNREF(features);
-
-	exit_shogun();
 
 	return 0;
 }

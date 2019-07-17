@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/DiffusionMaps.h>
 #include <shogun/mathematics/Math.h>
@@ -15,8 +14,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun();
-
 	int N = 100;
 	int dim = 3;
 	float64_t* matrix = new double[N*dim];
@@ -28,11 +25,10 @@ int main(int argc, char** argv)
 	CDiffusionMaps* dmaps = new CDiffusionMaps();
 	dmaps->set_target_dim(2);
 	dmaps->set_t(10);
-	dmaps->parallel->set_num_threads(4);
+	dmaps->get_global_parallel()->set_num_threads(4);
 	auto embedding = dmaps->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(dmaps);
 	SG_UNREF(features);
-	exit_shogun();
 	return 0;
 }

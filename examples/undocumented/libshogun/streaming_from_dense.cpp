@@ -10,7 +10,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -188,15 +188,12 @@ void test_get_streamed_features_too_many()
 
 int main()
 {
-	init_shogun_with_defaults();
-
-	sg_io->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_general();
 	test_get_streamed_features();
 	test_get_streamed_features_too_many();
 //
-	exit_shogun();
 	return 0;
 }
 

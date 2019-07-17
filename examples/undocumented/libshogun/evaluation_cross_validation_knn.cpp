@@ -4,7 +4,7 @@
  * Authors: Saurabh Mahindre, Soumyajit De, Bjoern Esser
  */
 
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/KNN.h>
@@ -96,13 +96,9 @@ void test_cross_validation()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
-	sg_io->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_cross_validation();
-
-	exit_shogun();
 
 	return 0;
 }

@@ -7,7 +7,6 @@
 
 #include <shogun/lib/config.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #include <shogun/mathematics/Math.h>
@@ -16,8 +15,6 @@ using namespace shogun;
 
 int main()
 {
-	init_shogun_with_defaults();
-
 	int N = 100;
 	int dim = 3;
 
@@ -53,8 +50,6 @@ int main()
 	SG_UNREF(embedding);
 	SG_UNREF(spe);
 	SG_UNREF(features);
-
-	exit_shogun();
 
 	return 0;
 }

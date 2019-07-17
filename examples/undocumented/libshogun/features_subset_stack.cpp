@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Soeren Sonnenburg
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/SubsetStack.h>
 
 using namespace shogun;
@@ -49,11 +48,7 @@ void test()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

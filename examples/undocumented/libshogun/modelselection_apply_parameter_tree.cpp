@@ -5,7 +5,6 @@
  *          Sergey Lisitsyn, Wu Lin
  */
 
-#include <shogun/base/init.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -15,11 +14,6 @@
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 CModelSelectionParameters* create_param_tree()
 {
@@ -108,8 +102,6 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	/* create example tree */
 	CModelSelectionParameters* tree=create_param_tree();
 	tree->print_tree();
@@ -134,8 +126,6 @@ int main(int argc, char **argv)
 	 * (namely the kernel) of the tree is SG_UNREF'ed (and not REF'ed anywhere
 	 * else) */
 	SG_UNREF(tree);
-
-	exit_shogun();
 
 	return 0;
 }

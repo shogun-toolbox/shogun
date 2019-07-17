@@ -5,7 +5,6 @@
  *          Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
 #include <shogun/mathematics/Math.h>
@@ -136,11 +135,8 @@ void test()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	test();
 
-	exit_shogun();
 	return 0;
 }
 

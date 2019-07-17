@@ -3,7 +3,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGString.h>
-#include <shogun/base/init.h>
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingStringFeatures.h>
@@ -23,8 +22,6 @@ void display_vector(const SGString<char> &vec)
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	// Create a StreamingAsciiFile from our input file
 	CStreamingAsciiFile* file = new CStreamingAsciiFile("../data/fm_train_dna.dat");
 	SG_REF(file);
@@ -53,6 +50,5 @@ int main(int argc, char **argv)
 
 	SG_UNREF(feat);
 
-	exit_shogun();
 	return 0;
 }

@@ -10,7 +10,7 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -71,8 +71,6 @@ int main()
 	const float64_t rbf_width=4000;
 	const float64_t svm_C=10;
 	const float64_t svm_eps=0.001;
-
-	init_shogun();
 
 
 	float64_t* feattr(NULL);
@@ -187,7 +185,7 @@ int main()
 	CRandomFourierGaussPreproc *rfgauss=new CRandomFourierGaussPreproc;
 	SG_REF(rfgauss);
 
-	rfgauss->get_io()->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	// ************************************************************
 	// set parameters of the preprocessor
@@ -277,7 +275,7 @@ int main()
 	CRandomFourierGaussPreproc *rfgauss2=new CRandomFourierGaussPreproc;
 	SG_REF(rfgauss2);
 
-	rfgauss2->get_io()->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	// add preprocessor
 	featureste2->add_preproc(rfgauss);
@@ -514,6 +512,5 @@ std::cout<< "classification errors gaussian kernel and rfgauss  "<< err1 << " " 
 	SG_UNREF(svm2);
 	SG_UNREF(rfgauss);
 	SG_UNREF(rfgauss2);
-	exit_shogun();
 	return 0;
 }

@@ -11,7 +11,6 @@
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/DynArray.h>
-#include <shogun/base/init.h>
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
@@ -362,8 +361,6 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 
 int main(int argc, char * argv[])
 {
-	init_shogun_with_defaults();
-
 	// Training data
 	SGMatrix<int32_t> labels_train;
 	SGMatrix<float64_t> feats_train;
@@ -419,7 +416,6 @@ int main(int argc, char * argv[])
 	SG_SPRINT("\nExample 3.2: full-connected graph, GEMPLP inference\n");
 	param = MultilabelParameter(FULL, GEMPLP);
 	test(param, labels_train, feats_train, labels_test, feats_test);
-	exit_shogun();
 
 	return 0;
 }

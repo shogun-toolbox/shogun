@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Thoralf Klein, Evgeniy Andreev, Fernando Iglesias
  */
 
-#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -74,13 +73,10 @@ void test_libsvr()
 
 int main()
 {
-	init_shogun_with_defaults();
-
-//	sg_io->set_loglevel(MSG_DEBUG);
+//	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_libsvr();
 
-	exit_shogun();
 	return 0;
 }
 
