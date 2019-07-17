@@ -123,6 +123,28 @@ namespace shogun
 			>
 		> : public std::true_type {};
 
+		template<typename T, typename _ = void>
+		struct has_std_to_string : std::false_type {};
+
+		template<typename T>
+		struct has_std_to_string<
+			T,
+			when_exists<
+				decltype(std::to_string(std::declval<T>()))
+			>
+		> : public std::true_type {};
+
+		template<typename T, typename _ = void>
+		struct has_to_string : std::false_type {};
+
+		template<typename T>
+		struct has_to_string<
+			T,
+			when_exists<
+				decltype(std::declval<T>().to_string())
+			>
+		> : public std::true_type {};
+
 		template<typename T>
 		using returns_void = std::is_same<typename T::result_type, void>;
 
