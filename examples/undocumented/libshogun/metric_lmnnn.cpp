@@ -6,8 +6,6 @@ using namespace shogun;
 
 int main()
 {
-	init_shogun_with_defaults();
-
 	// create features, each column is a feature vector
 	SGMatrix<float64_t> feat_mat(2,4);
 	// 1st feature vector
@@ -53,5 +51,4 @@ int main()
 
 	SG_UNREF(statistics);
 	SG_UNREF(lmnn);
-	exit_shogun();
 }

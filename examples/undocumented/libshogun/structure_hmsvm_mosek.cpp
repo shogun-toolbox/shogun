@@ -7,7 +7,6 @@ using namespace shogun;
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
 #ifdef USE_MOSEK
 
 	int32_t num_examples = 10;
@@ -43,7 +42,6 @@ int main(int argc, char ** argv)
 	SG_UNREF(sosvm);
 
 #endif /* USE_MOSEK */
-	exit_shogun();
 
 	return 0;
 }

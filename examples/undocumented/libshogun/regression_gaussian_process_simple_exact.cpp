@@ -15,7 +15,6 @@
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/base/init.h>
 
 using namespace shogun;
 
@@ -62,11 +61,8 @@ void test()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	test();
 
-	exit_shogun();
 	return 0;
 }
 

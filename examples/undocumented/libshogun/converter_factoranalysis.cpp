@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/FactorAnalysis.h>
 #include <shogun/mathematics/Math.h>
@@ -15,8 +14,6 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun();
-
 	int N = 100;
 	int dim = 3;
 	float64_t* matrix = new double[N*dim];
@@ -30,6 +27,5 @@ int main(int argc, char** argv)
 	SG_UNREF(embedding);
 	SG_UNREF(fa);
 	SG_UNREF(features);
-	exit_shogun();
 	return 0;
 }

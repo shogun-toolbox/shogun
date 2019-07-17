@@ -3,7 +3,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/base/init.h>
 #include <shogun/multiclass/ShareBoost.h>
 
 #define  EPSILON  1e-5
@@ -15,8 +14,6 @@ const char* fname_labels = "../data/7class_example4_train.label";
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	/* dense features from matrix */
 	CCSVFile* feature_file = new CCSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
@@ -65,7 +62,6 @@ int main(int argc, char** argv)
 	SG_UNREF(subset_fea);
 	SG_UNREF(features);
 	SG_UNREF(labels);
-	exit_shogun();
 
 	return 0;
 }

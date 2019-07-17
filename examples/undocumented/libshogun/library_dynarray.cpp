@@ -4,7 +4,6 @@
  * Authors: Thoralf Klein, Soeren Sonnenburg
  */
 
-#include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
@@ -14,8 +13,6 @@ using namespace shogun;
 
 int main()
 {
-	init_shogun_with_defaults();
-
 	DynArray<int32_t> values;
 
 	for (int32_t i=0; i<1000; i++)
@@ -45,8 +42,6 @@ int main()
 		SG_SPRINT("%i\n", i);
 		vectors[i].display_vector();
 	}
-
-	exit_shogun();
 
 	return 0;
 }

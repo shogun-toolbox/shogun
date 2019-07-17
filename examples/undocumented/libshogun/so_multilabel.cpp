@@ -5,7 +5,7 @@
  * Written(W) 2014 Abinash Panda
  */
 
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/evaluation/StructuredAccuracy.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/io/LibSVMFile.h>
@@ -75,9 +75,7 @@ void load_data(const char * file_name,
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
-
-	sg_io->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	const char train_file_name[] = "../../../../data/multilabel/yeast_train.svm";
 	const char test_file_name[] = "../../../../data/multilabel/yeast_test.svm";
@@ -195,7 +193,6 @@ int main(int argc, char ** argv)
 	SG_FREE(multilabels);
 	SG_FREE(test_multilabels);
 
-	exit_shogun();
 	return 0;
 }
 

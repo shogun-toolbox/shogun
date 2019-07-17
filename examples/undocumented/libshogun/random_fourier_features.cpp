@@ -4,7 +4,6 @@
  * Authors: Bjoern Esser, Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/RandomFourierDotFeatures.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/classifier/svm/SVMOcas.h>
@@ -40,8 +39,6 @@ void load_data(int32_t num_dim, int32_t num_vecs,
 
 int main(int argv, char** argc)
 {
-	init_shogun_with_defaults();
-
 	int32_t num_dim = 100;
 	int32_t num_vecs = 10000;
 
@@ -87,5 +84,4 @@ int main(int argv, char** argc)
 
 	SG_UNREF(lin_svm);
 	SG_UNREF(predicted);
-	exit_shogun();
 }

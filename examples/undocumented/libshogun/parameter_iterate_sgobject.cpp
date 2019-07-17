@@ -9,23 +9,15 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 /* number of features and their dimension, number of kernels */
 int main(int argc, char** argv)
 {
 	const int32_t n=7;
-
-	init_shogun(&print_message);
 
 	/* create some random data and hand it to each kernel */
 	SGMatrix<float64_t> matrix(n,n);
@@ -88,7 +80,5 @@ int main(int argc, char** argv)
 
 	/* this also handles features, labels, and last kernel in kernels[n-1] */
 	SG_UNREF(svm);
-
-	exit_shogun();
 	return 0;
 }

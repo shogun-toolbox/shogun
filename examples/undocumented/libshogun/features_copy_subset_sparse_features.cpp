@@ -5,7 +5,6 @@
  *          Viktor Gal
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/Subset.h>
 
@@ -119,11 +118,7 @@ void test()
 }
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

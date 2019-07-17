@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/evaluation/StructuredAccuracy.h>
@@ -17,7 +16,6 @@
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/lib/Time.h>
-#include <shogun/base/init.h>
 
 #include <stdio.h>
 
@@ -93,8 +91,6 @@ void read_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
-
 	SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
 	SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
 
@@ -188,7 +184,6 @@ int main(int argc, char ** argv)
 	SG_UNREF(sout);
 	SG_UNREF(bout);
 	SG_UNREF(out);
-	exit_shogun();
 
 	return 0;
 }

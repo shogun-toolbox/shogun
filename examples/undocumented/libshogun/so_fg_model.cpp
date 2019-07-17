@@ -1,5 +1,4 @@
 #include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 
@@ -268,13 +267,9 @@ void test(int32_t num_samples)
 
 int main(int argc, char * argv[])
 {
-	init_shogun_with_defaults();
-
-	//sg_io->set_loglevel(MSG_DEBUG);
+	//env()->io()->set_loglevel(MSG_DEBUG);
 
 	test(100);
-
-	exit_shogun();
 
 	return 0;
 }

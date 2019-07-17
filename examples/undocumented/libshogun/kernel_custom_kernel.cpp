@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Fernando Iglesias
  */
 
-#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
@@ -62,13 +61,10 @@ void test_custom_kernel_subsets()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
-//	sg_io->set_loglevel(MSG_DEBUG);
+//	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test_custom_kernel_subsets();
 
-	exit_shogun();
 	return 0;
 }
 

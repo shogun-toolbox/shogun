@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 #if defined(HAVE_NLOPT)
-#include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -171,8 +170,6 @@ CModelSelectionParameters* build_tree(CInferenceMethod* inf,
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix =
 		 SGMatrix<float64_t>(dim_vectors, num_vectors);
@@ -297,8 +294,6 @@ int main(int argc, char **argv)
 	//SG_UNREF(grad_search);
 	//SG_UNREF(best_combination);
 	//SG_UNREF(result);
-
-	exit_shogun();
 
 	return 0;
 

@@ -4,7 +4,6 @@
  * Authors: Thoralf Klein
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>
@@ -15,8 +14,6 @@ using namespace shogun;
 
 int main()
 {
-	init_shogun_with_defaults();
-
 	// Create a StreamingAsciiFile from the training data
 	const char* train_file_name = "../data/train_densereal.light";
 	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
@@ -56,8 +53,6 @@ int main()
 	SG_UNREF(train_features);
 	SG_UNREF(train_file);
 	SG_UNREF(svm);
-
-	exit_shogun();
 
 	return 0;
 }

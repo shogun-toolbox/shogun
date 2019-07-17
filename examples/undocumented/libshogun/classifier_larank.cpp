@@ -8,7 +8,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/LaRank.h>
-#include <shogun/base/init.h>
 
 using namespace shogun;
 
@@ -91,11 +90,8 @@ void test()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	test();
 
-	exit_shogun();
 	return 0;
 }
 

@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -7,14 +6,8 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc,char *argv[])
 {
-	init_shogun(&print_message,&print_message,&print_message);//initialising shogun without giving arguments shogun wont be able to print
 	int32_t x_n=4,x_d=2;//X dimensions : x_n for no of datapoints and x_d for dimensionality of data
 	SGMatrix<float64_t> fmatrix(x_d,x_n);
 
@@ -89,7 +82,6 @@ int main(int argc,char *argv[])
 	SG_UNREF(labels2);
 	SG_UNREF(nsvm2);
 	SG_UNREF(features);
-	exit_shogun();
 	return 0;
 }
 

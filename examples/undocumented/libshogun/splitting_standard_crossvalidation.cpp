@@ -4,21 +4,13 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	index_t num_labels;
 	index_t num_subsets;
 	index_t runs=100;
@@ -83,8 +75,6 @@ int main(int argc, char **argv)
 		/* clean up */
 		SG_UNREF(splitting);
 	}
-
-	exit_shogun();
 
 	return 0;
 }

@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/GCArray.h>
 #include <shogun/kernel/Kernel.h>
@@ -12,8 +11,6 @@ const int l=10;
 
 int main(int argc, char** argv)
 {
-	init_shogun();
-
 	// we need this scope, because exit_shogun() must not be called
 	// before the destructor of CGCArray<CKernel*> kernels!
 	{
@@ -33,8 +30,6 @@ int main(int argc, char** argv)
 		}
 
 	}
-
-	exit_shogun();
 
 	return 0;
 }

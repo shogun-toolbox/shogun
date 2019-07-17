@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg
  */
 
-#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -189,8 +188,6 @@ void test_lapack()
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 #ifdef HAVE_LAPACK
 	SG_SPRINT("checking lapack\n");
 	test_lapack();
@@ -202,7 +199,6 @@ int main(int argc, char** argv)
 	test_matrix_multiply();
 #endif // HAVE_LAPACK
 
-	exit_shogun();
 	return 0;
 }
 

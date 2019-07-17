@@ -2,17 +2,10 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/classifier/NearestCentroid.h>
-#include <shogun/base/init.h>
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(){
-	init_shogun(&print_message);
 	index_t num_vec=7;
 	index_t num_feat=2;
 	index_t num_class=2;
@@ -48,7 +41,5 @@ int main(){
 	// free up memory
 	SG_UNREF(nearest_centroid);
 
-	exit_shogun();
 	return 0;
-
 }

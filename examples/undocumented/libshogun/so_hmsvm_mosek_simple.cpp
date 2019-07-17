@@ -9,7 +9,6 @@ using namespace shogun;
 
 int main(int argc, char ** argv)
 {
-	init_shogun_with_defaults();
 #ifdef USE_MOSEK
 
 	// Create structured labels
@@ -61,7 +60,6 @@ int main(int argc, char ** argv)
 	SG_UNREF(model);
 
 #endif /* USE_MOSEK */
-	exit_shogun();
 
 	return 0;
 }

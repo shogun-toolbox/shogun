@@ -5,7 +5,6 @@
  *          Roman Votyakov, Pan Deng, Wu Lin
  */
 
-#include <shogun/base/init.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/classifier/svm/LibSVM.h>
@@ -339,9 +338,7 @@ CModelSelectionParameters* create_param_tree_5()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
-//	sg_io->set_loglevel(MSG_DEBUG);
+//	env()->io()->set_loglevel(MSG_DEBUG);
 
 	CModelSelectionParameters* tree=NULL;
 
@@ -374,8 +371,6 @@ int main(int argc, char **argv)
 	SG_REF(tree);
 	test_tree(tree);
 	SG_UNREF(tree);
-
-	exit_shogun();
 
 	return 0;
 }

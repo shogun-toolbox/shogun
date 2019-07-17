@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/features/hashed/HashedDenseFeatures.h>
 #include <shogun/features/hashed/HashedSparseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -8,8 +7,6 @@ using namespace shogun;
 
 int main()
 {
-	init_shogun_with_defaults();
-
 	int32_t num_vectors = 5;
 	int32_t dim = 20;
 
@@ -47,5 +44,4 @@ int main()
 
 	SG_UNREF(h_dense_feats);
 	SG_UNREF(h_sparse_feats);
-	exit_shogun();
 }

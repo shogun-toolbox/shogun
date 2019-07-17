@@ -5,7 +5,7 @@
  *          Wu Lin
  */
 
-#include <shogun/base/init.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/evaluation/CrossValidation.h>
@@ -101,13 +101,9 @@ void test()
 
 int main(int argc, char **argv)
 {
-	init_shogun_with_defaults();
-
-	sg_io->set_loglevel(MSG_DEBUG);
+	env()->io()->set_loglevel(MSG_DEBUG);
 
 	test();
-
-	exit_shogun();
 
 	return 0;
 }

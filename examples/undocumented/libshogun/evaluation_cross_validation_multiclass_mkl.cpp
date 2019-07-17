@@ -5,7 +5,6 @@
  *          Viktor Gal, Thoralf Klein, Alexander Binder, Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -75,7 +74,7 @@ void test_multiclass_mkl_cv()
 	CMKLMulticlass* mkl=new CMKLMulticlass(1.2, cker, labels);
 	SG_REF(mkl);
 	mkl->set_epsilon(0.00001);
-	mkl->parallel->set_num_threads(1);
+	mkl->get_global_parallel()->set_num_threads(1);
 	mkl->set_mkl_epsilon(0.001);
 	mkl->set_mkl_norm(1.5);
 
@@ -112,13 +111,9 @@ void test_multiclass_mkl_cv()
 }
 
 int main(int argc, char** argv){
-	shogun::init_shogun_with_defaults();
-
-	// sg_io->set_loglevel(MSG_DEBUG);
+	// env()->io()->set_loglevel(MSG_DEBUG);
 
 	/* performs cross-validation on a multi-class mkl machine */
 	test_multiclass_mkl_cv();
-
-	exit_shogun();
 }
 

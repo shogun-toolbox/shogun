@@ -7,8 +7,6 @@
 #ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
-
-#include <shogun/base/init.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -31,8 +29,6 @@ const char* fname_feat_test="../data/fm_test_real.dat";
 
 int main(int argc, char** argv)
 {
-	init_shogun_with_defaults();
-
 	// trainig data
 	SGMatrix<float64_t> X_train;
 	SGVector<float64_t> y_train;
@@ -113,7 +109,6 @@ int main(int argc, char** argv)
 	SG_UNREF(predictions);
 	SG_UNREF(feat_test);
 
-	exit_shogun();
 	return 0;
 }
 #else //USE_GPL_SHOGUN
