@@ -27,8 +27,8 @@ using namespace shogun;
 
 ShogunEnv* ShogunEnv::instance()
 {
-	static auto shogun_env = new ShogunEnv();
-	return shogun_env;
+	static ShogunEnv shogun_env{};
+	return &shogun_env;
 }
 
 ShogunEnv::ShogunEnv()
