@@ -49,6 +49,9 @@ function(get_excluded_meta_examples)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
 			regression/multiple_kernel_learning.sg
 			binary/multiple_kernel_learning.sg
+			binary/svmlight.sg
+			binary/svmlight_batch_linadd.sg
+			regression/svrlight.sg
 		)
 	ENDIF()
   
