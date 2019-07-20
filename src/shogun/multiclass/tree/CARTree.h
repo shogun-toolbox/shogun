@@ -424,6 +424,10 @@ public:
 	static const float64_t EQ_DELTA;
 
 protected:
+	/** Returns whether the type of various feature dimensions are specified
+	 * using is_nominal_feature
+	 */
+	bool are_types_set();
 	/** equality range for regression labels */
 	float64_t m_label_epsilon;
 
@@ -441,9 +445,6 @@ protected:
 
 	/** If pre sorted features are used in train */
 	bool m_pre_sort;
-
-	/** flag storing whether the type of various feature dimensions are specified using is_nominal_feature **/
-	bool m_types_set;
 
 	/** flag storing whether weights of samples are specified using weights vector **/
 	bool m_weights_set;

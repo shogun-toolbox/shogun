@@ -192,7 +192,6 @@ void CCARTree::clear_weights()
 void CCARTree::set_feature_types(SGVector<bool> ft)
 {
 	m_nominal=ft;
-	m_types_set=true;
 }
 
 SGVector<bool> CCARTree::get_feature_types() const
@@ -203,7 +202,6 @@ SGVector<bool> CCARTree::get_feature_types() const
 void CCARTree::clear_feature_types()
 {
 	m_nominal=SGVector<bool>();
-	m_types_set=false;
 }
 
 int32_t CCARTree::get_num_folds() const
@@ -245,6 +243,11 @@ void CCARTree::set_label_epsilon(float64_t ep)
 	m_label_epsilon=ep;
 }
 
+bool CCARTree::are_types_set()
+{
+	return m_nominal.size() != 0;
+}
+
 bool CCARTree::train_machine(CFeatures* data)
 {
 	REQUIRE(data,"Data required for training\n")
@@ -266,7 +269,7 @@ bool CCARTree::train_machine(CFeatures* data)
 		linalg::set_const(m_weights, 1.0);
 	}
 
-	if (m_types_set)
+	if (are_types_set())
 	{
 		REQUIRE(
 		    m_nominal.vlen == num_features,
@@ -1478,7 +1481,6 @@ void CCARTree::init()
 	m_weights=SGVector<float64_t>();
 	m_mode=PT_MULTICLASS;
 	m_pre_sort=false;
-	m_types_set=false;
 	m_weights_set=false;
 	m_apply_cv_pruning=false;
 	m_folds=5;
@@ -1496,7 +1498,6 @@ void CCARTree::init()
 	SG_ADD(&m_nominal, "nominal", "feature types");
 	SG_ADD(&m_weights, "weights", "weights");
 	SG_ADD(&m_weights_set, "weights_set", "weights set");
-	SG_ADD(&m_types_set, "types_set", "feature types set");
 	SG_ADD(
 	    &m_apply_cv_pruning, "apply_cv_pruning",
 	    "apply cross validation pruning");
