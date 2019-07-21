@@ -350,7 +350,7 @@ IF (NOT spdlog_FOUND)
     include(external/spdlog)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
           $<BUILD_INTERFACE:${spdlog_INCLUDE_DIR}>
-          $<INSTALL_INTERFACE:include/shogun/third_party/spdlog>
+          $<INSTALL_INTERFACE:include/shogun/third_party>
           )
 ELSE()
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${spdlog_INCLUDE_DIR})

@@ -22,16 +22,17 @@
 #include <type_traits>
 
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/bundled/printf.h>
 
 #ifndef _WIN32
 #include <unistd.h>
 #endif
 
-namespace shogun
+namespace spdlog
 {
-	class RefCount;
-	class SGIO;
+	namespace details
+	{
+		class thread_pool;
+	}
 }
 
 namespace shogun
@@ -61,9 +62,6 @@ enum EMessageLocation
 	MSG_LINE_AND_FILE=2
 };
 
-#define NUM_LOG_LEVELS 7
-#define FBUFSIZE 4096
-
 #ifdef DARWIN
 #include <Availability.h>
 #endif //DARWIN
@@ -84,107 +82,62 @@ enum EMessageLocation
 #endif
 
 // printf like functions (with additional severity level)
-// for object derived from CSGObject
+#define SG_IO env()->io()
 #define _SRC_LOC spdlog::source_loc{__FILE__, __LINE__, __PRETTY_FUNCTION__}
 
 #define SG_GCDEBUG(...) {								\
-	io->message(MSG_GCDEBUG, _SRC_LOC, __VA_ARGS__);	\
+	SG_IO->message(MSG_GCDEBUG, _SRC_LOC, __VA_ARGS__);	\
 }
 
 #define SG_DEBUG(...) {									\
-	io->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
-}
-
-#define SG_OBJ_DEBUG(o,...) {							\
-	o->io->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
+	SG_IO->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
 }
 
 #define SG_INFO(...) {									\
-	io->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);		\
+	SG_IO->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);		\
 }
 
-#define SG_CLASS_INFO(c, ...) {							\
-	c::io->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);	\
+#define SG_WARNING(c, ...) {							\
+	SG_IO->message(MSG_WARN, _SRC_LOC, __VA_ARGS__);	\
 }
 
-#define SG_WARNING(...) { io->message(MSG_WARN, _SRC_LOC, __VA_ARGS__); }
 #define SG_THROW(ExceptionType, ...)                                           \
 	{                                                                          \
-		io->template error<ExceptionType>(                                     \
+		SG_IO->template error<ExceptionType>(                                  \
 		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
 	}
 #define SG_ERROR(...) SG_THROW(ShogunException, __VA_ARGS__)
-#define SG_OBJ_ERROR(o, ...)                                                   \
-	{                                                                          \
-		o->io->template error<ShogunException>(                                \
-		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
-	}
-#define SG_CLASS_ERROR(c, ...)                                                 \
-	{                                                                          \
-		c::io->template error<ShogunException>(                                \
-		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
-	}
-#define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, _SRC_LOC, \
+
+#define SG_UNSTABLE(func, ...) { SG_IO->message(MSG_WARN, _SRC_LOC, \
 __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 "work or not to the Shogun mailing list.  Thanking you in " \
 "anticipation.  " __VA_ARGS__); }
 
-#define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
-#define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
-#define SG_NOTIMPLEMENTED { io->not_implemented(_SRC_LOC); }
-#define SG_GPL_ONLY { io->gpl_only(_SRC_LOC); }
+#define SG_PRINT(...) { SG_IO->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
+#define SG_NOTIMPLEMENTED { SG_IO->not_implemented(_SRC_LOC); }
+#define SG_GPL_ONLY { SG_IO->gpl_only(_SRC_LOC); }
 
 #define SG_DONE() {								\
-	if (SG_UNLIKELY(io->get_show_progress()))	\
-		io->done();								\
-}
-
-// printf like function using the global SG_IO object
-#define SG_IO env()->io()
-
-#define SG_SGCDEBUG(...) {											\
-	SG_IO->message(MSG_GCDEBUG, _SRC_LOC, __VA_ARGS__);\
-}
-
-#define SG_SDEBUG(...) {											\
-	SG_IO->message(MSG_DEBUG, _SRC_LOC, __VA_ARGS__);	\
-}
-
-#define SG_SINFO(...) {												\
-	SG_IO->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);	\
-}
-
-#define SG_SWARNING(...) { SG_IO->message(MSG_WARN, _SRC_LOC, __VA_ARGS__); }
-#define SG_STHROW(Exception, ...)                                              \
-	{                                                                          \
-		SG_IO->template error<Exception>(                                      \
-		    MSG_ERROR, _SRC_LOC, __VA_ARGS__);  \
-	}
-#define SG_SERROR(...) SG_STHROW(ShogunException, __VA_ARGS__)
-#define SG_SPRINT(...) { SG_IO->message(MSG_MESSAGEONLY, _SRC_LOC, __VA_ARGS__); }
-
-#define SG_SDONE() {								\
 	if (SG_UNLIKELY(SG_IO->get_show_progress()))	\
 		SG_IO->done();								\
 }
 
-#define SG_SNOTIMPLEMENTED { SG_IO->not_implemented(_SRC_LOC); }
-#define SG_SGPL_ONLY { SG_IO->gpl_only(_SRC_LOC); }
+// printf like function using the global SG_IO object
 
 #define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\
-		SG_SERROR("assertion %s failed in %s file %s line %d\n",#x, __PRETTY_FUNCTION__, __FILE__, __LINE__)	\
+		SG_ERROR("assertion %s failed in %s file %s line %d\n",#x, __PRETTY_FUNCTION__, __FILE__, __LINE__)	\
 }
 
 #define REQUIRE(x, ...) {		\
 	if (SG_UNLIKELY(!(x)))		\
-		SG_SERROR(__VA_ARGS__)	\
+		SG_ERROR(__VA_ARGS__)	\
 }
 
 #define REQUIRE_E(x, Exception, ...)                                           \
 	{                                                                          \
 		if (SG_UNLIKELY(!(x)))                                                 \
-			SG_STHROW(Exception, __VA_ARGS__)                                  \
+			SG_THROW(Exception, __VA_ARGS__)                                  \
 	}
 
 /* help clang static analyzer to identify custom assertation functions */
@@ -192,9 +145,9 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 void _clang_fail(void) __attribute__((analyzer_noreturn));
 
 #undef SG_ERROR(...)
-#undef SG_SERROR(...)
+#undef SG_ERROR(...)
 #define SG_ERROR(...) _clang_fail();
-#define SG_SERROR(...) _clang_fail();
+#define SG_ERROR(...) _clang_fail();
 
 #endif /* __clang_analyzer__ */
 
@@ -224,11 +177,20 @@ class SGIO
 	public:
 		/** default constructor */
 		SGIO();
-		/** copy constructor */
-		SGIO(const SGIO& orig);
 
 		/** destructor */
 		virtual ~SGIO();
+
+		/** (re)initializes the default (asynchronous) logger
+		 * 
+		 * @param queue_size size of the message queue
+		 * @param n_threads number of logging threads
+		 */
+		void init_default_logger(uint64_t queue_size=128, uint64_t n_threads=1);
+
+		/** (re)initializes the default sink
+		 */
+		void init_default_sink();
 
 		/** set loglevel
 		 *
@@ -318,17 +280,17 @@ class SGIO
 		inline void not_implemented(const spdlog::source_loc& loc={}) const
 		{
 			error<ShogunException>(
-			    MSG_ERROR, loc,
-			    "Sorry, not yet implemented .\n");
+			    MSG_ERROR, loc, "Sorry, not yet implemented .\n");
 		}
 
 		/** print error message 'Only available with GPL parts.' */
 		inline void gpl_only(const spdlog::source_loc& loc={}) const
 		{
 			error<ShogunException>(
-			    MSG_ERROR, loc, "This feature is only "
-			                                     "available if Shogun is built "
-			                                     "with GPL codes.\n");
+			    MSG_ERROR, loc,
+			    "This feature is only "
+			    "available if Shogun is built "
+			    "with GPL codes.\n");
 		}
 
 		/** print warning message 'function deprecated' */
@@ -338,38 +300,22 @@ class SGIO
 					"This function is deprecated and will be removed soon.\n");
 		}
 
-		/** skip leading spaces
-		 *
-		 * @param str string in which to look for spaces
-		 * @return string after after skipping leading spaces
-		 */
-		static char* skip_spaces(char* str);
+		/** redirects stdout to another sink */
+		void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink);
 
-		/** skip leading spaces + tabs
-		 *
-		 * @param str string in which to look for blanks
-		 * @return string after after skipping leading blanks
-		 */
-		static char* skip_blanks(char* str);
+		/** redirects stderr to another sink */
+		void redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink);
 
 		/** enable progress bar */
 		inline void enable_progress()
 		{
 			show_progress=true;
-
-			// static functions like CSVM::classify_example_helper call SG_PROGRESS
-			if (SG_IO!=this)
-				SG_IO->enable_progress();
 		}
 
 		/** disable progress bar */
 		inline void disable_progress()
 		{
 			show_progress=false;
-
-			// static functions like CSVM::classify_example_helper call SG_PROGRESS
-			if (SG_IO!=this)
-				SG_IO->disable_progress();
 		}
 
 		/** enable displaying of file and line when printing messages etc
@@ -377,7 +323,7 @@ class SGIO
 		 * @param location location info (none, function, ...)
 		 *
 		 */
-		void set_location_info(EMessageLocation location)
+		inline void set_location_info(EMessageLocation location)
 		{
 			location_info = location;
 			update_pattern();
@@ -446,32 +392,13 @@ class SGIO
 		 */
 		static uint32_t ss_length(substring s);
 
-		/** increase reference counter
-		 *
-		 * @return reference count
-		 */
-		int32_t ref();
-
-		/** display reference counter
-		 *
-		 * @return reference count
-		 */
-		int32_t ref_count() const;
-
-		/** decrement reference counter and deallocate object if refcount is zero
-		 * before or after decrementing it
-		 *
-		 * @return reference count
-		 */
-		int32_t unref();
-
 		/** @return object name */
 		inline const char* get_name() { return "SGIO"; }
 
 	protected:
+		/** Updates log pattern */
 		void update_pattern();
 
-	protected:
 		/** if progress bar shall be shown */
 		bool show_progress;
 		/** if each print function should append filename and linenumber of
@@ -481,37 +408,16 @@ class SGIO
 		bool syntax_highlight;
 
 	private:
-		std::shared_ptr<spdlog::logger> logger;
-		RefCount* m_refcount;
+		class RedirectSink;
+		std::shared_ptr<RedirectSink> io_sink;
+		std::shared_ptr<spdlog::logger> io_logger;
+		std::shared_ptr<spdlog::details::thread_pool> thread_pool;
 };
-
-namespace sgio_traits
-{
-	template <typename T>
-	constexpr static inline auto cast_pointer_to_void(const T& t)
-	{
-		if constexpr (std::is_pointer<T>::value)
-			return (void *) t;
-		else if constexpr (std::is_array<T>::value)
-			return &t[0];
-		else
-			return t;
-	}
-}
 
 template <typename... Args>
 void SGIO::message(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const
 {
-	// A solution to format using printf style
-	// This is not optimal because it enforces formatting at call site
-	// and the priority is checked twice
-	const auto _prio = static_cast<spdlog::level::level_enum>(prio);
-	if (logger->should_log(_prio))
-	{
-		std::string msg_formatted =
-			fmt::sprintf(msg, sgio_traits::cast_pointer_to_void(args)...);
-		logger->log(loc, _prio, msg_formatted);
-	}
+	io_logger->log(loc, static_cast<spdlog::level::level_enum>(prio), msg, args...);
 }
 
 template <typename ExceptionType, typename... Args>
