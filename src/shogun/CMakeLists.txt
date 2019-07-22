@@ -54,7 +54,7 @@ IF (LICENSE_GPL_SHOGUN)
 
             SET(USE_GPL_SHOGUN 1)
         ELSE()
-            MESSAGE(FATAL_ERROR "Shogun can only be built with GPL codes if the source files are in ${SHOGUN_GPL_INCLUDE_DIR}. Please download or disable with LICENSE_GPL_SHOGUN=OFF.\n")
+            MESSAGE(FATAL_ERROR "Shogun can only be built with GPL codes if the source files are in ${SHOGUN_GPL_INCLUDE_DIR}. Please download the GPL codes or checkout the Git Submodule with 'git submodule update --init'. To exclude GPL codes of Shogun in build set the switch LICENSE_GPL_SHOGUN=OFF.\n")
         ENDIF()
 ENDIF()
 
