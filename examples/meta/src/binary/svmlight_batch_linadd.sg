@@ -1,0 +1,37 @@
+File f_feats_train = csv_file("../../data/fm_train_dna.dat")
+File f_feats_test = csv_file("../../data/fm_test_dna.dat")
+File f_labels_train = csv_file("../../data/label_train_dna.dat")
+
+#![create_features]
+Features feats_train = string_features(f_feats_train, enum EAlphabet.DNA)
+Features feats_test = string_features(f_feats_test, enum EAlphabet.DNA)
+Labels labels_train = labels(f_labels_train)
+#![create_features]
+
+#![create_kernel]
+Kernel svm_kernel = kernel("WeightedDegreeStringKernel", degree=20)
+svm_kernel.init(feats_train, feats_train)
+#![create_kernel]
+
+#![create_classifier]
+Machine svm = machine("SVMLight", kernel=svm_kernel, labels=labels_train, C1=2.3, C2=2.3, epsilon=0.0000001)
+Parallel p = svm.get_global_parallel()
+p.set_num_threads(4)
+#![create_classifier]
+
+#![train_and_apply]
+svm.train()
+svm_kernel.init(feats_train, feats_test)
+svm.put("use_batch_computation", False)
+svm.put("use_linadd", True)
+Labels labels_predict_no_batch = svm.apply(feats_test)
+svm.put("use_batch_computation", True)
+Labels labels_predict_with_batch = svm.apply(feats_test)
+#![train_and_apply]
+
+#![extract_weights_labels]
+RealVector labels_vector_no_batch = labels_predict_no_batch.get_real_vector("labels")
+RealVector labels_vector_with_batch = labels_predict_with_batch.get_real_vector("labels")
+RealVector weights = svm.get_real_vector("m_alpha")
+real bias = svm.get_real("m_bias")
+#![extract_weights_labels]

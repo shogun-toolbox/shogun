@@ -424,6 +424,14 @@ public:
 	static const float64_t EQ_DELTA;
 
 protected:
+	/** Returns whether the type of various feature dimensions are specified
+	 * using is_nominal_feature
+	 */
+	bool types_set();
+
+	/** Returns whether weights are set */
+	bool weights_set();
+
 	/** equality range for regression labels */
 	float64_t m_label_epsilon;
 
@@ -441,12 +449,6 @@ protected:
 
 	/** If pre sorted features are used in train */
 	bool m_pre_sort;
-
-	/** flag storing whether the type of various feature dimensions are specified using is_nominal_feature **/
-	bool m_types_set;
-
-	/** flag storing whether weights of samples are specified using weights vector **/
-	bool m_weights_set;
 
 	/** flag indicating whether cross validation pruning has to be applied or not - false by default **/
 	bool m_apply_cv_pruning;

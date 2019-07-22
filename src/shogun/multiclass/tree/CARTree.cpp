@@ -175,7 +175,6 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 void CCARTree::set_weights(SGVector<float64_t> w)
 {
 	m_weights=w;
-	m_weights_set=true;
 }
 
 SGVector<float64_t> CCARTree::get_weights() const
@@ -186,13 +185,11 @@ SGVector<float64_t> CCARTree::get_weights() const
 void CCARTree::clear_weights()
 {
 	m_weights=SGVector<float64_t>();
-	m_weights_set=false;
 }
 
 void CCARTree::set_feature_types(SGVector<bool> ft)
 {
 	m_nominal=ft;
-	m_types_set=true;
 }
 
 SGVector<bool> CCARTree::get_feature_types() const
@@ -203,7 +200,6 @@ SGVector<bool> CCARTree::get_feature_types() const
 void CCARTree::clear_feature_types()
 {
 	m_nominal=SGVector<bool>();
-	m_types_set=false;
 }
 
 int32_t CCARTree::get_num_folds() const
@@ -245,6 +241,16 @@ void CCARTree::set_label_epsilon(float64_t ep)
 	m_label_epsilon=ep;
 }
 
+bool CCARTree::types_set()
+{
+	return m_nominal.size() != 0;
+}
+
+bool CCARTree::weights_set()
+{
+	return m_weights.size() != 0;
+}
+
 bool CCARTree::train_machine(CFeatures* data)
 {
 	REQUIRE(data,"Data required for training\n")
@@ -254,7 +260,7 @@ bool CCARTree::train_machine(CFeatures* data)
 	auto num_features = dense_features->get_num_features();
 	auto num_vectors = dense_features->get_num_vectors();
 
-	if (m_weights_set)
+	if (weights_set())
 	{
 		REQUIRE(m_weights.vlen==num_vectors,"Length of weights vector (currently %d) should be same as"
 					" number of vectors in data (presently %d)",m_weights.vlen,num_vectors)
@@ -266,7 +272,7 @@ bool CCARTree::train_machine(CFeatures* data)
 		linalg::set_const(m_weights, 1.0);
 	}
 
-	if (m_types_set)
+	if (types_set())
 	{
 		REQUIRE(
 		    m_nominal.vlen == num_features,
@@ -340,7 +346,8 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<floa
 				float64_t sum = linalg::dot(labels_vec, weights);
 				// lsd*total_weight=sum_of_squared_deviation
 				float64_t tot=0;
-				node->data.weight_minus_node=tot*least_squares_deviation(labels_vec,weights,tot);
+				node->data.weight_minus_node=least_squares_deviation(labels_vec,weights,tot);
+				node->data.weight_minus_node*=tot;
 				node->data.node_label=sum/tot;
 				node->data.total_weight=tot;
 
@@ -1478,8 +1485,6 @@ void CCARTree::init()
 	m_weights=SGVector<float64_t>();
 	m_mode=PT_MULTICLASS;
 	m_pre_sort=false;
-	m_types_set=false;
-	m_weights_set=false;
 	m_apply_cv_pruning=false;
 	m_folds=5;
 	m_alphas=new CDynamicArray<float64_t>();
@@ -1495,8 +1500,6 @@ void CCARTree::init()
 	SG_ADD(&m_sorted_indices, "sorted_indices", "sorted indices");
 	SG_ADD(&m_nominal, "nominal", "feature types");
 	SG_ADD(&m_weights, "weights", "weights");
-	SG_ADD(&m_weights_set, "weights_set", "weights set");
-	SG_ADD(&m_types_set, "types_set", "feature types set");
 	SG_ADD(
 	    &m_apply_cv_pruning, "apply_cv_pruning",
 	    "apply cross validation pruning");
