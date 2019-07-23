@@ -75,7 +75,7 @@ After this just simply install the shogun library
 The nightly packages are available in the `nightly` component, i.e. `deb http://apt.shogun.ml/ stretch nightly`
 
 ### Fedora <a name="fedora"></a>
-Shogun is part of [Fedora 25](https://admin.fedoraproject.org/pkgdb/package/rpms/shogun/).
+Shogun is part of [Fedora 25](https://apps.fedoraproject.org/packages/shogun).
 Install as
 
     sudo dnf install shogun
