@@ -1,7 +1,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 
@@ -281,14 +280,14 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 	int32_t num_str=1024;
 	int32_t max_string_len=1024;
 
-	SGString<char>* strings=SG_MALLOC(SGString<char>, num_str);
+	SGVector<char>* strings=SG_MALLOC(SGVector<char>, num_str);
 	std::mt19937_64 prng(seed);
   	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (int32_t i=0; i<num_str; i++)
 	{
-		strings[i]=SGString<char>(uniform_int_dist(prng, {1, max_string_len}));
-		for (int32_t j=0; j<strings[i].slen; j++)
-			strings[i].string[j]=(char) uniform_int_dist(prng, {0, 255});
+		strings[i]=SGVector<char>(uniform_int_dist(prng, {1, max_string_len}));
+		for (int32_t j=0; j<strings[i].vlen; j++)
+			strings[i].vector[j]=(char) uniform_int_dist(prng, {0, 255});
 	}
 
 	CProtobufFile* fin;
@@ -298,7 +297,7 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 	fout->set_string_list(strings, num_str);
 	SG_UNREF(fout);
 
-	SGString<char>* data_from_file=NULL;
+	SGVector<char>* data_from_file=NULL;
 	int32_t num_str_from_file=0;
 	int32_t max_string_len_from_file=0;
 	fin=new CProtobufFile("ProtobufFileTest_string_list_char_output.txt",'r', NULL);
@@ -307,8 +306,8 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		for (int32_t j=0; j<strings[i].slen; j++)
-			EXPECT_EQ(strings[i].string[j], data_from_file[i].string[j]);
+		for (int32_t j=0; j<strings[i].vlen; j++)
+			EXPECT_EQ(strings[i].vector[j], data_from_file[i].vector[j]);
 	}
 
 	SG_UNREF(fin);

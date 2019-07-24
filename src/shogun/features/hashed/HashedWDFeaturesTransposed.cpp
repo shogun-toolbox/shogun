@@ -113,8 +113,6 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeatures
 
 CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 {
-	for (int32_t i=0; i<string_length; i++)
-		SG_FREE(transposed_strings[i].vector);
 	SG_FREE(transposed_strings);
 
 	SG_UNREF(strings);

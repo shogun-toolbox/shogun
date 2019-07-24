@@ -48,8 +48,8 @@ TEST(Factory, string_features_from_file)
 
 	for (auto i : range(3))
 	{
-		string_list.strings[i].string = const_cast<char*>(strings[i].c_str());
-		string_list.strings[i].slen = strings[i].size();
+		string_list.strings[i] = SGVector<char>(
+			const_cast<char*>(strings[i].c_str()), strings[i].size(), false);
 	}
 
 	generate_temp_filename(const_cast<char*>(filename.c_str()));

@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/converter/HashedDocConverter.h>
@@ -22,17 +22,17 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
 
-	SGString<char> string_1(65);
+	SGVector<char> string_1(65);
 	for (index_t i=0; i<65; i++)
-		string_1.string[i] = doc_1[i];
+		string_1[i] = doc_1[i];
 
-	SGString<char> string_2(72);
+	SGVector<char> string_2(72);
 	for (index_t i=0; i<72; i++)
-		string_2.string[i] = doc_2[i];
+		string_2[i] = doc_2[i];
 
-	SGString<char> string_3(85);
+	SGVector<char> string_3(85);
 	for (index_t i=0; i<85; i++)
-		string_3.string[i] = doc_3[i];
+		string_3[i] = doc_3[i];
 
 	SGStringList<char> list(3,85);
 	list.strings[0] = string_1;
@@ -55,8 +55,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	{
 		SGSparseVector<float64_t> example = feats->get_vector();
 
-		SGVector<char> tmp(list.strings[i].string, list.strings[i].slen, false);
-		tmp.vector = list.strings[i].string;
+		SGVector<char> tmp = list.strings[i];
 		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
 
 		EXPECT_EQ(example.num_feat_entries, converted_doc.num_feat_entries);
@@ -82,17 +81,17 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
 
-	SGString<char> string_1(65);
+	SGVector<char> string_1(65);
 	for (index_t i=0; i<65; i++)
-		string_1.string[i] = doc_1[i];
+		string_1[i] = doc_1[i];
 
-	SGString<char> string_2(72);
+	SGVector<char> string_2(72);
 	for (index_t i=0; i<72; i++)
-		string_2.string[i] = doc_2[i];
+		string_2[i] = doc_2[i];
 
-	SGString<char> string_3(85);
+	SGVector<char> string_3(85);
 	for (index_t i=0; i<85; i++)
-		string_3.string[i] = doc_3[i];
+		string_3[i] = doc_3[i];
 
 	SGStringList<char> list(3,85);
 	list.strings[0] = string_1;
@@ -120,8 +119,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	while (feats->get_next_example())
 	{
 		/** Dense dot test */
-		SGVector<char> tmp(list.strings[i].string, list.strings[i].slen, false);
-		tmp.vector = list.strings[i].string;
+		SGVector<char> tmp = list.strings[i];
 		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
 
 		float32_t tmp_res = 0;

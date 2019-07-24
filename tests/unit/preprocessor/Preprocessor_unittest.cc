@@ -78,11 +78,11 @@ TEST(Preprocessor, string)
 	for (index_t i=0; i<num_strings; ++i)
 	{
 		index_t len=uniform_int_dist(prng, {min_string_length, max_string_length});
-		SGString<uint16_t> current(len);
+		SGVector<uint16_t> current(len);
 
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
-			current.string[j]=(uint16_t)uniform_int_dist(prng, {'A', 'Z'});
+			current[j]=(uint16_t)uniform_int_dist(prng, {'A', 'Z'});
 
 		strings.strings[i]=current;
 	}

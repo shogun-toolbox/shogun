@@ -379,7 +379,6 @@ void CCSVFile::get_string_list(
 			SGVector<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)
 {
-	SGVector<char> line;
 	int32_t current_line_idx=0;
 	int32_t num_tokens=0;
 
@@ -390,14 +389,11 @@ void CCSVFile::get_string_list(
 	skip_lines(m_num_to_skip);
 	while (m_line_reader->has_next())
 	{
-		line=m_line_reader->read_line();
-		strings[current_line_idx].vlen=line.vlen;
-		strings[current_line_idx].vector=SG_MALLOC(char, line.vlen);
-		for (int32_t i=0; i<line.vlen; i++)
-			strings[current_line_idx].vector[i]=line[i];
+		strings[current_line_idx]=m_line_reader->read_line();
 
-		if (line.vlen>max_string_len)
-			max_string_len=line.vlen;
+		index_t line_length = strings[current_line_idx].vlen;
+		if (line_length>max_string_len)
+			max_string_len=line_length;
 
 		current_line_idx++;
 	}

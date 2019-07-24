@@ -5,7 +5,7 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
@@ -28,13 +28,13 @@ TEST(SubsequenceStringKernel, compute)
 	const char* doc_1="ABCDEFG";
 	const char* doc_2="EFGHIJK";
 
-	SGString<char> string_1(len);
+	SGVector<char> string_1(len);
 	for (index_t i=0; i<len; i++)
-		string_1.string[i] = doc_1[i];
+		string_1[i] = doc_1[i];
 
-	SGString<char> string_2(len);
+	SGVector<char> string_2(len);
 	for (index_t i=0; i<len; i++)
-		string_2.string[i] = doc_2[i];
+		string_2[i] = doc_2[i];
 
 	SGStringList<char> list(num_strings, len);
 	list.strings[0]=string_1;
@@ -69,9 +69,9 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 	for (index_t i=0; i<num_strings; ++i)
 	{
 		index_t cur_len=uniform_int_dist(prng, {min_len, max_len});
-		SGString<char> str(cur_len);
+		SGVector<char> str(cur_len);
 		for (index_t l=0; l<cur_len; ++l)
-			str.string[l]=char(uniform_int_dist(prng, {'A','Z'}));
+			str[l]=char(uniform_int_dist(prng, {'A','Z'}));
 		list.strings[i]=str;
 	}
 

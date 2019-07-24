@@ -51,9 +51,7 @@ void CDecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
 	for (auto i : range(string_list.num_strings))
 	{
 		auto& vec = string_list.strings[i];
-		auto decompressed = apply_to_string(vec.vector, vec.vlen);
-		SG_FREE(vec.vector);
-		vec.vector = decompressed;
+		vec = SGVector<ST>(apply_to_string(vec.vector, vec.vlen), vec.vlen);
 	}
 }
 

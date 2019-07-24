@@ -200,11 +200,9 @@ void CBinaryFile::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& 
 		int32_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i)				\
-		strings[i].vlen=len;																	\
-		sg_type* str = SG_MALLOC(sg_type, len);														\
-		if (fread(str, sizeof(sg_type), len, file)!= (size_t) len)								\
+		strings[i] = SGVector<sg_type>(len);													\
+		if (fread(strings[i].vector, sizeof(sg_type), len, file)!= (size_t) len)				\
 			SG_ERROR("Failed to read string %d\n", i)											\
-		strings[i].vector=str;																	\
 	}																							\
 }
 

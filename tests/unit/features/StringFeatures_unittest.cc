@@ -68,7 +68,7 @@ TEST(StringFeaturesTest,copy_subset)
 		for (index_t j=0; j<vec.vlen; ++j)
 		{
 			index_t offset_idx=i+(offset_copy+offset_subset);
-			EXPECT_EQ(vec.vector[j], strings.strings[offset_idx].string[j]);
+			EXPECT_EQ(vec.vector[j], strings.strings[offset_idx].vector[j]);
 		}
 
 		subset_copy->free_feature_vector(vec, i);

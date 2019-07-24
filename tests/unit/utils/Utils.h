@@ -39,15 +39,11 @@ SGStringList<T> generateRandomStringData(
 		index_t len =
 		    std::rand() % (max_string_length - min_string_length + 1) +
 		    min_string_length;
-		SGString<T> current(len);
+		SGVector<T> current(len);
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j = 0; j < len; ++j)
 		{
-			current.string[j] = (T)(std::rand() % ('Z' - 'A' + 1) + 'A');
-			T* string = SG_MALLOC(T, 2);
-			string[0] = current.string[j];
-			string[1] = '\0';
-			SG_FREE(string);
+			current[j] = (T)(std::rand() % ('Z' - 'A' + 1) + 'A');
 		}
 
 		strings.strings[i] = current;
