@@ -276,7 +276,7 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
     using namespace shogun;
     int32_t max_len=0;
     int32_t num_strings=0;
-    SGString<sg_type>* strings=NULL;
+    SGVector<sg_type>* strings=NULL;
 
     octave_value arg=$input;
     if (arg.is_cell())
@@ -284,7 +284,7 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
         Cell c = arg.cell_value();
         num_strings=c.nelem();
         ASSERT(num_strings>=1);
-        strings=SG_MALLOC(SGString<sg_type>, num_strings);
+        strings=SG_MALLOC(SGVector<sg_type>, num_strings);
 
         for (int32_t i=0; i<num_strings; i++)
         {
@@ -298,20 +298,20 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
             int32_t len=str.cols();
             if (len>0)
             {
-                strings[i].slen=len; /* all must have same length in octave */
-                strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
+                strings[i].vlen=len; /* all must have same length in octave */
+                strings[i].vector=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
                 int32_t j;
                 for (j=0; j<len; j++)
-                    strings[i].string[j]=str(0,j);
-                strings[i].string[j]='\0';
+                    strings[i].vector[j]=str(0,j);
+                strings[i].vector[j]='\0';
                 max_len=CMath::max(max_len, len);
             }
             else
             {
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-                strings[i].slen=0;
-                strings[i].string=NULL;
+                strings[i].vlen=0;
+                strings[i].vector=NULL;
             }
         }
     }
@@ -320,26 +320,26 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
         oct_type data=arg.oct_converter();
         num_strings=data.cols();
         int32_t len=data.rows();
-        strings=SG_MALLOC(SGString<sg_type>, num_strings);
+        strings=SG_MALLOC(SGVector<sg_type>, num_strings);
         ASSERT(strings);
 
         for (int32_t i=0; i<num_strings; i++)
         {
             if (len>0)
             {
-                strings[i].slen=len; /* all must have same length in octave */
-                strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
+                strings[i].vlen=len; /* all must have same length in octave */
+                strings[i].vector=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
                 int32_t j;
                 for (j=0; j<len; j++)
-                    strings[i].string[j]=data(j,i);
-                strings[i].string[j]='\0';
+                    strings[i].vector[j]=data(j,i);
+                strings[i].vector[j]='\0';
             }
             else
             {
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-                strings[i].slen=0;
-                strings[i].string=NULL;
+                strings[i].vlen=0;
+                strings[i].vector=NULL;
             }
         }
         max_len=len;
@@ -369,13 +369,13 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 /* output typemap for CStringFeatures */
 %typemap(out) shogun::SGStringList<char>
 {
-    shogun::SGString<char>* str = $1.strings;
+    shogun::SGVector<char>* str = $1.strings;
     int32_t i, num_strings = $1.num_strings;
 
     Cell c(num_strings, 1);
 
     for (i = 0; i < num_strings; i++) {
-        c(i)=std::string(str[i].string);
+        c(i)=std::string(str[i].vector);
     }
 
     $result = c;
@@ -383,7 +383,7 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 %define TYPEMAP_STRINGFEATURES_OUT(oct_type, sg_type)
 %typemap(out) shogun::SGStringList<sg_type>
 {
-	SGString<sg_type>* strings = $1.strings;
+	SGVector<sg_type>* strings = $1.strings;
 	int32_t num_strings = $1.num_strings;
 	int32_t max_string_length = $1.max_string_length;
 	
@@ -391,14 +391,14 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 	
 	for (auto i : range(num_strings))
 	{
-		auto len = strings[i].slen;
+		auto len = strings[i].vlen;
 		dim_vector vdims = dim_vector::alloc(2);
 		vdims(0) = 1;
 		vdims(1) = len;
 		auto vec=oct_type(vdims);
 		
 		for (auto j : range(len))
-			vec(j) = strings[i].string[j];
+			vec(j) = strings[i].vector[j];
 
 		c(i) = vec;
 	}

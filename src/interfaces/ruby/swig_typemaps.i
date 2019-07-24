@@ -174,22 +174,21 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	}
 
 	size = RARRAY_LEN($input);
-	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, size);
+	shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, size);
 
 	for (i = 0; i < size; i++) {
 		VALUE arr = rb_ary_entry($input, i);
-		new (&strings[i]) SGString<SGTYPE>();
+		new (&strings[i]) SGVector<SGTYPE>();
 		if (TYPE(arr) == T_STRING) {
 			len = RSTRING_LEN(arr);
 			const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].slen = len;
-			strings[i].string = NULL;
+			strings[i].vlen = len;
 
 			if (len > 0) {
-				strings[i].string = SG_MALLOC(SGTYPE, len + 1);
-				sg_memcpy(strings[i].string, str, len + 1);
+				strings[i].vector = SG_MALLOC(SGTYPE, len + 1);
+				sg_memcpy(strings[i].vector, str, len + 1);
 			}
 		}
 		else {
@@ -197,12 +196,12 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 				len = RARRAY_LEN(arr);
 				max_len = shogun::CMath::max(len, max_len);
 
-				strings[i].slen=len;
-				strings[i].string=NULL;
+				strings[i].vlen=len;
+				strings[i].vector=NULL;
 				if (len > 0) {
-					strings[i].string = SG_MALLOC(SGTYPE, len);
+					strings[i].vector = SG_MALLOC(SGTYPE, len);
 					for (j = 0; j < len; j++) {
-						strings[i].string[j] = R2SG(RARRAY_PTR(arr)[j]);
+						strings[i].vector[j] = R2SG(RARRAY_PTR(arr)[j]);
 					}
 				}
 			}
@@ -220,7 +219,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 }
 
 %typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGString<SGTYPE>* str = $1.strings;
+	shogun::SGVector<SGTYPE>* str = $1.strings;
 	int32_t i, j, num = $1.num_strings;
 	VALUE arr;
 
@@ -228,15 +227,15 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 
 	for (i = 0; i < num; i++) {
 		if (strcmp(TYPECODE, "String[]")==0) {
-			VALUE vec = rb_str_new2((char *)str[i].string);
+			VALUE vec = rb_str_new2((char *)str[i].vector);
 			rb_ary_push(arr, vec);
 		}
 		else {
-			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
-			sg_memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
+			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].vlen);
+			sg_memcpy(data, str[i].vector, str[i].vlen * sizeof(SGTYPE));
 
-			VALUE vec = rb_ary_new2(str[i].slen);
-			for (j = 0; j < str[i].slen; j++) {
+			VALUE vec = rb_ary_new2(str[i].vlen);
+			for (j = 0; j < str[i].vlen; j++) {
 				rb_ary_push(vec, SG2R(data[j]));
 			}
 			rb_ary_push(arr, vec);

@@ -101,7 +101,7 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 				buffer_size+=granularity;
 			}
 
-			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1]=SGVector<ST>(line, len);
+			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1]=SGVector<ST>(line, len, false);
 			CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, (int32_t) len);
 		}
 		else

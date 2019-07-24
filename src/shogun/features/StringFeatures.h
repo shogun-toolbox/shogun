@@ -662,10 +662,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		SGVector<ST>* features;
 
 		/** true when single string / created by sliding window */
-		ST* single_string;
-
-		/// length of prior single string
-		int32_t length_of_single_string;
+		SGVector<ST> single_string;
 
 		/** length of longest string (for subset, is updated) */
 		int32_t max_string_length;

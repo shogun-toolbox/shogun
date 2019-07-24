@@ -190,18 +190,17 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 		return $null;
 	}
 
-	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, rows_$1);
+	shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, rows_$1);
 
 	for (i = 0; i < rows_$1; i++) {
 		len = cols_$1;
 		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].slen = len;
-		strings[i].string = NULL;
+		strings[i].vlen = len;
 
 		if (len >0) {
-			strings[i].string = SG_MALLOC(SGTYPE, len);
-			sg_memcpy(strings[i].string, array, len * sizeof(SGTYPE));
+			strings[i].vector = SG_MALLOC(SGTYPE, len);
+			sg_memcpy(strings[i].vector, array, len * sizeof(SGTYPE));
 		}
 		array = array + len;
 	}
@@ -214,10 +213,10 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 }
 
 %typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGString<SGTYPE>* str = $1.strings;
+	shogun::SGVector<SGTYPE>* str = $1.strings;
 	int32_t i, j;
 	int32_t rows = $1.num_strings;
-	int32_t cols = str[0].slen;
+	int32_t cols = str[0].vlen;
 	int32_t len = rows * cols;
 
 	CTYPE *res = SG_MALLOC(CTYPE, len + 2);
@@ -227,7 +226,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	res = res + 2;
 
 	for (i = 0; i < rows; i++) {
-		sg_memcpy(res, str[i].string, str[i].slen * sizeof(SGTYPE));
+		sg_memcpy(res, str[i].vector, str[i].vlen * sizeof(SGTYPE));
 		res = res + cols;
 	}
 	$result = res;
@@ -285,19 +284,18 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 		return $null;
 	}
 
-	shogun::SGString<char>* strings=SG_MALLOC(shogun::SGString<char>, size_$1);
+	shogun::SGVector<char>* strings=SG_MALLOC(shogun::SGVector<char>, size_$1);
 
 	for (i = 0; i < size_$1; i++) {
 		str = $input[i];
 		len = strlen(str);
 		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].slen = len;
-		strings[i].string = NULL;
+		strings[i].vlen = len;
 
 		if (len > 0) {
-			strings[i].string = SG_MALLOC(char, len);
-			sg_memcpy(strings[i].string, str, len);
+			strings[i].vector = SG_MALLOC(char, len);
+			sg_memcpy(strings[i].vector, str, len);
 		}
 	}
 
@@ -309,7 +307,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 }
 
 %typemap(out) shogun::SGStringList<char> {
-	shogun::SGString<char>* str = $1.strings;
+	shogun::SGVector<char>* str = $1.strings;
 	int32_t i, j;
 	int32_t size = $1.num_strings;
 	int32_t max_size = 32;
@@ -319,11 +317,11 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	sprintf(res[0], "%d", size);
 
 	for (i = 0; i < size; i++) {
-		res[i + 1] = SG_MALLOC(char, str[i].slen + 1);
-		sg_memcpy(res[i + 1], str[i].string, str[i].slen * sizeof(char));
+		res[i + 1] = SG_MALLOC(char, str[i].vlen + 1);
+		sg_memcpy(res[i + 1], str[i].vector, str[i].vlen * sizeof(char));
 		
 		// null terminate string as C#'s Marshal.PtrToStringAnsi expects that
-		res[i+1][str[i].slen] = '\0';
+		res[i+1][str[i].vlen] = '\0';
 	}
 	$result = res;
 }

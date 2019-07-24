@@ -38,7 +38,6 @@
 %include <shogun/lib/SGMatrix.h>
 %include <shogun/lib/SGSparseVector.h>
 %include <shogun/lib/SGSparseMatrix.h>
-%include <shogun/lib/SGString.h>
 %include <shogun/lib/SGStringList.h>
 %include <shogun/lib/SGNDArray.h>
 namespace shogun
@@ -157,43 +156,6 @@ namespace shogun
 #endif
 #ifdef USE_FLOATMAX
     %template(LongRealStringList) SGStringList<floatmax_t>;
-#endif
-
-#ifdef USE_BOOL
-    %template(BoolString) SGString<bool>;
-#endif
-#ifdef USE_CHAR
-    %template(CharString) SGString<char>;
-#endif
-#ifdef USE_UINT8
-    %template(ByteString) SGString<uint8_t>;
-#endif
-#ifdef USE_UINT16
-    %template(WordString) SGString<uint16_t>;
-#endif
-#ifdef USE_INT16
-    %template(ShortString) SGString<int16_t>;
-#endif
-#ifdef USE_INT32
-    %template(IntString)  SGString<int32_t>;
-#endif
-#ifdef USE_UINT32
-    %template(UIntString)  SGString<uint32_t>;
-#endif
-#ifdef USE_INT64
-    %template(LongIntString)  SGString<int64_t>;
-#endif
-#ifdef USE_UINT64
-    %template(ULongIntString)  SGString<uint64_t>;
-#endif
-#ifdef USE_FLOAT32
-    %template(ShortRealString) SGString<float32_t>;
-#endif
-#ifdef USE_FLOAT64
-    %template(RealString) SGString<float64_t>;
-#endif
-#ifdef USE_FLOATMAX
-    %template(LongRealString) SGString<floatmax_t>;
 #endif
 
 #if !defined(SWIGPERL)

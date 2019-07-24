@@ -75,7 +75,7 @@
                 if(!it) {
                     return false;
                 }
-                shogun::SGString<type>* sg_str = sg_strings.strings;
+                shogun::SGVector<type>* sg_str = sg_strings.strings;
                 int32_t sg_num = sg_strings.num_strings;
                 //work out max len!
                 STRLEN sg_slen_max = sg_strings.max_string_length;
@@ -94,7 +94,7 @@
                 }
                 for(int32_t i = 0; i < sg_num; i++) {
                     //PTZ121012 really to check this with unicode types also...
-                    sg_memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].string, sizeof(type) * sg_str[i].slen);
+                    sg_memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].vector, sizeof(type) * sg_str[i].vlen);
                     //PTZ121012 shall have calloced also...
                 }
                 PDL->SetSV_PDL(rsv, it);
@@ -253,7 +253,7 @@ fail:
                         return false;
                     }
                     int l_sz = it->nvals / l_len_max;
-                    SGString< type >* l_ss = SG_MALLOC(SGString< type >, l_sz);
+                    SGVector< type >* l_ss = SG_MALLOC(SGVector< type >, l_sz);
                     if(!l_ss) {
                         return false;
                     }
@@ -279,26 +279,21 @@ fail:
                         el_len = strnlen(el_str, l_len_max);
                         if(i + el_len > it->nvals) {
                             warn("string_from_pdl::offset error in string conversion::bayling out");
-                            for(int32_t j = 0; j < lind; j++)
-                                l_ss[j].~SGString< type >();
                             SG_FREE(l_ss);
                             //free(inds);
                             return false;
                         }
-                        new(&l_ss[lind]) SGString< type >();
-                        l_ss[lind].slen = el_len;
-                        l_ss[lind].string = NULL;
+                        new(&l_ss[lind]) SGVector< type >();
+                        l_ss[lind].vlen = el_len;
                         if(el_len > 0) {
-                            l_ss[lind].string = SG_MALLOC(type, el_len);
-                            if(!l_ss[lind].string) {
+                            l_ss[lind].vector = SG_MALLOC(type, el_len);
+                            if(!l_ss[lind].vector) {
 			      warn("string_from_pdl::out of memory");
-			      for(int32_t j = 0; j <= lind; j++)
-                                    l_ss[j].~SGString< type >();
                                 SG_FREE(l_ss);
                                 //free(inds);
                                 return false;
                             }
-                            sg_memcpy(l_ss[lind].string, el_str, el_len);
+                            sg_memcpy(l_ss[lind].vector, el_str, el_len);
                             if(el_len > sg_strings.max_string_length) {
                                 sg_strings.max_string_length = el_len;
                             }
@@ -329,19 +324,18 @@ fail:
                 if(is_array(sv)) {
                     AV* l_av = (AV*) SvRV(sv);   /* dereference */
                     int l_sz = av_len(l_av) + 1;
-                    shogun::SGString<type>* l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
+                    shogun::SGVector<type>* l_ss = SG_MALLOC(shogun::SGVector<type>, l_sz);
                     sg_strings.strings = l_ss;
                     for (int32_t i = 0; i <= l_sz; i++) {
                         STRLEN el_len;
                         SV** el_psv = av_fetch(l_av, i, 0);
                         const char* el_str = SvPV(*el_psv, el_len);
-                        new (&l_ss[i]) SGString<type>();
+                        new (&l_ss[i]) SGVector<type>();
                         //PTZ121002 free *el_psv?
-                        l_ss[i].slen = el_len;
-                        l_ss[i].string = NULL;
+                        l_ss[i].vlen = el_len;
                         if (el_len > 0) {
-                            l_ss[i].string = SG_MALLOC(type, el_len);
-                            sg_memcpy(l_ss[i].string, el_str, el_len);
+                            l_ss[i].vector = SG_MALLOC(type, el_len);
+                            sg_memcpy(l_ss[i].vector, el_str, el_len);
                             if(el_len > sg_strings.max_string_length) {
                                 sg_strings.max_string_length = el_len;
                             }

@@ -22,6 +22,7 @@
 #include <vector>
 #else
 #include <unistd.h>
+#include <algorithm>
 
 #endif
 
@@ -87,11 +88,8 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 {
 	remove_all_subsets();
 
-	if (single_string)
-	{
-		SG_FREE(single_string);
-		single_string=NULL;
-	}
+	if (single_string.vector)
+		single_string = SGVector<ST>();
 	else
 		cleanup_feature_vectors(0, num_vectors-1);
 
@@ -1113,29 +1111,27 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t
 
 	ASSERT(step_size>0)
 	ASSERT(window_size>0)
-	ASSERT(num_vectors==1 || single_string)
+	ASSERT(num_vectors==1 || single_string.vector)
 	ASSERT(max_string_length>=window_size ||
-			(single_string && length_of_single_string>=window_size));
+			(single_string.vector && single_string.vlen>=window_size));
 
 	//in case we are dealing with a single remapped string
 	//allow remapping
-	if (single_string)
-		num_vectors= (length_of_single_string-window_size)/step_size + 1;
+	if (single_string.vector)
+		num_vectors= (single_string.vlen-window_size)/step_size + 1;
 	else if (num_vectors==1)
-	{
 		num_vectors= (max_string_length-window_size)/step_size + 1;
-		length_of_single_string=max_string_length;
-	}
 
 	SGVector<ST>* f=SG_MALLOC(SGVector<ST>, num_vectors);
 	int32_t offs=0;
 	for (int32_t i=0; i<num_vectors; i++)
 	{
-		f[i] = SGVector<ST>(
-			&features[0].vector[offs+skip], window_size-skip, false);
+		index_t l = offs+skip;
+		index_t h = std::min(offs+window_size, features[0].size());
+		f[i] = features[0].slice(l, h);
 		offs+=step_size;
 	}
-	single_string=features[0].vector;
+	single_string=features[0];
 	SG_FREE(features);
 	features=f;
 	max_string_length=window_size-skip;
@@ -1151,9 +1147,9 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t 
 
 	ASSERT(positions)
 	ASSERT(window_size>0)
-	ASSERT(num_vectors==1 || single_string)
+	ASSERT(num_vectors==1 || single_string.vector)
 	ASSERT(max_string_length>=window_size ||
-			(single_string && length_of_single_string>=window_size));
+			(single_string.vector && single_string.vlen>=window_size));
 
 	num_vectors= positions->get_num_elements();
 	ASSERT(num_vectors>0)
@@ -1162,13 +1158,12 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t 
 
 	//in case we are dealing with a single remapped string
 	//allow remapping
-	if (single_string)
-		len=length_of_single_string;
+	if (single_string.vector)
+		len=single_string.vlen;
 	else
 	{
-		single_string=features[0].vector;
+		single_string=features[0];
 		len=max_string_length;
-		length_of_single_string=max_string_length;
 	}
 
 	SGVector<ST>* f=SG_MALLOC(SGVector<ST>, num_vectors);
@@ -1178,14 +1173,17 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t 
 
 		if (p>=0 && p<=len-window_size)
 		{
-			f[i] = SGVector<ST>(&features[0].vector[p+skip], window_size-skip, false);
+			index_t l = p+skip;
+			index_t h = std::min(p+window_size, features[0].size());
+			f[i] = features[0].slice(l, h);
+			f[i].vlen = window_size-skip;
 		}
 		else
 		{
 			num_vectors=1;
 			max_string_length=len;
 			features[0].vlen=len;
-			single_string=NULL;
+			single_string=SGVector<ST>();
 			SG_FREE(f);
 			SG_ERROR("window (size:%d) starting at position[%d]=%d does not fit in sequence(len:%d)\n",
 					window_size, i, p, len);
@@ -1573,8 +1571,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	alphabet=NULL;
 	num_vectors=0;
 	features=NULL;
-	single_string=NULL;
-	length_of_single_string=0;
+	single_string=SGVector<ST>();
 	max_string_length=0;
 	order=0;
 	preprocess_on_get=false;
@@ -1590,11 +1587,10 @@ template<class ST> void CStringFeatures<ST>::init()
 			"This contains the array of features.");
 	watch_param("features", &features, &num_vectors);
 
-	m_parameters->add_vector(&single_string,
-			&length_of_single_string,
+	m_parameters->add(&single_string,
 			"single_string",
 			"Created by sliding window.");
-	watch_param("single_string", &single_string, &length_of_single_string);
+	watch_param("single_string", &single_string);
 
 	SG_ADD(
 		&max_string_length, "max_string_length", "Length of longest string.");

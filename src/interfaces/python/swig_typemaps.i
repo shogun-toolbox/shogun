@@ -355,7 +355,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         Py_ssize_t size=PyList_Size(list);
-        shogun::SGString<type>* strings=SG_MALLOC(shogun::SGString<type>, size);
+        shogun::SGVector<type>* strings=SG_MALLOC(shogun::SGVector<type>, size);
 
         Py_ssize_t max_len=0;
         for (auto i=0; i<size; ++i)
@@ -371,20 +371,18 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     if (str == nullptr)
                     {
                         PyErr_SetString(PyExc_TypeError, "Error converting string content.");
-                        for (auto j=0; j<i; ++j)
-                            SG_FREE(strings[i].string);
                         SG_FREE(strings);
                         return false;
                     }
 					max_len=shogun::CMath::max(len, max_len);
 
-                    strings[i].slen=len;
-                    strings[i].string=NULL;
+                    strings[i].vlen=len;
+                    strings[i].vector=NULL;
 
                     if (len>0)
                     {
-                        strings[i].string=SG_MALLOC(type, len);
-                        sg_memcpy(strings[i].string, str, len);
+                        strings[i].vector=SG_MALLOC(type, len);
+                        sg_memcpy(strings[i].vector, str, len);
                         Py_XDECREF(tmp);
                     }
                 }
@@ -392,8 +390,6 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                 {
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
 
-                    for (auto j=0; j<i; ++j)
-                        SG_FREE(strings[i].string);
                     SG_FREE(strings);
                     return false;
                 }
@@ -411,13 +407,13 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     Py_ssize_t len = PyArray_DIM(array,0);
                     max_len=shogun::CMath::max(len,max_len);
 
-                    strings[i].slen=len;
-                    strings[i].string=NULL;
+                    strings[i].vlen=len;
+                    strings[i].vector=NULL;
 
                     if (len>0)
                     {
-                        strings[i].string=SG_MALLOC(type, len);
-                        sg_memcpy(strings[i].string, str, len*sizeof(type));
+                        strings[i].vector=SG_MALLOC(type, len);
+                        sg_memcpy(strings[i].vector, str, len*sizeof(type));
                     }
 
                     if (is_new_object)
@@ -427,8 +423,6 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                 {
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
 
-                    for (int32_t j=0; j<i; ++j)
-                        SG_FREE(strings[i].string);
                     SG_FREE(strings);
                     return false;
                 }
@@ -453,7 +447,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
 template <class type>
 static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int typecode)
 {
-    shogun::SGString<type>* str=sg_strings.strings;
+    shogun::SGVector<type>* str=sg_strings.strings;
     index_t num=sg_strings.num_strings;
     PyObject* list = PyList_New(num);
 
@@ -465,18 +459,18 @@ static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int t
 
             if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
-                /* This path is only taking if str[i].string is a char*. However this cast is
+                /* This path is only taking if str[i].vector is a char*. However this cast is
                    required to build through for non char types. */
-				s=PyUnicode_FromStringAndSize((char*) str[i].string, str[i].slen);
+				s=PyUnicode_FromStringAndSize((char*) str[i].vector, str[i].vlen);
             }
             else
             {
                 PyArray_Descr* descr=PyArray_DescrFromType(typecode);
-                type* data = SG_MALLOC(type, str[i].slen);
+                type* data = SG_MALLOC(type, str[i].vlen);
                 if (descr && data)
                 {
-                    sg_memcpy(data, str[i].string, str[i].slen*sizeof(type));
-                    npy_intp dims = str[i].slen;
+                    sg_memcpy(data, str[i].vector, str[i].vlen*sizeof(type));
+                    npy_intp dims = str[i].vlen;
 
                     s = PyArray_NewFromDescr(&PyArray_Type,
                             descr, 1, &dims, NULL, (void*) data,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);

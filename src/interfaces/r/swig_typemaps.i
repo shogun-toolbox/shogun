@@ -154,7 +154,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 {
     int32_t max_len=0;
     int32_t num_strings=0;
-    shogun::SGString<sg_type>* strs=NULL;
+    shogun::SGVector<sg_type>* strs=NULL;
 
     if ($input == R_NilValue || TYPEOF($input) != STRSXP)
     {
@@ -164,7 +164,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
     num_strings=Rf_length($input);
     ASSERT(num_strings>=1);
-    strs=SG_MALLOC(shogun::SGString<sg_type>, num_strings);
+    strs=SG_MALLOC(shogun::SGVector<sg_type>, num_strings);
 
     for (int32_t i=0; i<num_strings; i++)
     {
@@ -175,17 +175,17 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
         if (len>0)
         {
 			sg_type* dst=SG_MALLOC(sg_type, len+1);
-            /*ASSERT(strs[i].string);*/
-			strs[i].string=(sg_type*) sg_memcpy(dst, c, len*sizeof(sg_type));
-            strs[i].string[len]='\0'; /* zero terminate */
-            strs[i].slen=len;
+            /*ASSERT(strs[i].vector);*/
+			strs[i].vector=(sg_type*) sg_memcpy(dst, c, len*sizeof(sg_type));
+            strs[i].vector[len]='\0'; /* zero terminate */
+            strs[i].vlen=len;
             max_len=CMath::max(max_len, len);
         }
         else
         {
             /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-            strs[i].slen=0;
-            strs[i].string=NULL;
+            strs[i].vlen=0;
+            strs[i].vector=NULL;
         }
     }
 

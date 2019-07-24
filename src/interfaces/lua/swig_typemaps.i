@@ -288,7 +288,7 @@ TYPEMAP_SGMATRIX(float64_t)
     }
 
     size = lua_rawlen(L, ($input));
-    shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, size);
+    shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, size);
 
     for (i = 0; i < size; i++) {
         lua_rawgeti(L, $input, i + 1);
@@ -297,13 +297,12 @@ TYPEMAP_SGMATRIX(float64_t)
             const char *str = lua_tolstring(L, -1, (size_t *)&len);
             max_len = shogun::CMath::max(len, max_len);
 
-            strings[i].slen = len;
-            strings[i].string = NULL;
+            strings[i].vlen = len;
 
             if (len > 0) {
-                strings[i].string = SG_MALLOC(SGTYPE, len+1);
-                sg_memcpy(strings[i].string, str, len);
-                strings[i].string[len]='\0';
+                strings[i].vector = SG_MALLOC(SGTYPE, len+1);
+                sg_memcpy(strings[i].vector, str, len);
+                strings[i].vector[len]='\0';
             }
         }
         else {
@@ -314,12 +313,12 @@ TYPEMAP_SGMATRIX(float64_t)
             len = lua_rawlen(L, (-1));
             max_len = shogun::CMath::max(len, max_len);
 
-            strings[i].slen=len;
-            strings[i].string=NULL;
+            strings[i].vlen=len;
+            strings[i].vector=NULL;
 
             if (len > 0) {
-                strings[i].string = SG_MALLOC(SGTYPE, len);
-                sg_memcpy(strings[i].string, arr, len * sizeof(SGTYPE));
+                strings[i].vector = SG_MALLOC(SGTYPE, len);
+                sg_memcpy(strings[i].vector, arr, len * sizeof(SGTYPE));
             }
 
         }
@@ -334,22 +333,22 @@ TYPEMAP_SGMATRIX(float64_t)
 }
 
 %typemap(out) shogun::SGStringList<SGTYPE> {
-    shogun::SGString<SGTYPE>* str = $1.strings;
+    shogun::SGVector<SGTYPE>* str = $1.strings;
     int32_t i, j, num = $1.num_strings;
 
     lua_newtable(L);
 
     for (i = 0; i < num; i++) {
         if (strcmp(TYPECODE, "String[]") == 0) {
-            lua_pushstring(L, (char *)str[i].string);
+            lua_pushstring(L, (char *)str[i].vector);
             lua_rawseti(L, -2, i + 1);
         }
         else {
-            SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
-            sg_memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
+            SGTYPE* data = SG_MALLOC(SGTYPE, str[i].vlen);
+            sg_memcpy(data, str[i].vector, str[i].vlen * sizeof(SGTYPE));
 
             lua_newtable(L);
-            for (j = 0; j < str[i].slen; j++) {
+            for (j = 0; j < str[i].vlen; j++) {
                 lua_pushnumber(L, (lua_Number)data[j]);
                 lua_rawseti(L, -2, j + 1);
             }
