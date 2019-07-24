@@ -114,7 +114,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeatures
 CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 {
 	for (int32_t i=0; i<string_length; i++)
-		SG_FREE(transposed_strings[i].string);
+		SG_FREE(transposed_strings[i].vector);
 	SG_FREE(transposed_strings);
 
 	SG_UNREF(strings);
@@ -394,7 +394,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	int32_t string_length=hf->string_length;
 	int32_t degree=hf->degree;
 	float64_t* wd_weights=hf->wd_weights;
-	SGString<uint8_t>* transposed_strings=hf->transposed_strings;
+	SGVector<uint8_t>* transposed_strings=hf->transposed_strings;
 	uint32_t mask=hf->mask;
 	int32_t partial_w_dim=hf->partial_w_dim;
 	float64_t normalization_const=hf->normalization_const;
@@ -411,7 +411,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			for (int32_t k=0; k<degree && i+k<string_length; k++)
 			{
 				const float64_t wd = wd_weights[k];
-				uint8_t* dim=transposed_strings[i+k].string;
+				uint8_t* dim=transposed_strings[i+k].vector;
 				uint32_t carry = 0;
 				uint32_t chunk = 0;
 				for (int32_t j=start; j<stop; j++)
@@ -462,7 +462,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			for (int32_t k=0; k<degree && i+k<string_length; k++)
 			{
 				const float64_t wd = wd_weights[k];
-				uint8_t* dim=transposed_strings[i+k].string;
+				uint8_t* dim=transposed_strings[i+k].vector;
 				uint32_t carry = 0;
 				uint32_t chunk = 0;
 

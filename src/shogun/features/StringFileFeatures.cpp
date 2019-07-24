@@ -82,7 +82,7 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 	ASSERT(CStringFeatures<ST>::alphabet)
 
 	int64_t buffer_size=granularity;
-	CStringFeatures<ST>::features=SG_MALLOC(SGString<ST>, buffer_size);
+	CStringFeatures<ST>::features=SG_MALLOC(SGVector<ST>, buffer_size);
 
 	uint64_t offs=0;
 	uint64_t len=0;
@@ -97,12 +97,12 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 		{
 			if (CStringFeatures<ST>::num_vectors > buffer_size)
 			{
-				CStringFeatures<ST>::features = SG_REALLOC(SGString<ST>, CStringFeatures<ST>::features, buffer_size, buffer_size+granularity);
+				CStringFeatures<ST>::features = SG_REALLOC(SGVector<ST>, CStringFeatures<ST>::features, buffer_size, buffer_size+granularity);
 				buffer_size+=granularity;
 			}
 
-			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].string=line;
-			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].slen=len;
+			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].vector=line;
+			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].vlen=len;
 			CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, (int32_t) len);
 		}
 		else
@@ -117,7 +117,7 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 	if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
 		CStringFileFeatures<ST>::cleanup();
 
-	CStringFeatures<ST>::features=SG_REALLOC(SGString<ST>, CStringFeatures<ST>::features, buffer_size, CStringFeatures<ST>::num_vectors);
+	CStringFeatures<ST>::features=SG_REALLOC(SGVector<ST>, CStringFeatures<ST>::features, buffer_size, CStringFeatures<ST>::num_vectors);
 }
 
 template class CStringFileFeatures<bool>;

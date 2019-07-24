@@ -19,14 +19,13 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/Alphabet.h>
-#include <shogun/lib/SGString.h>
 
 namespace shogun
 {
 class CAlphabet;
 template <class T> class CDynamicArray;
 class CFile;
-template <class T> class SGString;
+template <class T> class SGVector;
 template <class T> class SGStringList;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -218,7 +217,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param num_vec number of vectors in matrix
 		 * @return transposed string features
 		 */
-		SGString<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec);
+		SGVector<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec);
 
 		/** free feature vector
 		 *
@@ -391,7 +390,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @return if setting was successful
 		 */
-		bool set_features(SGString<ST>* p_features, int32_t p_num_vectors,
+		bool set_features(SGVector<ST>* p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length);
 
 		/** append features
@@ -416,7 +415,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return if setting was successful
 		 */
-		bool append_features(SGString<ST>* p_features, int32_t p_num_vectors,
+		bool append_features(SGVector<ST>* p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length);
 
 		/** get_string_list
@@ -432,7 +431,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual SGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len) const;
+		virtual SGVector<ST>* get_features(int32_t& num_str, int32_t& max_str_len) const;
 
 		/** copy_features
 		 *
@@ -442,7 +441,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual SGString<ST>* copy_features(int32_t& num_str, int32_t& max_str_len);
+		virtual SGVector<ST>* copy_features(int32_t& num_str, int32_t& max_str_len);
 
 		/** get_features  (swig compatible)
 		 *
@@ -451,7 +450,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dst string features (returned)
 		 * @param num_str number of strings (returned)
 		 */
-		virtual void get_features(SGString<ST>** dst, int32_t* num_str);
+		virtual void get_features(SGVector<ST>** dst, int32_t* num_str);
 
 		/** save features to file
 		 *
@@ -594,7 +593,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * note that this function is only sensible for character strings
 		 */
-		static ST* get_zero_terminated_string_copy(SGString<ST> str);
+		static ST* get_zero_terminated_string_copy(SGVector<ST> str);
 
 		/** set feature vector for sample num
 		 *
@@ -660,7 +659,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t num_vectors;
 
 		/** this contains the array of features */
-		SGString<ST>* features;
+		SGVector<ST>* features;
 
 		/** true when single string / created by sliding window */
 		ST* single_string;
