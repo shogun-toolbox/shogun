@@ -11,12 +11,11 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
-#include <shogun/lib/SGString.h>
 
 namespace shogun
 {
 class CFile;
-template <class T> class SGString;
+template <class T> class SGVector;
 
 /** @brief template class SGStringList */
 template <class T> class SGStringList : public SGReferencedData
@@ -26,7 +25,7 @@ public:
 	SGStringList();
 
 	/** constructor for setting params */
-	SGStringList(SGString<T>* s, index_t num_s, index_t max_length,
+	SGStringList(SGVector<T>* s, index_t num_s, index_t max_length,
 			bool ref_counting=true);
 
 	/** constructor to create new string list in memory */
@@ -93,7 +92,7 @@ public:
 	index_t max_string_length;
 
 	/** this contains the array of features */
-	SGString<T>* strings;
+	SGVector<T>* strings;
 };
 }
 #endif // __SGSTRINGLIST_H__

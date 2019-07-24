@@ -355,6 +355,98 @@ Parameter::add_vector(CSGObject*** param, index_t* length,
 	add_type(&type, param, name, description);
 }
 
+
+void
+Parameter::add_vector(SGVector<bool>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_BOOL, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<char>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_CHAR, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<int8_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_INT8, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<uint8_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_UINT8, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<int16_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_INT16, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<uint16_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_UINT16, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<int32_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_INT32, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<uint32_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_UINT32, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<int64_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_INT64, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<uint64_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_UINT64, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<float32_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_FLOAT32, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<float64_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_FLOAT64, length);
+	add_type(&type, param, name, description);
+}
+
+void
+Parameter::add_vector(SGVector<floatmax_t>** param, index_t* length,
+					  const char* name, const char* description) {
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_FLOATMAX, length);
+	add_type(&type, param, name, description);
+}
+
 void
 Parameter::add_vector(SGSparseVector<bool>** param, index_t* length,
 					  const char* name, const char* description) {

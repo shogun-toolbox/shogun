@@ -49,7 +49,7 @@ void CSortWordString::apply_to_string_list(SGStringList<uint16_t> string_list)
 		auto& vec = string_list.strings[i];
 
 		//CMath::qsort(vec, len);
-		CMath::radix_sort(vec.string, vec.slen);
+		CMath::radix_sort(vec.vector, vec.vlen);
 	}
 }
 

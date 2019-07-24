@@ -248,15 +248,15 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	fin.close();
 
 	nof_sequences = seqs.size();
-	sequences = SG_MALLOC(SGString<char>, nof_sequences);
+	sequences = SG_MALLOC(SGVector<char>, nof_sequences);
 
 	int max_len = 0;
 	for (int i=0; i < nof_sequences; ++i)
 	{
 		int len = seqs[i].length();
-		sequences[i].string = SG_MALLOC(char, len+1);
-		sequences[i].slen = len;
-		strcpy(sequences[i].string, seqs[i].c_str());
+		sequences[i].vector = SG_MALLOC(char, len+1);
+		sequences[i].vlen = len;
+		strcpy(sequences[i].vector, seqs[i].c_str());
 
 		if (len > max_len) max_len = len;
 	}

@@ -219,7 +219,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CMLDataHDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CMLDataHDF5File::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 

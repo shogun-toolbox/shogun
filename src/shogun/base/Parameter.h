@@ -494,6 +494,110 @@ public:
 	 */
 	void add_vector(CSGObject*** param, index_t* length,
 					const char* name, const char* description="");
+		/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<bool>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<char>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<int8_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<uint8_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<int16_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<uint16_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<int32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<uint32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<int64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<uint64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<float32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<float64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGVector<floatmax_t>** param, index_t* length,
+					const char* name, const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
 	 * @param length length of vector

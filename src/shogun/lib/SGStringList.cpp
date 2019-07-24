@@ -1,7 +1,7 @@
 #include <shogun/base/range.h>
 #include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGStringList.h>
 
 namespace shogun
@@ -14,7 +14,7 @@ SGStringList<T>::SGStringList() : SGReferencedData()
 }
 
 template <class T>
-SGStringList<T>::SGStringList(SGString<T>* s, index_t num_s, index_t max_length,
+SGStringList<T>::SGStringList(SGVector<T>* s, index_t num_s, index_t max_length,
 		bool ref_counting) :
 	SGReferencedData(ref_counting), num_strings(num_s),
 	max_string_length(max_length), strings(s)
@@ -26,7 +26,7 @@ SGStringList<T>::SGStringList(index_t num_s, index_t max_length, bool ref_counti
 	SGReferencedData(ref_counting),
 	num_strings(num_s), max_string_length(max_length)
 {
-	strings=SG_MALLOC(SGString<T>, num_strings);
+	strings=SG_MALLOC(SGVector<T>, num_strings);
 }
 
 template <class T>
@@ -93,7 +93,7 @@ SGStringList<T> SGStringList<T>::clone() const
 {
 	SGStringList<T> result(*this);
 
-	auto strings = SG_MALLOC(SGString<T>, num_strings);
+	auto strings = SG_MALLOC(SGVector<T>, num_strings);
 
 	for (auto i : range(num_strings))
 		strings[i] = this->strings[i].clone();
