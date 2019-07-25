@@ -97,7 +97,8 @@ TYPED_TEST_CASE(StringDispatchCRTP, SGCharTypes);
 
 TYPED_TEST(StringDispatchCRTP, train_with_string)
 {
-	auto strings = generateRandomStringData<TypeParam>(2);
+	std::mt19937_64 prng(25);
+	auto strings = generateRandomStringData<TypeParam>(prng, 2);
 	auto features = some<CStringFeatures<TypeParam>>(strings, ALPHANUM);
 
 	auto labels = SGVector<float64_t>({1, -1});
@@ -124,7 +125,8 @@ TEST(TrainDense, train_dense_with_wrong_feature_type)
 
 TEST(TrainDense, train_dense_with_wrong_feature_class)
 {
-	auto strings = generateRandomStringData(2);
+	std::mt19937_64 prng(25);
+	auto strings = generateRandomStringData(prng, 2);
 	auto features = some<CStringFeatures<char>>(strings, ALPHANUM);
 
 	auto labels = SGVector<float64_t>({1, -1});

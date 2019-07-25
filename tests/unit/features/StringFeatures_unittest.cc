@@ -10,12 +10,14 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/memory.h>
+#include <random>
 
 using namespace shogun;
 
 TEST(StringFeaturesTest,copy_subset)
 {
-	SGStringList<char> strings = generateRandomStringData();
+	std::mt19937_64 prng(25);
+	SGStringList<char> strings = generateRandomStringData(prng);
 
 	/* create num_feautres 2-dimensional vectors */
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
@@ -80,7 +82,8 @@ TEST(StringFeaturesTest,copy_subset)
 
 TEST(StringFeaturesTest,equals)
 {
-	SGStringList<char> strings = generateRandomStringData();
+	std::mt19937_64 prng(25);
+	SGStringList<char> strings = generateRandomStringData(prng);
 
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
 	CStringFeatures<char>* f_clone = (CStringFeatures<char>*)f->clone();
