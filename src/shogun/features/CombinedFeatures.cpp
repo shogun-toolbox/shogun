@@ -64,12 +64,12 @@ CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
 void CCombinedFeatures::list_feature_objs() const
 {
 	SG_INFO("BEGIN COMBINED FEATURES LIST - ")
-	this->list_feature_obj();
+	SG_INFO(this->to_string().c_str());
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CFeatures* f = get_feature_obj(f_idx);
-		f->list_feature_obj();
+		SG_INFO(f->to_string().c_str());
 		SG_UNREF(f);
 	}
 
