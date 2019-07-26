@@ -28,10 +28,6 @@
 %rename(GPBTSVM) CGPBTSVM;
 #endif //USE_GPL_SHOGUN
 %rename(LDA) CLDA;
-#ifdef USE_SVMLIGHT
-%rename(SVMLight) CSVMLight;
-%rename(SVMLightOneClass) CSVMLightOneClass;
-#endif //USE_SVMLIGHT
 %rename(LinearMachine) CLinearMachine;
 %rename(OnlineLinearMachine) COnlineLinearMachine;
 %rename(LPBoost) CLPBoost;
@@ -83,19 +79,6 @@
 %include <shogun/classifier/svm/GPBTSVM.h>
 #endif //USE_GPL_SHOGUN
 %include <shogun/classifier/LDA.h>
-#ifdef USE_SVMLIGHT
-%ignore VERSION;
-%ignore VERSION_DATE;
-%ignore MAXSHRINK;
-%ignore SHRINK_STATE;
-%ignore MODEL;
-%ignore LEARN_PARM;
-%ignore TIMING;
-
-%include <shogun/classifier/svm/SVMLight.h>
-%include <shogun/classifier/svm/SVMLightOneClass.h>
-#endif //USE_SVMLIGHT
-
 %include <shogun/classifier/LPBoost.h>
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>

@@ -136,36 +136,6 @@
 %ignore shogun::CStringFeatures::get_histogram;
 %ignore shogun::CStringFeatures::create_random(float64_t*, int32_t, int32_t, int32_t);
 
-%ignore shogun::CSVMLight::add_to_index;
-%ignore shogun::CSVMLight::calculate_svm_model;
-%ignore shogun::CSVMLight::call_mkl_callback;
-%ignore shogun::CSVMLight::check_optimality;
-%ignore shogun::CSVMLight::clear_index;
-%ignore shogun::CSVMLight::compute_index;
-%ignore shogun::CSVMLight::compute_matrices_for_optimization;
-%ignore shogun::CSVMLight::compute_matrices_for_optimization_parallel;
-%ignore shogun::CSVMLight::compute_objective_function;
-%ignore shogun::CSVMLight::get_runtime;
-%ignore shogun::CSVMLight::init;
-%ignore shogun::CSVMLight::init_shrink_state;
-%ignore shogun::CSVMLight::optimize_svm;
-%ignore shogun::CSVMLight::optimize_to_convergence;
-%ignore shogun::CSVMLight::reactivate_inactive_examples;
-%ignore shogun::CSVMLight::select_next_qp_subproblem_grad;
-%ignore shogun::CSVMLight::select_next_qp_subproblem_rand;
-%ignore shogun::CSVMLight::select_top_n;
-%ignore shogun::CSVMLight::shrink_problem;
-%ignore shogun::CSVMLight::shrink_state_cleanup;
-%ignore shogun::CSVMLight::svm_learn;
-%ignore shogun::CSVMLight::update_linear_component;
-%ignore shogun::CSVMLight::update_linear_component_mkl;
-%ignore shogun::CSVMLight::update_linear_component_mkl_linadd;
-%ignore shogun::CSVMLight::update_linear_component_mkl_linadd_helper;
-%ignore shogun::CSVRLight::call_mkl_callback;
-%ignore shogun::CSVRLight::svr_learn;
-%ignore shogun::CSVRLight::update_linear_component_mkl;
-%ignore shogun::CSVRLight::update_linear_component_mkl_linadd;
-
 %ignore shogun::CStringWordFeatures::cleanup;
 %ignore shogun::CStringWordFeatures::cleanup_feature_vector;
 %ignore shogun::CStringWordFeatures::cleanup_feature_vectors;

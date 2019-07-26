@@ -9,15 +9,7 @@
 %rename(MKL) CMKL;
 %rename(MKLRegression) CMKLRegression;
 
-#ifdef USE_SVMLIGHT
-%rename(SVRLight) CSVRLight;
-#endif //USE_SVMLIGHT
-
-
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/regression/svr/MKLRegression.h>
-#ifdef USE_SVMLIGHT
-%include <shogun/regression/svr/SVRLight.h>
-#endif //USE_SVMLIGHT
