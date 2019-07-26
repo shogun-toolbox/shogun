@@ -61,21 +61,6 @@ CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
 	return (CFeatures*) feature_array->get_element(idx);
 }
 
-void CCombinedFeatures::list_feature_objs() const
-{
-	io::info("BEGIN COMBINED FEATURES LIST - ");
-	this->list_feature_obj();
-
-	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
-	{
-		CFeatures* f = get_feature_obj(f_idx);
-		f->list_feature_obj();
-		SG_UNREF(f);
-	}
-
-	io::info("END COMBINED FEATURES LIST - ");
-}
-
 bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_feat)
 {
 	bool result=false;
@@ -92,9 +77,9 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 				SG_UNREF(f1);
 				SG_UNREF(f2);
 				io::info("not compatible, combfeat");
-				comb_feat->list_feature_objs();
+				io::info("{}", comb_feat->to_string().c_str());
 				io::info("vs this");
-				this->list_feature_objs();
+				io::info("{}", this->to_string().c_str());
 				return false;
 			}
 
@@ -114,9 +99,9 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 		{
 			io::warn("number of features in combined feature objects differs ({} != {})", this->get_num_feature_obj(), comb_feat->get_num_feature_obj());
 				io::info("compare");
-				comb_feat->list_feature_objs();
+				io::info("{}", comb_feat->to_string().c_str());
 			io::info("vs this");
-				this->list_feature_objs();
+				io::info("{}", this->to_string().c_str());
 		}
 	}
 

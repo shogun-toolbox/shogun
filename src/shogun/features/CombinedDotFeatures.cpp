@@ -42,22 +42,6 @@ CCombinedDotFeatures::~CCombinedDotFeatures()
 	SG_UNREF(feature_array);
 }
 
-void CCombinedDotFeatures::list_feature_objs()
-{
-	io::info("BEGIN COMBINED DOTFEATURES LIST ({}, {}) - ", num_vectors, num_dimensions);
-	this->list_feature_obj();
-
-	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
-	{
-		CDotFeatures* f = get_feature_obj(f_idx);
-		f->list_feature_obj();
-		SG_UNREF(f);
-	}
-
-	io::info("END COMBINED DOTFEATURES LIST ({}, {}) - ", num_vectors, num_dimensions);
-	this->list_feature_obj();
-}
-
 void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 {
 	int32_t dim=0;
@@ -71,7 +55,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 			vec=f->get_num_vectors();
 		else if (vec != f->get_num_vectors())
 		{
-			f->list_feature_obj();
+			io::info("{}", f->to_string().c_str());
 			error("Number of vectors ({}) mismatches in above feature obj ({})", vec, f->get_num_vectors());
 		}
 

@@ -207,9 +207,6 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual CFeatures* duplicate() const;
 
-		/** list feature objects */
-		void list_feature_objs();
-
 		/** get feature object at position idx
 		 *
 		 * @param idx the index of the feature to return
