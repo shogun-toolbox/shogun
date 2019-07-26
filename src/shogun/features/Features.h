@@ -176,9 +176,6 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool reshape(int32_t num_features, int32_t num_vectors);
 
-		/** list feature object */
-		void list_feature_obj() const;
-
 		/** load features from file
 		 *
 		 * @param loader File object via which data shall be loaded

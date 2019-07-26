@@ -75,9 +75,6 @@ class CCombinedFeatures : public CFeatures
 					? m_subset_stack->get_size() : num_vec;
 		}
 
-		/** list feature objects */
-		void list_feature_objs() const;
-
 		/** check feature object compatibility
 		 *
 		 * @param comb_feat feature to check for compatibility
