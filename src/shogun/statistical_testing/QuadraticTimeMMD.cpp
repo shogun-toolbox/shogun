@@ -166,7 +166,7 @@ void CQuadraticTimeMMD::Self::init_kernel()
 		auto kernel=owner.get_kernel();
 		kernel->init(samples_p_and_q, samples_p_and_q);
 		is_kernel_initialized=true;
-		SG_SINFO("Kernel is initialized with joint features of %d total samples!\n", samples_p_and_q->get_num_vectors());
+		SG_INFO("Kernel is initialized with joint features of %d total samples!\n", samples_p_and_q->get_num_vectors());
 	}
 }
 
@@ -268,7 +268,7 @@ CFeatures* CQuadraticTimeMMD::get_p_and_q()
 	}
 	else
 	{
-		SG_SERROR("Could not fetch samples!\n");
+		SG_ERROR("Could not fetch samples!\n");
 	}
 	data_mgr.end();
 	return samples_p_and_q;
@@ -347,7 +347,7 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 
 SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 {
-	SG_SDEBUG("Entering\n");
+	SG_DEBUG("Entering\n");
 	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
 
 	init_permutation_job();
@@ -363,7 +363,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	{
 		auto kernel=owner.get_kernel();
 		if (kernel->get_kernel_type()==K_CUSTOM)
-			SG_SINFO("Precompute is turned off, but provided kernel is already precomputed!\n");
+			SG_INFO("Precompute is turned off, but provided kernel is already precomputed!\n");
 		auto kernel_functor=internal::Kernel(kernel);
 		result=permutation_job(kernel_functor, prng);
 	}
@@ -372,13 +372,13 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	for (auto i=0; i<result.vlen; ++i)
 		null_samples[i]=owner.normalize_statistic(result[i]);
 
-	SG_SDEBUG("Leaving\n");
+	SG_DEBUG("Leaving\n");
 	return null_samples;
 }
 
 SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 {
-	SG_SDEBUG("Entering\n");
+	SG_DEBUG("Entering\n");
 	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
 	REQUIRE(precompute, "MMD2_SPECTRUM is not possible without precomputing the kernel matrix!\n");
 
@@ -429,13 +429,13 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 		null_samples[i]=null_sample;
 	}
 
-	SG_SDEBUG("Leaving\n");
+	SG_DEBUG("Leaving\n");
 	return null_samples;
 }
 
 SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 {
-	SG_SDEBUG("Entering\n");
+	SG_DEBUG("Entering\n");
 
 	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
 	REQUIRE(precompute, "MMD2_GAMMA is not possible without precomputing the kernel matrix!\n");
@@ -499,7 +499,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 	result[0]=a;
 	result[1]=b;
 
-	SG_SDEBUG("Leaving\n");
+	SG_DEBUG("Leaving\n");
 	return result;
 }
 

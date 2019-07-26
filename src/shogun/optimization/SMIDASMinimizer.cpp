@@ -105,18 +105,18 @@ void SMIDASMinimizer::init_minimization()
 	{
 		if (updater->enables_descend_correction())
 		{
-			SG_SWARNING("There is not theoretical guarantee when Descend Correction is enabled\n");
+			SG_WARNING("There is not theoretical guarantee when Descend Correction is enabled\n");
 		}
 		GradientDescendUpdater* gradient_updater=
 			dynamic_cast<GradientDescendUpdater* >(m_gradient_updater);
 		if(!gradient_updater)
 		{
-			SG_SWARNING("There is not theoretical guarantee when this updater is used\n");
+			SG_WARNING("There is not theoretical guarantee when this updater is used\n");
 		}
 	}
 	else
 	{
-		SG_SWARNING("There is not theoretical guarantee when this updater is used\n");
+		SG_WARNING("There is not theoretical guarantee when this updater is used\n");
 	}
 	REQUIRE(m_learning_rate,"Learning Rate instance must set\n");
 }

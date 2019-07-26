@@ -90,7 +90,7 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
-		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CFITCInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CFITCInferenceMethod*)inference;

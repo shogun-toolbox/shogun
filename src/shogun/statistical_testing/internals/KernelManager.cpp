@@ -44,12 +44,12 @@ using namespace internal;
 
 KernelManager::KernelManager()
 {
-	SG_SDEBUG("Kernel manager instance initialized!\n");
+	SG_DEBUG("Kernel manager instance initialized!\n");
 }
 
 KernelManager::KernelManager(index_t num_kernels)
 {
-	SG_SDEBUG("Kernel manager instance initialized with %d kernels!\n", num_kernels);
+	SG_DEBUG("Kernel manager instance initialized with %d kernels!\n", num_kernels);
 	m_kernels.resize(num_kernels);
 	m_precomputed_kernels.resize(num_kernels);
 	std::fill(m_kernels.begin(), m_kernels.end(), nullptr);
@@ -69,37 +69,37 @@ void KernelManager::clear()
 
 InitPerKernel KernelManager::kernel_at(index_t i)
 {
-	SG_SDEBUG("Entering!\n");
+	SG_DEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, num_kernels()-1);
-	SG_SDEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!\n");
 	return InitPerKernel(m_kernels[i]);
 }
 
 CKernel* KernelManager::kernel_at(index_t i) const
 {
-	SG_SDEBUG("Entering!\n");
+	SG_DEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, num_kernels()-1);
 	if (m_precomputed_kernels[i]==nullptr)
 	{
-		SG_SDEBUG("Leaving!\n");
+		SG_DEBUG("Leaving!\n");
 		return m_kernels[i].get();
 	}
-	SG_SDEBUG("Precomputed kernel exists!\n");
-	SG_SDEBUG("Leaving!\n");
+	SG_DEBUG("Precomputed kernel exists!\n");
+	SG_DEBUG("Leaving!\n");
 	return m_precomputed_kernels[i].get();
 }
 
 void KernelManager::push_back(CKernel* kernel)
 {
-	SG_SDEBUG("Entering!\n");
+	SG_DEBUG("Entering!\n");
 	SG_REF(kernel);
 	m_kernels.push_back(std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); }));
 	m_precomputed_kernels.push_back(nullptr);
-	SG_SDEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!\n");
 }
 
 const index_t KernelManager::num_kernels() const
@@ -112,7 +112,7 @@ const index_t KernelManager::num_kernels() const
 
 void KernelManager::precompute_kernel_at(index_t i)
 {
-	SG_SDEBUG("Entering!\n");
+	SG_DEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, num_kernels()-1);
@@ -124,21 +124,21 @@ void KernelManager::precompute_kernel_at(index_t i)
 		// the kernel matrix.
 		SGMatrix<float32_t> kernel_matrix=kernel->get_kernel_matrix<float32_t>();
 		m_precomputed_kernels[i]=std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel_matrix));
-		SG_SDEBUG("Kernel type %s is precomputed and replaced internally with %s!\n",
+		SG_DEBUG("Kernel type %s is precomputed and replaced internally with %s!\n",
 			kernel->get_name(), m_precomputed_kernels[i]->get_name());
 	}
-	SG_SDEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!\n");
 }
 
 void KernelManager::restore_kernel_at(index_t i)
 {
-	SG_SDEBUG("Entering!\n");
+	SG_DEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, num_kernels()-1);
 	m_precomputed_kernels[i]=nullptr;
-	SG_SDEBUG("Precomputed kernel (if any) was deleted!\n");
-	SG_SDEBUG("Leaving!\n");
+	SG_DEBUG("Precomputed kernel (if any) was deleted!\n");
+	SG_DEBUG("Leaving!\n");
 }
 
 bool KernelManager::same_distance_type() const
@@ -168,7 +168,7 @@ bool KernelManager::same_distance_type() const
 		else
 		{
 			same=false;
-			SG_SINFO("Kernel at location %d is not of CShiftInvariantKernel type (was of %s type)!\n",
+			SG_INFO("Kernel at location %d is not of CShiftInvariantKernel type (was of %s type)!\n",
 				i, kernel_at(i)->get_name());
 			break;
 		}
@@ -196,7 +196,7 @@ CDistance* KernelManager::get_distance_instance() const
 	}
 	else
 	{
-		SG_SERROR("Unsupported distance type!\n");
+		SG_ERROR("Unsupported distance type!\n");
 	}
 	return distance;
 }

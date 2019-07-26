@@ -895,7 +895,7 @@ CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
 {
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
-		SG_SERROR("CCombinedKernel::obtain_from_generic(): provided kernel is "
+		SG_ERROR("CCombinedKernel::obtain_from_generic(): provided kernel is "
 				"not of type CCombinedKernel!\n");
 	}
 
@@ -925,13 +925,13 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 		CList* c_list= dynamic_cast<CList* >(list);
 		if (!c_list)
 		{
-			SG_SERROR("CCombinedKernel::combine_kernels() : Failed to cast list of type "
+			SG_ERROR("CCombinedKernel::combine_kernels() : Failed to cast list of type "
 					"%s to type CList\n", list->get_name());
 		}
 
 		if (c_list->get_num_elements()==0)
 		{
-			SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position %d "
+			SG_ERROR("CCombinedKernel::combine_kernels() : Sub-list in position %d "
 					"is empty.\n", list_index);
 		}
 
@@ -973,7 +973,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 			 first_kernel = false;
 		else if (c_kernel->get_kernel_type()!=prev_kernel_type)
 		{
-			SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
+			SG_ERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
 					"0 contains different types of kernels\n");
 		}
 
@@ -1017,7 +1017,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 				first_kernel = false;
 			else if (c_kernel->get_kernel_type()!=prev_kernel_type)
 			{
-				SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
+				SG_ERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
 						"%d contains different types of kernels\n", list_index);
 			}
 

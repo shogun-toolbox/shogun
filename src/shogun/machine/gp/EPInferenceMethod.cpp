@@ -96,7 +96,7 @@ CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_EP)
-		SG_SERROR("Provided inference is not of type CEPInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CEPInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CEPInferenceMethod*)inference;

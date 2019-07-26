@@ -65,7 +65,7 @@ CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel*
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
 	{
-		SG_SERROR("Provided kernel is not of type CGaussianARDSparseKernel!\n");
+		SG_ERROR("Provided kernel is not of type CGaussianARDSparseKernel!\n");
 	}
 
 	/* since an additional reference is returned */

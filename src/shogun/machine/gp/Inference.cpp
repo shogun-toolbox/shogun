@@ -226,7 +226,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 		}
 		else
 		{
-			SG_SERROR("Can't compute derivative of negative log marginal "
+			SG_ERROR("Can't compute derivative of negative log marginal "
 					"likelihood wrt %s.%s", node->data->get_name(), node->key->m_name);
 		}
 

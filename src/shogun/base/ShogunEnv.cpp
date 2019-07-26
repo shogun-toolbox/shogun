@@ -33,11 +33,9 @@ ShogunEnv* ShogunEnv::instance()
 
 ShogunEnv::ShogunEnv()
 {
-	sg_io = new SGIO();
+	sg_io = std::make_unique<SGIO>();
 	sg_linalg = std::make_unique<SGLinalg>();
 	sg_signal = std::make_unique<CSignal>();
-
-	SG_REF(sg_io);
 
 	sg_fequals_epsilon = 0.0;
 	sg_fequals_tolerant = false;
@@ -100,16 +98,9 @@ void ShogunEnv::init_from_env()
 	}
 }
 
-void ShogunEnv::set_global_io(SGIO* io)
-{
-	SG_REF(io);
-	SG_UNREF(sg_io);
-	sg_io = io;
-}
-
 SGIO* ShogunEnv::io()
 {
-	return sg_io;
+	return sg_io.get();
 }
 
 float64_t ShogunEnv::fequals_epsilon()

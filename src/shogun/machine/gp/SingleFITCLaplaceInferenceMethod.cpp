@@ -298,7 +298,7 @@ float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		SG_SWARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 	return Psi_New;
 }
@@ -411,7 +411,7 @@ CSingleFITCLaplaceInferenceMethod* CSingleFITCLaplaceInferenceMethod::obtain_fro
 	REQUIRE(inference!=NULL, "Inference should be not NULL");
 
 	if (inference->get_inference_type()!=INF_FITC_LAPLACE_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleFITCLaplaceInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CSingleFITCLaplaceInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CSingleFITCLaplaceInferenceMethod*)inference;

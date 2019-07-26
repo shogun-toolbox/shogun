@@ -166,7 +166,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	current_combination->apply_to_machine(machine);
 	if (print_state)
 	{
-		SG_SPRINT("Current combination\n");
+		SG_PRINT("Current combination\n");
 		current_combination->print_tree();
 	}
 	SG_UNREF(machine);
@@ -179,7 +179,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	if (print_state)
 	{
-		SG_SPRINT("Current result\n");
+		SG_PRINT("Current result\n");
 		gradient_result->print_result();
 	}
 

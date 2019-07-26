@@ -145,14 +145,14 @@ namespace shogun
 		 */
 		virtual CLabels* duplicate() const
 		{
-			SG_SNOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED;
 			return nullptr;
 		}
 
 #ifndef SWIG // SWIG should skip this part
 		virtual CLabels* shallow_subset_copy()
 		{
-			SG_SNOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED;
 			return NULL;
 		}
 #endif

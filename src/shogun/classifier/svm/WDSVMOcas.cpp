@@ -385,7 +385,7 @@ int CWDSVMOcas::add_new_cut(
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::add_new_cut_helper, (void*)&params_add[t]) != 0)
 		{
 			nthreads=t;
-			SG_SWARNING("thread creation failed\n")
+			SG_WARNING("thread creation failed\n")
 			break;
 		}
 	}
@@ -403,7 +403,7 @@ int CWDSVMOcas::add_new_cut(
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			SG_SWARNING("pthread_join failed\n")
+			SG_WARNING("pthread_join failed\n")
 
 		//float32_t* a=params_add[t].new_a;
 		//for (i=0; i<nDim; i++)
@@ -569,11 +569,11 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		params_output[t].start = step*t;
 		params_output[t].end = step*(t+1);
 
-		//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
+		//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
 		{
 			nthreads=t;
-			SG_SWARNING("thread creation failed\n")
+			SG_WARNING("thread creation failed\n")
 			break;
 		}
 	}
@@ -585,12 +585,12 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	params_output[t].start = step*t;
 	params_output[t].end = nData;
 	compute_output_helper(&params_output[t]);
-	//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
+	//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
 
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			SG_SWARNING("pthread_join failed\n")
+			SG_WARNING("pthread_join failed\n")
 	}
 	SG_FREE(threads);
 	SG_FREE(params_output);

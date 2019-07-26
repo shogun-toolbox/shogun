@@ -136,7 +136,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	break;
 	default:
 	{
-		SG_SERROR("Unsupported kernel selection method specified! Accepted strategies are "
+		SG_ERROR("Unsupported kernel selection method specified! Accepted strategies are "
 			"MAXIMIZE_MMD (single, weighted), "
 			"MAXIMIZE_POWER (single, weighted), "
 			"CROSS_VALIDATION (single) and "

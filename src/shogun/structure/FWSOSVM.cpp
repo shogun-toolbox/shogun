@@ -161,7 +161,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			ASSERT(CMath::fequals_abs(primal - dual, dual_gap, 1e-12));
 			float64_t train_error = CSOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
 
-			SG_SPRINT("pass %d (iteration %d), primal = %f, dual = %f, duality gap = %f, train_error = %f \n",
+			SG_PRINT("pass %d (iteration %d), primal = %f, dual = %f, duality gap = %f, train_error = %f \n",
 				pi, k, primal, dual, dual_gap, train_error);
 
 			m_helper->add_debug_info(primal, (1.0*k) / N, train_error, dual, dual_gap);

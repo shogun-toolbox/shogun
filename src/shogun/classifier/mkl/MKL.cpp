@@ -217,12 +217,12 @@ public:
 
 		if (status==GLP_INFEAS)
 		{
-			SG_SPRINT("solution is infeasible!\n")
+			SG_PRINT("solution is infeasible!\n")
 			return false;
 		}
 		else if(status==GLP_NOFEAS)
 		{
-			SG_SPRINT("problem has no feasible solution!\n")
+			SG_PRINT("problem has no feasible solution!\n")
 			return false;
 		}
 		return true;
@@ -477,7 +477,7 @@ bool CMKL::train_machine(CFeatures* data)
 		if ((training_time_clock.cur_time_diff() > get_max_train_time()) &&
 		    (get_max_train_time() > 0))
 		{
-			SG_SWARNING(
+			SG_WARNING(
 			    "MKL Algorithm terminates PREMATURELY due to current training "
 			    "time exceeding get_max_train_time ()= %f . It may have not "
 			    "converged yet!\n",
@@ -541,7 +541,7 @@ bool CMKL::perform_mkl_step(
 {
 	if((training_time_clock.cur_time_diff()>get_max_train_time ())&&(get_max_train_time ()>0))
 	{
-		SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ())
+		SG_WARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ())
 		return true;
 	}
 

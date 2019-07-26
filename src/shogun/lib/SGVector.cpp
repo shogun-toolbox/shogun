@@ -25,7 +25,7 @@
 template <> \
 void SGVector<complex128_t>::function() \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -33,7 +33,7 @@ void SGVector<complex128_t>::function() \
 template <> \
 void SGVector<bool>::function(bool a) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for bool\n",\
+	SG_ERROR("SGVector::%s():: Not supported for bool\n",\
 		#function);\
 }
 
@@ -41,7 +41,7 @@ void SGVector<bool>::function(bool a) \
 template <> \
 void SGVector<complex128_t>::function(complex128_t a) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -49,7 +49,7 @@ void SGVector<complex128_t>::function(complex128_t a) \
 template <> \
 void SGVector<complex128_t>::function(complex128_t a, complex128_t b) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -58,7 +58,7 @@ template <> \
 void SGVector<complex128_t>::function(complex128_t a, complex128_t b,\
 	complex128_t c) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -241,7 +241,7 @@ index_t SGVector<T>::find_position_to_insert(T element)
 template <>
 index_t SGVector<complex128_t>::find_position_to_insert(complex128_t element)
 {
-	SG_SERROR("SGVector::find_position_to_insert():: \
+	SG_ERROR("SGVector::find_position_to_insert():: \
 		Not supported for complex128_t\n");
 	return index_t(-1);
 }
@@ -286,7 +286,7 @@ template <>
 void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
 	int32_t len, complex128_t start)
 {
-	SG_SERROR("SGVector::range_fill_vector():: \
+	SG_ERROR("SGVector::range_fill_vector():: \
 		Not supported for complex128_t\n");
 }
 
@@ -362,7 +362,7 @@ template<class T>
 void SGVector<T>::display_size() const
 {
 	assert_on_cpu();
-	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen)
+	SG_PRINT("SGVector '%p' of size: %d\n", vector, vlen)
 }
 
 template<class T>
@@ -480,7 +480,7 @@ void SGVector<T>::display_vector(const T* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=%s\n", prefix, name, to_string(vector, n).c_str())
+	SG_PRINT("%s%s=%s\n", prefix, name, to_string(vector, n).c_str())
 }
 
 template <class T>
@@ -520,14 +520,14 @@ void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
 template <>
 bool SGVector<bool>::twonorm(const bool* x, int32_t len)
 {
-	SG_SNOTIMPLEMENTED
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 template <>
 char SGVector<char>::twonorm(const char* x, int32_t len)
 {
-	SG_SNOTIMPLEMENTED
+	SG_NOTIMPLEMENTED
 	return '\0';
 }
 
@@ -676,7 +676,7 @@ T SGVector<T>::qsq(T* x, int32_t len, float64_t q)
 template <>
 complex128_t SGVector<complex128_t>::qsq(complex128_t* x, int32_t len, float64_t q)
 {
-	SG_SNOTIMPLEMENTED
+	SG_NOTIMPLEMENTED
 	return complex128_t(0.0);
 }
 
@@ -691,7 +691,7 @@ T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 template <>
 complex128_t SGVector<complex128_t>::qnorm(complex128_t* x, int32_t len, float64_t q)
 {
-	SG_SNOTIMPLEMENTED
+	SG_NOTIMPLEMENTED
 	return complex128_t(0.0);
 }
 
@@ -736,7 +736,7 @@ template <>
 int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
 {
 	int32_t j=0;
-	SG_SERROR("SGVector::unique():: Not supported for complex128_t\n");
+	SG_ERROR("SGVector::unique():: Not supported for complex128_t\n");
 	return j;
 }
 
@@ -752,7 +752,7 @@ SGVector<T> SGVector<T>::unique()
 template <>
 SGVector<complex128_t> SGVector<complex128_t>::unique()
 {
-	SG_SNOTIMPLEMENTED
+	SG_NOTIMPLEMENTED
 	return SGVector<complex128_t>();
 }
 
@@ -815,7 +815,7 @@ template<class T> void SGVector<T>::load(CFile* loader)
 template<>
 void SGVector<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGVector::load():: Not supported for complex128_t\n");
+	SG_ERROR("SGVector::load():: Not supported for complex128_t\n");
 }
 
 template<class T> void SGVector<T>::save(CFile* saver)
@@ -831,7 +831,7 @@ template<class T> void SGVector<T>::save(CFile* saver)
 template<>
 void SGVector<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
+	SG_ERROR("SGVector::save():: Not supported for complex128_t\n");
 }
 
 template <class T> SGVector<float64_t> SGVector<T>::get_real()
@@ -857,7 +857,7 @@ SGMatrix<T> SGVector<T>::convert_to_matrix(SGVector<T> vector,
 	index_t nrows, index_t ncols, bool fortran_order)
 {
 	if (nrows*ncols>vector.size())
-		SG_SERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
+		SG_ERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
 
 	T* data=NULL;
 	SGVector<T>::convert_to_matrix(data, nrows, ncols, vector.vector, vector.vlen, fortran_order);
@@ -870,7 +870,7 @@ template <class T>
 void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order)
 {
 	if (nrows*ncols>vlen)
-		SG_SERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
+		SG_ERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
 
 	if (matrix!=NULL)
 		SG_FREE(matrix);
@@ -895,7 +895,7 @@ void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, co
 template <>	\
 SGVector<float64_t> SGVector<type>::function()	\
 {	\
-	SG_SERROR("SGVector::%s():: Not supported for %s\n",	\
+	SG_ERROR("SGVector::%s():: Not supported for %s\n",	\
 		#function, #type);	\
 	SGVector<float64_t> ret(vlen);	\
 	return ret;	\

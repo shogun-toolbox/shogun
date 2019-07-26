@@ -65,7 +65,7 @@ CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
 	ASSERT(lik!=NULL);
 
 	if (lik->get_model_type()!=LT_GAUSSIAN)
-		SG_SERROR("Provided likelihood is not of type CGaussianLikelihood!\n")
+		SG_ERROR("Provided likelihood is not of type CGaussianLikelihood!\n")
 
 	SG_REF(lik);
 	return (CGaussianLikelihood*)lik;

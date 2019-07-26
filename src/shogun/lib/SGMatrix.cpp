@@ -343,7 +343,7 @@ T SGMatrix<T>::max_single() const
 template <>
 complex128_t SGMatrix<complex128_t>::max_single() const
 {
-	SG_SERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
+	SG_ERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
 	return complex128_t(0.0);
 }
 
@@ -553,13 +553,13 @@ void SGMatrix<T>::display_matrix(
 	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=%s\n", prefix, name, to_string(matrix, rows, cols).c_str())
+	SG_PRINT("%s%s=%s\n", prefix, name, to_string(matrix, rows, cols).c_str())
 }
 
 template <>
 SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
 {
-	SG_SNOTIMPLEMENTED
+	SG_NOTIMPLEMENTED
 	return SGMatrix<char>();
 }
 
@@ -751,7 +751,7 @@ SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix
 	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	if (matrix.num_rows!=matrix.num_cols)
 	{
-		SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
+		SG_ERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
 				" rows and columns are not equal!\n");
 	}
 
@@ -780,7 +780,7 @@ double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
 			eigenvalues, &info);
 
 	if (info!=0)
-		SG_SERROR("DSYEV failed with code %d\n", info)
+		SG_ERROR("DSYEV failed with code %d\n", info)
 
 	return eigenvalues;
 }
@@ -816,7 +816,7 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 	/* do a dimension check */
 	if (cols_A!=rows_B)
 	{
-		SG_SERROR("SGMatrix::matrix_multiply(): Dimension mismatch: "
+		SG_ERROR("SGMatrix::matrix_multiply(): Dimension mismatch: "
 				"A(%dx%d)*B(%dx%D)\n", rows_A, cols_A, rows_B, cols_B);
 	}
 
@@ -867,7 +867,7 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 		if (pre_allocated.num_rows!=num_rows ||
 				pre_allocated.num_cols!=num_cols)
 		{
-			SG_SERROR("SGMatrix<T>::get_allocated_matrix(). Provided target"
+			SG_ERROR("SGMatrix<T>::get_allocated_matrix(). Provided target"
 					"matrix dimensions (%dx%d) do not match passed data "
 					"dimensions (%dx%d)!\n", pre_allocated.num_rows,
 					pre_allocated.num_cols, num_rows, num_cols);
@@ -931,7 +931,7 @@ void SGMatrix<T>::load(CFile* loader)
 template<>
 void SGMatrix<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGMatrix::load():: Not supported for complex128_t\n");
+	SG_ERROR("SGMatrix::load():: Not supported for complex128_t\n");
 }
 
 template<class T>
@@ -947,7 +947,7 @@ void SGMatrix<T>::save(CFile* writer)
 template<>
 void SGMatrix<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGMatrix::save():: Not supported for complex128_t\n");
+	SG_ERROR("SGMatrix::save():: Not supported for complex128_t\n");
 }
 
 template<class T>

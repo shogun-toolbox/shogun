@@ -431,7 +431,7 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 		const float64_t step,
 		int n, int k, int ls)
 {
-	SG_SINFO("Epoch %i: Error = %f\n",k, fx);
+	SG_INFO("Epoch %i: Error = %f\n",k, fx);
 
 	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(instance);
 	SGVector<float64_t> grad_vector(const_cast<float64_t*>(grad), network->get_num_parameters(), false);
@@ -440,7 +440,7 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 		SGVector<float64_t> layer_gradients = network->get_section(grad_vector, i);
 		if (layer_gradients.vlen > 0)
 		{
-			SG_SINFO("Layer %i (%s), Max Gradient: %g, Mean Gradient: %g.\n", i, network->get_layer(i)->get_name(),
+			SG_INFO("Layer %i (%s), Max Gradient: %g, Mean Gradient: %g.\n", i, network->get_layer(i)->get_name(),
 				CMath::max(layer_gradients.vector, layer_gradients.vlen),
 				SGVector<float64_t>::sum(layer_gradients.vector, layer_gradients.vlen)/layer_gradients.vlen);
 		}

@@ -662,7 +662,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 		/*
 		if(iter % 10 == 0)
 		{
-			SG_SINFO(".")
+			SG_INFO(".")
 		}
 		*/
 
@@ -675,7 +675,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 				active_size = l;
 				for(i=0;i<l;i++)
 					active_size_i[i] = nr_class;
-				//SG_SINFO("*")
+				//SG_INFO("*")
 				eps_shrink = CMath::max(eps_shrink/2, eps);
 				start_from_all = true;
 			}
@@ -687,9 +687,9 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 			break;
 	}
 
-	SG_SINFO("\noptimization finished, #iter = %d\n",iter)
+	SG_INFO("\noptimization finished, #iter = %d\n",iter)
 	if (iter >= max_iter)
-		SG_SINFO("Warning: reaching max number of iterations\n")
+		SG_INFO("Warning: reaching max number of iterations\n")
 
 	SG_FREE(tx);
 }

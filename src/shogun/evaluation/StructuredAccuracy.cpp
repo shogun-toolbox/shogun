@@ -62,7 +62,7 @@ float64_t CStructuredAccuracy::evaluate(CLabels * predicted, CLabels * ground_tr
 SGMatrix<int32_t> CStructuredAccuracy::get_confusion_matrix(
         CLabels * predicted, CLabels * ground_truth)
 {
-	SG_SERROR("Not implemented\n")
+	SG_ERROR("Not implemented\n")
 	return SGMatrix<int32_t>();
 }
 

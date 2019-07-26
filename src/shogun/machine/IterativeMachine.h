@@ -73,7 +73,7 @@ namespace shogun
 
 			if (m_complete)
 			{
-				SG_SINFO(
+				SG_INFO(
 				    "%s converged after %d iterations.\n", this->get_name(),
 				    m_current_iteration)
 
@@ -81,7 +81,7 @@ namespace shogun
 			}
 			else if (!m_complete && m_current_iteration >= m_max_iterations)
 			{
-				SG_SWARNING(
+				SG_WARNING(
 				    "%s did not converge after the maximum number of %d "
 				    "iterations.\n",
 				    this->get_name(), m_current_iteration)

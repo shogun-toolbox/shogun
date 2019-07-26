@@ -82,7 +82,7 @@ CFactorGraphFeatures* CFactorGraphFeatures::obtain_from_generic(CFeatures* base_
 	if (base_feats->get_feature_class() == C_FACTOR_GRAPH)
 		return dynamic_cast<CFactorGraphFeatures*>(base_feats);
 	else
-		SG_SERROR("base_labels must be of dynamic type CFactorGraph!\n")
+		SG_ERROR("base_labels must be of dynamic type CFactorGraph!\n")
 
 	return NULL;
 }

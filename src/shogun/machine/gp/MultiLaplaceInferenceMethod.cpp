@@ -178,7 +178,7 @@ CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
-		SG_SERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CMultiLaplaceInferenceMethod*)inference;

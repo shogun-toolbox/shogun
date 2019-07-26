@@ -89,7 +89,7 @@ CChi2Kernel* CChi2Kernel::obtain_from_generic(CKernel* kernel)
 {
 	if (kernel->get_kernel_type()!=K_CHI2)
 	{
-		SG_SERROR("Provided kernel is "
+		SG_ERROR("Provided kernel is "
 				"not of type CChi2Kernel!\n");
 	}
 

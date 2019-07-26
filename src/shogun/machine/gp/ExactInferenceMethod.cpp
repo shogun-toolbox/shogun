@@ -308,7 +308,7 @@ CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_EXACT)
-		SG_SERROR("Provided inference is not of type CExactInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CExactInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CExactInferenceMethod*)inference;

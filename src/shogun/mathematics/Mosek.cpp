@@ -71,7 +71,7 @@ CMosek::~CMosek()
 
 void MSKAPI CMosek::print(void* handle, char str[])
 {
-	SG_SPRINT("%s", str)
+	SG_PRINT("%s", str)
 }
 
 MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,

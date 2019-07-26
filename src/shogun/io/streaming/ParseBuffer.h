@@ -241,7 +241,7 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	ex_used = SG_MALLOC(E_IS_EXAMPLE_USED, ring_size);
 	read_mutex = std::make_shared<std::mutex>();
 	write_mutex = std::make_shared<std::mutex>();
-	SG_SINFO("Initialized with ring size: %d.\n", ring_size)
+	SG_INFO("Initialized with ring size: %d.\n", ring_size)
 
 	ex_write_index = 0;
 	ex_read_index = 0;

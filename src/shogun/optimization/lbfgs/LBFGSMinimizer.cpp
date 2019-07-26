@@ -51,7 +51,7 @@ CLBFGSMinimizer::CLBFGSMinimizer(FirstOrderCostFunction *fun)
 		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
 	if(m_fun && bound_constraints_fun)
 	{
-		SG_SWARNING("The minimizer does not support constrained minimization. All constraints will be ignored.\n")
+		SG_WARNING("The minimizer does not support constrained minimization. All constraints will be ignored.\n")
 	}
 	init();
 }
@@ -169,7 +169,7 @@ float64_t CLBFGSMinimizer::minimize()
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
-		SG_SWARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
+		SG_WARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
 			error_code);
 	}
 

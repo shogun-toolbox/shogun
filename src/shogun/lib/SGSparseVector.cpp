@@ -247,7 +247,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	// shrinking vector
 	if (!stable_pointer)
 	{
-		SG_SINFO("shrinking vector from %d to %d\n", num_feat_entries, new_feat_count);
+		SG_INFO("shrinking vector from %d to %d\n", num_feat_entries, new_feat_count);
 		features = SG_REALLOC(value_type, features, num_feat_entries, new_feat_count);
 	}
 
@@ -409,13 +409,13 @@ template<class T> void SGSparseVector<T>::save(CFile * saver)
 template <>
 void SGSparseVector<complex128_t>::load(CFile * loader)
 {
-	SG_SERROR("SGSparseVector::load():: Not supported for complex128_t\n");
+	SG_ERROR("SGSparseVector::load():: Not supported for complex128_t\n");
 }
 
 template <>
 void SGSparseVector<complex128_t>::save(CFile * saver)
 {
-	SG_SERROR("SGSparseVector::save():: Not supported for complex128_t\n");
+	SG_ERROR("SGSparseVector::save():: Not supported for complex128_t\n");
 }
 
 template <class T>
@@ -442,8 +442,8 @@ void SGSparseVector<T>::free_data()
 template <class T>
 T SGSparseVector<T>::dot_prod_expensive_unsorted(const SGSparseVector<T> &a, const SGSparseVector<T> &b)
 {
-	SG_SWARNING("Computing sparse_dot(a,b) on unsorted vectors is very expensive: O(n^2)\n");
-	SG_SWARNING("Using fallback to give correct results because upstream code does not sort.\n");
+	SG_WARNING("Computing sparse_dot(a,b) on unsorted vectors is very expensive: O(n^2)\n");
+	SG_WARNING("Using fallback to give correct results because upstream code does not sort.\n");
 
 	T dot_prod = 0;
 
@@ -483,7 +483,7 @@ std::string SGSparseVector<T>::to_string() const
 template <class T>
 void SGSparseVector<T>::display_vector(const char * name, const char * prefix)
 {
-	SG_SPRINT("%s%s=%s\n", prefix, name, to_string().c_str());
+	SG_PRINT("%s%s=%s\n", prefix, name, to_string().c_str());
 }
 
 template <class T>

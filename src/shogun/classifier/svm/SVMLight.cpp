@@ -2470,7 +2470,7 @@ float64_t* CSVMLight::optimize_qp(
 
 		if(CMath::is_nan(dual[0])) {     /* check for choldc problem */
 			if(verbosity>=2) {
-				SG_SDEBUG("Restarting PR_LOQO with more conservative parameters.\n")
+				SG_DEBUG("Restarting PR_LOQO with more conservative parameters.\n")
 			}
 			if(init_margin<0.80) { /* become more conservative in general */
 				init_margin=(4.0*margin+1.0)/5.0;
@@ -2478,7 +2478,7 @@ float64_t* CSVMLight::optimize_qp(
 			margin=(margin+1.0)/2.0;
 			(opt_precision)*=10.0;   /* reduce precision */
 			if(verbosity>=2) {
-				SG_SDEBUG("Reducing precision of PR_LOQO.\n")
+				SG_DEBUG("Reducing precision of PR_LOQO.\n")
 			}
 		}
 		else if(result!=OPTIMAL_SOLUTION) {
@@ -2486,7 +2486,7 @@ float64_t* CSVMLight::optimize_qp(
 			init_iter+=10;
 			(opt_precision)*=10.0;   /* reduce precision */
 			if(verbosity>=2) {
-				SG_SDEBUG("Reducing precision of PR_LOQO due to (%ld).\n",result)
+				SG_DEBUG("Reducing precision of PR_LOQO due to (%ld).\n",result)
 			}
 		}
 	}
@@ -2508,7 +2508,7 @@ float64_t* CSVMLight::optimize_qp(
 		for(j=i;j<qp->opt_n;j++) {
 			dist+=(primal[j]*qp->opt_g[i*qp->opt_n+j]);
 		}
-		/*  SG_SDEBUG("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]) */
+		/*  SG_DEBUG("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]) */
 		if((primal[i]<(qp->opt_up[i]-epsilon_loqo)) && (dist < (1.0-(*epsilon_crit)))) {
 			epsilon_loqo=(qp->opt_up[i]-primal[i])*2.0;
 		}
@@ -2551,7 +2551,7 @@ float64_t* CSVMLight::optimize_qp(
 		(opt_precision)/=100.0;
 		precision_violations++;
 		if(verbosity>=2) {
-			SG_SDEBUG("Increasing Precision of PR_LOQO.\n")
+			SG_DEBUG("Increasing Precision of PR_LOQO.\n")
 		}
 	}
 
@@ -2559,13 +2559,13 @@ float64_t* CSVMLight::optimize_qp(
 	if(precision_violations > 5000) {
 		(*epsilon_crit)*=10.0;
 		precision_violations=0;
-		SG_SINFO("Relaxing epsilon on KT-Conditions.\n")
+		SG_INFO("Relaxing epsilon on KT-Conditions.\n")
 	}
 
 	(*threshold)=model_b;
 
 	if(result!=OPTIMAL_SOLUTION) {
-		SG_SERROR("PR_LOQO did not converge.\n")
+		SG_ERROR("PR_LOQO did not converge.\n")
 		return(qp->opt_xinit);
 	}
 	else {

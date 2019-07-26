@@ -296,7 +296,7 @@ CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(
 	ASSERT(lik!=NULL);
 
 	if (lik->get_model_type()!=LT_STUDENTST)
-		SG_SERROR("Provided likelihood is not of type CStudentsTLikelihood!\n")
+		SG_ERROR("Provided likelihood is not of type CStudentsTLikelihood!\n")
 
 	SG_REF(lik);
 	return (CStudentsTLikelihood*)lik;

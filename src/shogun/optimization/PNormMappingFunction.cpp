@@ -38,7 +38,7 @@ void PNormMappingFunction::set_norm(float64_t p)
 {
 	if(p<2.0)
 	{
-		SG_SWARNING("The norm (%f) should not be less than 2.0 and we use p=2.0 in this case\n", p);
+		SG_WARNING("The norm (%f) should not be less than 2.0 and we use p=2.0 in this case\n", p);
 		m_p=2.0;
 	}
 	else

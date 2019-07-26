@@ -43,7 +43,7 @@ namespace shogun
 		case F_ANY:
 			return "ANY";
 		default:
-			SG_SNOTIMPLEMENTED
+			SG_NOTIMPLEMENTED
 			return "UNKNOWN";
 		}
 	}

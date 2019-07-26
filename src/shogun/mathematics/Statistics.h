@@ -437,7 +437,7 @@ public:
 template <>
 	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
 	{
-		SG_SNOTIMPLEMENTED
+		SG_NOTIMPLEMENTED
 		return floatmax_t(0.0);
 	}
 

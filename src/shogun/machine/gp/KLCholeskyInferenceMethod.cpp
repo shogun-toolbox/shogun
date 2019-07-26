@@ -78,7 +78,7 @@ CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
-		SG_SERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CKLCholeskyInferenceMethod*)inference;

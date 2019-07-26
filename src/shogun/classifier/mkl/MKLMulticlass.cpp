@@ -164,7 +164,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			delta+=0.5*normweightssquared[maxind];
 			//delta=fabs(delta);
-			SG_SINFO("L1 Norm chosen, MKL part of duality gap %f \n",delta)
+			SG_INFO("L1 Norm chosen, MKL part of duality gap %f \n",delta)
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return true;
@@ -190,10 +190,10 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			else
 			{
-            SG_SWARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
+            SG_WARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
 				delta=sqrt(delta);
 			}
-				SG_SINFO("weight delta %f \n",delta)
+				SG_INFO("weight delta %f \n",delta)
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{

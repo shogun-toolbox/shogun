@@ -120,7 +120,7 @@ template <class ST>
 SGMatrix<ST>
 CDensePreprocessor<ST>::inverse_apply_to_matrix(SGMatrix<ST> matrix)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 
 	return SGMatrix<ST>();
 }

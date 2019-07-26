@@ -97,7 +97,7 @@ enum EMessageLocation
 	SG_IO->message(MSG_INFO, _SRC_LOC, __VA_ARGS__);		\
 }
 
-#define SG_WARNING(c, ...) {							\
+#define SG_WARNING(...) {							\
 	SG_IO->message(MSG_WARN, _SRC_LOC, __VA_ARGS__);	\
 }
 

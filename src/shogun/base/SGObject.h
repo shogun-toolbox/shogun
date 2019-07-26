@@ -666,7 +666,7 @@ public:
 		if (c)
 			return c;
 
-		SG_SERROR(
+		SG_ERROR(
 			"Object of type %s cannot be converted to type %s.\n",
 			this->get_name(),
 			demangled_type<T>().c_str());
@@ -1011,8 +1011,6 @@ protected:
 	ParameterProperties m_default_mask = ParameterProperties::NONE;
 
 private:
-	void set_global_objects();
-	void unset_global_objects();
 	void init();
 
 	/** Overloaded helper to increase reference counter */
@@ -1188,9 +1186,6 @@ protected:
 		stringToEnumMapType m_string_to_enum_map;
 
 	public:
-		/** io */
-		SGIO* io;
-
 		/** parameters */
 		Parameter* m_parameters;
 

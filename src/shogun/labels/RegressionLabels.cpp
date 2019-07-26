@@ -62,12 +62,12 @@ namespace shogun
 				return some<CRegressionLabels>(
 					orig->as<CBinaryLabels>()->get_labels());
 			default:
-				SG_SNOTIMPLEMENTED
+				SG_NOTIMPLEMENTED
 			}
 		}
 		catch (const ShogunException& e)
 		{
-			SG_SERROR(
+			SG_ERROR(
 			    "Cannot convert %s to regression labels: \n", e.what(),
 			    orig->get_name());
 		}

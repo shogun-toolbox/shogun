@@ -85,7 +85,7 @@ CLatentFeatures* CLatentFeatures::obtain_from_generic(CFeatures* base_feats)
 	if (base_feats->get_feature_class() == C_LATENT)
 		return (CLatentFeatures*) base_feats;
 	else
-		SG_SERROR("base_labels must be of dynamic type CLatentLabels\n")
+		SG_ERROR("base_labels must be of dynamic type CLatentLabels\n")
 
 	return NULL;
 }

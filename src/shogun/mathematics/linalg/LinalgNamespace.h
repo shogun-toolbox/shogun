@@ -60,7 +60,7 @@ namespace shogun
 					return sg_linalg->get_gpu_backend();
 				else
 				{
-					SG_SERROR(
+					SG_ERROR(
 					    "Vector or matrix is on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
@@ -90,7 +90,7 @@ namespace shogun
 					return sg_linalg->get_gpu_backend();
 				else
 				{
-					SG_SERROR(
+					SG_ERROR(
 					    "Vector or matrix is on GPU but no GPU backend registered. \
 					  This can happen if the GPU backend was de-activated \
 					  after memory has been transferred to GPU.\n");
@@ -99,7 +99,7 @@ namespace shogun
 			}
 			else if (a.on_gpu() || b.on_gpu())
 			{
-				SG_SERROR(
+				SG_ERROR(
 				    "Cannot operate with first vector/matrix on_gpu flag(%d) \
 					and second vector/matrix on_gpu flag (%d).\n",
 				    a.on_gpu(), b.on_gpu());
@@ -129,7 +129,7 @@ namespace shogun
 					return sg_linalg->get_gpu_backend();
 				else
 				{
-					SG_SERROR(
+					SG_ERROR(
 					    "Vector or matrix is on GPU but no GPU backend registered. \
 					  This can happen if the GPU backend was de-activated \
 					  after memory has been transferred to GPU.\n");
@@ -138,7 +138,7 @@ namespace shogun
 			}
 			else if (a.on_gpu() || b.on_gpu() || c.on_gpu())
 			{
-				SG_SERROR(
+				SG_ERROR(
 				    "Cannot operate with first vector/matrix on_gpu flag(%d),\
 					second vector/matrix on_gpu flag (%d) and third vector/matrix \
 					on_gpu flag (%d).\n",
@@ -166,7 +166,7 @@ namespace shogun
 			if (a.on_gpu())
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_SWARNING("The vector is already on GPU.\n");
+					SG_WARNING("The vector is already on GPU.\n");
 			}
 			else
 			{
@@ -177,7 +177,7 @@ namespace shogun
 				else
 				{
 					if (sg_linalg->get_linalg_warnings())
-						SG_SWARNING("Trying to access GPU memory\
+						SG_WARNING("Trying to access GPU memory\
 				 	without GPU backend registered.\n");
 					b = a;
 				}
@@ -203,7 +203,7 @@ namespace shogun
 			if (a.on_gpu())
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_SWARNING("The matrix is already on GPU.\n");
+					SG_WARNING("The matrix is already on GPU.\n");
 			}
 			else
 			{
@@ -215,7 +215,7 @@ namespace shogun
 				else
 				{
 					if (sg_linalg->get_linalg_warnings())
-						SG_SWARNING("Trying to access GPU memory\
+						SG_WARNING("Trying to access GPU memory\
 				 	without GPU backend registered.\n");
 					b = a;
 				}
@@ -260,7 +260,7 @@ namespace shogun
 					b = SGVector<T>(data, a.size());
 				}
 				else
-					SG_SERROR(
+					SG_ERROR(
 					    "Data memory on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
@@ -268,7 +268,7 @@ namespace shogun
 			else
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_SWARNING("The data is already on CPU.\n");
+					SG_WARNING("The data is already on CPU.\n");
 				b = a;
 			}
 
@@ -301,7 +301,7 @@ namespace shogun
 					b = SGMatrix<T>(data, a.num_rows, a.num_cols);
 				}
 				else
-					SG_SERROR(
+					SG_ERROR(
 					    "Data memory on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
@@ -309,7 +309,7 @@ namespace shogun
 			else
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_SWARNING("The data is already on CPU.\n");
+					SG_WARNING("The data is already on CPU.\n");
 				b = a;
 			}
 

@@ -330,7 +330,7 @@ class CFeatures : public CSGObject
 #ifndef SWIG // SWIG should skip this part
 		virtual CFeatures* shallow_subset_copy()
 		{
-			SG_SNOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED;
 			return NULL;
 		}
 #endif

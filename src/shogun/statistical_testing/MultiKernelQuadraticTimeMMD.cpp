@@ -71,7 +71,7 @@ void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(CDistance* dis
 	if (m_dtype==distance->get_distance_type())
 	{
 		ASSERT(m_pairwise_distance!=nullptr);
-		SG_SINFO("Precomputed distance exists for %s!\n", distance->get_name());
+		SG_INFO("Precomputed distance exists for %s!\n", distance->get_name());
 	}
 	else
 	{

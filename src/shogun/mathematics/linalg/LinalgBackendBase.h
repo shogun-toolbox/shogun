@@ -66,7 +66,7 @@ namespace shogun
 	    const Container<Type>& a, const Container<Type>& b, Type alpha,        \
 	    Type beta, Container<Type>& result) const                              \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
@@ -82,7 +82,7 @@ namespace shogun
 	    const SGMatrix<Type>& A, index_t i, const SGVector<Type>& b,           \
 	    Container<Type>& result, Type alpha, Type beta) const                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return;                                                                \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
@@ -100,7 +100,7 @@ namespace shogun
 	    SGMatrix<Type>& A, const SGVector<Type>& b, Type alpha, Type beta)     \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return;                                                                \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix);
@@ -114,7 +114,7 @@ namespace shogun
 #define BACKEND_GENERIC_ADD_RIDGE(Type, Container)                             \
 	virtual void add_ridge(SGMatrix<Type>& A, Type beta) const                 \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return;                                                                \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_RIDGE, SGMatrix);
@@ -130,7 +130,7 @@ namespace shogun
 	    const SGMatrix<Type>& A, const SGVector<Type>& b,                      \
 	    SGMatrix<Type>& result, Type alpha, Type beta) const                   \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return;                                                                \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_VECTOR, SGMatrix)
@@ -144,7 +144,7 @@ namespace shogun
 #define BACKEND_GENERIC_ADD_SCALAR(Type, Container)                            \
 	virtual void add_scalar(Container<Type>& a, Type b) const                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGMatrix)
@@ -158,7 +158,7 @@ namespace shogun
 #define BACKEND_GENERIC_CENTER_MATRIX(Type, Container)                         \
 	virtual void center_matrix(Container<Type>& A) const                       \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CENTER_MATRIX, SGMatrix)
 #undef BACKEND_GENERIC_CENTER_MATRIX
@@ -172,7 +172,7 @@ namespace shogun
 	virtual Container<Type> cholesky_factor(                                   \
 	    const Container<Type>& A, const bool lower) const                      \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
@@ -188,7 +188,7 @@ namespace shogun
 	    const Container<Type>& L, const SGVector<Type>& b, const bool lower)   \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
@@ -204,7 +204,7 @@ namespace shogun
 	    Container<Type>& L, const SGVector<Type>& b, Type alpha,               \
 	    const bool lower) const                                                \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
@@ -216,7 +216,7 @@ namespace shogun
 	virtual void rank_update(                                                  \
 	    Container<Type>& A, const SGVector<Type>& b, Type alpha) const         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANK_UPDATE, SGMatrix)
 #undef BACKEND_GENERIC_RANK_UPDATE
@@ -231,7 +231,7 @@ namespace shogun
 	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
 	    SGVector<index_t>& p, const bool lower) const                          \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
 #undef BACKEND_GENERIC_LDLT_FACTOR
@@ -244,7 +244,7 @@ namespace shogun
 #define BACKEND_GENERIC_PINVH(Type, Container)                                 \
 	virtual void pinvh(const SGMatrix<Type>& A, SGMatrix<Type>& result) const  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINVH, SGMatrix)
 #undef BACKEND_GENERIC_PINVH
@@ -257,7 +257,7 @@ namespace shogun
 #define BACKEND_GENERIC_PINV(Type, Container)                                  \
 	virtual void pinv(const SGMatrix<Type>& A, SGMatrix<Type>& result) const   \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINV, SGMatrix)
 #undef BACKEND_GENERIC_PINV
@@ -273,7 +273,7 @@ namespace shogun
 	    const SGVector<index_t>& p, const SGVector<Type>& b, const bool lower) \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_SOLVER, SGMatrix)
@@ -288,7 +288,7 @@ namespace shogun
 	virtual Type cross_entropy(                                                \
 	    const Container<Type>& P, const Container<Type>& Q) const              \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
@@ -302,7 +302,7 @@ namespace shogun
 #define BACKEND_GENERIC_DOT(Type, Container)                                   \
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
@@ -317,7 +317,7 @@ namespace shogun
 	virtual linalg::promote<float64_t, Type>::type dot(                        \
 	    const Container<float64_t>& a, const Container<Type>& b) const         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE_EXCEPT_FLOAT64(BACKEND_GENERIC_DOT, SGVector)
@@ -333,7 +333,7 @@ namespace shogun
 	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
 	    SGMatrix<Type>& eigenvectors) const                                    \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER, SGMatrix)
 #undef BACKEND_GENERIC_EIGEN_SOLVER
@@ -349,7 +349,7 @@ namespace shogun
 	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
 	    SGMatrix<Type>& eigenvectors, index_t k) const                         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(
 		    BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC, SGMatrix)
@@ -365,7 +365,7 @@ namespace shogun
 	    const Container<Type>& a, const Container<Type>& b,                    \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD, SGVector)
@@ -381,7 +381,7 @@ namespace shogun
 	    const Container<Type>& a, const Container<Type>& b,                    \
 	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
@@ -398,7 +398,7 @@ namespace shogun
 	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
 	    bool transpose_A, bool transpose_B) const                              \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
@@ -413,7 +413,7 @@ namespace shogun
 	virtual void exponent(const Container<Type>& a, Container<Type>& result)   \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGMatrix)
@@ -427,7 +427,7 @@ namespace shogun
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
 	virtual void identity(Container<Type>& identity_matrix) const              \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return;                                                                \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
@@ -442,7 +442,7 @@ namespace shogun
 	virtual void logistic(const Container<Type>& a, Container<Type>& result)   \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
 #undef BACKEND_GENERIC_LOGISTIC
@@ -457,7 +457,7 @@ namespace shogun
 	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
 	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
@@ -472,7 +472,7 @@ namespace shogun
 #define BACKEND_GENERIC_MAX(Type, Container)                                   \
 	virtual Type max(const Container<Type>& a) const                           \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
@@ -488,7 +488,7 @@ namespace shogun
 #define BACKEND_GENERIC_REAL_MEAN(Type, Container)                             \
 	virtual float64_t mean(const Container<Type>& a) const                     \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
@@ -504,7 +504,7 @@ namespace shogun
 #define BACKEND_GENERIC_COMPLEX_MEAN(Container)                                \
 	virtual complex128_t mean(const Container<complex128_t>& a) const          \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
@@ -521,7 +521,7 @@ namespace shogun
 	virtual SGVector<float64_t> std_deviation(                                 \
 	    const Container<Type>& a, bool colwise) const                          \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_STD, SGMatrix)
@@ -537,7 +537,7 @@ namespace shogun
 	virtual void multiply_by_logistic_derivative(                              \
 	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
@@ -552,7 +552,7 @@ namespace shogun
 	virtual void multiply_by_rectified_linear_derivative(                      \
 	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
@@ -566,7 +566,7 @@ namespace shogun
 #define BACKEND_GENERIC_RANGE_FILL(Type, Container)                            \
 	virtual void range_fill(Container<Type>& a, const Type start) const        \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
@@ -581,7 +581,7 @@ namespace shogun
 	virtual void rectified_linear(                                             \
 	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
@@ -596,7 +596,7 @@ namespace shogun
 	virtual Container<Type> qr_solver(                                         \
 	    const SGMatrix<Type>& A, const Container<Type>& b) const               \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGVector)
@@ -612,7 +612,7 @@ namespace shogun
 	virtual void scale(                                                        \
 	    const Container<Type>& a, Type alpha, Container<Type>& result) const   \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
@@ -628,7 +628,7 @@ namespace shogun
 	    const Container<Type>& a, const SGVector<Type>& alphas,                \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE
@@ -641,7 +641,7 @@ namespace shogun
 #define BACKEND_GENERIC_SET_CONST(Type, Container)                             \
 	virtual void set_const(Container<Type>& a, const Type value) const         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
@@ -655,7 +655,7 @@ namespace shogun
 #define BACKEND_GENERIC_SUM(Type, Container)                                   \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const             \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
@@ -670,7 +670,7 @@ namespace shogun
 #define BACKEND_GENERIC_SOFTMAX(Type, Container)                               \
 	virtual void softmax(Container<Type>& a) const                             \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 #undef BACKEND_GENERIC_SOFTMAX
@@ -684,7 +684,7 @@ namespace shogun
 	virtual Type squared_error(                                                \
 	    const Container<Type>& P, const Container<Type>& Q) const              \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
@@ -699,7 +699,7 @@ namespace shogun
 	virtual Type sum(const linalg::Block<Container<Type>>& a, bool no_diag)    \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
@@ -713,7 +713,7 @@ namespace shogun
 #define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container)                         \
 	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const   \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
@@ -728,7 +728,7 @@ namespace shogun
 	virtual Type sum_symmetric(                                                \
 	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM, SGMatrix)
@@ -743,7 +743,7 @@ namespace shogun
 	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
@@ -758,7 +758,7 @@ namespace shogun
 	virtual SGVector<Type> colwise_sum(                                        \
 	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_COLWISE_SUM, SGMatrix)
@@ -773,7 +773,7 @@ namespace shogun
 	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) \
 	    const                                                                  \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
@@ -788,7 +788,7 @@ namespace shogun
 	virtual SGVector<Type> rowwise_sum(                                        \
 	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
@@ -804,7 +804,7 @@ namespace shogun
 	    const Container<Type>& A, SGVector<Type> s, SGMatrix<Type> U,          \
 	    bool thin_U, linalg::SVDAlgorithm alg) const                           \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
 #undef BACKEND_GENERIC_SVD
@@ -817,7 +817,7 @@ namespace shogun
 #define BACKEND_GENERIC_TRACE(Type, Container)                                 \
 	virtual Type trace(const Container<Type>& A) const                         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
@@ -831,7 +831,7 @@ namespace shogun
 #define BACKEND_GENERIC_TRANSPOSE_MATRIX(Type, Container)                      \
 	virtual Container<Type> transpose_matrix(const Container<Type>& A) const   \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRANSPOSE_MATRIX, SGMatrix)
@@ -847,7 +847,7 @@ namespace shogun
 	    const SGMatrix<Type>& L, const Container<Type>& b,                     \
 	    const bool lower = true) const                                         \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(
@@ -864,7 +864,7 @@ namespace shogun
 #define BACKEND_GENERIC_ZERO(Type, Container)                                  \
 	virtual void zero(Container<Type>& a) const                                \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return;                                                                \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGVector)
@@ -880,7 +880,7 @@ namespace shogun
 #define BACKEND_GENERIC_TO_GPU(Type, Container)                                \
 	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>&) const          \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
@@ -895,7 +895,7 @@ namespace shogun
 #define BACKEND_GENERIC_FROM_GPU(Type, Container)                              \
 	virtual void from_gpu(const Container<Type>&, Type* data) const            \
 	{                                                                          \
-		SG_SNOTIMPLEMENTED;                                                    \
+		SG_NOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)

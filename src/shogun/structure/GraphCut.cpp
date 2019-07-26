@@ -959,11 +959,11 @@ void CGraphCut::print_graph()
 		{
 			if (node_i->type_tree == SOURCE)
 			{
-				SG_SPRINT("\n s -> %d, cost = %f", node_i->id, node_i->tree_cap);
+				SG_PRINT("\n s -> %d, cost = %f", node_i->id, node_i->tree_cap);
 			}
 			else
 			{
-				SG_SPRINT("\n %d -> t, cost = %f", node_i->id, node_i->tree_cap);
+				SG_PRINT("\n %d -> t, cost = %f", node_i->id, node_i->tree_cap);
 			}
 		}
 	}
@@ -972,7 +972,7 @@ void CGraphCut::print_graph()
 	for (int32_t i = 0; i < m_num_edges; i++)
 	{
 		GCEdge* edge = m_edges + i;
-		SG_SPRINT("\n %d -> %d, cost = %f", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
+		SG_PRINT("\n %d -> %d, cost = %f", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
 	}
 
 }
@@ -985,11 +985,11 @@ void CGraphCut::print_assignment()
 
 		if (get_assignment(i) == SOURCE)
 		{
-			SG_SPRINT("\nGCNode %2d: S", node_i->id);
+			SG_PRINT("\nGCNode %2d: S", node_i->id);
 		}
 		else
 		{
-			SG_SPRINT("\nGCNode %2d: T", node_i->id);
+			SG_PRINT("\nGCNode %2d: T", node_i->id);
 		}
 	}
 }

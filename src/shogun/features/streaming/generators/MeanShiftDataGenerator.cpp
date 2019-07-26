@@ -56,7 +56,7 @@ void CMeanShiftDataGenerator::init()
 
 bool CMeanShiftDataGenerator::get_next_example()
 {
-	SG_SDEBUG("entering\n");
+	SG_DEBUG("entering\n");
 
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(m_dimension);
@@ -70,7 +70,7 @@ bool CMeanShiftDataGenerator::get_next_example()
 	/* save example back to superclass */
 	CMeanShiftDataGenerator::current_vector=result;
 
-	SG_SDEBUG("leaving\n");
+	SG_DEBUG("leaving\n");
 	return true;
 }
 

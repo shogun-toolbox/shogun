@@ -355,7 +355,7 @@ namespace shogun
 		    const Any& any, PrimitiveLambdaT primitive_func,
 		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
-			SG_SWARNING(
+			SG_WARNING(
 			    "Ignoring Any dispatch call.\n"
 			    "sg_any_dispatch requires a lambda function definition "
 			    "for the expected underlying type of Any (%s).\n",
@@ -371,7 +371,7 @@ namespace shogun
 		    const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
 		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
-			SG_SERROR(
+			SG_ERROR(
 			    "Unsupported type %s\n",
 			    demangled_type(any.type_info().name()).c_str())
 		}
@@ -504,7 +504,7 @@ static const typemap sg_non_integer_typemap = {
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
 		if (type == TYPE::T_UNDEFINED)
-			SG_SERROR(
+			SG_ERROR(
 			    "Type %s is not part of %s\n",
 			    demangled_type(any.type_info().name()).c_str(),
 			    type_internal::print_map(typesmap).c_str())

@@ -168,7 +168,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFe
 		}
 		catch (ShogunException e)
 		{
-			SG_SERROR("%s, Try using less number of blocks per burst!\n", e.what());
+			SG_ERROR("%s, Try using less number of blocks per burst!\n", e.what());
 		}
 	}
 }

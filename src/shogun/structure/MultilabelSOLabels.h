@@ -55,7 +55,7 @@ public:
 		}
 		else
 		{
-			SG_SERROR("base_data must be of dynamic type CSparseMultilabel\n");
+			SG_ERROR("base_data must be of dynamic type CSparseMultilabel\n");
 		}
 
 		return NULL;

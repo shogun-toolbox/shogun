@@ -56,7 +56,7 @@ TEST(ParserTest, tokenization_reals)
 
 	CParser* reader=new CParser(cv, tokenizer);
 
-	SG_SET_LOCALE_C;
+	SG_ET_LOCALE_C;
 
 	float64_t tmp=0;
 	int32_t num_tokens=0;

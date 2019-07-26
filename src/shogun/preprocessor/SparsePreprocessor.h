@@ -83,7 +83,7 @@ CFeatures* CSparsePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 	if (!inplace)
 	{
 		// feature_matrix = feature_matrix.clone();
-		SG_SERROR("Out-of-place mode for SparsePreprocessor is not supported");
+		SG_ERROR("Out-of-place mode for SparsePreprocessor is not supported");
 	}
 
 	apply_to_sparse_matrix(feature_matrix);

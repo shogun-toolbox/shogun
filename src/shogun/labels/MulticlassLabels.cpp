@@ -192,7 +192,7 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 
 	if (labels->get_label_type() != LT_MULTICLASS)
 	{
-		SG_SERROR("The Labels passed cannot be casted to CMulticlassLabels!")
+		SG_ERROR("The Labels passed cannot be casted to CMulticlassLabels!")
 		return NULL;
 	}
 
@@ -219,7 +219,7 @@ namespace shogun
 		if (!(min == 0 && max == (index_t)unique.size() - 1))
 		{
 			// print conversion table for users
-			SG_SWARNING(
+			SG_WARNING(
 			    "Converting non-contiguous multiclass labels to "
 			    "contiguous version:\n",
 			    unique.size() - 1);
@@ -227,7 +227,7 @@ namespace shogun
 			    unique.begin(), unique.end(), [&unique](int32_t old_label) {
 				    auto new_label =
 				        std::distance(unique.begin(), unique.find(old_label));
-				    SG_SWARNING("Converting %d to %d.\n", old_label, new_label);
+				    SG_WARNING("Converting %d to %d.\n", old_label, new_label);
 				});
 
 			SGVector<float64_t> converted(result_vector.vlen);
@@ -255,12 +255,12 @@ namespace shogun
 			case LT_BINARY:
 				return to_multiclass((CBinaryLabels*)orig);
 			default:
-				SG_SNOTIMPLEMENTED
+				SG_NOTIMPLEMENTED
 			}
 		}
 		catch (const ShogunException& e)
 		{
-			SG_SERROR(
+			SG_ERROR(
 			    "Cannot convert %s to multiclass labels: %s\n",
 			    orig->get_name(), e.what());
 		}

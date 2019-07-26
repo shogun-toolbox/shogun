@@ -141,7 +141,7 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 {
 	int32_t D = observations.num_rows;
 	int32_t N = observations.num_cols;
-	SG_SDEBUG("%d observations in %d dimensions\n", N, D)
+	SG_DEBUG("%d observations in %d dimensions\n", N, D)
 
 	REQUIRE(N>1, "Number of observations (%d) must be at least 2.\n", N);
 	REQUIRE(D>0, "Number of dimensions (%d) must be at least 1.\n", D);
@@ -156,12 +156,12 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 		sg_memcpy(centered.matrix, observations.matrix,
 				sizeof(float64_t)*num_elements);
 	}
-	SG_SDEBUG("Centering observations\n");
+	SG_DEBUG("Centering observations\n");
 	Map<MatrixXd> eigen_centered(centered.matrix, D, N);
 	eigen_centered.colwise() -= eigen_centered.rowwise().mean();
 
 	/* compute and store 1/(N-1) * X * X.T */
-	SG_SDEBUG("Computing squared differences\n");
+	SG_DEBUG("Computing squared differences\n");
 	SGMatrix<float64_t> cov(D, D);
 	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
 	eigen_cov = (eigen_centered * eigen_centered.adjoint()) / double(N - 1);
@@ -241,14 +241,14 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 
 //#define DEBUG_FISHER_TABLE
 #ifdef DEBUG_FISHER_TABLE
-	SG_SPRINT("counter=%d\n", counter)
-	SG_SPRINT("dim1=%d\n", dim1)
-	SG_SPRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]))
-	SG_SPRINT("n=%g\n", n)
-	SG_SPRINT("prob_table_log=%.18Lg\n", prob_table_log)
-	SG_SPRINT("log_denomf=%.18g\n", log_denomf)
-	SG_SPRINT("log_denom=%.18Lg\n", log_denom)
-	SG_SPRINT("log_nom=%.18g\n", log_nom)
+	SG_PRINT("counter=%d\n", counter)
+	SG_PRINT("dim1=%d\n", dim1)
+	SG_PRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]))
+	SG_PRINT("n=%g\n", n)
+	SG_PRINT("prob_table_log=%.18Lg\n", prob_table_log)
+	SG_PRINT("log_denomf=%.18g\n", log_denomf)
+	SG_PRINT("log_denom=%.18Lg\n", log_denom)
+	SG_PRINT("log_nom=%.18g\n", log_nom)
 	display_vector(m, m_len, "marginals");
 	display_vector(x, 2*3*counter, "x");
 #endif // DEBUG_FISHER_TABLE
@@ -280,8 +280,8 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	}
 
 #ifdef DEBUG_FISHER_TABLE
-	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p)
-	SG_SPRINT("exp_nonrand_p=%.18g\n", std::exp(nonrand_p))
+	SG_PRINT("nonrand_p=%.18g\n", nonrand_p)
+	SG_PRINT("exp_nonrand_p=%.18g\n", std::exp(nonrand_p))
 #endif // DEBUG_FISHER_TABLE
 	nonrand_p = std::exp(nonrand_p);
 
@@ -371,7 +371,7 @@ float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
 	cdfnor(&which, &p, &q, &output_x, &mean, &std_deviation, &output_status, &output_bound);
 
 	if (output_status!=0)
-		SG_SERROR("Error %d while calling cdflib::cdfnor\n", output_status);
+		SG_ERROR("Error %d while calling cdflib::cdfnor\n", output_status);
 
 	return output_x;
 
@@ -395,7 +395,7 @@ float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 	cdfchi(&which, &output_p, &output_q, &x, &df, &output_status, &output_bound);
 
 	if (output_status!=0)
-		SG_SERROR("Error %d while calling cdflib::cdfchi\n", output_status);
+		SG_ERROR("Error %d while calling cdflib::cdfchi\n", output_status);
 
 	return output_p;
 }
@@ -418,7 +418,7 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 	cdfgam(&which, &output_p, &output_q, &x, &shape, &scale, &output_error_code, &output_bound);
 
 	if (output_error_code!=0)
-		SG_SERROR("Error %d while calling cdflib::cdfgam\n", output_error_code);
+		SG_ERROR("Error %d while calling cdflib::cdfgam\n", output_error_code);
 
 	return output_p;
 }
@@ -537,7 +537,7 @@ float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 	cdfgam(&which, &p, &q, &output_x, &shape, &scale, &output_error_code, &output_bound);
 
 	if (output_error_code!=0)
-		SG_SERROR("Error %d while calling cdflib::beta_inc\n", output_error_code);
+		SG_ERROR("Error %d while calling cdflib::beta_inc\n", output_error_code);
 
 	return output_x;
 }
@@ -558,7 +558,7 @@ float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2
 	cdff(&which, &output_p, &output_q, &x, &d1, &d2, &output_error_code, &output_bound);
 
 	if (output_error_code!=0)
-		SG_SERROR("Error %d while calling cdflib::cdff\n", output_error_code);
+		SG_ERROR("Error %d while calling cdflib::cdff\n", output_error_code);
 
 	return output_p;
 }
@@ -839,7 +839,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 	/* count prior0 and prior1 if needed */
 	int32_t prior0 = 0;
 	int32_t prior1 = 0;
-	SG_SDEBUG("counting number of positive and negative labels\n")
+	SG_DEBUG("counting number of positive and negative labels\n")
 	{
 		prior1 =
 		    std::count_if(labels.begin(), labels.end(), [](float64_t label) {
@@ -847,7 +847,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 			});
 		prior0 = labels.vlen - prior1;
 	}
-	SG_SDEBUG("%d pos; %d neg\n", prior1, prior0)
+	SG_DEBUG("%d pos; %d neg\n", prior1, prior0)
 
 	/* construct target support */
 	float64_t hiTarget = (prior1 + 1.0) / (prior1 + 2.0);
@@ -881,7 +881,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 	float64_t g2;
 	for (it = 0; it < maxiter; ++it)
 	{
-		SG_SDEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
+		SG_DEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
 
 		/* Update Gradient and Hessian (use H' = H + sigma I) */
 		float64_t h11 = sigma; // Numerically ensures strict PD
@@ -958,7 +958,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 
 		if (stepsize < minstep)
 		{
-			SG_SWARNING(
+			SG_WARNING(
 			    "Line search fails, A=%f, "
 			    "B=%f, g1=%f, g2=%f, dA=%f, dB=%f, gd=%f\n",
 			    a, b, g1, g2, dA, dB, gd);
@@ -967,13 +967,13 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 
 	if (it >= maxiter - 1)
 	{
-		SG_SWARNING(
+		SG_WARNING(
 		    "Reaching maximal iterations,"
 		    " g1=%f, g2=%f\n",
 		    g1, g2);
 	}
 
-	SG_SDEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
+	SG_DEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
 
 	CStatistics::SigmoidParamters result;
 	result.a = a;
@@ -984,7 +984,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 
 CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
 {
-	SG_SDEBUG("entering CStatistics::fit_sigmoid()\n")
+	SG_DEBUG("entering CStatistics::fit_sigmoid()\n")
 
 	REQUIRE(scores.vector, "CStatistics::fit_sigmoid() requires "
 			"scores vector!\n");
@@ -992,7 +992,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	/* count prior0 and prior1 if needed */
 	int32_t prior0=0;
 	int32_t prior1=0;
-	SG_SDEBUG("counting number of positive and negative labels\n")
+	SG_DEBUG("counting number of positive and negative labels\n")
 	{
 		for (index_t i=0; i<scores.vlen; ++i)
 		{
@@ -1002,7 +1002,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 				prior0++;
 		}
 	}
-	SG_SDEBUG("%d pos; %d neg\n", prior1, prior0)
+	SG_DEBUG("%d pos; %d neg\n", prior1, prior0)
 
 	/* parameter setting */
 	/* maximum number of iterations */
@@ -1049,7 +1049,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	float64_t g2;
 	for (it=0; it<maxiter; ++it)
 	{
-		SG_SDEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
+		SG_DEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
 
 		/* Update Gradient and Hessian (use H' = H + sigma I) */
 		float64_t h11=sigma; //Numerically ensures strict PD
@@ -1126,7 +1126,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 
 		if (stepsize<minstep)
 		{
-			SG_SWARNING("CStatistics::fit_sigmoid(): line search fails, A=%f, "
+			SG_WARNING("CStatistics::fit_sigmoid(): line search fails, A=%f, "
 					"B=%f, g1=%f, g2=%f, dA=%f, dB=%f, gd=%f\n",
 					a, b, g1, g2, dA, dB, gd);
 		}
@@ -1134,17 +1134,17 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 
 	if (it>=maxiter-1)
 	{
-		SG_SWARNING("CStatistics::fit_sigmoid(): reaching maximal iterations,"
+		SG_WARNING("CStatistics::fit_sigmoid(): reaching maximal iterations,"
 				" g1=%f, g2=%f\n", g1, g2);
 	}
 
-	SG_SDEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
+	SG_DEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
 
 	CStatistics::SigmoidParamters result;
 	result.a=a;
 	result.b=b;
 
-	SG_SDEBUG("leaving CStatistics::fit_sigmoid()\n")
+	SG_DEBUG("leaving CStatistics::fit_sigmoid()\n")
 	return result;
 }
 

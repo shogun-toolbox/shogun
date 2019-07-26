@@ -102,7 +102,7 @@ CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
 	{
-		SG_SERROR("Provided kernel is not of type CGaussianARDKernel!\n");
+		SG_ERROR("Provided kernel is not of type CGaussianARDKernel!\n");
 	}
 
 	/* since an additional reference is returned */

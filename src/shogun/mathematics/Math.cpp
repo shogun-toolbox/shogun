@@ -89,7 +89,7 @@ int32_t CMath::determine_logrange()
 			break;
 	}
 
-	SG_SINFO(
+	SG_INFO(
 	    "determined range for x in table log(1+std::exp(-x)) is:%d "
 	    "(error:%G)\n",
 	    i, acc)
@@ -99,7 +99,7 @@ int32_t CMath::determine_logrange()
 int32_t CMath::determine_logaccuracy(int32_t range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
-	SG_SINFO(
+	SG_INFO(
 	    "determined accuracy for x in table log(1+std::exp(-x)) is:%d "
 	    "(error:%G)\n",
 	    range, 1.0 / (double)range)

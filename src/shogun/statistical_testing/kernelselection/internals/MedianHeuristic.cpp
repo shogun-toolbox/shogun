@@ -59,7 +59,7 @@ MedianHeuristic::~MedianHeuristic()
 
 void MedianHeuristic::init_measures()
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 }
 
 void MedianHeuristic::compute_measures()
@@ -99,7 +99,7 @@ CKernel* MedianHeuristic::select_kernel()
 {
 	compute_measures();
 	auto median_distance=measures[measures.size()/2];
-	SG_SDEBUG("kernel width (shogun): %f\n", median_distance);
+	SG_DEBUG("kernel width (shogun): %f\n", median_distance);
 
 	const auto num_kernels=kernel_mgr.num_kernels();
 	measures=SGVector<float64_t>(num_kernels);
@@ -110,6 +110,6 @@ CKernel* MedianHeuristic::select_kernel()
 	}
 
 	auto kernel_idx=(int64_t)std::distance(measures.data(), std::min_element(measures.data(), measures.data()+measures.size()));
-	SG_SDEBUG("Selected kernel at %d position!\n", kernel_idx);
+	SG_DEBUG("Selected kernel at %d position!\n", kernel_idx);
 	return kernel_mgr.kernel_at(kernel_idx);
 }

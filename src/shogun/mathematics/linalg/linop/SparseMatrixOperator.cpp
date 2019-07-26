@@ -56,7 +56,7 @@ CSparseMatrixOperator<T>::CSparseMatrixOperator
 		}
 		m_operator.sparse_matrix=rows;
 
-		SG_SGCDEBUG("%s deep copy created (%p)\n", this->get_name(), this);
+		SG_GCDEBUG("%s deep copy created (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
@@ -133,7 +133,7 @@ template<> \
 SparsityStructure* CSparseMatrixOperator<complex128_t>
 	::get_sparsity_structure(int64_t power) const
   {
-    SG_SERROR("Not supported for complex128_t\n");
+    SG_ERROR("Not supported for complex128_t\n");
     return new SparsityStructure();
   }
 
@@ -225,7 +225,7 @@ SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
 template<> \
 SGVector<type> CSparseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
-		SG_SERROR("Not supported for %s\n", #type);\
+		SG_ERROR("Not supported for %s\n", #type);\
 		return b; \
 	}
 

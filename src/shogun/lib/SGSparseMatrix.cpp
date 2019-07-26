@@ -102,7 +102,7 @@ void SGSparseMatrix<T>::load(CFile* loader)
 template<>
 void SGSparseMatrix<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGSparseMatrix::load():: Not supported for complex128_t");
+	SG_ERROR("SGSparseMatrix::load():: Not supported for complex128_t");
 }
 
 template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(CLibSVMFile* file, bool do_sort_features)
@@ -137,7 +137,7 @@ void SGSparseMatrix<T>::save(CFile* saver)
 template<>
 void SGSparseMatrix<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGSparseMatrix::save():: Not supported for complex128_t");
+	SG_ERROR("SGSparseMatrix::save():: Not supported for complex128_t");
 }
 
 template<class T> void SGSparseMatrix<T>::save_with_labels(CLibSVMFile* file,
@@ -238,7 +238,7 @@ template<class T> void SGSparseMatrix<T>::from_dense(SGMatrix<T> full)
 
 	REQUIRE(num_vec>0, "Matrix should have > 0 vectors!\n");
 
-	SG_SINFO("converting dense feature matrix to sparse one\n")
+	SG_INFO("converting dense feature matrix to sparse one\n")
 		int32_t* num_feat_entries=SG_MALLOC(int, num_vec);
 
 
@@ -278,7 +278,7 @@ template<class T> void SGSparseMatrix<T>::from_dense(SGMatrix<T> full)
 		}
 	}
 
-	SG_SINFO("sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
+	SG_INFO("sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
 			num_total_entries, int64_t(num_feat)*num_vec, (100.0*num_total_entries)/(int64_t(num_feat)*num_vec));
 	SG_FREE(num_feat_entries);
 }

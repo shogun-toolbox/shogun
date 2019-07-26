@@ -179,7 +179,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 			{
 				if( cos(curgamma[i])<=0)
 				{
-               SG_SINFO("linesearch(...): at i %d cos(curgamma[i-1])<=0 %f\n",i, cos(curgamma[i-1]))
+               SG_INFO("linesearch(...): at i %d cos(curgamma[i-1])<=0 %f\n",i, cos(curgamma[i-1]))
 					//curgamma[i-1]=pi4/2;
 				}
 			}
@@ -191,7 +191,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 					tmpbeta[k]/=cos(curgamma[i-1]);
 					if(tmpbeta[k]>1)
 					{
-                  SG_SINFO("linesearch(...): at k %d tmpbeta[k]>1 %f\n",k, tmpbeta[k])
+                  SG_INFO("linesearch(...): at k %d tmpbeta[k]>1 %f\n",k, tmpbeta[k])
 					}
 					tmpbeta[k]=std::min(1.0,std::max(0.0, tmpbeta[k]));
 				}
@@ -201,7 +201,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 
 				for(size_t i=0;i<curgamma.size();++i)
 	{
-		SG_SINFO("linesearch(...): curgamma[i] %f\n",curgamma[i])
+		SG_INFO("linesearch(...): curgamma[i] %f\n",curgamma[i])
 	}
 
 
@@ -215,11 +215,11 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 		//find smallest objective
 		int32_t minind=0;
 		float64_t minval=objectives(curbeta,  minind);
-		SG_SINFO("linesearch(...): objectives at i %f\n",minval)
+		SG_INFO("linesearch(...): objectives at i %f\n",minval)
 		for(int32_t i=1; i< (int32_t)sumsofalphas.size() ;++i)
 		{
 			float64_t tmpval=objectives(curbeta, i);
-		SG_SINFO("linesearch(...): objectives at i %f\n",tmpval)
+		SG_INFO("linesearch(...): objectives at i %f\n",tmpval)
 			if(tmpval<minval)
 			{
 				minval=tmpval;
@@ -446,17 +446,17 @@ void MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2)
 	if(pnorm<1 )
 		SG_ERROR("MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1")
 
-	SG_SDEBUG("MKLMulticlassGradient::computeweights(...): pnorm %f\n",pnorm)
+	SG_DEBUG("MKLMulticlassGradient::computeweights(...): pnorm %f\n",pnorm)
 
 	std::vector<float64_t> initw(weights2);
 	linesearch2(weights2,initw);
 
-	SG_SINFO("MKLMulticlassGradient::computeweights(...): newweights \n")
+	SG_INFO("MKLMulticlassGradient::computeweights(...): newweights \n")
 	for(size_t i=0;i<weights2.size();++i)
 	{
-		SG_SINFO(" %f",weights2[i])
+		SG_INFO(" %f",weights2[i])
 	}
-	SG_SINFO(" \n")
+	SG_INFO(" \n")
 
 	/*
 	   int maxnumlinesrch=15;
@@ -489,14 +489,14 @@ void MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2)
 	   }
 	// for(size_t i=0;i<weights2.size();++i)
 	// {
-	//    SG_SINFO("MKLMulticlassGradient::computeweights(...): oldweights %f\n",initw[i])
+	//    SG_INFO("MKLMulticlassGradient::computeweights(...): oldweights %f\n",initw[i])
 	//	}
-	SG_SINFO("MKLMulticlassGradient::computeweights(...): newweights at iter %d normdiff %f\n",numiter,norm)
+	SG_INFO("MKLMulticlassGradient::computeweights(...): newweights at iter %d normdiff %f\n",numiter,norm)
 	for(size_t i=0;i<weights2.size();++i)
 	{
-	SG_SINFO(" %f",weights2[i])
+	SG_INFO(" %f",weights2[i])
 	}
-	SG_SINFO(" \n")
+	SG_INFO(" \n")
 	}
 	while(false==finished);
 	*/

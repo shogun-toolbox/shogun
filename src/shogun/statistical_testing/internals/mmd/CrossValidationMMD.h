@@ -174,12 +174,12 @@ struct CrossValidationMMD : PermutationMMD
 					}
 
 					std::sort(null_samples.data(), null_samples.data()+null_samples.size());
-					SG_SDEBUG("statistic=%f\n", statistic);
+					SG_DEBUG("statistic=%f\n", statistic);
 					float64_t idx=null_samples.find_position_to_insert(statistic);
-					SG_SDEBUG("index=%f\n", idx);
+					SG_DEBUG("index=%f\n", idx);
 					auto p_value=1.0-idx/m_num_null_samples;
 					bool rejected=p_value<m_alpha;
-					SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
+					SG_DEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
 					m_rejections(current_run*m_num_folds+current_fold, k)=rejected;
 
 					m_n_x=orig_n_x;

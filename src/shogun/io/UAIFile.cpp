@@ -174,7 +174,7 @@ SET_VECTOR(SCNu16, uint16_t)
 void CUAIFile::parse()
 {
     if (!file)
-        SG_SERROR("No file specified");
+        SG_ERROR("No file specified");
 
     SGVector<char> line, n_type;
 
@@ -215,7 +215,7 @@ void CUAIFile::parse()
         SGVector<float64_t> data;
         get_vector(data.vector, data.vlen);
         if (data_size != data.vlen)
-            SG_SERROR("Data size mismatch. Expected %d size data; \
+            SG_ERROR("Data size mismatch. Expected %d size data; \
                 got %d size data\n", data_size, data.vlen);
         m_factors_table[i] = data;
     }

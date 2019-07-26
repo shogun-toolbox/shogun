@@ -52,7 +52,7 @@ namespace shogun
 		/** print result */
 		virtual void print_result()
 		{
-			SG_SPRINT("%f+-%f\n", mean, std_dev);
+			SG_PRINT("%f+-%f\n", mean, std_dev);
 		}
 
 		/**

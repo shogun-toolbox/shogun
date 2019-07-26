@@ -192,9 +192,9 @@ SGVector<float64_t> CFactorGraph::evaluate_energies() const
 		etable[ei] = evaluate_energy(assig);
 
 		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi)
-			SG_SPRINT("%d ", assig[vi]);
+			SG_PRINT("%d ", assig[vi]);
 
-		SG_SPRINT("| %f\n", etable[ei]);
+		SG_PRINT("| %f\n", etable[ei]);
 	}
 
 	return etable;

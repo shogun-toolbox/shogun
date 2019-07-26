@@ -72,7 +72,7 @@ struct Block
 		m_row_size(row_size), m_col_size(col_size)
 	{
 		if (matrix.on_gpu())
-			SG_SERROR("Matrix block is currently not supported for GPU matrices.\n");
+			SG_ERROR("Matrix block is currently not supported for GPU matrices.\n");
 	}
 
 	/** the matrix on which the block is defined */

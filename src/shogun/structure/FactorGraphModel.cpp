@@ -201,7 +201,7 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 		return;
 
 	if (m_verbose)
-		SG_SPRINT("****** update m_w_cache!\n");
+		SG_PRINT("****** update m_w_cache!\n");
 
 	ASSERT(w.size() == m_w_cache.size());
 	m_w_cache = w.clone();
@@ -292,7 +292,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	}
 
 	if (m_verbose)
-		SG_SPRINT("\n------ example %d\n", feat_idx);
+		SG_PRINT("\n------ example %d\n", feat_idx);
 
 	// update factor parameters
 	w_to_fparams(w);
@@ -300,7 +300,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 	if (m_verbose)
 	{
-		SG_SPRINT("energy table before loss-aug:\n");
+		SG_PRINT("energy table before loss-aug:\n");
 		fg->evaluate_energies();
 	}
 
@@ -326,7 +326,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 		if (m_verbose)
 		{
-			SG_SPRINT("energy table after loss-aug:\n");
+			SG_PRINT("energy table after loss-aug:\n");
 			fg->evaluate_energies();
 		}
 	}
@@ -350,20 +350,20 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 		float64_t dot_truth = linalg::dot(w, ret->psi_truth);
 		float64_t slack =  dot_pred + ret->delta - dot_truth;
 
-		SG_SPRINT("\n");
+		SG_PRINT("\n");
 		w.display_vector("w");
 
 		ret->psi_pred.display_vector("psi_pred");
 		states_star.display_vector("state_pred");
 
-		SG_SPRINT("dot_pred = %f, energy_pred = %f, delta = %f\n\n", dot_pred, l_energy_pred, ret->delta);
+		SG_PRINT("dot_pred = %f, energy_pred = %f, delta = %f\n\n", dot_pred, l_energy_pred, ret->delta);
 
 		ret->psi_truth.display_vector("psi_truth");
 		states_gt.display_vector("state_gt");
 
-		SG_SPRINT("dot_truth = %f, energy_gt = %f\n\n", dot_truth, energy_gt);
+		SG_PRINT("dot_truth = %f, energy_gt = %f\n\n", dot_truth, energy_gt);
 
-		SG_SPRINT("slack = %f, score = %f\n\n", slack, ret->score);
+		SG_PRINT("slack = %f, score = %f\n\n", slack, ret->score);
 	}
 
 	SG_UNREF(y_truth);

@@ -220,7 +220,7 @@ template <class ST>
 CFeatures*
 CFeatureSelection<ST>::inverse_transform(CFeatures* features, bool inplace)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 
 	return nullptr;
 }

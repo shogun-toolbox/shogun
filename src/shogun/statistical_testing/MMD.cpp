@@ -55,7 +55,7 @@ EStatisticType statistic_type(machine_int_t method)
 		return ST_BIASED_FULL;
 	else
 	{
-		SG_SERROR("Unknown statistic type %d.\n", method);
+		SG_ERROR("Unknown statistic type %d.\n", method);
 		return ST_UNBIASED_FULL;
 	}
 }
@@ -68,7 +68,7 @@ EVarianceEstimationMethod variance_estimation_method(machine_int_t method)
 		return VEM_PERMUTATION;
 	else
 	{
-		SG_SERROR("Unknown variance estimation method %d.\n", method);
+		SG_ERROR("Unknown variance estimation method %d.\n", method);
 		return VEM_PERMUTATION;
 	}
 }
@@ -85,7 +85,7 @@ ENullApproximationMethod null_approximation_method(machine_int_t method)
 		return NAM_MMD2_GAMMA;
 	else
 	{
-		SG_SERROR("Unknown null approximation method %d.\n", method);
+		SG_ERROR("Unknown null approximation method %d.\n", method);
 		return NAM_MMD2_GAMMA;
 	}
 }
@@ -103,7 +103,7 @@ EKernelSelectionMethod kernel_selection_method(machine_int_t method)
 		return KSM_CROSS_VALIDATION;
 	else
 	{
-		SG_SERROR("Unknown kernel selection method %d.\n", method);
+		SG_ERROR("Unknown kernel selection method %d.\n", method);
 		return KSM_AUTO;
 	}
 }

@@ -174,7 +174,7 @@ void LinalgBackendEigen::svd_impl(
 #if	(defined(__arm__) || defined (__thumb__) || defined(__TARGET_ARCH_ARM) ||	\
 	 defined(__TARGET_ARCH_THUMB) || defined (_ARM) || defined(_M_ARM) ||		\
 	 defined(_M_ARMT) || defined(__arm)) && !defined(__aarch64__)
-		SG_SWARNING(
+		SG_WARNING(
 		    "BDC-SVD is not supported on 32 Bit ARM hardware.\n"
 		    "Falling back on Jacobi-SVD.\n")
 #elif EIGEN_VERSION_AT_LEAST(3, 3, 0)
@@ -184,7 +184,7 @@ void LinalgBackendEigen::svd_impl(
 		U_eig = svd_eig.matrixU().template cast<T>();
 		break;
 #else
-		SG_SWARNING(
+		SG_WARNING(
 		    "At least Eigen 3.3 is required for BDC-SVD.\n"
 		    "Falling back on Jacobi-SVD.\n")
 #endif

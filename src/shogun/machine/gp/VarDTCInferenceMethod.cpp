@@ -116,7 +116,7 @@ CVarDTCInferenceMethod* CVarDTCInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_SPARSE_REGRESSION)
-		SG_SERROR("Provided inference is not of type CVarDTCInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CVarDTCInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CVarDTCInferenceMethod*)inference;

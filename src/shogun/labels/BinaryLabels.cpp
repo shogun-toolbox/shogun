@@ -151,12 +151,12 @@ namespace shogun
 			case LT_BINARY:
 				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
 			default:
-				SG_SNOTIMPLEMENTED
+				SG_NOTIMPLEMENTED
 			}
 		}
 		catch (const ShogunException& e)
 		{
-			SG_SERROR(
+			SG_ERROR(
 			    "Cannot convert %s to binary labels: %s\n", orig->get_name(),
 			    e.what());
 		}

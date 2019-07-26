@@ -58,19 +58,19 @@ int main(int argc, const char *argv[])
 		env()->io()->set_loglevel(MSG_DEBUG);
 		if (!loaded_equals_ref)
 		{
-			SG_SDEBUG(
+			SG_DEBUG(
 				"Test input different from reference input for %s\n",
 				a->get_name());
 			a->equals(a_ref);
 		}
 		else
 		{
-			SG_SDEBUG(
+			SG_DEBUG(
 				"Reference input different from test input for %s.\n",
 				a->get_name());
 			a_ref->equals(a);
 		}
-		SG_SDEBUG(
+		SG_DEBUG(
 			"For details, run: diff %s %s\n", fname_full_generated.c_str(),
 			fname_full_reference.c_str());
 	}

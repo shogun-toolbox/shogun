@@ -86,7 +86,7 @@ void CKernelPCA::fit(CFeatures* features)
 	ASSERT(n == m)
 	if (m_target_dim > n)
 	{
-		SG_SWARNING(
+		SG_WARNING(
 		    "Target dimension (%d) is not a valid value, it must be"
 		    "less or equal than the number of vectors."
 		    "Setting it to maximum allowed size (%d).",

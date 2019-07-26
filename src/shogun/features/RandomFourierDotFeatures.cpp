@@ -100,7 +100,7 @@ SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector(
 			break;
 
 		default:
-			SG_SERROR("Unknown kernel\n");
+			SG_ERROR("Unknown kernel\n");
 	}
 	return vec;
 }

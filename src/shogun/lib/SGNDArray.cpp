@@ -156,14 +156,14 @@ SGNDArray<T>& SGNDArray<T>::operator*=(T val)
 template<>
 SGNDArray<bool>& SGNDArray<bool>::operator*=(bool val)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return (*this);
 }
 
 template<>
 SGNDArray<char>& SGNDArray<char>::operator*=(char val)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return (*this);
 }
 
@@ -184,14 +184,14 @@ SGNDArray<T>& SGNDArray<T>::operator+=(SGNDArray& ndarray)
 template<>
 SGNDArray<bool>& SGNDArray<bool>::operator+=(SGNDArray& ndarray)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return (*this);
 }
 
 template<>
 SGNDArray<char>& SGNDArray<char>::operator+=(SGNDArray& ndarray)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return (*this);
 }
 
@@ -212,14 +212,14 @@ SGNDArray<T>& SGNDArray<T>::operator-=(SGNDArray& ndarray)
 template<>
 SGNDArray<bool>& SGNDArray<bool>::operator-=(SGNDArray& ndarray)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return (*this);
 }
 
 template<>
 SGNDArray<char>& SGNDArray<char>::operator-=(SGNDArray& ndarray)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return (*this);
 }
 
@@ -246,14 +246,14 @@ T SGNDArray<T>::max_element(int32_t &max_at)
 template<>
 bool SGNDArray<bool>::max_element(int32_t &max_at)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return false;
 }
 
 template<>
 char SGNDArray<char>::max_element(int32_t &max_at)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return '\0';
 }
 

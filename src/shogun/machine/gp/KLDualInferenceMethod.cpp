@@ -158,7 +158,7 @@ float64_t CKLDualInferenceMethodMinimizer::minimize()
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
-	  SG_SWARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
+	  SG_WARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
 		  error_code);
 	}
 	return cost;
@@ -227,7 +227,7 @@ CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
 
 	if (inference->get_inference_type()!=INF_KL_DUAL)
 	{
-		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n");
+		SG_ERROR("Provided inference is not of type CKLDualInferenceMethod!\n");
 	}
 
 	SG_REF(inference);

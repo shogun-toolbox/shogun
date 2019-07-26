@@ -100,7 +100,7 @@ class CList : public CSGObject
 
 		virtual ~CList()
 		{
-			SG_DEBUG("Destroying List %p\n", this)
+			SG_DEBUG("Destroying List %p\n", fmt::ptr(this))
 
 			delete_all_elements();
 		}
@@ -503,7 +503,7 @@ class CList : public CSGObject
 				if (delete_data)
 				{
 					SG_GCDEBUG("Decreasing refcount of %s(%p)!\n",
-							data->get_name(), data);
+							data->get_name(), fmt::ptr(data));
 					SG_UNREF(data);
 				}
 
@@ -557,7 +557,7 @@ class CList : public CSGObject
 
 			while (c)
 			{
-				SG_PRINT("\"%s\" at %p\n", c->data ? c->data->get_name() : "", c->data)
+				SG_PRINT("\"%s\" at %p\n", c->data ? c->data->get_name() : "", fmt::ptr(c->data))
 				c=c->next;
 			}
 		}

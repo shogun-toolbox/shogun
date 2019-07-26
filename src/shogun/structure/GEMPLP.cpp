@@ -190,7 +190,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 	        "the same size as variables!\n", get_name());
 
 	// iterate over message loop
-	SG_SDEBUG("Running MPLP for %d iterations\n",  m_param.m_max_iter);
+	SG_DEBUG("Running MPLP for %d iterations\n",  m_param.m_max_iter);
 
 	float64_t last_obj = CMath::INFTY;
 
@@ -244,7 +244,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 		float64_t obj_del = last_obj - obj;
 		float64_t int_gap = obj - int_val;
 
-		SG_SDEBUG("Iter= %d Objective=%f ObjBest=%f ObjDel=%f Gap=%f \n", (it + 1), obj, int_val, obj_del, int_gap);
+		SG_DEBUG("Iter= %d Objective=%f ObjBest=%f ObjDel=%f Gap=%f \n", (it + 1), obj, int_val, obj_del, int_gap);
 
 		if (obj_del < m_param.m_obj_del_thr && it > 16)
 			break;

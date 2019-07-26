@@ -29,7 +29,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 		{
 			if (D(j,j) < 0)
 			{
-				SG_SERROR("Input Matrix %d is not Positive-definite\n", i)
+				SG_ERROR("Input Matrix %d is not Positive-definite\n", i)
 			}
 		}
 	}
@@ -59,7 +59,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	{
 		if(logdet == 0)// is NA
 		{
-			SG_SERROR("log det does not exist\n")
+			SG_ERROR("log det does not exist\n")
 			break;
 		}
 
@@ -76,7 +76,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	}
 
 	if (iter == itermax)
-		SG_SERROR("Convergence not reached\n")
+		SG_ERROR("Convergence not reached\n")
 
 	return V;
 

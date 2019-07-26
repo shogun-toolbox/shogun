@@ -76,7 +76,7 @@ CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
-		SG_SERROR("Provided inference is not of type CKLDiagonalInferenceMethod!\n")
+		SG_ERROR("Provided inference is not of type CKLDiagonalInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CKLDiagonalInferenceMethod*)inference;

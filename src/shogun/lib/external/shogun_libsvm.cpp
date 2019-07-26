@@ -486,7 +486,7 @@ void Solver::Solve(
 			G[i] = p_p[i];
 			G_bar[i] = 0;
 		}
-		SG_SINFO("Computing gradient for initial set of non-zero alphas\n")
+		SG_INFO("Computing gradient for initial set of non-zero alphas\n")
 		//CMath::display_vector(alpha, l, "alphas");
 		for (i = 0; i < l && !cancel_computation(); i++)
 		{
@@ -522,7 +522,7 @@ void Solver::Solve(
 		{
 			counter = CMath::min(l,1000);
 			if(shrinking) do_shrinking();
-			//SG_SINFO(".")
+			//SG_INFO(".")
 		}
 
 		int32_t i,j;
@@ -533,7 +533,7 @@ void Solver::Solve(
 			reconstruct_gradient();
 			// reset active set size and check
 			active_size = l;
-			//SG_SINFO("*")
+			//SG_INFO("*")
 			if(select_working_set(i,j, gap)!=0)
 				break;
 			else
@@ -715,7 +715,7 @@ void Solver::Solve(
 
 			float64_t primal=0;
 			//float64_t gap=100000;
-			SG_SPRINT("dual obj=%f primal obf=%f gap=%f\n", v/2, primal, gap)
+			SG_PRINT("dual obj=%f primal obf=%f gap=%f\n", v/2, primal, gap)
 		}
 #endif
 	}
@@ -747,7 +747,7 @@ void Solver::Solve(
 	p_si->upper_bound_p = Cp;
 	p_si->upper_bound_n = Cn;
 
-	SG_SINFO("\noptimization finished, #iter = %d\n",iter)
+	SG_INFO("\noptimization finished, #iter = %d\n",iter)
 
 	SG_FREE(p);
 	SG_FREE(y);
@@ -1415,7 +1415,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	//CMath::display_vector(class_count, nr_class, "class_count");
 
 	float64_t mu=((float64_t) nr_class)/(nu*l);
-	//SG_SPRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu)
+	//SG_PRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu)
 
 	float64_t rho=0;
 	float64_t quad=0;
@@ -1484,7 +1484,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 
 	rho/=nr_class;
 
-	SG_SPRINT("rho=%f\n", rho)
+	SG_PRINT("rho=%f\n", rho)
 
 	float64_t sumb=0;
 	for (int32_t i=0; i<nr_class; i++)
@@ -1494,11 +1494,11 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 		else
 			biases[i+1]+=rho-zero_counts[i];
 
-		SG_SPRINT("biases=%f\n", biases[i+1])
+		SG_PRINT("biases=%f\n", biases[i+1])
 
 		sumb+=biases[i+1];
 	}
-	SG_SPRINT("sumb=%f\n", sumb)
+	SG_PRINT("sumb=%f\n", sumb)
 
 	SG_FREE(zero_counts);
 
@@ -1518,13 +1518,13 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 		xi+=rho-outputs[i];
 	}
 
-	//SG_SPRINT("xi=%f\n", xi)
+	//SG_PRINT("xi=%f\n", xi)
 
-	//SG_SPRINT("quad=%f Cp=%f xi*mu=%f\n", quad, nr_class*rho, xi*mu)
+	//SG_PRINT("quad=%f Cp=%f xi*mu=%f\n", quad, nr_class*rho, xi*mu)
 
 	float64_t primal=0.5*quad- nr_class*rho+xi*mu;
 
-	//SG_SPRINT("primal=%10.10f\n", primal)
+	//SG_PRINT("primal=%10.10f\n", primal)
 
 	SG_FREE(y);
 	SG_FREE(alpha);
@@ -1625,7 +1625,7 @@ int32_t Solver_NUMC::select_working_set(
 	out_i=best_out_i;
 	out_j=best_out_j;
 
-	SG_SDEBUG("i=%d j=%d best_gap=%f y_i=%f y_j=%f\n", out_i, out_j, gap, y[out_i], y[out_j])
+	SG_DEBUG("i=%d j=%d best_gap=%f y_i=%f y_j=%f\n", out_i, out_j, gap, y[out_i], y[out_j])
 
 
 	if(gap < eps)
@@ -1853,7 +1853,7 @@ static void solve_c_svc(
 		sum_alpha += alpha[i];
 
 	if (Cp==Cn)
-		SG_SINFO("nu = %f\n", sum_alpha/(param->C*prob->l))
+		SG_INFO("nu = %f\n", sum_alpha/(param->C*prob->l))
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1889,7 +1889,7 @@ void solve_c_svc_weighted(
 		sum_alpha += alpha[i];
 
 	//if (Cp==Cn)
-	//	SG_SINFO("nu = %f\n", sum_alpha/(prob->C*prob->l))
+	//	SG_INFO("nu = %f\n", sum_alpha/(prob->C*prob->l))
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1939,7 +1939,7 @@ static void solve_nu_svc(
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking, param->use_bias);
 	float64_t r = si->r;
 
-	SG_SINFO("C = %f\n",1/r)
+	SG_INFO("C = %f\n",1/r)
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i]/r;
@@ -2022,9 +2022,9 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	if (param->use_bias)
 	{
-		SG_SDEBUG("Computing biases and primal objective\n")
+		SG_DEBUG("Computing biases and primal objective\n")
 		float64_t primal = s.compute_primal(y, alpha, model->rho, model->normwcw);
-		SG_SINFO("Primal = %10.10f\n", primal)
+		SG_INFO("Primal = %10.10f\n", primal)
 	}
 
 	for (int32_t i=0; i<nr_class; i++)
@@ -2114,7 +2114,7 @@ static void solve_epsilon_svr(
 		alpha[i] = alpha2[i] - alpha2[i+l];
 		sum_alpha += fabs(alpha[i]);
 	}
-	SG_SINFO("nu = %f\n",sum_alpha/(param->C*l))
+	SG_INFO("nu = %f\n",sum_alpha/(param->C*l))
 
 	SG_FREE(alpha2);
 	SG_FREE(linear_term);
@@ -2149,7 +2149,7 @@ static void solve_nu_svr(
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, C, param->eps, si, param->shrinking, param->use_bias);
 
-	SG_SINFO("epsilon = %f\n",-si->r)
+	SG_INFO("epsilon = %f\n",-si->r)
 
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
@@ -2194,7 +2194,7 @@ decision_function svm_train_one(
 			break;
 	}
 
-	SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho)
+	SG_INFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho)
 
 	// output SVs
 	if (param->svm_type != ONE_CLASS)
@@ -2218,7 +2218,7 @@ decision_function svm_train_one(
 				}
 			}
 		}
-		SG_SINFO("nSV = %d, nBSV = %d\n",nSV,nBSV)
+		SG_INFO("nSV = %d, nBSV = %d\n",nSV,nBSV)
 	}
 
 	decision_function f;
@@ -2304,7 +2304,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
 	{
-		SG_SINFO("training one class svm or doing epsilon sv regression\n")
+		SG_INFO("training one class svm or doing epsilon sv regression\n")
 
 		// regression or one-class-svm
 		model->nr_class = 2;
@@ -2338,7 +2338,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	{
 		Solver::SolutionInfo si;
 		solve_nu_multiclass_svc(prob,param,&si,model);
-		SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho)
+		SG_INFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho)
 	}
 	else
 	{
@@ -2386,7 +2386,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				if(param->weight_label[i] == label[j])
 					break;
 			if(j == nr_class)
-				SG_SWARNING("warning: class label %d specified in weight is not found\n", param->weight_label[i])
+				SG_WARNING("warning: class label %d specified in weight is not found\n", param->weight_label[i])
 			else
 				weighted_C[j] *= param->weight[i];
 		}
@@ -2474,7 +2474,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			nz_count[i] = nSV;
 		}
 
-		SG_SINFO("Total nSV = %d\n",total_sv)
+		SG_INFO("Total nSV = %d\n",total_sv)
 
 		model->l = total_sv;
 		model->SV = SG_MALLOC(svm_node *,total_sv);

@@ -57,7 +57,7 @@ SGVector<float64_t> MaxMeasure::get_measure_vector()
 
 SGMatrix<float64_t> MaxMeasure::get_measure_matrix()
 {
-	SG_SNOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED;
 	return SGMatrix<float64_t>();
 }
 
@@ -99,6 +99,6 @@ CKernel* MaxMeasure::select_kernel()
 	ASSERT(measures.size()==kernel_mgr.num_kernels());
 	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
 	auto max_idx=std::distance(measures.vector, max_element);
-	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);
+	SG_DEBUG("Selected kernel at %d position!\n", max_idx);
 	return kernel_mgr.kernel_at(max_idx);
 }

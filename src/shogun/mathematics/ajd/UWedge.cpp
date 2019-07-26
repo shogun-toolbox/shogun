@@ -111,7 +111,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 
 	if (iter == itermax)
 	{
-		SG_SWARNING(
+		SG_WARNING(
 		    "Convergence delta (%f) not below tolerance (%f) after %d "
 		    "iterations.\n",
 		    improve, eps, itermax);
