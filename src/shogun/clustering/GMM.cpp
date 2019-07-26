@@ -325,11 +325,6 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						set_comp(candidate->get_comp());
 						set_coef(candidate->get_coef());
 
-						for (int32_t k=0; k<int32_t(candidate->get_comp().size()); k++)
-						{
-							SG_UNREF(candidate->get_comp()[k]);
-						}
-
 						better_found=true;
 						delete candidate;
 						break;
