@@ -413,7 +413,7 @@ void CSVMLight::svm_learn()
 	}
 
   /* compute starting state for initial alpha values */
-	SG_DEBUG("alpha:%d num_sv:%d\n", m_alpha.vector, get_num_support_vectors())
+	SG_DEBUG("alpha:%p num_sv:%d\n", fmt::ptr(m_alpha.vector), get_num_support_vectors())
 
 	if(m_alpha.vector && get_num_support_vectors()) {
 		if(verbosity>=1) {

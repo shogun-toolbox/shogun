@@ -110,7 +110,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				    "match - bailing out\n")
 			}
 
-			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
+			SG_DEBUG("Initializing 0x%p - \"%s\"\n", fmt::ptr(this), k->get_name())
 			result = k->init(lf, rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
@@ -123,7 +123,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 			SG_DEBUG(
 			    "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM "
 			    "kernel)\n",
-			    this, k->get_name())
+			    fmt::ptr(this), k->get_name())
 			if (!k->has_features())
 				SG_ERROR(
 				    "No kernel matrix was assigned to this Custom kernel\n")
@@ -373,14 +373,14 @@ bool CCombinedKernel::init_optimization(
 			ret=k->init_optimization(count, IDX, weights);
 		else
 		{
-			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", k)
+			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", fmt::ptr(k))
 			have_non_optimizable=true;
 		}
 
 		if (!ret)
 		{
 			have_non_optimizable=true;
-			SG_WARNING("init_optimization of kernel 0x%X failed\n", k)
+			SG_WARNING("init_optimization of kernel 0x%X failed\n", fmt::ptr(k))
 		}
 
 		SG_UNREF(k);

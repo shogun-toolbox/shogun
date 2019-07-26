@@ -22,18 +22,18 @@ namespace shogun
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
 	: CIterativeLinearSolver<complex128_t, float64_t>()
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver(bool store_residuals)
 	: CIterativeLinearSolver<complex128_t, float64_t>(store_residuals)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(

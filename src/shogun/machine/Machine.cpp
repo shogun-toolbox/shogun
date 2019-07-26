@@ -36,7 +36,7 @@ bool CMachine::train(CFeatures* data)
 	if (train_require_labels())
 	{
 		if (m_labels == NULL)
-			SG_ERROR("%s@%p: No labels given", get_name(), this)
+			SG_ERROR("%s@%p: No labels given", get_name(), fmt::ptr(this))
 
 		m_labels->ensure_valid(get_name());
 	}
@@ -116,7 +116,7 @@ ESolverType CMachine::get_solver_type()
 CLabels* CMachine::apply(CFeatures* data)
 {
 	SG_DEBUG("entering %s::apply(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CLabels* result=NULL;
 
@@ -143,7 +143,7 @@ CLabels* CMachine::apply(CFeatures* data)
 	}
 
 	SG_DEBUG("leaving %s::apply(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return result;
 }

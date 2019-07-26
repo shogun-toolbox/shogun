@@ -121,9 +121,9 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes)
 	for (uint32_t i=0; i<num_cut_planes; i++)
 	{
-		SG_DEBUG("cp_value[%d]=%p\n", i, cp_value)
+		SG_DEBUG("cp_value[%d]=%p\n", i, fmt::ptr(cp_value))
 		SG_FREE(cp_value[i]);
-		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index)
+		SG_DEBUG("cp_index[%d]=%p\n", i, fmt::ptr(cp_index))
 		SG_FREE(cp_index[i]);
 	}
 

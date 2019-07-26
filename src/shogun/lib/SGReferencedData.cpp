@@ -46,7 +46,7 @@ int32_t SGReferencedData::ref_count()
 	int32_t c = m_refcount->ref_count();
 
 #ifdef DEBUG_SGVECTOR
-	SG_GCDEBUG("ref_count(): refcount %d, data %p\n", c, this)
+	SG_GCDEBUG("ref_count(): refcount %d, data %p\n", c, fmt::ptr(this))
 #endif
 	return c;
 }
@@ -71,7 +71,7 @@ int32_t SGReferencedData::ref()
 	int32_t c = m_refcount->ref();
 
 #ifdef DEBUG_SGVECTOR
-	SG_GCDEBUG("ref() refcount %ld data %p increased\n", c, this)
+	SG_GCDEBUG("ref() refcount %ld data %p increased\n", c, fmt::ptr(this))
 #endif
 	return c;
 }
@@ -95,7 +95,7 @@ int32_t SGReferencedData::unref()
 	if (c<=0)
 	{
 #ifdef DEBUG_SGVECTOR
-		SG_GCDEBUG("unref() refcount %d data %p destroying\n", c, this)
+		SG_GCDEBUG("unref() refcount %d data %p destroying\n", c, fmt::ptr(this))
 #endif
 		free_data();
 		delete m_refcount;
@@ -105,7 +105,7 @@ int32_t SGReferencedData::unref()
 	else
 	{
 #ifdef DEBUG_SGVECTOR
-		SG_GCDEBUG("unref() refcount %d data %p decreased\n", c, this)
+		SG_GCDEBUG("unref() refcount %d data %p decreased\n", c, fmt::ptr(this))
 #endif
 		init_data();
 		m_refcount=NULL;

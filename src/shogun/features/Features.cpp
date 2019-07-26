@@ -40,7 +40,7 @@ CFeatures::CFeatures(CFile* loader)
 	init();
 
 	load(loader);
-	SG_INFO("Feature object loaded (%p)\n",this)
+	SG_INFO("Feature object loaded (%p)\n",fmt::ptr(this))
 }
 
 CFeatures::~CFeatures()
@@ -128,7 +128,7 @@ bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
 
 void CFeatures::list_feature_obj() const
 {
-	SG_INFO("%p - ", this)
+	SG_INFO("%p - ", fmt::ptr(this))
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:

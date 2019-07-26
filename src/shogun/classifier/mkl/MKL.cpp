@@ -238,7 +238,7 @@ public:
 
 CMKL::CMKL(CSVM* s) : CSVM()
 {
-	SG_DEBUG("creating MKL object %p\n", this)
+	SG_DEBUG("creating MKL object %p\n", fmt::ptr(this))
 	register_params();
 	set_constraint_generator(s);
 	self->init();
@@ -249,7 +249,7 @@ CMKL::~CMKL()
 	// -- Delete beta_local for ElasticnetMKL
 	SG_FREE(beta_local);
 
-	SG_DEBUG("deleting MKL object %p\n", this)
+	SG_DEBUG("deleting MKL object %p\n", fmt::ptr(this))
 	if (svm)
 		svm->set_callback_function(NULL, NULL);
 	SG_UNREF(svm);
@@ -356,7 +356,7 @@ bool CMKL::train_machine(CFeatures* data)
 	if (m_labels)
 		num_label = m_labels->get_num_labels();
 
-	SG_INFO("%d trainlabels (%ld)\n", num_label, m_labels)
+	SG_INFO("%d trainlabels (%ld)\n", num_label, fmt::ptr(m_labels))
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 

@@ -569,7 +569,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		params_output[t].start = step*t;
 		params_output[t].end = step*(t+1);
 
-		//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
+		//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output))
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
 		{
 			nthreads=t;
@@ -585,7 +585,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	params_output[t].start = step*t;
 	params_output[t].end = nData;
 	compute_output_helper(&params_output[t]);
-	//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
+	//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output))
 
 	for (t=0; t<nthreads; t++)
 	{

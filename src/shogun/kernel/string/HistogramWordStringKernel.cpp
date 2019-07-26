@@ -63,7 +63,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ASSERT(l)
 	ASSERT(r)
 
-	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", l, r)
+	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", fmt::ptr(l), fmt::ptr(r))
 	int32_t i;
 	initialized=false;
 

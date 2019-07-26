@@ -285,7 +285,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	result=SG_MALLOC(T, total_num);
 
 	PRange<int64_t> pb = PRange<int64_t>(
-	    range(total_num), *this->io, "PROGRESS: ", UTF8, []() { return true; });
+	    range(total_num), *env()->io(), "PROGRESS: ", UTF8, []() { return true; });
 	int32_t num_threads;
 	int64_t step;
 	#pragma omp parallel shared(num_threads, step)

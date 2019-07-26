@@ -91,8 +91,8 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
 	//make sure features were indeed supplied
-	REQUIRE(l, "CKernel::init(%p, %p): Left hand side features required!\n", l, r)
-	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", l, r)
+	REQUIRE(l, "CKernel::init(%p, %p): Left hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
+	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
 
 	//make sure features are compatible
 	if (l->support_compatible_class())
@@ -127,7 +127,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
 
-	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l, r)
+	SG_DEBUG("leaving CKernel::init(%p, %p)\n", fmt::ptr(l), fmt::ptr(r))
 	return true;
 }
 
@@ -666,7 +666,7 @@ void CKernel::remove_rhs()
 
 void CKernel::list_kernel()
 {
-	SG_INFO("%p - \"%s\" weight=%1.2f OPT:%s", this, get_name(),
+	SG_INFO("%p - \"%s\" weight=%1.2f OPT:%s", fmt::ptr(this), get_name(),
 			get_combined_kernel_weight(),
 			get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" :
 			"SLOWBUTMEMEFFICIENT");

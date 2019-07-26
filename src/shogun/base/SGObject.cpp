@@ -222,10 +222,9 @@ using namespace shogun;
 CSGObject::CSGObject() : self(), param_obs_list()
 {
 	init();
-	set_global_objects();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject created (%p)\n", this)
+	SG_GCDEBUG("SGObject created (%p)\n", fmt::ptr(this))
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
@@ -234,12 +233,12 @@ CSGObject::CSGObject(const CSGObject& orig)
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject copied (%p)\n", this)
+	SG_GCDEBUG("SGObject copied (%p)\n", fmt::ptr(this))
 }
 
 CSGObject::~CSGObject()
 {
-	SG_GCDEBUG("SGObject destroyed (%p)\n", this)
+	SG_GCDEBUG("SGObject destroyed (%p)\n", fmt::ptr(this))
 
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -253,14 +252,14 @@ CSGObject::~CSGObject()
 int32_t CSGObject::ref()
 {
 	int32_t count = m_refcount->ref();
-	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
+	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), fmt::ptr(this))
 	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::ref_count()
 {
 	int32_t count = m_refcount->ref_count();
-	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
+	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), fmt::ptr(this))
 	return m_refcount->ref_count();
 }
 
@@ -269,13 +268,13 @@ int32_t CSGObject::unref()
 	int32_t count = m_refcount->unref();
 	if (count<=0)
 	{
-		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), this)
+		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), fmt::ptr(this))
 		delete this;
 		return 0;
 	}
 	else
 	{
-		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), this)
+		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), fmt::ptr(this))
 		return m_refcount->ref_count();
 	}
 }
@@ -362,8 +361,6 @@ void CSGObject::save_serializable_post() noexcept(false)
 
 void CSGObject::init()
 {
-
-	io = NULL;
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();
@@ -445,10 +442,10 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 
 CSGObject* CSGObject::clone(ParameterProperties pp) const
 {
-	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), this);
+	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), fmt::ptr(this));
 	SG_DEBUG("Constructing an empty instance of %s.\n", get_name());
 	CSGObject* clone = create_empty();
-	SG_DEBUG("Empty instance of %s created at %p.\n", get_name(), clone);
+	SG_DEBUG("Empty instance of %s created at %p.\n", get_name(), fmt::ptr(clone));
 
 	REQUIRE(
 	    clone, "Could not create empty instance of %s. The reason for "
@@ -478,7 +475,7 @@ CSGObject* CSGObject::clone(ParameterProperties pp) const
 		clone->get_parameter(tag).get_value().clone_from(own);
 	}
 
-	SG_DEBUG("Done cloning %s at %p, new object at %p.\n", get_name(), this, clone);
+	SG_DEBUG("Done cloning %s at %p, new object at %p.\n", get_name(), fmt::ptr(this), fmt::ptr(clone));
 	return clone;
 }
 

@@ -44,7 +44,7 @@ CWeightedDegreeRBFKernel::~CWeightedDegreeRBFKernel()
 bool CWeightedDegreeRBFKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
-	SG_DEBUG("Initialized WeightedDegreeRBFKernel (%p).\n", this)
+	SG_DEBUG("Initialized WeightedDegreeRBFKernel (%p).\n", fmt::ptr(this))
 	return init_normalizer();
 }
 
@@ -66,7 +66,7 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 		for (i=0; i<degree; i++)
 			weights[i]/=sum;
 
-		SG_DEBUG("Initialized weights for WeightedDegreeRBFKernel (%p).\n", this)
+		SG_DEBUG("Initialized weights for WeightedDegreeRBFKernel (%p).\n", fmt::ptr(this))
 		return true;
 	}
 	else

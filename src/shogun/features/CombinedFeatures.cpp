@@ -243,7 +243,7 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 			current->add_subset(subset);
 			processed->add(current);
 			SG_DEBUG("adding subset to %s at %p\n",
-					current->get_name(), current);
+					current->get_name(), fmt::ptr(current));
 		}
 		SG_UNREF(current);
 	}
@@ -270,7 +270,7 @@ void CCombinedFeatures::remove_subset()
 			current->remove_subset();
 			processed->add(current);
 			SG_DEBUG("removing subset from %s at %p\n",
-					current->get_name(), current);
+					current->get_name(), fmt::ptr(current));
 		}
 		SG_UNREF(current);
 	}
@@ -297,7 +297,7 @@ void CCombinedFeatures::remove_all_subsets()
 			current->remove_all_subsets();
 			processed->add(current);
 			SG_DEBUG("removing all subsets from %s at %p\n",
-					current->get_name(), current);
+					current->get_name(), fmt::ptr(current));
 		}
 		SG_UNREF(current);
 	}

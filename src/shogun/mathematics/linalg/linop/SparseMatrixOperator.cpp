@@ -56,7 +56,7 @@ CSparseMatrixOperator<T>::CSparseMatrixOperator
 		}
 		m_operator.sparse_matrix=rows;
 
-		SG_GCDEBUG("%s deep copy created (%p)\n", this->get_name(), this);
+		SG_GCDEBUG("%s deep copy created (%p)\n", this->get_name(), fmt::ptr(this));
 	}
 
 template<class T>

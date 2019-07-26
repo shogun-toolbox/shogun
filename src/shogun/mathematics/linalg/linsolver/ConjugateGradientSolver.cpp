@@ -23,18 +23,18 @@ namespace shogun
 CConjugateGradientSolver::CConjugateGradientSolver()
 	: CIterativeLinearSolver<float64_t>()
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateGradientSolver::CConjugateGradientSolver(bool store_residuals)
 	: CIterativeLinearSolver<float64_t>(store_residuals)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateGradientSolver::~CConjugateGradientSolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<float64_t> CConjugateGradientSolver::solve(

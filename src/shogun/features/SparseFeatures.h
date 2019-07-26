@@ -410,7 +410,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			void print_info()
 			{
 				SG_PRINT("sv=%p, vidx=%d, num_feat_entries=%d, index=%d\n",
-						sv.features, vector_index, sv.num_feat_entries, index);
+						fmt::ptr(sv.features), vector_index, sv.num_feat_entries, index);
 			}
 		};
 		#endif

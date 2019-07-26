@@ -60,7 +60,7 @@ namespace shogun
 #define SG_PROGRESS(...)                                                       \
 	progress(                                                                  \
 	    std::string(this->get_name()) + "::" + std::string(__FUNCTION__),      \
-	    *this->io, __VA_ARGS__)
+	    *env()->io(), __VA_ARGS__)
 
 #define SG_SPROGRESS(...) progress(__FUNCTION__, __VA_ARGS__)
 

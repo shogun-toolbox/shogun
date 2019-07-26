@@ -85,7 +85,7 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
 	SG_DEBUG("entering %s::apply_multiclass(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CMulticlassLabels* return_labels=NULL;
 
@@ -180,7 +180,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 
 
 	SG_DEBUG("leaving %s::apply_multiclass(%s at %p)\n",
-				get_name(), data ? data->get_name() : "NULL", data);
+				get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 	return return_labels;
 }
 

@@ -362,7 +362,7 @@ template<class T>
 void SGVector<T>::display_size() const
 {
 	assert_on_cpu();
-	SG_PRINT("SGVector '%p' of size: %d\n", vector, vlen)
+	SG_PRINT("SGVector '%p' of size: %d\n", fmt::ptr(vector), vlen)
 }
 
 template<class T>

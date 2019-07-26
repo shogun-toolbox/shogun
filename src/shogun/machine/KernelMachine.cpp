@@ -254,7 +254,7 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
 	SG_DEBUG("entering %s::apply_get_outputs(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n")
 
@@ -292,10 +292,10 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	{
 		SG_DEBUG("computing output on %d test examples\n", num_vectors)
 
-		if (io->get_show_progress())
-			io->enable_progress();
+		if (env()->io()->get_show_progress())
+			env()->io()->enable_progress();
 		else
-			io->disable_progress();
+			env()->io()->disable_progress();
 
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
@@ -383,7 +383,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return output;
 }

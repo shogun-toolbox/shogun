@@ -2117,7 +2117,6 @@ void CDynProg::best_path_trans_deriv(
 				SG_PRINT("%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state)
 			}
 		}
-		io->set_loglevel(M_DEBUG) ;
 		SG_DEBUG("%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state)
 #endif
 		// increase usage of this transition

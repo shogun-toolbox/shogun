@@ -267,7 +267,7 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 		if (ex_ring[i].fv != NULL && free_vectors_on_destruct)
 		{
 			SG_DEBUG("%s::~%s(): destroying examples ring vector %d at %p\n",
-					get_name(), get_name(), i, ex_ring[i].fv);
+					get_name(), get_name(), i, fmt::ptr(ex_ring[i].fv));
 			delete ex_ring[i].fv;
 		}
 	}
@@ -348,7 +348,7 @@ void CParseBuffer<T>::finalize_example(bool free_after_release)
 	if (free_after_release)
 	{
 		SG_DEBUG("Freeing object in ring at index %d and address: %p.\n",
-			 ex_read_index, ex_ring[ex_read_index].fv);
+			 ex_read_index, fmt::ptr(ex_ring[ex_read_index].fv));
 
 		SG_FREE(ex_ring[ex_read_index].fv);
 		ex_ring[ex_read_index].fv=NULL;

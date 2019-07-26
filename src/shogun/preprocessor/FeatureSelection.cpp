@@ -113,13 +113,13 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 		for (index_t i=0; i<num_features; ++i)
 			measures[i]=compute_measures(features, i);
 
-		if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+		if (env()->io()->get_loglevel()==MSG_DEBUG || env()->io()->get_loglevel()==MSG_GCDEBUG)
 			measures.display_vector("measures");
 
 		// rank the measures
 		SGVector<index_t> argsorted=CMath::argsort(measures);
 
-		if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+		if (env()->io()->get_loglevel()==MSG_DEBUG || env()->io()->get_loglevel()==MSG_GCDEBUG)
 			argsorted.display_vector("argsorted");
 
 		// make sure that we don't end up with lesser feats than target dim

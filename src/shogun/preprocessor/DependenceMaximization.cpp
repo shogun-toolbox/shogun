@@ -80,7 +80,7 @@ CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 			dims[n_dims++]=i;
 	}
 
-	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+	if (env()->io()->get_loglevel()==MSG_DEBUG || env()->io()->get_loglevel()==MSG_GCDEBUG)
 		dims.display_vector("dims");
 
 	// the following already does a SG_REF on the newly created feature
@@ -145,7 +145,7 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	// sorting the indices to get the original order
 	CMath::qsort(inds);
-	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+	if (env()->io()->get_loglevel()==MSG_DEBUG || env()->io()->get_loglevel()==MSG_GCDEBUG)
 		inds.display_vector("selected feats");
 
 	// copy rest of the features and SG_UNREF the original feat obj

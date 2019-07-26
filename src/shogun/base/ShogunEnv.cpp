@@ -47,7 +47,6 @@ ShogunEnv::ShogunEnv()
 
 ShogunEnv::~ShogunEnv()
 {
-	SG_UNREF(sg_io);
 	delete CSignal::m_subscriber;
 	delete CSignal::m_observable;
 	delete CSignal::m_subject;

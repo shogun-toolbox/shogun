@@ -325,7 +325,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 				TParameter* param=m_param->get_parameter(i);
 				CSGObject* current_sgobject=*((CSGObject**) param->m_parameter);
 				SG_PRINT("\"%s\":%s at %p ", param->m_name,
-						current_sgobject->get_name(), current_sgobject);
+						current_sgobject->get_name(), fmt::ptr(current_sgobject));
 			}
 			else if (ctype==CT_SGVECTOR || ctype==CT_VECTOR || ctype==CT_SGMATRIX || ctype==CT_MATRIX)
 			{
