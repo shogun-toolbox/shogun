@@ -493,6 +493,6 @@ TYPEMAP_SPARSEFEATURES_OUT(float64_t,     NPY_FLOAT64)
 %init %{
 	// set number of threads to 1
 	// see issue #3772
-	SG_SWARNING("Using Shogun single-threaded. Multi-threaded Octave is currently broken. See https://github.com/shogun-toolbox/shogun/issues/3772\n");
+	SG_WARNING("Using Shogun single-threaded. Multi-threaded Octave is currently broken. See https://github.com/shogun-toolbox/shogun/issues/3772\n");
 	shogun::env()->set_num_threads(1);
 %}
