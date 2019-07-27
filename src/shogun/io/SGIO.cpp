@@ -12,16 +12,16 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
+#include <spdlog/spdlog.h>
 #include <spdlog/async.h>
 #include <spdlog/async_logger.h>
 #include <spdlog/sinks/base_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
+#include <ctype.h>
 #include <sstream>
 #include <stdarg.h>
-#include <ctype.h>
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
@@ -36,6 +36,38 @@
 #endif
 
 using namespace shogun;
+
+class Formatter : public spdlog::formatter
+{
+public:
+	Formatter(const Formatter& orig)
+	    : formatter_(std::move(orig.formatter_->clone()))
+	{
+	}
+
+	template <typename... Args>
+	Formatter(Args&&... args)
+	    : formatter_(std::make_unique<spdlog::pattern_formatter>(args...))
+	{
+	}
+
+	void format(
+	    const spdlog::details::log_msg& msg, fmt::memory_buffer& dest) override
+	{
+		if (msg.level == static_cast<spdlog::level::level_enum>(MSG_MESSAGEONLY))
+			dest.append(msg.payload.data(), msg.payload.data() + msg.payload.size());
+		else
+			formatter_->format(msg, dest);
+	}
+
+	std::unique_ptr<spdlog::formatter> clone() const override
+	{
+		return std::make_unique<Formatter>(*this);
+	}
+
+private:
+	std::unique_ptr<spdlog::formatter> formatter_;
+};
 
 class SGIO::RedirectSink : public spdlog::sinks::base_sink<std::mutex>
 {
@@ -74,7 +106,7 @@ protected:
 
 	void set_pattern_(const std::string& pattern) override
 	{
-		set_formatter_(std::make_unique<spdlog::pattern_formatter>(pattern));
+		set_formatter_(std::make_unique<Formatter>(pattern));
 	}
 
 	void
@@ -104,8 +136,7 @@ private:
 };
 
 SGIO::SGIO()
-    : show_progress(false), location_info(MSG_NONE),
-      syntax_highlight(true)
+    : show_progress(false), location_info(MSG_NONE), syntax_highlight(true)
 {
 	init_default_sink();
 	init_default_logger();
@@ -114,18 +145,29 @@ SGIO::SGIO()
 
 void SGIO::init_default_logger(uint64_t queue_size, uint64_t n_threads)
 {
-	thread_pool = std::make_shared<spdlog::details::thread_pool>(queue_size, n_threads);
-	io_logger = std::make_shared<spdlog::async_logger>("global", io_sink, thread_pool, spdlog::async_overflow_policy::block);
+	thread_pool =
+	    std::make_shared<spdlog::details::thread_pool>(queue_size, n_threads);
+	io_logger = std::make_shared<spdlog::async_logger>(
+	    "global", io_sink, thread_pool, spdlog::async_overflow_policy::block);
 }
- 
+
 void SGIO::init_default_sink()
 {
 	io_sink = std::make_shared<RedirectSink>();
-	if(io_logger)
+	if (io_logger)
 	{
 		io_logger->sinks().clear();
 		io_logger->sinks().push_back(io_sink);
 	}
+}
+
+void SGIO::message_(
+    EMessageType prio, const SourceLocation& loc,
+    const fmt::string_view& msg) const
+{
+	io_logger->log(
+	    {loc.file, loc.line, loc.function},
+	    static_cast<spdlog::level::level_enum>(prio), msg);
 }
 
 void SGIO::done()
@@ -148,9 +190,9 @@ void SGIO::set_loglevel(EMessageType level)
 
 char* SGIO::c_string_of_substring(substring s)
 {
-	uint32_t len = s.end - s.start+1;
+	uint32_t len = s.end - s.start + 1;
 	char* ret = SG_CALLOC(char, len);
-	sg_memcpy(ret,s.start,len-1);
+	sg_memcpy(ret, s.start, len - 1);
 	return ret;
 }
 
@@ -164,7 +206,7 @@ void SGIO::print_substring(substring s)
 float32_t SGIO::float_of_substring(substring s)
 {
 	char* endptr = s.end;
-	float32_t f = strtof(s.start,&endptr);
+	float32_t f = strtof(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
 		SG_ERROR("error: {} is not a float!\n", c_string_of_substring(s))
 
@@ -174,7 +216,7 @@ float32_t SGIO::float_of_substring(substring s)
 float64_t SGIO::double_of_substring(substring s)
 {
 	char* endptr = s.end;
-	float64_t f = strtod(s.start,&endptr);
+	float64_t f = strtod(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
 		SG_ERROR("Error!:{} is not a double!\n", c_string_of_substring(s))
 
@@ -192,7 +234,7 @@ int32_t SGIO::int_of_substring(substring s)
 
 uint32_t SGIO::ulong_of_substring(substring s)
 {
-	return strtoul(s.start,NULL,10);
+	return strtoul(s.start, NULL, 10);
 }
 
 uint32_t SGIO::ss_length(substring s)
@@ -209,7 +251,7 @@ void SGIO::update_pattern()
 {
 	std::stringstream pattern_builder;
 	pattern_builder << "[%D %T ";
-	switch(location_info)
+	switch (location_info)
 	{
 	case MSG_LINE_AND_FILE:
 		pattern_builder << "%@ ";
@@ -227,7 +269,7 @@ void SGIO::update_pattern()
 
 	pattern_builder << "%v";
 
-	io_logger->set_pattern(pattern_builder.str());
+	io_logger->set_formatter(std::make_unique<Formatter>(pattern_builder.str()));
 }
 
 void SGIO::redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink)
@@ -240,4 +282,9 @@ void SGIO::redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink)
 {
 	io_sink->redirect_stderr(sink);
 	update_pattern();
+}
+
+bool SGIO::should_log(EMessageType prio) const
+{
+	return io_logger->should_log(static_cast<spdlog::level::level_enum>(prio));
 }

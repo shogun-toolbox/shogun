@@ -14,14 +14,12 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/exception/ShogunException.h>
+#include <shogun/io/fmt/fmt.h>
 
 #include <string.h>
 #include <locale.h>
 #include <sys/types.h>
-#include <functional>
 #include <type_traits>
-
-#include <spdlog/spdlog.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -29,9 +27,16 @@
 
 namespace spdlog
 {
+	class logger;
+
 	namespace details
 	{
 		class thread_pool;
+	}
+
+	namespace sinks
+	{
+		class sink;
 	}
 }
 
@@ -83,7 +88,7 @@ enum EMessageLocation
 
 // printf like functions (with additional severity level)
 #define SG_IO env()->io()
-#define _SRC_LOC spdlog::source_loc{__FILE__, __LINE__, __PRETTY_FUNCTION__}
+#define _SRC_LOC SourceLocation{__FILE__, __LINE__, __PRETTY_FUNCTION__}
 
 #define SG_GCDEBUG(...) {								\
 	SG_IO->message(MSG_GCDEBUG, _SRC_LOC, __VA_ARGS__);	\
@@ -166,6 +171,19 @@ struct substring
 	char *end;
 };
 
+struct SourceLocation
+{
+	constexpr SourceLocation(
+		const char* file_="", int32_t line_=0, const char* function_="")
+	: file(file_), line(line_), function(function_)
+	{
+	}
+
+	const char* file;
+	int32_t line;
+	const char* function;
+};
+
 /** @brief Class SGIO, used to do input output operations throughout shogun.
  *
  * Any debug or error or progress message is passed through the functions of
@@ -197,6 +215,11 @@ class SGIO
 		 * @param level level of log messages
 		 */
 		void set_loglevel(EMessageType level);
+
+		/** @return whether loglevel is above specified level and thus the
+		 * message should be printed
+		 */
+		bool should_log(EMessageType prio) const;
 
 		/** get loglevel
 		 *
@@ -236,7 +259,7 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename... Args>
-		void message(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const;
+		void message(EMessageType prio, const SourceLocation& loc, const char* fmt, const Args&... args) const;
 
 		/** format and print a message
 		 * @param prio message priority
@@ -244,9 +267,9 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename... Args>
-		void message(EMessageType prio, const char* msg, const Args&... args) const
+		void message(EMessageType prio, const char* fmt, const Args&... args) const
 		{
-			message(prio, spdlog::source_loc{}, msg, args...);
+			message(prio, SourceLocation{}, fmt, args...);
 		}
 
 		/** format and print a message, and then throw an exception
@@ -256,7 +279,7 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename Exception, typename... Args>
-		void error(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const;
+		void error(EMessageType prio, const SourceLocation& loc, const char* fmt, const Args&... args) const;
 
 		/** format and print a message, and then throw an exception
 		 * @tparam ExceptionType type of the exception to throw
@@ -267,7 +290,7 @@ class SGIO
 		template <typename Exception, typename... Args>
 		void error(EMessageType prio, const char* msg, const Args&... args) const
 		{
-			error(prio, spdlog::source_loc{}, msg, args...);
+			error(prio, SourceLocation{}, msg, args...);
 		}
 
 		/** print 'done' with priority INFO,
@@ -277,14 +300,14 @@ class SGIO
 		void done();
 
 		/** print error message 'not implemented' */
-		inline void not_implemented(const spdlog::source_loc& loc={}) const
+		inline void not_implemented(const SourceLocation& loc={}) const
 		{
 			error<ShogunException>(
 			    MSG_ERROR, loc, "Sorry, not yet implemented .\n");
 		}
 
 		/** print error message 'Only available with GPL parts.' */
-		inline void gpl_only(const spdlog::source_loc& loc={}) const
+		inline void gpl_only(const SourceLocation& loc={}) const
 		{
 			error<ShogunException>(
 			    MSG_ERROR, loc,
@@ -294,7 +317,7 @@ class SGIO
 		}
 
 		/** print warning message 'function deprecated' */
-		inline void deprecated(const spdlog::source_loc& loc={}) const
+		inline void deprecated(const SourceLocation& loc={}) const
 		{
 			message(MSG_WARN, loc,
 					"This function is deprecated and will be removed soon.\n");
@@ -395,7 +418,10 @@ class SGIO
 		/** @return object name */
 		inline const char* get_name() { return "SGIO"; }
 
-	protected:
+	private:
+		/** Prints a formatted message */
+		void message_(EMessageType prio, const SourceLocation& loc, const fmt::string_view& msg) const;
+
 		/** Updates log pattern */
 		void update_pattern();
 
@@ -407,7 +433,6 @@ class SGIO
 		/** whether syntax highlighting is enabled */
 		bool syntax_highlight;
 
-	private:
 		class RedirectSink;
 		std::shared_ptr<RedirectSink> io_sink;
 		std::shared_ptr<spdlog::logger> io_logger;
@@ -415,13 +440,18 @@ class SGIO
 };
 
 template <typename... Args>
-void SGIO::message(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const
+void SGIO::message(EMessageType prio, const SourceLocation& loc, const char* fmt, const Args&... args) const
 {
-	io_logger->log(loc, static_cast<spdlog::level::level_enum>(prio), msg, args...);
+	if(should_log(prio))
+	{
+		fmt::memory_buffer msg;
+		fmt::format_to(msg, fmt, args...);
+		message_(prio, loc, fmt::string_view(msg.data(), msg.size()));
+	}
 }
 
 template <typename ExceptionType, typename... Args>
-void SGIO::error(EMessageType prio, const spdlog::source_loc& loc, const char* msg, const Args&... args) const
+void SGIO::error(EMessageType prio, const SourceLocation& loc, const char* msg, const Args&... args) const
 {
 	static_assert(std::is_nothrow_copy_constructible<ExceptionType>::value,
 			  "ExceptionType must be nothrow copy constructible");

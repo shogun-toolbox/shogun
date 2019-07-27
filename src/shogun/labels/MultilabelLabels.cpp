@@ -337,7 +337,7 @@ CMultilabelLabels::display() const
 
 	for (int32_t class_i = 0; class_i < get_num_classes(); class_i++)
 	{
-		SG_PRINT("  yC_{class_i={}}", class_i);
+		SG_PRINT("  yC_{{class_i={}}}", class_i);
 		SGVector <float64_t> dense =
 		        to_dense <int32_t, float64_t> (labels_list[class_i],
 		                                       get_num_labels(), +1, -1);
@@ -351,7 +351,7 @@ CMultilabelLabels::display() const
 
 	for (int32_t j = 0; j < get_num_labels(); j++)
 	{
-		SG_PRINT("  y_{j={}}", j);
+		SG_PRINT("  y_{{j={}}}", j);
 		SGVector <float64_t> dense =
 		        to_dense <int32_t , float64_t> (&m_labels[j], get_num_classes(),
 		                                        +1, -1);

@@ -88,8 +88,8 @@ void ShogunEnv::init_from_env()
 		}
 		catch (...)
 		{
-			auto& io = sg_io;
-			SG_WARNING(
+			sg_io->message(
+			    MSG_WARN,
 			    "The specified SHOGUN_NUM_THREADS environment ({})"
 			    "variable could not be parsed as integer!\n",
 			    env_thread_val);

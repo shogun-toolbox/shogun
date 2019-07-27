@@ -353,6 +353,7 @@ IF (NOT spdlog_FOUND)
           $<INSTALL_INTERFACE:include/shogun/third_party>
           )
 ELSE()
+    SET(USE_EXTERNAL_SPDLOG 1)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${spdlog_INCLUDE_DIR})
 ENDIF()
 

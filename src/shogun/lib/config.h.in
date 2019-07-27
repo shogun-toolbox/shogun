@@ -95,6 +95,8 @@
 /* does the compiler support abi::__cxa_demangle */
 #cmakedefine HAVE_CXA_DEMANGLE 1
 
+#cmakedefine USE_EXTERNAL_SPDLOG 1
+
 #ifdef __CLING__
 #pragma cling add_library_path(@SHOGUN_CLING_LIBRARY_DIR@)
 #pragma cling load("libshogun")
