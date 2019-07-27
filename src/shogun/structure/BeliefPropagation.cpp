@@ -31,7 +31,7 @@ CBeliefPropagation::~CBeliefPropagation()
 
 float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 {
-	SG_ERROR("%s::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
+	SG_ERROR("{}::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
 	return 0;
 }
 
@@ -116,7 +116,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	if (!dset->get_connected())
 	{
 		SG_UNREF(dset);
-		SG_ERROR("%s::get_root_indicators(): run connect_components() first!\n", get_name());
+		SG_ERROR("{}::get_root_indicators(): run connect_components() first!\n", get_name());
 	}
 
 	int32_t num_vars = m_fg->get_cardinalities().size();
@@ -208,7 +208,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-		"%s::inference(): the output assignment should be prepared as"
+		"{}::inference(): the output assignment should be prepared as"
 		"the same size as variables!\n", get_name());
 
 	bottom_up_pass();
@@ -217,8 +217,8 @@ float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 	for (int32_t vi = 0; vi < assignment.size(); vi++)
 		assignment[vi] = m_states[vi];
 
-	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", m_fg->evaluate_energy(assignment));
-	SG_DEBUG("minimized energy = %f\n", -m_map_energy);
+	SG_DEBUG("fg.evaluate_energy(assignment) = {}\n", m_fg->evaluate_energy(assignment));
+	SG_DEBUG("minimized energy = {}\n", -m_map_energy);
 
 	return -m_map_energy;
 }
@@ -248,7 +248,7 @@ void CTreeMaxProduct::bottom_up_pass()
 	// on [Nowozin et al. 2011] for more detail.
 	for (uint32_t mi = 0; mi < m_msg_order.size(); ++mi)
 	{
-		SG_DEBUG("mi = %d, mtype: %d %d -> %d\n", mi,
+		SG_DEBUG("mi = {}, mtype: {} {} -> {}\n", mi,
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
 
 		if (m_msg_order[mi]->mtype == VAR_TO_FAC) // var -> factor
@@ -392,7 +392,7 @@ void CTreeMaxProduct::top_down_pass()
 	//   compute r_f2v
 	for (int32_t mi = (int32_t)(m_msg_order.size()-1); mi >= 0; --mi)
 	{
-		SG_DEBUG("mi = %d, mtype: %d %d <- %d\n", mi,
+		SG_DEBUG("mi = {}, mtype: {} {} <- {}\n", mi,
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
 
 		if (m_msg_order[mi]->mtype == FAC_TO_VAR) // factor <- var

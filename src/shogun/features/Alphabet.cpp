@@ -76,7 +76,7 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 	else if (len>=(int32_t) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
-      SG_ERROR("unknown alphabet %s\n", al)
+      SG_ERROR("unknown alphabet {}\n", al)
    }
 
 	set_alphabet(alpha);
@@ -168,7 +168,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 	init_map_table();
     clear_histogram();
 
-	SG_DEBUG("initialised alphabet %s\n", get_alphabet_name(alphabet))
+	SG_DEBUG("initialised alphabet {}\n", get_alphabet_name(alphabet))
 
 	return result;
 }
@@ -588,15 +588,15 @@ void CAlphabet::print_histogram()
 		if (histogram[i])
 		{
 			if (isprint(i))
-				SG_PRINT("hist['%c']=%lld", i, histogram[i])
+				SG_PRINT("hist['{}']={}", i, histogram[i])
 			else if (i == '\t')
-				SG_PRINT("hist['\\t']=%lld", histogram[i])
+				SG_PRINT("hist['\\t']={}", histogram[i])
 			else if (i == '\n')
-				SG_PRINT("hist['\\n']=%lld", histogram[i])
+				SG_PRINT("hist['\\n']={}", histogram[i])
 			else if (i == '\r')
-				SG_PRINT("hist['\\r']=%lld", histogram[i])
+				SG_PRINT("hist['\\r']={}", histogram[i])
 			else
-				SG_PRINT("hist[%d]=%lld", i, histogram[i])
+				SG_PRINT("hist[{}]={}", i, histogram[i])
 
 			if (!valid_chars[i])
 				SG_PRINT(" - Character not in Alphabet.\n")
@@ -656,7 +656,7 @@ void CAlphabet::copy_histogram(const CAlphabet* a)
 
 	if (h.vlen != sizeof(histogram)/sizeof(histogram[0]))
 	{
-		SG_ERROR("Histogram has %d elements, but %d elements where expected\n",
+		SG_ERROR("Histogram has {} elements, but {} elements where expected\n",
 				h.vlen, sizeof(histogram)/sizeof(histogram[0]));
 	}
 

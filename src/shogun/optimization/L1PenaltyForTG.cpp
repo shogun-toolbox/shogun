@@ -43,7 +43,7 @@ void L1PenaltyForTG::update_variable_for_proximity(SGVector<float64_t> variable,
 	else
 	{
 		REQUIRE(variable.vlen==m_q.vlen,
-			"The length of variable (%d) is changed. Last time, the length of variable was %d", variable.vlen, m_q.vlen);
+			"The length of variable ({}) is changed. Last time, the length of variable was {}", variable.vlen, m_q.vlen);
 	}
 	m_u+=proximal_weight;
 	for(index_t idx=0; idx<variable.vlen; idx++)

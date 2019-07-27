@@ -61,7 +61,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// cast is safe, check_training_setup ensures features are dense
 	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
 	CMulticlassLabels* y = multiclass_labels(m_labels);
-	SG_DEBUG("%d input vectors with %d dimensions.\n", x->get_num_vectors(), x->get_num_features());
+	SG_DEBUG("{} input vectors with {} dimensions.\n", x->get_num_vectors(), x->get_num_features());
 
 	auto& L = init_transform;
 	// Compute target or genuine neighbours
@@ -94,7 +94,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		// Find current set of impostors
 		SG_DEBUG("Finding impostors.\n")
 		cur_impostors = CLMNNImpl::find_impostors(x,y,L,target_nn,iter,m_correction);
-		SG_DEBUG("Found %d impostors in the current set.\n", cur_impostors.size())
+		SG_DEBUG("Found {} impostors in the current set.\n", cur_impostors.size())
 
 		// (Sub-) gradient computation
 		SG_DEBUG("Updating gradient.\n")
@@ -124,7 +124,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		// Store statistics for this iteration
 		m_statistics->set(iter-1, obj[iter-1], stepsize, cur_impostors.size());
 
-		SG_DEBUG("iteration=%d, objective=%.4f, #impostors=%4d, stepsize=%.4E\n",
+		SG_DEBUG("iteration={}, objective={:.4f}, #impostors={:4d}, stepsize=%.4E\n",
 				iter, obj[iter-1], cur_impostors.size(), stepsize)
 
 		// Print progress bar iteration
@@ -303,7 +303,7 @@ const char* CLMNNStatistics::get_name() const
 void CLMNNStatistics::resize(int32_t size)
 {
 	REQUIRE(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
-			 " Given value is %d.\n", size);
+			 " Given value is {}.\n", size);
 
 	obj.resize_vector(size);
 	stepsize.resize_vector(size);
@@ -314,7 +314,7 @@ void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_i
 		uint32_t num_impostors_iter)
 {
 	REQUIRE(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
-			"must be larger or equal to zero and less than the size (%d). Given valu is %d.\n", obj.vlen, iter);
+			"must be larger or equal to zero and less than the size ({}). Given valu is {}.\n", obj.vlen, iter);
 
 	obj[iter] = obj_iter;
 	stepsize[iter] = stepsize_iter;

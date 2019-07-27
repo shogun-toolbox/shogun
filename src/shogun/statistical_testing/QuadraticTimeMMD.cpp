@@ -120,9 +120,9 @@ CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd, CQuadraticTimeMMD::prng_ty
 void CQuadraticTimeMMD::Self::init_statistic_job()
 {
 	REQUIRE(owner.get_num_samples_p()>0,
-		"Number of samples from P (was %s) has to be > 0!\n", owner.get_num_samples_p());
+		"Number of samples from P (was {}) has to be > 0!\n", owner.get_num_samples_p());
 	REQUIRE(owner.get_num_samples_q()>0,
-		"Number of samples from Q (was %s) has to be > 0!\n", owner.get_num_samples_q());
+		"Number of samples from Q (was {}) has to be > 0!\n", owner.get_num_samples_q());
 
 	statistic_job.m_n_x=owner.get_num_samples_p();
 	statistic_job.m_n_y=owner.get_num_samples_q();
@@ -132,9 +132,9 @@ void CQuadraticTimeMMD::Self::init_statistic_job()
 void CQuadraticTimeMMD::Self::init_variance_h1_job()
 {
 	REQUIRE(owner.get_num_samples_p()>0,
-		"Number of samples from P (was %s) has to be > 0!\n", owner.get_num_samples_p());
+		"Number of samples from P (was {}) has to be > 0!\n", owner.get_num_samples_p());
 	REQUIRE(owner.get_num_samples_q()>0,
-		"Number of samples from Q (was %s) has to be > 0!\n", owner.get_num_samples_q());
+		"Number of samples from Q (was {}) has to be > 0!\n", owner.get_num_samples_q());
 
 	variance_h1_job.m_n_x=owner.get_num_samples_p();
 	variance_h1_job.m_n_y=owner.get_num_samples_q();
@@ -143,11 +143,11 @@ void CQuadraticTimeMMD::Self::init_variance_h1_job()
 void CQuadraticTimeMMD::Self::init_permutation_job()
 {
 	REQUIRE(owner.get_num_samples_p()>0,
-		"Number of samples from P (was %s) has to be > 0!\n", owner.get_num_samples_p());
+		"Number of samples from P (was {}) has to be > 0!\n", owner.get_num_samples_p());
 	REQUIRE(owner.get_num_samples_q()>0,
-		"Number of samples from Q (was %s) has to be > 0!\n", owner.get_num_samples_q());
+		"Number of samples from Q (was {}) has to be > 0!\n", owner.get_num_samples_q());
 	REQUIRE(owner.get_num_null_samples()>0,
-		"Number of null samples (was %d) has to be > 0!\n", owner.get_num_null_samples());
+		"Number of null samples (was {}) has to be > 0!\n", owner.get_num_null_samples());
 
 	permutation_job.m_n_x=owner.get_num_samples_p();
 	permutation_job.m_n_y=owner.get_num_samples_q();
@@ -166,7 +166,7 @@ void CQuadraticTimeMMD::Self::init_kernel()
 		auto kernel=owner.get_kernel();
 		kernel->init(samples_p_and_q, samples_p_and_q);
 		is_kernel_initialized=true;
-		SG_INFO("Kernel is initialized with joint features of %d total samples!\n", samples_p_and_q->get_num_vectors());
+		SG_INFO("Kernel is initialized with joint features of {} total samples!\n", samples_p_and_q->get_num_vectors());
 	}
 }
 
@@ -386,7 +386,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 	index_t n=owner.get_num_samples_q();
 
 	REQUIRE(num_eigenvalues>0 && num_eigenvalues<m+n-1,
-		"Number of Eigenvalues (%d) must be in between [1, %d]\n", num_eigenvalues, m+n-1);
+		"Number of Eigenvalues ({}) must be in between [1, {}]\n", num_eigenvalues, m+n-1);
 
 	init_kernel();
 
@@ -443,7 +443,11 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 
 	index_t m=owner.get_num_samples_p();
 	index_t n=owner.get_num_samples_q();
+<<<<<<< HEAD
 	REQUIRE(m==n, "Number of samples from p (%d) and q (%d) must be equal.\n", m, n)
+=======
+	REQUIRE(m==n, "Number of samples from p ({}) and q ({}) must be equal.\n", n, m)
+>>>>>>> Replace printf specifiers
 
 	SGVector<float64_t> result(2);
 	std::fill(result.vector, result.vector+result.vlen, 0);

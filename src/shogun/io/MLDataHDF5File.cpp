@@ -58,7 +58,7 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 
 	if (!fp)
 	{
-		SG_ERROR("Could not open file '%s'\n", fname)
+		SG_ERROR("Could not open file '{}'\n", fname)
 		return;
 	}
 
@@ -79,7 +79,7 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 	h5file = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
 
 	if (h5file<0)
-		SG_ERROR("Could not open data repository '%s'\n", data_name)
+		SG_ERROR("Could not open data repository '{}'\n", data_name)
 }
 
 CMLDataHDF5File::~CMLDataHDF5File()
@@ -114,7 +114,7 @@ void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
 	if (!((ndims==2 && dims[0]==nelements && dims[1]==1) ||							\
 			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
 			(ndims==1 && dims[0]==nelements)))										\
-		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0])	\
+		SG_ERROR("Error not a 1-dimensional vector (ndims={}, dims[0]={})\n", ndims, dims[0])	\
 	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
@@ -338,7 +338,7 @@ void CMLDataHDF5File::create_group_hierarchy()
 				g=H5Gcreate2(h5file, vname, H5P_DEFAULT, H5P_DEFAULT,
 						H5P_DEFAULT);
 				if (g<0)
-					SG_ERROR("Error creating group '%s'\n", vname)
+					SG_ERROR("Error creating group '{}'\n", vname)
 				vname[i]='/';
 			}
 			H5Gclose(g);

@@ -51,14 +51,14 @@ RmsPropUpdater::RmsPropUpdater(float64_t learning_rate,float64_t epsilon,float64
 
 void RmsPropUpdater::set_learning_rate(float64_t learning_rate)
 {
-	REQUIRE(learning_rate>0,"Learning_rate (%f) must be positive\n",
+	REQUIRE(learning_rate>0,"Learning_rate ({}) must be positive\n",
 		learning_rate);
 	m_build_in_learning_rate=learning_rate;
 }
 
 void RmsPropUpdater::set_epsilon(float64_t epsilon)
 {
-	REQUIRE(epsilon>=0,"Epsilon (%f) must be non-negative\n",
+	REQUIRE(epsilon>=0,"Epsilon ({}) must be non-negative\n",
 		epsilon);
 	m_epsilon=epsilon;
 }
@@ -66,7 +66,7 @@ void RmsPropUpdater::set_epsilon(float64_t epsilon)
 void RmsPropUpdater::set_decay_factor(float64_t decay_factor)
 {
 	REQUIRE(decay_factor>=0.0 && decay_factor<1.0,
-		"decay factor (%f) must in [0,1)\n",
+		"decay factor ({}) must in [0,1)\n",
 		decay_factor);
 	m_decay_factor=decay_factor;
 }
@@ -94,7 +94,7 @@ float64_t RmsPropUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t gradient, index_t idx, float64_t learning_rate)
 {
 	REQUIRE(idx>=0 && idx<m_gradient_accuracy.vlen,
-		"Index (%d) is invalid\n", idx);
+		"Index ({}) is invalid\n", idx);
 	float64_t scale=m_decay_factor*m_gradient_accuracy[idx]+
 		(1.0-m_decay_factor)*gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
@@ -108,7 +108,7 @@ void RmsPropUpdater::update_variable(SGVector<float64_t> variable_reference,
 {
 	REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
 	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
-		"The length of variable_reference (%d) and the length of gradient (%d) do not match\n",
+		"The length of variable_reference ({}) and the length of gradient ({}) do not match\n",
 		variable_reference.vlen,raw_negative_descend_direction.vlen);
 	if(m_gradient_accuracy.vlen==0)
 	{

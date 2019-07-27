@@ -168,7 +168,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFe
 		}
 		catch (ShogunException e)
 		{
-			SG_ERROR("%s, Try using less number of blocks per burst!\n", e.what());
+			SG_ERROR("{}, Try using less number of blocks per burst!\n", e.what());
 		}
 	}
 }
@@ -289,7 +289,7 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 	{
 		const auto num_blocks=next_burst.num_blocks();
 		REQUIRE(num_blocks%2==0,
-				"The number of blocks per burst (%d this burst) has to be even!\n",
+				"The number of blocks per burst ({} this burst) has to be even!\n",
 				num_blocks);
 		merge_samples(next_burst, blocks);
 		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_REF(ptr); });

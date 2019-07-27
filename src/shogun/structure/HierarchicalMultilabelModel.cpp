@@ -58,7 +58,7 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 		num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
 	}
 
-	REQUIRE(num_classes == taxonomy.vlen, "Number of classes must be equal to taxonomy vector = %d\n",
+	REQUIRE(num_classes == taxonomy.vlen, "Number of classes must be equal to taxonomy vector = {}\n",
 	        taxonomy.vlen);
 
 	m_taxonomy = SGVector<int32_t>(num_classes);
@@ -68,8 +68,8 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 
 	for (index_t i = 0; i < num_classes; i++)
 	{
-		REQUIRE(taxonomy[i] < num_classes && taxonomy[i] >= -1, "parent-id of node-id:%d is taxonomy[%d] = %d,"
-		        " but must be within [-1; %d-1] (-1 for root node)\n", i, i,
+		REQUIRE(taxonomy[i] < num_classes && taxonomy[i] >= -1, "parent-id of node-id:{} is taxonomy[{}] = {},"
+		        " but must be within [-1; {}-1] (-1 for root node)\n", i, i,
 		        taxonomy[i], num_classes);
 		m_taxonomy[i] = taxonomy[i];
 

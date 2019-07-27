@@ -131,7 +131,7 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* v
 	ASSERT(vec2)
 	if (vec2_len < current_num_features)
 	{
-		SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
+		SG_ERROR("dimension of vec (={}) does not match number of features (={})\n",
 			 vec2_len, current_num_features);
 	}
 
@@ -159,7 +159,7 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* v
 	ASSERT(vec2)
 	if (vec2_len < current_num_features)
 	{
-		SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
+		SG_ERROR("dimension of vec (={}) does not match number of features (={})\n",
 			 vec2_len, current_num_features);
 	}
 

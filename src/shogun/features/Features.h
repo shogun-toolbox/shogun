@@ -229,7 +229,7 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* create_merged_copy(CList* others) const
 		{
-			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
+			SG_ERROR("{}::create_merged_copy() is not yet implemented!\n")
 			return NULL;
 		}
 
@@ -243,7 +243,7 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* create_merged_copy(CFeatures* other) const
 		{
-			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
+			SG_ERROR("{}::create_merged_copy() is not yet implemented!\n")
 			return NULL;
 		}
 

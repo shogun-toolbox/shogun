@@ -142,7 +142,7 @@ float64_t CKernelMachine::get_alpha(int32_t idx)
     if (!m_alpha.vector)
         SG_ERROR("No alphas set\n")
     if (idx>=m_alpha.vlen)
-        SG_ERROR("Alphas index (%d) out of range (%d)\n", idx, m_svs.vlen)
+        SG_ERROR("Alphas index ({}) out of range ({})\n", idx, m_svs.vlen)
     return m_alpha.vector[idx];
 }
 
@@ -253,15 +253,15 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	SG_DEBUG("entering %s::apply_get_outputs(%s at %p)\n",
+	SG_DEBUG("entering {}::apply_get_outputs({} at {})\n",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
-	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n")
+	REQUIRE(kernel, "{}::apply_get_outputs(): No kernel assigned!\n")
 
 	if (!kernel->get_num_vec_lhs())
 	{
-		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
-				" an implementation error in %s, where it was forgotten to set "
+		SG_ERROR("{}: No vectors on left hand side ({}). This is probably due to"
+				" an implementation error in {}, where it was forgotten to set "
 				"the data (m_svs) indices\n", get_name(),
 				data->get_name());
 	}
@@ -269,7 +269,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		CFeatures* lhs=kernel->get_lhs();
-		REQUIRE(lhs, "%s::apply_get_outputs(): No left hand side specified\n",
+		REQUIRE(lhs, "{}::apply_get_outputs(): No left hand side specified\n",
 				get_name());
 		kernel->init(lhs, data);
 		SG_UNREF(lhs);
@@ -290,7 +290,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (kernel->get_num_vec_rhs()>0)
 	{
-		SG_DEBUG("computing output on %d test examples\n", num_vectors)
+		SG_DEBUG("computing output on {} test examples\n", num_vectors)
 
 		if (env()->io()->get_show_progress())
 			env()->io()->enable_progress();
@@ -382,7 +382,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 	}
 
-	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
+	SG_DEBUG("leaving {}::apply_get_outputs({} at {})\n",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return output;

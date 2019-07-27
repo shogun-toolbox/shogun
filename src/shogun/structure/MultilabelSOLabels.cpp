@@ -138,7 +138,7 @@ SGVector<float64_t> CMultilabelSOLabels::to_dense(CStructuredData * label,
 void CMultilabelSOLabels::add_label(CStructuredData * label)
 {
 	REQUIRE(m_last_set_label >= 0 && m_last_set_label < get_num_labels(),
-	        "Only %d number of labels can be added.\n", get_num_labels());
+	        "Only {} number of labels can be added.\n", get_num_labels());
 
 	set_label(m_last_set_label, label);
 	m_last_set_label++;

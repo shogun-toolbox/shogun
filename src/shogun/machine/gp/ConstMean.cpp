@@ -78,7 +78,7 @@ SGVector<float64_t> CConstMean::get_parameter_derivative(const CFeatures* featur
 	}
 	else
 	{
-		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
+		SG_ERROR("Can't compute derivative wrt {} parameter\n", param->m_name);
 		return SGVector<float64_t>();
 	}
 }

@@ -54,10 +54,10 @@ public:
 		SG_PRINT("Value: [")
 
 		for (index_t i=0; i<m_value.vlen-1; i++)
-			SG_PRINT("%f, ", m_value[i])
+			SG_PRINT("{}, ", m_value[i])
 
 		if (m_value.vlen>0)
-			SG_PRINT("%f", m_value[m_value.vlen-1])
+			SG_PRINT("{}", m_value[m_value.vlen-1])
 
 		SG_PRINT("] ")
 
@@ -79,24 +79,24 @@ public:
 			// get gradient wrt parameter
 			SGVector<float64_t> param_gradient=param_node->data;
 
-			SG_PRINT("%s.%s: ", object_name, param_name)
+			SG_PRINT("{}.{}: ", object_name, param_name)
 
 			for (index_t j=0; j<param_gradient.vlen-1; j++)
-				SG_PRINT("%f, ", param_gradient[j])
+				SG_PRINT("{}, ", param_gradient[j])
 
 			if (i==m_gradient->get_num_elements()-1)
 			{
 				if (param_gradient.vlen>0)
-					SG_PRINT("%f", param_gradient[param_gradient.vlen-1])
+					SG_PRINT("{}", param_gradient[param_gradient.vlen-1])
 			}
 			else
 			{
 				if (param_gradient.vlen>0)
-					SG_PRINT("%f; ", param_gradient[param_gradient.vlen-1])
+					SG_PRINT("{}; ", param_gradient[param_gradient.vlen-1])
 			}
 		}
 
-		SG_PRINT("] Total Variables: %u\n", m_total_variables)
+		SG_PRINT("] Total Variables: {}\n", m_total_variables)
 	}
 
 	/** return number of total variables in gradient map

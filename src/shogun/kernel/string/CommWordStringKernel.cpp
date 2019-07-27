@@ -44,7 +44,7 @@ CCommWordStringKernel::CCommWordStringKernel(
 bool CCommWordStringKernel::init_dictionary(int32_t size)
 {
 	dictionary_weights=SGVector<float64_t>(size);
-	SG_DEBUG("using dictionary of %d words\n", size)
+	SG_DEBUG("using dictionary of {} words\n", size)
 	clear_normal();
 
 	return dictionary_weights.vector!=NULL;
@@ -375,7 +375,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
 
-	SG_DEBUG("num_words:%d, order:%d, len:%d sz:%d (len*sz:%d)\n", num_words, order,
+	SG_DEBUG("num_words:{}, order:{}, len:{} sz:{} (len*sz:{})\n", num_words, order,
 			num_feat, num_sym, num_feat*num_sym);
 
 	if (!target)
@@ -433,10 +433,10 @@ float64_t* CCommWordStringKernel::compute_scoring(
 				{
 //#define DEBUG_COMMSCORING
 #ifdef DEBUG_COMMSCORING
-					SG_PRINT("o=%d/%d p=%d/%d i=0x%x x=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d marg=%g o_sym:%d m_sym:%d weight(",
+					SG_PRINT("o={}/{} p={}/{} i=0x{:x} x=0x{:x} imask={:x} jmask={:x} kmask={:x} il={} ir={} marg={:g} o_sym:{} m_sym:{} weight(",
 							o,order, p,order, i, x, imer_mask, jmer_mask, kmer_mask, il, ir, marginalizer, o_sym, m_sym);
 
-					SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n",
+					SG_PRINT("{}{}{}{}/{}{}{}{})+={:g}/{:g}\n",
 							alpha->remap_to_char((x>>(3*num_bits))&0x03), alpha->remap_to_char((x>>(2*num_bits))&0x03),
 							alpha->remap_to_char((x>>num_bits)&0x03), alpha->remap_to_char(x&0x03),
 							alpha->remap_to_char((i>>(3*num_bits))&0x03), alpha->remap_to_char((i>>(2*num_bits))&0x03),
@@ -452,9 +452,9 @@ float64_t* CCommWordStringKernel::compute_scoring(
 						uint32_t c=x | ((j & jmer_mask) << (num_bits*jl));
 #ifdef DEBUG_COMMSCORING
 
-						SG_PRINT("o=%d/%d p=%d/%d i=0x%x j=0x%x x=0x%x c=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d jl=%d marg=%g o_sym:%d m_sym:%d weight(",
+						SG_PRINT("o={}/{} p={}/{} i=0x{:x} j=0x{:x} x=0x{:x} c=0x{:x} imask={:x} jmask={:x} kmask={:x} il={} ir={} jl={} marg={:g} o_sym:{} m_sym:{} weight(",
 								o,order, p,order, i, j, x, c, imer_mask, jmer_mask, kmer_mask, il, ir, jl, marginalizer, o_sym, m_sym);
-						SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n",
+						SG_PRINT("{}{}{}{}/{}{}{}{})+={:g}/{:g}\n",
 								alpha->remap_to_char((c>>(3*num_bits))&0x03), alpha->remap_to_char((c>>(2*num_bits))&0x03),
 								alpha->remap_to_char((c>>num_bits)&0x03), alpha->remap_to_char(c&0x03),
 								alpha->remap_to_char((i>>(3*num_bits))&0x03), alpha->remap_to_char((i>>(2*num_bits))&0x03),
@@ -565,7 +565,7 @@ char* CCommWordStringKernel::compute_consensus(
 		}
 	}
 
-	SG_DEBUG("max_idx:%i, max_score:%f\n", max_idx, max_score)
+	SG_DEBUG("max_idx:{}, max_score:{}\n", max_idx, max_score)
 
 	for (int32_t i=result_len-1; i>=num_feat; i--)
 		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(result_len-1-i)), 1) );

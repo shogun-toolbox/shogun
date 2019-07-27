@@ -116,7 +116,7 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 	}
 
 	weight_a=a;
-	SG_INFO("setting opt_a: %g\n", a)
+	SG_INFO("setting opt_a: {:g}\n", a)
 	return a;
 }
 
@@ -132,7 +132,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 
 	free_feature_matrix();
 
-	SG_INFO("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M())
+	SG_INFO("pos_feat=[{},{},{},{}],neg_feat=[{},{},{},{}]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M())
 
 	if (pos && pos->get_observations())
 		set_num_vectors(pos->get_observations()->get_num_vectors());
@@ -219,7 +219,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	num_vectors=pos->get_observations()->get_num_vectors();
 	ASSERT(num_vectors)
 
-	SG_INFO("allocating FK feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
+	SG_INFO("allocating FK feature cache of size {:.2f}M\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
 	free_feature_matrix();
 	feature_matrix=SGMatrix<float64_t>(num_features,num_vectors);
 
@@ -228,7 +228,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	for (int32_t x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			SG_DEBUG("%02d%%.", (int) (100.0*x/num_vectors))
+			SG_DEBUG("{:02d}%%.", (int) (100.0*x/num_vectors))
 		else if (!(x % (num_vectors/200+1)))
 			SG_DEBUG(".")
 

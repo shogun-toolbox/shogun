@@ -99,7 +99,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 
 	// NULL check for features is handled in get_num_features
 	index_t num_features=get_num_features(features);
-	SG_DEBUG("Initial number of features %d!\n", num_features);
+	SG_DEBUG("Initial number of features {}!\n", num_features);
 
 	// the main loop
 	while (num_features>m_target_dim)
@@ -141,7 +141,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 		if (to_remove>can_remove)
 		{
 			m_num_remove=can_remove;
-			SG_DEBUG("Can only remove %d features in this iteration!\n",
+			SG_DEBUG("Can only remove {} features in this iteration!\n",
 					can_remove);
 
 			if (m_policy==PERCENTILE_SMALLEST)
@@ -165,7 +165,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 
 		// update the number of features
 		num_features=get_num_features(features);
-		SG_DEBUG("Current number of features %d!\n", num_features);
+		SG_DEBUG("Current number of features {}!\n", num_features);
 	}
 
 	// sanity check
@@ -187,16 +187,16 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 	REQUIRE(features, "Features cannot be NULL!\n");
 	REQUIRE(features->get_num_vectors()>0,
 			"Number of feature vectors has to be positive!\n");
-	REQUIRE(m_target_dim>0, "Target dimension (%d) has to be positive! Set "
+	REQUIRE(m_target_dim>0, "Target dimension ({}) has to be positive! Set "
 			"a higher number via set_target_dim().\n", m_target_dim);
 
 	index_t num_features=get_num_features(features);
-	REQUIRE(num_features>0, "Invalid number of features (%d)! Most likely "
-			"feature selection cannot be performed for %s!\n",
+	REQUIRE(num_features>0, "Invalid number of features ({})! Most likely "
+			"feature selection cannot be performed for {}!\n",
 			num_features, features->get_name());
 	REQUIRE(num_features>m_target_dim,
 			"Number of original features (dimensions of the feature vectors) "
-			"(%d) has to be greater that the target dimension (%d)!\n",
+			"({}) has to be greater that the target dimension ({})!\n",
 			num_features, m_target_dim);
 
 	// this method makes a deep copy of the feature object and performs
@@ -274,7 +274,7 @@ index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 			return s_feats->get_num_features();
 		}
 		default:
-			SG_ERROR("Number of features not available for %s!\n",
+			SG_ERROR("Number of features not available for {}!\n",
 					features->get_name());
 			break;
 	}

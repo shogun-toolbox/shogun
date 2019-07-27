@@ -67,7 +67,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_multiclass(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_multiclass(), "{} with {} doesn't support "
 			"multi classification\n", m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
@@ -109,7 +109,7 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_binary(), "{} with {} doesn't support "
 			"binary classification\n", m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
@@ -146,7 +146,7 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(), "{} with {} doesn't support "
 			"classification\n", m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
@@ -180,7 +180,7 @@ SGVector<float64_t> CGaussianProcessClassification::get_mean_vector(
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
-		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
+		"{} with {} doesn't support classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -202,7 +202,7 @@ SGVector<float64_t> CGaussianProcessClassification::get_variance_vector(
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
-		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
+		"{} with {} doesn't support classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -224,7 +224,7 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
-		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
+		"{} with {} doesn't support classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);

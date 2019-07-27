@@ -55,7 +55,7 @@ NextSamples::~NextSamples()
 std::vector<Block>& NextSamples::operator[](size_t i)
 {
 	REQUIRE(i>=0 && i<next_samples.size(),
-			"index (%d) must be between [0,%d]!\n",
+			"index ({}) must be between [0,{}]!\n",
 			i, next_samples.size()-1);
 	return next_samples[i];
 }
@@ -63,7 +63,7 @@ std::vector<Block>& NextSamples::operator[](size_t i)
 const std::vector<Block>& NextSamples::operator[](size_t i) const
 {
 	REQUIRE(i>=0 && i<next_samples.size(),
-			"index (%d) must be between [0,%d]!\n",
+			"index ({}) must be between [0,{}]!\n",
 			i, next_samples.size()-1);
 	return next_samples[i];
 }

@@ -133,7 +133,7 @@ SGVector<int32_t> CMultilabelCLRModel::to_sparse(SGVector<float64_t> dense_vec,
 	for (index_t i = 0; i < dense_vec.vlen; i++)
 	{
 		REQUIRE(dense_vec[i] == d_true || dense_vec[i] == d_false,
-		        "The values of dense vector should be either (%d) or (%d).\n",
+		        "The values of dense vector should be either ({}) or ({}).\n",
 		        d_true, d_false);
 
 		if (dense_vec[i] == d_true)

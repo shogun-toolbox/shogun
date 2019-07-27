@@ -85,7 +85,7 @@ SGVector<float64_t> CHashedMultilabelModel::get_joint_feature_vector(
         int32_t feat_idx, CStructuredData * y)
 {
 	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
-	         "implemented for %s!\n", get_name());
+	         "implemented for {}!\n", get_name());
 
 	return SGVector<float64_t>();
 }
@@ -205,7 +205,7 @@ SGVector<int32_t> CHashedMultilabelModel::to_sparse(SGVector<float64_t> dense_ve
 	for (index_t i = 0; i < dense_vec.vlen; i++)
 	{
 		REQUIRE(dense_vec[i] == d_true || dense_vec[i] == d_false,
-		        "The values of dense vector should be either (%d) or (%d).\n",
+		        "The values of dense vector should be either ({}) or ({}).\n",
 		        d_true, d_false);
 
 		if (dense_vec[i] == d_true)

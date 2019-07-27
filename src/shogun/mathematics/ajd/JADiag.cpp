@@ -29,7 +29,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 		{
 			if (D(j,j) < 0)
 			{
-				SG_ERROR("Input Matrix %d is not Positive-definite\n", i)
+				SG_ERROR("Input Matrix {} is not Positive-definite\n", i)
 			}
 		}
 	}

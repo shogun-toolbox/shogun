@@ -42,7 +42,7 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 				correct++;
 		}
 		m_rejects_num = length-total;
-		SG_DEBUG("correct=%d, total=%d, rejected=%d\n",correct,total,length-total)
+		SG_DEBUG("correct={}, total={}, rejected={}\n",correct,total,length-total)
 		return ((float64_t)correct)/total;
 	}
 	return 0.0;

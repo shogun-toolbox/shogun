@@ -91,20 +91,20 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
 	//make sure features were indeed supplied
-	REQUIRE(l, "CKernel::init(%p, %p): Left hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
-	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
+	REQUIRE(l, "CKernel::init({}, {}): Left hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
+	REQUIRE(r, "CKernel::init({}, {}): Right hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
 
 	//make sure features are compatible
 	if (l->support_compatible_class())
 	{
 		REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
-			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
 			l->get_name(), r->get_name());
 	}
 	else
 	{
 		REQUIRE(l->get_feature_class()==r->get_feature_class(),
-			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
 			l->get_name(), r->get_name())
 	}
 	ASSERT(l->get_feature_type()==r->get_feature_type())
@@ -127,7 +127,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
 
-	SG_DEBUG("leaving CKernel::init(%p, %p)\n", fmt::ptr(l), fmt::ptr(r))
+	SG_DEBUG("leaving CKernel::init({}, {})\n", fmt::ptr(l), fmt::ptr(r))
 	return true;
 }
 
@@ -167,7 +167,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	int32_t totdoc=get_num_vec_lhs();
 	if (totdoc<=0)
 	{
-		SG_ERROR("kernel has zero rows: num_lhs=%d num_rhs=%d\n",
+		SG_ERROR("kernel has zero rows: num_lhs={} num_rhs={}\n",
 				get_num_vec_lhs(), get_num_vec_rhs());
 	}
 	uint64_t buffer_size=0;
@@ -181,7 +181,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	if (buffer_size>((uint64_t) totdoc)*totdoc)
 		buffer_size=((uint64_t) totdoc)*totdoc;
 
-	SG_INFO("using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name())
+	SG_INFO("using a kernel cache of size {} MB ({} bytes) for {} Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name())
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)))
@@ -666,7 +666,7 @@ void CKernel::remove_rhs()
 
 void CKernel::list_kernel()
 {
-	SG_INFO("%p - \"%s\" weight=%1.2f OPT:%s", fmt::ptr(this), get_name(),
+	SG_INFO("{} - \"{}\" weight={:1.2f} OPT:{}", fmt::ptr(this), get_name(),
 			get_combined_kernel_weight(),
 			get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" :
 			"SLOWBUTMEMEFFICIENT");
@@ -859,7 +859,7 @@ CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
 	{
 		CKernel* casted=dynamic_cast<CKernel*>(kernel);
 		REQUIRE(casted, "CKernel::obtain_from_generic(): Error, provided object"
-				" of class \"%s\" is not a subclass of CKernel!\n",
+				" of class \"{}\" is not a subclass of CKernel!\n",
 				kernel->get_name());
 		return casted;
 	}
@@ -998,11 +998,11 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 	REQUIRE(has_features(), "No features assigned to kernel\n")
 	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<num_rhs,
-			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=num_rhs,
-			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
 
 	float64_t sum=0.0;
 
@@ -1049,15 +1049,15 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 	REQUIRE(has_features(), "No features assigned to kernel\n")
 	REQUIRE(block_begin_row>=0 && block_begin_row<num_lhs &&
 			block_begin_col>=0 && block_begin_col<num_rhs,
-			"Invalid block begin index (%d, %d)!\n",
+			"Invalid block begin index ({}, {})!\n",
 			block_begin_row, block_begin_col)
 	REQUIRE(block_begin_row+block_size_row<=num_lhs &&
 			block_begin_col+block_size_col<=num_rhs,
-			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Invalid block size ({}, {}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size_row, block_size_col,
 			block_begin_row, block_begin_col)
 	REQUIRE(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+			"Invalid block size ({}, {})!\n", block_size_row, block_size_col)
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
@@ -1094,11 +1094,11 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 	REQUIRE(has_features(), "No features assigned to kernel\n")
 	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<num_rhs,
-			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=num_rhs,
-			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
 
 	// initialize the vector that accumulates the row/col-wise sum on the go
 	SGVector<float64_t> row_sum(block_size);
@@ -1148,11 +1148,11 @@ SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
 	REQUIRE(has_features(), "No features assigned to kernel\n")
 	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<num_rhs,
-			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=num_rhs,
-			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
 
 	// initialize the matrix that accumulates the row/col-wise sum on the go
 	// the first column stores the sum of kernel values
@@ -1208,15 +1208,15 @@ SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
 	REQUIRE(has_features(), "No features assigned to kernel\n")
 	REQUIRE(block_begin_row>=0 && block_begin_row<num_lhs &&
 			block_begin_col>=0 && block_begin_col<num_rhs,
-			"Invalid block begin index (%d, %d)!\n",
+			"Invalid block begin index ({}, {})!\n",
 			block_begin_row, block_begin_col)
 	REQUIRE(block_begin_row+block_size_row<=num_lhs &&
 			block_begin_col+block_size_col<=num_rhs,
-			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Invalid block size ({}, {}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size_row, block_size_col,
 			block_begin_row, block_begin_col)
 	REQUIRE(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+			"Invalid block size ({}, {})!\n", block_size_row, block_size_col)
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
@@ -1318,7 +1318,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 	bool symmetric= (lhs && lhs==rhs && m==n);
 
-	SG_DEBUG("returning kernel matrix of size %dx%d\n", m, n)
+	SG_DEBUG("returning kernel matrix of size {}x{}\n", m, n)
 
 	result=SG_MALLOC(T, total_num);
 

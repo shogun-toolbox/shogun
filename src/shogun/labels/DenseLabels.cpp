@@ -199,7 +199,7 @@ int32_t CDenseLabels::get_int_label(int32_t idx)
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())
 	if (m_labels.vector[real_num] != float64_t((int32_t(m_labels.vector[real_num]))))
-		SG_ERROR("label[%d]=%g is not an integer\n", m_labels.vector[real_num])
+		SG_ERROR("label[{}]={:g} is not an integer\n", m_labels.vector[real_num])
 
 	return int32_t(m_labels.vector[real_num]);
 }

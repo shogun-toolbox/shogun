@@ -113,7 +113,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weights()
 
 void CExponentialARDKernel::set_scalar_weights(float64_t weight)
 {
-	REQUIRE(weight>0, "Scalar (%f) weight should be positive\n",weight);
+	REQUIRE(weight>0, "Scalar ({}) weight should be positive\n",weight);
 	m_log_weights=SGVector<float64_t>(1);
 	m_log_weights.set_const(std::log(weight));
 	m_ARD_type=KT_SCALAR;
@@ -130,7 +130,7 @@ void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 	m_log_weights=SGVector<float64_t>(weights.vlen);
 	for(index_t i=0; i<weights.vlen; i++)
 	{
-		REQUIRE(weights[i]>0, "Each entry of vector weight (v[%d]=%f) should be positive\n",
+		REQUIRE(weights[i]>0, "Each entry of vector weight (v[{}]={}) should be positive\n",
 			i,weights[i]);
 		m_log_weights[i] = std::log(weights[i]);
 	}
@@ -146,7 +146,7 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 		"Setting matrix weights must be before initialize features\n");
 	REQUIRE(weights.num_cols>0, "Matrix weight should be non-empty");
 	REQUIRE(weights.num_rows>=weights.num_cols,
-		"Number of row (%d) must be not less than number of column (%d)",
+		"Number of row ({}) must be not less than number of column ({})",
 		weights.num_rows, weights.num_cols);
 
 	m_weights_rows=weights.num_rows;
@@ -159,7 +159,7 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 	for (int i=0; i<weights.num_cols && i<weights.num_rows; i++)
 	{
 		float64_t* begin=weights.get_column_vector(i);
-		REQUIRE(begin[i]>0, "The diagonal entry of matrix weight (w(%d,%d)=%f) should be positive\n",
+		REQUIRE(begin[i]>0, "The diagonal entry of matrix weight (w({},{})={}) should be positive\n",
 			i,i,begin[i]);
 		std::copy(begin+i,begin+weights.num_rows,m_log_weights.vector+offset);
 		m_log_weights[offset] = std::log(m_log_weights[offset]);
@@ -186,12 +186,12 @@ bool CExponentialARDKernel::init(CFeatures* l, CFeatures* r)
 	int32_t dim=((CDotFeatures*) l)->get_dim_feature_space();
 	if (m_ARD_type==KT_FULL)
 	{
-		REQUIRE(m_weights_rows==dim, "Dimension mismatch between features (%d) and weights (%d)\n",
+		REQUIRE(m_weights_rows==dim, "Dimension mismatch between features ({}) and weights ({})\n",
 			dim, m_weights_rows);
 	}
 	else if (m_ARD_type==KT_DIAG)
 	{
-		REQUIRE(m_log_weights.vlen==dim, "Dimension mismatch between features (%d) and weights (%d)\n",
+		REQUIRE(m_log_weights.vlen==dim, "Dimension mismatch between features ({}) and weights ({})\n",
 			dim, m_log_weights.vlen);
 	}
 	return init_normalizer();
@@ -256,8 +256,8 @@ void CExponentialARDKernel::check_weight_gradient_index(index_t index)
 
 	if (m_ARD_type!=KT_SCALAR)
 	{
-		REQUIRE(index>=0, "Index (%d) must be non-negative\n",index);
-		REQUIRE(index<m_log_weights.vlen, "Index (%d) must be within #dimension of weights (%d)\n",
+		REQUIRE(index>=0, "Index ({}) must be non-negative\n",index);
+		REQUIRE(index<m_log_weights.vlen, "Index ({}) must be within #dimension of weights ({})\n",
 			index, m_log_weights.vlen);
 	}
 }

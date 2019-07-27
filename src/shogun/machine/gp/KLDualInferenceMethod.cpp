@@ -158,7 +158,7 @@ float64_t CKLDualInferenceMethodMinimizer::minimize()
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
-	  SG_WARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
+	  SG_WARNING("Error(s) happened during L-BFGS optimization (error code:{})\n",
 		  error_code);
 	}
 	return cost;
@@ -179,7 +179,7 @@ float64_t CKLDualInferenceMethodMinimizer::evaluate(void *obj, const float64_t *
 	//get the gradient wrt variable_new
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
 	REQUIRE(grad.vlen==dim,
-		"The length of gradient (%d) and the length of variable (%d) do not match\n",
+		"The length of gradient ({}) and the length of variable ({}) do not match\n",
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);
@@ -361,7 +361,7 @@ float64_t CKLDualInferenceMethod::get_dual_objective_wrt_parameters()
 void CKLDualInferenceMethod::get_gradient_of_dual_objective_wrt_parameters(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
-		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
+		"The length of gradients ({}) should the same as the length of parameters ({})\n",
 		gradient.vlen, m_alpha.vlen);
 
 	if (!m_is_dual_valid)

@@ -35,7 +35,7 @@ bool CStructuredLabels::is_valid() const
 
 void CStructuredLabels::ensure_valid(const char* context)
 {
-	REQUIRE(is_valid(), "Non-valid StructuredLabels in %s", context);
+	REQUIRE(is_valid(), "Non-valid StructuredLabels in {}", context);
 }
 
 CDynamicObjectArray* CStructuredLabels::get_labels() const

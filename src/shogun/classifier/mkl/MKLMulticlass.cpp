@@ -99,7 +99,7 @@ void CMKLMulticlass::initlpsolver()
    if (m_kernel->get_kernel_type()!=K_COMBINED)
 	{
       SG_ERROR("CMKLMulticlass::initlpsolver(): given kernel is not of type"
-            " K_COMBINED %d required by Multiclass Mkl \n",
+            " K_COMBINED {} required by Multiclass Mkl \n",
             m_kernel->get_kernel_type());
 	}
 
@@ -164,7 +164,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			delta+=0.5*normweightssquared[maxind];
 			//delta=fabs(delta);
-			SG_INFO("L1 Norm chosen, MKL part of duality gap %f \n",delta)
+			SG_INFO("L1 Norm chosen, MKL part of duality gap {} \n",delta)
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return true;
@@ -193,7 +193,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
             SG_WARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
 				delta=sqrt(delta);
 			}
-				SG_INFO("weight delta %f \n",delta)
+				SG_INFO("weight delta {} \n",delta)
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
@@ -341,8 +341,8 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 	{
       if (m_labels->get_num_labels() != data->get_num_vectors())
       {
-         SG_ERROR("%s::train_machine(): Number of training vectors (%d) does"
-               " not match number of labels (%d)\n", get_name(),
+         SG_ERROR("{}::train_machine(): Number of training vectors ({}) does"
+               " not match number of labels ({})\n", get_name(),
                data->get_num_vectors(), m_labels->get_num_labels());
       }
       m_kernel->init(data, data);

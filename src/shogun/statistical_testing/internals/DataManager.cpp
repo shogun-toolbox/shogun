@@ -42,7 +42,7 @@ using namespace internal;
 
 DataManager::DataManager(index_t num_distributions)
 {
-	SG_DEBUG("Data manager instance initialized with %d data sources!\n", num_distributions);
+	SG_DEBUG("Data manager instance initialized with {} data sources!\n", num_distributions);
 	fetchers.resize(num_distributions);
 	std::fill(fetchers.begin(), fetchers.end(), nullptr);
 
@@ -83,7 +83,7 @@ index_t DataManager::get_min_blocksize() const
 			divisor=CMath::gcd(divisor, fetchers[i]->m_num_samples);
 		min_blocksize=get_num_samples()/divisor;
 	}
-	SG_DEBUG("min blocksize is %d!", min_blocksize);
+	SG_DEBUG("min blocksize is {}!", min_blocksize);
 	SG_DEBUG("Leaving!\n");
 	return min_blocksize;
 }
@@ -96,20 +96,20 @@ void DataManager::set_blocksize(index_t blocksize)
 	REQUIRE(n>0,
 			"Total number of samples is 0! Please set the number of samples!\n");
 	REQUIRE(blocksize>0 && blocksize<=n,
-			"The blocksize has to be within [0, %d], given = %d!\n",
+			"The blocksize has to be within [0, {}], given = {}!\n",
 			n, blocksize);
 	REQUIRE(n%blocksize==0,
-		"Total number of samples (%d) has to be divisble by the blocksize (%d)!\n",
+		"Total number of samples ({}) has to be divisble by the blocksize ({})!\n",
 		n, blocksize);
 
 	for (size_t i=0; i<fetchers.size(); ++i)
 	{
 		index_t m=fetchers[i]->m_num_samples;
 		REQUIRE((blocksize*m)%n==0,
-			"Blocksize (%d) cannot be even distributed with a ratio of %f!\n",
+			"Blocksize ({}) cannot be even distributed with a ratio of {}!\n",
 			blocksize, m/n);
 		fetchers[i]->fetch_blockwise().with_blocksize(blocksize*m/n);
-		SG_DEBUG("block[%d].size = ", i, blocksize*m/n);
+		SG_DEBUG("block[{}].size = ", i, blocksize*m/n);
 	}
 	SG_DEBUG("Leaving!\n");
 }
@@ -118,7 +118,7 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
 	SG_DEBUG("Entering!\n");
 	REQUIRE(num_blocks_per_burst>0,
-	   	"Number of blocks per burst (%d) has to be greater than 0!\n",
+	   	"Number of blocks per burst ({}) has to be greater than 0!\n",
 		num_blocks_per_burst);
 
 	index_t blocksize=0;
@@ -133,8 +133,8 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	index_t max_num_blocks_per_burst=get_num_samples()/blocksize;
 	if (num_blocks_per_burst>max_num_blocks_per_burst)
 	{
-		SG_INFO("There can only be %d blocks per burst given the blocksize (%d)!\n", max_num_blocks_per_burst, blocksize);
-		SG_INFO("Setting num blocks per burst to be %d instead!\n", max_num_blocks_per_burst);
+		SG_INFO("There can only be {} blocks per burst given the blocksize ({})!\n", max_num_blocks_per_burst, blocksize);
+		SG_INFO("Setting num blocks per burst to be {} instead!\n", max_num_blocks_per_burst);
 		num_blocks_per_burst=max_num_blocks_per_burst;
 	}
 
@@ -147,7 +147,7 @@ InitPerFeature DataManager::samples_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
 	REQUIRE(i<(int64_t)fetchers.size(),
-			"Value of i (%d) should be between 0 and %d, inclusive!",
+			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
 	return InitPerFeature(fetchers[i]);
@@ -157,7 +157,7 @@ CFeatures* DataManager::samples_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
 	REQUIRE(i<(int64_t)fetchers.size(),
-			"Value of i (%d) should be between 0 and %d, inclusive!",
+			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
 	if (fetchers[i]!=nullptr)
@@ -170,7 +170,7 @@ index_t& DataManager::num_samples_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
 	REQUIRE(i<(int64_t)fetchers.size(),
-			"Value of i (%d) should be between 0 and %d, inclusive!",
+			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
 	return fetchers[i]->m_num_samples;
@@ -180,7 +180,7 @@ const index_t DataManager::num_samples_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
 	REQUIRE(i<(int64_t)fetchers.size(),
-			"Value of i (%d) should be between 0 and %d, inclusive!",
+			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
 	if (fetchers[i]!=nullptr)
@@ -193,7 +193,7 @@ const index_t DataManager::blocksize_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
 	REQUIRE(i<(int64_t)fetchers.size(),
-			"Value of i (%d) should be between 0 and %d, inclusive!",
+			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
 	if (fetchers[i]!=nullptr)
@@ -372,8 +372,8 @@ void DataManager::use_fold(index_t idx)
 		"Fold subset cannot be used without turning on Train/Test mode first!"
 		"Please call set_train_test_mode(True) before using this method!\n");
 	REQUIRE(fetchers.size()>0, "Features are not set!");
-	REQUIRE(idx>=0, "Fold index has to be in [0, %d]!", get_num_folds()-1);
-	REQUIRE(idx<get_num_folds(), "Fold index has to be in [0, %d]!", get_num_folds()-1);
+	REQUIRE(idx>=0, "Fold index has to be in [0, {}]!", get_num_folds()-1);
+	REQUIRE(idx<get_num_folds(), "Fold index has to be in [0, {}]!", get_num_folds()-1);
 
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [this, idx](fetcher_type& f)

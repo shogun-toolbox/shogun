@@ -40,7 +40,7 @@ CFeatures::CFeatures(CFile* loader)
 	init();
 
 	load(loader);
-	SG_INFO("Feature object loaded (%p)\n",fmt::ptr(this))
+	SG_INFO("Feature object loaded ({})\n",fmt::ptr(this))
 }
 
 CFeatures::~CFeatures()
@@ -106,7 +106,7 @@ void CFeatures::list_preprocessors()
 
 	for (int32_t i=0; i<num_preproc; i++)
 	{
-		SG_INFO("preproc[%d]=%s\n", i, preproc->get_element(i)->get_name());
+		SG_INFO("preproc[{}]={}\n", i, preproc->get_element(i)->get_name());
 	}
 }
 
@@ -128,7 +128,7 @@ bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
 
 void CFeatures::list_feature_obj() const
 {
-	SG_INFO("%p - ", fmt::ptr(this))
+	SG_INFO("{} - ", fmt::ptr(this))
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
@@ -297,7 +297,7 @@ CSubsetStack* CFeatures::get_subset_stack()
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
 {
-	SG_ERROR("%s::copy_subset(): copy_subset and therefore model storage of "
+	SG_ERROR("{}::copy_subset(): copy_subset and therefore model storage of "
 			"CMachine (required for cross-validation and model-selection is "
 			"not yet implemented yet. Ask developers!\n", get_name());
 	return NULL;
@@ -305,7 +305,7 @@ CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
 
 CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims) const
 {
-	SG_WARNING("%s::copy_dimension_subset():: Is not yet implemented!\n",
+	SG_WARNING("{}::copy_dimension_subset():: Is not yet implemented!\n",
 			get_name());
 	return NULL;
 }

@@ -182,7 +182,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_inducing_noise(
 	//time complexity O(m^2*n)
 	REQUIRE(param, "Param not set\n");
 	REQUIRE(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);

@@ -34,7 +34,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	// function supports regression
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
@@ -77,7 +77,7 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	// function supports regression
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
@@ -106,7 +106,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 	// function supports regression
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
@@ -128,7 +128,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 	// function supports regression
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+	REQUIRE(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression\n",	m_method->get_name(), lik->get_name())
 
 	SGVector<float64_t> mu=get_posterior_means(data);

@@ -68,7 +68,7 @@ void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 	catch (ShogunException e)
 	{
 		SG_PRINT(
-		    "%s: Received an observed value named %s which is a not a "
+		    "{}: Received an observed value named {} which is a not a "
 		    "CrossValidationStorage object"
 		    ", therefore it was ignored.",
 		    this->get_name(), value.first->get<std::string>("name").c_str())
@@ -91,9 +91,9 @@ void CParameterObserverCV::print_observed_value(
 		auto f = value->get("folds", i);
 		SG_PRINT("\n")
 		SG_PRINT(
-		    "Current run index: %i\n", f->get<index_t>("current_run_index"))
+		    "Current run index: {}\n", f->get<index_t>("current_run_index"))
 		SG_PRINT(
-		    "Current fold index: %i\n", f->get<index_t>("current_fold_index"))
+		    "Current fold index: {}\n", f->get<index_t>("current_fold_index"))
 		f->get<SGVector<index_t>>("train_indices")
 		    .display_vector("Train Indices ");
 		f->get<SGVector<index_t>>("test_indices")
@@ -106,7 +106,7 @@ void CParameterObserverCV::print_observed_value(
 		    ->get_values()
 		    .display_vector("Test True Label ");
 		SG_PRINT(
-		    "Evaluation result: %f\n", f->get<float64_t>("evaluation_result"));
+		    "Evaluation result: {}\n", f->get<float64_t>("evaluation_result"));
 		SG_UNREF(f)
 	}
 }
@@ -117,14 +117,14 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 	{
 		CLinearMachine* linear_machine = (CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("Learned Weights = ");
-		SG_PRINT("Learned Bias = %f\n", linear_machine->get_bias())
+		SG_PRINT("Learned Bias = {}\n", linear_machine->get_bias())
 	}
 
 	if (dynamic_cast<CKernelMachine*>(machine))
 	{
 		CKernelMachine* kernel_machine = (CKernelMachine*)machine;
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
-		SG_PRINT("Learned Bias = %f\n", kernel_machine->get_bias())
+		SG_PRINT("Learned Bias = {}\n", kernel_machine->get_bias())
 	}
 
 	if (dynamic_cast<CLinearMulticlassMachine*>(machine) ||

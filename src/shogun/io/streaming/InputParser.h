@@ -467,7 +467,7 @@ template <class T>
     else
         ret = false;
 
-    SG_DEBUG("leaving CInputParser::is_running(), returning %d\n", ret)
+    SG_DEBUG("leaving CInputParser::is_running(), returning {}\n", ret)
     return ret;
 }
 

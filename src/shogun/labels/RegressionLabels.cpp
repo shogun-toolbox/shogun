@@ -68,7 +68,7 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			SG_ERROR(
-			    "Cannot convert %s to regression labels: \n", e.what(),
+			    "Cannot convert {} to regression labels: \n", e.what(),
 			    orig->get_name());
 		}
 

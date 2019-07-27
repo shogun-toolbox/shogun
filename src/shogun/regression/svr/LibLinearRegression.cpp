@@ -84,8 +84,8 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 
 	if (num_vec!=num_train_labels)
 	{
-		SG_ERROR("number of vectors %d does not match "
-				"number of training labels %d\n",
+		SG_ERROR("number of vectors {} does not match "
+				"number of training labels {}\n",
 				num_vec, num_train_labels);
 	}
 
@@ -349,7 +349,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	}
 
 	pb.complete_absolute();
-	SG_INFO("\noptimization finished, #iter = %d\n", iter)
+	SG_INFO("\noptimization finished, #iter = {}\n", iter)
 	if(iter >= m_max_iter)
 		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n")
 
@@ -363,8 +363,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			nSV++;
 	}
 
-	SG_INFO("Objective value = %lf\n", v)
-	SG_INFO("nSV = %d\n",nSV)
+	SG_INFO("Objective value = {}\n", v)
+	SG_INFO("nSV = {}\n",nSV)
 
 	delete [] index;
 }

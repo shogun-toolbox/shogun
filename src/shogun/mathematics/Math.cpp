@@ -90,7 +90,7 @@ int32_t CMath::determine_logrange()
 	}
 
 	SG_INFO(
-	    "determined range for x in table log(1+std::exp(-x)) is:%d "
+	    "determined range for x in table log(1+std::exp(-x)) is:{} "
 	    "(error:%G)\n",
 	    i, acc)
 	return i;
@@ -100,7 +100,7 @@ int32_t CMath::determine_logaccuracy(int32_t range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
 	SG_INFO(
-	    "determined accuracy for x in table log(1+std::exp(-x)) is:%d "
+	    "determined accuracy for x in table log(1+std::exp(-x)) is:{} "
 	    "(error:%G)\n",
 	    range, 1.0 / (double)range)
 	return range;
@@ -323,7 +323,7 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance)
 {
 	REQUIRE(rel_tolerance > 0 && rel_tolerance < 1.0,
-		"Relative tolerance (%f) should be less than 1.0 and positive\n", rel_tolerance);
+		"Relative tolerance ({}) should be less than 1.0 and positive\n", rel_tolerance);
 	REQUIRE(is_finite(true_value),
 		"The true_value should be finite\n");
 	float64_t abs_tolerance = rel_tolerance;

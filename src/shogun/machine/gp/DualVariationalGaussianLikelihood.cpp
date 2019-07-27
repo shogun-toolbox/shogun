@@ -56,7 +56,7 @@ CVariationalGaussianLikelihood* CDualVariationalGaussianLikelihood::get_variatio
 	REQUIRE(m_likelihood, "The likelihood model must not be NULL\n");
 	CVariationalGaussianLikelihood* var_lik=dynamic_cast<CVariationalGaussianLikelihood *>(m_likelihood);
 	REQUIRE(var_lik,
-		"The likelihood model (%s) does NOT support variational guassian inference\n",
+		"The likelihood model ({}) does NOT support variational guassian inference\n",
 		m_likelihood->get_name());
 
 	return var_lik;
@@ -102,7 +102,7 @@ bool CDualVariationalGaussianLikelihood::set_variational_distribution(
 void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale)
 {
 	REQUIRE((strict_scale>0 && strict_scale<1),
-		"The strict_scale (%f) should be between 0 and 1 exclusively.\n",
+		"The strict_scale ({}) should be between 0 and 1 exclusively.\n",
 		strict_scale);
 	m_strict_scale=strict_scale;
 }
@@ -110,11 +110,11 @@ void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale
 float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGVector<float64_t> direction, const float64_t step) const
 {
 	REQUIRE(direction.vlen==m_lambda.vlen,
-		"The length (%d) of direction should be same as the length (%d) of dual parameters\n",
+		"The length ({}) of direction should be same as the length ({}) of dual parameters\n",
 		direction.vlen, m_lambda.vlen);
 
 	REQUIRE(step>=0,
-		"The step size (%f) should be non-negative\n", step);
+		"The step size ({}) should be non-negative\n", step);
 
 	float64_t upper_bound=get_dual_upper_bound();
 	float64_t lower_bound=get_dual_lower_bound();
@@ -158,11 +158,11 @@ void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t>
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
 
 	REQUIRE((lambda.vlen==lab->get_num_labels()),
-		"Length of the vector of lambda (%d) "
-		"and number of labels (%d) should be the same\n",
+		"Length of the vector of lambda ({}) "
+		"and number of labels ({}) should be the same\n",
 		lambda.vlen, lab->get_num_labels());
 	REQUIRE(lab->get_label_type()==LT_BINARY,
-		"Labels (%s) must be type of CBinaryLabels\n",
+		"Labels ({}) must be type of CBinaryLabels\n",
 		lab->get_name());
 
 	m_lab=(((CBinaryLabels*)lab)->get_labels()).clone();

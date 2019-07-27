@@ -87,7 +87,7 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 {
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(
-	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
+	    labels->get_num_classes() == 2, "Number of classes ({}) must be 2\n",
 	    labels->get_num_classes())
 
 	// keep just one dimension to do binary classification
@@ -124,7 +124,7 @@ bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 {
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(
-	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
+	    labels->get_num_classes() == 2, "Number of classes ({}) must be 2\n",
 	    labels->get_num_classes())
 	index_t num_feat = data->get_num_features();
 

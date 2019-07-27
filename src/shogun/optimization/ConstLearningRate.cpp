@@ -36,7 +36,7 @@ using namespace shogun;
 
 void ConstLearningRate::set_const_learning_rate(float64_t learning_rate)
 {
-	REQUIRE(learning_rate>0.0, "learning_rate (%f) must be positive",learning_rate);
+	REQUIRE(learning_rate>0.0, "learning_rate ({}) must be positive",learning_rate);
 	m_const_learning_rate=learning_rate;
 }
 

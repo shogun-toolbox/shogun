@@ -113,10 +113,10 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 	/* Make sure l and r have the same type of CFeatures */
 	REQUIRE(l->get_feature_class()==r->get_feature_class(),
-			"Different FeatureClass: l is %d, r is %d\n",
+			"Different FeatureClass: l is {}, r is {}\n",
 			l->get_feature_class(),r->get_feature_class())
 	REQUIRE(l->get_feature_type()==r->get_feature_type(),
-			"Different FeatureType: l is %d, r is %d\n",
+			"Different FeatureType: l is {}, r is {}\n",
 			l->get_feature_type(),r->get_feature_type())
 
 	/* If l and r are the type of CIndexFeatures,
@@ -145,8 +145,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 	lhs_equals_rhs=m_is_symmetric;
 
-	SG_DEBUG("num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
-	SG_DEBUG("num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols)
+	SG_DEBUG("num_vec_lhs: {} vs num_rows {}\n", l->get_num_vectors(), kmatrix.num_rows)
+	SG_DEBUG("num_vec_rhs: {} vs num_cols {}\n", r->get_num_vectors(), kmatrix.num_cols)
 	ASSERT(l->get_num_vectors()==kmatrix.num_rows)
 	ASSERT(r->get_num_vectors()==kmatrix.num_cols)
 	return init_normalizer();
@@ -167,11 +167,11 @@ float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
 	REQUIRE(m_is_symmetric, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<kmatrix.num_cols,
-			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=kmatrix.num_cols,
-			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
 
 	SG_DEBUG("Leaving\n");
 
@@ -196,15 +196,15 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
 	REQUIRE(block_begin_row>=0 && block_begin_row<kmatrix.num_rows &&
 			block_begin_col>=0 && block_begin_col<kmatrix.num_cols,
-			"Invalid block begin index (%d, %d)!\n",
+			"Invalid block begin index ({}, {})!\n",
 			block_begin_row, block_begin_col)
 	REQUIRE(block_begin_row+block_size_row<=kmatrix.num_rows &&
 			block_begin_col+block_size_col<=kmatrix.num_cols,
-			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Invalid block size ({}, {}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size_row, block_size_col,
 			block_begin_row, block_begin_col)
 	REQUIRE(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+			"Invalid block size ({}, {})!\n", block_size_row, block_size_col)
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
@@ -235,11 +235,11 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
 	REQUIRE(m_is_symmetric, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<kmatrix.num_cols,
-			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=kmatrix.num_cols,
-			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
 
 	SGVector<float32_t> s=rowwise_sum(block(kmatrix, block_begin,
 				block_begin, block_size, block_size), no_diag);
@@ -270,11 +270,11 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
 	REQUIRE(m_is_symmetric, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<kmatrix.num_cols,
-			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=kmatrix.num_cols,
-			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
 
 	// initialize the matrix that accumulates the row/col-wise sum
 	// the first column stores the sum of kernel values
@@ -316,15 +316,15 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
 	REQUIRE(block_begin_row>=0 && block_begin_row<kmatrix.num_rows &&
 			block_begin_col>=0 && block_begin_col<kmatrix.num_cols,
-			"Invalid block begin index (%d, %d)!\n",
+			"Invalid block begin index ({}, {})!\n",
 			block_begin_row, block_begin_col)
 	REQUIRE(block_begin_row+block_size_row<=kmatrix.num_rows &&
 			block_begin_col+block_size_col<=kmatrix.num_cols,
-			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Invalid block size ({}, {}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size_row, block_size_col,
 			block_begin_row, block_begin_col)
 	REQUIRE(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+			"Invalid block size ({}, {})!\n", block_size_row, block_size_col)
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)

@@ -75,10 +75,10 @@ SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
 : SGReferencedData(vec)
 {
 	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
-	REQUIRE(nrows>0, "Number of rows (%d) has to be a positive integer!\n", nrows);
-	REQUIRE(ncols>0, "Number of cols (%d) has to be a positive integer!\n", ncols);
-	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix (%d) must "
-			"be the same as the number of elements in the vector (%d)!\n",
+	REQUIRE(nrows>0, "Number of rows ({}) has to be a positive integer!\n", nrows);
+	REQUIRE(ncols>0, "Number of cols ({}) has to be a positive integer!\n", ncols);
+	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix ({}) must "
+			"be the same as the number of elements in the vector ({})!\n",
 			nrows*ncols, vec.vlen);
 
 	matrix=vec.vector;
@@ -232,8 +232,8 @@ void SGMatrix<T>::set_const(T const_elem)
 	assert_on_cpu();
 
 	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	std::fill(matrix, matrix+size(), const_elem);
 }
@@ -250,8 +250,8 @@ bool SGMatrix<T>::is_symmetric() const
 	assert_on_cpu();
 
 	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	if (num_rows!=num_cols)
 		return false;
@@ -276,8 +276,8 @@ bool SGMatrix<real_t>::is_symmetric() const	\
 	assert_on_cpu();	\
 	\
 	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");	\
-	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);	\
-	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);	\
+	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);	\
+	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);	\
 	\
 	if (num_rows!=num_cols)	\
 		return false;	\
@@ -307,8 +307,8 @@ bool SGMatrix<complex128_t>::is_symmetric() const
 	assert_on_cpu();
 
 	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	if (num_rows!=num_cols)
 		return false;
@@ -334,8 +334,8 @@ T SGMatrix<T>::max_single() const
 	assert_on_cpu();
 
 	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	return *std::max_element(matrix, matrix+size());
 }
@@ -368,8 +368,8 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 	if (!matrix || !nrows || !ncols)
 		return nullptr;
 
-	REQUIRE(nrows > 0, "Number of rows (%d) has to be positive!\n", nrows);
-	REQUIRE(ncols > 0, "Number of cols (%d) has to be positive!\n", ncols);
+	REQUIRE(nrows > 0, "Number of rows ({}) has to be positive!\n", nrows);
+	REQUIRE(ncols > 0, "Number of cols ({}) has to be positive!\n", ncols);
 
 	auto size=int64_t(nrows)*ncols;
 	T* result=SG_ALIGNED_MALLOC(T, size, alignment::container_alignment);
@@ -553,7 +553,7 @@ void SGMatrix<T>::display_matrix(
 	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0)
-	SG_PRINT("%s%s=%s\n", prefix, name, to_string(matrix, rows, cols).c_str())
+	SG_PRINT("{}{}={}\n", prefix, name, to_string(matrix, rows, cols).c_str())
 }
 
 template <>
@@ -780,7 +780,7 @@ double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
 			eigenvalues, &info);
 
 	if (info!=0)
-		SG_ERROR("DSYEV failed with code %d\n", info)
+		SG_ERROR("DSYEV failed with code {}\n", info)
 
 	return eigenvalues;
 }
@@ -817,7 +817,7 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 	if (cols_A!=rows_B)
 	{
 		SG_ERROR("SGMatrix::matrix_multiply(): Dimension mismatch: "
-				"A(%dx%d)*B(%dx%D)\n", rows_A, cols_A, rows_B, cols_B);
+				"A({}x{})*B({}x%D)\n", rows_A, cols_A, rows_B, cols_B);
 	}
 
 	/* allocate result matrix */
@@ -868,8 +868,8 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 				pre_allocated.num_cols!=num_cols)
 		{
 			SG_ERROR("SGMatrix<T>::get_allocated_matrix(). Provided target"
-					"matrix dimensions (%dx%d) do not match passed data "
-					"dimensions (%dx%d)!\n", pre_allocated.num_rows,
+					"matrix dimensions ({}x{}) do not match passed data "
+					"dimensions ({}x{})!\n", pre_allocated.num_rows,
 					pre_allocated.num_cols, num_rows, num_cols);
 		}
 	}

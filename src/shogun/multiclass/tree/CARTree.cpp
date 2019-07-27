@@ -145,7 +145,7 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 	{
 		CSGObject* element=pruned_trees->get_element(i);
 		if (element == nullptr)
-			SG_ERROR("%d element is NULL\n",i);
+			SG_ERROR("{} element is NULL\n",i);
 
 		bnode_t* root = dynamic_cast<bnode_t*>(element);
 
@@ -163,7 +163,7 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 
 	CSGObject* element=pruned_trees->get_element(min_index);
 	if (element == nullptr)
-		SG_ERROR("%d element is NULL\n",min_index);
+		SG_ERROR("{} element is NULL\n",min_index);
 
 	bnode_t* root = dynamic_cast<bnode_t*>(element);
 	this->set_root(root);
@@ -209,7 +209,7 @@ int32_t CCARTree::get_num_folds() const
 
 void CCARTree::set_num_folds(int32_t folds)
 {
-	REQUIRE(folds>1,"Number of folds is expected to be greater than 1. Supplied value is %d\n",folds)
+	REQUIRE(folds>1,"Number of folds is expected to be greater than 1. Supplied value is {}\n",folds)
 	m_folds=folds;
 }
 
@@ -220,7 +220,7 @@ int32_t CCARTree::get_max_depth() const
 
 void CCARTree::set_max_depth(int32_t depth)
 {
-	REQUIRE(depth>0,"Max allowed tree depth should be greater than 0. Supplied value is %d\n",depth)
+	REQUIRE(depth>0,"Max allowed tree depth should be greater than 0. Supplied value is {}\n",depth)
 	m_max_depth=depth;
 }
 
@@ -231,7 +231,7 @@ int32_t CCARTree::get_min_node_size() const
 
 void CCARTree::set_min_node_size(int32_t nsize)
 {
-	REQUIRE(nsize>0,"Min allowed node size should be greater than 0. Supplied value is %d\n",nsize)
+	REQUIRE(nsize>0,"Min allowed node size should be greater than 0. Supplied value is {}\n",nsize)
 	m_min_node_size=nsize;
 }
 
@@ -262,8 +262,8 @@ bool CCARTree::train_machine(CFeatures* data)
 
 	if (weights_set())
 	{
-		REQUIRE(m_weights.vlen==num_vectors,"Length of weights vector (currently %d) should be same as"
-					" number of vectors in data (presently %d)",m_weights.vlen,num_vectors)
+		REQUIRE(m_weights.vlen==num_vectors,"Length of weights vector (currently {}) should be same as"
+					" number of vectors in data (presently {})",m_weights.vlen,num_vectors)
 	}
 	else
 	{
@@ -276,8 +276,8 @@ bool CCARTree::train_machine(CFeatures* data)
 	{
 		REQUIRE(
 		    m_nominal.vlen == num_features,
-		    "Length of m_nominal vector (currently %d) should "
-		    "be same as number of features in data (presently %d).\n",
+		    "Length of m_nominal vector (currently {}) should "
+		    "be same as number of features in data (presently {}).\n",
 		    m_nominal.vlen, num_features)
 	}
 	else
@@ -1244,7 +1244,7 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 			if (jth_element!=NULL)
 				current_root=dynamic_cast<bnode_t*>(jth_element);
 			else
-				SG_ERROR("%d element is NULL which should not be",j);
+				SG_ERROR("{} element is NULL which should not be",j);
 
 			CLabels* labels =
 			    apply_from_current_node(feats_train, current_root);
@@ -1305,7 +1305,7 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 	CSGObject* element=pruned_trees->get_element(min_index);
 	bnode_t* best_tree_root=NULL;
 	if (element==nullptr)
-		SG_ERROR("%d element is NULL which should not be",min_index);
+		SG_ERROR("{} element is NULL which should not be",min_index);
 
 	best_tree_root=dynamic_cast<bnode_t*>(element);
 	this->set_root(best_tree_root);

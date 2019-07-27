@@ -138,7 +138,7 @@ class CDynamicObjectArray : public CSGObject
 		{
 			if (index >= m_array.size())
 			{
-				SG_ERROR("array index out of bounds (%d >= %d)\n",
+				SG_ERROR("array index out of bounds ({} >= {})\n",
 						 index, m_array.size());
 			}
 			return get_element(index);

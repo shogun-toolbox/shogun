@@ -108,7 +108,7 @@ void CHomogeneousKernelMap::init()
 	int tableWidth = m_numSubdivisions * (m_maxExponent - m_minExponent + 1);
 	size_t numElements = (tableHeight * tableWidth + 2*(1+m_order));
 	if (unsigned(m_table.vlen) != numElements) {
-		SG_DEBUG ("reallocating... %d -> %d\n", m_table.vlen, numElements)
+		SG_DEBUG ("reallocating... {} -> {}\n", m_table.vlen, numElements)
 		m_table.vector = SG_REALLOC (float64_t, m_table.vector, m_table.vlen, numElements);
 		m_table.vlen = numElements;
 	}

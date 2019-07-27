@@ -27,10 +27,10 @@ CStochasticSOSVM::CStochasticSOSVM(
 : RandomMixin<CLinearStructuredOutputMachine>(model, labs)
 {
 	REQUIRE(model != NULL && labs != NULL,
-		"%s::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
+		"{}::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
 
 	REQUIRE(labs->get_num_labels() > 0,
-		"%s::CStochasticSOSVM(): number of labels should be greater than 0!\n", get_name());
+		"{}::CStochasticSOSVM(): number of labels should be greater than 0!\n", get_name());
 
 	init();
 	m_lambda = 1.0 / labs->get_num_labels();
@@ -77,7 +77,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	// Number of training examples
 	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
 
-	SG_DEBUG("M=%d, N =%d.\n", M, N);
+	SG_DEBUG("M={}, N ={}.\n", M, N);
 
 	// Initialize the weight vector
 	m_w = SGVector<float64_t>(M);
@@ -136,7 +136,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 			else
 			{
-				SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+				SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
 						"to be set true\n", m_model->get_name());
 			}
 
@@ -173,7 +173,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 				float64_t primal = CSOSVMHelper::primal_objective(w_debug, m_model, m_lambda);
 				float64_t train_error = CSOSVMHelper::average_loss(w_debug, m_model);
 
-				SG_DEBUG("pass %d (iteration %d), SVM primal = %f, train_error = %f \n",
+				SG_DEBUG("pass {} (iteration {}), SVM primal = {}, train_error = {} \n",
 					pi, k, primal, train_error);
 
 				m_helper->add_debug_info(primal, (1.0*k) / N, train_error);

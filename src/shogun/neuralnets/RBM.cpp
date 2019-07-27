@@ -109,8 +109,8 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 {
 	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
 	REQUIRE(features->get_num_features()==m_num_visible,
-		"Number of features (%i) must match the RBM's number of visible units "
-		"(%i)\n", features->get_num_features(), m_num_visible);
+		"Number of features ({}) must match the RBM's number of visible units "
+		"({})\n", features->get_num_features(), m_num_visible);
 
 	SGMatrix<float64_t> inputs = features->get_feature_matrix();
 
@@ -166,10 +166,10 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 			if (counter%monitoring_interval == 0)
 			{
 				if (monitoring_method==RBMMM_RECONSTRUCTION_ERROR)
-					SG_INFO("Epoch %i: reconstruction Error = %f\n",i,
+					SG_INFO("Epoch {}: reconstruction Error = {}\n",i,
 						reconstruction_error(inputs_batch, buffer));
 				if (monitoring_method==RBMMM_PSEUDO_LIKELIHOOD)
-					SG_INFO("Epoch %i: Pseudo-log-likelihood = %f\n",i,
+					SG_INFO("Epoch {}: Pseudo-log-likelihood = {}\n",i,
 						pseudo_likelihood(inputs_batch,buffer));
 			}
 			counter ++;
@@ -196,7 +196,7 @@ CDenseFeatures< float64_t >* CRBM::sample_group(int32_t V,
 	int32_t num_gibbs_steps, int32_t batch_size)
 {
 	REQUIRE(V<m_num_visible_groups,
-		"Visible group index (%i) out of bounds (%i)\n", V, m_num_visible);
+		"Visible group index ({}) out of bounds ({})\n", V, m_num_visible);
 
 	sample(num_gibbs_steps, batch_size);
 
@@ -214,7 +214,7 @@ void CRBM::sample_with_evidence(
 	int32_t E, CDenseFeatures< float64_t >* evidence, int32_t num_gibbs_steps)
 {
 	REQUIRE(E<m_num_visible_groups,
-		"Visible group index (%i) out of bounds (%i)\n", E, m_num_visible);
+		"Visible group index ({}) out of bounds ({})\n", E, m_num_visible);
 
 	set_batch_size(evidence->get_num_vectors());
 
@@ -248,9 +248,9 @@ CDenseFeatures< float64_t >* CRBM::sample_group_with_evidence(int32_t V,
 	int32_t E, CDenseFeatures< float64_t >* evidence, int32_t num_gibbs_steps)
 {
 	REQUIRE(V<m_num_visible_groups,
-		"Visible group index (%i) out of bounds (%i)\n", V, m_num_visible);
+		"Visible group index ({}) out of bounds ({})\n", V, m_num_visible);
 	REQUIRE(E<m_num_visible_groups,
-		"Visible group index (%i) out of bounds (%i)\n", E, m_num_visible);
+		"Visible group index ({}) out of bounds ({})\n", E, m_num_visible);
 
 	sample_with_evidence(E, evidence, num_gibbs_steps);
 

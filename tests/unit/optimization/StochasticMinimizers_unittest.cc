@@ -75,8 +75,8 @@ void CRegressionExample::init()
 
 float64_t CRegressionExample::get_cost()
 {
-	REQUIRE(m_x.num_rows==m_y.vlen,"samples size (%d %d) must match\n",m_x.num_rows,m_y.vlen);
-	REQUIRE(m_x.num_cols==m_w.vlen,"features size (%d %d) must match\n",m_x.num_cols,m_w.vlen);
+	REQUIRE(m_x.num_rows==m_y.vlen,"samples size ({} {}) must match\n",m_x.num_rows,m_y.vlen);
+	REQUIRE(m_x.num_cols==m_w.vlen,"features size ({} {}) must match\n",m_x.num_cols,m_w.vlen);
 
 	Map<MatrixXd> e_x(m_x.matrix, m_x.num_rows, m_x.num_cols);
 	Map<VectorXd> e_w(m_w.vector, m_w.vlen);

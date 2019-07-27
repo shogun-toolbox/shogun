@@ -111,10 +111,10 @@ void DataFetcher::shuffle_features()
 	else
 	{
 		const index_t size=m_samples->get_num_vectors();
-		SG_DEBUG("Current number of feature vectors = %d\n", size);
+		SG_DEBUG("Current number of feature vectors = {}\n", size);
 		if (shuffle_subset.size()<size)
 		{
-			SG_DEBUG("Resizing the shuffle indices vector (from %d to %d)\n", shuffle_subset.size(), size);
+			SG_DEBUG("Resizing the shuffle indices vector (from {} to {})\n", shuffle_subset.size(), size);
 			shuffle_subset=SGVector<index_t>(size);
 		}
 		std::iota(shuffle_subset.data(), shuffle_subset.data()+shuffle_subset.size(), 0);
@@ -122,7 +122,7 @@ void DataFetcher::shuffle_features()
 		// CMath::permute(shuffle_subset);
 //		shuffle_subset.display_vector("shuffle_subset");
 
-		SG_DEBUG("Shuffling %d feature vectors\n", size);
+		SG_DEBUG("Shuffling {} feature vectors\n", size);
 		m_samples->add_subset(shuffle_subset);
 
 		features_shuffled=true;
@@ -183,12 +183,12 @@ void DataFetcher::start()
 	{
 		m_samples->add_subset(active_subset);
 		SG_DEBUG("Added active subset!\n");
-		SG_INFO("Currently active number of samples is %d\n", get_num_samples());
+		SG_INFO("Currently active number of samples is {}\n", get_num_samples());
 	}
 
 	if (m_block_details.m_full_data || m_block_details.m_blocksize>get_num_samples())
 	{
-		SG_INFO("Fetching entire data (%d samples)!\n", get_num_samples());
+		SG_INFO("Fetching entire data ({} samples)!\n", get_num_samples());
 		m_block_details.with_blocksize(get_num_samples());
 	}
 	m_block_details.m_total_num_blocks=get_num_samples()/m_block_details.m_blocksize;
@@ -228,7 +228,7 @@ void DataFetcher::end()
 	{
 		m_samples->remove_subset();
 		SG_DEBUG("Removed active subset!\n");
-		SG_INFO("Currently active number of samples is %d\n", get_num_samples());
+		SG_INFO("Currently active number of samples is {}\n", get_num_samples());
 	}
 }
 
@@ -272,18 +272,18 @@ void DataFetcher::allocate_active_subset()
 	if (train_mode)
 	{
 		num_active_samples=m_samples->get_num_vectors()*train_test_ratio/(train_test_ratio+1);
-		SG_INFO("Using %d number of samples for this fold as training samples!\n", num_active_samples);
+		SG_INFO("Using {} number of samples for this fold as training samples!\n", num_active_samples);
 	}
 	else
 	{
 		num_active_samples=m_samples->get_num_vectors()/(train_test_ratio+1);
-		SG_INFO("Using %d number of samples for this fold as testing samples!\n", num_active_samples);
+		SG_INFO("Using {} number of samples for this fold as testing samples!\n", num_active_samples);
 	}
 
 	ASSERT(num_active_samples>0);
 	if (active_subset.size()!=num_active_samples)
 	{
-		SG_DEBUG("Resizing the active subset from %d to %d\n", active_subset.size(), num_active_samples);
+		SG_DEBUG("Resizing the active subset from {} to {}\n", active_subset.size(), num_active_samples);
 		active_subset=SGVector<index_t>(num_active_samples);
 	}
 }

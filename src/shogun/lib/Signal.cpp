@@ -70,7 +70,7 @@ void CSignal::handler(int signal)
 	}
 	else
 	{
-		SG_PRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
+		SG_PRINT("[ShogunSignalHandler] Unknown signal {} received\n", signal)
 	}
 }
 

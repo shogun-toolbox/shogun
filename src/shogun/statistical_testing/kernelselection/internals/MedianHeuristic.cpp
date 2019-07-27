@@ -48,7 +48,7 @@ MedianHeuristic::MedianHeuristic(KernelManager& km, CMMD* est) : KernelSelection
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		REQUIRE(kernel_mgr.kernel_at(i)->get_kernel_type()==K_GAUSSIAN,
-			"The underlying kernel has to be a GaussianKernel (was %s)!\n",
+			"The underlying kernel has to be a GaussianKernel (was {})!\n",
 			kernel_mgr.kernel_at(i)->get_name());
 	}
 }
@@ -72,7 +72,7 @@ void MedianHeuristic::compute_measures()
 
 	n=distance->get_num_vec_lhs();
 	REQUIRE(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
-		"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",
+		"Distance matrix is supposed to be a square matrix (was of dimension {}X{})!\n",
 		distance->get_num_vec_lhs(), distance->get_num_vec_rhs());
 	measures=SGVector<float64_t>((n*(n-1))/2);
 	index_t write_idx=0;
@@ -99,7 +99,7 @@ CKernel* MedianHeuristic::select_kernel()
 {
 	compute_measures();
 	auto median_distance=measures[measures.size()/2];
-	SG_DEBUG("kernel width (shogun): %f\n", median_distance);
+	SG_DEBUG("kernel width (shogun): {}\n", median_distance);
 
 	const auto num_kernels=kernel_mgr.num_kernels();
 	measures=SGVector<float64_t>(num_kernels);
@@ -110,6 +110,6 @@ CKernel* MedianHeuristic::select_kernel()
 	}
 
 	auto kernel_idx=(int64_t)std::distance(measures.data(), std::min_element(measures.data(), measures.data()+measures.size()));
-	SG_DEBUG("Selected kernel at %d position!\n", kernel_idx);
+	SG_DEBUG("Selected kernel at {} position!\n", kernel_idx);
 	return kernel_mgr.kernel_at(kernel_idx);
 }

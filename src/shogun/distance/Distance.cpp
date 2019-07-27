@@ -83,25 +83,25 @@ bool CDistance::check_compatibility(CFeatures* l, CFeatures* r)
 	REQUIRE(r, "Right hand side features must be set!\n");
 
 	REQUIRE(l->get_feature_type()==r->get_feature_type(),
-		"Right hand side of features (%s) must be of same type with left hand side features (%s)\n",
+		"Right hand side of features ({}) must be of same type with left hand side features ({})\n",
 		r->get_name(), l->get_name());
 
 	if (l->support_compatible_class())
 	{
 		REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
-			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
 			r->get_name(), l->get_name());
 	}
 	else if (r->support_compatible_class())
 	{
 		REQUIRE(r->get_feature_class_compatibility(l->get_feature_class()),
-			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
 			r->get_name(), l->get_name());
 	}
 	else
 	{
 		REQUIRE(l->get_feature_class()==r->get_feature_class(),
-			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
 			r->get_name(), l->get_name());
 	}
 
@@ -186,7 +186,7 @@ float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
 {
 	REQUIRE(idx_a < lhs->get_num_vectors() && idx_b < rhs->get_num_vectors() && \
 			idx_a >= 0 && idx_b >= 0,
-			"idx_a (%d) must be in [0,%d] and idx_b (%d) must be in [0,%d]\n",
+			"idx_a ({}) must be in [0,{}] and idx_b ({}) must be in [0,{}]\n",
 			idx_a, lhs->get_num_vectors()-1, idx_b, rhs->get_num_vectors()-1)
 
 	ASSERT(lhs)
@@ -234,7 +234,7 @@ void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
 	int32_t num_right=rhs->get_num_vectors();
-	SG_INFO("precomputing distance matrix (%ix%i)\n", num_left, num_right)
+	SG_INFO("precomputing distance matrix ({}x{})\n", num_left, num_right)
 
 	ASSERT(num_left==num_right)
 	ASSERT(lhs==rhs)
@@ -280,7 +280,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 	bool symmetric= (lhs && lhs==rhs && m==n);
 
-	SG_DEBUG("returning distance matrix of size %dx%d\n", m, n)
+	SG_DEBUG("returning distance matrix of size {}x{}\n", m, n)
 
 	result=SG_MALLOC(T, total_num);
 

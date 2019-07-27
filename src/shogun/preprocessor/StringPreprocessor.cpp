@@ -93,8 +93,8 @@ namespace shogun
 	{
 		REQUIRE(
 		    features->get_feature_class() == C_STRING,
-		    "Provided features (%d) "
-		    "has to be of C_STRING (%d) class!\n",
+		    "Provided features ({}) "
+		    "has to be of C_STRING ({}) class!\n",
 		    features->get_feature_class(), C_STRING);
 
 		SG_REF(features);

@@ -98,8 +98,8 @@ void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
 	    *std::min_element(labels_histogram.begin(), labels_histogram.end());
 	REQUIRE(
 	    min_num_examples > k,
-	    "The minimum number of examples of any class (%d) must be larger "
-	    "than k (%d); it must be at least k+1 because any example needs "
+	    "The minimum number of examples of any class ({}) must be larger "
+	    "than k ({}); it must be at least k+1 because any example needs "
 	    "k *other* neighbors of the same class.",
 	    min_num_examples, k)
 }

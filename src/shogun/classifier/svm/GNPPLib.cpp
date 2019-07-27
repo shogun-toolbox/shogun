@@ -47,7 +47,7 @@ CGNPPLib::CGNPPLib(
   Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
   Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
-  SG_INFO("using %d kernel cache lines\n", Cache_Size)
+  SG_INFO("using {} kernel cache lines\n", Cache_Size)
   ASSERT(Cache_Size>=2)
 
   /* allocates memory for kernel cache */
@@ -178,7 +178,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
   History[INDEX(1,0,2)] = UB;
 
   if( verb ) {
-    SG_PRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Init: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
@@ -290,7 +290,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
     else if(t >= tmax) exitflag = 0; 
 
     if( verb && (t % verb) == 0) {
-     SG_PRINT("%d: UB=%f,LB=%f,UB-LB=%f,(UB-LB)/|UB|=%f\n",
+     SG_PRINT("{}: UB={},LB={},UB-LB={},(UB-LB)/|UB|={}\n",
         t, UB, LB, UB-LB,(UB-LB)/UB); 
     }  
 
@@ -317,7 +317,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
 
   /* print info about last iteration*/
   if(verb && (t % verb) ) {
-    SG_PRINT("Exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Exit: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
@@ -445,7 +445,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
   History[INDEX(1,0,2)] = UB;
 
   if( verb ) {
-    SG_PRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Init: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
@@ -626,7 +626,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
     else if(t >= tmax) exitflag = 0; 
 
     if( verb && (t % verb) == 0) {
-     SG_PRINT("%d: UB=%f,LB=%f,UB-LB=%f,(UB-LB)/|UB|=%f\n",
+     SG_PRINT("{}: UB={},LB={},UB-LB={},(UB-LB)/|UB|={}\n",
         t, UB, LB, UB-LB,(UB-LB)/UB); 
     }  
 
@@ -653,7 +653,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
 
   /* print info about last iteration*/
   if(verb && (t % verb) ) {
-    SG_PRINT("Exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Exit: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 

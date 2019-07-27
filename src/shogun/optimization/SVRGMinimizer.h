@@ -79,11 +79,11 @@ public:
 	virtual void set_sgd_number_passes(int32_t sgd_passes)
 	{
 		REQUIRE(m_num_passes>0, "Must set num_passes first\n");
-		REQUIRE(sgd_passes>=0, "The number (%d) to go through data using SGD update must be positive\n",
+		REQUIRE(sgd_passes>=0, "The number ({}) to go through data using SGD update must be positive\n",
 			sgd_passes);
 		REQUIRE(m_num_passes>sgd_passes,
-			"SVRG update is not actived because the total number (%d) to go through data",
-			" is less than the number (%d) to go through data using SGD\n",
+			"SVRG update is not actived because the total number ({}) to go through data",
+			" is less than the number ({}) to go through data using SGD\n",
 			m_num_passes, sgd_passes);
 		m_num_sgd_passes=sgd_passes;
 	}
@@ -102,11 +102,11 @@ public:
 	{
 		REQUIRE(m_num_passes>0, "Must set num passes first\n");
 		REQUIRE(m_num_sgd_passes>=0, "Must set sgd update passes first\n");
-		REQUIRE(interval>0, "Interval (%d) must be positive\n", interval);
+		REQUIRE(interval>0, "Interval ({}) must be positive\n", interval);
 		REQUIRE((m_num_passes-m_num_sgd_passes)%interval==0, "Interval is not valid\n");
-		/* if (m_num_passes-m_num_sgd_passes)%interval!=0, will affect the finaly result if we do the following operations:
+		/* if (m_num_passes-m_num_sgd_passes){}nterval!=0, will affect the finaly result if we do the following operations:
 		* first do minimization, then save_to_file, and then load_from_file and finaly do minimization.
-		* If we want to get the exact result when (m_num_passes-m_num_sgd_passes)%interval!=0,
+		* If we want to get the exact result when (m_num_passes-m_num_sgd_passes){}nterval!=0,
 		* we should store/restore m_average_gradient and m_previous_variable in save_to_file/load_from_file
 		*/
 		m_svrg_interval=interval;

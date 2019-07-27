@@ -137,7 +137,7 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle not"
+				SG_ERROR("{}::set_triangle_kernel_matrix_from_triangle not"
 						" possible with subset. Remove first\n", get_name());
 			}
 			return set_triangle_kernel_matrix_from_triangle_generic(tri_kernel_matrix);
@@ -160,7 +160,7 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle_generic "
+				SG_ERROR("{}::set_triangle_kernel_matrix_from_triangle_generic "
 						"not possible with subset. Remove first\n", get_name());
 			}
 			ASSERT(tri_kernel_matrix.vector)
@@ -175,7 +175,7 @@ class CCustomKernel: public CKernel
 			}
 
 			cleanup_custom();
-			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom kernel of size {}x{}\n", cols,cols)
 
 			float32_t* m = SG_MALLOC(float32_t, len);
 			kmatrix=SGMatrix<float32_t>(m, cols, cols);
@@ -217,7 +217,7 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_triangle_kernel_matrix_from_full_generic "
+				SG_ERROR("{}::set_triangle_kernel_matrix_from_full_generic "
 						"not possible with subset. Remove first\n", get_name());
 			}
 
@@ -226,7 +226,7 @@ class CCustomKernel: public CKernel
 			ASSERT(rows==cols)
 
 			cleanup_custom();
-			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom kernel of size {}x{}\n", cols,cols)
 
 			float32_t* m = SG_MALLOC(float32_t, cols*(cols+1)/2);
 			kmatrix=SGMatrix<float32_t>(m, rows, cols);
@@ -263,7 +263,7 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_full_kernel_matrix_from_full "
+				SG_ERROR("{}::set_full_kernel_matrix_from_full "
 						"not possible with subset. Remove first\n", get_name());
 			}
 
@@ -294,14 +294,14 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_full_kernel_matrix_from_full "
+				SG_ERROR("{}::set_full_kernel_matrix_from_full "
 						"not possible with subset. Remove first\n", get_name());
 			}
 
 			cleanup_custom();
 			int32_t rows=full_kernel_matrix.num_rows;
 			int32_t cols=full_kernel_matrix.num_cols;
-			SG_DEBUG("using custom kernel of size %dx%d\n", rows,cols)
+			SG_DEBUG("using custom kernel of size {}x{}\n", rows,cols)
 
 			kmatrix=SGMatrix<float32_t>(rows,cols);
 			upper_diagonal = false;
@@ -545,15 +545,15 @@ class CCustomKernel: public CKernel
 		 */
 		SGMatrix<float32_t> get_float32_kernel_matrix()
 		{
-			REQUIRE(!m_row_subset_stack->has_subsets(), "%s::get_float32_kernel_matrix(): "
+			REQUIRE(!m_row_subset_stack->has_subsets(), "{}::get_float32_kernel_matrix(): "
 						"Not possible with row subset active! If you want to"
-						" create a %s from another one with a subset, use "
+						" create a {} from another one with a subset, use "
 						"get_kernel_matrix() and the SGMatrix constructor!\n",
 						get_name(), get_name());
 
-			REQUIRE(!m_col_subset_stack->has_subsets(), "%s::get_float32_kernel_matrix(): "
+			REQUIRE(!m_col_subset_stack->has_subsets(), "{}::get_float32_kernel_matrix(): "
 					"Not possible with collumn subset active! If you want to"
-					" create a %s from another one with a subset, use "
+					" create a {} from another one with a subset, use "
 					"get_kernel_matrix() and the SGMatrix constructor!\n",
 					get_name(), get_name());
 
@@ -572,7 +572,7 @@ class CCustomKernel: public CKernel
 		 */
 		virtual float64_t compute(int32_t row, int32_t col)
 		{
-			REQUIRE(kmatrix.matrix, "%s::compute(%d, %d): No kenrel matrix "
+			REQUIRE(kmatrix.matrix, "{}::compute({}, {}): No kenrel matrix "
 					"set!\n", get_name(), row, col);
 
 			index_t real_row=m_row_subset_stack->subset_idx_conversion(row);

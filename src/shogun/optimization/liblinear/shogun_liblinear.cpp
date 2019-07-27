@@ -687,7 +687,7 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 			break;
 	}
 
-	SG_INFO("\noptimization finished, #iter = %d\n",iter)
+	SG_INFO("\noptimization finished, #iter = {}\n",iter)
 	if (iter >= max_iter)
 		SG_INFO("Warning: reaching max number of iterations\n")
 

@@ -50,7 +50,7 @@ namespace shogun
 				        data->as<CDenseFeatures<floatmax_t>>());
 			default:
 				SG_ERROR(
-				    "Training with %s of provided type %s is not "
+				    "Training with {} of provided type {} is not "
 				    "possible!",
 				    data->get_name(),
 				    feature_type(data->get_feature_type()).c_str());
@@ -99,7 +99,7 @@ namespace shogun
 				    data->as<CStringFeatures<uint16_t>>());
 			default:
 				SG_ERROR(
-				    "Training with %s of provided type %s is "
+				    "Training with {} of provided type {} is "
 				    "not possible!",
 				    data->get_name(),
 				    feature_type(data->get_feature_type()).c_str());

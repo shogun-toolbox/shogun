@@ -188,8 +188,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 		if (class_idx < 0 || class_idx >= m_num_classes)
 		{
 			SG_ERROR(
-			    "Label %d with value %d is out of {0, 1, 2, ..., "
-			    "num_classes-1}, where num_classes is %d\n",
+			    "Label {} with value {} is out of {0, 1, 2, ..., "
+			    "num_classes-1}, where num_classes is {}\n",
 			    i, class_idx, m_num_classes);
 			return false;
 		}

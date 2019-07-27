@@ -49,7 +49,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	init_strategy();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=m_labels->get_num_labels();
-	SG_INFO("%d trainlabels, %d classes\n", problem.l, num_classes)
+	SG_INFO("{} trainlabels, {} classes\n", problem.l, num_classes)
 
 
 	if (data)
@@ -101,7 +101,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg)
+		SG_ERROR("Error: {}\n",error_msg)
 
 	model = svm_train(&problem, &param);
 
@@ -109,7 +109,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	{
 		if (model->nr_class!=num_classes)
 		{
-			SG_ERROR("LibSVM model->nr_class=%d while num_classes=%d\n",
+			SG_ERROR("LibSVM model->nr_class={} while num_classes={}\n",
 					model->nr_class, num_classes);
 		}
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef))
@@ -145,7 +145,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 				int32_t sv_idx=0;
 				for (k=0; k<model->nSV[i]; k++)
 				{
-					SG_DEBUG("setting SV[%d] to %d\n", sv_idx,
+					SG_DEBUG("setting SV[{}] to {}\n", sv_idx,
 							model->SV[offsets[i]+k]->index);
 					svm->set_support_vector(sv_idx, model->SV[offsets[i]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[j-1][offsets[i]+k]);
@@ -154,7 +154,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 
 				for (k=0; k<model->nSV[j]; k++)
 				{
-					SG_DEBUG("setting SV[%d] to %d\n", sv_idx,
+					SG_DEBUG("setting SV[{}] to {}\n", sv_idx,
 							model->SV[offsets[i]+k]->index);
 					svm->set_support_vector(sv_idx, model->SV[offsets[j]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[i][offsets[j]+k]);
@@ -196,8 +196,8 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 //				else
 //					idx=((num_classes-1)*model->label[j]+model->label[i])/2;
 //
-				SG_DEBUG("svm[%d] has %d sv (total: %d), b=%f "
-						"label:(%d,%d) -> svm[%d]\n",
+				SG_DEBUG("svm[{}] has {} sv (total: {}), b={} "
+						"label:({},{}) -> svm[{}]\n",
 						s, num_sv, model->l, bias, model->label[i],
 						model->label[j], idx);
 

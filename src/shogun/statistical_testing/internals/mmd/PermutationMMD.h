@@ -82,7 +82,7 @@ struct PermutationMMD : ComputeMMD
 				}
 			}
 			null_samples[n]=compute(terms);
-			SG_DEBUG("null_samples[%d] = %f!\n", n, null_samples[n]);
+			SG_DEBUG("null_samples[{}] = {}!\n", n, null_samples[n]);
 		}
 		return null_samples;
 	}
@@ -169,7 +169,7 @@ struct PermutationMMD : ComputeMMD
 				}
 			}
 			float32_t statistic=compute(terms);
-			SG_DEBUG("Kernel(%d): statistic=%f\n", k, statistic);
+			SG_DEBUG("Kernel({}): statistic={}\n", k, statistic);
 
 #pragma omp parallel for
 			for (auto n=0; n<m_num_null_samples; ++n)
@@ -193,7 +193,7 @@ struct PermutationMMD : ComputeMMD
 				null_samples[n]=compute(null_terms);
 			}
 			result[k]=compute_p_value(null_samples, statistic);
-			SG_DEBUG("Kernel(%d): p_value=%f\n", k, result[k]);
+			SG_DEBUG("Kernel({}): p_value={}\n", k, result[k]);
 		}
 
 		return result;

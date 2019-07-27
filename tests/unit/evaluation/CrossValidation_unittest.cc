@@ -167,7 +167,7 @@ protected:
 			break;
 
 		default:
-			SG_ERROR("Unsupported problem type: %d\n", pt);
+			SG_ERROR("Unsupported problem type: {}\n", pt);
 			FAIL();
 		}
 

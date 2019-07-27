@@ -151,11 +151,11 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 		new (&matrix[i]) SGSparseVector<sg_type>();										\
 		int32_t len=0;																	\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
-			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i)		\
+			SG_ERROR("Failed to read sparse vector length of vector idx={}\n", i)		\
 		matrix[i].num_feat_entries=len;													\
 		SGSparseVectorEntry<sg_type>* vec = SG_MALLOC(SGSparseVectorEntry<sg_type>, len);					\
 		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
-			SG_ERROR("Failed to read sparse vector %d\n", i)							\
+			SG_ERROR("Failed to read sparse vector {}\n", i)							\
 		matrix[i].features=vec;															\
 		num_feat = CMath::max(num_feat, matrix[i].get_num_dimensions()); \
 	}																					\
@@ -199,10 +199,10 @@ void CBinaryFile::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& 
 	{																							\
 		int32_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
-			SG_ERROR("Failed to read string length of string with idx=%d\n", i)				\
+			SG_ERROR("Failed to read string length of string with idx={}\n", i)				\
 		strings[i] = SGVector<sg_type>(len);													\
 		if (fread(strings[i].vector, sizeof(sg_type), len, file)!= (size_t) len)				\
-			SG_ERROR("Failed to read string %d\n", i)											\
+			SG_ERROR("Failed to read string {}\n", i)											\
 	}																							\
 }
 
@@ -394,23 +394,23 @@ CBinaryFile::read_header(TSGDataType* dest)
 	ASSERT(dest)
 
 	if (fseek(file, 0L, SEEK_SET)!=0)
-		SG_ERROR("Error seeking file '%s' to the beginning.\n", filename)
+		SG_ERROR("Error seeking file '{}' to the beginning.\n", filename)
 
 	char fourcc[4];
 	uint16_t endian=0;
 
 	if (fread(&fourcc, sizeof(char), 4, file)!=4)
-		SG_ERROR("Error reading fourcc header in file '%s'\n", filename)
+		SG_ERROR("Error reading fourcc header in file '{}'\n", filename)
 
 	if (fread(&endian, sizeof(uint16_t), 1, file)!=1)
-		SG_ERROR("Error reading endian header in file '%s'\n", filename)
+		SG_ERROR("Error reading endian header in file '{}'\n", filename)
 
 	if ((fread(&dest->m_ctype, sizeof(dest->m_ctype), 1, file)!=1) ||
 			(fread(&dest->m_ptype, sizeof(dest->m_ptype), 1, file)!=1))
-		SG_ERROR("Error reading datatype header in file '%s'\n", filename)
+		SG_ERROR("Error reading datatype header in file '{}'\n", filename)
 
 	if (strncmp(fourcc, "SG01", 4))
-		SG_ERROR("Header mismatch, expected SG01 in file '%s'\n", filename)
+		SG_ERROR("Header mismatch, expected SG01 in file '{}'\n", filename)
 }
 
 void

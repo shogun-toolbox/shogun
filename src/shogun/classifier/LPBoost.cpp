@@ -128,10 +128,10 @@ bool CLPBoost::train_machine(CFeatures* data)
 		COMPUTATION_CONTROLLERS
 		int32_t max_dim=0;
 		float64_t violator=find_max_violator(max_dim);
-		SG_PRINT("iteration:%06d violator: %10.17f (>1.0) chosen: %d\n", num_hypothesis, violator, max_dim)
+		SG_PRINT("iteration:{:06d} violator: {:10.17f} (>1.0) chosen: {}\n", num_hypothesis, violator, max_dim)
 		if (violator <= 1.0+epsilon && num_hypothesis>1) //no constraint violated
 		{
-			SG_PRINT("converged after %d iterations!\n", num_hypothesis)
+			SG_PRINT("converged after {} iterations!\n", num_hypothesis)
 			break;
 		}
 

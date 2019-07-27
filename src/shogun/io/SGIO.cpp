@@ -157,7 +157,7 @@ char* SGIO::c_string_of_substring(substring s)
 void SGIO::print_substring(substring s)
 {
 	char* c_string = c_string_of_substring(s);
-	SG_PRINT("%s\n", c_string)
+	SG_PRINT("{}\n", c_string)
 	SG_FREE(c_string);
 }
 
@@ -166,7 +166,7 @@ float32_t SGIO::float_of_substring(substring s)
 	char* endptr = s.end;
 	float32_t f = strtof(s.start,&endptr);
 	if (endptr == s.start && s.start != s.end)
-		SG_ERROR("error: %s is not a float!\n", c_string_of_substring(s))
+		SG_ERROR("error: {} is not a float!\n", c_string_of_substring(s))
 
 	return f;
 }
@@ -176,7 +176,7 @@ float64_t SGIO::double_of_substring(substring s)
 	char* endptr = s.end;
 	float64_t f = strtod(s.start,&endptr);
 	if (endptr == s.start && s.start != s.end)
-		SG_ERROR("Error!:%s is not a double!\n", c_string_of_substring(s))
+		SG_ERROR("Error!:{} is not a double!\n", c_string_of_substring(s))
 
 	return f;
 }
@@ -202,6 +202,7 @@ uint32_t SGIO::ss_length(substring s)
 
 SGIO::~SGIO()
 {
+	io_logger->flush();
 }
 
 void SGIO::update_pattern()

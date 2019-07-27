@@ -125,7 +125,7 @@ void CKLInference::check_variational_likelihood(CLikelihoodModel* mod) const
 	REQUIRE(mod, "the likelihood model must not be NULL\n")
 	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(mod);
 	REQUIRE(lik,
-		"The provided likelihood model (%s) must support variational Gaussian inference. ",
+		"The provided likelihood model ({}) must support variational Gaussian inference. ",
 		"Please use a Variational Gaussian Likelihood model\n",
 		mod->get_name());
 }
@@ -192,25 +192,25 @@ void CKLInference::update()
 
 void CKLInference::set_noise_factor(float64_t noise_factor)
 {
-	REQUIRE(noise_factor>=0, "The noise_factor %.20f should be non-negative\n", noise_factor);
+	REQUIRE(noise_factor>=0, "The noise_factor {:.20f} should be non-negative\n", noise_factor);
 	m_noise_factor=noise_factor;
 }
 
 void CKLInference::set_min_coeff_kernel(float64_t min_coeff_kernel)
 {
-	REQUIRE(min_coeff_kernel>=0, "The min_coeff_kernel %.20f should be non-negative\n", min_coeff_kernel);
+	REQUIRE(min_coeff_kernel>=0, "The min_coeff_kernel {:.20f} should be non-negative\n", min_coeff_kernel);
 	m_min_coeff_kernel=min_coeff_kernel;
 }
 
 void CKLInference::set_max_attempt(index_t max_attempt)
 {
-	REQUIRE(max_attempt>=0, "The max_attempt %d should be non-negative. 0 means inifity attempts\n", max_attempt);
+	REQUIRE(max_attempt>=0, "The max_attempt {} should be non-negative. 0 means inifity attempts\n", max_attempt);
 	m_max_attempt=max_attempt;
 }
 
 void CKLInference::set_exp_factor(float64_t exp_factor)
 {
-	REQUIRE(exp_factor>1.0, "The exp_factor %f should be greater than 1.0.\n", exp_factor);
+	REQUIRE(exp_factor>1.0, "The exp_factor {} should be greater than 1.0.\n", exp_factor);
 	m_exp_factor=exp_factor;
 }
 
@@ -235,8 +235,8 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInference::update_init_helper()
 	while (Kernel_D.minCoeff()<=m_min_coeff_kernel)
 	{
 		if (m_max_attempt>0 && attempt_count>m_max_attempt)
-			SG_ERROR("The Kernel matrix is highly non-positive definite since the min_coeff_kernel is less than %.20f",
-				" even when adding %.20f noise to the diagonal elements at max %d attempts\n",
+			SG_ERROR("The Kernel matrix is highly non-positive definite since the min_coeff_kernel is less than {:.20f}",
+				" even when adding {:.20f} noise to the diagonal elements at max {} attempts\n",
 				m_min_coeff_kernel, noise_factor, m_max_attempt);
 		attempt_count++;
 		float64_t pre_noise_factor=noise_factor;
@@ -297,7 +297,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_likelihood_model(const TPar
 	SGVector<float64_t> lp_dhyp=lik->get_first_derivative_wrt_hyperparameter(param);
 	Map<VectorXd> eigen_lp_dhyp(lp_dhyp.vector, lp_dhyp.vlen);
 	SGVector<float64_t> result(1);
-	//%dnlZ.lik(j) = -sum(lp_dhyp);
+	//{}nlZ.lik(j) = -sum(lp_dhyp);
 	result[0]=-eigen_lp_dhyp.sum();
 
 	return result;
@@ -317,7 +317,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 	{
 		SGVector<float64_t> dmu;
 
-		//%dm_t = feval(mean{:}, hyp.mean, x, j);
+		//{}m_t = feval(mean{:}, hyp.mean, x, j);
 		if (result.vlen==1)
 			dmu=m_mean->get_parameter_derivative(m_features, param);
 		else
@@ -325,7 +325,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 
-		//%dnlZ.mean(j) = -alpha'*dm_t;
+		//{}nlZ.mean(j) = -alpha'*dm_t;
 		result[i]=-eigen_alpha.dot(eigen_dmu);
 	}
 
@@ -365,7 +365,7 @@ void CKLInference::register_minimizer(Minimizer* minimizer)
 SGVector<float64_t> CKLInference::get_derivative_wrt_inference_method(const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);

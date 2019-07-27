@@ -187,7 +187,7 @@ public:
 	 */
 	virtual CFeatures* get_streamed_features(index_t num_elements)
 	{
-		SG_ERROR("%s::get_streamed_features() is not yet implemented!\n",
+		SG_ERROR("{}::get_streamed_features() is not yet implemented!\n",
 				get_name());
 		return NULL;
 	}

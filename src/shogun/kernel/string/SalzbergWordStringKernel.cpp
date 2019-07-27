@@ -361,7 +361,7 @@ void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 			num_neg++;
 	}
 
-	SG_INFO("priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n",
+	SG_INFO("priors: pos={:1.3f} ({})  neg={:1.3f} ({})\n",
 		(float64_t) num_pos/(num_pos+num_neg), num_pos,
 		(float64_t) num_neg/(num_pos+num_neg), num_neg);
 

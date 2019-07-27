@@ -42,7 +42,7 @@ bool CEuclideanDistance::init(CFeatures* l, CFeatures* r)
 	CDotFeatures* casted_r=static_cast<CDotFeatures*>(r);
 
 	REQUIRE(casted_l->get_dim_feature_space()==casted_r->get_dim_feature_space(),
-		"Number of dimension mismatch (l:%d vs. r:%d)!\n",
+		"Number of dimension mismatch (l:{} vs. r:{})!\n",
 		casted_l->get_dim_feature_space(),casted_r->get_dim_feature_space());
 
 	precompute_lhs();
@@ -141,14 +141,14 @@ void CEuclideanDistance::register_params()
 float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
 {
 	REQUIRE(lhs->get_feature_class()==C_DENSE,
-		"Left hand side (was %s) has to be CDenseFeatures instance!\n", lhs->get_name());
+		"Left hand side (was {}) has to be CDenseFeatures instance!\n", lhs->get_name());
 	REQUIRE(rhs->get_feature_class()==C_DENSE,
-		"Right hand side (was %s) has to be CDenseFeatures instance!\n", rhs->get_name());
+		"Right hand side (was {}) has to be CDenseFeatures instance!\n", rhs->get_name());
 
 	REQUIRE(lhs->get_feature_type()==F_DREAL,
-		"Left hand side (was %s) has to be of double type!\n", lhs->get_name());
+		"Left hand side (was {}) has to be of double type!\n", lhs->get_name());
 	REQUIRE(rhs->get_feature_type()==F_DREAL,
-		"Right hand side (was %s) has to be double type!\n", rhs->get_name());
+		"Right hand side (was {}) has to be double type!\n", rhs->get_name());
 
 	CDenseFeatures<float64_t>* casted_lhs=static_cast<CDenseFeatures<float64_t>*>(lhs);
 	CDenseFeatures<float64_t>* casted_rhs=static_cast<CDenseFeatures<float64_t>*>(rhs);
@@ -158,7 +158,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	SGVector<float64_t> avec=casted_lhs->get_feature_vector(idx_a);
 	SGVector<float64_t> bvec=casted_rhs->get_feature_vector(idx_b);
 
-	REQUIRE(avec.vlen==bvec.vlen, "The vector lengths are not equal (%d vs %d)!\n", avec.vlen, bvec.vlen);
+	REQUIRE(avec.vlen==bvec.vlen, "The vector lengths are not equal ({} vs {})!\n", avec.vlen, bvec.vlen);
 
 	float64_t result=0;
 	for (int32_t i=0; i<avec.vlen; i++)

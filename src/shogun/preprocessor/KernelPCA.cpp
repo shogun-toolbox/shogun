@@ -87,9 +87,9 @@ void CKernelPCA::fit(CFeatures* features)
 	if (m_target_dim > n)
 	{
 		SG_WARNING(
-		    "Target dimension (%d) is not a valid value, it must be"
+		    "Target dimension ({}) is not a valid value, it must be"
 		    "less or equal than the number of vectors."
-		    "Setting it to maximum allowed size (%d).",
+		    "Setting it to maximum allowed size ({}).",
 		    m_target_dim, n);
 		m_target_dim = n;
 	}
@@ -141,7 +141,7 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 		return apply_to_string_features(features);
 	}
 
-	SG_ERROR("Feature type %d not supported\n", features->get_feature_type());
+	SG_ERROR("Feature type {} not supported\n", features->get_feature_type());
 	return NULL;
 }
 

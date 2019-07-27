@@ -638,7 +638,7 @@ namespace shogun
 			* status < 0: the i-th argument had an illegal value
 			* status > 0: internal error
 			*/
-			REQUIRE(!(status < 0), "The %d-th argument han an illegal value.", -status)
+			REQUIRE(!(status < 0), "The {}-th argument han an illegal value.", -status)
 			REQUIRE(!(status > 0), "Internal error.")
 		}
 		#endif

@@ -60,8 +60,8 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n")
 
-	SG_DEBUG("PSI size: %d\n", m_model->get_dim())
-	SG_DEBUG("Number of training data: %d\n", m_model->get_num_vectors())
+	SG_DEBUG("PSI size: {}\n", m_model->get_dim())
+	SG_DEBUG("Number of training data: {}\n", m_model->get_num_vectors())
 	SG_DEBUG("Initialise PSI (x,h)\n")
 	m_model->cache_psi_features();
 
@@ -78,7 +78,7 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 	SG_DEBUG("Starting CCCP\n")
 	while ((m_cur_iter < 2)||(!stop&&(m_cur_iter < m_max_iter)))
 	{
-		SG_DEBUG("iteration: %d\n", m_cur_iter)
+		SG_DEBUG("iteration: {}\n", m_cur_iter)
 		/* do the SVM optimisation with fixed h* */
 		SG_DEBUG("Do the inner loop of CCCP: optimize for w for fixed h*\n")
 		primal_obj = do_inner_loop(inner_eps);
@@ -86,15 +86,15 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 		/* calculate the decrement */
 		decrement = prev_po - primal_obj;
 		prev_po = primal_obj;
-		SG_DEBUG("decrement: %f\n", decrement)
-		SG_DEBUG("primal objective: %f\n", primal_obj)
+		SG_DEBUG("decrement: {}\n", decrement)
+		SG_DEBUG("primal objective: {}\n", primal_obj)
 
 		/* check the stopping criterion */
 		stop = (inner_eps < (0.5*m_C*m_epsilon+1E-8)) && (decrement < m_C*m_epsilon);
 
 		inner_eps = -decrement*0.01;
 		inner_eps = CMath::max(inner_eps, 0.5*m_C*m_epsilon);
-		SG_DEBUG("inner epsilon: %f\n", inner_eps)
+		SG_DEBUG("inner epsilon: {}\n", inner_eps)
 
 		/* find argmaxH */
 		SG_DEBUG("Find and set h_i = argmax_h (w, psi(x_i,h))\n")

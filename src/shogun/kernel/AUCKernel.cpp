@@ -67,7 +67,7 @@ bool CAUCKernel::setup_auc_maximization()
 	// create AUC features and labels (alternate labels)
 	int32_t num_auc = num_pos * num_neg;
 	SG_INFO(
-	    "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc)
+	    "num_pos: {}  num_neg: {}  num_auc: {}\n", num_pos, num_neg, num_auc)
 
 	SGMatrix<uint16_t> features_auc(2, num_auc);
 	auto* labels_auc = SG_MALLOC(int32_t, num_auc);

@@ -17,14 +17,14 @@ void CKernelMulticlassMachine::store_model_features()
 {
 	CKernel *kernel= m_kernel;
 	if (!kernel)
-		SG_ERROR("%s::store_model_features(): kernel is needed to store SV "
+		SG_ERROR("{}::store_model_features(): kernel is needed to store SV "
 				"features.\n", get_name());
 
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
 	if (!lhs)
 	{
-		SG_ERROR("%s::store_model_features(): kernel lhs is needed to store "
+		SG_ERROR("{}::store_model_features(): kernel lhs is needed to store "
 		"SV features.\n", get_name());
 	}
 

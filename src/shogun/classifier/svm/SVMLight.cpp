@@ -219,8 +219,8 @@ bool CSVMLight::train_machine(CFeatures* data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
-			SG_ERROR("%s::train_machine(): Number of training vectors (%d) does"
-					" not match number of labels (%d)\n", get_name(),
+			SG_ERROR("{}::train_machine(): Number of training vectors ({}) does"
+					" not match number of labels ({})\n", get_name(),
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
 		kernel->init(data, data);
@@ -237,22 +237,22 @@ bool CSVMLight::train_machine(CFeatures* data)
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG("threads = %i\n", env()->get_num_threads())
-	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
+	SG_DEBUG("threads = {}\n", env()->get_num_threads())
+	SG_DEBUG("qpsize = {}\n", learn_parm->svm_maxqpsize)
 	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
-	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))
-	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION))
-	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION))
-	SG_DEBUG("kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" )
-	SG_DEBUG("get_solver_type() = %i\n", get_solver_type())
-	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled())
-	SG_DEBUG("get_batch_computation_enabled() = %i\n", get_batch_computation_enabled())
-	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels())
+	SG_DEBUG("kernel->has_property(KP_LINADD) = {}\n", kernel->has_property(KP_LINADD))
+	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = {}\n", kernel->has_property(KP_KERNCOMBINATION))
+	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = {}\n", kernel->has_property(KP_BATCHEVALUATION))
+	SG_DEBUG("kernel->get_optimization_type() = {}\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" )
+	SG_DEBUG("get_solver_type() = {}\n", get_solver_type())
+	SG_DEBUG("get_linadd_enabled() = {}\n", get_linadd_enabled())
+	SG_DEBUG("get_batch_computation_enabled() = {}\n", get_batch_computation_enabled())
+	SG_DEBUG("kernel->get_num_subkernels() = {}\n", kernel->get_num_subkernels())
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache)
+	SG_DEBUG("use_kernel_cache = {}\n", use_kernel_cache)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
@@ -413,7 +413,7 @@ void CSVMLight::svm_learn()
 	}
 
   /* compute starting state for initial alpha values */
-	SG_DEBUG("alpha:%p num_sv:%d\n", fmt::ptr(m_alpha.vector), get_num_support_vectors())
+	SG_DEBUG("alpha:{} num_sv:{}\n", fmt::ptr(m_alpha.vector), get_num_support_vectors())
 
 	if(m_alpha.vector && get_num_support_vectors()) {
 		if(verbosity>=1) {
@@ -491,7 +491,7 @@ void CSVMLight::svm_learn()
     if(verbosity>=1)
 		SG_DONE()
   }
-		SG_DEBUG("%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg)
+		SG_DEBUG("{} totdoc {} pos {} neg\n", totdoc, trainpos, trainneg)
 		SG_DEBUG("Optimizing...\n")
 
 	/* train the svm */
@@ -506,7 +506,7 @@ void CSVMLight::svm_learn()
 		if(verbosity==1)
 		{
 			SG_DONE()
-			SG_DEBUG("(%ld iterations)", iterations)
+			SG_DEBUG("({} iterations)", iterations)
 		}
 
 		misclassified=0;
@@ -515,12 +515,12 @@ void CSVMLight::svm_learn()
 				misclassified++;
 		}
 
-		SG_INFO("Optimization finished (%ld misclassified, maxdiff=%.8f).\n",
+		SG_INFO("Optimization finished ({} misclassified, maxdiff={:.8f}).\n",
 				misclassified,maxdiff);
 
-		SG_INFO("obj = %.16f, rho = %.16f\n",get_objective(),model->b)
+		SG_INFO("obj = {:.16f}, rho = {:.16f}\n",get_objective(),model->b)
 		if (maxdiff>epsilon)
-			SG_WARNING("maximum violation (%f) exceeds svm_epsilon (%f) due to numerical difficulties\n", maxdiff, epsilon)
+			SG_WARNING("maximum violation ({}) exceeds svm_epsilon ({}) due to numerical difficulties\n", maxdiff, epsilon)
 
 		upsupvecnum=0;
 		for (i=1;i<model->sv_num;i++)
@@ -530,7 +530,7 @@ void CSVMLight::svm_learn()
 					 learn_parm->epsilon_a))
 				upsupvecnum++;
 		}
-		SG_INFO("Number of SV: %d (including %d at upper bound)\n",
+		SG_INFO("Number of SV: {} (including {} at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
@@ -597,7 +597,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   learn_parm->epsilon_shrink=2;
   (*maxdiff)=1;
 
-  SG_DEBUG("totdoc:%d\n",totdoc)
+  SG_DEBUG("totdoc:{}\n",totdoc)
   chosen = SG_MALLOC(int32_t, totdoc);
   last_suboptimal_at =SG_MALLOC(int32_t, totdoc);
   key =SG_MALLOC(int32_t, totdoc+11);
@@ -756,7 +756,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 	  }
 
 	  if(verbosity>=2) {
-		  SG_INFO(" %ld vectors chosen\n",choosenum)
+		  SG_INFO(" {} vectors chosen\n",choosenum)
 	  }
 
 	  if(verbosity>=2) t1=get_runtime();
@@ -827,7 +827,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  terminate=1;
 		  retrain=0;
 		  SG_WARNING("Relaxing KT-Conditions due to slow progress! Terminating!\n")
-		  SG_DEBUG("(iteration :%d, bestmaxdiffiter: %d, lean_param->maxiter: %d)\n", iteration, bestmaxdiffiter, learn_parm->maxiter )
+		  SG_DEBUG("(iteration :{}, bestmaxdiffiter: {}, lean_param->maxiter: {})\n", iteration, bestmaxdiffiter, learn_parm->maxiter )
 	  }
 
 	  noshrink= (get_shrinking_enabled()) ? 0 : 1;
@@ -843,7 +843,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 									   docs,aicache,
 									   maxdiff);
 		  reactivated=true;
-		  SG_DEBUG("done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f)\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org)
+		  SG_DEBUG("done reactivating inactive examples (maxdiff:{:8f} eps_crit:{:8f} orig_eps:{:8f})\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org)
 		  /* Update to new active variables. */
 		  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 		  inactivenum=totdoc-activenum;
@@ -856,14 +856,14 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  retrain=0;
 		  if((*maxdiff) > learn_parm->epsilon_crit)
 		  {
-			  SG_INFO("restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f))\n", *maxdiff, learn_parm->epsilon_crit)
+			  SG_INFO("restarting optimization as we are - due to shrinking - deviating too much (maxdiff({}) > eps({}))\n", *maxdiff, learn_parm->epsilon_crit)
 		      retrain=1;
 		  }
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
 		      SG_DONE()
-		      SG_DEBUG("Number of inactive variables = %ld\n", inactivenum)
+		      SG_DEBUG("Number of inactive variables = {}\n", inactivenum)
 		  }
 	  }
 
@@ -878,7 +878,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  learn_parm->epsilon_crit=epsilon_crit_org;
 
 	  if(verbosity>=2) {
-		  SG_INFO(" => (%ld SV (incl. %ld SV at u-bound), max violation=%.5f)\n",
+		  SG_INFO(" => ({} SV (incl. {} SV at u-bound), max violation={:.5f})\n",
 					   supvecnum,model->at_upper_bound,(*maxdiff));
 
 	  }
@@ -919,7 +919,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   } /* end of loop */
   pb.complete_absolute();
 
-  SG_DEBUG("inactive:%d\n", inactivenum)
+  SG_DEBUG("inactive:{}\n", inactivenum)
 
   if (inactivenum && !reactivated && !callback)
   {
@@ -1116,7 +1116,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		S_THREAD_PARAM_KERNEL* params = SG_MALLOC(S_THREAD_PARAM_KERNEL, num_threads-1);
 		int32_t step= Knum/num_threads;
-		//SG_DEBUG("\nkernel-step size: %i\n", step)
+		//SG_DEBUG("\nkernel-step size: {}\n", step)
 		for (int32_t t=0; t<num_threads-1; t++)
 		{
 			params[t].svmlight = this;
@@ -1166,7 +1166,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 
 			if(verbosity>=3) {
 				if(i % 20 == 0) {
-					SG_DEBUG("%ld..",i)
+					SG_DEBUG("{}..",i)
 				}
 			}
 		}
@@ -1244,7 +1244,7 @@ void CSVMLight::compute_matrices_for_optimization(
 
 	  if(verbosity>=3) {
 		  if(i % 20 == 0) {
-			  SG_DEBUG("%ld..",i)
+			  SG_DEBUG("{}..",i)
 		  }
 	  }
   }
@@ -2056,7 +2056,7 @@ int32_t CSVMLight::shrink_problem(
 
 	  if(verbosity>=2) {
 		  SG_DONE()
-		  SG_DEBUG("Number of inactive variables = %ld\n", totdoc-activenum)
+		  SG_DEBUG("Number of inactive variables = {}\n", totdoc-activenum)
 	  }
   }
   return(activenum);
@@ -2282,7 +2282,7 @@ void CSVMLight::reactivate_inactive_examples(
 	  for (t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--)
 	  {
 		  if(verbosity>=2) {
-			  SG_INFO("%ld..",t)
+			  SG_INFO("{}..",t)
 		  }
 		  a_old=shrink_state->a_history[t];
 		  for (i=0;i<totdoc;i++) {
@@ -2486,7 +2486,7 @@ float64_t* CSVMLight::optimize_qp(
 			init_iter+=10;
 			(opt_precision)*=10.0;   /* reduce precision */
 			if(verbosity>=2) {
-				SG_DEBUG("Reducing precision of PR_LOQO due to (%ld).\n",result)
+				SG_DEBUG("Reducing precision of PR_LOQO due to ({}).\n",result)
 			}
 		}
 	}
@@ -2508,7 +2508,7 @@ float64_t* CSVMLight::optimize_qp(
 		for(j=i;j<qp->opt_n;j++) {
 			dist+=(primal[j]*qp->opt_g[i*qp->opt_n+j]);
 		}
-		/*  SG_DEBUG("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]) */
+		/*  SG_DEBUG("LOQO: a[{}]={}, dist={}, b={}\n",i,primal[i],dist,dual[0]) */
 		if((primal[i]<(qp->opt_up[i]-epsilon_loqo)) && (dist < (1.0-(*epsilon_crit)))) {
 			epsilon_loqo=(qp->opt_up[i]-primal[i])*2.0;
 		}

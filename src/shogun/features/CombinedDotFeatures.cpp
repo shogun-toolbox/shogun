@@ -44,7 +44,7 @@ CCombinedDotFeatures::~CCombinedDotFeatures()
 
 void CCombinedDotFeatures::list_feature_objs()
 {
-	SG_INFO("BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
+	SG_INFO("BEGIN COMBINED DOTFEATURES LIST ({}, {}) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -54,7 +54,7 @@ void CCombinedDotFeatures::list_feature_objs()
 		SG_UNREF(f);
 	}
 
-	SG_INFO("END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
+	SG_INFO("END COMBINED DOTFEATURES LIST ({}, {}) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 }
 
@@ -72,7 +72,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 		else if (vec != f->get_num_vectors())
 		{
 			f->list_feature_obj();
-			SG_ERROR("Number of vectors (%d) mismatches in above feature obj (%d)\n", vec, f->get_num_vectors())
+			SG_ERROR("Number of vectors ({}) mismatches in above feature obj ({})\n", vec, f->get_num_vectors())
 		}
 
 		SG_UNREF(f);
@@ -80,7 +80,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 
 	num_dimensions=dim;
 	num_vectors=vec;
-	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions)
+	SG_DEBUG("vecs={}, dims={}\n", num_vectors, num_dimensions)
 }
 
 float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
@@ -338,7 +338,7 @@ void CCombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
 {
 	REQUIRE(
 	    idx >= 0 && (size_t)idx < feature_weights.size(),
-	    "Index (%d) is out of bounds", idx);
+	    "Index ({}) is out of bounds", idx);
 
 	feature_weights[idx] = weight;
 }

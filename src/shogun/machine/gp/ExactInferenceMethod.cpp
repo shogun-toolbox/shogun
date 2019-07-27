@@ -286,7 +286,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -318,7 +318,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			m_model->get_name(), param->m_name)
 
 	// get the sigma variable from the Gaussian likelihood model

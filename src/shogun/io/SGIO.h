@@ -126,7 +126,7 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 
 #define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\
-		SG_ERROR("assertion %s failed in %s file %s line %d\n",#x, __PRETTY_FUNCTION__, __FILE__, __LINE__)	\
+		SG_ERROR("assertion {} failed in {} file {} line {}\n",#x, __PRETTY_FUNCTION__, __FILE__, __LINE__)	\
 }
 
 #define REQUIRE(x, ...) {		\

@@ -73,7 +73,7 @@ template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
 	if ( num < 0 || num >= get_num_vectors() )
 	{
 		SG_ERROR("The index of the feature vector to get must be between "
-			 "0 and %d (get_num_vectors()-1)\n", get_num_vectors()-1);
+			 "0 and {} (get_num_vectors()-1)\n", get_num_vectors()-1);
 	}
 
 	return m_features[num];
@@ -87,7 +87,7 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 	if ( num < 0 || num >= get_num_vectors() )
 	{
 		SG_ERROR("The index of the feature vector to get must be between "
-			 "0 and %d (get_num_vectors()-1)\n", get_num_vectors()-1);
+			 "0 and {} (get_num_vectors()-1)\n", get_num_vectors()-1);
 	}
 
 	// Shorthands for the dimensions of the feature vector to get
@@ -97,13 +97,13 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 	if ( col < 0 || col >= num_cols )
 	{
 		SG_ERROR("The index of the column to get must be between "
-			 "0 and %d (#columns of the feature vector)\n", num_cols);
+			 "0 and {} (#columns of the feature vector)\n", num_cols);
 	}
 
 	if ( out.vlen < get_num_features() )
 	{
 		SG_ERROR("The vector out must have space to hold at least "
-			 "%d (get_num_features()) elements\n", get_num_features());
+			 "{} (get_num_features()) elements\n", get_num_features());
 	}
 
 	int32_t start = col*num_rows;
@@ -120,13 +120,13 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 	if ( num < 0 || num >= get_num_vectors() )
 	{
 		SG_ERROR("The index of the feature vector to set must be between "
-			 "0 and %d (get_num_vectors()-1)\n", get_num_vectors()-1);
+			 "0 and {} (get_num_vectors()-1)\n", get_num_vectors()-1);
 	}
 
 	if ( get_num_features() != 0 && vec.num_rows != get_num_features() )
 	{
 		SG_ERROR("The feature vector to set must have the same features "
-			 "as the rest of the MatrixFeatures, %d "
+			 "as the rest of the MatrixFeatures, {} "
 			 "(get_num_features())\n", get_num_features());
 	}
 

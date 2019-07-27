@@ -22,18 +22,18 @@ namespace shogun
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
 	: CIterativeLinearSolver<complex128_t, float64_t>()
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
+	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver(bool store_residuals)
 	: CIterativeLinearSolver<complex128_t, float64_t>(store_residuals)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
+	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), fmt::ptr(this));
+	SG_GCDEBUG("{} destroyed ({})\n", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
@@ -43,7 +43,7 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n, %d vs %d",
+	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n, {} vs {}",
 		A->get_dimension(), b.vlen);
 
 	// the final solution vector, initial guess is 0
@@ -81,7 +81,7 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 
 	for (it.begin(r); !it.end(r); ++it)
 	{
-		SG_DEBUG("CG iteration %d, residual norm %f\n",
+		SG_DEBUG("CG iteration {}, residual norm {}\n",
 			it.get_iter_info().iteration_count,
 			it.get_iter_info().residual_norm);
 
@@ -128,7 +128,7 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 	if (!it.succeeded(r))
 		SG_WARNING("Did not converge!\n");
 
-	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
+	SG_INFO("Iteration took {} times, residual norm={:.20f}, time elapsed={}\n",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Leaving..\n");

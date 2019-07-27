@@ -53,13 +53,13 @@ namespace shogun
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_rows, result.num_rows);
 			REQUIRE(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->logistic(a, result);
@@ -79,13 +79,13 @@ namespace shogun
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_rows, result.num_rows);
 			REQUIRE(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->multiply_by_logistic_derivative(
@@ -104,13 +104,13 @@ namespace shogun
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_rows, result.num_rows);
 			REQUIRE(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->multiply_by_rectified_linear_derivative(
@@ -129,13 +129,13 @@ namespace shogun
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_rows, result.num_rows);
 			REQUIRE(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).\n",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->rectified_linear(a, result);
@@ -166,11 +166,11 @@ namespace shogun
 		{
 			REQUIRE(
 			    (p.num_rows == q.num_rows),
-			    "Number of rows of matrix p (%d) must match matrix q (%d).\n",
+			    "Number of rows of matrix p ({}) must match matrix q ({}).\n",
 			    p.num_rows, q.num_rows);
 			REQUIRE(
 			    (p.num_cols == q.num_cols), "Number of columns of matrix p "
-			                                "(%d) must match matrix q (%d).\n",
+			                                "({}) must match matrix q ({}).\n",
 			    p.num_cols, q.num_cols);
 
 			return infer_backend(p, q)->cross_entropy(p, q);
@@ -188,11 +188,11 @@ namespace shogun
 		{
 			REQUIRE(
 			    (p.num_rows == q.num_rows),
-			    "Number of rows of matrix p (%d) must match matrix q (%d).\n",
+			    "Number of rows of matrix p ({}) must match matrix q ({}).\n",
 			    p.num_rows, q.num_rows);
 			REQUIRE(
 			    (p.num_cols == q.num_cols), "Number of columns of matrix p "
-			                                "(%d) must match matrix q (%d).\n",
+			                                "({}) must match matrix q ({}).\n",
 			    p.num_cols, q.num_cols);
 
 			return infer_backend(p, q)->squared_error(p, q);

@@ -64,8 +64,8 @@ CMultilabelLabels::~CMultilabelLabels()
 void
 CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 {
-	REQUIRE(num_labels >= 0, "num_labels=%d should be >= 0", num_labels);
-	REQUIRE(num_classes > 0, "num_classes=%d should be > 0", num_classes);
+	REQUIRE(num_labels >= 0, "num_labels={} should be >= 0", num_labels);
+	REQUIRE(num_classes > 0, "num_classes={} should be > 0", num_classes);
 
 	// This one does consider the contained labels, so its simply BROKEN
 	// Can be disabled as
@@ -226,7 +226,7 @@ SGMatrix<int32_t>  CMultilabelLabels::get_labels() const
 SGVector <int32_t> CMultilabelLabels::get_label(int32_t j)
 {
 	REQUIRE(j < get_num_labels(),
-	        "label index j=%d should be within [%d,%d[",
+	        "label index j={} should be within [{},{}[",
 	        j, 0, get_num_labels());
 	return m_labels[j];
 }
@@ -261,7 +261,7 @@ void
 CMultilabelLabels::set_label(int32_t j, SGVector <int32_t> label)
 {
 	REQUIRE(j < get_num_labels(),
-	        "label index j=%d should be within [%d,%d[",
+	        "label index j={} should be within [{},{}[",
 	        j, 0, get_num_labels());
 	m_labels[j] = label;
 }
@@ -282,7 +282,7 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 		{
 			int32_t label_j = (*labels_list[class_i])[l_pos];
 			REQUIRE(label_j < get_num_labels(),
-			        "class_i=%d/%d :: label_j=%d/%d (l_pos=%d)\n",
+			        "class_i={}/{} :: label_j={}/{} (l_pos={})\n",
 			        class_i, get_num_classes(), label_j, get_num_labels(),
 			        l_pos);
 			num_class_idx[label_j]++;
@@ -308,7 +308,7 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 			// get class_i of current position
 			int32_t label_j = (*labels_list[class_i])[l_pos];
 			REQUIRE(label_j < get_num_labels(),
-			        "class_i=%d/%d :: label_j=%d/%d (l_pos=%d)\n",
+			        "class_i={}/{} :: label_j={}/{} (l_pos={})\n",
 			        class_i, get_num_classes(), label_j, get_num_labels(),
 			        l_pos);
 
@@ -332,12 +332,12 @@ void
 CMultilabelLabels::display() const
 {
 	SGVector <int32_t> ** labels_list = get_class_labels();
-	SG_PRINT("printing %d binary label vectors for %d multilabels:\n",
+	SG_PRINT("printing {} binary label vectors for {} multilabels:\n",
 	         get_num_classes(), get_num_labels());
 
 	for (int32_t class_i = 0; class_i < get_num_classes(); class_i++)
 	{
-		SG_PRINT("  yC_{class_i=%d}", class_i);
+		SG_PRINT("  yC_{class_i={}}", class_i);
 		SGVector <float64_t> dense =
 		        to_dense <int32_t, float64_t> (labels_list[class_i],
 		                                       get_num_labels(), +1, -1);
@@ -346,12 +346,12 @@ CMultilabelLabels::display() const
 	}
 	SG_FREE(labels_list);
 
-	SG_PRINT("printing %d binary class vectors for %d labels:\n",
+	SG_PRINT("printing {} binary class vectors for {} labels:\n",
 	         get_num_labels(), get_num_classes());
 
 	for (int32_t j = 0; j < get_num_labels(); j++)
 	{
-		SG_PRINT("  y_{j=%d}", j);
+		SG_PRINT("  y_{j={}}", j);
 		SGVector <float64_t> dense =
 		        to_dense <int32_t , float64_t> (&m_labels[j], get_num_classes(),
 		                                        +1, -1);

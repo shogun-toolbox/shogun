@@ -87,7 +87,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 		k = get_kernel(k_idx);
 
 		if (!k)
-			SG_ERROR("Kernel at position %d is NULL\n", k_idx);
+			SG_ERROR("Kernel at position {} is NULL\n", k_idx);
 
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
@@ -110,7 +110,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				    "match - bailing out\n")
 			}
 
-			SG_DEBUG("Initializing 0x%p - \"%s\"\n", fmt::ptr(this), k->get_name())
+			SG_DEBUG("Initializing 0x{} - \"{}\"\n", fmt::ptr(this), k->get_name())
 			result = k->init(lf, rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
@@ -121,7 +121,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 		else
 		{
 			SG_DEBUG(
-			    "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM "
+			    "Initializing 0x{} - \"{}\" (skipping init, this is a CUSTOM "
 			    "kernel)\n",
 			    fmt::ptr(this), k->get_name())
 			if (!k->has_features())
@@ -143,13 +143,13 @@ bool CCombinedKernel::init_with_extracted_subsets(
 
 			if (k->get_num_vec_lhs() != num_lhs)
 				SG_ERROR(
-				    "Number of lhs-feature vectors (%d) not match with number "
-				    "of rows (%d) of custom kernel\n",
+				    "Number of lhs-feature vectors ({}) not match with number "
+				    "of rows ({}) of custom kernel\n",
 				    num_lhs, k->get_num_vec_lhs())
 			if (k->get_num_vec_rhs() != num_rhs)
 				SG_ERROR(
-				    "Number of rhs-feature vectors (%d) not match with number "
-				    "of cols (%d) of custom kernel\n",
+				    "Number of rhs-feature vectors ({}) not match with number "
+				    "of cols ({}) of custom kernel\n",
 				    num_rhs, k->get_num_vec_rhs())
 		}
 
@@ -926,12 +926,12 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 		if (!c_list)
 		{
 			SG_ERROR("CCombinedKernel::combine_kernels() : Failed to cast list of type "
-					"%s to type CList\n", list->get_name());
+					"{} to type CList\n", list->get_name());
 		}
 
 		if (c_list->get_num_elements()==0)
 		{
-			SG_ERROR("CCombinedKernel::combine_kernels() : Sub-list in position %d "
+			SG_ERROR("CCombinedKernel::combine_kernels() : Sub-list in position {} "
 					"is empty.\n", list_index);
 		}
 
@@ -1018,7 +1018,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 			else if (c_kernel->get_kernel_type()!=prev_kernel_type)
 			{
 				SG_ERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
-						"%d contains different types of kernels\n", list_index);
+						"{} contains different types of kernels\n", list_index);
 			}
 
 			prev_kernel_type = c_kernel->get_kernel_type();

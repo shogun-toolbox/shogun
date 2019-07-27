@@ -24,7 +24,7 @@ CRationalApproximation::CRationalApproximation()
 {
 	init();
 
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this))
 }
 
 CRationalApproximation::CRationalApproximation(
@@ -39,14 +39,14 @@ CRationalApproximation::CRationalApproximation(
 
 	m_desired_accuracy=desired_accuracy;
 
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this))
 }
 
 CRationalApproximation::~CRationalApproximation()
 {
 	SG_UNREF(m_eigen_solver);
 
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("{} destroyed ({})\n", this->get_name(), fmt::ptr(this))
 }
 
 void CRationalApproximation::init()
@@ -102,8 +102,8 @@ void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
 	m_eigen_solver->compute();
-	SG_INFO("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
-	SG_INFO("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
+	SG_INFO("max_eig={:.15f}\n", m_eigen_solver->get_max_eigenvalue());
+	SG_INFO("min_eig={:.15f}\n", m_eigen_solver->get_min_eigenvalue());
 
 	REQUIRE(m_eigen_solver->get_min_eigenvalue()>0,
 		"Minimum eigenvalue is negative, please provide a Hermitian matrix\n");
@@ -112,13 +112,13 @@ void CRationalApproximation::precompute()
 	if (m_num_shifts==0)
 		m_num_shifts=compute_num_shifts_from_accuracy();
 
-	SG_INFO("Computing %d shifts\n", m_num_shifts);
+	SG_INFO("Computing {} shifts\n", m_num_shifts);
 	compute_shifts_weights_const();
 }
 
 int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 {
-	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive but is %f\n",
+	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive but is {}\n",
 			m_desired_accuracy);
 
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();

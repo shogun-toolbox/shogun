@@ -36,7 +36,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 
 	obtain_kmer_spectrum(str);
 
-	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings)
+	SG_DEBUG("SPEC size={}, num_str={}\n", spec_size, num_strings)
 }
 
 CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig),

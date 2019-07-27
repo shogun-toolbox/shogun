@@ -91,7 +91,7 @@ void StreamingDataFetcher::start()
 	REQUIRE(get_num_samples()>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
 	if (m_block_details.m_full_data || m_block_details.m_blocksize>get_num_samples())
 	{
-		SG_INFO("Fetching entire data (%d samples)!\n", get_num_samples());
+		SG_INFO("Fetching entire data ({} samples)!\n", get_num_samples());
 		m_block_details.with_blocksize(get_num_samples());
 	}
 	m_block_details.m_total_num_blocks=get_num_samples()/m_block_details.m_blocksize;

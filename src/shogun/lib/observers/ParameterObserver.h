@@ -94,8 +94,8 @@ namespace shogun
 		{
 			REQUIRE(
 			    i >= 0 && i < this->get_num_observations(),
-			    "Observation index (%i) is out of bound (total observations "
-			    "%i)",
+			    "Observation index ({}) is out of bound (total observations "
+			    "{})",
 			    i, this->get_num_observations());
 			return this->m_observations[i].get();
 		};

@@ -242,7 +242,7 @@ CKernel* CKernelSelectionStrategy::select_kernel(CMMD* estimator)
 {
 	auto num_kernels=self->kernel_mgr.num_kernels();
 	REQUIRE(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!\n");
-	SG_DEBUG("Selecting kernels from a total of %d kernels!\n", num_kernels);
+	SG_DEBUG("Selecting kernels from a total of {} kernels!\n", num_kernels);
 
 	self->init_policy(estimator);
 	ASSERT(self->policy!=nullptr);

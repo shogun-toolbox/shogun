@@ -171,7 +171,7 @@ CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	REQUIRE(
 	    vec2.size() == vec_nDim,
-	    "Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2.vlen,
+	    "Dimensions don't match, vec2_dim={}, vec_nDim={}\n", vec2.vlen,
 	    vec_nDim)
 
 	int32_t ww;
@@ -220,7 +220,7 @@ CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != vec_nDim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
+		SG_ERROR("Dimensions don't match, vec2_dim={}, vec_nDim={}\n", vec2_len, vec_nDim)
 
 	int32_t ww;
 	int32_t hh;

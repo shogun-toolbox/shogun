@@ -147,7 +147,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		else
 			delta = CMath::max(delta, CMath::min(alpha*snorm, sigma3*delta));
 
-		SG_INFO("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d\n", iter, actred, prered, delta, f, gnorm, cg_iter)
+		SG_INFO("iter {:2d} act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG {:3d}\n", iter, actred, prered, delta, f, gnorm, cg_iter)
 
 		if (actred > eta0*prered)
 		{

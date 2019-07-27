@@ -127,7 +127,7 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen)
 	if (alen!=m_str_len)
-		SG_ERROR("alen (%d) !=m_str_len (%d)\n", alen, m_str_len)
+		SG_ERROR("alen ({}) !=m_str_len ({})\n", alen, m_str_len)
 	ASSERT(m_str_min)
 	ASSERT(m_str_maj)
 
@@ -160,8 +160,8 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 					sumbb++;
 				else
 				{
-					SG_ERROR("The impossible happened i=%d l=%d a1=%c "
-							"a2=%c b1=%c b2=%c min=%c maj=%c\n", i, l, a1,a2, b1,b2, m_str_min[i+l], m_str_maj[i+l]);
+					SG_ERROR("The impossible happened i={} l={} a1={} "
+							"a2={} b1={} b2={} min={} maj={}\n", i, l, a1,a2, b1,b2, m_str_min[i+l], m_str_maj[i+l]);
 				}
 			}
 

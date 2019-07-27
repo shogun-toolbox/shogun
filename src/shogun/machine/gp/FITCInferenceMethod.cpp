@@ -405,7 +405,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 {
 	//time complexity O(m*n)
 	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			m_model->get_name(), param->m_name)
 
 	// create eigen representation of dg, al, w, W and B

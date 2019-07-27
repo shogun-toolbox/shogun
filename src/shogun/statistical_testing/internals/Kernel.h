@@ -72,7 +72,7 @@ public:
 	{
 		REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
 		REQUIRE(kernel->get_num_vec_lhs()==kernel->get_num_vec_rhs(),
-			"Kernel instance is not symmetric (%dx%d)!\n", kernel->get_num_vec_lhs(), kernel->get_num_vec_rhs());
+			"Kernel instance is not symmetric ({}x{})!\n", kernel->get_num_vec_lhs(), kernel->get_num_vec_rhs());
 		m_num_feat_vec=kernel->get_num_vec_lhs();
 		auto size=m_num_feat_vec*(m_num_feat_vec+1)/2;
 		if (m_self_adjoint_kernel_matrix.size()==0 || m_self_adjoint_kernel_matrix.size()!=size)

@@ -131,7 +131,7 @@ CSparsePolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) cons
 {
 	REQUIRE(
 	    vec2.vlen == m_output_dimensions,
-	    "Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n",
+	    "Dimensions don't match, vec2_dim={}, m_output_dimensions={}\n",
 	    vec2.vlen, m_output_dimensions);
 
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
@@ -181,7 +181,7 @@ CSparsePolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) cons
 void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len!=m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
+		SG_ERROR("Dimensions don't match, vec2_dim={}, m_output_dimensions={}\n", vec2_len, m_output_dimensions)
 
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
 

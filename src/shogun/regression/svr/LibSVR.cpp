@@ -85,7 +85,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO("%d trainlabels\n", problem.l)
+	SG_INFO("{} trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -112,7 +112,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 		param.svm_type=NU_SVR;
 		break;
 	default:
-		SG_ERROR("%s::train_machine(): Unknown solver type!\n", get_name());
+		SG_ERROR("{}::train_machine(): Unknown solver type!\n", get_name());
 		break;
 	}
 
@@ -136,7 +136,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg)
+		SG_ERROR("Error: {}\n",error_msg)
 
 	model = svm_train(&problem, &param);
 

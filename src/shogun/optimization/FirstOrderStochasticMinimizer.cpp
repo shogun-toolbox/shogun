@@ -54,7 +54,7 @@ FirstOrderStochasticMinimizer:: ~FirstOrderStochasticMinimizer()
 
 void FirstOrderStochasticMinimizer::set_number_passes(int32_t num_passes)
 {
-	REQUIRE(num_passes>0, "The number (%d) to go through data must be positive\n", num_passes);
+	REQUIRE(num_passes>0, "The number ({}) to go through data must be positive\n", num_passes);
 	m_num_passes=num_passes;
 }
 

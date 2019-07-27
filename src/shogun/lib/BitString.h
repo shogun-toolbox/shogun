@@ -149,7 +149,7 @@ class CBitString : public CSGObject
 					fasta=s;
 
 				if (!s || len==0)
-					SG_ERROR("Error reading fasta entry in line %d len=%ld", spanned_lines+1, len)
+					SG_ERROR("Error reading fasta entry in line {} len={}", spanned_lines+1, len)
 
 				if (s[0]=='>')
 					SG_ERROR("Multiple fasta hunks (lines starting with '>') are not supported!\n")
@@ -268,7 +268,7 @@ class CBitString : public CSGObject
 			int32_t j=bitindex % ws;
 			int32_t missing=word_len-(ws-j);
 
-			//SG_PRINT("i=%lld j=%d ws=%d word_len=%d missing=%d left=%llx shift=%d\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len)
+			//SG_PRINT("i={} j={} ws={} word_len={} missing={} left=%llx shift={}\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len)
 			uint64_t res= ((string[i] << j) & mask ) >> (ws-word_len);
 
 			if (missing>0)

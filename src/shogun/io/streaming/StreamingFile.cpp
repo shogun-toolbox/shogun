@@ -204,14 +204,14 @@ CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 		mode |= O_WRONLY;
 		break;
 	default:
-		SG_ERROR("Unknown mode '%c'\n", task)
+		SG_ERROR("Unknown mode '{}'\n", task)
 	}
 
 	if (filename)
 	{
 		int file = open((const char*) filename, mode);
 		if (file < 0)
-			SG_ERROR("Error opening file '%s'\n", filename)
+			SG_ERROR("Error opening file '{}'\n", filename)
 
 		buf = new CIOBuffer(file);
 		SG_REF(buf);

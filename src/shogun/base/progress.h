@@ -228,21 +228,21 @@ namespace shogun
 			}
 
 			/** Print the actual progress bar to screen **/
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			m_io.message(MSG_MESSAGEONLY, "{} |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
 				if (m_current_value.load() - m_min_value > i * size_chunk)
 				{
 					m_io.message(
-					    MSG_MESSAGEONLY, "", "", -1, "%s",
+					    MSG_MESSAGEONLY, "{}",
 					    get_pb_char().c_str());
 				}
 				else
 				{
-					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+					m_io.message(MSG_MESSAGEONLY, " ");
 				}
 			}
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", v);
+			m_io.message(MSG_MESSAGEONLY, "| {:.2f}%", v);
 
 			if (estimate > 120)
 			{
@@ -250,7 +250,7 @@ namespace shogun
 				    str, sizeof(str),
 				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
 				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
+				    MSG_MESSAGEONLY, str, estimate / 60,
 				    total_estimate / 60);
 			}
 			else
@@ -259,7 +259,7 @@ namespace shogun
 				    str, sizeof(str),
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
 				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+				    MSG_MESSAGEONLY, str, estimate, total_estimate);
 			}
 		}
 
@@ -328,21 +328,21 @@ namespace shogun
 			}
 
 			/** Print the actual progress bar to screen **/
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			m_io.message(MSG_MESSAGEONLY, "{} |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
 				if (m_current_value.load() - min_value > i * size_chunk)
 				{
 					m_io.message(
-					    MSG_MESSAGEONLY, "", "", -1, "%s",
+					    MSG_MESSAGEONLY, "{}",
 					    get_pb_char().c_str());
 				}
 				else
 				{
-					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+					m_io.message(MSG_MESSAGEONLY, " ");
 				}
 			}
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", current_val);
+			m_io.message(MSG_MESSAGEONLY, "| {:.2f}\%", current_val);
 
 			if (estimate > 120)
 			{
@@ -350,7 +350,7 @@ namespace shogun
 				    str, sizeof(str),
 				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
 				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
+				    MSG_MESSAGEONLY, str, estimate / 60,
 				    total_estimate / 60);
 			}
 			else
@@ -359,7 +359,7 @@ namespace shogun
 				    str, sizeof(str),
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
 				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+				    MSG_MESSAGEONLY, str, estimate, total_estimate);
 			}
 		}
 
@@ -370,7 +370,7 @@ namespace shogun
 			if (!m_io.get_show_progress())
 				return;
 
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
+			m_io.message(MSG_MESSAGEONLY, "\n");
 		}
 
 		/**

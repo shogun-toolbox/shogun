@@ -96,9 +96,9 @@ int ShareBoostOptimizer::lbfgs_progress(
 	if (k != 1 && k % 100 != 0)
 		return 0;
 
-    SG_PRINT("Iteration %d:\n", k)
-    SG_PRINT("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1])
-    SG_PRINT("  xnorm = %f, gnorm = %f, step = %f\n", xnorm, gnorm, step)
+    SG_PRINT("Iteration {}:\n", k)
+    SG_PRINT("  fx = {}, x[0] = {}, x[1] = {}\n", fx, x[0], x[1])
+    SG_PRINT("  xnorm = {}, gnorm = {}, step = {}\n", xnorm, gnorm, step)
     SG_PRINT("\n")
     return 0;
 }

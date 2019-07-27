@@ -113,7 +113,7 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<in
 	{
 		int32_t index=idx[i];
 		REQUIRE(index>=0 && index<total_vlen,
-			"The index (%d) in the vector idx is not valid since there are %d samples\n",
+			"The index ({}) in the vector idx is not valid since there are {} samples\n",
 			index, total_vlen);
 	}
 	m_idx = idx;
@@ -148,7 +148,7 @@ float64_t CDenseSubSamplesFeatures<ST>::dot(
 template<class ST> void CDenseSubSamplesFeatures<ST>::check_bound(int32_t index) const
 {
 	REQUIRE(index<m_idx.vlen && index>=0,
-		"Index (%d) is out of bound (%d)\n", index, m_idx.vlen);
+		"Index ({}) is out of bound ({})\n", index, m_idx.vlen);
 }
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::add_to_dense_vec(

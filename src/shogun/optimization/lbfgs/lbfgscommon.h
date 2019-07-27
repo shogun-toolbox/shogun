@@ -28,7 +28,7 @@ struct LBFGSLineSearchHelper
 
 	static ELBFGSLineSearch get_lbfgs_linear_search(int8_t method_id)
 	{
-		REQUIRE(method_id>=0 && method_id<4, "Unsupported method id (%d)\n", method_id);
+		REQUIRE(method_id>=0 && method_id<4, "Unsupported method id ({})\n", method_id);
 		return (ELBFGSLineSearch) method_id;
 	}
 };

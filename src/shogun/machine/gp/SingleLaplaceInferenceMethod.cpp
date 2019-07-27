@@ -263,7 +263,7 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		SG_WARNING("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})\n", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 	return Psi_New;
 }
@@ -619,7 +619,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_inference_
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	// create eigen representation of K, Z, dfhat, dlp and alpha
@@ -802,7 +802,7 @@ float64_t CSingleLaplaceInferenceMethod::get_psi_wrt_alpha()
 void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
-		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
+		"The length of gradients ({}) should the same as the length of parameters ({})\n",
 		gradient.vlen, m_alpha.vlen);
 
 	Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);

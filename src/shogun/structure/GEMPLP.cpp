@@ -90,7 +90,7 @@ void CGEMPLP::init()
 			{
 				inds_s[i] = vars_c.find(curr_intersection[i])[0];
 				REQUIRE(inds_s[i] >= 0,
-						"Intersection contains variable %d which is not in the region %d", curr_intersection[i], c);
+						"Intersection contains variable {} which is not in the region {}", curr_intersection[i], c);
 
 				dims_array[i] = fg_var_sizes[curr_intersection[i]];
 			}
@@ -186,11 +186,11 @@ int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<in
 float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-	        "%s::inference(): the output assignment should be prepared as"
+	        "{}::inference(): the output assignment should be prepared as"
 	        "the same size as variables!\n", get_name());
 
 	// iterate over message loop
-	SG_DEBUG("Running MPLP for %d iterations\n",  m_param.m_max_iter);
+	SG_DEBUG("Running MPLP for {} iterations\n",  m_param.m_max_iter);
 
 	float64_t last_obj = CMath::INFTY;
 
@@ -244,7 +244,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 		float64_t obj_del = last_obj - obj;
 		float64_t int_gap = obj - int_val;
 
-		SG_DEBUG("Iter= %d Objective=%f ObjBest=%f ObjDel=%f Gap=%f \n", (it + 1), obj, int_val, obj_del, int_gap);
+		SG_DEBUG("Iter= {} Objective={} ObjBest={} ObjDel={} Gap={} \n", (it + 1), obj, int_val, obj_del, int_gap);
 
 		if (obj_del < m_param.m_obj_del_thr && it > 16)
 			break;
@@ -256,7 +256,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 	}
 
 	float64_t energy = m_fg->evaluate_energy(assignment);
-	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", energy);
+	SG_DEBUG("fg.evaluate_energy(assignment) = {}\n", energy);
 
 	return energy;
 }
@@ -266,7 +266,7 @@ void CGEMPLP::update_messages(int32_t id_region)
 	REQUIRE(m_factors != NULL, "Factors are not set!\n");
 
 	REQUIRE(m_factors->get_num_elements() > id_region,
-			"Region id (%d) exceeds the factor elements' length (%d)!\n",
+			"Region id ({}) exceeds the factor elements' length ({})!\n",
 			id_region, m_factors->get_num_elements());
 
 	CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(id_region));

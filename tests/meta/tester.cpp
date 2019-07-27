@@ -59,19 +59,19 @@ int main(int argc, const char *argv[])
 		if (!loaded_equals_ref)
 		{
 			SG_DEBUG(
-				"Test input different from reference input for %s\n",
+				"Test input different from reference input for {}\n",
 				a->get_name());
 			a->equals(a_ref);
 		}
 		else
 		{
 			SG_DEBUG(
-				"Reference input different from test input for %s.\n",
+				"Reference input different from test input for {}.\n",
 				a->get_name());
 			a_ref->equals(a);
 		}
 		SG_DEBUG(
-			"For details, run: diff %s %s\n", fname_full_generated.c_str(),
+			"For details, run: diff {} {}\n", fname_full_generated.c_str(),
 			fname_full_reference.c_str());
 	}
 

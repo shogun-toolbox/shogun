@@ -120,7 +120,7 @@ int32_t CStochasticGBMachine::get_num_iterations() const
 
 void CStochasticGBMachine::set_subset_fraction(float64_t frac)
 {
-	REQUIRE((frac>0)&&(frac<=1),"subset fraction should lie between 0 and 1. Supplied value is %f\n",frac)
+	REQUIRE((frac>0)&&(frac<=1),"subset fraction should lie between 0 and 1. Supplied value is {}\n",frac)
 
 	m_subset_frac=frac;
 }
@@ -132,7 +132,7 @@ float64_t CStochasticGBMachine::get_subset_fraction() const
 
 void CStochasticGBMachine::set_learning_rate(float64_t lr)
 {
-	REQUIRE((lr>0)&&(lr<=1),"learning rate should lie between 0 and 1. Supplied value is %f\n",lr)
+	REQUIRE((lr>0)&&(lr<=1),"learning rate should lie between 0 and 1. Supplied value is {}\n",lr)
 
 	m_learning_rate=lr;
 }
@@ -154,7 +154,7 @@ CRegressionLabels* CStochasticGBMachine::apply_regression(CFeatures* data)
 		float64_t gamma=m_gamma->get_element(i);
 
 		CSGObject* element=m_weak_learners->get_element(i);
-		REQUIRE(element,"%d element of the array of weak learners is NULL. This is not expected\n",i)
+		REQUIRE(element,"{} element of the array of weak learners is NULL. This is not expected\n",i)
 		CMachine* machine=dynamic_cast<CMachine*>(element);
 
 		CRegressionLabels* dlabels=machine->apply_regression(feats);
@@ -321,7 +321,7 @@ float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *param
 	REQUIRE(obj,"object cannot be NULL\n")
 	CDynamicObjectArray* objects=static_cast<CDynamicObjectArray*>(obj);
 	REQUIRE((objects->get_num_elements()==2) || (objects->get_num_elements()==4),"Number of elements in obj array"
-	" (%d) does not match expectations(2 or 4)\n",objects->get_num_elements())
+	" ({}) does not match expectations(2 or 4)\n",objects->get_num_elements())
 
 	if (objects->get_num_elements()==2)
 	{

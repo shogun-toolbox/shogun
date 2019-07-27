@@ -38,7 +38,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 	degree=str->get_order();
 	set_wd_weights();
 
-	SG_DEBUG("WEIGHTED SPEC alphasz=%d, size=%d, num_str=%d\n", alphabet_size,
+	SG_DEBUG("WEIGHTED SPEC alphasz={}, size={}, num_str={}\n", alphabet_size,
 			spec_size, num_strings);
 
 	if (normalize)
@@ -252,8 +252,8 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=num_strings)
 	{
-		SG_ERROR("Index out of bounds (number of strings %d, you "
-				"requested %d)\n", num_strings, vector_index);
+		SG_ERROR("Index out of bounds (number of strings {}, you "
+				"requested {})\n", num_strings, vector_index);
 	}
 
 	wspec_feature_iterator* it=SG_MALLOC(wspec_feature_iterator, 1);

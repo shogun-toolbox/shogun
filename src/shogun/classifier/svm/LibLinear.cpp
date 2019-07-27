@@ -98,8 +98,8 @@ bool CLibLinear::train_machine(CFeatures* data)
 		{
 			SG_ERROR(
 			    "L1 methods require the data to be transposed: "
-			    "number of features %d does not match number of "
-			    "training labels %d\n",
+			    "number of features {} does not match number of "
+			    "training labels {}\n",
 			    num_feat, num_train_labels);
 		}
 		CMath::swap(num_feat, num_vec);
@@ -109,8 +109,8 @@ bool CLibLinear::train_machine(CFeatures* data)
 		if (num_vec != num_train_labels)
 		{
 			SG_ERROR(
-			    "number of vectors %d does not match "
-			    "number of training labels %d\n",
+			    "number of vectors {} does not match "
+			    "number of training labels {}\n",
 			    num_vec, num_train_labels);
 		}
 	}
@@ -163,7 +163,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	}
 	neg = prob.l - pos;
 
-	SG_INFO("%d training points %d dims\n", prob.l, prob.n)
+	SG_INFO("{} training points {} dims\n", prob.l, prob.n)
 
 	function* fun_obj = NULL;
 	switch (solver_type)
@@ -427,7 +427,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n",iter)
+	SG_INFO("optimization finished, #iter = {}\n",iter)
 	if (iter >= get_max_iterations())
 	{
 		SG_WARNING(
@@ -447,8 +447,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		if (alpha[i] > 0)
 			++nSV;
 	}
-	SG_INFO("Objective value = %lf\n", v / 2)
-	SG_INFO("nSV = %d\n", nSV)
+	SG_INFO("Objective value = {}\n", v / 2)
+	SG_INFO("nSV = {}\n", nSV)
 
 	SG_FREE(QD);
 	SG_FREE(alpha);
@@ -775,7 +775,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n", iter)
+	SG_INFO("optimization finished, #iter = {}\n", iter)
 	if (iter >= get_max_iterations())
 		SG_WARNING("\nWARNING: reaching max number of iterations\n")
 
@@ -795,8 +795,8 @@ void CLibLinear::solve_l1r_l2_svc(
 		if (b[j] > 0)
 			v += C[GETI(j)] * b[j] * b[j];
 
-	SG_INFO("Objective value = %lf\n", v)
-	SG_INFO("#nonzeros/#features = %d/%d\n", nnz, w_size)
+	SG_INFO("Objective value = {}\n", v)
+	SG_INFO("#nonzeros/#features = {}/{}\n", nnz, w_size)
 
 	SG_FREE(index);
 	SG_FREE(y);
@@ -1149,7 +1149,7 @@ void CLibLinear::solve_l1r_lr(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n", iter)
+	SG_INFO("optimization finished, #iter = {}\n", iter)
 	if (iter >= get_max_iterations())
 		SG_WARNING("\nWARNING: reaching max number of iterations\n")
 
@@ -1169,8 +1169,8 @@ void CLibLinear::solve_l1r_lr(
 		else
 			v += C[GETI(j)] * log(1 + exp_wTx[j]);
 
-	SG_INFO("Objective value = %lf\n", v)
-	SG_INFO("#nonzeros/#features = %d/%d\n", nnz, w_size)
+	SG_INFO("Objective value = {}\n", v)
+	SG_INFO("#nonzeros/#features = {}/{}\n", nnz, w_size)
 
 	SG_FREE(index);
 	SG_FREE(y);
@@ -1344,7 +1344,7 @@ void CLibLinear::solve_l2r_lr_dual(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n",iter)
+	SG_INFO("optimization finished, #iter = {}\n",iter)
 
 	if (iter >= get_max_iterations())
 		SG_WARNING("reaching max number of iterations\nUsing -s 0 may be "
@@ -1360,7 +1360,7 @@ void CLibLinear::solve_l2r_lr_dual(
 		v += alpha[2 * i] * log(alpha[2 * i]) +
 		     alpha[2 * i + 1] * log(alpha[2 * i + 1]) -
 		     upper_bound[GETI(i)] * log(upper_bound[GETI(i)]);
-	SG_INFO("Objective value = %lf\n", v)
+	SG_INFO("Objective value = {}\n", v)
 
 	delete[] xTx;
 	delete[] alpha;
@@ -1378,8 +1378,8 @@ void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 	if (num_labels != linear_term.vlen)
 	{
 		SG_ERROR(
-		    "Number of labels (%d) does not match number"
-		    " of entries (%d) in linear term \n",
+		    "Number of labels ({}) does not match number"
+		    " of entries ({}) in linear term \n",
 		    num_labels, linear_term.vlen);
 	}
 

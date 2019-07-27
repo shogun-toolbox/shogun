@@ -86,8 +86,8 @@ template <class T>
 SGMatrixList<T> SGMatrixList<T>::split(SGMatrix<T> matrix, int32_t num_components)
 {
 	REQUIRE((matrix.num_cols % num_components) == 0,
-		"The number of columns (%d) must be multiple of the number "
-		"of components (%d).\n",
+		"The number of columns ({}) must be multiple of the number "
+		"of components ({}).\n",
 		matrix.num_cols, num_components);
 
 	int32_t new_num_cols = matrix.num_cols / num_components;

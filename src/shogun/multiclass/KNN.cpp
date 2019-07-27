@@ -78,8 +78,8 @@ bool CKNN::train_machine(CFeatures* data)
 	{
 		REQUIRE(
 		    m_labels->get_num_labels() == data->get_num_vectors(),
-		    "Number of training vectors (%d) does not match number of labels "
-		    "(%d)\n",
+		    "Number of training vectors ({}) does not match number of labels "
+		    "({})\n",
 		    data->get_num_vectors(), m_labels->get_num_labels());
 		distance->init(data, data);
 	}
@@ -97,7 +97,7 @@ bool CKNN::train_machine(CFeatures* data)
 	m_min_label=min_class;
 	m_num_classes=max_class-min_class+1;
 
-	SG_INFO("m_num_classes: %d (%+d to %+d) num_train: %d\n", m_num_classes,
+	SG_INFO("m_num_classes: {} ({:+d} to {:+d}) num_train: {}\n", m_num_classes,
 			min_class, max_class, m_train_labels.vlen);
 
 	return true;
@@ -110,7 +110,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 
 	REQUIRE(
 	    n >= m_k,
-	    "K (%d) must not be larger than the number of examples (%d).\n", m_k, n)
+	    "K ({}) must not be larger than the number of examples ({}).\n", m_k, n)
 
 	//distances to train data
 	SGVector<float64_t> dists(m_train_labels.vlen);
@@ -137,9 +137,9 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 		CMath::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
 
 #ifdef DEBUG_KNN
-		SG_PRINT("\nQuick sort query %d\n", i)
+		SG_PRINT("\nQuick sort query {}\n", i)
 		for (int32_t j=0; j<m_k; j++)
-			SG_PRINT("%d ", train_idxs[j])
+			SG_PRINT("{} ", train_idxs[j])
 		SG_PRINT("\n")
 #endif
 
@@ -172,7 +172,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	//labels of the k nearest neighbors
 	SGVector<int32_t> train_lab(m_k);
 
-	SG_INFO("%d test examples\n", num_lab)
+	SG_INFO("{} test examples\n", num_lab)
 
 	//histogram of classes and returned output
 	SGVector<float64_t> classes(m_num_classes);
@@ -197,7 +197,7 @@ CMulticlassLabels* CKNN::classify_NN()
 	CMulticlassLabels* output = new CMulticlassLabels(num_lab);
 	SGVector<float64_t> distances(m_train_labels.vlen);
 
-	SG_INFO("%d test examples\n", num_lab)
+	SG_INFO("{} test examples\n", num_lab)
 
 	distance->precompute_lhs();
 
@@ -241,7 +241,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	REQUIRE(num_lab, "No vectors on right hand side\n");
 
 	REQUIRE(
-	    m_k <= num_lab, "Number of labels (%d) must be at least K (%d).\n",
+	    m_k <= num_lab, "Number of labels ({}) must be at least K ({}).\n",
 	    num_lab, m_k);
 
 	//working buffer of m_train_labels
@@ -250,7 +250,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	//histogram of classes and returned output
 	SGVector<int32_t> classes(m_num_classes);
 
-	SG_INFO("%d test examples\n", num_lab)
+	SG_INFO("{} test examples\n", num_lab)
 
 	init_solver(m_knn_solver);
 

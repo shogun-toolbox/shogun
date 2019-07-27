@@ -73,8 +73,8 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab
 	SGVector<int32_t> labels=((CMulticlassLabels*) lab)->get_int_labels();
 	for (int32_t i=0;i<labels.vlen;i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.vlen/labels.vlen)),
-		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
-		"%d\n",func.vlen/labels.vlen,i,labels[i]);
+		 "Labels must be between 0 and C(ie {} here). Currently labels[{}] is"
+		"{}\n",func.vlen/labels.vlen,i,labels[i]);
 
 	// labels.vlen=num_rows  func.vlen/num_rows=num_cols
 	Map<MatrixXd> eigen_f(func.vector,labels.vlen,func.vlen/labels.vlen);
@@ -126,8 +126,8 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
 	SGVector<int32_t> labels=((CMulticlassLabels*) lab)->get_int_labels();
 	for (int32_t i=0;i<labels.vlen;i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.num_cols)),
-		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
-		"%d\n",func.num_cols,i,labels[i]);
+		 "Labels must be between 0 and C(ie {} here). Currently labels[{}] is"
+		"{}\n",func.num_cols,i,labels[i]);
 
 	SGVector<float64_t> ret=SGVector<float64_t>(func.num_rows*func.num_cols);
 	sg_memcpy(ret.vector,func.matrix,func.num_rows*func.num_cols*sizeof(float64_t));
@@ -222,7 +222,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative3_f(SGMatr
 
 void CSoftMaxLikelihood::set_num_samples(index_t num_samples)
 {
-	REQUIRE(num_samples>0, "Numer of samples (%d) should be positive\n",
+	REQUIRE(num_samples>0, "Numer of samples ({}) should be positive\n",
 		num_samples);
 	m_num_samples=num_samples;
 }
@@ -233,11 +233,11 @@ SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu
 	const index_t C=s2.vlen/mu.vlen;
 	const index_t n=mu.vlen/C;
 
-	REQUIRE(n*C==mu.vlen, "Number of labels (%d) times number of classes (%d) must match "
-		"number of elements(%d) in mu\n", n, C, mu.vlen);
+	REQUIRE(n*C==mu.vlen, "Number of labels ({}) times number of classes ({}) must match "
+		"number of elements({}) in mu\n", n, C, mu.vlen);
 
-	REQUIRE(n*C*C==s2.vlen, "Number of labels (%d) times second power of number of classes (%d*%d) must match "
-		"number of elements(%d) in s2\n",n, C, C, s2.vlen);
+	REQUIRE(n*C*C==s2.vlen, "Number of labels ({}) times second power of number of classes ({}*{}) must match "
+		"number of elements({}) in s2\n",n, C, C, s2.vlen);
 
 	SGVector<index_t> y;
 
@@ -247,13 +247,13 @@ SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu
 			"Labels must be type of CMulticlassLabels\n");
 
 		const index_t n1=lab->get_num_labels();
-		REQUIRE(n==n1, "Number of samples (%d) learned from mu and s2 must match "
-			"number of labels(%d) in lab\n",n,n1);
+		REQUIRE(n==n1, "Number of samples ({}) learned from mu and s2 must match "
+			"number of labels({}) in lab\n",n,n1);
 
 		y=((CMulticlassLabels*) lab)->get_int_labels();
 		for (index_t i=0;i<y.vlen;i++)
-			REQUIRE(y[i]<C,"Labels must be between 0 and C(ie %d here). Currently lab[%d] is"
-				"%d\n",C,i,y[i]);
+			REQUIRE(y[i]<C,"Labels must be between 0 and C(ie {} here). Currently lab[{}] is"
+				"{}\n",C,i,y[i]);
 	}
 	else
 	{

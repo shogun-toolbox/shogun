@@ -179,7 +179,7 @@ CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
 		return NULL;
 
 	REQUIRE(kernel->get_kernel_type()==K_ANOVA, "Provided kernel is "
-				"not of type CANOVAKernel, but type %d!\n",
+				"not of type CANOVAKernel, but type {}!\n",
 				kernel->get_kernel_type())
 
 	/* since an additional reference is returned */

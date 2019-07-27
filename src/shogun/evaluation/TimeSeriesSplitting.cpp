@@ -97,7 +97,7 @@ void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)
 	REQUIRE(min_size > 0, "Minimum subset size should be atleast 1.")
 	REQUIRE(
 	    min_size < num_labels - (num_subsets - 1) * (num_labels / num_subsets),
-	    "Minimum subset size can be atmost %d, constrained by number of "
+	    "Minimum subset size can be atmost {}, constrained by number of "
 	    "subsets and labels.",
 	    num_labels - (num_subsets - 1) * (num_labels / num_subsets) - 1);
 	m_min_subset_size = min_size;

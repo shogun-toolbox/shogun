@@ -390,7 +390,7 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		SG_WARNING("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})\n", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 }
 
@@ -430,7 +430,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_m
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);

@@ -93,7 +93,7 @@ void CLanczosEigenSolver::compute()
 	// CG iteration begins
 	for (it.begin(v_i); !it.end(v_i); ++it)
 	{
-		SG_DEBUG("CG iteration %d, residual norm %f\n",
+		SG_DEBUG("CG iteration {}, residual norm {}\n",
 				it.get_iter_info().iteration_count,
 				it.get_iter_info().residual_norm);
 
@@ -135,7 +135,7 @@ void CLanczosEigenSolver::compute()
 
 		if (info==0)
 		{
-			SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
+			SG_INFO("Iteration took {} times, residual norm={:.20f}\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 
 			m_min_eigenvalue=w[0];
@@ -153,7 +153,7 @@ void CLanczosEigenSolver::compute()
 
 		if (info==0)
 		{
-			SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
+			SG_INFO("Iteration took {} times, residual norm={:.20f}\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 			m_max_eigenvalue=w[0];
 			m_is_computed_max=true;

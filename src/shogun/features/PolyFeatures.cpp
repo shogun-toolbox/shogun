@@ -141,7 +141,7 @@ CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	REQUIRE(
 	    vec2.size() == m_output_dimensions,
-	    "Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n",
+	    "Dimensions don't match, vec2_dim={}, m_output_dimensions={}\n",
 	    vec2.size(), m_output_dimensions)
 
 	int32_t len;
@@ -171,7 +171,7 @@ CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
+		SG_ERROR("Dimensions don't match, vec2_dim={}, m_output_dimensions={}\n", vec2_len, m_output_dimensions)
 
 	int32_t len;
 	bool do_free;

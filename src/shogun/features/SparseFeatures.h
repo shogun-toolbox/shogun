@@ -409,7 +409,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			/** print details of iterator (for debugging purposes)*/
 			void print_info()
 			{
-				SG_PRINT("sv=%p, vidx=%d, num_feat_entries=%d, index=%d\n",
+				SG_PRINT("sv={}, vidx={}, num_feat_entries={}, index={}\n",
 						fmt::ptr(sv.features), vector_index, sv.num_feat_entries, index);
 			}
 		};

@@ -286,7 +286,7 @@ class CPlif: public CPlifBase
 			{
 				len=p_len;
 
-				SG_DEBUG("set_plif len=%i\n", p_len)
+				SG_DEBUG("set_plif len={}\n", p_len)
 				limits = SGVector<float64_t>(len);
 				penalties = SGVector<float64_t>(len);
 				cum_derivatives = SGVector<float64_t>(len);
@@ -403,7 +403,7 @@ class CPlif: public CPlifBase
 		 */
 		virtual void list_plif() const
 		{
-			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm)
+			SG_PRINT("CPlif(min_value={:1.2f}, max_value={:1.2f}, use_svm={})\n", min_value, max_value, use_svm)
 		}
 
 		/** delete plif struct

@@ -48,11 +48,11 @@ CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 				h5file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 			break;
 		default:
-			SG_ERROR("unknown mode '%c'\n", rw)
+			SG_ERROR("unknown mode '{}'\n", rw)
 	};
 
 	if (h5file<0)
-		SG_ERROR("Could not open file '%s'\n", fname)
+		SG_ERROR("Could not open file '{}'\n", fname)
 }
 
 CHDF5File::~CHDF5File()
@@ -84,7 +84,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 	if (!((ndims==2 && dims[0]==nelements && dims[1]==1) ||							\
 			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
 			(ndims==1 && dims[0]==nelements)))										\
-		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0])	\
+		SG_ERROR("Error not a 1-dimensional vector (ndims={}, dims[0]={})\n", ndims, dims[0])	\
 	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
@@ -228,7 +228,7 @@ void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 	if (dataset<0)															\
 	{																		\
 		SG_ERROR("Could not create hdf5 dataset - does"						\
-				" dataset '%s' already exist?\n", variable_name);			\
+				" dataset '{}' already exist?\n", variable_name);			\
 	}																		\
 	status=H5Dwrite(dataset, h5type, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec);	\
 	if (status<0)															\
@@ -269,7 +269,7 @@ void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	
 	if (dataset<0)																\
 	{																			\
 		SG_ERROR("Could not create hdf5 dataset - does"							\
-				" dataset '%s' already exist?\n", variable_name);				\
+				" dataset '{}' already exist?\n", variable_name);				\
 	}																			\
 	status=H5Dwrite(dataset, h5type, H5S_ALL, H5S_ALL, H5P_DEFAULT, matrix);	\
 	if (status<0)																\
@@ -437,7 +437,7 @@ void CHDF5File::create_group_hierarchy()
 				g=H5Gcreate2(h5file, vname, H5P_DEFAULT, H5P_DEFAULT,
 						H5P_DEFAULT);
 				if (g<0)
-					SG_ERROR("Error creating group '%s'\n", vname)
+					SG_ERROR("Error creating group '{}'\n", vname)
 				vname[i]='/';
 			}
 			H5Gclose(g);

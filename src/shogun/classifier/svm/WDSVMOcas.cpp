@@ -158,7 +158,7 @@ int32_t CWDSVMOcas::set_wd_weights()
 
 bool CWDSVMOcas::train_machine(CFeatures* data)
 {
-	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
+	SG_INFO("C={}, epsilon={}, bufsize={}\n", get_C1(), get_epsilon(), bufsize)
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
@@ -183,13 +183,13 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 
 	w_dim_single_char=set_wd_weights();
 	//CMath::display_vector(wd_weights, degree, "wd_weights");
-	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char)
+	SG_DEBUG("w_dim_single_char={}\n", w_dim_single_char)
 	w_dim=string_length*w_dim_single_char;
-	SG_DEBUG("cutting plane has %d dims\n", w_dim)
+	SG_DEBUG("cutting plane has {} dims\n", w_dim)
 	num_vec=get_features()->get_max_vector_length();
 
 	set_normalization_const();
-	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, labvec.vlen)
+	SG_INFO("num_vec: {} num_lab: {}\n", num_vec, labvec.vlen)
 	ASSERT(num_vec==labvec.vlen)
 	ASSERT(num_vec>0)
 
@@ -214,7 +214,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	CMath::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
-	SG_PRINT("timing:%f\n", start)
+	SG_PRINT("timing:{}\n", start)
 	SG_FREE(tmp);
 	exit(1);*/
 /////speed tests/////
@@ -233,15 +233,15 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 			&CWDSVMOcas::print,
 			this);
 
-	SG_INFO("Ocas Converged after %d iterations\n"
+	SG_INFO("Ocas Converged after {} iterations\n"
 			"==================================\n"
 			"timing statistics:\n"
-			"output_time: %f s\n"
-			"sort_time: %f s\n"
-			"add_time: %f s\n"
-			"w_time: %f s\n"
-			"solver_time %f s\n"
-			"ocas_time %f s\n\n", result.nIter, result.output_time, result.sort_time,
+			"output_time: {} s\n"
+			"sort_time: {} s\n"
+			"add_time: {} s\n"
+			"w_time: {} s\n"
+			"solver_time {} s\n"
+			"ocas_time {} s\n\n", result.nIter, result.output_time, result.sort_time,
 			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	for (int32_t i=bufsize-1; i>=0; i--)
@@ -569,7 +569,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		params_output[t].start = step*t;
 		params_output[t].end = step*(t+1);
 
-		//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output))
+		//SG_PRINT("t={} start={} end={} output={}\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output))
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
 		{
 			nthreads=t;
@@ -585,7 +585,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	params_output[t].start = step*t;
 	params_output[t].end = nData;
 	compute_output_helper(&params_output[t]);
-	//SG_PRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output))
+	//SG_PRINT("t={} start={} end={} output={}\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output))
 
 	for (t=0; t<nthreads; t++)
 	{
@@ -633,7 +633,7 @@ void CWDSVMOcas::compute_W(
 
 	*sq_norm_W = linalg::dot(W, W) +CMath::sq(bias);
 	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;;
-	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
+	//SG_PRINT("nSel={} sq_norm_W={} dp_WoldW={}\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;
 	o->old_bias = old_bias;

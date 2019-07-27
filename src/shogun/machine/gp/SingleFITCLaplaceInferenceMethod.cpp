@@ -298,7 +298,7 @@ float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		SG_WARNING("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})\n", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 	return Psi_New;
 }
@@ -798,7 +798,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_infere
 		&& strcmp(param->m_name, "log_inducing_noise")
 		&& strcmp(param->m_name, "inducing_features")),
 		"Can't compute derivative of"
-		" the nagative log marginal likelihood wrt %s.%s parameter\n",
+		" the nagative log marginal likelihood wrt {}.{} parameter\n",
 		get_name(), param->m_name)
 
 	SGVector<float64_t> result;
@@ -979,7 +979,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::derivative_helper_when_Wn
 	SGVector<float64_t> res, const TParameter *param)
 {
 	REQUIRE(param, "Param not set\n");
-	SG_WARNING("Derivative wrt %s cannot be computed since W (the Hessian (diagonal) matrix) is too negative\n", param->m_name);
+	SG_WARNING("Derivative wrt {} cannot be computed since W (the Hessian (diagonal) matrix) is too negative\n", param->m_name);
 	//dnlZ = struct('cov',0*hyp.cov, 'mean',0*hyp.mean, 'lik',0*hyp.lik);
 	res.zero();
 	return res;

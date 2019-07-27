@@ -91,7 +91,7 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 	{
 		REQUIRE(lhs, "Left features not set!\n");
 		REQUIRE(rhs, "Right features not set!\n");
-		REQUIRE(index>=0 && index<num_lhs,"Index (%d) is out of bound (%d)\n",
+		REQUIRE(index>=0 && index<num_lhs,"Index ({}) is out of bound ({})\n",
 			index, num_rhs);
 		int32_t idx_l=index;
 		//Note that CDotKernel requires lhs and rhs are CDotFeatures pointers

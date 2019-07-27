@@ -71,7 +71,7 @@ DescendPair AdaptMomentumCorrection::get_corrected_descend_direction(float64_t n
 	REQUIRE(m_adapt_rate>0 && m_adapt_rate<1.0,"adaptive rate is invalid\n");
 	index_t len=m_momentum_correction->get_length_previous_descend_direction();
 	REQUIRE(idx>=0 && idx<len,
-		"The index (%d) is invalid\n", idx);
+		"The index ({}) is invalid\n", idx);
 		if(m_descend_rate.vlen==0)
 		{
 			m_descend_rate=SGVector<float64_t>(len);
@@ -102,9 +102,9 @@ DescendPair AdaptMomentumCorrection::get_corrected_descend_direction(float64_t n
 void AdaptMomentumCorrection::set_adapt_rate(float64_t adapt_rate,
 	float64_t rate_min, float64_t rate_max)
 {
-	REQUIRE(adapt_rate>0.0 && adapt_rate<1.0, "Adaptive rate (%f) must in (0,1)\n", adapt_rate);
-	REQUIRE(rate_min>=0, "Minimum speedup rate (%f) must be non-negative\n", rate_min);
-	REQUIRE(rate_max>rate_min, "Maximum speedup rate (%f) must greater than minimum speedup rate (%f)\n",
+	REQUIRE(adapt_rate>0.0 && adapt_rate<1.0, "Adaptive rate ({}) must in (0,1)\n", adapt_rate);
+	REQUIRE(rate_min>=0, "Minimum speedup rate ({}) must be non-negative\n", rate_min);
+	REQUIRE(rate_max>rate_min, "Maximum speedup rate ({}) must greater than minimum speedup rate ({})\n",
 		rate_max, rate_min);
 	m_adapt_rate=adapt_rate;
 	m_rate_min=rate_min;
@@ -113,7 +113,7 @@ void AdaptMomentumCorrection::set_adapt_rate(float64_t adapt_rate,
 
 void AdaptMomentumCorrection::set_init_descend_rate(float64_t init_descend_rate)
 {
-	REQUIRE(init_descend_rate>0,"Init speedup rate (%f) must be positive\n", init_descend_rate);
+	REQUIRE(init_descend_rate>0,"Init speedup rate ({}) must be positive\n", init_descend_rate);
 	m_init_descend_rate=init_descend_rate;
 }
 

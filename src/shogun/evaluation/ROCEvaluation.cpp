@@ -20,11 +20,11 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	REQUIRE(ground_truth, "No ground truth labels provided.\n");
 	REQUIRE(
 	    predicted->get_label_type() == LT_BINARY,
-	    "Given predicted labels (%d) must be binary (%d).\n",
+	    "Given predicted labels ({}) must be binary ({}).\n",
 	    predicted->get_label_type(), LT_BINARY);
 	REQUIRE(
 	    ground_truth->get_label_type() == LT_BINARY,
-	    "Given ground truth labels (%d) must be binary (%d).\n",
+	    "Given ground truth labels ({}) must be binary ({}).\n",
 	    ground_truth->get_label_type(), LT_BINARY);
 
 	return evaluate_roc((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
@@ -89,9 +89,9 @@ float64_t CROCEvaluation::evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* 
 	}
 
 	// assure both number of positive and negative examples is >0
-	REQUIRE(pos_count>0, "%s::evaluate_roc(): Number of positive labels is "
+	REQUIRE(pos_count>0, "{}::evaluate_roc(): Number of positive labels is "
 			"zero, ROC fails!\n", get_name());
-	REQUIRE(neg_count>0, "%s::evaluate_roc(): Number of negative labels is "
+	REQUIRE(neg_count>0, "{}::evaluate_roc(): Number of negative labels is "
 			"zero, ROC fails!\n", get_name());
 
 	int32_t j = 0;

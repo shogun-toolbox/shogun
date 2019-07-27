@@ -77,7 +77,7 @@ bool CKernelRidgeRegression::train_machine(CFeatures *data)
 	if (m_labels->get_num_labels() != kernel->get_num_vec_rhs())
 	{
 		SG_ERROR("Number of labels does not match number of kernel"
-			" columns (num_labels=%d cols=%d\n", m_labels->get_num_labels(), kernel->get_num_vec_rhs());
+			" columns (num_labels={} cols={}\n", m_labels->get_num_labels(), kernel->get_num_vec_rhs());
 	}
 
 	// allocate alpha vector

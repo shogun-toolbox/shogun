@@ -25,7 +25,7 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 	init();
 	m_fg = fg;
 
-	REQUIRE(fg != NULL, "%s::CMAPInference(): fg cannot be NULL!\n", get_name());
+	REQUIRE(fg != NULL, "{}::CMAPInference(): fg cannot be NULL!\n", get_name());
 
 	switch(inference_method)
 	{
@@ -39,19 +39,19 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 			m_infer_impl = new CGEMPLP(fg);
 			break;
 		case LOOPY_MAX_PROD:
-			SG_ERROR("%s::CMAPInference(): LoopyMaxProduct has not been implemented!\n",
+			SG_ERROR("{}::CMAPInference(): LoopyMaxProduct has not been implemented!\n",
 				get_name());
 			break;
 		case LP_RELAXATION:
-			SG_ERROR("%s::CMAPInference(): LPRelaxation has not been implemented!\n",
+			SG_ERROR("{}::CMAPInference(): LPRelaxation has not been implemented!\n",
 				get_name());
 			break;
 		case TRWS_MAX_PROD:
-			SG_ERROR("%s::CMAPInference(): TRW-S has not been implemented!\n",
+			SG_ERROR("{}::CMAPInference(): TRW-S has not been implemented!\n",
 				get_name());
 			break;
 		default:
-			SG_ERROR("%s::CMAPInference(): unsupported inference method!\n",
+			SG_ERROR("{}::CMAPInference(): unsupported inference method!\n",
 				get_name());
 			break;
 	}

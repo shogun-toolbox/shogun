@@ -14,8 +14,8 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 {
 	REQUIRE(
 	    predicted->get_num_labels() == ground_truth->get_num_labels(),
-	    "Number of predicted labels (%d) must be "
-	    "equal to number of ground truth labels (%d)!\n",
+	    "Number of predicted labels ({}) must be "
+	    "equal to number of ground truth labels ({})!\n",
 	    get_name(), predicted->get_num_labels(),
 	    ground_truth->get_num_labels());
 

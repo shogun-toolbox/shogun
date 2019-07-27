@@ -39,7 +39,7 @@ Version::~Version()
 
 void Version::print_version()
 {
-	SG_PRINT("libshogun (%s/%s%" PRId64 ")\n\n", MACHINE, VERSION_RELEASE, version_revision)
+	SG_PRINT("libshogun ({}/{}{})\n\n", MACHINE, VERSION_RELEASE, version_revision)
 	SG_PRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n")
 	SG_PRINT("Copyright (C) 1999-2011 Max Planck Society\n")
 	SG_PRINT("Copyright (C) 2009-2011 Berlin Institute of Technology\n")

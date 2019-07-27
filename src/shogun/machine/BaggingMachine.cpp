@@ -70,7 +70,7 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	REQUIRE(m_labels, "Labels not set.\n");
 	REQUIRE(
 	    m_labels->get_label_type() == LT_MULTICLASS,
-	    "Labels (%s) are not compatible with multiclass.\n",
+	    "Labels ({}) are not compatible with multiclass.\n",
 	    m_labels->get_name());
 
 	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);

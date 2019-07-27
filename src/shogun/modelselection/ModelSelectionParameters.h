@@ -216,7 +216,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 		ERangeType type, T step, T type_base)
 {
 	if (max<min)
-		SG_ERROR("unable build values: max=%f < min=%f\n", max, min)
+		SG_ERROR("unable build values: max={} < min={}\n", max, min)
 
 	/* create value vector, no ref-counting */
 	index_t num_values=CMath::round((max-min)/step)+1;
@@ -237,7 +237,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 			break;
 		case R_LOG:
 			if (current<=0)
-				SG_ERROR("log(x) with x=%f\n", current)
+				SG_ERROR("log(x) with x={}\n", current)
 
 			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
 			result.vector[i]=CMath::log2(current)/CMath::log2(type_base);

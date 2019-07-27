@@ -74,8 +74,8 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 		{
 			if (!m_sgobject->m_parameters->contains_parameter(child->m_node_name))
 			{
-				SG_ERROR("Not possible to add child, node with CSGObject \"%s\""
-						" does not contain a parameter called \"%s\"\n",
+				SG_ERROR("Not possible to add child, node with CSGObject \"{}\""
+						" does not contain a parameter called \"{}\"\n",
 						m_sgobject->get_name(), child->m_node_name);
 			}
 		}
@@ -344,8 +344,8 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 	for (index_t i=0; i<num_prefix; ++i)
 		prefix[i]='\t';
 
-	SG_DEBUG("%s------>entering CModelSelectionParameters::get_combinations() "
-			"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
+	SG_DEBUG("{}------>entering CModelSelectionParameters::get_combinations() "
+			"for \"{}\"\n", prefix, m_node_name ? m_node_name : "root");
 	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* value case: node with values and no children.
@@ -368,10 +368,10 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				p->add(&((int32_t*)m_values)[i], m_node_name);;
 				break;
 			case MSPT_NONE:
-				SG_ERROR("%sValue node has no type!\n", prefix)
+				SG_ERROR("{}Value node has no type!\n", prefix)
 				break;
 			default:
-				SG_ERROR("%sUnknown type for model selection parameter!\n",
+				SG_ERROR("{}Unknown type for model selection parameter!\n",
 						prefix);
 				break;
 			}
@@ -379,8 +379,8 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 			result->append_element(new CParameterCombination(p));
 		}
 
-		SG_DEBUG("%s------>leaving CModelSelectionParameters::get_combinations()"
-				"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
+		SG_DEBUG("{}------>leaving CModelSelectionParameters::get_combinations()"
+				"for \"{}\"\n", prefix, m_node_name ? m_node_name : "root");
 
 		SG_FREE(prefix);
 		return result;
@@ -394,7 +394,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 	 * combine them iteratively children which are something different
 	 */
 	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
-		SG_ERROR("%sIllegal CModelSelectionParameters node type.\n", prefix)
+		SG_ERROR("{}Illegal CModelSelectionParameters node type.\n", prefix)
 
 	/* only consider combinations if this node has children */
 	if (m_child_nodes->get_num_elements())
@@ -457,7 +457,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		else
 		{
 			/* extract all tree sets of non-value nodes */
-//			SG_PRINT("%sextracting combinations of non-value nodes\n", prefix)
+//			SG_PRINT("{}extracting combinations of non-value nodes\n", prefix)
 			CDynamicObjectArray* non_value_combinations=
 					new CDynamicObjectArray();
 			for (index_t i=0; i<non_value_children.get_num_elements(); ++i)
@@ -467,7 +467,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 						(CModelSelectionParameters*)
 						non_value_children.get_element(i);
 
-//				SG_PRINT("%s\tcurrent non-value child\n", prefix)
+//				SG_PRINT("{}\tcurrent non-value child\n", prefix)
 //				non_value_child->print_tree(num_prefix+1);
 
 				CDynamicObjectArray* current_combination=
@@ -475,7 +475,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				non_value_combinations->append_element(current_combination);
 				SG_UNREF(non_value_child);
 
-//				SG_PRINT("%s\tcombinations of non-value nodes:\n", prefix)
+//				SG_PRINT("{}\tcombinations of non-value nodes:\n", prefix)
 //				for (index_t j=0; j<current_combination->get_num_elements(); ++j)
 //				{
 //					CParameterCombination* c=(CParameterCombination*)
@@ -484,7 +484,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 //					SG_UNREF(c);
 //				}
 			}
-//			SG_PRINT("%sdone extracting combinations of non-value nodes\n",
+//			SG_PRINT("{}done extracting combinations of non-value nodes\n",
 //					prefix);
 
 			/* Now, combine combinations of value and non-value nodes */
@@ -593,7 +593,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		}
 	}
 
-//	SG_PRINT("%sresult is a set of %d elements:\n", prefix,
+//	SG_PRINT("{}result is a set of {} elements:\n", prefix,
 //			result->get_num_elements());
 //	for (index_t i=0; i<result->get_num_elements(); ++i)
 //	{
@@ -603,8 +603,8 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 //		SG_UNREF(current);
 //	}
 
-	SG_DEBUG("%s------>leaving CModelSelectionParameters::get_combinations()"
-			"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
+	SG_DEBUG("{}------>leaving CModelSelectionParameters::get_combinations()"
+			"for \"{}\"\n", prefix, m_node_name ? m_node_name : "root");
 	SG_FREE(prefix);
 	return result;
 }
@@ -621,9 +621,9 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 	if (has_children())
 	{
 		if (m_sgobject)
-			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name())
+			SG_PRINT("{}{}:\"{}\"\n", prefix, m_node_name, m_sgobject->get_name())
 		else
-			SG_PRINT("%s%s with\n", prefix, m_node_name ? m_node_name : "root")
+			SG_PRINT("{}{} with\n", prefix, m_node_name ? m_node_name : "root")
 
 		/* now recursively print successors */
 
@@ -642,14 +642,14 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		 * without children*/
 		if (m_sgobject)
 		{
-			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name())
+			SG_PRINT("{}{}:\"{}\"\n", prefix, m_node_name, m_sgobject->get_name())
 		}
 		else
 		{
 			if (m_values)
 			{
 				// value node
-				SG_PRINT("%s%s with values: ", prefix, m_node_name)
+				SG_PRINT("{}{} with values: ", prefix, m_node_name)
 
 				switch (m_value_type)
 				{

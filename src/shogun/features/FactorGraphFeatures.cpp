@@ -64,8 +64,8 @@ bool CFactorGraphFeatures::add_sample(CFactorGraph* example)
 
 CFactorGraph* CFactorGraphFeatures::get_sample(index_t idx)
 {
-	REQUIRE(m_samples != NULL, "%s::get_sample(): m_samples is NULL!\n", get_name());
-	REQUIRE(idx >= 0 && idx < get_num_vectors(), "%s::get_sample(): out of index!\n", get_name());
+	REQUIRE(m_samples != NULL, "{}::get_sample(): m_samples is NULL!\n", get_name());
+	REQUIRE(idx >= 0 && idx < get_num_vectors(), "{}::get_sample(): out of index!\n", get_name());
 
 	return dynamic_cast<CFactorGraph*>(m_samples->get_element(idx));
 }

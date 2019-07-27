@@ -71,7 +71,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Number of training examples
 	int32_t N = model_features->get_num_vectors();
 
-	SG_DEBUG("M=%d, N =%d, num_aux=%d, num_aux_con=%d.\n", M, N, num_aux, num_aux_con);
+	SG_DEBUG("M={}, N ={}, num_aux={}, num_aux_con={}.\n", M, N, num_aux, num_aux_con);
 
 	// Interface with MOSEK
 	CMosek* mosek = new CMosek(0, M+num_aux+N);
@@ -84,10 +84,10 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_model->init_primal_opt(m_regularization, A, a, B, b, lb, ub, C);
 
 	REQUIRE(lb.vlen == 0 || lb.vlen == M,
-		"%s::train_machine(): lb.vlen can only be 0 or w.vlen!\n", get_name());
+		"{}::train_machine(): lb.vlen can only be 0 or w.vlen!\n", get_name());
 
 	REQUIRE(ub.vlen == 0 || ub.vlen == M,
-		"%s::train_machine(): ub.vlen can only be 0 or w.vlen!\n", get_name());
+		"{}::train_machine(): ub.vlen can only be 0 or w.vlen!\n", get_name());
 
 	if (lb.vlen == M)
 		set_lower_bounds(lb);
@@ -95,7 +95,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	if (ub.vlen == M)
 		set_upper_bounds(ub);
 
-	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to %.2f.\n", m_regularization);
+	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to {:.2f}.\n", m_regularization);
 
 	// Input terms of the problem that do not change between iterations
 	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, m_lb, m_ub, A, b) == MSK_RES_OK,
@@ -132,7 +132,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 	do
 	{
-		SG_DEBUG("Iteration #%d: Cutting plane training with num_con=%d and old_num_con=%d.\n",
+		SG_DEBUG("Iteration #{}: Cutting plane training with num_con={} and old_num_con={}.\n",
 				iteration, num_con, old_num_con);
 
 		old_num_con = num_con;
@@ -207,7 +207,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 				m_slacks[i-M-num_aux] = sol[i];
 		}
 
-		SG_DEBUG("QP solved. The primal objective value is %.4f.\n", mosek->get_primal_objective_value());
+		SG_DEBUG("QP solved. The primal objective value is {:.4f}.\n", mosek->get_primal_objective_value());
 
 		++iteration;
 
@@ -241,7 +241,7 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	}
 	else
 	{
-		SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+		SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
 				"to be set true\n", m_model->get_name());
 		return 0;
 	}
@@ -282,7 +282,7 @@ bool CPrimalMosekSOSVM::add_constraint(
 	}
 	else
 	{
-		SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+		SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
 				"to be set true\n", m_model->get_name());
 	}
 

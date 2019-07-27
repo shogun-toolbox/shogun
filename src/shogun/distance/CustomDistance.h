@@ -172,7 +172,7 @@ class CCustomDistance: public CDistance
 			int64_t int32_max=2147483647;
 
 			if (cols> int32_max)
-				SG_ERROR("Matrix larger than %d x %d\n", int32_max)
+				SG_ERROR("Matrix larger than {} x {}\n", int32_max)
 
 			if (cols*(cols+1)/2 != len)
 			{
@@ -181,7 +181,7 @@ class CCustomDistance: public CDistance
 			}
 
 			cleanup_custom();
-			SG_DEBUG("using custom distance of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom distance of size {}x{}\n", cols,cols)
 
 			dmatrix= SG_MALLOC(float32_t, len);
 
@@ -243,7 +243,7 @@ class CCustomDistance: public CDistance
 			ASSERT(rows==cols)
 
 			cleanup_custom();
-			SG_DEBUG("using custom distance of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom distance of size {}x{}\n", cols,cols)
 
 			dmatrix= SG_MALLOC(float32_t, int64_t(cols)*(cols+1)/2);
 
@@ -304,7 +304,7 @@ class CCustomDistance: public CDistance
 		bool set_full_distance_matrix_from_full_generic(const T* dm, int32_t rows, int32_t cols)
 		{
 			cleanup_custom();
-			SG_DEBUG("using custom distance of size %dx%d\n", rows,cols)
+			SG_DEBUG("using custom distance of size {}x{}\n", rows,cols)
 
 			dmatrix=SG_MALLOC(float32_t, rows*cols);
 

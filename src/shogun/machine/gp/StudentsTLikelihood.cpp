@@ -604,8 +604,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	if (lab)
 	{
 		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (%d), length of the vector of "
-				"variances (%d) and number of labels (%d) should be the same\n",
+				"Length of the vector of means ({}), length of the vector of "
+				"variances ({}) and number of labels ({}) should be the same\n",
 				mu.vlen, s2.vlen, lab->get_num_labels())
 		REQUIRE(lab->get_label_type()==LT_REGRESSION,
 				"Labels must be type of CRegressionLabels\n")
@@ -614,8 +614,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	}
 	else
 	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (%d) and "
-				"length of the vector of variances (%d) should be the same\n",
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means ({}) and "
+				"length of the vector of variances ({}) should be the same\n",
 				mu.vlen, s2.vlen)
 
 		y=SGVector<float64_t>(mu.vlen);
@@ -670,10 +670,10 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-			"Length of the vector of means (%d), length of the vector of "
-			"variances (%d) and number of labels (%d) should be the same\n",
+			"Length of the vector of means ({}), length of the vector of "
+			"variances ({}) and number of labels ({}) should be the same\n",
 			mu.vlen, s2.vlen, lab->get_num_labels())
-	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i)
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 			"Labels must be type of CRegressionLabels\n")
 
@@ -717,10 +717,10 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-			"Length of the vector of means (%d), length of the vector of "
-			"variances (%d) and number of labels (%d) should be the same\n",
+			"Length of the vector of means ({}), length of the vector of "
+			"variances ({}) and number of labels ({}) should be the same\n",
 			mu.vlen, s2.vlen, lab->get_num_labels())
-	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i)
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 			"Labels must be type of CRegressionLabels\n")
 

@@ -189,7 +189,7 @@ void CGraphCut::init_maxflow()
 float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-	        "%s::inference(): the output assignment should be prepared as"
+	        "{}::inference(): the output assignment should be prepared as"
 	        "the same size as variables!\n", get_name());
 
 	// compute max flow
@@ -202,8 +202,8 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	}
 
 	m_map_energy = m_fg->evaluate_energy(assignment);
-	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", m_fg->evaluate_energy(assignment));
-	SG_DEBUG("minimized energy = %f\n", m_map_energy);
+	SG_DEBUG("fg.evaluate_energy(assignment) = {}\n", m_fg->evaluate_energy(assignment));
+	SG_DEBUG("minimized energy = {}\n", m_map_energy);
 
 	return m_map_energy;
 }
@@ -959,11 +959,11 @@ void CGraphCut::print_graph()
 		{
 			if (node_i->type_tree == SOURCE)
 			{
-				SG_PRINT("\n s -> %d, cost = %f", node_i->id, node_i->tree_cap);
+				SG_PRINT("\n s -> {}, cost = {}", node_i->id, node_i->tree_cap);
 			}
 			else
 			{
-				SG_PRINT("\n %d -> t, cost = %f", node_i->id, node_i->tree_cap);
+				SG_PRINT("\n {} -> t, cost = {}", node_i->id, node_i->tree_cap);
 			}
 		}
 	}
@@ -972,7 +972,7 @@ void CGraphCut::print_graph()
 	for (int32_t i = 0; i < m_num_edges; i++)
 	{
 		GCEdge* edge = m_edges + i;
-		SG_PRINT("\n %d -> %d, cost = %f", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
+		SG_PRINT("\n {} -> {}, cost = {}", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
 	}
 
 }
@@ -985,11 +985,11 @@ void CGraphCut::print_assignment()
 
 		if (get_assignment(i) == SOURCE)
 		{
-			SG_PRINT("\nGCNode %2d: S", node_i->id);
+			SG_PRINT("\nGCNode {:2d}: S", node_i->id);
 		}
 		else
 		{
-			SG_PRINT("\nGCNode %2d: T", node_i->id);
+			SG_PRINT("\nGCNode {:2d}: T", node_i->id);
 		}
 	}
 }

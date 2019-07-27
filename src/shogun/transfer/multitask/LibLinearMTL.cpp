@@ -86,8 +86,8 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 
 	if (num_vec!=num_train_labels)
 	{
-		SG_ERROR("number of vectors %d does not match "
-				"number of training labels %d\n",
+		SG_ERROR("number of vectors {} does not match "
+				"number of training labels {}\n",
 				num_vec, num_train_labels);
 	}
 
@@ -126,8 +126,8 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	}
 	neg = prob.l - pos;
 
-	SG_INFO("%d training points %d dims\n", prob.l, prob.n)
-	SG_INFO("%d positives, %d negatives\n", pos, neg)
+	SG_INFO("{} training points {} dims\n", prob.l, prob.n)
+	SG_INFO("{} positives, {} negatives\n", pos, neg)
 
 	double Cp=C1;
 	double Cn=C2;
@@ -374,7 +374,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n",iter)
+	SG_INFO("optimization finished, #iter = {}\n",iter)
 	if (iter >= max_iterations)
 	{
 		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
@@ -479,7 +479,7 @@ return obj
 
 	}
 
-	SG_INFO("DONE to compute Primal OBJ, obj=%f\n",obj)
+	SG_INFO("DONE to compute Primal OBJ, obj={}\n",obj)
 
 	return obj;
 }

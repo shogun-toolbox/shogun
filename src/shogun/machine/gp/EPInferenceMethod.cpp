@@ -297,7 +297,7 @@ void CEPInferenceMethod::update()
 
 	if (sweep==m_max_sweep && CMath::abs(m_nlZ-nlZ_old)>m_tol)
 	{
-		SG_WARNING("Maximum number (%d) of sweeps reached, but tolerance (%f) was "
+		SG_WARNING("Maximum number ({}) of sweeps reached, but tolerance ({}) was "
 				"not yet reached. You can increase or decrease both.\n",
 				m_max_sweep, m_tol);
 
@@ -479,7 +479,7 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);

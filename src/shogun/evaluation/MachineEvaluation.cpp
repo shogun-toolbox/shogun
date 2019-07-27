@@ -88,26 +88,26 @@ void CMachineEvaluation::init()
 
 CEvaluationResult* CMachineEvaluation::evaluate() const
 {
-	SG_DEBUG("entering %s::evaluate()\n", get_name())
+	SG_DEBUG("entering {}::evaluate()\n", get_name())
 
 	REQUIRE(
-	    m_machine, "%s::evaluate() is only possible if a machine is "
+	    m_machine, "{}::evaluate() is only possible if a machine is "
 	               "attached\n",
 	    get_name());
 
 	REQUIRE(
-	    m_features, "%s::evaluate() is only possible if features are "
+	    m_features, "{}::evaluate() is only possible if features are "
 	                "attached\n",
 	    get_name());
 
 	REQUIRE(
-	    m_labels, "%s::evaluate() is only possible if labels are "
+	    m_labels, "{}::evaluate() is only possible if labels are "
 	              "attached\n",
 	    get_name());
 
 	CEvaluationResult* result = evaluate_impl();
 
-	SG_DEBUG("leaving %s::evaluate()\n", get_name())
+	SG_DEBUG("leaving {}::evaluate()\n", get_name())
 	return result;
 };
 

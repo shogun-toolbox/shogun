@@ -51,9 +51,9 @@ void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 	CDenseFeatures<float64_t>* lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	dimensions=lhs->get_num_features();
 	REQUIRE(centers.num_cols == k,
-			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
+			"Expected {} initial cluster centers, got {}", k, centers.num_cols);
 	REQUIRE(centers.num_rows == dimensions,
-			"Expected %d dimensionional cluster centers, got %d", dimensions, centers.num_rows);
+			"Expected {} dimensionional cluster centers, got {}", dimensions, centers.num_rows);
 	mus_initial = centers;
 	SG_UNREF(lhs);
 }
@@ -139,13 +139,13 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	REQUIRE(distance, "Distance is not provided\n")
 	REQUIRE(
 	    distance->get_feature_type() == F_DREAL,
-	    "Distance's features type (%d) should be of type REAL (%d)\n")
+	    "Distance's features type ({}) should be of type REAL ({})\n")
 	REQUIRE(
 	    max_iter > 0,
-	    "The number of iterations provided (%i) must be greater than 0\n",
+	    "The number of iterations provided ({}) must be greater than 0\n",
 	    max_iter)
 	REQUIRE(
-	    k > 0, "The number of clusters provided (%i) must be greater than 0\n",
+	    k > 0, "The number of clusters provided ({}) must be greater than 0\n",
 	    k)
 
 	if (data)

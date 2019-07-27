@@ -185,8 +185,8 @@ class CLibLinearMTL : public RandomMixin<CLinearMachine>
 
 			if (num_labels!=linear_term.vlen)
 			{
-				SG_ERROR("Number of labels (%d) does not match number"
-						" of entries (%d) in linear term \n", num_labels,
+				SG_ERROR("Number of labels ({}) does not match number"
+						" of entries ({}) in linear term \n", num_labels,
 						linear_term.vlen);
 			}
 

@@ -118,8 +118,8 @@ bool CC45ClassifierTree::train_machine(CFeatures* data)
 
 	if (m_weights_set)
 	{
-		REQUIRE(m_weights.vlen==num_vectors,"Length of weights vector (currently %d) should be same as"
-					" number of vectors in data (presently %d)",m_weights.vlen,num_vectors)
+		REQUIRE(m_weights.vlen==num_vectors,"Length of weights vector (currently {}) should be same as"
+					" number of vectors in data (presently {})",m_weights.vlen,num_vectors)
 	}
 	else
 	{
@@ -130,8 +130,8 @@ bool CC45ClassifierTree::train_machine(CFeatures* data)
 
 	if (m_types_set)
 	{
-		REQUIRE(m_nominal.vlen==num_features,"Length of m_nominal vector (currently %d) should "
-			"be same as number of features in data (presently %d)",m_nominal.vlen,num_features)
+		REQUIRE(m_nominal.vlen==num_features,"Length of m_nominal vector (currently {}) should "
+			"be same as number of features in data (presently {})",m_nominal.vlen,num_features)
 	}
 	else
 	{
@@ -478,7 +478,7 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 	else
 	{
 		REQUIRE(children->get_num_elements()==2,"The chosen attribute in current node is continuous. Expected number of"
-					" children is 2 but current node has %d children.",children->get_num_elements())
+					" children is 2 but current node has {} children.",children->get_num_elements())
 
 		node_t* left_child=dynamic_cast<node_t*>(children->get_element(0));
 		node_t* right_child=dynamic_cast<node_t*>(children->get_element(1));
@@ -712,7 +712,7 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 					if (el!=NULL)
 						child=dynamic_cast<node_t*>(el);
 					else
-						SG_ERROR("%d element of children is NULL\n",j);
+						SG_ERROR("{} element of children is NULL\n",j);
 
 					if (child->data.transit_if_feature_value==sample[node->data.attribute_id])
 					{

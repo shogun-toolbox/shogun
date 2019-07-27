@@ -202,7 +202,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		REQUIRE(features[j - 1].feat_index <= features[j].feat_index,
-		        "sort_features(): failed sanity check %d <= %d after sorting (comparing indices features[%d] <= features[%d], features=%d)\n",
+		        "sort_features(): failed sanity check {} <= {} after sorting (comparing indices features[{}] <= features[{}], features={})\n",
 		        features[j - 1].feat_index, features[j].feat_index, j - 1, j, num_feat_entries);
 	}
 
@@ -213,10 +213,10 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	{
 		// always true, but kept for future changes
 		REQUIRE(last_index < j,
-		        "sort_features(): target index %d must not exceed source index j=%d",
+		        "sort_features(): target index {} must not exceed source index j={}",
 		        last_index, j);
 		REQUIRE(features[last_index].feat_index <= features[j].feat_index,
-		        "sort_features(): failed sanity check %d = features[%d].feat_index <= features[%d].feat_index = %d\n",
+		        "sort_features(): failed sanity check {} = features[{}].feat_index <= features[{}].feat_index = {}\n",
 		        features[last_index].feat_index, last_index, j, features[j].feat_index);
 
 		// merging of features with same index
@@ -247,7 +247,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	// shrinking vector
 	if (!stable_pointer)
 	{
-		SG_INFO("shrinking vector from %d to %d\n", num_feat_entries, new_feat_count);
+		SG_INFO("shrinking vector from {} to {}\n", num_feat_entries, new_feat_count);
 		features = SG_REALLOC(value_type, features, num_feat_entries, new_feat_count);
 	}
 
@@ -256,7 +256,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		REQUIRE(features[j - 1].feat_index < features[j].feat_index,
-		        "sort_features(): failed sanity check %d < %d after sorting (comparing indices features[%d] < features[%d], features=%d)\n",
+		        "sort_features(): failed sanity check {} < {} after sorting (comparing indices features[{}] < features[{}], features={})\n",
 		        features[j - 1].feat_index, features[j].feat_index, j - 1, j, num_feat_entries);
 	}
 
@@ -332,7 +332,7 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 
 	if (features)
 	{
-		REQUIRE(get_num_dimensions() <= dimension, "get_dense(dimension=%d): sparse dimension %d exceeds requested dimension\n",
+		REQUIRE(get_num_dimensions() <= dimension, "get_dense(dimension={}): sparse dimension {} exceeds requested dimension\n",
 		        dimension, get_num_dimensions());
 
 		for (size_type i = 0; i < num_feat_entries; i++)
@@ -483,7 +483,7 @@ std::string SGSparseVector<T>::to_string() const
 template <class T>
 void SGSparseVector<T>::display_vector(const char * name, const char * prefix)
 {
-	SG_PRINT("%s%s=%s\n", prefix, name, to_string().c_str());
+	SG_PRINT("{}{}={}\n", prefix, name, to_string().c_str());
 }
 
 template <class T>

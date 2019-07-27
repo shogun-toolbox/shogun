@@ -67,7 +67,7 @@ namespace shogun
 		{
 			if (has(tag))
 			{
-				SG_ERROR("Can not register %s twice", tag.name().c_str())
+				SG_ERROR("Can not register {} twice", tag.name().c_str())
 			}
 			map[tag] = parameter;
 		}
@@ -77,7 +77,7 @@ namespace shogun
 			if (!has(tag))
 			{
 				SG_ERROR(
-				    "Can not update unregistered parameter %s",
+				    "Can not update unregistered parameter {}",
 				    tag.name().c_str())
 			}
 			map.at(tag).set_value(value);
@@ -224,7 +224,7 @@ CSGObject::CSGObject() : self(), param_obs_list()
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject created (%p)\n", fmt::ptr(this))
+	SG_GCDEBUG("SGObject created ({})\n", fmt::ptr(this))
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
@@ -233,12 +233,12 @@ CSGObject::CSGObject(const CSGObject& orig)
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject copied (%p)\n", fmt::ptr(this))
+	SG_GCDEBUG("SGObject copied ({})\n", fmt::ptr(this))
 }
 
 CSGObject::~CSGObject()
 {
-	SG_GCDEBUG("SGObject destroyed (%p)\n", fmt::ptr(this))
+	SG_GCDEBUG("SGObject destroyed ({})\n", fmt::ptr(this))
 
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -252,14 +252,14 @@ CSGObject::~CSGObject()
 int32_t CSGObject::ref()
 {
 	int32_t count = m_refcount->ref();
-	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("ref() refcount {} obj {} ({}) increased\n", count, this->get_name(), fmt::ptr(this))
 	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::ref_count()
 {
 	int32_t count = m_refcount->ref_count();
-	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("ref_count(): refcount {}, obj {} ({})\n", count, this->get_name(), fmt::ptr(this))
 	return m_refcount->ref_count();
 }
 
@@ -268,13 +268,13 @@ int32_t CSGObject::unref()
 	int32_t count = m_refcount->unref();
 	if (count<=0)
 	{
-		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("unref() refcount {}, obj {} ({}) destroying\n", count, this->get_name(), fmt::ptr(this))
 		delete this;
 		return 0;
 	}
 	else
 	{
-		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("unref() refcount {} obj {} ({}) decreased\n", count, this->get_name(), fmt::ptr(this))
 		return m_refcount->ref_count();
 	}
 }
@@ -389,7 +389,7 @@ std::string CSGObject::get_description(const std::string& name) const
 	else
 	{
 		SG_ERROR(
-		    "There is no parameter called '%s' in %s", name.c_str(),
+		    "There is no parameter called '{}' in {}", name.c_str(),
 		    this->get_name());
 		return "";
 	}
@@ -397,7 +397,7 @@ std::string CSGObject::get_description(const std::string& name) const
 
 void CSGObject::print_modsel_params()
 {
-	SG_PRINT("parameters available for model selection for %s:\n", get_name())
+	SG_PRINT("parameters available for model selection for {}:\n", get_name())
 
 	index_t num_param=m_model_selection_parameters->get_num_parameters();
 
@@ -412,7 +412,7 @@ void CSGObject::print_modsel_params()
 		if (type)
 		{
 			current->m_datatype.to_string(type, l);
-			SG_PRINT("\t%s (%s): %s\n", current->m_name, current->m_description,
+			SG_PRINT("\t{} ({}): {}\n", current->m_name, current->m_description,
 					type);
 			SG_FREE(type);
 		}
@@ -442,13 +442,13 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 
 CSGObject* CSGObject::clone(ParameterProperties pp) const
 {
-	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), fmt::ptr(this));
-	SG_DEBUG("Constructing an empty instance of %s.\n", get_name());
+	SG_DEBUG("Starting to clone {} at {}.\n", get_name(), fmt::ptr(this));
+	SG_DEBUG("Constructing an empty instance of {}.\n", get_name());
 	CSGObject* clone = create_empty();
-	SG_DEBUG("Empty instance of %s created at %p.\n", get_name(), fmt::ptr(clone));
+	SG_DEBUG("Empty instance of {} created at {}.\n", get_name(), fmt::ptr(clone));
 
 	REQUIRE(
-	    clone, "Could not create empty instance of %s. The reason for "
+	    clone, "Could not create empty instance of {}. The reason for "
 	          "this usually is that get_name() of the class returns something "
 	          "wrong, that a class has a wrongly set generic type, or that it "
 	          "lies outside the main source tree and does not have "
@@ -463,19 +463,19 @@ CSGObject* CSGObject::clone(ParameterProperties pp) const
 		if (!own.cloneable())
 		{
 			SG_DEBUG(
-			    "Skipping clone of %s::%s of type %s.\n", this->get_name(),
+			    "Skipping clone of {}::{} of type {}.\n", this->get_name(),
 			    tag.name().c_str(), own.type().c_str());
 			continue;
 		}
 
 		SG_DEBUG(
-			"Cloning parameter %s::%s of type %s.\n", this->get_name(),
+			"Cloning parameter {}::{} of type {}.\n", this->get_name(),
 			tag.name().c_str(), own.type().c_str());
 
 		clone->get_parameter(tag).get_value().clone_from(own);
 	}
 
-	SG_DEBUG("Done cloning %s at %p, new object at %p.\n", get_name(), fmt::ptr(this), fmt::ptr(clone));
+	SG_DEBUG("Done cloning {} at {}, new object at {}.\n", get_name(), fmt::ptr(this), fmt::ptr(clone));
 	return clone;
 }
 
@@ -491,7 +491,7 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
 		SG_ERROR(
-		    "%s::%s is marked as read-only and cannot be modified!\n",
+		    "{}::{} is marked as read-only and cannot be modified!\n",
 		    get_name(), _tag.name().c_str());
 
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
@@ -500,7 +500,7 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 		if (!msg.empty())
 		{
 			SG_ERROR(
-					"%s::%s cannot be updated because it must be: %s!\n",
+					"{}::{} cannot be updated because it must be: {}!\n",
 					get_name(), _tag.name().c_str(), msg.c_str())
 		}
 	}
@@ -518,14 +518,14 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	        ParameterProperties::RUNFUNCTION))
 	{
 		SG_ERROR(
-		    "The parameter %s::%s is registered as a function, "
+		    "The parameter {}::{} is registered as a function, "
 		    "use the .run() method instead!\n",
 		    get_name(), _tag.name().c_str())
 	}
 	if (parameter.get_value().empty())
 	{
 		SG_ERROR(
-		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+		    "There is no parameter called \"{}\" in {}\n", _tag.name().c_str(),
 		    get_name());
 	}
 	return parameter;
@@ -538,14 +538,14 @@ AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 	        ParameterProperties::RUNFUNCTION))
 	{
 		SG_ERROR(
-		    "The parameter %s::%s is not registered as a function, "
+		    "The parameter {}::{} is not registered as a function, "
 		    "use the .get() method instead",
 		    get_name(), _tag.name().c_str())
 	}
 	if (parameter.get_value().empty())
 	{
 		SG_ERROR(
-		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+		    "There is no parameter called \"{}\" in {}\n", _tag.name().c_str(),
 		    get_name());
 	}
 	return parameter;
@@ -562,7 +562,7 @@ void CSGObject::add_callback_function(
 	REQUIRE(function, "Function object is not callable");
 	BaseTag tag(name);
 	REQUIRE(
-	    has_parameter(tag), "There is no parameter called \"%s\" in %s\n",
+	    has_parameter(tag), "There is no parameter called \"{}\" in {}\n",
 	    tag.name().c_str(), get_name());
 
 	auto& param = self->at(tag);
@@ -605,8 +605,8 @@ void CSGObject::unsubscribe(ParameterObserver* obs)
 	auto it = m_subscriptions.find(index);
 	if (it == m_subscriptions.end())
 		SG_ERROR(
-		    "The object %s does not have any registered parameter observer "
-		    "with index %i",
+		    "The object {} does not have any registered parameter observer "
+		    "with index {}",
 		    this->get_name(), index);
 
 	it->second.unsubscribe();
@@ -704,7 +704,7 @@ bool CSGObject::equals(const CSGObject* other) const
 	if (strcmp(this->get_name(), other->get_name()))
 	{
 		SG_DEBUG(
-		    "Own type %s differs from provided %s.\n", get_name(),
+		    "Own type {} differs from provided {}.\n", get_name(),
 		    other->get_name());
 		return false;
 	}
@@ -718,7 +718,7 @@ bool CSGObject::equals(const CSGObject* other) const
 		if (!own.visitable())
 		{
 			SG_DEBUG(
-			    "Skipping comparison of %s::%s of type %s as it is "
+			    "Skipping comparison of {}::{} of type {} as it is "
 			    "non-visitable.\n",
 			    this->get_name(), tag.name().c_str(), own.type().c_str());
 			continue;
@@ -727,7 +727,7 @@ bool CSGObject::equals(const CSGObject* other) const
 		const Any& given = other->get_parameter(tag).get_value();
 
 		SG_DEBUG(
-		    "Comparing parameter %s::%s of type %s.\n", this->get_name(),
+		    "Comparing parameter {}::{} of type {}.\n", this->get_name(),
 		    tag.name().c_str(), own.type().c_str());
 		if (own != given)
 		{
@@ -744,14 +744,14 @@ bool CSGObject::equals(const CSGObject* other) const
 				   << "::" << tag.name() << "=";
 				given.visit(visitor.get());
 
-				SG_DEBUG("%s\n", ss.str().c_str());
+				SG_DEBUG("{}\n", ss.str().c_str());
 			}
 
 			return false;
 		}
 	}
 
-	SG_DEBUG("All parameters of %s equal.\n", this->get_name());
+	SG_DEBUG("All parameters of {} equal.\n", this->get_name());
 	return true;
 }
 
@@ -798,7 +798,7 @@ CSGObject* CSGObject::get(const std::string& name, index_t index) const
 	if (!result && has(name))
 	{
 		SG_ERROR(
-			"Cannot get array parameter %s::%s[%d] of type %s as object.\n",
+			"Cannot get array parameter {}::{}[{}] of type {} as object.\n",
 			get_name(), name.c_str(), index,
 			self->map[BaseTag(name)].get_value().type().c_str());
 	}
@@ -815,14 +815,14 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 {
 	if (!has(name))
 	{
-		SG_ERROR("Parameter %s::%s does not exist.\n", get_name(), name.c_str())
+		SG_ERROR("Parameter {}::{} does not exist.\n", get_name(), name.c_str())
 	}
 	if (auto* result = get(name, std::nothrow))
 	{
 		return result;
 	}
 	SG_ERROR(
-			"Cannot get parameter %s::%s of type %s as object.\n",
+			"Cannot get parameter {}::{} of type {} as object.\n",
 			get_name(), name.c_str(),
 			self->map[BaseTag(name)].get_value().type().c_str());
 	return nullptr;

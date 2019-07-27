@@ -140,8 +140,8 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
+	SG_DEBUG("lhs_changed: {}\n", lhs_changed)
+	SG_DEBUG("rhs_changed: {}\n", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
@@ -219,7 +219,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 			else
 				add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
 
-			//SG_DEBUG("number of used trie nodes: %i\n", tries.get_num_used_nodes())
+			//SG_DEBUG("number of used trie nodes: {}\n", tries.get_num_used_nodes())
 		}
 		else
 		{
@@ -619,7 +619,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	int32_t len=new_weights.num_cols;
 
 	if (d!=degree || len<0)
-		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree)
+		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got ({} x {})\n", len, degree)
 
 	degree=d;
 	length=len;
@@ -631,7 +631,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	weights_length=len+max_mismatch;
 
 
-	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length)
+	SG_DEBUG("Creating weights of size {}x{}\n", weights_degree, weights_length)
 	int32_t num_weights=weights_degree*weights_length;
 	SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, num_weights);
@@ -654,7 +654,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 	}
 
 	if (seq_length!=len)
-		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len)
+		SG_ERROR("seq_length = {}, position_weights_length={}\n", seq_length, len)
 
 	SG_FREE(position_weights);
 	position_weights=SG_MALLOC(float64_t, len);

@@ -68,14 +68,14 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 			}
 			else
 			{
-				SG_WARNING("Parameter %s.%s was not added to parameter combination, "
+				SG_WARNING("Parameter {}.{} was not added to parameter combination, "
 					"since it isn't a type currently supported\n", obj->get_name(),
 					param->m_name);
 			}
 		}
 		else
 		{
-			SG_WARNING("Parameter %s.%s was not added to parameter combination, "
+			SG_WARNING("Parameter {}.{} was not added to parameter combination, "
 					"since it isn't of floating point type\n", obj->get_name(),
 					param->m_name);
 		}
@@ -148,7 +148,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_BOOL)
-					SG_ERROR("Parameter %s not a boolean parameter", name)
+					SG_ERROR("Parameter {} not a boolean parameter", name)
 
 				if (index < 0)
 					*((bool*)(param)) = value;
@@ -178,7 +178,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_INT32)
-					SG_ERROR("Parameter %s not a integer parameter", name)
+					SG_ERROR("Parameter {} not a integer parameter", name)
 
 				if (index < 0)
 					*((int32_t*)(param)) = value;
@@ -207,7 +207,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_FLOAT64)
-					SG_ERROR("Parameter %s not a double parameter", name)
+					SG_ERROR("Parameter {} not a double parameter", name)
 
 				if (index < 0)
 					*((float64_t*)(param)) = value;
@@ -314,7 +314,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 
 	if (m_param)
 	{
-		SG_PRINT("%s", prefix)
+		SG_PRINT("{}", prefix)
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
 			EContainerType ctype = m_param->get_parameter(i)->m_datatype.m_ctype;
@@ -324,32 +324,32 @@ void CParameterCombination::print_tree(int prefix_num) const
 			{
 				TParameter* param=m_param->get_parameter(i);
 				CSGObject* current_sgobject=*((CSGObject**) param->m_parameter);
-				SG_PRINT("\"%s\":%s at %p ", param->m_name,
+				SG_PRINT("\"{}\":{} at {} ", param->m_name,
 						current_sgobject->get_name(), fmt::ptr(current_sgobject));
 			}
 			else if (ctype==CT_SGVECTOR || ctype==CT_VECTOR || ctype==CT_SGMATRIX || ctype==CT_MATRIX)
 			{
-				SG_PRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
+				SG_PRINT("\"{}\"=", m_param->get_parameter(i)->m_name)
 				float64_t** param = (float64_t**)(m_param->
 						get_parameter(i)->m_parameter);
 
 				index_t length = m_param->get_parameter(i)->m_datatype.get_num_elements();
 
 				for (index_t j = 0; j < length; j++)
-					SG_PRINT("%f ", (*param)[j])
+					SG_PRINT("{} ", (*param)[j])
 			}
 
 			else
 			{
-				SG_PRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
+				SG_PRINT("\"{}\"=", m_param->get_parameter(i)->m_name)
 				void* param=m_param->get_parameter(i)->m_parameter;
 
 				if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_FLOAT64)
-					SG_PRINT("%f ", *((float64_t*)param))
+					SG_PRINT("{} ", *((float64_t*)param))
 				else if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_INT32)
-					SG_PRINT("%i ", *((int32_t*)param))
+					SG_PRINT("{} ", *((int32_t*)param))
 				else if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_BOOL)
-					SG_PRINT("%s ", *((bool*)param ? "true" : "false"))
+					SG_PRINT("{} ", *((bool*)param ? "true" : "false"))
 				else
 					SG_NOTIMPLEMENTED
 			}
@@ -358,7 +358,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 
 	}
 	else
-		SG_PRINT("%sroot", prefix)
+		SG_PRINT("{}root", prefix)
 
 	SG_PRINT("\n")
 
@@ -382,14 +382,14 @@ DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 	for (index_t i=0; i<set_1.get_num_elements(); ++i)
 	{
 		for (index_t j=0; j<set_1.get_element(i)->get_num_parameters(); ++j)
-			SG_DEBUG("\t%s\n", set_1.get_element(i)->get_parameter(j)->m_name)
+			SG_DEBUG("\t{}\n", set_1.get_element(i)->get_parameter(j)->m_name)
 	}
 
 	SG_DEBUG("set 2:\n")
 	for (index_t i=0; i<set_2.get_num_elements(); ++i)
 	{
 		for (index_t j=0; j<set_2.get_element(i)->get_num_parameters(); ++j)
-			SG_DEBUG("\t%s\n", set_2.get_element(i)->get_parameter(j)->m_name)
+			SG_DEBUG("\t{}\n", set_2.get_element(i)->get_parameter(j)->m_name)
 	}
 
 	DynArray<Parameter*>* result=new DynArray<Parameter*>();
@@ -563,7 +563,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 
 	SG_DEBUG("all names\n")
 	for (std::set<string>::iterator it=names.begin(); it!=names.end(); ++it)
-		SG_DEBUG("\"%s\"\n", (*it).c_str())
+		SG_DEBUG("\"{}\"\n", (*it).c_str())
 
 	/* only do stuff if there are names */
 	if (!names.empty())
@@ -578,7 +578,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 		CDynamicObjectArray* trees=
 				CParameterCombination::extract_trees_with_name(sets, first_name);
 
-		SG_DEBUG("adding trees for first name \"%s\":\n", first_name)
+		SG_DEBUG("adding trees for first name \"{}\":\n", first_name)
 		for (index_t i=0; i<trees->get_num_elements(); ++i)
 		{
 			CParameterCombination* current_tree=
@@ -598,7 +598,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 		std::set<string>::iterator it=names.begin();
 		for (++it; it!=names.end(); ++it)
 		{
-			SG_DEBUG("processing \"%s\"\n", (*it).c_str())
+			SG_DEBUG("processing \"{}\"\n", (*it).c_str())
 
 			/* extract all trees with current name */
 			const char* current_name=(*it).c_str();

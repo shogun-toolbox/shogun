@@ -34,7 +34,7 @@ SGVector<index_t> CIndexBlockGroup::get_SLEP_ind()
 {
 	check_blocks_list(m_blocks);
 	int32_t n_sub_blocks = m_blocks->get_num_elements();
-	SG_DEBUG("Number of sub-blocks = %d\n", n_sub_blocks)
+	SG_DEBUG("Number of sub-blocks = {}\n", n_sub_blocks)
 	SGVector<index_t> ind(n_sub_blocks+1);
 
 	CIndexBlock* iterator = (CIndexBlock*)(m_blocks->get_first_element());

@@ -128,25 +128,25 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_
 
 float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	SG_ERROR("%s::risk_nslack_slack_rescale() has not been implemented!\n", get_name());
+	SG_ERROR("{}::risk_nslack_slack_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
 float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	SG_ERROR("%s::risk_1slack_margin_rescale() has not been implemented!\n", get_name());
+	SG_ERROR("{}::risk_1slack_margin_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
 float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	SG_ERROR("%s::risk_1slack_slack_rescale() has not been implemented!\n", get_name());
+	SG_ERROR("{}::risk_1slack_slack_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
 float64_t CStructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	SG_ERROR("%s::risk_customized_formulation() has not been implemented!\n", get_name());
+	SG_ERROR("{}::risk_customized_formulation() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
@@ -172,7 +172,7 @@ float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<
 			ret = risk_customized_formulation(subgrad, W, info);
 			break;
 		default:
-			SG_ERROR("%s::risk(): cannot recognize the risk type!\n", get_name());
+			SG_ERROR("{}::risk(): cannot recognize the risk type!\n", get_name());
 			ret = -1;
 			break;
 	}
@@ -183,7 +183,7 @@ CSOSVMHelper* CStructuredOutputMachine::get_helper() const
 {
 	if (m_helper == NULL)
 	{
-		SG_ERROR("%s::get_helper(): no helper has been created!"
+		SG_ERROR("{}::get_helper(): no helper has been created!"
 			"Please set verbose before training!\n", get_name());
 	}
 

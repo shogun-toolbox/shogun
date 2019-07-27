@@ -25,10 +25,10 @@ CFWSOSVM::CFWSOSVM(
 : CLinearStructuredOutputMachine(model, labs)
 {
 	REQUIRE(model != NULL && labs != NULL,
-		"%s::CFWSOSVM(): model and labels cannot be NULL!\n", get_name());
+		"{}::CFWSOSVM(): model and labels cannot be NULL!\n", get_name());
 
 	REQUIRE(labs->get_num_labels() > 0,
-		"%s::CFWSOSVM(): number of labels should be greater than 0!\n", get_name());
+		"{}::CFWSOSVM(): number of labels should be greater than 0!\n", get_name());
 
 	init();
 	m_lambda = 1.0 / labs->get_num_labels();
@@ -77,7 +77,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	// Number of training examples
 	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
 
-	SG_DEBUG("M=%d, N =%d.\n", M, N);
+	SG_DEBUG("M={}, N ={}.\n", M, N);
 
 	// Initialize the weight vector
 	m_w = SGVector<float64_t>(M);
@@ -129,7 +129,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			}
 			else
 			{
-				SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+				SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
 						"to be set true\n", m_model->get_name());
 			}
 
@@ -161,7 +161,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			ASSERT(CMath::fequals_abs(primal - dual, dual_gap, 1e-12));
 			float64_t train_error = CSOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
 
-			SG_PRINT("pass %d (iteration %d), primal = %f, dual = %f, duality gap = %f, train_error = %f \n",
+			SG_PRINT("pass {} (iteration {}), primal = {}, dual = {}, duality gap = {}, train_error = {} \n",
 				pi, k, primal, dual, dual_gap, train_error);
 
 			m_helper->add_debug_info(primal, (1.0*k) / N, train_error, dual, dual_gap);
@@ -170,15 +170,15 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		// 6) check duality gap
 		if (dual_gap <= m_gap_threshold)
 		{
-			SG_DEBUG("iteration %d...\n", k);
-			SG_DEBUG("current gap: %f, gap_threshold: %f\n", dual_gap, m_gap_threshold);
+			SG_DEBUG("iteration {}...\n", k);
+			SG_DEBUG("current gap: {}, gap_threshold: {}\n", dual_gap, m_gap_threshold);
 			SG_DEBUG("Duality gap below threshold -- stopping!\n");
 			break; // stop main loop
 		}
 		else
 		{
-			SG_DEBUG("iteration %d...\n", k);
-			SG_DEBUG("current gap: %f.\n", dual_gap);
+			SG_DEBUG("iteration {}...\n", k);
+			SG_DEBUG("current gap: {}.\n", dual_gap);
 		}
 
 		// 7) step-size gamma

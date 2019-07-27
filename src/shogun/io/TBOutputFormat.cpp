@@ -123,7 +123,7 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	else
 	{
 		SG_ERROR(
-		    "Unsupported type %s", value.first->get_any().type_info().name());
+		    "Unsupported type {}", value.first->get_any().type_info().name());
 	}
 
 	return e;

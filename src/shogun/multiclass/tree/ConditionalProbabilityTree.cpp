@@ -218,7 +218,7 @@ void CConditionalProbabilityTree::train_node(CStreamingDenseFeatures<float32_t>*
 {
 	REQUIRE(node, "Node must not be NULL\n");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
+	REQUIRE(mch, "Instance of {} could not be casted to COnlineLibLinear\n", node->get_name());
 	mch->train_example(ex, label);
 	SG_UNREF(mch);
 }
@@ -227,7 +227,7 @@ float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, bnod
 {
 	REQUIRE(node, "Node must not be NULL\n");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
+	REQUIRE(mch, "Instance of {} could not be casted to COnlineLibLinear\n", node->get_name());
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 	SG_UNREF(mch);
 	// use sigmoid function to turn the decision value into valid probability

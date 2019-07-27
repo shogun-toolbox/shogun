@@ -57,8 +57,8 @@ CMixtureModel::~CMixtureModel()
 bool CMixtureModel::train(CFeatures* data)
 {
 	REQUIRE(m_components->get_num_elements()>0,"mixture componenents not specified\n")
-	REQUIRE(m_components->get_num_elements()==m_weights.vlen,"number of weights (%d) does  not"
-		" match number of components (%d)\n",m_weights.vlen,m_components->get_num_elements())
+	REQUIRE(m_components->get_num_elements()==m_weights.vlen,"number of weights ({}) does  not"
+		" match number of components ({})\n",m_weights.vlen,m_components->get_num_elements())
 
 	// set training features
 	if (data)
@@ -103,7 +103,7 @@ bool CMixtureModel::train(CFeatures* data)
 float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 {
 	REQUIRE(num_param==1,"number of parameters in mixture model is 1"
-	" (i.e. number of components). num_components should be 1. %d supplied\n",num_param)
+	" (i.e. number of components). num_components should be 1. {} supplied\n",num_param)
 
 	return std::log(static_cast<float64_t>(get_num_components()));
 }
@@ -166,7 +166,7 @@ index_t CMixtureModel::get_num_components() const
 
 CDistribution* CMixtureModel::get_component(index_t index) const
 {
-	REQUIRE(index<get_num_components(),"index supplied (%d) is greater than total mixture components (%d)\n"
+	REQUIRE(index<get_num_components(),"index supplied ({}) is greater than total mixture components ({})\n"
 																				,index,get_num_components())
 	return m_components->get_element(index)->as<CDistribution>();
 }

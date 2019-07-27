@@ -34,7 +34,7 @@ using namespace shogun;
 
 void ElasticNetPenalty::set_l1_ratio(float64_t ratio)
 {
-	REQUIRE(ratio>0.0 && ratio<1.0, "ratio (%f) must be in (0.0,1.0)", ratio);
+	REQUIRE(ratio>0.0 && ratio<1.0, "ratio ({}) must be in (0.0,1.0)", ratio);
 	m_l1_ratio=ratio;
 }
 

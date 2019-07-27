@@ -99,7 +99,7 @@ void CPCA::fit(CFeatures* features)
 	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	auto num_vectors = feature_matrix.num_cols;
 	auto num_features = feature_matrix.num_rows;
-	SG_INFO("num_examples: %d num_features: %d\n", num_vectors, num_features)
+	SG_INFO("num_examples: {} num_features: {}\n", num_vectors, num_features)
 
 	// max target dim allowed
 	auto max_dim_allowed = std::min(num_vectors, num_features);
@@ -182,7 +182,7 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 			}
 			break;
 	};
-	SG_INFO("Reducing from %i to %i features\n", num_features, num_dim)
+	SG_INFO("Reducing from {} to {} features\n", num_features, num_dim)
 
 	m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 	Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix,
@@ -201,8 +201,8 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 			{
 				SG_WARNING(
 				    "Covariance matrix has almost zero Eigenvalue (ie "
-				    "Eigenvalue within a tolerance of %E around 0) at "
-				    "dimension %d. Consider reducing its dimension.\n",
+				    "Eigenvalue within a tolerance of {:E} around 0) at "
+				    "dimension {}. Consider reducing its dimension.\n",
 				    m_eigenvalue_zero_tolerance,
 				    i + max_dim_allowed - num_dim + 1)
 
@@ -259,7 +259,7 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 			}
 			break;
 	};
-	SG_INFO("Reducing from %i to %i features...\n", num_features, num_dim)
+	SG_INFO("Reducing from {} to {} features...\n", num_features, num_dim)
 
 	// right singular vectors form eigenvectors
 	m_transformation_matrix = SGMatrix<float64_t>(num_features, num_dim);
@@ -275,8 +275,8 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 			{
 
 				SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
-					"Eigenvalue within a tolerance of %E around 0) at "
-					"dimension %d. Consider reducing its dimension.",
+					"Eigenvalue within a tolerance of {:E} around 0) at "
+					"dimension {}. Consider reducing its dimension.",
 					m_eigenvalue_zero_tolerance, i + 1)
 
 				transformMatrix.col(i) = MatrixXd::Zero(num_features, 1);

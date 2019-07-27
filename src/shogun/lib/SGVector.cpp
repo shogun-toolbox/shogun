@@ -25,7 +25,7 @@
 template <> \
 void SGVector<complex128_t>::function() \
 { \
-	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::{}():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -33,7 +33,7 @@ void SGVector<complex128_t>::function() \
 template <> \
 void SGVector<bool>::function(bool a) \
 { \
-	SG_ERROR("SGVector::%s():: Not supported for bool\n",\
+	SG_ERROR("SGVector::{}():: Not supported for bool\n",\
 		#function);\
 }
 
@@ -41,7 +41,7 @@ void SGVector<bool>::function(bool a) \
 template <> \
 void SGVector<complex128_t>::function(complex128_t a) \
 { \
-	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::{}():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -49,7 +49,7 @@ void SGVector<complex128_t>::function(complex128_t a) \
 template <> \
 void SGVector<complex128_t>::function(complex128_t a, complex128_t b) \
 { \
-	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::{}():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -58,7 +58,7 @@ template <> \
 void SGVector<complex128_t>::function(complex128_t a, complex128_t b,\
 	complex128_t c) \
 { \
-	SG_ERROR("SGVector::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("SGVector::{}():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -261,7 +261,7 @@ T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 	if (!vec || !len)
 		return nullptr;
 
-	REQUIRE(len > 0, "Number of elements (%d) has to be positive!\n", len);
+	REQUIRE(len > 0, "Number of elements ({}) has to be positive!\n", len);
 
 	T* result = SG_ALIGNED_MALLOC(T, len, alignment::container_alignment);
 	sg_memcpy(result, vec, sizeof(T)*len);
@@ -316,7 +316,7 @@ SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 {
 	assert_on_cpu();
 	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
-	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
+	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V({}) + V({})]\n", vlen, x.vlen);
 
 	SGVector<T> result=clone();
 	result.add(x);
@@ -328,7 +328,7 @@ void SGVector<T>::add(const SGVector<T> x)
 {
 	assert_on_cpu();
 	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
-	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
+	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V({}) + V({})]\n", vlen, x.vlen);
 
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x.vector[i];
@@ -352,7 +352,7 @@ void SGVector<T>::add(const SGSparseVector<T>& x)
 		for (int32_t i=0; i < x.num_feat_entries; i++)
 		{
 			index_t idx = x.features[i].feat_index;
-			REQUIRE(idx < vlen, "Feature index should be less than %d.\n", vlen);
+			REQUIRE(idx < vlen, "Feature index should be less than {}.\n", vlen);
 			vector[idx] += x.features[i].entry;
 		}
 	}
@@ -362,7 +362,7 @@ template<class T>
 void SGVector<T>::display_size() const
 {
 	assert_on_cpu();
-	SG_PRINT("SGVector '%p' of size: %d\n", fmt::ptr(vector), vlen)
+	SG_PRINT("SGVector '{}' of size: {}\n", fmt::ptr(vector), vlen)
 }
 
 template<class T>
@@ -480,7 +480,7 @@ void SGVector<T>::display_vector(const T* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_PRINT("%s%s=%s\n", prefix, name, to_string(vector, n).c_str())
+	SG_PRINT("{}{}={}\n", prefix, name, to_string(vector, n).c_str())
 }
 
 template <class T>
@@ -895,7 +895,7 @@ void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, co
 template <>	\
 SGVector<float64_t> SGVector<type>::function()	\
 {	\
-	SG_ERROR("SGVector::%s():: Not supported for %s\n",	\
+	SG_ERROR("SGVector::{}():: Not supported for {}\n",	\
 		#function, #type);	\
 	SGVector<float64_t> ret(vlen);	\
 	return ret;	\

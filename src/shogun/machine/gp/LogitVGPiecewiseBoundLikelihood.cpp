@@ -211,7 +211,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	//ex0 = ch-cl;
 	const Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
 
-	//%ex1= v.*(pl-ph) + m.*(ch-cl);
+	//{:e}x1= v.*(pl-ph) + m.*(ch-cl);
 	MatrixXd eigen_ex1 = ((eigen_pl - eigen_ph).array().rowwise()*eigen_s2.array().transpose()
 		+ eigen_cdf_diff.array().rowwise()*eigen_mu.array().transpose()).matrix();
 
@@ -231,7 +231,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	SGVector<float64_t> f(m_mu.vlen);
 	Map<VectorXd> eigen_f(f.vector, f.vlen);
 
-	//%f = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
+	//{} = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
 	eigen_f = (eigen_ex2.array().colwise()*eigen_a.array()
 		+ eigen_ex1.array().colwise()*eigen_b.array()
 		+ eigen_ex0.array().colwise()*eigen_c.array()).colwise().sum().matrix();
@@ -257,7 +257,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using the piecewise bound ",
-		"wrt %s.%s parameter. The function only accepts mu and sigma2 as parameter",
+		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter",
 		get_name(), param->m_name);
 
 	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);

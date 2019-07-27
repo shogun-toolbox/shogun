@@ -55,7 +55,7 @@ void CMulticlassLabels::set_multiclass_confidences(int32_t i,
 		SGVector<float64_t> confidences)
 {
 	REQUIRE(confidences.size()==m_multiclass_confidences.num_rows,
-			"%s::set_multiclass_confidences(): Length of confidences should "
+			"{}::set_multiclass_confidences(): Length of confidences should "
 			"match size of the matrix", get_name());
 
 	m_multiclass_confidences.set_column(i, confidences);
@@ -73,7 +73,7 @@ SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
 void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 {
 	int32_t n_labels = m_labels.size();
-	REQUIRE(n_labels!=0,"%s::allocate_confidences_for(): There should be "
+	REQUIRE(n_labels!=0,"{}::allocate_confidences_for(): There should be "
 			"labels to store confidences", get_name());
 
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
@@ -227,7 +227,7 @@ namespace shogun
 			    unique.begin(), unique.end(), [&unique](int32_t old_label) {
 				    auto new_label =
 				        std::distance(unique.begin(), unique.find(old_label));
-				    SG_WARNING("Converting %d to %d.\n", old_label, new_label);
+				    SG_WARNING("Converting {} to {}.\n", old_label, new_label);
 				});
 
 			SGVector<float64_t> converted(result_vector.vlen);
@@ -261,7 +261,7 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			SG_ERROR(
-			    "Cannot convert %s to multiclass labels: %s\n",
+			    "Cannot convert {} to multiclass labels: {}\n",
 			    orig->get_name(), e.what());
 		}
 

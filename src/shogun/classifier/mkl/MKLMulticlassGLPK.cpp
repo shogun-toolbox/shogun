@@ -62,7 +62,7 @@ void MKLMulticlassGLPK::setup(const int32_t numkernels2)
 	if (numkernels<=1)
 	{
 		SG_ERROR("void glpkwrapper::setup(const int32_tnumkernels): input "
-				"numkernels out of bounds: %d\n",numkernels);
+				"numkernels out of bounds: {}\n",numkernels);
 	}
 
 	if (!linearproblem)
@@ -193,7 +193,7 @@ void MKLMulticlassGLPK::computeweights(std::vector<float64_t> & weights2)
 	}
 	else
 	SG_ERROR("void glpkwrapper::computeweights(std::vector<float64_t> & "
-			"weights2): sum of weights nonpositive %f\n",sum);
+			"weights2): sum of weights nonpositive {}\n",sum);
 #else
 	SG_ERROR(
 			"glpk.h from GNU glpk not included at compile time necessary "

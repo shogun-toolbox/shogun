@@ -23,7 +23,7 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator()
 	{
 		init();
 
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
+		SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this));
 	}
 
 template<class T>
@@ -33,7 +33,7 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
 	{
 		init();
 
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), fmt::ptr(this));
+		SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this));
 	}
 
 template<class T>
@@ -50,7 +50,7 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator(
 				m_operator(j,i)=orig.m_operator(j,i);
 		}
 
-		SG_GCDEBUG("%s deep copy created (%p)\n", this->get_name(), fmt::ptr(this));
+		SG_GCDEBUG("{} deep copy created ({})\n", this->get_name(), fmt::ptr(this));
 	}
 
 template<class T>
@@ -62,7 +62,7 @@ void CDenseMatrixOperator<T>::init()
 template<class T>
 CDenseMatrixOperator<T>::~CDenseMatrixOperator()
 	{
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), fmt::ptr(this));
+		SG_GCDEBUG("{} destroyed ({})\n", this->get_name(), fmt::ptr(this));
 	}
 
 template<class T>
@@ -134,7 +134,7 @@ SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 template<> \
 SGVector<type> CDenseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
-		SG_ERROR("Not supported for %s\n", #type);\
+		SG_ERROR("Not supported for {}\n", #type);\
 		return b; \
 	}
 

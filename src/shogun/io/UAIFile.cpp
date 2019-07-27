@@ -215,8 +215,8 @@ void CUAIFile::parse()
         SGVector<float64_t> data;
         get_vector(data.vector, data.vlen);
         if (data_size != data.vlen)
-            SG_ERROR("Data size mismatch. Expected %d size data; \
-                got %d size data\n", data_size, data.vlen);
+            SG_ERROR("Data size mismatch. Expected {} size data; \
+                got {} size data\n", data_size, data.vlen);
         m_factors_table[i] = data;
     }
 }
@@ -242,7 +242,7 @@ void CUAIFile::set_num_vars(int32_t num_vars)
 void CUAIFile::set_vars_card(SGVector<int32_t> vars_card)
 {
     REQUIRE (m_num_vars == vars_card.vlen,
-        "Variables mismatch. Expected %d variables, got %d variables",
+        "Variables mismatch. Expected {} variables, got {} variables",
          m_num_vars, vars_card.vlen);
 
     m_vars_card = vars_card;
@@ -276,8 +276,8 @@ void CUAIFile::set_factors_scope(int num_factors,
 void CUAIFile::set_factors_table(int32_t num_factors,
                                  const SGVector<float64_t>* factors_table)
 {
-    REQUIRE(num_factors == m_num_factors, "Factors mismatch. Expected %d factors; \
-        got %d factors", m_num_factors, num_factors);
+    REQUIRE(num_factors == m_num_factors, "Factors mismatch. Expected {} factors; \
+        got {} factors", m_num_factors, num_factors);
 
     m_factors_table = new SGVector<float64_t> [m_num_factors];
     for (int32_t i=0; i<m_num_factors; i++)

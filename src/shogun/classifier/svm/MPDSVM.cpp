@@ -153,11 +153,11 @@ bool CMPDSVM::train_machine(CFeatures* data)
 					       alphas[i] * alphas[j] * kernel->kernel(i, j);
 			}
 
-			SG_DEBUG("obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter)
+			SG_DEBUG("obj:{} pviol:{} dviol:{} maxpidx:{} iter:{}\n", obj, maxpviol, maxdviol, maxpidx, niter)
 		}
 
 		//for (int32_t i=0; i<n; i++)
-		//	SG_DEBUG("alphas:%f dalphas:%f\n", alphas[i], dalphas[i])
+		//	SG_DEBUG("alphas:{} dalphas:{}\n", alphas[i], dalphas[i])
 
 		primalcool = (maxpviol < primaleps*stopfac);
 		dualcool = (maxdviol < dualeps*stopfac) || (!free_alpha);
@@ -166,9 +166,9 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		if (primalcool && dualcool)
 		{
 			if (!free_alpha)
-				SG_INFO(" no free alpha, stopping! #iter=%d\n", niter)
+				SG_INFO(" no free alpha, stopping! #iter={}\n", niter)
 			else
-				SG_INFO(" done! #iter=%d\n", niter)
+				SG_INFO(" done! #iter={}\n", niter)
 			break;
 		}
 
@@ -257,8 +257,8 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 	}
 	compute_svm_dual_objective();
-	SG_INFO("obj = %.16f, rho = %.16f\n",get_objective(),get_bias())
-	SG_INFO("Number of SV: %ld\n", get_num_support_vectors())
+	SG_INFO("obj = {:.16f}, rho = {:.16f}\n",get_objective(),get_bias())
+	SG_INFO("Number of SV: {}\n", get_num_support_vectors())
 
 	SG_FREE(alphas);
 	SG_FREE(dalphas);

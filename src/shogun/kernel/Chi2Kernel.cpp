@@ -53,7 +53,7 @@ bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	REQUIRE(width>0,
-		"width not set to positive value. Current width %d \n", width);
+		"width not set to positive value. Current width {} \n", width);
 	int32_t alen, blen;
 	bool afree, bfree;
 

@@ -41,8 +41,8 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 			char  errmsg[1024];
 			SG_WARNING("Could not open CPLEX environment.\n")
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING("%s", errmsg)
-			SG_WARNING("retrying in %d seconds\n", timeout)
+			SG_WARNING("{}", errmsg)
+			SG_WARNING("retrying in {} seconds\n", timeout)
 			sleep(timeout);
 		}
 		else
@@ -51,12 +51,12 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 
 			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_OFF);
 			if (status)
-				SG_ERROR("Failure to turn off screen indicator, error %d.\n", status)
+				SG_ERROR("Failure to turn off screen indicator, error {}.\n", status)
 
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if (status)
-					SG_ERROR("Failure to turn on data checking, error %d.\n", status)
+					SG_ERROR("Failure to turn on data checking, error {}.\n", status)
 				else
 				{
 					lp = CPXcreateprob (env, &status, "shogun");
@@ -71,7 +71,7 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 					else if (problem_type == E_LINEAR)
 						status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 0);
 					if (status)
-						SG_ERROR("Failure to select dual lp/qp optimization, error %d.\n", status)
+						SG_ERROR("Failure to select dual lp/qp optimization, error {}.\n", status)
 
 				}
 			}
@@ -146,9 +146,9 @@ bool CCplex::setup_subgradientlpm_QP(
 			int32_t idx=idx_bound[i-num_dim-num_zero];
 			int32_t vlen=0;
 			bool vfree=false;
-			//SG_PRINT("idx=%d\n", idx)
+			//SG_PRINT("idx={}\n", idx)
 			SGSparseVector<float64_t> vec=features->get_sparse_feature_vector(idx);
-			//SG_PRINT("vlen=%d\n", vlen)
+			//SG_PRINT("vlen={}\n", vlen)
 
 			cmatbeg[i]=offs;
 			cmatcnt[i]=vlen;
@@ -163,7 +163,7 @@ bool CCplex::setup_subgradientlpm_QP(
 					cmatval[offs]=-val*vec.features[j].entry;
 					offs++;
 					ASSERT(offs<cmatsize)
-					//SG_PRINT("vec[%d]=%10.10f\n", j, vec.features[j].entry)
+					//SG_PRINT("vec[{}]={:10.10f}\n", j, vec.features[j].entry)
 				}
 
 				if (use_bias)
@@ -260,7 +260,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 	init(E_LINEAR);
 	int32_t status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //primal simplex
 	if (status)
-		SG_ERROR("Failure to select dual lp optimization, error %d.\n", status)
+		SG_ERROR("Failure to select dual lp optimization, error {}.\n", status)
 
 	double* obj=SG_MALLOC(double, num_cols);
 	double* lb=SG_MALLOC(double, num_cols);
@@ -278,7 +278,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 	{
 		char  errmsg[1024];
 		CPXgeterrorstring (env, status, errmsg);
-		SG_ERROR("%s", errmsg)
+		SG_ERROR("{}", errmsg)
 	}
 	SG_FREE(obj);
 	SG_FREE(lb);
@@ -444,7 +444,7 @@ bool CCplex::setup_lpm(
 
 	int32_t status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //barrier
 	if (status)
-		SG_ERROR("Failure to select barrier optimization, error %d.\n", status)
+		SG_ERROR("Failure to select barrier optimization, error {}.\n", status)
 	CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 
 	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN,
@@ -474,7 +474,7 @@ bool CCplex::cleanup()
 		lp_initialized = false;
 
 		if (status)
-			SG_WARNING("CPXfreeprob failed, error code %d.\n", status)
+			SG_WARNING("CPXfreeprob failed, error code {}.\n", status)
 		else
 			result = true;
 	}
@@ -489,7 +489,7 @@ bool CCplex::cleanup()
 			char  errmsg[1024];
 			SG_WARNING("Could not close CPLEX environment.\n")
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING("%s", errmsg)
+			SG_WARNING("{}", errmsg)
 		}
 		else
 			result = true;
@@ -611,7 +611,7 @@ bool CCplex::optimize(float64_t* sol, float64_t* lambda)
 
 	status = CPXsolution (env, lp, &solnstat, &objval, sol, lambda, NULL, NULL);
 
-	//SG_PRINT("obj:%f\n", objval)
+	//SG_PRINT("obj:{}\n", objval)
 
 	return (status==0);
 }

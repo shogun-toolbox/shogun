@@ -83,7 +83,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
 	REQUIRE(obs.num_rows == D && obs.num_cols == state_seq.vlen,
-		"obs.num_rows (%d) != D (%d) OR obs.num_cols (%d) != state_seq.vlen (%d)\n",
+		"obs.num_rows ({}) != D ({}) OR obs.num_cols ({}) != state_seq.vlen ({})\n",
 		obs.num_rows, D, obs.num_cols, state_seq.vlen)
 	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
@@ -231,8 +231,8 @@ CResultSet* CHMSVMModel::argmax(
 		CSequence* ytrue = m_labels->get_label(feat_idx)->as<CSequence>();
 
 		REQUIRE(ytrue->get_data().size() == T, "T, the length of the feature "
-			"x^i (%d) and the length of its corresponding label y^i "
-			"(%d) must be the same.\n", T, ytrue->get_data().size());
+			"x^i ({}) and the length of its corresponding label y^i "
+			"({}) must be the same.\n", T, ytrue->get_data().size());
 
 		SGMatrix< float64_t > loss_matrix = m_state_model->loss_matrix(ytrue);
 
@@ -474,7 +474,7 @@ bool CHMSVMModel::check_training_setup() const
 	{
 		if ( state_freq[i] <= 0 )
 		{
-			SG_ERROR("What? State %d has never appeared\n", i)
+			SG_ERROR("What? State {} has never appeared\n", i)
 			return false;
 		}
 	}

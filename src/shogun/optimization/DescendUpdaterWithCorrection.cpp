@@ -56,7 +56,7 @@ void DescendUpdaterWithCorrection::update_variable(SGVector<float64_t> variable_
 {
 	REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
 	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
-		"The length of variable_reference (%d) and the length of gradient (%d) do not match\n",
+		"The length of variable_reference ({}) and the length of gradient ({}) do not match\n",
 		variable_reference.vlen,raw_negative_descend_direction.vlen);
 
 	if(m_correction)

@@ -194,7 +194,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 			&& strcmp(param->m_name, "log_inducing_noise")
 			&& strcmp(param->m_name, "inducing_features")),
 		    "Can't compute derivative of"
-			" the nagative log marginal likelihood wrt %s.%s parameter\n",
+			" the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	if (!strcmp(param->m_name, "log_inducing_noise"))
@@ -209,7 +209,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 			int32_t dim=m_inducing_features.num_rows;
 			int32_t num_samples=m_inducing_features.num_cols;
 			res=SGVector<float64_t>(dim*num_samples);
-			SG_WARNING("Derivative wrt %s cannot be computed since the kernel does not support fully sparse inference\n",
+			SG_WARNING("Derivative wrt {} cannot be computed since the kernel does not support fully sparse inference\n",
 				param->m_name);
 			res.zero();
 			return res;
@@ -285,13 +285,13 @@ void CSingleSparseInference::check_bound(SGVector<float64_t> bound, const char* 
 	{
 		REQUIRE(m_inducing_features.num_rows>0, "Inducing features must set before this method is called\n");
 		REQUIRE(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
-			"The length of inducing features (%dx%d)",
-			" and the length of bound constraints (%d) are different\n", 
+			"The length of inducing features ({}x{})",
+			" and the length of bound constraints ({}) are different\n", 
 			m_inducing_features.num_rows,m_inducing_features.num_cols,bound.vlen);
 	}
 	else if(bound.vlen==1)
 	{
-		SG_WARNING("All inducing_features (%dx%d) are constrainted by the single value (%f) in the %s bound\n",
+		SG_WARNING("All inducing_features ({}x{}) are constrainted by the single value ({}) in the {} bound\n",
 			m_inducing_features.num_rows,m_inducing_features.num_cols,bound[0],name);
 	}
 }
@@ -309,13 +309,13 @@ void CSingleSparseInference::set_upper_bound_of_inducing_features(SGVector<float
 
 void CSingleSparseInference::set_max_iterations_for_inducing_features(int32_t it)
 {
-	REQUIRE(it>0, "Iteration (%d) must be positive\n",it);
+	REQUIRE(it>0, "Iteration ({}) must be positive\n",it);
 	m_max_ind_iterations=it;
 }
 void CSingleSparseInference::set_tolearance_for_inducing_features(float64_t tol)
 {
 
-	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
+	REQUIRE(tol>0, "Tolearance ({}) must be positive\n",tol);
 	m_ind_tolerance=tol;
 }
 void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization, FirstOrderMinimizer* minimizer)

@@ -52,7 +52,7 @@ float64_t CInference::get_scale() const
 
 void CInference::set_scale(float64_t scale)
 {
-	REQUIRE(scale>0, "Scale (%f) must be positive", scale);
+	REQUIRE(scale>0, "Scale ({}) must be positive", scale);
 	m_log_scale = std::log(scale);
 }
 
@@ -227,7 +227,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 		else
 		{
 			SG_ERROR("Can't compute derivative of negative log marginal "
-					"likelihood wrt %s.%s", node->data->get_name(), node->key->m_name);
+					"likelihood wrt {}.{}", node->data->get_name(), node->key->m_name);
 		}
 
 		#pragma omp critical
@@ -254,7 +254,7 @@ void CInference::check_members() const
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
-			"Number of training vectors (%d) must match number of labels (%d)\n",
+			"Number of training vectors ({}) must match number of labels ({})\n",
 			m_labels->get_num_labels(), m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")

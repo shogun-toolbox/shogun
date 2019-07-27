@@ -88,7 +88,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 				ptr_data++;													\
 		}																	\
 																			\
-		SG_DEBUG("num_feat %d\n", num_feat)									\
+		SG_DEBUG("num_feat {}\n", num_feat)									\
 																			\
 		/* now copy data into vector */										\
 		if (old_len < num_feat)												\
@@ -211,7 +211,7 @@ GET_FLOAT_VECTOR(float64_t)
 						ptr_data++;										\
 				}														\
 																		\
-				SG_DEBUG("num_feat %d\n", num_feat)					\
+				SG_DEBUG("num_feat {}\n", num_feat)					\
 				/* The first element is the label */					\
 				label=atof(items->get_element(0));						\
 				/* now copy rest of the data into vector */				\
@@ -300,7 +300,7 @@ void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
 				return;													\
 		}																\
 																		\
-		SG_DEBUG("Line read from the file:\n%s\n", buffer)				\
+		SG_DEBUG("Line read from the file:\n{}\n", buffer)				\
 		/* Remove the terminating \n */									\
 		if (buffer[bytes_read-1]=='\n')									\
 		{																\
@@ -616,7 +616,7 @@ void CStreamingAsciiFile::append_item(
 		memset(item, 0, sizeof(char)*(len+1));
 		item=strncpy(item, ptr_item, len);
 
-		SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item)
+		SG_DEBUG("current {}, len {}, item {}\n", *ptr_data, len, item)
 		items->append_element(item);
 }
 

@@ -802,7 +802,7 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 
 SGVector<float64_t> CGMM::sample()
 {
-	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
+	REQUIRE(m_components.size()>0, "Number of mixture components is {} but "
 			"must be positive\n", m_components.size());
 	
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
@@ -813,7 +813,7 @@ SGVector<float64_t> CGMM::sample()
 		cum_sum+=m_coefficients.vector[i];
 		if (cum_sum>=rand_num)
 		{
-			SG_DEBUG("Sampling from mixture component %d\n", i);
+			SG_DEBUG("Sampling from mixture component {}\n", i);
 			return m_components[i]->sample();
 		}
 	}

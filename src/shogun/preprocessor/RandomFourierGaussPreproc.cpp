@@ -379,7 +379,7 @@ CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
 
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
+	SG_INFO("get Feature matrix: {}x{}\n", num_vectors, num_features)
 
 	if (num_features != cur_dim_input_space)
 	{

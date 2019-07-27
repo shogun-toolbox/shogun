@@ -69,10 +69,10 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(motif_positions_rhs)
 
 	if (l->get_num_vectors() != motif_positions_lhs->get_num_vectors())
-		SG_ERROR("Number of vectors does not agree (LHS: %d, Motif LHS: %d).\n",
+		SG_ERROR("Number of vectors does not agree (LHS: {}, Motif LHS: {}).\n",
 				l->get_num_vectors(),  motif_positions_lhs->get_num_vectors());
 	if (r->get_num_vectors() != motif_positions_rhs->get_num_vectors())
-		SG_ERROR("Number of vectors does not agree (RHS: %d, Motif RHS: %d).\n",
+		SG_ERROR("Number of vectors does not agree (RHS: {}, Motif RHS: {}).\n",
 				r->get_num_vectors(), motif_positions_rhs->get_num_vectors());
 
 	set_wd_weights();

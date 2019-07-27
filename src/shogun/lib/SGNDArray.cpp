@@ -28,7 +28,7 @@ template<class T> SGNDArray<T>::SGNDArray(T* a, index_t* d, index_t nd, bool ref
 	for (int32_t i=0; i<num_dims; i++)
 		len_array *= dims[i];
 
-	REQUIRE(len_array>0, "Length of array (%d) must be greater than 0\n", len_array);
+	REQUIRE(len_array>0, "Length of array ({}) must be greater than 0\n", len_array);
 }
 
 template<class T> SGNDArray<T>::SGNDArray(index_t* d, index_t nd, bool ref_counting) :
@@ -38,7 +38,7 @@ template<class T> SGNDArray<T>::SGNDArray(index_t* d, index_t nd, bool ref_count
 	for (int32_t i=0; i<num_dims; i++)
 		len_array *= dims[i];
 
-	REQUIRE(len_array>0, "Length of array (%d) must be greater than 0\n", len_array);
+	REQUIRE(len_array>0, "Length of array ({}) must be greater than 0\n", len_array);
 	array = SG_MALLOC(T, len_array);
 }
 
@@ -55,7 +55,7 @@ template<class T> SGNDArray<T>::SGNDArray(const SGVector<index_t> dimensions, bo
 		len_array *= dims[i];
 	}
 
-	REQUIRE(len_array>0, "Length of array (%d) must be greater than 0\n", len_array);
+	REQUIRE(len_array>0, "Length of array ({}) must be greater than 0\n", len_array);
 	array = SG_MALLOC(T, len_array);
 }
 
@@ -117,8 +117,8 @@ template<class T> SGVector<index_t> SGNDArray<T>::get_dimensions() const
 template<class T> void SGNDArray<T>::transpose_matrix(index_t matIdx) const
 {
 	REQUIRE(array && dims, "Array is empty.\n");
-	REQUIRE(num_dims > 2, "Number of dimensions (%d) must be greater than 2.\n", num_dims);
-	REQUIRE(dims[2] > matIdx, "Provided index (%d) is out of range, must be smaller than %d\n", matIdx, dims[2]);
+	REQUIRE(num_dims > 2, "Number of dimensions ({}) must be greater than 2.\n", num_dims);
+	REQUIRE(dims[2] > matIdx, "Provided index ({}) is out of range, must be smaller than {}\n", matIdx, dims[2]);
 
 	T aux;
 	// Index to acces directly the elements of the matrix of interest
@@ -171,9 +171,9 @@ template<class T>
 SGNDArray<T>& SGNDArray<T>::operator+=(SGNDArray& ndarray)
 {
 	REQUIRE(len_array == ndarray.len_array,
-			"The length of the given array (%d) does not match the length of internal array (%d).\n", ndarray.len_array, len_array);
+			"The length of the given array ({}) does not match the length of internal array ({}).\n", ndarray.len_array, len_array);
 	REQUIRE(num_dims == ndarray.num_dims,
-			"The provided number of dimensions (%d) does not match the internal number of dimensions (%d).\n", ndarray.num_dims, num_dims);
+			"The provided number of dimensions ({}) does not match the internal number of dimensions ({}).\n", ndarray.num_dims, num_dims);
 
 	for (index_t i = 0; i < len_array; i++)
 		array[i] += ndarray.array[i];
@@ -199,9 +199,9 @@ template<class T>
 SGNDArray<T>& SGNDArray<T>::operator-=(SGNDArray& ndarray)
 {
 	REQUIRE(len_array == ndarray.len_array,
-			"The length of the given array (%d) does not match the length of internal array (%d).\n", ndarray.len_array, len_array);
+			"The length of the given array ({}) does not match the length of internal array ({}).\n", ndarray.len_array, len_array);
 	REQUIRE(num_dims == ndarray.num_dims,
-			"The provided number of dimensions (%d) does not match the internal number of dimensions (%d).\n", ndarray.num_dims, num_dims);
+			"The provided number of dimensions ({}) does not match the internal number of dimensions ({}).\n", ndarray.num_dims, num_dims);
 
 	for (index_t i = 0; i < len_array; i++)
 		array[i] -= ndarray.array[i];
@@ -226,7 +226,7 @@ SGNDArray<char>& SGNDArray<char>::operator-=(SGNDArray& ndarray)
 template<class T>
 T SGNDArray<T>::max_element(int32_t &max_at)
 {
-	REQUIRE(len_array > 0, "Length of the array (%d) must be greater than 0.\n", len_array);
+	REQUIRE(len_array > 0, "Length of the array ({}) must be greater than 0.\n", len_array);
 
 	T m = array[0];
 	max_at = 0;
@@ -264,11 +264,11 @@ T SGNDArray<T>::get_value(SGVector<index_t> index) const
 	int32_t fact = 1;
 
 	REQUIRE(index.size() == num_dims,
-			"Provided number of dimensions (%d) does not match internal number of dimensions (%d).\n", index.size(), num_dims);
+			"Provided number of dimensions ({}) does not match internal number of dimensions ({}).\n", index.size(), num_dims);
 
 	for (int32_t i = num_dims - 1; i >= 0; i--)
 	{
-		REQUIRE(index[i] < dims[i], "Provided index (%d) on dimension %d must be smaller than %d. \n", index[i], i, dims[i]);
+		REQUIRE(index[i] < dims[i], "Provided index ({}) on dimension {} must be smaller than {}. \n", index[i], i, dims[i]);
 
 		y += index[i] * fact;
 		fact *= dims[i];
@@ -281,7 +281,7 @@ template<class T>
 void SGNDArray<T>::next_index(SGVector<index_t>& curr_index) const
 {
 	REQUIRE(curr_index.size() == num_dims,
-			"The provided number of dimensions (%d) does not match the internal number of dimensions (%d).\n", curr_index.size(), num_dims);
+			"The provided number of dimensions ({}) does not match the internal number of dimensions ({}).\n", curr_index.size(), num_dims);
 
 	for (int32_t i = num_dims - 1; i >= 0; i--)
 	{
@@ -299,9 +299,9 @@ void SGNDArray<T>::expand(SGNDArray &big_array, SGVector<index_t>& axes)
 {
 	// TODO: A nice implementation would be a function like repmat in matlab
 	REQUIRE(axes.size() <= 2,
-			"Provided axes size (%d) must be smaller than 2.\n", axes.size());
+			"Provided axes size ({}) must be smaller than 2.\n", axes.size());
 	REQUIRE(num_dims <= 2,
-			"Number of dimensions (%d) must be smaller than 2. Only 1-d and 2-d array can be expanded currently.\n", num_dims);
+			"Number of dimensions ({}) must be smaller than 2. Only 1-d and 2-d array can be expanded currently.\n", num_dims);
 
 	// Initialize indices in big array to zeros
 	SGVector<index_t> inds_big(big_array.num_dims);

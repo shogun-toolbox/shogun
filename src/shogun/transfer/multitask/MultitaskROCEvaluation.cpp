@@ -39,7 +39,7 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 		{
 			if (indices_set.count(task_indices[i]))
 			{
-				//SG_PRINT("%d is in %d task\n",task_indices[i],t)
+				//SG_PRINT("{} is in {} task\n",task_indices[i],t)
 				task_indices_cut.push_back(task_indices[i]);
 			}
 		}
@@ -67,7 +67,7 @@ float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_
 	float64_t result = 0.0;
 	for (int32_t t=0; t<m_num_tasks; t++)
 	{
-		//SG_PRINT("%d task", t)
+		//SG_PRINT("{} task", t)
 		//m_tasks_indices[t].display_vector();
 		predicted->add_subset(m_tasks_indices[t]);
 		ground_truth->add_subset(m_tasks_indices[t]);

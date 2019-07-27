@@ -34,7 +34,7 @@ namespace shogun
 		        holds_alternative<CTransformer*>(m_stages.back().second),
 		    std::invalid_argument,
 		    "Transformers can not be placed after machines. Last element is "
-		    "%s\n",
+		    "{}\n",
 		    m_stages.back().first.c_str());
 
 		SG_REF(transformer);
@@ -55,7 +55,7 @@ namespace shogun
 		    m_stages.empty() ||
 		        holds_alternative<CTransformer*>(m_stages.back().second),
 		    std::invalid_argument,
-		    "Multiple machines are added to pipeline. Last element is %s\n",
+		    "Multiple machines are added to pipeline. Last element is {}\n",
 		    m_stages.back().first.c_str());
 
 		SG_REF(machine);
@@ -80,7 +80,7 @@ namespace shogun
 				REQUIRE_E(
 				    machine, std::invalid_argument, "Stage must be either a "
 				                                    "transformer or a machine. "
-				                                    "Provided %s\n",
+				                                    "Provided {}\n",
 				    stage->get_name());
 				SG_REF(machine);
 				m_stages.emplace_back(machine->get_name(), machine);
@@ -108,7 +108,7 @@ namespace shogun
 		    holds_alternative<CMachine*>(m_stages.back().second),
 		    InvalidStateException, "Pipline cannot be trained without an "
 		                           "added machine. Last element "
-		                           "is %s.\n",
+		                           "is {}.\n",
 		    m_stages.back().first.c_str());
 	}
 
@@ -214,7 +214,7 @@ namespace shogun
 		}
 
 		SG_THROW(
-		    std::invalid_argument, "Transformer with name %s not found.\n",
+		    std::invalid_argument, "Transformer with name {} not found.\n",
 		    name.c_str());
 
 		return nullptr;

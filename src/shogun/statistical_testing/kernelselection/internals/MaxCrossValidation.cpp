@@ -56,9 +56,9 @@ MaxCrossValidation<PRNG>::MaxCrossValidation(
     : KernelSelection(km, est), num_runs(M), num_folds(K), alpha(alp),
       prng(_prng)
 {
-	REQUIRE(num_runs>0, "Number of runs (%d) must be positive!\n", num_runs);
-	REQUIRE(num_folds>0, "Number of folds (%d) must be positive!\n", num_folds);
-	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold (%f) has to be in [0, 1]!\n", alpha);
+	REQUIRE(num_runs>0, "Number of runs ({}) must be positive!\n", num_runs);
+	REQUIRE(num_folds>0, "Number of folds ({}) must be positive!\n", num_folds);
+	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold ({}) has to be in [0, 1]!\n", alpha);
 }
 
 template <typename PRNG>
@@ -93,7 +93,7 @@ void MaxCrossValidation<PRNG>::init_measures()
 template <typename PRNG>
 void MaxCrossValidation<PRNG>::compute_measures()
 {
-	SG_DEBUG("Performing %d fold cross-validattion!\n", num_folds);
+	SG_DEBUG("Performing {} fold cross-validattion!\n", num_folds);
 	const auto num_kernels=kernel_mgr.num_kernels();
 
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
@@ -151,7 +151,7 @@ void MaxCrossValidation<PRNG>::compute_measures()
 		{
 			for (auto j=0; j<num_folds; ++j)
 			{
-				SG_DEBUG("Running fold %d\n", j);
+				SG_DEBUG("Running fold {}\n", j);
 				for (auto k=0; k<num_kernels; ++k)
 				{
 					auto kernel=kernel_mgr.kernel_at(k);
@@ -181,7 +181,7 @@ CKernel* MaxCrossValidation<PRNG>::select_kernel()
 	compute_measures();
 	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
 	auto max_idx=std::distance(measures.vector, max_element);
-	SG_DEBUG("Selected kernel at %d position!\n", max_idx);
+	SG_DEBUG("Selected kernel at {} position!\n", max_idx);
 	return kernel_mgr.kernel_at(max_idx);
 }
 

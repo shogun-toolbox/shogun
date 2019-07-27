@@ -58,11 +58,11 @@ void CSparseInference::convert_features()
 		m_inducing_features.num_rows,m_inducing_features.num_cols,false);
 	CDotFeatures *lat_type=new CDenseFeatures<float64_t>(lat_m);
 
-	REQUIRE(feat_type, "Input features (%s) must be DotFeatures"
+	REQUIRE(feat_type, "Input features ({}) must be DotFeatures"
 		" or one of its subclasses\n", m_features->get_name())
 	REQUIRE(feat_type->get_dim_feature_space()==lat_type->get_dim_feature_space(),
 		"The dim of feature spaces between"
-		" input features (%d) and inducing features (%d) must be same\n",
+		" input features ({}) and inducing features ({}) must be same\n",
 		feat_type->get_dim_feature_space(),
 		lat_type->get_dim_feature_space())
 	if((m_features->get_feature_class()!=lat_type->get_feature_class())||
@@ -70,7 +70,7 @@ void CSparseInference::convert_features()
 	{
 		if(m_features->get_feature_class()!=lat_type->get_feature_class())
 		{
-			SG_WARNING("Input features (%s) and inducing features (%s) are"
+			SG_WARNING("Input features ({}) and inducing features ({}) are"
 				" difference classes\n", m_features->get_name(),
 				lat_type->get_name());
 		}
@@ -111,7 +111,7 @@ void CSparseInference::init()
 
 void CSparseInference::set_inducing_noise(float64_t noise)
 {
-	REQUIRE(noise>0, "Noise (%f) for inducing points must be postive",noise);
+	REQUIRE(noise>0, "Noise ({}) for inducing points must be postive",noise);
 	m_log_ind_noise = std::log(noise);
 }
 

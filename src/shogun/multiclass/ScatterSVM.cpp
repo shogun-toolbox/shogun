@@ -120,10 +120,10 @@ bool CScatterSVM::train_machine(CFeatures* data)
 		float64_t nu_min=((float64_t) Nc)/num_vectors;
 		float64_t nu_max=((float64_t) Nc)*Nmin/num_vectors;
 
-		SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max)
+		SG_INFO("valid nu interval [{} ... {}]\n", nu_min, nu_max)
 
 		if (get_nu()<nu_min || get_nu()>nu_max)
-			SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max)
+			SG_ERROR("nu out of valid range [{} ... {}]\n", nu_min, nu_max)
 
 		result=train_testrule12();
 	}
@@ -142,7 +142,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO("%d trainlabels\n", problem.l)
+	SG_INFO("{} trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -186,7 +186,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg)
+		SG_ERROR("Error: {}\n",error_msg)
 
 	model = svm_train(&problem, &param);
 	m_kernel->set_normalizer(prev_normalizer);
@@ -282,7 +282,7 @@ bool CScatterSVM::train_testrule12()
 
 	struct svm_node* x_space;
 	problem.l=m_labels->get_num_labels();
-	SG_INFO("%d trainlabels\n", problem.l)
+	SG_INFO("{} trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -323,7 +323,7 @@ bool CScatterSVM::train_testrule12()
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg)
+		SG_ERROR("Error: {}\n",error_msg)
 
 	model = svm_train(&problem, &param);
 
@@ -482,7 +482,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 		for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 		{
-			//SG_PRINT("svm %d\n", i)
+			//SG_PRINT("svm {}\n", i)
 			CSVM *svm = get_svm(i);
 			ASSERT(svm)
 			svm->set_kernel(m_kernel);

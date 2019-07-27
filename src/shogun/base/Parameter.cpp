@@ -1420,8 +1420,8 @@ TParameter::new_sgserial(CSGObject** param,
 		}
 
 		SG_WARNING("TParameter::new_sgserial(): "
-				   "Class `C%s%s' was not listed during compiling Shogun"
-				   " :( ...  Can not construct it for `%s%s'!",
+				   "Class `C{}{}' was not listed during compiling Shogun"
+				   " :( ...  Can not construct it for `{}{}'!",
 				   sgserializable_name, buf, prefix, m_name);
 
 		return false;
@@ -1462,7 +1462,7 @@ void TParameter::get_incremental_hash(
 		if (*(void**) m_parameter == NULL && len_real_y != 0)
 		{
 			SG_WARNING("Inconsistency between data structure and "
-					"len_y during hashing `%s'!  Continuing with "
+					"len_y during hashing `{}'!  Continuing with "
 					"len_y=0.\n",
 					m_name);
 			len_real_y = 0;
@@ -1482,7 +1482,7 @@ void TParameter::get_incremental_hash(
 			if (*(void**) m_parameter == NULL && len_real_x != 0)
 			{
 				SG_WARNING("Inconsistency between data structure and "
-						"len_x during hashing %s'!  Continuing "
+						"len_x during hashing {}'!  Continuing "
 						"with len_x=0.\n",
 						m_name);
 				len_real_x = 0;
@@ -1545,7 +1545,7 @@ Parameter::add_type(const TSGDataType* type, void* param,
 	{
 		if (!std::isalnum(name[i]) && name[i]!='_' && name[i]!='.')
 		{
-			SG_ERROR("Character %d of parameter with name \"%s\" is illegal "
+			SG_ERROR("Character {} of parameter with name \"{}\" is illegal "
 					"(only alnum or underscore is allowed)\n",
 					i, name);
 		}
@@ -1554,7 +1554,7 @@ Parameter::add_type(const TSGDataType* type, void* param,
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
 			SG_ERROR("FATAL: Parameter::add_type(): "
-					 "Double parameter `%s'!\n", name);
+					 "Double parameter `{}'!\n", name);
 
 	m_params.append_element(
 		new TParameter(type, param, name, description)
@@ -1590,8 +1590,8 @@ void Parameter::set_from_parameters(Parameter* params)
 					char* own_type=SG_MALLOC(char, l);
 					current->m_datatype.to_string(given_type, l);
 					own->m_datatype.to_string(own_type, l);
-					SG_ERROR("given parameter \"%s\" has a different type (%s)"
-							" than existing one (%s)\n", current->m_name,
+					SG_ERROR("given parameter \"{}\" has a different type ({})"
+							" than existing one ({})\n", current->m_name,
 							given_type, own_type);
 					SG_FREE(given_type);
 					SG_FREE(own_type);
@@ -1603,7 +1603,7 @@ void Parameter::set_from_parameters(Parameter* params)
 
 		if (!own)
 		{
-			SG_ERROR("parameter with name %s does not exist\n",
+			SG_ERROR("parameter with name {} does not exist\n",
 					current->m_name);
 		}
 

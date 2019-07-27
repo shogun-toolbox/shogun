@@ -41,7 +41,7 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
 {
 	if (plif_ids.vlen!=m_num_plifs)
-		SG_ERROR("plif_ids size mismatch (num_ids=%d vs.num_plifs=%d)\n", plif_ids.vlen, m_num_plifs)
+		SG_ERROR("plif_ids size mismatch (num_ids={} vs.num_plifs={})\n", plif_ids.vlen, m_num_plifs)
 
 	m_ids.resize_array(m_num_plifs);
 	m_ids.set_array(plif_ids.vector, plif_ids.vlen, true, true);
@@ -56,7 +56,7 @@ void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
 void CPlifMatrix::set_plif_min_values(SGVector<float64_t> min_values)
 {
 	if (min_values.vlen!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", min_values.vlen, m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values={} vs.num_plifs={})\n", min_values.vlen, m_num_plifs)
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -68,7 +68,7 @@ void CPlifMatrix::set_plif_min_values(SGVector<float64_t> min_values)
 void CPlifMatrix::set_plif_max_values(SGVector<float64_t> max_values)
 {
 	if (max_values.vlen!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", max_values.vlen, m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values={} vs.num_plifs={})\n", max_values.vlen, m_num_plifs)
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -80,7 +80,7 @@ void CPlifMatrix::set_plif_max_values(SGVector<float64_t> max_values)
 void CPlifMatrix::set_plif_use_cache(SGVector<bool> use_cache)
 {
 	if (use_cache.vlen!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", use_cache.vlen, m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values={} vs.num_plifs={})\n", use_cache.vlen, m_num_plifs)
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -92,7 +92,7 @@ void CPlifMatrix::set_plif_use_cache(SGVector<bool> use_cache)
 void CPlifMatrix::set_plif_use_svm(SGVector<int32_t> use_svm)
 {
 	if (use_svm.vlen!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", use_svm.vlen, m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values={} vs.num_plifs={})\n", use_svm.vlen, m_num_plifs)
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -105,7 +105,7 @@ void CPlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
 {
 	if (limits.num_rows!=m_num_plifs ||  limits.num_cols!=m_num_limits)
 	{
-		SG_ERROR("limits size mismatch expected (%d,%d) got (%d,%d)\n",
+		SG_ERROR("limits size mismatch expected ({},{}) got ({},{})\n",
 				m_num_plifs, m_num_limits, limits.num_rows, limits.num_cols);
 	}
 
@@ -124,7 +124,7 @@ void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 {
 	if (penalties.num_rows!=m_num_plifs ||  penalties.num_cols!=m_num_limits)
 	{
-		SG_ERROR("penalties size mismatch expected (%d,%d) got (%d,%d)\n",
+		SG_ERROR("penalties size mismatch expected ({},{}) got ({},{})\n",
 				m_num_plifs, m_num_limits, penalties.num_rows, penalties.num_cols);
 	}
 
@@ -143,7 +143,7 @@ void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 void CPlifMatrix::set_plif_names(SGVector<char>* names, int32_t num_values, int32_t maxlen)
 {
 	if (num_values!=m_num_plifs)
-		SG_ERROR("names size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs)
+		SG_ERROR("names size mismatch (num_values={} vs.num_plifs={})\n", num_values, m_num_plifs)
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -157,7 +157,7 @@ void CPlifMatrix::set_plif_names(SGVector<char>* names, int32_t num_values, int3
 void CPlifMatrix::set_plif_transform_type(SGVector<char>* transform_type, int32_t num_values, int32_t maxlen)
 {
 	if (num_values!=m_num_plifs)
-		SG_ERROR("transform_type size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs)
+		SG_ERROR("transform_type size mismatch (num_values={} vs.num_plifs={})\n", num_values, m_num_plifs)
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -170,7 +170,7 @@ void CPlifMatrix::set_plif_transform_type(SGVector<char>* transform_type, int32_
 			m_PEN=NULL;
 			m_num_plifs=0;
 			m_num_limits=0;
-			SG_ERROR("transform type not recognized ('%s')\n", transform_str)
+			SG_ERROR("transform type not recognized ('{}')\n", transform_str)
 		}
 		SG_FREE(transform_str);
 	}
@@ -271,10 +271,10 @@ void CPlifMatrix::set_plif_state_signal_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t max_num_signals)
 {
 	if (m!=m_num_plifs)
-		SG_ERROR("plif_state_signal_matrix size does not match previous info %i!=%i\n", m, m_num_plifs)
+		SG_ERROR("plif_state_signal_matrix size does not match previous info {}!={}\n", m, m_num_plifs)
 
 	/*if (m_seq.get_dim3() != max_num_signals)
-		SG_ERROR("size(plif_state_signal_matrix,2) does not match with size(m_seq,3): %i!=%i\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals)
+		SG_ERROR("size(plif_state_signal_matrix,2) does not match with size(m_seq,3): {}!={}\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals)
 
 	CArray2<int32_t> id_matrix(plif_id_matrix, m_num_plifs, max_num_signals, false, false) ;
 	m_PEN_state_signals.resize_array(m_num_plifs, max_num_signals) ;

@@ -87,7 +87,7 @@ template <class T1, class T2> struct thread_qsort
 #define COMPLEX128_ERROR_ONEARG(function)	\
 static inline complex128_t function(complex128_t a)	\
 {	\
-	SG_ERROR("CMath::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("CMath::{}():: Not supported for complex128_t\n",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
 }
@@ -643,7 +643,7 @@ class CMath : public CSGObject
 		 */
 		static int32_t gcd(int32_t a, int32_t b)
 		{
-			REQUIRE((a>=0 && b>0) || (b>=0 && a>0), "gcd(%d,%d) is not defined.\n",
+			REQUIRE((a>=0 && b>0) || (b>=0 && a>0), "gcd({},{}) is not defined.\n",
 					a, b);
 
 			if (1 == a || 1 == b)
@@ -1455,7 +1455,7 @@ class CMath : public CSGObject
 
 			if (!CMath::is_finite(q))
 			{
-				SG_WARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q)
+				SG_WARNING("INVALID second operand to logsum({},{}) expect undefined results\n", p, q)
 				return NOT_A_NUMBER;
 			}
 			diff = p - q;
@@ -1798,7 +1798,7 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 template <> \
 inline complex128_t CMath::function<complex128_t>(complex128_t a)	\
 {	\
-	SG_ERROR("CMath::%s():: Not supported for complex128_t\n",\
+	SG_ERROR("CMath::{}():: Not supported for complex128_t\n",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
 }

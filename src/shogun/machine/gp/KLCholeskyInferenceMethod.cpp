@@ -141,7 +141,7 @@ bool CKLCholeskyInferenceMethod::precompute()
 void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
-		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
+		"The length of gradients ({}) should the same as the length of parameters ({})\n",
 		gradient.vlen, m_alpha.vlen);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);

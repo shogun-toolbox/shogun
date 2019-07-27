@@ -89,7 +89,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		SG_ERROR("error in svm file, line nr:{}\n", line_number)
 	}
 	else
 	{
@@ -97,7 +97,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("%SVM", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			SG_ERROR("error in svm file, line nr:{}\n", line_number)
 		}
 		line_number++;
 	}
@@ -106,19 +106,19 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		SG_ERROR("error in svm file, line nr:{}\n", line_number)
 	}
 
 	if (!feof(modelfl))
 		line_number++;
 
-	SG_INFO("loading %ld support vectors\n",int_buffer)
+	SG_INFO("loading {} support vectors\n",int_buffer)
 	create_new_model(int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		SG_ERROR("error in svm file, line nr:{}\n", line_number)
 	}
 
 	if (!feof(modelfl))
@@ -129,7 +129,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		SG_ERROR("error in svm file, line nr:{}\n", line_number)
 	}
 
 	if (!feof(modelfl))
@@ -140,7 +140,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		SG_ERROR("error in svm file, line nr:{}\n", line_number)
 	}
 	else
 	{
@@ -148,7 +148,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("alphas=[", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			SG_ERROR("error in svm file, line nr:{}\n", line_number)
 		}
 		line_number++;
 	}
@@ -161,7 +161,7 @@ bool CSVM::load(FILE* modelfl)
 		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			SG_ERROR("error in svm file, line nr:{}\n", line_number)
 		}
 
 		if (!feof(modelfl))
@@ -174,7 +174,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		SG_ERROR("error in svm file, line nr:{}\n", line_number)
 	}
 	else
 	{
@@ -182,7 +182,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("];", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			SG_ERROR("error in svm file, line nr:{}\n", line_number)
 		}
 		line_number++;
 	}
@@ -311,8 +311,8 @@ void CSVM::set_linear_term(const SGVector<float64_t> linear_term)
 
 	if (num_labels != linear_term.vlen)
 	{
-		SG_ERROR("Number of labels (%d) does not match number"
-				"of entries (%d) in linear term \n", num_labels, linear_term.vlen);
+		SG_ERROR("Number of labels ({}) does not match number"
+				"of entries ({}) in linear term \n", num_labels, linear_term.vlen);
 	}
 
 	m_linear_term=linear_term;

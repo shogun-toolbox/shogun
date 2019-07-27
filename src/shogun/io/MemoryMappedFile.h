@@ -91,7 +91,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				uint8_t byte=0;
 				DWORD bytes_written;
 				if ((SetFilePointerEx(fd, desired_len, NULL, FILE_BEGIN) == 0) || (WriteFile(fd, &byte, 1, &bytes_written, NULL) == 0))
-					SG_ERROR("Error creating file of size %ld bytes\n", fsize)
+					SG_ERROR("Error creating file of size {} bytes\n", fsize)
 			}
 
 			DWORD length = GetFileSize(fd, NULL);
@@ -123,7 +123,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			{
 				uint8_t byte=0;
 				if (lseek(fd, fsize, SEEK_SET) != fsize || write(fd, &byte, 1) != 1)
-					SG_ERROR("Error creating file of size %ld bytes\n", fsize)
+					SG_ERROR("Error creating file of size {} bytes\n", fsize)
 			}
 
 			struct stat sb;
@@ -150,7 +150,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				desired_len.QuadPart = last_written_byte;
 				if ((SetFilePointerEx(fd, desired_len, NULL, FILE_BEGIN) == 0) || (SetEndOfFile(fd) == 0)) {
 					CloseHandle(fd);
-					SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte)
+					SG_ERROR("Error Truncating file to {} bytes\n", last_written_byte)
 				}
 			}
 			CloseHandle(fd);
@@ -160,7 +160,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 
 			{
 				close(fd);
-				SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte)
+				SG_ERROR("Error Truncating file to {} bytes\n", last_written_byte)
 			}
 			close(fd);
 #endif

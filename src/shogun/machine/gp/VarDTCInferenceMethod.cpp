@@ -310,7 +310,7 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			m_model->get_name(), param->m_name)
 
 	SGVector<float64_t> dlik(1);
@@ -386,7 +386,7 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_noise(
 {
 	REQUIRE(param, "Param not set\n");
 	REQUIRE(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);

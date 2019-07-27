@@ -90,7 +90,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 {
 	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n")
 
-	REQUIRE(m_current_values.vector, "%s::scores_to_probabilities() requires "
+	REQUIRE(m_current_values.vector, "{}::scores_to_probabilities() requires "
 	        "values vector!\n", get_name());
 
 	if (a == 0 && b == 0)
@@ -101,7 +101,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 		b = params.b;
 	}
 
-	SG_DEBUG("using sigmoid: a=%f, b=%f\n", a, b)
+	SG_DEBUG("using sigmoid: a={}, b={}\n", a, b)
 
 	/* now the sigmoid is fitted, convert all values to probabilities */
 	for (index_t i = 0; i < m_current_values.vlen; ++i)
@@ -157,7 +157,7 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			SG_ERROR(
-			    "Cannot convert %s to binary labels: %s\n", orig->get_name(),
+			    "Cannot convert {} to binary labels: {}\n", orig->get_name(),
 			    e.what());
 		}
 

@@ -46,7 +46,7 @@ public:
 		array[utils::is_big_endian() ? 0 : 1] = lsb;
 
 		*v = *reinterpret_cast<floatmax_t*>(array);
-		SG_DEBUG("read floatmax_t with value %Lf\n", *v);
+		SG_DEBUG("read floatmax_t with value {}\n", *v);
 	}
 
 	void on_object(S& s, CSGObject** v)
@@ -142,8 +142,8 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	}
 	catch(ShogunException& e)
 	{
-		SG_WARNING("Error while deserializeing %s: ShogunException: "
-			"%s\n", obj_name.c_str(), e.what());
+		SG_WARNING("Error while deserializeing {}: ShogunException: "
+			"{}\n", obj_name.c_str(), e.what());
 		SG_UNREF(obj);
 		return nullptr;
 	}

@@ -73,8 +73,8 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l, r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
+	SG_DEBUG("lhs_changed: {}\n", lhs_changed)
+	SG_DEBUG("rhs_changed: {}\n", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*)l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*)r;
@@ -136,7 +136,7 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 		std::vector<struct joint_list_struct> joint_list_;
 
 		if (d==0)
-			SG_PRINT("i=%i: ", i);
+			SG_PRINT("i={}: ", i);
 		if (d==0&&target_letter_0!=-1&&(int)i!=target_letter_0)
 			continue;
 

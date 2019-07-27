@@ -86,7 +86,7 @@ void CNumericalVGLikelihood::init()
 
 void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 {
-	REQUIRE(n>0, "The number (%d) of Gaussian Hermite point should be positive\n",n);
+	REQUIRE(n>0, "The number ({}) of Gaussian Hermite point should be positive\n",n);
 	if (m_GHQ_N!=n)
 	{
 		m_GHQ_N=n;
@@ -166,7 +166,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using numerical integration ",
-		"wrt %s.%s parameter. The function only accepts mu and sigma2 as parameter\n",
+		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter\n",
 		get_name(), param->m_name);
 
 	SGVector<float64_t> res(m_mu.vlen);

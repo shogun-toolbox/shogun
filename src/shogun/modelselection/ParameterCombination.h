@@ -221,7 +221,7 @@ public:
 		if (param_combination)
 		{
 			CParameterCombination* casted = dynamic_cast<CParameterCombination*>(param_combination);
-			REQUIRE(casted, "Error, provided object of class \"%s\" is not a subclass of"
+			REQUIRE(casted, "Error, provided object of class \"{}\" is not a subclass of"
 					" CParameterCombination!\n",
 					param_combination->get_name());
 			return casted;

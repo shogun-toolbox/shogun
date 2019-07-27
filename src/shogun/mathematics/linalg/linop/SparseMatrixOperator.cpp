@@ -56,7 +56,7 @@ CSparseMatrixOperator<T>::CSparseMatrixOperator
 		}
 		m_operator.sparse_matrix=rows;
 
-		SG_GCDEBUG("%s deep copy created (%p)\n", this->get_name(), fmt::ptr(this));
+		SG_GCDEBUG("{} deep copy created ({})\n", this->get_name(), fmt::ptr(this));
 	}
 
 template<class T>
@@ -225,7 +225,7 @@ SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
 template<> \
 SGVector<type> CSparseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
-		SG_ERROR("Not supported for %s\n", #type);\
+		SG_ERROR("Not supported for {}\n", #type);\
 		return b; \
 	}
 

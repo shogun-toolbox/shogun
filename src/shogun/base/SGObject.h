@@ -325,7 +325,7 @@ public:
 			if (!parameter_value.cloneable())
 			{
 				SG_ERROR(
-					"Cannot put parameter %s::%s.\n", get_name(),
+					"Cannot put parameter {}::{}.\n", get_name(),
 					_tag.name().c_str());
 			}
 			try
@@ -335,8 +335,8 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-					"Cannot put parameter %s::%s of type %s, incompatible "
-					"provided type %s.\n",
+					"Cannot put parameter {}::{} of type {}, incompatible "
+					"provided type {}.\n",
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
 					exc.expected().c_str());
 			}
@@ -346,7 +346,7 @@ public:
 		else
 		{
 			SG_ERROR(
-				"Parameter %s::%s does not exist.\n", get_name(),
+				"Parameter {}::{} does not exist.\n", get_name(),
 				_tag.name().c_str());
 		}
 	}
@@ -367,7 +367,7 @@ public:
 		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
 		{
 			SG_ERROR(
-					"There are no options for parameter %s::%s", get_name(),
+					"There are no options for parameter {}::{}", get_name(),
 					_tag.name().c_str());
 		}
 
@@ -376,7 +376,7 @@ public:
 		if (string_to_enum.find(val_string) == string_to_enum.end())
 		{
 			SG_ERROR(
-					"Illegal option '%s' for parameter %s::%s",
+					"Illegal option '{}' for parameter {}::{}",
                     val_string.c_str(), get_name(), _tag.name().c_str());
 		}
 
@@ -411,7 +411,7 @@ public:
 	void add(const std::string& name, T* value)
 	{
 		REQUIRE(
-			value, "Cannot add to %s::%s, no object provided.\n", get_name(),
+			value, "Cannot add to {}::{}, no object provided.\n", get_name(),
 			name.c_str());
 
 		auto push_back_lambda = [&value](auto& array) {
@@ -421,7 +421,7 @@ public:
 			return;
 
 		SG_ERROR(
-		    "Cannot add object %s to array parameter %s::%s of type %s.\n",
+		    "Cannot add object {} to array parameter {}::{} of type {}.\n",
 		    value->get_name(), get_name(), name.c_str(),
 			demangled_type<T>().c_str());
 	}
@@ -464,7 +464,7 @@ public:
 		if (!result)
 		{
 			SG_ERROR(
-				"Could not get array parameter %s::%s[%d] of type %s\n",
+				"Could not get array parameter {}::{}[{}] of type {}\n",
 				get_name(), name.c_str(), index, demangled_type<T>().c_str());
 		}
 		return result;
@@ -560,8 +560,8 @@ public:
 		catch (const TypeMismatchException& exc)
 		{
 			SG_ERROR(
-				"Cannot get parameter %s::%s of type %s, incompatible "
-				"requested type %s.\n",
+				"Cannot get parameter {}::{} of type {}, incompatible "
+				"requested type {}.\n",
 				get_name(), _tag.name().c_str(), exc.actual().c_str(),
 				exc.expected().c_str());
 		}
@@ -582,9 +582,9 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-					"Cannot get parameter %s::%s of type %s, incompatible "
-					"requested type %s or there are no options for parameter "
-					"%s::%s.\n",
+					"Cannot get parameter {}::{} of type {}, incompatible "
+					"requested type {} or there are no options for parameter "
+					"{}::{}.\n",
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
 					exc.expected().c_str(), get_name(), _tag.name().c_str());
 			}
@@ -617,7 +617,7 @@ public:
 		auto param = get_function(tag);
 		if (!any_cast<bool>(param.get_value()))
 		{
-			SG_ERROR("Failed to run function %s::%s", get_name(), name.c_str())
+			SG_ERROR("Failed to run function {}::{}", get_name(), name.c_str())
 		}
 	}
 
@@ -667,7 +667,7 @@ public:
 			return c;
 
 		SG_ERROR(
-			"Object of type %s cannot be converted to type %s.\n",
+			"Object of type {} cannot be converted to type {}.\n",
 			this->get_name(),
 			demangled_type<T>().c_str());
 		return nullptr;

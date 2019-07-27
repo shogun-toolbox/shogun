@@ -118,7 +118,7 @@ struct nlopt_params
 float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data)
 {
 	REQUIRE(func_data!=NULL, "func_data must set\n");
-	REQUIRE(model_vars.vlen==model_grads.vlen, "length of variable (%d) and gradient (%d) must equal\n",
+	REQUIRE(model_vars.vlen==model_grads.vlen, "length of variable ({}) and gradient ({}) must equal\n",
 		model_vars.vlen, model_grads.vlen);
 
 	nlopt_params* params=(nlopt_params*)func_data;
@@ -148,7 +148,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 				bool result=current_combination->set_parameter(param->m_name,
 						model_vars[offset++],	parent, j);
-				 REQUIRE(result, "Parameter %s not found in combination tree\n",
+				 REQUIRE(result, "Parameter {} not found in combination tree\n",
 						 param->m_name)
 			}
 		}
@@ -156,7 +156,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 		{
 			bool result=current_combination->set_parameter(param->m_name,
 					model_vars[offset++], parent);
-			REQUIRE(result, "Parameter %s not found in combination tree\n",
+			REQUIRE(result, "Parameter {} not found in combination tree\n",
 					param->m_name)
 		}
 	}
@@ -222,7 +222,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 			}
 		}
 
-		REQUIRE(derivative.vlen, "Can't find gradient wrt %s parameter!\n",
+		REQUIRE(derivative.vlen, "Can't find gradient wrt {} parameter!\n",
 				node->key->m_name);
 
 		sg_memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
