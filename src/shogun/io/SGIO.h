@@ -259,7 +259,7 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename... Args>
-		void message(EMessageType prio, const SourceLocation& loc, const char* fmt, const Args&... args) const;
+		void message(EMessageType prio, const SourceLocation& loc, const char* format, const Args&... args) const;
 
 		/** format and print a message
 		 * @param prio message priority
@@ -267,9 +267,9 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename... Args>
-		void message(EMessageType prio, const char* fmt, const Args&... args) const
+		void message(EMessageType prio, const char* format, const Args&... args) const
 		{
-			message(prio, SourceLocation{}, fmt, args...);
+			message(prio, SourceLocation{}, format, args...);
 		}
 
 		/** format and print a message, and then throw an exception
@@ -279,7 +279,7 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename Exception, typename... Args>
-		void error(EMessageType prio, const SourceLocation& loc, const char* fmt, const Args&... args) const;
+		void error(EMessageType prio, const SourceLocation& loc, const char* format, const Args&... args) const;
 
 		/** format and print a message, and then throw an exception
 		 * @tparam ExceptionType type of the exception to throw
@@ -440,12 +440,12 @@ class SGIO
 };
 
 template <typename... Args>
-void SGIO::message(EMessageType prio, const SourceLocation& loc, const char* fmt, const Args&... args) const
+void SGIO::message(EMessageType prio, const SourceLocation& loc, const char* format, const Args&... args) const
 {
 	if(should_log(prio))
 	{
 		fmt::memory_buffer msg;
-		fmt::format_to(msg, fmt, args...);
+		fmt::format_to(msg, format, args...);
 		message_(prio, loc, fmt::string_view(msg.data(), msg.size()));
 	}
 }

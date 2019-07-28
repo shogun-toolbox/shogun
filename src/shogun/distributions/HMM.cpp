@@ -4136,7 +4136,7 @@ bool CHMM::save_likelihood(FILE* file)
 
 		fprintf(file, "P=[");
 		for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
-			fprintf(file, "{:e} ", (double) model_probability(dim));
+			fprintf(file, "%e ", (double) model_probability(dim));
 
 		fprintf(file,"];");
 		result=true;

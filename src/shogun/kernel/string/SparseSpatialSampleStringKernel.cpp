@@ -205,14 +205,14 @@ void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx
 			}
 			features = extractTriple(S,len,nStr,d1,d2);
 			nfeat = (*features).n;
-			printf("({},{}): {} features\n", d1, d2, nfeat);
+			printf("(%d,%d): %d features\n", d1, d2, nfeat);
 			maxIdx = 0;
 			for (i = 0; i < nfeat*3; ++i)
 				maxIdx = maxIdx > (*features).features[i] ? maxIdx : (*features).features[i];
 			if (na < maxIdx+1)
 			{
-				printf("WARNING: Sequence elements are outside the specified range [0,{}]\n",na);
-				printf("\tUsing [0,{}] instead\n", maxIdx);
+				printf("WARNING: Sequence elements are outside the specified range [0,%d]\n",na);
+				printf("\tUsing [0,%d] instead\n", maxIdx);
 				na = maxIdx+1;
 			}
 			if (isVerbose)
