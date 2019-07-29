@@ -8,7 +8,6 @@
 #include "utils/Utils.h"
 #include <gtest/gtest.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/memory.h>
 #include <random>
 
@@ -17,7 +16,7 @@ using namespace shogun;
 TEST(StringFeaturesTest,copy_subset)
 {
 	std::mt19937_64 prng(25);
-	SGStringList<char> strings = generateRandomStringData(prng);
+	std::vector<SGVector<char>> strings = generateRandomStringData(prng);
 
 	/* create num_feautres 2-dimensional vectors */
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
@@ -70,7 +69,7 @@ TEST(StringFeaturesTest,copy_subset)
 		for (index_t j=0; j<vec.vlen; ++j)
 		{
 			index_t offset_idx=i+(offset_copy+offset_subset);
-			EXPECT_EQ(vec.vector[j], strings.strings[offset_idx].vector[j]);
+			EXPECT_EQ(vec.vector[j], strings[offset_idx].vector[j]);
 		}
 
 		subset_copy->free_feature_vector(vec, i);
@@ -83,7 +82,7 @@ TEST(StringFeaturesTest,copy_subset)
 TEST(StringFeaturesTest,equals)
 {
 	std::mt19937_64 prng(25);
-	SGStringList<char> strings = generateRandomStringData(prng);
+	std::vector<SGVector<char>> strings = generateRandomStringData(prng);
 
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
 	CStringFeatures<char>* f_clone = (CStringFeatures<char>*)f->clone();

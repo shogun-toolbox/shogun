@@ -42,7 +42,6 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()
 		"\n");
 
 	strings = NULL;
-	transposed_strings = NULL;
 
 	degree = 0;
 	start_degree = 0;
@@ -72,10 +71,11 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 	SG_REF(str);
 
 	strings=str;
-	int32_t transposed_num_feat=0;
-	int32_t transposed_num_vec=0;
-	transposed_strings=str->get_transposed(transposed_num_feat, transposed_num_vec);
-
+	transposed_strings=std::move(str->get_transposed_matrix());
+	int32_t transposed_num_feat = transposed_strings.size();
+	int32_t transposed_num_vec = 
+		transposed_strings.empty()? 0 : transposed_strings.back().size();
+	
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
 	ASSERT(transposed_num_feat==num_strings)
@@ -113,8 +113,6 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeatures
 
 CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 {
-	SG_FREE(transposed_strings);
-
 	SG_UNREF(strings);
 	SG_FREE(wd_weights);
 }
@@ -392,7 +390,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	int32_t string_length=hf->string_length;
 	int32_t degree=hf->degree;
 	float64_t* wd_weights=hf->wd_weights;
-	SGVector<uint8_t>* transposed_strings=hf->transposed_strings;
+	auto& transposed_strings=hf->transposed_strings;
 	uint32_t mask=hf->mask;
 	int32_t partial_w_dim=hf->partial_w_dim;
 	float64_t normalization_const=hf->normalization_const;

@@ -60,7 +60,7 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 *
 		 * @param string_list the string list to be preprocessed
 		 */
-		virtual void apply_to_string_list(SGStringList<ST> string_list) = 0;
+		virtual void apply_to_string_list(std::vector<SGVector<ST>>& string_list) = 0;
 };
 
 }

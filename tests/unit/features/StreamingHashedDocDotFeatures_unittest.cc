@@ -7,7 +7,6 @@
 #include <gtest/gtest.h>
 #include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/converter/HashedDocConverter.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
@@ -34,10 +33,11 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	for (index_t i=0; i<85; i++)
 		string_3[i] = doc_3[i];
 
-	SGStringList<char> list(3,85);
-	list.strings[0] = string_1;
-	list.strings[1] = string_2;
-	list.strings[2] = string_3;
+	std::vector<SGVector<char>> list;
+	list.reserve(3);
+	list.push_back(string_1);
+	list.push_back(string_2);
+	list.push_back(string_3);
 
 	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
 	tokenizer->delimiters[' '] = 1;
@@ -55,7 +55,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	{
 		SGSparseVector<float64_t> example = feats->get_vector();
 
-		SGVector<char> tmp = list.strings[i];
+		SGVector<char> tmp = list[i];
 		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
 
 		EXPECT_EQ(example.num_feat_entries, converted_doc.num_feat_entries);
@@ -93,10 +93,11 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	for (index_t i=0; i<85; i++)
 		string_3[i] = doc_3[i];
 
-	SGStringList<char> list(3,85);
-	list.strings[0] = string_1;
-	list.strings[1] = string_2;
-	list.strings[2] = string_3;
+	std::vector<SGVector<char>> list;
+	list.reserve(3);
+	list.push_back(string_1);
+	list.push_back(string_2);
+	list.push_back(string_3);
 
 	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
 	tokenizer->delimiters[' '] = 1;
@@ -119,7 +120,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	while (feats->get_next_example())
 	{
 		/** Dense dot test */
-		SGVector<char> tmp = list.strings[i];
+		SGVector<char> tmp = list[i];
 		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
 
 		float32_t tmp_res = 0;

@@ -36,9 +36,9 @@
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/SortWordString.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 
 #include <random>
 
@@ -72,7 +72,8 @@ TEST(Preprocessor, string)
 	const index_t max_string_length=20;
 	const index_t min_string_length=max_string_length/2;
 
-	SGStringList<uint16_t> strings(num_strings, max_string_length);
+	std::vector<SGVector<uint16_t>> strings;
+	strings.reserve(num_strings);
 	std::mt19937_64 prng(seed);
 	UniformIntDistribution<int32_t> uniform_int_dist;
 	for (index_t i=0; i<num_strings; ++i)
@@ -81,10 +82,8 @@ TEST(Preprocessor, string)
 		SGVector<uint16_t> current(len);
 
 		/* fill with random uppercase letters (ASCII) */
-		for (index_t j=0; j<len; ++j)
-			current[j]=(uint16_t)uniform_int_dist(prng, {'A', 'Z'});
-
-		strings.strings[i]=current;
+		random::fill_array(current, 'A', 'Z', prng);
+		strings.push_back(current);
 	}
 
 	/* create num_features 2-dimensional vectors */

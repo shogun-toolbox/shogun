@@ -7,7 +7,6 @@
 #define __UTILS_H__
 
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
@@ -29,11 +28,12 @@ void generate_toy_data_weather(
     bool load_train_data = true);
 
 template <typename T = char, typename PRNG = std::mt19937_64>
-SGStringList<T> generateRandomStringData(
+std::vector<SGVector<T>> generateRandomStringData(
     PRNG& prng, index_t num_strings = 10, index_t max_string_length = 10,
     index_t min_string_length = 10)
 {
-	SGStringList<T> strings(num_strings, max_string_length);
+	std::vector<SGVector<T>> strings;
+	strings.reserve(num_strings);
 
 	for (index_t i = 0; i < num_strings; ++i)
 	{
@@ -44,7 +44,7 @@ SGStringList<T> generateRandomStringData(
 		/* fill with random uppercase letters (ASCII) */
 		random::fill_array(current, 'A', 'Z', prng);
 
-		strings.strings[i] = current;
+		strings.push_back(current);
 	}
 	return strings;
 }

@@ -52,10 +52,8 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 
 template <class ST> void CStringFileFeatures<ST>::cleanup()
 {
-	CStringFeatures<ST>::num_vectors=0;
-	SG_FREE(CStringFeatures<ST>::features);
+	CStringFeatures<ST>::features.clear();
 	SG_FREE(CStringFeatures<ST>::symbol_mask_table);
-	CStringFeatures<ST>::features=NULL;
 	CStringFeatures<ST>::symbol_mask_table=NULL;
 
 	/* start with a fresh alphabet, but instead of emptying the histogram
@@ -82,41 +80,40 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 	ASSERT(CStringFeatures<ST>::alphabet)
 
 	int64_t buffer_size=granularity;
-	CStringFeatures<ST>::features=SG_MALLOC(SGVector<ST>, buffer_size);
+	CStringFeatures<ST>::features.clear();
+	CStringFeatures<ST>::features.resize(buffer_size);
 
 	uint64_t offs=0;
 	uint64_t len=0;
-	CStringFeatures<ST>::max_string_length=0;
-	CStringFeatures<ST>::num_vectors=0;
+	int num_vectors=0;
 
 	while (true)
 	{
-		ST* line=get_line(len, offs, CStringFeatures<ST>::num_vectors, file_size);
+		ST* line=get_line(len, offs, num_vectors, file_size);
 
 		if (line)
 		{
-			if (CStringFeatures<ST>::num_vectors > buffer_size)
+			if (num_vectors > buffer_size)
 			{
-				CStringFeatures<ST>::features = SG_REALLOC(SGVector<ST>, CStringFeatures<ST>::features, buffer_size, buffer_size+granularity);
+				CStringFeatures<ST>::features.resize(buffer_size+granularity);
 				buffer_size+=granularity;
 			}
 
-			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1]=SGVector<ST>(line, len, false);
-			CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, (int32_t) len);
+			CStringFeatures<ST>::features[num_vectors-1]=SGVector<ST>(line, len, false);
 		}
 		else
 			break;
 	}
 
-	SG_CLASS_INFO(CStringFeatures<ST>, "number of strings:%d\n", CStringFeatures<ST>::num_vectors)
-	SG_CLASS_INFO(CStringFeatures<ST>,"maximum string length:%d\n", CStringFeatures<ST>::max_string_length)
+	SG_CLASS_INFO(CStringFeatures<ST>, "number of strings:%d\n", CStringFeatures<ST>::get_num_vectors())
+	SG_CLASS_INFO(CStringFeatures<ST>,"maximum string length:%d\n", CStringFeatures<ST>::get_max_vector_length())
 	SG_CLASS_INFO(CStringFeatures<ST>,"max_value_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_max_value_in_histogram())
 	SG_CLASS_INFO(CStringFeatures<ST>,"num_symbols_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram())
 
 	if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
 		CStringFileFeatures<ST>::cleanup();
 
-	CStringFeatures<ST>::features=SG_REALLOC(SGVector<ST>, CStringFeatures<ST>::features, buffer_size, CStringFeatures<ST>::num_vectors);
+	CStringFeatures<ST>::features.resize(num_vectors);
 }
 
 template class CStringFileFeatures<bool>;

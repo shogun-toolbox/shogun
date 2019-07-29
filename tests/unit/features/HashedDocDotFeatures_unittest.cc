@@ -9,7 +9,6 @@
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/SparseFeatures.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/NGramTokenizer.h>
@@ -38,10 +37,11 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 	for (index_t i=0; i<85; i++)
 		string_3[i] = doc_3[i];
 
-	SGStringList<char> list(3,85);
-	list.strings[0] = string_1;
-	list.strings[1] = string_2;
-	list.strings[2] = string_3;
+	std::vector<SGVector<char>> list;
+	list.reserve(3);
+	list.push_back(string_1);
+	list.push_back(string_2);
+	list.push_back(string_3);
 
 	int32_t hash_bits = 5; //log2(32).
 
@@ -93,10 +93,11 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	for (index_t i=0; i<85; i++)
 		string_3[i] = doc_3[i];
 
-	SGStringList<char> list(3,85);
-	list.strings[0] = string_1;
-	list.strings[1] = string_2;
-	list.strings[2] = string_3;
+	std::vector<SGVector<char>> list;
+	list.reserve(3);
+	list.push_back(string_1);
+	list.push_back(string_2);
+	list.push_back(string_3);
 
 	int32_t dimension = 32;
 	int32_t hash_bits = 5;
@@ -196,8 +197,8 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	for (index_t i=0; i<6; i++)
 		string_1[i] = doc_1[i];
 
-	SGStringList<char> list(1,6);
-	list.strings[0] = string_1;
+	std::vector<SGVector<char>> list;
+	list.push_back(string_1);
 
 	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);
 	SG_REF(tokenizer);
@@ -287,8 +288,8 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	for (index_t i=0; i<6; i++)
 		string_1[i] = doc_1[i];
 
-	SGStringList<char> list(1,6);
-	list.strings[0] = string_1;
+	std::vector<SGVector<char>> list;
+	list.push_back(string_1);
 
 	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);

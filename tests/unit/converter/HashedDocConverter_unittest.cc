@@ -7,7 +7,6 @@
 #include <shogun/converter/HashedDocConverter.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DelimiterTokenizer.h>
@@ -70,10 +69,11 @@ TEST(HashedDocConverterTest, compare_dot_features)
 	for (index_t i=0; i<85; i++)
 		string_3[i] = doc_3[i];
 
-	SGStringList<char> list(3,85);
-	list.strings[0] = string_1;
-	list.strings[1] = string_2;
-	list.strings[2] = string_3;
+	std::vector<SGVector<char>> list;
+	list.reserve(3);
+	list.push_back(string_1);
+	list.push_back(string_2);
+	list.push_back(string_3);
 
 	int32_t hash_bits = 3;
 
@@ -89,7 +89,7 @@ TEST(HashedDocConverterTest, compare_dot_features)
 	float64_t e = 0.1e-14;
 	for (index_t i=0; i<3; i++)
 	{
-		SGSparseVector<float64_t> c_vec = converter->apply(list.strings[i]);
+		SGSparseVector<float64_t> c_vec = converter->apply(list[i]);
 		SGVector<float64_t> d_vec = d_feats->get_computed_dot_feature_vector(i);
 		for (index_t j=0; j<c_vec.num_feat_entries; j++)
 			EXPECT_TRUE(e > c_vec.features[j].entry - d_vec[c_vec.features[j].feat_index]);
