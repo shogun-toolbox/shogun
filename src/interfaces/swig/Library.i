@@ -122,40 +122,40 @@ namespace shogun
 #endif
 
 #ifdef USE_BOOL
-    %template(BoolStringList) SGStringList<bool>;
+    %template(BoolStringListX) SGStringList<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(CharStringList) SGStringList<char>;
+    %template(CharStringListX) SGStringList<char>;
 #endif
 #ifdef USE_UINT8
-    %template(ByteStringList) SGStringList<uint8_t>;
+    %template(ByteStringListX) SGStringList<uint8_t>;
 #endif
 #ifdef USE_UINT16
-    %template(WordStringList) SGStringList<uint16_t>;
+    %template(WordStringListX) SGStringList<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(ShortStringList) SGStringList<int16_t>;
+    %template(ShortStringListX) SGStringList<int16_t>;
 #endif
 #ifdef USE_INT32
-    %template(IntStringList)  SGStringList<int32_t>;
+    %template(IntStringListX)  SGStringList<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(UIntStringList)  SGStringList<uint32_t>;
+    %template(UIntStringListX)  SGStringList<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(LongIntStringList)  SGStringList<int64_t>;
+    %template(LongIntStringListX)  SGStringList<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(ULongIntStringList)  SGStringList<uint64_t>;
+    %template(ULongIntStringListX)  SGStringList<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(ShortRealStringList) SGStringList<float32_t>;
+    %template(ShortRealStringListX) SGStringList<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(RealStringList) SGStringList<float64_t>;
+    %template(RealStringListX) SGStringList<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(LongRealStringList) SGStringList<floatmax_t>;
+    %template(LongRealStringListX) SGStringList<floatmax_t>;
 #endif
 
 #if !defined(SWIGPERL)
@@ -289,6 +289,44 @@ namespace shogun
 #endif
 }
 
+#ifdef USE_BOOL
+    %template(BoolStringList) std::vector<shogun::SGVector<bool>>;
+#endif
+#ifdef USE_CHAR
+    %template(CharStringList) std::vector<shogun::SGVector<char>>;
+#endif
+#ifdef USE_UINT8
+    %template(ByteStringList) std::vector<shogun::SGVector<uint8_t>>;
+#endif
+#ifdef USE_UINT16
+    %template(WordStringList) std::vector<shogun::SGVector<uint16_t>>;
+#endif
+#ifdef USE_INT16
+    %template(ShortStringList) std::vector<shogun::SGVector<int16_t>>;
+#endif
+#ifdef USE_INT32
+    %template(IntStringList)  std::vector<shogun::SGVector<int32_t>>;
+#endif
+#ifdef USE_UINT32
+    %template(UIntStringList)  std::vector<shogun::SGVector<uint32_t>>;
+#endif
+#ifdef USE_INT64
+    %template(LongIntStringList)  std::vector<shogun::SGVector<int64_t>>;
+#endif
+#ifdef USE_UINT64
+    %template(ULongIntStringList)  std::vector<shogun::SGVector<uint64_t>>;
+#endif
+#ifdef USE_FLOAT32
+    %template(ShortRealStringList) std::vector<shogun::SGVector<float32_t>>;
+#endif
+#ifdef USE_FLOAT64
+    %template(RealStringList) std::vector<shogun::SGVector<float64_t>>;
+#endif
+#ifdef USE_FLOATMAX
+    %template(LongRealStringList) std::vector<shogun::SGVector<floatmax_t>>;
+#endif
+
+
 
 /* Include Class Headers to make them visible from within the target language */
 /* Template Class DynamicArray */
@@ -398,8 +436,8 @@ namespace shogun
 #ifdef USE_INT32
     %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;
 #endif
-	%template(append_element_string_char_list) CDynamicObjectArray::append_element_string_list<SGStringList<char>, SGStringList<char>>;
-	%template(append_element_string_word_list) CDynamicObjectArray::append_element_string_list<SGStringList<uint16_t>, SGStringList<uint16_t>>;
+    %template(append_element_string_char_list) CDynamicObjectArray::append_element_string_list<SGStringList<char>, SGStringList<char>>;
+    %template(append_element_string_word_list) CDynamicObjectArray::append_element_string_list<SGStringList<uint16_t>, SGStringList<uint16_t>>;
 }
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>

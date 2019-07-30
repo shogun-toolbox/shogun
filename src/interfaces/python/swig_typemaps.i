@@ -347,7 +347,7 @@ static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecod
 }
 
 template <class type>
-static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int typecode)
+static bool string_from_strpy(std::vector<SGVector<type>>& sg_strings, PyObject* obj, int typecode)
 {
     PyObject* list=(PyObject*) obj;
 
@@ -355,9 +355,9 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         Py_ssize_t size=PyList_Size(list);
-        shogun::SGVector<type>* strings=SG_MALLOC(shogun::SGVector<type>, size);
+        std::vector<shogun::SGVector<type>> strings;
+        strings.reserve(size);
 
-        Py_ssize_t max_len=0;
         for (auto i=0; i<size; ++i)
         {
             PyObject *o = PyList_GetItem(list,i);
@@ -365,32 +365,21 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
             {
                 if (PyUnicode_Check(o))
                 {
-                    PyObject *tmp = nullptr;
                     Py_ssize_t len = -1;
                     const char* str = PyUnicode_AsUTF8AndSize(o, &len);
                     if (str == nullptr)
                     {
                         PyErr_SetString(PyExc_TypeError, "Error converting string content.");
-                        SG_FREE(strings);
                         return false;
                     }
-					max_len=shogun::CMath::max(len, max_len);
 
-                    strings[i].vlen=len;
-                    strings[i].vector=NULL;
-
-                    if (len>0)
-                    {
-                        strings[i].vector=SG_MALLOC(type, len);
-                        sg_memcpy(strings[i].vector, str, len);
-                        Py_XDECREF(tmp);
-                    }
+                    strings.emplace_back(len);
+                    if (len > 0)
+                        sg_memcpy(strings.back().vector, str, len);
                 }
                 else
                 {
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
-
-                    SG_FREE(strings);
                     return false;
                 }
             }
@@ -405,16 +394,10 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
 
                     type* str=(type*) PyArray_DATA(array);
                     Py_ssize_t len = PyArray_DIM(array,0);
-                    max_len=shogun::CMath::max(len,max_len);
 
-                    strings[i].vlen=len;
-                    strings[i].vector=NULL;
-
-                    if (len>0)
-                    {
-                        strings[i].vector=SG_MALLOC(type, len);
-                        sg_memcpy(strings[i].vector, str, len*sizeof(type));
-                    }
+                    strings.emplace_back(len);
+                    if (len > 0)
+                        sg_memcpy(strings.back().vector, str, len*sizeof(type));
 
                     if (is_new_object)
                         Py_DECREF(array);
@@ -422,19 +405,11 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                 else
                 {
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
-
-                    SG_FREE(strings);
                     return false;
                 }
             }
         }
-
-        SGStringList<type> sl;
-        sl.strings=strings;
-        sl.num_strings=size;
-        sl.max_string_length=max_len;
-        sg_strings=sl;
-
+        sg_strings = std::move(strings);
         return true;
     }
     else
@@ -445,10 +420,10 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
 }
 
 template <class type>
-static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int typecode)
+static bool string_to_strpy(PyObject* &obj, std::vector<SGVector<type>>& sg_strings, int typecode)
 {
-    shogun::SGVector<type>* str=sg_strings.strings;
-    index_t num=sg_strings.num_strings;
+    const shogun::SGVector<type>* str=sg_strings.data();
+    auto num=sg_strings.size();
     PyObject* list = PyList_New(num);
 
     if (list && str)
@@ -1018,13 +993,13 @@ TYPEMAP_OUTND(PyObject,      NPY_OBJECT)
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>&
 {
     $1 = is_pystring_list($input, typecode);
 }
-%typemap(in) shogun::SGStringList<type>
+%typemap(in) std::vector<shogun::SGVector<type>>&
 {
-    if (! string_from_strpy<type>($1, $input, typecode))
+    if (! string_from_strpy<type>(*$1, $input, typecode))
         SWIG_fail;
 }
 %enddef
@@ -1051,9 +1026,9 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
-%typemap(out) shogun::SGStringList<type>
+%typemap(out) std::vector<shogun::SGVector<type>>&
 {
-    if (!string_to_strpy($result, $1, typecode))
+    if (!string_to_strpy($result, *$1, typecode))
         SWIG_fail;
 }
 %enddef

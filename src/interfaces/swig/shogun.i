@@ -50,6 +50,7 @@
 #endif
 #endif
 
+%include "std_vector.i"
 %include "shogun_ignores.i"
 %include "RandomMixin.i"
 %include "Machine_includes.i"
