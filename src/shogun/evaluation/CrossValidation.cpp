@@ -20,7 +20,7 @@
 
 using namespace shogun;
 
-CCrossValidation::CCrossValidation() : RandomMixin<CMachineEvaluation>()
+CCrossValidation::CCrossValidation() : Seedable<CMachineEvaluation>()
 {
 	init();
 }
@@ -28,7 +28,7 @@ CCrossValidation::CCrossValidation() : RandomMixin<CMachineEvaluation>()
 CCrossValidation::CCrossValidation(
     CMachine* machine, CFeatures* features, CLabels* labels,
     CSplittingStrategy* splitting_strategy, CEvaluation* evaluation_criterion)
-    : RandomMixin<CMachineEvaluation>(
+    : Seedable<CMachineEvaluation>(
           machine, features, labels, splitting_strategy, evaluation_criterion)
 {
 	init();
@@ -37,7 +37,7 @@ CCrossValidation::CCrossValidation(
 CCrossValidation::CCrossValidation(
     CMachine* machine, CLabels* labels, CSplittingStrategy* splitting_strategy,
     CEvaluation* evaluation_criterion)
-    : RandomMixin<CMachineEvaluation>(
+    : Seedable<CMachineEvaluation>(
           machine, labels, splitting_strategy, evaluation_criterion)
 {
 	init();

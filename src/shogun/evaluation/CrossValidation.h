@@ -13,7 +13,7 @@
 
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
-#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/Seedable.h>
 
 namespace shogun
 {
@@ -123,7 +123,7 @@ namespace shogun
 	 * HP Laboratories.] for details on this subject.
 	 *
 	 */
-	class CCrossValidation : public RandomMixin<CMachineEvaluation>
+	class CCrossValidation : public Seedable<CMachineEvaluation>
 	{
 	public:
 		/** constructor */
