@@ -364,6 +364,7 @@ namespace shogun
     %template(StreamingRealFeatures) CStreamingDenseFeatures<float64_t>;
 
     /** Instantiate RandomMixin */
+    %template(SeedableStreamingDense) shogun::Seedable<shogun::CStreamingDenseFeatures<float64_t>>;
     %template(RandomMixinStreamingDense) shogun::RandomMixin<shogun::CStreamingDenseFeatures<float64_t>, std::mt19937_64>;
 #endif
 }

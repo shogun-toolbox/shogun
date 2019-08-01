@@ -153,6 +153,7 @@ APPLY_LATENT(CLatentSVM);
 %include <shogun/machine/Machine.h>
 
 /** Instantiate RandomMixin */
+%template(SeedableMachine) shogun::Seedable<shogun::CMachine>;
 %template(RandomMixinMachine) shogun::RandomMixin<shogun::CMachine, std::mt19937_64>;
 
 %include <shogun/machine/Pipeline.h>

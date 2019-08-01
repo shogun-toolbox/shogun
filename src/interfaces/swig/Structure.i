@@ -105,6 +105,7 @@
 %include <shogun/machine/LinearStructuredOutputMachine.h>
 
 /** Instantiate RandomMixin */
+%template(SeedableLinearStructured) shogun::Seedable<shogun::CLinearStructuredOutputMachine>;
 %template(RandomMixinLinearStructured) shogun::RandomMixin<shogun::CLinearStructuredOutputMachine, std::mt19937_64>;
 
 %include <shogun/machine/KernelStructuredOutputMachine.h>

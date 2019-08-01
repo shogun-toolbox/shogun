@@ -79,6 +79,7 @@ namespace shogun
     %template(TreeMachineWithCHAIDTreeNodeData) CTreeMachine<CHAIDTreeNodeData>;
 
     /** Instantiate RandomMixin */
+    %template(SeedableTreeMachine) shogun::Seedable<CTreeMachine<CARTreeNodeData>>;
     %template(RandomMixinTreeMachine) RandomMixin<CTreeMachine<CARTreeNodeData>, std::mt19937_64>;
 }
 
