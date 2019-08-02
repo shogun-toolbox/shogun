@@ -5,7 +5,6 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/List.h>

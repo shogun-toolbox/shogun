@@ -41,7 +41,6 @@ TEST(Factory, string_features_from_file)
 	std::string filename = "Factory-features_from_file.XXXXXX";
 
 	auto num_strings = 3;
-	auto max_string_length = 10;
 
 	std::vector<SGVector<char>> string_list;
 	string_list.reserve(num_strings);

@@ -158,13 +158,13 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, R2SG, SG2R, TYPECODE)
 
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<SGTYPE> {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& {
 	$1 = 0;
 	if (TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) {
 		$1 = 1;
 	}
 }
-%typemap(in) shogun::SGStringList<SGTYPE> {
+%typemap(in) std::vector<shogun::SGVector<SGTYPE>>& {
 	int32_t size = 0;
 	int32_t i, j;
 	int32_t len, max_len = 0;
@@ -174,35 +174,29 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	}
 
 	size = RARRAY_LEN($input);
-	shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, size);
+	std::vector<shogun::SGVector<SGTYPE>> strings;
+	strings.reserve(size);
 
 	for (i = 0; i < size; i++) {
 		VALUE arr = rb_ary_entry($input, i);
-		new (&strings[i]) SGVector<SGTYPE>();
 		if (TYPE(arr) == T_STRING) {
 			len = RSTRING_LEN(arr);
+			strings.emplace_back(len+1);
+			strings.back().vlen = len;
+
 			const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].vlen = len;
-
-			if (len > 0) {
-				strings[i].vector = SG_MALLOC(SGTYPE, len + 1);
-				sg_memcpy(strings[i].vector, str, len + 1);
-			}
+			sg_memcpy(strings.back().vector, str, len + 1);
 		}
 		else {
 			if (TYPE(arr) == T_ARRAY) {
 				len = RARRAY_LEN(arr);
 				max_len = shogun::CMath::max(len, max_len);
+				strings.emplace_back(len);
 
-				strings[i].vlen=len;
-				strings[i].vector=NULL;
-				if (len > 0) {
-					strings[i].vector = SG_MALLOC(SGTYPE, len);
-					for (j = 0; j < len; j++) {
-						strings[i].vector[j] = R2SG(RARRAY_PTR(arr)[j]);
-					}
+				for (j = 0; j < len; j++) {
+					strings.back().vector[j] = R2SG(RARRAY_PTR(arr)[j]);
 				}
 			}
 			else {
@@ -211,16 +205,16 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 		}
 	}
 
-	SGStringList<SGTYPE> sl;
-	sl.strings = strings;
-	sl.num_strings = size;
-	sl.max_string_length = max_len;
-	$1 = sl;
+	$1 = new std::vector<shogun::SGVector<SGTYPE>>(std::move(strings));
 }
 
-%typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGVector<SGTYPE>* str = $1.strings;
-	int32_t i, j, num = $1.num_strings;
+%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
+    delete $1;
+}
+
+%typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
+	std::vector<shogun::SGVector<SGTYPE>>& str = $1;
+	int32_t i, j, num = str.size();
 	VALUE arr;
 
 	arr = rb_ary_new2(num);

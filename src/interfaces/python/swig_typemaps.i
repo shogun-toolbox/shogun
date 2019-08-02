@@ -347,15 +347,15 @@ static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecod
 }
 
 template <class type>
-static bool string_from_strpy(std::vector<SGVector<type>>& sg_strings, PyObject* obj, int typecode)
+static bool string_from_strpy(std::vector<SGVector<type>>& strings, PyObject* obj, int typecode)
 {
     PyObject* list=(PyObject*) obj;
+    strings = std::vector<SGVector<type>>();
 
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         Py_ssize_t size=PyList_Size(list);
-        std::vector<shogun::SGVector<type>> strings;
         strings.reserve(size);
 
         for (auto i=0; i<size; ++i)
@@ -374,8 +374,7 @@ static bool string_from_strpy(std::vector<SGVector<type>>& sg_strings, PyObject*
                     }
 
                     strings.emplace_back(len);
-                    if (len > 0)
-                        sg_memcpy(strings.back().vector, str, len);
+                    sg_memcpy(strings.back().vector, str, len);
                 }
                 else
                 {
@@ -396,8 +395,7 @@ static bool string_from_strpy(std::vector<SGVector<type>>& sg_strings, PyObject*
                     Py_ssize_t len = PyArray_DIM(array,0);
 
                     strings.emplace_back(len);
-                    if (len > 0)
-                        sg_memcpy(strings.back().vector, str, len*sizeof(type));
+                    sg_memcpy(strings.back().vector, str, len*sizeof(type));
 
                     if (is_new_object)
                         Py_DECREF(array);
@@ -409,7 +407,6 @@ static bool string_from_strpy(std::vector<SGVector<type>>& sg_strings, PyObject*
                 }
             }
         }
-        sg_strings = std::move(strings);
         return true;
     }
     else
@@ -993,15 +990,24 @@ TYPEMAP_OUTND(PyObject,      NPY_OBJECT)
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>&
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>, std::vector<shogun::SGVector<type>>&
 {
     $1 = is_pystring_list($input, typecode);
 }
+
 %typemap(in) std::vector<shogun::SGVector<type>>&
 {
-    if (! string_from_strpy<type>(*$1, $input, typecode))
+    $1 = nullptr;
+    std::vector<shogun::SGVector<type>> tmp;
+    if (! string_from_strpy<type>(tmp, $input, typecode))
         SWIG_fail;
+    $1 = new std::vector<shogun::SGVector<type>>(std::move(tmp));
 }
+
+%typemap(freearg) std::vector<shogun::SGVector<type>>& {
+    delete $1;
+}
+
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL)
@@ -1026,9 +1032,9 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
-%typemap(out) std::vector<shogun::SGVector<type>>&
+%typemap(out) std::vector<shogun::SGVector<type>>
 {
-    if (!string_to_strpy($result, *$1, typecode))
+    if (!string_to_strpy<type>($result, $1, typecode))
         SWIG_fail;
 }
 %enddef

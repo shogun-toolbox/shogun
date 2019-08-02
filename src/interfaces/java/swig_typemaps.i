@@ -633,11 +633,12 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, JTYPE, JAVATYPE, JNITYPE, CLASSDESC)
 
-%typemap(jni) shogun::SGStringList<SGTYPE>	%{jobjectArray%}
-%typemap(jtype) shogun::SGStringList<SGTYPE>		%{JTYPE[][]%}
-%typemap(jstype) shogun::SGStringList<SGTYPE>	%{JTYPE[][]%}
+%typemap(jni) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>&	%{jobjectArray%}
+%typemap(jtype) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>&		%{JTYPE[][]%}
+%typemap(jstype) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>&	%{JTYPE[][]%}
 
-%typemap(in) shogun::SGStringList<SGTYPE> {
+%typemap(in) std::vector<shogun::SGVector<SGTYPE>>& {
+	$1 = nullptr;
 	int32_t size = 0;
 	int32_t i;
 	int32_t len, max_len = 0;
@@ -648,33 +649,29 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	}
 
 	size = JCALL1(GetArrayLength, jenv, $input);
-	shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, size);
+	std::vector<shogun::SGVector<SGTYPE>> strings;
+	strings.reserve(size);
 
 	for (i = 0; i < size; i++) {
 		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
 		len = JCALL1(GetArrayLength, jenv, jarr);
 		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].vlen=len;
-		strings[i].vector=NULL;
-
-		if (len >0) {
-			strings[i].vector = SG_MALLOC(SGTYPE, len);
-			sg_memcpy(strings[i].vector, jarr, len * sizeof(SGTYPE));
-		}
+		strings.emplace_back(len);
+		sg_memcpy(strings.back().vector, jarr, len * sizeof(SGTYPE));
 	}
 
-	SGStringList<SGTYPE> sl;
-	sl.strings=strings;
-	sl.num_strings=size;
-	sl.max_string_length=max_len;
-	$1 = sl;
+	$1 = new std::vector<shogun::SGVector<SGTYPE>>(std::move(strings));
 }
 
-%typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGVector<SGTYPE>* string_array = $1.strings;
-	int32_t num_strings = $1.num_strings;
-	
+%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
+    delete $1;
+}
+
+%typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
+	std::vector<shogun::SGVector<SGTYPE>>& string_array = $1;
+	int32_t num_strings = string_array.size();
+
 	// class for inner array (the invidivual strings)
 	jclass cls = JCALL1(FindClass, jenv, CLASSDESC);
 
@@ -702,8 +699,8 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	$result = outer;
 }
 
-%typemap(javain) shogun::SGStringList<SGTYPE> "$javainput"
-%typemap(javaout) shogun::SGStringList<SGTYPE> {
+%typemap(javain) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& "$javainput"
+%typemap(javaout) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& {
 	return $jnicall;
 }
 
@@ -723,12 +720,13 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 
 #undef TYPEMAP_STRINGFEATURES
 
-/* input/output typemap for SGStringList<char> */
-%typemap(jni) shogun::SGStringList<char>	%{jobjectArray%}
-%typemap(jtype) shogun::SGStringList<char>		%{String []%}
-%typemap(jstype) shogun::SGStringList<char>	%{String []%}
+/* input/output typemap for std::vector<shogun::SGVector<char>> */
+%typemap(jni) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>&	%{jobjectArray%}
+%typemap(jtype) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>&	%{String []%}
+%typemap(jstype) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>&	%{String []%}
 
-%typemap(in) shogun::SGStringList<char> {
+%typemap(in) std::vector<shogun::SGVector<char>>& {
+	$1 = nullptr;
 	int32_t size = 0;
 	int32_t i;
 	int32_t len, max_len = 0;
@@ -739,7 +737,8 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 	}
 
 	size = JCALL1(GetArrayLength, jenv, $input);
-	shogun::SGVector<char>* strings=SG_MALLOC(shogun::SGVector<char>, size);
+	std::vector<shogun::SGVector<char>> strings;
+	strings.reserve(size);
 
 	for (i = 0; i < size; i++) {
 		jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
@@ -748,32 +747,29 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 		max_len = shogun::CMath::max(len, max_len);
 		const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
 
-		strings[i].vlen = len;
+		strings.emplace_back(len);
+		sg_memcpy(strings.back().vector, str, len);
 
-		if (len > 0) {
-			strings[i].vector = SG_MALLOC(char, len);
-			sg_memcpy(strings[i].vector, str, len);
-		}
 		JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
 	}
 
-	SGStringList<char> sl;
-	sl.strings = strings;
-	sl.num_strings = size;
-	sl.max_string_length = max_len;
-	$1 = sl;
+	$1 = new std::vector<shogun::SGVector<char>>(std::move(strings));
 }
 
-%typemap(out) shogun::SGStringList<char> {
-	shogun::SGVector<char>* str = $1.strings;
-	int32_t i, j, num = $1.num_strings;
+%typemap(freearg) std::vector<shogun::SGVector<char>>& {
+    delete $1;
+}
+
+%typemap(out) std::vector<shogun::SGVector<char>> {
+	std::vector<shogun::SGVector<char>>& str = $1;
+	int32_t num = str.size();
 	jclass cls;
 	jobjectArray res;
 
 	cls = JCALL1(FindClass, jenv, "java/lang/String");
 	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
 
-	for (i = 0; i < num; i++) {
+	for (int32_t i = 0; i < num; i++) {
 		jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].vector);
 		JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
 		JCALL1(DeleteLocalRef, jenv, jstr);
@@ -781,7 +777,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 	$result = res;
 }
 
-%typemap(javain) shogun::SGStringList<char> "$javainput"
-%typemap(javaout) shogun::SGStringList<char> {
+%typemap(javain) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& "$javainput"
+%typemap(javaout) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& {
 	return $jnicall;
 }

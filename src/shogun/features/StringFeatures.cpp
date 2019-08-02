@@ -6,7 +6,6 @@
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/fs/Path.h>
 #include <shogun/io/ShogunErrc.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/preprocessor/StringPreprocessor.h>
@@ -330,7 +329,7 @@ template<class ST> int32_t CStringFeatures<ST>::get_vector_length(int32_t vec_nu
 	return len;
 }
 
-template<class ST> int32_t CStringFeatures<ST>::get_max_vector_length()
+template<class ST> int32_t CStringFeatures<ST>::get_max_vector_length() const
 {
 	int32_t max_string_length=0;
 	index_t num_str=get_num_vectors();
@@ -883,10 +882,13 @@ template<class ST> bool CStringFeatures<ST>::append_features(const std::vector<S
 
 template<class ST> std::vector<SGVector<ST>>& CStringFeatures<ST>::get_string_list()
 {
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("get features() is not possible on subset")
+
 	return features;
 }
 
-template<class ST> const std::vector<SGVector<ST>>& CStringFeatures<ST>::get_features() const
+template<class ST> std::vector<SGVector<ST>> CStringFeatures<ST>::get_string_list() const
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("get features() is not possible on subset")
@@ -1551,9 +1553,10 @@ template<class ST> void CStringFeatures<ST>::init()
 		&preprocess_on_get, "preprocess_on_get", "Preprocess on-the-fly?");
 
 	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
+	watch_param("string_list", &features);
 	watch_param("mask_table", &symbol_mask_table, &symbol_mask_table_len);
 	watch_method("num_vectors", &CStringFeatures::get_num_vectors);
-	watch_method("string_list", &CStringFeatures::get_string_list);
+	watch_method("max_string_length", &CStringFeatures::get_max_vector_length);
 }
 
 /** get feature type the char feature can deal with

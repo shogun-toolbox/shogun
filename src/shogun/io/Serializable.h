@@ -36,7 +36,7 @@
 #define SHOGUN_SERIALIZABLE_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/SGStringList.h>
+#include <shogun/lib/type_case.h>
 
 namespace shogun
 {
@@ -127,31 +127,62 @@ public:
 	virtual const char* get_name() const { return "MatrixSerializable"; }
 };
 
-// FIXME: there is no SG_ADD for SGStringList so need to do that manually.
-// can be dropped once SG_ADD works with SGStringList
+// FIXME: there is no SG_ADD for std::vector so need to do that manually.
+// can be dropped once SG_ADD works with std::vector
 // Note: cannot inherit from CSerializable as need to overload/change init()
-template<class T> class CStringListSerializable: public CSGObject
+template<class T> class CStdVectorSerializable: public CSGObject
 {
 public:
-	CStringListSerializable() : CSGObject() { init(); }
-	CStringListSerializable(SGStringList<T> value, const char* value_name="") : CSGObject()
+	CStdVectorSerializable() : CSGObject() { init(); }
+	CStdVectorSerializable(const std::vector<T>& value, const char* value_name="") 
+		: CSGObject(), m_name(value_name)
 	{
 		init();
 		m_value = value;
 	}
-	virtual ~CStringListSerializable() {}
-	virtual const char* get_name() const { return "StringListSerializable"; }
+	virtual ~CStdVectorSerializable() {}
+	virtual const char* get_name() const { return "StdVectorSerializable"; }
 
 protected:
-	virtual void init()
+	void init()
 	{
-		set_generic<T>();
-		m_value = SGStringList<T>();
-		m_parameters->add_vector(&m_value.strings, &m_value.num_strings, "value",
-				"Serialized value");
+		if constexpr (type_internal::is_sg_primitive<T>::value)
+			set_generic<T>();
+		// FIXME(?): std::vector<bool> is not a container
+		// doesn't play well with the parameter framework
+		if constexpr (!std::is_same<T, bool>::value)
+			watch_param("value", &m_value);
+		else
+			SG_WARNING("std::vector<bool> is not currently serializable. "
+					   "Use SGVector<bool> instead.");
+		watch_param("name", &m_name);
 	}
 
-	SGStringList<T> m_value;
+	std::vector<T> m_value;
+	std::string m_name;
 };
+
+template<class T> class CVectorListSerializable: public CStdVectorSerializable<SGVector<T>>
+{
+public:
+	CVectorListSerializable(const std::vector<SGVector<T>>& value, const char* value_name="") 
+		: CStdVectorSerializable<SGVector<T>>(value, value_name)
+	{
+		init();
+	}
+	CVectorListSerializable() : CStdVectorSerializable<SGVector<T>>()
+	{
+		init(); 
+	}
+
+	virtual const char* get_name() const { return "VectorListSerializable"; }
+
+protected:
+	void init()
+	{
+		CSGObject::set_generic<T>();
+	}
+};
+
 };
 #endif // SHOGUN_SERIALIZABLE_H_

@@ -262,7 +262,7 @@ TYPEMAP_SGMATRIX(float64_t)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, TYPECODE)
 
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<SGTYPE> {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& {
     if(!lua_istable(L, $input)) {
         luaL_typerror(L, $input, "table");
         $1 = 0;
@@ -278,7 +278,8 @@ TYPEMAP_SGMATRIX(float64_t)
     }
 }
 
-%typemap(in) shogun::SGStringList<SGTYPE> {
+%typemap(in) std::vector<shogun::SGVector<SGTYPE>>& {
+    $1 = nullptr;
     int32_t size = 0;
     int32_t i;
     int32_t len, max_len = 0;
@@ -288,7 +289,8 @@ TYPEMAP_SGMATRIX(float64_t)
     }
 
     size = lua_rawlen(L, ($input));
-    shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, size);
+    std::vector<shogun::SGVector<SGTYPE>> strings;
+    strings.reserve(size);
 
     for (i = 0; i < size; i++) {
         lua_rawgeti(L, $input, i + 1);
@@ -297,13 +299,10 @@ TYPEMAP_SGMATRIX(float64_t)
             const char *str = lua_tolstring(L, -1, (size_t *)&len);
             max_len = shogun::CMath::max(len, max_len);
 
-            strings[i].vlen = len;
-
-            if (len > 0) {
-                strings[i].vector = SG_MALLOC(SGTYPE, len+1);
-                sg_memcpy(strings[i].vector, str, len);
-                strings[i].vector[len]='\0';
-            }
+            strings.emplace_back(len + 1);
+            strings.back().vlen = len;
+            sg_memcpy(strings.back().vector, str, len);
+            strings.back().vector[len]='\0';
         }
         else {
             if (!lua_istable(L, -1)) {
@@ -313,28 +312,21 @@ TYPEMAP_SGMATRIX(float64_t)
             len = lua_rawlen(L, (-1));
             max_len = shogun::CMath::max(len, max_len);
 
-            strings[i].vlen=len;
-            strings[i].vector=NULL;
-
-            if (len > 0) {
-                strings[i].vector = SG_MALLOC(SGTYPE, len);
-                sg_memcpy(strings[i].vector, arr, len * sizeof(SGTYPE));
-            }
-
+            strings.emplace_back(len);
+            sg_memcpy(strings.back().vector, arr, len * sizeof(SGTYPE));
         }
         lua_pop(L,1);
     }
-
-    SGStringList<SGTYPE> sl;
-    sl.strings = strings;
-    sl.num_strings = size;
-    sl.max_string_length = max_len;
-    $1 = sl;
+    $1 = new std::vector<shogun::SGVector<SGTYPE>>(std::move(strings));
 }
 
-%typemap(out) shogun::SGStringList<SGTYPE> {
-    shogun::SGVector<SGTYPE>* str = $1.strings;
-    int32_t i, j, num = $1.num_strings;
+%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
+    delete $1;
+}
+
+%typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
+    std::vector<shogun::SGVector<SGTYPE>>& str = $1;
+    int32_t i, j, num = str.size();
 
     lua_newtable(L);
 

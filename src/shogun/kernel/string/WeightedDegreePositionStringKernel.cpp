@@ -196,6 +196,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 
 	int32_t len=sf_l->get_max_vector_length();
+	SG_WARNING("%d, %d\n", sf_l->get_max_vector_length(), sf_r->get_max_vector_length());
 	if (lhs_changed && !sf_l->have_same_length(len))
 		SG_ERROR("All strings in WD kernel must have same length (lhs wrong)!\n")
 

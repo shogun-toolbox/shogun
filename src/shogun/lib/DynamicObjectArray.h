@@ -206,9 +206,9 @@ class CDynamicObjectArray : public CSGObject
 		}
 
 		template <typename T>
-		inline bool append_element(SGStringList<T> e, const char* name="")
+		inline bool append_element(const std::vector<SGVector<T>>& e, const char* name="")
 		{
-			auto serialized_element = new CStringListSerializable<T>(e, name);
+			auto serialized_element = new CVectorListSerializable<T>(e, name);
 			return append_element(serialized_element);
 		}
 

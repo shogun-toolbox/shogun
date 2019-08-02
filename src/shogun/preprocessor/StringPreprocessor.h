@@ -11,7 +11,6 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/common.h>
 #include <shogun/preprocessor/Preprocessor.h>
 

@@ -176,11 +176,12 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") shogun::SGStringList<SGTYPE> %{int rows_$1, int cols_$1, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<SGTYPE> %{CSHARPTYPE[,]%}
-%typemap(cstype) shogun::SGStringList<SGTYPE> %{CSHARPTYPE[,]%}
+%typemap(ctype, out="CTYPE*") std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& %{int rows_$1, int cols_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& %{CSHARPTYPE[,]%}
+%typemap(cstype) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& %{CSHARPTYPE[,]%}
 
-%typemap(in) shogun::SGStringList<SGTYPE> {
+%typemap(in) std::vector<shogun::SGVector<SGTYPE>>& {
+	$1 = nullptr;
 	int32_t i;
 	int32_t len, max_len = 0;
 	CTYPE * array = $input;
@@ -190,33 +191,31 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 		return $null;
 	}
 
-	shogun::SGVector<SGTYPE>* strings=SG_MALLOC(shogun::SGVector<SGTYPE>, rows_$1);
+	std::vector<shogun::SGVector<SGTYPE>> strings;
+	strings.reserve(rows_$1);
 
 	for (i = 0; i < rows_$1; i++) {
 		len = cols_$1;
-		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].vlen = len;
+		strings.emplace_back(len);
+		sg_memcpy(strings.back().vector, array, len * sizeof(SGTYPE));
 
-		if (len >0) {
-			strings[i].vector = SG_MALLOC(SGTYPE, len);
-			sg_memcpy(strings[i].vector, array, len * sizeof(SGTYPE));
-		}
 		array = array + len;
 	}
 
-	SGStringList<SGTYPE> sl;
-	sl.strings=strings;
-	sl.num_strings=rows_$1;
-	sl.max_string_length=max_len;
-	$1 = sl;
+	$1 = new std::vector<shogun::SGVector<SGTYPE>>(std::move(strings));
 }
 
-%typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGVector<SGTYPE>* str = $1.strings;
-	int32_t i, j;
-	int32_t rows = $1.num_strings;
-	int32_t cols = str[0].vlen;
+%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
+    delete $1;
+}
+
+%typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
+	std::vector<shogun::SGVector<SGTYPE>>& strings = $1;
+	int32_t rows = strings.size();
+	int32_t cols = 0;
+	for(auto& str : strings)
+		cols = std::max(cols, str.vlen);
 	int32_t len = rows * cols;
 
 	CTYPE *res = SG_MALLOC(CTYPE, len + 2);
@@ -225,15 +224,15 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 	res = res + 2;
 
-	for (i = 0; i < rows; i++) {
-		sg_memcpy(res, str[i].vector, str[i].vlen * sizeof(SGTYPE));
+	for (auto& str : strings) {
+		sg_memcpy(res, str.vector, str.vlen * sizeof(SGTYPE));
 		res = res + cols;
 	}
 	$result = res;
 }
 
-%typemap(csin) shogun::SGStringList<SGTYPE> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
-%typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<SGTYPE> {
+%typemap(csin) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
+%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& {
 	IntPtr ptr = $imcall;$excode
 	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
 	Marshal.Copy(ptr, ranks, 0, 2);
@@ -269,12 +268,13 @@ TYPEMAP_STRINGFEATURES(long long, long long, long)
 TYPEMAP_STRINGFEATURES(float32_t, float, float)
 TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
-/* input/output typemap for SGStringList<char> */
-%typemap(ctype, out="char **") shogun::SGStringList<char> %{int size_$1, char **%}
-%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<char> %{string []%}
-%typemap(cstype) shogun::SGStringList<char> %{string []%}
+/* input/output typemap for std::vector<shogun::SGVector<SGTYPE>><char> */
+%typemap(ctype, out="char **") std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& %{int size_$1, char **%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& %{string []%}
+%typemap(cstype) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& %{string []%}
 
-%typemap(in) shogun::SGStringList<char> {
+%typemap(in) std::vector<shogun::SGVector<char>>& {
+	$1 = nullptr;
 	int32_t i;
 	int32_t len, max_len = 0;
 	char * str;
@@ -284,50 +284,48 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 		return $null;
 	}
 
-	shogun::SGVector<char>* strings=SG_MALLOC(shogun::SGVector<char>, size_$1);
+	std::vector<shogun::SGVector<char>> strings;
+	strings.reserve(size_$1);
 
 	for (i = 0; i < size_$1; i++) {
 		str = $input[i];
 		len = strlen(str);
-		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].vlen = len;
+		strings.emplace_back(len);
 
-		if (len > 0) {
-			strings[i].vector = SG_MALLOC(char, len);
-			sg_memcpy(strings[i].vector, str, len);
-		}
+		sg_memcpy(strings.back().vector, str, len);
 	}
 
-	SGStringList<char> sl;
-	sl.strings = strings;
-	sl.num_strings = size_$1;
-	sl.max_string_length = max_len;
-	$1 = sl;
+	$1 = new std::vector<shogun::SGVector<char>>(std::move(strings));
 }
 
-%typemap(out) shogun::SGStringList<char> {
-	shogun::SGVector<char>* str = $1.strings;
-	int32_t i, j;
-	int32_t size = $1.num_strings;
-	int32_t max_size = 32;
+%typemap(freearg) std::vector<shogun::SGVector<char>>& {
+    delete $1;
+}
+
+%typemap(out) std::vector<shogun::SGVector<char>> {
+	std::vector<shogun::SGVector<char>>& strings = $1;
+	int32_t size = strings.size();
+	int32_t max_size = 0;
+	for(auto& str : strings)
+		max_size = std::max(max_size, str.vlen);
 
 	char ** res = SG_MALLOC(char*, size + 1);
 	res[0] = SG_MALLOC(char, max_size);
 	sprintf(res[0], "%d", size);
-
-	for (i = 0; i < size; i++) {
-		res[i + 1] = SG_MALLOC(char, str[i].vlen + 1);
-		sg_memcpy(res[i + 1], str[i].vector, str[i].vlen * sizeof(char));
+	
+	for (int i = 0; i < size; i++) {
+		res[i + 1] = SG_MALLOC(char, strings[i].vlen + 1);
+		sg_memcpy(res[i + 1], strings[i].vector, strings[i].vlen * sizeof(char));
 		
 		// null terminate string as C#'s Marshal.PtrToStringAnsi expects that
-		res[i+1][str[i].vlen] = '\0';
+		res[i+1][strings[i].vlen] = '\0';
 	}
 	$result = res;
 }
 
-%typemap(csin) shogun::SGStringList<char> "$csinput.Length, $csinput"
-%typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<char> {
+%typemap(csin) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& "$csinput.Length, $csinput"
+%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& {
 	IntPtr ptr = $imcall;$excode
 
 	IntPtr[] ranks = new IntPtr[1];

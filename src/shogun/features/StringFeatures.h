@@ -262,7 +262,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return maximum vector/string length
 		 */
-		virtual int32_t get_max_vector_length();
+		virtual int32_t get_max_vector_length() const;
 
 		/** @return number of vectors, possibly of subset */
 		virtual int32_t get_num_vectors() const;
@@ -415,20 +415,17 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool append_features(const std::vector<SGVector<ST>>& p_features);
 
+		/** returns a copy of the string_list vector (swig friendly)
+		 * @return string_list
+		 */
+		std::vector<SGVector<ST>> get_string_list() const;
+
+#ifndef SWIG
 		/** get_string_list
 		 * @return string_list
 		 */
-        std::vector<SGVector<ST>>& get_string_list();
-
-		/** get_features
-		 *
-		 * not possible with subset
-		 *
-		 * @param num_str number of strings (returned)
-		 * @param max_str_len maximal string length (returned)
-		 * @return string features
-		 */
-		virtual const std::vector<SGVector<ST>>& get_features() const;
+		std::vector<SGVector<ST>>& get_string_list();
+#endif // SWIG
 
 		/** copy_features
 		 *
