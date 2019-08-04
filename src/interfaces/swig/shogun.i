@@ -209,7 +209,7 @@ namespace shogun
 			// vector with correct inner type
 			if ($self->has(tag_vec_X))
 			{
-				SGVector<X> vec(mat.data(), mat.size(), false);
+				SGVector<X> vec(mat);
 				$self->put(tag_vec_X, vec);
 				return;
 			}
