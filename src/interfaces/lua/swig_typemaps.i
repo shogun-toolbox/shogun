@@ -262,7 +262,7 @@ TYPEMAP_SGMATRIX(float64_t)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, TYPECODE)
 
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<SGTYPE>> {
     if(!lua_istable(L, $input)) {
         luaL_typerror(L, $input, "table");
         $1 = 0;
@@ -278,8 +278,8 @@ TYPEMAP_SGMATRIX(float64_t)
     }
 }
 
-%typemap(in) std::vector<shogun::SGVector<SGTYPE>>& {
-    $1 = nullptr;
+%typemap(in) std::vector<shogun::SGVector<SGTYPE>> {
+    auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<SGTYPE>>>($1);
     int32_t size = 0;
     int32_t i;
     int32_t len, max_len = 0;
@@ -289,7 +289,6 @@ TYPEMAP_SGMATRIX(float64_t)
     }
 
     size = lua_rawlen(L, ($input));
-    std::vector<shogun::SGVector<SGTYPE>> strings;
     strings.reserve(size);
 
     for (i = 0; i < size; i++) {
@@ -317,15 +316,14 @@ TYPEMAP_SGMATRIX(float64_t)
         }
         lua_pop(L,1);
     }
-    $1 = new std::vector<shogun::SGVector<SGTYPE>>(std::move(strings));
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
-    delete $1;
+%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>> {
+    typemap_utils::free_if_pointer($1);
 }
 
 %typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
-    std::vector<shogun::SGVector<SGTYPE>>& str = $1;
+    auto& str = typemap_utils::cast_deref<std::vector<shogun::SGVector<SGTYPE>>>($1);
     int32_t i, j, num = str.size();
 
     lua_newtable(L);
@@ -349,6 +347,8 @@ TYPEMAP_SGMATRIX(float64_t)
     }
     SWIG_arg++;
 }
+
+%apply std::vector<shogun::SGVector<SGTYPE>> { std::vector<shogun::SGVector<SGTYPE>>& }
 
 %enddef
 

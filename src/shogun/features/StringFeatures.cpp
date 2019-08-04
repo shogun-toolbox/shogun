@@ -103,8 +103,7 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 	*/
 
 	features.clear();
-	SG_FREE(symbol_mask_table);
-	symbol_mask_table=NULL;
+	symbol_mask_table = SGVector<ST>();
 
 	/* start with a fresh alphabet, but instead of emptying the histogram
 	 * create a new object (to leave the alphabet object alone if it is used
@@ -545,7 +544,8 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 	alphabet=new CAlphabet(DNA);
 	num_symbols=alphabet->get_num_symbols();
 
-	std::vector<SGVector<ST>> strings(num);
+	std::vector<SGVector<ST>> strings;
+	strings.reserve(num);
 	offs=0;
 
 	for (i=0;i<num; i++)
@@ -573,9 +573,9 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 				}
 
 				len=fasta_len-spanned_lines;
-				strings[i] = SGVector<ST>(len);
+				strings.emplace_back(len);
 
-				ST* str=strings[i].vector;
+				ST* str=strings.back().vector;
 				int32_t idx=0;
 				SG_DEBUG("'%.*s', len=%d, spanned_lines=%d\n", (int32_t) id_len, id, (int32_t) len, (int32_t) spanned_lines)
 
@@ -722,12 +722,12 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 	else
 	{
 		int32_t num=0;
-		int32_t max_len=-1;
 		int64_t max_buffer_size = -1;
 
 		//usually n==num_vec, but it might not in race conditions
 		//(file perms modified, file erased)
-		std::vector<SGVector<ST>> strings(children.size());
+		std::vector<SGVector<ST>> strings;
+		strings.reserve(children.size());
 		std::string buffer;
 		for (auto v: children)
 		{
@@ -752,9 +752,8 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 						SG_ERROR("failed to read file\n")
 
 					int64_t sg_string_len = filesize/(int64_t)sizeof(ST);
-					strings[num] = SGVector<ST>(sg_string_len);
+					strings.emplace_back(sg_string_len);
 					sg_memcpy(const_cast<char*>(result.data()), strings[num].vector, filesize);
-					max_len=std::max(max_len, strings[num].vlen);
 					++num;
 				}
 			}
@@ -765,7 +764,6 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 		if (num>0)
 		{
 			return set_features(strings);
-			//TODO remove if copying in set_features is dropped
 		}
 
 	}
@@ -1254,9 +1252,7 @@ template<class ST> void CStringFeatures<ST>::compute_symbol_mask_table(int64_t m
 	if (m_subset_stack->has_subsets())
 		SG_NOTIMPLEMENTED
 
-	SG_FREE(symbol_mask_table);
-	symbol_mask_table=SG_MALLOC(ST, 256);
-	symbol_mask_table_len=256;
+	symbol_mask_table = SGVector<ST>(256);
 
 	uint64_t mask=0;
 	for (int32_t i=0; i< (int64_t) max_val; i++)
@@ -1530,8 +1526,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	order=0;
 	preprocess_on_get=false;
 	feature_cache=NULL;
-	symbol_mask_table=NULL;
-	symbol_mask_table_len=0;
+	symbol_mask_table=SGVector<ST>();
 	num_symbols=0.0;
 	original_num_symbols=0;
 
@@ -1551,10 +1546,11 @@ template<class ST> void CStringFeatures<ST>::init()
 		&order, "order", "Order used in higher order mapping.");
 	SG_ADD(
 		&preprocess_on_get, "preprocess_on_get", "Preprocess on-the-fly?");
+	SG_ADD(
+		&symbol_mask_table, "mask_table",
+		"Symbol mask table - using in higher order mapping");
 
-	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
 	watch_param("string_list", &features);
-	watch_param("mask_table", &symbol_mask_table, &symbol_mask_table_len);
 	watch_method("num_vectors", &CStringFeatures::get_num_vectors);
 	watch_method("max_string_length", &CStringFeatures::get_max_vector_length);
 }
@@ -1846,8 +1842,7 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 
 	int32_t num_vectors=sf->get_num_vectors();
 	ASSERT(num_vectors>0)
-	features.clear();
-	features.resize(num_vectors);
+	features.reserve(num_vectors);
 
 	SG_DEBUG("%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
 			alpha->get_num_symbols_in_histogram());
@@ -1859,11 +1854,10 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 		CT* c=sf->get_feature_vector(i, len, vfree);
 		ASSERT(!vfree) // won't work when preprocessors are attached
 
-		features[i] = SGVector<ST>(len);
+		features.emplace_back(len);
 
-		ST* str=features[i].vector;
 		for (int32_t j=0; j<len; j++)
-			str[j]=(ST) alpha->remap_to_bin(c[j]);
+			features.back()[j]=(ST) alpha->remap_to_bin(c[j]);
 	}
 
 	original_num_symbols=alpha->get_num_symbols();

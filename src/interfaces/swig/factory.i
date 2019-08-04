@@ -16,7 +16,7 @@
 %newobject shogun::differentiable(const std::string& name);
 %newobject shogun::gp_inference(const std::string& name);
 %newobject shogun::loss(const std::string& name);
-%newobject shogun::string_features(CFile*, EAlphabet alpha = DNA, EPrimitiveType primitive_type = PT_CHAR);
+%newobject shogun::string_features;
 %newobject shogun::transformer(const std::string&);
 %newobject shogun::csv_file(std::string fname, char rw);
 %newobject shogun::libsvm_file(std::string fname, char rw);

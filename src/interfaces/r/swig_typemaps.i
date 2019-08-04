@@ -150,11 +150,12 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
-%typemap(in) std::vector<shogun::SGVector<sg_type>>&
+%typemap(in) std::vector<shogun::SGVector<sg_type>>
 {
+    auto& strs = typemap_utils::initialize<std::vector<shogun::SGVector<sg_type>>>($1);
+
     int32_t max_len=0;
     int32_t num_strings=0;
-    std::vector<shogun::SGVector<sg_type>> strs;
 
     if ($input == R_NilValue || TYPEOF($input) != STRSXP)
     {
@@ -183,13 +184,13 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
             /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
         }
     }
-
-    $1 = new std::vector<shogun::SGVector<sg_type>>(std::move(strs));
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<sg_type>>& {
-    delete $1;
+%typemap(freearg) std::vector<shogun::SGVector<sg_type>> {
+    typemap_utils::free_if_pointer($1);
 }
+
+%apply std::vector<shogun::SGVector<sg_type>> { std::vector<shogun::SGVector<sg_type>>& }
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(STRSXP, char, CHAR, "Char")

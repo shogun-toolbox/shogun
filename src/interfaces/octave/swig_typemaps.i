@@ -261,7 +261,7 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<sg_type>>, std::vector<shogun::SGVector<sg_type>>&
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<sg_type>>
 {
     $1=0;
     octave_value arg=$input;
@@ -271,12 +271,13 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
         $1=1;
 }
 
-%typemap(in) std::vector<shogun::SGVector<sg_type>>&
+%typemap(in) std::vector<shogun::SGVector<sg_type>>
 {
+    auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<sg_type>>>($1);
+
     using namespace shogun;
     int32_t max_len=0;
     int32_t num_strings=0;
-    std::vector<shogun::SGVector<sg_type>> strings;
 
     octave_value arg=$input;
     if (arg.is_cell())
@@ -345,12 +346,13 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
                 "???");*/
         SWIG_fail;
     }
-    $1 = new std::vector<shogun::SGVector<sg_type>>(std::move(strings));
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<sg_type>>& {
-    delete $1;
+%typemap(freearg) std::vector<shogun::SGVector<sg_type>> {
+    typemap_utils::free_if_pointer($1);
 }
+
+%apply std::vector<shogun::SGVector<sg_type>> { std::vector<shogun::SGVector<sg_type>>& }
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
@@ -361,9 +363,9 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 #undef TYPEMAP_STRINGFEATURES_IN
 
 /* output typemap for CStringFeatures */
-%typemap(out) std::vector<shogun::SGVector<char>>
+%typemap(out) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>&
 {
-    std::vector<shogun::SGVector<char>>& str = $1;
+    auto& str = typemap_utils::cast_deref<std::vector<shogun::SGVector<char>>>($1);
     int32_t i, num_strings = str.size();
 
     Cell c(num_strings, 1);
@@ -375,9 +377,9 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
     $result = c;
 }
 %define TYPEMAP_STRINGFEATURES_OUT(oct_type, sg_type)
-%typemap(out) std::vector<shogun::SGVector<sg_type>>
+%typemap(out) std::vector<shogun::SGVector<sg_type>>, std::vector<shogun::SGVector<sg_type>>&
 {
-    std::vector<shogun::SGVector<sg_type>>& strings = $1;
+    auto& strings = typemap_utils::cast_deref<std::vector<shogun::SGVector<sg_type>>>($1);
 	int32_t num_strings = strings.size();
 
 	Cell c(num_strings, 1);

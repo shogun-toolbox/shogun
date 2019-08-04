@@ -710,7 +710,7 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type, typecode)
-%typecheck(SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>, std::vector<shogun::SGVector<type>>&
+%typecheck(SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>
 {
   void * s_p = 0;
   int res = SWIG_ConvertPtr($input, &s_p, $&1_descriptor, 0);
@@ -720,19 +720,19 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
     $1 = is_pdl_string($input, typecode);
   }
 }
-%typemap(in) std::vector<shogun::SGVector<type>>&
+%typemap(in) std::vector<shogun::SGVector<type>>
 {
-  $1 = nullptr;
-  std::vector<shogun::SGVector<type>> tmp;
-  if(!string_from_pdl< type >(tmp, $input, typecode)) {
+  auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<type>>>($1);
+  if(!string_from_pdl< type >(strings, $input, typecode)) {
     SWIG_fail;
   }
-  $1 = new std::vector<shogun::SGVector<type>>(std::move(tmp));
 }
 
 %typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
-    delete $1;
+  typemap_utils::free_if_pointer($1);
 }
+
+%apply std::vector<shogun::SGVector<type>> { std::vector<shogun::SGVector<type>>& }
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(bool,          PDL_BOOL)

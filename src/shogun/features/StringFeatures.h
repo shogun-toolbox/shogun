@@ -659,10 +659,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t order;
 
 		/// order used in higher order mapping
-		ST* symbol_mask_table;
-
-		/// order used in higher order mapping
-		int32_t symbol_mask_table_len;
+		SGVector<ST> symbol_mask_table;
 
 		/// preprocess on-the-fly?
 		bool preprocess_on_get;

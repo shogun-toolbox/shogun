@@ -53,8 +53,7 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 template <class ST> void CStringFileFeatures<ST>::cleanup()
 {
 	CStringFeatures<ST>::features.clear();
-	SG_FREE(CStringFeatures<ST>::symbol_mask_table);
-	CStringFeatures<ST>::symbol_mask_table=NULL;
+	CStringFeatures<ST>::symbol_mask_table = SGVector<ST>();
 
 	/* start with a fresh alphabet, but instead of emptying the histogram
 	 * create a new object (to leave the alphabet object alone if it is used

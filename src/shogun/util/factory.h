@@ -135,10 +135,7 @@ namespace shogun
 		{
 		case PT_CHAR:
 		{
-			auto string_feats =
-				new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
-			SG_REF(string_feats);
-			return string_feats;
+			return new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
 			break;
 		}
 		default:
@@ -183,10 +180,12 @@ namespace shogun
 		{
 		case PT_UINT16:
 		{
+			auto* alphabet = string_features->get_alphabet();
 			auto result =
-			    new CStringFeatures<uint16_t>(string_features->get_alphabet());
+			    new CStringFeatures<uint16_t>(alphabet);
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
+			SG_UNREF(alphabet);
 			REQUIRE(success, "Failed to obtain from string char features.\n");
 			return result;
 		}

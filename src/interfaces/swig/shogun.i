@@ -19,6 +19,7 @@
 "The `shogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
 
+
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %module(directors="1", docstring=DOCSTR) shogun
 #else

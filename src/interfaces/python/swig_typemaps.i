@@ -350,7 +350,6 @@ template <class type>
 static bool string_from_strpy(std::vector<SGVector<type>>& strings, PyObject* obj, int typecode)
 {
     PyObject* list=(PyObject*) obj;
-    strings = std::vector<SGVector<type>>();
 
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
@@ -989,73 +988,52 @@ TYPEMAP_OUTND(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_OUTND
 
 /* input typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>, std::vector<shogun::SGVector<type>>&
+%define TYPEMAP_STRINGFEATURES(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>
 {
     $1 = is_pystring_list($input, typecode);
 }
 
-%typemap(in) std::vector<shogun::SGVector<type>>&
+%typemap(in) std::vector<shogun::SGVector<type>>
 {
-    $1 = nullptr;
-    std::vector<shogun::SGVector<type>> tmp;
-    if (! string_from_strpy<type>(tmp, $input, typecode))
+    auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<type>>>($1);
+    if (! string_from_strpy<type>(strings, $input, typecode))
         SWIG_fail;
-    $1 = new std::vector<shogun::SGVector<type>>(std::move(tmp));
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<type>>& {
-    delete $1;
+%typemap(freearg) std::vector<shogun::SGVector<type>> {
+    typemap_utils::free_if_pointer($1);
 }
 
-%enddef
-
-TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL)
-#ifdef PYTHON3 // str -> unicode for python3
-TYPEMAP_STRINGFEATURES_IN(char,          NPY_UNICODE)
-#else
-TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING)
-#endif
-TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8)
-TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
-TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16)
-TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT32)
-TYPEMAP_STRINGFEATURES_IN(uint32_t,      NPY_UINT32)
-TYPEMAP_STRINGFEATURES_IN(int64_t,       NPY_INT64)
-TYPEMAP_STRINGFEATURES_IN(uint64_t,      NPY_UINT64)
-TYPEMAP_STRINGFEATURES_IN(float32_t,     NPY_FLOAT32)
-TYPEMAP_STRINGFEATURES_IN(float64_t,     NPY_FLOAT64)
-TYPEMAP_STRINGFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_STRINGFEATURES_IN
-
-/* output typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
 %typemap(out) std::vector<shogun::SGVector<type>>
 {
-    if (!string_to_strpy<type>($result, $1, typecode))
+    auto& strings = typemap_utils::cast_deref<std::vector<shogun::SGVector<type>>>($1);
+
+    if (!string_to_strpy<type>($result, strings, typecode))
         SWIG_fail;
 }
+
+%apply std::vector<shogun::SGVector<type>> { std::vector<shogun::SGVector<type>>& }
+
 %enddef
 
-TYPEMAP_STRINGFEATURES_OUT(bool,          NPY_BOOL)
+TYPEMAP_STRINGFEATURES(bool,          NPY_BOOL)
 #ifdef PYTHON3 // str -> unicode for python3
-TYPEMAP_STRINGFEATURES_OUT(char,          NPY_UNICODE)
+TYPEMAP_STRINGFEATURES(char,          NPY_UNICODE)
 #else
-TYPEMAP_STRINGFEATURES_OUT(char,          NPY_STRING)
+TYPEMAP_STRINGFEATURES(char,          NPY_STRING)
 #endif
-TYPEMAP_STRINGFEATURES_OUT(uint8_t,       NPY_UINT8)
-TYPEMAP_STRINGFEATURES_OUT(int16_t,       NPY_INT16)
-TYPEMAP_STRINGFEATURES_OUT(uint16_t,      NPY_UINT16)
-TYPEMAP_STRINGFEATURES_OUT(int32_t,       NPY_INT32)
-TYPEMAP_STRINGFEATURES_OUT(uint32_t,      NPY_UINT32)
-TYPEMAP_STRINGFEATURES_OUT(int64_t,       NPY_INT64)
-TYPEMAP_STRINGFEATURES_OUT(uint64_t,      NPY_UINT64)
-TYPEMAP_STRINGFEATURES_OUT(float32_t,     NPY_FLOAT32)
-TYPEMAP_STRINGFEATURES_OUT(float64_t,     NPY_FLOAT64)
-TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
+TYPEMAP_STRINGFEATURES(uint8_t,       NPY_UINT8)
+TYPEMAP_STRINGFEATURES(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES(uint16_t,      NPY_UINT16)
+TYPEMAP_STRINGFEATURES(int32_t,       NPY_INT32)
+TYPEMAP_STRINGFEATURES(uint32_t,      NPY_UINT32)
+TYPEMAP_STRINGFEATURES(int64_t,       NPY_INT64)
+TYPEMAP_STRINGFEATURES(uint64_t,      NPY_UINT64)
+TYPEMAP_STRINGFEATURES(float32_t,     NPY_FLOAT32)
+TYPEMAP_STRINGFEATURES(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_STRINGFEATURES(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_STRINGFEATURES_ARGOUT
 
 

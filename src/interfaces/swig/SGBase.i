@@ -322,6 +322,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %include <shogun/lib/common.h>
 %include <shogun/lib/exception/ShogunException.h>
 
+%{
+#include "typemaps_utilities.i"
+%}
 %include "swig_typemaps.i"
 
 %include "std_vector.i"

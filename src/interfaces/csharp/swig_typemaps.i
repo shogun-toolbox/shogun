@@ -92,7 +92,6 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 %typemap(in) shogun::SGMatrix<SGTYPE>
 {
-	int32_t i,j;
 	SGTYPE *array;
 
 	if (!$input) {
@@ -106,7 +105,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 		return $null;
 	}
 
-	for (i = 0; i < rows_$1 * cols_$1; i++) {
+	for (int32_t i = 0; i < rows_$1 * cols_$1; i++) {
 		array[i] = (SGTYPE)$input[i];
 	}
 
@@ -115,7 +114,6 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 %typemap(out) shogun::SGMatrix<SGTYPE>
 {
-	int32_t i;
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
 	int32_t len = rows * cols;
@@ -127,7 +125,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 	CTYPE *dst = (CTYPE *)(res + 2 * sizeof(int32_t));
 
-	for (i = 0; i < len; i++) {
+	for (int32_t i = 0; i < len; i++) {
 		dst[i] = (CTYPE) $1.matrix[i];
 	}
 
@@ -176,12 +174,12 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& %{int rows_$1, int cols_$1, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& %{CSHARPTYPE[,]%}
-%typemap(cstype) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& %{CSHARPTYPE[,]%}
+%typemap(ctype, out="CTYPE*") std::vector<shogun::SGVector<SGTYPE>> %{int rows_$1, int cols_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[,]%}
+%typemap(cstype) std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[,]%}
 
-%typemap(in) std::vector<shogun::SGVector<SGTYPE>>& {
-	$1 = nullptr;
+%typemap(in) std::vector<shogun::SGVector<SGTYPE>> {
+	auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<SGTYPE>>>($1);
 	int32_t i;
 	int32_t len, max_len = 0;
 	CTYPE * array = $input;
@@ -191,7 +189,6 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 		return $null;
 	}
 
-	std::vector<shogun::SGVector<SGTYPE>> strings;
 	strings.reserve(rows_$1);
 
 	for (i = 0; i < rows_$1; i++) {
@@ -202,16 +199,14 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 		array = array + len;
 	}
-
-	$1 = new std::vector<shogun::SGVector<SGTYPE>>(std::move(strings));
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
-    delete $1;
+%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>> {
+	typemap_utils::free_if_pointer($1);
 }
 
 %typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
-	std::vector<shogun::SGVector<SGTYPE>>& strings = $1;
+	auto& strings = typemap_utils::cast_deref<std::vector<shogun::SGVector<SGTYPE>>>($1);
 	int32_t rows = strings.size();
 	int32_t cols = 0;
 	for(auto& str : strings)
@@ -231,8 +226,8 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	$result = res;
 }
 
-%typemap(csin) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
-%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<SGTYPE>>, std::vector<shogun::SGVector<SGTYPE>>& {
+%typemap(csin) std::vector<shogun::SGVector<SGTYPE>> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
+%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<SGTYPE>> {
 	IntPtr ptr = $imcall;$excode
 	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
 	Marshal.Copy(ptr, ranks, 0, 2);
@@ -254,6 +249,8 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	return result;
 }
 
+%apply std::vector<shogun::SGVector<SGTYPE>> { std::vector<shogun::SGVector<SGTYPE>>& }
+
 %enddef
 
 //TYPEMAP_STRINGFEATURES(char, signed char, byte)
@@ -269,12 +266,12 @@ TYPEMAP_STRINGFEATURES(float32_t, float, float)
 TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 /* input/output typemap for std::vector<shogun::SGVector<SGTYPE>><char> */
-%typemap(ctype, out="char **") std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& %{int size_$1, char **%}
-%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& %{string []%}
-%typemap(cstype) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& %{string []%}
+%typemap(ctype, out="char **") std::vector<shogun::SGVector<char>> %{int size_$1, char **%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<char>> %{string []%}
+%typemap(cstype) std::vector<shogun::SGVector<char>> %{string []%}
 
-%typemap(in) std::vector<shogun::SGVector<char>>& {
-	$1 = nullptr;
+%typemap(in) std::vector<shogun::SGVector<char>> {
+	auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<char>>>($1);
 	int32_t i;
 	int32_t len, max_len = 0;
 	char * str;
@@ -284,7 +281,6 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 		return $null;
 	}
 
-	std::vector<shogun::SGVector<char>> strings;
 	strings.reserve(size_$1);
 
 	for (i = 0; i < size_$1; i++) {
@@ -295,16 +291,14 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 		sg_memcpy(strings.back().vector, str, len);
 	}
-
-	$1 = new std::vector<shogun::SGVector<char>>(std::move(strings));
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<char>>& {
-    delete $1;
+%typemap(freearg) std::vector<shogun::SGVector<char>> {
+	typemap_utils::free_if_pointer($1);
 }
 
 %typemap(out) std::vector<shogun::SGVector<char>> {
-	std::vector<shogun::SGVector<char>>& strings = $1;
+	auto& strings = typemap_utils::cast_deref<std::vector<shogun::SGVector<char>>>($1);
 	int32_t size = strings.size();
 	int32_t max_size = 0;
 	for(auto& str : strings)
@@ -324,8 +318,8 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	$result = res;
 }
 
-%typemap(csin) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& "$csinput.Length, $csinput"
-%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>& {
+%typemap(csin) std::vector<shogun::SGVector<char>> "$csinput.Length, $csinput"
+%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<char>> {
 	IntPtr ptr = $imcall;$excode
 
 	IntPtr[] ranks = new IntPtr[1];
@@ -345,3 +339,5 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	Marshal.FreeCoTaskMem(ptr);
 	return result;
 }
+
+%apply std::vector<shogun::SGVector<char>> { std::vector<shogun::SGVector<char>>& }
