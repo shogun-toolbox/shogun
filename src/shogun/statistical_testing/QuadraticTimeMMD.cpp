@@ -443,7 +443,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 
 	index_t m=owner.get_num_samples_p();
 	index_t n=owner.get_num_samples_q();
-	REQUIRE(m==n, "Number of samples from p (%d) and q (%d) must be equal.\n", n, m)
+	REQUIRE(m==n, "Number of samples from p (%d) and q (%d) must be equal.\n", m, n)
 
 	SGVector<float64_t> result(2);
 	std::fill(result.vector, result.vector+result.vlen, 0);
