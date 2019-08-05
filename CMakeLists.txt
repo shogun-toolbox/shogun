@@ -196,6 +196,12 @@ IF (${ANY_INTERFACE_ENABLED})
 	ENDIF()
 
 	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
+
+	IF(SWIG_VERSION EQUAL 4.0.0 AND USE_SWIG_DIRECTORS)
+		MESSAGE(FATAL_ERROR "Due to a bug, Swig directors are not supported with Swig 4.0.0.\n"
+		                    "Please disable USE_SWIG_DIRECTORS or upgrade Swig.")
+	ENDIF()
+
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
 	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)

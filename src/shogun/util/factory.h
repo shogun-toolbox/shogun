@@ -276,14 +276,14 @@ namespace shogun
 	}
 
 	template <class T>
-	CLabels* labels(SGVector<T> labels)
+	CLabels* labels(SGVector<T> labels_vector)
 	{
 		CDenseLabels* result = nullptr;
 		// try to interpret as all dense label types, from most restrictive to
 		// least restrictive
-		try_labels<CBinaryLabels>(result, labels);
-		try_labels<CMulticlassLabels>(result, labels);
-		try_labels<CRegressionLabels>(result, labels);
+		try_labels<CBinaryLabels>(result, labels_vector);
+		try_labels<CMulticlassLabels>(result, labels_vector);
+		try_labels<CRegressionLabels>(result, labels_vector);
 		REQUIRE(
 		    result, "Cannot interpret given labels as any of dense labels.\n");
 		SG_SINFO("Interpreted labels as %s\n", result->get_name())
