@@ -165,51 +165,9 @@ static int is_pysparse_matrix(PyObject* obj, int typecode)
          ) ? 1 : 0;
 }
 
-static int is_pystring_list(PyObject* obj, int typecode)
-{
-    PyObject* list=(PyObject*) obj;
-
-    int result=0;
-    if (list && PyList_Check(list) && PyList_Size(list)>0)
-    {
-        result=1;
-        int32_t size=PyList_Size(list);
-        for (auto i=0; i<size; ++i)
-        {
-            PyObject *o = PyList_GetItem(list,i);
-
-            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
-            {
-                if (!PyUnicode_Check(o))
-                {
-                    result=0;
-                    break;
-                }
-            }
-            else
-            {
-                if (!::is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
-                {
-                    result=0;
-                    break;
-                }
-            }
-        }
-    }
-
-    return result;
-}
-
-
 template <class type>
 static bool vector_from_numpy(SGVector<type>& sg_vec, PyObject* obj, int typecode)
 {
-    if (!is_pyvector(obj, typecode))
-    {
-        PyErr_SetString(PyExc_TypeError,"not a numpy vector of appropriate type");
-        return false;
-    }
-
     int is_new_object;
     PyArrayObject* array = make_contiguous(obj, &is_new_object, 1,typecode, true);
     if (!array)
@@ -344,120 +302,6 @@ static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecod
 #endif
 
 	return descr!=NULL;
-}
-
-template <class type>
-static bool string_from_strpy(std::vector<SGVector<type>>& strings, PyObject* obj, int typecode)
-{
-    PyObject* list=(PyObject*) obj;
-
-    /* Check if is a list */
-    if (!list || PyList_Check(list) || PyList_Size(list)==0)
-    {
-        Py_ssize_t size=PyList_Size(list);
-        strings.reserve(size);
-
-        for (auto i=0; i<size; ++i)
-        {
-            PyObject *o = PyList_GetItem(list,i);
-            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
-            {
-                if (PyUnicode_Check(o))
-                {
-                    Py_ssize_t len = -1;
-                    const char* str = PyUnicode_AsUTF8AndSize(o, &len);
-                    if (str == nullptr)
-                    {
-                        PyErr_SetString(PyExc_TypeError, "Error converting string content.");
-                        return false;
-                    }
-
-                    strings.emplace_back(len);
-                    sg_memcpy(strings.back().vector, str, len);
-                }
-                else
-                {
-                    PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
-                    return false;
-                }
-            }
-            else
-            {
-                if (::is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
-                {
-                    int is_new_object=0;
-                    PyArrayObject* array = make_contiguous(o, &is_new_object, 1, typecode);
-                    if (!array)
-                        return false;
-
-                    type* str=(type*) PyArray_DATA(array);
-                    Py_ssize_t len = PyArray_DIM(array,0);
-
-                    strings.emplace_back(len);
-                    sg_memcpy(strings.back().vector, str, len*sizeof(type));
-
-                    if (is_new_object)
-                        Py_DECREF(array);
-                }
-                else
-                {
-                    PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    else
-    {
-        PyErr_SetString(PyExc_TypeError,"not a/empty list");
-        return false;
-    }
-}
-
-template <class type>
-static bool string_to_strpy(PyObject* &obj, std::vector<SGVector<type>>& sg_strings, int typecode)
-{
-    const shogun::SGVector<type>* str=sg_strings.data();
-    auto num=sg_strings.size();
-    PyObject* list = PyList_New(num);
-
-    if (list && str)
-    {
-        for (auto i=0; i<num; ++i)
-        {
-            PyObject* s=NULL;
-
-            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
-            {
-                /* This path is only taking if str[i].vector is a char*. However this cast is
-                   required to build through for non char types. */
-				s=PyUnicode_FromStringAndSize((char*) str[i].vector, str[i].vlen);
-            }
-            else
-            {
-                PyArray_Descr* descr=PyArray_DescrFromType(typecode);
-                type* data = SG_MALLOC(type, str[i].vlen);
-                if (descr && data)
-                {
-                    sg_memcpy(data, str[i].vector, str[i].vlen*sizeof(type));
-                    npy_intp dims = str[i].vlen;
-
-                    s = PyArray_NewFromDescr(&PyArray_Type,
-                            descr, 1, &dims, NULL, (void*) data,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
-                    PyArray_ENABLEFLAGS((PyArrayObject*) s, NPY_ARRAY_OWNDATA);
-                }
-                else
-                    return false;
-            }
-
-            PyList_SetItem(list, i, s);
-        }
-        obj = list;
-        return true;
-    }
-    else
-        return false;
 }
 
 template <class type>
@@ -789,71 +633,143 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 #endif
 
 /* One dimensional input arrays */
-%define TYPEMAP_IN_SGVECTOR(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
+%define TYPEMAP_SGVECTOR(type, typecode)
+
+// used for "in" and "typecheck" typemaps
+%fragment(SWIG_AsVal_frag(shogun::SGVector<type>), "header")
 {
-    $1 = is_pyvector($input, typecode);
+    int SWIG_AsVal_dec(shogun::SGVector<type>)(PyObject* input, shogun::SGVector<type>* val)
+    {
+        // if val is nullptr, it's expected to do typechecking
+        if (!val)
+            return is_pyvector(input, typecode)? SWIG_OK : SWIG_ERROR;
+        else
+            return vector_from_numpy<type>(*val, input, typecode)? SWIG_OK : SWIG_ERROR;
+    }
 }
 
-%typemap(in) shogun::SGVector<type>
+// used for "out" typemap
+%fragment(SWIG_From_frag(shogun::SGVector<type>), "header")
 {
-    if (!vector_from_numpy<type>($1, $input, typecode))
-        SWIG_fail;
+    PyObject* SWIG_From_dec(shogun::SGVector<type>)(const shogun::SGVector<type>& arg)
+    {
+        PyObject* result = nullptr;
+        vector_to_numpy(result, arg, typecode);
+        return result;
+    }
 }
+
+// tell swig about the traits of the type to be used in stl containers
+%fragment(SWIG_Traits_frag(shogun::SGVector<type>), "header",
+          fragment="StdTraits",
+          fragment=SWIG_From_frag(shogun::SGVector<type>),
+          fragment=SWIG_AsVal_frag(shogun::SGVector<type>),
+          fragment=SWIG_From_frag(std::string),
+          fragment=SWIG_AsVal_frag(std::string))
+{
+namespace swig
+{
+    template <>
+    struct traits<shogun::SGVector<type>>
+    {
+        typedef value_category category;
+        static const char* type_name()
+        {
+            return "shogun::SGVector<" #type ">";
+        }
+    };
+
+    template <>
+    struct traits_asval<shogun::SGVector<type>>
+    {
+        typedef shogun::SGVector<type> value_type;
+
+        static int asval(SWIG_Object obj, value_type *val)
+        {
+            if constexpr (!std::is_same<type, char>::value)
+            {
+                return SWIG_AsVal_dec(shogun::SGVector<type>)(obj, val);
+            }
+            else
+            {
+                // treat SGVector<char> as a string
+                std::string str;
+                int result = SWIG_AsVal_dec(std::string)(obj, &str);
+                if (SWIG_IsOK(result) && val)
+                {
+                    const char* cstr = str.c_str();
+                    *val = shogun::SGVector<type>(cstr, cstr + str.length());
+                }
+                return result;
+            }
+        }
+    };
+
+    template <>
+    struct traits_from<shogun::SGVector<type>>
+    {
+        typedef shogun::SGVector<type> value_type;
+
+        static SWIG_Object from(const value_type& val)
+        {
+            if constexpr (!std::is_same<type, char>::value)
+            {
+                return SWIG_From(shogun::SGVector<type>)(val);
+            }
+            else
+            {
+                // treat SGVector<char> as a string
+                std::stringstream ss;
+                ss.write((char *)val.vector, val.vlen);
+                return SWIG_From_dec(std::string)(ss.str());
+            }
+        }
+    };
+}
+}
+
+%value_in_typemap(
+    SWIG_AsVal_dec(shogun::SGVector<type>),
+    SWIG_AsVal_frag(shogun::SGVector<type>),
+    shogun::SGVector<type>);
+
+%value_out_typemap(
+    SWIG_From_dec(shogun::SGVector<type>),
+    SWIG_From_frag(shogun::SGVector<type>),
+    shogun::SGVector<type>);
+
+%value_typecheck_typemap(
+    SWIG_TYPECHECK_POINTER,
+    SWIG_AsVal_dec(shogun::SGVector<type>),
+    SWIG_AsVal_frag(shogun::SGVector<type>),
+    shogun::SGVector<type>);
+
+// vector array
+%template() std::vector<shogun::SGVector<type>>;
+
 %enddef
 
-/* Define concrete examples of the TYPEMAP_IN_SGVECTOR macros */
-TYPEMAP_IN_SGVECTOR(bool,          NPY_BOOL)
+/* Define concrete examples of the TYPEMAP_SGVECTOR macros */
+TYPEMAP_SGVECTOR(bool,          NPY_BOOL)
 #ifdef PYTHON3 // str -> unicode for python3
-TYPEMAP_IN_SGVECTOR(char,          NPY_UNICODE)
+TYPEMAP_SGVECTOR(char,          NPY_UNICODE)
 #else
-TYPEMAP_IN_SGVECTOR(char,          NPY_STRING)
+TYPEMAP_SGVECTOR(char,          NPY_STRING)
 #endif
-TYPEMAP_IN_SGVECTOR(uint8_t,       NPY_UINT8)
-TYPEMAP_IN_SGVECTOR(int16_t,       NPY_INT16)
-TYPEMAP_IN_SGVECTOR(uint16_t,      NPY_UINT16)
-TYPEMAP_IN_SGVECTOR(int32_t,       NPY_INT32)
-TYPEMAP_IN_SGVECTOR(uint32_t,      NPY_UINT32)
-TYPEMAP_IN_SGVECTOR(int64_t,       NPY_INT64)
-TYPEMAP_IN_SGVECTOR(uint64_t,      NPY_UINT64)
-TYPEMAP_IN_SGVECTOR(float32_t,     NPY_FLOAT32)
-TYPEMAP_IN_SGVECTOR(float64_t,     NPY_FLOAT64)
-TYPEMAP_IN_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_IN_SGVECTOR(complex128_t,   NPY_CDOUBLE)
-TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
+TYPEMAP_SGVECTOR(uint8_t,       NPY_UINT8)
+TYPEMAP_SGVECTOR(int16_t,       NPY_INT16)
+TYPEMAP_SGVECTOR(uint16_t,      NPY_UINT16)
+TYPEMAP_SGVECTOR(int32_t,       NPY_INT32)
+TYPEMAP_SGVECTOR(uint32_t,      NPY_UINT32)
+TYPEMAP_SGVECTOR(int64_t,       NPY_INT64)
+TYPEMAP_SGVECTOR(uint64_t,      NPY_UINT64)
+TYPEMAP_SGVECTOR(float32_t,     NPY_FLOAT32)
+TYPEMAP_SGVECTOR(float64_t,     NPY_FLOAT64)
+TYPEMAP_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_SGVECTOR(complex128_t,   NPY_CDOUBLE)
+TYPEMAP_SGVECTOR(PyObject,      NPY_OBJECT)
 
-#undef TYPEMAP_IN_SGVECTOR
-
-/* One dimensional output arrays */
-%define TYPEMAP_OUT_SGVECTOR(type,typecode)
-%typemap(out) shogun::SGVector<type>
-{
-    if (!vector_to_numpy($result, $1, typecode))
-        SWIG_fail;
-}
-%enddef
-
-/* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
-TYPEMAP_OUT_SGVECTOR(bool,          NPY_BOOL)
-#ifdef PYTHON3 // str -> unicode for python3
-TYPEMAP_OUT_SGVECTOR(char,          NPY_UNICODE)
-#else
-TYPEMAP_OUT_SGVECTOR(char,          NPY_STRING)
-#endif
-TYPEMAP_OUT_SGVECTOR(uint8_t,       NPY_UINT8)
-TYPEMAP_OUT_SGVECTOR(int16_t,       NPY_INT16)
-TYPEMAP_OUT_SGVECTOR(uint16_t,      NPY_UINT16)
-TYPEMAP_OUT_SGVECTOR(int32_t,       NPY_INT32)
-TYPEMAP_OUT_SGVECTOR(uint32_t,      NPY_UINT32)
-TYPEMAP_OUT_SGVECTOR(int64_t,       NPY_INT64)
-TYPEMAP_OUT_SGVECTOR(uint64_t,      NPY_UINT64)
-TYPEMAP_OUT_SGVECTOR(float32_t,     NPY_FLOAT32)
-TYPEMAP_OUT_SGVECTOR(float64_t,     NPY_FLOAT64)
-TYPEMAP_OUT_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_OUT_SGVECTOR(complex128_t,   NPY_CDOUBLE)
-TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_OUT_SGVECTOR
+#undef TYPEMAP_SGVECTOR
 
 /* Two dimensional input arrays */
 %define TYPEMAP_IN_SGMATRIX(type,typecode)
@@ -986,56 +902,6 @@ TYPEMAP_OUTND(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_OUTND(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_OUTND
-
-/* input typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>
-{
-    $1 = is_pystring_list($input, typecode);
-}
-
-%typemap(in) std::vector<shogun::SGVector<type>>
-{
-    auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<type>>>($1);
-    if (! string_from_strpy<type>(strings, $input, typecode))
-        SWIG_fail;
-}
-
-%typemap(freearg) std::vector<shogun::SGVector<type>> {
-    typemap_utils::free_if_pointer($1);
-}
-
-%typemap(out) std::vector<shogun::SGVector<type>>
-{
-    auto& strings = typemap_utils::cast_deref<std::vector<shogun::SGVector<type>>>($1);
-
-    if (!string_to_strpy<type>($result, strings, typecode))
-        SWIG_fail;
-}
-
-%apply std::vector<shogun::SGVector<type>> { std::vector<shogun::SGVector<type>>& }
-
-%enddef
-
-TYPEMAP_STRINGFEATURES(bool,          NPY_BOOL)
-#ifdef PYTHON3 // str -> unicode for python3
-TYPEMAP_STRINGFEATURES(char,          NPY_UNICODE)
-#else
-TYPEMAP_STRINGFEATURES(char,          NPY_STRING)
-#endif
-TYPEMAP_STRINGFEATURES(uint8_t,       NPY_UINT8)
-TYPEMAP_STRINGFEATURES(int16_t,       NPY_INT16)
-TYPEMAP_STRINGFEATURES(uint16_t,      NPY_UINT16)
-TYPEMAP_STRINGFEATURES(int32_t,       NPY_INT32)
-TYPEMAP_STRINGFEATURES(uint32_t,      NPY_UINT32)
-TYPEMAP_STRINGFEATURES(int64_t,       NPY_INT64)
-TYPEMAP_STRINGFEATURES(uint64_t,      NPY_UINT64)
-TYPEMAP_STRINGFEATURES(float32_t,     NPY_FLOAT32)
-TYPEMAP_STRINGFEATURES(float64_t,     NPY_FLOAT64)
-TYPEMAP_STRINGFEATURES(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_STRINGFEATURES(PyObject,      NPY_OBJECT)
-#undef TYPEMAP_STRINGFEATURES_ARGOUT
-
 
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
