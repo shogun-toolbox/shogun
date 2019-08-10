@@ -418,7 +418,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		/** returns a copy of the string_list vector (swig friendly)
 		 * @return string_list
 		 */
-		std::vector<SGVector<ST>> get_string_list() const;
+		const std::vector<SGVector<ST>>& get_string_list() const;
 
 #ifndef SWIG
 		/** get_string_list

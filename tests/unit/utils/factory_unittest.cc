@@ -53,8 +53,6 @@ TEST(Factory, string_features_from_file)
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
 	auto file_save = some<CCSVFile>(filename.c_str(), 'w');
 	
-	// FIXME
-	//string_list.save(file_save);
 	SG_SET_LOCALE_C;
 	file_save->set_string_list(string_list.data(), string_list.size());
 	SG_RESET_LOCALE;

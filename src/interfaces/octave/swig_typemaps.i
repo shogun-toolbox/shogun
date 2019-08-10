@@ -261,7 +261,7 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<sg_type>>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<sg_type>>, const std::vector<shogun::SGVector<sg_type>>&
 {
     $1=0;
     octave_value arg=$input;
@@ -271,88 +271,58 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
         $1=1;
 }
 
-%typemap(in) std::vector<shogun::SGVector<sg_type>>
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<sg_type>>), "header")
 {
-    auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<sg_type>>>($1);
-
-    using namespace shogun;
-    int32_t max_len=0;
-    int32_t num_strings=0;
-
-    octave_value arg=$input;
-    if (arg.is_cell())
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<sg_type>>)
+        (const octave_value& arg, std::vector<shogun::SGVector<sg_type>>& strings)
     {
-        Cell c = arg.cell_value();
-        num_strings=c.nelem();
-        ASSERT(num_strings>=1);
-        strings.reserve(num_strings);
-
-        for (int32_t i=0; i<num_strings; i++)
+        if (arg.is_cell())
         {
-            if (!c.elem(i).oct_type_check() || !c.elem(i).rows()==1)
-            {
-                /* SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter);*/
-                SWIG_fail;
-            }
-            oct_type str=c.elem(i).oct_converter();
+            Cell c = arg.cell_value();
+            int32_t num_strings=c.numel();
+            ASSERT(num_strings>=1);
+            strings.reserve(num_strings);
 
-            int32_t len=str.cols();
-            strings.emplace_back(len + 1); /* all must have same length in octave */
-            strings.back().vlen=len; /* not zero terminated in octave */
-
-            if (len>0)
+            for (int32_t i=0; i<num_strings; i++)
             {
-                int32_t j;
-                for (j=0; j<len; j++)
+                if (!c.elem(i).oct_type_check() || c.elem(i).rows()!=1)
+                    return SWIG_ERROR;
+
+                oct_type str=c.elem(i).oct_converter();
+
+                int32_t len=str.cols();
+                strings.emplace_back(len);
+
+                for (int32_t j=0; j<len; j++)
                     strings.back().vector[j]=str(0,j);
-                strings.back().vector[j]='\0';
             }
-            else
-            {
-                /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-            }
+            return SWIG_OK;
         }
-    }
-    else if (arg.oct_type_check())
-    {
-        oct_type data=arg.oct_converter();
-        num_strings=data.cols();
-        int32_t len=data.rows();
-        strings.reserve(num_strings);
-        ASSERT(num_strings>=1);
-
-        for (int32_t i=0; i<num_strings; i++)
+        else if (arg.oct_type_check())
         {
-            strings.emplace_back(len+1);
-            strings.back().vlen = len;
-            if (len>0)
+            oct_type data=arg.oct_converter();
+            int32_t num_strings=data.cols();
+            int32_t len=data.rows();
+            strings.reserve(num_strings);
+            ASSERT(num_strings>=1);
+
+            for (int32_t i=0; i<num_strings; i++)
             {
-                int32_t j;
-                for (j=0; j<len; j++)
+                strings.emplace_back(len);
+
+                for (int32_t j=0; j<len; j++)
                     strings.back().vector[j]=data(j,i);
-                strings.back().vector[j]='\0';
             }
-            else
-            {
-                /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-            }
+            return SWIG_OK;
         }
-        max_len=len;
-    }
-    else
-    {
-        /*SG_PRINT("matrix_type: %d\n", arg.is_matrix_type() ? 1 : 0);
-        SG_ERROR("Expected String, got class %s as argument.\n",
-                "???");*/
-        SWIG_fail;
+        else
+        {
+            return SWIG_ERROR;
+        }
     }
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<sg_type>> {
-    typemap_utils::free_if_pointer($1);
-}
-
-%apply std::vector<shogun::SGVector<sg_type>> { std::vector<shogun::SGVector<sg_type>>& }
+%val_in_typemap(std::vector<shogun::SGVector<sg_type>>);
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
@@ -363,43 +333,56 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 #undef TYPEMAP_STRINGFEATURES_IN
 
 /* output typemap for CStringFeatures */
-%typemap(out) std::vector<shogun::SGVector<char>>, std::vector<shogun::SGVector<char>>&
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<char>>), "header")
 {
-    auto& str = typemap_utils::cast_deref<std::vector<shogun::SGVector<char>>>($1);
-    int32_t i, num_strings = str.size();
+    Cell SWIG_From_dec(std::vector<shogun::SGVector<char>>)
+        (const std::vector<shogun::SGVector<char>>& str)
+    {
+        int32_t num_strings = str.size();
 
-    Cell c(num_strings, 1);
+        Cell c(num_strings, 1);
 
-    for (i = 0; i < num_strings; i++) {
-        c(i)=std::string(str[i].vector);
+        for (int32_t i = 0; i < num_strings; i++) {
+            std::stringstream ss;
+            ss.write(str[i].vector, str[i].vlen);
+            c(i)=ss.str();
+        }
+
+        return c;
     }
-
-    $result = c;
 }
+%val_out_typemap(std::vector<shogun::SGVector<char>>);
+
 %define TYPEMAP_STRINGFEATURES_OUT(oct_type, sg_type)
-%typemap(out) std::vector<shogun::SGVector<sg_type>>, std::vector<shogun::SGVector<sg_type>>&
+
+/* output typemap for CStringFeatures */
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<sg_type>>), "header")
 {
-    auto& strings = typemap_utils::cast_deref<std::vector<shogun::SGVector<sg_type>>>($1);
-	int32_t num_strings = strings.size();
+    Cell SWIG_From_dec(std::vector<shogun::SGVector<sg_type>>)
+        (const std::vector<shogun::SGVector<sg_type>>& strings)
+    {
+        int32_t num_strings = strings.size();
 
-	Cell c(num_strings, 1);
-	
-	for (auto i : range(num_strings))
-	{
-		auto len = strings[i].vlen;
-		dim_vector vdims = dim_vector::alloc(2);
-		vdims(0) = 1;
-		vdims(1) = len;
-		auto vec=oct_type(vdims);
-		
-		for (auto j : range(len))
-			vec(j) = strings[i].vector[j];
+        Cell c(num_strings, 1);
+        
+        for (auto i : range(num_strings))
+        {
+            auto len = strings[i].vlen;
+            dim_vector vdims = dim_vector::alloc(2);
+            vdims(0) = 1;
+            vdims(1) = len;
+            auto vec=oct_type(vdims);
+            
+            for (auto j : range(len))
+                vec(j) = strings[i].vector[j];
 
-		c(i) = vec;
-	}
+            c(i) = vec;
+        }
 
-	$result = c;
+        return c;
+    }
 }
+%val_out_typemap(std::vector<shogun::SGVector<sg_type>>);
 %enddef
 
 TYPEMAP_STRINGFEATURES_OUT(uint16NDArray, uint16_t)
@@ -424,7 +407,7 @@ TYPEMAP_STRINGFEATURES_OUT(uint16NDArray, uint16_t)
 	SparseMatrix sm = mat_feat.sparse_matrix_value ();
 	int32_t num_vec=sm.cols();
 	int32_t num_feat=sm.rows();
-	int64_t nnz=sm.nelem();
+	int64_t nnz=sm.numel();
 
 	SGSparseVector<type>* matrix = SG_MALLOC(SGSparseVector<type>, num_vec);
 	for (int32_t i=0; i<num_vec; i++)

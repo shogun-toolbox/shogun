@@ -22,6 +22,7 @@
 #else
 #include <unistd.h>
 #include <algorithm>
+#include <utility>
 
 #endif
 
@@ -878,7 +879,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(const std::vector<S
 	return false;
 }
 
-template<class ST> std::vector<SGVector<ST>>& CStringFeatures<ST>::get_string_list()
+template<class ST> const std::vector<SGVector<ST>>& CStringFeatures<ST>::get_string_list() const
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("get features() is not possible on subset")
@@ -886,12 +887,10 @@ template<class ST> std::vector<SGVector<ST>>& CStringFeatures<ST>::get_string_li
 	return features;
 }
 
-template<class ST> std::vector<SGVector<ST>> CStringFeatures<ST>::get_string_list() const
+template<class ST> std::vector<SGVector<ST>>& CStringFeatures<ST>::get_string_list()
 {
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("get features() is not possible on subset")
-
-	return features;
+	return const_cast<std::vector<SGVector<ST>>&>(
+		std::as_const(*this).get_string_list());
 }
 
 template<class ST> std::vector<SGVector<ST>> CStringFeatures<ST>::copy_features()

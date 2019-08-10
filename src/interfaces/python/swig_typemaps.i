@@ -634,17 +634,17 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 /* One dimensional input arrays */
 %define TYPEMAP_SGVECTOR(type, typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>, const shogun::SGVector<type>&
+{
+    $1 = is_pyvector($input, typecode);
+}
 
-// used for "in" and "typecheck" typemaps
+// used for "in" typemap
 %fragment(SWIG_AsVal_frag(shogun::SGVector<type>), "header")
 {
-    int SWIG_AsVal_dec(shogun::SGVector<type>)(PyObject* input, shogun::SGVector<type>* val)
+    int SWIG_AsVal_dec(shogun::SGVector<type>)(PyObject* input, shogun::SGVector<type>& val)
     {
-        // if val is nullptr, it's expected to do typechecking
-        if (!val)
-            return is_pyvector(input, typecode)? SWIG_OK : SWIG_ERROR;
-        else
-            return vector_from_numpy<type>(*val, input, typecode)? SWIG_OK : SWIG_ERROR;
+        return vector_from_numpy<type>(val, input, typecode)? SWIG_OK : SWIG_ERROR;
     }
 }
 
@@ -688,7 +688,11 @@ namespace swig
         {
             if constexpr (!std::is_same<type, char>::value)
             {
-                return SWIG_AsVal_dec(shogun::SGVector<type>)(obj, val);
+                // do typechecking if val == nullptr
+                if(!val)
+                    return is_pyvector(obj, typecode)? SWIG_OK : SWIG_ERROR;
+                else
+                    return SWIG_AsVal_dec(shogun::SGVector<type>)(obj, *val);
             }
             else
             {
@@ -714,7 +718,7 @@ namespace swig
         {
             if constexpr (!std::is_same<type, char>::value)
             {
-                return SWIG_From(shogun::SGVector<type>)(val);
+                return SWIG_From_dec(shogun::SGVector<type>)(val);
             }
             else
             {
@@ -728,21 +732,8 @@ namespace swig
 }
 }
 
-%value_in_typemap(
-    SWIG_AsVal_dec(shogun::SGVector<type>),
-    SWIG_AsVal_frag(shogun::SGVector<type>),
-    shogun::SGVector<type>);
-
-%value_out_typemap(
-    SWIG_From_dec(shogun::SGVector<type>),
-    SWIG_From_frag(shogun::SGVector<type>),
-    shogun::SGVector<type>);
-
-%value_typecheck_typemap(
-    SWIG_TYPECHECK_POINTER,
-    SWIG_AsVal_dec(shogun::SGVector<type>),
-    SWIG_AsVal_frag(shogun::SGVector<type>),
-    shogun::SGVector<type>);
+%val_in_typemap(shogun::SGVector<type>);
+%val_out_typemap(shogun::SGVector<type>);
 
 // vector array
 %template() std::vector<shogun::SGVector<type>>;

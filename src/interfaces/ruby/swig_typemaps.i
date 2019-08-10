@@ -165,7 +165,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	}
 }
 %typemap(in) std::vector<shogun::SGVector<SGTYPE>> {
-	auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<SGTYPE>>>($1);
+	std::vector<shogun::SGVector<SGTYPE>>& strings = $1;
 
 	int32_t size = 0;
 	int32_t i, j;
@@ -207,12 +207,8 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	}
 }
 
-%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>> {
-	typemap_utils::free_if_pointer($1);
-}
-
 %typemap(out) std::vector<shogun::SGVector<SGTYPE>> {
-	auto& str = typemap_utils::cast_deref<std::vector<shogun::SGVector<SGTYPE>>>($1);
+	std::vector<shogun::SGVector<SGTYPE>>& str = $1;
 	int32_t i, j, num = str.size();
 	VALUE arr;
 
@@ -237,7 +233,6 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	$result = arr;
 }
 
-%apply std::vector<shogun::SGVector<SGTYPE>> { std::vector<shogun::SGVector<SGTYPE>>& }
 %enddef
 
 TYPEMAP_STRINGFEATURES(char, NUM2CHR, CHR2FIX, "String[]")

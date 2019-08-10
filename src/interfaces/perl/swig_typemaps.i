@@ -722,17 +722,11 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
 }
 %typemap(in) std::vector<shogun::SGVector<type>>
 {
-  auto& strings = typemap_utils::initialize<std::vector<shogun::SGVector<type>>>($1);
+  auto& strings = $1;
   if(!string_from_pdl< type >(strings, $input, typecode)) {
     SWIG_fail;
   }
 }
-
-%typemap(freearg) std::vector<shogun::SGVector<SGTYPE>>& {
-  typemap_utils::free_if_pointer($1);
-}
-
-%apply std::vector<shogun::SGVector<type>> { std::vector<shogun::SGVector<type>>& }
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(bool,          PDL_BOOL)
