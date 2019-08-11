@@ -44,7 +44,7 @@ void CDirectEigenSolver::compute()
 
 	CDenseMatrixOperator<float64_t>* op
 		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
-	REQUIRE(op, "Linear operator is not of CDenseMatrixOperator type!\n");
+	require(op, "Linear operator is not of CDenseMatrixOperator type!\n");
 
 	SGMatrix<float64_t> m=op->get_matrix_operator();
 	Map<MatrixXd> map_m(m.matrix, m.num_rows, m.num_cols);

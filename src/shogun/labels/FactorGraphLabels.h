@@ -49,7 +49,7 @@ public:
 		if ( base_data->get_structured_data_type() == SDT_FACTOR_GRAPH )
 			return (CFactorGraphObservation*) base_data;
 		else
-			SG_ERROR("base_data must be of dynamic type CFactorGraphObservation\n")
+			error("base_data must be of dynamic type CFactorGraphObservation\n");
 
 		return NULL;
 	}

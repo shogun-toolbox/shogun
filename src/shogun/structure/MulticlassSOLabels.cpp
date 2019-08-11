@@ -32,7 +32,7 @@ CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
 	for ( int32_t i = 0 ; i < src.vlen ; ++i )
 	{
 		if ( src[i] < 0 || src[i] >= m_num_classes )
-			SG_ERROR("Found label out of {0, 1, 2, ..., num_classes-1}")
+			error("Found label out of {0, 1, 2, ..., num_classes-1}");
 		else
 			add_label( new CRealNumber(src[i]) );
 	}
@@ -48,7 +48,7 @@ CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
 {
 	// ensure_valid("CMulticlassSOLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
-		SG_ERROR("Index must be inside [0, num_labels-1]\n")
+		error("Index must be inside [0, num_labels-1]\n");
 
 	return (CStructuredData*) new CRealNumber(m_labels_vector[idx]);
 }

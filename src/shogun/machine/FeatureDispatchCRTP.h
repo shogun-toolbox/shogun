@@ -49,7 +49,7 @@ namespace shogun
 				    ->template train_machine_templated<floatmax_t>(
 				        data->as<CDenseFeatures<floatmax_t>>());
 			default:
-				SG_ERROR(
+				error(
 				    "Training with {} of provided type {} is not "
 				    "possible!",
 				    data->get_name(),
@@ -98,7 +98,7 @@ namespace shogun
 				return this_casted->template train_machine_templated<uint16_t>(
 				    data->as<CStringFeatures<uint16_t>>());
 			default:
-				SG_ERROR(
+				error(
 				    "Training with {} of provided type {} is "
 				    "not possible!",
 				    data->get_name(),

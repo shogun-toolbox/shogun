@@ -147,7 +147,7 @@ public :
 				break;
 			}
 			default:
-				SG_PRINT("kernel type not recognized\n");
+				io::print("kernel type not recognized\n");
 		}
 
 		return 0.0;
@@ -170,7 +170,7 @@ public :
 				break;
 			}
 			default:
-				SG_PRINT("kernel type not recognized\n");
+				io::print("kernel type not recognized\n");
 		}
 
 		return 0.0;

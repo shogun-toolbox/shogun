@@ -35,7 +35,7 @@ CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
 	set_labels(train_labels);
 
 	if (!train_examples->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n")
+		error("Specified features are not of type CDotFeatures\n");
 
 	set_features((CDotFeatures*)train_examples);
 };
@@ -54,7 +54,7 @@ CFeatures* CGaussianNaiveBayes::get_features()
 void CGaussianNaiveBayes::set_features(CFeatures* features)
 {
 	if (!features->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n")
+		error("Specified features are not of type CDotFeatures\n");
 
 	SG_REF(features);
 	SG_UNREF(m_features);
@@ -67,7 +67,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n")
+				error("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
 

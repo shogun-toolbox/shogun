@@ -86,8 +86,8 @@ public:
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		REQUIRE(sigma>0.0, "Standard deviation ({}) must be greater than zero\n",
-			sigma)
+		require(sigma>0.0, "Standard deviation ({}) must be greater than zero\n",
+			sigma);
 		m_log_sigma = std::log(sigma);
 	}
 

@@ -36,32 +36,32 @@
 using namespace shogun;
 float64_t InverseScalingLearningRate::get_learning_rate(int32_t iter_counter)
 {
-	REQUIRE(iter_counter,"Iter_counter ({}) must be positive\n", iter_counter);
+	require(iter_counter,"Iter_counter ({}) must be positive\n", iter_counter);
 	return m_initial_learning_rate/CMath::pow(m_intercept+m_slope*iter_counter,m_exponent);
 }
 
 void InverseScalingLearningRate::set_initial_learning_rate(float64_t initial_learning_rate)
 {
-	REQUIRE(initial_learning_rate>0.0, "Initial learning rate ({}) should be positive\n",
+	require(initial_learning_rate>0.0, "Initial learning rate ({}) should be positive\n",
 		initial_learning_rate);
 	m_initial_learning_rate=initial_learning_rate;
 }
 
 void InverseScalingLearningRate::set_exponent(float64_t exponent)
 {
-	REQUIRE(exponent>0.0, "Exponent ({}) should be positive\n", exponent);
+	require(exponent>0.0, "Exponent ({}) should be positive\n", exponent);
 	m_exponent=exponent;
 }
 
 void InverseScalingLearningRate::set_slope(float64_t slope)
 {
-	REQUIRE(slope>0.0,"Slope ({}) should be positive\n", slope);
+	require(slope>0.0,"Slope ({}) should be positive\n", slope);
 	m_slope=slope;
 }
 
 void InverseScalingLearningRate::set_intercept(float64_t intercept)
 {
-	REQUIRE(intercept>=0, "Intercept ({}) should be non-negative\n",
+	require(intercept>=0, "Intercept ({}) should be non-negative\n",
 		intercept);
 	m_intercept=intercept;
 }

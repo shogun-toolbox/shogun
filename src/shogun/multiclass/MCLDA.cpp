@@ -80,7 +80,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 
 		set_features((CDotFeatures*) data);
 	}
@@ -114,7 +114,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	}
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying X ...\n")
+	io::print("\n>>> Displaying X ...\n");
 	SGMatrix< float64_t >::display_matrix(X.data(), num_vecs, m_dim);
 #endif
 
@@ -124,7 +124,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	Xs = X*Em_scalings;
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying Xs ...\n")
+	io::print("\n>>> Displaying Xs ...\n");
 	SGMatrix< float64_t >::display_matrix(Xs.data(), num_vecs, m_rank);
 #endif
 
@@ -135,7 +135,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	d = (Xs*Em_coef.transpose()).rowwise() + Em_intercept.transpose();
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying d ...\n")
+	io::print("\n>>> Displaying d ...\n");
 	SGMatrix< float64_t >::display_matrix(d.data(), num_vecs, m_num_classes);
 #endif
 
@@ -150,23 +150,23 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 bool CMCLDA::train_machine(CFeatures* data)
 {
 	if (!m_labels)
-		SG_ERROR("No labels allocated in MCLDA training\n")
+		error("No labels allocated in MCLDA training\n");
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Speficied features are not of type CDotFeatures\n")
+			error("Speficied features are not of type CDotFeatures\n");
 
 		set_features((CDotFeatures*) data);
 	}
 
 	if (!m_features)
-		SG_ERROR("No features allocated in MCLDA training\n")
+		error("No features allocated in MCLDA training\n");
 
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
-		SG_ERROR("No train_labels allocated in MCLDA training\n")
+		error("No train_labels allocated in MCLDA training\n");
 
 	cleanup();
 
@@ -175,7 +175,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	int32_t num_vec  = m_features->get_num_vectors();
 
 	if (num_vec != train_labels.vlen)
-		SG_ERROR("Dimension mismatch between features and labels in MCLDA training")
+		error("Dimension mismatch between features and labels in MCLDA training");
 
 	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes);
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes); // number of examples of each class
@@ -187,7 +187,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 		if (class_idx < 0 || class_idx >= m_num_classes)
 		{
-			SG_ERROR(
+			error(
 			    "Label {} with value {} is out of {0, 1, 2, ..., "
 			    "num_classes-1}, where num_classes is {}\n",
 			    i, class_idx, m_num_classes);
@@ -203,7 +203,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	{
 		if (class_nums[i] <= 0)
 		{
-			SG_ERROR("What? One class with no elements\n")
+			error("What? One class with no elements\n");
 			return false;
 		}
 	}
@@ -264,7 +264,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	}
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying means ...\n")
+	io::print("\n>>> Displaying means ...\n");
 	SGMatrix< float64_t >::display_matrix(m_means.matrix, m_dim, m_num_classes);
 #endif
 
@@ -286,7 +286,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 #ifdef DEBUG_MCLDA
 	if (m_store_cov)
 	{
-		SG_PRINT("\n>>> Displaying cov ...\n")
+		io::print("\n>>> Displaying cov ...\n");
 		SGMatrix< float64_t >::display_matrix(m_cov.matrix, m_dim, m_dim);
 	}
 #endif
@@ -312,10 +312,10 @@ bool CMCLDA::train_machine(CFeatures* data)
 	float64_t fac = 1.0 / (num_vec - m_num_classes);
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying m_xbar ...\n")
+	io::print("\n>>> Displaying m_xbar ...\n");
 	SGVector< float64_t >::display_vector(m_xbar.vector, m_dim);
 
-	SG_PRINT("\n>>> Displaying std ...\n")
+	io::print("\n>>> Displaying std ...\n");
 	SGVector< float64_t >::display_vector(std.data(), m_dim);
 #endif
 
@@ -342,7 +342,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	}
 
 	if (rank < m_dim)
-		SG_ERROR("Warning: Variables are collinear\n")
+		error("Warning: Variables are collinear\n");
 
 	MatrixXd scalings(m_dim, rank);
 	for (int i = 0; i < m_dim; i++)
@@ -350,7 +350,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 			scalings(i,j) = V(j,i) / std[j] / S[j];
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying scalings ...\n")
+	io::print("\n>>> Displaying scalings ...\n");
 	SGMatrix< float64_t >::display_matrix(scalings.data(), m_dim, rank);
 #endif
 
@@ -387,7 +387,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	Em_scalings = scalings * V.leftCols(m_rank);
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying m_scalings ...\n")
+	io::print("\n>>> Displaying m_scalings ...\n");
 	SGMatrix< float64_t >::display_matrix(m_scalings.matrix, rank, m_rank);
 #endif
 
@@ -400,7 +400,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	Em_coef = meansc.transpose() * Em_scalings;
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying m_coefs ...\n")
+	io::print("\n>>> Displaying m_coefs ...\n");
 	SGMatrix< float64_t >::display_matrix(m_coef.matrix, m_num_classes, m_rank);
 #endif
 
@@ -411,7 +411,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		m_intercept[j] = -0.5*m_coef[j]*m_coef[j] + log(class_nums[j]/float(num_vec));
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying m_intercept ...\n")
+	io::print("\n>>> Displaying m_intercept ...\n");
 	SGVector< float64_t >::display_vector(m_intercept.vector, m_num_classes);
 #endif
 

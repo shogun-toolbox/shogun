@@ -75,10 +75,10 @@ public:
 
 
 		if (std::string(k->get_name()) == "WeightedDegree") {
-			SG_INFO("using first-element normalization\n")
+			io::info("using first-element normalization\n");
 			scale=k->compute(0, 0);
 		} else {
-			SG_INFO("no inner normalization for non-WDK kernel\n")
+			io::info("no inner normalization for non-WDK kernel\n");
 			scale=1.0;
 		}
 
@@ -120,7 +120,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
-		SG_ERROR("normalize_lhs not implemented")
+		error("normalize_lhs not implemented");
 		return 0;
 	}
 
@@ -130,7 +130,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
-		SG_ERROR("normalize_rhs not implemented")
+		error("normalize_rhs not implemented");
 		return 0;
 	}
 
@@ -228,7 +228,7 @@ public:
 	{
 		normalization_constant = constant;
 
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		return 0.0;
 	}
 

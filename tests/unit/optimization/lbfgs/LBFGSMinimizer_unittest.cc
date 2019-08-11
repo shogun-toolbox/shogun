@@ -60,13 +60,13 @@ void LBFGSTestCostFunction::set_target(CPiecewiseQuadraticObject *obj)
 
 float64_t LBFGSTestCostFunction::get_cost()
 {
-	REQUIRE(m_obj,"object not set\n");
+	require(m_obj,"object not set\n");
 	return m_obj->get_value();
 }
 
 SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 {
-	REQUIRE(m_obj,"object not set\n");
+	require(m_obj,"object not set\n");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
@@ -87,7 +87,7 @@ SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 
 SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 {
-	REQUIRE(m_obj,"object not set\n");
+	require(m_obj,"object not set\n");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
@@ -141,7 +141,7 @@ void CPiecewiseQuadraticObject::set_truth_x(SGVector<float64_t> truth_x)
 
 float64_t CPiecewiseQuadraticObject::get_value()
 {
-	REQUIRE(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
+	require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
 	float64_t res=0.0;
 	for(index_t i=0; i<m_init_x.vlen; i++)
 	{
@@ -153,15 +153,15 @@ float64_t CPiecewiseQuadraticObject::get_value()
 
 SGVector<float64_t> CPiecewiseQuadraticObject::get_gradient(TParameter * param)
 {
-	REQUIRE(param, "param not set\n");
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(param, "param not set\n");
+	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
 		get_name(), param->m_name);
 
 	SGVector<float64_t> res;
 	if (!strcmp(param->m_name, "init_x"))
 	{
 		res=SGVector<float64_t>(m_init_x.vlen);
-		REQUIRE(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
+		require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
 		for(index_t i=0; i<res.vlen; i++)
 		{
 			float64_t grad=2.0*(m_init_x[i]-m_truth_x[i]);
@@ -173,9 +173,9 @@ SGVector<float64_t> CPiecewiseQuadraticObject::get_gradient(TParameter * param)
 
 SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(TParameter * param)
 {
-	REQUIRE(param, "param not set\n");
+	require(param, "param not set\n");
 
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
 		get_name(), param->m_name);
 
 	if (!strcmp(param->m_name, "init_x"))

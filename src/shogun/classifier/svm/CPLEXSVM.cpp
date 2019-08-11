@@ -37,7 +37,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
-			SG_ERROR("{}::train_machine(): Number of training vectors ({}) does"
+			error("{}::train_machine(): Number of training vectors ({}) does"
 					" not match number of labels ({})\n", get_name(),
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
@@ -82,8 +82,8 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 			}
 		}
 		//compute_objective();
-		SG_INFO("obj = {:.16f}, rho = {:.16f}\n",get_objective(),get_bias())
-		SG_INFO("Number of SV: {}\n", get_num_support_vectors())
+		io::info("obj = {:.16f}, rho = {:.16f}\n",get_objective(),get_bias());
+		io::info("Number of SV: {}\n", get_num_support_vectors());
 
 		SG_FREE(alphas);
 		SG_FREE(lb);
@@ -93,7 +93,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 	}
 
 	if (!result)
-		SG_ERROR("cplex svm failed")
+		error("cplex svm failed");
 
 	return result;
 }

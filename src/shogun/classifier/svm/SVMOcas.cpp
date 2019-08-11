@@ -51,7 +51,7 @@ CSVMOcas::~CSVMOcas()
 
 bool CSVMOcas::train_machine(CFeatures* data)
 {
-	SG_INFO("C={}, epsilon={}, bufsize={}\n", get_C1(), get_epsilon(), bufsize)
+	io::info("C={}, epsilon={}, bufsize={}\n", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = {}\n", get_bias_enabled())
 
 	ASSERT(m_labels)
@@ -59,7 +59,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features)
@@ -73,7 +73,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	current_w.zero();
 
 	if (num_vec!=lab.vlen || num_vec<=0)
-		SG_ERROR("num_vec={} num_train_labels={}\n", num_vec, lab.vlen)
+		error("num_vec={} num_train_labels={}\n", num_vec, lab.vlen);
 
 	SG_FREE(old_w);
 	old_w=SG_CALLOC(float64_t, current_w.vlen);
@@ -101,7 +101,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 			&CSVMOcas::print,
 			this);
 
-	SG_INFO("Ocas Converged after {} iterations\n"
+	io::info("Ocas Converged after {} iterations\n"
 			"==================================\n"
 			"timing statistics:\n"
 			"output_time: {} s\n"
@@ -321,7 +321,7 @@ void CSVMOcas::compute_W(
 
 	*sq_norm_W = linalg::dot(W, W) + CMath::sq(bias);
 	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;
-	//SG_PRINT("nSel={} sq_norm_W={} dp_WoldW={}\n", nSel, *sq_norm_W, *dp_WoldW)
+	//io::print("nSel={} sq_norm_W={} dp_WoldW={}\n", nSel, *sq_norm_W, *dp_WoldW);
 
 	o->bias = bias;
 	o->old_bias = old_bias;

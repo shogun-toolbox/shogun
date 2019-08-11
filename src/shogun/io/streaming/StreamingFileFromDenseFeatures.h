@@ -114,7 +114,7 @@ CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(
 {
 	init();
 
-	REQUIRE(feat,"{}::CStreamingFileFromDenseFeatures() features required!\n",
+	require(feat,"{}::CStreamingFileFromDenseFeatures() features required!\n",
 			get_name());
 	features=feat;
 	SG_REF(feat);

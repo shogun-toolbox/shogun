@@ -61,7 +61,7 @@ CData* CLatentLabels::get_latent_label(int32_t idx)
 {
 	ASSERT(m_latent_labels != NULL)
 	if (idx < 0 || idx >= get_num_labels())
-		SG_ERROR("Out of index!\n")
+		error("Out of index!\n");
 
 	return (CData*) m_latent_labels->get_element(idx);
 }
@@ -91,7 +91,7 @@ bool CLatentLabels::is_valid() const
 
 void CLatentLabels::ensure_valid(const char* context)
 {
-	REQUIRE(is_valid(), "Empty labels provided!\n");
+	require(is_valid(), "Empty labels provided!\n");
 }
 
 int32_t CLatentLabels::get_num_labels() const

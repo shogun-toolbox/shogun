@@ -65,7 +65,7 @@ CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
 	ASSERT(lik!=NULL);
 
 	if (lik->get_model_type()!=LT_GAUSSIAN)
-		SG_ERROR("Provided likelihood is not of type CGaussianLikelihood!\n")
+		error("Provided likelihood is not of type CGaussianLikelihood!\n");
 
 	SG_REF(lik);
 	return (CGaussianLikelihood*)lik;
@@ -92,11 +92,11 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* la
 		SGVector<float64_t> func) const
 {
 	// check the parameters
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n")
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
+	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n");
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
@@ -120,12 +120,12 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 		const CLabels* lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n")
-	REQUIRE(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3\n")
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
+	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n");
+	require(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3\n");
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
@@ -153,11 +153,11 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n")
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
+	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n");
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
@@ -184,11 +184,11 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n")
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
+	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n");
 
 	if (strcmp(param->m_name, "log_sigma"))
 		return SGVector<float64_t>();
@@ -212,11 +212,11 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n")
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
+	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n");
 
 	if (strcmp(param->m_name, "log_sigma"))
 		return SGVector<float64_t>();
@@ -242,20 +242,20 @@ SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
 
 	if (lab)
 	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+		require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 				"Length of the vector of means ({}), length of the vector of "
 				"variances ({}) and number of labels ({}) should be the same\n",
-				mu.vlen, s2.vlen, lab->get_num_labels())
-		REQUIRE(lab->get_label_type()==LT_REGRESSION,
-				"Labels must be type of CRegressionLabels\n")
+				mu.vlen, s2.vlen, lab->get_num_labels());
+		require(lab->get_label_type()==LT_REGRESSION,
+				"Labels must be type of CRegressionLabels\n");
 
 		y=((CRegressionLabels*)lab)->get_labels();
 	}
 	else
 	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means ({}) and "
+		require(mu.vlen==s2.vlen, "Length of the vector of means ({}) and "
 				"length of the vector of variances ({}) should be the same\n",
-				mu.vlen, s2.vlen)
+				mu.vlen, s2.vlen);
 
 		y=SGVector<float64_t>(mu.vlen);
 		y.set_const(1.0);
@@ -281,14 +281,14 @@ float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
 {
 	// check the parameters
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 			"Length of the vector of means ({}), length of the vector of "
 			"variances ({}) and number of labels ({}) should be the same\n",
-			mu.vlen, s2.vlen, lab->get_num_labels())
-	REQUIRE(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i)
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
+			mu.vlen, s2.vlen, lab->get_num_labels());
+	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i);
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
 
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
@@ -303,14 +303,14 @@ float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
 {
 	// check the parameters
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
-	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+	require(lab, "Labels are required (lab should not be NULL)\n");
+	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 			"Length of the vector of means ({}), length of the vector of "
 			"variances ({}) and number of labels ({}) should be the same\n",
-			mu.vlen, s2.vlen, lab->get_num_labels())
-	REQUIRE(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i)
-	REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n")
+			mu.vlen, s2.vlen, lab->get_num_labels());
+	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i);
+	require(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n");
 
 	// compute 2nd moment
 	float64_t Var =

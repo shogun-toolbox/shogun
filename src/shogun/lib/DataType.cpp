@@ -51,7 +51,7 @@ namespace shogun
 		case PT_COMPLEX128:
 			return "COMPLEX128";
 		default:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return "UNKNOWN";
 		}
 	}
@@ -169,12 +169,12 @@ TSGDataType::sizeof_stype(EStructType stype, EPrimitiveType ptype)
 		case PT_COMPLEX128: return sizeof (SGSparseVector<complex128_t>);
 		case PT_SGOBJECT: return -1;
 		case PT_UNDEFINED: default:
-			SG_ERROR("Implementation error: undefined primitive type\n");
+			error("Implementation error: undefined primitive type\n");
 			break;
 		}
 		break;
 	case ST_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined structure type\n");
+		error("Implementation error: undefined structure type\n");
 		break;
 	}
 
@@ -201,7 +201,7 @@ TSGDataType::sizeof_ptype(EPrimitiveType ptype)
 	case PT_COMPLEX128: return sizeof (complex128_t);
 	case PT_SGOBJECT: return sizeof (CSGObject*);
 	case PT_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined primitive type\n");
+		error("Implementation error: undefined primitive type\n");
 		break;
 	}
 
@@ -228,7 +228,7 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 	case PT_COMPLEX128: return sizeof (SGSparseVectorEntry<complex128_t>);
 	case PT_SGOBJECT: return -1;
 	case PT_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined primitive type\n");
+		error("Implementation error: undefined primitive type\n");
 		break;
 	}
 
@@ -259,7 +259,7 @@ TSGDataType::offset_sparseentry(EPrimitiveType ptype)
 	case PT_COMPLEX128: result = ENTRY_OFFSET(x, complex128_t); break;
 	case PT_SGOBJECT: return -1;
 	case PT_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined primitive type\n");
+		error("Implementation error: undefined primitive type\n");
 		break;
 	}
 
@@ -276,7 +276,7 @@ TSGDataType::stype_to_string(char* dest, EStructType stype,
 	case ST_NONE: strncpy(p, "", n); break;
 	case ST_SPARSE: strncpy(p, "Sparse<", n); break;
 	case ST_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined structure type\n");
+		error("Implementation error: undefined structure type\n");
 		break;
 	}
 
@@ -288,7 +288,7 @@ TSGDataType::stype_to_string(char* dest, EStructType stype,
 	case ST_SPARSE:
 		strcat(p, ">"); break;
 	case ST_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined structure type\n");
+		error("Implementation error: undefined structure type\n");
 		break;
 	}
 }
@@ -316,7 +316,7 @@ TSGDataType::ptype_to_string(char* dest, EPrimitiveType ptype,
 	case PT_COMPLEX128: strncpy(p, "complex128", n); break;
 	case PT_SGOBJECT: strncpy(p, "SGSerializable*", n); break;
 	case PT_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined primitive type\n");
+		error("Implementation error: undefined primitive type\n");
 		break;
 	}
 }
@@ -362,7 +362,7 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 	case PT_INT64: case PT_UINT64: case PT_FLOAT32: case PT_FLOAT64:
 	case PT_FLOATMAX: case PT_COMPLEX128: case PT_SGOBJECT: break;
 	case PT_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined primitive type\n");
+		error("Implementation error: undefined primitive type\n");
 		break;
 	}
 
@@ -381,7 +381,7 @@ size_t TSGDataType::get_size()
 
 			return get_num_elements()*sizeof_sparseentry(m_ptype);
 		case ST_UNDEFINED: default:
-			SG_ERROR("Implementation error: undefined structure type\n");
+			error("Implementation error: undefined structure type\n");
 			break;
 	}
 
@@ -400,9 +400,9 @@ int64_t TSGDataType::get_num_elements()
 		case CT_MATRIX: case CT_SGMATRIX:
 			return (*m_length_y)*(*m_length_x);
 		case CT_NDARRAY:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 		case CT_UNDEFINED: default:
-			SG_ERROR("Implementation error: undefined container type\n");
+			error("Implementation error: undefined container type\n");
 			break;
 	}
 	return 0;

@@ -71,7 +71,7 @@ void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(CDistance* dis
 	if (m_dtype==distance->get_distance_type())
 	{
 		ASSERT(m_pairwise_distance!=nullptr);
-		SG_INFO("Precomputed distance exists for {}!\n", distance->get_name());
+		io::info("Precomputed distance exists for {}!\n", distance->get_name());
 	}
 	else
 	{
@@ -99,7 +99,7 @@ CMultiKernelQuadraticTimeMMD::~CMultiKernelQuadraticTimeMMD()
 void CMultiKernelQuadraticTimeMMD::add_kernel(CKernel *kernel)
 {
 	ASSERT(self->m_owner);
-	REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
+	require(kernel, "Kernel instance cannot be NULL!\n");
 	self->m_kernel_mgr.push_back(kernel->as<CShiftInvariantKernel>());
 }
 
@@ -124,7 +124,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_statistic()
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h0()
 {
 	ASSERT(self->m_owner);
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return SGVector<float64_t>();
 }
 
@@ -166,7 +166,7 @@ SGVector<bool> CMultiKernelQuadraticTimeMMD::perform_test(float64_t alpha)
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
+	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
 
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();
@@ -194,7 +194,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
+	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
 
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();
@@ -217,8 +217,8 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManage
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
-	REQUIRE(self->m_owner->get_statistic_type()==ST_UNBIASED_FULL, "Only possible with UNBIASED_FULL!\n");
+	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
+	require(self->m_owner->get_statistic_type()==ST_UNBIASED_FULL, "Only possible with UNBIASED_FULL!\n");
 
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();
@@ -241,10 +241,10 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager
 SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
+	require(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
 		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!\n");
 
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
+	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
 
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();
@@ -274,10 +274,10 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
+	require(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
 		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!\n");
 
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
+	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!\n", kernel_mgr.num_kernels());
 
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();

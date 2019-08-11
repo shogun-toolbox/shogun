@@ -74,16 +74,16 @@ bool CDomainAdaptationSVMLinear::is_presvm_sane()
 
 	if (!presvm) {
 
-		SG_WARNING("presvm is null")
+		io::warn("presvm is null");
 
 	} else {
 
         if (presvm->get_bias() != 0) {
-            SG_ERROR("presvm bias not set to zero")
+            error("presvm bias not set to zero");
         }
 
         if (presvm->get_features()->get_feature_type() != this->get_features()->get_feature_type()) {
-            SG_ERROR("feature types do not agree")
+            error("feature types do not agree");
         }
     }
 
@@ -98,15 +98,15 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 	CDotFeatures* tmp_data;
 
 	if (m_labels->get_label_type() != LT_BINARY)
-		SG_ERROR("DomainAdaptationSVMLinear requires binary labels\n")
+		error("DomainAdaptationSVMLinear requires binary labels\n");
 
 	if (train_data)
 	{
 		if (!train_data->has_property(FP_DOT))
-			SG_ERROR("DotFeatures expected\n")
+			error("DotFeatures expected\n");
 
 		if (((CBinaryLabels*) m_labels)->get_num_labels() != train_data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels\n");
 
 		tmp_data = (CDotFeatures*) train_data;
 	}

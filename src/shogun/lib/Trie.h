@@ -801,7 +801,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 	}
 	return ret ;
 #else
-	SG_ERROR("not implemented\n")
+	error("not implemented\n");
 	return 0 ;
 #endif
 }
@@ -810,7 +810,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 int32_t CTrie<Trie>::compact_nodes(
 	int32_t start_node, int32_t depth, float64_t * weights)
 {
-	SG_ERROR("code buggy\n")
+	error("code buggy\n");
 
 	int32_t ret=0 ;
 
@@ -996,7 +996,7 @@ bool CTrie<Trie>::compare_traverse(
 		}
 	}
 #else
-	SG_ERROR("not implemented\n")
+	error("not implemented\n");
 #endif
 
 	return true ;
@@ -1051,7 +1051,7 @@ bool CTrie<Trie>::find_node(
 	trace_len=0 ;
 	return false ;
 #else
-	SG_ERROR("not implemented\n")
+	error("not implemented\n");
 	return false ;
 #endif
 }
@@ -1073,7 +1073,7 @@ void CTrie<Trie>::display_node(int32_t node) const
 			break ;
 	}
 	ASSERT(found)
-	SG_PRINT("position {}  trace: ", tree)
+	io::print("position {}  trace: ", tree);
 
 	for (int32_t i=0; i<trace_len-1; i++)
 	{
@@ -1086,18 +1086,18 @@ void CTrie<Trie>::display_node(int32_t node) const
 			}
 		ASSERT(branch!=-1)
 		char acgt[5]="ACGT" ;
-		SG_PRINT("{}", acgt[branch])
+		io::print("{}", acgt[branch]);
 	}
-	SG_PRINT("\nnode={}\nweight={}\nhas_seq={}\nhas_floats={}\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats)
+	io::print("\nnode={}\nweight={}\nhas_seq={}\nhas_floats={}\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats);
 	if (TreeMem[node].has_floats)
 	{
 		for (int32_t q=0; q<4; q++)
-			SG_PRINT("child_weighs[{}] = {}\n", q, TreeMem[node].child_weights[q])
+			io::print("child_weighs[{}] = {}\n", q, TreeMem[node].child_weights[q]);
 	}
 	if (TreeMem[node].has_seq)
 	{
 		for (int32_t q=0; q<16; q++)
-			SG_PRINT("seq[{}] = {}\n", q, TreeMem[node].seq[q])
+			io::print("seq[{}] = {}\n", q, TreeMem[node].seq[q]);
 	}
 	if (!TreeMem[node].has_seq && !TreeMem[node].has_floats)
 	{
@@ -1105,18 +1105,18 @@ void CTrie<Trie>::display_node(int32_t node) const
 		{
 			if (TreeMem[node].children[q]!=NO_CHILD)
 			{
-				SG_PRINT("children[{}] = {} -> \n", q, TreeMem[node].children[q])
+				io::print("children[{}] = {} -> \n", q, TreeMem[node].children[q]);
 				display_node(abs(TreeMem[node].children[q])) ;
 			}
 			else
-				SG_PRINT("children[{}] = NO_CHILD -| \n", q, TreeMem[node].children[q])
+				io::print("children[{}] = NO_CHILD -| \n", q, TreeMem[node].children[q]);
 		}
 
 	}
 
 	SG_FREE(trace);
 #else
-	SG_ERROR("not implemented\n")
+	error("not implemented\n");
 #endif
 }
 
@@ -2053,16 +2053,16 @@ float64_t CTrie<Trie>::get_cumulative_score(
 {
 	float64_t result=0.0;
 
-	//SG_PRINT("pos:{} length:{} deg:{} seq:0x%0llx...\n", pos, length, deg, seq)
+	//io::print("pos:{} length:{} deg:{} seq:0x%0llx...\n", pos, length, deg, seq);
 
 	for (int32_t i=pos; i<pos+deg && i<length; i++)
 	{
-		//SG_PRINT("loop {}\n", i)
+		//io::print("loop {}\n", i);
 		Trie* tree = &TreeMem[trees[i]];
 
 		for (int32_t d=0; d<deg-i+pos; d++)
 		{
-			//SG_PRINT("loop degree {} shit: {}\n", d, (2*(deg-1-d-i+pos)))
+			//io::print("loop degree {} shit: {}\n", d, (2*(deg-1-d-i+pos)));
 			ASSERT(d-1<degree)
 			int32_t sym = (int32_t) (seq >> (2*(deg-1-d-i+pos)) & 3);
 
@@ -2075,7 +2075,7 @@ float64_t CTrie<Trie>::get_cumulative_score(
 			result+=w*tree->weight;
 		}
 	}
-	//SG_PRINT("cum: {}\n", result)
+	//io::print("cum: {}\n", result);
 	return result;
 }
 
@@ -2100,7 +2100,7 @@ void CTrie<Trie>::fill_backtracking_table(
 			ConsensusEntry entry=cur->get_element(i);
 			entry.score+=get_cumulative_score(pos+1, entry.string, degree-1, weights);
 			cur->set_element(entry,i);
-			//SG_PRINT("cum: str:0%0llx sc:{} bt:{}\n",entry.string,entry.score,entry.bt)
+			//io::print("cum: str:0%0llx sc:{} bt:{}\n",entry.string,entry.score,entry.bt);
 		}
 	}
 
@@ -2115,7 +2115,7 @@ void CTrie<Trie>::fill_backtracking_table(
 		{
 			//uint64_t str_cur_old= cur->get_element(i).string;
 			uint64_t str_cur= cur->get_element(i).string >> 2;
-			//SG_PRINT("...cur:0x%0llx cur_noprfx:0x%0llx...\n", str_cur_old, str_cur)
+			//io::print("...cur:0x%0llx cur_noprfx:0x%0llx...\n", str_cur_old, str_cur);
 
 			int32_t bt=-1;
 			float64_t max_score=0.0;
@@ -2126,7 +2126,7 @@ void CTrie<Trie>::fill_backtracking_table(
 				uint64_t mask=
 					((((uint64_t)0)-1) ^ (((uint64_t) 3) << (2*(degree-1))));
 				uint64_t str_prev=  mask & prev->get_element(j).string;
-				//SG_PRINT("...prev:0x%0llx prev_nosfx:0x%0llx mask:%0llx...\n", str_prev_old, str_prev,mask)
+				//io::print("...prev:0x%0llx prev_nosfx:0x%0llx mask:%0llx...\n", str_prev_old, str_prev,mask);
 
 				if (str_cur == str_prev)
 				{
@@ -2136,7 +2136,7 @@ void CTrie<Trie>::fill_backtracking_table(
 						bt=j;
 						max_score=sc;
 
-						//SG_PRINT("new_max[{},{}] = {}\n", j,i, max_score)
+						//io::print("new_max[{},{}] = {}\n", j,i, max_score);
 					}
 				}
 			}
@@ -2147,7 +2147,7 @@ void CTrie<Trie>::fill_backtracking_table(
 			entry.score=max_score;
 			entry.string=cur->get_element(i).string;
 			cur->set_element(entry, i);
-			//SG_PRINT("entry[{}]: str:0%0llx sc:{} bt:{}\n",i, entry.string,entry.score,entry.bt)
+			//io::print("entry[{}]: str:0%0llx sc:{} bt:{}\n",i, entry.string,entry.score,entry.bt);
 		}
 	}
 }

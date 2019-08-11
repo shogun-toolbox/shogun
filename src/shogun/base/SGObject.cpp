@@ -67,7 +67,7 @@ namespace shogun
 		{
 			if (has(tag))
 			{
-				SG_ERROR("Can not register {} twice", tag.name().c_str())
+				error("Can not register {} twice", tag.name().c_str());
 			}
 			map[tag] = parameter;
 		}
@@ -76,9 +76,9 @@ namespace shogun
 		{
 			if (!has(tag))
 			{
-				SG_ERROR(
+				error(
 				    "Can not update unregistered parameter {}",
-				    tag.name().c_str())
+				    tag.name().c_str());
 			}
 			map.at(tag).set_value(value);
 		}
@@ -281,13 +281,13 @@ int32_t CSGObject::unref()
 
 CSGObject * CSGObject::shallow_copy() const
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 CSGObject * CSGObject::deep_copy() const
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
@@ -327,14 +327,14 @@ void CSGObject::unset_generic()
 
 bool CSGObject::serialize(io::CSerializer* ser)
 {
-	REQUIRE(ser != nullptr, "Serializer format object should be non-null\n");
+	require(ser != nullptr, "Serializer format object should be non-null\n");
 	ser->write(wrap(this));
 	return true;
 }
 
 bool CSGObject::deserialize(io::CDeserializer* deser)
 {
-	REQUIRE(deser != nullptr, "Deserializer format object should be non-null\n");
+	require(deser != nullptr, "Deserializer format object should be non-null\n");
 	deser->read(this);
 	return true;
 }
@@ -388,7 +388,7 @@ std::string CSGObject::get_description(const std::string& name) const
 	}
 	else
 	{
-		SG_ERROR(
+		error(
 		    "There is no parameter called '{}' in {}", name.c_str(),
 		    this->get_name());
 		return "";
@@ -397,12 +397,12 @@ std::string CSGObject::get_description(const std::string& name) const
 
 void CSGObject::print_modsel_params()
 {
-	SG_PRINT("parameters available for model selection for {}:\n", get_name())
+	io::print("parameters available for model selection for {}:\n", get_name());
 
 	index_t num_param=m_model_selection_parameters->get_num_parameters();
 
 	if (!num_param)
-		SG_PRINT("\tnone\n")
+		io::print("\tnone\n");
 
 	for (index_t i=0; i<num_param; i++)
 	{
@@ -412,7 +412,7 @@ void CSGObject::print_modsel_params()
 		if (type)
 		{
 			current->m_datatype.to_string(type, l);
-			SG_PRINT("\t{} ({}): {}\n", current->m_name, current->m_description,
+			io::print("\t{} ({}): {}\n", current->m_name, current->m_description,
 					type);
 			SG_FREE(type);
 		}
@@ -447,7 +447,7 @@ CSGObject* CSGObject::clone(ParameterProperties pp) const
 	CSGObject* clone = create_empty();
 	SG_DEBUG("Empty instance of {} created at {}.\n", get_name(), fmt::ptr(clone));
 
-	REQUIRE(
+	require(
 	    clone, "Could not create empty instance of {}. The reason for "
 	          "this usually is that get_name() of the class returns something "
 	          "wrong, that a class has a wrongly set generic type, or that it "
@@ -490,7 +490,7 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 	auto& param = self->at(_tag);
 	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
-		SG_ERROR(
+		error(
 		    "{}::{} is marked as read-only and cannot be modified!\n",
 		    get_name(), _tag.name().c_str());
 
@@ -499,9 +499,9 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 		auto msg = self->map[_tag].get_constrain_function()(value);
 		if (!msg.empty())
 		{
-			SG_ERROR(
+			error(
 					"{}::{} cannot be updated because it must be: {}!\n",
-					get_name(), _tag.name().c_str(), msg.c_str())
+					get_name(), _tag.name().c_str(), msg.c_str());
 		}
 	}
 	self->update(_tag, value);
@@ -517,14 +517,14 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	if (parameter.get_properties().has_property(
 	        ParameterProperties::RUNFUNCTION))
 	{
-		SG_ERROR(
+		error(
 		    "The parameter {}::{} is registered as a function, "
 		    "use the .run() method instead!\n",
-		    get_name(), _tag.name().c_str())
+		    get_name(), _tag.name().c_str());
 	}
 	if (parameter.get_value().empty())
 	{
-		SG_ERROR(
+		error(
 		    "There is no parameter called \"{}\" in {}\n", _tag.name().c_str(),
 		    get_name());
 	}
@@ -537,14 +537,14 @@ AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 	if (!parameter.get_properties().has_property(
 	        ParameterProperties::RUNFUNCTION))
 	{
-		SG_ERROR(
+		error(
 		    "The parameter {}::{} is not registered as a function, "
 		    "use the .get() method instead",
-		    get_name(), _tag.name().c_str())
+		    get_name(), _tag.name().c_str());
 	}
 	if (parameter.get_value().empty())
 	{
-		SG_ERROR(
+		error(
 		    "There is no parameter called \"{}\" in {}\n", _tag.name().c_str(),
 		    get_name());
 	}
@@ -559,9 +559,9 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 void CSGObject::add_callback_function(
     const std::string& name, std::function<void()> function)
 {
-	REQUIRE(function, "Function object is not callable");
+	require(function, "Function object is not callable");
 	BaseTag tag(name);
-	REQUIRE(
+	require(
 	    has_parameter(tag), "There is no parameter called \"{}\" in {}\n",
 	    tag.name().c_str(), get_name());
 
@@ -604,7 +604,7 @@ void CSGObject::unsubscribe(ParameterObserver* obs)
 	// Check if we have such subscription
 	auto it = m_subscriptions.find(index);
 	if (it == m_subscriptions.end())
-		SG_ERROR(
+		error(
 		    "The object {} does not have any registered parameter observer "
 		    "with index {}",
 		    this->get_name(), index);
@@ -731,7 +731,7 @@ bool CSGObject::equals(const CSGObject* other) const
 		    tag.name().c_str(), own.type().c_str());
 		if (own != given)
 		{
-			if (env()->io()->get_loglevel() <= MSG_DEBUG)
+			if (env()->io()->get_loglevel() <= io::MSG_DEBUG)
 			{
 				std::stringstream ss;
 				std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
@@ -797,7 +797,7 @@ CSGObject* CSGObject::get(const std::string& name, index_t index) const
 	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
 	{
-		SG_ERROR(
+		error(
 			"Cannot get array parameter {}::{}[{}] of type {} as object.\n",
 			get_name(), name.c_str(), index,
 			self->map[BaseTag(name)].get_value().type().c_str());
@@ -815,13 +815,13 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 {
 	if (!has(name))
 	{
-		SG_ERROR("Parameter {}::{} does not exist.\n", get_name(), name.c_str())
+		error("Parameter {}::{} does not exist.\n", get_name(), name.c_str());
 	}
 	if (auto* result = get(name, std::nothrow))
 	{
 		return result;
 	}
-	SG_ERROR(
+	error(
 			"Cannot get parameter {}::{} of type {} as object.\n",
 			get_name(), name.c_str(),
 			self->map[BaseTag(name)].get_value().type().c_str());

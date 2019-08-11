@@ -56,7 +56,7 @@ public:
 
 	error_condition read(string* buffer, int64_t size) override
 	{
-		REQUIRE(buffer != nullptr, "Provided buffer should not be nullptr!");
+		require(buffer != nullptr, "Provided buffer should not be nullptr!");
 		auto d = distance(m_current_pos, m_buffer.cend());
 		if (d == 0)
 		{

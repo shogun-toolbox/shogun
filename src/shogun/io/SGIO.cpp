@@ -6,12 +6,10 @@
  *          Saurabh Goyal
  */
 
+#define SPDLOG_EOL ""
+
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/RefCount.h>
-#include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/memory.h>
-#include <shogun/mathematics/Math.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
 #include <spdlog/async_logger.h>
@@ -19,23 +17,10 @@
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <ctype.h>
-#include <sstream>
-#include <stdarg.h>
-#include <sys/stat.h>
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
 #include <mutex>
-#include <stdlib.h>
-
-#ifdef _WIN32
-#define R_OK 4
-#endif
 
 using namespace shogun;
+using namespace shogun::io;
 
 class Formatter : public spdlog::formatter
 {
@@ -136,7 +121,7 @@ private:
 };
 
 SGIO::SGIO()
-    : show_progress(false), location_info(MSG_NONE), syntax_highlight(true)
+    : show_progress(false), syntax_highlight(true)
 {
 	init_default_sink();
 	init_default_logger();
@@ -170,14 +155,6 @@ void SGIO::message_(
 	    static_cast<spdlog::level::level_enum>(prio), msg);
 }
 
-void SGIO::done()
-{
-	if (!show_progress)
-		return;
-
-	message(MSG_INFO, "done.\n");
-}
-
 EMessageType SGIO::get_loglevel() const
 {
 	return static_cast<EMessageType>(io_logger->level());
@@ -196,19 +173,12 @@ char* SGIO::c_string_of_substring(substring s)
 	return ret;
 }
 
-void SGIO::print_substring(substring s)
-{
-	char* c_string = c_string_of_substring(s);
-	SG_PRINT("{}\n", c_string)
-	SG_FREE(c_string);
-}
-
 float32_t SGIO::float_of_substring(substring s)
 {
 	char* endptr = s.end;
 	float32_t f = strtof(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
-		SG_ERROR("error: {} is not a float!\n", c_string_of_substring(s))
+		error("{} is not a float!\n", c_string_of_substring(s));
 
 	return f;
 }
@@ -218,7 +188,7 @@ float64_t SGIO::double_of_substring(substring s)
 	char* endptr = s.end;
 	float64_t f = strtod(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
-		SG_ERROR("Error!:{} is not a double!\n", c_string_of_substring(s))
+		error("{} is not a double!\n", c_string_of_substring(s));
 
 	return f;
 }
@@ -250,18 +220,8 @@ SGIO::~SGIO()
 void SGIO::update_pattern()
 {
 	std::stringstream pattern_builder;
-	pattern_builder << "[%D %T ";
-	switch (location_info)
-	{
-	case MSG_LINE_AND_FILE:
-		pattern_builder << "%@ ";
-		break;
-	case MSG_FUNCTION:
-		pattern_builder << "%! ";
-		break;
-	default:
-		break;
-	}
+	pattern_builder << "[%D %T %! %@";
+
 	if (syntax_highlight)
 		pattern_builder << "%^%l%$] ";
 	else

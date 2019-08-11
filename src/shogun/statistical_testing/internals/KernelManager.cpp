@@ -70,7 +70,7 @@ void KernelManager::clear()
 InitPerKernel KernelManager::kernel_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<num_kernels(),
+	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
 	SG_DEBUG("Leaving!\n");
@@ -80,7 +80,7 @@ InitPerKernel KernelManager::kernel_at(index_t i)
 CKernel* KernelManager::kernel_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<num_kernels(),
+	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
 	if (m_precomputed_kernels[i]==nullptr)
@@ -113,7 +113,7 @@ const index_t KernelManager::num_kernels() const
 void KernelManager::precompute_kernel_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<num_kernels(),
+	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
 	auto kernel=m_kernels[i].get();
@@ -133,7 +133,7 @@ void KernelManager::precompute_kernel_at(index_t i)
 void KernelManager::restore_kernel_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<num_kernels(),
+	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
 	m_precomputed_kernels[i]=nullptr;
@@ -168,7 +168,7 @@ bool KernelManager::same_distance_type() const
 		else
 		{
 			same=false;
-			SG_INFO("Kernel at location {} is not of CShiftInvariantKernel type (was of {} type)!\n",
+			io::info("Kernel at location {} is not of CShiftInvariantKernel type (was of {} type)!\n",
 				i, kernel_at(i)->get_name());
 			break;
 		}
@@ -178,11 +178,11 @@ bool KernelManager::same_distance_type() const
 
 CDistance* KernelManager::get_distance_instance() const
 {
-	REQUIRE(same_distance_type(), "Distance types for all the kernels are not the same!\n");
+	require(same_distance_type(), "Distance types for all the kernels are not the same!\n");
 
 	CDistance* distance=nullptr;
 	CShiftInvariantKernel* kernel_0=dynamic_cast<CShiftInvariantKernel*>(kernel_at(0));
-	REQUIRE(kernel_0, "Kernel ({}) must be of CShiftInvariantKernel type!\n", kernel_at(0)->get_name());
+	require(kernel_0, "Kernel ({}) must be of CShiftInvariantKernel type!\n", kernel_at(0)->get_name());
 	if (kernel_0->get_distance_type()==D_EUCLIDEAN)
 	{
 		auto euclidean_distance=new CEuclideanDistance();
@@ -196,19 +196,19 @@ CDistance* KernelManager::get_distance_instance() const
 	}
 	else
 	{
-		SG_ERROR("Unsupported distance type!\n");
+		error("Unsupported distance type!\n");
 	}
 	return distance;
 }
 
 void KernelManager::set_precomputed_distance(CCustomDistance* distance) const
 {
-	REQUIRE(distance!=nullptr, "Distance instance cannot be null!\n");
+	require(distance!=nullptr, "Distance instance cannot be null!\n");
 	for (auto i=0; i<num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_at(i);
 		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
-		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was {}) must be of CShiftInvarintKernel type!\n", kernel->get_name());
+		require(shift_inv_kernel!=nullptr, "Kernel instance (was {}) must be of CShiftInvarintKernel type!\n", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=distance;
 		shift_inv_kernel->num_lhs=distance->get_num_vec_lhs();
 		shift_inv_kernel->num_rhs=distance->get_num_vec_rhs();
@@ -221,7 +221,7 @@ void KernelManager::unset_precomputed_distance() const
 	{
 		CKernel* kernel=kernel_at(i);
 		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
-		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was {}) must be of CShiftInvarintKernel type!\n", kernel->get_name());
+		require(shift_inv_kernel!=nullptr, "Kernel instance (was {}) must be of CShiftInvarintKernel type!\n", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=nullptr;
 		shift_inv_kernel->num_lhs=0;
 		shift_inv_kernel->num_rhs=0;

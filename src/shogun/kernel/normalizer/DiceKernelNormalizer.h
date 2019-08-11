@@ -97,7 +97,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
-			SG_ERROR("linadd not supported with Dice normalization.\n")
+			error("linadd not supported with Dice normalization.\n");
 			return 0;
 		}
 
@@ -107,7 +107,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
-			SG_ERROR("linadd not supported with Dice normalization.\n")
+			error("linadd not supported with Dice normalization.\n");
 			return 0;
 		}
 

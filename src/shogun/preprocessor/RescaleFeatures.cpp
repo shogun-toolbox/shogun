@@ -29,10 +29,10 @@ void CRescaleFeatures::fit(CFeatures* features)
 	auto simple_features = features->as<CDenseFeatures<float64_t>>();
 	int32_t num_examples = simple_features->get_num_vectors();
 	int32_t num_features = simple_features->get_num_features();
-	REQUIRE(
+	require(
 	    num_examples > 1, "number of feature vectors should be at least 2!\n");
 
-	SG_INFO("Extracting min and range values for each feature\n")
+	io::info("Extracting min and range values for each feature\n");
 
 	m_min = SGVector<float64_t>(num_features);
 	m_range = SGVector<float64_t>(num_features);

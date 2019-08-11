@@ -69,7 +69,7 @@
 		}                                                                      \
 		else                                                                   \
 		{                                                                      \
-			SG_ERROR(                                                          \
+			error(                                                          \
 			    "Register parameter {}::{} with SG_ADD before adding options", \
 			    get_name(), param_name);                                       \
 		}                                                                      \

@@ -45,7 +45,7 @@ T CStreamingSparseFeatures<T>::get_feature(int32_t index)
 template <class T>
 void CStreamingSparseFeatures<T>::reset_stream()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 template <class T>
@@ -131,7 +131,7 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* v
 	ASSERT(vec2)
 	if (vec2_len < current_num_features)
 	{
-		SG_ERROR("dimension of vec (={}) does not match number of features (={})\n",
+		error("dimension of vec (={}) does not match number of features (={})\n",
 			 vec2_len, current_num_features);
 	}
 
@@ -159,7 +159,7 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* v
 	ASSERT(vec2)
 	if (vec2_len < current_num_features)
 	{
-		SG_ERROR("dimension of vec (={}) does not match number of features (={})\n",
+		error("dimension of vec (={}) does not match number of features (={})\n",
 			 vec2_len, current_num_features);
 	}
 
@@ -346,7 +346,7 @@ int32_t CStreamingSparseFeatures<T>::get_dim_feature_space() const
 template <class T>
 	float32_t CStreamingSparseFeatures<T>::dot(CStreamingDotFeatures* df)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return -1;
 }
 

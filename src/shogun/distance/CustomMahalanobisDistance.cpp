@@ -55,8 +55,8 @@ float64_t CCustomMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	SGVector<float64_t> avec = static_cast<CDenseFeatures<float64_t>*>(lhs)->get_feature_vector(idx_a);
 	SGVector<float64_t> bvec = static_cast<CDenseFeatures<float64_t>*>(rhs)->get_feature_vector(idx_b);
 
-	REQUIRE(avec.vlen == bvec.vlen, "In CCustomMahalanobisDistance::compute the "
-			"feature vectors must have the same number of elements")
+	require(avec.vlen == bvec.vlen, "In CCustomMahalanobisDistance::compute the "
+			"feature vectors must have the same number of elements");
 
 	// Compute the distance between the feature vectors
 

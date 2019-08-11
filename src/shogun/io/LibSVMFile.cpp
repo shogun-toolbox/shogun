@@ -116,7 +116,7 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t&
 	\
 	for (int32_t i=0; i<num_vec; i++) \
 	{ \
-		REQUIRE(multilabel[i].size()==1, \
+		require(multilabel[i].size()==1, \
 			"{} is a multilabel ({}) file. You are trying to read it with a single-label reader.", \
 			multilabel[i].size(), filename); \
 	} \
@@ -150,9 +150,9 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 	{                                                                          \
 		num_feat = 0;                                                          \
                                                                                \
-		SG_INFO("counting line numbers in file {}.\n", filename)               \
+		io::info("counting line numbers in file {}.\n", filename);               \
 		num_vec = get_num_lines();                                             \
-		SG_INFO("File {} has {} lines.\n", filename, num_vec)                  \
+		io::info("File {} has {} lines.\n", filename, num_vec);                  \
                                                                                \
 		int32_t current_line_ind = 0;                                          \
 		SGVector<char> line;                                                   \
@@ -254,7 +254,7 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
                                                                                \
 		SG_RESET_LOCALE;                                                       \
                                                                                \
-		SG_INFO("file successfully read\n")                                    \
+		io::info("file successfully read\n");                                    \
 	}
 
 GET_MULTI_LABELED_SPARSE_MATRIX(read_bool, bool)

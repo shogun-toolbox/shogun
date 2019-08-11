@@ -40,15 +40,15 @@ void CLMNNImpl::check_training_setup(
     CFeatures* features, CLabels* labels, SGMatrix<float64_t>& init_transform,
     int32_t k)
 {
-	REQUIRE(features->has_property(FP_DOT),
-			"LMNN can only be applied to features that support dot products\n")
-	REQUIRE(labels->get_label_type()==LT_MULTICLASS,
-			"LMNN supports only MulticlassLabels\n")
-	REQUIRE(labels->get_num_labels()==features->get_num_vectors(),
-			"The number of feature vectors must be equal to the number of labels\n")
+	require(features->has_property(FP_DOT),
+			"LMNN can only be applied to features that support dot products\n");
+	require(labels->get_label_type()==LT_MULTICLASS,
+			"LMNN supports only MulticlassLabels\n");
+	require(labels->get_num_labels()==features->get_num_vectors(),
+			"The number of feature vectors must be equal to the number of labels\n");
 	//FIXME this requirement should be dropped in the future
-	REQUIRE(features->get_feature_class()==C_DENSE,
-			"Currently, LMNN supports only DenseFeatures\n")
+	require(features->get_feature_class()==C_DENSE,
+			"Currently, LMNN supports only DenseFeatures\n");
 
 	// cast is safe, we ensure above that features are dense
 	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(features);
@@ -57,10 +57,10 @@ void CLMNNImpl::check_training_setup(
 	if (init_transform.num_rows==0)
 		init_transform = CLMNNImpl::compute_pca_transform(x);
 
-	REQUIRE(init_transform.num_rows==x->get_num_features() &&
+	require(init_transform.num_rows==x->get_num_features() &&
 			init_transform.num_rows==init_transform.num_cols,
 			"The initial transform must be a square matrix of size equal to the "
-			"number of features\n")
+			"number of features\n");
 
 	check_maximum_k(labels, k);
 }
@@ -96,12 +96,12 @@ void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
 
 	int32_t min_num_examples =
 	    *std::min_element(labels_histogram.begin(), labels_histogram.end());
-	REQUIRE(
+	require(
 	    min_num_examples > k,
 	    "The minimum number of examples of any class ({}) must be larger "
 	    "than k ({}); it must be at least k+1 because any example needs "
 	    "k *other* neighbors of the same class.",
-	    min_num_examples, k)
+	    min_num_examples, k);
 }
 
 SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
@@ -207,8 +207,8 @@ ImpostorsSetType CLMNNImpl::find_impostors(
 	static ImpostorsSetType Nexact;
 
 	// impostors search
-	REQUIRE(correction>0, "The number of iterations between exact updates of the "
-			"impostors set must be greater than 0\n")
+	require(correction>0, "The number of iterations between exact updates of the "
+			"impostors set must be greater than 0\n");
 	if ((iter % correction)==0)
 	{
 		Nexact = CLMNNImpl::find_impostors_exact(
@@ -319,7 +319,7 @@ bool CLMNNImpl::check_termination(
 {
 	if (iter >= maxiter-1)
 	{
-		SG_WARNING("Maximum number of iterations reached before convergence.");
+		io::warn("Maximum number of iterations reached before convergence.");
 		return true;
 	}
 
@@ -481,9 +481,9 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(
 		while (target_nn(target_idx, it->example)!=it->target && target_idx<target_nn.num_rows)
 			++target_idx;
 
-		REQUIRE(target_idx<target_nn.num_rows, "The index of the target neighbour in the "
+		require(target_idx<target_nn.num_rows, "The index of the target neighbour in the "
 				"impostors set was not found in the target neighbours matrix. "
-				"There must be a bug in find_impostors_exact.\n")
+				"There must be a bug in find_impostors_exact.\n");
 
 		if ( impostors_sqdists[i++] <= sqdists(target_idx, it->example) )
 			N.insert(*it);

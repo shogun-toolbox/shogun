@@ -36,7 +36,7 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 			break;
 		case SMT_UNKNOWN:
 		default:
-			SG_ERROR("The EStateModelType given is not valid\n")
+			error("The EStateModelType given is not valid\n");
 	}
 }
 
@@ -82,9 +82,9 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		m_transmission_weights(state_seq[i],state_seq[i+1]) += 1;
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
-	REQUIRE(obs.num_rows == D && obs.num_cols == state_seq.vlen,
+	require(obs.num_rows == D && obs.num_cols == state_seq.vlen,
 		"obs.num_rows ({}) != D ({}) OR obs.num_cols ({}) != state_seq.vlen ({})\n",
-		obs.num_rows, D, obs.num_cols, state_seq.vlen)
+		obs.num_rows, D, obs.num_cols, state_seq.vlen);
 	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
 
@@ -170,9 +170,9 @@ CResultSet* CHMSVMModel::argmax(
 
 	if ( m_use_plifs )
 	{
-		REQUIRE(m_plif_matrix, "PLiF matrix not allocated, has the SO machine been trained with "
+		require(m_plif_matrix, "PLiF matrix not allocated, has the SO machine been trained with "
 				"the use_plifs option?\n");
-		REQUIRE(m_plif_matrix->get_num_elements() == S*D, "Dimension mismatch in PLiF matrix, have the "
+		require(m_plif_matrix->get_num_elements() == S*D, "Dimension mismatch in PLiF matrix, have the "
 				"feature dimension and/or number of states changed from training to prediction?\n");
 	}
 
@@ -230,7 +230,7 @@ CResultSet* CHMSVMModel::argmax(
 	{
 		CSequence* ytrue = m_labels->get_label(feat_idx)->as<CSequence>();
 
-		REQUIRE(ytrue->get_data().size() == T, "T, the length of the feature "
+		require(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i ({}) and the length of its corresponding label y^i "
 			"({}) must be the same.\n", T, ytrue->get_data().size());
 
@@ -319,7 +319,7 @@ CResultSet* CHMSVMModel::argmax(
 		}
 	}
 
-	REQUIRE(opt_path[T-1]!=-1, "Viterbi decoding found no possible sequence states.\n"
+	require(opt_path[T-1]!=-1, "Viterbi decoding found no possible sequence states.\n"
 			"Maybe the state model used cannot produce such sequence.\n"
 			"If using the TwoStateModel, please use sequences of length greater than two.\n");
 
@@ -456,7 +456,7 @@ bool CHMSVMModel::check_training_setup() const
 
 			if ( state < 0 || state >= hmsvm_labels->get_num_states() )
 			{
-				SG_ERROR("Found state out of {0, 1, ..., "
+				error("Found state out of {0, 1, ..., "
 					 "num_states-1}\n");
 				return false;
 			}
@@ -474,7 +474,7 @@ bool CHMSVMModel::check_training_setup() const
 	{
 		if ( state_freq[i] <= 0 )
 		{
-			SG_ERROR("What? State {} has never appeared\n", i)
+			error("What? State {} has never appeared\n", i);
 			return false;
 		}
 	}

@@ -40,7 +40,7 @@ float64_t L1Penalty::get_penalty(float64_t variable)
 
 void L1Penalty::set_rounding_epsilon(float64_t epsilon)
 {
-	REQUIRE(epsilon>=0,"Rounding epsilon ({}) should be non-negative\n", epsilon);
+	require(epsilon>=0,"Rounding epsilon ({}) should be non-negative\n", epsilon);
 	m_rounding_epsilon=epsilon;
 }
 

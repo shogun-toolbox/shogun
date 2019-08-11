@@ -23,7 +23,7 @@ CPolyKernel::CPolyKernel() : CDotKernel(0)
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
     : CDotKernel(size)
 {
-	REQUIRE(c >= 0.0, "c parameter must be positive!");
+	require(c >= 0.0, "c parameter must be positive!");
 	init();
 	degree = d;
 	m_c = c;
@@ -35,7 +35,7 @@ CPolyKernel::CPolyKernel(
     int32_t size)
     : CDotKernel(size)
 {
-	REQUIRE(c >= 0.0, "c parameter must be positive!");
+	require(c >= 0.0, "c parameter must be positive!");
 	init();
 
 	degree = d;

@@ -322,27 +322,27 @@ public:
 
 	virtual void get_matrix(int8_t*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void get_int8_sparsematrix(shogun::SGSparseVector<signed char>*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void get_int8_string_list(shogun::SGVector<signed char>*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_int8_matrix(const int8_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_int8_sparsematrix(const shogun::SGSparseVector<signed char>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_int8_string_list(const shogun::SGVector<signed char>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 #endif // #ifndef SWIG // SWIG should skip this
 

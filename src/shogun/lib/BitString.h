@@ -28,7 +28,7 @@ class CBitString : public CSGObject
 	public:
 		/** default constructor  */
 		CBitString() {
-			SG_UNSTABLE("CBitString::CBitString()", "\n")
+			io::unstable("CBitString::CBitString()");
 
 			alphabet = NULL;
 			string = NULL;
@@ -131,10 +131,10 @@ class CBitString : public CSGObject
 			char* id=f.get_line(id_len, offs);
 
 			if (!id_len || id[0]!='>')
-				SG_ERROR("No fasta hunks (lines starting with '>') found\n")
+				error("No fasta hunks (lines starting with '>') found\n");
 
 			if (offs==f.get_size())
-				SG_ERROR("Empty file?\n")
+				error("Empty file?\n");
 
 			char* fasta=NULL;
 			char* s=NULL;
@@ -149,10 +149,10 @@ class CBitString : public CSGObject
 					fasta=s;
 
 				if (!s || len==0)
-					SG_ERROR("Error reading fasta entry in line {} len={}", spanned_lines+1, len)
+					error("Error reading fasta entry in line {} len={}", spanned_lines+1, len);
 
 				if (s[0]=='>')
-					SG_ERROR("Multiple fasta hunks (lines starting with '>') are not supported!\n")
+					error("Multiple fasta hunks (lines starting with '>') are not supported!\n");
 
 				if (offs==f.get_size())
 				{
@@ -268,7 +268,7 @@ class CBitString : public CSGObject
 			int32_t j=bitindex % ws;
 			int32_t missing=word_len-(ws-j);
 
-			//SG_PRINT("i={} j={} ws={} word_len={} missing={} left=%llx shift={}\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len)
+			//io::print("i={} j={} ws={} word_len={} missing={} left=%llx shift={}\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len);
 			uint64_t res= ((string[i] << j) & mask ) >> (ws-word_len);
 
 			if (missing>0)

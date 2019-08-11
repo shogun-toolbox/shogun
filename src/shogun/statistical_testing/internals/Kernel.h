@@ -65,13 +65,13 @@ public:
 	}
 	explicit SelfAdjointPrecomputedKernel(SGVector<float32_t> self_adjoint_kernel_matrix) : m_num_feat_vec(0)
 	{
-		REQUIRE(self_adjoint_kernel_matrix.size()>0, "Provided kernel matrix cannot be of size 0!\n");
+		require(self_adjoint_kernel_matrix.size()>0, "Provided kernel matrix cannot be of size 0!\n");
 		m_self_adjoint_kernel_matrix=self_adjoint_kernel_matrix;
 	}
 	void precompute(CKernel* kernel)
 	{
-		REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
-		REQUIRE(kernel->get_num_vec_lhs()==kernel->get_num_vec_rhs(),
+		require(kernel, "Kernel instance cannot be NULL!\n");
+		require(kernel->get_num_vec_lhs()==kernel->get_num_vec_rhs(),
 			"Kernel instance is not symmetric ({}x{})!\n", kernel->get_num_vec_lhs(), kernel->get_num_vec_rhs());
 		m_num_feat_vec=kernel->get_num_vec_lhs();
 		auto size=m_num_feat_vec*(m_num_feat_vec+1)/2;

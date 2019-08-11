@@ -108,7 +108,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 
 		set_features((CDotFeatures*) data);
 	}
@@ -171,23 +171,23 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 bool CQDA::train_machine(CFeatures* data)
 {
 	if (!m_labels)
-		SG_ERROR("No labels allocated in QDA training\n")
+		error("No labels allocated in QDA training\n");
 
 	if ( data )
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Speficied features are not of type CDotFeatures\n")
+			error("Speficied features are not of type CDotFeatures\n");
 
 		set_features((CDotFeatures*) data);
 	}
 
 	if (!m_features)
-		SG_ERROR("No features allocated in QDA training\n")
+		error("No features allocated in QDA training\n");
 
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
-		SG_ERROR("No train_labels allocated in QDA training\n")
+		error("No train_labels allocated in QDA training\n");
 
 	cleanup();
 
@@ -196,7 +196,7 @@ bool CQDA::train_machine(CFeatures* data)
 	int32_t num_vec  = m_features->get_num_vectors();
 
 	if (num_vec != train_labels.vlen)
-		SG_ERROR("Dimension mismatch between features and labels in QDA training")
+		error("Dimension mismatch between features and labels in QDA training");
 
 	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes); // number of examples of each class
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes);
@@ -209,7 +209,7 @@ bool CQDA::train_machine(CFeatures* data)
 
 		if (class_idx < 0 || class_idx >= m_num_classes)
 		{
-			SG_ERROR("found label out of {0, 1, 2, ..., num_classes-1}...")
+			error("found label out of {0, 1, 2, ..., num_classes-1}...");
 			return false;
 		}
 		else
@@ -222,7 +222,7 @@ bool CQDA::train_machine(CFeatures* data)
 	{
 		if (class_nums[i] <= 0)
 		{
-			SG_ERROR("What? One class with no elements\n")
+			error("What? One class with no elements\n");
 			return false;
 		}
 	}

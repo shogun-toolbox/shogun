@@ -85,7 +85,7 @@ void SGMatrixList<T>::free_data()
 template <class T>
 SGMatrixList<T> SGMatrixList<T>::split(SGMatrix<T> matrix, int32_t num_components)
 {
-	REQUIRE((matrix.num_cols % num_components) == 0,
+	require((matrix.num_cols % num_components) == 0,
 		"The number of columns ({}) must be multiple of the number "
 		"of components ({}).\n",
 		matrix.num_cols, num_components);

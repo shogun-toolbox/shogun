@@ -114,8 +114,8 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	CSGObject* obj = nullptr;
 	if (_this)
 	{
-		REQUIRE(_this->get_name() == obj_name, "");
-		REQUIRE(_this->get_generic() == static_cast<EPrimitiveType>(primitive_type), "");
+		require(_this->get_name() == obj_name, "");
+		require(_this->get_generic() == static_cast<EPrimitiveType>(primitive_type), "");
 		obj = _this;
 	}
 	else
@@ -142,7 +142,7 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	}
 	catch(ShogunException& e)
 	{
-		SG_WARNING("Error while deserializeing {}: ShogunException: "
+		io::warn("Error while deserializeing {}: ShogunException: "
 			"{}\n", obj_name.c_str(), e.what());
 		SG_UNREF(obj);
 		return nullptr;

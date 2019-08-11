@@ -69,10 +69,10 @@ void SVRGMinimizer::init()
 void SVRGMinimizer::init_minimization()
 {
 	FirstOrderStochasticMinimizer::init_minimization();
-	REQUIRE(m_num_sgd_passes>=0, "sgd_passes must set\n");
-	REQUIRE(m_svrg_interval>0, "svrg_interval must set\n");
+	require(m_num_sgd_passes>=0, "sgd_passes must set\n");
+	require(m_svrg_interval>0, "svrg_interval must set\n");
 	FirstOrderSAGCostFunction *fun=dynamic_cast<FirstOrderSAGCostFunction *>(m_fun);
-	REQUIRE(fun,"the cost function must be a stochastic average gradient cost function\n");
+	require(fun,"the cost function must be a stochastic average gradient cost function\n");
 	if (m_num_sgd_passes>0)
 	{
 		SGDMinimizer sgd(fun);
@@ -92,7 +92,7 @@ float64_t SVRGMinimizer::minimize()
 
 	SGVector<float64_t> variable_reference=m_fun->obtain_variable_reference();
 	FirstOrderSAGCostFunction *fun=dynamic_cast<FirstOrderSAGCostFunction *>(m_fun);
-	REQUIRE(fun,"the cost function must be a stochastic average gradient cost function\n");
+	require(fun,"the cost function must be a stochastic average gradient cost function\n");
 	for(;m_cur_passes<(m_num_passes-m_num_sgd_passes);m_cur_passes++)
 	{
 		if(m_cur_passes%m_svrg_interval==0)

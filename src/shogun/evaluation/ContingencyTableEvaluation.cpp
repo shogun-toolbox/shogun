@@ -12,7 +12,7 @@ using namespace shogun;
 
 float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	REQUIRE(
+	require(
 	    predicted->get_num_labels() == ground_truth->get_num_labels(),
 	    "Number of predicted labels ({}) must be "
 	    "equal to number of ground truth labels ({})!\n",
@@ -48,7 +48,7 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 			return get_custom_score();
 	}
 
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 42;
 }
 
@@ -77,7 +77,7 @@ EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() con
 	case CUSTOM:
 		return get_custom_direction();
 	default:
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 
 	return ED_MINIMIZE;

@@ -37,7 +37,7 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 	problem.l=kernel->get_num_vec_lhs();
 
 	struct svm_node* x_space;
-	SG_INFO("{} train data points\n", problem.l)
+	io::info("{} train data points\n", problem.l);
 
 	problem.y=NULL;
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -74,7 +74,7 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: {}\n",error_msg)
+		error("Error: {}\n",error_msg);
 	
 	model = svm_train(&problem, &param);
 

@@ -52,12 +52,12 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	SG_DEBUG("Entering\n");
 
 	// sanity check
-	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch! [{} vs {}]\n",
+	require(A, "Operator is NULL!\n");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch! [{} vs {}]\n",
 		A->get_dimension(), b.vlen);
-	REQUIRE(shifts.vector,"Shifts are not initialized!\n");
-	REQUIRE(weights.vector,"Weights are not initialized!\n");
-	REQUIRE(shifts.vlen==weights.vlen, "Number of shifts and number of "
+	require(shifts.vector,"Shifts are not initialized!\n");
+	require(weights.vector,"Weights are not initialized!\n");
+	require(shifts.vlen==weights.vlen, "Number of shifts and number of "
 		"weights are not equal! [{} vs {}]\n", shifts.vlen, weights.vlen);
 
 	// the solution matrix, one column per shift, initial guess 0 for all
@@ -181,9 +181,9 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	float64_t elapsed=time.cur_time_diff();
 
 	if (!it.succeeded(r))
-		SG_WARNING("Did not converge!\n");
+		io::warn("Did not converge!\n");
 
-	SG_INFO("Iteration took {} times, residual norm={:.20f}, time elapsed={}\n",
+	io::info("Iteration took {} times, residual norm={:.20f}, time elapsed={}\n",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	// compute the final result vector multiplied by weights

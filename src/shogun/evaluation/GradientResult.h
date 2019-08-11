@@ -46,23 +46,23 @@ public:
 	/** prints the function value and gradient contained in the object */
 	virtual void print_result()
 	{
-		REQUIRE(m_gradient, "Gradient map should not be NULL\n")
-		REQUIRE(m_parameter_dictionary, "Parameter dictionary should not be "
-				"NULL\n")
+		require(m_gradient, "Gradient map should not be NULL\n");
+		require(m_parameter_dictionary, "Parameter dictionary should not be "
+				"NULL\n");
 
 		// print value of the function
-		SG_PRINT("Value: [")
+		io::print("Value: [");
 
 		for (index_t i=0; i<m_value.vlen-1; i++)
-			SG_PRINT("{}, ", m_value[i])
+			io::print("{}, ", m_value[i]);
 
 		if (m_value.vlen>0)
-			SG_PRINT("{}", m_value[m_value.vlen-1])
+			io::print("{}", m_value[m_value.vlen-1]);
 
-		SG_PRINT("] ")
+		io::print("] ");
 
 		// print gradient wrt parameters
-		SG_PRINT("Gradient: [")
+		io::print("Gradient: [");
 
 		for (index_t i=0; i<m_gradient->get_num_elements(); i++)
 		{
@@ -79,24 +79,24 @@ public:
 			// get gradient wrt parameter
 			SGVector<float64_t> param_gradient=param_node->data;
 
-			SG_PRINT("{}.{}: ", object_name, param_name)
+			io::print("{}.{}: ", object_name, param_name);
 
 			for (index_t j=0; j<param_gradient.vlen-1; j++)
-				SG_PRINT("{}, ", param_gradient[j])
+				io::print("{}, ", param_gradient[j]);
 
 			if (i==m_gradient->get_num_elements()-1)
 			{
 				if (param_gradient.vlen>0)
-					SG_PRINT("{}", param_gradient[param_gradient.vlen-1])
+					io::print("{}", param_gradient[param_gradient.vlen-1]);
 			}
 			else
 			{
 				if (param_gradient.vlen>0)
-					SG_PRINT("{}; ", param_gradient[param_gradient.vlen-1])
+					io::print("{}; ", param_gradient[param_gradient.vlen-1]);
 			}
 		}
 
-		SG_PRINT("] Total Variables: {}\n", m_total_variables)
+		io::print("] Total Variables: {}\n", m_total_variables);
 	}
 
 	/** return number of total variables in gradient map
@@ -132,7 +132,7 @@ public:
 	 */
 	virtual void set_gradient(CMap<TParameter*, SGVector<float64_t> >* gradient)
 	{
-		REQUIRE(gradient, "Gradient map should not be NULL\n")
+		require(gradient, "Gradient map should not be NULL\n");
 
 		SG_REF(gradient);
 		SG_UNREF(m_gradient);

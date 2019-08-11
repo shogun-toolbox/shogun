@@ -63,7 +63,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl() const
 	for (auto i : SG_PROGRESS(range(m_num_runs)))
 	{
 		results[i] = evaluate_one_run(i);
-		SG_INFO("Result of cross-validation run {}/{} is {}\n", i+1, m_num_runs, results[i])
+		io::info("Result of cross-validation run {}/{} is {}\n", i+1, m_num_runs, results[i]);
 	}
 
 	/* construct evaluation result */
@@ -81,7 +81,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl() const
 void CCrossValidation::set_num_runs(int32_t num_runs)
 {
 	if (num_runs < 1)
-		SG_ERROR("{} is an illegal number of repetitions\n", num_runs)
+		error("{} is an illegal number of repetitions\n", num_runs);
 
 	m_num_runs = num_runs;
 }
@@ -128,7 +128,7 @@ float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 		SG_REF(result_labels);
 
 		results[i] = evaluation_criterion->evaluate(result_labels, labels_test);
-		SG_INFO("Result of cross-validation fold {}/{} is {}\n", i+1, num_subsets, results[i])
+		io::info("Result of cross-validation fold {}/{} is {}\n", i+1, num_subsets, results[i]);
 
 		SG_UNREF(machine);
 		SG_UNREF(features_train);

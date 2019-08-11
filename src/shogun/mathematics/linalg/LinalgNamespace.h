@@ -60,7 +60,7 @@ namespace shogun
 					return sg_linalg->get_gpu_backend();
 				else
 				{
-					SG_ERROR(
+					error(
 					    "Vector or matrix is on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
@@ -90,7 +90,7 @@ namespace shogun
 					return sg_linalg->get_gpu_backend();
 				else
 				{
-					SG_ERROR(
+					error(
 					    "Vector or matrix is on GPU but no GPU backend registered. \
 					  This can happen if the GPU backend was de-activated \
 					  after memory has been transferred to GPU.\n");
@@ -99,7 +99,7 @@ namespace shogun
 			}
 			else if (a.on_gpu() || b.on_gpu())
 			{
-				SG_ERROR(
+				error(
 				    "Cannot operate with first vector/matrix on_gpu flag({}) \
 					and second vector/matrix on_gpu flag ({}).\n",
 				    a.on_gpu(), b.on_gpu());
@@ -129,7 +129,7 @@ namespace shogun
 					return sg_linalg->get_gpu_backend();
 				else
 				{
-					SG_ERROR(
+					error(
 					    "Vector or matrix is on GPU but no GPU backend registered. \
 					  This can happen if the GPU backend was de-activated \
 					  after memory has been transferred to GPU.\n");
@@ -138,7 +138,7 @@ namespace shogun
 			}
 			else if (a.on_gpu() || b.on_gpu() || c.on_gpu())
 			{
-				SG_ERROR(
+				error(
 				    "Cannot operate with first vector/matrix on_gpu flag({}),\
 					second vector/matrix on_gpu flag ({}) and third vector/matrix \
 					on_gpu flag ({}).\n",
@@ -166,7 +166,7 @@ namespace shogun
 			if (a.on_gpu())
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_WARNING("The vector is already on GPU.\n");
+					io::warn("The vector is already on GPU.\n");
 			}
 			else
 			{
@@ -177,7 +177,7 @@ namespace shogun
 				else
 				{
 					if (sg_linalg->get_linalg_warnings())
-						SG_WARNING("Trying to access GPU memory\
+						io::warn("Trying to access GPU memory\
 				 	without GPU backend registered.\n");
 					b = a;
 				}
@@ -203,7 +203,7 @@ namespace shogun
 			if (a.on_gpu())
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_WARNING("The matrix is already on GPU.\n");
+					io::warn("The matrix is already on GPU.\n");
 			}
 			else
 			{
@@ -215,7 +215,7 @@ namespace shogun
 				else
 				{
 					if (sg_linalg->get_linalg_warnings())
-						SG_WARNING("Trying to access GPU memory\
+						io::warn("Trying to access GPU memory\
 				 	without GPU backend registered.\n");
 					b = a;
 				}
@@ -260,7 +260,7 @@ namespace shogun
 					b = SGVector<T>(data, a.size());
 				}
 				else
-					SG_ERROR(
+					error(
 					    "Data memory on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
@@ -268,7 +268,7 @@ namespace shogun
 			else
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_WARNING("The data is already on CPU.\n");
+					io::warn("The data is already on CPU.\n");
 				b = a;
 			}
 
@@ -301,7 +301,7 @@ namespace shogun
 					b = SGMatrix<T>(data, a.num_rows, a.num_cols);
 				}
 				else
-					SG_ERROR(
+					error(
 					    "Data memory on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
@@ -309,7 +309,7 @@ namespace shogun
 			else
 			{
 				if (sg_linalg->get_linalg_warnings())
-					SG_WARNING("The data is already on CPU.\n");
+					io::warn("The data is already on CPU.\n");
 				b = a;
 			}
 
@@ -345,21 +345,21 @@ namespace shogun
 		add(const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result,
 		    T alpha = 1, T beta = 1)
 		{
-			REQUIRE(
+			require(
 			    a.vlen == b.vlen,
 			    "Length of vector a ({}) doesn't match vector b ({}).\n",
 			    a.vlen, b.vlen);
-			REQUIRE(
+			require(
 			    result.vlen == b.vlen,
 			    "Length of vector result ({}) doesn't match vector a ({}).\n",
 			    result.vlen, a.vlen);
 
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ a.on_gpu()), "Cannot operate with vector "
 			                                     "result on_gpu ({}) and "
 			                                     "vector a on_gpu ({}).\n",
 			    result.on_gpu(), a.on_gpu());
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ b.on_gpu()), "Cannot operate with vector "
 			                                     "result on_gpu ({}) and "
 			                                     "vector b on_gpu ({}).\n",
@@ -385,21 +385,21 @@ namespace shogun
 		add(const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
 		    T alpha = 1, T beta = 1)
 		{
-			REQUIRE(
+			require(
 			    (a.num_rows == b.num_rows),
 			    "Number of rows of matrix a ({}) must match matrix b ({}).\n",
 			    a.num_rows, b.num_rows);
-			REQUIRE(
+			require(
 			    (a.num_cols == b.num_cols), "Number of columns of matrix a "
 			                                "({}) must match matrix b ({}).\n",
 			    a.num_cols, b.num_cols);
 
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ a.on_gpu()), "Cannot operate with matrix "
 			                                     "result on_gpu ({}) and "
 			                                     "matrix a on_gpu ({}).\n",
 			    result.on_gpu(), a.on_gpu());
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ b.on_gpu()), "Cannot operate with matrix "
 			                                     "result on_gpu ({}) and "
 			                                     "matrix b on_gpu ({}).\n",
@@ -444,15 +444,15 @@ namespace shogun
 		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
 		    SGMatrix<T>& result, T alpha = 1, T beta = 1)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == b.vlen, "Number of rows of matrix A ({}) doesn't "
 			                          "match length of vector b ({}).\n",
 			    A.num_rows, b.vlen);
-			REQUIRE(
+			require(
 			    result.num_rows == A.num_rows,
 			    "Number of rows of result ({}) doesn't match matrix A ({}).\n",
 			    result.num_rows, A.num_rows);
-			REQUIRE(
+			require(
 			    i >= 0 && i < A.num_cols, "Index i ({}) is out of range (0-{})",
 			    i, A.num_cols - 1);
 
@@ -476,15 +476,15 @@ namespace shogun
 		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
 		    SGVector<T>& result, T alpha = 1, T beta = 1)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == b.vlen, "Number of rows of matrix A ({}) doesn't "
 			                          "match length of vector b ({}).\n",
 			    A.num_rows, b.vlen);
-			REQUIRE(
+			require(
 			    result.vlen == b.vlen,
 			    "Length of result ({}) doesn't match vector b ({}).\n",
 			    result.vlen, b.vlen);
-			REQUIRE(
+			require(
 			    i >= 0 && i < A.num_cols, "Index i ({}) is out of range (0-{})",
 			    i, A.num_cols - 1);
 
@@ -504,12 +504,12 @@ namespace shogun
 		void pinvh(const SGMatrix<T>& A, SGMatrix<T>& result)
 		{
 
-			REQUIRE(
+			require(
 			    result.num_rows == A.num_rows && result.num_cols == A.num_cols,
 			    "Dimension mismatch! A ({} x {}) vs result ({} x {}).\n",
 			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
 
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols,
 			    "Given matrix is not square ({} x {})", A.num_rows, A.num_cols);
 
@@ -541,7 +541,7 @@ namespace shogun
 		template <typename T>
 		void pinv(const SGMatrix<T>& A, SGMatrix<T>& result)
 		{
-			REQUIRE(
+			require(
 			    result.num_rows == A.num_cols && result.num_cols == A.num_rows,
 			    "Dimension mismatch! Result must be of ({} x {}) provided is "
 			    "({} x {}).\n",
@@ -580,12 +580,12 @@ namespace shogun
 		add_diag(SGMatrix<T>& A, const SGVector<T>& b, T alpha = 1, T beta = 1)
 		{
 			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
-			REQUIRE(
+			require(
 			    diagonal_len == b.vlen, "Length of main diagonal of matrix A "
 			                            "({}) doesn't match length of vector b "
 			                            "({}).\n",
 			    diagonal_len, b.vlen);
-			REQUIRE(
+			require(
 			    diagonal_len > 0 && b.vlen > 0, "Matrix / vector can't be "
 			                                    "empty.\n");
 			infer_backend(A, SGMatrix<T>(b))->add_diag(A, b, alpha, beta);
@@ -602,7 +602,7 @@ namespace shogun
 		void add_ridge(SGMatrix<T>& A, T beta)
 		{
 			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
-			REQUIRE(diagonal_len > 0, "Matrix can't be empty.\n");
+			require(diagonal_len > 0, "Matrix can't be empty.\n");
 			infer_backend(A)->add_ridge(A, beta);
 		}
 
@@ -623,11 +623,11 @@ namespace shogun
 		    const SGMatrix<T>& A, const SGVector<T>& b, SGMatrix<T>& result,
 		    T alpha = 1, T beta = 1)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == b.vlen, "Number of rows of matrix A ({}) doesn't "
 			                          "match length of vector b ({}).\n",
 			    A.num_rows, b.vlen);
-			REQUIRE(
+			require(
 			    result.num_rows == A.num_rows && result.num_cols == A.num_cols,
 			    "Dimension mismatch! A ({} x {}) vs result ({} x {}).\n",
 			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
@@ -661,7 +661,7 @@ namespace shogun
 		template <typename T>
 		void center_matrix(SGMatrix<T>& A)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols, "Matrix A ({} x% d) is not square!\n",
 			    A.num_rows, A.num_cols);
 			infer_backend(A)->center_matrix(A);
@@ -681,7 +681,7 @@ namespace shogun
 		SGMatrix<T>
 		cholesky_factor(const SGMatrix<T>& A, const bool lower = true)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols,
 			    "Matrix dimensions ({}x{}) are not square\n", A.num_rows,
 			    A.num_cols);
@@ -705,10 +705,10 @@ namespace shogun
 		    SGMatrix<T>& L, const SGVector<T>& b, T alpha = 1,
 		    bool lower = true)
 		{
-			REQUIRE(
+			require(
 			    L.num_rows == L.num_cols, "Matrix ({}x{}) is not square\n",
 			    L.num_rows, L.num_cols);
-			REQUIRE(
+			require(
 			    L.num_rows == b.size(),
 			    "Vector size ({}) must match matrix size ({}x{})\n", b.size(),
 			    L.num_rows, L.num_rows);
@@ -728,10 +728,10 @@ namespace shogun
 		template <typename T>
 		void rank_update(SGMatrix<T>& A, const SGVector<T>& b, T alpha = 1)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols, "Matrix ({}x{}) is not square\n",
 			    A.num_rows, A.num_cols);
-			REQUIRE(
+			require(
 			    A.num_rows == b.size(),
 			    "Vector size ({}) must match matrix size ({}x{})\n", b.size(),
 			    A.num_rows, A.num_rows);
@@ -753,11 +753,11 @@ namespace shogun
 		SGVector<T> cholesky_solver(
 		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower = true)
 		{
-			REQUIRE(
+			require(
 			    L.num_rows == L.num_cols,
 			    "Matrix dimensions ({}x{}) are not square\n", L.num_rows,
 			    L.num_cols);
-			REQUIRE(
+			require(
 			    L.num_rows == b.size(),
 			    "Vector size ({}) must match matrix size ({}x{})\n", b.size(),
 			    L.num_rows);
@@ -785,19 +785,19 @@ namespace shogun
 		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
 		    SGVector<index_t>& p, const bool lower = true)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols,
 			    "Matrix dimensions ({}x{}) are not square\n", A.num_rows,
 			    A.num_cols);
-			REQUIRE(
+			require(
 			    A.num_rows == L.num_rows && A.num_cols == L.num_cols,
 			    "Shape of matrix A ({}, {}) doesn't match matrix L ({}, {})\n",
 			    A.num_rows, A.num_cols, L.num_rows, L.num_rows);
-			REQUIRE(
+			require(
 			    d.vlen == A.num_rows, "Length of vector d ({}) doesn't match "
 			                          "length of diagonal of matrix L ({})\n",
 			    d.vlen, A.num_rows);
-			REQUIRE(
+			require(
 			    p.vlen = A.num_rows, "Length of transpositions vector p ({}) "
 			                         "doesn't match length of diagonal of "
 			                         "matrix L ({})\n",
@@ -826,15 +826,15 @@ namespace shogun
 		    const SGMatrix<T>& L, const SGVector<T>& d, SGVector<index_t>& p,
 		    const SGVector<T>& b, const bool lower = true)
 		{
-			REQUIRE(
+			require(
 			    L.num_rows == L.num_cols,
 			    "Matrix dimensions ({}x{}) are not square\n", L.num_rows,
 			    L.num_cols);
-			REQUIRE(
+			require(
 			    d.vlen == L.num_rows, "Length of vector d ({}) doesn't match "
 			                          "length of diagonal of matrix L ({})\n",
 			    d.vlen, L.num_rows);
-			REQUIRE(
+			require(
 			    p.vlen = L.num_rows, "Length of transpositions vector p ({}) "
 			                         "doesn't match length of diagonal of "
 			                         "matrix L ({})\n",
@@ -858,7 +858,7 @@ namespace shogun
 		    typename Tag = void*>
 		TU dot(const SGVector<T>& a, const SGVector<U>& b, Tag tag = {})
 		{
-			REQUIRE(
+			require(
 			    a.vlen == b.vlen,
 			    "Length of vector a ({}) doesn't match vector b ({}).\n",
 			    a.vlen, b.vlen);
@@ -892,20 +892,20 @@ namespace shogun
 		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
 		    SGMatrix<T>& eigenvectors)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols, "Matrix A ({} x% d) is not square!\n",
 			    A.num_rows, A.num_cols);
-			REQUIRE(
+			require(
 			    A.num_rows == eigenvectors.num_rows,
 			    "Number of rows of A ({}) doesn't match eigenvectors' matrix "
 			    "({}).\n",
 			    A.num_rows, eigenvectors.num_rows);
-			REQUIRE(
+			require(
 			    A.num_cols == eigenvectors.num_cols,
 			    "Number of columns of A ({}) doesn't match eigenvectors' "
 			    "matrix ({}).\n",
 			    A.num_cols, eigenvectors.num_cols);
-			REQUIRE(
+			require(
 			    A.num_cols == eigenvalues.vlen,
 			    "Length of eigenvalues' vector doesn't match matrix A");
 
@@ -932,28 +932,28 @@ namespace shogun
 		    SGMatrix<T>& eigenvectors, index_t k = 0)
 		{
 
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols, "Matrix A ({} x% d) is not square!\n",
 			    A.num_rows, A.num_cols);
 
 			if (k == 0)
 				k = A.num_rows;
-			REQUIRE(
+			require(
 			    k > 0 && k <= A.num_rows,
 			    "Invalid value of k ({}), it must be in the range 1-{}.", k,
-			    A.num_rows)
+			    A.num_rows);
 
-			REQUIRE(
+			require(
 			    A.num_rows == eigenvectors.num_rows,
 			    "Number of rows of A ({}) doesn't match eigenvectors' matrix "
 			    "({}).\n",
 			    A.num_rows, eigenvectors.num_rows);
-			REQUIRE(
+			require(
 			    k == eigenvectors.num_cols, "Number of requested eigenvectors "
 			                                "({}) doesn't match the number "
 			                                "of result matrix columns ({}).\n",
 			    k, eigenvectors.num_cols);
-			REQUIRE(
+			require(
 			    k == eigenvalues.vlen, "Length of result vector doesn't "
 			                           "match the number of requested "
 			                           "eigenvalues");
@@ -986,18 +986,18 @@ namespace shogun
 			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
 			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
 
-			REQUIRE(
+			require(
 			    (num_rows == transpose_B ? B.m_col_size : B.m_row_size) &&
 			        (num_cols == transpose_B ? B.m_row_size : B.m_col_size),
 			    "Dimension mismatch! A({} x {}) vs B({} x {})\n", A.m_row_size,
 			    A.m_col_size, B.m_row_size, B.m_col_size);
 
-			REQUIRE(
+			require(
 			    num_rows == result.num_rows && num_cols == result.num_cols,
 			    "Dimension mismatch! A({} x {}) vs result({} x {})\n",
 			    A.m_row_size, A.m_col_size, result.num_rows, result.num_cols);
 
-			REQUIRE(
+			require(
 			    !result.on_gpu(),
 			    "Cannot operate with matrix result on_gpu ({}) \
 	 		as matrix blocks are on CPU.\n",
@@ -1055,13 +1055,13 @@ namespace shogun
 			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
 			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
 
-			REQUIRE(
+			require(
 			    (num_rows == transpose_B ? B.num_cols : B.num_rows) &&
 			        (num_cols == transpose_B ? B.num_rows : B.num_cols),
 			    "Dimension mismatch! A({} x {}) vs B({} x {})\n", A.num_rows,
 			    A.num_cols, B.num_rows, B.num_cols);
 
-			REQUIRE(
+			require(
 			    num_rows == result.num_rows && num_cols == result.num_cols,
 			    "Dimension mismatch! A({} x {}) vs result({} x {})\n",
 			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
@@ -1111,10 +1111,10 @@ namespace shogun
 		void element_prod(
 		    const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result)
 		{
-			REQUIRE(
+			require(
 			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})\n",
 			    a.vlen, b.vlen);
-			REQUIRE(
+			require(
 			    a.vlen == result.vlen,
 			    "Dimension mismatch! A({}) vs result({})\n", a.vlen,
 			    result.vlen);
@@ -1134,7 +1134,7 @@ namespace shogun
 		template <typename T>
 		SGVector<T> element_prod(const SGVector<T>& a, const SGVector<T>& b)
 		{
-			REQUIRE(
+			require(
 			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})\n",
 			    a.vlen, b.vlen);
 
@@ -1170,7 +1170,7 @@ namespace shogun
 		template <typename T>
 		void identity(SGMatrix<T>& identity_matrix)
 		{
-			REQUIRE(identity_matrix.num_rows == identity_matrix.num_cols, "Matrix is not square!\n");
+			require(identity_matrix.num_rows == identity_matrix.num_cols, "Matrix is not square!\n");
 			infer_backend(identity_matrix)->identity(identity_matrix);
 		}
 
@@ -1191,12 +1191,12 @@ namespace shogun
 		{
 			if (transpose)
 			{
-				REQUIRE(
+				require(
 				    A.num_rows == b.vlen,
 				    "Row number of Matrix A ({}) doesn't match \
 			length of vector b ({}).\n",
 				    A.num_rows, b.vlen);
-				REQUIRE(
+				require(
 				    result.vlen == A.num_cols,
 				    "Length of vector result ({}) doesn't match \
 			column number of Matrix A ({}).\n",
@@ -1204,24 +1204,24 @@ namespace shogun
 			}
 			else
 			{
-				REQUIRE(
+				require(
 				    A.num_cols == b.vlen,
 				    "Column number of Matrix A ({}) doesn't match \
 			length of vector b ({}).\n",
 				    A.num_cols, b.vlen);
-				REQUIRE(
+				require(
 				    result.vlen == A.num_rows,
 				    "Length of vector result ({}) doesn't match \
 			row number of Matrix A ({}).\n",
 				    result.vlen, A.num_rows);
 			}
 
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ A.on_gpu()), "Cannot operate with vector "
 			                                     "result on_gpu ({}) and "
 			                                     "vector a on_gpu ({}).\n",
 			    result.on_gpu(), A.on_gpu());
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ b.on_gpu()), "Cannot operate with vector "
 			                                     "result on_gpu ({}) and "
 			                                     "vector b on_gpu ({}).\n",
@@ -1246,7 +1246,7 @@ namespace shogun
 			SGVector<T> result;
 			if (transpose)
 			{
-				REQUIRE(
+				require(
 				    A.num_rows == b.vlen,
 				    "Row number of Matrix A ({}) doesn't match \
 			length of vector b ({}).\n",
@@ -1255,7 +1255,7 @@ namespace shogun
 			}
 			else
 			{
-				REQUIRE(
+				require(
 				    A.num_cols == b.vlen,
 				    "Column number of Matrix A ({}) doesn't match \
 		length of vector b ({}).\n",
@@ -1287,12 +1287,12 @@ namespace shogun
 		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
 		    bool transpose_A = false, bool transpose_B = false)
 		{
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ A.on_gpu()),
 			    "Cannot operate with matrix result on_gpu ({}) and \
 			 matrix A on_gpu ({}).\n",
 			    result.on_gpu(), A.on_gpu());
-			REQUIRE(
+			require(
 			    !(result.on_gpu() ^ B.on_gpu()),
 			    "Cannot operate with matrix result on_gpu ({}) and \
 			 matrix B on_gpu ({}).\n",
@@ -1300,19 +1300,19 @@ namespace shogun
 
 			if (transpose_A)
 			{
-				REQUIRE(
+				require(
 				    A.num_cols == result.num_rows,
 				    "Number of columns for A ({}) and \
 				number of rows for result ({}) should be equal!\n",
 				    A.num_cols, result.num_rows);
 				if (transpose_B)
 				{
-					REQUIRE(
+					require(
 					    A.num_rows == B.num_cols,
 					    "Number of rows for A ({}) and \
 					number of columns for B ({}) should be equal!\n",
 					    A.num_rows, B.num_cols);
-					REQUIRE(
+					require(
 					    B.num_rows == result.num_cols,
 					    "Number of rows for B ({}) and \
 					number of columns for result ({}) should be equal!\n",
@@ -1320,12 +1320,12 @@ namespace shogun
 				}
 				else
 				{
-					REQUIRE(
+					require(
 					    A.num_rows == B.num_rows,
 					    "Number of rows for A ({}) and \
 					number of rows for B ({}) should be equal!\n",
 					    A.num_rows, B.num_rows);
-					REQUIRE(
+					require(
 					    B.num_cols == result.num_cols,
 					    "Number of columns for B ({}) and \
 					number of columns for result ({}) should be equal!\n",
@@ -1334,19 +1334,19 @@ namespace shogun
 			}
 			else
 			{
-				REQUIRE(
+				require(
 				    A.num_rows == result.num_rows,
 				    "Number of rows for A ({}) and \
 				number of rows for result ({}) should be equal!\n",
 				    A.num_rows, result.num_rows);
 				if (transpose_B)
 				{
-					REQUIRE(
+					require(
 					    A.num_cols == B.num_cols,
 					    "Number of columns for A ({}) and \
 					number of columns for B ({}) should be equal!\n",
 					    A.num_cols, B.num_cols);
-					REQUIRE(
+					require(
 					    B.num_rows == result.num_cols,
 					    "Number of rows for B ({}) and \
 					number of columns for result ({}) should be equal!\n",
@@ -1354,12 +1354,12 @@ namespace shogun
 				}
 				else
 				{
-					REQUIRE(
+					require(
 					    A.num_cols == B.num_rows,
 					    "Number of columns for A ({}) and \
 					number of rows for B ({}) should be equal!\n",
 					    A.num_cols, B.num_rows);
-					REQUIRE(
+					require(
 					    B.num_cols == result.num_cols,
 					    "Number of columns for B ({}) and \
 					number of columns for result ({}) should be equal!\n",
@@ -1392,7 +1392,7 @@ namespace shogun
 
 			if (transpose_A & transpose_B)
 			{
-				REQUIRE(
+				require(
 				    A.num_rows == B.num_cols, "Number of rows for A ({}) and \
 				number of columns for B ({}) should be equal!\n",
 				    A.num_rows, B.num_cols);
@@ -1400,7 +1400,7 @@ namespace shogun
 			}
 			else if (transpose_A)
 			{
-				REQUIRE(
+				require(
 				    A.num_rows == B.num_rows, "Number of rows for A ({}) and \
 				number of rows for B ({}) should be equal!\n",
 				    A.num_rows, B.num_rows);
@@ -1408,7 +1408,7 @@ namespace shogun
 			}
 			else if (transpose_B)
 			{
-				REQUIRE(
+				require(
 				    A.num_cols == B.num_cols,
 				    "Number of columns for A ({}) and \
 				number of columns for B ({}) should be equal!\n",
@@ -1417,7 +1417,7 @@ namespace shogun
 			}
 			else
 			{
-				REQUIRE(
+				require(
 				    A.num_cols == B.num_rows,
 				    "Number of columns for A ({}) and \
 				number of rows for B ({}) should be equal!\n",
@@ -1505,7 +1505,7 @@ namespace shogun
 		                        float64_t>::type
 		mean(const Container<T>& a)
 		{
-			REQUIRE(a.size() > 0, "Vector/Matrix cannot be empty!\n");
+			require(a.size() > 0, "Vector/Matrix cannot be empty!\n");
 			return infer_backend(a)->mean(a);
 		}
 
@@ -1520,7 +1520,7 @@ namespace shogun
 		template <template <typename> class Container>
 		complex128_t mean(const Container<complex128_t>& a)
 		{
-			REQUIRE(a.size() > 0, "Vector/Matrix cannot be empty!\n");
+			require(a.size() > 0, "Vector/Matrix cannot be empty!\n");
 			return infer_backend(a)->mean(a);
 		}
 
@@ -1533,7 +1533,7 @@ namespace shogun
 		template <typename T>
 		void update_mean(SGVector<T>& cma, const SGVector<T>& datum, int32_t n)
 		{
-			REQUIRE(n > 0, "Number of data points ({}) must be at least 1", n);
+			require(n > 0, "Number of data points ({}) must be at least 1", n);
 			T alpha = (T)(1.0) / n;
 			T beta = 1 - alpha;
 			add(datum, cma, cma, alpha, beta);
@@ -1548,7 +1548,7 @@ namespace shogun
 		template <typename T>
 		void update_mean(T& cma, const T datum, int32_t n)
 		{
-			REQUIRE(n > 0, "Number of data points ({}) must be at least 1", n);
+			require(n > 0, "Number of data points ({}) must be at least 1", n);
 			T alpha = (T)(1.0) / n;
 			T beta = 1 - alpha;
 			cma = alpha * datum + beta * cma;
@@ -1567,7 +1567,7 @@ namespace shogun
 		    !std::is_same<T, complex128_t>::value, SGVector<float64_t>>::type
 		std_deviation(const SGMatrix<T>& mat, bool colwise = true)
 		{
-			REQUIRE(mat.size() > 0, "Vector/Matrix cannot be empty!\n");
+			require(mat.size() > 0, "Vector/Matrix cannot be empty!\n");
 			return infer_backend(mat)->std_deviation(mat, colwise);
 		}
 
@@ -1580,7 +1580,7 @@ namespace shogun
 		template <typename T>
 		T norm(const SGVector<T>& a)
 		{
-			REQUIRE(a.size() > 0, "Vector cannot be empty!\n");
+			require(a.size() > 0, "Vector cannot be empty!\n");
 			return std::sqrt(dot(a, a));
 		}
 
@@ -1595,7 +1595,7 @@ namespace shogun
 		template <typename T, template <typename> class Container>
 		Container<T> qr_solver(const SGMatrix<T>& A, const Container<T>& b)
 		{
-			REQUIRE(
+			require(
 			    A.num_rows == A.num_cols, "Matrix A ({} x% d) is not square!\n",
 			    A.num_rows, A.num_cols);
 
@@ -1628,7 +1628,7 @@ namespace shogun
 		template <typename T>
 		void scale(const SGVector<T>& a, SGVector<T>& result, T alpha = 1)
 		{
-			REQUIRE(
+			require(
 			    result.vlen == a.vlen,
 			    "Length of vector result ({}) doesn't match vector a ({}).\n",
 			    result.vlen, a.vlen);
@@ -1648,12 +1648,12 @@ namespace shogun
 		template <typename T>
 		void scale(const SGMatrix<T>& A, SGMatrix<T>& result, T alpha = 1)
 		{
-			REQUIRE(
+			require(
 			    (A.num_rows == result.num_rows), "Number of rows of matrix A "
 			                                     "({}) must match matrix "
 			                                     "result ({}).\n",
 			    A.num_rows, result.num_rows);
-			REQUIRE(
+			require(
 			    (A.num_cols == result.num_cols), "Number of columns of matrix "
 			                                     "A ({}) must match matrix "
 			                                     "result ({}).\n",
@@ -1676,19 +1676,19 @@ namespace shogun
 		    const SGMatrix<T>& A, SGMatrix<T>& result,
 		    const SGVector<T>& alphas)
 		{
-			REQUIRE(
+			require(
 			    (A.num_rows == result.num_rows),
 			    "Number of rows of matrix A "
 			    "({}) must match matrix "
 			    "result ({}).\n",
 			    A.num_rows, result.num_rows);
-			REQUIRE(
+			require(
 			    (A.num_cols == result.num_cols),
 			    "Number of columns of matrix "
 			    "A ({}) must match matrix "
 			    "result ({}).\n",
 			    A.num_cols, result.num_cols);
-			REQUIRE(
+			require(
 			    (A.num_cols == alphas.vlen),
 			    "Number of columns of matrix "
 			    "A ({}) must match vector "
@@ -1767,7 +1767,7 @@ namespace shogun
 		template <typename T>
 		T sum_symmetric(const SGMatrix<T>& a, bool no_diag = false)
 		{
-			REQUIRE(a.num_rows == a.num_cols, "Matrix is not square!\n");
+			require(a.num_rows == a.num_cols, "Matrix is not square!\n");
 			return infer_backend(a)->sum_symmetric(a, no_diag);
 		}
 
@@ -1783,7 +1783,7 @@ namespace shogun
 		template <typename T>
 		T sum_symmetric(const Block<SGMatrix<T>>& a, bool no_diag = false)
 		{
-			REQUIRE(a.m_row_size == a.m_col_size, "Matrix is not square!\n");
+			require(a.m_row_size == a.m_col_size, "Matrix is not square!\n");
 			return env()->linalg()->get_cpu_backend()->sum_symmetric(a, no_diag);
 		}
 
@@ -1879,13 +1879,13 @@ namespace shogun
 		    SVDAlgorithm alg = SVDAlgorithm::BidiagonalDivideConquer)
 		{
 			auto r = CMath::min(A.num_cols, A.num_rows);
-			REQUIRE(
+			require(
 			    (A.num_rows == U.num_rows),
 			    "Number of rows of matrix A ({}) must match matrix U ({}).\n",
 			    A.num_rows, U.num_rows);
 			if (thin_U)
 			{
-				REQUIRE(
+				require(
 				    (U.num_cols == r), "Number of columns of matrix A ({}) "
 				                       "must match A's smaller dimension "
 				                       "({}).\n",
@@ -1893,13 +1893,13 @@ namespace shogun
 			}
 			else
 			{
-				REQUIRE(
+				require(
 				    (A.num_rows == U.num_cols), "Number of rows of matrix A "
 				                                "({}) must match number of "
 				                                "columns of U ({}).\n",
 				    A.num_cols, r);
 			}
-			REQUIRE(
+			require(
 			    (s.vlen == r), "Length of vector s ({}) doesn't match A's "
 			                   "smaller dimension ({}).\n",
 			    s.vlen, r);
@@ -1916,7 +1916,7 @@ namespace shogun
 		template <typename T>
 		T trace(const SGMatrix<T>& A)
 		{
-			REQUIRE(A.num_rows == A.num_cols, "Matrix is not square!\n");
+			require(A.num_rows == A.num_cols, "Matrix is not square!\n");
 			return infer_backend(A)->trace(A);
 		}
 

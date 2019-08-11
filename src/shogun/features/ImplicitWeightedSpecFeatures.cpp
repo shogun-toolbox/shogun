@@ -13,8 +13,8 @@ using namespace shogun;
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
 	:CDotFeatures()
 {
-	SG_UNSTABLE("CImplicitWeightedSpecFeatures::"
-				"CImplicitWeightedSpecFeatures()", "\n");
+	io::unstable("CImplicitWeightedSpecFeatures::"
+				"CImplicitWeightedSpecFeatures()");
 
 	strings = NULL;
 	normalization_factors = NULL;
@@ -92,7 +92,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeig
 	num_strings(orig.num_strings),
 	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	SG_REF(strings);
 }
 
@@ -201,7 +201,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(
 			result*=normalization_factors[vec_idx1];
 	}
 	else
-		SG_ERROR("huh?\n")
+		error("huh?\n");
 
 	return result;
 }
@@ -252,7 +252,7 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=num_strings)
 	{
-		SG_ERROR("Index out of bounds (number of strings {}, you "
+		error("Index out of bounds (number of strings {}, you "
 				"requested {})\n", num_strings, vector_index);
 	}
 

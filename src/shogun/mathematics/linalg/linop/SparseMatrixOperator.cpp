@@ -80,7 +80,7 @@ template<class T>
 SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
 	int64_t power) const
 	{
-		REQUIRE(power>0, "matrix-power is non-positive!\n");
+		require(power>0, "matrix-power is non-positive!\n");
 
 		// create casted operator in bool for capturing the sparsity
 		CSparseMatrixOperator<bool>* sp_str
@@ -133,14 +133,14 @@ template<> \
 SparsityStructure* CSparseMatrixOperator<complex128_t>
 	::get_sparsity_structure(int64_t power) const
   {
-    SG_ERROR("Not supported for complex128_t\n");
+    error("Not supported for complex128_t\n");
     return new SparsityStructure();
   }
 
 template<class T>
 SGVector<T> CSparseMatrixOperator<T>::get_diagonal() const
 	{
-		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
+		require(m_operator.sparse_matrix, "Operator not initialized!\n");
 
 		const int32_t diag_size=m_operator.num_vectors>m_operator.num_features ?
 			m_operator.num_features : m_operator.num_vectors;
@@ -166,13 +166,13 @@ SGVector<T> CSparseMatrixOperator<T>::get_diagonal() const
 template<class T>
 void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	{
-		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
-		REQUIRE(diag.vector, "Diagonal not initialized!\n");
+		require(m_operator.sparse_matrix, "Operator not initialized!\n");
+		require(diag.vector, "Diagonal not initialized!\n");
 
 		const int32_t diag_size=m_operator.num_vectors>m_operator.num_features ?
 			m_operator.num_features : m_operator.num_vectors;
 
-		REQUIRE(diag_size==diag.vlen, "Dimension mismatch!\n");
+		require(diag_size==diag.vlen, "Dimension mismatch!\n");
 
 		bool need_sorting=false;
 		for (index_t i=0; i<diag_size; ++i)
@@ -210,8 +210,8 @@ void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 template<class T>
 SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
-		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
-		REQUIRE(this->get_dimension()==b.vlen,
+		require(m_operator.sparse_matrix, "Operator not initialized!\n");
+		require(this->get_dimension()==b.vlen,
 			"Number of rows of vector must be equal to the "
 			"number of cols of the operator!\n");
 
@@ -225,7 +225,7 @@ SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
 template<> \
 SGVector<type> CSparseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
-		SG_ERROR("Not supported for {}\n", #type);\
+		error("Not supported for {}\n", #type);\
 		return b; \
 	}
 

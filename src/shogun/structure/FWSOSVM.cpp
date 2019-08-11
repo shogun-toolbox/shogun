@@ -24,10 +24,10 @@ CFWSOSVM::CFWSOSVM(
 		bool verbose)
 : CLinearStructuredOutputMachine(model, labs)
 {
-	REQUIRE(model != NULL && labs != NULL,
+	require(model != NULL && labs != NULL,
 		"{}::CFWSOSVM(): model and labels cannot be NULL!\n", get_name());
 
-	REQUIRE(labs->get_num_labels() > 0,
+	require(labs->get_num_labels() > 0,
 		"{}::CFWSOSVM(): number of labels should be greater than 0!\n", get_name());
 
 	init();
@@ -129,7 +129,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			}
 			else
 			{
-				SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
+				error("model({}) should have either of psi_computed or psi_computed_sparse"
 						"to be set true\n", m_model->get_name());
 			}
 
@@ -161,7 +161,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			ASSERT(CMath::fequals_abs(primal - dual, dual_gap, 1e-12));
 			float64_t train_error = CSOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
 
-			SG_PRINT("pass {} (iteration {}), primal = {}, dual = {}, duality gap = {}, train_error = {} \n",
+			io::print("pass {} (iteration {}), primal = {}, dual = {}, duality gap = {}, train_error = {} \n",
 				pi, k, primal, dual, dual_gap, train_error);
 
 			m_helper->add_debug_info(primal, (1.0*k) / N, train_error, dual, dual_gap);

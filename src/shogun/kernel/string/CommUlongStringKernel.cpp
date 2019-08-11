@@ -275,7 +275,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 
 	if (!get_is_initialized())
 	{
-      SG_ERROR("CCommUlongStringKernel optimization not initialized\n")
+      error("CCommUlongStringKernel optimization not initialized\n");
 		return 0 ;
 	}
 

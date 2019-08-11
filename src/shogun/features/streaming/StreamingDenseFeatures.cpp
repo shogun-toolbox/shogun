@@ -35,7 +35,7 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 		CDenseFeatures<T>* dense_features, float64_t* lab) :
 		CStreamingDotFeatures()
 {
-	REQUIRE(dense_features, "{}::CStreamingDenseFeatures(): Features needed!\n")
+	require(dense_features, "{}::CStreamingDenseFeatures(): Features needed!\n");
 
 	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
@@ -271,7 +271,7 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 	len1=sgvec1.vlen;
 
 	if (len1!=current_vector.vlen)
-		SG_ERROR(
+		error(
 				"Lengths {} and {} not equal while computing dot product!\n", len1, current_vector.vlen);
 
 	return linalg::dot(current_vector, sgvec1);
@@ -296,7 +296,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	SG_DEBUG("entering\n");
 	SG_DEBUG("Streaming {} elements\n", num_elements)
 
-	REQUIRE(num_elements>0, "Requested number of feature vectors ({}) must be "
+	require(num_elements>0, "Requested number of feature vectors ({}) must be "
 			"positive\n", num_elements);
 
 	/* init matrix empty, as we dont know the dimension yet */
@@ -307,7 +307,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		/* check if we run out of data */
 		if (!get_next_example())
 		{
-			SG_WARNING("Ran out of streaming data, reallocating matrix and "
+			io::warn("Ran out of streaming data, reallocating matrix and "
 					"returning!\n");
 
 			/* allocating space for data so far, not this mighe be 0 bytes */
@@ -334,7 +334,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			SGVector<T> vec=get_vector();
 
 			/* check for inconsistent dimensions */
-			REQUIRE(vec.vlen==matrix.num_rows,
+			require(vec.vlen==matrix.num_rows,
 					"Dimension of streamed vector ({}) does not match "
 					"dimensions of previous vectors ({})\n",
 					vec.vlen, matrix.num_rows);

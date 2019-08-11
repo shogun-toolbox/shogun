@@ -16,7 +16,7 @@ using namespace shogun;
 
 CRealFileFeatures::CRealFileFeatures()
 {
-	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures()", "\n")
+	io::unstable("CRealFileFeatures::CRealFileFeatures()");
 	init();
 }
 
@@ -93,22 +93,22 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 	fseek(working_file, filepos, SEEK_SET);
 	free_feature_matrix();
 
-	SG_INFO("allocating feature matrix of size {:.2f}M\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0)
+	io::info("allocating feature matrix of size {:.2f}M\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
 	feature_matrix=SGMatrix<float64_t>(num_features,num_vectors);
 
-	SG_INFO("loading... be patient.\n")
+	io::info("loading... be patient.\n");
 
 	for (int32_t i=0; i<(int32_t) num_vectors; i++)
 	{
 		if (!(i % (num_vectors/10+1)))
-			SG_PRINT("{:02d}%%.", (int) (100.0*i/num_vectors))
+			io::print("{:02d}%%.", (int) (100.0*i/num_vectors));
 		else if (!(i % (num_vectors/200+1)))
-			SG_PRINT(".")
+			io::print(".");
 
 		ASSERT(fread(&feature_matrix.matrix[num_features*i], doublelen, num_features, working_file)==(size_t) num_features)
 	}
-	SG_DONE()
+	io::progress_done();
 
 	return feature_matrix.matrix;
 }
@@ -134,7 +134,7 @@ bool CRealFileFeatures::load_base_data()
 	ASSERT(fread(&num_vec, (uint32_t) intlen, 1, working_file)==1)
 	ASSERT(fread(&num_feat, (uint32_t) intlen, 1, working_file)==1)
 	ASSERT(fread(&preprocd, (uint32_t) intlen, 1, working_file)==1)
-	SG_INFO("detected: intsize={}, doublesize={}, num_vec={}, num_feat={}, preprocd={}\n", intlen, doublelen, num_vec, num_feat, preprocd)
+	io::info("detected: intsize={}, doublesize={}, num_vec={}, num_feat={}, preprocd={}\n", intlen, doublelen, num_vec, num_feat, preprocd);
 	filepos=ftell(working_file);
 	set_num_vectors(num_vec);
 	set_num_features(num_feat);

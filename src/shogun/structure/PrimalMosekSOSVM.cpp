@@ -76,17 +76,17 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Interface with MOSEK
 	CMosek* mosek = new CMosek(0, M+num_aux+N);
 	SG_REF(mosek);
-	REQUIRE(mosek->get_rescode() == MSK_RES_OK, "Mosek object could not be properly created in PrimalMosekSOSVM training.\n");
+	require(mosek->get_rescode() == MSK_RES_OK, "Mosek object could not be properly created in PrimalMosekSOSVM training.\n");
 
 	// Initialize the terms of the optimization problem
 	SGMatrix< float64_t > A, B, C;
 	SGVector< float64_t > a, b, lb, ub;
 	m_model->init_primal_opt(m_regularization, A, a, B, b, lb, ub, C);
 
-	REQUIRE(lb.vlen == 0 || lb.vlen == M,
+	require(lb.vlen == 0 || lb.vlen == M,
 		"{}::train_machine(): lb.vlen can only be 0 or w.vlen!\n", get_name());
 
-	REQUIRE(ub.vlen == 0 || ub.vlen == M,
+	require(ub.vlen == 0 || ub.vlen == M,
 		"{}::train_machine(): ub.vlen can only be 0 or w.vlen!\n", get_name());
 
 	if (lb.vlen == M)
@@ -98,8 +98,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to {:.2f}.\n", m_regularization);
 
 	// Input terms of the problem that do not change between iterations
-	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, m_lb, m_ub, A, b) == MSK_RES_OK,
-		"Mosek error in PrimalMosekSOSVM initializing SO-SVM.\n")
+	require(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, m_lb, m_ub, A, b) == MSK_RES_OK,
+		"Mosek error in PrimalMosekSOSVM initializing SO-SVM.\n");
 
 	// Initialize the weight vector
 	m_w = SGVector< float64_t >(M);
@@ -241,7 +241,7 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	}
 	else
 	{
-		SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
+		error("model({}) should have either of psi_computed or psi_computed_sparse"
 				"to be set true\n", m_model->get_name());
 		return 0;
 	}
@@ -253,7 +253,7 @@ bool CPrimalMosekSOSVM::insert_result(CList* result_list, CResultSet* result) co
 
 	if ( ! succeed )
 	{
-		SG_PRINT("ResultSet could not be inserted in the list..."
+		io::print("ResultSet could not be inserted in the list..."
 			 "aborting training of PrimalMosekSOSVM\n");
 	}
 
@@ -282,7 +282,7 @@ bool CPrimalMosekSOSVM::add_constraint(
 	}
 	else
 	{
-		SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
+		error("model({}) should have either of psi_computed or psi_computed_sparse"
 				"to be set true\n", m_model->get_name());
 	}
 

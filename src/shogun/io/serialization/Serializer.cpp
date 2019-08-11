@@ -27,7 +27,7 @@ void CSerializer::attach(Some<COutputStream> stream)
 
 Some<COutputStream> CSerializer::stream() const
 {
-	REQUIRE(m_stream, "Serializer has no stream, attach() it to a stream");
+	require(m_stream, "Serializer has no stream, attach() it to a stream");
 	return m_stream;
 }
 
@@ -37,7 +37,7 @@ void shogun::io::pre_serialize(CSGObject* obj) noexcept(false)
 
 	if (!obj->get_save_serializable_pre())
 	{
-		SG_ERROR("{}::save_serializable_pre(): Implementation "
+		error("{}::save_serializable_pre(): Implementation "
 			"error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
 			"called!", obj->get_name());
 	}
@@ -49,7 +49,7 @@ void shogun::io::post_serialize(CSGObject* obj) noexcept(false)
 
 	if (!obj->get_save_serializable_post())
 	{
-		SG_ERROR("{}::save_serializable_post(): Implementation "
+		error("{}::save_serializable_post(): Implementation "
 			"error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
 			"called!", obj->get_name());
 	}

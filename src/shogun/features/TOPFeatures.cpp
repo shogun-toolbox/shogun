@@ -193,15 +193,15 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	ASSERT(pos->get_observations())
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	SG_INFO("allocating top feature cache of size {:.2f}M\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
+	io::info("allocating top feature cache of size {:.2f}M\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	feature_matrix = SGMatrix<float64_t>(num_features,num_vectors);
 	if (!feature_matrix.matrix)
 	{
-      SG_ERROR("allocation not successful!")
+      error("allocation not successful!");
 		return NULL ;
 	} ;
 
-	SG_INFO("calculating top feature matrix\n")
+	io::info("calculating top feature matrix\n");
 
 	for (int32_t x=0; x<num_vectors; x++)
 	{
@@ -213,7 +213,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}
 
-	SG_DONE()
+	io::progress_done();
 
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;

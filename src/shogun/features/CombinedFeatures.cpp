@@ -55,7 +55,7 @@ CCombinedFeatures::~CCombinedFeatures()
 
 CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
 {
-	REQUIRE(
+	require(
 	    idx < get_num_feature_obj() && idx>=0, "Feature index ({}) must be within [{}, {}]",
 	    idx, 0, get_num_feature_obj()-1);
 	return (CFeatures*) feature_array->get_element(idx);
@@ -63,7 +63,7 @@ CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
 
 void CCombinedFeatures::list_feature_objs() const
 {
-	SG_INFO("BEGIN COMBINED FEATURES LIST - ")
+	io::info("BEGIN COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -73,7 +73,7 @@ void CCombinedFeatures::list_feature_objs() const
 		SG_UNREF(f);
 	}
 
-	SG_INFO("END COMBINED FEATURES LIST - ")
+	io::info("END COMBINED FEATURES LIST - ");
 }
 
 bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_feat)
@@ -91,9 +91,9 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 			{
 				SG_UNREF(f1);
 				SG_UNREF(f2);
-				SG_INFO("not compatible, combfeat\n")
+				io::info("not compatible, combfeat\n");
 				comb_feat->list_feature_objs();
-				SG_INFO("vs this\n")
+				io::info("vs this\n");
 				this->list_feature_objs();
 				return false;
 			}
@@ -108,14 +108,14 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 	{
 		if (!comb_feat)
 		{
-			SG_WARNING("comb_feat is NULL \n");
+			io::warn("comb_feat is NULL \n");
 		}
 		else
 		{
-			SG_WARNING("number of features in combined feature objects differs ({} != {})\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj())
-				SG_INFO("compare\n")
+			io::warn("number of features in combined feature objects differs ({} != {})\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj());
+				io::info("compare\n");
 				comb_feat->list_feature_objs();
-			SG_INFO("vs this\n")
+			io::info("vs this\n");
 				this->list_feature_objs();
 		}
 	}
@@ -140,7 +140,7 @@ bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
 
 	if (get_num_vectors()>0 && n!=get_num_vectors())
 	{
-		SG_ERROR("Number of feature vectors does not match (expected {}, "
+		error("Number of feature vectors does not match (expected {}, "
 				"obj has {})\n", get_num_vectors(), n);
 	}
 
@@ -155,7 +155,7 @@ bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 
 	if (get_num_vectors()>0 && n!=get_num_vectors())
 	{
-		SG_ERROR("Number of feature vectors does not match (expected {}, "
+		error("Number of feature vectors does not match (expected {}, "
 				"obj has {})\n", get_num_vectors(), n);
 	}
 
@@ -194,7 +194,7 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 			get_feature_class()!=other->get_feature_class() ||
 			strcmp(get_name(), other->get_name()))
 	{
-		SG_ERROR("{}::create_merged_copy(): Features are of different type!\n",
+		error("{}::create_merged_copy(): Features are of different type!\n",
 				get_name());
 	}
 
@@ -202,13 +202,13 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 
 	if (!casted)
 	{
-		SG_ERROR("{}::create_merged_copy(): Could not cast object of {} to "
+		error("{}::create_merged_copy(): Could not cast object of {} to "
 				"same type as {}\n",get_name(), other->get_name(), get_name());
 	}
 
 	if (get_num_feature_obj()!=casted->get_num_feature_obj())
 	{
-		SG_ERROR("{}::create_merged_copy(): Only possible if both instances "
+		error("{}::create_merged_copy(): Only possible if both instances "
 				"have the same number of sub-feature-objects\n", get_name());
 	}
 

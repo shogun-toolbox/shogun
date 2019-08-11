@@ -47,7 +47,7 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
-			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
+			error("Specified features are not of type CStreamingDotFeatures\n");
 
 		set_features((CStreamingDotFeatures*) data);
 	}
@@ -88,7 +88,7 @@ bool COnlineLinearMachine::train_machine(CFeatures *data)
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
-			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
+			error("Specified features are not of type CStreamingDotFeatures\n");
 		set_features((CStreamingDotFeatures*) data);
 	}
 	start_train();

@@ -34,7 +34,7 @@ width_computation_type(width_computation_type2), width(width2),
 	 num_randfeats_forwidthcomputation(-1)
 {
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive")
+		error("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
 	weights=SG_MALLOC(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
@@ -87,7 +87,7 @@ width_computation_type(width_computation_type2), width(width2),
 	  num_randfeats_forwidthcomputation(-1)
 {
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive")
+		error("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
 	weights=SG_MALLOC(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
@@ -119,7 +119,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 {
 
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2::compute(...) fatal error: parameter num_cells NOT positive")
+		error("CPyramidChi2::compute(...) fatal error: parameter num_cells NOT positive");
 
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -129,7 +129,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
 					blen, bfree);
 	if(alen!=blen)
-		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim")
+		error("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");
 
 	int32_t dims=alen/num_cells;
 
@@ -201,7 +201,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 		}
 		else
 		{
-			SG_ERROR("CPyramidChi2::compute(...) fatal error: width<=0")
+			error("CPyramidChi2::compute(...) fatal error: width<=0");
 		}
 	}
 
@@ -246,7 +246,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 	num_randfeats_forwidthcomputation=-1;
 
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive")
+		error("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive");
 	if(weights)
 		SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, num_cells);

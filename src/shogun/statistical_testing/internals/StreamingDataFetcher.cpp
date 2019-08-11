@@ -41,7 +41,7 @@ using namespace internal;
 StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples)
 : DataFetcher(), parser_running(false)
 {
-	REQUIRE(samples!=nullptr, "Samples cannot be null!\n");
+	require(samples!=nullptr, "Samples cannot be null!\n");
 	m_samples=samples;
 	SG_REF(m_samples);
 	m_num_samples=0;
@@ -88,10 +88,10 @@ index_t StreamingDataFetcher::get_num_samples() const
 
 void StreamingDataFetcher::start()
 {
-	REQUIRE(get_num_samples()>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
+	require(get_num_samples()>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
 	if (m_block_details.m_full_data || m_block_details.m_blocksize>get_num_samples())
 	{
-		SG_INFO("Fetching entire data ({} samples)!\n", get_num_samples());
+		io::info("Fetching entire data ({} samples)!\n", get_num_samples());
 		m_block_details.with_blocksize(get_num_samples());
 	}
 	m_block_details.m_total_num_blocks=get_num_samples()/m_block_details.m_blocksize;

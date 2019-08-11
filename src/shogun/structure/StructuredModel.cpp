@@ -69,7 +69,7 @@ void CStructuredModel::init_primal_opt(
 		SGVector< float64_t > & ub,
 		SGMatrix< float64_t > & C)
 {
-	SG_ERROR("init_primal_opt is not implemented for {}!\n", get_name())
+	error("init_primal_opt is not implemented for {}!\n", get_name());
 }
 
 void CStructuredModel::set_labels(CStructuredLabels* labels)
@@ -113,7 +113,7 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
 		CStructuredData* y)
 {
-	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
+	error("compute_joint_feature(int32_t, CStructuredData*) is not "
 			"implemented for {}!\n", get_name());
 
 	return SGVector< float64_t >();
@@ -134,7 +134,7 @@ SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
 		int32_t feat_idx,
 		CStructuredData* y)
 {
-	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
+	error("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
 			"implemented for {}!\n", get_name());
 
 	return SGSparseVector< float64_t >();
@@ -142,7 +142,7 @@ SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
 
 float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
 {
-	REQUIRE(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),
+	require(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]\n");
 
 	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
@@ -154,7 +154,7 @@ float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred
 
 float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
-	SG_ERROR("delta_loss(CStructuredData*, CStructuredData*) is not "
+	error("delta_loss(CStructuredData*, CStructuredData*) is not "
 			"implemented for {}!\n", get_name());
 
 	return 0.0;

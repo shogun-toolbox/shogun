@@ -178,9 +178,9 @@ CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
 	if (!kernel)
 		return NULL;
 
-	REQUIRE(kernel->get_kernel_type()==K_ANOVA, "Provided kernel is "
+	require(kernel->get_kernel_type()==K_ANOVA, "Provided kernel is "
 				"not of type CANOVAKernel, but type {}!\n",
-				kernel->get_kernel_type())
+				kernel->get_kernel_type());
 
 	/* since an additional reference is returned */
 	SG_REF(kernel);

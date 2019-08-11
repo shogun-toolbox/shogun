@@ -70,7 +70,7 @@ CAutoencoder()
 
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
-		REQUIRE(get_layer(i)->get_num_neurons()==get_layer(m_num_layers-i-1)->get_num_neurons(),
+		require(get_layer(i)->get_num_neurons()==get_layer(m_num_layers-i-1)->get_num_neurons(),
 			"Layer {} ({} neurons) must have the same number of neurons "
 			"as layer {} ({} neurons)\n", i, get_layer(i)->get_num_neurons(),
 			m_num_layers-i-1, get_layer(m_num_layers-i-1)->get_num_neurons());
@@ -84,7 +84,7 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 	int32_t num_encoding_layers = (m_num_layers-1)/2;
 	for (int32_t i=1; i<=num_encoding_layers; i++)
 	{
-		SG_INFO("Pre-training Layer {}\n", i);
+		io::info("Pre-training Layer {}\n", i);
 
 		CNeuralLayer* ae_encoding_layer = (CNeuralLayer*)get_layer(i)->clone();
 

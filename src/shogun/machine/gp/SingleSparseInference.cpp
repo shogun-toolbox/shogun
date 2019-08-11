@@ -57,14 +57,14 @@ public:
 	virtual const char* get_name() const { return "SingleSparseInferenceCostFunction"; }
         void set_target(CSingleSparseInference *obj)
 	{
-		REQUIRE(obj,"Object not set\n");
+		require(obj,"Object not set\n");
 		if(obj!=m_obj)
 		{
 			SG_REF(obj);
 			SG_UNREF(m_obj);
 			m_obj=obj;
 			m_obj->check_fully_sparse();
-			REQUIRE(m_obj->m_fully_sparse,"Can not compute gradient\n");
+			require(m_obj->m_fully_sparse,"Can not compute gradient\n");
 		}
 	}
         void unset_target(bool is_unref)
@@ -77,20 +77,20 @@ public:
 	}
         virtual float64_t get_cost()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set\n");
 		float64_t nlz=m_obj->get_negative_log_marginal_likelihood();
 		return nlz;
 	}
         virtual SGVector<float64_t> obtain_variable_reference()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set\n");
 		SGMatrix<float64_t>& lat_m=m_obj->m_inducing_features;
 		SGVector<float64_t> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
 		return x;
 	}
         virtual SGVector<float64_t> get_gradient()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set\n");
 		m_obj->compute_gradient();
 		TParameter* param=m_obj->m_gradient_parameters->get_parameter("inducing_features");
 		SGVector<float64_t> derivatives=m_obj->get_derivative_wrt_inducing_features(param);
@@ -98,12 +98,12 @@ public:
 	}
         virtual SGVector<float64_t> get_lower_bound()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set\n");
 		return m_obj->m_lower_bound;
 	}
         virtual SGVector<float64_t> get_upper_bound()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set\n");
 		return m_obj->m_upper_bound;
 	}
 private:
@@ -175,12 +175,12 @@ CSingleSparseInference::~CSingleSparseInference()
 
 void CSingleSparseInference::check_fully_sparse()
 {
-	REQUIRE(m_kernel, "Kernel must be set first\n")
+	require(m_kernel, "Kernel must be set first\n");
 	if (strstr(m_kernel->get_name(), "SparseKernel")!=NULL)
 		m_fully_sparse=true;
 	else
 	{
-		SG_WARNING( "The provided kernel does not support to optimize inducing features\n");
+		io::warn( "The provided kernel does not support to optimize inducing features\n");
 		m_fully_sparse=false;
 	}
 }
@@ -189,13 +189,13 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	// the time complexity O(m^2*n) if the TO DO is done
-	REQUIRE(param, "Param not set\n");
-	REQUIRE(!(strcmp(param->m_name, "log_scale")
+	require(param, "Param not set\n");
+	require(!(strcmp(param->m_name, "log_scale")
 			&& strcmp(param->m_name, "log_inducing_noise")
 			&& strcmp(param->m_name, "inducing_features")),
 		    "Can't compute derivative of"
 			" the nagative log marginal likelihood wrt {}.{} parameter\n",
-			get_name(), param->m_name)
+			get_name(), param->m_name);
 
 	if (!strcmp(param->m_name, "log_inducing_noise"))
 		// wrt inducing_noise
@@ -209,7 +209,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 			int32_t dim=m_inducing_features.num_rows;
 			int32_t num_samples=m_inducing_features.num_cols;
 			res=SGVector<float64_t>(dim*num_samples);
-			SG_WARNING("Derivative wrt {} cannot be computed since the kernel does not support fully sparse inference\n",
+			io::warn("Derivative wrt {} cannot be computed since the kernel does not support fully sparse inference\n",
 				param->m_name);
 			res.zero();
 			return res;
@@ -240,7 +240,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_kernel(
 	const TParameter* param)
 {
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set\n");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -283,15 +283,15 @@ void CSingleSparseInference::check_bound(SGVector<float64_t> bound, const char* 
 {
 	if (bound.vlen>1)
 	{
-		REQUIRE(m_inducing_features.num_rows>0, "Inducing features must set before this method is called\n");
-		REQUIRE(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
+		require(m_inducing_features.num_rows>0, "Inducing features must set before this method is called\n");
+		require(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
 			"The length of inducing features ({}x{})",
 			" and the length of bound constraints ({}) are different\n", 
 			m_inducing_features.num_rows,m_inducing_features.num_cols,bound.vlen);
 	}
 	else if(bound.vlen==1)
 	{
-		SG_WARNING("All inducing_features ({}x{}) are constrainted by the single value ({}) in the {} bound\n",
+		io::warn("All inducing_features ({}x{}) are constrainted by the single value ({}) in the {} bound\n",
 			m_inducing_features.num_rows,m_inducing_features.num_cols,bound[0],name);
 	}
 }
@@ -309,13 +309,13 @@ void CSingleSparseInference::set_upper_bound_of_inducing_features(SGVector<float
 
 void CSingleSparseInference::set_max_iterations_for_inducing_features(int32_t it)
 {
-	REQUIRE(it>0, "Iteration ({}) must be positive\n",it);
+	require(it>0, "Iteration ({}) must be positive\n",it);
 	m_max_ind_iterations=it;
 }
 void CSingleSparseInference::set_tolearance_for_inducing_features(float64_t tol)
 {
 
-	REQUIRE(tol>0, "Tolearance ({}) must be positive\n",tol);
+	require(tol>0, "Tolearance ({}) must be positive\n",tol);
 	m_ind_tolerance=tol;
 }
 void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization, FirstOrderMinimizer* minimizer)
@@ -324,7 +324,7 @@ void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmiza
 	if (m_opt_inducing_features)
 	{
 		check_fully_sparse();
-		REQUIRE(m_fully_sparse,"Please use a kernel which has the functionality about optimizing inducing features\n");
+		require(m_fully_sparse,"Please use a kernel which has the functionality about optimizing inducing features\n");
 	}
 	if(minimizer)
 	{
@@ -345,11 +345,11 @@ void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmiza
 		SG_REF(m_inducing_minimizer);
 #else
 		m_inducing_minimizer=NULL;
-		SG_WARNING("We require NLOPT library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)\n");
+		io::warn("We require NLOPT library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)\n");
 #endif //HAVE_NLOPT
 #else 
 		m_inducing_minimizer=NULL;
-		SG_WARNING("We require NLOPT (GPL License) library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)");
+		io::warn("We require NLOPT (GPL License) library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)");
 #endif //USE_GPL_SHOGUN
 	}
 }
@@ -359,7 +359,7 @@ void CSingleSparseInference::optimize_inducing_features()
 	if (!m_opt_inducing_features)
 		return;
 
-	REQUIRE(m_inducing_minimizer, "Please call enable_optimizing_inducing_features() first\n");
+	require(m_inducing_minimizer, "Please call enable_optimizing_inducing_features() first\n");
 	SingleSparseInferenceCostFunction *cost_fun=new SingleSparseInferenceCostFunction();
 	cost_fun->set_target(this);
 	bool cleanup=false;

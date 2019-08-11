@@ -95,7 +95,7 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	comb_feat_2->append_feature_obj(feat_2);
 	comb_feat_2->set_subfeature_weight(2, 2);
 
-	SG_INFO("Beginning dot() testing");
+	io::info("Beginning dot() testing\n");
 	int32_t result = comb_feat_1->dot(0, comb_feat_2, 0);
 	// comb_feat_1[0] dot comb_feat_2[0] =
 	//		feat_1_weight * feat_3_weight * (feat_1 dot feat_3) +
@@ -106,9 +106,9 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	EXPECT_EQ(result, 1*3*100 - 2*1*50 - 3*2*100);
 	result = comb_feat_1->dot(0,comb_feat_2,1);
 	EXPECT_EQ(result, 1*3*28 - 2*1*14 - 3*2*28);
-	SG_INFO("Completed dot() testing");
+	io::info("Completed dot() testing\n");
 
-	SG_INFO("Beginning dot() testing");
+	io::info("Beginning dot() testing\n");
 	SGVector<float64_t> vector(9);
 	for (index_t i=0; i<9; i++)
 	{
@@ -117,7 +117,7 @@ TEST(CombinedDotFeaturesTest, dot_products)
 
 	result = comb_feat_1->dot(1, vector);
 	EXPECT_EQ(result, 1 * 134 - 2 * 170 + 3 * 412);
-	SG_INFO("Completed dense_dot() testing");
+	io::info("Completed dense_dot() testing\n");
 
 	SG_UNREF(comb_feat_1);
 	SG_UNREF(comb_feat_2);

@@ -251,10 +251,10 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute gm and gv
 	//and the formula of the appendix
-	REQUIRE(param, "Param is required (param should not be NULL)\n");
-	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	require(param, "Param is required (param should not be NULL)\n");
+	require(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
-	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
+	require(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using the piecewise bound ",
 		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter",
@@ -362,7 +362,7 @@ bool CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<flo
 	status=CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 	if (status)
 	{
-		REQUIRE(lab->get_label_type()==LT_BINARY,
+		require(lab->get_label_type()==LT_BINARY,
 			"Labels must be type of CBinaryLabels\n");
 
 		m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();

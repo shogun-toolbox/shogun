@@ -74,7 +74,7 @@ SGMatrix<T> CDenseMatrixOperator<T>::get_matrix_operator() const
 template<class T>
 SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
 	{
-		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
+		require(m_operator.matrix, "Operator not initialized!\n");
 
 		typedef Matrix<T, Dynamic, 1> VectorXt;
 		typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
@@ -92,8 +92,8 @@ SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
 template<class T>
 void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	{
-		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
-		REQUIRE(diag.vector, "Diagonal not initialized!\n");
+		require(m_operator.matrix, "Operator not initialized!\n");
+		require(diag.vector, "Diagonal not initialized!\n");
 
 		typedef Matrix<T, Dynamic, 1> VectorXt;
 		typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
@@ -101,7 +101,7 @@ void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 		Map<MatrixXt> _op(m_operator.matrix, m_operator.num_rows,
 			m_operator.num_cols);
 
-		REQUIRE(static_cast<int32_t>(_op.diagonalSize())==diag.vlen,
+		require(static_cast<int32_t>(_op.diagonalSize())==diag.vlen,
 			"Dimension mismatch!\n");
 
 		Map<VectorXt> _diag(diag.vector, diag.vlen);
@@ -111,8 +111,8 @@ void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 template<class T>
 SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
-		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
-		REQUIRE(this->get_dimension()==b.vlen,
+		require(m_operator.matrix, "Operator not initialized!\n");
+		require(this->get_dimension()==b.vlen,
 			"Number of rows of vector must be equal to the "
 			"number of cols of the operator!\n");
 
@@ -134,7 +134,7 @@ SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 template<> \
 SGVector<type> CDenseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
-		SG_ERROR("Not supported for {}\n", #type);\
+		error("Not supported for {}\n", #type);\
 		return b; \
 	}
 

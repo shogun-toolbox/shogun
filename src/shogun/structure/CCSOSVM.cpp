@@ -112,7 +112,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	r = MSK_maketask(m_msk_env, 1, k, &task);
 
 	if (r != MSK_RES_OK)
-		SG_ERROR("Could not create MOSEK task: {}\n", r)
+		error("Could not create MOSEK task: {}\n", r);
 
 	r = MSK_inputdata(task,
 			1,k,
@@ -124,7 +124,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 			bkx,blx,bux);
 
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error setting input data: {}\n", r)
+		error("Error setting input data: {}\n", r);
 
 	/* coefficients for the Gram matrix */
 	t = 0;
@@ -141,7 +141,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 
 	r = MSK_putqobj(task, k*(k+1)/2, qsubi, qsubj, qval);
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error MSK_putqobj: {}\n", r)
+		error("Error MSK_putqobj: {}\n", r);
 
 	/* DEBUG */
 	/*
@@ -159,7 +159,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	r = MSK_optimize(task);
 
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error MSK_optimize: {}\n", r)
+		error("Error MSK_optimize: {}\n", r);
 
 	MSK_getsolutionslice(task,
 			MSK_SOL_ITR,
@@ -247,7 +247,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	expected_descent = -primal_obj_b;
 	initial_primal_obj = primal_obj_b;
 
-	SG_INFO("Running CCCP inner loop solver: ")
+	io::info("Running CCCP inner loop solver: ");
 
 	while ((!suff_decrease_cond) && (expected_descent<-m_eps) && (iter<m_max_iter))
 	{
@@ -255,7 +255,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		++size_active;
 
 		SG_DEBUG("ITER {}\n", iter)
-		SG_PRINT(".")
+		io::print(".");
 
 		/* add constraint */
 		dXc.resize_array(size_active);
@@ -321,7 +321,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 					proximal_rhs[i] = (1+rho)*delta[i] - rho*gammaG0[i];
 					break;
 				default:
-					SG_ERROR("Invalid QPType: {}\n", m_qp_type)
+					error("Invalid QPType: {}\n", m_qp_type);
 			}
 		}
 
@@ -351,7 +351,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				*/
 				break;
 			default:
-				SG_ERROR("Invalid QPType: {}\n", m_qp_type)
+				error("Invalid QPType: {}\n", m_qp_type);
 		}
 
 		/* DEBUG */
@@ -506,7 +506,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		}
 	} // end cutting plane while loop
 
-	SG_INFO(" Inner loop optimization finished.\n")
+	io::info(" Inner loop optimization finished.\n");
 
 	for (index_t j = 0; j < size_active; j++)
 		SG_FREE(G[j]);
@@ -548,7 +548,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		}
 		else
 		{
-			SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
+			error("model({}) should have either of psi_computed or psi_computed_sparse"
 					"to be set true\n", m_model->get_name());
 		}
 		/*
@@ -697,12 +697,12 @@ void CCCSOSVM::init()
 
 	/* check return code */
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error while creating mosek env: {}\n", r)
+		error("Error while creating mosek env: {}\n", r);
 
 	/* initialize the environment */
 	r = MSK_initenv(m_msk_env);
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error while initializing mosek env: {}\n", r)
+		error("Error while initializing mosek env: {}\n", r);
 #endif
 
 	SG_ADD(&m_C, "m_C", "C");

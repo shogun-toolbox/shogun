@@ -169,7 +169,7 @@ int32_t CLMNN::get_k() const
 
 void CLMNN::set_k(const int32_t k)
 {
-	REQUIRE(k>0, "The number of target neighbors per example must be larger than zero\n");
+	require(k>0, "The number of target neighbors per example must be larger than zero\n");
 	m_k = k;
 }
 
@@ -190,7 +190,7 @@ float64_t CLMNN::get_stepsize() const
 
 void CLMNN::set_stepsize(const float64_t stepsize)
 {
-	REQUIRE(stepsize>0, "The step size used in gradient descent must be larger than zero\n")
+	require(stepsize>0, "The step size used in gradient descent must be larger than zero\n");
 	m_stepsize = stepsize;
 }
 
@@ -201,8 +201,8 @@ float64_t CLMNN::get_stepsize_threshold() const
 
 void CLMNN::set_stepsize_threshold(const float64_t stepsize_threshold)
 {
-	REQUIRE(stepsize_threshold>0,
-			"The threshold for the step size must be larger than zero\n")
+	require(stepsize_threshold>0,
+			"The threshold for the step size must be larger than zero\n");
 	m_stepsize_threshold = stepsize_threshold;
 }
 
@@ -213,7 +213,7 @@ int32_t CLMNN::get_maxiter() const
 
 void CLMNN::set_maxiter(const int32_t maxiter)
 {
-	REQUIRE(maxiter>0, "The number of maximum iterations must be larger than zero\n")
+	require(maxiter>0, "The number of maximum iterations must be larger than zero\n");
 	m_maxiter = maxiter;
 }
 
@@ -234,8 +234,8 @@ float64_t CLMNN::get_obj_threshold() const
 
 void CLMNN::set_obj_threshold(const float64_t obj_threshold)
 {
-	REQUIRE(obj_threshold>0,
-			"The threshold for the objective must be larger than zero\n")
+	require(obj_threshold>0,
+			"The threshold for the objective must be larger than zero\n");
 	m_obj_threshold = obj_threshold;
 }
 
@@ -302,7 +302,7 @@ const char* CLMNNStatistics::get_name() const
 
 void CLMNNStatistics::resize(int32_t size)
 {
-	REQUIRE(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
+	require(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
 			 " Given value is {}.\n", size);
 
 	obj.resize_vector(size);
@@ -313,7 +313,7 @@ void CLMNNStatistics::resize(int32_t size)
 void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_iter,
 		uint32_t num_impostors_iter)
 {
-	REQUIRE(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
+	require(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
 			"must be larger or equal to zero and less than the size ({}). Given valu is {}.\n", obj.vlen, iter);
 
 	obj[iter] = obj_iter;

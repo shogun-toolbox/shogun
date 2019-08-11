@@ -37,7 +37,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
 
 CRandomFourierDotFeatures::CRandomFourierDotFeatures(CFile* loader)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 CRandomFourierDotFeatures::CRandomFourierDotFeatures(const CRandomFourierDotFeatures& orig)
@@ -100,7 +100,7 @@ SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector(
 			break;
 
 		default:
-			SG_ERROR("Unknown kernel\n");
+			error("Unknown kernel\n");
 	}
 	return vec;
 }

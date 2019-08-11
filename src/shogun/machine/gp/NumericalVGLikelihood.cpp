@@ -86,7 +86,7 @@ void CNumericalVGLikelihood::init()
 
 void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 {
-	REQUIRE(n>0, "The number ({}) of Gaussian Hermite point should be positive\n",n);
+	require(n>0, "The number ({}) of Gaussian Hermite point should be positive\n",n);
 	if (m_GHQ_N!=n)
 	{
 		m_GHQ_N=n;
@@ -97,8 +97,8 @@ void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
 	const TParameter* param) const
 {
-	REQUIRE(param, "Param is required (param should not be NULL)\n");
-	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	require(param, "Param is required (param should not be NULL)\n");
+	require(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
 	if (!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")))
 		return SGVector<float64_t> ();
 
@@ -160,10 +160,10 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 	//based on the likKL(v, lik, varargin) function in infKL.m
 
 	//compute gradient using numerical integration
-	REQUIRE(param, "Param is required (param should not be NULL)\n");
-	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	require(param, "Param is required (param should not be NULL)\n");
+	require(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
-	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
+	require(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using numerical integration ",
 		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter\n",
@@ -228,18 +228,18 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 	{
 		if (supports_binary())
 		{
-			REQUIRE(lab->get_label_type()==LT_BINARY,
+			require(lab->get_label_type()==LT_BINARY,
 				"Labels must be type of CBinaryLabels\n");
 		}
 		else
 		{
 			if (supports_regression())
 			{
-				REQUIRE(lab->get_label_type()==LT_REGRESSION,
+				require(lab->get_label_type()==LT_REGRESSION,
 					"Labels must be type of CRegressionLabels\n");
 			}
 			else
-				SG_ERROR("Unsupported Label type\n");
+				error("Unsupported Label type\n");
 		}
 
 		if (supports_binary())
@@ -254,7 +254,7 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 #ifdef USE_GPL_SHOGUN
 			CIntegration::generate_gauher(m_xgh, m_wgh);
 #else
-			SG_GPL_ONLY
+			gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 			m_is_init_GHQ=true;
 		}

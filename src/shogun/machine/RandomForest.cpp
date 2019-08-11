@@ -88,7 +88,7 @@ CRandomForest::~CRandomForest()
 
 void CRandomForest::set_machine(CMachine* machine)
 {
-	SG_ERROR("Machine is set as CRandomCART and cannot be changed\n")
+	error("Machine is set as CRandomCART and cannot be changed\n");
 }
 
 void CRandomForest::set_weights(SGVector<float64_t> weights)
@@ -103,46 +103,46 @@ SGVector<float64_t> CRandomForest::get_weights() const
 
 void CRandomForest::set_feature_types(SGVector<bool> ft)
 {
-	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
+	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n");
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_types(ft);
 }
 
 SGVector<bool> CRandomForest::get_feature_types() const
 {
-	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
+	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n");
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_types();
 }
 
 EProblemType CRandomForest::get_machine_problem_type() const
 {
-	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
+	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n");
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_machine_problem_type();
 }
 
 void CRandomForest::set_machine_problem_type(EProblemType mode)
 {
-	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
+	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n");
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_machine_problem_type(mode);
 }
 
 void CRandomForest::set_num_random_features(int32_t rand_featsize)
 {
-	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
-	REQUIRE(rand_featsize>0,"feature subset size should be greater than 0\n")
+	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n");
+	require(rand_featsize>0,"feature subset size should be greater than 0\n");
 
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_featsize);
 }
 
 int32_t CRandomForest::get_num_random_features() const
 {
-	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
+	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n");
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_subset_size();
 }
 
 void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 {
-	REQUIRE(m,"Machine supplied is NULL\n")
-	REQUIRE(m_machine,"Reference Machine is NULL\n")
+	require(m,"Machine supplied is NULL\n");
+	require(m_machine,"Reference Machine is NULL\n");
 
 	CRandomCARTree* tree=dynamic_cast<CRandomCARTree*>(m);
 
@@ -173,7 +173,7 @@ bool CRandomForest::train_machine(CFeatures* data)
 		m_features = data;
 	}
 	
-	REQUIRE(m_features, "Training features not set!\n");
+	require(m_features, "Training features not set!\n");
 	
 	dynamic_cast<CRandomCARTree*>(m_machine)->pre_sort_features(m_features, m_sorted_transposed_feats, m_sorted_indices);
 

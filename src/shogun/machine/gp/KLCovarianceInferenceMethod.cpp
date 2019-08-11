@@ -114,7 +114,7 @@ CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
-		SG_ERROR("Provided inference is not of type CKLCovarianceInferenceMethod!\n")
+		error("Provided inference is not of type CKLCovarianceInferenceMethod!\n");
 
 	SG_REF(inference);
 	return (CKLCovarianceInferenceMethod*)inference;
@@ -167,7 +167,7 @@ bool CKLCovarianceInferenceMethod::precompute()
 
 void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
-	REQUIRE(gradient.vlen==m_alpha.vlen,
+	require(gradient.vlen==m_alpha.vlen,
 		"The length of gradients ({}) should the same as the length of parameters ({})\n",
 		gradient.vlen, m_alpha.vlen);
 

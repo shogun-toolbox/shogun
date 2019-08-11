@@ -113,13 +113,13 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 		for (index_t i=0; i<num_features; ++i)
 			measures[i]=compute_measures(features, i);
 
-		if (env()->io()->get_loglevel()==MSG_DEBUG || env()->io()->get_loglevel()==MSG_GCDEBUG)
+		if (env()->io()->get_loglevel()<=io::MSG_DEBUG)
 			measures.display_vector("measures");
 
 		// rank the measures
 		SGVector<index_t> argsorted=CMath::argsort(measures);
 
-		if (env()->io()->get_loglevel()==MSG_DEBUG || env()->io()->get_loglevel()==MSG_GCDEBUG)
+		if (env()->io()->get_loglevel()<=io::MSG_DEBUG)
 			argsorted.display_vector("argsorted");
 
 		// make sure that we don't end up with lesser feats than target dim
@@ -184,17 +184,17 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 	m_subset->remove_all_subsets();
 
 	// sanity checks
-	REQUIRE(features, "Features cannot be NULL!\n");
-	REQUIRE(features->get_num_vectors()>0,
+	require(features, "Features cannot be NULL!\n");
+	require(features->get_num_vectors()>0,
 			"Number of feature vectors has to be positive!\n");
-	REQUIRE(m_target_dim>0, "Target dimension ({}) has to be positive! Set "
+	require(m_target_dim>0, "Target dimension ({}) has to be positive! Set "
 			"a higher number via set_target_dim().\n", m_target_dim);
 
 	index_t num_features=get_num_features(features);
-	REQUIRE(num_features>0, "Invalid number of features ({})! Most likely "
+	require(num_features>0, "Invalid number of features ({})! Most likely "
 			"feature selection cannot be performed for {}!\n",
 			num_features, features->get_name());
-	REQUIRE(num_features>m_target_dim,
+	require(num_features>m_target_dim,
 			"Number of original features (dimensions of the feature vectors) "
 			"({}) has to be greater that the target dimension ({})!\n",
 			num_features, m_target_dim);
@@ -209,7 +209,7 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 		case BACKWARD_ELIMINATION:
 			return apply_backward_elimination(feats_copy);
 		default:
-			SG_ERROR("Specified algorithm not yet supported!\n");
+			error("Specified algorithm not yet supported!\n");
 			return features;
 	}
 
@@ -220,7 +220,7 @@ template <class ST>
 CFeatures*
 CFeatureSelection<ST>::inverse_transform(CFeatures* features, bool inplace)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 
 	return nullptr;
 }
@@ -255,7 +255,7 @@ SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
 template <class ST>
 index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 {
-	REQUIRE(features, "Features not initialized!\n");
+	require(features, "Features not initialized!\n");
 
 	EFeatureClass f_class=features->get_feature_class();
 
@@ -264,17 +264,17 @@ index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 		case C_DENSE:
 		{
 			CDenseFeatures<ST>* d_feats=dynamic_cast<CDenseFeatures<ST>*>(features);
-			REQUIRE(d_feats, "Type mismatch for dense features!\n");
+			require(d_feats, "Type mismatch for dense features!\n");
 			return d_feats->get_num_features();
 		}
 		case C_SPARSE:
 		{
 			CSparseFeatures<ST>* s_feats=dynamic_cast<CSparseFeatures<ST>*>(features);
-			REQUIRE(s_feats, "Type mismatch for sparse features!\n");
+			require(s_feats, "Type mismatch for sparse features!\n");
 			return s_feats->get_num_features();
 		}
 		default:
-			SG_ERROR("Number of features not available for {}!\n",
+			error("Number of features not available for {}!\n",
 					features->get_name());
 			break;
 	}

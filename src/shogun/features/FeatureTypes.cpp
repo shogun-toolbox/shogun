@@ -43,7 +43,7 @@ namespace shogun
 		case F_ANY:
 			return "ANY";
 		default:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return "UNKNOWN";
 		}
 	}

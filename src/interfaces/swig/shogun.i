@@ -143,7 +143,7 @@ import org.jblas.*;
     }
     else
     {
-        SG_ERROR("There is no option in %s::%s for value %i",
+        error("There is no option in %s::%s for value %i",
                 $self->get_name(), TAG.name().c_str(), val);
     }
 %enddef

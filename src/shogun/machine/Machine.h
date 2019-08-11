@@ -218,14 +218,14 @@ class CMachine : public CStoppableSGObject
 		/** applies to one vector */
 		virtual float64_t apply_one(int32_t i)
 		{
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return 0.0;
 		}
 
 		/** returns type of problem machine solves */
 		virtual EProblemType get_machine_problem_type() const
 		{
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return PT_BINARY;
 		}
 
@@ -250,20 +250,20 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
-			SG_ERROR(
+			error(
 			    "train_machine is not yet implemented for {}!\n", get_name());
 			return false;
 		}
 
 		virtual bool train_dense(CFeatures* data)
 		{
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return false;
 		}
 
 		virtual bool train_string(CFeatures* data)
 		{
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return false;
 		}
 
@@ -293,7 +293,7 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool continue_train()
 		{
-			SG_ERROR("Training continuation not supported by this model.\n");
+			error("Training continuation not supported by this model.\n");
 			return false;
 		}
 

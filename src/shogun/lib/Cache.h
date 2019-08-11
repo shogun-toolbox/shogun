@@ -43,7 +43,7 @@ template<class T> class CCache : public CSGObject
 	 /** default constructor  */
 	CCache() :CSGObject()
 	{
-		SG_UNSTABLE("CCache::CCache()", "\n")
+		io::unstable("CCache::CCache()");
 
 		cache_block=NULL;
 		lookup_table=NULL;
@@ -70,7 +70,7 @@ template<class T> class CCache : public CSGObject
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
-			SG_INFO("doing without cache.\n")
+			io::info("doing without cache.\n");
 			cache_block=NULL;
 			lookup_table=NULL;
 			cache_table=NULL;
@@ -83,7 +83,7 @@ template<class T> class CCache : public CSGObject
 		entry_size=obj_size;
 		nr_cache_lines=CMath::min((int64_t) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
 
-		SG_INFO("creating {} cache lines (total size: {} byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T))
+		io::info("creating {} cache lines (total size: {} byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=SG_MALLOC(T, obj_size*nr_cache_lines);
 		lookup_table=SG_MALLOC(TEntry, num_entries);
 		cache_table=SG_MALLOC(TEntry*, nr_cache_lines);

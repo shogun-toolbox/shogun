@@ -100,7 +100,7 @@ bool CSigmoidCalibration::fit_binary(
 
 CBinaryLabels* CSigmoidCalibration::calibrate_binary(CBinaryLabels* predictions)
 {
-	REQUIRE(
+	require(
 	    m_sigmoid_as.size() == 1,
 	    "Parameters not fitted, which need to be fitted before calibrating.\n");
 	CStatistics::SigmoidParamters params;
@@ -145,7 +145,7 @@ CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
 {
 	index_t num_classes = predictions->get_num_classes();
 	index_t num_samples = predictions->get_num_labels();
-	REQUIRE(
+	require(
 	    m_sigmoid_as.size() == num_classes,
 	    "Parameters not fitted, which need to be fitted before calibrating.\n");
 

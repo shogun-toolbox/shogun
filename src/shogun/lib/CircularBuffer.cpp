@@ -48,7 +48,7 @@ int32_t CCircularBuffer::push(SGVector<char> source)
 {
 	if (source.vector==NULL || source.vlen==0)
 	{
-		SG_ERROR("CCircularBuffer::push(SGVector<char>):: Invalid parameters! Source shouldn't be NULL or zero sized\n");
+		error("CCircularBuffer::push(SGVector<char>):: Invalid parameters! Source shouldn't be NULL or zero sized\n");
 		return -1;
 	}
 
@@ -92,7 +92,7 @@ int32_t CCircularBuffer::push(FILE* source, int32_t source_size)
 {
 	if (source==NULL || source_size==0)
 	{
-		SG_ERROR("CCircularBuffer::push(FILE*, int32_t):: Invalid parameters! Source shouldn't be NULL or zero sized\n");
+		error("CCircularBuffer::push(FILE*, int32_t):: Invalid parameters! Source shouldn't be NULL or zero sized\n");
 		return -1;
 	}
 
@@ -175,7 +175,7 @@ bool CCircularBuffer::has_next()
 {
 	if (m_tokenizer==NULL)
 	{
-		SG_ERROR("CCircularBuffer::has_next():: Tokenizer is not initialized\n");
+		error("CCircularBuffer::has_next():: Tokenizer is not initialized\n");
 		return false;
 	}
 
@@ -214,7 +214,7 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 
 	if (m_tokenizer==NULL)
 	{
-		SG_ERROR("CCircularBuffer::next_token_idx(index_t&):: Tokenizer is not initialized\n");
+		error("CCircularBuffer::next_token_idx(index_t&):: Tokenizer is not initialized\n");
 		return 0;
 	}
 
@@ -308,7 +308,7 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 {
 	if (source==NULL || source_size==0)
 	{
-		SG_ERROR("CCircularBuffer::append_chunk(const char*, int32_t, bool):: Invalid parameters!\
+		error("CCircularBuffer::append_chunk(const char*, int32_t, bool):: Invalid parameters!\
 				Source shouldn't be NULL or zero sized\n");
 		return -1;
 	}
@@ -345,7 +345,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 {
 	if (dest==NULL || dest_size==NULL)
 	{
-		SG_ERROR("CCircularBuffer::detach_chunk(...):: Invalid parameters! Pointers are NULL\n");
+		error("CCircularBuffer::detach_chunk(...):: Invalid parameters! Pointers are NULL\n");
 		return;
 	}
 

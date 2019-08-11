@@ -139,7 +139,7 @@ class CPlif: public CPlifBase
 			else if (transform== T_LINEAR_PLUS3)
 				return "(+3)";
 			else
-				SG_ERROR("wrong type")
+				error("wrong type");
 			return "";
 		}
 
@@ -403,7 +403,7 @@ class CPlif: public CPlifBase
 		 */
 		virtual void list_plif() const
 		{
-			SG_PRINT("CPlif(min_value={:1.2f}, max_value={:1.2f}, use_svm={})\n", min_value, max_value, use_svm)
+			io::print("CPlif(min_value={:1.2f}, max_value={:1.2f}, use_svm={})\n", min_value, max_value, use_svm);
 		}
 
 		/** delete plif struct

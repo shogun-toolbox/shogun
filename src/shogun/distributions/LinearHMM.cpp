@@ -53,7 +53,7 @@ bool CLinearHMM::train(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_WORD)
 		{
-			SG_ERROR("Expected features of class string type word!\n")
+			error("Expected features of class string type word!\n");
 		}
 		set_features(data);
 	}

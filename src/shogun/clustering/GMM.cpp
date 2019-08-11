@@ -114,7 +114,7 @@ bool CGMM::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n")
+				error("Specified features are not of type CDotFeatures\n");
 		set_features(data);
 	}
 
@@ -124,7 +124,7 @@ bool CGMM::train(CFeatures* data)
 float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
 	if (!features)
-		SG_ERROR("No features to train on.\n")
+		error("No features to train on.\n");
 
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
@@ -204,10 +204,10 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
 {
 	if (!features)
-		SG_ERROR("No features to train on.\n")
+		error("No features to train on.\n");
 
 	if (m_components.size()<3)
-		SG_ERROR("Can't run SMEM with less than 3 component mixture model.\n")
+		error("Can't run SMEM with less than 3 component mixture model.\n");
 
 	CDotFeatures* dotdata = features->as<CDotFeatures>();
 	auto num_vectors = dotdata->get_num_vectors();
@@ -697,13 +697,13 @@ CDistribution* CGMM::get_component(index_t index) const
 
 float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
 float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 1;
 }
 
@@ -802,7 +802,7 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 
 SGVector<float64_t> CGMM::sample()
 {
-	REQUIRE(m_components.size()>0, "Number of mixture components is {} but "
+	require(m_components.size()>0, "Number of mixture components is {} but "
 			"must be positive\n", m_components.size());
 	
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);

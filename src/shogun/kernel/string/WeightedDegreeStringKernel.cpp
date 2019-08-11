@@ -148,10 +148,10 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 
 	int32_t len=sf_l->get_max_vector_length();
 	if (lhs_changed && !sf_l->have_same_length(len))
-		SG_ERROR("All strings in WD kernel must have same length (lhs wrong)!\n")
+		error("All strings in WD kernel must have same length (lhs wrong)!\n");
 
 	if (rhs_changed && !sf_r->have_same_length(len))
-		SG_ERROR("All strings in WD kernel must have same length (rhs wrong)!\n")
+		error("All strings in WD kernel must have same length (rhs wrong)!\n");
 
 	SG_UNREF(alphabet);
 	alphabet=sf_l->get_alphabet();
@@ -619,7 +619,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	int32_t len=new_weights.num_cols;
 
 	if (d!=degree || len<0)
-		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got ({} x {})\n", len, degree)
+		error("WD: Dimension mismatch (should be (seq_length | 1) x degree) got ({} x {})\n", len, degree);
 
 	degree=d;
 	length=len;
@@ -654,7 +654,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 	}
 
 	if (seq_length!=len)
-		SG_ERROR("seq_length = {}, position_weights_length={}\n", seq_length, len)
+		error("seq_length = {}, position_weights_length={}\n", seq_length, len);
 
 	SG_FREE(position_weights);
 	position_weights=SG_MALLOC(float64_t, len);

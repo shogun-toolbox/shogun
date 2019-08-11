@@ -123,7 +123,7 @@ class CQDA : public CNativeMulticlassMachine
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("QDA requires SIMPLE REAL valued features\n")
+				error("QDA requires SIMPLE REAL valued features\n");
 
 			SG_REF(feat);
 			SG_UNREF(m_features);
@@ -161,7 +161,7 @@ class CQDA : public CNativeMulticlassMachine
 		 */
 		inline SGMatrix< float64_t > get_cov(int32_t c) const
 		{
-			REQUIRE(m_store_covs, "Covariance matrices were not stored. "
+			require(m_store_covs, "Covariance matrices were not stored. "
 					"Please activate to access them subsequently.\n");
 			return SGMatrix< float64_t >(m_covs.get_matrix(c), m_dim, m_dim, false);
 		}

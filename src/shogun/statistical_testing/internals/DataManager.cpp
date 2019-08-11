@@ -62,7 +62,7 @@ index_t DataManager::get_num_samples() const
 	index_t n=0;
 	typedef const std::unique_ptr<DataFetcher> fetcher_type;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { return f->m_num_samples==0; }))
-		SG_ERROR("number of samples from all the distributions are not set!")
+		error("number of samples from all the distributions are not set!");
 	else
 		std::for_each(fetchers.begin(), fetchers.end(), [&n](fetcher_type& f) { n+=f->m_num_samples; });
 	SG_DEBUG("Leaving!\n");
@@ -75,7 +75,7 @@ index_t DataManager::get_min_blocksize() const
 	index_t min_blocksize=0;
 	typedef const std::unique_ptr<DataFetcher> fetcher_type;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { return f->m_num_samples==0; }))
-		SG_ERROR("number of samples from all the distributions are not set!")
+		error("number of samples from all the distributions are not set!");
 	else
 	{
 		index_t divisor=0;
@@ -93,19 +93,19 @@ void DataManager::set_blocksize(index_t blocksize)
 	SG_DEBUG("Entering!\n");
 	auto n=get_num_samples();
 
-	REQUIRE(n>0,
+	require(n>0,
 			"Total number of samples is 0! Please set the number of samples!\n");
-	REQUIRE(blocksize>0 && blocksize<=n,
+	require(blocksize>0 && blocksize<=n,
 			"The blocksize has to be within [0, {}], given = {}!\n",
 			n, blocksize);
-	REQUIRE(n%blocksize==0,
+	require(n%blocksize==0,
 		"Total number of samples ({}) has to be divisble by the blocksize ({})!\n",
 		n, blocksize);
 
 	for (size_t i=0; i<fetchers.size(); ++i)
 	{
 		index_t m=fetchers[i]->m_num_samples;
-		REQUIRE((blocksize*m)%n==0,
+		require((blocksize*m)%n==0,
 			"Blocksize ({}) cannot be even distributed with a ratio of {}!\n",
 			blocksize, m/n);
 		fetchers[i]->fetch_blockwise().with_blocksize(blocksize*m/n);
@@ -117,7 +117,7 @@ void DataManager::set_blocksize(index_t blocksize)
 void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(num_blocks_per_burst>0,
+	require(num_blocks_per_burst>0,
 	   	"Number of blocks per burst ({}) has to be greater than 0!\n",
 		num_blocks_per_burst);
 
@@ -127,14 +127,14 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	{
 		blocksize+=f->m_block_details.m_blocksize;
 	});
-	REQUIRE(blocksize>0,
+	require(blocksize>0,
 			"Blocksizes are not set!\n");
 
 	index_t max_num_blocks_per_burst=get_num_samples()/blocksize;
 	if (num_blocks_per_burst>max_num_blocks_per_burst)
 	{
-		SG_INFO("There can only be {} blocks per burst given the blocksize ({})!\n", max_num_blocks_per_burst, blocksize);
-		SG_INFO("Setting num blocks per burst to be {} instead!\n", max_num_blocks_per_burst);
+		io::info("There can only be {} blocks per burst given the blocksize ({})!\n", max_num_blocks_per_burst, blocksize);
+		io::info("Setting num blocks per burst to be {} instead!\n", max_num_blocks_per_burst);
 		num_blocks_per_burst=max_num_blocks_per_burst;
 	}
 
@@ -146,7 +146,7 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 InitPerFeature DataManager::samples_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<(int64_t)fetchers.size(),
+	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
@@ -156,7 +156,7 @@ InitPerFeature DataManager::samples_at(index_t i)
 CFeatures* DataManager::samples_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<(int64_t)fetchers.size(),
+	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
@@ -169,7 +169,7 @@ CFeatures* DataManager::samples_at(index_t i) const
 index_t& DataManager::num_samples_at(index_t i)
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<(int64_t)fetchers.size(),
+	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
@@ -179,7 +179,7 @@ index_t& DataManager::num_samples_at(index_t i)
 const index_t DataManager::num_samples_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<(int64_t)fetchers.size(),
+	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
@@ -192,7 +192,7 @@ const index_t DataManager::num_samples_at(index_t i) const
 const index_t DataManager::blocksize_at(index_t i) const
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(i<(int64_t)fetchers.size(),
+	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
 	SG_DEBUG("Leaving!\n");
@@ -232,7 +232,7 @@ void DataManager::set_train_test_mode(bool on)
 		set_train_test_ratio(train_test_ratio);
 
 		train_test_mode = on;
-		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		require(fetchers.size() > 0, "Features are not set!\n");
 		typedef std::unique_ptr<DataFetcher> fetcher_type;
 		std::for_each(
 		    fetchers.begin(), fetchers.end(), [this](fetcher_type& f) {
@@ -242,7 +242,7 @@ void DataManager::set_train_test_mode(bool on)
 	else
 	{
 		train_test_mode = on;
-		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		require(fetchers.size() > 0, "Features are not set!\n");
 		typedef std::unique_ptr<DataFetcher> fetcher_type;
 		std::for_each(
 		    fetchers.begin(), fetchers.end(), [this](fetcher_type& f) {
@@ -264,7 +264,7 @@ void DataManager::set_train_mode(bool on)
 	if (train_test_mode)
 	{
 		train_mode=on;
-		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		require(fetchers.size() > 0, "Features are not set!\n");
 		typedef std::unique_ptr<DataFetcher> fetcher_type;
 		std::for_each(
 		    fetchers.begin(), fetchers.end(),
@@ -272,7 +272,7 @@ void DataManager::set_train_mode(bool on)
 	}
 	else
 	{
-		SG_ERROR("Train mode cannot be used without turning on Train/Test mode first!"
+		error("Train mode cannot be used without turning on Train/Test mode first!"
 		"Please call set_train_test_mode(True) before using this method!\n");
 	}
 }
@@ -288,7 +288,7 @@ void DataManager::set_cross_validation_mode(bool on)
 		cross_validation_mode=on;
 	else
 	{
-		SG_ERROR("Cross-validation mode cannot be used without turning on Train/Test mode first!"
+		error("Cross-validation mode cannot be used without turning on Train/Test mode first!"
 		"Please call set_train_test_mode(True) before using this method!\n");
 	}
 }
@@ -303,7 +303,7 @@ void DataManager::set_train_test_ratio(float64_t ratio)
 	if (train_test_mode)
 	{
 		train_test_ratio=ratio;
-		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		require(fetchers.size() > 0, "Features are not set!\n");
 		typedef std::unique_ptr<DataFetcher> fetcher_type;
 		std::for_each(
 		    fetchers.begin(), fetchers.end(), [this](fetcher_type& f) {
@@ -312,7 +312,7 @@ void DataManager::set_train_test_ratio(float64_t ratio)
 	}
 	else
 	{
-		SG_ERROR("Train-test ratio cannot be set without turning on Train/Test mode first!"
+		error("Train-test ratio cannot be set without turning on Train/Test mode first!"
 		"Please call set_train_test_mode(True) before using this method!\n");
 	}
 }
@@ -330,7 +330,7 @@ index_t DataManager::get_num_folds() const
 void DataManager::shuffle_features()
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
+	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->shuffle_features(); });
 	SG_DEBUG("Leaving!\n");
@@ -339,7 +339,7 @@ void DataManager::shuffle_features()
 void DataManager::unshuffle_features()
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
+	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->unshuffle_features(); });
 	SG_DEBUG("Leaving!\n");
@@ -349,10 +349,10 @@ void DataManager::init_active_subset()
 {
 	SG_DEBUG("Entering!\n");
 
-	REQUIRE(train_test_mode,
+	require(train_test_mode,
 		"Train-test subset cannot be used without turning on Train/Test mode first!"
 		"Please call set_train_test_mode(True) before using this method!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
+	require(fetchers.size()>0, "Features are not set!");
 
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [this](fetcher_type& f)
@@ -368,12 +368,12 @@ void DataManager::use_fold(index_t idx)
 {
 	SG_DEBUG("Entering!\n");
 
-	REQUIRE(train_test_mode,
+	require(train_test_mode,
 		"Fold subset cannot be used without turning on Train/Test mode first!"
 		"Please call set_train_test_mode(True) before using this method!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
-	REQUIRE(idx>=0, "Fold index has to be in [0, {}]!", get_num_folds()-1);
-	REQUIRE(idx<get_num_folds(), "Fold index has to be in [0, {}]!", get_num_folds()-1);
+	require(fetchers.size()>0, "Features are not set!");
+	require(idx>=0, "Fold index has to be in [0, {}]!", get_num_folds()-1);
+	require(idx<get_num_folds(), "Fold index has to be in [0, {}]!", get_num_folds()-1);
 
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [this, idx](fetcher_type& f)
@@ -388,7 +388,7 @@ void DataManager::use_fold(index_t idx)
 void DataManager::start()
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
+	require(fetchers.size()>0, "Features are not set!");
 
 	if (train_test_mode && !cross_validation_mode)
 		init_active_subset();
@@ -431,7 +431,7 @@ NextSamples DataManager::next()
 void DataManager::end()
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
+	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->end(); });
 	SG_DEBUG("Leaving!\n");
@@ -440,7 +440,7 @@ void DataManager::end()
 void DataManager::reset()
 {
 	SG_DEBUG("Entering!\n");
-	REQUIRE(fetchers.size()>0, "Features are not set!");
+	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->reset(); });
 	SG_DEBUG("Leaving!\n");

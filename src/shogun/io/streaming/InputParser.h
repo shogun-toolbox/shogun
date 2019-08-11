@@ -432,7 +432,7 @@ template <class T>
 	SG_DEBUG("entering CInputParser::start_parser()\n")
     if (is_running())
     {
-        SG_ERROR("Parser thread is already running! Multiple parse threads not supported.\n")
+        error("Parser thread is already running! Multiple parse threads not supported.\n");
     }
 
     SG_DEBUG("creating parse thread\n")

@@ -90,17 +90,17 @@ CEvaluationResult* CMachineEvaluation::evaluate() const
 {
 	SG_DEBUG("entering {}::evaluate()\n", get_name())
 
-	REQUIRE(
+	require(
 	    m_machine, "{}::evaluate() is only possible if a machine is "
 	               "attached\n",
 	    get_name());
 
-	REQUIRE(
+	require(
 	    m_features, "{}::evaluate() is only possible if features are "
 	                "attached\n",
 	    get_name());
 
-	REQUIRE(
+	require(
 	    m_labels, "{}::evaluate() is only possible if labels are "
 	              "attached\n",
 	    get_name());

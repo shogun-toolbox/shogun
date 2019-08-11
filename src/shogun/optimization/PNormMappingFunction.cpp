@@ -38,7 +38,7 @@ void PNormMappingFunction::set_norm(float64_t p)
 {
 	if(p<2.0)
 	{
-		SG_WARNING("The norm ({}) should not be less than 2.0 and we use p=2.0 in this case\n", p);
+		io::warn("The norm ({}) should not be less than 2.0 and we use p=2.0 in this case\n", p);
 		m_p=2.0;
 	}
 	else
@@ -60,7 +60,7 @@ void PNormMappingFunction::update_variable(SGVector<float64_t> variable, SGVecto
 
 void PNormMappingFunction::projection(SGVector<float64_t> input, SGVector<float64_t> output, float64_t degree)
 {
-	REQUIRE(input.vlen==output.vlen,"The lenght ({}) of input and the length ({}) of output are diffent\n",
+	require(input.vlen==output.vlen,"The lenght ({}) of input and the length ({}) of output are diffent\n",
 		input.vlen, output.vlen);
 	float64_t scale=0.0;
 	for(index_t idx=0; idx<input.vlen; idx++)

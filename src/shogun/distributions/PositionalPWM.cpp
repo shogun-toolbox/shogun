@@ -27,7 +27,7 @@ CPositionalPWM::~CPositionalPWM()
 
 bool CPositionalPWM::train(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return true;
 }
 
@@ -52,7 +52,7 @@ float64_t CPositionalPWM::get_log_model_parameter(int32_t num_param)
 
 float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 

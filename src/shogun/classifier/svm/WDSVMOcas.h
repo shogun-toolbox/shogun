@@ -180,7 +180,7 @@ class CWDSVMOcas : public CMachine
 			float64_t sum=0;
 			bool free_vec;
 			uint8_t* vec=features->get_feature_vector(num, len, free_vec);
-			//SG_INFO("len {}, string_length {}\n", len, string_length)
+			//io::info("len {}, string_length {}\n", len, string_length);
 			ASSERT(len==string_length)
 
 			for (int32_t j=0; j<string_length; j++)

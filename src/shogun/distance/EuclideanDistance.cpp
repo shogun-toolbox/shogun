@@ -35,13 +35,13 @@ bool CEuclideanDistance::init(CFeatures* l, CFeatures* r)
 	cleanup();
 
 	CDistance::init(l, r);
-	REQUIRE(l->has_property(FP_DOT), "Left hand side features must support dot property!\n");
-	REQUIRE(r->has_property(FP_DOT), "Right hand side features must support dot property!\n");
+	require(l->has_property(FP_DOT), "Left hand side features must support dot property!\n");
+	require(r->has_property(FP_DOT), "Right hand side features must support dot property!\n");
 
 	CDotFeatures* casted_l=static_cast<CDotFeatures*>(l);
 	CDotFeatures* casted_r=static_cast<CDotFeatures*>(r);
 
-	REQUIRE(casted_l->get_dim_feature_space()==casted_r->get_dim_feature_space(),
+	require(casted_l->get_dim_feature_space()==casted_r->get_dim_feature_space(),
 		"Number of dimension mismatch (l:{} vs. r:{})!\n",
 		casted_l->get_dim_feature_space(),casted_r->get_dim_feature_space());
 
@@ -78,7 +78,7 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 
 void CEuclideanDistance::precompute_lhs()
 {
-	REQUIRE(lhs, "Left hand side feature cannot be NULL!\n");
+	require(lhs, "Left hand side feature cannot be NULL!\n");
 	const index_t num_vec=lhs->get_num_vectors();
 
 	if (m_lhs_squared_norms.vlen!=num_vec)
@@ -92,7 +92,7 @@ void CEuclideanDistance::precompute_lhs()
 
 void CEuclideanDistance::precompute_rhs()
 {
-	REQUIRE(rhs, "Right hand side feature cannot be NULL!\n");
+	require(rhs, "Right hand side feature cannot be NULL!\n");
 	const index_t num_vec=rhs->get_num_vectors();
 
 	if (m_rhs_squared_norms.vlen!=num_vec)
@@ -140,14 +140,14 @@ void CEuclideanDistance::register_params()
 
 float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
 {
-	REQUIRE(lhs->get_feature_class()==C_DENSE,
+	require(lhs->get_feature_class()==C_DENSE,
 		"Left hand side (was {}) has to be CDenseFeatures instance!\n", lhs->get_name());
-	REQUIRE(rhs->get_feature_class()==C_DENSE,
+	require(rhs->get_feature_class()==C_DENSE,
 		"Right hand side (was {}) has to be CDenseFeatures instance!\n", rhs->get_name());
 
-	REQUIRE(lhs->get_feature_type()==F_DREAL,
+	require(lhs->get_feature_type()==F_DREAL,
 		"Left hand side (was {}) has to be of double type!\n", lhs->get_name());
-	REQUIRE(rhs->get_feature_type()==F_DREAL,
+	require(rhs->get_feature_type()==F_DREAL,
 		"Right hand side (was {}) has to be double type!\n", rhs->get_name());
 
 	CDenseFeatures<float64_t>* casted_lhs=static_cast<CDenseFeatures<float64_t>*>(lhs);
@@ -158,7 +158,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	SGVector<float64_t> avec=casted_lhs->get_feature_vector(idx_a);
 	SGVector<float64_t> bvec=casted_rhs->get_feature_vector(idx_b);
 
-	REQUIRE(avec.vlen==bvec.vlen, "The vector lengths are not equal ({} vs {})!\n", avec.vlen, bvec.vlen);
+	require(avec.vlen==bvec.vlen, "The vector lengths are not equal ({} vs {})!\n", avec.vlen, bvec.vlen);
 
 	float64_t result=0;
 	for (int32_t i=0; i<avec.vlen; i++)

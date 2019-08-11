@@ -39,7 +39,7 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 		{
 			if (indices_set.count(task_indices[i]))
 			{
-				//SG_PRINT("{} is in {} task\n",task_indices[i],t)
+				//io::print("{} is in {} task\n",task_indices[i],t);
 				task_indices_cut.push_back(task_indices[i]);
 			}
 		}
@@ -55,19 +55,19 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 
 float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	REQUIRE(predicted->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
-	REQUIRE(ground_truth->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
+	require(predicted->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
+	require(ground_truth->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
 
         CBinaryLabels* predicted_binary = (CBinaryLabels*)predicted;
         CBinaryLabels* ground_truth_binary = (CBinaryLabels*)ground_truth;
 
-	//SG_PRINT("Evaluate\n")
+	//io::print("Evaluate\n");
 	predicted->remove_all_subsets();
 	ground_truth->remove_all_subsets();
 	float64_t result = 0.0;
 	for (int32_t t=0; t<m_num_tasks; t++)
 	{
-		//SG_PRINT("{} task", t)
+		//io::print("{} task", t);
 		//m_tasks_indices[t].display_vector();
 		predicted->add_subset(m_tasks_indices[t]);
 		ground_truth->add_subset(m_tasks_indices[t]);

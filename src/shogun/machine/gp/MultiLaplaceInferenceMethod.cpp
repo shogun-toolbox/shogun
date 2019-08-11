@@ -139,9 +139,9 @@ void CMultiLaplaceInferenceMethod::check_members() const
 {
 	CInference::check_members();
 
-	REQUIRE(m_labels->get_label_type()==LT_MULTICLASS,
+	require(m_labels->get_label_type()==LT_MULTICLASS,
 		"Labels must be type of CMulticlassLabels\n");
-	REQUIRE(m_model->supports_multiclass(),
+	require(m_model->supports_multiclass(),
 		"likelihood model should support multi-classification\n");
 }
 
@@ -167,7 +167,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_
 		const TParameter* param)
 {
 	//SoftMax likelihood does not have this kind of derivative
-	SG_ERROR("Not Implemented!\n");
+	error("Not Implemented!\n");
 	return SGVector<float64_t> ();
 }
 
@@ -178,7 +178,7 @@ CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
-		SG_ERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
+		error("Provided inference is not of type CMultiLaplaceInferenceMethod!\n");
 
 	SG_REF(inference);
 	return (CMultiLaplaceInferenceMethod*)inference;
@@ -383,14 +383,14 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
 #else
-		SG_GPL_ONLY
+		gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 		m_nlz+=Psi_New;
 	}
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		SG_WARNING("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		io::warn("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})\n", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 }
 
@@ -429,9 +429,9 @@ float64_t CMultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t
 SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter\n",
-			get_name(), param->m_name)
+			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -451,7 +451,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set\n");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -481,7 +481,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set\n");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);

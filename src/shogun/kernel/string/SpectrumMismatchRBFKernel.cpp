@@ -136,17 +136,17 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 		std::vector<struct joint_list_struct> joint_list_;
 
 		if (d==0)
-			SG_PRINT("i={}: ", i);
+			io::print("i={}: ", i);
 		if (d==0&&target_letter_0!=-1&&(int)i!=target_letter_0)
 			continue;
 
 		if (d==1)
 		{
-			SG_PRINT("*");
+			io::print("*");
 		}
 		if (d==2)
 		{
-			SG_PRINT("+");
+			io::print("+");
 		}
 
 		for (unsigned int j=0; j<joint_list.size(); j++)
@@ -223,7 +223,7 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 			}
 		}
 		if (d==0)
-			SG_PRINT("\n");
+			io::print("\n");
 	}
 }
 
@@ -274,7 +274,7 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
 	if (AA_matrix_)
 	{
 		if (nr!=128 || nc!=128)
-			SG_ERROR("AA_matrix should be of shape 128x128\n")
+			error("AA_matrix should be of shape 128x128\n");
 
 		AA_matrix=SGMatrix<float64_t>(nc, nr);
 		SG_DEBUG("Setting AA_matrix\n")

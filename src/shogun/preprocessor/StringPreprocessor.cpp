@@ -91,7 +91,7 @@ namespace shogun
 	CFeatures*
 	CStringPreprocessor<ST>::transform(CFeatures* features, bool inplace)
 	{
-		REQUIRE(
+		require(
 		    features->get_feature_class() == C_STRING,
 		    "Provided features ({}) "
 		    "has to be of C_STRING ({}) class!\n",

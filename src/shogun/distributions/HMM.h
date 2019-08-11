@@ -1157,7 +1157,7 @@ class CHMM : public RandomMixin<CDistribution>
 			if ((line_>=N)||(column>=M))
 				SG_DEBUG("index out of range in get_b({},{}) [{},{}]\n", line_, column,N,M)
 #endif
-			//SG_PRINT("idx {}\n", line_*M+column)
+			//io::print("idx {}\n", line_*M+column);
 			return observation_matrix_b[line_*M+column];
 		}
 
@@ -1499,12 +1499,9 @@ protected:
 	bool comma_or_space(FILE* file);
 
 	/// parse error messages
-	inline void error(int32_t p_line, const char* str)
+	inline void error_in_line(int32_t p_line, const char* str)
 	{
-		if (p_line)
-			SG_ERROR("error in line {} {}\n", p_line, str)
-		else
-			SG_ERROR("error {}\n", str)
+		error("error in line {} {}\n", p_line, str);
 	}
 	//@}
 

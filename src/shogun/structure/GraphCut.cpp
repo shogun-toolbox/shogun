@@ -12,7 +12,7 @@ using namespace shogun;
 CGraphCut::CGraphCut()
 	: CMAPInferImpl()
 {
-	SG_UNSTABLE("CGraphCut::CGraphCut()", "\n");
+	io::unstable("CGraphCut::CGraphCut()");
 
 	init();
 }
@@ -74,7 +74,7 @@ void CGraphCut::init()
 	{
 		if (cards[i] != 2)
 		{
-			SG_ERROR("This implementation of the graph cut optimizer supports only binary variables.");
+			error("This implementation of the graph cut optimizer supports only binary variables.");
 		}
 	}
 
@@ -91,7 +91,7 @@ void CGraphCut::init()
 
 		if (num_vars > 3)
 		{
-			SG_ERROR("This implementation of the graph cut optimizer supports only factors of order <= 3.");
+			error("This implementation of the graph cut optimizer supports only factors of order <= 3.");
 		}
 
 		++m_num_factors_at_order[num_vars];
@@ -188,7 +188,7 @@ void CGraphCut::init_maxflow()
 
 float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 {
-	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
+	require(assignment.size() == m_fg->get_cardinalities().size(),
 	        "{}::inference(): the output assignment should be prepared as"
 	        "the same size as variables!\n", get_name());
 
@@ -291,7 +291,7 @@ void CGraphCut::add_factor(CFactor* factor)
 		// It is the sufficient and necessary condition for any function to be graph-representable
 		if (term < 0)
 		{
-			SG_ERROR("\nRegularity condition is not satisfied\n");
+			error("\nRegularity condition is not satisfied\n");
 		}
 
 		add_edge(var0, var1, term, 0);
@@ -395,7 +395,7 @@ void CGraphCut::add_factor(CFactor* factor)
 	}
 	break;
 	default:
-		SG_ERROR("This implementation of the graph cut optimizer does not support factors of order > 3.");
+		error("This implementation of the graph cut optimizer does not support factors of order > 3.");
 		break;
 	}
 }
@@ -541,7 +541,7 @@ float64_t CGraphCut::compute_maxflow()
 	// start the main loop
 	while (true)
 	{
-		if (env()->io()->get_loglevel() == MSG_DEBUG)
+		if (env()->io()->get_loglevel() <= io::MSG_DEBUG)
 			test_consistency(current_node);
 
 		GCEdge* connecting_edge;
@@ -568,7 +568,7 @@ float64_t CGraphCut::compute_maxflow()
 		adopt();
 	}
 
-	if (env()->io()->get_loglevel() == MSG_DEBUG)
+	if (env()->io()->get_loglevel() <= io::MSG_DEBUG)
 		test_consistency();
 
 	return m_flow;
@@ -959,11 +959,11 @@ void CGraphCut::print_graph()
 		{
 			if (node_i->type_tree == SOURCE)
 			{
-				SG_PRINT("\n s -> {}, cost = {}", node_i->id, node_i->tree_cap);
+				io::print("\n s -> {}, cost = {}", node_i->id, node_i->tree_cap);
 			}
 			else
 			{
-				SG_PRINT("\n {} -> t, cost = {}", node_i->id, node_i->tree_cap);
+				io::print("\n {} -> t, cost = {}", node_i->id, node_i->tree_cap);
 			}
 		}
 	}
@@ -972,7 +972,7 @@ void CGraphCut::print_graph()
 	for (int32_t i = 0; i < m_num_edges; i++)
 	{
 		GCEdge* edge = m_edges + i;
-		SG_PRINT("\n {} -> {}, cost = {}", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
+		io::print("\n {} -> {}, cost = {}", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
 	}
 
 }
@@ -985,11 +985,11 @@ void CGraphCut::print_assignment()
 
 		if (get_assignment(i) == SOURCE)
 		{
-			SG_PRINT("\nGCNode {:2d}: S", node_i->id);
+			io::print("\nGCNode {:2d}: S", node_i->id);
 		}
 		else
 		{
-			SG_PRINT("\nGCNode {:2d}: T", node_i->id);
+			io::print("\nGCNode {:2d}: T", node_i->id);
 		}
 	}
 }

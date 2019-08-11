@@ -112,12 +112,12 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 	}
 	else
 	{
-		SG_ERROR("Unsupported feature type!")
+		error("Unsupported feature type!");
 	}
 }
 
 SGVector<int32_t> CLSHKNNSolver::classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }

@@ -46,7 +46,7 @@ void CDenseMatrixExactLog::precompute()
 	// check for proper downcast
 	CDenseMatrixOperator<float64_t>* op
 		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
-	REQUIRE(op, "Operator not an instance of DenseMatrixOperator!\n");
+	require(op, "Operator not an instance of DenseMatrixOperator!\n");
 	SGMatrix<float64_t> m=op->get_matrix_operator();
 
 	// compute log(C) using Eigen3
@@ -71,7 +71,7 @@ void CDenseMatrixExactLog::precompute()
 #else
 void CDenseMatrixExactLog::precompute()
 {
-	SG_WARNING("Eigen3.1.0 or later required!\n")
+	io::warn("Eigen3.1.0 or later required!\n");
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 

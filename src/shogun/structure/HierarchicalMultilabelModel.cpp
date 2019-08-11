@@ -58,7 +58,7 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 		num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
 	}
 
-	REQUIRE(num_classes == taxonomy.vlen, "Number of classes must be equal to taxonomy vector = {}\n",
+	require(num_classes == taxonomy.vlen, "Number of classes must be equal to taxonomy vector = {}\n",
 	        taxonomy.vlen);
 
 	m_taxonomy = SGVector<int32_t>(num_classes);
@@ -68,7 +68,7 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 
 	for (index_t i = 0; i < num_classes; i++)
 	{
-		REQUIRE(taxonomy[i] < num_classes && taxonomy[i] >= -1, "parent-id of node-id:{} is taxonomy[{}] = {},"
+		require(taxonomy[i] < num_classes && taxonomy[i] >= -1, "parent-id of node-id:{} is taxonomy[{}] = {},"
 		        " but must be within [-1; {}-1] (-1 for root node)\n", i, i,
 		        taxonomy[i], num_classes);
 		m_taxonomy[i] = taxonomy[i];
@@ -82,7 +82,7 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 
 	if (num_classes)
 	{
-		REQUIRE(m_root != -1 && root_node_count == 1, "Single ROOT element must be defined "
+		require(m_root != -1 && root_node_count == 1, "Single ROOT element must be defined "
 		        "with parent-id = -1\n");
 	}
 
@@ -177,7 +177,7 @@ float64_t CHierarchicalMultilabelModel::delta_loss(CStructuredData * y1,
 float64_t CHierarchicalMultilabelModel::delta_loss(SGVector<int32_t> y1,
                 SGVector<int32_t> y2)
 {
-	REQUIRE(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
+	require(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
 
 	float64_t loss = 0;
 
@@ -220,7 +220,7 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 		m_num_classes = multi_labs->get_num_classes();
 	}
 
-	REQUIRE(m_num_classes > 0, "The model needs to be trained before using "
+	require(m_num_classes > 0, "The model needs to be trained before using "
 	        "if for prediction\n");
 
 	int32_t dim = get_dim();

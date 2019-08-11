@@ -70,7 +70,7 @@ CKernelPCA::~CKernelPCA()
 
 void CKernelPCA::fit(CFeatures* features)
 {
-	REQUIRE(m_kernel, "Kernel not set\n");
+	require(m_kernel, "Kernel not set\n");
 
 	if (m_fitted)
 		cleanup();
@@ -86,7 +86,7 @@ void CKernelPCA::fit(CFeatures* features)
 	ASSERT(n == m)
 	if (m_target_dim > n)
 	{
-		SG_WARNING(
+		io::warn(
 		    "Target dimension ({}) is not a valid value, it must be"
 		    "less or equal than the number of vectors."
 		    "Setting it to maximum allowed size ({}).",
@@ -123,7 +123,7 @@ void CKernelPCA::fit(CFeatures* features)
 	linalg::matrix_prod(m_transformation_matrix, bias_tmp, m_bias_vector, true);
 
 	m_fitted = true;
-	SG_INFO("Done\n")
+	io::info("Done\n");
 }
 
 CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
@@ -141,7 +141,7 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 		return apply_to_string_features(features);
 	}
 
-	SG_ERROR("Feature type {} not supported\n", features->get_feature_type());
+	error("Feature type {} not supported\n", features->get_feature_type());
 	return NULL;
 }
 

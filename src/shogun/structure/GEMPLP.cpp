@@ -89,7 +89,7 @@ void CGEMPLP::init()
 			for (int32_t i = 0; i < inds_s.size(); i++)
 			{
 				inds_s[i] = vars_c.find(curr_intersection[i])[0];
-				REQUIRE(inds_s[i] >= 0,
+				require(inds_s[i] >= 0,
 						"Intersection contains variable {} which is not in the region {}", curr_intersection[i], c);
 
 				dims_array[i] = fg_var_sizes[curr_intersection[i]];
@@ -145,7 +145,7 @@ SGNDArray<float64_t> CGEMPLP::convert_energy_to_potential(CFactor* factor)
 				message.array[x*cards[1]+y] = - energies[y*cards[0]+x];
 	}
 	else
-		SG_ERROR("Index issue has not been solved for higher order (>=3) factors.");
+		error("Index issue has not been solved for higher order (>=3) factors.");
 
 	return message.clone();
 }
@@ -185,7 +185,7 @@ int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<in
 
 float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 {
-	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
+	require(assignment.size() == m_fg->get_cardinalities().size(),
 	        "{}::inference(): the output assignment should be prepared as"
 	        "the same size as variables!\n", get_name());
 
@@ -263,9 +263,9 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 
 void CGEMPLP::update_messages(int32_t id_region)
 {
-	REQUIRE(m_factors != NULL, "Factors are not set!\n");
+	require(m_factors != NULL, "Factors are not set!\n");
 
-	REQUIRE(m_factors->get_num_elements() > id_region,
+	require(m_factors->get_num_elements() > id_region,
 			"Region id ({}) exceeds the factor elements' length ({})!\n",
 			id_region, m_factors->get_num_elements());
 

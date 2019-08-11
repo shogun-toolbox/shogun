@@ -50,13 +50,13 @@ SGMatrix<float64_t> CMatrixOperations::get_choleksy(SGVector<float64_t> W,
 	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 	Map<MatrixXd> eigen_kernel(kernel.matrix, kernel.num_rows, kernel.num_cols);
 
-	REQUIRE(eigen_W.rows()==eigen_sW.rows(),
+	require(eigen_W.rows()==eigen_sW.rows(),
 		"The length of W ({}) and sW ({}) should be the same\n",
 		eigen_W.rows(), eigen_sW.rows());
-	REQUIRE(eigen_kernel.rows()==eigen_kernel.cols(),
+	require(eigen_kernel.rows()==eigen_kernel.cols(),
 		"Kernel should a sqaure matrix, row ({}) col ({})\n",
 		eigen_kernel.rows(), eigen_kernel.cols());
-	REQUIRE(eigen_kernel.rows()==eigen_W.rows(),
+	require(eigen_kernel.rows()==eigen_W.rows(),
 		"The dimension between kernel ({}) and W ({}) should be matched\n",
 		eigen_kernel.rows(), eigen_W.rows());
 
@@ -113,16 +113,16 @@ SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L,
 	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 	Map<MatrixXd> eigen_V(V.matrix, V.num_rows, V.num_cols);
 
-	REQUIRE(eigen_kernel.rows()==eigen_kernel.cols(),
+	require(eigen_kernel.rows()==eigen_kernel.cols(),
 		"Kernel should a sqaure matrix, row ({}) col ({})\n",
 		eigen_kernel.rows(), eigen_kernel.cols());
-	REQUIRE(eigen_L.rows()==eigen_L.cols(),
+	require(eigen_L.rows()==eigen_L.cols(),
 		"L should a sqaure matrix, row ({}) col ({})\n",
 		eigen_L.rows(), eigen_L.cols());
-	REQUIRE(eigen_kernel.rows()==eigen_sW.rows(),
+	require(eigen_kernel.rows()==eigen_sW.rows(),
 		"The dimension between kernel ({}) and sW ({}) should be matched\n",
 		eigen_kernel.rows(), eigen_sW.rows());
-	REQUIRE(eigen_L.rows()==eigen_sW.rows(),
+	require(eigen_L.rows()==eigen_sW.rows(),
 		"The dimension between L ({}) and sW ({}) should be matched\n",
 		eigen_L.rows(), eigen_sW.rows());
 

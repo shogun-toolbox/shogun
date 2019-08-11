@@ -42,7 +42,7 @@ void MKLMulticlassGradient::setup(const int32_t numkernels2)
 	numkernels=numkernels2;
 	if (numkernels<=1)
 	{
-		SG_ERROR("void glpkwrapper::setup(const int32_tnumkernels): input "
+		error("void glpkwrapper::setup(const int32_tnumkernels): input "
 				"numkernels out of bounds: {}\n",numkernels);
 	}
 
@@ -52,7 +52,7 @@ void MKLMulticlassGradient::set_mkl_norm(float64_t norm)
 {
 	pnorm=norm;
 	if(pnorm<1 )
-      SG_ERROR("MKLMulticlassGradient::set_mkl_norm(float64_t norm) : parameter pnorm<1")
+      error("MKLMulticlassGradient::set_mkl_norm(float64_t norm) : parameter pnorm<1");
 }
 
 
@@ -179,7 +179,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 			{
 				if( cos(curgamma[i])<=0)
 				{
-               SG_INFO("linesearch(...): at i {} cos(curgamma[i-1])<=0 {}\n",i, cos(curgamma[i-1]))
+               io::info("linesearch(...): at i {} cos(curgamma[i-1])<=0 {}\n",i, cos(curgamma[i-1]));
 					//curgamma[i-1]=pi4/2;
 				}
 			}
@@ -191,7 +191,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 					tmpbeta[k]/=cos(curgamma[i-1]);
 					if(tmpbeta[k]>1)
 					{
-                  SG_INFO("linesearch(...): at k {} tmpbeta[k]>1 {}\n",k, tmpbeta[k])
+                  io::info("linesearch(...): at k {} tmpbeta[k]>1 {}\n",k, tmpbeta[k]);
 					}
 					tmpbeta[k]=std::min(1.0,std::max(0.0, tmpbeta[k]));
 				}
@@ -201,7 +201,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 
 				for(size_t i=0;i<curgamma.size();++i)
 	{
-		SG_INFO("linesearch(...): curgamma[i] {}\n",curgamma[i])
+		io::info("linesearch(...): curgamma[i] {}\n",curgamma[i]);
 	}
 
 
@@ -215,11 +215,11 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 		//find smallest objective
 		int32_t minind=0;
 		float64_t minval=objectives(curbeta,  minind);
-		SG_INFO("linesearch(...): objectives at i {}\n",minval)
+		io::info("linesearch(...): objectives at i {}\n",minval);
 		for(int32_t i=1; i< (int32_t)sumsofalphas.size() ;++i)
 		{
 			float64_t tmpval=objectives(curbeta, i);
-		SG_INFO("linesearch(...): objectives at i {}\n",tmpval)
+		io::info("linesearch(...): objectives at i {}\n",tmpval);
 			if(tmpval<minval)
 			{
 				minval=tmpval;
@@ -375,7 +375,7 @@ finalbeta=oldweights;
 
 	for( int32_t p=0; p<num_kernels; ++p )
 	{
-		//SG_PRINT("MKL-direct:  sumw[{:3d}] = {:e}  ( oldbeta = {:e} )\n", p, sumw[p], old_beta[p] )
+		//io::print("MKL-direct:  sumw[{:3d}] = {:e}  ( oldbeta = {:e} )\n", p, sumw[p], old_beta[p] );
 		if(  oldweights[p] >= 0.0 )
 		{
 			finalbeta[p] = normsofsubkernels.back()[p] * oldweights[p]*oldweights[p] / pnorm;
@@ -407,20 +407,20 @@ finalbeta=oldweights;
 	const float64_t R = std::sqrt(preR / pnorm) * epsRegul;
 	if( !( R >= 0 ) )
 	{
-		SG_PRINT("MKL-direct: p = {:.3f}\n", pnorm )
-		SG_PRINT("MKL-direct: nofKernelsGood = {}\n", nofKernelsGood )
-		SG_PRINT("MKL-direct: Z = {:e}\n", Z )
-		SG_PRINT("MKL-direct: eps = {:e}\n", epsRegul )
+		io::print("MKL-direct: p = {:.3f}\n", pnorm );
+		io::print("MKL-direct: nofKernelsGood = {}\n", nofKernelsGood );
+		io::print("MKL-direct: Z = {:e}\n", Z );
+		io::print("MKL-direct: eps = {:e}\n", epsRegul );
 		for( int32_t p=0; p<num_kernels; ++p )
 		{
 			const float64_t t = CMath::pow( oldweights[p] - finalbeta[p], 2.0 );
-			SG_PRINT("MKL-direct: t[{:3d}] = {:e}  ( diff = {:e} = {:e} - {:e} )\n", p, t, oldweights[p]-finalbeta[p], oldweights[p], finalbeta[p] )
+			io::print("MKL-direct: t[{:3d}] = {:e}  ( diff = {:e} = {:e} - {:e} )\n", p, t, oldweights[p]-finalbeta[p], oldweights[p], finalbeta[p] );
 		}
-		SG_PRINT("MKL-direct: preR = {:e}\n", preR )
-		SG_PRINT("MKL-direct: preR/p = {:e}\n", preR/pnorm )
-		SG_PRINT("MKL-direct: sqrt(preR/p) = {:e}\n", std::sqrt(preR / pnorm))
-		SG_PRINT("MKL-direct: R = {:e}\n", R )
-		SG_ERROR("Assertion R >= 0 failed!\n" )
+		io::print("MKL-direct: preR = {:e}\n", preR );
+		io::print("MKL-direct: preR/p = {:e}\n", preR/pnorm );
+		io::print("MKL-direct: sqrt(preR/p) = {:e}\n", std::sqrt(preR / pnorm));
+		io::print("MKL-direct: R = {:e}\n", R );
+		error("Assertion R >= 0 failed!\n" );
 	}
 
 	Z = 0.0;
@@ -444,19 +444,19 @@ finalbeta=oldweights;
 void MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2)
 {
 	if(pnorm<1 )
-		SG_ERROR("MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1")
+		error("MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1");
 
 	SG_DEBUG("MKLMulticlassGradient::computeweights(...): pnorm {}\n",pnorm)
 
 	std::vector<float64_t> initw(weights2);
 	linesearch2(weights2,initw);
 
-	SG_INFO("MKLMulticlassGradient::computeweights(...): newweights \n")
+	io::info("MKLMulticlassGradient::computeweights(...): newweights \n");
 	for(size_t i=0;i<weights2.size();++i)
 	{
-		SG_INFO(" {}",weights2[i])
+		io::info(" {}",weights2[i]);
 	}
-	SG_INFO(" \n")
+	io::info(" \n");
 
 	/*
 	   int maxnumlinesrch=15;
@@ -489,14 +489,14 @@ void MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2)
 	   }
 	// for(size_t i=0;i<weights2.size();++i)
 	// {
-	//    SG_INFO("MKLMulticlassGradient::computeweights(...): oldweights {}\n",initw[i])
+	//    io::info("MKLMulticlassGradient::computeweights(...): oldweights {}\n",initw[i]);
 	//	}
-	SG_INFO("MKLMulticlassGradient::computeweights(...): newweights at iter {} normdiff {}\n",numiter,norm)
+	io::info("MKLMulticlassGradient::computeweights(...): newweights at iter {} normdiff {}\n",numiter,norm);
 	for(size_t i=0;i<weights2.size();++i)
 	{
-	SG_INFO(" {}",weights2[i])
+	io::info(" {}",weights2[i]);
 	}
-	SG_INFO(" \n")
+	io::info(" \n");
 	}
 	while(false==finished);
 	*/

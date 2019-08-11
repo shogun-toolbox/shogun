@@ -68,14 +68,14 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 			}
 			else
 			{
-				SG_WARNING("Parameter {}.{} was not added to parameter combination, "
+				io::warn("Parameter {}.{} was not added to parameter combination, "
 					"since it isn't a type currently supported\n", obj->get_name(),
 					param->m_name);
 			}
 		}
 		else
 		{
-			SG_WARNING("Parameter {}.{} was not added to parameter combination, "
+			io::warn("Parameter {}.{} was not added to parameter combination, "
 					"since it isn't of floating point type\n", obj->get_name(),
 					param->m_name);
 		}
@@ -108,7 +108,7 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 			}
 			else
 			{
-				SG_NOTIMPLEMENTED
+				not_implemented(SOURCE_LOCATION);
 			}
 		}
 	}
@@ -148,7 +148,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_BOOL)
-					SG_ERROR("Parameter {} not a boolean parameter", name)
+					error("Parameter {} not a boolean parameter", name);
 
 				if (index < 0)
 					*((bool*)(param)) = value;
@@ -178,7 +178,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_INT32)
-					SG_ERROR("Parameter {} not a integer parameter", name)
+					error("Parameter {} not a integer parameter", name);
 
 				if (index < 0)
 					*((int32_t*)(param)) = value;
@@ -207,7 +207,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_FLOAT64)
-					SG_ERROR("Parameter {} not a double parameter", name)
+					error("Parameter {} not a double parameter", name);
 
 				if (index < 0)
 					*((float64_t*)(param)) = value;
@@ -314,7 +314,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 
 	if (m_param)
 	{
-		SG_PRINT("{}", prefix)
+		io::print("{}", prefix);
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
 			EContainerType ctype = m_param->get_parameter(i)->m_datatype.m_ctype;
@@ -324,43 +324,43 @@ void CParameterCombination::print_tree(int prefix_num) const
 			{
 				TParameter* param=m_param->get_parameter(i);
 				CSGObject* current_sgobject=*((CSGObject**) param->m_parameter);
-				SG_PRINT("\"{}\":{} at {} ", param->m_name,
+				io::print("\"{}\":{} at {} ", param->m_name,
 						current_sgobject->get_name(), fmt::ptr(current_sgobject));
 			}
 			else if (ctype==CT_SGVECTOR || ctype==CT_VECTOR || ctype==CT_SGMATRIX || ctype==CT_MATRIX)
 			{
-				SG_PRINT("\"{}\"=", m_param->get_parameter(i)->m_name)
+				io::print("\"{}\"=", m_param->get_parameter(i)->m_name);
 				float64_t** param = (float64_t**)(m_param->
 						get_parameter(i)->m_parameter);
 
 				index_t length = m_param->get_parameter(i)->m_datatype.get_num_elements();
 
 				for (index_t j = 0; j < length; j++)
-					SG_PRINT("{} ", (*param)[j])
+					io::print("{} ", (*param)[j]);
 			}
 
 			else
 			{
-				SG_PRINT("\"{}\"=", m_param->get_parameter(i)->m_name)
+				io::print("\"{}\"=", m_param->get_parameter(i)->m_name);
 				void* param=m_param->get_parameter(i)->m_parameter;
 
 				if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_FLOAT64)
-					SG_PRINT("{} ", *((float64_t*)param))
+					io::print("{} ", *((float64_t*)param));
 				else if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_INT32)
-					SG_PRINT("{} ", *((int32_t*)param))
+					io::print("{} ", *((int32_t*)param));
 				else if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_BOOL)
-					SG_PRINT("{} ", *((bool*)param ? "true" : "false"))
+					io::print("{} ", *((bool*)param ? "true" : "false"));
 				else
-					SG_NOTIMPLEMENTED
+					not_implemented(SOURCE_LOCATION);
 			}
 
 		}
 
 	}
 	else
-		SG_PRINT("{}root", prefix)
+		io::print("{}root", prefix);
 
-	SG_PRINT("\n")
+	io::print("\n");
 
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
@@ -458,7 +458,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 
 				if (current_node->m_child_nodes->get_num_elements())
 				{
-					SG_ERROR("leaf sets multiplication only possible if all "
+					error("leaf sets multiplication only possible if all "
 							"trees are leafs");
 				}
 
@@ -468,7 +468,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 					new_param_set->append_element(current_param);
 				else
 				{
-					SG_ERROR("leaf sets multiplication only possible if all "
+					error("leaf sets multiplication only possible if all "
 							"leafs have non-NULL Parameter instances\n");
 				}
 
@@ -734,7 +734,7 @@ void CParameterCombination::apply_to_modsel_parameter(
 			if (m_param->get_num_parameters()>1 ||
 					m_param->get_parameter(0)->m_datatype.m_ptype!=PT_SGOBJECT)
 			{
-				SG_ERROR("invalid CParameterCombination node type, has children"
+				error("invalid CParameterCombination node type, has children"
 						" and more than one parameter or is not a "
 						"CSGObject.\n");
 			}
@@ -756,7 +756,7 @@ void CParameterCombination::apply_to_modsel_parameter(
 		}
 	}
 	else
-		SG_ERROR("CParameterCombination node has illegal type.\n")
+		error("CParameterCombination node has illegal type.\n");
 }
 
 void CParameterCombination::build_parameter_values_map(
@@ -819,7 +819,7 @@ void CParameterCombination::build_parameter_parent_map(
 				}
 				else
 				{
-					SG_NOTIMPLEMENTED
+					not_implemented(SOURCE_LOCATION);
 				}
 			}
 		}
@@ -843,7 +843,7 @@ void CParameterCombination::build_parameter_parent_map(
 				}
 				else
 				{
-					SG_NOTIMPLEMENTED
+					not_implemented(SOURCE_LOCATION);
 				}
 			}
 			else

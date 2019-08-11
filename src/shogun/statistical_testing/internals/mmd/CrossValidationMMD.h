@@ -75,10 +75,10 @@ struct CrossValidationMMD : PermutationMMD
 	template <typename PRNG>
 	void operator()(const KernelManager& kernel_mgr, PRNG& prng)
 	{
-		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
+		require(m_rejections.num_rows==m_num_runs*m_num_folds,
 			"Number of rows in the measure matrix (was {}), has to be >= {}*{} = {}!\n",
 			m_rejections.num_rows, m_num_runs, m_num_folds, m_num_runs*m_num_folds);
-		REQUIRE(m_rejections.num_cols==kernel_mgr.num_kernels(),
+		require(m_rejections.num_cols==kernel_mgr.num_kernels(),
 			"Number of columns in the measure matrix (was {}), has to equal to the nunber of kernels ({})!\n",
 			m_rejections.num_cols, kernel_mgr.num_kernels());
 

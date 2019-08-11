@@ -38,7 +38,7 @@ void CPerceptron::init_model(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
 

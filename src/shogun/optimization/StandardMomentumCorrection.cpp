@@ -35,7 +35,7 @@ using namespace shogun;
 DescendPair StandardMomentumCorrection::get_corrected_descend_direction(float64_t negative_descend_direction,
 	index_t idx)
 {
-	REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index ({}) is invalid\n", idx);
+	require(idx>=0 && idx<m_previous_descend_direction.vlen,"The index ({}) is invalid\n", idx);
 	DescendPair pair;
 	m_previous_descend_direction[idx]=
 		m_weight*m_previous_descend_direction[idx]-negative_descend_direction;

@@ -92,7 +92,7 @@ namespace shogun
 		 */
 		ObservedValue* get_observation(index_t i)
 		{
-			REQUIRE(
+			require(
 			    i >= 0 && i < this->get_num_observations(),
 			    "Observation index ({}) is out of bound (total observations "
 			    "{})",

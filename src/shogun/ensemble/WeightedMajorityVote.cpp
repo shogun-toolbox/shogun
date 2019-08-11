@@ -33,7 +33,7 @@ CWeightedMajorityVote::~CWeightedMajorityVote()
 
 SGVector<float64_t> CWeightedMajorityVote::combine(const SGMatrix<float64_t>& ensemble_result) const
 {
-	REQUIRE(m_weights.vlen == ensemble_result.num_cols, "The number of results and weights does not match!");
+	require(m_weights.vlen == ensemble_result.num_cols, "The number of results and weights does not match!");
 	SGVector<float64_t> mv(ensemble_result.num_rows);
 	for (index_t i = 0; i < ensemble_result.num_rows; ++i)
 	{
@@ -51,7 +51,7 @@ float64_t CWeightedMajorityVote::combine(const SGVector<float64_t>& ensemble_res
 
 float64_t CWeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ensemble_result) const
 {
-	REQUIRE(m_weights.vlen == ensemble_result.vlen, "The number of results and weights does not match!");
+	require(m_weights.vlen == ensemble_result.vlen, "The number of results and weights does not match!");
 	std::map<index_t, float64_t> freq;
 	std::map<index_t, float64_t>::iterator it;
 	index_t max_label = -100;

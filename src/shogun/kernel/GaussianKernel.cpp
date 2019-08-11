@@ -47,7 +47,7 @@ CGaussianKernel::~CGaussianKernel()
 
 CGaussianKernel* CGaussianKernel::obtain_from_generic(CKernel* kernel)
 {
-	REQUIRE(kernel->get_kernel_type()==K_GAUSSIAN,
+	require(kernel->get_kernel_type()==K_GAUSSIAN,
 		"Provided kernel ({}) must be of type CGaussianKernel!\n", kernel->get_name());
 
 	SG_REF(kernel);
@@ -84,14 +84,14 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 
 void CGaussianKernel::set_width(float64_t w)
 {
-	REQUIRE(w>0, "width ({}) must be positive\n",w);
+	require(w>0, "width ({}) must be positive\n",w);
 	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
 {
-	REQUIRE(lhs, "Left hand side features must be set!\n")
-	REQUIRE(rhs, "Rightt hand side features must be set!\n")
+	require(lhs, "Left hand side features must be set!\n");
+	require(rhs, "Rightt hand side features must be set!\n");
 
 	if (!strcmp(param->m_name, "log_width"))
 	{
@@ -109,7 +109,7 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 	}
 	else
 	{
-		SG_ERROR("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter\n", param->m_name);
 		return SGMatrix<float64_t>();
 	}
 }

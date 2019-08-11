@@ -31,7 +31,7 @@ namespace shogun
 
 			Any operator()() override
 			{
-				REQUIRE(m_kernel != nullptr, "m_kernel is not pointing to a CKernel object");
+				require(m_kernel != nullptr, "m_kernel is not pointing to a CKernel object");
 
 				auto lhs = m_kernel->get_lhs();
 				switch (lhs->get_feature_class())

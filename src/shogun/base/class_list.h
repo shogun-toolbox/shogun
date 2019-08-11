@@ -46,7 +46,7 @@ namespace shogun {
 		auto* object = create(name, pt);
 		if (!object)
 		{
-			SG_ERROR(
+			error(
 			    "Class {} with primitive type {} does not exist.\n", name,
 			    ptype_name(pt).c_str());
 		}

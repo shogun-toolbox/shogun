@@ -234,7 +234,7 @@ SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > tr
 SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 		int32_t num_feats) const
 {
-	REQUIRE(num_free_states == 2, "Using the TwoStateModel only two states are free\n")
+	require(num_free_states == 2, "Using the TwoStateModel only two states are free\n");
 
 	SGVector< int32_t > monotonicity(num_feats*num_free_states);
 

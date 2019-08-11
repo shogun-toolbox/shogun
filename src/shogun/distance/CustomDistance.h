@@ -172,11 +172,11 @@ class CCustomDistance: public CDistance
 			int64_t int32_max=2147483647;
 
 			if (cols> int32_max)
-				SG_ERROR("Matrix larger than {} x {}\n", int32_max)
+				error("Matrix larger than {} x {}\n", int32_max);
 
 			if (cols*(cols+1)/2 != len)
 			{
-				SG_ERROR("dm should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n")
+				error("dm should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n");
 				return false;
 			}
 

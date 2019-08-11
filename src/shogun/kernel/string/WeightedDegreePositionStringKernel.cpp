@@ -167,7 +167,7 @@ void CWeightedDegreePositionStringKernel::create_empty_tries()
 		poim_tries.create(seq_length, false);  // still buggy
 	}
 	else
-		SG_ERROR("unknown optimization type\n")
+		error("unknown optimization type\n");
 }
 
 bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
@@ -196,12 +196,12 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 
 	int32_t len=sf_l->get_max_vector_length();
-	SG_WARNING("%d, %d\n", sf_l->get_max_vector_length(), sf_r->get_max_vector_length());
+
 	if (lhs_changed && !sf_l->have_same_length(len))
-		SG_ERROR("All strings in WD kernel must have same length (lhs wrong)!\n")
+		error("All strings in WD kernel must have same length (lhs wrong)!\n");
 
 	if (rhs_changed && !sf_r->have_same_length(len))
-		SG_ERROR("All strings in WD kernel must have same length (rhs wrong)!\n")
+		error("All strings in WD kernel must have same length (rhs wrong)!\n");
 
 	SG_UNREF(alphabet);
 	alphabet= sf_l->get_alphabet();
@@ -251,7 +251,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 
 	if (max_mismatch!=0)
 	{
-		SG_ERROR("CWeightedDegreePositionStringKernel optimization not implemented for mismatch!=0\n")
+		error("CWeightedDegreePositionStringKernel optimization not implemented for mismatch!=0\n");
 		return false ;
 	}
 
@@ -295,7 +295,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			tries.delete_trees(false);  // still buggy
 		else {
-			SG_ERROR("unknown optimization type\n")
+			error("unknown optimization type\n");
 		}
 		set_is_initialized(false);
 
@@ -664,7 +664,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			max_s=shift[i];
 		else {
-			SG_ERROR("unknown optimization type\n")
+			error("unknown optimization type\n");
 		}
 
 		for (int32_t s=max_s; s>=0; s--)
@@ -705,7 +705,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(
 		max_s=shift[tree_num];
 	}
 	else {
-		SG_ERROR("unknown optimization type\n")
+		error("unknown optimization type\n");
 	}
 	for (int32_t i=CMath::max(0,tree_num-max_shift);
 			i<CMath::min(len,tree_num+degree+max_shift); i++)
@@ -893,7 +893,7 @@ bool CWeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_we
 	int32_t len=new_weights.num_cols;
 
 	if (d!=degree || len<0)
-		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got ({} x {})\n", len, degree)
+		error("WD: Dimension mismatch (should be (seq_length | 1) x degree) got ({} x {})\n", len, degree);
 
 	degree=d;
 	length=len;
@@ -921,7 +921,7 @@ void CWeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_
 		seq_length=pws.vlen;
 
 	if (seq_length!=pws.vlen)
-		SG_ERROR("seq_length = {}, position_weights_length={}\n", seq_length, pws.vlen)
+		error("seq_length = {}, position_weights_length={}\n", seq_length, pws.vlen);
 
 	SG_FREE(position_weights);
 	position_weights=SG_MALLOC(float64_t, pws.vlen);
@@ -946,7 +946,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pw
 
 	if (seq_length!=len)
 	{
-		SG_ERROR("seq_length = {}, position_weights_length={}\n", seq_length, len)
+		error("seq_length = {}, position_weights_length={}\n", seq_length, len);
 		return false;
 	}
 
@@ -975,7 +975,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 
 	if (seq_length!=len)
 	{
-		SG_ERROR("seq_length = {}, position_weights_length={}\n", seq_length, len)
+		error("seq_length = {}, position_weights_length={}\n", seq_length, len);
 		return false;
 	}
 
@@ -1537,7 +1537,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 	//for (int32_t i=0; i<n; i++)
 	//{
 	//	ConsensusEntry e= table[num_tables-2]->get_element(i);
-	//	SG_PRINT("second last: str:0%0llx sc:{} bt:{}\n",e.string,e.score,e.bt)
+	//	io::print("second last: str:0%0llx sc:{} bt:{}\n",e.string,e.score,e.bt);
 	//}
 
 	const char* acgt="ACGT";
@@ -1558,7 +1558,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 	}
 	uint64_t endstr=table[num_tables-1]->get_element(max_idx).string;
 
-	SG_INFO("max_idx:{} num_el:{} num_feat:{} num_tables:{} max_score:{}\n", max_idx, num_elements, num_feat, num_tables, max_score)
+	io::info("max_idx:{} num_el:{} num_feat:{} num_tables:{} max_score:{}\n", max_idx, num_elements, num_feat, num_tables, max_score);
 
 	for (int32_t i=0; i<degree; i++)
 		result[num_feat-1-i]=acgt[(endstr >> (2*i)) & 3];
@@ -1567,7 +1567,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 	{
 		for (int32_t i=num_tables-1; i>=0; i--)
 		{
-			//SG_PRINT("max_idx: {}, i:{}\n", max_idx, i)
+			//io::print("max_idx: {}, i:{}\n", max_idx, i);
 			result[i]=acgt[table[i]->get_element(max_idx).string >> (2*(degree-1)) & 3];
 			max_idx=table[i]->get_element(max_idx).bt;
 		}
@@ -1579,7 +1579,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 	//	for (int32_t i=0; i<n; i++)
 	//	{
 	//		ConsensusEntry e= table[t]->get_element(i);
-	//		SG_PRINT("table[{},{}]: str:0%0llx sc:{:+f} bt:{}\n",t,i, e.string,e.score,e.bt)
+	//		io::print("table[{},{}]: str:0%0llx sc:{:+f} bt:{}\n",t,i, e.string,e.score,e.bt);
 	//	}
 	//}
 
@@ -1817,8 +1817,8 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 
 	if ((max_degree < 1) || (max_degree > 12))
 	{
-		//SG_WARNING("max_degree out of range 1..12 ({}).\n", max_degree)
-		SG_WARNING("max_degree out of range 1..12 ({}). setting to 1.\n", max_degree)
+		//io::warn("max_degree out of range 1..12 ({}).\n", max_degree);
+		io::warn("max_degree out of range 1..12 ({}). setting to 1.\n", max_degree);
 		max_degree=1;
 	}
 

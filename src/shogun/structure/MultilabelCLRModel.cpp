@@ -108,7 +108,7 @@ float64_t CMultilabelCLRModel::delta_loss(CStructuredData * y1, CStructuredData 
 
 float64_t CMultilabelCLRModel::delta_loss(SGVector<float64_t> y1, SGVector<float64_t> y2)
 {
-	REQUIRE(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
+	require(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
 
 	float64_t loss = 0;
 
@@ -132,7 +132,7 @@ SGVector<int32_t> CMultilabelCLRModel::to_sparse(SGVector<float64_t> dense_vec,
 
 	for (index_t i = 0; i < dense_vec.vlen; i++)
 	{
-		REQUIRE(dense_vec[i] == d_true || dense_vec[i] == d_false,
+		require(dense_vec[i] == d_true || dense_vec[i] == d_false,
 		        "The values of dense vector should be either ({}) or ({}).\n",
 		        d_true, d_false);
 
@@ -171,7 +171,7 @@ CResultSet * CMultilabelCLRModel::argmax(SGVector<float64_t> w, int32_t feat_idx
 	}
 	else
 	{
-		REQUIRE(m_num_classes > 0, "The model needs to be trained before using "
+		require(m_num_classes > 0, "The model needs to be trained before using "
 		        "it for prediction\n");
 	}
 

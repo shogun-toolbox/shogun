@@ -98,7 +98,7 @@ namespace shogun
 
 	CFeatures* features(CFile* file, machine_int_t primitive_type = PT_FLOAT64)
 	{
-		REQUIRE(file, "No file provided.\n");
+		require(file, "No file provided.\n");
 		CFeatures* result = nullptr;
 
 		switch (primitive_type)
@@ -119,7 +119,7 @@ namespace shogun
 			result = new CDenseFeatures<uint16_t>();
 			break;
 		default:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 		}
 		result->load(file);
 		return result;
@@ -129,7 +129,7 @@ namespace shogun
 	    CFile* file, machine_int_t alphabet_type = DNA,
 	    machine_int_t primitive_type = PT_CHAR)
 	{
-		REQUIRE(file, "No file provided.\n");
+		require(file, "No file provided.\n");
 
 		switch (primitive_type)
 		{
@@ -139,7 +139,7 @@ namespace shogun
 			break;
 		}
 		default:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 		}
 
 		return nullptr;
@@ -163,16 +163,16 @@ namespace shogun
 	    bool rev, machine_int_t primitive_type)
 	{
 
-		REQUIRE_E(features, std::invalid_argument, "No features provided.\n");
-		REQUIRE_E(
+		require<std::invalid_argument>(features, "No features provided.\n");
+		require<std::invalid_argument>(
 		    features->get_feature_class() == C_STRING &&
 		        features->get_feature_type() == F_CHAR,
-		    std::invalid_argument, "Given features must be char-based StringFeatures, "
-		                           "provided ({}) have feature class ({}), feature type "
-		                           "({}) and class name.\n",
-		                           features->get_name(),
-								   features->get_feature_class(),
-								   features->get_feature_type());
+		        "Given features must be char-based StringFeatures, "
+		        "provided ({}) have feature class ({}), feature type "
+		        "({}) and class name.\n",
+		        features->get_name(),
+				features->get_feature_class(),
+				features->get_feature_type());
 
 		auto string_features = features->as<CStringFeatures<char>>();
 
@@ -186,11 +186,11 @@ namespace shogun
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
 			SG_UNREF(alphabet);
-			REQUIRE(success, "Failed to obtain from string char features.\n");
+			require(success, "Failed to obtain from string char features.\n");
 			return result;
 		}
 		default:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 		}
 
 		return nullptr;
@@ -202,7 +202,7 @@ namespace shogun
 	CFeatures* features_subset(CFeatures* base_features, SGVector<index_t> indices,
 			EPrimitiveType primitive_type = PT_FLOAT64)
 	{
-		REQUIRE(base_features, "No base features provided.\n");
+		require(base_features, "No base features provided.\n");
 
 		switch (primitive_type)
 		{
@@ -210,7 +210,7 @@ namespace shogun
 			return new CDenseSubsetFeatures<float64_t>(base_features->as<CDenseFeatures<float64_t>>(), indices);
 			break;
 		default:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 		}
 
 		return nullptr;
@@ -243,7 +243,7 @@ namespace shogun
 
 	CLabels* labels(CFile* file)
 	{
-		REQUIRE(file, "No file provided.\n");
+		require(file, "No file provided.\n");
 
 		// load label data into memory via any dense label specialization
 		CDenseLabels* loaded = new CRegressionLabels();
@@ -253,7 +253,7 @@ namespace shogun
 
 		CDenseLabels* result = nullptr;
 
-		REQUIRE(
+		require(
 		    dynamic_cast<CCSVFile*>(file),
 		    "Cannot load labels from {}(\"{}\").\n", file->get_name(),
 		    file->get_filename());
@@ -263,13 +263,13 @@ namespace shogun
 		try_labels<CBinaryLabels>(result, labels);
 		try_labels<CMulticlassLabels>(result, labels);
 		try_labels<CRegressionLabels>(result, labels);
-		REQUIRE(
+		require(
 		    result,
 		    "Cannot load labels from {}(\"{}\") as any of dense labels.\n",
 		    file->get_name(), file->get_filename());
-		SG_INFO(
+		io::info(
 		    "Loaded labels from {}(\"{}\") as {}\n", file->get_name(),
-		    file->get_filename(), result->get_name())
+		    file->get_filename(), result->get_name());
 
 		return result;
 	}
@@ -283,9 +283,9 @@ namespace shogun
 		try_labels<CBinaryLabels>(result, labels_vector);
 		try_labels<CMulticlassLabels>(result, labels_vector);
 		try_labels<CRegressionLabels>(result, labels_vector);
-		REQUIRE(
+		require(
 		    result, "Cannot interpret given labels as any of dense labels.\n");
-		SG_INFO("Interpreted labels as {}\n", result->get_name())
+		io::info("Interpreted labels as {}\n", result->get_name());
 		return result;
 	}
 

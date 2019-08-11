@@ -102,23 +102,23 @@ void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
 	m_eigen_solver->compute();
-	SG_INFO("max_eig={:.15f}\n", m_eigen_solver->get_max_eigenvalue());
-	SG_INFO("min_eig={:.15f}\n", m_eigen_solver->get_min_eigenvalue());
+	io::info("max_eig={:.15f}\n", m_eigen_solver->get_max_eigenvalue());
+	io::info("min_eig={:.15f}\n", m_eigen_solver->get_min_eigenvalue());
 
-	REQUIRE(m_eigen_solver->get_min_eigenvalue()>0,
+	require(m_eigen_solver->get_min_eigenvalue()>0,
 		"Minimum eigenvalue is negative, please provide a Hermitian matrix\n");
 
 	// compute number of shifts from accuracy if shifts are not set yet
 	if (m_num_shifts==0)
 		m_num_shifts=compute_num_shifts_from_accuracy();
 
-	SG_INFO("Computing {} shifts\n", m_num_shifts);
+	io::info("Computing {} shifts\n", m_num_shifts);
 	compute_shifts_weights_const();
 }
 
 int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 {
-	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive but is {}\n",
+	require(m_desired_accuracy>0, "Desired accuracy must be positive but is {}\n",
 			m_desired_accuracy);
 
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
@@ -159,7 +159,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 #ifdef USE_GPL_SHOGUN
 	CJacobiEllipticFunctions::ellipKKp(L, K, Kp);
 #else
-	SG_GPL_ONLY
+	gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 
 	// compute constant multiplier
@@ -182,7 +182,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 #ifdef USE_GPL_SHOGUN
 		CJacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
 #else
-		SG_GPL_ONLY
+		gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 
 		complex128_t w=m_mult*(1.0+k*sn)/(1.0-k*sn);
@@ -200,11 +200,11 @@ void CRationalApproximation::compute_shifts_weights_const()
 			m_weights[i] = 2.0 * std::log(w) * dzdt / w;
 			break;
 		case OF_POLY:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			m_weights[i]=complex128_t(0.0);
 			break;
 		case OF_UNDEFINED:
-			SG_WARNING("Operator function is undefined!\n")
+			io::warn("Operator function is undefined!\n");
 			m_weights[i]=complex128_t(0.0);
 			break;
 		}

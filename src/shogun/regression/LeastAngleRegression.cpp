@@ -358,7 +358,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 
 	if (max_corr / n_vec > m_epsilon)
 	{
-		SG_WARNING(
+		io::warn(
 		    "Convergence level ({}) not below tolerance ({}) after {} "
 		    "iterations.\n",
 		    max_corr / n_vec, m_epsilon, nloop);

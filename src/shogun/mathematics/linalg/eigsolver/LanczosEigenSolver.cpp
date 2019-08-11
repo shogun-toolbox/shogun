@@ -66,7 +66,7 @@ void CLanczosEigenSolver::compute()
 		return;
 	}
 
-	REQUIRE(m_linear_operator, "Operator is NULL!\n");
+	require(m_linear_operator, "Operator is NULL!\n");
 
 	// vector v_0
 	VectorXd v=VectorXd::Zero(m_linear_operator->get_dimension());
@@ -135,14 +135,14 @@ void CLanczosEigenSolver::compute()
 
 		if (info==0)
 		{
-			SG_INFO("Iteration took {} times, residual norm={:.20f}\n",
+			io::info("Iteration took {} times, residual norm={:.20f}\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 
 			m_min_eigenvalue=w[0];
 			m_is_computed_min=true;
 		}
 		else
-			SG_WARNING("Some error occured while computing eigenvalues!\n");
+			io::warn("Some error occured while computing eigenvalues!\n");
 	}
 
 	if (!m_is_computed_max)
@@ -153,13 +153,13 @@ void CLanczosEigenSolver::compute()
 
 		if (info==0)
 		{
-			SG_INFO("Iteration took {} times, residual norm={:.20f}\n",
+			io::info("Iteration took {} times, residual norm={:.20f}\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 			m_max_eigenvalue=w[0];
 			m_is_computed_max=true;
 		}
 		else
-			SG_WARNING("Some error occured while computing eigenvalues!\n");
+			io::warn("Some error occured while computing eigenvalues!\n");
 	}
 
 	SG_DEBUG("Leaving\n");

@@ -125,7 +125,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 	    }
 	    case NAM_PERMUTATION:
 	    {
-		    SG_ERROR(
+		    error(
 		        "Null approximation via permutation does not make sense "
 		        "for linear time MMD. Use the Gaussian approximation "
 		        "instead.\n");

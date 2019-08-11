@@ -42,12 +42,12 @@ SGVector<complex128_t> CDirectLinearSolverComplex::solve(
 {
 	SGVector<complex128_t> x(b.vlen);
 
-	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
+	require(A, "Operator is NULL!\n");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 
 	CDenseMatrixOperator<complex128_t> *op=
 		dynamic_cast<CDenseMatrixOperator<complex128_t>*>(A);
-	REQUIRE(op, "Operator is not CDenseMatrixOperator<complex128_t, float64_t> type!\n");
+	require(op, "Operator is not CDenseMatrixOperator<complex128_t, float64_t> type!\n");
 
 	SGMatrix<complex128_t> mat_A=op->get_matrix_operator();
 	Map<MatrixXcd> map_A(mat_A.matrix, mat_A.num_rows, mat_A.num_cols);
@@ -63,7 +63,7 @@ SGVector<complex128_t> CDirectLinearSolverComplex::solve(
 
 			// checking for success
 			if (llt.info()==NumericalIssue)
-				SG_WARNING("Matrix is not Hermitian positive definite!\n");
+				io::warn("Matrix is not Hermitian positive definite!\n");
 		}
 		break;
 	case DS_QR_NOPERM:

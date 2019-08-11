@@ -87,12 +87,12 @@ struct ComputeMMD
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);
 		const index_t size=m_n_x+m_n_y;
-		REQUIRE(
+		require(
 			kernel_matrix.num_rows == size,
 			"Number of rows from kernel matrix ({}) did not match the total "
 			"number of samples from both distribution ({})\n",
 			kernel_matrix.num_rows, size);
-		REQUIRE(
+		require(
 			kernel_matrix.num_cols == size,
 			"Number of cols from kernel matrix ({}) did not match the total "
 			"number of samples from both distribution ({})\n",

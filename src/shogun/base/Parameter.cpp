@@ -1419,7 +1419,7 @@ TParameter::new_sgserial(CSGObject** param,
 			strcat(buf, ">");
 		}
 
-		SG_WARNING("TParameter::new_sgserial(): "
+		io::warn("TParameter::new_sgserial(): "
 				   "Class `C{}{}' was not listed during compiling Shogun"
 				   " :( ...  Can not construct it for `{}{}'!",
 				   sgserializable_name, buf, prefix, m_name);
@@ -1438,7 +1438,7 @@ void TParameter::get_incremental_hash(
 	switch (m_datatype.m_ctype)
 	{
 	case CT_NDARRAY:
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		break;
 	case CT_SCALAR:
 	{
@@ -1461,7 +1461,7 @@ void TParameter::get_incremental_hash(
 
 		if (*(void**) m_parameter == NULL && len_real_y != 0)
 		{
-			SG_WARNING("Inconsistency between data structure and "
+			io::warn("Inconsistency between data structure and "
 					"len_y during hashing `{}'!  Continuing with "
 					"len_y=0.\n",
 					m_name);
@@ -1471,7 +1471,7 @@ void TParameter::get_incremental_hash(
 		switch (m_datatype.m_ctype)
 		{
 		case CT_NDARRAY:
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			break;
 		case CT_VECTOR: case CT_SGVECTOR:
 			len_real_x = 1;
@@ -1481,7 +1481,7 @@ void TParameter::get_incremental_hash(
 
 			if (*(void**) m_parameter == NULL && len_real_x != 0)
 			{
-				SG_WARNING("Inconsistency between data structure and "
+				io::warn("Inconsistency between data structure and "
 						"len_x during hashing {}'!  Continuing "
 						"with len_x=0.\n",
 						m_name);
@@ -1495,7 +1495,7 @@ void TParameter::get_incremental_hash(
 
 		case CT_SCALAR: break;
 		case CT_UNDEFINED: default:
-			SG_ERROR("Implementation error: undefined container type\n");
+			error("Implementation error: undefined container type\n");
 			break;
 		}
 		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
@@ -1509,7 +1509,7 @@ void TParameter::get_incremental_hash(
 		break;
 	}
 	case CT_UNDEFINED: default:
-		SG_ERROR("Implementation error: undefined container type\n");
+		error("Implementation error: undefined container type\n");
 		break;
 	}
 }
@@ -1539,13 +1539,13 @@ Parameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
 	if (name == NULL || *name == '\0')
-		SG_ERROR("FATAL: Parameter::add_type(): `name' is empty!\n")
+		error("FATAL: Parameter::add_type(): `name' is empty!\n");
 
 	for (size_t i=0; i<strlen(name); ++i)
 	{
 		if (!std::isalnum(name[i]) && name[i]!='_' && name[i]!='.')
 		{
-			SG_ERROR("Character {} of parameter with name \"{}\" is illegal "
+			error("Character {} of parameter with name \"{}\" is illegal "
 					"(only alnum or underscore is allowed)\n",
 					i, name);
 		}
@@ -1553,7 +1553,7 @@ Parameter::add_type(const TSGDataType* type, void* param,
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
-			SG_ERROR("FATAL: Parameter::add_type(): "
+			error("FATAL: Parameter::add_type(): "
 					 "Double parameter `{}'!\n", name);
 
 	m_params.append_element(
@@ -1590,7 +1590,7 @@ void Parameter::set_from_parameters(Parameter* params)
 					char* own_type=SG_MALLOC(char, l);
 					current->m_datatype.to_string(given_type, l);
 					own->m_datatype.to_string(own_type, l);
-					SG_ERROR("given parameter \"{}\" has a different type ({})"
+					error("given parameter \"{}\" has a different type ({})"
 							" than existing one ({})\n", current->m_name,
 							given_type, own_type);
 					SG_FREE(given_type);
@@ -1603,7 +1603,7 @@ void Parameter::set_from_parameters(Parameter* params)
 
 		if (!own)
 		{
-			SG_ERROR("parameter with name {} does not exist\n",
+			error("parameter with name {} does not exist\n",
 					current->m_name);
 		}
 
@@ -1642,7 +1642,7 @@ void Parameter::set_from_parameters(Parameter* params)
 				}
 			}
 			else
-				SG_ERROR("primitive type PT_SGOBJECT occurred with structure "
+				error("primitive type PT_SGOBJECT occurred with structure "
 						"type other than ST_NONE");
 		}
 
@@ -1684,7 +1684,7 @@ void Parameter::set_from_parameters(Parameter* params)
 				source=*((CSGObject**) current->m_parameter);
 				break;
 			default:
-				SG_NOTIMPLEMENTED
+				not_implemented(SOURCE_LOCATION);
 				break;
 			}
 		}

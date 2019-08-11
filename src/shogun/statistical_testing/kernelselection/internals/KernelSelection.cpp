@@ -42,8 +42,8 @@ using namespace internal;
 
 KernelSelection::KernelSelection(KernelManager& km, CMMD* est) : kernel_mgr(km), estimator(est)
 {
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is {}!\n", kernel_mgr.num_kernels());
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	require(kernel_mgr.num_kernels()>0, "Number of kernels is {}!\n", kernel_mgr.num_kernels());
+	require(estimator!=nullptr, "Estimator is not set!\n");
 }
 
 KernelSelection::~KernelSelection()

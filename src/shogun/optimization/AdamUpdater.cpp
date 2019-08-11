@@ -55,21 +55,21 @@ AdamUpdater::AdamUpdater(float64_t learning_rate,float64_t epsilon,
 
 void AdamUpdater::set_learning_rate(float64_t learning_rate)
 {
-	REQUIRE(learning_rate>0,"Learning_rate ({}) must be positive\n",
+	require(learning_rate>0,"Learning_rate ({}) must be positive\n",
 		learning_rate);
 	m_log_learning_rate = std::log(learning_rate);
 }
 
 void AdamUpdater::set_epsilon(float64_t epsilon)
 {
-	REQUIRE(epsilon>0,"Epsilon ({}) must be non-negative\n",
+	require(epsilon>0,"Epsilon ({}) must be non-negative\n",
 		epsilon);
 	m_epsilon=epsilon;
 }
 
 void AdamUpdater::set_first_moment_decay_factor(float64_t decay_factor)
 {
-	REQUIRE(decay_factor>0.0 && decay_factor<=1.0,
+	require(decay_factor>0.0 && decay_factor<=1.0,
 		"Decay factor ({}) for first moment must in (0,1]\n",
 		decay_factor);
 	m_decay_factor_first_moment=decay_factor;
@@ -77,7 +77,7 @@ void AdamUpdater::set_first_moment_decay_factor(float64_t decay_factor)
 
 void AdamUpdater::set_second_moment_decay_factor(float64_t decay_factor)
 {
-	REQUIRE(decay_factor>0.0 && decay_factor<=1.0,
+	require(decay_factor>0.0 && decay_factor<=1.0,
 		"Decay factor ({}) for second moment must in (0,1]\n",
 		decay_factor);
 	m_decay_factor_second_moment=decay_factor;
@@ -117,8 +117,8 @@ void AdamUpdater::init()
 float64_t AdamUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t gradient, index_t idx, float64_t learning_rate)
 {
-	REQUIRE(idx>=0 && idx<m_gradient_first_moment.vlen, "");
-	REQUIRE(idx>=0 && idx<m_gradient_second_moment.vlen, "");
+	require(idx>=0 && idx<m_gradient_first_moment.vlen, "");
+	require(idx>=0 && idx<m_gradient_second_moment.vlen, "");
 
 	float64_t scale_first_moment=m_decay_factor_first_moment*m_gradient_first_moment[idx]+
 		(1.0-m_decay_factor_first_moment)*gradient;
@@ -137,7 +137,7 @@ float64_t AdamUpdater::get_negative_descend_direction(float64_t variable,
 void AdamUpdater::update_variable(SGVector<float64_t> variable_reference,
 	SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
 {
-	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen, "");
+	require(variable_reference.vlen==raw_negative_descend_direction.vlen, "");
 	if(m_gradient_first_moment.vlen==0)
 	{
 		m_gradient_first_moment=SGVector<float64_t>(variable_reference.vlen);

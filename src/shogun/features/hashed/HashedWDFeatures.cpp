@@ -11,7 +11,7 @@ using namespace shogun;
 
 CHashedWDFeatures::CHashedWDFeatures() :CDotFeatures()
 {
-	SG_UNSTABLE("CHashedWDFeatures::CHashedWDFeatures()", "\n")
+	io::unstable("CHashedWDFeatures::CHashedWDFeatures()");
 
 	strings = NULL;
 
@@ -126,7 +126,7 @@ float64_t CHashedWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec
 float64_t
 CHashedWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	REQUIRE(
+	require(
 	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}\n",
 	    vec2.size(), w_dim);
 
@@ -163,7 +163,7 @@ CHashedWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 			uint32_t h =
 					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("vec[i]={}, k={}, offs={} o={}\n", vec[i], k,offs, o)
+			io::print("vec[i]={}, k={}, offs={} o={}\n", vec[i], k,offs, o);
 #endif
 			sum+=vec2[o+(h & mask)]*wd;
 			val[i] = h;
@@ -182,7 +182,7 @@ CHashedWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim)
+		error("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim);
 
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
@@ -219,8 +219,8 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 			uint32_t h = CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("offs={} o={} h={} \n", offs, o, h)
-			SG_PRINT("vec[i]={}, k={}, offs={} o={}\n", vec[i], k,offs, o)
+			io::print("offs={} o={} h={} \n", offs, o, h);
+			io::print("vec[i]={}, k={}, offs={} o={}\n", vec[i], k,offs, o);
 #endif
 			vec2[o+(h & mask)]+=wd;
 			val[i] = h;
@@ -289,18 +289,18 @@ int32_t CHashedWDFeatures::get_nnz_features_for_vector(int32_t num) const
 
 void* CHashedWDFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 bool CHashedWDFeatures::get_next_feature(int32_t& index, float64_t& value,
 		void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CHashedWDFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }

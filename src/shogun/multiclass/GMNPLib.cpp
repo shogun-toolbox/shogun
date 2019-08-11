@@ -24,7 +24,7 @@ using namespace shogun;
 
 CGMNPLib::CGMNPLib()
 {
-	SG_UNSTABLE("CGMNPLib::CGMNPLib()", "\n")
+	io::unstable("CGMNPLib::CGMNPLib()");
 
 	diag_H = NULL;
 	kernel_columns = NULL;
@@ -57,7 +57,7 @@ CGMNPLib::CGMNPLib(
   Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
   Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
-  SG_INFO("using {} kernel cache lines\n", Cache_Size)
+  io::info("using {} kernel cache lines\n", Cache_Size);
   ASSERT(Cache_Size>=2)
 
   /* allocates memory for kernel cache */
@@ -238,11 +238,11 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* ------------------------------------------------------------ */
 
   Ha = SG_MALLOC(float64_t, dim);
-  if( Ha == NULL ) SG_ERROR("Not enough memory.")
+  if( Ha == NULL ) error("Not enough memory.");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
   History = SG_MALLOC(float64_t, History_size*2);
-  if( History == NULL ) SG_ERROR("Not enough memory.")
+  if( History == NULL ) error("Not enough memory.");
 
   /* inx = argmin(0.5*diag_H + vector_c ); */
   for( tmp1 =  PLUS_INF, i = 0; i < dim; i++ ) {
@@ -279,7 +279,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   History[INDEX(1,0,2)] = UB;
 
   if( verb ) {
-    SG_PRINT("Init: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
+    io::print("Init: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }
 
@@ -372,7 +372,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
 
 	if (verb && (t % verb) == 0)
 	{
-		SG_PRINT(
+		io::print(
 			"{}: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n", t, UB, LB,
 			UB - LB, (UB - LB) / UB);
 	}
@@ -387,7 +387,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
 	{
 		tmp_ptr = SG_MALLOC(float64_t, (History_size + HISTORY_BUF) * 2);
 		if (tmp_ptr == NULL)
-			SG_ERROR("Not enough memory.")
+			error("Not enough memory.");
 		for (i = 0; i < History_size; i++)
 		{
 			tmp_ptr[INDEX(0, i, 2)] = History[INDEX(0, i, 2)];
@@ -405,7 +405,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* print info about last iteration*/
   pb.complete_absolute();
   if(verb && (t % verb) ) {
-    SG_PRINT("exit: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
+    io::print("exit: UB={}, LB={}, UB-LB={}, (UB-LB)/|UB|={} \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }
 

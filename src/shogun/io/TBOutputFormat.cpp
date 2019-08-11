@@ -122,7 +122,7 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	CHECK_TYPE_HISTO(std::vector<char>)
 	else
 	{
-		SG_ERROR(
+		error(
 		    "Unsupported type {}", value.first->get_any().type_info().name());
 	}
 

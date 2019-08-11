@@ -316,29 +316,29 @@ template<typename V>
 CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _this = nullptr)
 {
 	const V& value = *v;
-	REQUIRE(v != nullptr, "Value should be set!");
+	require(v != nullptr, "Value should be set!");
 
 	if (value.IsNull())
 		return nullptr;
 
-	REQUIRE(value.HasMember(kNameKey), "Not a valid serialized SGObject, it does not have a 'name'!")
+	require(value.HasMember(kNameKey), "Not a valid serialized SGObject, it does not have a 'name'!");
 	string obj_name(value[kNameKey].GetString());
-	REQUIRE(value.HasMember(kGenericKey), "Not a valid serialized SGObject, it does not have a 'generic'!")
+	require(value.HasMember(kGenericKey), "Not a valid serialized SGObject, it does not have a 'generic'!");
 	EPrimitiveType primitive_type((EPrimitiveType) value[kGenericKey].GetInt());
 	CSGObject* obj = nullptr;
 	if (_this)
 	{
-		REQUIRE(_this->get_name() == obj_name, "");
-		REQUIRE(_this->get_generic() == primitive_type, "");
+		require(_this->get_name() == obj_name, "");
+		require(_this->get_generic() == primitive_type, "");
 		obj = _this;
 	}
 	else
 	{
 		obj = create(obj_name.c_str(), primitive_type);
 	}
-	REQUIRE(obj != nullptr, "Could not create '{}' class", obj_name.c_str())
-	REQUIRE(value.HasMember(kParametersKey), "Not a valid serialized SGObject, it does not have 'parameters!")
-	REQUIRE(value[kParametersKey].IsObject(), "Not a valid serialized SGObject!")
+	require(obj != nullptr, "Could not create '{}' class", obj_name.c_str());
+	require(value.HasMember(kParametersKey), "Not a valid serialized SGObject, it does not have 'parameters!");
+	require(value[kParametersKey].IsObject(), "Not a valid serialized SGObject!");
 	auto obj_params = value[kParametersKey].GetObject();
 
 	try
@@ -355,7 +355,7 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _
 	}
 	catch(ShogunException& e)
 	{
-		SG_WARNING("Error while deserializeing {}: ShogunException: "
+		io::warn("Error while deserializeing {}: ShogunException: "
 			"{}\n", obj_name.c_str(), e.what());
 		SG_UNREF(obj);
 		return nullptr;

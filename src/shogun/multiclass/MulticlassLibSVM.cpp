@@ -49,14 +49,14 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	init_strategy();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=m_labels->get_num_labels();
-	SG_INFO("{} trainlabels, {} classes\n", problem.l, num_classes)
+	io::info("{} trainlabels, {} classes\n", problem.l, num_classes);
 
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
-			SG_ERROR("Number of training vectors does not match number of "
+			error("Number of training vectors does not match number of "
 					"labels\n");
 		}
 		m_kernel->init(data, data);
@@ -101,7 +101,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: {}\n",error_msg)
+		error("Error: {}\n",error_msg);
 
 	model = svm_train(&problem, &param);
 
@@ -109,7 +109,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	{
 		if (model->nr_class!=num_classes)
 		{
-			SG_ERROR("LibSVM model->nr_class={} while num_classes={}\n",
+			error("LibSVM model->nr_class={} while num_classes={}\n",
 					model->nr_class, num_classes);
 		}
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef))
@@ -201,7 +201,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 						s, num_sv, model->l, bias, model->label[i],
 						model->label[j], idx);
 
-				REQUIRE(set_svm(idx, svm),"SVM set failed")
+				require(set_svm(idx, svm),"SVM set failed");
 				s++;
 			}
 		}

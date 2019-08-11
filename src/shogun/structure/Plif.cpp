@@ -60,7 +60,7 @@ bool CPlif::set_transform_type(const char *type_str)
 		transform = T_LINEAR_PLUS3 ;
 	else
 	{
-		SG_ERROR("unknown transform type ({})\n", type_str)
+		error("unknown transform type ({})\n", type_str);
 		return false ;
 	}
 	return true ;
@@ -121,7 +121,7 @@ float64_t CPlif::lookup_penalty_svm(
 	ASSERT(use_svm>0)
 	float64_t d_value=d_values[use_svm-1] ;
 #ifdef PLIF_DEBUG
-	SG_PRINT("{}.lookup_penalty_svm({})\n", get_name(), d_value)
+	io::print("{}.lookup_penalty_svm({})\n", get_name(), d_value);
 #endif
 
 	if (!do_calc)
@@ -143,7 +143,7 @@ float64_t CPlif::lookup_penalty_svm(
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR("unknown transform\n")
+		error("unknown transform\n");
 		break ;
 	}
 
@@ -156,7 +156,7 @@ float64_t CPlif::lookup_penalty_svm(
 			break ; // assume it is monotonically increasing
 
 #ifdef PLIF_DEBUG
-	SG_PRINT("  -> idx = {} ", idx)
+	io::print("  -> idx = {} ", idx);
 #endif
 
 	if (idx==0)
@@ -168,11 +168,11 @@ float64_t CPlif::lookup_penalty_svm(
 		ret = (penalties[idx]*(d_value-limits[idx-1]) + penalties[idx-1]*
 			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;
 #ifdef PLIF_DEBUG
-		SG_PRINT("  -> ({:1.3f}*{:1.3f}, {:1.3f}*{:1.3f})", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1])
+		io::print("  -> ({:1.3f}*{:1.3f}, {:1.3f}*{:1.3f})", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1]);
 #endif
 	}
 #ifdef PLIF_DEBUG
-		SG_PRINT("  -> ret={:1.3f}\n", ret)
+		io::print("  -> ret={:1.3f}\n", ret);
 #endif
 
 	return ret ;
@@ -185,7 +185,7 @@ float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
 
 	if ((p_value<min_value) || (p_value>max_value))
 	{
-		//SG_PRINT("Feature:{}, {}.lookup_penalty({}): return -inf min_value: {}, max_value: {}\n", name, get_name(), p_value, min_value, max_value)
+		//io::print("Feature:{}, {}.lookup_penalty({}): return -inf min_value: {}, max_value: {}\n", name, get_name(), p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
 	if (!do_calc)
@@ -204,13 +204,13 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 		return lookup_penalty_svm(p_value, svm_values) ;
 
 #ifdef PLIF_DEBUG
-	SG_PRINT("{}.lookup_penalty({})\n", get_name(), p_value)
+	io::print("{}.lookup_penalty({})\n", get_name(), p_value);
 #endif
 
 
 	if ((p_value<min_value) || (p_value>max_value))
 	{
-		//SG_PRINT("Feature:{}, {}.lookup_penalty({}): return -inf min_value: {}, max_value: {}\n", name, get_name(), p_value, min_value, max_value)
+		//io::print("Feature:{}, {}.lookup_penalty({}): return -inf min_value: {}, max_value: {}\n", name, get_name(), p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
 
@@ -235,12 +235,12 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR("unknown transform\n")
+		error("unknown transform\n");
 		break ;
 	}
 
 #ifdef PLIF_DEBUG
-	SG_PRINT("  -> value = {:1.4f} ", d_value)
+	io::print("  -> value = {:1.4f} ", d_value);
 #endif
 
 	int32_t idx = 0 ;
@@ -252,7 +252,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 			break ; // assume it is monotonically increasing
 
 #ifdef PLIF_DEBUG
-	SG_PRINT("  -> idx = {} ", idx)
+	io::print("  -> idx = {} ", idx);
 #endif
 
 	if (idx==0)
@@ -264,13 +264,13 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 		ret = (penalties[idx]*(d_value-limits[idx-1]) + penalties[idx-1]*
 			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;
 #ifdef PLIF_DEBUG
-		SG_PRINT("  -> ({:1.3f}*{:1.3f}, {:1.3f}*{:1.3f}) ", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1])
+		io::print("  -> ({:1.3f}*{:1.3f}, {:1.3f}*{:1.3f}) ", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1]);
 #endif
 	}
 	//if (p_value>=30 && p_value<150)
-	//SG_PRINT("{} {}({}) -> {:1.2f}\n", PEN->name, p_value, idx, ret)
+	//io::print("{} {}({}) -> {:1.2f}\n", PEN->name, p_value, idx, ret);
 #ifdef PLIF_DEBUG
-	SG_PRINT("  -> ret={:1.3f}\n", ret)
+	io::print("  -> ret={:1.3f}\n", ret);
 #endif
 
 	return ret ;
@@ -312,7 +312,7 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR("unknown transform\n")
+		error("unknown transform\n");
 		break ;
 	}
 
@@ -359,7 +359,7 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR("unknown transform\n")
+		error("unknown transform\n");
 		break ;
 	}
 
@@ -388,7 +388,7 @@ void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 		svm_ids[(*num_svms)] = use_svm;
 		(*num_svms)++;
 	}
-	SG_PRINT("->use_svm:{} plif_id:{} name:{} trans_type:{}  ",use_svm, get_id(), get_name(), get_transform_type())
+	io::print("->use_svm:{} plif_id:{} name:{} trans_type:{}  ",use_svm, get_id(), get_name(), get_transform_type());
 }
 
 bool CPlif::get_do_calc()

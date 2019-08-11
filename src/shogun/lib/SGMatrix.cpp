@@ -62,7 +62,7 @@ SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
 template <class T>
 SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
 {
-	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
+	require((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
 	matrix=vec.vector;
 	num_rows=vec.vlen;
 	num_cols=1;
@@ -74,10 +74,10 @@ template <class T>
 SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
 : SGReferencedData(vec)
 {
-	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
-	REQUIRE(nrows>0, "Number of rows ({}) has to be a positive integer!\n", nrows);
-	REQUIRE(ncols>0, "Number of cols ({}) has to be a positive integer!\n", ncols);
-	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix ({}) must "
+	require((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
+	require(nrows>0, "Number of rows ({}) has to be a positive integer!\n", nrows);
+	require(ncols>0, "Number of cols ({}) has to be a positive integer!\n", ncols);
+	require(vec.vlen==nrows*ncols, "Number of elements in the matrix ({}) must "
 			"be the same as the number of elements in the vector ({})!\n",
 			nrows*ncols, vec.vlen);
 
@@ -231,9 +231,9 @@ void SGMatrix<T>::set_const(T const_elem)
 {
 	assert_on_cpu();
 
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
+	require(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	require(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	require(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	std::fill(matrix, matrix+size(), const_elem);
 }
@@ -249,9 +249,9 @@ bool SGMatrix<T>::is_symmetric() const
 {
 	assert_on_cpu();
 
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
+	require(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	require(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	require(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	if (num_rows!=num_cols)
 		return false;
@@ -275,9 +275,9 @@ bool SGMatrix<real_t>::is_symmetric() const	\
 {	\
 	assert_on_cpu();	\
 	\
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");	\
-	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);	\
-	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);	\
+	require(matrix!=nullptr, "The underlying matrix is not allocated!\n");	\
+	require(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);	\
+	require(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);	\
 	\
 	if (num_rows!=num_cols)	\
 		return false;	\
@@ -306,9 +306,9 @@ bool SGMatrix<complex128_t>::is_symmetric() const
 {
 	assert_on_cpu();
 
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
+	require(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	require(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	require(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	if (num_rows!=num_cols)
 		return false;
@@ -333,9 +333,9 @@ T SGMatrix<T>::max_single() const
 {
 	assert_on_cpu();
 
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
-	REQUIRE(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
+	require(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	require(num_rows>0, "Number of rows ({}) has to be positive!\n", num_rows);
+	require(num_cols>0, "Number of cols ({}) has to be positive!\n", num_cols);
 
 	return *std::max_element(matrix, matrix+size());
 }
@@ -343,7 +343,7 @@ T SGMatrix<T>::max_single() const
 template <>
 complex128_t SGMatrix<complex128_t>::max_single() const
 {
-	SG_ERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
+	error("SGMatrix::max_single():: Not supported for complex128_t\n");
 	return complex128_t(0.0);
 }
 
@@ -368,8 +368,8 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 	if (!matrix || !nrows || !ncols)
 		return nullptr;
 
-	REQUIRE(nrows > 0, "Number of rows ({}) has to be positive!\n", nrows);
-	REQUIRE(ncols > 0, "Number of cols ({}) has to be positive!\n", ncols);
+	require(nrows > 0, "Number of rows ({}) has to be positive!\n", nrows);
+	require(ncols > 0, "Number of cols ({}) has to be positive!\n", ncols);
 
 	auto size=int64_t(nrows)*ncols;
 	T* result=SG_ALIGNED_MALLOC(T, size, alignment::container_alignment);
@@ -553,13 +553,13 @@ void SGMatrix<T>::display_matrix(
 	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0)
-	SG_PRINT("{}{}={}\n", prefix, name, to_string(matrix, rows, cols).c_str())
+	io::print("{}{}={}\n", prefix, name, to_string(matrix, rows, cols).c_str());
 }
 
 template <>
 SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return SGMatrix<char>();
 }
 
@@ -737,8 +737,8 @@ SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t si
 template <class T>
 void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 {
-	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
-	ASSERT(matrix.num_cols==matrix.num_rows)
+	require(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
+	ASSERT(matrix.num_cols==matrix.num_rows);
 	int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
 	clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
 	clapack_dgetri(CblasColMajor,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
@@ -748,10 +748,10 @@ void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 template <class T>
 SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix)
 {
-	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
+	require(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	if (matrix.num_rows!=matrix.num_cols)
 	{
-		SG_ERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
+		error("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
 				" rows and columns are not equal!\n");
 	}
 
@@ -780,7 +780,7 @@ double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
 			eigenvalues, &info);
 
 	if (info!=0)
-		SG_ERROR("DSYEV failed with code {}\n", info)
+		error("DSYEV failed with code {}\n", info);
 
 	return eigenvalues;
 }
@@ -804,7 +804,7 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 		SGMatrix<float64_t> A, SGMatrix<float64_t> B,
 		bool transpose_A, bool transpose_B, float64_t scale)
 {
-	REQUIRE((!A.on_gpu()) && (!B.on_gpu()),
+	require((!A.on_gpu()) && (!B.on_gpu()),
 		"Operation is not possible when data is in GPU memory.\n");
 
 	/* these variables store size of transposed matrices*/
@@ -816,7 +816,7 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 	/* do a dimension check */
 	if (cols_A!=rows_B)
 	{
-		SG_ERROR("SGMatrix::matrix_multiply(): Dimension mismatch: "
+		error("SGMatrix::matrix_multiply(): Dimension mismatch: "
 				"A({}x{})*B({}x%D)\n", rows_A, cols_A, rows_B, cols_B);
 	}
 
@@ -867,7 +867,7 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 		if (pre_allocated.num_rows!=num_rows ||
 				pre_allocated.num_cols!=num_cols)
 		{
-			SG_ERROR("SGMatrix<T>::get_allocated_matrix(). Provided target"
+			error("SGMatrix<T>::get_allocated_matrix(). Provided target"
 					"matrix dimensions ({}x{}) do not match passed data "
 					"dimensions ({}x{})!\n", pre_allocated.num_rows,
 					pre_allocated.num_cols, num_rows, num_cols);
@@ -931,7 +931,7 @@ void SGMatrix<T>::load(CFile* loader)
 template<>
 void SGMatrix<complex128_t>::load(CFile* loader)
 {
-	SG_ERROR("SGMatrix::load():: Not supported for complex128_t\n");
+	error("SGMatrix::load():: Not supported for complex128_t\n");
 }
 
 template<class T>
@@ -947,7 +947,7 @@ void SGMatrix<T>::save(CFile* writer)
 template<>
 void SGMatrix<complex128_t>::save(CFile* saver)
 {
-	SG_ERROR("SGMatrix::save():: Not supported for complex128_t\n");
+	error("SGMatrix::save():: Not supported for complex128_t\n");
 }
 
 template<class T>

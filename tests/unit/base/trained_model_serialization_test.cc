@@ -80,7 +80,7 @@ protected:
 			break;
 
 		default:
-			SG_ERROR("Unsupported problem type: {}\n", pt);
+			error("Unsupported problem type: {}\n", pt);
 			FAIL();
 		}
 

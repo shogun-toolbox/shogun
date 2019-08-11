@@ -33,7 +33,7 @@ ShogunEnv* ShogunEnv::instance()
 
 ShogunEnv::ShogunEnv()
 {
-	sg_io = std::make_unique<SGIO>();
+	sg_io = std::make_unique<io::SGIO>();
 	sg_linalg = std::make_unique<SGLinalg>();
 	sg_signal = std::make_unique<CSignal>();
 
@@ -63,11 +63,11 @@ void ShogunEnv::init_from_env()
 	if (env_log_val)
 	{
 		if (strncmp(env_log_val, "DEBUG", 5) == 0)
-			sg_io->set_loglevel(MSG_DEBUG);
+			sg_io->set_loglevel(io::MSG_DEBUG);
 		else if (strncmp(env_log_val, "WARN", 4) == 0)
-			sg_io->set_loglevel(MSG_WARN);
+			sg_io->set_loglevel(io::MSG_WARN);
 		else if (strncmp(env_log_val, "ERROR", 5) == 0)
-			sg_io->set_loglevel(MSG_ERROR);
+			sg_io->set_loglevel(io::MSG_ERROR);
 	}
 
 	char* env_warnings_val = NULL;
@@ -89,7 +89,7 @@ void ShogunEnv::init_from_env()
 		catch (...)
 		{
 			sg_io->message(
-			    MSG_WARN,
+			    io::MSG_WARN,
 			    "The specified SHOGUN_NUM_THREADS environment ({})"
 			    "variable could not be parsed as integer!\n",
 			    env_thread_val);
@@ -97,7 +97,7 @@ void ShogunEnv::init_from_env()
 	}
 }
 
-SGIO* ShogunEnv::io()
+io::SGIO* ShogunEnv::io()
 {
 	return sg_io.get();
 }

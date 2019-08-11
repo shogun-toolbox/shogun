@@ -116,7 +116,7 @@ CVarDTCInferenceMethod* CVarDTCInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_SPARSE_REGRESSION)
-		SG_ERROR("Provided inference is not of type CVarDTCInferenceMethod!\n")
+		error("Provided inference is not of type CVarDTCInferenceMethod!\n");
 
 	SG_REF(inference);
 	return (CVarDTCInferenceMethod*)inference;
@@ -126,15 +126,15 @@ void CVarDTCInferenceMethod::check_members() const
 {
 	CSingleSparseInference::check_members();
 
-	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
-			"VarDTC inference method can only use Gaussian likelihood function\n")
-	REQUIRE(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
-			"of CRegressionLabels\n")
+	require(m_model->get_model_type()==LT_GAUSSIAN,
+			"VarDTC inference method can only use Gaussian likelihood function\n");
+	require(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
+			"of CRegressionLabels\n");
 }
 
 SGVector<float64_t> CVarDTCInferenceMethod::get_diagonal_vector()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	//the inference method does not need to use this 
 	return SGVector<float64_t>();
 }
@@ -294,14 +294,14 @@ void CVarDTCInferenceMethod::update_deriv()
 
 SGVector<float64_t> CVarDTCInferenceMethod::get_posterior_mean()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	//TODO: implement this method once I get time
 	return SGVector<float64_t>();
 }
 
 SGMatrix<float64_t> CVarDTCInferenceMethod::get_posterior_covariance()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	//TODO: implement this method once I get time
 	return SGMatrix<float64_t>();
 }
@@ -309,9 +309,9 @@ SGMatrix<float64_t> CVarDTCInferenceMethod::get_posterior_covariance()
 SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
+	require(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter\n",
-			m_model->get_name(), param->m_name)
+			m_model->get_name(), param->m_name);
 
 	SGVector<float64_t> dlik(1);
 
@@ -384,10 +384,10 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_features
 SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_noise(
 	const TParameter* param)
 {
-	REQUIRE(param, "Param not set\n");
-	REQUIRE(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
+	require(param, "Param not set\n");
+	require(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter\n",
-			get_name(), param->m_name)
+			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	SGVector<float64_t> result(1);
@@ -417,7 +417,7 @@ float64_t CVarDTCInferenceMethod::get_derivative_related_cov(SGVector<float64_t>
 SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_mean(
 	const TParameter* param)
 {
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set\n");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -447,6 +447,6 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_mean(
 
 void CVarDTCInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
-	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
+	io::warn("The method does not require a minimizer. The provided minimizer will not be used.\n");
 }
 

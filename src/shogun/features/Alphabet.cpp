@@ -76,7 +76,7 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 	else if (len>=(int32_t) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
-      SG_ERROR("unknown alphabet {}\n", al)
+      error("unknown alphabet {}\n", al);
    }
 
 	set_alphabet(alpha);
@@ -93,7 +93,7 @@ CAlphabet::CAlphabet(CAlphabet* a)
 : CSGObject()
 {
 	init();
-	REQUIRE(a, "No Alphabet specified!\n");
+	require(a, "No Alphabet specified!\n");
 	set_alphabet(a->get_alphabet());
 	copy_histogram(a);
 }
@@ -588,20 +588,20 @@ void CAlphabet::print_histogram()
 		if (histogram[i])
 		{
 			if (isprint(i))
-				SG_PRINT("hist['{}']={}", i, histogram[i])
+				io::print("hist['{}']={}", i, histogram[i]);
 			else if (i == '\t')
-				SG_PRINT("hist['\\t']={}", histogram[i])
+				io::print("hist['\\t']={}", histogram[i]);
 			else if (i == '\n')
-				SG_PRINT("hist['\\n']={}", histogram[i])
+				io::print("hist['\\n']={}", histogram[i]);
 			else if (i == '\r')
-				SG_PRINT("hist['\\r']={}", histogram[i])
+				io::print("hist['\\r']={}", histogram[i]);
 			else
-				SG_PRINT("hist[{}]={}", i, histogram[i])
+				io::print("hist[{}]={}", i, histogram[i]);
 
 			if (!valid_chars[i])
-				SG_PRINT(" - Character not in Alphabet.\n")
+				io::print(" - Character not in Alphabet.\n");
 			else
-				SG_PRINT("\n");
+				io::print("\n");
 		}
 	}
 }
@@ -627,7 +627,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 	if (!result && print_error)
 	{
 		print_histogram();
-		SG_ERROR("ALPHABET does not contain all symbols in histogram\n")
+		error("ALPHABET does not contain all symbols in histogram\n");
 	}
 
 	return result;
@@ -641,7 +641,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 		{
 			print_histogram();
 			fprintf(stderr, "get_num_bits_in_histogram()=%i > get_num_bits()=%i\n", get_num_bits_in_histogram(), get_num_bits()) ;
-         SG_ERROR("ALPHABET too small to contain all symbols in histogram\n")
+         error("ALPHABET too small to contain all symbols in histogram\n");
 		}
 		return false;
 	}
@@ -656,7 +656,7 @@ void CAlphabet::copy_histogram(const CAlphabet* a)
 
 	if (h.vlen != sizeof(histogram)/sizeof(histogram[0]))
 	{
-		SG_ERROR("Histogram has {} elements, but {} elements where expected\n",
+		error("Histogram has {} elements, but {} elements where expected\n",
 				h.vlen, sizeof(histogram)/sizeof(histogram[0]));
 	}
 

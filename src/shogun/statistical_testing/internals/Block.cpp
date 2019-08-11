@@ -39,7 +39,7 @@ using namespace internal;
 
 Block::Block(CFeatures* feats, index_t index, index_t size) : m_feats(feats)
 {
-	REQUIRE(m_feats!=nullptr, "Underlying feature object cannot be null!\n");
+	require(m_feats!=nullptr, "Underlying feature object cannot be null!\n");
 
 	// increase the refcount of the underlying feature object
 	// we want this object to be alive till the last block is free'd

@@ -213,13 +213,13 @@ bool CSVMLight::train_machine(CFeatures* data)
 	learn_parm->xa_depth=0;
 
     if (!kernel)
-        SG_ERROR("SVM_light can not proceed without kernel!\n")
+        error("SVM_light can not proceed without kernel!\n");
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
-			SG_ERROR("{}::train_machine(): Number of training vectors ({}) does"
+			error("{}::train_machine(): Number of training vectors ({}) does"
 					" not match number of labels ({})\n", get_name(),
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
@@ -227,7 +227,7 @@ bool CSVMLight::train_machine(CFeatures* data)
 	}
 
     if (!kernel->has_features())
-        SG_ERROR("SVM_light can not proceed without initialized kernel!\n")
+        error("SVM_light can not proceed without initialized kernel!\n");
 
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(kernel->get_num_vec_lhs()==m_labels->get_num_labels())
@@ -417,7 +417,7 @@ void CSVMLight::svm_learn()
 
 	if(m_alpha.vector && get_num_support_vectors()) {
 		if(verbosity>=1) {
-			SG_INFO("Computing starting state...")
+			io::info("Computing starting state...");
 		}
 
 	float64_t* alpha = SG_MALLOC(float64_t, totdoc);
@@ -489,7 +489,7 @@ void CSVMLight::svm_learn()
     SG_FREE(alpha);
 
     if(verbosity>=1)
-		SG_DONE()
+		io::progress_done();
   }
 		SG_DEBUG("{} totdoc {} pos {} neg\n", totdoc, trainpos, trainneg)
 		SG_DEBUG("Optimizing...\n")
@@ -505,7 +505,7 @@ void CSVMLight::svm_learn()
 	if(verbosity>=1) {
 		if(verbosity==1)
 		{
-			SG_DONE()
+			io::progress_done();
 			SG_DEBUG("({} iterations)", iterations)
 		}
 
@@ -515,12 +515,12 @@ void CSVMLight::svm_learn()
 				misclassified++;
 		}
 
-		SG_INFO("Optimization finished ({} misclassified, maxdiff={:.8f}).\n",
+		io::info("Optimization finished ({} misclassified, maxdiff={:.8f}).\n",
 				misclassified,maxdiff);
 
-		SG_INFO("obj = {:.16f}, rho = {:.16f}\n",get_objective(),model->b)
+		io::info("obj = {:.16f}, rho = {:.16f}\n",get_objective(),model->b);
 		if (maxdiff>epsilon)
-			SG_WARNING("maximum violation ({}) exceeds svm_epsilon ({}) due to numerical difficulties\n", maxdiff, epsilon)
+			io::warn("maximum violation ({}) exceeds svm_epsilon ({}) due to numerical difficulties\n", maxdiff, epsilon);
 
 		upsupvecnum=0;
 		for (i=1;i<model->sv_num;i++)
@@ -530,7 +530,7 @@ void CSVMLight::svm_learn()
 					 learn_parm->epsilon_a))
 				upsupvecnum++;
 		}
-		SG_INFO("Number of SV: {} (including {} at upper bound)\n",
+		io::info("Number of SV: {} (including {} at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
@@ -756,7 +756,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 	  }
 
 	  if(verbosity>=2) {
-		  SG_INFO(" {} vectors chosen\n",choosenum)
+		  io::info(" {} vectors chosen\n",choosenum);
 	  }
 
 	  if(verbosity>=2) t1=get_runtime();
@@ -826,7 +826,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  /* int32_t time no progress? */
 		  terminate=1;
 		  retrain=0;
-		  SG_WARNING("Relaxing KT-Conditions due to slow progress! Terminating!\n")
+		  io::warn("Relaxing KT-Conditions due to slow progress! Terminating!\n");
 		  SG_DEBUG("(iteration :{}, bestmaxdiffiter: {}, lean_param->maxiter: {})\n", iteration, bestmaxdiffiter, learn_parm->maxiter )
 	  }
 
@@ -856,13 +856,13 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  retrain=0;
 		  if((*maxdiff) > learn_parm->epsilon_crit)
 		  {
-			  SG_INFO("restarting optimization as we are - due to shrinking - deviating too much (maxdiff({}) > eps({}))\n", *maxdiff, learn_parm->epsilon_crit)
+			  io::info("restarting optimization as we are - due to shrinking - deviating too much (maxdiff({}) > eps({}))\n", *maxdiff, learn_parm->epsilon_crit);
 		      retrain=1;
 		  }
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
-		      SG_DONE()
+		      io::progress_done();
 		      SG_DEBUG("Number of inactive variables = {}\n", inactivenum)
 		  }
 	  }
@@ -878,7 +878,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  learn_parm->epsilon_crit=epsilon_crit_org;
 
 	  if(verbosity>=2) {
-		  SG_INFO(" => ({} SV (incl. {} SV at u-bound), max violation={:.5f})\n",
+		  io::info(" => ({} SV (incl. {} SV at u-bound), max violation={:.5f})\n",
 					   supvecnum,model->at_upper_bound,(*maxdiff));
 
 	  }
@@ -1044,7 +1044,7 @@ void CSVMLight::optimize_svm(
             learn_parm->svm_maxqpsize); /* the threshold for free. otherwise */
 		/* b is calculated in calculate_model. */
     if(verbosity>=3) {
-     SG_DONE()
+     io::progress_done();
     }
 
     for (i=0;i<varnum;i++)
@@ -1183,7 +1183,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		}
 
 		if(verbosity>=3) {
-			SG_DONE()
+			io::progress_done();
 		}
 	}
 #endif
@@ -1257,7 +1257,7 @@ void CSVMLight::compute_matrices_for_optimization(
   }
 
   if(verbosity>=3) {
-	  SG_DONE()
+	  io::progress_done();
   }
 }
 
@@ -1373,7 +1373,7 @@ int32_t CSVMLight::calculate_svm_model(
   }
 
   if(verbosity>=3) {
-   SG_DONE()
+   io::progress_done();
   }
 
   return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
@@ -2029,7 +2029,7 @@ int32_t CSVMLight::shrink_problem(
 	  /* Shrink problem by removing those variables which are */
 	  /* optimal at a bound for a minimum number of iterations */
 	  if(verbosity>=2) {
-		  SG_INFO(" Shrinking...")
+		  io::info(" Shrinking...");
 	  }
 
 	  if (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
@@ -2055,7 +2055,7 @@ int32_t CSVMLight::shrink_problem(
 		  shrink_state->deactnum=0;
 
 	  if(verbosity>=2) {
-		  SG_DONE()
+		  io::progress_done();
 		  SG_DEBUG("Number of inactive variables = {}\n", totdoc-activenum)
 	  }
   }
@@ -2282,7 +2282,7 @@ void CSVMLight::reactivate_inactive_examples(
 	  for (t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--)
 	  {
 		  if(verbosity>=2) {
-			  SG_INFO("{}..",t)
+			  io::info("{}..",t);
 		  }
 		  a_old=shrink_state->a_history[t];
 		  for (i=0;i<totdoc;i++) {
@@ -2559,13 +2559,13 @@ float64_t* CSVMLight::optimize_qp(
 	if(precision_violations > 5000) {
 		(*epsilon_crit)*=10.0;
 		precision_violations=0;
-		SG_INFO("Relaxing epsilon on KT-Conditions.\n")
+		io::info("Relaxing epsilon on KT-Conditions.\n");
 	}
 
 	(*threshold)=model_b;
 
 	if(result!=OPTIMAL_SOLUTION) {
-		SG_ERROR("PR_LOQO did not converge.\n")
+		error("PR_LOQO did not converge.\n");
 		return(qp->opt_xinit);
 	}
 	else {

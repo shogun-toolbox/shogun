@@ -149,7 +149,7 @@ SGVector<index_t>* CTaskTree::get_tasks_indices() const
 	do
 	{
 		tasks_indices[t_i] = iterator->get_indices();
-		//REQUIRE(iterator->is_contiguous(),"Task is not contiguous")
+		//require(iterator->is_contiguous(),"Task is not contiguous");
 		//ind[t_i+1] = iterator->get_indices()[iterator->get_indices().vlen-1] + 1;
 		//SG_DEBUG("Block = [{},{}]\n", iterator->get_min_index(), iterator->get_max_index())
 		SG_UNREF(iterator);

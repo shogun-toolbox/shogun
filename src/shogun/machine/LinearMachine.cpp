@@ -22,7 +22,7 @@ CLinearMachine::CLinearMachine(): CMachine()
 CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine()
 {
 	init();
-	REQUIRE(machine, "No machine provided.\n");
+	require(machine, "No machine provided.\n");
 
 	auto w = machine->get_w();
 	auto w_clone = w.clone();
@@ -69,7 +69,7 @@ SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 
 		set_features((CDotFeatures*) data);
 	}

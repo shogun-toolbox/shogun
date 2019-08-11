@@ -153,7 +153,7 @@ protected:
 		if constexpr (!std::is_same<T, bool>::value)
 			watch_param("value", &m_value);
 		else
-			SG_WARNING("std::vector<bool> is not currently serializable. "
+			io::warn("std::vector<bool> is not currently serializable. "
 					   "Use SGVector<bool> instead.");
 		watch_param("name", &m_name);
 	}

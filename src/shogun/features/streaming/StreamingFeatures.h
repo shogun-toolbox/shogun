@@ -187,7 +187,7 @@ public:
 	 */
 	virtual CFeatures* get_streamed_features(index_t num_elements)
 	{
-		SG_ERROR("{}::get_streamed_features() is not yet implemented!\n",
+		error("{}::get_streamed_features() is not yet implemented!\n",
 				get_name());
 		return NULL;
 	}
@@ -199,7 +199,7 @@ public:
 	 */
 	virtual CFeatures* duplicate() const
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		return NULL;
 	}
 

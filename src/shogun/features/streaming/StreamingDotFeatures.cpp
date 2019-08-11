@@ -15,7 +15,7 @@ CStreamingDotFeatures::CStreamingDotFeatures() : CStreamingFeatures()
 CStreamingDotFeatures::CStreamingDotFeatures(CDotFeatures* dot_features,
 		float64_t* lab)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return;
 }
 
@@ -70,24 +70,24 @@ void CStreamingDotFeatures::expand_if_required(float64_t*& vec, int32_t &len)
 
 void* CStreamingDotFeatures::get_feature_iterator()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 int32_t CStreamingDotFeatures::get_nnz_features_for_vector()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return -1;
 }
 
 bool CStreamingDotFeatures::get_next_feature(int32_t& index, float32_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CStreamingDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return;
 }

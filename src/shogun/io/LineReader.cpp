@@ -58,13 +58,13 @@ bool CLineReader::has_next()
 {
 	if (m_stream==NULL || m_max_token_length==0 || m_tokenizer==NULL)
 	{
-		SG_ERROR("CLineReader::has_next():: Class is not initialized\n");
+		error("CLineReader::has_next():: Class is not initialized\n");
 		return false;
 	}
 
 	if (ferror(m_stream))
 	{
-		SG_ERROR("CLineReader::has_next():: Error reading file\n");
+		error("CLineReader::has_next():: Error reading file\n");
 		return false;
 	}
 
@@ -159,7 +159,7 @@ int32_t CLineReader::read(int32_t& bytes_to_skip)
 
 		if (ferror(m_stream))
 		{
-			SG_ERROR("CLineReader::read(int32_t&):: Error reading file\n");
+			error("CLineReader::read(int32_t&):: Error reading file\n");
 			return -1;
 		}
 	}

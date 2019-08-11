@@ -57,14 +57,14 @@ SGVector<float64_t> MaxMeasure::get_measure_vector()
 
 SGMatrix<float64_t> MaxMeasure::get_measure_matrix()
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return SGMatrix<float64_t>();
 }
 
 void MaxMeasure::init_measures()
 {
 	const index_t num_kernels=kernel_mgr.num_kernels();
-	REQUIRE(num_kernels>0, "Number of kernels is {}!\n", kernel_mgr.num_kernels());
+	require(num_kernels>0, "Number of kernels is {}!\n", kernel_mgr.num_kernels());
 	if (measures.size()!=num_kernels)
 		measures=SGVector<float64_t>(num_kernels);
 	std::fill(measures.data(), measures.data()+measures.size(), 0);
@@ -72,7 +72,7 @@ void MaxMeasure::init_measures()
 
 void MaxMeasure::compute_measures()
 {
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	require(estimator!=nullptr, "Estimator is not set!\n");
 	CQuadraticTimeMMD* mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (mmd!=nullptr && kernel_mgr.same_distance_type())
 		measures=mmd->multikernel()->statistic(kernel_mgr);

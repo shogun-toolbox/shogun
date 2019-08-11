@@ -110,8 +110,8 @@ void CStreamingMMD::Self::create_statistic_job()
 	auto Bx=data_mgr.blocksize_at(0);
 	auto By=data_mgr.blocksize_at(1);
 
-	REQUIRE(Bx>0, "Blocksize for samples from P cannot be 0!\n");
-	REQUIRE(By>0, "Blocksize for samples from Q cannot be 0!\n");
+	require(Bx>0, "Blocksize for samples from P cannot be 0!\n");
+	require(By>0, "Blocksize for samples from Q cannot be 0!\n");
 
 	auto mmd=mmd::ComputeMMD();
 	mmd.m_n_x=Bx;
@@ -154,7 +154,7 @@ void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, std::vector<CFe
 
 void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFeatures*>& blocks, CKernel* kernel) const
 {
-	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
+	require(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
 #pragma omp parallel for
 	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
@@ -168,7 +168,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFe
 		}
 		catch (ShogunException e)
 		{
-			SG_ERROR("{}, Try using less number of blocks per burst!\n", e.what());
+			error("{}, Try using less number of blocks per burst!\n", e.what());
 		}
 	}
 }
@@ -185,7 +185,7 @@ std::pair<float64_t, float64_t> CStreamingMMD::Self::compute_statistic_variance(
 {
 	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
 	auto kernel=kernel_mgr.kernel_at(0);
-	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
+	require(kernel != nullptr, "Kernel is not set!\n");
 
 	float64_t statistic=0;
 	float64_t permuted_samples_statistic=0;
@@ -261,7 +261,7 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 //	SGVector<float64_t> statistic(num_kernels);
 //	SGMatrix<float64_t> Q(num_kernels, num_kernels);
 //	return std::make_pair(statistic, Q);
-	REQUIRE(kernel_selection_mgr.num_kernels()>0, "No kernels specified for kernel learning! "
+	require(kernel_selection_mgr.num_kernels()>0, "No kernels specified for kernel learning! "
 		"Please add kernels using add_kernel() method!\n");
 
 	const auto num_kernels=kernel_selection_mgr.num_kernels();
@@ -288,7 +288,7 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 	while (!next_burst.empty())
 	{
 		const auto num_blocks=next_burst.num_blocks();
-		REQUIRE(num_blocks%2==0,
+		require(num_blocks%2==0,
 				"The number of blocks per burst ({} this burst) has to be even!\n",
 				num_blocks);
 		merge_samples(next_burst, blocks);
@@ -337,7 +337,7 @@ SGVector<float64_t> CStreamingMMD::Self::sample_null()
 {
 	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
 	auto kernel=kernel_mgr.kernel_at(0);
-	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
+	require(kernel != nullptr, "Kernel is not set!\n");
 
 	SGVector<float64_t> statistic(num_null_samples);
 	SGVector<index_t> term_counters(num_null_samples);

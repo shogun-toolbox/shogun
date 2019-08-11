@@ -86,7 +86,7 @@ bool CSGDQN::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
 
@@ -111,7 +111,7 @@ bool CSGDQN::train(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda={}, epochs={}, eta0={}\n", lambda, epochs, eta0)
+	io::info("lambda={}, epochs={}, eta0={}\n", lambda, epochs, eta0);
 
 
 	float64_t* Bc=SG_MALLOC(float64_t, w.vlen);
@@ -123,7 +123,7 @@ bool CSGDQN::train(CFeatures* data)
 	//Calibrate
 	calibrate();
 
-	SG_INFO("Training on {} vectors\n", num_vec)
+	io::info("Training on {} vectors\n", num_vec);
 
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
@@ -201,7 +201,7 @@ void CSGDQN::calibrate()
 	ASSERT(num_vec>0)
 	ASSERT(c_dim>0)
 
-	SG_INFO("Estimating sparsity num_vec={} num_feat={}.\n", num_vec, c_dim)
+	io::info("Estimating sparsity num_vec={} num_feat={}.\n", num_vec, c_dim);
 
 	int32_t n = 0;
 	float64_t r = 0;

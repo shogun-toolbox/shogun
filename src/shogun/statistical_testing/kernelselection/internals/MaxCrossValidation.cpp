@@ -56,9 +56,9 @@ MaxCrossValidation<PRNG>::MaxCrossValidation(
     : KernelSelection(km, est), num_runs(M), num_folds(K), alpha(alp),
       prng(_prng)
 {
-	REQUIRE(num_runs>0, "Number of runs ({}) must be positive!\n", num_runs);
-	REQUIRE(num_folds>0, "Number of folds ({}) must be positive!\n", num_folds);
-	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold ({}) has to be in [0, 1]!\n", alpha);
+	require(num_runs>0, "Number of runs ({}) must be positive!\n", num_runs);
+	require(num_folds>0, "Number of folds ({}) must be positive!\n", num_folds);
+	require(alpha>=0.0 && alpha<=1.0, "Threshold ({}) has to be in [0, 1]!\n", alpha);
 }
 
 template <typename PRNG>
@@ -99,7 +99,7 @@ void MaxCrossValidation<PRNG>::compute_measures()
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (quadratic_time_mmd)
 	{
-		REQUIRE(estimator->get_null_approximation_method()==NAM_PERMUTATION,
+		require(estimator->get_null_approximation_method()==NAM_PERMUTATION,
 			"Only supported with PERMUTATION method for null distribution approximation!\n");
 
 		auto Nx=estimator->get_num_samples_p();

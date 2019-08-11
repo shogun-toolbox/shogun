@@ -33,8 +33,8 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver)
 
 	m_k=k;
 
-	REQUIRE(d, "Distance not set.\n");
-	REQUIRE(trainlab, "Training labels not set.\n");
+	require(d, "Distance not set.\n");
+	require(trainlab, "Training labels not set.\n");
 
 	set_distance(d);
 	set_labels(trainlab);
@@ -71,12 +71,12 @@ CKNN::~CKNN()
 
 bool CKNN::train_machine(CFeatures* data)
 {
-	REQUIRE(m_labels, "No training labels provided.\n");
-	REQUIRE(distance, "No training distance provided.\n");
+	require(m_labels, "No training labels provided.\n");
+	require(distance, "No training distance provided.\n");
 
 	if (data)
 	{
-		REQUIRE(
+		require(
 		    m_labels->get_num_labels() == data->get_num_vectors(),
 		    "Number of training vectors ({}) does not match number of labels "
 		    "({})\n",
@@ -86,7 +86,7 @@ bool CKNN::train_machine(CFeatures* data)
 
 	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
-	REQUIRE(m_train_labels.vlen > 0, "Provided training labels are empty\n");
+	require(m_train_labels.vlen > 0, "Provided training labels are empty\n");
 
 	// find minimal and maximal class
 	auto min_class = CMath::min(m_train_labels.vector, m_train_labels.vlen);
@@ -97,7 +97,7 @@ bool CKNN::train_machine(CFeatures* data)
 	m_min_label=min_class;
 	m_num_classes=max_class-min_class+1;
 
-	SG_INFO("m_num_classes: {} ({:+d} to {:+d}) num_train: {}\n", m_num_classes,
+	io::info("m_num_classes: {} ({:+d} to {:+d}) num_train: {}\n", m_num_classes,
 			min_class, max_class, m_train_labels.vlen);
 
 	return true;
@@ -108,9 +108,9 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
 
-	REQUIRE(
+	require(
 	    n >= m_k,
-	    "K ({}) must not be larger than the number of examples ({}).\n", m_k, n)
+	    "K ({}) must not be larger than the number of examples ({}).\n", m_k, n);
 
 	//distances to train data
 	SGVector<float64_t> dists(m_train_labels.vlen);
@@ -137,10 +137,10 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 		CMath::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
 
 #ifdef DEBUG_KNN
-		SG_PRINT("\nQuick sort query {}\n", i)
+		io::print("\nQuick sort query {}\n", i);
 		for (int32_t j=0; j<m_k; j++)
-			SG_PRINT("{} ", train_idxs[j])
-		SG_PRINT("\n")
+			io::print("{} ", train_idxs[j]);
+		io::print("\n");
 #endif
 
 		//fill in the output the indices of the nearest neighbors
@@ -162,9 +162,9 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	if (m_k == 1)
 		return classify_NN();
 
-	REQUIRE(m_num_classes > 0, "Machine not trained.\n");
-	REQUIRE(distance, "Distance not set.\n");
-	REQUIRE(distance->get_num_vec_rhs(), "No vectors on right hand side.\n");
+	require(m_num_classes > 0, "Machine not trained.\n");
+	require(distance, "Distance not set.\n");
+	require(distance->get_num_vec_rhs(), "No vectors on right hand side.\n");
 
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=distance->get_num_vec_lhs())
@@ -172,7 +172,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	//labels of the k nearest neighbors
 	SGVector<int32_t> train_lab(m_k);
 
-	SG_INFO("{} test examples\n", num_lab)
+	io::info("{} test examples\n", num_lab);
 
 	//histogram of classes and returned output
 	SGVector<float64_t> classes(m_num_classes);
@@ -188,16 +188,16 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 
 CMulticlassLabels* CKNN::classify_NN()
 {
-	REQUIRE(distance, "Distance not set.\n");
-	REQUIRE(m_num_classes > 0, "Machine not trained.\n");
+	require(distance, "Distance not set.\n");
+	require(m_num_classes > 0, "Machine not trained.\n");
 
 	int32_t num_lab = distance->get_num_vec_rhs();
-	REQUIRE(num_lab, "No vectors on right hand side\n");
+	require(num_lab, "No vectors on right hand side\n");
 
 	CMulticlassLabels* output = new CMulticlassLabels(num_lab);
 	SGVector<float64_t> distances(m_train_labels.vlen);
 
-	SG_INFO("{} test examples\n", num_lab)
+	io::info("{} test examples\n", num_lab);
 
 	distance->precompute_lhs();
 
@@ -234,13 +234,13 @@ CMulticlassLabels* CKNN::classify_NN()
 
 SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 {
-	REQUIRE(distance, "Distance not set.\n");
-	REQUIRE(m_num_classes > 0, "Machine not trained.\n");
+	require(distance, "Distance not set.\n");
+	require(m_num_classes > 0, "Machine not trained.\n");
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	REQUIRE(num_lab, "No vectors on right hand side\n");
+	require(num_lab, "No vectors on right hand side\n");
 
-	REQUIRE(
+	require(
 	    m_k <= num_lab, "Number of labels ({}) must be at least K ({}).\n",
 	    num_lab, m_k);
 
@@ -250,7 +250,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	//histogram of classes and returned output
 	SGVector<int32_t> classes(m_num_classes);
 
-	SG_INFO("{} test examples\n", num_lab)
+	io::info("{} test examples\n", num_lab);
 
 	init_solver(m_knn_solver);
 
@@ -263,12 +263,12 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 void CKNN::init_distance(CFeatures* data)
 {
-	REQUIRE(distance, "Distance not set.\n");
+	require(distance, "Distance not set.\n");
 	CFeatures* lhs=distance->get_lhs();
 	if (!lhs || !lhs->get_num_vectors())
 	{
 		SG_UNREF(lhs);
-		SG_ERROR("No vectors on left hand side\n")
+		error("No vectors on left hand side\n");
 	}
 	distance->init(lhs, data);
 	SG_UNREF(lhs);
@@ -312,7 +312,7 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 		SG_REF(solver);
 		break;
 #else
-		SG_GPL_ONLY
+		gpl_only(SOURCE_LOCATION);
 #endif // USE_GPL_SHOGUN
 	}
 	case KNN_LSH:

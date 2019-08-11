@@ -87,7 +87,7 @@ template <class T1, class T2> struct thread_qsort
 #define COMPLEX128_ERROR_ONEARG(function)	\
 static inline complex128_t function(complex128_t a)	\
 {	\
-	SG_ERROR("CMath::{}():: Not supported for complex128_t\n",\
+	error("CMath::{}():: Not supported for complex128_t\n",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
 }
@@ -643,7 +643,7 @@ class CMath : public CSGObject
 		 */
 		static int32_t gcd(int32_t a, int32_t b)
 		{
-			REQUIRE((a>=0 && b>0) || (b>=0 && a>0), "gcd({},{}) is not defined.\n",
+			require((a>=0 && b>0) || (b>=0 && a>0), "gcd({},{}) is not defined.\n",
 					a, b);
 
 			if (1 == a || 1 == b)
@@ -748,8 +748,8 @@ class CMath : public CSGObject
 		template <class T>
 		static T log_sum_exp(SGVector<T> values)
 		{
-			REQUIRE(values.vector, "Values are empty");
-			REQUIRE(values.vlen>0,"number of values supplied is 0\n");
+			require(values.vector, "Values are empty");
+			require(values.vlen>0,"number of values supplied is 0\n");
 
 			/* find minimum element index */
 			index_t min_index=0;
@@ -905,7 +905,7 @@ class CMath : public CSGObject
 		/// byte not implemented for complex128_t
 		static inline uint8_t byte(complex128_t word, uint16_t p)
 		{
-			SG_ERROR("CMath::byte():: Not supported for complex128_t\n");
+			error("CMath::byte():: Not supported for complex128_t\n");
 			return uint8_t(0);
 		}
 
@@ -1016,7 +1016,7 @@ class CMath : public CSGObject
 		/// radix_sort_helper not implemented for complex128_t
 		static void radix_sort_helper(complex128_t* array, int32_t size, uint16_t i)
 		{
-			SG_ERROR("CMath::radix_sort_helper():: Not supported for complex128_t\n");
+			error("CMath::radix_sort_helper():: Not supported for complex128_t\n");
 		}
 
 #ifndef SWIG // SWIG should skip this part
@@ -1131,9 +1131,9 @@ class CMath : public CSGObject
 				while (mask)
 				{
 					if (mask & word)
-						SG_PRINT("1")
+						io::print("1");
 					else
-						SG_PRINT("0")
+						io::print("0");
 
 					mask>>=1;
 				}
@@ -1144,7 +1144,7 @@ class CMath : public CSGObject
 		static void display_bits(complex128_t word,
 			int32_t width=8*sizeof(complex128_t))
 		{
-			SG_ERROR("CMath::display_bits():: Not supported for complex128_t\n");
+			error("CMath::display_bits():: Not supported for complex128_t\n");
 		}
 
 		/** Performs a quicksort on an array output of length size
@@ -1162,7 +1162,7 @@ class CMath : public CSGObject
 		template <class T>
 			static void qsort_index(complex128_t* output, T* index, uint32_t size)
 			{
-				SG_ERROR("CMath::qsort_index():: Not supported for complex128_t\n");
+				error("CMath::qsort_index():: Not supported for complex128_t\n");
 			}
 
 		/** Performs a quicksort on an array output of length size
@@ -1182,7 +1182,7 @@ class CMath : public CSGObject
 			static void qsort_backword_index(
 				complex128_t* output, T* index, uint32_t size)
 			{
-				SG_ERROR("CMath::qsort_backword_index():: \
+				error("CMath::qsort_backword_index():: \
 					Not supported for complex128_t\n");
 			}
 
@@ -1216,7 +1216,7 @@ class CMath : public CSGObject
 			inline static void parallel_qsort_index(complex128_t* output, T* index,
 				uint32_t size, int32_t n_threads, int32_t limit=0)
 			{
-				SG_ERROR("CMath::parallel_qsort_index():: Not supported for complex128_t\n");
+				error("CMath::parallel_qsort_index():: Not supported for complex128_t\n");
 			}
 
 		/// helper function for parallel_qsort_index.
@@ -1235,7 +1235,7 @@ class CMath : public CSGObject
 		/// complex128_t cannot be used as index
 		static void min(float64_t* output, complex128_t* index, int32_t size)
 		{
-			SG_ERROR("CMath::min():: Not supported for complex128_t\n");
+			error("CMath::min():: Not supported for complex128_t\n");
 		}
 
 		/** Finds the n smallest elements in output and puts these elements as the
@@ -1249,7 +1249,7 @@ class CMath : public CSGObject
 		static void nmin(float64_t* output, complex128_t* index,
 			int32_t size, int32_t n)
 		{
-			SG_ERROR("CMath::nmin():: Not supported for complex128_t\n");
+			error("CMath::nmin():: Not supported for complex128_t\n");
 		}
 
 
@@ -1284,7 +1284,7 @@ class CMath : public CSGObject
 		/// binary_search_helper not implemented for complex128_t
 		static int32_t binary_search_helper(complex128_t* output, int32_t size, complex128_t elem)
 		{
-			SG_ERROR("CMath::binary_search_helper():: Not supported for complex128_t\n");
+			error("CMath::binary_search_helper():: Not supported for complex128_t\n");
 			return int32_t(0);
 		}
 
@@ -1306,7 +1306,7 @@ class CMath : public CSGObject
 		/// binary_search not implemented for complex128_t
 		static inline int32_t binary_search(complex128_t* output, int32_t size, complex128_t elem)
 		{
-			SG_ERROR("CMath::binary_search():: Not supported for complex128_t\n");
+			error("CMath::binary_search():: Not supported for complex128_t\n");
 			return int32_t(-1);
 		}
 
@@ -1352,7 +1352,7 @@ class CMath : public CSGObject
 		/// binary_search not implemented for complex128_t
 		static inline int32_t binary_search(complex128_t** vector, index_t length, complex128_t* elem)
 		{
-			SG_ERROR("CMath::binary_search():: Not supported for complex128_t\n");
+			error("CMath::binary_search():: Not supported for complex128_t\n");
 			return int32_t(-1);
 		}
 
@@ -1379,7 +1379,7 @@ class CMath : public CSGObject
 		static int32_t binary_search_max_lower_equal(complex128_t* output,
 			int32_t size, complex128_t elem)
 		{
-			SG_ERROR("CMath::binary_search_max_lower_equal():: \
+			error("CMath::binary_search_max_lower_equal():: \
 				Not supported for complex128_t\n");
 			return int32_t(-1);
 		}
@@ -1455,7 +1455,7 @@ class CMath : public CSGObject
 
 			if (!CMath::is_finite(q))
 			{
-				SG_WARNING("INVALID second operand to logsum({},{}) expect undefined results\n", p, q)
+				io::warn("INVALID second operand to logsum({},{}) expect undefined results\n", p, q);
 				return NOT_A_NUMBER;
 			}
 			diff = p - q;
@@ -1798,7 +1798,7 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 template <> \
 inline complex128_t CMath::function<complex128_t>(complex128_t a)	\
 {	\
-	SG_ERROR("CMath::{}():: Not supported for complex128_t\n",\
+	error("CMath::{}():: Not supported for complex128_t\n",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
 }

@@ -48,7 +48,7 @@ void CMulticlassStrategy::init()
 void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
 {
 	if (m_train_labels != NULL)
-		SG_ERROR("Stop the previous training task before starting a new one!")
+		error("Stop the previous training task before starting a new one!");
 	SG_REF(train_labels);
 	m_train_labels=train_labels;
 	SG_REF(orig_labels);

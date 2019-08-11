@@ -17,7 +17,7 @@ using namespace shogun;
 CBeliefPropagation::CBeliefPropagation()
 	: CMAPInferImpl()
 {
-	SG_UNSTABLE("CBeliefPropagation::CBeliefPropagation()", "\n");
+	io::unstable("CBeliefPropagation::CBeliefPropagation()");
 }
 
 CBeliefPropagation::CBeliefPropagation(CFactorGraph* fg)
@@ -31,7 +31,7 @@ CBeliefPropagation::~CBeliefPropagation()
 
 float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 {
-	SG_ERROR("{}::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
+	error("{}::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
 	return 0;
 }
 
@@ -40,7 +40,7 @@ float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 CTreeMaxProduct::CTreeMaxProduct()
 	: CBeliefPropagation()
 {
-	SG_UNSTABLE("CTreeMaxProduct::CTreeMaxProduct()", "\n");
+	io::unstable("CTreeMaxProduct::CTreeMaxProduct()");
 
 	init();
 }
@@ -116,7 +116,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	if (!dset->get_connected())
 	{
 		SG_UNREF(dset);
-		SG_ERROR("{}::get_root_indicators(): run connect_components() first!\n", get_name());
+		error("{}::get_root_indicators(): run connect_components() first!\n", get_name());
 	}
 
 	int32_t num_vars = m_fg->get_cardinalities().size();
@@ -207,7 +207,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 
 float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 {
-	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
+	require(assignment.size() == m_fg->get_cardinalities().size(),
 		"{}::inference(): the output assignment should be prepared as"
 		"the same size as variables!\n", get_name());
 

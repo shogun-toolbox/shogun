@@ -56,7 +56,7 @@ public:
 	 */
 	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
 	{
-		SG_NOTIMPLEMENTED;
+		not_implemented(SOURCE_LOCATION);;
 	}
 
 	/**

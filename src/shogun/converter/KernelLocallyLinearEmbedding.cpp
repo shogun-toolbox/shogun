@@ -40,7 +40,7 @@ CKernelLocallyLinearEmbedding::transform(CFeatures* features, bool inplace)
 	// get dimensionality and number of vectors of data
 	int32_t N = features->get_num_vectors();
 	if (m_k>=N)
-		SG_ERROR("Number of neighbors ({}) should be less than number of objects ({}).\n",
+		error("Number of neighbors ({}) should be less than number of objects ({}).\n",
 		         m_k, N);
 
 	// compute kernel matrix

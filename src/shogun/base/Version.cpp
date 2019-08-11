@@ -39,15 +39,15 @@ Version::~Version()
 
 void Version::print_version()
 {
-	SG_PRINT("libshogun ({}/{}{})\n\n", MACHINE, VERSION_RELEASE, version_revision)
-	SG_PRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n")
-	SG_PRINT("Copyright (C) 1999-2011 Max Planck Society\n")
-	SG_PRINT("Copyright (C) 2009-2011 Berlin Institute of Technology\n")
-	SG_PRINT("Copyright (C) 2012-2014 Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Fernando Iglesias et al\n")
-	SG_PRINT("Written   (W) 1999-2012 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n")
+	io::print("libshogun ({}/{}{})\n\n", MACHINE, VERSION_RELEASE, version_revision);
+	io::print("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n");
+	io::print("Copyright (C) 1999-2011 Max Planck Society\n");
+	io::print("Copyright (C) 2009-2011 Berlin Institute of Technology\n");
+	io::print("Copyright (C) 2012-2014 Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Fernando Iglesias et al\n");
+	io::print("Written   (W) 1999-2012 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");
 #ifndef USE_SVMLIGHT
-	SG_PRINT("This is free software; see the source for copying conditions.  There is NO\n")
-	SG_PRINT("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n")
+	io::print("This is free software; see the source for copying conditions.  There is NO\n");
+	io::print("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
 #endif
 }
 

@@ -73,7 +73,7 @@ CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	if (strcmp(features->get_name(), "StringFeatures")!=0)
-		SG_ERROR(
+		error(
 			"CHashedConverter::transform() : CFeatures object passed is "
 			"not of type CStringFeatures.");
 

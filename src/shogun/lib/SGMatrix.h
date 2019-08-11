@@ -493,7 +493,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		void assert_on_cpu() const
 		{
 			if (on_gpu())
-				SG_ERROR("Direct memory access not possible when data is in GPU memory.\n");
+				error("Direct memory access not possible when data is in GPU memory.\n");
 		}
 
 	public:

@@ -78,19 +78,19 @@ int32_t CLBPPyrDotFeatures::get_num_vectors() const
 
 void* CLBPPyrDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 bool CLBPPyrDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CLBPPyrDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
@@ -169,10 +169,10 @@ uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& 
 float64_t
 CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	REQUIRE(
+	require(
 	    vec2.size() == vec_nDim,
 	    "Dimensions don't match, vec2_dim={}, vec_nDim={}\n", vec2.vlen,
-	    vec_nDim)
+	    vec_nDim);
 
 	int32_t ww;
 	int32_t hh;
@@ -220,7 +220,7 @@ CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != vec_nDim)
-		SG_ERROR("Dimensions don't match, vec2_dim={}, vec_nDim={}\n", vec2_len, vec_nDim)
+		error("Dimensions don't match, vec2_dim={}, vec_nDim={}\n", vec2_len, vec_nDim);
 
 	int32_t ww;
 	int32_t hh;

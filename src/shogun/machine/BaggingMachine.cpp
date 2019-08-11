@@ -67,8 +67,8 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	SGMatrix<float64_t> bagged_outputs =
 	    apply_outputs_without_combination(data);
 
-	REQUIRE(m_labels, "Labels not set.\n");
-	REQUIRE(
+	require(m_labels, "Labels not set.\n");
+	require(
 	    m_labels->get_label_type() == LT_MULTICLASS,
 	    "Labels ({}) are not compatible with multiclass.\n",
 	    m_labels->get_name());
@@ -111,7 +111,7 @@ CRegressionLabels* CBaggingMachine::apply_regression(CFeatures* data)
 SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 {
 	ASSERT(data != NULL);
-	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
+	require(m_combination_rule != NULL, "Combination rule is not set!");
 
 	SGMatrix<float64_t> output = apply_outputs_without_combination(data);
 	SGVector<float64_t> combined = m_combination_rule->combine(output);
@@ -136,7 +136,7 @@ CBaggingMachine::apply_outputs_without_combination(CFeatures* data)
 		if (l!=NULL)
 			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
 		else
-			SG_ERROR("NULL returned by apply method\n");
+			error("NULL returned by apply method\n");
 
 		float64_t* bag_results = output.get_column_vector(i);
 		sg_memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
@@ -150,8 +150,8 @@ CBaggingMachine::apply_outputs_without_combination(CFeatures* data)
 
 bool CBaggingMachine::train_machine(CFeatures* data)
 {
-	REQUIRE(m_machine != NULL, "Machine is not set!");
-	REQUIRE(m_num_bags > 0, "Number of bag is not set!");
+	require(m_machine != NULL, "Machine is not set!");
+	require(m_num_bags > 0, "Number of bag is not set!");
 
 	if (data)
 	{
@@ -331,8 +331,8 @@ CCombinationRule* CBaggingMachine::get_combination_rule() const
 
 float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 {
-	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
-	REQUIRE(m_bags->get_num_elements() > 0, "BaggingMachine is not trained!");
+	require(m_combination_rule != NULL, "Combination rule is not set!");
+	require(m_bags->get_num_elements() > 0, "BaggingMachine is not trained!");
 
 	SGMatrix<float64_t> output(m_features->get_num_vectors(), m_bags->get_num_elements());
 	if (m_labels->get_label_type() == LT_REGRESSION)
@@ -358,7 +358,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		if (l!=NULL)
 			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
 		else
-			SG_ERROR("NULL returned by apply method\n");
+			error("NULL returned by apply method\n");
 
 		// assign the values in the matrix (NAN) that are in-bag!
 		for (index_t j = 0; j < oob.vlen; j++)
@@ -398,7 +398,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 			break;
 
 		default:
-			SG_ERROR("Unsupported label type\n");
+			error("Unsupported label type\n");
 	}
 	SG_REF(predicted);
 

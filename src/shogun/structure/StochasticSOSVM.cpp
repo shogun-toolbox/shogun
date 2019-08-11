@@ -26,10 +26,10 @@ CStochasticSOSVM::CStochasticSOSVM(
 		bool verbose)
 : RandomMixin<CLinearStructuredOutputMachine>(model, labs)
 {
-	REQUIRE(model != NULL && labs != NULL,
+	require(model != NULL && labs != NULL,
 		"{}::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
 
-	REQUIRE(labs->get_num_labels() > 0,
+	require(labs->get_num_labels() > 0,
 		"{}::CStochasticSOSVM(): number of labels should be greater than 0!\n", get_name());
 
 	init();
@@ -136,7 +136,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 			else
 			{
-				SG_ERROR("model({}) should have either of psi_computed or psi_computed_sparse"
+				error("model({}) should have either of psi_computed or psi_computed_sparse"
 						"to be set true\n", m_model->get_name());
 			}
 

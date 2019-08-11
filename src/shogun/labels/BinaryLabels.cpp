@@ -78,7 +78,7 @@ bool CBinaryLabels::is_valid() const
 
 void CBinaryLabels::ensure_valid(const char* context)
 {
-	REQUIRE(is_valid(), "Binary Labels must be -1 or +1!\n");
+	require(is_valid(), "Binary Labels must be -1 or +1!\n");
 }
 
 ELabelType CBinaryLabels::get_label_type() const
@@ -90,7 +90,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 {
 	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n")
 
-	REQUIRE(m_current_values.vector, "{}::scores_to_probabilities() requires "
+	require(m_current_values.vector, "{}::scores_to_probabilities() requires "
 	        "values vector!\n", get_name());
 
 	if (a == 0 && b == 0)
@@ -143,7 +143,7 @@ namespace shogun
 {
 	Some<CBinaryLabels> binary_labels(CLabels* orig)
 	{
-		REQUIRE(orig, "No labels provided.\n");
+		require(orig, "No labels provided.\n");
 		try
 		{
 			switch (orig->get_label_type())
@@ -151,12 +151,12 @@ namespace shogun
 			case LT_BINARY:
 				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
 			default:
-				SG_NOTIMPLEMENTED
+				not_implemented(SOURCE_LOCATION);
 			}
 		}
 		catch (const ShogunException& e)
 		{
-			SG_ERROR(
+			error(
 			    "Cannot convert {} to binary labels: {}\n", orig->get_name(),
 			    e.what());
 		}

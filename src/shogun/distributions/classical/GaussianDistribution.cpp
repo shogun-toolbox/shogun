@@ -24,9 +24,9 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 		SGMatrix<float64_t> cov, bool cov_is_factor) :
 				RandomMixin<CProbabilityDistribution>(mean.vlen)
 {
-	REQUIRE(cov.num_rows==cov.num_cols, "Covariance must be square but is "
+	require(cov.num_rows==cov.num_cols, "Covariance must be square but is "
 			"{}x{}\n", cov.num_rows, cov.num_cols);
-	REQUIRE(mean.vlen==cov.num_cols, "Mean must have same dimension as "
+	require(mean.vlen==cov.num_cols, "Mean must have same dimension as "
 			"covariance, which is {}x{}, but is {}\n",
 			cov.num_rows, cov.num_cols, mean.vlen);
 
@@ -49,7 +49,7 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 			if (solver.info() == Success)
 			{
 				VectorXd ev=solver.eigenvalues();
-				SG_ERROR("Error computing Cholesky of Gaussian's covariance. "
+				error("Error computing Cholesky of Gaussian's covariance. "
 						"Smallest Eigenvalue is {}.\n", ev[0]);
 			}
 		}
@@ -68,18 +68,18 @@ CGaussianDistribution::~CGaussianDistribution()
 SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
-	REQUIRE(num_samples>0, "Number of samples ({}) must be positive\n",
+	require(num_samples>0, "Number of samples ({}) must be positive\n",
 			num_samples);
 
 	/* use pre-allocated samples? */
 	SGMatrix<float64_t> samples;
 	if (pre_samples.matrix)
 	{
-		REQUIRE(pre_samples.num_rows==m_dimension, "Dimension of pre-samples"
+		require(pre_samples.num_rows==m_dimension, "Dimension of pre-samples"
 				" ({}) does not match dimension of Gaussian ({})\n",
 				pre_samples.num_rows, m_dimension);
 
-		REQUIRE(pre_samples.num_cols==num_samples, "Number of pre-samples"
+		require(pre_samples.num_cols==num_samples, "Number of pre-samples"
 				" ({}) does not desired number of samples ({})\n",
 				pre_samples.num_cols, num_samples);
 
@@ -107,9 +107,9 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 
 SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> samples) const
 {
-	REQUIRE(samples.num_cols>0, "Number of samples must be positive, but is {}\n",
+	require(samples.num_cols>0, "Number of samples must be positive, but is {}\n",
 			samples.num_cols);
-	REQUIRE(samples.num_rows==m_dimension, "Sample dimension ({}) does not match"
+	require(samples.num_rows==m_dimension, "Sample dimension ({}) does not match"
 			"Gaussian dimension ({})\n", samples.num_rows, m_dimension);
 
 	/* for easier to read code */

@@ -68,7 +68,7 @@ bool CGaussian::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n")
+				error("Specified features are not of type CDotFeatures\n");
 		set_features(data);
 	}
 
@@ -96,13 +96,13 @@ int32_t CGaussian::get_num_model_parameters()
 
 float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
@@ -302,7 +302,7 @@ SGMatrix<float64_t> CGaussian::get_cov()
 	if (m_cov_type==FULL)
 	{
 		if (!m_u.matrix)
-			SG_ERROR("Unitary matrix not set\n")
+			error("Unitary matrix not set\n");
 
 		SGMatrix<float64_t> temp_holder(m_mean.vlen, m_mean.vlen);
 		SGMatrix<float64_t> diag_holder(m_mean.vlen, m_mean.vlen);

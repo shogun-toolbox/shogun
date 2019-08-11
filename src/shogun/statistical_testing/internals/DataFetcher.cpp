@@ -44,7 +44,7 @@ DataFetcher::DataFetcher() : m_num_samples(0), train_test_mode(false),
 DataFetcher::DataFetcher(CFeatures* samples) : train_test_mode(false),
    	train_mode(false), m_samples(samples), features_shuffled(false)
 {
-	REQUIRE(m_samples!=nullptr, "Samples cannot be null!\n");
+	require(m_samples!=nullptr, "Samples cannot be null!\n");
 	SG_REF(m_samples);
 	m_num_samples=m_samples->get_num_vectors();
 }
@@ -102,10 +102,10 @@ float64_t DataFetcher::get_train_test_ratio() const
 
 void DataFetcher::shuffle_features()
 {
-	REQUIRE(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
+	require(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
 	if (features_shuffled)
 	{
-		SG_WARNING("Features are already shuffled! Call to shuffle_features() has no effect."
+		io::warn("Features are already shuffled! Call to shuffle_features() has no effect."
 		"If you want to reshuffle, please call unshuffle_features() first and then call this method!\n");
 	}
 	else
@@ -131,7 +131,7 @@ void DataFetcher::shuffle_features()
 
 void DataFetcher::unshuffle_features()
 {
-	REQUIRE(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
+	require(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
 	if (features_shuffled)
 	{
 		m_samples->remove_subset();
@@ -139,7 +139,7 @@ void DataFetcher::unshuffle_features()
 	}
 	else
 	{
-		SG_WARNING("Features are NOT shuffled! Call to unshuffle_features() has no effect."
+		io::warn("Features are NOT shuffled! Call to unshuffle_features() has no effect."
 		"If you want to reshuffle, please call shuffle_features() instead!\n");
 	}
 }
@@ -178,17 +178,17 @@ void DataFetcher::init_active_subset()
 
 void DataFetcher::start()
 {
-	REQUIRE(get_num_samples()>0, "Number of samples is 0!\n");
+	require(get_num_samples()>0, "Number of samples is 0!\n");
 	if (train_test_mode)
 	{
 		m_samples->add_subset(active_subset);
 		SG_DEBUG("Added active subset!\n");
-		SG_INFO("Currently active number of samples is {}\n", get_num_samples());
+		io::info("Currently active number of samples is {}\n", get_num_samples());
 	}
 
 	if (m_block_details.m_full_data || m_block_details.m_blocksize>get_num_samples())
 	{
-		SG_INFO("Fetching entire data ({} samples)!\n", get_num_samples());
+		io::info("Fetching entire data ({} samples)!\n", get_num_samples());
 		m_block_details.with_blocksize(get_num_samples());
 	}
 	m_block_details.m_total_num_blocks=get_num_samples()/m_block_details.m_blocksize;
@@ -228,7 +228,7 @@ void DataFetcher::end()
 	{
 		m_samples->remove_subset();
 		SG_DEBUG("Removed active subset!\n");
-		SG_INFO("Currently active number of samples is {}\n", get_num_samples());
+		io::info("Currently active number of samples is {}\n", get_num_samples());
 	}
 }
 
@@ -267,17 +267,17 @@ BlockwiseDetails& DataFetcher::fetch_blockwise()
 
 void DataFetcher::allocate_active_subset()
 {
-	REQUIRE(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
+	require(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
 	index_t num_active_samples=0;
 	if (train_mode)
 	{
 		num_active_samples=m_samples->get_num_vectors()*train_test_ratio/(train_test_ratio+1);
-		SG_INFO("Using {} number of samples for this fold as training samples!\n", num_active_samples);
+		io::info("Using {} number of samples for this fold as training samples!\n", num_active_samples);
 	}
 	else
 	{
 		num_active_samples=m_samples->get_num_vectors()/(train_test_ratio+1);
-		SG_INFO("Using {} number of samples for this fold as testing samples!\n", num_active_samples);
+		io::info("Using {} number of samples for this fold as testing samples!\n", num_active_samples);
 	}
 
 	ASSERT(num_active_samples>0);

@@ -74,7 +74,7 @@ EProblemType CCHAIDTree::get_machine_problem_type() const
 		case 2:
 			return PT_REGRESSION;
 		default:
-			SG_ERROR("Invalid dependent variable type set ({}). Problem type undefined\n",m_dependent_vartype);
+			error("Invalid dependent variable type set ({}). Problem type undefined\n",m_dependent_vartype);
 	}
 
 	return PT_MULTICLASS;
@@ -91,7 +91,7 @@ bool CCHAIDTree::is_label_valid(CLabels* lab) const
 		case 2:
 			return lab->get_label_type()==LT_REGRESSION;
 		default:
-			SG_ERROR("Invalid dependent variable type set ({}). Problem type undefined\n",m_dependent_vartype);
+			error("Invalid dependent variable type set ({}). Problem type undefined\n",m_dependent_vartype);
 	}
 
 	return false;
@@ -99,14 +99,14 @@ bool CCHAIDTree::is_label_valid(CLabels* lab) const
 
 CMulticlassLabels* CCHAIDTree::apply_multiclass(CFeatures* data)
 {
-	REQUIRE(data, "Data required for classification in apply_multiclass\n")
+	require(data, "Data required for classification in apply_multiclass\n");
 
 	return apply_tree(data)->as<CMulticlassLabels>();
 }
 
 CRegressionLabels* CCHAIDTree::apply_regression(CFeatures* data)
 {
-	REQUIRE(data, "Data required for regression in apply_regression\n")
+	require(data, "Data required for regression in apply_regression\n");
 
 	return apply_tree(data)->as<CRegressionLabels>();
 }
@@ -120,7 +120,7 @@ void CCHAIDTree::set_weights(SGVector<float64_t> w)
 SGVector<float64_t> CCHAIDTree::get_weights() const
 {
 	if (!m_weights_set)
-		SG_ERROR("weights not set\n");
+		error("weights not set\n");
 
 	return m_weights;
 }
@@ -148,23 +148,23 @@ void CCHAIDTree::clear_feature_types()
 
 void CCHAIDTree::set_dependent_vartype(int32_t var)
 {
-	REQUIRE(((var==0)||(var==1)||(var==2)), "Expected 0 or 1 or 2 as argument. {} received\n",var)
+	require(((var==0)||(var==1)||(var==2)), "Expected 0 or 1 or 2 as argument. {} received\n",var);
 	m_dependent_vartype=var;
 }
 
 bool CCHAIDTree::train_machine(CFeatures* data)
 {
-	REQUIRE(data, "Data required for training\n")
+	require(data, "Data required for training\n");
 
 	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
-	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified"
-	" ({} here) is not the same as the number of features in data matrix ({} here)\n",m_feature_types.vlen,feats->get_num_features())
+	require(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified"
+	" ({} here) is not the same as the number of features in data matrix ({} here)\n",m_feature_types.vlen,feats->get_num_features());
 
 	if (m_weights_set)
 	{
-		REQUIRE(m_weights.vlen==feats->get_num_vectors(),"Length of weights vector (currently {}) should be same as"
-				" the number of vectors in data (presently {})",m_weights.vlen,feats->get_num_vectors())
+		require(m_weights.vlen==feats->get_num_vectors(),"Length of weights vector (currently {}) should be same as"
+				" the number of vectors in data (presently {})",m_weights.vlen,feats->get_num_vectors());
 	}
 	else
 	{
@@ -199,8 +199,8 @@ bool CCHAIDTree::train_machine(CFeatures* data)
 
 CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level)
 {
-	REQUIRE(data,"data matrix cannot be empty\n");
-	REQUIRE(labels,"labels cannot be NULL\n");
+	require(data,"data matrix cannot be empty\n");
+	require(labels,"labels cannot be NULL\n");
 
 	node_t* node=new node_t();
 	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();
@@ -255,7 +255,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 	}
 	else
 	{
-		SG_ERROR("dependent variable type should be either 0(nominal) or 1(ordinal) or 2(continuous)\n");
+		error("dependent variable type should be either 0(nominal) or 1(ordinal) or 2(continuous)\n");
 	}
 
 	// check stopping rules
@@ -319,7 +319,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 		else if (m_feature_types[i]==1)
 			cat=merge_categories_ordinal(feats,labels_vec,weights,pv);
 		else
-			SG_ERROR("feature type supported are 0(nominal) and 1(ordinal). m_feature_types[{}] is set {}\n",i,m_feature_types[i])
+			error("feature type supported are 0(nominal) and 1(ordinal). m_feature_types[{}] is set {}\n",i,m_feature_types[i]);
 
 		if (pv<min_pv)
 		{
@@ -676,7 +676,7 @@ CLabels* CCHAIDTree::apply_tree(CFeatures* data)
 
 CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* current)
 {
-	REQUIRE(current != NULL, "The tree cannot be empty.\n");
+	require(current != NULL, "The tree cannot be empty.\n");
 	int32_t num_vecs=fmat.num_cols;
 
 	SGVector<float64_t> labels(num_vecs);
@@ -709,7 +709,7 @@ CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* c
 				node=dynamic_cast<node_t*>(el);
 			}
 			else
-				SG_ERROR("{} child is expected to be present. But it is NULL\n",index)
+				error("{} child is expected to be present. But it is NULL\n",index);
 
 			SG_UNREF(children);
 			children=node->get_children();
@@ -727,7 +727,7 @@ CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* c
 		case PT_REGRESSION:
 			return new CRegressionLabels(labels);
 		default:
-			SG_ERROR("Undefined problem type\n")
+			error("Undefined problem type\n");
 	}
 
 	return new CMulticlassLabels();
@@ -738,7 +738,7 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 {
 	// assimilate category indices other than missing (last cell of cat vector stores category index for missing)
 	// sanity check
-	REQUIRE(cat[cat.vlen-1]==cat.vlen-1,"last category is expected to be stored for MISSING. Hence it is expected to be un-merged\n")
+	require(cat[cat.vlen-1]==cat.vlen-1,"last category is expected to be stored for MISSING. Hence it is expected to be un-merged\n");
 	CDynamicArray<int32_t>* cat_ind=new CDynamicArray<int32_t>();
 	for (int32_t i=0;i<cat.vlen-1;i++)
 	{
@@ -843,10 +843,10 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 			            fnum_cat * CMath::nchoosek(inum_cat - 2, fnum_cat - 1));
 	    }
 	    default:
-		    SG_ERROR(
+		    error(
 		        "Feature type must be either 0 (nominal) or 1 (ordinal). It is "
 		        "currently set as {}\n",
-		        ft)
+		        ft);
 	}
 
 	return 0.0;
@@ -888,7 +888,7 @@ float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labe
 			return 1-CStatistics::fdistribution_cdf(f,num_cat-1,nf-num_cat);
 		}
 		default:
-			SG_ERROR("Dependent variable type must be either 0 or 1 or 2. It is currently set as {}\n",m_dependent_vartype)
+			error("Dependent variable type must be either 0 or 1 or 2. It is currently set as {}\n",m_dependent_vartype);
 	}
 
 	return -1.0;
@@ -1316,7 +1316,7 @@ bool CCHAIDTree::continuous_to_ordinal(CDenseFeatures<float64_t>* feats)
 	if (count_cont==0)
 		return false;
 
-	REQUIRE(m_num_breakpoints>0,"Number of breakpoints for continuous to ordinal conversion not set.\n")
+	require(m_num_breakpoints>0,"Number of breakpoints for continuous to ordinal conversion not set.\n");
 
 	SGVector<int32_t> cont_ind(count_cont);
 	int32_t ci=0;

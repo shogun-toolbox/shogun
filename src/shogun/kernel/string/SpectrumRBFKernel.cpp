@@ -225,7 +225,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 
 			if (curr_profile.size() != 20 * sequence.length())
 	    {
-				SG_ERROR("Something's wrong with the profile.\n")
+				error("Something's wrong with the profile.\n");
 				break;
 			}
 

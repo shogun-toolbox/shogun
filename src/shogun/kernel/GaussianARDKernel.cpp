@@ -31,8 +31,8 @@ void CGaussianARDKernel::init()
 float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=0.0;
-	REQUIRE(lhs, "Left features (lhs) not set!\n")
-	REQUIRE(rhs, "Right features (rhs) not set!\n")
+	require(lhs, "Left features (lhs) not set!\n");
+	require(rhs, "Right features (rhs) not set!\n");
 
 	if (lhs==rhs && idx_a==idx_b)
 		return result;
@@ -77,7 +77,7 @@ bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
 
 SGVector<float64_t> CGaussianARDKernel::precompute_squared_helper(CDotFeatures* df)
 {
-	REQUIRE(df, "Features not set\n")
+	require(df, "Features not set\n");
 	int32_t num_vec=df->get_num_vectors();
 	SGVector<float64_t> sq(num_vec);
 	for (int32_t i=0; i<num_vec; i++)
@@ -102,7 +102,7 @@ CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
 	{
-		SG_ERROR("Provided kernel is not of type CGaussianARDKernel!\n");
+		error("Provided kernel is not of type CGaussianARDKernel!\n");
 	}
 
 	/* since an additional reference is returned */
@@ -126,7 +126,7 @@ float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<
 		left=SGMatrix<float64_t>(left_transpose.matrix,1,left_transpose.num_rows,false);
 	}
 	else
-		SG_ERROR("Unsupported ARD type\n");
+		error("Unsupported ARD type\n");
 	SGMatrix<float64_t> right=compute_right_product(bvec, scalar_weight);
 	SGMatrix<float64_t> res=linalg::matrix_prod(left, right);
 	return res[0]*scalar_weight;
@@ -189,7 +189,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 		}
 		else
 		{
-			SG_ERROR("Unsupported ARD type\n");
+			error("Unsupported ARD type\n");
 		}
 
 	}
@@ -200,9 +200,9 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index)
 {
-	REQUIRE(param, "Param not set\n");
-	REQUIRE(lhs , "Left features not set!\n");
-	REQUIRE(rhs, "Right features not set!\n");
+	require(param, "Param not set\n");
+	require(lhs , "Left features not set!\n");
+	require(rhs, "Right features not set!\n");
 
 	if (lhs==rhs)
 	{
@@ -239,7 +239,7 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 		return derivative;
 	}
 
-	SG_ERROR("Can't compute derivative wrt {} parameter\n", param->m_name);
+	error("Can't compute derivative wrt {} parameter\n", param->m_name);
 	return SGVector<float64_t>();
 }
 
@@ -248,7 +248,7 @@ float64_t CGaussianARDKernel::get_parameter_gradient_helper(
 	const TParameter* param, index_t index, int32_t idx_a,
 	int32_t idx_b, SGVector<float64_t> avec, SGVector<float64_t> bvec)
 {
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set\n");
 
 	if (!strcmp(param->m_name, "log_weights"))
 	{
@@ -258,7 +258,7 @@ float64_t CGaussianARDKernel::get_parameter_gradient_helper(
 	}
 	else
 	{
-		SG_ERROR("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter\n", param->m_name);
 		return 0.0;
 	}
 }
@@ -266,9 +266,9 @@ float64_t CGaussianARDKernel::get_parameter_gradient_helper(
 SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
-	REQUIRE(param, "Param not set\n");
-	REQUIRE(lhs , "Left features not set!\n");
-	REQUIRE(rhs, "Right features not set!\n");
+	require(param, "Param not set\n");
+	require(lhs , "Left features not set!\n");
+	require(rhs, "Right features not set!\n");
 
 	if (!strcmp(param->m_name, "log_weights"))
 	{
@@ -295,7 +295,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 	}
 	else
 	{
-		SG_ERROR("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter\n", param->m_name);
 		return SGMatrix<float64_t>();
 	}
 }

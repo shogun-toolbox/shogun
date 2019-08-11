@@ -356,7 +356,7 @@ class CList : public CSGObject
 					}
 					else
 					{
-						SG_WARNING("Error in allocating memory for new element!\n");
+						io::warn("Error in allocating memory for new element!\n");
 						SG_DEBUG("Leaving\n");
 						return false;
 					}
@@ -456,7 +456,7 @@ class CList : public CSGObject
 				}
 				else
 				{
-					SG_WARNING("Error in allocating memory for new element!\n");
+					io::warn("Error in allocating memory for new element!\n");
 					return false;
 				}
 			}
@@ -478,7 +478,7 @@ class CList : public CSGObject
 				}
 				else
 				{
-					SG_WARNING("Error in allocating memory for new element!\n");
+					io::warn("Error in allocating memory for new element!\n");
 					return false;
 				}
 			}
@@ -557,7 +557,7 @@ class CList : public CSGObject
 
 			while (c)
 			{
-				SG_PRINT("\"{}\" at {}\n", c->data ? c->data->get_name() : "", fmt::ptr(c->data))
+				io::print("\"{}\" at {}\n", c->data ? c->data->get_name() : "", fmt::ptr(c->data));
 				c=c->next;
 			}
 		}

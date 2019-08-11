@@ -14,8 +14,7 @@ using namespace shogun;
 
 CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
 {
-	SG_UNSTABLE("CExplicitSpecFeatures::CExplicitSpecFeatures()",
-				"\n");
+	io::unstable("CExplicitSpecFeatures::CExplicitSpecFeatures()");
 
 	use_normalization = false;
 	num_strings = 0;
@@ -150,24 +149,24 @@ CFeatures* CExplicitSpecFeatures::duplicate() const
 
 void* CExplicitSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 bool CExplicitSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CExplicitSpecFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 int32_t CExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num) const
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 

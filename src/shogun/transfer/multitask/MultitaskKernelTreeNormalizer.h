@@ -189,8 +189,8 @@ public:
 	 */
 	CNode* add_node(std::string parent_name, std::string child_name, float64_t beta)
 	{
-		if (child_name=="")	SG_ERROR("child_name empty")
-		if (parent_name=="") SG_ERROR("parent_name empty")
+		if (child_name=="")	error("child_name empty");
+		if (parent_name=="") error("parent_name empty");
 
 
 		CNode* child_node = new CNode();
@@ -461,7 +461,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
-		SG_ERROR("normalize_lhs not implemented")
+		error("normalize_lhs not implemented");
 		return 0;
 	}
 
@@ -471,7 +471,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
-		SG_ERROR("normalize_rhs not implemented")
+		error("normalize_rhs not implemented");
 		return 0;
 	}
 

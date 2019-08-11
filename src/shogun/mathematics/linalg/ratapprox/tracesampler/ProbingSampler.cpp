@@ -158,7 +158,7 @@ void CProbingSampler::precompute()
 	std::vector<int32_t> vi_VertexColors;
 	Color->GetVertexColors(vi_VertexColors);
 
-	REQUIRE(vi_VertexColors.size()==static_cast<uint32_t>(m_dimension),
+	require(vi_VertexColors.size()==static_cast<uint32_t>(m_dimension),
 		"dimension mismatch, {} vs {}!\n", vi_VertexColors.size(), m_dimension);
 
 	m_coloring_vector=SGVector<int32_t>(vi_VertexColors.size());
@@ -186,7 +186,7 @@ void CProbingSampler::precompute()
 
 SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 {
-	REQUIRE(idx<m_num_samples, "Given index ({}) must be smaller than "
+	require(idx<m_num_samples, "Given index ({}) must be smaller than "
 			"number of samples to draw ({})\n", idx, m_num_samples);
 
 	SGVector<float64_t> s(m_dimension);

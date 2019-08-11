@@ -52,7 +52,7 @@ bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	REQUIRE(width>0,
+	require(width>0,
 		"width not set to positive value. Current width {} \n", width);
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -89,7 +89,7 @@ CChi2Kernel* CChi2Kernel::obtain_from_generic(CKernel* kernel)
 {
 	if (kernel->get_kernel_type()!=K_CHI2)
 	{
-		SG_ERROR("Provided kernel is "
+		error("Provided kernel is "
 				"not of type CChi2Kernel!\n");
 	}
 
@@ -100,6 +100,6 @@ CChi2Kernel* CChi2Kernel::obtain_from_generic(CKernel* kernel)
 
 void CChi2Kernel::set_width(int32_t w)
 {
-	REQUIRE(w>0, "Parameter width should be > 0");
+	require(w>0, "Parameter width should be > 0");
 	width=w;
 }

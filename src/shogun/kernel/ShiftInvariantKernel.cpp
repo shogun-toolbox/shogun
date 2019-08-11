@@ -53,7 +53,7 @@ CShiftInvariantKernel::~CShiftInvariantKernel()
 
 bool CShiftInvariantKernel::init(CFeatures* l, CFeatures* r)
 {
-	REQUIRE(m_distance, "The distance instance cannot be NULL!\n");
+	require(m_distance, "The distance instance cannot be NULL!\n");
 	CKernel::init(l,r);
 	m_distance->init(l, r);
 	return init_normalizer();
@@ -61,8 +61,8 @@ bool CShiftInvariantKernel::init(CFeatures* l, CFeatures* r)
 
 void CShiftInvariantKernel::precompute_distance()
 {
-	REQUIRE(m_distance, "The distance instance cannot be NULL!\n");
-	REQUIRE(m_distance->init(lhs, rhs), "Could not initialize the distance instance!\n");
+	require(m_distance, "The distance instance cannot be NULL!\n");
+	require(m_distance->init(lhs, rhs), "Could not initialize the distance instance!\n");
 
 	SGMatrix<float32_t> dist_mat=m_distance->get_distance_matrix<float32_t>();
 	if (m_precomputed_distance==NULL)
@@ -87,13 +87,13 @@ void CShiftInvariantKernel::cleanup()
 
 EDistanceType CShiftInvariantKernel::get_distance_type() const
 {
-	REQUIRE(m_distance, "The distance instance cannot be NULL!\n");
+	require(m_distance, "The distance instance cannot be NULL!\n");
 	return m_distance->get_distance_type();
 }
 
 float64_t CShiftInvariantKernel::distance(int32_t a, int32_t b) const
 {
-	REQUIRE(m_distance, "The distance instance cannot be NULL!\n");
+	require(m_distance, "The distance instance cannot be NULL!\n");
 	if (m_precomputed_distance!=NULL)
 		return m_precomputed_distance->distance(a, b);
 	else
@@ -111,7 +111,7 @@ void CShiftInvariantKernel::register_params()
 
 void CShiftInvariantKernel::set_precomputed_distance(CCustomDistance* precomputed_distance)
 {
-	REQUIRE(precomputed_distance, "The precomputed distance instance cannot be NULL!\n");
+	require(precomputed_distance, "The precomputed distance instance cannot be NULL!\n");
 	SG_REF(precomputed_distance);
 	SG_UNREF(m_precomputed_distance);
 	m_precomputed_distance=precomputed_distance;
@@ -119,7 +119,7 @@ void CShiftInvariantKernel::set_precomputed_distance(CCustomDistance* precompute
 
 CCustomDistance* CShiftInvariantKernel::get_precomputed_distance() const
 {
-	REQUIRE(m_precomputed_distance, "The precomputed distance instance cannot be NULL!\n");
+	require(m_precomputed_distance, "The precomputed distance instance cannot be NULL!\n");
 	SG_REF(m_precomputed_distance);
 	return m_precomputed_distance;
 }

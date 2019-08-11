@@ -50,12 +50,12 @@ SMDMinimizer::SMDMinimizer(FirstOrderStochasticCostFunction *fun)
 
 float64_t SMDMinimizer::minimize()
 {
-	REQUIRE(m_mapping_fun, "Mapping function must set\n");
+	require(m_mapping_fun, "Mapping function must set\n");
 	init_minimization();
 	SGVector<float64_t> variable_reference=m_fun->obtain_variable_reference();
 	SGVector<float64_t> dual_variable=m_mapping_fun->get_dual_variable(variable_reference);
 	FirstOrderStochasticCostFunction *fun=dynamic_cast<FirstOrderStochasticCostFunction *>(m_fun);
-	REQUIRE(fun,"the cost function must be a stochastic cost function\n");
+	require(fun,"the cost function must be a stochastic cost function\n");
 	for(;m_cur_passes<m_num_passes;m_cur_passes++)
 	{
 		fun->begin_sample();
@@ -85,7 +85,7 @@ void SMDMinimizer::init()
 
 void SMDMinimizer::set_mapping_function(MappingFunction* mapping_fun)
 {
-	REQUIRE(mapping_fun, "mapping/projection function must be set\n");
+	require(mapping_fun, "mapping/projection function must be set\n");
 	if(m_mapping_fun!=mapping_fun)
 	{
 		SG_REF(mapping_fun);

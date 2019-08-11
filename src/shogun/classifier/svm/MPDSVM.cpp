@@ -37,7 +37,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
 	ASSERT(kernel->has_features())
@@ -133,7 +133,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-			SG_ERROR("no violation no convergence, should not happen!\n")
+			error("no violation no convergence, should not happen!\n");
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
@@ -166,9 +166,9 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		if (primalcool && dualcool)
 		{
 			if (!free_alpha)
-				SG_INFO(" no free alpha, stopping! #iter={}\n", niter)
+				io::info(" no free alpha, stopping! #iter={}\n", niter);
 			else
-				SG_INFO(" done! #iter={}\n", niter)
+				io::info(" done! #iter={}\n", niter);
 			break;
 		}
 
@@ -230,7 +230,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 
 	pb.complete();
 	if (niter >= maxiter)
-		SG_WARNING("increase maxiter ... \n")
+		io::warn("increase maxiter ... \n");
 
 
 	int32_t nsv=0;
@@ -257,8 +257,8 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 	}
 	compute_svm_dual_objective();
-	SG_INFO("obj = {:.16f}, rho = {:.16f}\n",get_objective(),get_bias())
-	SG_INFO("Number of SV: {}\n", get_num_support_vectors())
+	io::info("obj = {:.16f}, rho = {:.16f}\n",get_objective(),get_bias());
+	io::info("Number of SV: {}\n", get_num_support_vectors());
 
 	SG_FREE(alphas);
 	SG_FREE(dalphas);

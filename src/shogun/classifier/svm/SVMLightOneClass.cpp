@@ -75,16 +75,16 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 	learn_parm->xa_depth=0;
 
     if (!kernel)
-        SG_ERROR("SVM_light can not proceed without kernel!\n")
+        error("SVM_light can not proceed without kernel!\n");
 
 	if (data)
 		kernel->init(data, data);
 
     if (!kernel->has_features())
-        SG_ERROR("SVM_light can not proceed without initialized kernel!\n")
+        error("SVM_light can not proceed without initialized kernel!\n");
 
 	int32_t num_vec=kernel->get_num_vec_lhs();
-	SG_INFO("num_vec={}\n", num_vec)
+	io::info("num_vec={}\n", num_vec);
 
 	SG_UNREF(m_labels);
 	m_labels=new CBinaryLabels(num_vec);

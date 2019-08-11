@@ -140,9 +140,9 @@ int32_t CKernelMachine::get_support_vector(int32_t idx)
 float64_t CKernelMachine::get_alpha(int32_t idx)
 {
     if (!m_alpha.vector)
-        SG_ERROR("No alphas set\n")
+        error("No alphas set\n");
     if (idx>=m_alpha.vlen)
-        SG_ERROR("Alphas index ({}) out of range ({})\n", idx, m_svs.vlen)
+        error("Alphas index ({}) out of range ({})\n", idx, m_svs.vlen);
     return m_alpha.vector[idx];
 }
 
@@ -229,12 +229,12 @@ bool CKernelMachine::init_kernel_optimization()
 		SG_FREE(sv_weight);
 
 		if (!ret)
-			SG_ERROR("initialization of kernel optimization failed\n")
+			error("initialization of kernel optimization failed\n");
 
 		return ret;
 	}
 	else
-		SG_ERROR("initialization of kernel optimization failed\n")
+		error("initialization of kernel optimization failed\n");
 
 	return false;
 }
@@ -256,11 +256,11 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	SG_DEBUG("entering {}::apply_get_outputs({} at {})\n",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
-	REQUIRE(kernel, "{}::apply_get_outputs(): No kernel assigned!\n")
+	require(kernel, "{}::apply_get_outputs(): No kernel assigned!\n");
 
 	if (!kernel->get_num_vec_lhs())
 	{
-		SG_ERROR("{}: No vectors on left hand side ({}). This is probably due to"
+		error("{}: No vectors on left hand side ({}). This is probably due to"
 				" an implementation error in {}, where it was forgotten to set "
 				"the data (m_svs) indices\n", get_name(),
 				data->get_name());
@@ -269,7 +269,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		CFeatures* lhs=kernel->get_lhs();
-		REQUIRE(lhs, "{}::apply_get_outputs(): No left hand side specified\n",
+		require(lhs, "{}::apply_get_outputs(): No left hand side specified\n",
 				get_name());
 		kernel->init(lhs, data);
 		SG_UNREF(lhs);
@@ -391,13 +391,13 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 void CKernelMachine::store_model_features()
 {
 	if (!kernel)
-		SG_ERROR("kernel is needed to store SV features.\n")
+		error("kernel is needed to store SV features.\n");
 
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
 
 	if (!lhs)
-		SG_ERROR("kernel lhs is needed to store SV features.\n")
+		error("kernel lhs is needed to store SV features.\n");
 
 	/* copy sv feature data */
 	CFeatures* sv_features=lhs->copy_subset(m_svs);

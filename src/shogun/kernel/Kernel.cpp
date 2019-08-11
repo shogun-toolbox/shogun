@@ -68,7 +68,7 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 CKernel::~CKernel()
 {
 	if (get_is_initialized())
-		SG_ERROR("Kernel still initialized on destruction.\n")
+		error("Kernel still initialized on destruction.\n");
 
 	remove_lhs_and_rhs();
 	SG_UNREF(normalizer);
@@ -91,21 +91,21 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
 	//make sure features were indeed supplied
-	REQUIRE(l, "CKernel::init({}, {}): Left hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
-	REQUIRE(r, "CKernel::init({}, {}): Right hand side features required!\n", fmt::ptr(l), fmt::ptr(r))
+	require(l, "CKernel::init({}, {}): Left hand side features required!\n", fmt::ptr(l), fmt::ptr(r));
+	require(r, "CKernel::init({}, {}): Right hand side features required!\n", fmt::ptr(l), fmt::ptr(r));
 
 	//make sure features are compatible
 	if (l->support_compatible_class())
 	{
-		REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
+		require(l->get_feature_class_compatibility(r->get_feature_class()),
 			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
 			l->get_name(), r->get_name());
 	}
 	else
 	{
-		REQUIRE(l->get_feature_class()==r->get_feature_class(),
+		require(l->get_feature_class()==r->get_feature_class(),
 			"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
-			l->get_name(), r->get_name())
+			l->get_name(), r->get_name());
 	}
 	ASSERT(l->get_feature_type()==r->get_feature_type())
 
@@ -167,7 +167,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	int32_t totdoc=get_num_vec_lhs();
 	if (totdoc<=0)
 	{
-		SG_ERROR("kernel has zero rows: num_lhs={} num_rhs={}\n",
+		error("kernel has zero rows: num_lhs={} num_rhs={}\n",
 				get_num_vec_lhs(), get_num_vec_rhs());
 	}
 	uint64_t buffer_size=0;
@@ -181,7 +181,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	if (buffer_size>((uint64_t) totdoc)*totdoc)
 		buffer_size=((uint64_t) totdoc)*totdoc;
 
-	SG_INFO("using a kernel cache of size {} MB ({} bytes) for {} Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name())
+	io::info("using a kernel cache of size {} MB ({} bytes) for {} Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)))
@@ -396,7 +396,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 			cache[num]= kernel_cache_clean_and_malloc(idx);
 
 			if (!cache[num])
-				SG_ERROR("Kernel cache full! => increase cache size\n")
+				error("Kernel cache full! => increase cache size\n");
 
 			num++;
 		}
@@ -662,11 +662,11 @@ void CKernel::remove_rhs()
 #endif //USE_SVMLIGHT
 }
 
-#define ENUM_CASE(n) case n: SG_INFO(#n " ") break;
+#define ENUM_CASE(n) case n: io::info(#n " "); break;
 
 void CKernel::list_kernel()
 {
-	SG_INFO("{} - \"{}\" weight={:1.2f} OPT:{}", fmt::ptr(this), get_name(),
+	io::info("{} - \"{}\" weight={:1.2f} OPT:{}", fmt::ptr(this), get_name(),
 			get_combined_kernel_weight(),
 			get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" :
 			"SLOWBUTMEMEFFICIENT");
@@ -780,26 +780,26 @@ void CKernel::list_kernel()
 		ENUM_CASE(F_LONGREAL)
 		ENUM_CASE(F_ANY)
 	}
-	SG_INFO("\n")
+	io::info("\n");
 }
 #undef ENUM_CASE
 
 bool CKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t * weights)
 {
-   SG_ERROR("kernel does not support linadd optimization\n")
+   error("kernel does not support linadd optimization\n");
 	return false ;
 }
 
 bool CKernel::delete_optimization()
 {
-   SG_ERROR("kernel does not support linadd optimization\n")
+   error("kernel does not support linadd optimization\n");
 	return false;
 }
 
 float64_t CKernel::compute_optimized(int32_t vector_idx)
 {
-   SG_ERROR("kernel does not support linadd optimization\n")
+   error("kernel does not support linadd optimization\n");
 	return 0;
 }
 
@@ -807,17 +807,17 @@ void CKernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* target, int32_t num_suppvec,
 	int32_t* IDX, float64_t* weights, float64_t factor)
 {
-   SG_ERROR("kernel does not support batch computation\n")
+   error("kernel does not support batch computation\n");
 }
 
 void CKernel::add_to_normal(int32_t vector_idx, float64_t weight)
 {
-   SG_ERROR("kernel does not support linadd optimization, add_to_normal not implemented\n")
+   error("kernel does not support linadd optimization, add_to_normal not implemented\n");
 }
 
 void CKernel::clear_normal()
 {
-   SG_ERROR("kernel does not support linadd optimization, clear_normal not implemented\n")
+   error("kernel does not support linadd optimization, clear_normal not implemented\n");
 }
 
 int32_t CKernel::get_num_subkernels()
@@ -828,7 +828,7 @@ int32_t CKernel::get_num_subkernels()
 void CKernel::compute_by_subkernel(
 	int32_t vector_idx, float64_t * subkernel_contrib)
 {
-   SG_ERROR("kernel compute_by_subkernel not implemented\n")
+   error("kernel compute_by_subkernel not implemented\n");
 }
 
 const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
@@ -848,7 +848,7 @@ void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 {
 	ASSERT(weights.vector)
 	if (weights.vlen!=1)
-      SG_ERROR("number of subkernel weights should be one ...\n")
+      error("number of subkernel weights should be one ...\n");
 
 	combined_kernel_weight = weights.vector[0] ;
 }
@@ -858,7 +858,7 @@ CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
 	if (kernel)
 	{
 		CKernel* casted=dynamic_cast<CKernel*>(kernel);
-		REQUIRE(casted, "CKernel::obtain_from_generic(): Error, provided object"
+		require(casted, "CKernel::obtain_from_generic(): Error, provided object"
 				" of class \"{}\" is not a subclass of CKernel!\n",
 				kernel->get_name());
 		return casted;
@@ -995,14 +995,14 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 {
 	SG_DEBUG("Entering\n");
 
-	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
-	REQUIRE(block_begin>=0 && block_begin<num_rhs,
-			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
-	REQUIRE(block_begin+block_size<=num_rhs,
+	require(has_features(), "No features assigned to kernel\n");
+	require(lhs_equals_rhs, "The kernel matrix is not symmetric!\n");
+	require(block_begin>=0 && block_begin<num_rhs,
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin);
+	require(block_begin+block_size<=num_rhs,
 			"Invalid block size ({}) at starting index ({}, {})! "
-			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
+			"Please use smaller blocks!", block_size, block_begin, block_begin);
+	require(block_size>=1, "Invalid block size ({})!\n", block_size);
 
 	float64_t sum=0.0;
 
@@ -1046,23 +1046,23 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 {
 	SG_DEBUG("Entering\n");
 
-	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(block_begin_row>=0 && block_begin_row<num_lhs &&
+	require(has_features(), "No features assigned to kernel\n");
+	require(block_begin_row>=0 && block_begin_row<num_lhs &&
 			block_begin_col>=0 && block_begin_col<num_rhs,
 			"Invalid block begin index ({}, {})!\n",
-			block_begin_row, block_begin_col)
-	REQUIRE(block_begin_row+block_size_row<=num_lhs &&
+			block_begin_row, block_begin_col);
+	require(block_begin_row+block_size_row<=num_lhs &&
 			block_begin_col+block_size_col<=num_rhs,
 			"Invalid block size ({}, {}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size_row, block_size_col,
-			block_begin_row, block_begin_col)
-	REQUIRE(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size ({}, {})!\n", block_size_row, block_size_col)
+			block_begin_row, block_begin_col);
+	require(block_size_row>=1 && block_size_col>=1,
+			"Invalid block size ({}, {})!\n", block_size_row, block_size_col);
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
 	{
-		SG_WARNING("Not removing the main diagonal since block is not square!\n");
+		io::warn("Not removing the main diagonal since block is not square!\n");
 		no_diag=false;
 	}
 
@@ -1091,14 +1091,14 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 {
 	SG_DEBUG("Entering\n");
 
-	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
-	REQUIRE(block_begin>=0 && block_begin<num_rhs,
-			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
-	REQUIRE(block_begin+block_size<=num_rhs,
+	require(has_features(), "No features assigned to kernel\n");
+	require(lhs_equals_rhs, "The kernel matrix is not symmetric!\n");
+	require(block_begin>=0 && block_begin<num_rhs,
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin);
+	require(block_begin+block_size<=num_rhs,
 			"Invalid block size ({}) at starting index ({}, {})! "
-			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
+			"Please use smaller blocks!", block_size, block_begin, block_begin);
+	require(block_size>=1, "Invalid block size ({})!\n", block_size);
 
 	// initialize the vector that accumulates the row/col-wise sum on the go
 	SGVector<float64_t> row_sum(block_size);
@@ -1145,14 +1145,14 @@ SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
 {
 	SG_DEBUG("Entering\n");
 
-	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
-	REQUIRE(block_begin>=0 && block_begin<num_rhs,
-			"Invalid block begin index ({}, {})!\n", block_begin, block_begin)
-	REQUIRE(block_begin+block_size<=num_rhs,
+	require(has_features(), "No features assigned to kernel\n");
+	require(lhs_equals_rhs, "The kernel matrix is not symmetric!\n");
+	require(block_begin>=0 && block_begin<num_rhs,
+			"Invalid block begin index ({}, {})!\n", block_begin, block_begin);
+	require(block_begin+block_size<=num_rhs,
 			"Invalid block size ({}) at starting index ({}, {})! "
-			"Please use smaller blocks!", block_size, block_begin, block_begin)
-	REQUIRE(block_size>=1, "Invalid block size ({})!\n", block_size)
+			"Please use smaller blocks!", block_size, block_begin, block_begin);
+	require(block_size>=1, "Invalid block size ({})!\n", block_size);
 
 	// initialize the matrix that accumulates the row/col-wise sum on the go
 	// the first column stores the sum of kernel values
@@ -1205,23 +1205,23 @@ SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
 {
 	SG_DEBUG("Entering\n");
 
-	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(block_begin_row>=0 && block_begin_row<num_lhs &&
+	require(has_features(), "No features assigned to kernel\n");
+	require(block_begin_row>=0 && block_begin_row<num_lhs &&
 			block_begin_col>=0 && block_begin_col<num_rhs,
 			"Invalid block begin index ({}, {})!\n",
-			block_begin_row, block_begin_col)
-	REQUIRE(block_begin_row+block_size_row<=num_lhs &&
+			block_begin_row, block_begin_col);
+	require(block_begin_row+block_size_row<=num_lhs &&
 			block_begin_col+block_size_col<=num_rhs,
 			"Invalid block size ({}, {}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size_row, block_size_col,
-			block_begin_row, block_begin_col)
-	REQUIRE(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size ({}, {})!\n", block_size_row, block_size_col)
+			block_begin_row, block_begin_col);
+	require(block_size_row>=1 && block_size_col>=1,
+			"Invalid block size ({}, {})!\n", block_size_row, block_size_col);
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
 	{
-		SG_WARNING("Not removing the main diagonal since block is not square!\n");
+		io::warn("Not removing the main diagonal since block is not square!\n");
 		no_diag=false;
 	}
 
@@ -1308,7 +1308,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 {
 	T* result = NULL;
 
-	REQUIRE(has_features(), "no features assigned to kernel\n")
+	require(has_features(), "no features assigned to kernel\n");
 
 	int32_t m=get_num_vec_lhs();
 	int32_t n=get_num_vec_rhs();

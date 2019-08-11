@@ -12,10 +12,10 @@ float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool sta
 	Map<MatrixXd> W(SGW.matrix,SGW.num_rows,SGW.num_cols);
 	Map<MatrixXd> A(SGA.matrix,SGA.num_rows,SGA.num_cols);
 
-	REQUIRE(W.rows() == W.cols(), "amari_index - W must be square\n")
-	REQUIRE(A.rows() == A.cols(), "amari_index - A must be square\n")
-	REQUIRE(W.rows() == A.rows(), "amari_index - A and W must be the same size\n")
-	REQUIRE(W.rows() >= 2, "amari_index - input must be at least 2x2\n")
+	require(W.rows() == W.cols(), "amari_index - W must be square\n");
+	require(A.rows() == A.cols(), "amari_index - A must be square\n");
+	require(W.rows() == A.rows(), "amari_index - A and W must be the same size\n");
+	require(W.rows() >= 2, "amari_index - input must be at least 2x2\n");
 
 	// normalizing both mixing matrices
 	if (standardize)

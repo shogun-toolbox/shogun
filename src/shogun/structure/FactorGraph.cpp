@@ -13,7 +13,7 @@ using namespace shogun;
 CFactorGraph::CFactorGraph()
 	: CSGObject()
 {
-	SG_UNSTABLE("CFactorGraph::CFactorGraph()", "\n");
+	io::unstable("CFactorGraph::CFactorGraph()");
 
 	register_parameters();
 	init();
@@ -192,9 +192,9 @@ SGVector<float64_t> CFactorGraph::evaluate_energies() const
 		etable[ei] = evaluate_energy(assig);
 
 		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi)
-			SG_PRINT("{} ", assig[vi]);
+			io::print("{} ", assig[vi]);
 
-		SG_PRINT("| {}\n", etable[ei]);
+		io::print("| {}\n", etable[ei]);
 	}
 
 	return etable;

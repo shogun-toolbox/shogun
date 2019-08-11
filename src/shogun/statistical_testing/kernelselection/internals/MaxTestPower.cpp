@@ -53,7 +53,7 @@ MaxTestPower::~MaxTestPower()
 void MaxTestPower::compute_measures()
 {
 	init_measures();
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	require(estimator!=nullptr, "Estimator is not set!\n");
 	const auto m=estimator->get_num_samples_p();
 	const auto n=estimator->get_num_samples_q();
 	auto existing_kernel=estimator->get_kernel();

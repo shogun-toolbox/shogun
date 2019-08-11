@@ -54,7 +54,7 @@ void CMulticlassLabels::init()
 void CMulticlassLabels::set_multiclass_confidences(int32_t i,
 		SGVector<float64_t> confidences)
 {
-	REQUIRE(confidences.size()==m_multiclass_confidences.num_rows,
+	require(confidences.size()==m_multiclass_confidences.num_rows,
 			"{}::set_multiclass_confidences(): Length of confidences should "
 			"match size of the matrix", get_name());
 
@@ -73,7 +73,7 @@ SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
 void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 {
 	int32_t n_labels = m_labels.size();
-	REQUIRE(n_labels!=0,"{}::allocate_confidences_for(): There should be "
+	require(n_labels!=0,"{}::allocate_confidences_for(): There should be "
 			"labels to store confidences", get_name());
 
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
@@ -81,7 +81,7 @@ void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 
 SGVector<float64_t> CMulticlassLabels::get_confidences_for_class(int32_t i)
 {
-	REQUIRE(
+	require(
 	    (m_multiclass_confidences.num_rows != 0) &&
 	        (m_multiclass_confidences.num_cols != 0),
 	    "Empty confidences, which need to be allocated before fetching.\n");
@@ -114,7 +114,7 @@ bool CMulticlassLabels::is_valid() const
 
 void CMulticlassLabels::ensure_valid(const char* context)
 {
-	REQUIRE(is_valid(), "Multiclass Labels must be in range "
+	require(is_valid(), "Multiclass Labels must be in range "
 	                    "[0,...,num_classes] and integers!\n");
 }
 
@@ -192,7 +192,7 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 
 	if (labels->get_label_type() != LT_MULTICLASS)
 	{
-		SG_ERROR("The Labels passed cannot be casted to CMulticlassLabels!")
+		error("The Labels passed cannot be casted to CMulticlassLabels!");
 		return NULL;
 	}
 
@@ -219,7 +219,7 @@ namespace shogun
 		if (!(min == 0 && max == (index_t)unique.size() - 1))
 		{
 			// print conversion table for users
-			SG_WARNING(
+			io::warn(
 			    "Converting non-contiguous multiclass labels to "
 			    "contiguous version:\n",
 			    unique.size() - 1);
@@ -227,7 +227,7 @@ namespace shogun
 			    unique.begin(), unique.end(), [&unique](int32_t old_label) {
 				    auto new_label =
 				        std::distance(unique.begin(), unique.find(old_label));
-				    SG_WARNING("Converting {} to {}.\n", old_label, new_label);
+				    io::warn("Converting {} to {}.\n", old_label, new_label);
 				});
 
 			SGVector<float64_t> converted(result_vector.vlen);
@@ -244,7 +244,7 @@ namespace shogun
 
 	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
 	{
-		REQUIRE(orig, "No labels provided.\n");
+		require(orig, "No labels provided.\n");
 		try
 		{
 			switch (orig->get_label_type())
@@ -255,12 +255,12 @@ namespace shogun
 			case LT_BINARY:
 				return to_multiclass((CBinaryLabels*)orig);
 			default:
-				SG_NOTIMPLEMENTED
+				not_implemented(SOURCE_LOCATION);
 			}
 		}
 		catch (const ShogunException& e)
 		{
-			SG_ERROR(
+			error(
 			    "Cannot convert {} to multiclass labels: {}\n",
 			    orig->get_name(), e.what());
 		}

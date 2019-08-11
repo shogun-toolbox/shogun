@@ -12,8 +12,7 @@ using namespace shogun;
 
 CWDFeatures::CWDFeatures() :CDotFeatures()
 {
-	SG_UNSTABLE("CWDFeatures::CWDFeatures() :CDotFeatures()",
-				"\n");
+	io::unstable("CWDFeatures::CWDFeatures() :CDotFeatures()");
 
 	strings = NULL;
 
@@ -116,9 +115,9 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 float64_t
 CWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	REQUIRE(
+	require(
 	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}\n",
-	    vec2.size(), w_dim)
+	    vec2.size(), w_dim);
 
 	float64_t sum=0;
 	int32_t lim=CMath::min(degree, string_length);
@@ -156,7 +155,7 @@ CWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim)
+		error("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim);
 
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
@@ -228,7 +227,7 @@ void* CWDFeatures::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=num_strings)
 	{
-		SG_ERROR("Index out of bounds (number of strings {}, you "
+		error("Index out of bounds (number of strings {}, you "
 				"requested {})\n", num_strings, vector_index);
 	}
 
@@ -274,14 +273,14 @@ bool CWDFeatures::get_next_feature(int32_t& index, float64_t& value, void* itera
 	int32_t i=it->i;
 	int32_t k=it->k;
 #ifdef DEBUG_WDFEATURES
-	SG_PRINT("i={} k={} offs={} o={} asize={} asizem1={}\n", i, k, it->offs, it->o, it->asize, it->asizem1)
+	io::print("i={} k={} offs={} o={} asize={} asizem1={}\n", i, k, it->offs, it->o, it->asize, it->asizem1);
 #endif
 
 	it->val[i]+=it->asizem1*it->vec[i+k];
 	value=wd_weights[k]/normalization_const;
 	index=it->val[i]+it->o;
 #ifdef DEBUG_WDFEATURES
-	SG_PRINT("index={} val={} w_size={} lim={} vlen={}\n", index, value, w_dim, it->lim, it->vlen)
+	io::print("index={} val={} w_size={} lim={} vlen={}\n", index, value, w_dim, it->lim, it->vlen);
 #endif
 
 	it->o+=it->asize;

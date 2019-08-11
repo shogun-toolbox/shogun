@@ -39,7 +39,6 @@
 namespace shogun
 {
 class RefCount;
-class SGIO;
 class Parallel;
 class Parameter;
 class ParameterObserverInterface;
@@ -324,7 +323,7 @@ public:
 			auto parameter_value = get_parameter(_tag).get_value();
 			if (!parameter_value.cloneable())
 			{
-				SG_ERROR(
+				error(
 					"Cannot put parameter {}::{}.\n", get_name(),
 					_tag.name().c_str());
 			}
@@ -334,7 +333,7 @@ public:
 			}
 			catch (const TypeMismatchException& exc)
 			{
-				SG_ERROR(
+				error(
 					"Cannot put parameter {}::{} of type {}, incompatible "
 					"provided type {}.\n",
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
@@ -345,7 +344,7 @@ public:
 		}
 		else
 		{
-			SG_ERROR(
+			error(
 				"Parameter {}::{} does not exist.\n", get_name(),
 				_tag.name().c_str());
 		}
@@ -366,7 +365,7 @@ public:
 
 		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
 		{
-			SG_ERROR(
+			error(
 					"There are no options for parameter {}::{}", get_name(),
 					_tag.name().c_str());
 		}
@@ -375,7 +374,7 @@ public:
 
 		if (string_to_enum.find(val_string) == string_to_enum.end())
 		{
-			SG_ERROR(
+			error(
 					"Illegal option '{}' for parameter {}::{}",
                     val_string.c_str(), get_name(), _tag.name().c_str());
 		}
@@ -410,7 +409,7 @@ public:
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
 	void add(const std::string& name, T* value)
 	{
-		REQUIRE(
+		require(
 			value, "Cannot add to {}::{}, no object provided.\n", get_name(),
 			name.c_str());
 
@@ -420,7 +419,7 @@ public:
 		if (sgo_details::dispatch_array_type<T>(this, name, push_back_lambda))
 			return;
 
-		SG_ERROR(
+		error(
 		    "Cannot add object {} to array parameter {}::{} of type {}.\n",
 		    value->get_name(), get_name(), name.c_str(),
 			demangled_type<T>().c_str());
@@ -463,7 +462,7 @@ public:
 		auto result = this->get<T>(name, index, std::nothrow);
 		if (!result)
 		{
-			SG_ERROR(
+			error(
 				"Could not get array parameter {}::{}[{}] of type {}\n",
 				get_name(), name.c_str(), index, demangled_type<T>().c_str());
 		}
@@ -559,7 +558,7 @@ public:
 		}
 		catch (const TypeMismatchException& exc)
 		{
-			SG_ERROR(
+			error(
 				"Cannot get parameter {}::{} of type {}, incompatible "
 				"requested type {}.\n",
 				get_name(), _tag.name().c_str(), exc.actual().c_str(),
@@ -581,7 +580,7 @@ public:
 			}
 			catch (const TypeMismatchException& exc)
 			{
-				SG_ERROR(
+				error(
 					"Cannot get parameter {}::{} of type {}, incompatible "
 					"requested type {} or there are no options for parameter "
 					"{}::{}.\n",
@@ -617,7 +616,7 @@ public:
 		auto param = get_function(tag);
 		if (!any_cast<bool>(param.get_value()))
 		{
-			SG_ERROR("Failed to run function {}::{}", get_name(), name.c_str())
+			error("Failed to run function {}::{}", get_name(), name.c_str());
 		}
 	}
 
@@ -651,7 +650,7 @@ public:
 	 */
 	template<class T> static T* as(CSGObject* sgo)
 	{
-		REQUIRE(sgo, "No object provided!\n");
+		require(sgo, "No object provided!\n");
 		return sgo->as<T>();
 	}
 
@@ -666,7 +665,7 @@ public:
 		if (c)
 			return c;
 
-		SG_ERROR(
+		error(
 			"Object of type {} cannot be converted to type {}.\n",
 			this->get_name(),
 			demangled_type<T>().c_str());
@@ -819,7 +818,7 @@ protected:
 			std::shared_ptr<params::AutoInit> auto_init,
 			AnyParameterProperties properties)
 	{
-		REQUIRE(
+		require(
 				properties.has_property(ParameterProperties::AUTO),
 				"Expected param to have ParameterProperty::AUTO");
 		BaseTag tag(name);
@@ -847,7 +846,7 @@ protected:
 			Constraint<Args...>&& constrain_function,
 			AnyParameterProperties properties)
 	{
-		REQUIRE(
+		require(
 				properties.has_property(ParameterProperties::CONSTRAIN),
 				"Expected param to have ParameterProperty::CONSTRAIN");
 		BaseTag tag(name);
@@ -1224,7 +1223,7 @@ protected:
 template <class T>
 T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
 {
-	REQUIRE(orig, "No object provided.\n");
+	require(orig, "No object provided.\n");
 	auto clone = orig->clone(pp);
 	ASSERT(clone);
 	return static_cast<T*>(clone);
@@ -1233,7 +1232,7 @@ T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
 template <class T>
 const T* make_clone(const T* orig, ParameterProperties pp = ParameterProperties::ALL)
 {
-	REQUIRE(orig, "No object provided.\n");
+	require(orig, "No object provided.\n");
 	auto clone = orig->clone(pp);
 	ASSERT(clone);
 	return static_cast<const T*>(clone);

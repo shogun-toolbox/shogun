@@ -191,226 +191,226 @@ public:
 
 	virtual void get_matrix(int8_t*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void get_int8_sparsematrix(shogun::SGSparseVector<signed char>*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void get_int8_string_list(shogun::SGVector<signed char>*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_int8_matrix(const int8_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_int8_sparsematrix(const shogun::SGSparseVector<signed char>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_int8_string_list(const shogun::SGVector<signed char>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const int8_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const uint8_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const char*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const int16_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const int32_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const uint32_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const float32_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const float64_t*, int32_t){
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const floatmax_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const uint16_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const int64_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_vector(const uint64_t*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const uint8_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const int8_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const char*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const int32_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const uint32_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const int64_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const uint64_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const float32_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const float64_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const floatmax_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const int16_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_matrix(const uint16_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<bool>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint8_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<int8_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<char>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<int32_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint32_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<int64_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint64_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<int16_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint16_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<float32_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<float64_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<floatmax_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<bool>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<uint8_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<int8_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<char>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<int32_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<uint32_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<int16_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<uint16_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<int64_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<uint64_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<float32_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<float64_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	virtual void set_string_list(const shogun::SGVector<floatmax_t>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 	/** @return object name */
 	virtual const char* get_name() const { return "HDF5File"; }

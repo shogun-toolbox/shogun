@@ -67,11 +67,11 @@ void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 	}
 	catch (ShogunException e)
 	{
-		SG_PRINT(
+		io::print(
 		    "{}: Received an observed value named {} which is a not a "
 		    "CrossValidationStorage object"
 		    ", therefore it was ignored.",
-		    this->get_name(), value.first->get<std::string>("name").c_str())
+		    this->get_name(), value.first->get<std::string>("name").c_str());
 	}
 }
 
@@ -89,11 +89,11 @@ void CParameterObserverCV::print_observed_value(
 	for (index_t i = 0; i < value->get<index_t>("num_folds"); i++)
 	{
 		auto f = value->get("folds", i);
-		SG_PRINT("\n")
-		SG_PRINT(
-		    "Current run index: {}\n", f->get<index_t>("current_run_index"))
-		SG_PRINT(
-		    "Current fold index: {}\n", f->get<index_t>("current_fold_index"))
+		io::print("\n");
+		io::print(
+		    "Current run index: {}\n", f->get<index_t>("current_run_index"));
+		io::print(
+		    "Current fold index: {}\n", f->get<index_t>("current_fold_index"));
 		f->get<SGVector<index_t>>("train_indices")
 		    .display_vector("Train Indices ");
 		f->get<SGVector<index_t>>("test_indices")
@@ -105,7 +105,7 @@ void CParameterObserverCV::print_observed_value(
 		f->get<CLabels*>("test_true_result")
 		    ->get_values()
 		    .display_vector("Test True Label ");
-		SG_PRINT(
+		io::print(
 		    "Evaluation result: {}\n", f->get<float64_t>("evaluation_result"));
 		SG_UNREF(f)
 	}
@@ -117,14 +117,14 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 	{
 		CLinearMachine* linear_machine = (CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("Learned Weights = ");
-		SG_PRINT("Learned Bias = {}\n", linear_machine->get_bias())
+		io::print("Learned Bias = {}\n", linear_machine->get_bias());
 	}
 
 	if (dynamic_cast<CKernelMachine*>(machine))
 	{
 		CKernelMachine* kernel_machine = (CKernelMachine*)machine;
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
-		SG_PRINT("Learned Bias = {}\n", kernel_machine->get_bias())
+		io::print("Learned Bias = {}\n", kernel_machine->get_bias());
 	}
 
 	if (dynamic_cast<CLinearMulticlassMachine*>(machine) ||

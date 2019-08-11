@@ -41,7 +41,7 @@ FirstOrderMinimizer::~FirstOrderMinimizer()
 
 void FirstOrderMinimizer::set_cost_function(FirstOrderCostFunction *fun)
 {
-	REQUIRE(fun,"The cost function must be not NULL\n");
+	require(fun,"The cost function must be not NULL\n");
 	if(m_fun != fun)
 	{
 		SG_REF(fun);
@@ -62,7 +62,7 @@ void FirstOrderMinimizer::set_penalty_type(Penalty* penalty_type)
 
 void FirstOrderMinimizer::set_penalty_weight(float64_t penalty_weight)
 {
-	REQUIRE(penalty_weight>0,"The weight of penalty must be positive\n");
+	require(penalty_weight>0,"The weight of penalty must be positive\n");
 	m_penalty_weight=penalty_weight;
 }
 
@@ -71,7 +71,7 @@ float64_t FirstOrderMinimizer::get_penalty(SGVector<float64_t> var)
 	float64_t penalty=0.0;
 	if(m_penalty_type)
 	{
-		REQUIRE(m_penalty_weight>0,"The weight of penalty must be set first\n");
+		require(m_penalty_weight>0,"The weight of penalty must be set first\n");
 		for(index_t idx=0; idx<var.vlen; idx++)
 			penalty+=m_penalty_weight*m_penalty_type->get_penalty(var[idx]);
 	}
@@ -82,7 +82,7 @@ void FirstOrderMinimizer::update_gradient(SGVector<float64_t> gradient, SGVector
 {
 	if(m_penalty_type)
 	{
-		REQUIRE(m_penalty_weight>0,"The weight of penalty must be set first\n");
+		require(m_penalty_weight>0,"The weight of penalty must be set first\n");
 		for(index_t idx=0; idx<var.vlen; idx++)
 		{
 			float64_t grad=gradient[idx];

@@ -27,7 +27,7 @@ void CIndexBlockGroup::add_block(CIndexBlock* block)
 
 void CIndexBlockGroup::remove_block(CIndexBlock* block)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 SGVector<index_t> CIndexBlockGroup::get_SLEP_ind()

@@ -29,11 +29,11 @@ CDirectSparseLinearSolver::~CDirectSparseLinearSolver()
 SGVector<float64_t> CDirectSparseLinearSolver::solve(
 		CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
-	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
+	require(A, "Operator is NULL!\n");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 	CSparseMatrixOperator<float64_t>* op
 		=dynamic_cast<CSparseMatrixOperator<float64_t>*>(A);
-	REQUIRE(op, "Operator is not SparseMatrixOperator type!\n");
+	require(op, "Operator is not SparseMatrixOperator type!\n");
 
 	// creating eigen3 Sparse Matrix
 	SGSparseMatrix<float64_t> sm=op->get_matrix_operator();
@@ -53,7 +53,7 @@ SGVector<float64_t> CDirectSparseLinearSolver::solve(
 
 	// checking for success
 	if (llt.info()==NumericalIssue)
-		SG_WARNING("Matrix is not Hermitian positive definite!\n");
+		io::warn("Matrix is not Hermitian positive definite!\n");
 
 	return x;
 }

@@ -55,7 +55,7 @@ int main(int argc, const char *argv[])
 	// print comparison output only if different as it it slow
 	if (!loaded_equals_ref || !ref_equals_loaded)
 	{
-		env()->io()->set_loglevel(MSG_DEBUG);
+		env()->io()->set_loglevel(io::MSG_DEBUG);
 		if (!loaded_equals_ref)
 		{
 			SG_DEBUG(

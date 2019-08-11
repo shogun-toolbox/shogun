@@ -25,7 +25,7 @@ CMKLRegression::~CMKLRegression()
 
 float64_t CMKLRegression::compute_sum_alpha()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 
 	// not correct needs explicit access to alpha and alpha*
@@ -38,7 +38,7 @@ float64_t CMKLRegression::compute_sum_alpha()
 
 float64_t CMKLRegression::compute_mkl_dual_objective()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 

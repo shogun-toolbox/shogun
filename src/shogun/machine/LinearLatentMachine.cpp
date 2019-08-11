@@ -39,7 +39,7 @@ CLinearLatentMachine::~CLinearLatentMachine()
 CLatentLabels* CLinearLatentMachine::apply_latent(CFeatures* data)
 {
 	if (m_model == NULL)
-		SG_ERROR("LatentModel is not set!\n")
+		error("LatentModel is not set!\n");
 
 	CLatentFeatures* lf = data->as<CLatentFeatures>();
 	m_model->set_features(lf);
@@ -58,7 +58,7 @@ void CLinearLatentMachine::set_model(CLatentModel* latent_model)
 bool CLinearLatentMachine::train_machine(CFeatures* data)
 {
 	if (m_model == NULL)
-		SG_ERROR("LatentModel is not set!\n")
+		error("LatentModel is not set!\n");
 
 	SG_DEBUG("PSI size: {}\n", m_model->get_dim())
 	SG_DEBUG("Number of training data: {}\n", m_model->get_num_vectors())

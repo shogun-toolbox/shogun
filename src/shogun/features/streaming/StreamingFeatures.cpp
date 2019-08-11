@@ -39,6 +39,6 @@ bool CStreamingFeatures::is_seekable()
 
 void CStreamingFeatures::reset_stream()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return;
 }

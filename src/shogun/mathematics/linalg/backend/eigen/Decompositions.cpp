@@ -105,7 +105,7 @@ SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(
 	 * 1: Eigen::NumericalIssue. The provided data did not satisfy the
 	 * prerequisites.
 	 */
-	REQUIRE(
+	require(
 	    llt.info() != Eigen::NumericalIssue,
 	    "Matrix is not Hermitian positive definite!\n");
 
@@ -152,7 +152,7 @@ void LinalgBackendEigen::ldlt_factor_impl(
 	// flatten N*1 matrix into vector
 	p_eig = ldlt.transpositionsP().indices().template cast<index_t>();
 
-	REQUIRE(
+	require(
 	    ldlt.info() != Eigen::NumericalIssue,
 	    "The factorization failed because of a zero pivot.\n");
 }
@@ -174,9 +174,9 @@ void LinalgBackendEigen::svd_impl(
 #if	(defined(__arm__) || defined (__thumb__) || defined(__TARGET_ARCH_ARM) ||	\
 	 defined(__TARGET_ARCH_THUMB) || defined (_ARM) || defined(_M_ARM) ||		\
 	 defined(_M_ARMT) || defined(__arm)) && !defined(__aarch64__)
-		SG_WARNING(
+		io::warn(
 		    "BDC-SVD is not supported on 32 Bit ARM hardware.\n"
-		    "Falling back on Jacobi-SVD.\n")
+		    "Falling back on Jacobi-SVD.\n");
 #elif EIGEN_VERSION_AT_LEAST(3, 3, 0)
 		auto svd_eig =
 		    A_eig.bdcSvd(thin_U ? Eigen::ComputeThinU : Eigen::ComputeFullU);
@@ -184,9 +184,9 @@ void LinalgBackendEigen::svd_impl(
 		U_eig = svd_eig.matrixU().template cast<T>();
 		break;
 #else
-		SG_WARNING(
+		io::warn(
 		    "At least Eigen 3.3 is required for BDC-SVD.\n"
-		    "Falling back on Jacobi-SVD.\n")
+		    "Falling back on Jacobi-SVD.\n");
 #endif
 	}
 

@@ -13,7 +13,7 @@ using namespace shogun;
 
 CSNPFeatures::CSNPFeatures()
 {
-	SG_UNSTABLE("CSNPFeatures::CSNPFeatures()", "\n")
+	io::unstable("CSNPFeatures::CSNPFeatures()");
 
 	strings = NULL;
 
@@ -142,7 +142,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) cons
 
 	ASSERT(alen==blen)
 	if (alen!=string_length)
-		SG_ERROR("alen ({}) !=string_length ({})\n", alen, string_length)
+		error("alen ({}) !=string_length ({})\n", alen, string_length);
 	ASSERT(m_str_min)
 	ASSERT(m_str_maj)
 
@@ -172,7 +172,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) cons
 				sumbb++;
 			else
 			{
-				SG_ERROR("The impossible happened i={} a1={} "
+				error("The impossible happened i={} a1={} "
 						"a2={} b1={} b2={} min={} maj={}\n", i, a1,a2, b1,b2, m_str_min[i], m_str_maj[i]);
 			}
 
@@ -188,9 +188,9 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) cons
 float64_t
 CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	REQUIRE(
+	require(
 	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}\n",
-	    vec2.size(), w_dim)
+	    vec2.size(), w_dim);
 
 	float64_t sum=0;
 	int32_t len;
@@ -213,7 +213,7 @@ CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 				dim=2;
 			else
 			{
-				SG_ERROR("The impossible happened i={} a1={} a2={} min={} maj={}\n",
+				error("The impossible happened i={} a1={} a2={} min={} maj={}\n",
 						i, a1,a2, m_str_min[i], m_str_maj[i]);
 			}
 		}
@@ -229,7 +229,7 @@ CSNPFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim)
+		error("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim);
 
 	int32_t len;
 	bool free_vec1;
@@ -254,7 +254,7 @@ void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t
 				dim=2;
 			else
 			{
-				SG_ERROR("The impossible happened i={} a1={} a2={} min={} maj={}\n",
+				error("The impossible happened i={} a1={} a2={} min={} maj={}\n",
 						i, a1,a2, m_str_min[i], m_str_maj[i]);
 			}
 		}
@@ -378,7 +378,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 					dim=2;
 				else
 				{
-					SG_ERROR("The impossible happened j={} a1={} a2={} min={} maj={}\n",
+					error("The impossible happened j={} a1={} a2={} min={} maj={}\n",
 							j, a1,a2, m_str_min[j], m_str_maj[j]);
 				}
 			}

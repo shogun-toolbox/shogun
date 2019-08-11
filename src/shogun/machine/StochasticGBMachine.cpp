@@ -70,7 +70,7 @@ CStochasticGBMachine::~CStochasticGBMachine()
 
 void CStochasticGBMachine::set_machine(CMachine* machine)
 {
-	REQUIRE(machine,"Supplied machine is NULL\n")
+	require(machine,"Supplied machine is NULL\n");
 
 	if (m_machine!=NULL)
 		SG_UNREF(m_machine);
@@ -82,7 +82,7 @@ void CStochasticGBMachine::set_machine(CMachine* machine)
 CMachine* CStochasticGBMachine::get_machine() const
 {
 	if (m_machine==NULL)
-		SG_ERROR("machine not set yet!\n")
+		error("machine not set yet!\n");
 
 	SG_REF(m_machine);
 	return m_machine;
@@ -90,7 +90,7 @@ CMachine* CStochasticGBMachine::get_machine() const
 
 void CStochasticGBMachine::set_loss_function(CLossFunction* f)
 {
-	REQUIRE(f,"Supplied loss function is NULL\n")
+	require(f,"Supplied loss function is NULL\n");
 	if (m_loss!=NULL)
 		SG_UNREF(m_loss);
 
@@ -101,7 +101,7 @@ void CStochasticGBMachine::set_loss_function(CLossFunction* f)
 CLossFunction* CStochasticGBMachine::get_loss_function() const
 {
 	if (m_loss==NULL)
-		SG_ERROR("Loss function not set yet!\n")
+		error("Loss function not set yet!\n");
 
 	SG_REF(m_loss)
 	return m_loss;
@@ -109,7 +109,7 @@ CLossFunction* CStochasticGBMachine::get_loss_function() const
 
 void CStochasticGBMachine::set_num_iterations(int32_t iter)
 {
-	REQUIRE(iter,"Number of iterations\n")
+	require(iter,"Number of iterations\n");
 	m_num_iter=iter;
 }
 
@@ -120,7 +120,7 @@ int32_t CStochasticGBMachine::get_num_iterations() const
 
 void CStochasticGBMachine::set_subset_fraction(float64_t frac)
 {
-	REQUIRE((frac>0)&&(frac<=1),"subset fraction should lie between 0 and 1. Supplied value is {}\n",frac)
+	require((frac>0)&&(frac<=1),"subset fraction should lie between 0 and 1. Supplied value is {}\n",frac);
 
 	m_subset_frac=frac;
 }
@@ -132,7 +132,7 @@ float64_t CStochasticGBMachine::get_subset_fraction() const
 
 void CStochasticGBMachine::set_learning_rate(float64_t lr)
 {
-	REQUIRE((lr>0)&&(lr<=1),"learning rate should lie between 0 and 1. Supplied value is {}\n",lr)
+	require((lr>0)&&(lr<=1),"learning rate should lie between 0 and 1. Supplied value is {}\n",lr);
 
 	m_learning_rate=lr;
 }
@@ -144,7 +144,7 @@ float64_t CStochasticGBMachine::get_learning_rate() const
 
 CRegressionLabels* CStochasticGBMachine::apply_regression(CFeatures* data)
 {
-	REQUIRE(data,"test data supplied is NULL\n")
+	require(data,"test data supplied is NULL\n");
 	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
 	SGVector<float64_t> retlabs(feats->get_num_vectors());
@@ -154,7 +154,7 @@ CRegressionLabels* CStochasticGBMachine::apply_regression(CFeatures* data)
 		float64_t gamma=m_gamma->get_element(i);
 
 		CSGObject* element=m_weak_learners->get_element(i);
-		REQUIRE(element,"{} element of the array of weak learners is NULL. This is not expected\n",i)
+		require(element,"{} element of the array of weak learners is NULL. This is not expected\n",i);
 		CMachine* machine=dynamic_cast<CMachine*>(element);
 
 		CRegressionLabels* dlabels=machine->apply_regression(feats);
@@ -172,10 +172,10 @@ CRegressionLabels* CStochasticGBMachine::apply_regression(CFeatures* data)
 
 bool CStochasticGBMachine::train_machine(CFeatures* data)
 {
-	REQUIRE(data,"training data not supplied!\n")
-	REQUIRE(m_machine,"machine not set!\n")
-	REQUIRE(m_loss,"loss function not specified\n")
-	REQUIRE(m_labels, "labels not specified\n")
+	require(data,"training data not supplied!\n");
+	require(m_machine,"machine not set!\n");
+	require(m_loss,"loss function not specified\n");
+	require(m_labels, "labels not specified\n");
 
 	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
@@ -227,7 +227,7 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 float64_t CStochasticGBMachine::compute_multiplier(
     CRegressionLabels* f, CRegressionLabels* hm, CLabels* labs)
 {
-	REQUIRE(f->get_num_labels()==hm->get_num_labels(),"The number of labels in both input parameters should be equal\n")
+	require(f->get_num_labels()==hm->get_num_labels(),"The number of labels in both input parameters should be equal\n");
 
 	CDynamicObjectArray* instance=new CDynamicObjectArray();
 	instance->push_back(labs);
@@ -249,7 +249,7 @@ CMachine* CStochasticGBMachine::fit_model(CDenseFeatures<float64_t>* feats, CReg
 	if (obj)
 		c=dynamic_cast<CMachine*>(obj);
 	else
-		SG_ERROR("Machine could not be cloned!\n")
+		error("Machine could not be cloned!\n");
 
 	// train cloned machine
 	c->set_labels(labels);
@@ -318,22 +318,22 @@ float64_t CStochasticGBMachine::get_gamma(void* instance)
 float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim,
 												const float64_t step)
 {
-	REQUIRE(obj,"object cannot be NULL\n")
+	require(obj,"object cannot be NULL\n");
 	CDynamicObjectArray* objects=static_cast<CDynamicObjectArray*>(obj);
-	REQUIRE((objects->get_num_elements()==2) || (objects->get_num_elements()==4),"Number of elements in obj array"
-	" ({}) does not match expectations(2 or 4)\n",objects->get_num_elements())
+	require((objects->get_num_elements()==2) || (objects->get_num_elements()==4),"Number of elements in obj array"
+	" ({}) does not match expectations(2 or 4)\n",objects->get_num_elements());
 
 	if (objects->get_num_elements()==2)
 	{
 		// extract labels
 		CSGObject* element=objects->get_element(0);
-		REQUIRE(element,"0 index element of objects is NULL\n")
+		require(element,"0 index element of objects is NULL\n");
 		CDenseLabels* lab=dynamic_cast<CDenseLabels*>(element);
 		SGVector<float64_t> labels=lab->get_labels();
 
 		// extract loss function
 		element=objects->get_element(1);
-		REQUIRE(element,"1 index element of objects is NULL\n")
+		require(element,"1 index element of objects is NULL\n");
 		CLossFunction* lossf=dynamic_cast<CLossFunction*>(element);
 
 		*gradient=0;
@@ -351,25 +351,25 @@ float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *param
 
 	// extract labels
 	CSGObject* element=objects->get_element(0);
-	REQUIRE(element,"0 index element of objects is NULL\n")
+	require(element,"0 index element of objects is NULL\n");
 	CDenseLabels* lab=dynamic_cast<CDenseLabels*>(element);
 	SGVector<float64_t> labels=lab->get_labels();
 
 	// extract f
 	element=objects->get_element(1);
-	REQUIRE(element,"1 index element of objects is NULL\n")
+	require(element,"1 index element of objects is NULL\n");
 	CDenseLabels* func=dynamic_cast<CDenseLabels*>(element);
 	SGVector<float64_t> f=func->get_labels();
 
 	// extract hm
 	element=objects->get_element(2);
-	REQUIRE(element,"2 index element of objects is NULL\n")
+	require(element,"2 index element of objects is NULL\n");
 	CDenseLabels* delta=dynamic_cast<CDenseLabels*>(element);
 	SGVector<float64_t> hm=delta->get_labels();
 
 	// extract loss function
 	element=objects->get_element(3);
-	REQUIRE(element,"3 index element of objects is NULL\n")
+	require(element,"3 index element of objects is NULL\n");
 	CLossFunction* lossf=dynamic_cast<CLossFunction*>(element);
 
 	*gradient=0;

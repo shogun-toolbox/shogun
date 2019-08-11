@@ -57,7 +57,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
-			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
+			error("Specified features are not of type CStreamingDotFeatures\n");
 		set_features((CStreamingDotFeatures*) data);
 	}
 
@@ -77,7 +77,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda={}, epochs={}, eta0={}\n", lambda, epochs, eta0)
+	io::info("lambda={}, epochs={}, eta0={}\n", lambda, epochs, eta0);
 
 	//do the sgd
 	calibrate();
@@ -142,7 +142,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 
 	features->end_parser();
 	float64_t wnorm = linalg::dot(m_w, m_w);
-	SG_INFO("Norm: {:.6f}, Bias: {:.6f}\n", wnorm, bias)
+	io::info("Norm: {:.6f}, Bias: {:.6f}\n", wnorm, bias);
 
 	return true;
 }
@@ -175,7 +175,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 			break;
 	}
 
-	SG_PRINT("Online SGD calibrated using {} vectors.\n", n)
+	io::print("Online SGD calibrated using {} vectors.\n", n);
 
 	// bias update scaling
 	bscale = 0.5*m/n;
@@ -183,7 +183,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
 
-	SG_INFO("using {} examples. skip={}  bscale={:.6f}\n", n, skip, bscale)
+	io::info("using {} examples. skip={}  bscale={:.6f}\n", n, skip, bscale);
 
 	SG_FREE(c);
 }
