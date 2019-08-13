@@ -52,7 +52,7 @@ steps:
       envVars: |
         CCACHE_DIR=/build/ccache
       workDir: '/build'
-      containerCommand: 'ninja -j1 shogun'
+      containerCommand: 'ninja -j3 shogun'
       detached: false
 
 - task: docker@0
