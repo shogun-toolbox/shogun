@@ -83,7 +83,7 @@ floatmax_t CStreamingStringFeatures<T>::get_num_symbols()
 template <class T>
 int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 {
-	if (current_string)
+	if (current_string.vector)
 		return 1;
 	return 0;
 }
@@ -91,7 +91,7 @@ int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 template <class T>
 int32_t CStreamingStringFeatures<T>::get_num_features()
 {
-	return current_length;
+	return current_string.size();
 }
 
 template <class T> void CStreamingStringFeatures<T>::set_vector_reader()
@@ -133,11 +133,7 @@ void CStreamingStringFeatures<T>::init()
 	working_file=NULL;
 	alphabet=new CAlphabet();
 
-	current_string=NULL;
-	current_length=-1;
-	current_sgstring.string=current_string;
-	current_sgstring.slen=current_length;
-
+	current_string=SGVector<T>(nullptr, -1, false);
 	set_generic<T>();
 }
 
@@ -175,8 +171,8 @@ bool CStreamingStringFeatures<T>::get_next_example()
 {
 	bool ret_value;
 
-	ret_value = (bool) parser.get_next_example(current_string,
-						   current_length,
+	ret_value = (bool) parser.get_next_example(current_string.vector,
+						   current_string.vlen,
 						   current_label);
 
 	if (!ret_value)
@@ -185,15 +181,15 @@ bool CStreamingStringFeatures<T>::get_next_example()
 	int32_t i;
 	if (remap_to_bin)
 	{
-		alpha_ascii->add_string_to_histogram(current_string, current_length);
+		alpha_ascii->add_string_to_histogram(current_string.vector, current_string.vlen);
 
-		for (i=0; i<current_length; i++)
+		for (i=0; i<current_string.size(); i++)
 			current_string[i]=alpha_ascii->remap_to_bin(current_string[i]);
-		alpha_bin->add_string_to_histogram(current_string, current_length);
+		alpha_bin->add_string_to_histogram(current_string.vector, current_string.vlen);
 	}
 	else
 	{
-		alpha_ascii->add_string_to_histogram(current_string, current_length);
+		alpha_ascii->add_string_to_histogram(current_string.vector, current_string.vlen);
 	}
 
 	/* Check the input using src alphabet, alpha_ascii */
@@ -217,12 +213,9 @@ bool CStreamingStringFeatures<T>::get_next_example()
 }
 
 template <class T>
-SGString<T> CStreamingStringFeatures<T>::get_vector()
+SGVector<T> CStreamingStringFeatures<T>::get_vector()
 {
-	current_sgstring.string=current_string;
-	current_sgstring.slen=current_length;
-
-	return current_sgstring;
+	return current_string;
 }
 
 template <class T>
@@ -242,7 +235,7 @@ void CStreamingStringFeatures<T>::release_example()
 template <class T>
 int32_t CStreamingStringFeatures<T>::get_vector_length()
 {
-	return current_length;
+	return current_string.size();
 }
 
 template <class T>

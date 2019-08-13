@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/StructuredModel.h>
 #include <shogun/structure/FactorType.h>

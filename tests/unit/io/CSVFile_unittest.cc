@@ -1,6 +1,5 @@
 #include <shogun/io/CSVFile.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
@@ -170,11 +169,11 @@ TEST(CSVFileTest, string_list_char)
 
 	int32_t num_str=0;
 	int32_t max_line_len=0;
-	SGString<char>* lines_to_read;
+	SGVector<char>* lines_to_read;
 
-	SGString<char>* lines_to_write=SG_MALLOC(SGString<char>, num_lines);
+	SGVector<char>* lines_to_write=SG_MALLOC(SGVector<char>, num_lines);
 	for (int32_t i=0; i<num_lines; i++)
-		lines_to_write[i] = SGString<char>((char*)text[i], strlen(text[i]), false);
+		lines_to_write[i] = SGVector<char>((char*)text[i], strlen(text[i]), false);
 
 	CCSVFile* fin;
 	CCSVFile* fout;
@@ -189,10 +188,9 @@ TEST(CSVFileTest, string_list_char)
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		for (int32_t j=0; j<lines_to_read[i].slen; j++)
+		for (int32_t j=0; j<lines_to_read[i].vlen; j++)
 		{
-			EXPECT_EQ(lines_to_read[i].string[j], lines_to_write[i].string[j]);
-			lines_to_read[i].destroy_string();
+			EXPECT_EQ(lines_to_read[i].vector[j], lines_to_write[i].vector[j]);
 		}
 	}
 	SG_UNREF(fin);

@@ -46,15 +46,10 @@ bool CDecompressString<ST>::save(FILE* f)
 }
 
 template <class ST>
-void CDecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
+void CDecompressString<ST>::apply_to_string_list(std::vector<SGVector<ST>>& string_list)
 {
-	for (auto i : range(string_list.num_strings))
-	{
-		auto& vec = string_list.strings[i];
-		auto decompressed = apply_to_string(vec.string, vec.slen);
-		SG_FREE(vec.string);
-		vec.string = decompressed;
-	}
+	for (auto& vec : string_list)
+		vec = SGVector<ST>(apply_to_string(vec.vector, vec.vlen), vec.vlen);
 }
 
 template <class ST>

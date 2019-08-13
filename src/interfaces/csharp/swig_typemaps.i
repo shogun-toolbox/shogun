@@ -92,7 +92,6 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 %typemap(in) shogun::SGMatrix<SGTYPE>
 {
-	int32_t i,j;
 	SGTYPE *array;
 
 	if (!$input) {
@@ -106,7 +105,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 		return $null;
 	}
 
-	for (i = 0; i < rows_$1 * cols_$1; i++) {
+	for (int32_t i = 0; i < rows_$1 * cols_$1; i++) {
 		array[i] = (SGTYPE)$input[i];
 	}
 
@@ -115,7 +114,6 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 %typemap(out) shogun::SGMatrix<SGTYPE>
 {
-	int32_t i;
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
 	int32_t len = rows * cols;
@@ -127,7 +125,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 	CTYPE *dst = (CTYPE *)(res + 2 * sizeof(int32_t));
 
-	for (i = 0; i < len; i++) {
+	for (int32_t i = 0; i < len; i++) {
 		dst[i] = (CTYPE) $1.matrix[i];
 	}
 
@@ -176,65 +174,59 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") shogun::SGStringList<SGTYPE> %{int rows_$1, int cols_$1, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<SGTYPE> %{CSHARPTYPE[,]%}
-%typemap(cstype) shogun::SGStringList<SGTYPE> %{CSHARPTYPE[,]%}
+%typemap(ctype, out="CTYPE*") std::vector<shogun::SGVector<SGTYPE>> %{int rows_$1, int cols_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[,]%}
+%typemap(cstype) std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[,]%}
 
-%typemap(in) shogun::SGStringList<SGTYPE> {
-	int32_t i;
-	int32_t len, max_len = 0;
-	CTYPE * array = $input;
-
-	if (!$input) {
-		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
-		return $null;
-	}
-
-	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, rows_$1);
-
-	for (i = 0; i < rows_$1; i++) {
-		len = cols_$1;
-		max_len = shogun::CMath::max(len, max_len);
-
-		strings[i].slen = len;
-		strings[i].string = NULL;
-
-		if (len >0) {
-			strings[i].string = SG_MALLOC(SGTYPE, len);
-			sg_memcpy(strings[i].string, array, len * sizeof(SGTYPE));
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<SGTYPE>>), "header")
+{
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<SGTYPE>>)
+    	(int rows, int cols, CTYPE* array, std::vector<shogun::SGVector<SGTYPE>>& strings)
+    {
+		if (!array) {
+			SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+			return SWIG_ERROR;
 		}
-		array = array + len;
-	}
 
-	SGStringList<SGTYPE> sl;
-	sl.strings=strings;
-	sl.num_strings=rows_$1;
-	sl.max_string_length=max_len;
-	$1 = sl;
+		strings.reserve(rows);
+
+		for (int32_t i = 0; i < rows; i++) {
+			strings.emplace_back(cols);
+			sg_memcpy(strings.back().vector, array, cols * sizeof(SGTYPE));
+
+			array = array + cols;
+		}
+		return SWIG_OK;
+    }
 }
 
-%typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGString<SGTYPE>* str = $1.strings;
-	int32_t i, j;
-	int32_t rows = $1.num_strings;
-	int32_t cols = str[0].slen;
-	int32_t len = rows * cols;
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<SGTYPE>>), "header")
+{
+    CTYPE* SWIG_From_dec(std::vector<shogun::SGVector<SGTYPE>>)
+    	(const std::vector<shogun::SGVector<SGTYPE>>& strings)
+    {
+		int32_t rows = strings.size();
+		int32_t cols = 0;
+		for(auto& str : strings)
+			cols = std::max(cols, str.vlen);
+		int32_t len = rows * cols;
 
-	CTYPE *res = SG_MALLOC(CTYPE, len + 2);
-	res[0] = rows;
-	res[1] = cols;
+		CTYPE *res = SG_MALLOC(CTYPE, len + 2);
+		res[0] = rows;
+		res[1] = cols;
 
-	res = res + 2;
+		res = res + 2;
 
-	for (i = 0; i < rows; i++) {
-		sg_memcpy(res, str[i].string, str[i].slen * sizeof(SGTYPE));
-		res = res + cols;
-	}
-	$result = res;
+		for (auto& str : strings) {
+			sg_memcpy(res, str.vector, str.vlen * sizeof(SGTYPE));
+			res = res + cols;
+		}
+		return res;
+    }
 }
 
-%typemap(csin) shogun::SGStringList<SGTYPE> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
-%typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<SGTYPE> {
+%typemap(csin) std::vector<shogun::SGVector<SGTYPE>> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
+%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<SGTYPE>> {
 	IntPtr ptr = $imcall;$excode
 	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
 	Marshal.Copy(ptr, ranks, 0, 2);
@@ -256,6 +248,10 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	return result;
 }
 
+%apply std::vector<shogun::SGVector<SGTYPE>> { const std::vector<shogun::SGVector<SGTYPE>>& };
+%val_in_typemap_with_args(std::vector<shogun::SGVector<SGTYPE>>, rows_$1, cols_$1);
+%val_out_typemap(std::vector<shogun::SGVector<SGTYPE>>);
+
 %enddef
 
 //TYPEMAP_STRINGFEATURES(char, signed char, byte)
@@ -270,66 +266,59 @@ TYPEMAP_STRINGFEATURES(long long, long long, long)
 TYPEMAP_STRINGFEATURES(float32_t, float, float)
 TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
-/* input/output typemap for SGStringList<char> */
-%typemap(ctype, out="char **") shogun::SGStringList<char> %{int size_$1, char **%}
-%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<char> %{string []%}
-%typemap(cstype) shogun::SGStringList<char> %{string []%}
+/* input/output typemap for std::vector<shogun::SGVector<<char>> */
+%typemap(ctype, out="char **") std::vector<shogun::SGVector<char>> %{int size_$1, char **%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<char>> %{string []%}
+%typemap(cstype) std::vector<shogun::SGVector<char>> %{string []%}
 
-%typemap(in) shogun::SGStringList<char> {
-	int32_t i;
-	int32_t len, max_len = 0;
-	char * str;
-
-	if (!$input) {
-		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
-		return $null;
-	}
-
-	shogun::SGString<char>* strings=SG_MALLOC(shogun::SGString<char>, size_$1);
-
-	for (i = 0; i < size_$1; i++) {
-		str = $input[i];
-		len = strlen(str);
-		max_len = shogun::CMath::max(len, max_len);
-
-		strings[i].slen = len;
-		strings[i].string = NULL;
-
-		if (len > 0) {
-			strings[i].string = SG_MALLOC(char, len);
-			sg_memcpy(strings[i].string, str, len);
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<char>>), "header")
+{
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<char>>)
+    	(int size, char** array, std::vector<shogun::SGVector<char>>& strings)
+    {
+		if (!array) {
+			SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+			return SWIG_ERROR;
 		}
-	}
 
-	SGStringList<char> sl;
-	sl.strings = strings;
-	sl.num_strings = size_$1;
-	sl.max_string_length = max_len;
-	$1 = sl;
+		strings.reserve(size);
+
+		for (int32_t i = 0; i < size; i++) {
+			char * str = array[i];
+			int32_t len = strlen(str);
+
+			strings.emplace_back(len);
+
+			sg_memcpy(strings.back().vector, str, len);
+		}
+
+		return SWIG_OK;
+    }
 }
 
-%typemap(out) shogun::SGStringList<char> {
-	shogun::SGString<char>* str = $1.strings;
-	int32_t i, j;
-	int32_t size = $1.num_strings;
-	int32_t max_size = 32;
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<char>>), "header")
+{
+    char** SWIG_From_dec(std::vector<shogun::SGVector<char>>)
+    	(const std::vector<shogun::SGVector<char>>& strings)
+    {
+		int32_t size = strings.size();
 
-	char ** res = SG_MALLOC(char*, size + 1);
-	res[0] = SG_MALLOC(char, max_size);
-	sprintf(res[0], "%d", size);
-
-	for (i = 0; i < size; i++) {
-		res[i + 1] = SG_MALLOC(char, str[i].slen + 1);
-		sg_memcpy(res[i + 1], str[i].string, str[i].slen * sizeof(char));
+		char ** res = SG_MALLOC(char*, size);
 		
-		// null terminate string as C#'s Marshal.PtrToStringAnsi expects that
-		res[i+1][str[i].slen] = '\0';
-	}
-	$result = res;
+		for (int i = 0; i < size; i++) {
+			res[i] = SG_MALLOC(char, strings[i].vlen + 1);
+			sg_memcpy(res[i], strings[i].vector, strings[i].vlen * sizeof(char));
+			
+			// null terminate string as C#'s Marshal.PtrToStringAnsi expects that
+			res[i][strings[i].vlen] = '\0';
+		}
+
+		return res;
+    }
 }
 
-%typemap(csin) shogun::SGStringList<char> "$csinput.Length, $csinput"
-%typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<char> {
+%typemap(csin) std::vector<shogun::SGVector<char>> "$csinput.Length, $csinput"
+%typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<char>> {
 	IntPtr ptr = $imcall;$excode
 
 	IntPtr[] ranks = new IntPtr[1];
@@ -349,3 +338,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	Marshal.FreeCoTaskMem(ptr);
 	return result;
 }
+
+%apply std::vector<shogun::SGVector<char>> { const std::vector<shogun::SGVector<char>>& }
+%val_in_typemap_with_args(std::vector<shogun::SGVector<char>>, size_$1);
+%val_out_typemap(std::vector<shogun::SGVector<char>>);

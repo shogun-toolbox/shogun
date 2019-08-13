@@ -9,7 +9,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/io/SGIO.h>
 
@@ -152,34 +151,6 @@ TSGDataType::sizeof_stype(EStructType stype, EPrimitiveType ptype)
 {
 	switch (stype) {
 	case ST_NONE: return sizeof_ptype(ptype);
-	case ST_STRING:
-		switch (ptype) {
-		case PT_BOOL: return sizeof (SGString<bool>);
-		case PT_CHAR: return sizeof (SGString<char>);
-		case PT_INT8: return sizeof (SGString<int8_t>);
-		case PT_UINT8: return sizeof (SGString<uint8_t>);
-		case PT_INT16: return sizeof (SGString<int16_t>);
-		case PT_UINT16: return sizeof (SGString<uint16_t>);
-		case PT_INT32: return sizeof (SGString<int32_t>);
-		case PT_UINT32: return sizeof (SGString<uint32_t>);
-		case PT_INT64: return sizeof (SGString<int64_t>);
-		case PT_UINT64: return sizeof (SGString<uint64_t>);
-		case PT_FLOAT32: return sizeof (SGString<float32_t>);
-		case PT_FLOAT64: return sizeof (SGString<float64_t>);
-		case PT_FLOATMAX: return sizeof (SGString<floatmax_t>);
-		case PT_COMPLEX128:
-			SG_SWARNING("TGSDataType::sizeof_stype(): Strings are"
-				" not supported for complex128_t\n");
-			return -1;
-		case PT_SGOBJECT:
-			SG_SWARNING("TGSDataType::sizeof_stype(): Strings are"
-				" not supported for SGObject\n");
-			return -1;
-		case PT_UNDEFINED: default:
-			SG_SERROR("Implementation error: undefined primitive type\n");
-			break;
-		}
-		break;
 	case ST_SPARSE:
 		switch (ptype) {
 		case PT_BOOL: return sizeof (SGSparseVector<bool>);
@@ -303,7 +274,6 @@ TSGDataType::stype_to_string(char* dest, EStructType stype,
 
 	switch (stype) {
 	case ST_NONE: strncpy(p, "", n); break;
-	case ST_STRING: strncpy(p, "String<", n); break;
 	case ST_SPARSE: strncpy(p, "Sparse<", n); break;
 	case ST_UNDEFINED: default:
 		SG_SERROR("Implementation error: undefined structure type\n");
@@ -315,7 +285,7 @@ TSGDataType::stype_to_string(char* dest, EStructType stype,
 
 	switch (stype) {
 	case ST_NONE: break;
-	case ST_STRING: case ST_SPARSE:
+	case ST_SPARSE:
 		strcat(p, ">"); break;
 	case ST_UNDEFINED: default:
 		SG_SERROR("Implementation error: undefined structure type\n");
@@ -405,11 +375,6 @@ size_t TSGDataType::get_size()
 	{
 		case ST_NONE:
 			return get_num_elements()*sizeof_ptype();
-		case ST_STRING:
-			if (m_ptype==PT_SGOBJECT)
-				return 0;
-
-			return get_num_elements()*sizeof_stype();
 		case ST_SPARSE:
 			if (m_ptype==PT_SGOBJECT)
 				return 0;

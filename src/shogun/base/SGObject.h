@@ -70,7 +70,6 @@ template <class T, class K> class CMap;
 
 struct TParameter;
 template <class T> class DynArray;
-template <class T> class SGStringList;
 
 using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
 
@@ -265,28 +264,8 @@ public:
 	 */
 	std::string get_description(const std::string& name) const;
 
-	/** @return vector of names of all parameters which are registered for model
-	 * selection */
-	SGStringList<char> get_modelsel_names();
-
 	/** prints all parameter registered for model selection and their type */
 	void print_modsel_params();
-
-	/** Returns description of a given parameter string, if it exists. SG_ERROR
-	 * otherwise
-	 *
-	 * @param param_name name of the parameter
-	 * @return description of the parameter
-	 */
-	char* get_modsel_param_descr(const char* param_name);
-
-	/** Returns index of model selection parameter with provided index
-	 *
-	 * @param param_name name of model selection parameter
-	 * @return index of model selection parameter with provided name,
-	 * -1 if there is no such
-	 */
-	index_t get_modsel_param_index(const char* param_name);
 
 	/** Builds a dictionary of all parameters in SGObject as well of those
 	 *  of SGObjects that are parameters of this object. Dictionary maps

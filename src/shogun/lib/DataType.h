@@ -33,9 +33,8 @@ enum EContainerType
 enum EStructType
 {
 	ST_NONE=0,
-	ST_STRING=1,
-	ST_SPARSE=2,
-	ST_UNDEFINED=3
+	ST_SPARSE=1,
+	ST_UNDEFINED=2
 };
 
 enum EPrimitiveType

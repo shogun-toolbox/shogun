@@ -23,7 +23,6 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 
@@ -434,64 +433,6 @@ void CSGObject::print_modsel_params()
 			SG_FREE(type);
 		}
 	}
-}
-
-SGStringList<char> CSGObject::get_modelsel_names()
-{
-    index_t num_param=m_model_selection_parameters->get_num_parameters();
-
-    SGStringList<char> result(num_param, -1);
-
-	index_t max_string_length=-1;
-
-    for (index_t i=0; i<num_param; i++)
-    {
-        char* name=m_model_selection_parameters->get_parameter(i)->m_name;
-        index_t len=strlen(name);
-		// +1 to have a zero terminated string
-        result.strings[i]=SGString<char>(name, len+1);
-
-        if (len>max_string_length)
-            max_string_length=len;
-    }
-
-	result.max_string_length=max_string_length;
-
-    return result;
-}
-
-char* CSGObject::get_modsel_param_descr(const char* param_name)
-{
-	index_t index=get_modsel_param_index(param_name);
-
-	if (index<0)
-	{
-		SG_ERROR("There is no model selection parameter called \"%s\" for %s",
-				param_name, get_name());
-	}
-
-	return m_model_selection_parameters->get_parameter(index)->m_description;
-}
-
-index_t CSGObject::get_modsel_param_index(const char* param_name)
-{
-	/* use fact that names extracted from below method are in same order than
-	 * in m_model_selection_parameters variable */
-	SGStringList<char> names=get_modelsel_names();
-
-	/* search for parameter with provided name */
-	index_t index=-1;
-	for (index_t i=0; i<names.num_strings; i++)
-	{
-		TParameter* current=m_model_selection_parameters->get_parameter(i);
-		if (!strcmp(param_name, current->m_name))
-		{
-			index=i;
-			break;
-		}
-	}
-
-	return index;
 }
 
 void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict)

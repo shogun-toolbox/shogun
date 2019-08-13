@@ -399,12 +399,15 @@ class Translator:
 
     def getIncludePathForClass(self, type_):
         translatedType = self.translateType({"ObjectType": type_})
+        stdParameterMatcher = 'std::[a-zA-Z_]*\<(.*)\>'
+        stdStrippedType =  re.sub(stdParameterMatcher, '\\1', translatedType)
+
         templateParameterMatcher = '\<[0-9a-zA-Z_]*\>'
         variants = [
-            'C' + translatedType,
-            translatedType,
-            'C' + re.sub(templateParameterMatcher, '', translatedType),
-            re.sub(templateParameterMatcher, '', translatedType)
+            'C' + stdStrippedType,
+            stdStrippedType,
+            'C' + re.sub(templateParameterMatcher, '', stdStrippedType),
+            re.sub(templateParameterMatcher, '', stdStrippedType),
         ]
 
         candidates = []

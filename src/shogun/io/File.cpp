@@ -14,7 +14,7 @@
 
 #include <shogun/lib/memory.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -134,44 +134,38 @@ void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 }
 
 void CFile::get_string_list(
-		SGString<bool>*& strings, int32_t& num_str,
+		SGVector<bool>*& strings, int32_t& num_str,
 		int32_t& max_string_len)
 {
-	SGString<int8_t>* strs;
+	SGVector<int8_t>* strs;
 	get_string_list(strs, num_str, max_string_len);
 
 	ASSERT(num_str>0 && max_string_len>0)
-	strings=SG_MALLOC(SGString<bool>, num_str);
+	strings=SG_MALLOC(SGVector<bool>, num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
-		strings[i].slen = strs[i].slen;
-                strings[i].string = SG_MALLOC(bool, strs[i].slen);
-		for(int32_t j = 0;j < strs[i].slen;j++)
-		strings[i].string[j] = strs[i].string[j] != 0 ? 1 : 0;
+		strings[i] = SGVector<bool>(strs[i].vlen);
+		for(int32_t j = 0;j < strs[i].vlen;j++)
+		strings[i].vector[j] = strs[i].vector[j] != 0 ? 1 : 0;
 	}
 
-	for(int32_t i = 0;i < num_str;i++)
-		SG_FREE(strs[i].string);
 	SG_FREE(strs);
 }
 
-void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
+void CFile::set_string_list(const SGVector<bool>* strings, int32_t num_str)
 {
-	SGString<int8_t> * strs = SG_MALLOC(SGString<int8_t>, num_str);
+	SGVector<int8_t> * strs = SG_MALLOC(SGVector<int8_t>, num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
-		strs[i].slen = strings[i].slen;
-		strs[i].string = SG_MALLOC(int8_t, strings[i].slen);
-		for(int32_t j = 0;j < strings[i].slen;j++)
-		strs[i].string[j] = strings[i].string[j] != 0 ? 1 : 0;
+		strs[i] = SGVector<int8_t>(strings[i].vlen);
+		for(int32_t j = 0;j < strings[i].vlen;j++)
+		strs[i].vector[j] = strings[i].vector[j] != 0 ? 1 : 0;
 	}
 
 	set_string_list(strs,num_str);
 
-	for(int32_t i = 0;i < num_str;i++)
-		SG_FREE(strs[i].string);
 	SG_FREE(strs);
 }
 

@@ -4,7 +4,6 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/util/factory.h>
 
 using namespace shogun;
@@ -42,19 +41,22 @@ TEST(Factory, string_features_from_file)
 	std::string filename = "Factory-features_from_file.XXXXXX";
 
 	auto num_strings = 3;
-	auto max_string_length = 10;
 
-	SGStringList<char> string_list(num_strings, max_string_length);
+	std::vector<SGVector<char>> string_list;
+	string_list.reserve(num_strings);
 
 	for (auto i : range(3))
 	{
-		string_list.strings[i].string = const_cast<char*>(strings[i].c_str());
-		string_list.strings[i].slen = strings[i].size();
+		string_list.emplace_back(const_cast<char*>(strings[i].c_str()), strings[i].size(), false);
 	}
 
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
 	auto file_save = some<CCSVFile>(filename.c_str(), 'w');
-	string_list.save(file_save);
+	
+	SG_SET_LOCALE_C;
+	file_save->set_string_list(string_list.data(), string_list.size());
+	SG_RESET_LOCALE;
+
 	file_save->close();
 
 	auto file_load = some<CCSVFile>(filename.c_str(), 'r');
@@ -65,11 +67,11 @@ TEST(Factory, string_features_from_file)
 	auto cast = obj->as<CStringFeatures<char>>();
 	auto loaded_string_list = cast->get_string_list();
 
-	EXPECT_EQ(loaded_string_list.num_strings, string_list.num_strings);
-	for (auto i : range(loaded_string_list.num_strings))
+	EXPECT_EQ(loaded_string_list.size(), string_list.size());
+	for (auto i : range(loaded_string_list.size()))
 	{
 		EXPECT_TRUE(
-		    loaded_string_list.strings[i].equals(string_list.strings[i]));
+		    loaded_string_list[i].equals(string_list[i]));
 	}
 
 	EXPECT_EQ(std::remove(filename.c_str()), 0);
