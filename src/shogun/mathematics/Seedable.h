@@ -36,6 +36,11 @@ namespace shogun
 			init();
 		}
 
+		virtual const char* get_name() const override
+		{
+			return "Seedable";
+		}
+
 	private:
 		void init()
 		{
