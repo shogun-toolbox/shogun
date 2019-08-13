@@ -96,6 +96,7 @@
 #cmakedefine HAVE_CXA_DEMANGLE 1
 
 #cmakedefine USE_EXTERNAL_SPDLOG 1
+#cmakedefine DEBUG_BUILD 1
 
 #ifdef __CLING__
 #pragma cling add_library_path(@SHOGUN_CLING_LIBRARY_DIR@)

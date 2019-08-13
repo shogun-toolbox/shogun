@@ -236,6 +236,10 @@ if( NOT CMAKE_BUILD_TYPE )
        FORCE )
 endif()
 
+IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	SET(DEBUG_BUILD 1)
+ENDIF()
+
 # set the flags for the build types
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops")

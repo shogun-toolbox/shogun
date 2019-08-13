@@ -63,8 +63,9 @@ namespace shogun
 #endif
 
 #define SOURCE_LOCATION                                                        \
-	io::SourceLocation(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+	io::SourceLocation{__FILE__, __LINE__, __PRETTY_FUNCTION__}
 
+#ifdef DEBUG_BUILD
 #define SG_GCDEBUG(...)                                                        \
 	env()->io()->message(io::MSG_GCDEBUG, SOURCE_LOCATION, __VA_ARGS__);
 
@@ -76,6 +77,11 @@ namespace shogun
 		if (SG_UNLIKELY(!(x)))                                                 \
 			error(SOURCE_LOCATION, "assertion {} failed\n", #x);               \
 	}
+#else
+#define SG_GCDEBUG(...) (void) 0;
+#define SG_DEBUG(...) (void) 0;
+#define ASSERT(...) (void) 0;
+#endif // DEBUG_BUILD
 
 #ifdef __clang_analyzer__
 	void _clang_fail(void) __attribute__((analyzer_noreturn));
@@ -146,6 +152,12 @@ namespace shogun
 			/** destructor */
 			virtual ~SGIO();
 
+			/** redirects stdout to another sink */
+			void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink);
+
+			/** redirects stderr to another sink */
+			void redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink);
+
 			/** (re)initializes the default (asynchronous) logger
 			 *
 			 * @param queue_size size of the message queue
@@ -158,6 +170,12 @@ namespace shogun
 			 */
 			void init_default_sink();
 
+			/** get loglevel
+			 *
+			 * @return level of log messages
+			 */
+			EMessageType get_loglevel() const;
+
 			/** set loglevel
 			 *
 			 * @param level level of log messages
@@ -168,12 +186,6 @@ namespace shogun
 			 * message should be printed
 			 */
 			bool should_log(EMessageType prio) const;
-
-			/** get loglevel
-			 *
-			 * @return level of log messages
-			 */
-			EMessageType get_loglevel() const;
 
 			/** get show_progress
 			 *
@@ -193,35 +205,6 @@ namespace shogun
 				return syntax_highlight;
 			}
 
-			/** format and print a message
-			 * @param prio message priority
-			 * @param loc source code location
-			 * @param msg message format
-			 * @param args arguments for formatting message
-			 */
-			template <typename... Args>
-			void message(
-			    EMessageType prio, const SourceLocation& loc,
-			    const char* format, const Args&... args) const;
-
-			/** redirects stdout to another sink */
-			void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink);
-
-			/** redirects stderr to another sink */
-			void redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink);
-
-			/** enable progress bar */
-			inline void enable_progress()
-			{
-				show_progress = true;
-			}
-
-			/** disable progress bar */
-			inline void disable_progress()
-			{
-				show_progress = false;
-			}
-
 			/** enable syntax highlighting */
 			inline void enable_syntax_highlighting()
 			{
@@ -235,6 +218,30 @@ namespace shogun
 				syntax_highlight = false;
 				update_pattern();
 			}
+
+			/** enable progress bar */
+			inline void enable_progress()
+			{
+				show_progress = true;
+			}
+
+			/** disable progress bar */
+			inline void disable_progress()
+			{
+				show_progress = false;
+			}
+
+#ifndef SWIG
+			/** format and print a message
+			 * @param prio message priority
+			 * @param loc source code location
+			 * @param msg message format
+			 * @param args arguments for formatting message
+			 */
+			template <typename... Args>
+			void message(
+			    EMessageType prio, const SourceLocation& loc,
+			    const char* format, const Args&... args) const;
 
 			/**
 			 * Return a C string from the substring
@@ -278,6 +285,7 @@ namespace shogun
 			 * @return length of substring
 			 */
 			static uint32_t ss_length(substring s);
+#endif // SWIG
 
 		private:
 			/** Prints a formatted message */
@@ -300,6 +308,7 @@ namespace shogun
 			std::shared_ptr<spdlog::details::thread_pool> thread_pool;
 		};
 
+#ifndef SWIG
 		template <typename... Args>
 		void SGIO::message(
 		    EMessageType prio, const SourceLocation& loc, const char* format,
@@ -356,8 +365,10 @@ namespace shogun
 			    "anticipation.\n",
 			    func);
 		}
-	} // namespace io
+#endif // SWIG
+	}  // namespace io
 
+#ifndef SWIG
 	template <typename ExceptionType = ShogunException, typename... Args>
 	static inline void error(
 	    const io::SourceLocation& loc, const char* format, const Args&... args)
@@ -410,5 +421,6 @@ namespace shogun
 			error<ExceptionType>(format, args...);
 		}
 	}
+#endif // SWIG
 } // namespace shogun
 #endif // __SGIO_H__
