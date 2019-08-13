@@ -37,7 +37,7 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 {
 	// FIXME: See comments in
 	// https://github.com/shogun-toolbox/shogun/pull/4085#discussion_r166254024
-	ASSERT(CRealDistance::init(l, r));
+	require(CRealDistance::init(l, r), "MahalanobisDistance initialization failed.");
 
 	SGMatrix<float64_t> cov;
 
