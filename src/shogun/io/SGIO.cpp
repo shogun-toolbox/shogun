@@ -26,7 +26,7 @@ class Formatter : public spdlog::formatter
 {
 public:
 	Formatter(const Formatter& orig)
-	    : formatter_(std::move(orig.formatter_->clone()))
+	    : formatter_(orig.formatter_->clone())
 	{
 	}
 
@@ -133,7 +133,7 @@ void SGIO::init_default_logger(uint64_t queue_size, uint64_t n_threads)
 	thread_pool =
 	    std::make_shared<spdlog::details::thread_pool>(queue_size, n_threads);
 	io_logger = std::make_shared<spdlog::async_logger>(
-	    "global", io_sink, thread_pool, spdlog::async_overflow_policy::block);
+	    "sg_global", io_sink, thread_pool, spdlog::async_overflow_policy::block);
 }
 
 void SGIO::init_default_sink()
