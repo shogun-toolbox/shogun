@@ -14,7 +14,6 @@
 /* Remove C Prefix */
 %rename(Distribution) CDistribution;
 %rename(HMM) CHMM;
-%rename(LinearHMM) CLinearHMM;
 %rename(PositionalPWM) CPositionalPWM;
 %rename(Gaussian) CGaussian;
 %rename(GMM) CGMM;
@@ -29,7 +28,6 @@
 %template(RandomMixinDistribution) shogun::RandomMixin<shogun::CDistribution, std::mt19937_64>;
 
 %include <shogun/distributions/HMM.h>
-%include <shogun/distributions/LinearHMM.h>
 %include <shogun/distributions/PositionalPWM.h>
 %include <shogun/distributions/Gaussian.h>
 %include <shogun/distributions/KernelDensity.h>

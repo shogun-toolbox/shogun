@@ -89,9 +89,12 @@ class CHistogram : public CDistribution
 		/** @return object name */
 		virtual const char* get_name() const { return "Histogram"; }
 
+	private:
+		void init();
+
 	protected:
 		/** histogram */
-		float64_t* hist;
+		SGVector<float64_t> hist;
 };
 }
 #endif

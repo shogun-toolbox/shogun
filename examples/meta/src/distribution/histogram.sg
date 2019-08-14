@@ -1,0 +1,18 @@
+File f_feats_train = csv_file("../../data/fm_train_dna.dat")
+
+ #![create_features]
+Features char_feats = string_features(f_feats_train, enum EAlphabet.DNA)
+Features embedded_feats = string_features(char_feats, 2, 3, 0, False)
+#![create_features]
+
+#![create_distribution]
+Distribution histogram = distribution("Histogram")
+histogram.set_features(embedded_feats)
+#![create_distribution]
+
+#![train_and_extract_values]
+histogram.train()
+RealVector histogram_array = histogram.get_real_vector("histogram")
+RealVector out_likelihood = histogram.get_log_likelihood()
+real out_sample = histogram.get_log_likelihood_sample()
+#![train_and_extract_values]

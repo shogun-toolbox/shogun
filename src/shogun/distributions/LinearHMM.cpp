@@ -25,8 +25,17 @@ CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 	init();
 
 	set_features(f);
-	sequence_length = f->get_vector_length(0);
-	num_symbols     = (int32_t) f->get_num_symbols();
+}
+
+void CLinearHMM::set_features(CFeatures* f)
+{
+	auto* string_feats = f->as<CStringFeatures<uint16_t>>();
+	REQUIRE(string_feats, "LinearHMM works with string features.");
+
+	CDistribution::set_features(f);
+
+	sequence_length = string_feats->get_vector_length(0);
+	num_symbols     = (int32_t) string_feats->get_num_symbols();
 	num_params      = sequence_length*num_symbols;
 }
 
@@ -42,8 +51,6 @@ CLinearHMM::CLinearHMM(int32_t p_num_features, int32_t p_num_symbols)
 
 CLinearHMM::~CLinearHMM()
 {
-	SG_FREE(transition_probs);
-	SG_FREE(log_transition_probs);
 }
 
 bool CLinearHMM::train(CFeatures* data)
@@ -57,15 +64,10 @@ bool CLinearHMM::train(CFeatures* data)
 		}
 		set_features(data);
 	}
-	SG_FREE(transition_probs);
-	SG_FREE(log_transition_probs);
-	int32_t* int_transition_probs=SG_MALLOC(int32_t, num_params);
+	SGMatrix<int32_t> int_transition_probs(num_symbols, sequence_length);
 
 	int32_t vec;
 	int32_t i;
-
-	for (i=0; i< num_params; i++)
-		int_transition_probs[i]=0;
 
 	for (vec=0; vec<features->get_num_vectors(); vec++)
 	{
@@ -84,8 +86,8 @@ bool CLinearHMM::train(CFeatures* data)
 	}
 
 	//trade memory for speed
-	transition_probs=SG_MALLOC(float64_t, num_params);
-	log_transition_probs=SG_MALLOC(float64_t, num_params);
+	transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
+	log_transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -111,21 +113,15 @@ bool CLinearHMM::train(CFeatures* data)
 		}
 	}
 
-	SG_FREE(int_transition_probs);
 	return true;
 }
 
 bool CLinearHMM::train(
 	const int32_t* indizes, int32_t num_indizes, float64_t pseudo)
 {
-	SG_FREE(transition_probs);
-	SG_FREE(log_transition_probs);
-	int32_t* int_transition_probs=SG_MALLOC(int32_t, num_params);
+	SGMatrix<int32_t> int_transition_probs(num_symbols, sequence_length);
 	int32_t vec;
 	int32_t i;
-
-	for (i=0; i< num_params; i++)
-		int_transition_probs[i]=0;
 
 	for (vec=0; vec<num_indizes; vec++)
 	{
@@ -147,8 +143,8 @@ bool CLinearHMM::train(
 	}
 
 	//trade memory for speed
-	transition_probs=SG_MALLOC(float64_t, num_params);
-	log_transition_probs=SG_MALLOC(float64_t, num_params);
+	transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
+	log_transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -174,7 +170,6 @@ bool CLinearHMM::train(
 		}
 	}
 
-	SG_FREE(int_transition_probs);
 	return true;
 }
 
@@ -246,48 +241,52 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 	return result;
 }
 
-SGVector<float64_t> CLinearHMM::get_transition_probs()
+SGMatrix<float64_t> CLinearHMM::get_transition_probs()
 {
-	return SGVector<float64_t>(transition_probs, num_params, false);
+	return transition_probs;
 }
 
-bool CLinearHMM::set_transition_probs(const SGVector<float64_t> probs)
+bool CLinearHMM::set_transition_probs(const SGMatrix<float64_t>& probs)
 {
-	ASSERT(probs.vlen == num_params)
+	REQUIRE(
+		probs.num_rows == num_symbols && probs.num_cols == sequence_length,
+		"Transition matrix should have a dimension of (%d, %d).", num_symbols, sequence_length)
 
-	if (!log_transition_probs)
-		log_transition_probs=SG_MALLOC(float64_t, num_params);
+	if (log_transition_probs.num_rows != num_symbols || log_transition_probs.num_cols != sequence_length)
+		log_transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
 
-	if (!transition_probs)
-		transition_probs=SG_MALLOC(float64_t, num_params);
+	if (transition_probs.num_rows != num_symbols || transition_probs.num_cols != sequence_length)
+		transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
 
 	for (int32_t i=0; i<num_params; i++)
 	{
-		transition_probs[i]=probs.vector[i];
+		transition_probs[i]=probs[i];
 		log_transition_probs[i]=log(transition_probs[i]);
 	}
 
 	return true;
 }
 
-SGVector<float64_t> CLinearHMM::get_log_transition_probs()
+SGMatrix<float64_t> CLinearHMM::get_log_transition_probs()
 {
-	return SGVector<float64_t>(log_transition_probs, num_params, false);
+	return log_transition_probs;
 }
 
-bool CLinearHMM::set_log_transition_probs(const SGVector<float64_t> probs)
+bool CLinearHMM::set_log_transition_probs(const SGMatrix<float64_t>& probs)
 {
-	ASSERT(probs.vlen == num_params)
+	REQUIRE(
+		probs.num_rows == num_symbols && probs.num_cols == sequence_length,
+		"Transition matrix log should have a dimension of (%d, %d).", num_symbols, sequence_length)
 
-	if (!log_transition_probs)
-		log_transition_probs=SG_MALLOC(float64_t, num_params);
+	if (log_transition_probs.num_rows != num_symbols || log_transition_probs.num_cols != sequence_length)
+		log_transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
 
-	if (!transition_probs)
-		transition_probs=SG_MALLOC(float64_t, num_params);
+	if (transition_probs.num_rows != num_symbols || transition_probs.num_cols != sequence_length)
+		transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
 
 	for (int32_t i=0; i<num_params; i++)
 	{
-		log_transition_probs[i]=probs.vector[i];
+		log_transition_probs[i]=probs[i];
 		transition_probs[i]=exp(log_transition_probs[i]);
 	}
 
@@ -306,17 +305,9 @@ void CLinearHMM::init()
 	sequence_length = 0;
 	num_symbols = 0;
 	num_params = 0;
-	transition_probs = NULL;
-	log_transition_probs = NULL;
+	transition_probs = SGMatrix<float64_t>();
+	log_transition_probs = SGMatrix<float64_t>();
 
-	m_parameters->add_matrix(&transition_probs, &num_symbols, &sequence_length,
-			"transition_probs", "Transition probabilities.");
-	watch_param(
-	    "transition_probs", &transition_probs, &num_symbols, &sequence_length);
-
-	m_parameters->add_matrix(&log_transition_probs, &num_symbols, &sequence_length,
-			"log_transition_probs", "Transition probabilities (logspace).");
-	watch_param(
-	    "log_transition_probs", &log_transition_probs, &num_symbols,
-	    &sequence_length);
+	SG_ADD(&transition_probs, "transition_probs", "Transition probabilities.");
+	SG_ADD(&log_transition_probs, "log_transition_probs", "Transition probabilities (logspace).");
 }

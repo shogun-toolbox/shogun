@@ -176,7 +176,7 @@ class CLinearHMM : public CDistribution
 		 */
 		virtual float64_t get_log_model_parameter(int32_t num_param)
 		{
-			ASSERT(log_transition_probs)
+			ASSERT(log_transition_probs.size() == num_params)
 			ASSERT(num_param<num_params)
 
 			return log_transition_probs[num_param];
@@ -186,30 +186,36 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @return logarithm of transition probs vector
 		 */
-		virtual SGVector<float64_t> get_log_transition_probs();
+		virtual SGMatrix<float64_t> get_log_transition_probs();
 
 		/** set logarithm of all transition probs
 		 *
 		 * @param probs new logarithm transition probs
 		 * @return if setting was successful
 		 */
-		virtual bool set_log_transition_probs(const SGVector<float64_t> probs);
+		virtual bool set_log_transition_probs(const SGMatrix<float64_t>& probs);
 
 		/** get all transition probs
 		 *
 		 * @return vector of transition probs
 		 */
-		virtual SGVector<float64_t> get_transition_probs();
+		virtual SGMatrix<float64_t> get_transition_probs();
 
 		/** set all transition probs
 		 *
 		 * @param probs new transition probs
 		 * @return if setting was successful
 		 */
-		virtual bool set_transition_probs(const SGVector<float64_t> probs);
+		virtual bool set_transition_probs(const SGMatrix<float64_t>& probs);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "LinearHMM"; }
+
+		/** set feature vectors
+		 *
+		 * @param f new feature vectors
+		 */
+		virtual void set_features(CFeatures* f);
 
 	protected:
 		virtual void load_serializable_post() noexcept(false);
@@ -225,9 +231,9 @@ class CLinearHMM : public CDistribution
 		/** number of parameters */
 		int32_t num_params;
 		/** transition probs */
-		float64_t* transition_probs;
+		SGMatrix<float64_t> transition_probs;
 		/** logarithm of transition probs */
-		float64_t* log_transition_probs;
+		SGMatrix<float64_t> log_transition_probs;
 };
 }
 #endif

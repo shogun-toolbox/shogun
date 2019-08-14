@@ -15,20 +15,19 @@ using namespace shogun;
 CHistogram::CHistogram()
 : CDistribution()
 {
-	hist=SG_CALLOC(float64_t, 1<<16);
+	init();
 }
 
 CHistogram::CHistogram(CStringFeatures<uint16_t> *f)
 : CDistribution()
 {
-	hist=SG_CALLOC(float64_t, 1<<16);
+	init();
 	features=f;
 	SG_REF(features);
 }
 
 CHistogram::~CHistogram()
 {
-	SG_FREE(hist);
 }
 
 bool CHistogram::train(CFeatures* data)
@@ -145,15 +144,18 @@ bool CHistogram::set_histogram(const SGVector<float64_t> histogram)
 {
 	ASSERT(histogram.vlen==get_num_model_parameters())
 
-	SG_FREE(hist);
-	hist=SG_MALLOC(float64_t, histogram.vlen);
-	for (int32_t i=0; i<histogram.vlen; i++)
-		hist[i]=histogram.vector[i];
-
+	hist = histogram.clone();
 	return true;
 }
 
 SGVector<float64_t> CHistogram::get_histogram()
 {
-	return SGVector<float64_t>(hist,get_num_model_parameters(),false);
+	return hist;
+}
+
+
+void CHistogram::init()
+{
+	hist = SGVector<float64_t>(1 << 16);
+	SG_ADD(&hist, "histogram", "Histogram array.");
 }
