@@ -170,18 +170,46 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 #undef TYPEMAP_SGMATRIX
 
+%pragma(csharp) modulecode=%{
+	public static int[] __get_dims<T>(T[][] arr)
+	{
+		int[] dims = new int[arr.Length];
+		for(int i = 0; i < arr.Length; i++)
+			dims[i] = arr[i].Length;
+		return dims;
+	}
+
+	public static T[] __flatten<T>(T[][] arr)
+	{
+		int len = 0;
+		for(int i = 0; i < arr.Length; i++)
+			len += arr[i].Length;
+
+		T[] flat_arr = new T[len];
+		int index = 0;
+		for(int i = 0; i < arr.Length; i++)
+		{
+			for(int j = 0; j < arr[i].Length; j++)
+			{
+				flat_arr[index] = arr[i][j];
+				index++;
+			}
+		}
+		return flat_arr;
+	}
+%}
 
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") std::vector<shogun::SGVector<SGTYPE>> %{int rows_$1, int cols_$1, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[,]%}
-%typemap(cstype) std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[,]%}
+%typemap(ctype, out="CTYPE*") std::vector<shogun::SGVector<SGTYPE>> %{int rows_$1, int* cols_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, [MarshalAs(UnmanagedType.LPArray)] int[] cols, [MarshalAs(UnmanagedType.LPArray)]") std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[]%}
+%typemap(cstype) std::vector<shogun::SGVector<SGTYPE>> %{CSHARPTYPE[][]%}
 
 %fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<SGTYPE>>), "header")
 {
     int SWIG_AsVal_dec(std::vector<shogun::SGVector<SGTYPE>>)
-    	(int rows, int cols, CTYPE* array, std::vector<shogun::SGVector<SGTYPE>>& strings)
+		(int rows, int* cols, CTYPE* array, std::vector<shogun::SGVector<SGTYPE>>& strings)
     {
 		if (!array) {
 			SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
@@ -191,10 +219,10 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 		strings.reserve(rows);
 
 		for (int32_t i = 0; i < rows; i++) {
-			strings.emplace_back(cols);
-			sg_memcpy(strings.back().vector, array, cols * sizeof(SGTYPE));
+			strings.emplace_back(cols[i]);
+			sg_memcpy(strings.back().vector, array, cols[i] * sizeof(SGTYPE));
 
-			array = array + cols;
+			array = array + cols[i];
 		}
 		return SWIG_OK;
     }
@@ -206,44 +234,44 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
     	(const std::vector<shogun::SGVector<SGTYPE>>& strings)
     {
 		int32_t rows = strings.size();
-		int32_t cols = 0;
+
+		int32_t len = 0;
 		for(auto& str : strings)
-			cols = std::max(cols, str.vlen);
-		int32_t len = rows * cols;
+			len += str.vlen;
 
-		CTYPE *res = SG_MALLOC(CTYPE, len + 2);
-		res[0] = rows;
-		res[1] = cols;
+		char *res = SG_MALLOC(char, len * sizeof(CTYPE) + (rows + 1) * sizeof(int32_t));
 
-		res = res + 2;
+		((int32_t *) res)[0] = rows;
+		for(int32_t i = 0; i < rows; i++)
+			((int32_t *) res)[i + 1] = strings[i].size();
+
+		CTYPE *data = (CTYPE *)((int32_t *) res + rows + 1);
 
 		for (auto& str : strings) {
-			sg_memcpy(res, str.vector, str.vlen * sizeof(SGTYPE));
-			res = res + cols;
+			sg_memcpy(data, str.vector, str.vlen * sizeof(SGTYPE));
+			data = data + str.size();
 		}
-		return res;
+		return (CTYPE *) res;
     }
 }
 
-%typemap(csin) std::vector<shogun::SGVector<SGTYPE>> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
+%typemap(csin) std::vector<shogun::SGVector<SGTYPE>> "$csinput.Length, shogun.__get_dims($csinput), shogun.__flatten($csinput)"
 %typemap(csout, excode=SWIGEXCODE) std::vector<shogun::SGVector<SGTYPE>> {
 	IntPtr ptr = $imcall;$excode
-	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
-	Marshal.Copy(ptr, ranks, 0, 2);
+	Int32[] rows_ = new Int32[1];
+	Marshal.Copy(ptr, rows_, 0, 1);
+	Int32 rows = rows_[0];
 
-	int rows = (int)ranks[0];
-	int cols = (int)ranks[1];
-	int len = rows * cols;
+	Int32[] lengths = new Int32[rows];
+	ptr = new IntPtr(ptr.ToInt64() + 1 * Marshal.SizeOf(typeof(int)));
+	Marshal.Copy(ptr, lengths, 0, rows);
+	ptr = new IntPtr(ptr.ToInt64() + rows * Marshal.SizeOf(typeof(int)));
 
-	CSHARPTYPE[] ret = new CSHARPTYPE[len];
-
-	Marshal.Copy(new IntPtr(ptr.ToInt64() + 2 * Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
-
-	CSHARPTYPE[,] result = new CSHARPTYPE[rows, cols];
+	CSHARPTYPE[][] result = new CSHARPTYPE[rows][];
 	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			result[i, j] = ret[i * cols + j];
-		}
+		result[i] = new CSHARPTYPE[lengths[i]];
+		Marshal.Copy(ptr, result[i], 0, lengths[i]);
+		ptr = new IntPtr(ptr.ToInt64() + (lengths[i]) * Marshal.SizeOf(typeof(CSHARPTYPE)));
 	}
 	return result;
 }
@@ -303,14 +331,16 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
     {
 		int32_t size = strings.size();
 
-		char ** res = SG_MALLOC(char*, size);
+		char ** res = SG_MALLOC(char*, size + 1);
+		res[0] = (char *) SG_MALLOC(int32_t, 1);
+		*((int32_t *) res[0]) = size;
 		
 		for (int i = 0; i < size; i++) {
-			res[i] = SG_MALLOC(char, strings[i].vlen + 1);
-			sg_memcpy(res[i], strings[i].vector, strings[i].vlen * sizeof(char));
+			res[i + 1] = SG_MALLOC(char, strings[i].vlen + 1);
+			sg_memcpy(res[i + 1], strings[i].vector, strings[i].vlen * sizeof(char));
 			
 			// null terminate string as C#'s Marshal.PtrToStringAnsi expects that
-			res[i][strings[i].vlen] = '\0';
+			res[i+1][strings[i].vlen] = '\0';
 		}
 
 		return res;
@@ -324,8 +354,10 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	IntPtr[] ranks = new IntPtr[1];
 	Marshal.Copy(ptr, ranks, 0, 1);
 
-	string len = Marshal.PtrToStringAnsi(ranks[0]);
-	int size = Convert.ToInt32(len);
+	Int32[] size_arr = new Int32[1];
+	Marshal.Copy(ranks[0], size_arr, 0, 1);
+	Int32 size = size_arr[0];
+
 	IntPtr[] ptrarray = new IntPtr[size + 1];
 	Marshal.Copy(ptr, ptrarray, 0, size + 1);
 

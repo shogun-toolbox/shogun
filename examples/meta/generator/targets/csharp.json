@@ -77,7 +77,7 @@
         "LongRealMatrix": "double[,]",
         "ComplexMatrix": "Complex[,]",
         "StringCharList": "String[]",
-        "StringWordList": "short[,]"
+        "StringWordList": "short[][]"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
