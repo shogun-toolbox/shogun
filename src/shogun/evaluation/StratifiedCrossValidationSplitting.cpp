@@ -48,7 +48,7 @@ void CStratifiedCrossValidationSplitting::check_labels() const
 			io::warn(
 			    "There are only {} labels of class {:.18g}, but {} "
 			    "subsets. Labels of that class will not appear in every "
-			    "subset!\n",
+			    "subset!",
 			    labels_per_class[i], classes[i], m_num_subsets);
 		}
 	}

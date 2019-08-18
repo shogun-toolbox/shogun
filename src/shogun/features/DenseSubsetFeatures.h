@@ -118,10 +118,10 @@ public:
 	{
 		CDenseSubsetFeatures<ST> *dsf = dynamic_cast<CDenseSubsetFeatures<ST> *>(df);
 		if (dsf == NULL)
-			error("Require DenseSubsetFeatures of the same kind to perform dot\n");
+			error("Require DenseSubsetFeatures of the same kind to perform dot");
 
 		if (m_idx.size() != dsf->m_idx.size())
-			error("Cannot dot vectors of different length\n");
+			error("Cannot dot vectors of different length");
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		SGVector<ST> vec2 = dsf->m_fea->get_feature_vector(vec_idx2);
@@ -143,7 +143,7 @@ public:
 	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 	{
 		require(
-			m_idx.vlen == vec2.vlen, "Cannot dot vectors of different length\n");
+			m_idx.vlen == vec2.vlen, "Cannot dot vectors of different length");
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 
 		float64_t sum=0;
@@ -164,7 +164,7 @@ public:
 	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false) const
 	{
 		if (m_idx.vlen != vec2_len)
-			error("Cannot add_to_dense_vec vectors of different length\n");
+			error("Cannot add_to_dense_vec vectors of different length");
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		if (abs_val)

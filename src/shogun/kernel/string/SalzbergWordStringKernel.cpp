@@ -106,12 +106,12 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		int32_t num_params2=(int32_t) llen*l->get_num_symbols()+rlen*r->get_num_symbols();
 		if ((!estimate) || (!estimate->check_models()))
 		{
-			error("no estimate available\n");
+			error("no estimate available");
 			return false ;
 		} ;
 		if (num_params2!=estimate->get_num_params())
 		{
-			error("number of parameters of estimate and feature representation do not match\n");
+			error("number of parameters of estimate and feature representation do not match");
 			return false ;
 		} ;
 
@@ -361,7 +361,7 @@ void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 			num_neg++;
 	}
 
-	io::info("priors: pos={:1.3f} ({})  neg={:1.3f} ({})\n",
+	io::info("priors: pos={:1.3f} ({})  neg={:1.3f} ({})",
 		(float64_t) num_pos/(num_pos+num_neg), num_pos,
 		(float64_t) num_neg/(num_pos+num_neg), num_neg);
 

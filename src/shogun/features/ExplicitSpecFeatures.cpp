@@ -14,7 +14,7 @@ using namespace shogun;
 
 CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
 {
-	io::unstable("CExplicitSpecFeatures::CExplicitSpecFeatures()");
+	unstable(SOURCE_LOCATION);
 
 	use_normalization = false;
 	num_strings = 0;
@@ -35,7 +35,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 
 	obtain_kmer_spectrum(str);
 
-	SG_DEBUG("SPEC size={}, num_str={}\n", spec_size, num_strings)
+	SG_DEBUG("SPEC size={}, num_str={}", spec_size, num_strings)
 }
 
 CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig),

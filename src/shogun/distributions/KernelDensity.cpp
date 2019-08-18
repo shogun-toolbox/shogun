@@ -56,7 +56,7 @@ CKernelDensity::~CKernelDensity()
 
 bool CKernelDensity::train(CFeatures* data)
 {
-	require(data,"Data not supplied\n");
+	require(data,"Data not supplied");
 	CDenseFeatures<float64_t>* dense_data=data->as<CDenseFeatures<float64_t>>();
 
 	SG_UNREF(tree);
@@ -84,7 +84,7 @@ bool CKernelDensity::train(CFeatures* data)
 		}
 		default:
 		{
-			error("Evaluation mode not recognized\n");
+			error("Evaluation mode not recognized");
 		}
 	}
 
@@ -94,7 +94,7 @@ bool CKernelDensity::train(CFeatures* data)
 
 SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* test, int32_t leaf_size)
 {
-	require(test,"data not supplied\n");
+	require(test,"data not supplied");
 
 	if ((m_eval==EM_KDTREE_SINGLE) || (m_eval==EM_BALLTREE_SINGLE))
 		return tree->log_kernel_density(test->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
@@ -105,7 +105,7 @@ SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* t
 	else if (m_eval==EM_BALLTREE_DUAL)
 		query_tree=new CBallTree(leaf_size,m_dist);
 	else
-		error("Evaluation mode not identified\n");
+		error("Evaluation mode not identified");
 
 	query_tree->build_tree(test);
 	CBinaryTreeMachineNode<NbodyTreeNodeData>* qroot=NULL;
@@ -113,7 +113,7 @@ SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* t
 	if (root)
 		qroot=dynamic_cast<CBinaryTreeMachineNode<NbodyTreeNodeData>*>(root);
 	else
-		error("Query tree root not found!\n");
+		error("Query tree root not found!");
 
 	SGVector<index_t> qid=query_tree->get_rearranged_vector_ids();
 	SGVector<float64_t> ret=tree->log_kernel_density_dual(test->get_feature_matrix(),qid,qroot,m_kernel_type,m_bandwidth,m_atol,m_rtol);

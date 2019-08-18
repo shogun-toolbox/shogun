@@ -58,7 +58,7 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
-	io::warn("The method does not require a minimizer. The provided minimizer will not be used.\n");
+	io::warn("The method does not require a minimizer. The provided minimizer will not be used.");
 }
 
 void CExactInferenceMethod::compute_gradient()
@@ -77,7 +77,7 @@ void CExactInferenceMethod::compute_gradient()
 
 void CExactInferenceMethod::update()
 {
-	SG_DEBUG("entering\n");
+	SG_DEBUG("entering");
 
 	CInference::update();
 	update_chol();
@@ -85,7 +85,7 @@ void CExactInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving\n");
+	SG_DEBUG("leaving");
 }
 
 void CExactInferenceMethod::check_members() const
@@ -93,9 +93,9 @@ void CExactInferenceMethod::check_members() const
 	CInference::check_members();
 
 	require(m_model->get_model_type()==LT_GAUSSIAN,
-		"Exact inference method can only use Gaussian likelihood function\n");
+		"Exact inference method can only use Gaussian likelihood function");
 	require(m_labels->get_label_type()==LT_REGRESSION,
-		"Labels must be type of CRegressionLabels\n");
+		"Labels must be type of CRegressionLabels");
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
@@ -286,7 +286,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt {}.{} parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter",
 			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -308,7 +308,7 @@ CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_EXACT)
-		error("Provided inference is not of type CExactInferenceMethod!\n");
+		error("Provided inference is not of type CExactInferenceMethod!");
 
 	SG_REF(inference);
 	return (CExactInferenceMethod*)inference;
@@ -318,7 +318,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	require(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt {}.{} parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter",
 			m_model->get_name(), param->m_name);
 
 	// get the sigma variable from the Gaussian likelihood model
@@ -343,7 +343,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_kernel(
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
 
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -373,7 +373,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_mean(
 	// create eigen representation of alpha vector
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);

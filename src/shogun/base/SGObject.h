@@ -324,7 +324,7 @@ public:
 			if (!parameter_value.cloneable())
 			{
 				error(
-					"Cannot put parameter {}::{}.\n", get_name(),
+					"Cannot put parameter {}::{}.", get_name(),
 					_tag.name().c_str());
 			}
 			try
@@ -335,7 +335,7 @@ public:
 			{
 				error(
 					"Cannot put parameter {}::{} of type {}, incompatible "
-					"provided type {}.\n",
+					"provided type {}.",
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
 					exc.expected().c_str());
 			}
@@ -345,7 +345,7 @@ public:
 		else
 		{
 			error(
-				"Parameter {}::{} does not exist.\n", get_name(),
+				"Parameter {}::{} does not exist.", get_name(),
 				_tag.name().c_str());
 		}
 	}
@@ -410,7 +410,7 @@ public:
 	void add(const std::string& name, T* value)
 	{
 		require(
-			value, "Cannot add to {}::{}, no object provided.\n", get_name(),
+			value, "Cannot add to {}::{}, no object provided.", get_name(),
 			name.c_str());
 
 		auto push_back_lambda = [&value](auto& array) {
@@ -420,7 +420,7 @@ public:
 			return;
 
 		error(
-		    "Cannot add object {} to array parameter {}::{} of type {}.\n",
+		    "Cannot add object {} to array parameter {}::{} of type {}.",
 		    value->get_name(), get_name(), name.c_str(),
 			demangled_type<T>().c_str());
 	}
@@ -463,7 +463,7 @@ public:
 		if (!result)
 		{
 			error(
-				"Could not get array parameter {}::{}[{}] of type {}\n",
+				"Could not get array parameter {}::{}[{}] of type {}",
 				get_name(), name.c_str(), index, demangled_type<T>().c_str());
 		}
 		return result;
@@ -560,7 +560,7 @@ public:
 		{
 			error(
 				"Cannot get parameter {}::{} of type {}, incompatible "
-				"requested type {}.\n",
+				"requested type {}.",
 				get_name(), _tag.name().c_str(), exc.actual().c_str(),
 				exc.expected().c_str());
 		}
@@ -583,7 +583,7 @@ public:
 				error(
 					"Cannot get parameter {}::{} of type {}, incompatible "
 					"requested type {} or there are no options for parameter "
-					"{}::{}.\n",
+					"{}::{}.",
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
 					exc.expected().c_str(), get_name(), _tag.name().c_str());
 			}
@@ -650,7 +650,7 @@ public:
 	 */
 	template<class T> static T* as(CSGObject* sgo)
 	{
-		require(sgo, "No object provided!\n");
+		require(sgo, "No object provided!");
 		return sgo->as<T>();
 	}
 
@@ -666,7 +666,7 @@ public:
 			return c;
 
 		error(
-			"Object of type {} cannot be converted to type {}.\n",
+			"Object of type {} cannot be converted to type {}.",
 			this->get_name(),
 			demangled_type<T>().c_str());
 		return nullptr;
@@ -1223,7 +1223,7 @@ protected:
 template <class T>
 T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
 {
-	require(orig, "No object provided.\n");
+	require(orig, "No object provided.");
 	auto clone = orig->clone(pp);
 	ASSERT(clone);
 	return static_cast<T*>(clone);
@@ -1232,7 +1232,7 @@ T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
 template <class T>
 const T* make_clone(const T* orig, ParameterProperties pp = ParameterProperties::ALL)
 {
-	require(orig, "No object provided.\n");
+	require(orig, "No object provided.");
 	auto clone = orig->clone(pp);
 	ASSERT(clone);
 	return static_cast<const T*>(clone);

@@ -34,7 +34,7 @@ using namespace shogun;
 CCompressor::CCompressor()
 	:CSGObject(), compression_type(UNCOMPRESSED)
 {
-	io::unstable("CCompressor::CCompressor()");
+	unstable(SOURCE_LOCATION);
 }
 
 void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
@@ -63,11 +63,11 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 		case LZO:
 			{
 				if (lzo_init() != LZO_E_OK)
-					error("Error initializing LZO Compression\n");
+					error("Error initializing LZO Compression");
 
 				lzo_bytep lzo_wrkmem = (lzo_bytep) lzo_malloc(LZO1X_999_MEM_COMPRESS);
 				if (!lzo_wrkmem)
-					error("Error allocating LZO workmem\n");
+					error("Error allocating LZO workmem");
 
 				initial_buffer_size=uncompressed_size +
 					uncompressed_size / 16+ 64 + 3;
@@ -93,7 +93,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				lzo_free(lzo_wrkmem);
 
 				if (ret!= LZO_E_OK)
-					error("Error lzo-compressing data\n");
+					error("Error lzo-compressing data");
 
 				break;
 			}
@@ -109,7 +109,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				if (compress2(compressed, &gz_size, uncompressed,
 							uncompressed_size, level) != Z_OK)
 				{
-					error("Error gzip-compressing data\n");
+					error("Error gzip-compressing data");
 				}
 				compressed_size=gz_size;
 				break;
@@ -126,14 +126,14 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				compressed_size=initial_buffer_size;
 				compressed=SG_MALLOC(uint8_t, initial_buffer_size);
 				if (BZ2_bzCompressInit(&strm, level, 0, 0)!=BZ_OK)
-					error("Error initializing bzip2 compressor\n");
+					error("Error initializing bzip2 compressor");
 
 				strm.next_in=(char*) uncompressed;
 				strm.avail_in=(unsigned int) uncompressed_size;
 				strm.next_out=(char*) compressed;
 				strm.avail_out=(unsigned int) compressed_size;
 				if (BZ2_bzCompress(&strm, BZ_RUN) != BZ_RUN_OK)
-					error("Error bzip2-compressing data (BZ_RUN)\n");
+					error("Error bzip2-compressing data (BZ_RUN)");
 
 				int ret=0;
 				while (true)
@@ -144,7 +144,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 					if (ret==BZ_STREAM_END)
 						break;
 					else
-						error("Error bzip2-compressing data (BZ_FINISH)\n");
+						error("Error bzip2-compressing data (BZ_FINISH)");
 				}
 				BZ2_bzCompressEnd(&strm);
 				compressed_size=(((uint64_t) strm.total_out_hi32) << 32) + strm.total_out_lo32;
@@ -164,9 +164,9 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				strm.avail_out=(size_t) compressed_size;
 
 				if (lzma_easy_encoder(&strm, level, LZMA_CHECK_CRC32) != LZMA_OK)
-					error("Error initializing lzma compressor\n");
+					error("Error initializing lzma compressor");
 				if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
-					error("Error lzma-compressing data (LZMA_RUN)\n");
+					error("Error lzma-compressing data (LZMA_RUN)");
 
 				lzma_ret ret;
 				while (true)
@@ -177,7 +177,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 					if (ret==LZMA_STREAM_END)
 						break;
 					else
-						error("Error lzma-compressing data (LZMA_FINISH)\n");
+						error("Error lzma-compressing data (LZMA_FINISH)");
 				}
 				lzma_end(&strm);
 				compressed_size=strm.total_out;
@@ -195,7 +195,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 			}
 #endif
 		default:
-			error("Unknown compression type\n");
+			error("Unknown compression type");
 	}
 
 	if (compressed)
@@ -224,17 +224,17 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 		case LZO:
 			{
 				if (lzo_init() != LZO_E_OK)
-					error("Error initializing LZO Compression\n");
+					error("Error initializing LZO Compression");
 
 				lzo_bytep lzo_wrkmem = (lzo_bytep) lzo_malloc(LZO1X_999_MEM_COMPRESS);
 				if (!lzo_wrkmem)
-					error("Error allocating LZO workmem\n");
+					error("Error allocating LZO workmem");
 
 				lzo_uint lzo_size=uncompressed_size;
 				if (lzo1x_decompress(compressed, compressed_size, uncompressed,
 							&lzo_size, NULL) != LZO_E_OK)
 				{
-					error("Error uncompressing lzo-data\n");
+					error("Error uncompressing lzo-data");
 				}
 				uncompressed_size=lzo_size;
 
@@ -249,7 +249,7 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 				if (uncompress(uncompressed, &gz_size, compressed,
 							compressed_size) != Z_OK)
 				{
-					error("Error uncompressing gzip-data\n");
+					error("Error uncompressing gzip-data");
 				}
 				uncompressed_size=gz_size;
 				break;
@@ -263,13 +263,13 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 				strm.bzfree=NULL;
 				strm.opaque=NULL;
 				if (BZ2_bzDecompressInit(&strm, 0, 0)!=BZ_OK)
-					error("Error initializing bzip2 decompressor\n");
+					error("Error initializing bzip2 decompressor");
 				strm.next_in=(char*) compressed;
 				strm.avail_in=(unsigned int) compressed_size;
 				strm.next_out=(char*) uncompressed;
 				strm.avail_out=(unsigned int) uncompressed_size;
 				if (BZ2_bzDecompress(&strm) != BZ_STREAM_END || strm.avail_in!=0)
-					error("Error uncompressing bzip2-data\n");
+					error("Error uncompressing bzip2-data");
 				BZ2_bzDecompressEnd(&strm);
 				break;
 			}
@@ -286,9 +286,9 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 				uint64_t memory_limit=lzma_easy_decoder_memusage(9);
 
 				if (lzma_stream_decoder(&strm, memory_limit, 0)!= LZMA_OK)
-					error("Error initializing lzma decompressor\n");
+					error("Error initializing lzma decompressor");
 				if (lzma_code(&strm, LZMA_RUN) != LZMA_STREAM_END)
-					error("Error decompressing lzma data\n");
+					error("Error decompressing lzma data");
 				lzma_end(&strm);
 				break;
 			}
@@ -299,19 +299,19 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 				size_t uncompressed_length;
 				if (!snappy::GetUncompressedLength( (char*) compressed,
 						(size_t) compressed_size, &uncompressed_length))
-					error("Error obtaining uncompressed length\n");
+					error("Error obtaining uncompressed length");
 
 				ASSERT(uncompressed_length<=uncompressed_size)
 				uncompressed_size=uncompressed_length;
 				if (!snappy::RawUncompress((char*) compressed,
 							(size_t) compressed_size,
 							(char*) uncompressed))
-					error("Error uncompressing snappy data\n");
+					error("Error uncompressing snappy data");
 
 				break;
 			}
 #endif
 		default:
-			error("Unknown compression type\n");
+			error("Unknown compression type");
 	}
 }

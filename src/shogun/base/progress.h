@@ -194,7 +194,7 @@ namespace shogun
 			// TODO: this guy here brokes testing
 			// require(
 			//    progress_bar_space > 0,
-			//    "Not enough terminal space to show the progress bar!\n");
+			//    "Not enough terminal space to show the progress bar!");
 
 			char str[1000];
 			float64_t runtime = CTime::get_curtime();
@@ -290,7 +290,7 @@ namespace shogun
 			// TODO: this guy here brokes testing
 			// require(
 			//    progress_bar_space > 0,
-			//    "Not enough terminal space to show the progress bar!\n");
+			//    "Not enough terminal space to show the progress bar!");
 
 			char str[1000];
 			float64_t runtime = CTime::get_curtime();

@@ -13,7 +13,7 @@ using namespace shogun;
 CFactorGraph::CFactorGraph()
 	: CSGObject()
 {
-	io::unstable("CFactorGraph::CFactorGraph()");
+	unstable(SOURCE_LOCATION);
 
 	register_parameters();
 	init();
@@ -47,12 +47,12 @@ CFactorGraph::~CFactorGraph()
 	SG_UNREF(m_dset);
 
 	if (m_factors != NULL)
-		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = {}.\n", m_factors->ref_count());
+		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = {}.", m_factors->ref_count());
 
 	if (m_datasources != NULL)
-		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = {}.\n", m_datasources->ref_count());
+		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = {}.", m_datasources->ref_count());
 
-	SG_DEBUG("CFactorGraph::~CFactorGraph(): this->ref_count() = {}.\n", this->ref_count());
+	SG_DEBUG("CFactorGraph::~CFactorGraph(): this->ref_count() = {}.", this->ref_count());
 }
 
 void CFactorGraph::register_parameters()
@@ -75,7 +75,7 @@ void CFactorGraph::init()
 	m_datasources = new CDynamicObjectArray();
 
 	if (m_factors != NULL)
-		SG_DEBUG("CFactorGraph::init(): m_factors->ref_count() = {}.\n", m_factors->ref_count());
+		SG_DEBUG("CFactorGraph::init(): m_factors->ref_count() = {}.", m_factors->ref_count());
 
 	// NOTE m_cards cannot be empty
 	m_dset = new CDisjointSet(m_cardinalities.size());

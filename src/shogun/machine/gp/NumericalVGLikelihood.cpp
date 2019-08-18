@@ -86,7 +86,7 @@ void CNumericalVGLikelihood::init()
 
 void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 {
-	require(n>0, "The number ({}) of Gaussian Hermite point should be positive\n",n);
+	require(n>0, "The number ({}) of Gaussian Hermite point should be positive",n);
 	if (m_GHQ_N!=n)
 	{
 		m_GHQ_N=n;
@@ -97,8 +97,8 @@ void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
 	const TParameter* param) const
 {
-	require(param, "Param is required (param should not be NULL)\n");
-	require(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	require(param, "Param is required (param should not be NULL)");
+	require(param->m_name, "Param name is required (param->m_name should not be NULL)");
 	if (!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")))
 		return SGVector<float64_t> ();
 
@@ -160,8 +160,8 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 	//based on the likKL(v, lik, varargin) function in infKL.m
 
 	//compute gradient using numerical integration
-	require(param, "Param is required (param should not be NULL)\n");
-	require(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	require(param, "Param is required (param should not be NULL)");
+	require(param->m_name, "Param name is required (param->m_name should not be NULL)");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
 	require(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ",
@@ -229,17 +229,17 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 		if (supports_binary())
 		{
 			require(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n");
+				"Labels must be type of CBinaryLabels");
 		}
 		else
 		{
 			if (supports_regression())
 			{
 				require(lab->get_label_type()==LT_REGRESSION,
-					"Labels must be type of CRegressionLabels\n");
+					"Labels must be type of CRegressionLabels");
 			}
 			else
-				error("Unsupported Label type\n");
+				error("Unsupported Label type");
 		}
 
 		if (supports_binary())

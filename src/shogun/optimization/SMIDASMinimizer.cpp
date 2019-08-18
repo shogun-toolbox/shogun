@@ -53,7 +53,7 @@ SMIDASMinimizer::SMIDASMinimizer(FirstOrderStochasticCostFunction *fun)
 
 float64_t SMIDASMinimizer::minimize()
 {
-	require(m_mapping_fun, "Mapping function must set\n");
+	require(m_mapping_fun, "Mapping function must set");
 	init_minimization();
 	SGVector<float64_t> variable_reference=m_fun->obtain_variable_reference();
 
@@ -62,14 +62,14 @@ float64_t SMIDASMinimizer::minimize()
 	else
 	{
 		require(m_dual_variable.vlen==variable_reference.vlen,
-			"The length ({}) of dual variable must match the length ({}) of variable\n",
+			"The length ({}) of dual variable must match the length ({}) of variable",
 			m_dual_variable.vlen, variable_reference.vlen);
 	}
 	L1Penalty* penalty_type=dynamic_cast<L1Penalty*>(m_penalty_type);
-	require(penalty_type,"For now only L1Penalty is supported. Please use the penalty for this minimizer\n");
+	require(penalty_type,"For now only L1Penalty is supported. Please use the penalty for this minimizer");
 
 	FirstOrderStochasticCostFunction *fun=dynamic_cast<FirstOrderStochasticCostFunction *>(m_fun);
-	require(fun,"the cost function must be a stochastic cost function\n");
+	require(fun,"the cost function must be a stochastic cost function");
 	for(;m_cur_passes<m_num_passes;m_cur_passes++)
 	{
 		fun->begin_sample();
@@ -105,18 +105,18 @@ void SMIDASMinimizer::init_minimization()
 	{
 		if (updater->enables_descend_correction())
 		{
-			io::warn("There is not theoretical guarantee when Descend Correction is enabled\n");
+			io::warn("There is not theoretical guarantee when Descend Correction is enabled");
 		}
 		GradientDescendUpdater* gradient_updater=
 			dynamic_cast<GradientDescendUpdater* >(m_gradient_updater);
 		if(!gradient_updater)
 		{
-			io::warn("There is not theoretical guarantee when this updater is used\n");
+			io::warn("There is not theoretical guarantee when this updater is used");
 		}
 	}
 	else
 	{
-		io::warn("There is not theoretical guarantee when this updater is used\n");
+		io::warn("There is not theoretical guarantee when this updater is used");
 	}
-	require(m_learning_rate,"Learning Rate instance must set\n");
+	require(m_learning_rate,"Learning Rate instance must set");
 }

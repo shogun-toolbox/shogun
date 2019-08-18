@@ -100,7 +100,7 @@ class CList : public CSGObject
 
 		virtual ~CList()
 		{
-			SG_DEBUG("Destroying List {}\n", fmt::ptr(this))
+			SG_DEBUG("Destroying List {}", fmt::ptr(this))
 
 			delete_all_elements();
 		}
@@ -321,7 +321,7 @@ class CList : public CSGObject
 		 */
 		inline bool append_element(CSGObject* data)
 		{
-			SG_DEBUG("Entering\n");
+			SG_DEBUG("Entering");
 
 			// none available, case is shattered in insert_element()
 			if (current != NULL)
@@ -332,7 +332,7 @@ class CList : public CSGObject
 					if (delete_data)
 						SG_UNREF(e);
 					// if successor exists use insert_element()
-					SG_DEBUG("Leaving\n");
+					SG_DEBUG("Leaving");
 					return insert_element(data);
 				}
 				else
@@ -351,20 +351,20 @@ class CList : public CSGObject
 						if (delete_data)
 							SG_REF(data);
 
-						SG_DEBUG("Leaving\n");
+						SG_DEBUG("Leaving");
 						return true;
 					}
 					else
 					{
-						io::warn("Error in allocating memory for new element!\n");
-						SG_DEBUG("Leaving\n");
+						io::warn("Error in allocating memory for new element!");
+						SG_DEBUG("Leaving");
 						return false;
 					}
 				}
 			}
 			else
 			{
-				SG_DEBUG("Leaving\n");
+				SG_DEBUG("Leaving");
 				return insert_element(data);
 			}
 		}
@@ -456,7 +456,7 @@ class CList : public CSGObject
 				}
 				else
 				{
-					io::warn("Error in allocating memory for new element!\n");
+					io::warn("Error in allocating memory for new element!");
 					return false;
 				}
 			}
@@ -478,7 +478,7 @@ class CList : public CSGObject
 				}
 				else
 				{
-					io::warn("Error in allocating memory for new element!\n");
+					io::warn("Error in allocating memory for new element!");
 					return false;
 				}
 			}
@@ -492,7 +492,7 @@ class CList : public CSGObject
 		 */
 		inline CSGObject* delete_element()
 		{
-			SG_DEBUG("Entering\n");
+			SG_DEBUG("Entering");
 			CSGObject* data = current ? current->data : NULL;
 
 			if (num_elements>0)
@@ -502,7 +502,7 @@ class CList : public CSGObject
 			{
 				if (delete_data)
 				{
-					SG_GCDEBUG("Decreasing refcount of {}({})!\n",
+					SG_GCDEBUG("Decreasing refcount of {}({})!",
 							data->get_name(), fmt::ptr(data));
 					SG_UNREF(data);
 				}
@@ -528,11 +528,11 @@ class CList : public CSGObject
 
 				delete element;
 
-				SG_DEBUG("Leaving\n");
+				SG_DEBUG("Leaving");
 				return data;
 			}
 
-			SG_DEBUG("Leaving\n");
+			SG_DEBUG("Leaving");
 			return NULL;
 		}
 

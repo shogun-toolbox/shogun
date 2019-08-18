@@ -81,7 +81,7 @@ void CCARTree::set_labels(CLabels* lab)
 	else if (lab->get_label_type()==LT_REGRESSION)
 		set_machine_problem_type(PT_REGRESSION);
 	else
-		error("label type supplied is not supported\n");
+		error("label type supplied is not supported");
 
 	SG_REF(lab);
 	SG_UNREF(m_labels);
@@ -105,12 +105,12 @@ bool CCARTree::is_label_valid(CLabels* lab) const
 
 CMulticlassLabels* CCARTree::apply_multiclass(CFeatures* data)
 {
-	require(data, "Data required for classification in apply_multiclass\n");
+	require(data, "Data required for classification in apply_multiclass");
 
 	// apply multiclass starting from root
 	bnode_t* current=dynamic_cast<bnode_t*>(get_root());
 
-	require(current, "Tree machine not yet trained.\n");
+	require(current, "Tree machine not yet trained.");
 	CLabels* ret=apply_from_current_node(data->as<CDenseFeatures<float64_t>>(), current);
 
 	SG_UNREF(current);
@@ -119,7 +119,7 @@ CMulticlassLabels* CCARTree::apply_multiclass(CFeatures* data)
 
 CRegressionLabels* CCARTree::apply_regression(CFeatures* data)
 {
-	require(data, "Data required for classification in apply_multiclass\n");
+	require(data, "Data required for classification in apply_multiclass");
 
 	// apply regression starting from root
 	bnode_t* current=dynamic_cast<bnode_t*>(get_root());
@@ -145,7 +145,7 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 	{
 		CSGObject* element=pruned_trees->get_element(i);
 		if (element == nullptr)
-			error("{} element is NULL\n",i);
+			error("{} element is NULL",i);
 
 		bnode_t* root = dynamic_cast<bnode_t*>(element);
 
@@ -163,7 +163,7 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 
 	CSGObject* element=pruned_trees->get_element(min_index);
 	if (element == nullptr)
-		error("{} element is NULL\n",min_index);
+		error("{} element is NULL",min_index);
 
 	bnode_t* root = dynamic_cast<bnode_t*>(element);
 	this->set_root(root);
@@ -209,7 +209,7 @@ int32_t CCARTree::get_num_folds() const
 
 void CCARTree::set_num_folds(int32_t folds)
 {
-	require(folds>1,"Number of folds is expected to be greater than 1. Supplied value is {}\n",folds);
+	require(folds>1,"Number of folds is expected to be greater than 1. Supplied value is {}",folds);
 	m_folds=folds;
 }
 
@@ -220,7 +220,7 @@ int32_t CCARTree::get_max_depth() const
 
 void CCARTree::set_max_depth(int32_t depth)
 {
-	require(depth>0,"Max allowed tree depth should be greater than 0. Supplied value is {}\n",depth);
+	require(depth>0,"Max allowed tree depth should be greater than 0. Supplied value is {}",depth);
 	m_max_depth=depth;
 }
 
@@ -231,13 +231,13 @@ int32_t CCARTree::get_min_node_size() const
 
 void CCARTree::set_min_node_size(int32_t nsize)
 {
-	require(nsize>0,"Min allowed node size should be greater than 0. Supplied value is {}\n",nsize);
+	require(nsize>0,"Min allowed node size should be greater than 0. Supplied value is {}",nsize);
 	m_min_node_size=nsize;
 }
 
 void CCARTree::set_label_epsilon(float64_t ep)
 {
-	require(ep>=0,"Input epsilon value is expected to be greater than or equal to 0\n");
+	require(ep>=0,"Input epsilon value is expected to be greater than or equal to 0");
 	m_label_epsilon=ep;
 }
 
@@ -253,8 +253,8 @@ bool CCARTree::weights_set()
 
 bool CCARTree::train_machine(CFeatures* data)
 {
-	require(data,"Data required for training\n");
-	require(data->get_feature_class()==C_DENSE,"Dense data required for training\n");
+	require(data,"Data required for training");
+	require(data->get_feature_class()==C_DENSE,"Dense data required for training");
 
 	auto dense_features = data->as<CDenseFeatures<float64_t>>();
 	auto num_features = dense_features->get_num_features();
@@ -277,14 +277,14 @@ bool CCARTree::train_machine(CFeatures* data)
 		require(
 		    m_nominal.vlen == num_features,
 		    "Length of m_nominal vector (currently {}) should "
-		    "be same as number of features in data (presently {}).\n",
+		    "be same as number of features in data (presently {}).",
 		    m_nominal.vlen, num_features);
 	}
 	else
 	{
 		io::warn(
 		    "Feature types are not specified. All features are "
-		    "considered as continuous in training.\n");
+		    "considered as continuous in training.");
 		m_nominal=SGVector<bool>(num_features);
 		linalg::set_const(m_nominal, false);
 	}
@@ -329,8 +329,8 @@ void CCARTree::pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_fe
 
 CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<float64_t>* data, const SGVector<float64_t>& weights, CDenseLabels* labels, int32_t level)
 {
-	require(labels,"labels have to be supplied\n");
-	require(data,"data matrix has to be supplied\n");
+	require(labels,"labels have to be supplied");
+	require(data,"data matrix has to be supplied");
 
 	bnode_t* node=new bnode_t();
 	auto labels_vec = labels->get_labels();
@@ -394,7 +394,7 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<floa
 				break;
 			}
 		default :
-			error("mode should be either PT_MULTICLASS or PT_REGRESSION\n");
+			error("mode should be either PT_MULTICLASS or PT_REGRESSION");
 	}
 
 	// check stopping rules
@@ -725,7 +725,7 @@ index_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 						g=gain(wleft,wright,total_wclasses,ulabels);
 						break;
 					default:
-						error("Undefined problem statement\n");
+						error("Undefined problem statement");
 				}
 
 				if (g>max_gain)
@@ -779,7 +779,7 @@ index_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 				else if (m_mode==PT_REGRESSION)
 					g=gain(left_wclasses,right_wclasses,total_wclasses,ulabels);
 				else
-					error("Undefined problem statement\n");
+					error("Undefined problem statement");
 
 				if (g>max_gain)
 				{
@@ -1098,7 +1098,7 @@ float64_t CCARTree::least_squares_deviation(const SGVector<float64_t>& feats, co
 CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bnode_t* current)
 {
 	auto num_vecs=feats->get_num_vectors();
-	require(num_vecs>0, "No data provided in apply\n");
+	require(num_vecs>0, "No data provided in apply");
 
 	SGVector<float64_t> labels(num_vecs);
 	for (index_t i=0;i<num_vecs;++i)
@@ -1174,7 +1174,7 @@ CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bno
 		}
 
 		default:
-			error("mode should be either PT_MULTICLASS or PT_REGRESSION\n");
+			error("mode should be either PT_MULTICLASS or PT_REGRESSION");
 	}
 
 	return NULL;
@@ -1346,7 +1346,7 @@ float64_t CCARTree::compute_error(CLabels* labels, CLabels* reference, SGVector<
 		}
 
 		default:
-			error("Case not possible\n");
+			error("Case not possible");
 	}
 
 	return 0.;
@@ -1354,7 +1354,7 @@ float64_t CCARTree::compute_error(CLabels* labels, CLabels* reference, SGVector<
 
 CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
 {
-	require(tree, "Tree not provided for pruning.\n");
+	require(tree, "Tree not provided for pruning.");
 
 	CDynamicObjectArray* trees=new CDynamicObjectArray();
 	SG_UNREF(m_alphas);
@@ -1370,7 +1370,7 @@ CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
 	if (t1root!=NULL)
 		t1_root=dynamic_cast<bnode_t*>(t1root);
 	else
-		error("t1_root is NULL. This is not expected\n");
+		error("t1_root is NULL. This is not expected");
 
 	form_t1(t1_root);
 	trees->push_back(t1_root);
@@ -1384,7 +1384,7 @@ CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
 		if (t2root!=NULL)
 			t2_root=dynamic_cast<bnode_t*>(t2root);
 		else
-			error("t1_root is NULL. This is not expected\n");
+			error("t1_root is NULL. This is not expected");
 
 		float64_t a_k=find_weakest_alpha(t2_root);
 		m_alphas->push_back(a_k);

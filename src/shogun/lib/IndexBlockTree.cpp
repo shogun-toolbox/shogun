@@ -95,7 +95,7 @@ void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_
 		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
 		do
 		{
-			SG_DEBUG("Block [{} {}] \n",iterator->get_min_index(), iterator->get_max_index())
+			SG_DEBUG("Block [{} {}] ",iterator->get_min_index(), iterator->get_max_index())
 			tree_nodes->push_back(block_tree_node_t(iterator->get_min_index(),iterator->get_max_index(),iterator->get_weight()));
 			if (iterator->get_num_sub_blocks()>0)
 				collect_tree_nodes_recursive(iterator, tree_nodes);

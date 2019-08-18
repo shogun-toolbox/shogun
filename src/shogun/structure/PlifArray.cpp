@@ -62,7 +62,7 @@ float64_t CPlifArray::lookup_penalty(
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
 	{
-		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}\n",p_value, min_value, max_value);
+		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}",p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
 	float64_t ret = 0.0 ;
@@ -78,7 +78,7 @@ float64_t CPlifArray::lookup_penalty(
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
 	{
-		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}\n",p_value, min_value, max_value);
+		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}",p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
 	float64_t ret = 0.0 ;

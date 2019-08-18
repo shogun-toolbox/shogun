@@ -258,7 +258,7 @@ SET_STRING_LIST(uint16_t)
 void CProtobufFile::write_big_endian_uint(uint32_t number, uint8_t* array, uint32_t size)
 {
 	if (size<4)
-		error("array is too small to write\n");
+		error("array is too small to write");
 
 	array[0]=(number>>24)&0xffu;
 	array[1]=(number>>16)&0xffu;
@@ -269,7 +269,7 @@ void CProtobufFile::write_big_endian_uint(uint32_t number, uint8_t* array, uint3
 uint32_t CProtobufFile::read_big_endian_uint(uint8_t* array, uint32_t size)
 {
 	if (size<4)
-		error("array is too small to read\n");
+		error("array is too small to read");
 
 	return (array[0]<<24) | (array[1]<<16) | (array[2]<<8) | array[3];
 }
@@ -288,8 +288,8 @@ void CProtobufFile::read_and_validate_global_header(ShogunVersion_SGDataType typ
 {
 	ShogunVersion header;
 	read_message(header);
-	require(header.version()==version, "wrong version\n");
-	require(header.data_type()==type, "wrong type\n");
+	require(header.version()==version, "wrong version");
+	require(header.data_type()==type, "wrong type");
 }
 
 void CProtobufFile::write_global_header(ShogunVersion_SGDataType type)
@@ -416,16 +416,16 @@ void CProtobufFile::read_message(google::protobuf::Message& message)
 
 	// read size of message
 	bytes_read=fread(uint_buffer, sizeof(char), sizeof(uint32_t), file);
-	require(bytes_read==sizeof(uint32_t), "IO error\n");
+	require(bytes_read==sizeof(uint32_t), "IO error");
 	msg_size=read_big_endian_uint(uint_buffer, sizeof(uint32_t));
-	require(msg_size>0, "message size should be more than zero\n");
+	require(msg_size>0, "message size should be more than zero");
 
 	// read message
 	bytes_read=fread(buffer, sizeof(char), msg_size, file);
-	require(bytes_read==msg_size, "IO error\n");
+	require(bytes_read==msg_size, "IO error");
 
 	// try to parse message from read data
-	require(message.ParseFromArray(buffer, msg_size), "cannot parse header\n");
+	require(message.ParseFromArray(buffer, msg_size), "cannot parse header");
 }
 
 void CProtobufFile::write_message(const google::protobuf::Message& message)
@@ -436,12 +436,12 @@ void CProtobufFile::write_message(const google::protobuf::Message& message)
 	// write size of message
 	write_big_endian_uint(msg_size, uint_buffer, sizeof(uint32_t));
 	bytes_write=fwrite(uint_buffer, sizeof(char), sizeof(uint32_t), file);
-	require(bytes_write==sizeof(uint32_t), "IO error\n");
+	require(bytes_write==sizeof(uint32_t), "IO error");
 
 	// write serialized message
 	message.SerializeToArray(buffer, msg_size);
 	bytes_write=fwrite(buffer, sizeof(char), msg_size, file);
-	require(bytes_write==msg_size, "IO error\n");
+	require(bytes_write==msg_size, "IO error");
 }
 
 #define READ_MEMORY_BLOCK(chunk_type, sg_type) \

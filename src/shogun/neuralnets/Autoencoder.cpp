@@ -95,7 +95,7 @@ CAutoencoder::CAutoencoder(
 
 bool CAutoencoder::train(CFeatures* data)
 {
-	require(data != NULL, "Invalid (NULL) feature pointer\n");
+	require(data != NULL, "Invalid (NULL) feature pointer");
 
 	SGMatrix<float64_t> inputs = features_to_matrix(data);
 

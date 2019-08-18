@@ -24,7 +24,7 @@ using namespace shogun;
 
 CGMNPLib::CGMNPLib()
 {
-	io::unstable("CGMNPLib::CGMNPLib()");
+	unstable(SOURCE_LOCATION);
 
 	diag_H = NULL;
 	kernel_columns = NULL;
@@ -57,7 +57,7 @@ CGMNPLib::CGMNPLib(
   Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
   Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
-  io::info("using {} kernel cache lines\n", Cache_Size);
+  io::info("using {} kernel cache lines", Cache_Size);
   ASSERT(Cache_Size>=2)
 
   /* allocates memory for kernel cache */

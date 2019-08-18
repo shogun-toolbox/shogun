@@ -54,12 +54,12 @@ namespace shogun
 			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
 			                                     "({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
 			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
 			                                     "a ({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->logistic(a, result);
@@ -80,12 +80,12 @@ namespace shogun
 			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
 			                                     "({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
 			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
 			                                     "a ({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->multiply_by_logistic_derivative(
@@ -105,12 +105,12 @@ namespace shogun
 			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
 			                                     "({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
 			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
 			                                     "a ({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->multiply_by_rectified_linear_derivative(
@@ -130,12 +130,12 @@ namespace shogun
 			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
 			                                     "({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
 			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
 			                                     "a ({}) must match matrix "
-			                                     "result ({}).\n",
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->rectified_linear(a, result);
@@ -166,11 +166,11 @@ namespace shogun
 		{
 			require(
 			    (p.num_rows == q.num_rows),
-			    "Number of rows of matrix p ({}) must match matrix q ({}).\n",
+			    "Number of rows of matrix p ({}) must match matrix q ({}).",
 			    p.num_rows, q.num_rows);
 			require(
 			    (p.num_cols == q.num_cols), "Number of columns of matrix p "
-			                                "({}) must match matrix q ({}).\n",
+			                                "({}) must match matrix q ({}).",
 			    p.num_cols, q.num_cols);
 
 			return infer_backend(p, q)->cross_entropy(p, q);
@@ -188,11 +188,11 @@ namespace shogun
 		{
 			require(
 			    (p.num_rows == q.num_rows),
-			    "Number of rows of matrix p ({}) must match matrix q ({}).\n",
+			    "Number of rows of matrix p ({}) must match matrix q ({}).",
 			    p.num_rows, q.num_rows);
 			require(
 			    (p.num_cols == q.num_cols), "Number of columns of matrix p "
-			                                "({}) must match matrix q ({}).\n",
+			                                "({}) must match matrix q ({}).",
 			    p.num_cols, q.num_cols);
 
 			return infer_backend(p, q)->squared_error(p, q);

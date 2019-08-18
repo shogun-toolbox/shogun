@@ -115,15 +115,15 @@ void COnlineLibLinear::stop_train()
 	float64_t gap = PGmax_new - PGmin_new;
 
 	io::progress_done();
-	io::info("Optimization finished.\n");
+	io::info("Optimization finished.");
 
 	// calculate objective value
 	v = linalg::dot(m_w, m_w);
 	v += bias*bias;
 
-	io::info("Objective value = {}\n", v/2);
-	io::info("nSV = {}\n", nSV);
-	io::info("gap = {:g}\n", gap);
+	io::info("Objective value = {}", v/2);
+	io::info("nSV = {}", nSV);
+	io::info("gap = {:g}", gap);
 }
 
 void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
@@ -268,7 +268,7 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 		CStreamingDenseFeatures<float32_t> *feat =
 			dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
 		if (feat == NULL)
-			error("Expected streaming dense feature <float32_t>\n");
+			error("Expected streaming dense feature <float32_t>");
 
 		train_one(feat->get_vector(), label);
 	}
@@ -276,7 +276,7 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 		CStreamingSparseFeatures<float32_t> *feat =
 			dynamic_cast<CStreamingSparseFeatures<float32_t> *>(feature);
 		if (feat == NULL)
-			error("Expected streaming sparse feature <float32_t>\n");
+			error("Expected streaming sparse feature <float32_t>");
 
 		train_one(feat->get_vector(), label);
 	}

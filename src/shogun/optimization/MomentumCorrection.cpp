@@ -35,7 +35,7 @@ using namespace shogun;
 
 void MomentumCorrection::initialize_previous_direction(index_t len)
 {
-	require(len>0, "The length ({}) must be positive\n", len);
+	require(len>0, "The length ({}) must be positive", len);
 	m_previous_descend_direction=SGVector<float64_t>(len);
 	m_previous_descend_direction.set_const(0.0);
 }
@@ -43,7 +43,7 @@ void MomentumCorrection::initialize_previous_direction(index_t len)
 float64_t MomentumCorrection::get_previous_descend_direction(index_t idx)
 {
 	require(idx>=0 && idx<m_previous_descend_direction.vlen,
-		"Index ({}) is invalid\n", idx);
+		"Index ({}) is invalid", idx);
 	return m_previous_descend_direction[idx];
 }
 

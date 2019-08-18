@@ -23,19 +23,19 @@ float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
         CLabels* ground_truth)
 {
     require(predicted->get_label_type() == LT_SPARSE_MULTILABEL,
-            "predicted label should be of multilabels type\n");
+            "predicted label should be of multilabels type");
     require(ground_truth->get_label_type() == LT_SPARSE_MULTILABEL,
-            "actual label should be of multilabels type\n");
+            "actual label should be of multilabels type");
     require(ground_truth->get_label_type() == predicted->get_label_type(),
-            "predicted labels and actual labels should be of same type\n");
+            "predicted labels and actual labels should be of same type");
 
     CMultilabelLabels* m_predicted = (CMultilabelLabels*) predicted;
     CMultilabelLabels* m_ground_truth = (CMultilabelLabels*) ground_truth;
 
     require(m_predicted->get_num_labels() == m_ground_truth->get_num_labels(),
-            "predicted labels and actual labels should have same number of labels\n");
+            "predicted labels and actual labels should have same number of labels");
     require(m_predicted->get_num_classes() == m_ground_truth->get_num_classes(),
-            "predicted labels and actual labels should have same number of classes\n");
+            "predicted labels and actual labels should have same number of classes");
 
     int32_t num_labels = predicted->get_num_labels();
     float64_t accuracy = 0.0;

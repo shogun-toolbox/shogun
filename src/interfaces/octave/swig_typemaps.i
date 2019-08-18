@@ -42,7 +42,7 @@
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check() || mat_feat.rows()!=1)
     {
-        /*error("Expected " error_string " Vector as argument\n");*/
+        /*error("Expected " error_string " Vector as argument");*/
         SWIG_fail;
     }
 
@@ -115,7 +115,7 @@ TYPEMAP_OUT_SGVECTOR(uint16NDArray, uint16_t, uint16_t, "Word")
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())
     {
-        /*error("Expected " error_string " Matrix as argument\n");*/
+        /*error("Expected " error_string " Matrix as argument");*/
         SWIG_fail;
     }
 
@@ -191,7 +191,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())
     {
-        /*error("Expected " error_string " Matrix as argument\n");*/
+        /*error("Expected " error_string " Matrix as argument");*/
         SWIG_fail;
     }
 
@@ -493,6 +493,6 @@ TYPEMAP_SPARSEFEATURES_OUT(float64_t,     NPY_FLOAT64)
 %init %{
 	// set number of threads to 1
 	// see issue #3772
-	io::warn("Using Shogun single-threaded. Multi-threaded Octave is currently broken. See https://github.com/shogun-toolbox/shogun/issues/3772\n");
+	io::warn("Using Shogun single-threaded. Multi-threaded Octave is currently broken. See https://github.com/shogun-toolbox/shogun/issues/3772");
 	shogun::env()->set_num_threads(1);
 %}

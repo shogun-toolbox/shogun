@@ -64,17 +64,17 @@ bool CLibSVM::train_machine(CFeatures* data)
 	}
 	require(
 	    kernel->get_num_vec_lhs() == m_labels->get_num_labels(),
-	    "Number of training data ({}) must match number of labels ({})\n",
+	    "Number of training data ({}) must match number of labels ({})",
 	    kernel->get_num_vec_lhs(), m_labels->get_num_labels());
 
 	problem.l=m_labels->get_num_labels();
-	io::info("{} trainlabels\n", problem.l);
+	io::info("{} trainlabels", problem.l);
 
 	// set linear term
 	if (m_linear_term.vlen>0)
 	{
 		if (m_labels->get_num_labels()!=m_linear_term.vlen)
-			error("Number of training vectors does not match length of linear term\n");
+			error("Number of training vectors does not match length of linear term");
 
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();
@@ -117,7 +117,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 		param.svm_type=NU_SVC;
 		break;
 	default:
-		error("{}::train_machine(): Unknown solver type!\n", get_name());
+		error("{}::train_machine(): Unknown solver type!", get_name());
 		break;
 	}
 
@@ -141,7 +141,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem, &param);
 
 	if(error_msg)
-		error("Error: {}\n",error_msg);
+		error("Error: {}",error_msg);
 
 	model = svm_train(&problem, &param);
 

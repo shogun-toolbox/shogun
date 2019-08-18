@@ -49,7 +49,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	init_strategy();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=m_labels->get_num_labels();
-	io::info("{} trainlabels, {} classes\n", problem.l, num_classes);
+	io::info("{} trainlabels, {} classes", problem.l, num_classes);
 
 
 	if (data)
@@ -57,7 +57,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
 			error("Number of training vectors does not match number of "
-					"labels\n");
+					"labels");
 		}
 		m_kernel->init(data, data);
 	}
@@ -101,7 +101,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		error("Error: {}\n",error_msg);
+		error("Error: {}",error_msg);
 
 	model = svm_train(&problem, &param);
 
@@ -109,7 +109,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	{
 		if (model->nr_class!=num_classes)
 		{
-			error("LibSVM model->nr_class={} while num_classes={}\n",
+			error("LibSVM model->nr_class={} while num_classes={}",
 					model->nr_class, num_classes);
 		}
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef))
@@ -145,7 +145,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 				int32_t sv_idx=0;
 				for (k=0; k<model->nSV[i]; k++)
 				{
-					SG_DEBUG("setting SV[{}] to {}\n", sv_idx,
+					SG_DEBUG("setting SV[{}] to {}", sv_idx,
 							model->SV[offsets[i]+k]->index);
 					svm->set_support_vector(sv_idx, model->SV[offsets[i]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[j-1][offsets[i]+k]);
@@ -154,7 +154,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 
 				for (k=0; k<model->nSV[j]; k++)
 				{
-					SG_DEBUG("setting SV[{}] to {}\n", sv_idx,
+					SG_DEBUG("setting SV[{}] to {}", sv_idx,
 							model->SV[offsets[i]+k]->index);
 					svm->set_support_vector(sv_idx, model->SV[offsets[j]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[i][offsets[j]+k]);
@@ -197,7 +197,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 //					idx=((num_classes-1)*model->label[j]+model->label[i])/2;
 //
 				SG_DEBUG("svm[{}] has {} sv (total: {}), b={} "
-						"label:({},{}) -> svm[{}]\n",
+						"label:({},{}) -> svm[{}]",
 						s, num_sv, model->l, bias, model->label[i],
 						model->label[j], idx);
 

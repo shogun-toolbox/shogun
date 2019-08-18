@@ -687,9 +687,9 @@ void Solver_MCSVM_CS::solve(PRNG& prng)
 			break;
 	}
 
-	io::info("\noptimization finished, #iter = {}\n",iter);
+	io::info("\noptimization finished, #iter = {}",iter);
 	if (iter >= max_iter)
-		io::info("Warning: reaching max number of iterations\n");
+		io::info("Warning: reaching max number of iterations");
 
 	SG_FREE(tx);
 }

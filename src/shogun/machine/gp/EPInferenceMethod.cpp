@@ -78,7 +78,7 @@ CEPInferenceMethod::~CEPInferenceMethod()
 
 void CEPInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
-        io::warn("The method does not require a minimizer. The provided minimizer will not be used.\n");
+        io::warn("The method does not require a minimizer. The provided minimizer will not be used.");
 }
 
 void CEPInferenceMethod::init()
@@ -96,7 +96,7 @@ CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_EP)
-		error("Provided inference is not of type CEPInferenceMethod!\n");
+		error("Provided inference is not of type CEPInferenceMethod!");
 
 	SG_REF(inference);
 	return (CEPInferenceMethod*)inference;
@@ -163,7 +163,7 @@ void CEPInferenceMethod::compute_gradient()
 
 void CEPInferenceMethod::update()
 {
-	SG_DEBUG("entering\n");
+	SG_DEBUG("entering");
 
 	// update kernel and feature matrix
 	CInference::update();
@@ -298,11 +298,11 @@ void CEPInferenceMethod::update()
 	if (sweep==m_max_sweep && CMath::abs(m_nlZ-nlZ_old)>m_tol)
 	{
 		io::warn("Maximum number ({}) of sweeps reached, but tolerance ({}) was "
-				"not yet reached. You can increase or decrease both.\n",
+				"not yet reached. You can increase or decrease both.",
 				m_max_sweep, m_tol);
 
 		if (m_fail_on_non_convergence)
-			error("EP did not converge. This error can be explicitly disabled.\n");
+			error("EP did not converge. This error can be explicitly disabled.");
 	}
 
 	// update vector alpha
@@ -313,7 +313,7 @@ void CEPInferenceMethod::update()
 	// update hash of the parameters
 	update_parameter_hash();
 
-	SG_DEBUG("leaving\n");
+	SG_DEBUG("leaving");
 }
 
 void CEPInferenceMethod::update_alpha()
@@ -479,7 +479,7 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt {}.{} parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter",
 			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -507,7 +507,7 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
 
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);

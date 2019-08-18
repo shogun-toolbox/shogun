@@ -76,7 +76,7 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 	else if (len>=(int32_t) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
-      error("unknown alphabet {}\n", al);
+      error("unknown alphabet {}", al);
    }
 
 	set_alphabet(alpha);
@@ -93,7 +93,7 @@ CAlphabet::CAlphabet(CAlphabet* a)
 : CSGObject()
 {
 	init();
-	require(a, "No Alphabet specified!\n");
+	require(a, "No Alphabet specified!");
 	set_alphabet(a->get_alphabet());
 	copy_histogram(a);
 }
@@ -168,7 +168,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 	init_map_table();
     clear_histogram();
 
-	SG_DEBUG("initialised alphabet {}\n", get_alphabet_name(alphabet))
+	SG_DEBUG("initialised alphabet {}", get_alphabet_name(alphabet))
 
 	return result;
 }
@@ -627,7 +627,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 	if (!result && print_error)
 	{
 		print_histogram();
-		error("ALPHABET does not contain all symbols in histogram\n");
+		error("ALPHABET does not contain all symbols in histogram");
 	}
 
 	return result;
@@ -641,7 +641,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 		{
 			print_histogram();
 			fprintf(stderr, "get_num_bits_in_histogram()=%i > get_num_bits()=%i\n", get_num_bits_in_histogram(), get_num_bits()) ;
-         error("ALPHABET too small to contain all symbols in histogram\n");
+         error("ALPHABET too small to contain all symbols in histogram");
 		}
 		return false;
 	}
@@ -656,7 +656,7 @@ void CAlphabet::copy_histogram(const CAlphabet* a)
 
 	if (h.vlen != sizeof(histogram)/sizeof(histogram[0]))
 	{
-		error("Histogram has {} elements, but {} elements where expected\n",
+		error("Histogram has {} elements, but {} elements where expected",
 				h.vlen, sizeof(histogram)/sizeof(histogram[0]));
 	}
 

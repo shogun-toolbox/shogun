@@ -36,7 +36,7 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 			break;
 		case SMT_UNKNOWN:
 		default:
-			error("The EStateModelType given is not valid\n");
+			error("The EStateModelType given is not valid");
 	}
 }
 
@@ -83,7 +83,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
 	require(obs.num_rows == D && obs.num_cols == state_seq.vlen,
-		"obs.num_rows ({}) != D ({}) OR obs.num_cols ({}) != state_seq.vlen ({})\n",
+		"obs.num_rows ({}) != D ({}) OR obs.num_cols ({}) != state_seq.vlen ({})",
 		obs.num_rows, D, obs.num_cols, state_seq.vlen);
 	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
@@ -171,9 +171,9 @@ CResultSet* CHMSVMModel::argmax(
 	if ( m_use_plifs )
 	{
 		require(m_plif_matrix, "PLiF matrix not allocated, has the SO machine been trained with "
-				"the use_plifs option?\n");
+				"the use_plifs option?");
 		require(m_plif_matrix->get_num_elements() == S*D, "Dimension mismatch in PLiF matrix, have the "
-				"feature dimension and/or number of states changed from training to prediction?\n");
+				"feature dimension and/or number of states changed from training to prediction?");
 	}
 
 	// Distribution of start states
@@ -232,7 +232,7 @@ CResultSet* CHMSVMModel::argmax(
 
 		require(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i ({}) and the length of its corresponding label y^i "
-			"({}) must be the same.\n", T, ytrue->get_data().size());
+			"({}) must be the same.", T, ytrue->get_data().size());
 
 		SGMatrix< float64_t > loss_matrix = m_state_model->loss_matrix(ytrue);
 
@@ -321,7 +321,7 @@ CResultSet* CHMSVMModel::argmax(
 
 	require(opt_path[T-1]!=-1, "Viterbi decoding found no possible sequence states.\n"
 			"Maybe the state model used cannot produce such sequence.\n"
-			"If using the TwoStateModel, please use sequences of length greater than two.\n");
+			"If using the TwoStateModel, please use sequences of length greater than two.");
 
 	for ( int32_t i = T-1 ; i > 0 ; --i )
 		opt_path[i-1] = trb[opt_path[i]*T + i];
@@ -457,7 +457,7 @@ bool CHMSVMModel::check_training_setup() const
 			if ( state < 0 || state >= hmsvm_labels->get_num_states() )
 			{
 				error("Found state out of {0, 1, ..., "
-					 "num_states-1}\n");
+					 "num_states-1}");
 				return false;
 			}
 			else
@@ -474,7 +474,7 @@ bool CHMSVMModel::check_training_setup() const
 	{
 		if ( state_freq[i] <= 0 )
 		{
-			error("What? State {} has never appeared\n", i);
+			error("What? State {} has never appeared", i);
 			return false;
 		}
 	}

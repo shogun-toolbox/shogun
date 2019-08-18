@@ -67,10 +67,10 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	SGMatrix<float64_t> bagged_outputs =
 	    apply_outputs_without_combination(data);
 
-	require(m_labels, "Labels not set.\n");
+	require(m_labels, "Labels not set.");
 	require(
 	    m_labels->get_label_type() == LT_MULTICLASS,
-	    "Labels ({}) are not compatible with multiclass.\n",
+	    "Labels ({}) are not compatible with multiclass.",
 	    m_labels->get_name());
 
 	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
@@ -136,7 +136,7 @@ CBaggingMachine::apply_outputs_without_combination(CFeatures* data)
 		if (l!=NULL)
 			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
 		else
-			error("NULL returned by apply method\n");
+			error("NULL returned by apply method");
 
 		float64_t* bag_results = output.get_column_vector(i);
 		sg_memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
@@ -358,7 +358,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		if (l!=NULL)
 			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
 		else
-			error("NULL returned by apply method\n");
+			error("NULL returned by apply method");
 
 		// assign the values in the matrix (NAN) that are in-bag!
 		for (index_t j = 0; j < oob.vlen; j++)
@@ -398,7 +398,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 			break;
 
 		default:
-			error("Unsupported label type\n");
+			error("Unsupported label type");
 	}
 	SG_REF(predicted);
 

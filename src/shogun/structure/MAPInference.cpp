@@ -14,7 +14,7 @@ using namespace shogun;
 
 CMAPInference::CMAPInference() : CSGObject()
 {
-	io::unstable("CMAPInference::CMAPInference()");
+	unstable(SOURCE_LOCATION);
 
 	init();
 }
@@ -25,7 +25,7 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 	init();
 	m_fg = fg;
 
-	require(fg != NULL, "{}::CMAPInference(): fg cannot be NULL!\n", get_name());
+	require(fg != NULL, "{}::CMAPInference(): fg cannot be NULL!", get_name());
 
 	switch(inference_method)
 	{
@@ -39,19 +39,19 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 			m_infer_impl = new CGEMPLP(fg);
 			break;
 		case LOOPY_MAX_PROD:
-			error("{}::CMAPInference(): LoopyMaxProduct has not been implemented!\n",
+			error("{}::CMAPInference(): LoopyMaxProduct has not been implemented!",
 				get_name());
 			break;
 		case LP_RELAXATION:
-			error("{}::CMAPInference(): LPRelaxation has not been implemented!\n",
+			error("{}::CMAPInference(): LPRelaxation has not been implemented!",
 				get_name());
 			break;
 		case TRWS_MAX_PROD:
-			error("{}::CMAPInference(): TRW-S has not been implemented!\n",
+			error("{}::CMAPInference(): TRW-S has not been implemented!",
 				get_name());
 			break;
 		default:
-			error("{}::CMAPInference(): unsupported inference method!\n",
+			error("{}::CMAPInference(): unsupported inference method!",
 				get_name());
 			break;
 	}

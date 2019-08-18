@@ -204,20 +204,20 @@ CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 		mode |= O_WRONLY;
 		break;
 	default:
-		error("Unknown mode '{}'\n", task);
+		error("Unknown mode '{}'", task);
 	}
 
 	if (filename)
 	{
 		int file = open((const char*) filename, mode);
 		if (file < 0)
-			error("Error opening file '{}'\n", filename);
+			error("Error opening file '{}'", filename);
 
 		buf = new CIOBuffer(file);
 		SG_REF(buf);
 	}
 	else
-		error("Error getting the file name!\n");
+		error("Error getting the file name!");
 }
 
 CStreamingFile::~CStreamingFile()

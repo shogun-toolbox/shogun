@@ -51,11 +51,11 @@ SGVector<float64_t> CLikelihoodModel::get_predictive_log_probabilities(
 SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
 		const CLabels* lab, SGMatrix<float64_t> F) const
 {
-	require(lab, "Given labels are NULL!\n");
+	require(lab, "Given labels are NULL!");
 	require(lab->get_num_labels()==F.num_rows, "Number of labels ({}) does "
-			"not match dimension of functions ({})\n",
+			"not match dimension of functions ({})",
 			lab->get_num_labels(),F.num_rows);
-	require(F.num_cols>0, "Number of passed functions ({}) must be positive\n",
+	require(F.num_cols>0, "Number of passed functions ({}) must be positive",
 			F.num_cols);
 
 	SGVector<float64_t> result(F.num_cols);
@@ -72,10 +72,10 @@ SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
 SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels* lab) const
 {
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 			"Length of the vector of means ({}), length of the vector of "
-			"variances ({}) and number of labels ({}) should be the same\n",
+			"variances ({}) and number of labels ({}) should be the same",
 			mu.vlen, s2.vlen, lab->get_num_labels());
 
 	SGVector<float64_t> result(mu.vlen);
@@ -89,10 +89,10 @@ SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
 SGVector<float64_t> CLikelihoodModel::get_second_moments(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels* lab) const
 {
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 			"Length of the vector of means ({}), length of the vector of "
-			"variances ({}) and number of labels ({}) should be the same\n",
+			"variances ({}) and number of labels ({}) should be the same",
 			mu.vlen, s2.vlen, lab->get_num_labels());
 
 	SGVector<float64_t> result(mu.vlen);

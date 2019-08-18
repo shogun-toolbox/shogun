@@ -47,7 +47,7 @@ CSparseInference::CSparseInference() : CInference()
 
 void CSparseInference::check_features()
 {
-	require(m_features, "Input features not set\n");
+	require(m_features, "Input features not set");
 }
 
 void CSparseInference::convert_features()
@@ -59,10 +59,10 @@ void CSparseInference::convert_features()
 	CDotFeatures *lat_type=new CDenseFeatures<float64_t>(lat_m);
 
 	require(feat_type, "Input features ({}) must be DotFeatures"
-		" or one of its subclasses\n", m_features->get_name());
+		" or one of its subclasses", m_features->get_name());
 	require(feat_type->get_dim_feature_space()==lat_type->get_dim_feature_space(),
 		"The dim of feature spaces between"
-		" input features ({}) and inducing features ({}) must be same\n",
+		" input features ({}) and inducing features ({}) must be same",
 		feat_type->get_dim_feature_space(),
 		lat_type->get_dim_feature_space());
 	if((m_features->get_feature_class()!=lat_type->get_feature_class())||
@@ -71,14 +71,14 @@ void CSparseInference::convert_features()
 		if(m_features->get_feature_class()!=lat_type->get_feature_class())
 		{
 			io::warn("Input features ({}) and inducing features ({}) are"
-				" difference classes\n", m_features->get_name(),
+				" difference classes", m_features->get_name(),
 				lat_type->get_name());
 		}
 		if(m_features->get_feature_type()!=lat_type->get_feature_type())
 		{
-			io::warn("Input features and inducing features are difference types\n");
+			io::warn("Input features and inducing features are difference types");
 		}
-		io::warn("Input features may be deleted\n");
+		io::warn("Input features may be deleted");
 		SGMatrix<float64_t> feat_m=feat_type->get_computed_dot_feature_matrix();
 		SG_UNREF(m_features);
 		m_features=new CDenseFeatures<float64_t>(feat_m);
@@ -128,8 +128,8 @@ void CSparseInference::check_members() const
 {
 	CInference::check_members();
 
-	require(m_inducing_features.num_rows, "Inducing features should not be empty\n");
-	require(m_inducing_features.num_cols, "Inducing features should not be empty\n");
+	require(m_inducing_features.num_rows, "Inducing features should not be empty");
+	require(m_inducing_features.num_cols, "Inducing features should not be empty");
 }
 
 SGVector<float64_t> CSparseInference::get_alpha()

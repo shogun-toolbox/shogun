@@ -224,7 +224,7 @@ CSGObject::CSGObject() : self(), param_obs_list()
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject created ({})\n", fmt::ptr(this))
+	SG_GCDEBUG("SGObject created ({})", fmt::ptr(this))
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
@@ -233,12 +233,12 @@ CSGObject::CSGObject(const CSGObject& orig)
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject copied ({})\n", fmt::ptr(this))
+	SG_GCDEBUG("SGObject copied ({})", fmt::ptr(this))
 }
 
 CSGObject::~CSGObject()
 {
-	SG_GCDEBUG("SGObject destroyed ({})\n", fmt::ptr(this))
+	SG_GCDEBUG("SGObject destroyed ({})", fmt::ptr(this))
 
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -252,14 +252,14 @@ CSGObject::~CSGObject()
 int32_t CSGObject::ref()
 {
 	int32_t count = m_refcount->ref();
-	SG_GCDEBUG("ref() refcount {} obj {} ({}) increased\n", count, this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("ref() refcount {} obj {} ({}) increased", count, this->get_name(), fmt::ptr(this))
 	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::ref_count()
 {
 	int32_t count = m_refcount->ref_count();
-	SG_GCDEBUG("ref_count(): refcount {}, obj {} ({})\n", count, this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("ref_count(): refcount {}, obj {} ({})", count, this->get_name(), fmt::ptr(this))
 	return m_refcount->ref_count();
 }
 
@@ -268,13 +268,13 @@ int32_t CSGObject::unref()
 	int32_t count = m_refcount->unref();
 	if (count<=0)
 	{
-		SG_GCDEBUG("unref() refcount {}, obj {} ({}) destroying\n", count, this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("unref() refcount {}, obj {} ({}) destroying", count, this->get_name(), fmt::ptr(this))
 		delete this;
 		return 0;
 	}
 	else
 	{
-		SG_GCDEBUG("unref() refcount {} obj {} ({}) decreased\n", count, this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("unref() refcount {} obj {} ({}) decreased", count, this->get_name(), fmt::ptr(this))
 		return m_refcount->ref_count();
 	}
 }
@@ -293,18 +293,18 @@ CSGObject * CSGObject::deep_copy() const
 
 void CSGObject::update_parameter_hash() const
 {
-	SG_DEBUG("entering\n")
+	SG_DEBUG("entering")
 
 	m_hash = hash();
 
-	SG_DEBUG("leaving\n")
+	SG_DEBUG("leaving")
 }
 
 bool CSGObject::parameter_hash_changed() const
 {
-	SG_DEBUG("entering\n")
+	SG_DEBUG("entering")
 
-	SG_DEBUG("leaving\n")
+	SG_DEBUG("leaving")
 	return (m_hash!=hash());
 }
 
@@ -327,14 +327,14 @@ void CSGObject::unset_generic()
 
 bool CSGObject::serialize(io::CSerializer* ser)
 {
-	require(ser != nullptr, "Serializer format object should be non-null\n");
+	require(ser != nullptr, "Serializer format object should be non-null");
 	ser->write(wrap(this));
 	return true;
 }
 
 bool CSGObject::deserialize(io::CDeserializer* deser)
 {
-	require(deser != nullptr, "Deserializer format object should be non-null\n");
+	require(deser != nullptr, "Deserializer format object should be non-null");
 	deser->read(this);
 	return true;
 }
@@ -442,10 +442,10 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 
 CSGObject* CSGObject::clone(ParameterProperties pp) const
 {
-	SG_DEBUG("Starting to clone {} at {}.\n", get_name(), fmt::ptr(this));
-	SG_DEBUG("Constructing an empty instance of {}.\n", get_name());
+	SG_DEBUG("Starting to clone {} at {}.", get_name(), fmt::ptr(this));
+	SG_DEBUG("Constructing an empty instance of {}.", get_name());
 	CSGObject* clone = create_empty();
-	SG_DEBUG("Empty instance of {} created at {}.\n", get_name(), fmt::ptr(clone));
+	SG_DEBUG("Empty instance of {} created at {}.", get_name(), fmt::ptr(clone));
 
 	require(
 	    clone, "Could not create empty instance of {}. The reason for "
@@ -463,19 +463,19 @@ CSGObject* CSGObject::clone(ParameterProperties pp) const
 		if (!own.cloneable())
 		{
 			SG_DEBUG(
-			    "Skipping clone of {}::{} of type {}.\n", this->get_name(),
+			    "Skipping clone of {}::{} of type {}.", this->get_name(),
 			    tag.name().c_str(), own.type().c_str());
 			continue;
 		}
 
 		SG_DEBUG(
-			"Cloning parameter {}::{} of type {}.\n", this->get_name(),
+			"Cloning parameter {}::{} of type {}.", this->get_name(),
 			tag.name().c_str(), own.type().c_str());
 
 		clone->get_parameter(tag).get_value().clone_from(own);
 	}
 
-	SG_DEBUG("Done cloning {} at {}, new object at {}.\n", get_name(), fmt::ptr(this), fmt::ptr(clone));
+	SG_DEBUG("Done cloning {} at {}, new object at {}.", get_name(), fmt::ptr(this), fmt::ptr(clone));
 	return clone;
 }
 
@@ -491,7 +491,7 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
 		error(
-		    "{}::{} is marked as read-only and cannot be modified!\n",
+		    "{}::{} is marked as read-only and cannot be modified!",
 		    get_name(), _tag.name().c_str());
 
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
@@ -500,7 +500,7 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 		if (!msg.empty())
 		{
 			error(
-					"{}::{} cannot be updated because it must be: {}!\n",
+					"{}::{} cannot be updated because it must be: {}!",
 					get_name(), _tag.name().c_str(), msg.c_str());
 		}
 	}
@@ -525,7 +525,7 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	if (parameter.get_value().empty())
 	{
 		error(
-		    "There is no parameter called \"{}\" in {}\n", _tag.name().c_str(),
+		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
 		    get_name());
 	}
 	return parameter;
@@ -545,7 +545,7 @@ AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 	if (parameter.get_value().empty())
 	{
 		error(
-		    "There is no parameter called \"{}\" in {}\n", _tag.name().c_str(),
+		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
 		    get_name());
 	}
 	return parameter;
@@ -562,7 +562,7 @@ void CSGObject::add_callback_function(
 	require(function, "Function object is not callable");
 	BaseTag tag(name);
 	require(
-	    has_parameter(tag), "There is no parameter called \"{}\" in {}\n",
+	    has_parameter(tag), "There is no parameter called \"{}\" in {}",
 	    tag.name().c_str(), get_name());
 
 	auto& param = self->at(tag);
@@ -696,7 +696,7 @@ bool CSGObject::equals(const CSGObject* other) const
 
 	if (other == nullptr)
 	{
-		SG_DEBUG("No object to compare to provided.\n");
+		SG_DEBUG("No object to compare to provided.");
 		return false;
 	}
 
@@ -704,7 +704,7 @@ bool CSGObject::equals(const CSGObject* other) const
 	if (strcmp(this->get_name(), other->get_name()))
 	{
 		SG_DEBUG(
-		    "Own type {} differs from provided {}.\n", get_name(),
+		    "Own type {} differs from provided {}.", get_name(),
 		    other->get_name());
 		return false;
 	}
@@ -719,7 +719,7 @@ bool CSGObject::equals(const CSGObject* other) const
 		{
 			SG_DEBUG(
 			    "Skipping comparison of {}::{} of type {} as it is "
-			    "non-visitable.\n",
+			    "non-visitable.",
 			    this->get_name(), tag.name().c_str(), own.type().c_str());
 			continue;
 		}
@@ -727,7 +727,7 @@ bool CSGObject::equals(const CSGObject* other) const
 		const Any& given = other->get_parameter(tag).get_value();
 
 		SG_DEBUG(
-		    "Comparing parameter {}::{} of type {}.\n", this->get_name(),
+		    "Comparing parameter {}::{} of type {}.", this->get_name(),
 		    tag.name().c_str(), own.type().c_str());
 		if (own != given)
 		{
@@ -744,14 +744,14 @@ bool CSGObject::equals(const CSGObject* other) const
 				   << "::" << tag.name() << "=";
 				given.visit(visitor.get());
 
-				SG_DEBUG("{}\n", ss.str().c_str());
+				SG_DEBUG("{}", ss.str().c_str());
 			}
 
 			return false;
 		}
 	}
 
-	SG_DEBUG("All parameters of {} equal.\n", this->get_name());
+	SG_DEBUG("All parameters of {} equal.", this->get_name());
 	return true;
 }
 
@@ -798,7 +798,7 @@ CSGObject* CSGObject::get(const std::string& name, index_t index) const
 	if (!result && has(name))
 	{
 		error(
-			"Cannot get array parameter {}::{}[{}] of type {} as object.\n",
+			"Cannot get array parameter {}::{}[{}] of type {} as object.",
 			get_name(), name.c_str(), index,
 			self->map[BaseTag(name)].get_value().type().c_str());
 	}
@@ -815,14 +815,14 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 {
 	if (!has(name))
 	{
-		error("Parameter {}::{} does not exist.\n", get_name(), name.c_str());
+		error("Parameter {}::{} does not exist.", get_name(), name.c_str());
 	}
 	if (auto* result = get(name, std::nothrow))
 	{
 		return result;
 	}
 	error(
-			"Cannot get parameter {}::{} of type {} as object.\n",
+			"Cannot get parameter {}::{} of type {} as object.",
 			get_name(), name.c_str(),
 			self->map[BaseTag(name)].get_value().type().c_str());
 	return nullptr;

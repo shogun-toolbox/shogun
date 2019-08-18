@@ -48,7 +48,7 @@ CTwoDistributionTest::~CTwoDistributionTest()
 
 void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
 {
-	require(samples_from_p, "Samples from P cannot be NULL!\n");
+	require(samples_from_p, "Samples from P cannot be NULL!");
 	auto& dm=get_data_mgr();
 	dm.samples_at(0)=samples_from_p;
 }
@@ -61,7 +61,7 @@ CFeatures* CTwoDistributionTest::get_p() const
 
 void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
 {
-	require(samples_from_q, "Samples from Q cannot be NULL!\n");
+	require(samples_from_q, "Samples from Q cannot be NULL!");
 	auto& dm=get_data_mgr();
 	dm.samples_at(1)=samples_from_q;
 }
@@ -104,14 +104,14 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 
 	data_mgr.start();
 	auto samples=data_mgr.next();
-	require(!samples.empty(), "Could not fetch samples!\n");
+	require(!samples.empty(), "Could not fetch samples!");
 
 	CFeatures *samples_p=samples[0][0];
 	CFeatures *samples_q=samples[1][0];
 
 	distance->cleanup();
 	distance->remove_lhs_and_rhs();
-	require(distance->init(samples_p, samples_q), "Could not initialize distance instance!\n");
+	require(distance->init(samples_p, samples_q), "Could not initialize distance instance!");
 	auto dist_mat=distance->get_distance_matrix<float32_t>();
 	distance->remove_lhs_and_rhs();
 	distance->cleanup();
@@ -127,14 +127,14 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 
 CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distance)
 {
-	require(distance!=nullptr, "Distance instance cannot be NULL!\n");
+	require(distance!=nullptr, "Distance instance cannot be NULL!");
 	auto& data_mgr=get_data_mgr();
 	bool is_blockwise=data_mgr.is_blockwise();
 	data_mgr.set_blockwise(false);
 
 	data_mgr.start();
 	auto samples=data_mgr.next();
-	require(!samples.empty(), "Could not fetch samples!\n");
+	require(!samples.empty(), "Could not fetch samples!");
 
 	CFeatures *samples_p=samples[0][0];
 	CFeatures *samples_q=samples[1][0];
@@ -146,7 +146,7 @@ CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distanc
 
 	distance->cleanup();
 	distance->remove_lhs_and_rhs();
-	require(distance->init(p_and_q, p_and_q), "Could not initialize distance instance!\n");
+	require(distance->init(p_and_q, p_and_q), "Could not initialize distance instance!");
 	auto dist_mat=distance->get_distance_matrix<float32_t>();
 	distance->remove_lhs_and_rhs();
 	distance->cleanup();

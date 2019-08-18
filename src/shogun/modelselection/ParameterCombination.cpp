@@ -69,14 +69,14 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 			else
 			{
 				io::warn("Parameter {}.{} was not added to parameter combination, "
-					"since it isn't a type currently supported\n", obj->get_name(),
+					"since it isn't a type currently supported", obj->get_name(),
 					param->m_name);
 			}
 		}
 		else
 		{
 			io::warn("Parameter {}.{} was not added to parameter combination, "
-					"since it isn't of floating point type\n", obj->get_name(),
+					"since it isn't of floating point type", obj->get_name(),
 					param->m_name);
 		}
 	}
@@ -376,20 +376,20 @@ void CParameterCombination::print_tree(int prefix_num) const
 DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 		const DynArray<Parameter*>& set_1, const DynArray<Parameter*>& set_2)
 {
-	SG_DEBUG("entering CParameterCombination::parameter_set_multiplication()\n")
+	SG_DEBUG("entering CParameterCombination::parameter_set_multiplication()")
 
-	SG_DEBUG("set 1:\n")
+	SG_DEBUG("set 1:")
 	for (index_t i=0; i<set_1.get_num_elements(); ++i)
 	{
 		for (index_t j=0; j<set_1.get_element(i)->get_num_parameters(); ++j)
-			SG_DEBUG("\t{}\n", set_1.get_element(i)->get_parameter(j)->m_name)
+			SG_DEBUG("\t{}", set_1.get_element(i)->get_parameter(j)->m_name)
 	}
 
-	SG_DEBUG("set 2:\n")
+	SG_DEBUG("set 2:")
 	for (index_t i=0; i<set_2.get_num_elements(); ++i)
 	{
 		for (index_t j=0; j<set_2.get_element(i)->get_num_parameters(); ++j)
-			SG_DEBUG("\t{}\n", set_2.get_element(i)->get_parameter(j)->m_name)
+			SG_DEBUG("\t{}", set_2.get_element(i)->get_parameter(j)->m_name)
 	}
 
 	DynArray<Parameter*>* result=new DynArray<Parameter*>();
@@ -405,7 +405,7 @@ DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 		}
 	}
 
-	SG_DEBUG("leaving CParameterCombination::parameter_set_multiplication()\n")
+	SG_DEBUG("leaving CParameterCombination::parameter_set_multiplication()")
 	return result;
 }
 
@@ -469,7 +469,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 				else
 				{
 					error("leaf sets multiplication only possible if all "
-							"leafs have non-NULL Parameter instances\n");
+							"leafs have non-NULL Parameter instances");
 				}
 
 				SG_UNREF(current_node);
@@ -534,7 +534,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 				const CDynamicObjectArray* sets,
 				const CParameterCombination* new_root)
 {
-	SG_DEBUG("entering CParameterCombination::non_value_tree_multiplication()\n")
+	SG_DEBUG("entering CParameterCombination::non_value_tree_multiplication()")
 	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* first step: get all names in the sets */
@@ -561,9 +561,9 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 		SG_UNREF(current_set);
 	}
 
-	SG_DEBUG("all names\n")
+	SG_DEBUG("all names")
 	for (std::set<string>::iterator it=names.begin(); it!=names.end(); ++it)
-		SG_DEBUG("\"{}\"\n", (*it).c_str())
+		SG_DEBUG("\"{}\"", (*it).c_str())
 
 	/* only do stuff if there are names */
 	if (!names.empty())
@@ -578,7 +578,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 		CDynamicObjectArray* trees=
 				CParameterCombination::extract_trees_with_name(sets, first_name);
 
-		SG_DEBUG("adding trees for first name \"{}\":\n", first_name)
+		SG_DEBUG("adding trees for first name \"{}\":", first_name)
 		for (index_t i=0; i<trees->get_num_elements(); ++i)
 		{
 			CParameterCombination* current_tree=
@@ -594,11 +594,11 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 		SG_UNREF(trees);
 
 		/* now iterate over the remaining names and build products */
-		SG_DEBUG("building products with remaining trees:\n")
+		SG_DEBUG("building products with remaining trees:")
 		std::set<string>::iterator it=names.begin();
 		for (++it; it!=names.end(); ++it)
 		{
-			SG_DEBUG("processing \"{}\"\n", (*it).c_str())
+			SG_DEBUG("processing \"{}\"", (*it).c_str())
 
 			/* extract all trees with current name */
 			const char* current_name=(*it).c_str();
@@ -624,7 +624,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 					new_element->append_child(to_add);
 					SG_UNREF(to_add);
 					new_result->append_element(new_element);
-					// SG_DEBUG("added:\n")
+					// SG_DEBUG("added:")
 					// new_element->print_tree();
 				}
 			}
@@ -638,7 +638,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 		}
 	}
 
-	SG_DEBUG("leaving CParameterCombination::non_value_tree_multiplication()\n")
+	SG_DEBUG("leaving CParameterCombination::non_value_tree_multiplication()")
 	return result;
 }
 
@@ -736,7 +736,7 @@ void CParameterCombination::apply_to_modsel_parameter(
 			{
 				error("invalid CParameterCombination node type, has children"
 						" and more than one parameter or is not a "
-						"CSGObject.\n");
+						"CSGObject.");
 			}
 
 			/* cast is now safe */
@@ -756,7 +756,7 @@ void CParameterCombination::apply_to_modsel_parameter(
 		}
 	}
 	else
-		error("CParameterCombination node has illegal type.\n");
+		error("CParameterCombination node has illegal type.");
 }
 
 void CParameterCombination::build_parameter_values_map(

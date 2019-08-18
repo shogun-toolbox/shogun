@@ -12,7 +12,7 @@ using namespace shogun;
 CGraphCut::CGraphCut()
 	: CMAPInferImpl()
 {
-	io::unstable("CGraphCut::CGraphCut()");
+	unstable(SOURCE_LOCATION);
 
 	init();
 }
@@ -190,7 +190,7 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 {
 	require(assignment.size() == m_fg->get_cardinalities().size(),
 	        "{}::inference(): the output assignment should be prepared as"
-	        "the same size as variables!\n", get_name());
+	        "the same size as variables!", get_name());
 
 	// compute max flow
 	init_maxflow();
@@ -202,8 +202,8 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	}
 
 	m_map_energy = m_fg->evaluate_energy(assignment);
-	SG_DEBUG("fg.evaluate_energy(assignment) = {}\n", m_fg->evaluate_energy(assignment));
-	SG_DEBUG("minimized energy = {}\n", m_map_energy);
+	SG_DEBUG("fg.evaluate_energy(assignment) = {}", m_fg->evaluate_energy(assignment));
+	SG_DEBUG("minimized energy = {}", m_map_energy);
 
 	return m_map_energy;
 }
@@ -291,7 +291,7 @@ void CGraphCut::add_factor(CFactor* factor)
 		// It is the sufficient and necessary condition for any function to be graph-representable
 		if (term < 0)
 		{
-			error("\nRegularity condition is not satisfied\n");
+			error("\nRegularity condition is not satisfied");
 		}
 
 		add_edge(var0, var1, term, 0);

@@ -181,7 +181,7 @@ class Model
 		{
 #ifdef HMM_DEBUG
 			if ((pos<0)||(pos*num_states+state>65336))
-				SG_DEBUG("index out of range in get_fix_pos_state({},{},{}) \n", pos,state,num_states)
+				SG_DEBUG("index out of range in get_fix_pos_state({},{},{}) ", pos,state,num_states)
 #endif
 			return fix_pos_state[pos*num_states+state] ;
 		}
@@ -270,7 +270,7 @@ class Model
 		{
 #ifdef HMM_DEBUG
 			if ((pos<0)||(pos*num_states+state>65336))
-				SG_DEBUG("index out of range in set_fix_pos_state({},{},{},{}) [{}]\n", pos,state,num_states,(int)value, pos*num_states+state)
+				SG_DEBUG("index out of range in set_fix_pos_state({},{},{},{}) [{}]", pos,state,num_states,(int)value, pos*num_states+state)
 #endif
 			fix_pos_state[pos*num_states+state]=value;
 			if (value==FIX_ALLOWED)
@@ -988,7 +988,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
-				SG_DEBUG("index out of range in set_q({},{:e}) [{}]\n", offset,value,N)
+				SG_DEBUG("index out of range in set_q({},{:e}) [{}]", offset,value,N)
 #endif
 			end_state_distribution_q[offset]=value;
 		}
@@ -1001,7 +1001,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
-				SG_DEBUG("index out of range in set_p({},.) [{}]\n", offset,N)
+				SG_DEBUG("index out of range in set_p({},.) [{}]", offset,N)
 #endif
 			initial_state_distribution_p[offset]=value;
 		}
@@ -1015,7 +1015,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
-				SG_DEBUG("index out of range in set_A({},{},.) [{},{}]\n",line_,column,N,N)
+				SG_DEBUG("index out of range in set_A({},{},.) [{},{}]",line_,column,N,N)
 #endif
 			transition_matrix_A[line_+column*N]=value;
 		}
@@ -1029,7 +1029,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
-				SG_DEBUG("index out of range in set_a({},{},.) [{},{}]\n",line_,column,N,N)
+				SG_DEBUG("index out of range in set_a({},{},.) [{},{}]",line_,column,N,N)
 #endif
 			transition_matrix_a[line_+column*N]=value; // look also best_path!
 		}
@@ -1043,7 +1043,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
-				SG_DEBUG("index out of range in set_B({},{}) [{},{}]\n", line_, column,N,M)
+				SG_DEBUG("index out of range in set_B({},{}) [{},{}]", line_, column,N,M)
 #endif
 			observation_matrix_B[line_*M+column]=value;
 		}
@@ -1057,7 +1057,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
-				SG_DEBUG("index out of range in set_b({},{}) [{},{}]\n", line_, column,N,M)
+				SG_DEBUG("index out of range in set_b({},{}) [{},{}]", line_, column,N,M)
 #endif
 			observation_matrix_b[line_*M+column]=value;
 		}
@@ -1073,7 +1073,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((time>=p_observations->get_max_vector_length())||(state>N))
-				SG_DEBUG("index out of range in set_psi({},{},.) [{},{}]\n",time,state,p_observations->get_max_vector_length(),N)
+				SG_DEBUG("index out of range in set_psi({},{},.) [{},{}]",time,state,p_observations->get_max_vector_length(),N)
 #endif
 			STATES_PER_OBSERVATION_PSI(dimension)[time*N+state]=value;
 		}
@@ -1086,7 +1086,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
-				SG_DEBUG("index out of range in {:e}=get_q({}) [{}]\n", end_state_distribution_q[offset],offset,N)
+				SG_DEBUG("index out of range in {:e}=get_q({}) [{}]", end_state_distribution_q[offset],offset,N)
 #endif
 			return end_state_distribution_q[offset];
 		}
@@ -1099,7 +1099,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
-				SG_DEBUG("index out of range in get_p({},.) [{}]\n", offset,N)
+				SG_DEBUG("index out of range in get_p({},.) [{}]", offset,N)
 #endif
 			return initial_state_distribution_p[offset];
 		}
@@ -1113,7 +1113,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
-				SG_DEBUG("index out of range in get_A({},{}) [{},{}]\n",line_,column,N,N)
+				SG_DEBUG("index out of range in get_A({},{}) [{},{}]",line_,column,N,N)
 #endif
 			return transition_matrix_A[line_+column*N];
 		}
@@ -1127,7 +1127,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
-				SG_DEBUG("index out of range in get_a({},{}) [{},{}]\n",line_,column,N,N)
+				SG_DEBUG("index out of range in get_a({},{}) [{},{}]",line_,column,N,N)
 #endif
 			return transition_matrix_a[line_+column*N]; // look also best_path()!
 		}
@@ -1141,7 +1141,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
-				SG_DEBUG("index out of range in get_B({},{}) [{},{}]\n", line_, column,N,M)
+				SG_DEBUG("index out of range in get_B({},{}) [{},{}]", line_, column,N,M)
 #endif
 			return observation_matrix_B[line_*M+column];
 		}
@@ -1155,7 +1155,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
-				SG_DEBUG("index out of range in get_b({},{}) [{},{}]\n", line_, column,N,M)
+				SG_DEBUG("index out of range in get_b({},{}) [{},{}]", line_, column,N,M)
 #endif
 			//io::print("idx {}\n", line_*M+column);
 			return observation_matrix_b[line_*M+column];
@@ -1172,7 +1172,7 @@ class CHMM : public RandomMixin<CDistribution>
 		{
 #ifdef HMM_DEBUG
 			if ((time>=p_observations->get_max_vector_length())||(state>N))
-				SG_DEBUG("index out of range in get_psi({},{}) [{},{}]\n",time,state,p_observations->get_max_vector_length(),N)
+				SG_DEBUG("index out of range in get_psi({},{}) [{},{}]",time,state,p_observations->get_max_vector_length(),N)
 #endif
 			return STATES_PER_OBSERVATION_PSI(dimension)[time*N+state];
 		}
@@ -1438,7 +1438,7 @@ inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 			sum= CMath::logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
 	}
 	//if (sum==-CMath::INFTY)
-	// SG_DEBUG("log derivative is -inf: dim={}, state={}, obs={}\n",dimension, i, j)
+	// SG_DEBUG("log derivative is -inf: dim={}, state={}, obs={}",dimension, i, j)
 	return sum;
 }
 //@}
@@ -1501,7 +1501,7 @@ protected:
 	/// parse error messages
 	inline void error_in_line(int32_t p_line, const char* str)
 	{
-		error("error in line {} {}\n", p_line, str);
+		error("error in line {} {}", p_line, str);
 	}
 	//@}
 

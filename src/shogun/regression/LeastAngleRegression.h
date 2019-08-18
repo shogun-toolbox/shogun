@@ -96,9 +96,9 @@ public:
 	void switch_w(int32_t num_variable)
 	{
 		SGVector<float64_t> w = get_w();
-		require(w.vlen > 0,"Please train the model (i.e. run the model's train() method) before updating its weights.\n");
+		require(w.vlen > 0,"Please train the model (i.e. run the model's train() method) before updating its weights.");
 		require(size_t(num_variable) < m_beta_idx.size() && num_variable >= 0,
-			"Cannot switch to an estimator of {} non-zero coefficients.\n", num_variable);
+			"Cannot switch to an estimator of {} non-zero coefficients.", num_variable);
 		if (w.vector == NULL)
 			w = SGVector<float64_t>(w.vlen);
 

@@ -32,10 +32,10 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
-	require(m_method, "Inference method should not be NULL\n");
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
-			"regression\n",	m_method->get_name(), lik->get_name());
+			"regression",	m_method->get_name(), lik->get_name());
 	SG_UNREF(lik);
 
 	CRegressionLabels* result;
@@ -75,10 +75,10 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
-	require(m_method, "Inference method should not be NULL\n");
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
-			"regression\n",	m_method->get_name(), lik->get_name());
+			"regression",	m_method->get_name(), lik->get_name());
 	SG_UNREF(lik);
 
 	if (data)
@@ -104,10 +104,10 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
-	require(m_method, "Inference method should not be NULL\n");
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
-			"regression\n",	m_method->get_name(), lik->get_name());
+			"regression",	m_method->get_name(), lik->get_name());
 	SG_UNREF(lik);
 
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -126,10 +126,10 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
-	require(m_method, "Inference method should not be NULL\n");
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
-			"regression\n",	m_method->get_name(), lik->get_name());
+			"regression",	m_method->get_name(), lik->get_name());
 
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);

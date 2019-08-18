@@ -75,8 +75,8 @@ void CRegressionExample::init()
 
 float64_t CRegressionExample::get_cost()
 {
-	require(m_x.num_rows==m_y.vlen,"samples size ({} {}) must match\n",m_x.num_rows,m_y.vlen);
-	require(m_x.num_cols==m_w.vlen,"features size ({} {}) must match\n",m_x.num_cols,m_w.vlen);
+	require(m_x.num_rows==m_y.vlen,"samples size ({} {}) must match",m_x.num_rows,m_y.vlen);
+	require(m_x.num_cols==m_w.vlen,"features size ({} {}) must match",m_x.num_cols,m_w.vlen);
 
 	Map<MatrixXd> e_x(m_x.matrix, m_x.num_rows, m_x.num_cols);
 	Map<VectorXd> e_w(m_w.vector, m_w.vlen);
@@ -87,8 +87,8 @@ float64_t CRegressionExample::get_cost()
 
 SGVector<float64_t> CRegressionExample::get_gradient(TParameter * param)
 {
-	require(param, "param not set\n");
-	require(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(param, "param not set");
+	require(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
 	SGVector<float64_t> res(m_w.vlen);
 	res.set_const(0.0);
@@ -104,19 +104,19 @@ SGVector<float64_t> CRegressionExample::get_gradient(TParameter * param)
 
 SGVector<float64_t> CRegressionExample::get_variable(TParameter * param)
 {
-	require(param, "param not set\n");
+	require(param, "param not set");
 
-	require(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
 	return m_w;
 }
 
 SGVector<float64_t> CRegressionExample::get_gradient(TParameter * param, index_t idx)
 {
-	require(param, "param not set\n");
-	require(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(param, "param not set");
+	require(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
-	require(idx>=0 && idx<m_y.vlen,"out of bound\n");
+	require(idx>=0 && idx<m_y.vlen,"out of bound");
 	SGVector<float64_t> res(m_w.vlen);
 	res.set_const(0.0);
 
@@ -158,19 +158,19 @@ void RegressionForTestCostFunction::set_target(CRegressionExample *obj)
 
 float64_t RegressionForTestCostFunction::get_cost()
 {
-	require(m_obj,"target must set\n");
+	require(m_obj,"target must set");
 	return m_obj->get_cost();
 }
 
 int32_t RegressionForTestCostFunction::get_sample_size()
 {
-	require(m_obj,"target must set\n");
+	require(m_obj,"target must set");
 	return m_obj->get_sample_size();
 }
 
 SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
@@ -194,20 +194,20 @@ SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 
 void RegressionForTestCostFunction::begin_sample()
 {
-	require(m_obj,"target must set\n");
+	require(m_obj,"target must set");
 	m_idx=-1;
 }
 
 bool RegressionForTestCostFunction::next_sample()
 {
-	require(m_obj,"target must set\n");
+	require(m_obj,"target must set");
 	m_idx++;
 	return m_idx<m_obj->get_sample_size();
 }
 
 SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
@@ -225,7 +225,7 @@ SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 
 SGVector<float64_t> RegressionForTestCostFunction::get_gradient()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 

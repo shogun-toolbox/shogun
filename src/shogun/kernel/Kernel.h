@@ -202,7 +202,7 @@ class CKernel : public CSGObject
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
 			require(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
-				"{}::kernel(): index out of Range: idx_a={}/{} idx_b={}/{}\n",
+				"{}::kernel(): index out of Range: idx_a={}/{} idx_b={}/{}",
 				get_name(), idx_a,num_lhs, idx_b,num_rhs);
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
@@ -227,10 +227,10 @@ class CKernel : public CSGObject
 				preallocated=SGVector<float64_t>())
 		{
 			require(lhs, "CKernel::get_kernel_diagonal(): Left-handside "
-					"features missing!\n");
+					"features missing!");
 
 			require(rhs, "CKernel::get_kernel_diagonal(): Right-handside "
-						"features missing!\n");
+						"features missing!");
 
 			int32_t length=CMath::min(lhs->get_num_vectors(),rhs->get_num_vectors());
 
@@ -241,7 +241,7 @@ class CKernel : public CSGObject
 			{
 				require(preallocated.vlen==length,
 						"{}::get_kernel_diagonal(): Preallocated vector has"
-						" wrong size!\n", get_name());
+						" wrong size!", get_name());
 			}
 
 			for (index_t i=0; i<preallocated.vlen; ++i)
@@ -849,7 +849,7 @@ class CKernel : public CSGObject
 		virtual SGMatrix<float64_t> get_parameter_gradient(
 				const TParameter* param, index_t index=-1)
 		{
-			error("Can't compute derivative wrt {} parameter\n", param->m_name);
+			error("Can't compute derivative wrt {} parameter", param->m_name);
 			return SGMatrix<float64_t>();
 		}
 

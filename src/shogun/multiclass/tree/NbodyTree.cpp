@@ -44,8 +44,8 @@ CNbodyTree::CNbodyTree(int32_t leaf_size, EDistanceType d)
 
 void CNbodyTree::build_tree(CDenseFeatures<float64_t>* data)
 {
-	require(data,"data not set\n");
-	require(m_leaf_size>0,"Leaf size should be greater than 0\n");
+	require(data,"data not set");
+	require(m_leaf_size>0,"Leaf size should be greater than 0");
 
 	m_knn_done=false;
 	m_data=data->get_feature_matrix();
@@ -58,8 +58,8 @@ void CNbodyTree::build_tree(CDenseFeatures<float64_t>* data)
 
 void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
 {
-	require(data,"Query data not supplied\n");
-	require(data->get_num_features()==m_data.num_rows,"query data dimension should be same as training data dimension\n");
+	require(data,"Query data not supplied");
+	require(data->get_num_features()==m_data.num_rows,"query data dimension should be same as training data dimension");
 
 	m_knn_done=true;
 	SGMatrix<float64_t> qfeats=data->get_feature_matrix();
@@ -86,7 +86,7 @@ void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
 SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol)
 {
 	int32_t dim=m_data.num_rows;
-	require(test.num_rows==dim,"dimensions of training data and test data should be the same\n");
+	require(test.num_rows==dim,"dimensions of training data and test data should be the same");
 
 	float64_t log_atol = std::log(atol * m_data.num_cols);
 	float64_t log_rtol = std::log(rtol);
@@ -119,7 +119,7 @@ SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKe
 SGVector<float64_t> CNbodyTree::log_kernel_density_dual(SGMatrix<float64_t> test, SGVector<index_t> qid, bnode_t* qroot, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol)
 {
 	int32_t dim=m_data.num_rows;
-	require(test.num_rows==dim,"dimensions of training data and test data should be the same\n");
+	require(test.num_rows==dim,"dimensions of training data and test data should be the same");
 
 	float64_t log_atol = std::log(atol * m_data.num_cols * test.num_cols);
 	float64_t log_rtol = std::log(rtol);
@@ -153,7 +153,7 @@ SGMatrix<float64_t> CNbodyTree::get_knn_dists()
 	if (m_knn_done)
 		return m_knn_dists;
 
-	error("knn query has not been executed yet\n");
+	error("knn query has not been executed yet");
 	return SGMatrix<float64_t>();
 }
 
@@ -162,7 +162,7 @@ SGMatrix<index_t> CNbodyTree::get_knn_indices()
 	if (m_knn_done)
 		return m_knn_indices;
 
-	error("knn query has not been executed yet\n");
+	error("knn query has not been executed yet");
 	return SGMatrix<index_t>();
 }
 

@@ -70,7 +70,7 @@ void CMKLMulticlass::initsvm()
 {
    if (!m_labels)
 	{
-      error("CMKLMulticlass::initsvm(): the set labels is NULL\n");
+      error("CMKLMulticlass::initsvm(): the set labels is NULL");
 	}
 
 	SG_UNREF(svm);
@@ -93,7 +93,7 @@ void CMKLMulticlass::initlpsolver()
 {
    if (!m_kernel)
 	{
-      error("CMKLMulticlass::initlpsolver(): the set kernel is NULL\n");
+      error("CMKLMulticlass::initlpsolver(): the set kernel is NULL");
 	}
 
    if (m_kernel->get_kernel_type()!=K_COMBINED)
@@ -164,7 +164,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			delta+=0.5*normweightssquared[maxind];
 			//delta=fabs(delta);
-			io::info("L1 Norm chosen, MKL part of duality gap {} \n",delta);
+			io::info("L1 Norm chosen, MKL part of duality gap {} ",delta);
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return true;
@@ -190,10 +190,10 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			else
 			{
-            io::warn("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n");
+            io::warn("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.");
 				delta=sqrt(delta);
 			}
-				io::info("weight delta {} \n",delta);
+				io::info("weight delta {} ",delta);
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{

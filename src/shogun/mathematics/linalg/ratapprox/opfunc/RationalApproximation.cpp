@@ -24,7 +24,7 @@ CRationalApproximation::CRationalApproximation()
 {
 	init();
 
-	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 }
 
 CRationalApproximation::CRationalApproximation(
@@ -39,14 +39,14 @@ CRationalApproximation::CRationalApproximation(
 
 	m_desired_accuracy=desired_accuracy;
 
-	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 }
 
 CRationalApproximation::~CRationalApproximation()
 {
 	SG_UNREF(m_eigen_solver);
 
-	SG_GCDEBUG("{} destroyed ({})\n", this->get_name(), fmt::ptr(this))
+	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
 }
 
 void CRationalApproximation::init()
@@ -102,23 +102,23 @@ void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
 	m_eigen_solver->compute();
-	io::info("max_eig={:.15f}\n", m_eigen_solver->get_max_eigenvalue());
-	io::info("min_eig={:.15f}\n", m_eigen_solver->get_min_eigenvalue());
+	io::info("max_eig={:.15f}", m_eigen_solver->get_max_eigenvalue());
+	io::info("min_eig={:.15f}", m_eigen_solver->get_min_eigenvalue());
 
 	require(m_eigen_solver->get_min_eigenvalue()>0,
-		"Minimum eigenvalue is negative, please provide a Hermitian matrix\n");
+		"Minimum eigenvalue is negative, please provide a Hermitian matrix");
 
 	// compute number of shifts from accuracy if shifts are not set yet
 	if (m_num_shifts==0)
 		m_num_shifts=compute_num_shifts_from_accuracy();
 
-	io::info("Computing {} shifts\n", m_num_shifts);
+	io::info("Computing {} shifts", m_num_shifts);
 	compute_shifts_weights_const();
 }
 
 int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 {
-	require(m_desired_accuracy>0, "Desired accuracy must be positive but is {}\n",
+	require(m_desired_accuracy>0, "Desired accuracy must be positive but is {}",
 			m_desired_accuracy);
 
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
@@ -204,7 +204,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 			m_weights[i]=complex128_t(0.0);
 			break;
 		case OF_UNDEFINED:
-			io::warn("Operator function is undefined!\n");
+			io::warn("Operator function is undefined!");
 			m_weights[i]=complex128_t(0.0);
 			break;
 		}

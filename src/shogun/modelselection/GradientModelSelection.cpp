@@ -30,7 +30,7 @@ public:
 	virtual ~GradientModelSelectionCostFunction() { SG_UNREF(m_obj); }
 	void set_target(CGradientModelSelection *obj)
 	{
-		require(obj,"Obj must set\n");
+		require(obj,"Obj must set");
 		if(m_obj!=obj)
 		{
 			SG_REF(obj);
@@ -49,18 +49,18 @@ public:
 
 	virtual float64_t get_cost()
 	{
-		require(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_obj->get_cost(m_val, m_grad, m_func_data);
 	}
 
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
-		require(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_val;
 	}
 	virtual SGVector<float64_t> get_gradient()
 	{
-		require(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_grad;
 	}
 
@@ -68,7 +68,7 @@ public:
 
 	virtual void set_func_data(void *func_data)
 	{
-		require(func_data != NULL, "func_data must set\n");
+		require(func_data != NULL, "func_data must set");
 		m_func_data = func_data;
 	}
 
@@ -117,8 +117,8 @@ struct nlopt_params
 
 float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data)
 {
-	require(func_data!=NULL, "func_data must set\n");
-	require(model_vars.vlen==model_grads.vlen, "length of variable ({}) and gradient ({}) must equal\n",
+	require(func_data!=NULL, "func_data must set");
+	require(model_vars.vlen==model_grads.vlen, "length of variable ({}) and gradient ({}) must equal",
 		model_vars.vlen, model_grads.vlen);
 
 	nlopt_params* params=(nlopt_params*)func_data;
@@ -148,7 +148,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 				bool result=current_combination->set_parameter(param->m_name,
 						model_vars[offset++],	parent, j);
-				 require(result, "Parameter {} not found in combination tree\n",
+				 require(result, "Parameter {} not found in combination tree",
 						 param->m_name);
 			}
 		}
@@ -156,7 +156,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 		{
 			bool result=current_combination->set_parameter(param->m_name,
 					model_vars[offset++], parent);
-			require(result, "Parameter {} not found in combination tree\n",
+			require(result, "Parameter {} not found in combination tree",
 					param->m_name);
 		}
 	}
@@ -222,7 +222,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 			}
 		}
 
-		require(derivative.vlen, "Can't find gradient wrt {} parameter!\n",
+		require(derivative.vlen, "Can't find gradient wrt {} parameter!",
 				node->key->m_name);
 
 		sg_memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
@@ -248,7 +248,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 void CGradientModelSelection::set_minimizer(FirstOrderMinimizer* minimizer)
 {
-	require(minimizer!=NULL, "Minimizer must set\n");
+	require(minimizer!=NULL, "Minimizer must set");
 	SG_REF(minimizer);
 	SG_UNREF(m_mode_minimizer);
 	m_mode_minimizer=minimizer;

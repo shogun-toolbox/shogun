@@ -274,11 +274,11 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_f(const CLabels* lab,
 		SGVector<float64_t> func) const
 {
 	// check the parameters
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
+			"Labels must be type of CBinaryLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n");
+			"length of the function vector");
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
@@ -298,12 +298,12 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_derivative_f(
 		const CLabels* lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
+			"Labels must be type of CBinaryLabels");
 	require(lab->get_num_labels()==func.vlen, "Number of labels must match "
-			"length of the function vector\n");
-	require(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3\n");
+			"length of the function vector");
+	require(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3");
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
@@ -335,7 +335,7 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_derivative_f(
 	}
 	else
 	{
-		error("Invalid index for derivative\n");
+		error("Invalid index for derivative");
 	}
 
 	return r;
@@ -350,17 +350,17 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 	{
 		require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 				"Length of the vector of means ({}), length of the vector of "
-				"variances ({}) and number of labels ({}) should be the same\n",
+				"variances ({}) and number of labels ({}) should be the same",
 				mu.vlen, s2.vlen, lab->get_num_labels());
 		require(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n");
+				"Labels must be type of CBinaryLabels");
 
 		y=((CBinaryLabels*)lab)->get_labels();
 	}
 	else
 	{
 		require(mu.vlen==s2.vlen, "Length of the vector of means ({}) and "
-				"length of the vector of variances ({}) should be the same\n",
+				"length of the vector of variances ({}) should be the same",
 				mu.vlen, s2.vlen);
 
 		y=SGVector<float64_t>(mu.vlen);
@@ -410,14 +410,14 @@ float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
 {
 	// check the parameters
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 			"Length of the vector of means ({}), length of the vector of "
-			"variances ({}) and number of labels ({}) should be the same\n",
+			"variances ({}) and number of labels ({}) should be the same",
 			mu.vlen, s2.vlen, lab->get_num_labels());
-	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i);
+	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
+			"Labels must be type of CBinaryLabels");
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
@@ -457,14 +457,14 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
 {
 	// check the parameters
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 			"Length of the vector of means ({}), length of the vector of "
-			"variances ({}) and number of labels ({}) should be the same\n",
+			"variances ({}) and number of labels ({}) should be the same",
 			mu.vlen, s2.vlen, lab->get_num_labels());
-	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!\n", i);
+	require(i>=0 && i<=mu.vlen, "Index ({}) out of bounds!", i);
 	require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
+			"Labels must be type of CBinaryLabels");
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 

@@ -181,7 +181,7 @@ float64_t CFactor::get_energy(int32_t index) const
 void CFactor::set_energies(SGVector<float64_t> ft_energies)
 {
 	require(m_factor_type->get_num_assignments() == ft_energies.size(),
-		"{}::set_energies(): ft_energies is not a valid energy table!\n", get_name());
+		"{}::set_energies(): ft_energies is not a valid energy table!", get_name());
 
 	m_energies = ft_energies;
 }
@@ -189,10 +189,10 @@ void CFactor::set_energies(SGVector<float64_t> ft_energies)
 void CFactor::set_energy(int32_t ei, float64_t value)
 {
 	require(ei >= 0 && ei < m_factor_type->get_num_assignments(),
-		"{}::set_energy(): ei is out of index!\n", get_name());
+		"{}::set_energy(): ei is out of index!", get_name());
 
 	require(is_data_dependent(), "{}::set_energy(): \
-		energy table is fixed in data dependent factor!\n", get_name());
+		energy table is fixed in data dependent factor!", get_name());
 
 	m_energies[ei] = value;
 }

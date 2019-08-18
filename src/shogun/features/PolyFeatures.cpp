@@ -141,7 +141,7 @@ CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	require(
 	    vec2.size() == m_output_dimensions,
-	    "Dimensions don't match, vec2_dim={}, m_output_dimensions={}\n",
+	    "Dimensions don't match, vec2_dim={}, m_output_dimensions={}",
 	    vec2.size(), m_output_dimensions);
 
 	int32_t len;
@@ -171,7 +171,7 @@ CPolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != m_output_dimensions)
-		error("Dimensions don't match, vec2_dim={}, m_output_dimensions={}\n", vec2_len, m_output_dimensions);
+		error("Dimensions don't match, vec2_dim={}, m_output_dimensions={}", vec2_len, m_output_dimensions);
 
 	int32_t len;
 	bool do_free;
@@ -225,7 +225,7 @@ void CPolyFeatures::store_multi_index()
 
         uint16_t* exponents = SG_MALLOC(uint16_t, m_input_dimensions);
         if (!exponents)
-		error("Error allocating mem \n");
+		error("Error allocating mem ");
 	/*copy adress: otherwise it will be overwritten in recursion*/
         uint16_t* index = m_multi_index;
         enumerate_multi_index(0, &index, exponents, m_degree);
@@ -268,7 +268,7 @@ void CPolyFeatures::store_multinomial_coefficients()
 	m_multinomial_coefficients = SG_MALLOC(float64_t, m_output_dimensions);
 	int32_t* exponents = SG_MALLOC(int32_t, m_input_dimensions);
 	if (!exponents)
-		error("Error allocating mem \n");
+		error("Error allocating mem ");
 	int32_t j=0;
 	for (j=0; j<m_input_dimensions; j++)
 		exponents[j] = 0;
@@ -362,7 +362,7 @@ float64_t CPolyFeatures::factln(int32_t n)
 {
 	static float64_t a[101];
 
-	if (n < 0) error("Negative factorial in routine factln\n");
+	if (n < 0) error("Negative factorial in routine factln");
 	if (n <= 1) return 0.0;
 	if (n <= 100) return a[n] ? a[n] : (a[n]=gammln(n+1.0));
 	else return gammln(n+1.0);

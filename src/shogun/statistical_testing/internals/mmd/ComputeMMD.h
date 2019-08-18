@@ -90,12 +90,12 @@ struct ComputeMMD
 		require(
 			kernel_matrix.num_rows == size,
 			"Number of rows from kernel matrix ({}) did not match the total "
-			"number of samples from both distribution ({})\n",
+			"number of samples from both distribution ({})",
 			kernel_matrix.num_rows, size);
 		require(
 			kernel_matrix.num_cols == size,
 			"Number of cols from kernel matrix ({}) did not match the total "
-			"number of samples from both distribution ({})\n",
+			"number of samples from both distribution ({})",
 			kernel_matrix.num_cols, size);
 
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
@@ -141,7 +141,7 @@ struct ComputeMMD
 		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			result[k]=compute(terms[k]);
-			SG_DEBUG("result[{}] = {}!\n", k, result[k]);
+			SG_DEBUG("result[{}] = {}!", k, result[k]);
 		}
 		terms.resize(0);
 		return result;
@@ -162,21 +162,21 @@ struct ComputeMMD
 		ASSERT(m_n_x>0 && m_n_y>0);
 		if (i<m_n_x && j<m_n_x && i>=j)
 		{
-			SG_DEBUG("Adding Kernel({}, {})={} to term_0!\n", i, j, kernel_value);
+			SG_DEBUG("Adding Kernel({}, {})={} to term_0!", i, j, kernel_value);
 			terms.term[0]+=kernel_value;
 			if (i==j)
 				terms.diag[0]+=kernel_value;
 		}
 		else if (i>=m_n_x && j>=m_n_x && i>=j)
 		{
-			SG_DEBUG("Adding Kernel({}, {})={} to term_1!\n", i, j, kernel_value);
+			SG_DEBUG("Adding Kernel({}, {})={} to term_1!", i, j, kernel_value);
 			terms.term[1]+=kernel_value;
 			if (i==j)
 				terms.diag[1]+=kernel_value;
 		}
 		else if (i>=m_n_x && j<m_n_x)
 		{
-			SG_DEBUG("Adding Kernel({}, {})={} to term_2!\n", i, j, kernel_value);
+			SG_DEBUG("Adding Kernel({}, {})={} to term_2!", i, j, kernel_value);
 			terms.term[2]+=kernel_value;
 			if (i-m_n_x==j)
 				terms.diag[2]+=kernel_value;
@@ -198,21 +198,21 @@ struct ComputeMMD
 		ASSERT(m_n_x>0 && m_n_y>0);
 		if (i<m_n_x && j<m_n_x && i<=j)
 		{
-			SG_DEBUG("Adding Kernel({}, {})={} to term_0!\n", i, j, kernel_value);
+			SG_DEBUG("Adding Kernel({}, {})={} to term_0!", i, j, kernel_value);
 			terms.term[0]+=kernel_value;
 			if (i==j)
 				terms.diag[0]+=kernel_value;
 		}
 		else if (i>=m_n_x && j>=m_n_x && i<=j)
 		{
-			SG_DEBUG("Adding Kernel({}, {})={} to term_1!\n", i, j, kernel_value);
+			SG_DEBUG("Adding Kernel({}, {})={} to term_1!", i, j, kernel_value);
 			terms.term[1]+=kernel_value;
 			if (i==j)
 				terms.diag[1]+=kernel_value;
 		}
 		else if (i<m_n_x && j>=m_n_x)
 		{
-			SG_DEBUG("Adding Kernel({}, {})={} to term_2!\n", i, j, kernel_value);
+			SG_DEBUG("Adding Kernel({}, {})={} to term_2!", i, j, kernel_value);
 			terms.term[2]+=kernel_value;
 			if (i+m_n_x==j)
 				terms.diag[2]+=kernel_value;
@@ -224,8 +224,8 @@ struct ComputeMMD
 		ASSERT(m_n_x>0 && m_n_y>0);
 		terms.term[0]=2*(terms.term[0]-terms.diag[0]);
 		terms.term[1]=2*(terms.term[1]-terms.diag[1]);
-		SG_DEBUG("term_0 sum (without diagonal) = {}!\n", terms.term[0]);
-		SG_DEBUG("term_1 sum (without diagonal) = {}!\n", terms.term[1]);
+		SG_DEBUG("term_0 sum (without diagonal) = {}!", terms.term[0]);
+		SG_DEBUG("term_1 sum (without diagonal) = {}!", terms.term[1]);
 		if (m_stype!=ST_BIASED_FULL)
 		{
 			terms.term[0]/=m_n_x*(m_n_x-1);
@@ -235,27 +235,27 @@ struct ComputeMMD
 		{
 			terms.term[0]+=terms.diag[0];
 			terms.term[1]+=terms.diag[1];
-			SG_DEBUG("term_0 sum (with diagonal) = {}!\n", terms.term[0]);
-			SG_DEBUG("term_1 sum (with diagonal) = {}!\n", terms.term[1]);
+			SG_DEBUG("term_0 sum (with diagonal) = {}!", terms.term[0]);
+			SG_DEBUG("term_1 sum (with diagonal) = {}!", terms.term[1]);
 			terms.term[0]/=m_n_x*m_n_x;
 			terms.term[1]/=m_n_y*m_n_y;
 		}
-		SG_DEBUG("term_0 (normalized) = {}!\n", terms.term[0]);
-		SG_DEBUG("term_1 (normalized) = {}!\n", terms.term[1]);
+		SG_DEBUG("term_0 (normalized) = {}!", terms.term[0]);
+		SG_DEBUG("term_1 (normalized) = {}!", terms.term[1]);
 
-		SG_DEBUG("term_2 sum (with diagonal) = {}!\n", terms.term[2]);
+		SG_DEBUG("term_2 sum (with diagonal) = {}!", terms.term[2]);
 		if (m_stype==ST_UNBIASED_INCOMPLETE)
 		{
 			terms.term[2]-=terms.diag[2];
-			SG_DEBUG("term_2 sum (without diagonal) = {}!\n", terms.term[2]);
+			SG_DEBUG("term_2 sum (without diagonal) = {}!", terms.term[2]);
 			terms.term[2]/=m_n_x*(m_n_x-1);
 		}
 		else
 			terms.term[2]/=m_n_x*m_n_y;
-		SG_DEBUG("term_2 (normalized) = {}!\n", terms.term[2]);
+		SG_DEBUG("term_2 (normalized) = {}!", terms.term[2]);
 
 		auto result=terms.term[0]+terms.term[1]-2*terms.term[2];
-		SG_DEBUG("result = {}!\n", result);
+		SG_DEBUG("result = {}!", result);
 		return result;
 	}
 

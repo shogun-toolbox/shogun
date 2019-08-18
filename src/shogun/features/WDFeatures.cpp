@@ -12,7 +12,7 @@ using namespace shogun;
 
 CWDFeatures::CWDFeatures() :CDotFeatures()
 {
-	io::unstable("CWDFeatures::CWDFeatures() :CDotFeatures()");
+	unstable(SOURCE_LOCATION);
 
 	strings = NULL;
 
@@ -116,7 +116,7 @@ float64_t
 CWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	require(
-	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}\n",
+	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}",
 	    vec2.size(), w_dim);
 
 	float64_t sum=0;
@@ -155,7 +155,7 @@ CWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		error("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim);
+		error("Dimensions don't match, vec2_dim={}, w_dim={}", vec2_len, w_dim);
 
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
@@ -203,7 +203,7 @@ void CWDFeatures::set_wd_weights()
 		w_dim+=CMath::pow(alphabet_size, i+1)*string_length;
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 	}
-	SG_DEBUG("created WDFeatures with d={} ({}), alphabetsize={}, dim={} num={}, len={}\n", degree, from_degree, alphabet_size, w_dim, num_strings, string_length)
+	SG_DEBUG("created WDFeatures with d={} ({}), alphabetsize={}, dim={} num={}, len={}", degree, from_degree, alphabet_size, w_dim, num_strings, string_length)
 }
 
 
@@ -220,7 +220,7 @@ void CWDFeatures::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:{}\n", normalization_const)
+	SG_DEBUG("normalization_const:{}", normalization_const)
 }
 
 void* CWDFeatures::get_feature_iterator(int32_t vector_index)
@@ -228,7 +228,7 @@ void* CWDFeatures::get_feature_iterator(int32_t vector_index)
 	if (vector_index>=num_strings)
 	{
 		error("Index out of bounds (number of strings {}, you "
-				"requested {})\n", num_strings, vector_index);
+				"requested {})", num_strings, vector_index);
 	}
 
 	wd_feature_iterator* it=SG_MALLOC(wd_feature_iterator, 1);

@@ -53,7 +53,7 @@ public:
 		m_normalizer=normalizer;
 
 		SG_DEBUG("Constructing ScatterKernelNormalizer with const_diag={:g}"
-				" const_offdiag={:g} num_labels={} and normalizer='{}'\n",
+				" const_offdiag={:g} num_labels={} and normalizer='{}'",
 				const_diag, const_offdiag, labels->get_num_labels(),
 				normalizer->get_name());
 	}

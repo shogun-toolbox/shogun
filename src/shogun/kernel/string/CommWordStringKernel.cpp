@@ -44,7 +44,7 @@ CCommWordStringKernel::CCommWordStringKernel(
 bool CCommWordStringKernel::init_dictionary(int32_t size)
 {
 	dictionary_weights=SGVector<float64_t>(size);
-	SG_DEBUG("using dictionary of {} words\n", size)
+	SG_DEBUG("using dictionary of {} words", size)
 	clear_normal();
 
 	return dictionary_weights.vector!=NULL;
@@ -282,11 +282,11 @@ bool CCommWordStringKernel::init_optimization(
 	if (count<=0)
 	{
 		set_is_initialized(true);
-		SG_DEBUG("empty set of SVs\n")
+		SG_DEBUG("empty set of SVs")
 		return true;
 	}
 
-	SG_DEBUG("initializing CCommWordStringKernel optimization\n")
+	SG_DEBUG("initializing CCommWordStringKernel optimization")
 
 	for (auto i : SG_PROGRESS(range(0, count)))
 	{
@@ -299,7 +299,7 @@ bool CCommWordStringKernel::init_optimization(
 
 bool CCommWordStringKernel::delete_optimization()
 {
-	SG_DEBUG("deleting CCommWordStringKernel optimization\n")
+	SG_DEBUG("deleting CCommWordStringKernel optimization")
 
 	clear_normal();
 	return true;
@@ -309,7 +309,7 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
 	{
-      error("CCommWordStringKernel optimization not initialized\n");
+      error("CCommWordStringKernel optimization not initialized");
 		return 0 ;
 	}
 
@@ -375,7 +375,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
 
-	SG_DEBUG("num_words:{}, order:{}, len:{} sz:{} (len*sz:{})\n", num_words, order,
+	SG_DEBUG("num_words:{}, order:{}, len:{} sz:{} (len*sz:{})", num_words, order,
 			num_feat, num_sym, num_feat*num_sym);
 
 	if (!target)
@@ -565,7 +565,7 @@ char* CCommWordStringKernel::compute_consensus(
 		}
 	}
 
-	SG_DEBUG("max_idx:{}, max_score:{}\n", max_idx, max_score)
+	SG_DEBUG("max_idx:{}, max_score:{}", max_idx, max_score)
 
 	for (int32_t i=result_len-1; i>=num_feat; i--)
 		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(result_len-1-i)), 1) );

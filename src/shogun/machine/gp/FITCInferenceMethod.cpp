@@ -72,7 +72,7 @@ void CFITCInferenceMethod::compute_gradient()
 
 void CFITCInferenceMethod::update()
 {
-	SG_DEBUG("entering\n");
+	SG_DEBUG("entering");
 
 	CInference::update();
 	update_chol();
@@ -80,7 +80,7 @@ void CFITCInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving\n");
+	SG_DEBUG("leaving");
 }
 
 CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
@@ -90,7 +90,7 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
-		error("Provided inference is not of type CFITCInferenceMethod!\n");
+		error("Provided inference is not of type CFITCInferenceMethod!");
 
 	SG_REF(inference);
 	return (CFITCInferenceMethod*)inference;
@@ -101,9 +101,9 @@ void CFITCInferenceMethod::check_members() const
 	CSingleFITCInference::check_members();
 
 	require(m_model->get_model_type()==LT_GAUSSIAN,
-			"FITC inference method can only use Gaussian likelihood function\n");
+			"FITC inference method can only use Gaussian likelihood function");
 	require(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
-			"of CRegressionLabels\n");
+			"of CRegressionLabels");
 }
 
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
@@ -405,7 +405,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 {
 	//time complexity O(m*n)
 	require(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt {}.{} parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter",
 			m_model->get_name(), param->m_name);
 
 	// create eigen representation of dg, al, w, W and B
@@ -431,5 +431,5 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 
 void CFITCInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
-	io::warn("The method does not require a minimizer. The provided minimizer will not be used.\n");
+	io::warn("The method does not require a minimizer. The provided minimizer will not be used.");
 }

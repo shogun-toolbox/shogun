@@ -61,7 +61,7 @@ CTwoSampleTest::~CTwoSampleTest()
 
 void CTwoSampleTest::set_kernel(CKernel* kernel)
 {
-	require(kernel, "Kernel cannot be NULL!\n");
+	require(kernel, "Kernel cannot be NULL!");
 	self->kernel_mgr.kernel_at(0)=kernel;
 	self->kernel_mgr.restore_kernel_at(0);
 }

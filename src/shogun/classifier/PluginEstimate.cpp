@@ -48,7 +48,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_WORD)
 		{
-			error("Features not of class string type word\n");
+			error("Features not of class string type word");
 		}
 
 		set_features((CStringFeatures<uint16_t>*) data);
@@ -80,7 +80,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 			neg_indizes[neg_idx++]=i;
 	}
 
-	io::info("training using pseudos {} and {}\n", m_pos_pseudo, m_neg_pseudo);
+	io::info("training using pseudos {} and {}", m_pos_pseudo, m_neg_pseudo);
 	pos_model->train(pos_indizes, pos_idx, m_pos_pseudo);
 	neg_model->train(neg_indizes, neg_idx, m_neg_pseudo);
 
@@ -97,7 +97,7 @@ CBinaryLabels* CPluginEstimate::apply_binary(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 			data->get_feature_type() != F_WORD)
 		{
-			error("Features not of class string type word\n");
+			error("Features not of class string type word");
 		}
 
 		set_features((CStringFeatures<uint16_t>*) data);
@@ -121,7 +121,7 @@ float64_t CPluginEstimate::apply_one(int32_t vec_idx)
 	uint16_t* vector=features->get_feature_vector(vec_idx, len, free_vec);
 
 	if ((!pos_model) || (!neg_model))
-		error("model(s) not assigned\n");
+		error("model(s) not assigned");
 
 	float64_t result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 	features->free_feature_vector(vector, vec_idx, free_vec);

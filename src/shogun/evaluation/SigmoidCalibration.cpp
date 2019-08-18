@@ -102,7 +102,7 @@ CBinaryLabels* CSigmoidCalibration::calibrate_binary(CBinaryLabels* predictions)
 {
 	require(
 	    m_sigmoid_as.size() == 1,
-	    "Parameters not fitted, which need to be fitted before calibrating.\n");
+	    "Parameters not fitted, which need to be fitted before calibrating.");
 	CStatistics::SigmoidParamters params;
 	params.a = m_sigmoid_as[0];
 	params.b = m_sigmoid_bs[0];
@@ -147,7 +147,7 @@ CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
 	index_t num_samples = predictions->get_num_labels();
 	require(
 	    m_sigmoid_as.size() == num_classes,
-	    "Parameters not fitted, which need to be fitted before calibrating.\n");
+	    "Parameters not fitted, which need to be fitted before calibrating.");
 
 	/** Temporarily stores the probabilities. */
 	SGMatrix<float64_t> confidence_values(num_samples, num_classes);

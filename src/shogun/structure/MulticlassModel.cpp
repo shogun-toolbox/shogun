@@ -76,7 +76,7 @@ CResultSet* CMulticlassModel::argmax(
 	else
 	{
 		require(m_num_classes > 0, "The model needs to be trained before "
-				"using it for prediction\n");
+				"using it for prediction");
 	}
 
 	int32_t dim = get_dim();
@@ -134,7 +134,7 @@ float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 float64_t CMulticlassModel::delta_loss(int32_t y1_idx, float64_t y2)
 {
 	require(y1_idx >= 0 || y1_idx < m_labels->get_num_labels(),
-			"The label index must be inside [0, num_labels-1]\n");
+			"The label index must be inside [0, num_labels-1]");
 
 	CRealNumber* rn1 = m_labels->get_label(y1_idx)->as<CRealNumber>();
 	float64_t ret = delta_loss(rn1->value, y2);

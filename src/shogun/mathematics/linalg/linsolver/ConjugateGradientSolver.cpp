@@ -23,28 +23,28 @@ namespace shogun
 CConjugateGradientSolver::CConjugateGradientSolver()
 	: CIterativeLinearSolver<float64_t>()
 {
-	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this));
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateGradientSolver::CConjugateGradientSolver(bool store_residuals)
 	: CIterativeLinearSolver<float64_t>(store_residuals)
 {
-	SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this));
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateGradientSolver::~CConjugateGradientSolver()
 {
-	SG_GCDEBUG("{} destroyed ({})\n", this->get_name(), fmt::ptr(this));
+	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<float64_t> CConjugateGradientSolver::solve(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
-	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..\n");
+	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..");
 
 	// sanity check
-	require(A, "Operator is NULL!\n");
-	require(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
+	require(A, "Operator is NULL!");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch!");
 
 	// the final solution vector, initial guess is 0
 	SGVector<float64_t> result(b.vlen);
@@ -81,7 +81,7 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 
 	for (it.begin(r); !it.end(r); ++it)
 	{
-		SG_DEBUG("CG iteration {}, residual norm {}\n",
+		SG_DEBUG("CG iteration {}, residual norm {}",
 			it.get_iter_info().iteration_count,
 			it.get_iter_info().residual_norm);
 
@@ -126,12 +126,12 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 	float64_t elapsed=time.cur_time_diff();
 
 	if (!it.succeeded(r))
-		io::warn("Did not converge!\n");
+		io::warn("Did not converge!");
 
-	io::info("Iteration took {} times, residual norm={:.20f}, time elapsed={}\n",
+	io::info("Iteration took {} times, residual norm={:.20f}, time elapsed={}",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
-	SG_DEBUG("CConjugateGradientSolve::solve(): Leaving..\n");
+	SG_DEBUG("CConjugateGradientSolve::solve(): Leaving..");
 	return result;
 }
 

@@ -53,10 +53,10 @@ CDualVariationalGaussianLikelihood::~CDualVariationalGaussianLikelihood()
 
 CVariationalGaussianLikelihood* CDualVariationalGaussianLikelihood::get_variational_likelihood() const
 {
-	require(m_likelihood, "The likelihood model must not be NULL\n");
+	require(m_likelihood, "The likelihood model must not be NULL");
 	CVariationalGaussianLikelihood* var_lik=dynamic_cast<CVariationalGaussianLikelihood *>(m_likelihood);
 	require(var_lik,
-		"The likelihood model ({}) does NOT support variational guassian inference\n",
+		"The likelihood model ({}) does NOT support variational guassian inference",
 		m_likelihood->get_name());
 
 	return var_lik;
@@ -102,7 +102,7 @@ bool CDualVariationalGaussianLikelihood::set_variational_distribution(
 void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale)
 {
 	require((strict_scale>0 && strict_scale<1),
-		"The strict_scale ({}) should be between 0 and 1 exclusively.\n",
+		"The strict_scale ({}) should be between 0 and 1 exclusively.",
 		strict_scale);
 	m_strict_scale=strict_scale;
 }
@@ -110,11 +110,11 @@ void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale
 float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGVector<float64_t> direction, const float64_t step) const
 {
 	require(direction.vlen==m_lambda.vlen,
-		"The length ({}) of direction should be same as the length ({}) of dual parameters\n",
+		"The length ({}) of direction should be same as the length ({}) of dual parameters",
 		direction.vlen, m_lambda.vlen);
 
 	require(step>=0,
-		"The step size ({}) should be non-negative\n", step);
+		"The step size ({}) should be non-negative", step);
 
 	float64_t upper_bound=get_dual_upper_bound();
 	float64_t lower_bound=get_dual_lower_bound();
@@ -155,14 +155,14 @@ float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGV
 
 void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t> lambda,  const CLabels* lab)
 {
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 
 	require((lambda.vlen==lab->get_num_labels()),
 		"Length of the vector of lambda ({}) "
-		"and number of labels ({}) should be the same\n",
+		"and number of labels ({}) should be the same",
 		lambda.vlen, lab->get_num_labels());
 	require(lab->get_label_type()==LT_BINARY,
-		"Labels ({}) must be type of CBinaryLabels\n",
+		"Labels ({}) must be type of CBinaryLabels",
 		lab->get_name());
 
 	m_lab=(((CBinaryLabels*)lab)->get_labels()).clone();

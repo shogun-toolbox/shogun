@@ -140,9 +140,9 @@ void CMultiLaplaceInferenceMethod::check_members() const
 	CInference::check_members();
 
 	require(m_labels->get_label_type()==LT_MULTICLASS,
-		"Labels must be type of CMulticlassLabels\n");
+		"Labels must be type of CMulticlassLabels");
 	require(m_model->supports_multiclass(),
-		"likelihood model should support multi-classification\n");
+		"likelihood model should support multi-classification");
 }
 
 SGVector<float64_t> CMultiLaplaceInferenceMethod::get_diagonal_vector()
@@ -167,7 +167,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_
 		const TParameter* param)
 {
 	//SoftMax likelihood does not have this kind of derivative
-	error("Not Implemented!\n");
+	error("Not Implemented!");
 	return SGVector<float64_t> ();
 }
 
@@ -178,7 +178,7 @@ CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
-		error("Provided inference is not of type CMultiLaplaceInferenceMethod!\n");
+		error("Provided inference is not of type CMultiLaplaceInferenceMethod!");
 
 	SG_REF(inference);
 	return (CMultiLaplaceInferenceMethod*)inference;
@@ -390,7 +390,7 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		io::warn("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		io::warn("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 }
 
@@ -430,7 +430,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_m
 		const TParameter* param)
 {
 	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt {}.{} parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter",
 			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -451,7 +451,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -481,7 +481,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);

@@ -217,14 +217,14 @@ void CBinnedDotFeatures::assert_shape(int32_t vec2_len) const
 	if (m_bins.num_cols*m_bins.num_rows != vec2_len)
 	{
 		error("Bin matrix has shape ({},{}) = {} entries, not matching vector"
-				" length {}\n", m_bins.num_cols,m_bins.num_rows,
+				" length {}", m_bins.num_cols,m_bins.num_rows,
 				m_bins.num_cols*m_bins.num_rows,vec2_len);
 	}
 
 	if (m_features && m_bins.num_cols != m_features->get_num_features())
 	{
 		error("Number of colums ({}) doesn't match number of features "
-				"({})\n", m_bins.num_cols, m_features->get_num_features());
+				"({})", m_bins.num_cols, m_features->get_num_features());
 	}
 
 }

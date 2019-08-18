@@ -90,7 +90,7 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 {
 	if (A + D > C + B)
 	{
-		SG_DEBUG("\nTruncate initialized data to ensure submodularity.\n");
+		SG_DEBUG("\nTruncate initialized data to ensure submodularity.");
 		float64_t delta = A + D - C - B;
 		float64_t subtrA = delta / 3;
 		A = A - subtrA;

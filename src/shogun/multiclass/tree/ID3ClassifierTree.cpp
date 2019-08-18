@@ -49,7 +49,7 @@ CID3ClassifierTree::~CID3ClassifierTree()
 
 CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 {
-	require(data, "Data required for classification in apply_multiclass\n");
+	require(data, "Data required for classification in apply_multiclass");
 
 	node_t* current = get_root();
 	CMulticlassLabels* ret = apply_multiclass_from_current_node((CDenseFeatures<float64_t>*) data, current);
@@ -70,8 +70,8 @@ bool CID3ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data,
 
 bool CID3ClassifierTree::train_machine(CFeatures* data)
 {
-	require(data,"Data required for training\n");
-	require(data->get_feature_class()==C_DENSE, "Dense data required for training\n");
+	require(data,"Data required for training");
+	require(data->get_feature_class()==C_DENSE, "Dense data required for training");
 
 	int32_t num_features = (dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_features();
 	SGVector<int32_t> feature_ids = SGVector<int32_t>(num_features);
@@ -210,9 +210,9 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data,
 								CMulticlassLabels* class_labels)
 {
-	require(data,"Data required for information gain calculation\n");
+	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
-		"Dense data required for information gain calculation\n");
+		"Dense data required for information gain calculation");
 
 	float64_t gain = 0;
 	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);

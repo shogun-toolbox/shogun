@@ -16,6 +16,6 @@ namespace shogun
 	void CTransformer::assert_fitted() const
 	{
 		require<NotFittedException>(
-		    m_fitted, "Transformer has not been fitted.\n");
+		    m_fitted, "Transformer has not been fitted.");
 	}
 }

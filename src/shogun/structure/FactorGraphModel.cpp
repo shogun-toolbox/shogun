@@ -50,7 +50,7 @@ void CFactorGraphModel::init()
 
 void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 {
-	require(ftype->get_w_dim() > 0, "{}::add_factor_type(): number of parameters can't be 0!\n",
+	require(ftype->get_w_dim() > 0, "{}::add_factor_type(): number of parameters can't be 0!",
 		get_name());
 
 	// check whether this ftype has been added
@@ -167,7 +167,7 @@ int32_t CFactorGraphModel::get_dim() const
 
 SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 {
-	require(m_factor_types != NULL, "{}::fparams_to_w(): no factor types!\n", get_name());
+	require(m_factor_types != NULL, "{}::fparams_to_w(): no factor types!", get_name());
 
 	if (m_w_cache.size() != get_dim())
 		m_w_cache.resize_vector(get_dim());
@@ -406,7 +406,7 @@ void CFactorGraphModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
-	require(m_factor_types != NULL, "{}::init_primal_opt(): no factor types!\n", get_name());
+	require(m_factor_types != NULL, "{}::init_primal_opt(): no factor types!", get_name());
 
 	int32_t dim_w = get_dim();
 

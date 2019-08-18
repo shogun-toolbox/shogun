@@ -72,12 +72,12 @@ void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs)
 			rescale_heuris_norm(outputs);
 			break;
 		case OVA_SOFTMAX:
-			error("{}::rescale_outputs(): Need to specify sigmoid parameters!\n", get_name());
+			error("{}::rescale_outputs(): Need to specify sigmoid parameters!", get_name());
 			break;
 		case PROB_HEURIS_NONE:
 			break;
 		default:
-			error("{}::rescale_outputs(): Unknown OVA probability heuristic type!\n", get_name());
+			error("{}::rescale_outputs(): Unknown OVA probability heuristic type!", get_name());
 			break;
 	}
 }
@@ -95,7 +95,7 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outpu
 {
 	if (m_num_classes != outputs.vlen)
 	{
-		error("{}::rescale_heuris_norm(): size(outputs) = {} != m_num_classes = {}\n",
+		error("{}::rescale_heuris_norm(): size(outputs) = {} != m_num_classes = {}",
 				get_name(), outputs.vlen, m_num_classes);
 	}
 
@@ -110,7 +110,7 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> ou
 {
 	if (m_num_classes != outputs.vlen)
 	{
-		error("{}::rescale_heuris_softmax(): size(outputs) = {} != m_num_classes = {}\n",
+		error("{}::rescale_heuris_softmax(): size(outputs) = {} != m_num_classes = {}",
 				get_name(), outputs.vlen, m_num_classes);
 	}
 

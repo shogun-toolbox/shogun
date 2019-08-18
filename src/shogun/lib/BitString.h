@@ -28,7 +28,7 @@ class CBitString : public CSGObject
 	public:
 		/** default constructor  */
 		CBitString() {
-			io::unstable("CBitString::CBitString()");
+			unstable(SOURCE_LOCATION);
 
 			alphabet = NULL;
 			string = NULL;
@@ -131,10 +131,10 @@ class CBitString : public CSGObject
 			char* id=f.get_line(id_len, offs);
 
 			if (!id_len || id[0]!='>')
-				error("No fasta hunks (lines starting with '>') found\n");
+				error("No fasta hunks (lines starting with '>') found");
 
 			if (offs==f.get_size())
-				error("Empty file?\n");
+				error("Empty file?");
 
 			char* fasta=NULL;
 			char* s=NULL;
@@ -152,7 +152,7 @@ class CBitString : public CSGObject
 					error("Error reading fasta entry in line {} len={}", spanned_lines+1, len);
 
 				if (s[0]=='>')
-					error("Multiple fasta hunks (lines starting with '>') are not supported!\n");
+					error("Multiple fasta hunks (lines starting with '>') are not supported!");
 
 				if (offs==f.get_size())
 				{

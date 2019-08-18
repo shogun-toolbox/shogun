@@ -51,12 +51,15 @@ bool ends_with(std::string long_str, std::string short_str)
 {
 	return long_str.compare(
 	           long_str.length() - short_str.length(), short_str.length(),
+	           short_str) == 0 ||
+	       long_str.compare(
+	           long_str.length() - short_str.length() - 1, short_str.length(),
 	           short_str) == 0;
 }
 
 TEST(SGIO, custom_stderr_sink)
 {
-	const std::string stderr_log = "Testing that \'error\' writes to stderr.\n";
+	const std::string stderr_log = "Testing that \'error\' writes to stderr.";
 
 	std::ostringstream stderr_stream;
 	auto stderr_sink = std::make_shared<StreamSink>(stderr_stream);

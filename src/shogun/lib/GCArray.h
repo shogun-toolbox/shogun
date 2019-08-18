@@ -31,7 +31,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		/** default constructor  */
 		CGCArray() : CSGObject()
 		{
-			io::unstable("CGCArray::CGCArray()");
+			unstable(SOURCE_LOCATION);
 
 			array = NULL;
 			size=0;

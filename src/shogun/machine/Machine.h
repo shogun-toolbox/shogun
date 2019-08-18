@@ -251,7 +251,7 @@ class CMachine : public CStoppableSGObject
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
 			error(
-			    "train_machine is not yet implemented for {}!\n", get_name());
+			    "train_machine is not yet implemented for {}!", get_name());
 			return false;
 		}
 
@@ -293,7 +293,7 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool continue_train()
 		{
-			error("Training continuation not supported by this model.\n");
+			error("Training continuation not supported by this model.");
 			return false;
 		}
 

@@ -62,7 +62,7 @@ int CIOBuffer::open_file(const char* name, char flag)
 		break;
 
 	default:
-		error("Unknown file operation. Something other than 'r'/'w' specified.\n");
+		error("Unknown file operation. Something other than 'r'/'w' specified.");
 		ret = 0;
 	}
 	return ret;
@@ -113,7 +113,7 @@ void CIOBuffer::flush()
 	if (working_file>=0)
 	{
 		if (write_file(space.begin, space.index()) != (int) space.index())
-			error("Error, failed to write example!\n");
+			error("Error, failed to write example!");
 	}
 	space.end = space.begin;
 #ifdef _WIN32
@@ -131,7 +131,7 @@ bool CIOBuffer::close_file()
 	{
 		int r = close(working_file);
 		if (r < 0)
-			error("Error closing the file!\n");
+			error("Error closing the file!");
 		return true;
 	}
 }

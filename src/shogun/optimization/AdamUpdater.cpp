@@ -55,14 +55,14 @@ AdamUpdater::AdamUpdater(float64_t learning_rate,float64_t epsilon,
 
 void AdamUpdater::set_learning_rate(float64_t learning_rate)
 {
-	require(learning_rate>0,"Learning_rate ({}) must be positive\n",
+	require(learning_rate>0,"Learning_rate ({}) must be positive",
 		learning_rate);
 	m_log_learning_rate = std::log(learning_rate);
 }
 
 void AdamUpdater::set_epsilon(float64_t epsilon)
 {
-	require(epsilon>0,"Epsilon ({}) must be non-negative\n",
+	require(epsilon>0,"Epsilon ({}) must be non-negative",
 		epsilon);
 	m_epsilon=epsilon;
 }
@@ -70,7 +70,7 @@ void AdamUpdater::set_epsilon(float64_t epsilon)
 void AdamUpdater::set_first_moment_decay_factor(float64_t decay_factor)
 {
 	require(decay_factor>0.0 && decay_factor<=1.0,
-		"Decay factor ({}) for first moment must in (0,1]\n",
+		"Decay factor ({}) for first moment must in (0,1]",
 		decay_factor);
 	m_decay_factor_first_moment=decay_factor;
 }
@@ -78,7 +78,7 @@ void AdamUpdater::set_first_moment_decay_factor(float64_t decay_factor)
 void AdamUpdater::set_second_moment_decay_factor(float64_t decay_factor)
 {
 	require(decay_factor>0.0 && decay_factor<=1.0,
-		"Decay factor ({}) for second moment must in (0,1]\n",
+		"Decay factor ({}) for second moment must in (0,1]",
 		decay_factor);
 	m_decay_factor_second_moment=decay_factor;
 }

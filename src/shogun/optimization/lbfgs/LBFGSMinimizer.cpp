@@ -51,7 +51,7 @@ CLBFGSMinimizer::CLBFGSMinimizer(FirstOrderCostFunction *fun)
 		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
 	if(m_fun && bound_constraints_fun)
 	{
-		io::warn("The minimizer does not support constrained minimization. All constraints will be ignored.\n");
+		io::warn("The minimizer does not support constrained minimization. All constraints will be ignored.");
 	}
 	init();
 }
@@ -135,9 +135,9 @@ void CLBFGSMinimizer::set_lbfgs_parameters(
 
 void CLBFGSMinimizer::init_minimization()
 {
-	require(m_fun, "Cost function not set!\n");
+	require(m_fun, "Cost function not set!");
 	m_target_variable=m_fun->obtain_variable_reference();
-	require(m_target_variable.vlen>0,"Target variable from cost function must not empty!\n");
+	require(m_target_variable.vlen>0,"Target variable from cost function must not empty!");
 }
 
 float64_t CLBFGSMinimizer::minimize()
@@ -169,7 +169,7 @@ float64_t CLBFGSMinimizer::minimize()
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
-		io::warn("Error(s) happened during L-BFGS optimization (error code:{})\n",
+		io::warn("Error(s) happened during L-BFGS optimization (error code:{})",
 			error_code);
 	}
 
@@ -183,7 +183,7 @@ float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 	CLBFGSMinimizer * obj_prt
 		= static_cast<CLBFGSMinimizer *>(obj);
 
-	require(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
+	require(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL");
 
 	float64_t cost=obj_prt->m_fun->get_cost();
 
@@ -193,7 +193,7 @@ float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 	//get the gradient wrt variable_new
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
 	require(grad.vlen==dim,
-		"The length of gradient ({}) and the length of variable ({}) do not match\n",
+		"The length of gradient ({}) and the length of variable ({}) do not match",
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);

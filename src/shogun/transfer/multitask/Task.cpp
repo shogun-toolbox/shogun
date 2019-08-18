@@ -85,7 +85,7 @@ void CTask::add_subtask(CTask* subtask)
 			}
 		}
 		if (!found)
-			error("Subtask contains indices that are not contained in this task\n");
+			error("Subtask contains indices that are not contained in this task");
 	}
 	m_subtasks->append_element(subtask);
 }

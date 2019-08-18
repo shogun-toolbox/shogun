@@ -98,7 +98,7 @@ namespace shogun
 
 	CFeatures* features(CFile* file, machine_int_t primitive_type = PT_FLOAT64)
 	{
-		require(file, "No file provided.\n");
+		require(file, "No file provided.");
 		CFeatures* result = nullptr;
 
 		switch (primitive_type)
@@ -129,7 +129,7 @@ namespace shogun
 	    CFile* file, machine_int_t alphabet_type = DNA,
 	    machine_int_t primitive_type = PT_CHAR)
 	{
-		require(file, "No file provided.\n");
+		require(file, "No file provided.");
 
 		switch (primitive_type)
 		{
@@ -163,13 +163,13 @@ namespace shogun
 	    bool rev, machine_int_t primitive_type)
 	{
 
-		require<std::invalid_argument>(features, "No features provided.\n");
+		require<std::invalid_argument>(features, "No features provided.");
 		require<std::invalid_argument>(
 		    features->get_feature_class() == C_STRING &&
 		        features->get_feature_type() == F_CHAR,
 		        "Given features must be char-based StringFeatures, "
 		        "provided ({}) have feature class ({}), feature type "
-		        "({}) and class name.\n",
+		        "({}) and class name.",
 		        features->get_name(),
 				features->get_feature_class(),
 				features->get_feature_type());
@@ -186,7 +186,7 @@ namespace shogun
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
 			SG_UNREF(alphabet);
-			require(success, "Failed to obtain from string char features.\n");
+			require(success, "Failed to obtain from string char features.");
 			return result;
 		}
 		default:
@@ -202,7 +202,7 @@ namespace shogun
 	CFeatures* features_subset(CFeatures* base_features, SGVector<index_t> indices,
 			EPrimitiveType primitive_type = PT_FLOAT64)
 	{
-		require(base_features, "No base features provided.\n");
+		require(base_features, "No base features provided.");
 
 		switch (primitive_type)
 		{
@@ -243,7 +243,7 @@ namespace shogun
 
 	CLabels* labels(CFile* file)
 	{
-		require(file, "No file provided.\n");
+		require(file, "No file provided.");
 
 		// load label data into memory via any dense label specialization
 		CDenseLabels* loaded = new CRegressionLabels();
@@ -255,7 +255,7 @@ namespace shogun
 
 		require(
 		    dynamic_cast<CCSVFile*>(file),
-		    "Cannot load labels from {}(\"{}\").\n", file->get_name(),
+		    "Cannot load labels from {}(\"{}\").", file->get_name(),
 		    file->get_filename());
 
 		// try to interpret as all dense label types, from most restrictive to
@@ -265,10 +265,10 @@ namespace shogun
 		try_labels<CRegressionLabels>(result, labels);
 		require(
 		    result,
-		    "Cannot load labels from {}(\"{}\") as any of dense labels.\n",
+		    "Cannot load labels from {}(\"{}\") as any of dense labels.",
 		    file->get_name(), file->get_filename());
 		io::info(
-		    "Loaded labels from {}(\"{}\") as {}\n", file->get_name(),
+		    "Loaded labels from {}(\"{}\") as {}", file->get_name(),
 		    file->get_filename(), result->get_name());
 
 		return result;
@@ -284,8 +284,8 @@ namespace shogun
 		try_labels<CMulticlassLabels>(result, labels_vector);
 		try_labels<CRegressionLabels>(result, labels_vector);
 		require(
-		    result, "Cannot interpret given labels as any of dense labels.\n");
-		io::info("Interpreted labels as {}\n", result->get_name());
+		    result, "Cannot interpret given labels as any of dense labels.");
+		io::info("Interpreted labels as {}", result->get_name());
 		return result;
 	}
 

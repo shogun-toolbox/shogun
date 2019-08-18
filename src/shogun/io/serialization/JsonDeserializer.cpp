@@ -43,62 +43,62 @@ public:
 	void on(bool* v) override
 	{
 		*v = next_element<bool>(&ValueType::GetBool);
-		SG_DEBUG("read bool with value {}\n", *v);
+		SG_DEBUG("read bool with value {}", *v);
 	}
 	void on(char* v) override
 	{
 		*v = utils::safe_convert<char>(next_element<int32_t>(&ValueType::GetInt));
-		SG_DEBUG("read char with value {}\n", *v);
+		SG_DEBUG("read char with value {}", *v);
 	}
 	void on(int8_t* v) override
 	{
 		*v = utils::safe_convert<int8_t>(next_element<int32_t>(&ValueType::GetInt));
-		SG_DEBUG("read int8_t with value {}\n", *v);
+		SG_DEBUG("read int8_t with value {}", *v);
 	}
 	void on(uint8_t* v) override
 	{
 		*v = utils::safe_convert<uint8_t>(next_element<uint32_t>(&ValueType::GetUint));
-		SG_DEBUG("read uint8_t with value {}\n", *v);
+		SG_DEBUG("read uint8_t with value {}", *v);
 	}
 	void on(int16_t* v) override
 	{
 		*v = utils::safe_convert<int16_t>(next_element<int32_t>(&ValueType::GetInt));
-		SG_DEBUG("read int16_t with value {}\n", *v);
+		SG_DEBUG("read int16_t with value {}", *v);
 	}
 	void on(uint16_t* v) override
 	{
 		*v = utils::safe_convert<uint16_t>(next_element<uint32_t>(&ValueType::GetUint));
-		SG_DEBUG("read uint16_t with value {}\n", *v);
+		SG_DEBUG("read uint16_t with value {}", *v);
 	}
 	void on(int32_t* v) override
 	{
 		*v = next_element<int32_t>(&ValueType::GetInt);
-		SG_DEBUG("read int32_t with value {}\n", *v);
+		SG_DEBUG("read int32_t with value {}", *v);
 	}
 	void on(uint32_t* v) override
 	{
 		*v = next_element<uint32_t>(&ValueType::GetUint);
-		SG_DEBUG("read uint32_t with value {}\n", *v);
+		SG_DEBUG("read uint32_t with value {}", *v);
 	}
 	void on(int64_t* v) override
 	{
 		*v = next_element<int64_t>(&ValueType::GetInt64);
-		SG_DEBUG("read int64_t with value {}\n", *v);
+		SG_DEBUG("read int64_t with value {}", *v);
 	}
 	void on(uint64_t* v) override
 	{
 		*v = next_element<uint64_t>(&ValueType::GetUint64);
-		SG_DEBUG("read uint64_t with value {}\n", *v);
+		SG_DEBUG("read uint64_t with value {}", *v);
 	}
 	void on(float32_t* v) override
 	{
 		*v = utils::safe_convert<float32_t>(next_element<float64_t>(&ValueType::GetDouble));
-		SG_DEBUG("read float with value {}\n", *v);
+		SG_DEBUG("read float with value {}", *v);
 	}
 	void on(float64_t* v) override
 	{
 		*v = next_element<float64_t>(&ValueType::GetDouble);
-		SG_DEBUG("read double with value {}\n", *v);
+		SG_DEBUG("read double with value {}", *v);
 	}
 	void on(floatmax_t* v) override
 	{
@@ -113,7 +113,7 @@ public:
 		m_value_stack.pop();
 
 		*v = *reinterpret_cast<floatmax_t*>(array);
-		SG_DEBUG("read floatmax_t with value {}\n", *v);
+		SG_DEBUG("read floatmax_t with value {}", *v);
 	}
 	void on(complex128_t* v) override
 	{
@@ -150,7 +150,7 @@ public:
 			ReverseConstIterator col_begin(json_array.End());
 			ReverseConstIterator col_end(json_array.Begin());
 			*rows = col_begin->GetArray().Size();
-			SG_DEBUG("reading matrix of size: {} x {}\n", *rows, *cols);
+			SG_DEBUG("reading matrix of size: {} x {}", *rows, *cols);
 			do
 			{
 				auto json_row = col_begin->GetArray();
@@ -176,7 +176,7 @@ public:
 		auto json_array = m_value_stack.top()->GetArray();
 		m_value_stack.pop();
 		*size = utils::safe_convert<size_t>(json_array.Size());
-		SG_DEBUG("reading map of size: {}\n", *size);
+		SG_DEBUG("reading map of size: {}", *size);
 		if (*size == 0)
 			return;
 		for (auto it = json_array.Begin(); it != json_array.End(); ++it)
@@ -221,7 +221,7 @@ private:
 		auto json_array = m_value_stack.top()->GetArray();
 		m_value_stack.pop();
 		*size = utils::safe_convert<T>(json_array.Size());
-		SG_DEBUG("reading '{}' of size: {}\n", type.c_str(), *size);
+		SG_DEBUG("reading '{}' of size: {}", type.c_str(), *size);
 		if (*size == 0)
 			return;
 
@@ -356,7 +356,7 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _
 	catch(ShogunException& e)
 	{
 		io::warn("Error while deserializeing {}: ShogunException: "
-			"{}\n", obj_name.c_str(), e.what());
+			"{}", obj_name.c_str(), e.what());
 		SG_UNREF(obj);
 		return nullptr;
 	}

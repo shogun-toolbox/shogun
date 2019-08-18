@@ -23,7 +23,7 @@ CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
 	/* "assert" that num_subsets is smaller than num labels */
 	if (labels->get_num_labels()<num_subsets)
 	{
-		error("Only {} labels for {} subsets!\n", labels->get_num_labels(),
+		error("Only {} labels for {} subsets!", labels->get_num_labels(),
 				num_subsets);
 	}
 
@@ -76,7 +76,7 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 	if (!m_is_filled)
 	{
 		error("Call {}::build_subsets() before accessing them! If this error"
-				" stays, its an implementation error of {}::build_subsets()\n",
+				" stays, its an implementation error of {}::build_subsets()",
 				get_name(), get_name());
 	}
 
@@ -100,7 +100,7 @@ SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx
 	if (!m_is_filled)
 	{
 		error("Call {}::build_subsets() before accessing them! If this error"
-				" stays, its an implementation error of {}::build_subsets()\n",
+				" stays, its an implementation error of {}::build_subsets()",
 				get_name(), get_name());
 	}
 

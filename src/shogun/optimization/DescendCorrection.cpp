@@ -35,7 +35,7 @@ using namespace shogun;
 
 void DescendCorrection::set_correction_weight(float64_t weight)
 {
-	require(weight>0, "weight ({}) must be positive\n", weight);
+	require(weight>0, "weight ({}) must be positive", weight);
 	m_weight=weight;
 }
 

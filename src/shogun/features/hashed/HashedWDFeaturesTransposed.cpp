@@ -37,8 +37,7 @@ struct HASHEDWD_THREAD_PARAM
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()
 	:CDotFeatures()
 {
-	io::unstable(
-		"CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()");
+	unstable(SOURCE_LOCATION);
 
 	strings = NULL;
 
@@ -152,7 +151,7 @@ float64_t CHashedWDFeaturesTransposed::dot(
     int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	require(
-	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}\n",
+	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}",
 	    vec2.size(), w_dim);
 
 	float64_t sum=0;
@@ -216,7 +215,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	ASSERT(num_threads>0)
 
 	if (dim != w_dim)
-		error("Dimensions don't match, vec_len={}, w_dim={}\n", dim, w_dim);
+		error("Dimensions don't match, vec_len={}, w_dim={}", dim, w_dim);
 
 	if (num_threads < 2)
 	{
@@ -302,7 +301,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	ASSERT(num_threads>0)
 
 	if (dim != w_dim)
-		error("Dimensions don't match, vec_len={}, w_dim={}\n", dim, w_dim);
+		error("Dimensions don't match, vec_len={}, w_dim={}", dim, w_dim);
 
 	if (num_threads < 2)
 	{
@@ -504,7 +503,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		error("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim);
+		error("Dimensions don't match, vec2_dim={}, w_dim={}", vec2_len, w_dim);
 
 	int32_t len;
 	bool free_vec1;
@@ -581,7 +580,7 @@ void CHashedWDFeaturesTransposed::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:{}\n", normalization_const)
+	SG_DEBUG("normalization_const:{}", normalization_const)
 }
 
 CFeatures* CHashedWDFeaturesTransposed::duplicate() const

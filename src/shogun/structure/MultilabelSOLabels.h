@@ -55,7 +55,7 @@ public:
 		}
 		else
 		{
-			error("base_data must be of dynamic type CSparseMultilabel\n");
+			error("base_data must be of dynamic type CSparseMultilabel");
 		}
 
 		return NULL;

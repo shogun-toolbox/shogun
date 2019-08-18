@@ -48,7 +48,7 @@ CStructuredData* CStructuredLabels::get_label(int32_t idx)
 {
 	ensure_valid("CStructuredLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
-		error("Index must be inside [0, num_labels-1]\n");
+		error("Index must be inside [0, num_labels-1]");
 
 	return (CStructuredData*) m_labels->get_element(idx);
 }
@@ -99,6 +99,6 @@ void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
 	else
 	{
 		require(label->get_structured_data_type() == m_sdt, "All the labels must "
-				"belong to the same CStructuredData child class\n");
+				"belong to the same CStructuredData child class");
 	}
 }

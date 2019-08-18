@@ -51,15 +51,15 @@ CSVMOcas::~CSVMOcas()
 
 bool CSVMOcas::train_machine(CFeatures* data)
 {
-	io::info("C={}, epsilon={}, bufsize={}\n", get_C1(), get_epsilon(), bufsize);
-	SG_DEBUG("use_bias = {}\n", get_bias_enabled())
+	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
+	SG_DEBUG("use_bias = {}", get_bias_enabled())
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures\n");
+			error("Specified features are not of type CDotFeatures");
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features)
@@ -73,7 +73,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	current_w.zero();
 
 	if (num_vec!=lab.vlen || num_vec<=0)
-		error("num_vec={} num_train_labels={}\n", num_vec, lab.vlen);
+		error("num_vec={} num_train_labels={}", num_vec, lab.vlen);
 
 	SG_FREE(old_w);
 	old_w=SG_CALLOC(float64_t, current_w.vlen);
@@ -101,7 +101,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 			&CSVMOcas::print,
 			this);
 
-	io::info("Ocas Converged after {} iterations\n"
+	io::info("Ocas Converged after {} iterations"
 			"==================================\n"
 			"timing statistics:\n"
 			"output_time: {} s\n"
@@ -109,7 +109,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 			"add_time: {} s\n"
 			"w_time: {} s\n"
 			"solver_time {} s\n"
-			"ocas_time {} s\n\n", result.nIter, result.output_time, result.sort_time,
+			"ocas_time {} s", result.nIter, result.output_time, result.sort_time,
 			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	SG_FREE(tmp_a_buf);
@@ -118,12 +118,12 @@ bool CSVMOcas::train_machine(CFeatures* data)
 
 	uint32_t num_cut_planes = result.nCutPlanes;
 
-	SG_DEBUG("num_cut_planes={}\n", num_cut_planes)
+	SG_DEBUG("num_cut_planes={}", num_cut_planes)
 	for (uint32_t i=0; i<num_cut_planes; i++)
 	{
-		SG_DEBUG("cp_value[{}]={}\n", i, fmt::ptr(cp_value))
+		SG_DEBUG("cp_value[{}]={}", i, fmt::ptr(cp_value))
 		SG_FREE(cp_value[i]);
-		SG_DEBUG("cp_index[{}]={}\n", i, fmt::ptr(cp_index))
+		SG_DEBUG("cp_index[{}]={}", i, fmt::ptr(cp_index))
 		SG_FREE(cp_index[i]);
 	}
 

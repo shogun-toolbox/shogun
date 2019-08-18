@@ -28,7 +28,7 @@
 		break;                                                                 \
 	default:                                                                   \
 		error(                                                                 \
-		    "Only defined for {} with real type, not for {}.\n",	           \
+		    "Only defined for {} with real type, not for {}.",	           \
 		    get_name(), demangled_type<ST>().c_str());                         \
 	}
 
@@ -184,7 +184,7 @@ template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t n
 	if (num >= get_num_vectors())
 	{
 		error("Index out of bounds (number of vectors {}, you "
-		      "requested {})\n", get_num_vectors(), real_num);
+		      "requested {})", get_num_vectors(), real_num);
 	}
 
 	int32_t vlen;
@@ -211,7 +211,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_vector(SGVector<ST> vec
 template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)
 {
 	if (m_subset_stack->has_subsets())
-		error("A subset is set, cannot call vector_subset\n");
+		error("A subset is set, cannot call vector_subset");
 
 	ASSERT(feature_matrix.matrix)
 	ASSERT(idx_len<=num_vectors)
@@ -227,7 +227,7 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 		ASSERT(old_ii<ii)
 
 		if (ii < 0 || ii >= num_vec)
-			error("Index out of range: should be 0<{}<{}\n", ii, num_vec);
+			error("Index out of range: should be 0<{}<{}", ii, num_vec);
 
 		if (i == ii)
 			continue;
@@ -242,7 +242,7 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t idx_len)
 {
 	if (m_subset_stack->has_subsets())
-		error("A subset is set, cannot call feature_subset\n");
+		error("A subset is set, cannot call feature_subset");
 
 	ASSERT(feature_matrix.matrix)
 	ASSERT(idx_len<=num_features)
@@ -260,7 +260,7 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 			int32_t jj = idx[j];
 			ASSERT(old_jj<jj)
 			if (jj < 0 || jj >= num_feat)
-				error("Index out of range: should be 0<{}<{}\n", jj, num_feat);
+				error("Index out of range: should be 0<{}<{}", jj, num_feat);
 
 			dst[j] = src[jj];
 			old_jj = jj;
@@ -282,18 +282,18 @@ SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix() const
 template <class ST>
 void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column_offset) const
 {
-	require(column_offset>=0, "Column offset ({}) cannot be negative!\n", column_offset);
-	require(!target.equals(feature_matrix), "Source and target feature matrices cannot be the same\n");
+	require(column_offset>=0, "Column offset ({}) cannot be negative!", column_offset);
+	require(!target.equals(feature_matrix), "Source and target feature matrices cannot be the same");
 
 	index_t num_vecs=get_num_vectors();
 	index_t num_cols=num_vecs+column_offset;
 
-	require(target.matrix!=nullptr, "Provided matrix is not allocated!\n");
+	require(target.matrix!=nullptr, "Provided matrix is not allocated!");
 	require(target.num_rows==num_features,
-			"Number of rows of given matrix ({}) should be equal to the number of features ({})!\n",
+			"Number of rows of given matrix ({}) should be equal to the number of features ({})!",
 			target.num_rows, num_features);
 	require(target.num_cols>=num_cols,
-			"Number of cols of given matrix ({}) should be at least {}!\n",
+			"Number of cols of given matrix ({}) should be at least {}!",
 			target.num_cols, num_cols);
 
 	if (!m_subset_stack->has_subsets())
@@ -379,7 +379,7 @@ template<class ST> void CDenseFeatures<ST>::set_num_features(int32_t num)
 template<class ST> void CDenseFeatures<ST>::set_num_vectors(int32_t num)
 {
 	if (m_subset_stack->has_subsets())
-		error("A subset is set, cannot call set_num_vectors\n");
+		error("A subset is set, cannot call set_num_vectors");
 
 	num_vectors = num;
 	initialize_cache();
@@ -388,7 +388,7 @@ template<class ST> void CDenseFeatures<ST>::set_num_vectors(int32_t num)
 template<class ST> void CDenseFeatures<ST>::initialize_cache()
 {
 	if (m_subset_stack->has_subsets())
-		error("A subset is set, cannot call initialize_cache\n");
+		error("A subset is set, cannot call initialize_cache");
 
 	if (num_features && num_vectors)
 	{
@@ -487,7 +487,7 @@ template<class ST> void* CDenseFeatures<ST>::get_feature_iterator(int32_t vector
 	if (vector_index>=get_num_vectors())
 	{
 		error("Index out of bounds (number of vectors {}, you "
-		      "requested {})\n", get_num_vectors(), vector_index);
+		      "requested {})", get_num_vectors(), vector_index);
 	}
 
 	dense_feature_iterator* iterator = SG_MALLOC(dense_feature_iterator, 1);
@@ -541,14 +541,14 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 template<class ST>
 CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
 	// sanity checks
 	index_t max=CMath::max(dims.vector, dims.vlen);
 	index_t min=CMath::min(dims.vector, dims.vlen);
 	require(max<num_features && min>=0,
 			"Provided dimensions is in the range [{}, {}] but they "
-			"have to be within [0, {}]! But it \n", min, max, num_features);
+			"have to be within [0, {}]! But it ", min, max, num_features);
 
 	SGMatrix<ST> feature_matrix_copy(dims.vlen, get_num_vectors());
 
@@ -564,7 +564,7 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) con
 	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
 	SG_REF(result);
 
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 	return result;
 }
 
@@ -573,7 +573,7 @@ CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
 {
 	CFeatures* shallow_copy_features=NULL;
 
-	SG_DEBUG("Using underlying feature matrix with {} dimensions and {} feature vectors!\n", num_features, num_vectors);
+	SG_DEBUG("Using underlying feature matrix with {} dimensions and {} feature vectors!", num_features, num_vectors);
 	SGMatrix<ST> shallow_copy_matrix(feature_matrix);
 	shallow_copy_features=new CDenseFeatures<ST>(shallow_copy_matrix);
 	SG_REF(shallow_copy_features);
@@ -676,9 +676,9 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 template <class ST>
 CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 {
-	SG_DEBUG("Entering.\n");
+	SG_DEBUG("Entering.");
 
-	require(others!=nullptr, "The list of other feature instances is not initialized!\n");
+	require(others!=nullptr, "The list of other feature instances is not initialized!");
 
 	auto current=others->get_first_element();
 	auto total_num_vectors=get_num_vectors();
@@ -688,10 +688,10 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 	{
 		auto casted = dynamic_cast<const CDenseFeatures<ST>*>(current);
 
-		require(casted!=nullptr, "Provided object's type ({}) must match own type ({})!\n",
+		require(casted!=nullptr, "Provided object's type ({}) must match own type ({})!",
 				current->get_name(), get_name());
 		require(num_features==casted->num_features,
-				"Provided feature object has different dimension ({}) than this one ({})!\n",
+				"Provided feature object has different dimension ({}) than this one ({})!",
 				casted->num_features, num_features);
 
 		total_num_vectors+=casted->get_num_vectors();
@@ -723,7 +723,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 
 	auto result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("Leaving.\n");
+	SG_DEBUG("Leaving.");
 	return result;
 }
 
@@ -752,7 +752,7 @@ void CDenseFeatures<ST>::save(CFile* writer)
 template< class ST > CDenseFeatures< ST >* CDenseFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
 {
 	require(base_features->get_feature_class() == C_DENSE,
-			"base_features must be of dynamic type CDenseFeatures\n");
+			"base_features must be of dynamic type CDenseFeatures");
 
 	return (CDenseFeatures< ST >*) base_features;
 }
@@ -807,7 +807,7 @@ SGVector<ST> CDenseFeatures<ST>::dot(const SGVector<ST>& other) const
 	require(
 		get_num_vectors() == other.size(), "Number of feature vectors ({}) "
 		                                   "must match provided vector's size "
-		                                   "({}).\n",
+		                                   "({}).",
 		get_num_features(), other.size());
 	// TODO optimize non batch mode, but get_feature_vector is non const :(
 	return linalg::matrix_prod(get_feature_matrix(), other, false);

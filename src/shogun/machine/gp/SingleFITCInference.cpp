@@ -158,7 +158,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	//time complexity O(n)
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -180,9 +180,9 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_inducing_noise(
 	const TParameter* param)
 {
 	//time complexity O(m^2*n)
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	require(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt {}.{} parameter\n",
+			"the nagative log marginal likelihood wrt {}.{} parameter",
 			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);

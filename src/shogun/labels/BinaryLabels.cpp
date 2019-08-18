@@ -78,7 +78,7 @@ bool CBinaryLabels::is_valid() const
 
 void CBinaryLabels::ensure_valid(const char* context)
 {
-	require(is_valid(), "Binary Labels must be -1 or +1!\n");
+	require(is_valid(), "Binary Labels must be -1 or +1!");
 }
 
 ELabelType CBinaryLabels::get_label_type() const
@@ -88,10 +88,10 @@ ELabelType CBinaryLabels::get_label_type() const
 
 void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 {
-	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n")
+	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()")
 
 	require(m_current_values.vector, "{}::scores_to_probabilities() requires "
-	        "values vector!\n", get_name());
+	        "values vector!", get_name());
 
 	if (a == 0 && b == 0)
 	{
@@ -101,7 +101,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 		b = params.b;
 	}
 
-	SG_DEBUG("using sigmoid: a={}, b={}\n", a, b)
+	SG_DEBUG("using sigmoid: a={}, b={}", a, b)
 
 	/* now the sigmoid is fitted, convert all values to probabilities */
 	for (index_t i = 0; i < m_current_values.vlen; ++i)
@@ -112,7 +112,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 		                          : 1.0 / (1 + std::exp(fApB));
 	}
 
-	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
+	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()")
 }
 
 CLabels* CBinaryLabels::shallow_subset_copy()
@@ -143,7 +143,7 @@ namespace shogun
 {
 	Some<CBinaryLabels> binary_labels(CLabels* orig)
 	{
-		require(orig, "No labels provided.\n");
+		require(orig, "No labels provided.");
 		try
 		{
 			switch (orig->get_label_type())
@@ -157,7 +157,7 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			error(
-			    "Cannot convert {} to binary labels: {}\n", orig->get_name(),
+			    "Cannot convert {} to binary labels: {}", orig->get_name(),
 			    e.what());
 		}
 

@@ -64,11 +64,11 @@ CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 		if (filename)
 		{
 			if (!(file=fopen((const char*) filename, (const char*) mode)))
-				error("Error opening file '{}'\n", filename);
+				error("Error opening file '{}'", filename);
 		}
 	}
 	else
-		error("unknown mode '{}'\n", mode[0]);
+		error("unknown mode '{}'", mode[0]);
 
 	if (name)
 		set_variable_name(name);

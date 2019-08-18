@@ -84,7 +84,7 @@ SGVector<float64_t> CMulticlassLabels::get_confidences_for_class(int32_t i)
 	require(
 	    (m_multiclass_confidences.num_rows != 0) &&
 	        (m_multiclass_confidences.num_cols != 0),
-	    "Empty confidences, which need to be allocated before fetching.\n");
+	    "Empty confidences, which need to be allocated before fetching.");
 
 	SGVector<float64_t> confs(m_multiclass_confidences.num_cols);
 	for (index_t j = 0; j < confs.size(); j++)
@@ -115,7 +115,7 @@ bool CMulticlassLabels::is_valid() const
 void CMulticlassLabels::ensure_valid(const char* context)
 {
 	require(is_valid(), "Multiclass Labels must be in range "
-	                    "[0,...,num_classes] and integers!\n");
+	                    "[0,...,num_classes] and integers!");
 }
 
 ELabelType CMulticlassLabels::get_label_type() const
@@ -221,13 +221,13 @@ namespace shogun
 			// print conversion table for users
 			io::warn(
 			    "Converting non-contiguous multiclass labels to "
-			    "contiguous version:\n",
+			    "contiguous version:",
 			    unique.size() - 1);
 			std::for_each(
 			    unique.begin(), unique.end(), [&unique](int32_t old_label) {
 				    auto new_label =
 				        std::distance(unique.begin(), unique.find(old_label));
-				    io::warn("Converting {} to {}.\n", old_label, new_label);
+				    io::warn("Converting {} to {}.", old_label, new_label);
 				});
 
 			SGVector<float64_t> converted(result_vector.vlen);
@@ -244,7 +244,7 @@ namespace shogun
 
 	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
 	{
-		require(orig, "No labels provided.\n");
+		require(orig, "No labels provided.");
 		try
 		{
 			switch (orig->get_label_type())
@@ -261,7 +261,7 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			error(
-			    "Cannot convert {} to multiclass labels: {}\n",
+			    "Cannot convert {} to multiclass labels: {}",
 			    orig->get_name(), e.what());
 		}
 

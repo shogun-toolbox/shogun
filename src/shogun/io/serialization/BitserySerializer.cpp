@@ -32,7 +32,7 @@ public:
 
 	void on_floatmax(Writer& writer, floatmax_t* v)
 	{
-		SG_DEBUG("writing floatmax_t with value {}\n", *v);
+		SG_DEBUG("writing floatmax_t with value {}", *v);
 		uint64_t msb, lsb;
 		uint64_t *array = reinterpret_cast<uint64_t*>(v);
 		auto array_size = sizeof(floatmax_t)/sizeof(uint64_t);
@@ -59,7 +59,7 @@ public:
 	{
 		if (*v)
 		{
-			SG_DEBUG("writing SGObject: {}\n", (*v)->get_name());
+			SG_DEBUG("writing SGObject: {}", (*v)->get_name());
 			SG_REF(*v);
 			write_object(writer, this, wrap<CSGObject>(*v));
 		}

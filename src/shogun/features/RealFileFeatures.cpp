@@ -16,7 +16,7 @@ using namespace shogun;
 
 CRealFileFeatures::CRealFileFeatures()
 {
-	io::unstable("CRealFileFeatures::CRealFileFeatures()");
+	unstable(SOURCE_LOCATION);
 	init();
 }
 
@@ -93,11 +93,11 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 	fseek(working_file, filepos, SEEK_SET);
 	free_feature_matrix();
 
-	io::info("allocating feature matrix of size {:.2f}M\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	io::info("allocating feature matrix of size {:.2f}M", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
 	feature_matrix=SGMatrix<float64_t>(num_features,num_vectors);
 
-	io::info("loading... be patient.\n");
+	io::info("loading... be patient.");
 
 	for (int32_t i=0; i<(int32_t) num_vectors; i++)
 	{
@@ -134,7 +134,7 @@ bool CRealFileFeatures::load_base_data()
 	ASSERT(fread(&num_vec, (uint32_t) intlen, 1, working_file)==1)
 	ASSERT(fread(&num_feat, (uint32_t) intlen, 1, working_file)==1)
 	ASSERT(fread(&preprocd, (uint32_t) intlen, 1, working_file)==1)
-	io::info("detected: intsize={}, doublesize={}, num_vec={}, num_feat={}, preprocd={}\n", intlen, doublelen, num_vec, num_feat, preprocd);
+	io::info("detected: intsize={}, doublesize={}, num_vec={}, num_feat={}, preprocd={}", intlen, doublelen, num_vec, num_feat, preprocd);
 	filepos=ftell(working_file);
 	set_num_vectors(num_vec);
 	set_num_features(num_feat);

@@ -72,7 +72,7 @@ void CPruneVarSubMean::fit(CFeatures* features)
 		}
 	}
 
-	io::info("Reducing number of features from {} to {}\n", num_features, num_ok);
+	io::info("Reducing number of features from {} to {}", num_features, num_ok);
 
 	m_idx.resize_vector(num_ok);
 	SGVector<float64_t> new_mean(num_ok);

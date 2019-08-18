@@ -216,7 +216,7 @@ void CUAIFile::parse()
         get_vector(data.vector, data.vlen);
         if (data_size != data.vlen)
             error("Data size mismatch. Expected {} size data; \
-                got {} size data\n", data_size, data.vlen);
+                got {} size data", data_size, data.vlen);
         m_factors_table[i] = data;
     }
 }

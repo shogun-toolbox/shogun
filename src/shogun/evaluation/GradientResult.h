@@ -46,9 +46,9 @@ public:
 	/** prints the function value and gradient contained in the object */
 	virtual void print_result()
 	{
-		require(m_gradient, "Gradient map should not be NULL\n");
+		require(m_gradient, "Gradient map should not be NULL");
 		require(m_parameter_dictionary, "Parameter dictionary should not be "
-				"NULL\n");
+				"NULL");
 
 		// print value of the function
 		io::print("Value: [");
@@ -132,7 +132,7 @@ public:
 	 */
 	virtual void set_gradient(CMap<TParameter*, SGVector<float64_t> >* gradient)
 	{
-		require(gradient, "Gradient map should not be NULL\n");
+		require(gradient, "Gradient map should not be NULL");
 
 		SG_REF(gradient);
 		SG_UNREF(m_gradient);

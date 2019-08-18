@@ -11,7 +11,7 @@ using namespace shogun;
 
 CHashedWDFeatures::CHashedWDFeatures() :CDotFeatures()
 {
-	io::unstable("CHashedWDFeatures::CHashedWDFeatures()");
+	unstable(SOURCE_LOCATION);
 
 	strings = NULL;
 
@@ -127,7 +127,7 @@ float64_t
 CHashedWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	require(
-	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}\n",
+	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}",
 	    vec2.size(), w_dim);
 
 	float64_t sum=0;
@@ -182,7 +182,7 @@ CHashedWDFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		error("Dimensions don't match, vec2_dim={}, w_dim={}\n", vec2_len, w_dim);
+		error("Dimensions don't match, vec2_dim={}, w_dim={}", vec2_len, w_dim);
 
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
@@ -250,7 +250,7 @@ void CHashedWDFeatures::set_wd_weights()
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 
 	SG_DEBUG("created HashedWDFeatures with d={} ({}), alphabetsize={}, "
-			"dim={} partial_dim={} num={}, len={}\n",
+			"dim={} partial_dim={} num={}, len={}",
 			degree, from_degree, alphabet_size,
 			w_dim, partial_w_dim, num_strings, string_length);
 }
@@ -269,7 +269,7 @@ void CHashedWDFeatures::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:{}\n", normalization_const)
+	SG_DEBUG("normalization_const:{}", normalization_const)
 }
 
 CFeatures* CHashedWDFeatures::duplicate() const

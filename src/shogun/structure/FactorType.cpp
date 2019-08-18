@@ -12,7 +12,7 @@ using namespace shogun;
 
 CFactorType::CFactorType() : CSGObject()
 {
-	io::unstable("CFactorType::CFactorType()");
+	unstable(SOURCE_LOCATION);
 
 	init();
 }
@@ -284,7 +284,7 @@ void CTableFactorType::compute_gradients(
 	}
 	else if (m_w.size() == 0)
 	{
-		error("{}::compute_gradients(): no parameters for this factor type.\n", get_name());
+		error("{}::compute_gradients(): no parameters for this factor type.", get_name());
 	}
 	else
 	{
@@ -318,7 +318,7 @@ void CTableFactorType::compute_gradients(
 	}
 	else if (m_w.size() == 0)
 	{
-		error("{}::compute_gradients(): no parameters for this factor type.\n", get_name());
+		error("{}::compute_gradients(): no parameters for this factor type.", get_name());
 	}
 	else
 	{

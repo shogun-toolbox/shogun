@@ -198,7 +198,7 @@ protected:
 		else if (m_dist==D_MANHATTAN)
 			return CMath::abs(d);
 		else
-			error("distance metric not recognized\n");
+			error("distance metric not recognized");
 
 		return 0;
 	}

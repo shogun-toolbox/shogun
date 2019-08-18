@@ -50,7 +50,7 @@ namespace shogun
 {
 	Some<CRegressionLabels> regression_labels(CLabels* orig)
 	{
-		require(orig, "No labels provided.\n");
+		require(orig, "No labels provided.");
 		try
 		{
 			switch (orig->get_label_type())
@@ -68,7 +68,7 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			error(
-			    "Cannot convert {} to regression labels: \n", e.what(),
+			    "Cannot convert {} to regression labels: ", e.what(),
 			    orig->get_name());
 		}
 

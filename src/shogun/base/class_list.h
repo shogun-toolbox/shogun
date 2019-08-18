@@ -47,7 +47,7 @@ namespace shogun {
 		if (!object)
 		{
 			error(
-			    "Class {} with primitive type {} does not exist.\n", name,
+			    "Class {} with primitive type {} does not exist.", name,
 			    ptype_name(pt).c_str());
 		}
 		T* cast = nullptr;

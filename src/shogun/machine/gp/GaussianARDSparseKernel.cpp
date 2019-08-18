@@ -65,7 +65,7 @@ CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel*
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
 	{
-		error("Provided kernel is not of type CGaussianARDSparseKernel!\n");
+		error("Provided kernel is not of type CGaussianARDSparseKernel!");
 	}
 
 	/* since an additional reference is returned */
@@ -76,7 +76,7 @@ CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel*
 SGVector<float64_t> CGaussianARDSparseKernel::get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index)
 {
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	if (!strcmp(param->m_name, "inducing_features"))
 		return CKernel::get_parameter_gradient_diagonal(param, index);
 	else
@@ -86,12 +86,12 @@ SGVector<float64_t> CGaussianARDSparseKernel::get_parameter_gradient_diagonal(
 SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
-	require(param, "Param not set\n");
+	require(param, "Param not set");
 	if (!strcmp(param->m_name, "inducing_features"))
 	{
-		require(lhs, "Left features not set!\n");
-		require(rhs, "Right features not set!\n");
-		require(index>=0 && index<num_lhs,"Index ({}) is out of bound ({})\n",
+		require(lhs, "Left features not set!");
+		require(rhs, "Right features not set!");
+		require(index>=0 && index<num_lhs,"Index ({}) is out of bound ({})",
 			index, num_rhs);
 		int32_t idx_l=index;
 		//Note that CDotKernel requires lhs and rhs are CDotFeatures pointers
@@ -131,7 +131,7 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 				}
 				else
 				{
-					error("Unsupported ARD type\n");
+					error("Unsupported ARD type");
 				}
 
 			}

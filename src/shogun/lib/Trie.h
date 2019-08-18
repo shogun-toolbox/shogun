@@ -515,7 +515,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		{
 			if (TreeMemPtr+10 < TreeMemPtrMax)
 				return;
-			SG_DEBUG("Extending TreeMem from {} to {} elements\n",
+			SG_DEBUG("Extending TreeMem from {} to {} elements",
 					TreeMemPtrMax, (int32_t) ((float64_t)TreeMemPtrMax*1.2));
 			int32_t old_sz=TreeMemPtrMax;
 			TreeMemPtrMax = (int32_t) ((float64_t)TreeMemPtrMax*1.2);
@@ -755,7 +755,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 {
 #ifdef TRIE_CHECK_EVERYTHING
 	int32_t ret=0 ;
-	SG_DEBUG("start_node={}\n", start_node)
+	SG_DEBUG("start_node={}", start_node)
 
 	if (start_node==NO_CHILD)
 	{
@@ -763,7 +763,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 		{
 			int32_t my_deepest_node ;
 			int32_t depth=find_deepest_node(i, my_deepest_node) ;
-			SG_DEBUG("start_node {} depth={}\n", i, depth)
+			SG_DEBUG("start_node {} depth={}", i, depth)
 			if (depth>ret)
 			{
 				deepest_node=my_deepest_node ;
@@ -801,7 +801,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 	}
 	return ret ;
 #else
-	error("not implemented\n");
+	error("not implemented");
 	return 0 ;
 #endif
 }
@@ -810,7 +810,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 int32_t CTrie<Trie>::compact_nodes(
 	int32_t start_node, int32_t depth, float64_t * weights)
 {
-	error("code buggy\n");
+	error("code buggy");
 
 	int32_t ret=0 ;
 
@@ -919,32 +919,32 @@ int32_t CTrie<Trie>::compact_nodes(
 bool CTrie<Trie>::compare_traverse(
 	int32_t node, const CTrie<Trie> & other, int32_t other_node)
 {
-	SG_DEBUG("checking nodes {} and {}\n", node, other_node)
+	SG_DEBUG("checking nodes {} and {}", node, other_node)
 	if (fabs(TreeMem[node].weight-other.TreeMem[other_node].weight)>=1e-5)
 	{
-		SG_DEBUG("CTrie::compare: TreeMem[{}].weight={}!=other.TreeMem[{}].weight={}\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight)
-		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+		SG_DEBUG("CTrie::compare: TreeMem[{}].weight={}!=other.TreeMem[{}].weight={}", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight)
+		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		display_node(node) ;
-		SG_DEBUG("============================================================\n")
+		SG_DEBUG("============================================================")
 		other.display_node(other_node) ;
-		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
+		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 		return false ;
 	}
 
 #ifdef TRIE_CHECK_EVERYTHING
 	if (TreeMem[node].has_seq!=other.TreeMem[other_node].has_seq)
 	{
-		SG_DEBUG("CTrie::compare: TreeMem[{}].has_seq={}!=other.TreeMem[{}].has_seq={}\n", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq)
-		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+		SG_DEBUG("CTrie::compare: TreeMem[{}].has_seq={}!=other.TreeMem[{}].has_seq={}", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq)
+		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		display_node(node) ;
-		SG_DEBUG("============================================================\n")
+		SG_DEBUG("============================================================")
 		other.display_node(other_node) ;
-		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
+		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 		return false ;
 	}
 	if (TreeMem[node].has_floats!=other.TreeMem[other_node].has_floats)
 	{
-		SG_DEBUG("CTrie::compare: TreeMem[{}].has_floats={}!=other.TreeMem[{}].has_floats={}\n", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats)
+		SG_DEBUG("CTrie::compare: TreeMem[{}].has_floats={}!=other.TreeMem[{}].has_floats={}", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats)
 		return false ;
 	}
 	if (other.TreeMem[other_node].has_floats)
@@ -952,12 +952,12 @@ bool CTrie<Trie>::compare_traverse(
 		for (int32_t q=0; q<4; q++)
 			if (fabs(TreeMem[node].child_weights[q]-other.TreeMem[other_node].child_weights[q])>1e-5)
 			{
-				SG_DEBUG("CTrie::compare: TreeMem[{}].child_weights[{}]={:e}!=other.TreeMem[{}].child_weights[{}]={:e}\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q])
-				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+				SG_DEBUG("CTrie::compare: TreeMem[{}].child_weights[{}]={:e}!=other.TreeMem[{}].child_weights[{}]={:e}", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q])
+				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 				display_node(node) ;
-				SG_DEBUG("============================================================\n")
+				SG_DEBUG("============================================================")
 				other.display_node(other_node) ;
-				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
+				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 				return false ;
 			}
 	}
@@ -966,12 +966,12 @@ bool CTrie<Trie>::compare_traverse(
 		for (int32_t q=0; q<16; q++)
 			if ((TreeMem[node].seq[q]!=other.TreeMem[other_node].seq[q]) && ((TreeMem[node].seq[q]<4)||(other.TreeMem[other_node].seq[q]<4)))
 			{
-				SG_DEBUG("CTrie::compare: TreeMem[{}].seq[{}]={}!=other.TreeMem[{}].seq[{}]={}\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q])
-				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+				SG_DEBUG("CTrie::compare: TreeMem[{}].seq[{}]={}!=other.TreeMem[{}].seq[{}]={}", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q])
+				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 				display_node(node) ;
-				SG_DEBUG("============================================================\n")
+				SG_DEBUG("============================================================")
 				other.display_node(other_node) ;
-				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
+				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 				return false ;
 			}
 	}
@@ -983,12 +983,12 @@ bool CTrie<Trie>::compare_traverse(
 				continue ;
 			if ((TreeMem[node].children[q]==NO_CHILD)!=(other.TreeMem[other_node].children[q]==NO_CHILD))
 			{
-				SG_DEBUG("CTrie::compare: TreeMem[{}].children[{}]={}!=other.TreeMem[{}].children[{}]={}\n", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q])
-				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+				SG_DEBUG("CTrie::compare: TreeMem[{}].children[{}]={}!=other.TreeMem[{}].children[{}]={}", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q])
+				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 				display_node(node) ;
-				SG_DEBUG("============================================================\n")
+				SG_DEBUG("============================================================")
 				other.display_node(other_node) ;
-				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
+				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 				return false ;
 			}
 			if (!compare_traverse(abs(TreeMem[node].children[q]), other, abs(other.TreeMem[other_node].children[q])))
@@ -996,7 +996,7 @@ bool CTrie<Trie>::compare_traverse(
 		}
 	}
 #else
-	error("not implemented\n");
+	error("not implemented");
 #endif
 
 	return true ;
@@ -1010,7 +1010,7 @@ bool CTrie<Trie>::compare(const CTrie<Trie> & other)
 		if (!compare_traverse(trees[i], other, other.trees[i]))
 			return false ;
 		else
-			SG_DEBUG("two tries at {} identical\n", i)
+			SG_DEBUG("two tries at {} identical", i)
 
 	return ret ;
 }
@@ -1051,7 +1051,7 @@ bool CTrie<Trie>::find_node(
 	trace_len=0 ;
 	return false ;
 #else
-	error("not implemented\n");
+	error("not implemented");
 	return false ;
 #endif
 }
@@ -1116,7 +1116,7 @@ void CTrie<Trie>::display_node(int32_t node) const
 
 	SG_FREE(trace);
 #else
-	error("not implemented\n");
+	error("not implemented");
 #endif
 }
 

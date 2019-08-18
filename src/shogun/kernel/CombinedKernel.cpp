@@ -81,13 +81,13 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	bool result = true;
 	index_t f_idx = 0;
 
-	SG_DEBUG("Starting for loop for kernels\n")
+	SG_DEBUG("Starting for loop for kernels")
 	for (index_t k_idx = 0; k_idx < get_num_kernels() && result; k_idx++)
 	{
 		k = get_kernel(k_idx);
 
 		if (!k)
-			error("Kernel at position {} is NULL\n", k_idx);
+			error("Kernel at position {} is NULL", k_idx);
 
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
@@ -107,10 +107,10 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				SG_UNREF(k);
 				error(
 				    "CombinedKernel: Number of features/kernels does not "
-				    "match - bailing out\n");
+				    "match - bailing out");
 			}
 
-			SG_DEBUG("Initializing 0x{} - \"{}\"\n", fmt::ptr(this), k->get_name())
+			SG_DEBUG("Initializing 0x{} - \"{}\"", fmt::ptr(this), k->get_name())
 			result = k->init(lf, rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
@@ -122,11 +122,11 @@ bool CCombinedKernel::init_with_extracted_subsets(
 		{
 			SG_DEBUG(
 			    "Initializing 0x{} - \"{}\" (skipping init, this is a CUSTOM "
-			    "kernel)\n",
+			    "kernel)",
 			    fmt::ptr(this), k->get_name())
 			if (!k->has_features())
 				error(
-				    "No kernel matrix was assigned to this Custom kernel\n");
+				    "No kernel matrix was assigned to this Custom kernel");
 
 			auto k_custom = dynamic_cast<CCustomKernel*>(k);
 			if (!k_custom)
@@ -144,12 +144,12 @@ bool CCombinedKernel::init_with_extracted_subsets(
 			if (k->get_num_vec_lhs() != num_lhs)
 				error(
 				    "Number of lhs-feature vectors ({}) not match with number "
-				    "of rows ({}) of custom kernel\n",
+				    "of rows ({}) of custom kernel",
 				    num_lhs, k->get_num_vec_lhs());
 			if (k->get_num_vec_rhs() != num_rhs)
 				error(
 				    "Number of rhs-feature vectors ({}) not match with number "
-				    "of cols ({}) of custom kernel\n",
+				    "of cols ({}) of custom kernel",
 				    num_rhs, k->get_num_vec_rhs());
 		}
 
@@ -158,14 +158,14 @@ bool CCombinedKernel::init_with_extracted_subsets(
 
 	if (!result)
 	{
-		io::info("CombinedKernel: Initialising the following kernel failed\n");
+		io::info("CombinedKernel: Initialising the following kernel failed");
 		if (k)
 		{
 			k->list_kernel();
 			SG_UNREF(k);
 		}
 		else
-			io::info("<NULL>\n");
+			io::info("<NULL>");
 		return false;
 	}
 
@@ -173,7 +173,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	    l_combined->get_num_feature_obj() != r_combined->get_num_feature_obj())
 		error(
 		    "CombinedKernel: Number of features/kernels does not match - "
-		    "bailing out\n");
+		    "bailing out");
 
 	init_normalizer();
 	initialized = true;
@@ -232,7 +232,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	{
 		SG_DEBUG(
 		    "Initialising combined kernel's combined features with the "
-		    "same instance from parameters\n");
+		    "same instance from parameters");
 		/* construct combined features with each element being the parameter
 		 * The we must make sure that we make any custom kernels aware of any
 		 * subsets present!
@@ -357,7 +357,7 @@ float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 bool CCombinedKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t *weights)
 {
-	SG_DEBUG("initializing CCombinedKernel optimization\n")
+	SG_DEBUG("initializing CCombinedKernel optimization")
 
 	delete_optimization();
 
@@ -373,14 +373,14 @@ bool CCombinedKernel::init_optimization(
 			ret=k->init_optimization(count, IDX, weights);
 		else
 		{
-			io::warn("non-optimizable kernel 0x%X in kernel-list\n", fmt::ptr(k));
+			io::warn("non-optimizable kernel 0x%X in kernel-list", fmt::ptr(k));
 			have_non_optimizable=true;
 		}
 
 		if (!ret)
 		{
 			have_non_optimizable=true;
-			io::warn("init_optimization of kernel 0x%X failed\n", fmt::ptr(k));
+			io::warn("init_optimization of kernel 0x%X failed", fmt::ptr(k));
 		}
 
 		SG_UNREF(k);
@@ -388,7 +388,7 @@ bool CCombinedKernel::init_optimization(
 
 	if (have_non_optimizable)
 	{
-		io::warn("some kernels in the kernel-list are not optimized\n");
+		io::warn("some kernels in the kernel-list are not optimized");
 
 		sv_idx=SG_MALLOC(int32_t, count);
 		sv_weight=SG_MALLOC(float64_t, count);
@@ -502,7 +502,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 {
 	if (!get_is_initialized())
 	{
-		error("CCombinedKernel optimization not initialized\n");
+		error("CCombinedKernel optimization not initialized");
 		return 0;
 	}
 
@@ -600,7 +600,7 @@ void CCombinedKernel::compute_by_subkernel(
 
 const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
-	SG_DEBUG("entering CCombinedKernel::get_subkernel_weights()\n")
+	SG_DEBUG("entering CCombinedKernel::get_subkernel_weights()")
 
 	num_weights = get_num_subkernels() ;
 	SG_FREE(subkernel_weights_buffer);
@@ -608,7 +608,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 
 	if (append_subkernel_weights)
 	{
-		SG_DEBUG("appending kernel weights\n")
+		SG_DEBUG("appending kernel weights")
 
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
@@ -626,7 +626,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	}
 	else
 	{
-		SG_DEBUG("not appending kernel weights\n")
+		SG_DEBUG("not appending kernel weights")
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); ++k_idx)
 		{
@@ -638,7 +638,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		}
 	}
 
-	SG_DEBUG("leaving CCombinedKernel::get_subkernel_weights()\n")
+	SG_DEBUG("leaving CCombinedKernel::get_subkernel_weights()")
 	return subkernel_weights_buffer ;
 }
 
@@ -896,7 +896,7 @@ CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
 		error("CCombinedKernel::obtain_from_generic(): provided kernel is "
-				"not of type CCombinedKernel!\n");
+				"not of type CCombinedKernel!");
 	}
 
 	/* since an additional reference is returned */
@@ -926,13 +926,13 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 		if (!c_list)
 		{
 			error("CCombinedKernel::combine_kernels() : Failed to cast list of type "
-					"{} to type CList\n", list->get_name());
+					"{} to type CList", list->get_name());
 		}
 
 		if (c_list->get_num_elements()==0)
 		{
 			error("CCombinedKernel::combine_kernels() : Sub-list in position {} "
-					"is empty.\n", list_index);
+					"is empty.", list_index);
 		}
 
 		num_combinations *= c_list->get_num_elements();
@@ -974,7 +974,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 		else if (c_kernel->get_kernel_type()!=prev_kernel_type)
 		{
 			error("CCombinedKernel::combine_kernels() : Sub-list in position "
-					"0 contains different types of kernels\n");
+					"0 contains different types of kernels");
 		}
 
 		prev_kernel_type = c_kernel->get_kernel_type();
@@ -1018,7 +1018,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 			else if (c_kernel->get_kernel_type()!=prev_kernel_type)
 			{
 				error("CCombinedKernel::combine_kernels() : Sub-list in position "
-						"{} contains different types of kernels\n", list_index);
+						"{} contains different types of kernels", list_index);
 			}
 
 			prev_kernel_type = c_kernel->get_kernel_type();

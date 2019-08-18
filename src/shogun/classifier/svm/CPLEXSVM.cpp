@@ -82,8 +82,8 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 			}
 		}
 		//compute_objective();
-		io::info("obj = {:.16f}, rho = {:.16f}\n",get_objective(),get_bias());
-		io::info("Number of SV: {}\n", get_num_support_vectors());
+		io::info("obj = {:.16f}, rho = {:.16f}",get_objective(),get_bias());
+		io::info("Number of SV: {}", get_num_support_vectors());
 
 		SG_FREE(alphas);
 		SG_FREE(lb);

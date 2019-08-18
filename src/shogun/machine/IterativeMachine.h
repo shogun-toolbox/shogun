@@ -74,7 +74,7 @@ namespace shogun
 			if (m_complete)
 			{
 				io::info(
-				    "{} converged after {} iterations.\n", this->get_name(),
+				    "{} converged after {} iterations.", this->get_name(),
 				    m_current_iteration);
 
 				this->end_training();
@@ -83,7 +83,7 @@ namespace shogun
 			{
 				io::warn(
 				    "{} did not converge after the maximum number of {} "
-				    "iterations.\n",
+				    "iterations.",
 				    this->get_name(), m_current_iteration);
 
 				this->end_training();

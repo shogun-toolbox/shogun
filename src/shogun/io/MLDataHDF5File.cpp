@@ -20,7 +20,7 @@ using namespace shogun;
 
 CMLDataHDF5File::CMLDataHDF5File()
 {
-	io::unstable("CMLDataHDF5File::CMLDataHDF5File()");
+	unstable(SOURCE_LOCATION);
 
 	get_boolean_type();
 	h5file = -1;
@@ -58,7 +58,7 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 
 	if (!fp)
 	{
-		error("Could not open file '{}'\n", fname);
+		error("Could not open file '{}'", fname);
 		return;
 	}
 
@@ -79,7 +79,7 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 	h5file = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
 
 	if (h5file<0)
-		error("Could not open data repository '{}'\n", data_name);
+		error("Could not open data repository '{}'", data_name);
 }
 
 CMLDataHDF5File::~CMLDataHDF5File()
@@ -94,27 +94,27 @@ CMLDataHDF5File::~CMLDataHDF5File()
 void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
 {																					\
 	if (!h5file)																	\
-		error("File invalid.\n");												\
+		error("File invalid.");												\
 																					\
 	int32_t* dims;																	\
 	int32_t ndims;																	\
 	int64_t nelements;																\
 	hid_t dataset=H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
 	if (dataset<0)																	\
-		error("Error opening data set\n");										\
+		error("Error opening data set");										\
 	hid_t dtype=H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
 	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);         \
 	if (h5_type==-1)																\
 	{																				\
 		H5Dclose(dataset);															\
-		io::info("No compatible datatype found\n");									\
+		io::info("No compatible datatype found");									\
 	}																				\
 	get_dims(dataset, dims, ndims, nelements);										\
 	if (!((ndims==2 && dims[0]==nelements && dims[1]==1) ||							\
 			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
 			(ndims==1 && dims[0]==nelements)))										\
-		error("Error not a 1-dimensional vector (ndims={}, dims[0]={})\n", ndims, dims[0]);	\
+		error("Error not a 1-dimensional vector (ndims={}, dims[0]={})", ndims, dims[0]);	\
 	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
@@ -125,7 +125,7 @@ void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
 	if (status<0)																	\
 	{																				\
 		SG_FREE(vec);																\
-		error("Error reading dataset\n");										\
+		error("Error reading dataset");										\
 	}																				\
 }
 
@@ -148,25 +148,25 @@ GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 void CMLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																					\
 	if (!h5file)																	\
-		error("File invalid.\n");												\
+		error("File invalid.");												\
 																					\
 	int32_t* dims;																	\
 	int32_t ndims;																	\
 	int64_t nelements;																\
 	hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
 	if (dataset<0)																	\
-		error("Error opening data set\n");										\
+		error("Error opening data set");										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
 	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);	        \
 	if (h5_type==-1)																\
 	{																				\
 		H5Dclose(dataset);															\
-		io::info("No compatible datatype found\n");									\
+		io::info("No compatible datatype found");									\
 	}																				\
 	get_dims(dataset, dims, ndims, nelements);										\
 	if (ndims!=2)																	\
-		error("Error not a 2-dimensional matrix\n");								\
+		error("Error not a 2-dimensional matrix");								\
 	matrix=SG_MALLOC(sg_type, nelements);													\
 	num_feat=dims[0];																\
 	num_vec=dims[1];																\
@@ -178,7 +178,7 @@ void CMLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_ve
 	if (status<0)																	\
 	{																				\
 		SG_FREE(matrix);															\
-		error("Error reading dataset\n");										\
+		error("Error reading dataset");										\
 	}																				\
 }
 
@@ -200,7 +200,7 @@ GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 void CMLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
-		error("File invalid.\n");													\
+		error("File invalid.");													\
 }
 GET_SPARSEMATRIX(get_sparse_matrix, bool, DT_SPARSE_BOOL)
 GET_SPARSEMATRIX(get_sparse_matrix, char, DT_SPARSE_CHAR)
@@ -256,7 +256,7 @@ void CMLDataHDF5File::get_boolean_type()
 			boolean_type = H5T_NATIVE_UINT64;
 			break;
 		default:
-			error("Boolean type not supported on this platform\n");
+			error("Boolean type not supported on this platform");
 	}
 }
 
@@ -310,7 +310,7 @@ void CMLDataHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, in
 {
 	hid_t dataspace = H5Dget_space(dataset);
 	if (dataspace<0)
-		error("Error obtaining hdf5 dataspace\n");
+		error("Error obtaining hdf5 dataspace");
 
 	ndims = H5Sget_simple_extent_ndims(dataspace);
 	total_elements=H5Sget_simple_extent_npoints(dataspace);
@@ -338,7 +338,7 @@ void CMLDataHDF5File::create_group_hierarchy()
 				g=H5Gcreate2(h5file, vname, H5P_DEFAULT, H5P_DEFAULT,
 						H5P_DEFAULT);
 				if (g<0)
-					error("Error creating group '{}'\n", vname);
+					error("Error creating group '{}'", vname);
 				vname[i]='/';
 			}
 			H5Gclose(g);

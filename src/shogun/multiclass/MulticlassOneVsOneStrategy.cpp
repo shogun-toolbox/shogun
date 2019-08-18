@@ -27,7 +27,7 @@ CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy(EProbHeuristicType prob
 void CMulticlassOneVsOneStrategy::register_parameters()
 {
 	//SG_ADD(&m_num_samples, "num_samples", "Number of samples in each training machine");
-	io::warn("{}::CMulticlassOneVsOneStrategy(): register parameters!\n", get_name());
+	io::warn("{}::CMulticlassOneVsOneStrategy(): register parameters!", get_name());
 }
 
 void CMulticlassOneVsOneStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
@@ -157,7 +157,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 	}
 
 	if(tot!=m_num_machines)
-		error("{}::rescale_output(): size(outputs) is not num_machines.\n", get_name());
+		error("{}::rescale_output(): size(outputs) is not num_machines.", get_name());
 
 	switch(get_prob_heuris_type())
 	{
@@ -173,7 +173,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 		case PROB_HEURIS_NONE:
 			break;
 		default:
-			error("{}::rescale_outputs(): Unknown OVO probability heuristic type!\n", get_name());
+			error("{}::rescale_outputs(): Unknown OVO probability heuristic type!", get_name());
 			break;
 	}
 }
@@ -183,7 +183,7 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t> outpu
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		error("{}::rescale_heuris_price(): size(outputs) = {} != m_num_machines = {}\n",
+		error("{}::rescale_heuris_price(): size(outputs) = {} != m_num_machines = {}",
 				get_name(), outputs.vlen, m_num_machines);
 	}
 
@@ -215,7 +215,7 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outp
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		error("{}::rescale_heuris_hastie(): size(outputs) = {} != m_num_machines = {}\n",
+		error("{}::rescale_heuris_hastie(): size(outputs) = {} != m_num_machines = {}",
 				get_name(), outputs.vlen, m_num_machines);
 	}
 
@@ -279,7 +279,7 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outp
 			prev_outputs[i] -= new_outputs[i];
 
 		gap = SGVector<float64_t>::qsq(prev_outputs.vector, prev_outputs.vlen, 2);
-		SG_DEBUG("[Hastie's heuristic] gap = {:.12f}\n", gap);
+		SG_DEBUG("[Hastie's heuristic] gap = {:.12f}", gap);
 	}
 
 	for (int32_t i=0; i<new_outputs.vlen; i++)
@@ -291,7 +291,7 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t> ou
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		error("{}::rescale_heuris_hamamura(): size(outputs) = {} != m_num_machines = {}\n",
+		error("{}::rescale_heuris_hamamura(): size(outputs) = {} != m_num_machines = {}",
 				get_name(), outputs.vlen, m_num_machines);
 	}
 

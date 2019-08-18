@@ -80,7 +80,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures\n");
+			error("Specified features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}
@@ -150,23 +150,23 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 bool CMCLDA::train_machine(CFeatures* data)
 {
 	if (!m_labels)
-		error("No labels allocated in MCLDA training\n");
+		error("No labels allocated in MCLDA training");
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Speficied features are not of type CDotFeatures\n");
+			error("Speficied features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}
 
 	if (!m_features)
-		error("No features allocated in MCLDA training\n");
+		error("No features allocated in MCLDA training");
 
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
-		error("No train_labels allocated in MCLDA training\n");
+		error("No train_labels allocated in MCLDA training");
 
 	cleanup();
 
@@ -189,7 +189,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		{
 			error(
 			    "Label {} with value {} is out of {0, 1, 2, ..., "
-			    "num_classes-1}, where num_classes is {}\n",
+			    "num_classes-1}, where num_classes is {}",
 			    i, class_idx, m_num_classes);
 			return false;
 		}
@@ -203,7 +203,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	{
 		if (class_nums[i] <= 0)
 		{
-			error("What? One class with no elements\n");
+			error("What? One class with no elements");
 			return false;
 		}
 	}
@@ -342,7 +342,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	}
 
 	if (rank < m_dim)
-		error("Warning: Variables are collinear\n");
+		error("Warning: Variables are collinear");
 
 	MatrixXd scalings(m_dim, rank);
 	for (int i = 0; i < m_dim; i++)

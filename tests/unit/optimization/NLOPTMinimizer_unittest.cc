@@ -68,7 +68,7 @@ void CPiecewiseQuadraticObject2::set_truth_x(SGVector<float64_t> truth_x)
 
 float64_t CPiecewiseQuadraticObject2::get_value()
 {
-	require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
+	require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same");
 	float64_t res=0.0;
 	for(index_t i=0; i<m_init_x.vlen; i++)
 	{
@@ -80,15 +80,15 @@ float64_t CPiecewiseQuadraticObject2::get_value()
 
 SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
 {
-	require(param, "param not set\n");
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(param, "param not set");
+	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
 
 	SGVector<float64_t> res;
 	if (!strcmp(param->m_name, "init_x"))
 	{
 		res=SGVector<float64_t>(m_init_x.vlen);
-		require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
+		require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same");
 		for(index_t i=0; i<res.vlen; i++)
 		{
 			float64_t grad=2.0*(m_init_x[i]-m_truth_x[i]);
@@ -99,9 +99,9 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
 }
 SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(TParameter * param)
 {
-	require(param, "param not set\n");
+	require(param, "param not set");
 
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
 
 	if (!strcmp(param->m_name, "init_x"))
@@ -111,9 +111,9 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(TParameter * param)
 
 SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * param)
 {
-	require(param, "param not set\n");
+	require(param, "param not set");
 
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
 
 	SGVector<float64_t> bound;
@@ -127,9 +127,9 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * par
 
 SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(TParameter * param)
 {
-	require(param, "param not set\n");
+	require(param, "param not set");
 
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
+	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
 		get_name(), param->m_name);
 
 	SGVector<float64_t> bound;
@@ -169,13 +169,13 @@ void NLOPTTestCostFunction::set_target(CPiecewiseQuadraticObject2 *obj)
 
 float64_t NLOPTTestCostFunction::get_cost()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	return m_obj->get_value();
 }
 
 SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
@@ -193,7 +193,7 @@ SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 
 SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
@@ -211,7 +211,7 @@ SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 
 SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
@@ -230,7 +230,7 @@ SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 
 SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 {
-	require(m_obj,"object not set\n");
+	require(m_obj,"object not set");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 

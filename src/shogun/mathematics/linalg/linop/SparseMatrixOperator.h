@@ -152,7 +152,7 @@ public:
 	template<class Scalar>
 	inline operator CSparseMatrixOperator<Scalar>*() const
 	{
-		require(m_operator.sparse_matrix, "Matrix is not initialized!\n");
+		require(m_operator.sparse_matrix, "Matrix is not initialized!");
 		typedef SGSparseVector<Scalar> vector;
 		typedef SGSparseVectorEntry<Scalar> entry;
 

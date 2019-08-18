@@ -64,20 +64,20 @@ float64_t CICAConverter::get_tol() const
 
 void CICAConverter::fit(CFeatures* features)
 {
-	require(features, "Features are not provided\n");
+	require(features, "Features are not provided");
 	require(
 	    features->get_feature_class() == C_DENSE,
-	    "ICA converters only work with dense features\n");
+	    "ICA converters only work with dense features");
 	require(
 	    features->get_feature_type() == F_DREAL,
-	    "ICA converters only work with real features\n");
+	    "ICA converters only work with real features");
 
 	fit_dense(static_cast<CDenseFeatures<float64_t>*>(features));
 }
 
 CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 {
-	require(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
+	require(m_mixing_matrix.matrix, "ICAConverter has not been fitted.");
 
 	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	if (!inplace)
@@ -96,7 +96,7 @@ CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 
 CFeatures* CICAConverter::inverse_transform(CFeatures* features, bool inplace)
 {
-	require(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
+	require(m_mixing_matrix.matrix, "ICAConverter has not been fitted.");
 
 	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	if (!inplace)

@@ -32,7 +32,7 @@ CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab
 CDomainAdaptationSVM::~CDomainAdaptationSVM()
 {
 	SG_UNREF(presvm);
-	SG_DEBUG("deleting DomainAdaptationSVM\n")
+	SG_DEBUG("deleting DomainAdaptationSVM")
 }
 
 
@@ -79,12 +79,12 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			error("Number of training vectors does not match number of labels\n");
+			error("Number of training vectors does not match number of labels");
 		kernel->init(data, data);
 	}
 
 	if (m_labels->get_label_type() != LT_BINARY)
-		error("DomainAdaptationSVM requires binary labels\n");
+		error("DomainAdaptationSVM requires binary labels");
 
 	ASSERT(presvm)
 	// set bias of parent svm to zero

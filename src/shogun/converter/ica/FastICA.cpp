@@ -70,7 +70,7 @@ bool CFastICA::get_whiten() const
 void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 {
 	auto X = features->get_feature_matrix();
-	require(X.data(), "Features have not been provided.\n");
+	require(X.data(), "Features have not been provided.");
 	int n = X.num_rows;
 	int p = X.num_cols;
 	int m = n;

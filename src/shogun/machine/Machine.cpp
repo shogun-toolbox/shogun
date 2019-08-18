@@ -50,7 +50,7 @@ bool CMachine::train(CFeatures* data)
 		require(
 		    data->get_num_vectors() == m_labels->get_num_labels(),
 		    "Number of training vectors ({}) does not match number of "
-		    "labels ({})\n",
+		    "labels ({})",
 		    data->get_num_vectors(), m_labels->get_num_labels());
 
 		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
@@ -115,7 +115,7 @@ ESolverType CMachine::get_solver_type()
 
 CLabels* CMachine::apply(CFeatures* data)
 {
-	SG_DEBUG("entering {}::apply({} at {})\n",
+	SG_DEBUG("entering {}::apply({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CLabels* result=NULL;
@@ -142,7 +142,7 @@ CLabels* CMachine::apply(CFeatures* data)
 			break;
 	}
 
-	SG_DEBUG("leaving {}::apply({} at {})\n",
+	SG_DEBUG("leaving {}::apply({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return result;
@@ -150,30 +150,30 @@ CLabels* CMachine::apply(CFeatures* data)
 
 CBinaryLabels* CMachine::apply_binary(CFeatures* data)
 {
-	error("This machine does not support apply_binary()\n");
+	error("This machine does not support apply_binary()");
 	return NULL;
 }
 
 CRegressionLabels* CMachine::apply_regression(CFeatures* data)
 {
-	error("This machine does not support apply_regression()\n");
+	error("This machine does not support apply_regression()");
 	return NULL;
 }
 
 CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
 {
-	error("This machine does not support apply_multiclass()\n");
+	error("This machine does not support apply_multiclass()");
 	return NULL;
 }
 
 CStructuredLabels* CMachine::apply_structured(CFeatures* data)
 {
-	error("This machine does not support apply_structured()\n");
+	error("This machine does not support apply_structured()");
 	return NULL;
 }
 
 CLatentLabels* CMachine::apply_latent(CFeatures* data)
 {
-	error("This machine does not support apply_latent()\n");
+	error("This machine does not support apply_latent()");
 	return NULL;
 }

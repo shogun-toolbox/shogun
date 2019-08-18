@@ -187,10 +187,10 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 {
 	require(assignment.size() == m_fg->get_cardinalities().size(),
 	        "{}::inference(): the output assignment should be prepared as"
-	        "the same size as variables!\n", get_name());
+	        "the same size as variables!", get_name());
 
 	// iterate over message loop
-	SG_DEBUG("Running MPLP for {} iterations\n",  m_param.m_max_iter);
+	SG_DEBUG("Running MPLP for {} iterations",  m_param.m_max_iter);
 
 	float64_t last_obj = CMath::INFTY;
 
@@ -244,7 +244,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 		float64_t obj_del = last_obj - obj;
 		float64_t int_gap = obj - int_val;
 
-		SG_DEBUG("Iter= {} Objective={} ObjBest={} ObjDel={} Gap={} \n", (it + 1), obj, int_val, obj_del, int_gap);
+		SG_DEBUG("Iter= {} Objective={} ObjBest={} ObjDel={} Gap={} ", (it + 1), obj, int_val, obj_del, int_gap);
 
 		if (obj_del < m_param.m_obj_del_thr && it > 16)
 			break;
@@ -256,17 +256,17 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 	}
 
 	float64_t energy = m_fg->evaluate_energy(assignment);
-	SG_DEBUG("fg.evaluate_energy(assignment) = {}\n", energy);
+	SG_DEBUG("fg.evaluate_energy(assignment) = {}", energy);
 
 	return energy;
 }
 
 void CGEMPLP::update_messages(int32_t id_region)
 {
-	require(m_factors != NULL, "Factors are not set!\n");
+	require(m_factors != NULL, "Factors are not set!");
 
 	require(m_factors->get_num_elements() > id_region,
-			"Region id ({}) exceeds the factor elements' length ({})!\n",
+			"Region id ({}) exceeds the factor elements' length ({})!",
 			id_region, m_factors->get_num_elements());
 
 	CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(id_region));

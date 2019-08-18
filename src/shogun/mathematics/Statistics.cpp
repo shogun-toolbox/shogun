@@ -32,7 +32,7 @@ using namespace shogun;
 
 float64_t CStatistics::variance(SGVector<float64_t> values)
 {
-	require(values.vlen>1, "Number of observations ({}) needs to be at least 1.\n",
+	require(values.vlen>1, "Number of observations ({}) needs to be at least 1.",
 			values.vlen);
 
 	float64_t mean=CStatistics::mean(values);
@@ -141,10 +141,10 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 {
 	int32_t D = observations.num_rows;
 	int32_t N = observations.num_cols;
-	SG_DEBUG("{} observations in {} dimensions\n", N, D)
+	SG_DEBUG("{} observations in {} dimensions", N, D)
 
-	require(N>1, "Number of observations ({}) must be at least 2.\n", N);
-	require(D>0, "Number of dimensions ({}) must be at least 1.\n", D);
+	require(N>1, "Number of observations ({}) must be at least 2.", N);
+	require(D>0, "Number of dimensions ({}) must be at least 1.", D);
 
 	SGMatrix<float64_t> centered=in_place ? observations :
 					SGMatrix<float64_t>(D, N);
@@ -156,12 +156,12 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 		sg_memcpy(centered.matrix, observations.matrix,
 				sizeof(float64_t)*num_elements);
 	}
-	SG_DEBUG("Centering observations\n");
+	SG_DEBUG("Centering observations");
 	Map<MatrixXd> eigen_centered(centered.matrix, D, N);
 	eigen_centered.colwise() -= eigen_centered.rowwise().mean();
 
 	/* compute and store 1/(N-1) * X * X.T */
-	SG_DEBUG("Computing squared differences\n");
+	SG_DEBUG("Computing squared differences");
 	SGMatrix<float64_t> cov(D, D);
 	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
 	eigen_cov = (eigen_centered * eigen_centered.adjoint()) / double(N - 1);
@@ -327,7 +327,7 @@ template <typename PRNG>
 SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N, PRNG& prng)
 {
 	require(sample_size<N,
-			"sample size should be less than number of indices\n");
+			"sample size should be less than number of indices");
 	int32_t* idxs=SG_MALLOC(int32_t,N);
 	int32_t i, rnd;
 	int32_t* permuted_idxs=SG_MALLOC(int32_t,sample_size);
@@ -356,9 +356,9 @@ template SGVector<int32_t> CStatistics::sample_indices<std::mt19937_64>(int32_t 
 float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
 		float64_t std_deviation)
 {
-	require(p>=0, "p ({}); must be greater or equal to 0.\n", p);
-	require(p<=1, "p ({}); must be greater or equal to 1.\n", p);
-	require(std_deviation>0, "Standard deviation ({}); must be positive\n",
+	require(p>=0, "p ({}); must be greater or equal to 0.", p);
+	require(p<=1, "p ({}); must be greater or equal to 1.", p);
+	require(std_deviation>0, "Standard deviation ({}); must be positive",
 			std_deviation);
 
 	// invserse normal cdf case, see cdflib.cpp for details
@@ -371,7 +371,7 @@ float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
 	cdfnor(&which, &p, &q, &output_x, &mean, &std_deviation, &output_status, &output_bound);
 
 	if (output_status!=0)
-		error("Error {} while calling cdflib::cdfnor\n", output_status);
+		error("Error {} while calling cdflib::cdfnor", output_status);
 
 	return output_x;
 
@@ -381,8 +381,8 @@ float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
 
 float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 {
-	require(x>=0, "x ({}) has to be greater or equal to 0.\n", x);
-	require(k>0, "Degrees of freedom ({}) has to be positive.\n", k);
+	require(x>=0, "x ({}) has to be greater or equal to 0.", x);
+	require(k>0, "Degrees of freedom ({}) has to be positive.", k);
 
 	// chi2 cdf case, see cdflib.cpp for details
 	int which=1;
@@ -395,16 +395,16 @@ float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 	cdfchi(&which, &output_p, &output_q, &x, &df, &output_status, &output_bound);
 
 	if (output_status!=0)
-		error("Error {} while calling cdflib::cdfchi\n", output_status);
+		error("Error {} while calling cdflib::cdfchi", output_status);
 
 	return output_p;
 }
 
 float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
-	require(x>=0, "x ({}) has to be greater or equal to 0.\n", x);
-	require(a>=0, "a ({}) has to be greater or equal to 0.\n", a);
-	require(b>=0, "b ({}) has to be greater or equal to 0.\n", b);
+	require(x>=0, "x ({}) has to be greater or equal to 0.", x);
+	require(a>=0, "a ({}) has to be greater or equal to 0.", a);
+	require(b>=0, "b ({}) has to be greater or equal to 0.", b);
 
 	// inverse gamma cdf case, see cdflib.cpp for details
 	float64_t shape=a;
@@ -418,7 +418,7 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 	cdfgam(&which, &output_p, &output_q, &x, &shape, &scale, &output_error_code, &output_bound);
 
 	if (output_error_code!=0)
-		error("Error {} while calling cdflib::cdfgam\n", output_error_code);
+		error("Error {} while calling cdflib::cdfgam", output_error_code);
 
 	return output_p;
 }
@@ -521,9 +521,9 @@ float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
 float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 		float64_t b)
 {
-	require(p>=0, "p ({}) has to be greater or equal to 0.\n", p);
-	require(a>=0, "a ({}) has to be greater or equal to 0.\n", a);
-	require(b>=0, "b ({}) has to be greater or equal to 0.\n", b);
+	require(p>=0, "p ({}) has to be greater or equal to 0.", p);
+	require(a>=0, "a ({}) has to be greater or equal to 0.", a);
+	require(b>=0, "b ({}) has to be greater or equal to 0.", b);
 
 	float64_t shape=a;
 	float64_t scale=b;
@@ -537,16 +537,16 @@ float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 	cdfgam(&which, &p, &q, &output_x, &shape, &scale, &output_error_code, &output_bound);
 
 	if (output_error_code!=0)
-		error("Error {} while calling cdflib::beta_inc\n", output_error_code);
+		error("Error {} while calling cdflib::beta_inc", output_error_code);
 
 	return output_x;
 }
 
 float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
 {
-	require(x>=0, "x ({}) has to be greater or equal to 0.\n", x);
-	require(d1>0, "d1 ({}) has to be positive.\n", d1);
-	require(d2>0, "d2 ({}) has to be positive.\n", d2);
+	require(x>=0, "x ({}) has to be greater or equal to 0.", x);
+	require(d1>0, "d1 ({}) has to be positive.", d1);
+	require(d2>0, "d2 ({}) has to be positive.", d2);
 
 	// fcdf case, see cdflib.cpp for details
 	int which=1;
@@ -558,7 +558,7 @@ float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2
 	cdff(&which, &output_p, &output_q, &x, &d1, &d2, &output_error_code, &output_bound);
 
 	if (output_error_code!=0)
-		error("Error {} while calling cdflib::cdff\n", output_error_code);
+		error("Error {} while calling cdflib::cdff", output_error_code);
 
 	return output_p;
 }
@@ -615,7 +615,7 @@ float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 {
 	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
 	require(eigen_A.rows()==eigen_A.cols(),
-		"Input matrix should be a square matrix row({}) col({})\n",
+		"Input matrix should be a square matrix row({}) col({})",
 		eigen_A.rows(), eigen_A.cols());
 
 	PartialPivLU<MatrixXd> lu(eigen_A);
@@ -712,11 +712,11 @@ template <typename PRNG>
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, PRNG& prng, int32_t N, bool precision_matrix)
 {
-	require(cov.num_rows>0, "Number of covariance rows must be positive!\n");
-	require(cov.num_cols>0,"Number of covariance cols must be positive!\n");
-	require(cov.matrix, "Covariance is not initialized!\n");
-	require(cov.num_rows==cov.num_cols, "Covariance should be square matrix!\n");
-	require(mean.vlen==cov.num_rows, "Mean and covariance dimension mismatch!\n");
+	require(cov.num_rows>0, "Number of covariance rows must be positive!");
+	require(cov.num_cols>0,"Number of covariance cols must be positive!");
+	require(cov.matrix, "Covariance is not initialized!");
+	require(cov.num_rows==cov.num_cols, "Covariance should be square matrix!");
+	require(mean.vlen==cov.num_rows, "Mean and covariance dimension mismatch!");
 
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
@@ -766,19 +766,19 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 {
 	require(cov.num_vectors>0,
 		"CStatistics::sample_from_gaussian(): \
-		Number of covariance rows must be positive!\n");
+		Number of covariance rows must be positive!");
 	require(cov.num_features>0,
 		"CStatistics::sample_from_gaussian(): \
-		Number of covariance cols must be positive!\n");
+		Number of covariance cols must be positive!");
 	require(cov.sparse_matrix,
 		"CStatistics::sample_from_gaussian(): \
-		Covariance is not initialized!\n");
+		Covariance is not initialized!");
 	require(cov.num_vectors==cov.num_features,
 		"CStatistics::sample_from_gaussian(): \
-		Covariance should be square matrix!\n");
+		Covariance should be square matrix!");
 	require(mean.vlen==cov.num_vectors,
 		"CStatistics::sample_from_gaussian(): \
-		Mean and covariance dimension mismatch!\n");
+		Mean and covariance dimension mismatch!");
 
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
@@ -834,12 +834,12 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
     SGVector<float64_t> scores, SGVector<float64_t> labels, index_t maxiter,
     float64_t minstep, float64_t sigma, float64_t epsilon)
 {
-	require(scores.vector, "Provided scores are empty.\n");
+	require(scores.vector, "Provided scores are empty.");
 
 	/* count prior0 and prior1 if needed */
 	int32_t prior0 = 0;
 	int32_t prior1 = 0;
-	SG_DEBUG("counting number of positive and negative labels\n")
+	SG_DEBUG("counting number of positive and negative labels")
 	{
 		prior1 =
 		    std::count_if(labels.begin(), labels.end(), [](float64_t label) {
@@ -847,7 +847,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 			});
 		prior0 = labels.vlen - prior1;
 	}
-	SG_DEBUG("{} pos; {} neg\n", prior1, prior0)
+	SG_DEBUG("{} pos; {} neg", prior1, prior0)
 
 	/* construct target support */
 	float64_t hiTarget = (prior1 + 1.0) / (prior1 + 2.0);
@@ -881,7 +881,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 	float64_t g2;
 	for (it = 0; it < maxiter; ++it)
 	{
-		SG_DEBUG("Iteration {}, a={}, b={}, fval={}\n", it, a, b, fval)
+		SG_DEBUG("Iteration {}, a={}, b={}, fval={}", it, a, b, fval)
 
 		/* Update Gradient and Hessian (use H' = H + sigma I) */
 		float64_t h11 = sigma; // Numerically ensures strict PD
@@ -960,7 +960,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 		{
 			io::warn(
 			    "Line search fails, A={}, "
-			    "B={}, g1={}, g2={}, dA={}, dB={}, gd={}\n",
+			    "B={}, g1={}, g2={}, dA={}, dB={}, gd={}",
 			    a, b, g1, g2, dA, dB, gd);
 		}
 	}
@@ -969,11 +969,11 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 	{
 		io::warn(
 		    "Reaching maximal iterations,"
-		    " g1={}, g2={}\n",
+		    " g1={}, g2={}",
 		    g1, g2);
 	}
 
-	SG_DEBUG("fitted sigmoid: a={}, b={}\n", a, b)
+	SG_DEBUG("fitted sigmoid: a={}, b={}", a, b)
 
 	CStatistics::SigmoidParamters result;
 	result.a = a;
@@ -984,15 +984,15 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 
 CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
 {
-	SG_DEBUG("entering CStatistics::fit_sigmoid()\n")
+	SG_DEBUG("entering CStatistics::fit_sigmoid()")
 
 	require(scores.vector, "CStatistics::fit_sigmoid() requires "
-			"scores vector!\n");
+			"scores vector!");
 
 	/* count prior0 and prior1 if needed */
 	int32_t prior0=0;
 	int32_t prior1=0;
-	SG_DEBUG("counting number of positive and negative labels\n")
+	SG_DEBUG("counting number of positive and negative labels")
 	{
 		for (index_t i=0; i<scores.vlen; ++i)
 		{
@@ -1002,7 +1002,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 				prior0++;
 		}
 	}
-	SG_DEBUG("{} pos; {} neg\n", prior1, prior0)
+	SG_DEBUG("{} pos; {} neg", prior1, prior0)
 
 	/* parameter setting */
 	/* maximum number of iterations */
@@ -1049,7 +1049,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	float64_t g2;
 	for (it=0; it<maxiter; ++it)
 	{
-		SG_DEBUG("Iteration {}, a={}, b={}, fval={}\n", it, a, b, fval)
+		SG_DEBUG("Iteration {}, a={}, b={}, fval={}", it, a, b, fval)
 
 		/* Update Gradient and Hessian (use H' = H + sigma I) */
 		float64_t h11=sigma; //Numerically ensures strict PD
@@ -1127,7 +1127,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 		if (stepsize<minstep)
 		{
 			io::warn("CStatistics::fit_sigmoid(): line search fails, A={}, "
-					"B={}, g1={}, g2={}, dA={}, dB={}, gd={}\n",
+					"B={}, g1={}, g2={}, dA={}, dB={}, gd={}",
 					a, b, g1, g2, dA, dB, gd);
 		}
 	}
@@ -1135,16 +1135,16 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	if (it>=maxiter-1)
 	{
 		io::warn("CStatistics::fit_sigmoid(): reaching maximal iterations,"
-				" g1={}, g2={}\n", g1, g2);
+				" g1={}, g2={}", g1, g2);
 	}
 
-	SG_DEBUG("fitted sigmoid: a={}, b={}\n", a, b)
+	SG_DEBUG("fitted sigmoid: a={}, b={}", a, b)
 
 	CStatistics::SigmoidParamters result;
 	result.a=a;
 	result.b=b;
 
-	SG_DEBUG("leaving CStatistics::fit_sigmoid()\n")
+	SG_DEBUG("leaving CStatistics::fit_sigmoid()")
 	return result;
 }
 

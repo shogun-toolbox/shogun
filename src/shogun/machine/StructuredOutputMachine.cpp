@@ -64,7 +64,7 @@ void CStructuredOutputMachine::register_parameters()
 void CStructuredOutputMachine::set_labels(CLabels* lab)
 {
 	CMachine::set_labels(lab);
-	require(m_model != NULL, "please call set_model() before set_labels()\n");
+	require(m_model != NULL, "please call set_model() before set_labels()");
 	m_model->set_labels(lab->as<CStructuredLabels>());
 }
 
@@ -128,25 +128,25 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_
 
 float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	error("{}::risk_nslack_slack_rescale() has not been implemented!\n", get_name());
+	error("{}::risk_nslack_slack_rescale() has not been implemented!", get_name());
 	return 0.0;
 }
 
 float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	error("{}::risk_1slack_margin_rescale() has not been implemented!\n", get_name());
+	error("{}::risk_1slack_margin_rescale() has not been implemented!", get_name());
 	return 0.0;
 }
 
 float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	error("{}::risk_1slack_slack_rescale() has not been implemented!\n", get_name());
+	error("{}::risk_1slack_slack_rescale() has not been implemented!", get_name());
 	return 0.0;
 }
 
 float64_t CStructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
-	error("{}::risk_customized_formulation() has not been implemented!\n", get_name());
+	error("{}::risk_customized_formulation() has not been implemented!", get_name());
 	return 0.0;
 }
 
@@ -172,7 +172,7 @@ float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<
 			ret = risk_customized_formulation(subgrad, W, info);
 			break;
 		default:
-			error("{}::risk(): cannot recognize the risk type!\n", get_name());
+			error("{}::risk(): cannot recognize the risk type!", get_name());
 			ret = -1;
 			break;
 	}
@@ -184,7 +184,7 @@ CSOSVMHelper* CStructuredOutputMachine::get_helper() const
 	if (m_helper == NULL)
 	{
 		error("{}::get_helper(): no helper has been created!"
-			"Please set verbose before training!\n", get_name());
+			"Please set verbose before training!", get_name());
 	}
 
 	SG_REF(m_helper);

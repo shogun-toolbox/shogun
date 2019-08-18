@@ -52,9 +52,9 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 float64_t
 CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 {
-	SG_DEBUG("Entering\n");
-	require(sample.vector, "Sample is not initialized!\n");
-	require(m_linear_operator, "Operator is not initialized!\n");
+	SG_DEBUG("Entering");
+	require(sample.vector, "Sample is not initialized!");
+	require(m_linear_operator, "Operator is not initialized!");
 
 	// we need to take the negation of the shifts for this case hence we set
 	// negate to true

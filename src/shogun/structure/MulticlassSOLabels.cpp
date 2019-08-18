@@ -48,7 +48,7 @@ CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
 {
 	// ensure_valid("CMulticlassSOLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
-		error("Index must be inside [0, num_labels-1]\n");
+		error("Index must be inside [0, num_labels-1]");
 
 	return (CStructuredData*) new CRealNumber(m_labels_vector[idx]);
 }

@@ -35,8 +35,8 @@ using namespace shogun;
 
 void AdaptMomentumCorrection::set_momentum_correction(MomentumCorrection* correction)
 {
-	require(correction,"MomentumCorrection must not NULL\n");
-	require(correction != this, "MomentumCorrection can not be itself\n");
+	require(correction,"MomentumCorrection must not NULL");
+	require(correction != this, "MomentumCorrection can not be itself");
 	SG_REF(m_momentum_correction);
 	m_momentum_correction=correction;
 }
@@ -48,30 +48,30 @@ AdaptMomentumCorrection::~AdaptMomentumCorrection()
 
 bool AdaptMomentumCorrection::is_initialized()
 {
-	require(m_momentum_correction,"MomentumCorrection must set\n");
+	require(m_momentum_correction,"MomentumCorrection must set");
 	return m_momentum_correction->is_initialized();
 }
 
 void AdaptMomentumCorrection::set_correction_weight(float64_t weight)
 {
-	require(m_momentum_correction,"MomentumCorrection must set\n");
+	require(m_momentum_correction,"MomentumCorrection must set");
 	m_momentum_correction->set_correction_weight(weight);
 }
 
 void AdaptMomentumCorrection::initialize_previous_direction(index_t len)
 {
-	require(m_momentum_correction,"MomentumCorrection must set\n");
+	require(m_momentum_correction,"MomentumCorrection must set");
 	m_momentum_correction->initialize_previous_direction(len);
 }
 
 DescendPair AdaptMomentumCorrection::get_corrected_descend_direction(float64_t negative_descend_direction,
 	index_t idx)
 {
-	require(m_momentum_correction,"MomentumCorrection must set\n");
-	require(m_adapt_rate>0 && m_adapt_rate<1.0,"adaptive rate is invalid\n");
+	require(m_momentum_correction,"MomentumCorrection must set");
+	require(m_adapt_rate>0 && m_adapt_rate<1.0,"adaptive rate is invalid");
 	index_t len=m_momentum_correction->get_length_previous_descend_direction();
 	require(idx>=0 && idx<len,
-		"The index ({}) is invalid\n", idx);
+		"The index ({}) is invalid", idx);
 		if(m_descend_rate.vlen==0)
 		{
 			m_descend_rate=SGVector<float64_t>(len);
@@ -102,9 +102,9 @@ DescendPair AdaptMomentumCorrection::get_corrected_descend_direction(float64_t n
 void AdaptMomentumCorrection::set_adapt_rate(float64_t adapt_rate,
 	float64_t rate_min, float64_t rate_max)
 {
-	require(adapt_rate>0.0 && adapt_rate<1.0, "Adaptive rate ({}) must in (0,1)\n", adapt_rate);
-	require(rate_min>=0, "Minimum speedup rate ({}) must be non-negative\n", rate_min);
-	require(rate_max>rate_min, "Maximum speedup rate ({}) must greater than minimum speedup rate ({})\n",
+	require(adapt_rate>0.0 && adapt_rate<1.0, "Adaptive rate ({}) must in (0,1)", adapt_rate);
+	require(rate_min>=0, "Minimum speedup rate ({}) must be non-negative", rate_min);
+	require(rate_max>rate_min, "Maximum speedup rate ({}) must greater than minimum speedup rate ({})",
 		rate_max, rate_min);
 	m_adapt_rate=adapt_rate;
 	m_rate_min=rate_min;
@@ -113,7 +113,7 @@ void AdaptMomentumCorrection::set_adapt_rate(float64_t adapt_rate,
 
 void AdaptMomentumCorrection::set_init_descend_rate(float64_t init_descend_rate)
 {
-	require(init_descend_rate>0,"Init speedup rate ({}) must be positive\n", init_descend_rate);
+	require(init_descend_rate>0,"Init speedup rate ({}) must be positive", init_descend_rate);
 	m_init_descend_rate=init_descend_rate;
 }
 

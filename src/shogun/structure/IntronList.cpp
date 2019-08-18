@@ -58,7 +58,7 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 			//io::print("i:{}, m_all_pos[i]:{}, k:{}, end_pos[k]: {}\n", i, m_all_pos[i], k, end_pos[k]);
 			if (k>0)
 				if (end_pos[k]<end_pos[k-1])
-					error("end pos array is not sorted: end_pos[k-1]:{} end_pos[k]:{}\n", end_pos[k-1], end_pos[k]);
+					error("end pos array is not sorted: end_pos[k-1]:{} end_pos[k]:{}", end_pos[k-1], end_pos[k]);
 			if (end_pos[k]>=m_all_pos[i])
 				break;
 			else
@@ -102,9 +102,9 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos)
 {
 	if (from_pos>=m_length)
-		error("from_pos ({}) is not < m_length ({})\n",to_pos, m_length);
+		error("from_pos ({}) is not < m_length ({})",to_pos, m_length);
 	if (to_pos>=m_length)
-		error("to_pos ({}) is not < m_length ({})\n",to_pos, m_length);
+		error("to_pos ({}) is not < m_length ({})",to_pos, m_length);
 	int32_t* from_list = m_intron_list[to_pos];
 	int32_t* q_list = m_quality_list[to_pos];
 

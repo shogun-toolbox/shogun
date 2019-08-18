@@ -74,7 +74,7 @@ CGaussianProcessMachine::~CGaussianProcessMachine()
 
 SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data)
 {
-	require(m_method, "Inference method should not be NULL\n");
+	require(m_method, "Inference method should not be NULL");
 
 	CFeatures* feat;
 
@@ -134,7 +134,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 		CFeatures* data)
 {
-	require(m_method, "Inference method should not be NULL\n");
+	require(m_method, "Inference method should not be NULL");
 
 	CFeatures* feat;
 
@@ -236,7 +236,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 			}
 			else
 			{
-				error("Unsupported inference method!\n");
+				error("Unsupported inference method!");
 				return s2;
 			}
 		}

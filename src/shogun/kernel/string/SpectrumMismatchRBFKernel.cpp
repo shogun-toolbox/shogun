@@ -73,8 +73,8 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l, r);
 
-	SG_DEBUG("lhs_changed: {}\n", lhs_changed)
-	SG_DEBUG("rhs_changed: {}\n", rhs_changed)
+	SG_DEBUG("lhs_changed: {}", lhs_changed)
+	SG_DEBUG("rhs_changed: {}", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*)l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*)r;
@@ -274,10 +274,10 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
 	if (AA_matrix_)
 	{
 		if (nr!=128 || nc!=128)
-			error("AA_matrix should be of shape 128x128\n");
+			error("AA_matrix should be of shape 128x128");
 
 		AA_matrix=SGMatrix<float64_t>(nc, nr);
-		SG_DEBUG("Setting AA_matrix\n")
+		SG_DEBUG("Setting AA_matrix")
 		sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t));
 		return true;
 	}

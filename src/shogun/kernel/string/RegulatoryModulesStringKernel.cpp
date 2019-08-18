@@ -69,10 +69,10 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(motif_positions_rhs)
 
 	if (l->get_num_vectors() != motif_positions_lhs->get_num_vectors())
-		error("Number of vectors does not agree (LHS: {}, Motif LHS: {}).\n",
+		error("Number of vectors does not agree (LHS: {}, Motif LHS: {}).",
 				l->get_num_vectors(),  motif_positions_lhs->get_num_vectors());
 	if (r->get_num_vectors() != motif_positions_rhs->get_num_vectors())
-		error("Number of vectors does not agree (RHS: {}, Motif RHS: {}).\n",
+		error("Number of vectors does not agree (RHS: {}, Motif RHS: {}).",
 				r->get_num_vectors(), motif_positions_rhs->get_num_vectors());
 
 	set_wd_weights();
@@ -88,7 +88,7 @@ void CRegulatoryModulesStringKernel::set_motif_positions(
 	SG_UNREF(motif_positions_lhs);
 	SG_UNREF(motif_positions_rhs);
 	if (positions_lhs->get_num_features() != positions_rhs->get_num_features())
-		error("Number of dimensions does not agree.\n");
+		error("Number of dimensions does not agree.");
 
 	motif_positions_lhs=positions_lhs;
 	motif_positions_rhs=positions_rhs;

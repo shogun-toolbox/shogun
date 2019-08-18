@@ -76,7 +76,7 @@ void CNeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
 void CNeuralSoftmaxLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
 	if (targets.num_rows == 0)
-		error("Cannot be used as a hidden layer\n");
+		error("Cannot be used as a hidden layer");
 
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i< len; i++)

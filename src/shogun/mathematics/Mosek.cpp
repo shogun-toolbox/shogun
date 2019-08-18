@@ -125,8 +125,8 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 		SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, +MSK_INFINITY);
 	}
 
-	require(lb.vlen >= M, "CMosek::init_sosvm(): lb.vlen < dimension of feature space.\n");
-	require(ub.vlen >= M, "CMosek::init_sosvm(): ub.vlen < dimension of feature space.\n");
+	require(lb.vlen >= M, "CMosek::init_sosvm(): lb.vlen < dimension of feature space.");
+	require(ub.vlen >= M, "CMosek::init_sosvm(): ub.vlen < dimension of feature space.");
 
 	for ( int32_t j = 0 ; j < num_var && m_rescode == MSK_RES_OK ; ++j )
 	{
@@ -191,7 +191,7 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 	m_rescode = wrapper_putboundlist(m_task, b);
 
 	require(m_rescode == MSK_RES_OK, "MOSEK Error in CMosek::init_sosvm(). "
-			"Enable DEBUG_MOSEK for details.\n");
+			"Enable DEBUG_MOSEK for details.");
 
 	return m_rescode;
 }
@@ -318,7 +318,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 #endif
 
 	require(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putaveclist(). "
-			"Enable DEBUG_MOSEK for details.\n");
+			"Enable DEBUG_MOSEK for details.");
 
 	return ret;
 }
@@ -346,7 +346,7 @@ MSKrescodee CMosek::wrapper_putboundlist(MSKtask_t & task, SGVector< float64_t >
 	SG_FREE(bk);
 
 	require(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putboundlist(). "
-			"Enable DEBUG_MOSEK for details.\n");
+			"Enable DEBUG_MOSEK for details.");
 
 	return ret;
 }

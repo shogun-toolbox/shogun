@@ -72,7 +72,7 @@ SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
 
 float64_t CDistribution::update_params_em(const SGVector<float64_t> alpha_k)
 {
-	io::warn("Not implemented in this class. This class cannot be used for Mixture models.\n");
+	io::warn("Not implemented in this class. This class cannot be used for Mixture models.");
 	not_implemented(SOURCE_LOCATION);
 	return -1;
 }

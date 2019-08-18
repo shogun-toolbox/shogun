@@ -140,9 +140,9 @@ int32_t CKernelMachine::get_support_vector(int32_t idx)
 float64_t CKernelMachine::get_alpha(int32_t idx)
 {
     if (!m_alpha.vector)
-        error("No alphas set\n");
+        error("No alphas set");
     if (idx>=m_alpha.vlen)
-        error("Alphas index ({}) out of range ({})\n", idx, m_svs.vlen);
+        error("Alphas index ({}) out of range ({})", idx, m_svs.vlen);
     return m_alpha.vector[idx];
 }
 
@@ -229,12 +229,12 @@ bool CKernelMachine::init_kernel_optimization()
 		SG_FREE(sv_weight);
 
 		if (!ret)
-			error("initialization of kernel optimization failed\n");
+			error("initialization of kernel optimization failed");
 
 		return ret;
 	}
 	else
-		error("initialization of kernel optimization failed\n");
+		error("initialization of kernel optimization failed");
 
 	return false;
 }
@@ -253,23 +253,23 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	SG_DEBUG("entering {}::apply_get_outputs({} at {})\n",
+	SG_DEBUG("entering {}::apply_get_outputs({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
-	require(kernel, "{}::apply_get_outputs(): No kernel assigned!\n");
+	require(kernel, "{}::apply_get_outputs(): No kernel assigned!");
 
 	if (!kernel->get_num_vec_lhs())
 	{
 		error("{}: No vectors on left hand side ({}). This is probably due to"
 				" an implementation error in {}, where it was forgotten to set "
-				"the data (m_svs) indices\n", get_name(),
+				"the data (m_svs) indices", get_name(),
 				data->get_name());
 	}
 
 	if (data)
 	{
 		CFeatures* lhs=kernel->get_lhs();
-		require(lhs, "{}::apply_get_outputs(): No left hand side specified\n",
+		require(lhs, "{}::apply_get_outputs(): No left hand side specified",
 				get_name());
 		kernel->init(lhs, data);
 		SG_UNREF(lhs);
@@ -290,7 +290,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (kernel->get_num_vec_rhs()>0)
 	{
-		SG_DEBUG("computing output on {} test examples\n", num_vectors)
+		SG_DEBUG("computing output on {} test examples", num_vectors)
 
 		if (env()->io()->get_show_progress())
 			env()->io()->enable_progress();
@@ -301,7 +301,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 				get_batch_computation_enabled())
 		{
 			output.zero();
-			SG_DEBUG("Batch evaluation enabled\n")
+			SG_DEBUG("Batch evaluation enabled")
 			if (get_num_support_vectors()>0)
 			{
 				int32_t* sv_idx=SG_MALLOC(int32_t, get_num_support_vectors());
@@ -382,7 +382,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 	}
 
-	SG_DEBUG("leaving {}::apply_get_outputs({} at {})\n",
+	SG_DEBUG("leaving {}::apply_get_outputs({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return output;
@@ -391,13 +391,13 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 void CKernelMachine::store_model_features()
 {
 	if (!kernel)
-		error("kernel is needed to store SV features.\n");
+		error("kernel is needed to store SV features.");
 
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
 
 	if (!lhs)
-		error("kernel lhs is needed to store SV features.\n");
+		error("kernel lhs is needed to store SV features.");
 
 	/* copy sv feature data */
 	CFeatures* sv_features=lhs->copy_subset(m_svs);

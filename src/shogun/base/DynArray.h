@@ -176,7 +176,7 @@ template <class T> class DynArray
 		{
 			if (index>=get_num_elements())
 			{
-				error("array index out of bounds ({} >= {})\n",
+				error("array index out of bounds ({} >= {})",
 						 index, get_num_elements());
 			}
 			return array[index];

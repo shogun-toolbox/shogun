@@ -93,14 +93,14 @@ CFisherLDA::~CFisherLDA()
 
 void CFisherLDA::fit(CFeatures* features)
 {
-	error("Labels for the given features are not specified!\n");
+	error("Labels for the given features are not specified!");
 }
 
 void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 {
-	require(features, "Features are not provided!\n");
+	require(features, "Features are not provided!");
 
-	require(labels, "Labels for the given features are not specified!\n");
+	require(labels, "Labels for the given features are not specified!");
 
 	require(
 	    labels->get_label_type() == LT_MULTICLASS,
@@ -123,7 +123,7 @@ void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 
 	int32_t num_class = multiclass_labels->get_num_classes();
 
-	require(num_class > 1, "At least two classes are needed to perform LDA.\n");
+	require(num_class > 1, "At least two classes are needed to perform LDA.");
 
 	// clip number if Dimensions to be a valid number
 	if ((m_num_dim <= 0) || (m_num_dim > (num_class - 1)))
@@ -207,12 +207,12 @@ SGMatrix<float64_t> CFisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
 
-	io::info("Transforming feature matrix\n");
+	io::info("Transforming feature matrix");
 	Map<MatrixXd> transform_matrix(
 	    m_transformation_matrix.matrix, m_transformation_matrix.num_rows,
 	    m_transformation_matrix.num_cols);
 
-	io::info("get Feature matrix: {}x{}\n", num_vectors, num_features);
+	io::info("get Feature matrix: {}x{}", num_vectors, num_features);
 
 	Map<MatrixXd> feature_matrix(matrix.matrix, num_features, num_vectors);
 

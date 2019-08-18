@@ -474,7 +474,7 @@ public:
 	{
 		m_long_transitions = use_long_transitions;
 		m_long_transition_threshold = threshold;
-		SG_DEBUG("ignoring max_len\n")
+		SG_DEBUG("ignoring max_len")
 		//m_long_transition_max = max_len;
 	}
 

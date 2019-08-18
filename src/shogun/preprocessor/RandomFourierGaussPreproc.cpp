@@ -224,7 +224,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	}
 
 
-	io::info("initializing randomcoefficients \n");
+	io::info("initializing randomcoefficients ");
 
 	float64_t pi = 3.14159265;
 
@@ -264,7 +264,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 		}
 	}
 
-	io::info("finished: initializing randomcoefficients \n");
+	io::info("finished: initializing randomcoefficients ");
 
 	return true;
 }
@@ -338,7 +338,7 @@ void CRandomFourierGaussPreproc::fit(CFeatures* f)
 				"CRandomFourierGaussPreproc::init (CFeatures *f): dim_feature_space<=0 is not allowed, use void set_dim_feature_space(const int32 dim) before!\n");
 	}
 
-	io::info("calling CRandomFourierGaussPreproc::init(...)\n");
+	io::info("calling CRandomFourierGaussPreproc::init(...)");
 	int32_t num_features =
 	    f->as<CDenseFeatures<float64_t>>()->get_num_features();
 
@@ -379,7 +379,7 @@ CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
 
-	io::info("get Feature matrix: {}x{}\n", num_vectors, num_features);
+	io::info("get Feature matrix: {}x{}", num_vectors, num_features);
 
 	if (num_features != cur_dim_input_space)
 	{

@@ -158,7 +158,7 @@ SGMatrix<float64_t> CQDiag::diagonalize_impl(SGNDArray<float64_t>& C, SGMatrix<f
 	EV = (P.transpose() * EV).transpose();
 
 	if (iter == itermax)
-		error("Convergence not reached\n");
+		error("Convergence not reached");
 
 	return V;
 }

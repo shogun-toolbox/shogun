@@ -46,7 +46,7 @@ namespace shogun{
 		if (data)
 		{
 			if (m_labels->get_num_labels() != data->get_num_vectors())
-				error("Number of training vectors does not match number of labels\n");
+				error("Number of training vectors does not match number of labels");
 			distance->init(data, data);
 		}
 		else

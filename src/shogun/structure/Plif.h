@@ -286,7 +286,7 @@ class CPlif: public CPlifBase
 			{
 				len=p_len;
 
-				SG_DEBUG("set_plif len={}\n", p_len)
+				SG_DEBUG("set_plif len={}", p_len)
 				limits = SGVector<float64_t>(len);
 				penalties = SGVector<float64_t>(len);
 				cum_derivatives = SGVector<float64_t>(len);

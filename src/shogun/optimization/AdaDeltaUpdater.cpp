@@ -53,14 +53,14 @@ AdaDeltaUpdater::AdaDeltaUpdater(float64_t learning_rate,float64_t epsilon,float
 
 void AdaDeltaUpdater::set_learning_rate(float64_t learning_rate)
 {
-	require(learning_rate>0,"Learning_rate ({}) must be positive\n",
+	require(learning_rate>0,"Learning_rate ({}) must be positive",
 		learning_rate);
 	m_build_in_learning_rate=learning_rate;
 }
 
 void AdaDeltaUpdater::set_epsilon(float64_t epsilon)
 {
-	require(epsilon>=0,"Epsilon ({}) must be non-negative\n",
+	require(epsilon>=0,"Epsilon ({}) must be non-negative",
 		epsilon);
 	m_epsilon=epsilon;
 }
@@ -68,7 +68,7 @@ void AdaDeltaUpdater::set_epsilon(float64_t epsilon)
 void AdaDeltaUpdater::set_decay_factor(float64_t decay_factor)
 {
 	require(decay_factor>=0.0 && decay_factor<1.0,
-		"Decay factor ({}) must in [0,1)\n",
+		"Decay factor ({}) must in [0,1)",
 		decay_factor);
 	m_decay_factor=decay_factor;
 }
@@ -101,9 +101,9 @@ float64_t AdaDeltaUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t gradient, index_t idx, float64_t learning_rate)
 {
 	require(idx>=0 && idx<m_gradient_accuracy.vlen,
-		"Index ({}) is invalid\n", idx);
+		"Index ({}) is invalid", idx);
 	require(idx>=0 && idx<m_gradient_delta_accuracy.vlen,
-		"Index ({}) is invalid\n", idx);
+		"Index ({}) is invalid", idx);
 	float64_t scale=m_decay_factor*m_gradient_accuracy[idx]+
 		(1.0-m_decay_factor)*gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
@@ -118,9 +118,9 @@ float64_t AdaDeltaUpdater::get_negative_descend_direction(float64_t variable,
 void AdaDeltaUpdater::update_variable(SGVector<float64_t> variable_reference,
 	SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
 {
-	require(variable_reference.vlen>0,"variable_reference must set\n");
+	require(variable_reference.vlen>0,"variable_reference must set");
 	require(variable_reference.vlen==raw_negative_descend_direction.vlen,
-		"The length of variable_reference ({}) and the length of gradient ({}) do not match\n",
+		"The length of variable_reference ({}) and the length of gradient ({}) do not match",
 		variable_reference.vlen,raw_negative_descend_direction.vlen);
 	if(m_gradient_accuracy.vlen==0)
 	{

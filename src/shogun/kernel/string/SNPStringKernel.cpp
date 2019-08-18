@@ -127,7 +127,7 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen)
 	if (alen!=m_str_len)
-		error("alen ({}) !=m_str_len ({})\n", alen, m_str_len);
+		error("alen ({}) !=m_str_len ({})", alen, m_str_len);
 	ASSERT(m_str_min)
 	ASSERT(m_str_maj)
 
@@ -161,7 +161,7 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				else
 				{
 					error("The impossible happened i={} l={} a1={} "
-							"a2={} b1={} b2={} min={} maj={}\n", i, l, a1,a2, b1,b2, m_str_min[i+l], m_str_maj[i+l]);
+							"a2={} b1={} b2={} min={} maj={}", i, l, a1,a2, b1,b2, m_str_min[i+l], m_str_maj[i+l]);
 				}
 			}
 

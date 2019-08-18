@@ -108,7 +108,7 @@ CFeatures*
 CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 {
 	if ( !features )
-		error("Features are required to apply SPE\n");
+		error("Features are required to apply SPE");
 
 	// Shorthand for the DenseFeatures
 	CDenseFeatures< float64_t >* simple_features =
@@ -119,11 +119,11 @@ CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 	int32_t N = simple_features->get_num_vectors();
 	if ( m_strategy == SPE_LOCAL && m_k >= N )
 		error("The number of neighbors ({}) must be less than "
-		         "the number of vectors ({})\n", m_k, N);
+		         "the number of vectors ({})", m_k, N);
 
 	if ( 2*m_nupdates > N )
 		error("The number of vectors ({}) must be at least two times "
-			 "the number of updates ({})\n", N, m_nupdates);
+			 "the number of updates ({})", N, m_nupdates);
 
 	m_distance->init(simple_features, simple_features);
 	CDenseFeatures< float64_t >* embedding = embed_distance(m_distance);

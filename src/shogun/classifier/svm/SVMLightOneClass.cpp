@@ -75,16 +75,16 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 	learn_parm->xa_depth=0;
 
     if (!kernel)
-        error("SVM_light can not proceed without kernel!\n");
+        error("SVM_light can not proceed without kernel!");
 
 	if (data)
 		kernel->init(data, data);
 
     if (!kernel->has_features())
-        error("SVM_light can not proceed without initialized kernel!\n");
+        error("SVM_light can not proceed without initialized kernel!");
 
 	int32_t num_vec=kernel->get_num_vec_lhs();
-	io::info("num_vec={}\n", num_vec);
+	io::info("num_vec={}", num_vec);
 
 	SG_UNREF(m_labels);
 	m_labels=new CBinaryLabels(num_vec);
@@ -96,22 +96,22 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG("threads = {}\n", env()->get_num_threads())
-	SG_DEBUG("qpsize = {}\n", learn_parm->svm_maxqpsize)
-	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
-	SG_DEBUG("kernel->has_property(KP_LINADD) = {}\n", kernel->has_property(KP_LINADD))
-	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = {}\n", kernel->has_property(KP_KERNCOMBINATION))
-	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = {}\n", kernel->has_property(KP_BATCHEVALUATION))
-	SG_DEBUG("kernel->get_optimization_type() = {}\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" )
-	SG_DEBUG("get_solver_type() = {}\n", get_solver_type())
-	SG_DEBUG("get_linadd_enabled() = {}\n", get_linadd_enabled())
-	SG_DEBUG("get_batch_computation_enabled() = {}\n", get_batch_computation_enabled())
-	SG_DEBUG("kernel->get_num_subkernels() = {}\n", kernel->get_num_subkernels())
+	SG_DEBUG("threads = {}", env()->get_num_threads())
+	SG_DEBUG("qpsize = {}", learn_parm->svm_maxqpsize)
+	SG_DEBUG("epsilon = %1.1e", learn_parm->epsilon_crit)
+	SG_DEBUG("kernel->has_property(KP_LINADD) = {}", kernel->has_property(KP_LINADD))
+	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = {}", kernel->has_property(KP_KERNCOMBINATION))
+	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = {}", kernel->has_property(KP_BATCHEVALUATION))
+	SG_DEBUG("kernel->get_optimization_type() = {}", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" )
+	SG_DEBUG("get_solver_type() = {}", get_solver_type())
+	SG_DEBUG("get_linadd_enabled() = {}", get_linadd_enabled())
+	SG_DEBUG("get_batch_computation_enabled() = {}", get_batch_computation_enabled())
+	SG_DEBUG("kernel->get_num_subkernels() = {}", kernel->get_num_subkernels())
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG("use_kernel_cache = {}\n", use_kernel_cache)
+	SG_DEBUG("use_kernel_cache = {}", use_kernel_cache)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{

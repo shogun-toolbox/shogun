@@ -56,20 +56,20 @@ CMixtureModel::~CMixtureModel()
 
 bool CMixtureModel::train(CFeatures* data)
 {
-	require(m_components->get_num_elements()>0,"mixture componenents not specified\n");
+	require(m_components->get_num_elements()>0,"mixture componenents not specified");
 	require(m_components->get_num_elements()==m_weights.vlen,"number of weights ({}) does  not"
-		" match number of components ({})\n",m_weights.vlen,m_components->get_num_elements());
+		" match number of components ({})",m_weights.vlen,m_components->get_num_elements());
 
 	// set training features
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				error("Specified features are not of type CDotFeatures\n");
+				error("Specified features are not of type CDotFeatures");
 		set_features(data);
 	}
 	else if (!features)
 	{
-		error("No features to train on.\n");
+		error("No features to train on.");
 	}
 
 	// set training points in all components of the mixture
@@ -94,7 +94,7 @@ bool CMixtureModel::train(CFeatures* data)
 	// run EM
 	bool is_converged=em->iterate_em(m_max_iters,m_conv_tol);
 	if (!is_converged)
-		io::warn("max iterations reached. No convergence yet!\n");
+		io::warn("max iterations reached. No convergence yet!");
 
 	SG_UNREF(em)
 	return true;
@@ -103,7 +103,7 @@ bool CMixtureModel::train(CFeatures* data)
 float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 {
 	require(num_param==1,"number of parameters in mixture model is 1"
-	" (i.e. number of components). num_components should be 1. {} supplied\n",num_param);
+	" (i.e. number of components). num_components should be 1. {} supplied",num_param);
 
 	return std::log(static_cast<float64_t>(get_num_components()));
 }
@@ -116,9 +116,9 @@ float64_t CMixtureModel::get_log_derivative(int32_t num_param, int32_t num_examp
 
 float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 {
-	require(features,"features not set\n");
-	require(features->get_feature_class() == C_DENSE,"Dense features required\n");
-	require(features->get_feature_type() == F_DREAL,"Real features required\n");
+	require(features,"features not set");
+	require(features->get_feature_class() == C_DENSE,"Dense features required");
+	require(features->get_feature_type() == F_DREAL,"Real features required");
 
 	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
@@ -166,7 +166,7 @@ index_t CMixtureModel::get_num_components() const
 
 CDistribution* CMixtureModel::get_component(index_t index) const
 {
-	require(index<get_num_components(),"index supplied ({}) is greater than total mixture components ({})\n"
+	require(index<get_num_components(),"index supplied ({}) is greater than total mixture components ({})"
 																				,index,get_num_components());
 	return m_components->get_element(index)->as<CDistribution>();
 }

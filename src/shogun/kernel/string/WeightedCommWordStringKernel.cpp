@@ -239,7 +239,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
-		error("CCommWordStringKernel optimization not initialized\n");
+		error("CCommWordStringKernel optimization not initialized");
 
 	ASSERT(use_sign==false)
 

@@ -88,7 +88,7 @@ void CPeriodicKernel::precompute_squared()
 		return;
 
 	CDotFeatures* dotlhs=dynamic_cast<CDotFeatures*>(lhs);
-	require(dotlhs!=NULL, "Left-hand-side features must be of type CDotFeatures\n");
+	require(dotlhs!=NULL, "Left-hand-side features must be of type CDotFeatures");
 
 	precompute_squared_helper(m_sq_lhs, dotlhs);
 
@@ -97,7 +97,7 @@ void CPeriodicKernel::precompute_squared()
 	else
 	{
 		CDotFeatures *dotrhs=dynamic_cast<CDotFeatures*>(rhs);
-		require(dotrhs!=NULL, "Left-hand-side features must be of type CDotFeatures\n");
+		require(dotrhs!=NULL, "Left-hand-side features must be of type CDotFeatures");
 
 		precompute_squared_helper(m_sq_rhs, dotrhs);
 	}
@@ -106,8 +106,8 @@ void CPeriodicKernel::precompute_squared()
 SGMatrix<float64_t> CPeriodicKernel::get_parameter_gradient(
 	const TParameter* param, index_t index)
 {
-	require(lhs, "Left-hand-side features not set!\n");
-	require(rhs, "Right-hand-side features not set!\n");
+	require(lhs, "Left-hand-side features not set!");
+	require(rhs, "Right-hand-side features not set!");
 
 	if (!strcmp(param->m_name, "length_scale"))
 	{
@@ -146,7 +146,7 @@ SGMatrix<float64_t> CPeriodicKernel::get_parameter_gradient(
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param->m_name);
 		return SGMatrix<float64_t>();
 	}
 }

@@ -40,14 +40,14 @@ void CCustomKernel::init()
 CCustomKernel::CCustomKernel()
 : CKernel(10), kmatrix(), upper_diagonal(false)
 {
-	SG_DEBUG("created CCustomKernel\n")
+	SG_DEBUG("created CCustomKernel")
 	init();
 }
 
 CCustomKernel::CCustomKernel(CKernel* k)
 : CKernel(10)
 {
-	SG_DEBUG("created CCustomKernel\n")
+	SG_DEBUG("created CCustomKernel")
 	init();
 
 	/* if constructed from a custom kernel, use same kernel matrix */
@@ -68,28 +68,28 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering\n")
+	SG_DEBUG("Entering")
 	init();
 	set_full_kernel_matrix_from_full(km, true);
-	SG_DEBUG("Leaving\n")
+	SG_DEBUG("Leaving")
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering\n")
+	SG_DEBUG("Entering")
 	init();
 	set_full_kernel_matrix_from_full(km, true);
-	SG_DEBUG("Leaving\n")
+	SG_DEBUG("Leaving")
 }
 
 CCustomKernel::~CCustomKernel()
 {
-	SG_DEBUG("Entering\n")
+	SG_DEBUG("Entering")
 	cleanup();
 	SG_UNREF(m_row_subset_stack);
 	SG_UNREF(m_col_subset_stack);
-	SG_DEBUG("Leaving\n")
+	SG_DEBUG("Leaving")
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
@@ -108,15 +108,15 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 		r=rhs;
 
 	/* Make sure l and r should not be NULL */
-	require(l, "CFeatures l should not be NULL\n");
-	require(r, "CFeatures r should not be NULL\n");
+	require(l, "CFeatures l should not be NULL");
+	require(r, "CFeatures r should not be NULL");
 
 	/* Make sure l and r have the same type of CFeatures */
 	require(l->get_feature_class()==r->get_feature_class(),
-			"Different FeatureClass: l is {}, r is {}\n",
+			"Different FeatureClass: l is {}, r is {}",
 			l->get_feature_class(),r->get_feature_class());
 	require(l->get_feature_type()==r->get_feature_type(),
-			"Different FeatureType: l is {}, r is {}\n",
+			"Different FeatureType: l is {}, r is {}",
 			l->get_feature_type(),r->get_feature_type());
 
 	/* If l and r are the type of CIndexFeatures,
@@ -145,8 +145,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 	lhs_equals_rhs=m_is_symmetric;
 
-	SG_DEBUG("num_vec_lhs: {} vs num_rows {}\n", l->get_num_vectors(), kmatrix.num_rows)
-	SG_DEBUG("num_vec_rhs: {} vs num_cols {}\n", r->get_num_vectors(), kmatrix.num_cols)
+	SG_DEBUG("num_vec_lhs: {} vs num_rows {}", l->get_num_vectors(), kmatrix.num_rows)
+	SG_DEBUG("num_vec_rhs: {} vs num_cols {}", r->get_num_vectors(), kmatrix.num_cols)
 	ASSERT(l->get_num_vectors()==kmatrix.num_rows)
 	ASSERT(r->get_num_vectors()==kmatrix.num_cols)
 	return init_normalizer();
@@ -155,25 +155,25 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::sum_symmetric_block (slower)!\n");
+				"CKernel::sum_symmetric_block (slower)!");
 		return CKernel::sum_symmetric_block(block_begin, block_size, no_diag);
 	}
 
-	require(kmatrix.matrix, "The kernel matrix is not initialized!\n");
-	require(m_is_symmetric, "The kernel matrix is not symmetric!\n");
+	require(kmatrix.matrix, "The kernel matrix is not initialized!");
+	require(m_is_symmetric, "The kernel matrix is not symmetric!");
 	require(block_begin>=0 && block_begin<kmatrix.num_cols,
-			"Invalid block begin index ({}, {})!\n", block_begin, block_begin);
+			"Invalid block begin index ({}, {})!", block_begin, block_begin);
 	require(block_begin+block_size<=kmatrix.num_cols,
 			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin);
-	require(block_size>=1, "Invalid block size ({})!\n", block_size);
+	require(block_size>=1, "Invalid block size ({})!", block_size);
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 
 	return sum_symmetric(block(kmatrix, block_begin,
 				block_begin, block_size, block_size), no_diag);
@@ -183,20 +183,20 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 		index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::sum_block (slower)!\n");
+				"CKernel::sum_block (slower)!");
 		return CKernel::sum_block(block_begin_row, block_begin_col,
 				block_size_row, block_size_col, no_diag);
 	}
 
-	require(kmatrix.matrix, "The kernel matrix is not initialized!\n");
+	require(kmatrix.matrix, "The kernel matrix is not initialized!");
 	require(block_begin_row>=0 && block_begin_row<kmatrix.num_rows &&
 			block_begin_col>=0 && block_begin_col<kmatrix.num_cols,
-			"Invalid block begin index ({}, {})!\n",
+			"Invalid block begin index ({}, {})!",
 			block_begin_row, block_begin_col);
 	require(block_begin_row+block_size_row<=kmatrix.num_rows &&
 			block_begin_col+block_size_col<=kmatrix.num_cols,
@@ -204,16 +204,16 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 			"Please use smaller blocks!", block_size_row, block_size_col,
 			block_begin_row, block_begin_col);
 	require(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size ({}, {})!\n", block_size_row, block_size_col);
+			"Invalid block size ({}, {})!", block_size_row, block_size_col);
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
 	{
-		io::warn("Not removing the main diagonal since block is not square!\n");
+		io::warn("Not removing the main diagonal since block is not square!");
 		no_diag=false;
 	}
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 
 	return sum(block(kmatrix, block_begin_row, block_begin_col,
 				block_size_row, block_size_col), no_diag);
@@ -222,24 +222,24 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 		block_begin, index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::row_wise_sum_symmetric_block (slower)!\n");
+				"CKernel::row_wise_sum_symmetric_block (slower)!");
 		return CKernel::row_wise_sum_symmetric_block(block_begin, block_size,
 				no_diag);
 	}
 
-	require(kmatrix.matrix, "The kernel matrix is not initialized!\n");
-	require(m_is_symmetric, "The kernel matrix is not symmetric!\n");
+	require(kmatrix.matrix, "The kernel matrix is not initialized!");
+	require(m_is_symmetric, "The kernel matrix is not symmetric!");
 	require(block_begin>=0 && block_begin<kmatrix.num_cols,
-			"Invalid block begin index ({}, {})!\n", block_begin, block_begin);
+			"Invalid block begin index ({}, {})!", block_begin, block_begin);
 	require(block_begin+block_size<=kmatrix.num_cols,
 			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin);
-	require(block_size>=1, "Invalid block size ({})!\n", block_size);
+	require(block_size>=1, "Invalid block size ({})!", block_size);
 
 	SGVector<float32_t> s=rowwise_sum(block(kmatrix, block_begin,
 				block_begin, block_size, block_size), no_diag);
@@ -249,7 +249,7 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 	for (index_t i=0; i<s.vlen; ++i)
 		sum[i]=s[i];
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 
 	return sum;
 }
@@ -257,24 +257,24 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 		index_t block_begin, index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::row_wise_sum_squared_sum_symmetric_block (slower)!\n");
+				"CKernel::row_wise_sum_squared_sum_symmetric_block (slower)!");
 		return CKernel::row_wise_sum_squared_sum_symmetric_block(block_begin,
 				block_size, no_diag);
 	}
 
-	require(kmatrix.matrix, "The kernel matrix is not initialized!\n");
-	require(m_is_symmetric, "The kernel matrix is not symmetric!\n");
+	require(kmatrix.matrix, "The kernel matrix is not initialized!");
+	require(m_is_symmetric, "The kernel matrix is not symmetric!");
 	require(block_begin>=0 && block_begin<kmatrix.num_cols,
-			"Invalid block begin index ({}, {})!\n", block_begin, block_begin);
+			"Invalid block begin index ({}, {})!", block_begin, block_begin);
 	require(block_begin+block_size<=kmatrix.num_cols,
 			"Invalid block size ({}) at starting index ({}, {})! "
 			"Please use smaller blocks!", block_size, block_begin, block_begin);
-	require(block_size>=1, "Invalid block size ({})!\n", block_size);
+	require(block_size>=1, "Invalid block size ({})!", block_size);
 
 	// initialize the matrix that accumulates the row/col-wise sum
 	// the first column stores the sum of kernel values
@@ -294,7 +294,7 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	for (index_t i=0; i<sq_sum.vlen; ++i)
 		row_sum(i, 1)=sq_sum[i];
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 
 	return row_sum;
 }
@@ -303,20 +303,20 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 		block_begin_row, index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
 		io::info("Row/col subsets initialized! Falling back to "
-				"CKernel::row_col_wise_sum_block (slower)!\n");
+				"CKernel::row_col_wise_sum_block (slower)!");
 		return CKernel::row_col_wise_sum_block(block_begin_row, block_begin_col,
 				block_size_row, block_size_col, no_diag);
 	}
 
-	require(kmatrix.matrix, "The kernel matrix is not initialized!\n");
+	require(kmatrix.matrix, "The kernel matrix is not initialized!");
 	require(block_begin_row>=0 && block_begin_row<kmatrix.num_rows &&
 			block_begin_col>=0 && block_begin_col<kmatrix.num_cols,
-			"Invalid block begin index ({}, {})!\n",
+			"Invalid block begin index ({}, {})!",
 			block_begin_row, block_begin_col);
 	require(block_begin_row+block_size_row<=kmatrix.num_rows &&
 			block_begin_col+block_size_col<=kmatrix.num_cols,
@@ -324,12 +324,12 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 			"Please use smaller blocks!", block_size_row, block_size_col,
 			block_begin_row, block_begin_col);
 	require(block_size_row>=1 && block_size_col>=1,
-			"Invalid block size ({}, {})!\n", block_size_row, block_size_col);
+			"Invalid block size ({}, {})!", block_size_row, block_size_col);
 
 	// check if removal of diagonal is required/valid
 	if (no_diag && block_size_row!=block_size_col)
 	{
-		io::warn("Not removing the main diagonal since block is not square!\n");
+		io::warn("Not removing the main diagonal since block is not square!");
 		no_diag=false;
 	}
 
@@ -352,21 +352,21 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 	for (index_t i=0; i<colwise.vlen; ++i)
 		sum[i+rowwise.vlen]=colwise[i];
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 
 	return sum;
 }
 
 void CCustomKernel::cleanup_custom()
 {
-	SG_DEBUG("Entering\n")
+	SG_DEBUG("Entering")
 	remove_all_row_subsets();
 	remove_all_col_subsets();
 
 	kmatrix=SGMatrix<float32_t>();
 	upper_diagonal=false;
 
-	SG_DEBUG("Leaving\n")
+	SG_DEBUG("Leaving")
 }
 
 void CCustomKernel::cleanup()

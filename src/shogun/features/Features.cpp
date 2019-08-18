@@ -40,7 +40,7 @@ CFeatures::CFeatures(CFile* loader)
 	init();
 
 	load(loader);
-	io::info("Feature object loaded ({})\n",fmt::ptr(this));
+	io::info("Feature object loaded ({})",fmt::ptr(this));
 }
 
 CFeatures::~CFeatures()
@@ -106,7 +106,7 @@ void CFeatures::list_preprocessors()
 
 	for (int32_t i=0; i<num_preproc; i++)
 	{
-		io::info("preproc[{}]={}\n", i, preproc->get_element(i)->get_name());
+		io::info("preproc[{}]={}", i, preproc->get_element(i)->get_name());
 	}
 }
 
@@ -180,46 +180,46 @@ void CFeatures::list_feature_obj() const
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			io::info("F_UNKNOWN \n");
+			io::info("F_UNKNOWN ");
 			break;
 		case F_CHAR:
-			io::info("F_CHAR \n");
+			io::info("F_CHAR ");
 			break;
 		case F_BYTE:
-			io::info("F_BYTE \n");
+			io::info("F_BYTE ");
 			break;
 		case F_SHORT:
-			io::info("F_SHORT \n");
+			io::info("F_SHORT ");
 			break;
 		case F_WORD:
-			io::info("F_WORD \n");
+			io::info("F_WORD ");
 			break;
 		case F_INT:
-			io::info("F_INT \n");
+			io::info("F_INT ");
 			break;
 		case F_UINT:
-			io::info("F_UINT \n");
+			io::info("F_UINT ");
 			break;
 		case F_LONG:
-			io::info("F_LONG \n");
+			io::info("F_LONG ");
 			break;
 		case F_ULONG:
-			io::info("F_ULONG \n");
+			io::info("F_ULONG ");
 			break;
 		case F_SHORTREAL:
-			io::info("F_SHORTEAL \n");
+			io::info("F_SHORTEAL ");
 			break;
 		case F_DREAL:
-			io::info("F_DREAL \n");
+			io::info("F_DREAL ");
 			break;
 		case F_LONGREAL:
-			io::info("F_LONGREAL \n");
+			io::info("F_LONGREAL ");
 			break;
 		case F_ANY:
-			io::info("F_ANY \n");
+			io::info("F_ANY ");
 			break;
 		default:
-         error("ERROR UNKNOWN FEATURE TYPE\n");
+         error("ERROR UNKNOWN FEATURE TYPE");
 	}
 }
 
@@ -299,13 +299,13 @@ CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
 {
 	error("{}::copy_subset(): copy_subset and therefore model storage of "
 			"CMachine (required for cross-validation and model-selection is "
-			"not yet implemented yet. Ask developers!\n", get_name());
+			"not yet implemented yet. Ask developers!", get_name());
 	return NULL;
 }
 
 CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims) const
 {
-	io::warn("{}::copy_dimension_subset():: Is not yet implemented!\n",
+	io::warn("{}::copy_dimension_subset():: Is not yet implemented!",
 			get_name());
 	return NULL;
 }

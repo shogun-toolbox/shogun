@@ -28,7 +28,7 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	inner_degree=id;
 	outer_degree=od;
 
-	SG_DEBUG("LIK with parms: l={}, id={}, od={} created!\n", l, id, od)
+	SG_DEBUG("LIK with parms: l={}, id={}, od={} created!", l, id, od)
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
@@ -42,7 +42,7 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	inner_degree=id;
 	outer_degree=od;
 
-	SG_DEBUG("LIK with parms: l={}, id={}, od={} created!\n", len, id, od)
+	SG_DEBUG("LIK with parms: l={}, id={}, od={} created!", len, id, od)
 
 	init(l, r);
 }

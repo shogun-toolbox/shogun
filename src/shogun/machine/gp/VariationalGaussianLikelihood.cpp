@@ -56,17 +56,17 @@ void CVariationalGaussianLikelihood::init()
 
 void CVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
 {
-	require(noise_factor>=0, "The noise_factor ({}) should be non negative\n", noise_factor);
+	require(noise_factor>=0, "The noise_factor ({}) should be non negative", noise_factor);
 	m_noise_factor=noise_factor;
 }
 
 bool CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
-	require(lab, "Labels are required (lab should not be NULL)\n");
+	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
 		"Length of the vector of means ({}), length of the vector of "
-		"variances ({}) and number of labels ({}) should be the same\n",
+		"variances ({}) and number of labels ({}) should be the same",
 		mu.vlen, s2.vlen, lab->get_num_labels());
 
 	for(index_t i = 0; i < s2.vlen; ++i)

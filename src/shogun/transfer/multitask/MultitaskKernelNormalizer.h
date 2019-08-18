@@ -73,10 +73,10 @@ public:
 		k->rhs=old_lhs;
 
 		if (strcmp(k->get_name(), "WeightedDegree") == 0) {
-			io::info("using first-element normalization\n");
+			io::info("using first-element normalization");
 			scale=k->compute(0, 0);
 		} else {
-			io::info("no inner normalization for non-WDK kernel\n");
+			io::info("no inner normalization for non-WDK kernel");
 			scale=1.0;
 		}
 

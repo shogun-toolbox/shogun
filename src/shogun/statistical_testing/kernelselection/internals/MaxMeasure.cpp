@@ -64,7 +64,7 @@ SGMatrix<float64_t> MaxMeasure::get_measure_matrix()
 void MaxMeasure::init_measures()
 {
 	const index_t num_kernels=kernel_mgr.num_kernels();
-	require(num_kernels>0, "Number of kernels is {}!\n", kernel_mgr.num_kernels());
+	require(num_kernels>0, "Number of kernels is {}!", kernel_mgr.num_kernels());
 	if (measures.size()!=num_kernels)
 		measures=SGVector<float64_t>(num_kernels);
 	std::fill(measures.data(), measures.data()+measures.size(), 0);
@@ -72,7 +72,7 @@ void MaxMeasure::init_measures()
 
 void MaxMeasure::compute_measures()
 {
-	require(estimator!=nullptr, "Estimator is not set!\n");
+	require(estimator!=nullptr, "Estimator is not set!");
 	CQuadraticTimeMMD* mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (mmd!=nullptr && kernel_mgr.same_distance_type())
 		measures=mmd->multikernel()->statistic(kernel_mgr);
@@ -99,6 +99,6 @@ CKernel* MaxMeasure::select_kernel()
 	ASSERT(measures.size()==kernel_mgr.num_kernels());
 	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
 	auto max_idx=std::distance(measures.vector, max_element);
-	SG_DEBUG("Selected kernel at {} position!\n", max_idx);
+	SG_DEBUG("Selected kernel at {} position!", max_idx);
 	return kernel_mgr.kernel_at(max_idx);
 }

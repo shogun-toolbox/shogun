@@ -25,9 +25,9 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 				RandomMixin<CProbabilityDistribution>(mean.vlen)
 {
 	require(cov.num_rows==cov.num_cols, "Covariance must be square but is "
-			"{}x{}\n", cov.num_rows, cov.num_cols);
+			"{}x{}", cov.num_rows, cov.num_cols);
 	require(mean.vlen==cov.num_cols, "Mean must have same dimension as "
-			"covariance, which is {}x{}, but is {}\n",
+			"covariance, which is {}x{}, but is {}",
 			cov.num_rows, cov.num_cols, mean.vlen);
 
 	init();
@@ -50,7 +50,7 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 			{
 				VectorXd ev=solver.eigenvalues();
 				error("Error computing Cholesky of Gaussian's covariance. "
-						"Smallest Eigenvalue is {}.\n", ev[0]);
+						"Smallest Eigenvalue is {}.", ev[0]);
 			}
 		}
 
@@ -68,7 +68,7 @@ CGaussianDistribution::~CGaussianDistribution()
 SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
-	require(num_samples>0, "Number of samples ({}) must be positive\n",
+	require(num_samples>0, "Number of samples ({}) must be positive",
 			num_samples);
 
 	/* use pre-allocated samples? */
@@ -76,11 +76,11 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	if (pre_samples.matrix)
 	{
 		require(pre_samples.num_rows==m_dimension, "Dimension of pre-samples"
-				" ({}) does not match dimension of Gaussian ({})\n",
+				" ({}) does not match dimension of Gaussian ({})",
 				pre_samples.num_rows, m_dimension);
 
 		require(pre_samples.num_cols==num_samples, "Number of pre-samples"
-				" ({}) does not desired number of samples ({})\n",
+				" ({}) does not desired number of samples ({})",
 				pre_samples.num_cols, num_samples);
 
 		samples=pre_samples;
@@ -107,10 +107,10 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 
 SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> samples) const
 {
-	require(samples.num_cols>0, "Number of samples must be positive, but is {}\n",
+	require(samples.num_cols>0, "Number of samples must be positive, but is {}",
 			samples.num_cols);
 	require(samples.num_rows==m_dimension, "Sample dimension ({}) does not match"
-			"Gaussian dimension ({})\n", samples.num_rows, m_dimension);
+			"Gaussian dimension ({})", samples.num_rows, m_dimension);
 
 	/* for easier to read code */
 	index_t num_samples=samples.num_cols;

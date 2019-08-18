@@ -39,7 +39,7 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 : CFeatures(0)
 {
 	require(feats.num_cols == feat_length*num_vecs, "The number of columns of feats "
-			"must be equal to feat_length times num_vecs\n");
+			"must be equal to feat_length times num_vecs");
 	init();
 	SGMatrixList< ST > feats_list = SGMatrixList< ST >::split(feats, num_vecs);
 	set_features(feats_list, feats.num_rows);
@@ -73,7 +73,7 @@ template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
 	if ( num < 0 || num >= get_num_vectors() )
 	{
 		error("The index of the feature vector to get must be between "
-			 "0 and {} (get_num_vectors()-1)\n", get_num_vectors()-1);
+			 "0 and {} (get_num_vectors()-1)", get_num_vectors()-1);
 	}
 
 	return m_features[num];
@@ -87,7 +87,7 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 	if ( num < 0 || num >= get_num_vectors() )
 	{
 		error("The index of the feature vector to get must be between "
-			 "0 and {} (get_num_vectors()-1)\n", get_num_vectors()-1);
+			 "0 and {} (get_num_vectors()-1)", get_num_vectors()-1);
 	}
 
 	// Shorthands for the dimensions of the feature vector to get
@@ -97,13 +97,13 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 	if ( col < 0 || col >= num_cols )
 	{
 		error("The index of the column to get must be between "
-			 "0 and {} (#columns of the feature vector)\n", num_cols);
+			 "0 and {} (#columns of the feature vector)", num_cols);
 	}
 
 	if ( out.vlen < get_num_features() )
 	{
 		error("The vector out must have space to hold at least "
-			 "{} (get_num_features()) elements\n", get_num_features());
+			 "{} (get_num_features()) elements", get_num_features());
 	}
 
 	int32_t start = col*num_rows;
@@ -120,14 +120,14 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 	if ( num < 0 || num >= get_num_vectors() )
 	{
 		error("The index of the feature vector to set must be between "
-			 "0 and {} (get_num_vectors()-1)\n", get_num_vectors()-1);
+			 "0 and {} (get_num_vectors()-1)", get_num_vectors()-1);
 	}
 
 	if ( get_num_features() != 0 && vec.num_rows != get_num_features() )
 	{
 		error("The feature vector to set must have the same features "
 			 "as the rest of the MatrixFeatures, {} "
-			 "(get_num_features())\n", get_num_features());
+			 "(get_num_features())", get_num_features());
 	}
 
 	m_features.set_matrix(num, vec);
@@ -165,7 +165,7 @@ template< class ST > void CMatrixFeatures< ST >::cleanup()
 template< class ST > CMatrixFeatures< ST >* CMatrixFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
 {
 	require(base_features->get_feature_class() == C_MATRIX,
-			"base_features must be of dynamic type CMatrixFeatures\n");
+			"base_features must be of dynamic type CMatrixFeatures");
 
 	return (CMatrixFeatures< ST >*) base_features;
 }

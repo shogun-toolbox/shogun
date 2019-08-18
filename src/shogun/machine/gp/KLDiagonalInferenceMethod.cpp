@@ -76,7 +76,7 @@ CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
-		error("Provided inference is not of type CKLDiagonalInferenceMethod!\n");
+		error("Provided inference is not of type CKLDiagonalInferenceMethod!");
 
 	SG_REF(inference);
 	return (CKLDiagonalInferenceMethod*)inference;
@@ -132,7 +132,7 @@ bool CKLDiagonalInferenceMethod::precompute()
 void CKLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	require(gradient.vlen==m_alpha.vlen,
-		"The length of gradients ({}) should the same as the length of parameters ({})\n",
+		"The length of gradients ({}) should the same as the length of parameters ({})",
 		gradient.vlen, m_alpha.vlen);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);

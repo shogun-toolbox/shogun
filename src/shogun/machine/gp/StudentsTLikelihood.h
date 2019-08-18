@@ -90,7 +90,7 @@ public:
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		require(sigma>0.0, "Scale parameter ({}) must be greater than zero\n", sigma);
+		require(sigma>0.0, "Scale parameter ({}) must be greater than zero", sigma);
 		m_log_sigma = std::log(sigma);
 	}
 
@@ -109,7 +109,7 @@ public:
 	 */
 	void set_degrees_freedom(float64_t df)
 	{
-		require(df>1.0, "Number of degrees ({}) of freedom must be greater than one\n", df);
+		require(df>1.0, "Number of degrees ({}) of freedom must be greater than one", df);
 		m_log_df = std::log(df - 1);
 	}
 

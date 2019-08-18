@@ -70,7 +70,7 @@ CKernelPCA::~CKernelPCA()
 
 void CKernelPCA::fit(CFeatures* features)
 {
-	require(m_kernel, "Kernel not set\n");
+	require(m_kernel, "Kernel not set");
 
 	if (m_fitted)
 		cleanup();
@@ -123,7 +123,7 @@ void CKernelPCA::fit(CFeatures* features)
 	linalg::matrix_prod(m_transformation_matrix, bias_tmp, m_bias_vector, true);
 
 	m_fitted = true;
-	io::info("Done\n");
+	io::info("Done");
 }
 
 CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
@@ -141,7 +141,7 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 		return apply_to_string_features(features);
 	}
 
-	error("Feature type {} not supported\n", features->get_feature_type());
+	error("Feature type {} not supported", features->get_feature_type());
 	return NULL;
 }
 

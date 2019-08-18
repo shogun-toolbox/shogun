@@ -70,7 +70,7 @@
 		  }
 	      }
 	  }
-	SG_DEBUG("%d %d %f\n", pos_x, pos_y, max_score);
+	SG_DEBUG("{} {} {}", pos_x, pos_y, max_score);
 	CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
 	SG_REF(h);
 	return h;

@@ -51,7 +51,7 @@ void CNewtonSVM::init_model(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures\n");
+			error("Specified features are not of type CDotFeatures");
 		set_features((CDotFeatures*) data);
 	}
 

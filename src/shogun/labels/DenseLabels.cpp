@@ -76,7 +76,7 @@ void CDenseLabels::set_to_const(float64_t c)
 void CDenseLabels::set_labels(SGVector<float64_t> v)
 {
 	if (m_subset_stack->has_subsets())
-		error("A subset is set, cannot set labels\n");
+		error("A subset is set, cannot set labels");
 
 	m_labels = v;
 }
@@ -145,7 +145,7 @@ bool CDenseLabels::is_valid() const
 
 void CDenseLabels::ensure_valid(const char* context)
 {
-	require(is_valid(), "Labels cannot be empty!\n");
+	require(is_valid(), "Labels cannot be empty!");
 }
 
 void CDenseLabels::load(CFile* loader)
@@ -199,7 +199,7 @@ int32_t CDenseLabels::get_int_label(int32_t idx)
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())
 	if (m_labels.vector[real_num] != float64_t((int32_t(m_labels.vector[real_num]))))
-		error("label[{}]={:g} is not an integer\n", m_labels.vector[real_num]);
+		error("label[{}]={:g} is not an integer", m_labels.vector[real_num]);
 
 	return int32_t(m_labels.vector[real_num]);
 }

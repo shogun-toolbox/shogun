@@ -192,7 +192,7 @@ public:
 	virtual SGVector<float64_t> get_first_derivative(const CLabels* lab,
 			SGVector<float64_t> func, const TParameter* param) const
 	{
-		error("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param->m_name);
 		return SGVector<float64_t>();
 	}
 
@@ -210,7 +210,7 @@ public:
 	virtual SGVector<float64_t> get_second_derivative(const CLabels* lab,
 			SGVector<float64_t> func, const TParameter* param) const
 	{
-		error("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param->m_name);
 		return SGVector<float64_t>();
 	}
 
@@ -227,7 +227,7 @@ public:
 	virtual SGVector<float64_t> get_third_derivative(const CLabels* lab,
 			SGVector<float64_t> func, const TParameter* param) const
 	{
-		error("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param->m_name);
 		return SGVector<float64_t>();
 	}
 

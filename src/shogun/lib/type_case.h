@@ -356,9 +356,9 @@ namespace shogun
 		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
 			io::warn(
-			    "Ignoring Any dispatch call.\n"
+			    "Ignoring Any dispatch call."
 			    "sg_any_dispatch requires a lambda function definition "
-			    "for the expected underlying type of Any ({}).\n",
+			    "for the expected underlying type of Any ({}).",
 			    demangled_type<T>().c_str());
 		}
 
@@ -372,7 +372,7 @@ namespace shogun
 		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
 			error(
-			    "Unsupported type {}\n",
+			    "Unsupported type {}",
 			    demangled_type(any.type_info().name()).c_str());
 		}
 
@@ -505,7 +505,7 @@ static const typemap sg_non_integer_typemap = {
 		TYPE type = type_internal::get_type(any, typesmap);
 		if (type == TYPE::T_UNDEFINED)
 			error(
-			    "Type {} is not part of {}\n",
+			    "Type {} is not part of {}",
 			    demangled_type(any.type_info().name()).c_str(),
 			    type_internal::print_map(typesmap).c_str());
 		else

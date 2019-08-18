@@ -69,19 +69,19 @@ class CDotKernel : public CKernel
 			if (l->support_compatible_class())
 			{
 				require(l->get_feature_class_compatibility(r->get_feature_class()),
-					"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
+					"Right hand side of features ({}) must be compatible with left hand side features ({})",
 					l->get_name(), r->get_name());
 			}
 			else
 			{
 				require(l->get_feature_class()==r->get_feature_class(),
-					"Right hand side of features ({}) must be compatible with left hand side features ({})\n",
+					"Right hand side of features ({}) must be compatible with left hand side features ({})",
 					l->get_name(), r->get_name());
 			}
 
 			if ( ((CDotFeatures*) l)->get_dim_feature_space() != ((CDotFeatures*) r)->get_dim_feature_space() )
 			{
-				error("train or test features #dimension mismatch (l:{} vs. r:{})\n",
+				error("train or test features #dimension mismatch (l:{} vs. r:{})",
 						((CDotFeatures*) l)->get_dim_feature_space(),((CDotFeatures*) r)->get_dim_feature_space());
 			}
 			return true;

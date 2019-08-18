@@ -94,13 +94,13 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	{
 	case KSM_MEDIAN_HEURISTIC:
 	{
-		require(!weighted, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
+		require(!weighted, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!");
 		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, estimator));
 	}
 	break;
 	case KSM_CROSS_VALIDATION:
 	{
-		require(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!\n");
+		require(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!");
 		using prng_type = CKernelSelectionStrategy::prng_type;
 		policy=std::make_unique<MaxCrossValidation<prng_type>>(kernel_mgr, estimator,
 			num_runs, num_folds, alpha, prng);
@@ -124,7 +124,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 		{
 			#ifdef USE_GPL_SHOGUN
 			auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
-			require(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!\n");
+			require(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!");
 			policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(kernel_mgr, estimator));
 			#else
 			SG_SGPL_ONLY
@@ -140,7 +140,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 			"MAXIMIZE_MMD (single, weighted), "
 			"MAXIMIZE_POWER (single, weighted), "
 			"CROSS_VALIDATION (single) and "
-			"MEDIAN_HEURISTIC (single)!\n");
+			"MEDIAN_HEURISTIC (single)!");
 	}
 	break;
 	}
@@ -241,8 +241,8 @@ void CKernelSelectionStrategy::add_kernel(CKernel* kernel)
 CKernel* CKernelSelectionStrategy::select_kernel(CMMD* estimator)
 {
 	auto num_kernels=self->kernel_mgr.num_kernels();
-	require(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!\n");
-	SG_DEBUG("Selecting kernels from a total of {} kernels!\n", num_kernels);
+	require(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!");
+	SG_DEBUG("Selecting kernels from a total of {} kernels!", num_kernels);
 
 	self->init_policy(estimator);
 	ASSERT(self->policy!=nullptr);
@@ -259,13 +259,13 @@ void CKernelSelectionStrategy::erase_intermediate_results()
 
 SGMatrix<float64_t> CKernelSelectionStrategy::get_measure_matrix()
 {
-	require(self->policy!=nullptr, "The kernel selection policy is not initialized!\n");
+	require(self->policy!=nullptr, "The kernel selection policy is not initialized!");
 	return self->policy->get_measure_matrix();
 }
 
 SGVector<float64_t> CKernelSelectionStrategy::get_measure_vector()
 {
-	require(self->policy!=nullptr, "The kernel selection policy is not initialized!\n");
+	require(self->policy!=nullptr, "The kernel selection policy is not initialized!");
 	return self->policy->get_measure_vector();
 }
 

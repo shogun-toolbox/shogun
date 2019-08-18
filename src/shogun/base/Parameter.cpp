@@ -1463,7 +1463,7 @@ void TParameter::get_incremental_hash(
 		{
 			io::warn("Inconsistency between data structure and "
 					"len_y during hashing `{}'!  Continuing with "
-					"len_y=0.\n",
+					"len_y=0.",
 					m_name);
 			len_real_y = 0;
 		}
@@ -1483,7 +1483,7 @@ void TParameter::get_incremental_hash(
 			{
 				io::warn("Inconsistency between data structure and "
 						"len_x during hashing {}'!  Continuing "
-						"with len_x=0.\n",
+						"with len_x=0.",
 						m_name);
 				len_real_x = 0;
 			}
@@ -1495,7 +1495,7 @@ void TParameter::get_incremental_hash(
 
 		case CT_SCALAR: break;
 		case CT_UNDEFINED: default:
-			error("Implementation error: undefined container type\n");
+			error("Implementation error: undefined container type");
 			break;
 		}
 		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
@@ -1509,7 +1509,7 @@ void TParameter::get_incremental_hash(
 		break;
 	}
 	case CT_UNDEFINED: default:
-		error("Implementation error: undefined container type\n");
+		error("Implementation error: undefined container type");
 		break;
 	}
 }
@@ -1539,14 +1539,14 @@ Parameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
 	if (name == NULL || *name == '\0')
-		error("FATAL: Parameter::add_type(): `name' is empty!\n");
+		error("FATAL: Parameter::add_type(): `name' is empty!");
 
 	for (size_t i=0; i<strlen(name); ++i)
 	{
 		if (!std::isalnum(name[i]) && name[i]!='_' && name[i]!='.')
 		{
 			error("Character {} of parameter with name \"{}\" is illegal "
-					"(only alnum or underscore is allowed)\n",
+					"(only alnum or underscore is allowed)",
 					i, name);
 		}
 	}
@@ -1554,7 +1554,7 @@ Parameter::add_type(const TSGDataType* type, void* param,
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
 			error("FATAL: Parameter::add_type(): "
-					 "Double parameter `{}'!\n", name);
+					 "Double parameter `{}'!", name);
 
 	m_params.append_element(
 		new TParameter(type, param, name, description)
@@ -1591,7 +1591,7 @@ void Parameter::set_from_parameters(Parameter* params)
 					current->m_datatype.to_string(given_type, l);
 					own->m_datatype.to_string(own_type, l);
 					error("given parameter \"{}\" has a different type ({})"
-							" than existing one ({})\n", current->m_name,
+							" than existing one ({})", current->m_name,
 							given_type, own_type);
 					SG_FREE(given_type);
 					SG_FREE(own_type);
@@ -1603,7 +1603,7 @@ void Parameter::set_from_parameters(Parameter* params)
 
 		if (!own)
 		{
-			error("parameter with name {} does not exist\n",
+			error("parameter with name {} does not exist",
 					current->m_name);
 		}
 

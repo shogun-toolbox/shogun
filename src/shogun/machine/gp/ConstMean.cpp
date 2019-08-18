@@ -67,8 +67,8 @@ SGVector<float64_t> CConstMean::get_mean_vector(const CFeatures* features) const
 SGVector<float64_t> CConstMean::get_parameter_derivative(const CFeatures* features,
 	const TParameter* param, index_t index)
 {
-	require(features,"The features should NOT be NULL\n");
-	require(param,"The param should NOT be NULL\n");
+	require(features,"The features should NOT be NULL");
+	require(param,"The param should NOT be NULL");
 
 	if (!strcmp(param->m_name, "mean"))
 	{
@@ -78,7 +78,7 @@ SGVector<float64_t> CConstMean::get_parameter_derivative(const CFeatures* featur
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter\n", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param->m_name);
 		return SGVector<float64_t>();
 	}
 }

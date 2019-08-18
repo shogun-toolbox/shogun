@@ -55,9 +55,9 @@ CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
 float64_t
 CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 {
-	SG_DEBUG("Entering..\n");
-	require(sample.vector, "Sample is not initialized!\n");
-	require(m_linear_operator, "Operator is not initialized!\n");
+	SG_DEBUG("Entering..");
+	require(sample.vector, "Sample is not initialized!");
+	require(m_linear_operator, "Operator is not initialized!");
 
 	// this enum will save from repeated typechecking for all jobs
 	enum typeID {DENSE=1, SPARSE, UNKNOWN} operator_type=UNKNOWN;
@@ -71,7 +71,7 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 		CDenseMatrixOperator<float64_t>* op
 			=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
 
-		require(op->get_matrix_operator().matrix, "Matrix is not initialized!\n");
+		require(op->get_matrix_operator().matrix, "Matrix is not initialized!");
 
 		// create complex dense matrix operator
 		complex_op=static_cast<CDenseMatrixOperator<complex128_t>*>(*op);
@@ -83,7 +83,7 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 		CSparseMatrixOperator<float64_t>* op
 			=dynamic_cast<CSparseMatrixOperator<float64_t>*>(m_linear_operator);
 
-		require(op->get_matrix_operator().sparse_matrix, "Matrix is not initialized!\n");
+		require(op->get_matrix_operator().sparse_matrix, "Matrix is not initialized!");
 
 		// create complex sparse matrix operator
 		complex_op=static_cast<CSparseMatrixOperator<complex128_t>*>(*op);
@@ -91,7 +91,7 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 	else
 	{
 		// something weird happened
-		error("Unknown MatrixOperator given!\n");
+		error("Unknown MatrixOperator given!");
 	}
 
 	SGVector<complex128_t> agg(sample.vlen);

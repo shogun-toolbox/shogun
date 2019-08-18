@@ -61,7 +61,7 @@ namespace shogun
 			inline void set_w(SGVector< float64_t > W)
 			{
 				require(W.vlen == m_model->get_dim(), "Dimension of the initial "
-						"solution must match the model's dimension!\n");
+						"solution must match the model's dimension!");
 				m_w=W;
 			}
 

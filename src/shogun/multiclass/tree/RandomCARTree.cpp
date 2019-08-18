@@ -45,7 +45,7 @@ CRandomCARTree::~CRandomCARTree()
 
 void CRandomCARTree::set_feature_subset_size(index_t size)
 {
-	require(size>0, "Subset size should be greater than 0. {} supplied!\n",size);
+	require(size>0, "Subset size should be greater than 0. {} supplied!",size);
 	m_randsubset_size=size;
 }
 
@@ -62,7 +62,7 @@ index_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, c
 	subset_size=m_randsubset_size;
 
 	require(subset_size<=num_feats, "The Feature subset size(set {}) should be less than"
-	" or equal to the total number of features({} here).\n",subset_size,num_feats);
+	" or equal to the total number of features({} here).",subset_size,num_feats);
 
 	return CCARTree::compute_best_attribute(mat,weights,labels,left,right,is_left_final,num_missing_final,count_left,count_right,subset_size, active_indices);
 

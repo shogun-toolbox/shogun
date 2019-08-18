@@ -88,26 +88,26 @@ void CMachineEvaluation::init()
 
 CEvaluationResult* CMachineEvaluation::evaluate() const
 {
-	SG_DEBUG("entering {}::evaluate()\n", get_name())
+	SG_DEBUG("entering {}::evaluate()", get_name())
 
 	require(
 	    m_machine, "{}::evaluate() is only possible if a machine is "
-	               "attached\n",
+	               "attached",
 	    get_name());
 
 	require(
 	    m_features, "{}::evaluate() is only possible if features are "
-	                "attached\n",
+	                "attached",
 	    get_name());
 
 	require(
 	    m_labels, "{}::evaluate() is only possible if labels are "
-	              "attached\n",
+	              "attached",
 	    get_name());
 
 	CEvaluationResult* result = evaluate_impl();
 
-	SG_DEBUG("leaving {}::evaluate()\n", get_name())
+	SG_DEBUG("leaving {}::evaluate()", get_name())
 	return result;
 };
 

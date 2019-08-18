@@ -26,7 +26,7 @@ CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
 	if (d->lhs_equals_rhs())
 	{
 		int32_t cols=d->get_num_vec_lhs();
-		SG_DEBUG("using custom distance of size {}x{}\n", cols,cols)
+		SG_DEBUG("using custom distance of size {}x{}", cols,cols)
 
 		dmatrix= SG_MALLOC(float32_t, int64_t(cols)*(cols+1)/2);
 
@@ -97,8 +97,8 @@ bool CCustomDistance::init(CFeatures* l, CFeatures* r)
 {
 	CDistance::init(l, r);
 
-	SG_DEBUG("num_vec_lhs: {} vs num_rows {}\n", l->get_num_vectors(), num_rows)
-	SG_DEBUG("num_vec_rhs: {} vs num_cols {}\n", r->get_num_vectors(), num_cols)
+	SG_DEBUG("num_vec_lhs: {} vs num_rows {}", l->get_num_vectors(), num_rows)
+	SG_DEBUG("num_vec_rhs: {} vs num_cols {}", r->get_num_vectors(), num_cols)
 	ASSERT(l->get_num_vectors()==num_rows)
 	ASSERT(r->get_num_vectors()==num_cols)
 	return true;
@@ -107,7 +107,7 @@ bool CCustomDistance::init(CFeatures* l, CFeatures* r)
 
 void CCustomDistance::cleanup_custom()
 {
-	SG_DEBUG("cleanup up custom distance\n")
+	SG_DEBUG("cleanup up custom distance")
 	SG_FREE(dmatrix);
 	dmatrix=NULL;
 	upper_diagonal=false;

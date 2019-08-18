@@ -13,9 +13,9 @@ using namespace shogun;
 
 float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	require(predicted, "Predicted labels must be not null.\n");
-	require(ground_truth, "Ground truth labels must be not null.\n");
-	require(predicted->get_num_labels() == ground_truth->get_num_labels(), "The number of predicted labels ({}) must be equal to the number of ground truth labels ({}).\n");
+	require(predicted, "Predicted labels must be not null.");
+	require(ground_truth, "Ground truth labels must be not null.");
+	require(predicted->get_num_labels() == ground_truth->get_num_labels(), "The number of predicted labels ({}) must be equal to the number of ground truth labels ({}).");
 	int32_t length = predicted->get_num_labels();
 	float64_t mse = 0.0;
 	auto predicted_regression = regression_labels(predicted);

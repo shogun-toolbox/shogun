@@ -33,7 +33,7 @@ bool CLPM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures\n");
+			error("Specified features are not of type CDotFeatures");
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features)
@@ -51,7 +51,7 @@ bool CLPM::train_machine(CFeatures* data)
 
 	CCplex solver;
 	solver.init(E_LINEAR);
-	io::info("C={}\n", C1);
+	io::info("C={}", C1);
 	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, (CBinaryLabels*)m_labels, get_bias_enabled());
 	if (get_max_train_time()>0)
 		solver.set_time_limit(get_max_train_time());

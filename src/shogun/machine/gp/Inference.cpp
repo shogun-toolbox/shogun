@@ -114,7 +114,7 @@ void CInference::init()
 
 void CInference::register_minimizer(Minimizer* minimizer)
 {
-	require(minimizer, "Minimizer must set\n");
+	require(minimizer, "Minimizer must set");
 	if(minimizer!=m_minimizer)
 	{
 		SG_REF(minimizer);
@@ -185,7 +185,7 @@ CMap<TParameter*, SGVector<float64_t> >* CInference::
 get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* params)
 {
 	require(params->get_num_elements(), "Number of parameters should be greater "
-			"than zero\n");
+			"than zero");
 
 	compute_gradient();
 
@@ -247,17 +247,17 @@ void CInference::update()
 
 void CInference::check_members() const
 {
-	require(m_features, "Training features should not be NULL\n");
+	require(m_features, "Training features should not be NULL");
 	require(m_features->get_num_vectors(),
-			"Number of training features must be greater than zero\n");
-	require(m_labels, "Labels should not be NULL\n");
+			"Number of training features must be greater than zero");
+	require(m_labels, "Labels should not be NULL");
 	require(m_labels->get_num_labels(),
-			"Number of labels must be greater than zero\n");
+			"Number of labels must be greater than zero");
 	require(m_labels->get_num_labels()==m_features->get_num_vectors(),
-			"Number of training vectors ({}) must match number of labels ({})\n",
+			"Number of training vectors ({}) must match number of labels ({})",
 			m_labels->get_num_labels(), m_features->get_num_vectors());
-	require(m_kernel, "Kernel should not be NULL\n");
-	require(m_mean, "Mean function should not be NULL\n");
+	require(m_kernel, "Kernel should not be NULL");
+	require(m_mean, "Mean function should not be NULL");
 }
 
 void CInference::update_train_kernel()

@@ -34,8 +34,8 @@ float64_t CMKLClassification::compute_sum_alpha()
 
 void CMKLClassification::init_training()
 {
-	require(m_labels, "Labels not set.\n");
-	require(m_labels->get_num_labels(), "Number of labels is zero.\n");
+	require(m_labels, "Labels not set.");
+	require(m_labels->get_num_labels(), "Number of labels is zero.");
 }
 
 CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)

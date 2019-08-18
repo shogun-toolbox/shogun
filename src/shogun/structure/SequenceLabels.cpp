@@ -24,7 +24,7 @@ CSequenceLabels::CSequenceLabels(SGVector< int32_t > labels, int32_t label_lengt
 : CStructuredLabels(num_labels), m_num_states(num_states)
 {
 	require(labels.vlen == label_length*num_labels, "The length of the labels must be "
-			"equal to label_length times num_labels\n");
+			"equal to label_length times num_labels");
 	init();
 
 	for ( int32_t i = 0 ; i < labels.vlen ; i += label_length )

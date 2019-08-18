@@ -92,14 +92,14 @@ void CFeatureSelection<ST>::cleanup()
 template <class ST>
 CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features)
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
 	// precompute whenever appropriate for performing the rest of the tasks
 	precompute();
 
 	// NULL check for features is handled in get_num_features
 	index_t num_features=get_num_features(features);
-	SG_DEBUG("Initial number of features {}!\n", num_features);
+	SG_DEBUG("Initial number of features {}!", num_features);
 
 	// the main loop
 	while (num_features>m_target_dim)
@@ -141,7 +141,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 		if (to_remove>can_remove)
 		{
 			m_num_remove=can_remove;
-			SG_DEBUG("Can only remove {} features in this iteration!\n",
+			SG_DEBUG("Can only remove {} features in this iteration!",
 					can_remove);
 
 			if (m_policy==PERCENTILE_SMALLEST)
@@ -165,38 +165,38 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 
 		// update the number of features
 		num_features=get_num_features(features);
-		SG_DEBUG("Current number of features {}!\n", num_features);
+		SG_DEBUG("Current number of features {}!", num_features);
 	}
 
 	// sanity check
 	ASSERT(m_subset->get_size()==m_target_dim);
 
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 	return features;
 }
 
 template <class ST>
 CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
 	// remove previously computed feature subsets
 	m_subset->remove_all_subsets();
 
 	// sanity checks
-	require(features, "Features cannot be NULL!\n");
+	require(features, "Features cannot be NULL!");
 	require(features->get_num_vectors()>0,
-			"Number of feature vectors has to be positive!\n");
+			"Number of feature vectors has to be positive!");
 	require(m_target_dim>0, "Target dimension ({}) has to be positive! Set "
-			"a higher number via set_target_dim().\n", m_target_dim);
+			"a higher number via set_target_dim().", m_target_dim);
 
 	index_t num_features=get_num_features(features);
 	require(num_features>0, "Invalid number of features ({})! Most likely "
-			"feature selection cannot be performed for {}!\n",
+			"feature selection cannot be performed for {}!",
 			num_features, features->get_name());
 	require(num_features>m_target_dim,
 			"Number of original features (dimensions of the feature vectors) "
-			"({}) has to be greater that the target dimension ({})!\n",
+			"({}) has to be greater that the target dimension ({})!",
 			num_features, m_target_dim);
 
 	// this method makes a deep copy of the feature object and performs
@@ -209,11 +209,11 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 		case BACKWARD_ELIMINATION:
 			return apply_backward_elimination(feats_copy);
 		default:
-			error("Specified algorithm not yet supported!\n");
+			error("Specified algorithm not yet supported!");
 			return features;
 	}
 
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 }
 
 template <class ST>
@@ -255,7 +255,7 @@ SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
 template <class ST>
 index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 {
-	require(features, "Features not initialized!\n");
+	require(features, "Features not initialized!");
 
 	EFeatureClass f_class=features->get_feature_class();
 
@@ -264,17 +264,17 @@ index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 		case C_DENSE:
 		{
 			CDenseFeatures<ST>* d_feats=dynamic_cast<CDenseFeatures<ST>*>(features);
-			require(d_feats, "Type mismatch for dense features!\n");
+			require(d_feats, "Type mismatch for dense features!");
 			return d_feats->get_num_features();
 		}
 		case C_SPARSE:
 		{
 			CSparseFeatures<ST>* s_feats=dynamic_cast<CSparseFeatures<ST>*>(features);
-			require(s_feats, "Type mismatch for sparse features!\n");
+			require(s_feats, "Type mismatch for sparse features!");
 			return s_feats->get_num_features();
 		}
 		default:
-			error("Number of features not available for {}!\n",
+			error("Number of features not available for {}!",
 					features->get_name());
 			break;
 	}

@@ -95,7 +95,7 @@ public:
 			int32_t n=kernel->get_num_vec_lhs();
 
 			require(m_num_rkhs_basis<=n, "Number of sampled rows ({}) must be \
-less than number of data points ({})\n", m_num_rkhs_basis, n);
+less than number of data points ({})", m_num_rkhs_basis, n);
 		}
 
 	};

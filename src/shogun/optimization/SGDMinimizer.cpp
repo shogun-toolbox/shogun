@@ -55,7 +55,7 @@ float64_t SGDMinimizer::minimize()
 
 	SGVector<float64_t> variable_reference=m_fun->obtain_variable_reference();
 	FirstOrderStochasticCostFunction *fun=dynamic_cast<FirstOrderStochasticCostFunction *>(m_fun);
-	require(fun,"the cost function must be a stochastic cost function\n");
+	require(fun,"the cost function must be a stochastic cost function");
 	for(;m_cur_passes<m_num_passes;m_cur_passes++)
 	{
 		fun->begin_sample();

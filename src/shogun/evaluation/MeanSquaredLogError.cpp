@@ -27,7 +27,7 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 
 		if (prediction<=-1.0 || truth<=-1.0)
 		{
-			io::warn("Negative label[{}] in {} is not allowed, ignoring!\n",
+			io::warn("Negative label[{}] in {} is not allowed, ignoring!",
 					i, get_name());
 			continue;
 		}

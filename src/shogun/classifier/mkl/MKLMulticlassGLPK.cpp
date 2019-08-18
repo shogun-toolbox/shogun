@@ -115,7 +115,7 @@ void MKLMulticlassGLPK::setup(const int32_t numkernels2)
 #else
 	error(
 			"glpk.h from GNU glpk not included at compile time necessary "
-			"here\n");
+			"here");
 #endif
 
 }
@@ -165,7 +165,7 @@ void MKLMulticlassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 #else
 	error(
 			"glpk.h from GNU glpk not included at compile time necessary "
-			"here\n");
+			"here");
 #endif
 }
 
@@ -193,10 +193,10 @@ void MKLMulticlassGLPK::computeweights(std::vector<float64_t> & weights2)
 	}
 	else
 	error("void glpkwrapper::computeweights(std::vector<float64_t> & "
-			"weights2): sum of weights nonpositive {}\n",sum);
+			"weights2): sum of weights nonpositive {}",sum);
 #else
 	error(
 			"glpk.h from GNU glpk not included at compile time necessary "
-			"here\n");
+			"here");
 #endif
 }

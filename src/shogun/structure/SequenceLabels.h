@@ -45,7 +45,7 @@ public:
 		if ( base_data->get_structured_data_type() == SDT_SEQUENCE )
 			return (CSequence*) base_data;
 		else
-			error("base_data must be of dynamic type CSequence\n");
+			error("base_data must be of dynamic type CSequence");
 
 		return NULL;
 	}

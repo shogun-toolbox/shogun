@@ -69,7 +69,7 @@ void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	}
 	data_mgr.set_blocksize(min_blocksize);
 	data_mgr.set_num_blocks_per_burst(num_blocks_per_burst);
-	SG_DEBUG("Block contains {} and {} samples, from P and Q respectively!\n", data_mgr.blocksize_at(0), data_mgr.blocksize_at(1));
+	SG_DEBUG("Block contains {} and {} samples, from P and Q respectively!", data_mgr.blocksize_at(0), data_mgr.blocksize_at(1));
 }
 
 const std::function<float32_t(SGMatrix<float32_t>)> CLinearTimeMMD::get_direct_estimation_method() const
@@ -128,7 +128,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 		    error(
 		        "Null approximation via permutation does not make sense "
 		        "for linear time MMD. Use the Gaussian approximation "
-		        "instead.\n");
+		        "instead.");
 		    break;
 	    }
 	    default:

@@ -72,7 +72,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 		else if (vec != f->get_num_vectors())
 		{
 			f->list_feature_obj();
-			error("Number of vectors ({}) mismatches in above feature obj ({})\n", vec, f->get_num_vectors());
+			error("Number of vectors ({}) mismatches in above feature obj ({})", vec, f->get_num_vectors());
 		}
 
 		SG_UNREF(f);
@@ -80,7 +80,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 
 	num_dimensions=dim;
 	num_vectors=vec;
-	SG_DEBUG("vecs={}, dims={}\n", num_vectors, num_dimensions)
+	SG_DEBUG("vecs={}, dims={}", num_vectors, num_dimensions)
 }
 
 float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const

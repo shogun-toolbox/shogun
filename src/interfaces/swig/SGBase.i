@@ -361,7 +361,7 @@ namespace shogun
                 return params[name].get()->get_value().type();
             }
             else {
-                error("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+                error("There is no parameter called '{}' in {}", name.c_str(), $self->get_name());
             }
         }
 
@@ -375,7 +375,7 @@ namespace shogun
             }
             else
             {
-                error("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+                error("There is no parameter called '{}' in {}", name.c_str(), $self->get_name());
             }
         }
 
@@ -386,7 +386,7 @@ namespace shogun
 
             if (param_to_enum_map.find(name) == param_to_enum_map.end())
             {
-                error("There are no options for parameter %s::%s", $self->get_name(), name.c_str());
+                error("There are no options for parameter {}::{}", $self->get_name(), name.c_str());
             }
 
             auto string_to_enum_map = param_to_enum_map[name];

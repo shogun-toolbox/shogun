@@ -6,7 +6,10 @@
  *          Saurabh Goyal
  */
 
-#define SPDLOG_EOL ""
+#define SPDLOG_NO_NAME
+#define SPDLOG_NO_THREAD_ID
+#define SPDLOG_DISABLE_DEFAULT_LOGGER
+#define SPDLOG_CLOCK_COARSE
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
@@ -17,32 +20,54 @@
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <mutex>
-
 using namespace shogun;
 using namespace shogun::io;
 
 class Formatter : public spdlog::formatter
 {
 public:
-	Formatter(const Formatter& orig)
-	    : formatter_(orig.formatter_->clone())
+	Formatter(bool syntax_highlight)
 	{
+		if (syntax_highlight)
+			formatter_ = std::make_unique<spdlog::pattern_formatter>(
+			    "[%D %T %^%l%$] ", spdlog::pattern_time_type::local, "");
+		else
+			formatter_ = std::make_unique<spdlog::pattern_formatter>(
+			    "[%D %T %l] ", spdlog::pattern_time_type::local, "");
 	}
 
-	template <typename... Args>
-	Formatter(Args&&... args)
-	    : formatter_(std::make_unique<spdlog::pattern_formatter>(args...))
+	Formatter(const Formatter& orig) : formatter_(orig.formatter_->clone())
 	{
 	}
 
 	void format(
 	    const spdlog::details::log_msg& msg, fmt::memory_buffer& dest) override
 	{
-		if (msg.level == static_cast<spdlog::level::level_enum>(MSG_MESSAGEONLY))
-			dest.append(msg.payload.data(), msg.payload.data() + msg.payload.size());
+		using namespace spdlog::details::fmt_helper;
+		if (static_cast<EMessageType>(msg.level) == MSG_MESSAGEONLY)
+		{
+			append_string_view(msg.payload, dest);
+		}
 		else
+		{
 			formatter_->format(msg, dest);
+			if (!msg.source.empty())
+			{
+				dest.push_back('[');
+				// show filename and line only in debug build
+#ifdef DEBUG_BUILD
+				append_string_view(msg.source.filename, dest);
+				dest.push_back(':');
+				append_int(msg.source.line, dest);
+				dest.push_back(' ');
+#endif
+				append_string_view(msg.source.funcname, dest);
+				dest.push_back(']');
+				dest.push_back(' ');
+			}
+			append_string_view(msg.payload, dest);
+			dest.push_back('\n');
+		}
 	}
 
 	std::unique_ptr<spdlog::formatter> clone() const override
@@ -60,7 +85,7 @@ public:
 	RedirectSink()
 	{
 		stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-		stderr_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+		stderr_sink = stdout_sink;
 	}
 
 	void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink_)
@@ -89,18 +114,12 @@ protected:
 			stderr_sink->flush();
 	}
 
-	void set_pattern_(const std::string& pattern) override
-	{
-		set_formatter_(std::make_unique<Formatter>(pattern));
-	}
-
 	void
 	set_formatter_(std::unique_ptr<spdlog::formatter> sink_formatter) override
 	{
-		formatter_ = std::move(sink_formatter);
-		stdout_sink->set_formatter(formatter_->clone());
 		if (stdout_sink != stderr_sink)
-			stderr_sink->set_formatter(formatter_->clone());
+			stderr_sink->set_formatter(sink_formatter->clone());
+		stdout_sink->set_formatter(std::move(sink_formatter));
 	}
 
 private:
@@ -108,8 +127,8 @@ private:
 	    std::shared_ptr<spdlog::sinks::sink>& old_sink,
 	    const std::shared_ptr<spdlog::sinks::sink>& new_sink)
 	{
-		flush();
 		std::lock_guard<std::mutex> lock(mutex_);
+		flush_();
 		if (new_sink)
 			old_sink = new_sink;
 		else
@@ -120,12 +139,10 @@ private:
 	std::shared_ptr<spdlog::sinks::sink> stderr_sink;
 };
 
-SGIO::SGIO()
-    : show_progress(false), syntax_highlight(true)
+SGIO::SGIO() : show_progress(false)
 {
 	init_default_sink();
 	init_default_logger();
-	update_pattern();
 }
 
 void SGIO::init_default_logger(uint64_t queue_size, uint64_t n_threads)
@@ -133,7 +150,8 @@ void SGIO::init_default_logger(uint64_t queue_size, uint64_t n_threads)
 	thread_pool =
 	    std::make_shared<spdlog::details::thread_pool>(queue_size, n_threads);
 	io_logger = std::make_shared<spdlog::async_logger>(
-	    "sg_global", io_sink, thread_pool, spdlog::async_overflow_policy::block);
+	    "sg_global", io_sink, thread_pool,
+	    spdlog::async_overflow_policy::block);
 }
 
 void SGIO::init_default_sink()
@@ -144,6 +162,7 @@ void SGIO::init_default_sink()
 		io_logger->sinks().clear();
 		io_logger->sinks().push_back(io_sink);
 	}
+	io_sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }
 
 void SGIO::message_(
@@ -178,7 +197,7 @@ float32_t SGIO::float_of_substring(substring s)
 	char* endptr = s.end;
 	float32_t f = strtof(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
-		error("{} is not a float!\n", c_string_of_substring(s));
+		error("{} is not a float!", c_string_of_substring(s));
 
 	return f;
 }
@@ -188,7 +207,7 @@ float64_t SGIO::double_of_substring(substring s)
 	char* endptr = s.end;
 	float64_t f = strtod(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
-		error("{} is not a double!\n", c_string_of_substring(s));
+		error("{} is not a double!", c_string_of_substring(s));
 
 	return f;
 }
@@ -217,34 +236,31 @@ SGIO::~SGIO()
 	io_logger->flush();
 }
 
-void SGIO::update_pattern()
-{
-	std::stringstream pattern_builder;
-	pattern_builder << "[%D %T %! %@";
-
-	if (syntax_highlight)
-		pattern_builder << "%^%l%$] ";
-	else
-		pattern_builder << "%l] ";
-
-	pattern_builder << "%v";
-
-	io_logger->set_formatter(std::make_unique<Formatter>(pattern_builder.str()));
-}
-
 void SGIO::redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink)
 {
 	io_sink->redirect_stdout(sink);
-	update_pattern();
+	sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }
 
 void SGIO::redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink)
 {
 	io_sink->redirect_stderr(sink);
-	update_pattern();
+	sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }
 
 bool SGIO::should_log(EMessageType prio) const
 {
 	return io_logger->should_log(static_cast<spdlog::level::level_enum>(prio));
+}
+
+void SGIO::enable_syntax_highlighting()
+{
+	syntax_highlight = true;
+	io_sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
+}
+
+void SGIO::disable_syntax_highlighting()
+{
+	syntax_highlight = false;
+	io_sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }

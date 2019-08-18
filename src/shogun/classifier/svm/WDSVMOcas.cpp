@@ -47,7 +47,7 @@ CWDSVMOcas::CWDSVMOcas()
 : CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(SVM_OCAS)
 {
-	io::unstable("CWDSVMOcas::CWDSVMOcas()");
+	unstable(SOURCE_LOCATION);
 
 	w=NULL;
 	old_w=NULL;
@@ -113,7 +113,7 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_BYTE)
 		{
-			error("Features not of class string type byte\n");
+			error("Features not of class string type byte");
 		}
 
 		set_features((CStringFeatures<uint8_t>*) data);
@@ -158,7 +158,7 @@ int32_t CWDSVMOcas::set_wd_weights()
 
 bool CWDSVMOcas::train_machine(CFeatures* data)
 {
-	io::info("C={}, epsilon={}, bufsize={}\n", get_C1(), get_epsilon(), bufsize);
+	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
@@ -167,7 +167,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_BYTE)
 		{
-			error("Features not of class string type byte\n");
+			error("Features not of class string type byte");
 		}
 		set_features((CStringFeatures<uint8_t>*) data);
 	}
@@ -183,13 +183,13 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 
 	w_dim_single_char=set_wd_weights();
 	//CMath::display_vector(wd_weights, degree, "wd_weights");
-	SG_DEBUG("w_dim_single_char={}\n", w_dim_single_char)
+	SG_DEBUG("w_dim_single_char={}", w_dim_single_char)
 	w_dim=string_length*w_dim_single_char;
-	SG_DEBUG("cutting plane has {} dims\n", w_dim)
+	SG_DEBUG("cutting plane has {} dims", w_dim)
 	num_vec=get_features()->get_max_vector_length();
 
 	set_normalization_const();
-	io::info("num_vec: {} num_lab: {}\n", num_vec, labvec.vlen);
+	io::info("num_vec: {} num_lab: {}", num_vec, labvec.vlen);
 	ASSERT(num_vec==labvec.vlen)
 	ASSERT(num_vec>0)
 
@@ -233,7 +233,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 			&CWDSVMOcas::print,
 			this);
 
-	io::info("Ocas Converged after {} iterations\n"
+	io::info("Ocas Converged after {} iterations"
 			"==================================\n"
 			"timing statistics:\n"
 			"output_time: {} s\n"
@@ -241,7 +241,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 			"add_time: {} s\n"
 			"w_time: {} s\n"
 			"solver_time {} s\n"
-			"ocas_time {} s\n\n", result.nIter, result.output_time, result.sort_time,
+			"ocas_time {} s", result.nIter, result.output_time, result.sort_time,
 			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	for (int32_t i=bufsize-1; i>=0; i--)
@@ -385,7 +385,7 @@ int CWDSVMOcas::add_new_cut(
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::add_new_cut_helper, (void*)&params_add[t]) != 0)
 		{
 			nthreads=t;
-			io::warn("thread creation failed\n");
+			io::warn("thread creation failed");
 			break;
 		}
 	}
@@ -403,7 +403,7 @@ int CWDSVMOcas::add_new_cut(
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			io::warn("pthread_join failed\n");
+			io::warn("pthread_join failed");
 
 		//float32_t* a=params_add[t].new_a;
 		//for (i=0; i<nDim; i++)
@@ -573,7 +573,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
 		{
 			nthreads=t;
-			io::warn("thread creation failed\n");
+			io::warn("thread creation failed");
 			break;
 		}
 	}
@@ -590,7 +590,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			io::warn("pthread_join failed\n");
+			io::warn("pthread_join failed");
 	}
 	SG_FREE(threads);
 	SG_FREE(params_output);

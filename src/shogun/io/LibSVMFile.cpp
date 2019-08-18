@@ -150,9 +150,9 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 	{                                                                          \
 		num_feat = 0;                                                          \
                                                                                \
-		io::info("counting line numbers in file {}.\n", filename);               \
+		io::info("counting line numbers in file {}.", filename);               \
 		num_vec = get_num_lines();                                             \
-		io::info("File {} has {} lines.\n", filename, num_vec);                  \
+		io::info("File {} has {} lines.", filename, num_vec);                  \
                                                                                \
 		int32_t current_line_ind = 0;                                          \
 		SGVector<char> line;                                                   \
@@ -254,7 +254,7 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
                                                                                \
 		SG_RESET_LOCALE;                                                       \
                                                                                \
-		io::info("file successfully read\n");                                    \
+		io::info("file successfully read");                                    \
 	}
 
 GET_MULTI_LABELED_SPARSE_MATRIX(read_bool, bool)

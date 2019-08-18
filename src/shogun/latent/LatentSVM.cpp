@@ -29,7 +29,7 @@ CLatentSVM::~CLatentSVM()
 CLatentLabels* CLatentSVM::apply_latent()
 {
 	if (!m_model)
-		error("LatentModel is not set!\n");
+		error("LatentModel is not set!");
 
 	if (m_model->get_num_vectors() < 1)
 		return NULL;

@@ -75,12 +75,12 @@ namespace shogun
 #define ASSERT(x)                                                              \
 	{                                                                          \
 		if (SG_UNLIKELY(!(x)))                                                 \
-			error(SOURCE_LOCATION, "assertion {} failed\n", #x);               \
+			error(SOURCE_LOCATION, "assertion {} failed", #x);                 \
 	}
 #else
-#define SG_GCDEBUG(...) (void) 0;
-#define SG_DEBUG(...) (void) 0;
-#define ASSERT(...) (void) 0;
+#define SG_GCDEBUG(...) (void)0;
+#define SG_DEBUG(...) (void)0;
+#define ASSERT(...) (void)0;
 #endif // DEBUG_BUILD
 
 #ifdef __clang_analyzer__
@@ -206,18 +206,10 @@ namespace shogun
 			}
 
 			/** enable syntax highlighting */
-			inline void enable_syntax_highlighting()
-			{
-				syntax_highlight = true;
-				update_pattern();
-			}
+			void enable_syntax_highlighting();
 
 			/** disable syntax highlighting */
-			inline void disable_syntax_highlighting()
-			{
-				syntax_highlight = false;
-				update_pattern();
-			}
+			void disable_syntax_highlighting();
 
 			/** enable progress bar */
 			inline void enable_progress()
@@ -293,9 +285,6 @@ namespace shogun
 			    EMessageType prio, const SourceLocation& loc,
 			    const fmt::string_view& msg) const;
 
-			/** Updates log pattern */
-			void update_pattern();
-
 			/** if progress bar shall be shown */
 			bool show_progress;
 
@@ -335,35 +324,17 @@ namespace shogun
 		}
 
 		template <typename... Args>
-		static inline void
-		warn(const SourceLocation& loc, const char* format, const Args&... args)
-		{
-			env()->io()->message(MSG_WARN, loc, format, args...);
-		}
-
-		template <typename... Args>
 		static inline void warn(const char* format, const Args&... args)
 		{
-			warn(SourceLocation{}, format, args...);
+			env()->io()->message(MSG_WARN, {}, format, args...);
 		}
 
 		static inline void progress_done()
 		{
 			if (SG_UNLIKELY(env()->io()->get_show_progress()))
 			{
-				info("done.\n");
+				info("done.");
 			}
-		}
-
-		static inline void
-		unstable(const char* func, const SourceLocation& loc = {})
-		{
-			warn(
-			    loc,
-			    "{}: Unstable method!  Please report if it seems to "
-			    "work or not to the Shogun mailing list.  Thanking you in "
-			    "anticipation.\n",
-			    func);
 		}
 #endif // SWIG
 	}  // namespace io
@@ -395,21 +366,6 @@ namespace shogun
 		error<ExceptionType>(io::SourceLocation{}, format, args...);
 	}
 
-	/** print error message 'not implemented' */
-	static inline void not_implemented(const io::SourceLocation& loc = {})
-	{
-		error<ShogunException>(loc, "Sorry, not yet implemented.\n");
-	}
-
-	/** print error message 'Only available with GPL parts.' */
-	static inline void gpl_only(const io::SourceLocation& loc = {})
-	{
-		error<ShogunException>(
-		    loc, "This feature is only "
-		         "available if Shogun is built "
-		         "with GPL codes.\n");
-	}
-
 	template <
 	    typename ExceptionType = ShogunException, typename Condition,
 	    typename... Args>
@@ -420,6 +376,31 @@ namespace shogun
 		{
 			error<ExceptionType>(format, args...);
 		}
+	}
+
+	/** print error message 'not implemented' */
+	static inline void not_implemented(const io::SourceLocation& loc = {})
+	{
+		error<ShogunException>(loc, "Sorry, not yet implemented.");
+	}
+
+	/** print error message 'Only available with GPL parts.' */
+	static inline void gpl_only(const io::SourceLocation& loc = {})
+	{
+		error<ShogunException>(
+		    loc, "This feature is only "
+		         "available if Shogun is built "
+		         "with GPL codes.");
+	}
+
+
+	static inline void unstable(const io::SourceLocation& loc = {})
+	{
+		env()->io()->message(
+		    io::MSG_WARN, loc,
+		    "Unstable method!  Please report if it seems to "
+		    "work or not to the Shogun mailing list.  Thanking you in "
+		    "anticipation.");
 	}
 #endif // SWIG
 } // namespace shogun

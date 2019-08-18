@@ -75,7 +75,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	compute_relevant_indizes(n, &neg_relevant_indizes);
 	num_features=compute_num_features();
 
-	SG_DEBUG("pos_feat=[{},{},{},{}],neg_feat=[{},{},{},{}] -> {} features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features)
+	SG_DEBUG("pos_feat=[{},{},{},{}],neg_feat=[{},{},{},{}] -> {} features", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features)
 }
 
 float64_t* CTOPFeatures::compute_feature_vector(
@@ -193,7 +193,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	ASSERT(pos->get_observations())
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	io::info("allocating top feature cache of size {:.2f}M\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
+	io::info("allocating top feature cache of size {:.2f}M", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	feature_matrix = SGMatrix<float64_t>(num_features,num_vectors);
 	if (!feature_matrix.matrix)
 	{
@@ -201,7 +201,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 		return NULL ;
 	} ;
 
-	io::info("calculating top feature matrix\n");
+	io::info("calculating top feature matrix");
 
 	for (int32_t x=0; x<num_vectors; x++)
 	{

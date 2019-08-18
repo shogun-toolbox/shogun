@@ -117,7 +117,7 @@ void CMultilabelLabels::ensure_valid(const char* context)
 {
 	require(
 	    is_valid(),
-	    "Multilabel labels need to be sorted and in [0, num_classes-1].\n");
+	    "Multilabel labels need to be sorted and in [0, num_classes-1].");
 }
 
 
@@ -282,7 +282,7 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 		{
 			int32_t label_j = (*labels_list[class_i])[l_pos];
 			require(label_j < get_num_labels(),
-			        "class_i={}/{} :: label_j={}/{} (l_pos={})\n",
+			        "class_i={}/{} :: label_j={}/{} (l_pos={})",
 			        class_i, get_num_classes(), label_j, get_num_labels(),
 			        l_pos);
 			num_class_idx[label_j]++;
@@ -308,7 +308,7 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 			// get class_i of current position
 			int32_t label_j = (*labels_list[class_i])[l_pos];
 			require(label_j < get_num_labels(),
-			        "class_i={}/{} :: label_j={}/{} (l_pos={})\n",
+			        "class_i={}/{} :: label_j={}/{} (l_pos={})",
 			        class_i, get_num_classes(), label_j, get_num_labels(),
 			        l_pos);
 

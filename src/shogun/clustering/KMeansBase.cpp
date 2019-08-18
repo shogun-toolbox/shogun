@@ -136,16 +136,16 @@ void CKMeansBase::compute_cluster_variances()
 
 void CKMeansBase::initialize_training(CFeatures* data)
 {
-	require(distance, "Distance is not provided\n");
+	require(distance, "Distance is not provided");
 	require(
 	    distance->get_feature_type() == F_DREAL,
-	    "Distance's features type ({}) should be of type REAL ({})\n");
+	    "Distance's features type ({}) should be of type REAL ({})");
 	require(
 	    max_iter > 0,
-	    "The number of iterations provided ({}) must be greater than 0\n",
+	    "The number of iterations provided ({}) must be greater than 0",
 	    max_iter);
 	require(
-	    k > 0, "The number of clusters provided ({}) must be greater than 0\n",
+	    k > 0, "The number of clusters provided ({}) must be greater than 0",
 	    k);
 
 	if (data)

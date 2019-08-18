@@ -89,7 +89,7 @@ template <class ST>
 CFeatures* CDensePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 {
 	require(features->get_feature_class()==C_DENSE, "Provided features ({}) "
-			"has to be of C_DENSE ({}) class!\n",
+			"has to be of C_DENSE ({}) class!",
 			features->get_feature_class(), C_DENSE);
 
 	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
@@ -106,7 +106,7 @@ CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
 	require(
 		features->get_feature_class() == C_DENSE,
 		"Provided features ({}) "
-		"has to be of C_DENSE ({}) class!\n",
+		"has to be of C_DENSE ({}) class!",
 		features->get_feature_class(), C_DENSE);
 
 	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();

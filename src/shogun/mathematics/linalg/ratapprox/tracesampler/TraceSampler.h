@@ -26,7 +26,7 @@ public:
 	{
 		init();
 
-		SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 	}
 
 	/**
@@ -41,13 +41,13 @@ public:
 
 		m_dimension=dimension;
 
-		SG_GCDEBUG("{} created ({})\n", this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 	}
 
 	/** destructor */
 	virtual ~CTraceSampler()
 	{
-		SG_GCDEBUG("{} destroyed ({})\n", this->get_name(), fmt::ptr(this))
+		SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
 	}
 
 	/**

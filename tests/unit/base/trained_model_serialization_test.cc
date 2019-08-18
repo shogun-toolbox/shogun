@@ -80,7 +80,7 @@ protected:
 			break;
 
 		default:
-			error("Unsupported problem type: {}\n", pt);
+			error("Unsupported problem type: {}", pt);
 			FAIL();
 		}
 

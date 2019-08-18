@@ -81,7 +81,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		{
 			SGVector<T> result(num_vectors);
 			require(v.vlen==num_features,
-				"Dimension mismatch! {} vs {}\n",
+				"Dimension mismatch! {} vs {}",
 				v.vlen, num_features);
 			for (index_t i=0; i<num_vectors; ++i)
 				result[i]=sparse_matrix[i].dense_dot(1.0, v.vector, v.vlen, 0.0);
@@ -101,11 +101,11 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 */
 		inline const T operator()(index_t i_row, index_t i_col) const
 		{
-			require(i_row>=0, "Provided row index {} negative!\n", i_row);
-			require(i_col>=0, "Provided column index {} negative!\n", i_col);
-			require(i_row<num_features, "Provided row index ({}) is larger than number of rows ({})\n",
+			require(i_row>=0, "Provided row index {} negative!", i_row);
+			require(i_col>=0, "Provided column index {} negative!", i_col);
+			require(i_row<num_features, "Provided row index ({}) is larger than number of rows ({})",
 							i_row, num_features);
-			require(i_col<num_vectors, "Provided column index ({}) is larger than number of columns ({})\n",
+			require(i_col<num_vectors, "Provided column index ({}) is larger than number of columns ({})",
 							i_col, num_vectors);
 
 			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
@@ -122,11 +122,11 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 */
 		inline T& operator()(index_t i_row, index_t i_col)
 		{
-			require(i_row>=0, "Provided row index {} negative!\n", i_row);
-			require(i_col>=0, "Provided column index {} negative!\n", i_col);
-			require(i_row<num_features, "Provided row index ({}) is larger than number of rows ({})\n",
+			require(i_row>=0, "Provided row index {} negative!", i_row);
+			require(i_col>=0, "Provided column index {} negative!", i_col);
+			require(i_row<num_features, "Provided row index ({}) is larger than number of rows ({})",
 							i_row, num_features);
-			require(i_col<num_vectors, "Provided column index ({}) is larger than number of columns ({})\n",
+			require(i_col<num_vectors, "Provided column index ({}) is larger than number of columns ({})",
 							i_col, num_vectors);
 
 			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)

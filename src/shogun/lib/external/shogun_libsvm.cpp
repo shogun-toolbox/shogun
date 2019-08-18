@@ -486,7 +486,7 @@ void Solver::Solve(
 			G[i] = p_p[i];
 			G_bar[i] = 0;
 		}
-		io::info("Computing gradient for initial set of non-zero alphas\n");
+		io::info("Computing gradient for initial set of non-zero alphas");
 		//CMath::display_vector(alpha, l, "alphas");
 		for (i = 0; i < l && !cancel_computation(); i++)
 		{
@@ -747,7 +747,7 @@ void Solver::Solve(
 	p_si->upper_bound_p = Cp;
 	p_si->upper_bound_n = Cn;
 
-	io::info("\noptimization finished, #iter = {}\n",iter);
+	io::info("\noptimization finished, #iter = {}",iter);
 
 	SG_FREE(p);
 	SG_FREE(y);
@@ -1625,7 +1625,7 @@ int32_t Solver_NUMC::select_working_set(
 	out_i=best_out_i;
 	out_j=best_out_j;
 
-	SG_DEBUG("i={} j={} best_gap={} y_i={} y_j={}\n", out_i, out_j, gap, y[out_i], y[out_j])
+	SG_DEBUG("i={} j={} best_gap={} y_i={} y_j={}", out_i, out_j, gap, y[out_i], y[out_j])
 
 
 	if(gap < eps)
@@ -1853,7 +1853,7 @@ static void solve_c_svc(
 		sum_alpha += alpha[i];
 
 	if (Cp==Cn)
-		io::info("nu = {}\n", sum_alpha/(param->C*prob->l));
+		io::info("nu = {}", sum_alpha/(param->C*prob->l));
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1889,7 +1889,7 @@ void solve_c_svc_weighted(
 		sum_alpha += alpha[i];
 
 	//if (Cp==Cn)
-	//	io::info("nu = {}\n", sum_alpha/(prob->C*prob->l));
+	//	io::info("nu = {}", sum_alpha/(prob->C*prob->l));
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1939,7 +1939,7 @@ static void solve_nu_svc(
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking, param->use_bias);
 	float64_t r = si->r;
 
-	io::info("C = {}\n",1/r);
+	io::info("C = {}",1/r);
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i]/r;
@@ -2022,9 +2022,9 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	if (param->use_bias)
 	{
-		SG_DEBUG("Computing biases and primal objective\n")
+		SG_DEBUG("Computing biases and primal objective")
 		float64_t primal = s.compute_primal(y, alpha, model->rho, model->normwcw);
-		io::info("Primal = {:10.10f}\n", primal);
+		io::info("Primal = {:10.10f}", primal);
 	}
 
 	for (int32_t i=0; i<nr_class; i++)
@@ -2114,7 +2114,7 @@ static void solve_epsilon_svr(
 		alpha[i] = alpha2[i] - alpha2[i+l];
 		sum_alpha += fabs(alpha[i]);
 	}
-	io::info("nu = {}\n",sum_alpha/(param->C*l));
+	io::info("nu = {}",sum_alpha/(param->C*l));
 
 	SG_FREE(alpha2);
 	SG_FREE(linear_term);
@@ -2149,7 +2149,7 @@ static void solve_nu_svr(
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, C, param->eps, si, param->shrinking, param->use_bias);
 
-	io::info("epsilon = {}\n",-si->r);
+	io::info("epsilon = {}",-si->r);
 
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
@@ -2194,7 +2194,7 @@ decision_function svm_train_one(
 			break;
 	}
 
-	io::info("obj = {:.16f}, rho = {:.16f}\n",si.obj,si.rho);
+	io::info("obj = {:.16f}, rho = {:.16f}",si.obj,si.rho);
 
 	// output SVs
 	if (param->svm_type != ONE_CLASS)
@@ -2218,7 +2218,7 @@ decision_function svm_train_one(
 				}
 			}
 		}
-		io::info("nSV = {}, nBSV = {}\n",nSV,nBSV);
+		io::info("nSV = {}, nBSV = {}",nSV,nBSV);
 	}
 
 	decision_function f;
@@ -2304,7 +2304,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
 	{
-		io::info("training one class svm or doing epsilon sv regression\n");
+		io::info("training one class svm or doing epsilon sv regression");
 
 		// regression or one-class-svm
 		model->nr_class = 2;
@@ -2338,7 +2338,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	{
 		Solver::SolutionInfo si;
 		solve_nu_multiclass_svc(prob,param,&si,model);
-		io::info("obj = {:.16f}, rho = {:.16f}\n",si.obj,si.rho);
+		io::info("obj = {:.16f}, rho = {:.16f}",si.obj,si.rho);
 	}
 	else
 	{
@@ -2386,7 +2386,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				if(param->weight_label[i] == label[j])
 					break;
 			if(j == nr_class)
-				io::warn("warning: class label {} specified in weight is not found\n", param->weight_label[i]);
+				io::warn("warning: class label {} specified in weight is not found", param->weight_label[i]);
 			else
 				weighted_C[j] *= param->weight[i];
 		}
@@ -2474,7 +2474,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			nz_count[i] = nSV;
 		}
 
-		io::info("Total nSV = {}\n",total_sv);
+		io::info("Total nSV = {}",total_sv);
 
 		model->l = total_sv;
 		model->SV = SG_MALLOC(svm_node *,total_sv);

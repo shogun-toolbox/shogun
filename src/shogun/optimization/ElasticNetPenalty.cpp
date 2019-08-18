@@ -70,7 +70,7 @@ float64_t ElasticNetPenalty::get_sparse_variable(float64_t variable, float64_t p
 
 void ElasticNetPenalty::check_ratio()
 {
-	require(m_l1_ratio>0, "l1_ratio must set\n");
+	require(m_l1_ratio>0, "l1_ratio must set");
 }
 
 ElasticNetPenalty::~ElasticNetPenalty()

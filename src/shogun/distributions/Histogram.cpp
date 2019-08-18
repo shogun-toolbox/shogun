@@ -42,7 +42,7 @@ bool CHistogram::train(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_WORD)
 		{
-			error("Expected features of class string type word\n");
+			error("Expected features of class string type word");
 		}
 		set_features(data);
 	}

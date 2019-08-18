@@ -37,7 +37,7 @@ CDomainAdaptationSVMLinear::~CDomainAdaptationSVMLinear()
 {
 
 	SG_UNREF(presvm);
-	SG_DEBUG("deleting DomainAdaptationSVMLinear\n")
+	SG_DEBUG("deleting DomainAdaptationSVMLinear")
 }
 
 
@@ -98,15 +98,15 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 	CDotFeatures* tmp_data;
 
 	if (m_labels->get_label_type() != LT_BINARY)
-		error("DomainAdaptationSVMLinear requires binary labels\n");
+		error("DomainAdaptationSVMLinear requires binary labels");
 
 	if (train_data)
 	{
 		if (!train_data->has_property(FP_DOT))
-			error("DotFeatures expected\n");
+			error("DotFeatures expected");
 
 		if (((CBinaryLabels*) m_labels)->get_num_labels() != train_data->get_num_vectors())
-			error("Number of training vectors does not match number of labels\n");
+			error("Number of training vectors does not match number of labels");
 
 		tmp_data = (CDotFeatures*) train_data;
 	}
@@ -127,7 +127,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
         // bias of parent SVM was set to zero in constructor, already contains B
         CBinaryLabels* parent_svm_out = presvm->apply_binary(tmp_data);
 
-        SG_DEBUG("pre-computing linear term from presvm\n")
+        SG_DEBUG("pre-computing linear term from presvm")
 
         // pre-compute linear term
         for (int32_t i=0; i!=num_training_points; i++)

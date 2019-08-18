@@ -82,7 +82,7 @@ void LinalgBackendEigen::eigen_solver_impl(
 	 */
 	require(
 	    solver.info() != Eigen::NumericalIssue,
-	    "The input contains INF or NaN values or overflow occured.\n");
+	    "The input contains INF or NaN values or overflow occured.");
 
 	eigenvalues_eig = solver.eigenvalues().real();
 	eigenvectors_eig = solver.eigenvectors().real();
@@ -103,7 +103,7 @@ void LinalgBackendEigen::eigen_solver_impl(
 
 	require(
 	    solver.info() != Eigen::NumericalIssue,
-	    "The input contains INF or NaN values or overflow occured.\n");
+	    "The input contains INF or NaN values or overflow occured.");
 
 	eigenvalues_eig = solver.eigenvalues();
 	eigenvectors_eig = solver.eigenvectors();

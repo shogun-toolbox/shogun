@@ -50,7 +50,7 @@ CC45ClassifierTree::~CC45ClassifierTree()
 
 CMulticlassLabels* CC45ClassifierTree::apply_multiclass(CFeatures* data)
 {
-	require(data, "Data required for classification in apply_multiclass\n");
+	require(data, "Data required for classification in apply_multiclass");
 
 	// apply multiclass starting from root
 	node_t* current=get_root();
@@ -110,8 +110,8 @@ void CC45ClassifierTree::clear_feature_types()
 
 bool CC45ClassifierTree::train_machine(CFeatures* data)
 {
-	require(data,"Data required for training\n");
-	require(data->get_feature_class()==C_DENSE,"Dense data required for training\n");
+	require(data,"Data required for training");
+	require(data->get_feature_class()==C_DENSE,"Dense data required for training");
 
 	int32_t num_features=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_features();
 	int32_t num_vectors=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_vectors();
@@ -151,8 +151,8 @@ bool CC45ClassifierTree::train_machine(CFeatures* data)
 CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data, SGVector<float64_t> weights,
 	CMulticlassLabels* class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
-	require(data,"data matrix cannot be NULL\n");
-	require(class_labels,"class labels cannot be NULL\n");
+	require(data,"data matrix cannot be NULL");
+	require(class_labels,"class labels cannot be NULL");
 	node_t* node=new node_t();
 	CDenseFeatures<float64_t>* feats=dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs=feats->get_num_vectors();
@@ -557,9 +557,9 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data,
 				SGVector<float64_t> weights, CMulticlassLabels* class_labels)
 {
-	require(data,"Data required for information gain calculation\n");
+	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
-		"Dense data required for information gain calculation\n");
+		"Dense data required for information gain calculation");
 
 	float64_t gain=0;
 	CDenseFeatures<float64_t>* feats=dynamic_cast<CDenseFeatures<float64_t>*>(data);
@@ -712,7 +712,7 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 					if (el!=NULL)
 						child=dynamic_cast<node_t*>(el);
 					else
-						error("{} element of children is NULL\n",j);
+						error("{} element of children is NULL",j);
 
 					if (child->data.transit_if_feature_value==sample[node->data.attribute_id])
 					{
@@ -741,14 +741,14 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 				if (el!=NULL)
 					left_child=dynamic_cast<node_t*>(el);
 				else
-					error("left child is NULL\n");
+					error("left child is NULL");
 
 				el=children->get_element(1);
 				node_t* right_child=NULL;
 				if (el!=NULL)
 					right_child=dynamic_cast<node_t*>(el);
 				else
-					error("left child is NULL\n");
+					error("left child is NULL");
 
 				if (left_child->data.transit_if_feature_value>=sample[node->data.attribute_id])
 				{

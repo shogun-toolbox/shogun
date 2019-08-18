@@ -108,7 +108,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures\n");
+			error("Specified features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}
@@ -171,23 +171,23 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 bool CQDA::train_machine(CFeatures* data)
 {
 	if (!m_labels)
-		error("No labels allocated in QDA training\n");
+		error("No labels allocated in QDA training");
 
 	if ( data )
 	{
 		if (!data->has_property(FP_DOT))
-			error("Speficied features are not of type CDotFeatures\n");
+			error("Speficied features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}
 
 	if (!m_features)
-		error("No features allocated in QDA training\n");
+		error("No features allocated in QDA training");
 
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
-		error("No train_labels allocated in QDA training\n");
+		error("No train_labels allocated in QDA training");
 
 	cleanup();
 
@@ -222,7 +222,7 @@ bool CQDA::train_machine(CFeatures* data)
 	{
 		if (class_nums[i] <= 0)
 		{
-			error("What? One class with no elements\n");
+			error("What? One class with no elements");
 			return false;
 		}
 	}

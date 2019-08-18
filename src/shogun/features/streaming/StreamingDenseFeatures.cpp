@@ -35,7 +35,7 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 		CDenseFeatures<T>* dense_features, float64_t* lab) :
 		CStreamingDotFeatures()
 {
-	require(dense_features, "{}::CStreamingDenseFeatures(): Features needed!\n");
+	require(dense_features, "{}::CStreamingDenseFeatures(): Features needed!");
 
 	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
@@ -52,11 +52,11 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
-	SG_DEBUG("entering {}::~CStreamingDenseFeatures()\n", get_name())
+	SG_DEBUG("entering {}::~CStreamingDenseFeatures()", get_name())
 	/* needed to prevent double free memory errors */
 	current_vector.vector=NULL;
 	current_vector.vlen=0;
-	SG_DEBUG("leaving {}::~CStreamingDenseFeatures()\n", get_name())
+	SG_DEBUG("leaving {}::~CStreamingDenseFeatures()", get_name())
 }
 
 template<class T> void CStreamingDenseFeatures<T>::reset_stream()
@@ -216,12 +216,12 @@ void CStreamingDenseFeatures<T>::end_parser()
 template<class T>
 bool CStreamingDenseFeatures<T>::get_next_example()
 {
-	SG_DEBUG("entering\n");
+	SG_DEBUG("entering");
 	bool ret_value;
 	ret_value=(bool)parser.get_next_example(current_vector.vector,
 			current_vector.vlen, current_label);
 
-	SG_DEBUG("leaving\n");
+	SG_DEBUG("leaving");
 	return ret_value;
 }
 
@@ -272,7 +272,7 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 
 	if (len1!=current_vector.vlen)
 		error(
-				"Lengths {} and {} not equal while computing dot product!\n", len1, current_vector.vlen);
+				"Lengths {} and {} not equal while computing dot product!", len1, current_vector.vlen);
 
 	return linalg::dot(current_vector, sgvec1);
 }
@@ -293,11 +293,11 @@ template<class T>
 CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		index_t num_elements)
 {
-	SG_DEBUG("entering\n");
-	SG_DEBUG("Streaming {} elements\n", num_elements)
+	SG_DEBUG("entering");
+	SG_DEBUG("Streaming {} elements", num_elements)
 
 	require(num_elements>0, "Requested number of feature vectors ({}) must be "
-			"positive\n", num_elements);
+			"positive", num_elements);
 
 	/* init matrix empty, as we dont know the dimension yet */
 	SGMatrix<T> matrix;
@@ -308,7 +308,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		if (!get_next_example())
 		{
 			io::warn("Ran out of streaming data, reallocating matrix and "
-					"returning!\n");
+					"returning!");
 
 			/* allocating space for data so far, not this mighe be 0 bytes */
 			SGMatrix<T> so_far(matrix.num_rows, i);
@@ -325,7 +325,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			/* allocate matrix memory in first iteration */
 			if (!matrix.matrix)
 			{
-				SG_DEBUG("Allocating {}x{} matrix\n",
+				SG_DEBUG("Allocating {}x{} matrix",
 						current_vector.vlen, num_elements);
 				matrix=SGMatrix<T>(current_vector.vlen, num_elements);
 			}
@@ -336,7 +336,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			/* check for inconsistent dimensions */
 			require(vec.vlen==matrix.num_rows,
 					"Dimension of streamed vector ({}) does not match "
-					"dimensions of previous vectors ({})\n",
+					"dimensions of previous vectors ({})",
 					vec.vlen, matrix.num_rows);
 
 			/* copy vector into matrix */
@@ -352,7 +352,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	/* create new feature object from collected data */
 	CDenseFeatures<T>* result=new CDenseFeatures<T>(matrix);
 
-	SG_DEBUG("leaving returning {}x{} matrix\n", matrix.num_rows,
+	SG_DEBUG("leaving returning {}x{} matrix", matrix.num_rows,
 			matrix.num_cols);
 
 	return result;
