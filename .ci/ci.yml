@@ -157,7 +157,7 @@ jobs:
 
 - job: windows_libshogun
   displayName: Windows
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
 
   pool:
     vmImage: 'vs2017-win2016'
