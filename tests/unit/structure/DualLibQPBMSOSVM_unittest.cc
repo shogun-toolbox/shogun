@@ -105,7 +105,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	sosvm->train();
 
 	BmrmStatistics res = sosvm->get_result();
-	//SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
+	//SG_PRINT("result = { Fp={}, Fd={}, nIter={}, nCP={}, nzA={}, exitflag={} }\n",
 	//		res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
 	ASSERT_LE(res.nCP, 8u);
@@ -126,7 +126,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 		SG_UNREF(rn);
 	}
 
-	// SG_SPRINT("Error = %lf %% \n", error/num_feat*100);
+	// SG_PRINT("Error = {} %% \n", error/num_feat*100);
 	ASSERT_LE(error/num_feat*100, 75.0);
 
 	// Free memory

@@ -71,7 +71,7 @@ T SGSparseVector<T>::dense_dot(T alpha, T * vec, int32_t dim, T b)
 template <class T>
 void SGSparseVector<T>::add_to_dense(T alpha, T * vec, int32_t dim, bool abs_val)
 {
-	REQUIRE(vec, "vec must not be NULL\n");
+	require(vec, "vec must not be NULL");
 
 	if (abs_val)
 	{
@@ -201,8 +201,8 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 
 	for (size_type j = 1; j < num_feat_entries; j++)
 	{
-		REQUIRE(features[j - 1].feat_index <= features[j].feat_index,
-		        "sort_features(): failed sanity check %d <= %d after sorting (comparing indices features[%d] <= features[%d], features=%d)\n",
+		require(features[j - 1].feat_index <= features[j].feat_index,
+		        "sort_features(): failed sanity check {} <= {} after sorting (comparing indices features[{}] <= features[{}], features={})",
 		        features[j - 1].feat_index, features[j].feat_index, j - 1, j, num_feat_entries);
 	}
 
@@ -212,11 +212,11 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		// always true, but kept for future changes
-		REQUIRE(last_index < j,
-		        "sort_features(): target index %d must not exceed source index j=%d",
+		require(last_index < j,
+		        "sort_features(): target index {} must not exceed source index j={}",
 		        last_index, j);
-		REQUIRE(features[last_index].feat_index <= features[j].feat_index,
-		        "sort_features(): failed sanity check %d = features[%d].feat_index <= features[%d].feat_index = %d\n",
+		require(features[last_index].feat_index <= features[j].feat_index,
+		        "sort_features(): failed sanity check {} = features[{}].feat_index <= features[{}].feat_index = {}",
 		        features[last_index].feat_index, last_index, j, features[j].feat_index);
 
 		// merging of features with same index
@@ -247,7 +247,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	// shrinking vector
 	if (!stable_pointer)
 	{
-		SG_SINFO("shrinking vector from %d to %d\n", num_feat_entries, new_feat_count);
+		io::info("shrinking vector from {} to {}", num_feat_entries, new_feat_count);
 		features = SG_REALLOC(value_type, features, num_feat_entries, new_feat_count);
 	}
 
@@ -255,8 +255,8 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 
 	for (size_type j = 1; j < num_feat_entries; j++)
 	{
-		REQUIRE(features[j - 1].feat_index < features[j].feat_index,
-		        "sort_features(): failed sanity check %d < %d after sorting (comparing indices features[%d] < features[%d], features=%d)\n",
+		require(features[j - 1].feat_index < features[j].feat_index,
+		        "sort_features(): failed sanity check {} < {} after sorting (comparing indices features[{}] < features[{}], features={})",
 		        features[j - 1].feat_index, features[j].feat_index, j - 1, j, num_feat_entries);
 	}
 
@@ -332,7 +332,7 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 
 	if (features)
 	{
-		REQUIRE(get_num_dimensions() <= dimension, "get_dense(dimension=%d): sparse dimension %d exceeds requested dimension\n",
+		require(get_num_dimensions() <= dimension, "get_dense(dimension={}): sparse dimension {} exceeds requested dimension",
 		        dimension, get_num_dimensions());
 
 		for (size_type i = 0; i < num_feat_entries; i++)
@@ -409,13 +409,13 @@ template<class T> void SGSparseVector<T>::save(CFile * saver)
 template <>
 void SGSparseVector<complex128_t>::load(CFile * loader)
 {
-	SG_SERROR("SGSparseVector::load():: Not supported for complex128_t\n");
+	error("SGSparseVector::load():: Not supported for complex128_t");
 }
 
 template <>
 void SGSparseVector<complex128_t>::save(CFile * saver)
 {
-	SG_SERROR("SGSparseVector::save():: Not supported for complex128_t\n");
+	error("SGSparseVector::save():: Not supported for complex128_t");
 }
 
 template <class T>
@@ -442,8 +442,8 @@ void SGSparseVector<T>::free_data()
 template <class T>
 T SGSparseVector<T>::dot_prod_expensive_unsorted(const SGSparseVector<T> &a, const SGSparseVector<T> &b)
 {
-	SG_SWARNING("Computing sparse_dot(a,b) on unsorted vectors is very expensive: O(n^2)\n");
-	SG_SWARNING("Using fallback to give correct results because upstream code does not sort.\n");
+	io::warn("Computing sparse_dot(a,b) on unsorted vectors is very expensive: O(n^2)");
+	io::warn("Using fallback to give correct results because upstream code does not sort.");
 
 	T dot_prod = 0;
 
@@ -483,7 +483,7 @@ std::string SGSparseVector<T>::to_string() const
 template <class T>
 void SGSparseVector<T>::display_vector(const char * name, const char * prefix)
 {
-	SG_SPRINT("%s%s=%s\n", prefix, name, to_string().c_str());
+	io::print("{}{}={}\n", prefix, name, to_string().c_str());
 }
 
 template <class T>

@@ -250,7 +250,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
 
   ocas.trn_err = nData;
   ocas.ocas_time = get_time() - ocas_start_time;
-  /*  ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f\n",
+  /*  ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={}, Q_P-Q_D/abs(Q_P)={}\n",
           ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P));
   */
   ocas_print(ocas);
@@ -344,7 +344,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
 
         ocas.ocas_time = get_time() - ocas_start_time;
 
-        /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+        /*        ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={}, 1-Q_D/Q_P={}, nza={:4d}, err={:.2f}%%, qpf={}\n",
                   ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                   ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
         */
@@ -478,7 +478,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
 
         ocas.ocas_time = get_time() - ocas_start_time;
 
-        /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+        /*        ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={}, 1-Q_D/Q_P={}, nza={:4d}, err={:.2f}%%, qpf={}\n",
                    ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                    ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
         */
@@ -695,8 +695,8 @@ ocas_return_value_T svm_ocas_solver(
 
 	ocas.trn_err = nData;
 	ocas.ocas_time = get_time() - ocas_start_time;
-	/*  ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f,
-	   Q_P-Q_D/abs(Q_P)=%f\n",
+	/*  ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={},
+	   Q_P-Q_D/abs(Q_P)={}\n",
 		    ocas.nIter,cur_time,
 	   ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P));
 	*/
@@ -797,8 +797,8 @@ ocas_return_value_T svm_ocas_solver(
 
 			ocas.ocas_time = get_time() - ocas_start_time;
 
-			/*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f,
-			   1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+			/*        ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={},
+			   1-Q_D/Q_P={}, nza={:4d}, err={:.2f}%%, qpf={}\n",
 				      ocas.nIter,cur_time,
 			   ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
 				      ocas.nNZAlpha,
@@ -934,8 +934,8 @@ ocas_return_value_T svm_ocas_solver(
 
 			ocas.ocas_time = get_time() - ocas_start_time;
 
-			/*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f,
-			   1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+			/*        ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={},
+			   1-Q_D/Q_P={}, nza={:4d}, err={:.2f}%%, qpf={}\n",
 				       ocas.nIter, cur_time,
 			   ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
 				       ocas.nNZAlpha,
@@ -1163,7 +1163,7 @@ ocas_return_value_T svm_ocas_solver_difC(
 
   ocas.trn_err = nData;
   ocas.ocas_time = get_time() - ocas_start_time;
-  /*  ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f\n",
+  /*  ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={}, Q_P-Q_D/abs(Q_P)={}\n",
           ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P));
   */
   ocas_print(ocas);
@@ -1254,7 +1254,7 @@ ocas_return_value_T svm_ocas_solver_difC(
 
         ocas.ocas_time = get_time() - ocas_start_time;
 
-        /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+        /*        ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={}, 1-Q_D/Q_P={}, nza={:4d}, err={:.2f}%%, qpf={}\n",
                   ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                   ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
         */
@@ -1392,7 +1392,7 @@ ocas_return_value_T svm_ocas_solver_difC(
 
         ocas.ocas_time = get_time() - ocas_start_time;
 
-        /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+        /*        ocas_print("{:4d}: tim={}, Q_P={}, Q_D={}, Q_P-Q_D={}, 1-Q_D/Q_P={}, nza={:4d}, err={:.2f}%%, qpf={}\n",
                    ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                    ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
         */

@@ -51,15 +51,15 @@ CSVMOcas::~CSVMOcas()
 
 bool CSVMOcas::train_machine(CFeatures* data)
 {
-	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
-	SG_DEBUG("use_bias = %i\n", get_bias_enabled())
+	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
+	SG_DEBUG("use_bias = {}", get_bias_enabled())
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures");
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features)
@@ -73,7 +73,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	current_w.zero();
 
 	if (num_vec!=lab.vlen || num_vec<=0)
-		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen)
+		error("num_vec={} num_train_labels={}", num_vec, lab.vlen);
 
 	SG_FREE(old_w);
 	old_w=SG_CALLOC(float64_t, current_w.vlen);
@@ -101,15 +101,15 @@ bool CSVMOcas::train_machine(CFeatures* data)
 			&CSVMOcas::print,
 			this);
 
-	SG_INFO("Ocas Converged after %d iterations\n"
+	io::info("Ocas Converged after {} iterations"
 			"==================================\n"
 			"timing statistics:\n"
-			"output_time: %f s\n"
-			"sort_time: %f s\n"
-			"add_time: %f s\n"
-			"w_time: %f s\n"
-			"solver_time %f s\n"
-			"ocas_time %f s\n\n", result.nIter, result.output_time, result.sort_time,
+			"output_time: {} s\n"
+			"sort_time: {} s\n"
+			"add_time: {} s\n"
+			"w_time: {} s\n"
+			"solver_time {} s\n"
+			"ocas_time {} s", result.nIter, result.output_time, result.sort_time,
 			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	SG_FREE(tmp_a_buf);
@@ -118,12 +118,12 @@ bool CSVMOcas::train_machine(CFeatures* data)
 
 	uint32_t num_cut_planes = result.nCutPlanes;
 
-	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes)
+	SG_DEBUG("num_cut_planes={}", num_cut_planes)
 	for (uint32_t i=0; i<num_cut_planes; i++)
 	{
-		SG_DEBUG("cp_value[%d]=%p\n", i, cp_value)
+		SG_DEBUG("cp_value[{}]={}", i, fmt::ptr(cp_value))
 		SG_FREE(cp_value[i]);
-		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index)
+		SG_DEBUG("cp_index[{}]={}", i, fmt::ptr(cp_index))
 		SG_FREE(cp_index[i]);
 	}
 
@@ -321,7 +321,7 @@ void CSVMOcas::compute_W(
 
 	*sq_norm_W = linalg::dot(W, W) + CMath::sq(bias);
 	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;
-	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
+	//io::print("nSel={} sq_norm_W={} dp_WoldW={}\n", nSel, *sq_norm_W, *dp_WoldW);
 
 	o->bias = bias;
 	o->old_bias = old_bias;

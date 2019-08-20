@@ -206,7 +206,7 @@ public:
 	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
 			SGVector<float64_t> s2, const CLabels* lab) const
 	{
-		SG_ERROR("Not Implemented\n");
+		error("Not Implemented");
 		return SGVector<float64_t>();
 	}
 
@@ -227,7 +227,7 @@ public:
 	virtual float64_t get_first_moment(SGVector<float64_t> mu,
 			SGVector<float64_t> s2, const CLabels* lab, index_t i) const
 	{
-		SG_ERROR("Not Implemented\n");
+		error("Not Implemented");
 		return -1.0;
 	}
 
@@ -248,7 +248,7 @@ public:
 	virtual float64_t get_second_moment(SGVector<float64_t> mu,
 			SGVector<float64_t> s2, const CLabels* lab, index_t i) const
 	{
-		SG_ERROR("Not Implemented\n");
+		error("Not Implemented");
 		return -1.0;
 	}
 

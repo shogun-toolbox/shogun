@@ -17,7 +17,7 @@ using namespace shogun;
 CStreamingAsciiFile::CStreamingAsciiFile()
 		: CStreamingFile()
 {
-	SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n")
+	unstable(SOURCE_LOCATION);
 	m_delimiter = ' ';
 }
 
@@ -88,7 +88,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 				ptr_data++;													\
 		}																	\
 																			\
-		SG_DEBUG("num_feat %d\n", num_feat)									\
+		SG_DEBUG("num_feat {}", num_feat)									\
 																			\
 		/* now copy data into vector */										\
 		if (old_len < num_feat)												\
@@ -145,7 +145,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 				int32_t j=0;												\
 				for (substring* i = feature_start; i != words.end; i++)		\
 				{															\
-						vector[j++] = SGIO::float_of_substring(*i);			\
+						vector[j++] = io::SGIO::float_of_substring(*i);		\
 				}															\
 				SG_RESET_LOCALE;											\
 		}
@@ -211,7 +211,7 @@ GET_FLOAT_VECTOR(float64_t)
 						ptr_data++;										\
 				}														\
 																		\
-				SG_DEBUG("num_feat %d\n", num_feat)					\
+				SG_DEBUG("num_feat {}", num_feat)					\
 				/* The first element is the label */					\
 				label=atof(items->get_element(0));						\
 				/* now copy rest of the data into vector */				\
@@ -261,7 +261,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 																		\
 				tokenize(m_delimiter, example_string, words);			\
 																		\
-				label = SGIO::float_of_substring(words[0]);				\
+				label = io::SGIO::float_of_substring(words[0]);				\
 																		\
 				len = words.index() - 1;								\
 				substring* feature_start = &words[1];					\
@@ -272,7 +272,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 				int32_t j=0;											\
 				for (substring* i = feature_start; i != words.end; i++)	\
 				{														\
-						vector[j++] = SGIO::float_of_substring(*i);		\
+						vector[j++] = io::SGIO::float_of_substring(*i);		\
 				}														\
 				SG_RESET_LOCALE;										\
 		}
@@ -300,7 +300,7 @@ void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
 				return;													\
 		}																\
 																		\
-		SG_DEBUG("Line read from the file:\n%s\n", buffer)				\
+		SG_DEBUG("Line read from the file:\n{}", buffer)				\
 		/* Remove the terminating \n */									\
 		if (buffer[bytes_read-1]=='\n')									\
 		{																\
@@ -550,7 +550,7 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 		}																\
 																		\
 		if (label_pos==-1)												\
-				SG_ERROR("No label found!\n")							\
+				error("No label found!");							\
 																		\
 		buffer+=label_pos+1;											\
 		num_chars-=label_pos+1;											\
@@ -609,14 +609,14 @@ template <class T>
 void CStreamingAsciiFile::append_item(
 		DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
-		REQUIRE(ptr_data && ptr_item, "Data and Item to append should not be NULL\n");
+		require(ptr_data && ptr_item, "Data and Item to append should not be NULL");
 
 		size_t len=(ptr_data-ptr_item)/sizeof(char);
 		char* item=SG_MALLOC(char, len+1);
 		memset(item, 0, sizeof(char)*(len+1));
 		item=strncpy(item, ptr_item, len);
 
-		SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item)
+		SG_DEBUG("current {}, len {}, item {}", *ptr_data, len, item)
 		items->append_element(item);
 }
 

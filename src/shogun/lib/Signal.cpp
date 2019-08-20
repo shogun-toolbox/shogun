@@ -38,39 +38,39 @@ void CSignal::handler(int signal)
 
 	if (signal == SIGINT)
 	{
-		SG_SPRINT(
+		io::print(
 		    "\n[ShogunSignalHandler] "
 		    "Immediately return to prompt / "
 		    "Prematurely finish computations / "
 		    "Pause current computation / "
-		    "Do nothing (I/C/P/D)? ")
+		    "Do nothing (I/C/P/D)? ");
 		char answer = getchar();
 		getchar();
 		switch (answer)
 		{
 		case 'I':
-			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
+			io::print("[ShogunSignalHandler] Killing the application...\n");
 			m_subscriber->on_completed();
 			exit(0);
 			break;
 		case 'C':
-			SG_SPRINT(
+			io::print(
 			    "[ShogunSignalHandler] Terminating"
 			    " prematurely current algorithm...\n");
 			m_subscriber->on_next(SG_BLOCK_COMP);
 			break;
 		case 'P':
-			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...")
+			io::print("[ShogunSignalHandler] Pausing current computation...");
 			m_subscriber->on_next(SG_PAUSE_COMP);
 			break;
 		default:
-			SG_SPRINT("[ShogunSignalHandler] Continuing...\n")
+			io::print("[ShogunSignalHandler] Continuing...\n");
 			break;
 		}
 	}
 	else
 	{
-		SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
+		io::print("[ShogunSignalHandler] Unknown signal {} received\n", signal);
 	}
 }
 

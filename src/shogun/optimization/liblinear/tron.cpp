@@ -147,7 +147,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		else
 			delta = CMath::max(delta, CMath::min(alpha*snorm, sigma3*delta));
 
-		SG_INFO("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d\n", iter, actred, prered, delta, f, gnorm, cg_iter)
+		io::info("iter {:2d} act {:5.3e} pre {:5.3e} delta {:5.3e} f {:5.3e} |g| {:5.3e} CG {:3d}", iter, actred, prered, delta, f, gnorm, cg_iter);
 
 		if (actred > eta0*prered)
 		{
@@ -165,18 +165,18 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		}
 		if (f < -1.0e+32)
 		{
-			SG_WARNING("f < -1.0e+32\n")
+			io::warn("f < -1.0e+32");
 			break;
 		}
 		if (CMath::abs(actred) <= 0 && CMath::abs(prered) <= 0)
 		{
-			SG_WARNING("actred and prered <= 0\n")
+			io::warn("actred and prered <= 0");
 			break;
 		}
 		if (CMath::abs(actred) <= 1.0e-12*CMath::abs(f) &&
 		    CMath::abs(prered) <= 1.0e-12*CMath::abs(f))
 		{
-			SG_WARNING("actred and prered too small\n")
+			io::warn("actred and prered too small");
 			break;
 		}
 	}
@@ -221,7 +221,7 @@ int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
 		tron_daxpy(n, alpha, d, inc, s, inc);
 		if (tron_dnrm2(n, s, inc) > delta)
 		{
-			SG_INFO("cg reaches trust region boundary\n")
+			io::info("cg reaches trust region boundary");
 			alpha = -alpha;
 			tron_daxpy(n, alpha, d, inc, s, inc);
 

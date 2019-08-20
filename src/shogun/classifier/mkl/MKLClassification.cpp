@@ -34,8 +34,8 @@ float64_t CMKLClassification::compute_sum_alpha()
 
 void CMKLClassification::init_training()
 {
-	REQUIRE(m_labels, "Labels not set.\n");
-	REQUIRE(m_labels->get_num_labels(), "Number of labels is zero.\n");
+	require(m_labels, "Labels not set.");
+	require(m_labels->get_num_labels(), "Number of labels is zero.");
 }
 
 CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)
@@ -44,7 +44,7 @@ CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)
 		return NULL;
 
 	if (machine->get_classifier_type() != CT_MKLCLASSIFICATION)
-		SG_SERROR("Provided machine is not of type CMKLClassification!")
+		error("Provided machine is not of type CMKLClassification!");
 
 	CMKLClassification* casted = dynamic_cast<CMKLClassification*>(machine);
 	SG_REF(casted)

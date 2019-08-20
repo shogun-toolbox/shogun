@@ -86,7 +86,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
-			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
+			error("linadd not supported with Tanimoto normalization.");
 			return 0;
 		}
 
@@ -96,7 +96,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
-			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
+			error("linadd not supported with Tanimoto normalization.");
 			return 0;
 		}
 

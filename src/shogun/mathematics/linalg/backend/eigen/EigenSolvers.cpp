@@ -80,9 +80,9 @@ void LinalgBackendEigen::eigen_solver_impl(
 	 * 1: Eigen::NumericalIssue. The input contains INF or NaN values or
 	 * overflow occured
 	 */
-	REQUIRE(
+	require(
 	    solver.info() != Eigen::NumericalIssue,
-	    "The input contains INF or NaN values or overflow occured.\n");
+	    "The input contains INF or NaN values or overflow occured.");
 
 	eigenvalues_eig = solver.eigenvalues().real();
 	eigenvectors_eig = solver.eigenvectors().real();
@@ -101,9 +101,9 @@ void LinalgBackendEigen::eigen_solver_impl(
 	Eigen::ComplexEigenSolver<typename SGMatrix<complex128_t>::EigenMatrixXt>
 	    solver(A_eig);
 
-	REQUIRE(
+	require(
 	    solver.info() != Eigen::NumericalIssue,
-	    "The input contains INF or NaN values or overflow occured.\n");
+	    "The input contains INF or NaN values or overflow occured.");
 
 	eigenvalues_eig = solver.eigenvalues();
 	eigenvectors_eig = solver.eigenvectors();

@@ -81,13 +81,13 @@ float64_t CHuberLoss::second_derivative(float64_t z)
 
 float64_t CHuberLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return 0;
 }
 
 float64_t CHuberLoss::get_square_grad(float64_t prediction, float64_t label)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return 0;
 }
 

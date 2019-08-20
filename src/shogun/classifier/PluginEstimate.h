@@ -131,7 +131,7 @@ class CPluginEstimate: public CMachine
 		{
 			if ((!pos_model) || (!neg_model))
 			{
-				SG_ERROR("no model available\n")
+				error("no model available");
 				return false;
 			}
 

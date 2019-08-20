@@ -161,7 +161,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 					assignment[m] = c;
 			}
 #ifdef DEBUG_HIERARCHICAL
-			SG_PRINT("l=%04i i=%04i j=%04i c1=%+04d c2=%+04d c=%+04d dist=%6.6f\n", l,i,j, c1,c2,c, merge_distance[l])
+			io::print("l={:04} i={:04d} j={:04d} c1={:+04} c2={:+04d} c={:+04d} dist={:6.6f}\n", l,i,j, c1,c2,c, merge_distance[l]);
 #endif
 			break;
 		}

@@ -62,8 +62,8 @@ bool COligoStringKernel::init(CFeatures* l, CFeatures* r)
 			((CStringFeatures<char>*) r)->get_max_vector_length()
 			);
 
-	REQUIRE(k>0, "k must be >0\n")
-	REQUIRE(width>0, "width must be >0\n")
+	require(k>0, "k must be >0");
+	require(width>0, "width must be >0");
 
 	getExpFunctionCache(max_len);
 	return init_normalizer();

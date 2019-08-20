@@ -32,7 +32,7 @@ template <class T> class CSimpleFile : public CSGObject
 		/** default constructor  */
 		CSimpleFile() :CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
 		{
-			SG_UNSTABLE("CSimpleFile::CSimpleFile()", "\n")
+			unstable(SOURCE_LOCATION);
 
 			file=NULL;
 			filename=get_strdup("");
@@ -84,7 +84,7 @@ template <class T> class CSimpleFile : public CSGObject
 						{
 							if ((num=(int64_t) ftell(file)) != -1)
 							{
-								SG_INFO("file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T))
+								io::info("file of size {} bytes == {} entries detected", num,num/sizeof(T));
 								num/=sizeof(T);
 							}
 							else
@@ -99,7 +99,7 @@ template <class T> class CSimpleFile : public CSGObject
 
 					if (!seek_status)
 					{
-						SG_ERROR("filesize autodetection failed\n")
+						error("filesize autodetection failed");
 						num=0;
 						return NULL;
 					}
@@ -116,10 +116,10 @@ template <class T> class CSimpleFile : public CSGObject
 						status=((int64_t) num_read == num);
 
 						if (!status)
-							SG_ERROR("only %ld of %ld entries read. io error\n", (int64_t) num_read, num)
+							error("only {} of {} entries read. io error", (int64_t) num_read, num);
 					}
 					else
-						SG_ERROR("failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename)
+						error("failed to allocate memory while trying to read {} entries from file \"s\"", (int64_t) num, filename);
 				}
 				return target;
 			}
@@ -176,10 +176,10 @@ template <class T> class CSimpleFile : public CSGObject
 						status=((int64_t) num_read == num);
 
 						if (!status)
-							SG_ERROR("only %ld of %ld entries read. io error\n", (int64_t) num_read, num)
+							error("only {} of {} entries read. io error", (int64_t) num_read, num);
 					}
 					else
-						SG_ERROR("failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename)
+						error("failed to allocate memory while trying to read {} entries from file \"s\"", (int64_t) num, filename);
 
 						*/
 		}

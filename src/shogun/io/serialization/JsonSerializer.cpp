@@ -56,79 +56,79 @@ public:
 
 	void on(bool* v) override
 	{
-		SG_SDEBUG("writing bool with value %d\n", *v);
+		SG_DEBUG("writing bool with value {}", *v);
 		m_json_writer.Bool(*v);
 		close_container();
 	}
 	void on(char* v) override
 	{
-		SG_SDEBUG("writing char with value %d\n", *v);
+		SG_DEBUG("writing char with value {}", *v);
 		m_json_writer.Int(*v);
 		close_container();
 	}
 	void on(int8_t* v) override
 	{
-		SG_SDEBUG("writing int8_t with value %d\n", *v);
+		SG_DEBUG("writing int8_t with value {}", *v);
 		m_json_writer.Int(*v);
 		close_container();
 	}
 	void on(uint8_t* v) override
 	{
-		SG_SDEBUG("writing uint8_t with value %d\n", *v);
+		SG_DEBUG("writing uint8_t with value {}", *v);
 		m_json_writer.Uint(*v);
 		close_container();
 	}
 	void on(int16_t* v) override
 	{
-		SG_SDEBUG("writing int16_t with value %d\n", *v);
+		SG_DEBUG("writing int16_t with value {}", *v);
 		m_json_writer.Int(*v);
 		close_container();
 	}
 	void on(uint16_t* v) override
 	{
-		SG_SDEBUG("writing uint16_t with value %d\n", *v);
+		SG_DEBUG("writing uint16_t with value {}", *v);
 		m_json_writer.Uint(*v);
 		close_container();
 	}
 	void on(int32_t* v) override
 	{
-		SG_SDEBUG("writing int32_t with value %d\n", *v);
+		SG_DEBUG("writing int32_t with value {}", *v);
 		m_json_writer.Int(*v);
 		close_container();
 	}
 	void on(uint32_t* v) override
 	{
-		SG_SDEBUG("writing uint32_t with value %d\n", *v);
+		SG_DEBUG("writing uint32_t with value {}", *v);
 		m_json_writer.Uint(*v);
 		close_container();
 	}
 	void on(int64_t* v) override
 	{
-		SG_SDEBUG("writing int64_t with value %" PRId64 "\n", *v);
+		SG_DEBUG("writing int64_t with value {}", *v);
 		m_json_writer.Int64(*v);
 		close_container();
 	}
 	void on(uint64_t* v) override
 	{
-		SG_SDEBUG("writing uint64_t with value %" PRIu64 "\n", *v);
+		SG_DEBUG("writing uint64_t with value {}", *v);
 		m_json_writer.Uint64(*v);
 		close_container();
 	}
 	void on(float* v) override
 	{
-		SG_SDEBUG("writing float with value %f\n", *v);
+		SG_DEBUG("writing float with value {}", *v);
 		m_json_writer.Double(*v);
 		close_container();
 	}
 	void on(float64_t* v) override
 	{
-		SG_SDEBUG("writing double with value %f\n", *v);
+		SG_DEBUG("writing double with value {}", *v);
 		m_json_writer.Double(*v);
 		close_container();
 	}
 	void on(floatmax_t* v) override
 	{
-		SG_SDEBUG("writing floatmax_t with value %Lf\n", *v);
+		SG_DEBUG("writing floatmax_t with value {}", *v);
 		uint64_t msb, lsb;
 		m_json_writer.StartArray();
 		uint64_t *array = reinterpret_cast<uint64_t*>(v);
@@ -155,7 +155,7 @@ public:
 	}
 	void on(complex128_t* v) override
 	{
-		SG_SDEBUG("writing complex128_t with value (%f, %f)\n", v->real(), v->imag());
+		SG_DEBUG("writing complex128_t with value ({}, {})", v->real(), v->imag());
 		m_json_writer.StartArray();
 		m_json_writer.Double(v->real());
 		m_json_writer.Double(v->imag());
@@ -164,14 +164,14 @@ public:
 	}
 	void on(std::string* v) override
 	{
-		SG_SDEBUG("writing std::string with value %s\n", v->c_str());
+		SG_DEBUG("writing std::string with value {}", v->c_str());
 		m_json_writer.String(v->c_str());
 	}
 	void on(CSGObject** v) override
 	{
 		if (*v)
 		{
-			SG_SDEBUG("writing SGObject: %s\n", (*v)->get_name());
+			SG_DEBUG("writing SGObject: {}", (*v)->get_name());
 			write_object(m_json_writer, this, wrap<CSGObject>(*v));
 		}
 		else
@@ -183,7 +183,7 @@ public:
 	}
 	void enter_matrix(index_t* rows, index_t* cols) override
 	{
-		SG_SDEBUG("writing matrix of size: %d x %d\n", *rows, *cols);
+		SG_DEBUG("writing matrix of size: {} x {}", *rows, *cols);
 		m_json_writer.StartArray();
 		if (*cols == 0 || *rows == 0)
 		{
@@ -198,7 +198,7 @@ public:
 	}
 	void enter_vector(index_t* size) override
 	{
-		SG_SDEBUG("writing vector of size: %d\n", *size);
+		SG_DEBUG("writing vector of size: {}", *size);
 		m_json_writer.StartArray();
 		if (*size == 0)
 			m_json_writer.EndArray();
@@ -207,7 +207,7 @@ public:
 	}
 	void enter_std_vector(size_t* size) override
 	{
-		SG_SDEBUG("writing std::vector of size: %d\n", *size);
+		SG_DEBUG("writing std::vector of size: {}", *size);
 		m_json_writer.StartArray();
 		if (*size == 0)
 			m_json_writer.EndArray();
@@ -216,7 +216,7 @@ public:
 	}
 	void enter_map(size_t* size) override
 	{
-		SG_SDEBUG("writing map of size: %d\n", *size);
+		SG_DEBUG("writing map of size: {}", *size);
 		m_json_writer.StartArray();
 		if (*size == 0)
 		{

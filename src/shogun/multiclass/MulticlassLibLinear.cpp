@@ -56,7 +56,7 @@ CMulticlassLibLinear::~CMulticlassLibLinear()
 SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 {
 	if (!m_train_state)
-		SG_ERROR("Please enable save_train_state option and train machine.\n")
+		error("Please enable save_train_state option and train machine.");
 
 	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS)
 

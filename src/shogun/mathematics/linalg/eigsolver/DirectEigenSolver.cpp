@@ -19,32 +19,32 @@ namespace shogun
 CDirectEigenSolver::CDirectEigenSolver()
 	: CEigenSolver()
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 }
 
 CDirectEigenSolver::CDirectEigenSolver(
 	CDenseMatrixOperator<float64_t>* linear_operator)
 	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 }
 
 CDirectEigenSolver::~CDirectEigenSolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
+	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
 }
 
 void CDirectEigenSolver::compute()
 {
 	if (m_is_computed_min && m_is_computed_max)
 	{
-		SG_DEBUG("Minimum/maximum eigenvalues are already computed, exiting\n");
+		SG_DEBUG("Minimum/maximum eigenvalues are already computed, exiting");
 		return;
 	}
 
 	CDenseMatrixOperator<float64_t>* op
 		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
-	REQUIRE(op, "Linear operator is not of CDenseMatrixOperator type!\n");
+	require(op, "Linear operator is not of CDenseMatrixOperator type!");
 
 	SGMatrix<float64_t> m=op->get_matrix_operator();
 	Map<MatrixXd> map_m(m.matrix, m.num_rows, m.num_cols);

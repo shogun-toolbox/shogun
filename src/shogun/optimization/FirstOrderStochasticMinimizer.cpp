@@ -37,7 +37,7 @@ using namespace shogun;
 
 void FirstOrderStochasticMinimizer::set_gradient_updater(DescendUpdater* gradient_updater)
 {
-	REQUIRE(gradient_updater, "Gradient updater must set\n");
+	require(gradient_updater, "Gradient updater must set");
 	if(m_gradient_updater != gradient_updater)
 	{
 		SG_REF(gradient_updater);
@@ -54,7 +54,7 @@ FirstOrderStochasticMinimizer:: ~FirstOrderStochasticMinimizer()
 
 void FirstOrderStochasticMinimizer::set_number_passes(int32_t num_passes)
 {
-	REQUIRE(num_passes>0, "The number (%d) to go through data must be positive\n", num_passes);
+	require(num_passes>0, "The number ({}) to go through data must be positive", num_passes);
 	m_num_passes=num_passes;
 }
 
@@ -77,7 +77,7 @@ void FirstOrderStochasticMinimizer::do_proximal_operation(SGVector<float64_t>var
 		SparsePenalty* sparse_penalty=dynamic_cast<SparsePenalty*>(m_penalty_type);
 		if(sparse_penalty)
 		{
-			REQUIRE(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used\n");
+			require(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used");
 			proximal_weight*=m_learning_rate->get_learning_rate(m_iter_counter);
 		}
 		proximal_penalty->update_variable_for_proximity(variable_reference,proximal_weight);
@@ -86,9 +86,9 @@ void FirstOrderStochasticMinimizer::do_proximal_operation(SGVector<float64_t>var
 
 void FirstOrderStochasticMinimizer::init_minimization()
 {
-	REQUIRE(m_fun,"Cost function must set\n");
-	REQUIRE(m_gradient_updater,"Descend updater must set\n");
-	REQUIRE(m_num_passes>0, "The number to go through data must set\n");
+	require(m_fun,"Cost function must set");
+	require(m_gradient_updater,"Descend updater must set");
+	require(m_num_passes>0, "The number to go through data must set");
 	m_cur_passes=0;
 }
 

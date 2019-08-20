@@ -115,7 +115,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
-			SG_ERROR("linadd not supported with Ridge normalization.\n")
+			error("linadd not supported with Ridge normalization.");
 			return 0;
 		}
 
@@ -125,7 +125,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
-			SG_ERROR("linadd not supported with Ridge normalization.\n")
+			error("linadd not supported with Ridge normalization.");
 			return 0;
 		}
 

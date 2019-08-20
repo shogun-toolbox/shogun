@@ -48,7 +48,7 @@ SGVector<float64_t> CMultidimensionalScaling::get_eigenvalues() const
 void CMultidimensionalScaling::set_landmark_number(int32_t num)
 {
 	if (num<3)
-		SG_ERROR("Number of landmarks should be greater than 3 to make triangulation possible while %d given.",
+		error("Number of landmarks should be greater than 3 to make triangulation possible while {} given.",
 		         num);
 	m_landmark_number = num;
 }
@@ -81,7 +81,7 @@ CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* d
 		parameters.method = SHOGUN_LANDMARK_MULTIDIMENSIONAL_SCALING;
 		parameters.landmark_ratio = float64_t(m_landmark_number)/distance->get_num_vec_lhs();
 		if (parameters.landmark_ratio > 1.0) {
-			SG_WARNING("Number of landmarks (%d) exceeds number of feature vectors (%d)",m_landmark_number,distance->get_num_vec_lhs());
+			io::warn("Number of landmarks ({}) exceeds number of feature vectors ({})",m_landmark_number,distance->get_num_vec_lhs());
 			parameters.landmark_ratio = 1.0;
 		}
 	}

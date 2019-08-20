@@ -14,7 +14,7 @@ template <class ST> bool CDenseDistance<ST>::init(CFeatures* l, CFeatures* r)
 
 	if ( ((CDenseFeatures<ST>*) l)->get_num_features() != ((CDenseFeatures<ST>*) r)->get_num_features() )
 	{
-		SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+		error("train or test features #dimension mismatch (l:{} vs. r:{})",
 				((CDenseFeatures<ST>*) l)->get_num_features(),((CDenseFeatures<ST>*) r)->get_num_features());
 	}
 

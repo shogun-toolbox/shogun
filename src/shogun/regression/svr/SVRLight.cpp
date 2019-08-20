@@ -100,20 +100,20 @@ bool CSVRLight::train_machine(CFeatures* data)
 
 	if (!kernel)
 	{
-		SG_ERROR("SVR_light can not proceed without kernel!\n")
+		error("SVR_light can not proceed without kernel!");
 		return false ;
 	}
 
 	if (!m_labels)
 	{
-		SG_ERROR("SVR_light can not proceed without labels!\n")
+		error("SVR_light can not proceed without labels!");
 		return false;
 	}
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels");
 		kernel->init(data, data);
 	}
 
@@ -121,17 +121,17 @@ bool CSVRLight::train_machine(CFeatures* data)
 		kernel->clear_normal();
 
 	// output some info
-	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
-	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
-	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))
-	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION))
-	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled())
-	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels())
+	SG_DEBUG("qpsize = {}", learn_parm->svm_maxqpsize)
+	SG_DEBUG("epsilon = %1.1e", learn_parm->epsilon_crit)
+	SG_DEBUG("kernel->has_property(KP_LINADD) = {}", kernel->has_property(KP_LINADD))
+	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = {}", kernel->has_property(KP_KERNCOMBINATION))
+	SG_DEBUG("get_linadd_enabled() = {}", get_linadd_enabled())
+	SG_DEBUG("kernel->get_num_subkernels() = {}", kernel->get_num_subkernels())
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache)
+	SG_DEBUG("use_kernel_cache = {}", use_kernel_cache)
 
 	// train the svm
 	svr_learn();
@@ -279,11 +279,11 @@ void CSVRLight::svr_learn()
 	}
 
 	if(verbosity==1) {
-		SG_DEBUG("Optimizing...\n")
+		SG_DEBUG("Optimizing...")
 	}
 
 	/* train the svm */
-		SG_DEBUG("num_train: %d\n", totdoc)
+		SG_DEBUG("num_train: {}", totdoc)
   iterations=optimize_to_convergence(docs,label,totdoc,
                      &shrink_state,inconsistent,a,lin,
                      c,&timing_profile,
@@ -292,14 +292,14 @@ void CSVRLight::svr_learn()
 
 
 	if(verbosity>=1) {
-		SG_DONE()
-		SG_INFO("(%ld iterations)\n",iterations)
-		SG_INFO("Optimization finished (maxdiff=%.8f).\n",maxdiff)
-		SG_INFO("obj = %.16f, rho = %.16f\n",get_objective(),model->b)
+		io::progress_done();
+		io::info("({} iterations)",iterations);
+		io::info("Optimization finished (maxdiff={:.8f}).",maxdiff);
+		io::info("obj = {:.16f}, rho = {:.16f}",get_objective(),model->b);
 
 		upsupvecnum=0;
 
-		SG_DEBUG("num sv: %d\n", model->sv_num)
+		SG_DEBUG("num sv: {}", model->sv_num)
 		for(i=1;i<model->sv_num;i++)
 		{
 			if(fabs(model->alpha[i]) >=
@@ -307,7 +307,7 @@ void CSVRLight::svr_learn()
 					 learn_parm->epsilon_a))
 				upsupvecnum++;
 		}
-		SG_INFO("Number of SV: %d (including %d at upper bound)\n",
+		io::info("Number of SV: {} (including {} at upper bound)",
 				model->sv_num-1,upsupvecnum);
 	}
 
@@ -352,7 +352,7 @@ float64_t CSVRLight::compute_objective_function(
 
   }
 
-  SG_INFO("REGRESSION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check) */
+  io::info("REGRESSION OBJECTIVE {} vs. CHECK {} (diff {})", criterion, check, criterion-check) */
 
   return(criterion);
 }
@@ -712,7 +712,7 @@ void CSVRLight::reactivate_inactive_examples(
 	  inactive2dnum=SG_MALLOC(int32_t, totdoc+11);
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
 		  if(verbosity>=2) {
-			  SG_INFO("%ld..",t)
+			  io::info("{}..",t);
 		  }
 		  a_old=shrink_state->a_history[t];
 		  for(i=0;i<totdoc;i++) {

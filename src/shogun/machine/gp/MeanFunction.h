@@ -73,7 +73,7 @@ public:
 	virtual SGVector<float64_t> get_parameter_derivative(const CFeatures* features,
 			const TParameter* param, index_t index=-1)
 	{
-		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+		error("Can't compute derivative wrt {} parameter", param->m_name);
 		return SGVector<float64_t>();
 	}
 };

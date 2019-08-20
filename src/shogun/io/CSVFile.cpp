@@ -241,7 +241,7 @@ GET_MATRIX(read_ulong, uint64_t)
 #define GET_NDARRAY(read_func, sg_type) \
 void CCSVFile::get_ndarray(sg_type*& array, int32_t*& dims, int32_t& num_dims) \
 { \
-	SG_NOTIMPLEMENTED \
+	not_implemented(SOURCE_LOCATION); \
 }
 
 GET_NDARRAY(read_byte, uint8_t)
@@ -257,7 +257,7 @@ GET_NDARRAY(read_word, uint16_t)
 void CCSVFile::get_sparse_matrix( \
 			SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 { \
-	SG_NOTIMPLEMENTED \
+	not_implemented(SOURCE_LOCATION); \
 }
 
 GET_SPARSE_MATRIX(read_char, bool)
@@ -357,7 +357,7 @@ SET_MATRIX(SCNu16, uint16_t)
 void CCSVFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
 { \
-	SG_NOTIMPLEMENTED \
+	not_implemented(SOURCE_LOCATION); \
 }
 
 SET_SPARSE_MATRIX(SCNi8, bool)
@@ -406,7 +406,7 @@ void CCSVFile::get_string_list( \
 			SGVector<sg_type>*& strings, int32_t& num_str, \
 			int32_t& max_string_len) \
 { \
-	SG_NOTIMPLEMENTED \
+	not_implemented(SOURCE_LOCATION); \
 }
 
 GET_STRING_LIST(int8_t)
@@ -437,7 +437,7 @@ void CCSVFile::set_string_list(
 void CCSVFile::set_string_list( \
 			const SGVector<sg_type>* strings, int32_t num_str) \
 { \
-	SG_NOTIMPLEMENTED \
+	not_implemented(SOURCE_LOCATION); \
 }
 
 SET_STRING_LIST(int8_t)

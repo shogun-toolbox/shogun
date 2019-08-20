@@ -174,7 +174,7 @@ SET_VECTOR(SCNu16, uint16_t)
 void CUAIFile::parse()
 {
     if (!file)
-        SG_SERROR("No file specified");
+        error("No file specified");
 
     SGVector<char> line, n_type;
 
@@ -215,15 +215,15 @@ void CUAIFile::parse()
         SGVector<float64_t> data;
         get_vector(data.vector, data.vlen);
         if (data_size != data.vlen)
-            SG_SERROR("Data size mismatch. Expected %d size data; \
-                got %d size data\n", data_size, data.vlen);
+            error("Data size mismatch. Expected {} size data; \
+                got {} size data", data_size, data.vlen);
         m_factors_table[i] = data;
     }
 }
 
 void CUAIFile::set_net_type(const char* net_type)
 {
-    REQUIRE ((strncmp(net_type, "BAYES", 5) == 0 || strncmp(net_type, "MARKOV", 6) == 0),
+    require ((strncmp(net_type, "BAYES", 5) == 0 || strncmp(net_type, "MARKOV", 6) == 0),
         "Network type should be either MARKOV or BAYES");
 
     m_net_type = SGVector<char>(strlen(net_type));
@@ -241,8 +241,8 @@ void CUAIFile::set_num_vars(int32_t num_vars)
 
 void CUAIFile::set_vars_card(SGVector<int32_t> vars_card)
 {
-    REQUIRE (m_num_vars == vars_card.vlen,
-        "Variables mismatch. Expected %d variables, got %d variables",
+    require (m_num_vars == vars_card.vlen,
+        "Variables mismatch. Expected {} variables, got {} variables",
          m_num_vars, vars_card.vlen);
 
     m_vars_card = vars_card;
@@ -258,8 +258,8 @@ void CUAIFile::set_num_factors(int32_t num_factors)
 void CUAIFile::set_factors_scope(int num_factors,
                                  const SGVector<int32_t>* factors_scope)
 {
-    REQUIRE(num_factors == m_num_factors, "Factors mismatch. Expected %d factors; \
-        got %d factors", m_num_factors, num_factors)
+    require(num_factors == m_num_factors, "Factors mismatch. Expected %d factors; \
+        got %d factors", m_num_factors, num_factors);
 
     m_factors_scope = new SGVector<int32_t> [m_num_factors];
     for (int32_t i=0; i<m_num_factors; i++)
@@ -276,8 +276,8 @@ void CUAIFile::set_factors_scope(int num_factors,
 void CUAIFile::set_factors_table(int32_t num_factors,
                                  const SGVector<float64_t>* factors_table)
 {
-    REQUIRE(num_factors == m_num_factors, "Factors mismatch. Expected %d factors; \
-        got %d factors", m_num_factors, num_factors);
+    require(num_factors == m_num_factors, "Factors mismatch. Expected {} factors; \
+        got {} factors", m_num_factors, num_factors);
 
     m_factors_table = new SGVector<float64_t> [m_num_factors];
     for (int32_t i=0; i<m_num_factors; i++)

@@ -75,11 +75,11 @@ struct CrossValidationMMD : PermutationMMD
 	template <typename PRNG>
 	void operator()(const KernelManager& kernel_mgr, PRNG& prng)
 	{
-		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
-			"Number of rows in the measure matrix (was %d), has to be >= %d*%d = %d!\n",
+		require(m_rejections.num_rows==m_num_runs*m_num_folds,
+			"Number of rows in the measure matrix (was {}), has to be >= {}*{} = {}!",
 			m_rejections.num_rows, m_num_runs, m_num_folds, m_num_runs*m_num_folds);
-		REQUIRE(m_rejections.num_cols==kernel_mgr.num_kernels(),
-			"Number of columns in the measure matrix (was %d), has to equal to the nunber of kernels (%d)!\n",
+		require(m_rejections.num_cols==kernel_mgr.num_kernels(),
+			"Number of columns in the measure matrix (was {}), has to equal to the nunber of kernels ({})!",
 			m_rejections.num_cols, kernel_mgr.num_kernels());
 
 		const index_t size=m_n_x+m_n_y;
@@ -174,12 +174,12 @@ struct CrossValidationMMD : PermutationMMD
 					}
 
 					std::sort(null_samples.data(), null_samples.data()+null_samples.size());
-					SG_SDEBUG("statistic=%f\n", statistic);
+					SG_DEBUG("statistic={}", statistic);
 					float64_t idx=null_samples.find_position_to_insert(statistic);
-					SG_SDEBUG("index=%f\n", idx);
+					SG_DEBUG("index={}", idx);
 					auto p_value=1.0-idx/m_num_null_samples;
 					bool rejected=p_value<m_alpha;
-					SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
+					SG_DEBUG("p-value={}, alpha={}, rejected={}", p_value, m_alpha, rejected);
 					m_rejections(current_run*m_num_folds+current_fold, k)=rejected;
 
 					m_n_x=orig_n_x;

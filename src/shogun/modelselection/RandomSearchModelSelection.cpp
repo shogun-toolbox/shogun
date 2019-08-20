@@ -35,7 +35,7 @@ CRandomSearchModelSelection::~CRandomSearchModelSelection()
 CParameterCombination* CRandomSearchModelSelection::select_model(bool print_state)
 {
 	if (print_state)
-		SG_PRINT("Generating parameter combinations\n")
+		io::print("Generating parameter combinations\n");
 
 	/* Retrieve all possible parameter combinations */
 	CDynamicObjectArray* all_combinations=
@@ -54,12 +54,12 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	CParameterCombination* best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
-		if (print_state) SG_PRINT("Direction is maximize\n")
+		if (print_state) io::print("Direction is maximize\n");
 		best_result->set_mean(CMath::ALMOST_NEG_INFTY);
 	}
 	else
 	{
-		if (print_state) SG_PRINT("Direction is minimize\n")
+		if (print_state) io::print("Direction is minimize\n");
 		best_result->set_mean(CMath::ALMOST_INFTY);
 	}
 
@@ -75,7 +75,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 		/* eventually print */
 		if (print_state)
 		{
-			SG_PRINT("trying combination:\n")
+			io::print("trying combination:\n");
 			current_combination->print_tree();
 		}
 

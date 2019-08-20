@@ -63,13 +63,13 @@ CDependenceMaximization::~CDependenceMaximization()
 CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 		index_t idx)
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
 	// remove the dimension specified by the index, i.e. get X\X_i
 	// NULL check is handled in CFeatureSelection::get_num_features call
 	index_t num_features=get_num_features(features);
-	REQUIRE(num_features>idx, "Specified dimension to remove (%d) is greater "
-			"than the total number of current features (%d)!\n",
+	require(num_features>idx, "Specified dimension to remove ({}) is greater "
+			"than the total number of current features ({})!",
 			idx, num_features);
 
 	SGVector<index_t> dims(num_features-1);
@@ -80,18 +80,18 @@ CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 			dims[n_dims++]=i;
 	}
 
-	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+	if (env()->io()->get_loglevel()<=io::MSG_DEBUG)
 		dims.display_vector("dims");
 
 	// the following already does a SG_REF on the newly created feature
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 	return features->copy_dimension_subset(dims);
 }
 
 float64_t CDependenceMaximization::compute_measures(CFeatures* features,
 		index_t idx)
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
 	// remove the dimension (feat) specified by the index idx
 	CFeatures* reduced_feats=create_transformed_copy(features, idx);
@@ -104,29 +104,29 @@ float64_t CDependenceMaximization::compute_measures(CFeatures* features,
 	m_estimator->set_p(reduced_feats);
 	float64_t statistic=m_estimator->compute_statistic();
 
-	SG_DEBUG("statistic = %f!\n", statistic);
+	SG_DEBUG("statistic = {}!", statistic);
 
 	SG_UNREF(reduced_feats);
 
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 	return statistic;
 }
 
 CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 		SGVector<index_t> argsorted)
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
-	REQUIRE(m_num_remove>0, "Number or percentage of features to be removed is "
-			"not set! Please use set_num_remove() to set this!\n");
-	REQUIRE(m_policy==N_LARGEST || m_policy==PERCENTILE_LARGEST,
+	require(m_num_remove>0, "Number or percentage of features to be removed is "
+			"not set! Please use set_num_remove() to set this!");
+	require(m_policy==N_LARGEST || m_policy==PERCENTILE_LARGEST,
 			"Only N_LARGEST and PERCENTILE_LARGEST removal policy can work "
-			"with %s!\n", get_name());
-	REQUIRE(features, "Features is not intialized!\n");
-	REQUIRE(argsorted.vector, "The argsorted vector is not initialized!\n");
-	REQUIRE(get_num_features(features)==argsorted.vlen,
-			"argsorted vector should be equal to the number of features (%d)! "
-			"But it was %d!\n", argsorted.vlen);
+			"with {}!", get_name());
+	require(features, "Features is not intialized!");
+	require(argsorted.vector, "The argsorted vector is not initialized!");
+	require(get_num_features(features)==argsorted.vlen,
+			"argsorted vector should be equal to the number of features ({})! "
+			"But it was {}!", argsorted.vlen);
 
 	// compute a threshold to remove for both the policies
 	index_t threshold=m_num_remove;
@@ -134,8 +134,8 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 		threshold*=argsorted.vlen*0.01;
 
 	// make sure that the threshold is valid given the current number of feats
-	REQUIRE(threshold<argsorted.vlen, "The threshold of removal is too high "
-			"(asked to remove %d features out of %d)! Please use a smaller "
+	require(threshold<argsorted.vlen, "The threshold of removal is too high "
+			"(asked to remove {} features out of {})! Please use a smaller "
 			"number for removal using set_num_remove() call",
 			threshold, argsorted.vlen);
 
@@ -145,7 +145,7 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	// sorting the indices to get the original order
 	CMath::qsort(inds);
-	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+	if (env()->io()->get_loglevel()<=io::MSG_DEBUG)
 		inds.display_vector("selected feats");
 
 	// copy rest of the features and SG_UNREF the original feat obj
@@ -157,15 +157,15 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	SG_UNREF(features);
 
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 	return reduced_feats;
 }
 
 void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 {
-	REQUIRE(policy==N_LARGEST || policy==PERCENTILE_LARGEST,
+	require(policy==N_LARGEST || policy==PERCENTILE_LARGEST,
 			"Only N_LARGEST and PERCENTILE_LARGEST removal policy can work "
-			"with %s!\n", get_name());
+			"with {}!", get_name());
 	m_policy=policy;
 }
 

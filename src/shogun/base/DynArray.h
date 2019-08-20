@@ -176,7 +176,7 @@ template <class T> class DynArray
 		{
 			if (index>=get_num_elements())
 			{
-				SG_SERROR("array index out of bounds (%d >= %d)\n",
+				error("array index out of bounds ({} >= {})",
 						 index, get_num_elements());
 			}
 			return array[index];

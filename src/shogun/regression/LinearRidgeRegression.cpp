@@ -76,7 +76,7 @@ bool CLinearRidgeRegression::train_machine_templated(
 	else
 	{
 		if (m_use_bias)
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 
 		SGMatrix<T> gram = feats->gram();
 		linalg::add_ridge(gram, tau);

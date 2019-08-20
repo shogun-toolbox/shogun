@@ -134,7 +134,7 @@ int32_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
 template <class ST>
 void CStreamingHashedSparseFeatures<ST>::set_vector_reader()
 {
-	SG_DEBUG("called inside set_vector_reader\n");
+	SG_DEBUG("called inside set_vector_reader");
 	parser.set_read_vector(&CStreamingFile::get_sparse_vector);
 }
 

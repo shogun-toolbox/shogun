@@ -55,7 +55,7 @@ template <class ST> class CSparseKernel : public CKernel
 
 			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features())
 			{
-				SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+				error("train or test features #dimension mismatch (l:{} vs. r:{})",
 						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
 			}
 			return true;

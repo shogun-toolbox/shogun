@@ -160,7 +160,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			if (get_is_initialized())
 				return compute_by_tree(idx);
 
-			SG_ERROR("CWeightedDegreeStringKernel optimization not initialized\n")
+			error("CWeightedDegreeStringKernel optimization not initialized");
 			return 0;
 		}
 
@@ -194,7 +194,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			{
 
 				if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
-					SG_ERROR("not implemented")
+					error("not implemented");
 
 				tries->delete_trees(max_mismatch==0);
 				set_is_initialized(false);
@@ -210,7 +210,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		{
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
-				SG_ERROR("not implemented")
+				error("not implemented");
 
 			if (max_mismatch==0)
 				add_example_to_tree(idx, weight);
@@ -248,13 +248,13 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			{
 
 				if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
-					SG_ERROR("not implemented")
+					error("not implemented");
 
 				compute_by_tree(idx, subkernel_contrib);
 				return ;
 			}
 
-			SG_ERROR("CWeightedDegreeStringKernel optimization not initialized\n")
+			error("CWeightedDegreeStringKernel optimization not initialized");
 		}
 
 		/** get subkernel weights
@@ -293,7 +293,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			int32_t num_weights2=w.vlen;
 			int32_t num_weights = get_num_subkernels();
 			if (num_weights!=num_weights2)
-				SG_ERROR("number of weights do not match\n")
+				error("number of weights do not match");
 
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
@@ -398,7 +398,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		{
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
-				SG_ERROR("not implemented")
+				error("not implemented");
 
 			if (position_weights!=NULL)
 			{
@@ -571,7 +571,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		inline bool set_mkl_stepsize(int32_t step)
 		{
 			if (step<1)
-				SG_ERROR("Stepsize must be a positive integer\n")
+				error("Stepsize must be a positive integer");
 			mkl_stepsize=step;
 			return true;
 		}

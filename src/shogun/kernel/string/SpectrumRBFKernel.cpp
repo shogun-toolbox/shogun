@@ -100,7 +100,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 		aa_to_index[(uint8_t) 'W'] = 17;
 		aa_to_index[(uint8_t) 'Y'] = 18;
 		aa_to_index[(uint8_t) 'V'] = 19;
-	SG_DEBUG("initializing background\n")
+	SG_DEBUG("initializing background")
 	double background[20]; // profile
 	background[0]=0.0799912015849807; //A
 	background[1]=0.0484482507611578;//R
@@ -131,7 +131,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	const char *filename="/fml/ag-raetsch/home/toussaint/scp/aawd_compbio_workshop/code_nora/data/profile/profiles";
 	std::ifstream fin(filename);
 
-	SG_DEBUG("Reading profiles from %s\n", filename)
+	SG_DEBUG("Reading profiles from {}", filename)
 	std::string line;
 	while (!fin.eof())
 	{
@@ -167,7 +167,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 					if (0) //(aa =="B" || aa == "X" || aa == "Z")
 					{
 						int pos = seqs.size()+1;
-						SG_DEBUG("Skipping aa in sequence %d\n", pos)
+						SG_DEBUG("Skipping aa in sequence {}", pos)
 				    continue;
 	        }
 					else
@@ -196,7 +196,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 							}
 							double value = -1* std::log(C*(p/100)+(1-C)*background[j]); // taken from Leslie's example, C actually corresponds to 1/(1+C)
 							curr_profile.push_back(value);
-							//SG_DEBUG("seq %d aa %d value %f p %f  bg %f\n", i, j, value,p, background[j])
+							//SG_DEBUG("seq {} aa {} value {} p {}  bg {}", i, j, value,p, background[j])
 						}
 
 						if (all_zeros)
@@ -207,16 +207,16 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 								//profile[i][temp_profile_index]=-log(C+(1-C)*background[re_candidate[temp_profile_index]]);
 								int32_t aa_index = aa_to_index[(int)aa.c_str()[0]];
 								double value = -1* std::log(C+(1-C)*background[aa_index]); // taken from Leslie's example, C actually corresponds to 1/(1+C)
-								SG_DEBUG("before %f\n", profiles.back()[(i-1) * 20 + aa_index])
+								SG_DEBUG("before {}", profiles.back()[(i-1) * 20 + aa_index])
 								curr_profile[(i*20) + aa_index] = value;
-								SG_DEBUG(">>> aa %c \t %d \t %f\n", aa.c_str()[0], aa_index, value)
+								SG_DEBUG(">>> aa {} \t {} \t {}", aa.c_str()[0], aa_index, value)
 
 								/*
 								for (int z=0; z <20; ++z)
 								{
-									SG_DEBUG(" %d \t %f\t", z, curr_profile[z])
+									SG_DEBUG(" {} \t {}\t", z, curr_profile[z])
 								}
-								SG_DEBUG("\n")
+								SG_DEBUG("")
 								*/
 							}
 						}
@@ -225,7 +225,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 
 			if (curr_profile.size() != 20 * sequence.length())
 	    {
-				SG_ERROR("Something's wrong with the profile.\n")
+				error("Something's wrong with the profile.");
 				break;
 			}
 
@@ -279,8 +279,8 @@ bool CSpectrumRBFKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
+	SG_DEBUG("lhs_changed: {}", lhs_changed)
+	SG_DEBUG("rhs_changed: {}", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
@@ -366,7 +366,7 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 
 	if (AA_matrix_)
 	{
-		SG_DEBUG("Setting AA_matrix\n")
+		SG_DEBUG("Setting AA_matrix")
 		sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 		return true ;
 	}

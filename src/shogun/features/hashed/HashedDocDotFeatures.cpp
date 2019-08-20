@@ -34,7 +34,7 @@ CHashedDocDotFeatures::CHashedDocDotFeatures(const CHashedDocDotFeatures& orig)
 
 CHashedDocDotFeatures::CHashedDocDotFeatures(CFile* loader)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
@@ -272,19 +272,19 @@ int32_t CHashedDocDotFeatures::get_nnz_features_for_vector(int32_t num) const
 
 void* CHashedDocDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 
 bool CHashedDocDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 
 void CHashedDocDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 const char* CHashedDocDotFeatures::get_name() const

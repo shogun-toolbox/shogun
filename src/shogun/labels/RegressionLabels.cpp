@@ -50,7 +50,7 @@ namespace shogun
 {
 	Some<CRegressionLabels> regression_labels(CLabels* orig)
 	{
-		REQUIRE(orig, "No labels provided.\n");
+		require(orig, "No labels provided.");
 		try
 		{
 			switch (orig->get_label_type())
@@ -62,13 +62,13 @@ namespace shogun
 				return some<CRegressionLabels>(
 					orig->as<CBinaryLabels>()->get_labels());
 			default:
-				SG_SNOTIMPLEMENTED
+				not_implemented(SOURCE_LOCATION);
 			}
 		}
 		catch (const ShogunException& e)
 		{
-			SG_SERROR(
-			    "Cannot convert %s to regression labels: \n", e.what(),
+			error(
+			    "Cannot convert {} to regression labels: ", e.what(),
 			    orig->get_name());
 		}
 

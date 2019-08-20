@@ -36,7 +36,7 @@ bool CMachine::train(CFeatures* data)
 	if (train_require_labels())
 	{
 		if (m_labels == NULL)
-			SG_ERROR("%s@%p: No labels given", get_name(), this)
+			error("{}@{}: No labels given", get_name(), fmt::ptr(this));
 
 		m_labels->ensure_valid(get_name());
 	}
@@ -46,12 +46,12 @@ bool CMachine::train(CFeatures* data)
 
 	if (support_feature_dispatching())
 	{
-		REQUIRE(data != NULL, "Features not provided!");
-		REQUIRE(
+		require(data != NULL, "Features not provided!");
+		require(
 		    data->get_num_vectors() == m_labels->get_num_labels(),
-		    "Number of training vectors (%d) does not match number of "
-		    "labels (%d)\n",
-		    data->get_num_vectors(), m_labels->get_num_labels())
+		    "Number of training vectors ({}) does not match number of "
+		    "labels ({})",
+		    data->get_num_vectors(), m_labels->get_num_labels());
 
 		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
 			result = train_dense(data);
@@ -60,7 +60,7 @@ bool CMachine::train(CFeatures* data)
 		    data->get_feature_class() == C_STRING)
 			result = train_string(data);
 		else
-			SG_ERROR("Training with %s is not implemented!", data->get_name());
+			error("Training with {} is not implemented!", data->get_name());
 	}
 	else
 		result = train_machine(data);
@@ -75,7 +75,7 @@ void CMachine::set_labels(CLabels* lab)
 {
     if (lab != NULL)
         if (!is_label_valid(lab))
-            SG_ERROR("Invalid label for %s", get_name())
+            error("Invalid label for {}", get_name());
 
 	SG_REF(lab);
 	SG_UNREF(m_labels);
@@ -115,8 +115,8 @@ ESolverType CMachine::get_solver_type()
 
 CLabels* CMachine::apply(CFeatures* data)
 {
-	SG_DEBUG("entering %s::apply(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("entering {}::apply({} at {})",
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CLabels* result=NULL;
 
@@ -138,42 +138,42 @@ CLabels* CMachine::apply(CFeatures* data)
 			result=apply_latent(data);
 			break;
 		default:
-			SG_ERROR("Unknown problem type")
+			error("Unknown problem type");
 			break;
 	}
 
-	SG_DEBUG("leaving %s::apply(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("leaving {}::apply({} at {})",
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return result;
 }
 
 CBinaryLabels* CMachine::apply_binary(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_binary()\n")
+	error("This machine does not support apply_binary()");
 	return NULL;
 }
 
 CRegressionLabels* CMachine::apply_regression(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_regression()\n")
+	error("This machine does not support apply_regression()");
 	return NULL;
 }
 
 CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_multiclass()\n")
+	error("This machine does not support apply_multiclass()");
 	return NULL;
 }
 
 CStructuredLabels* CMachine::apply_structured(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_structured()\n")
+	error("This machine does not support apply_structured()");
 	return NULL;
 }
 
 CLatentLabels* CMachine::apply_latent(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_latent()\n")
+	error("This machine does not support apply_latent()");
 	return NULL;
 }

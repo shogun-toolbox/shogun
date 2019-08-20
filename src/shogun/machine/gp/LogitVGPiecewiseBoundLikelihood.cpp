@@ -211,7 +211,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	//ex0 = ch-cl;
 	const Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
 
-	//%ex1= v.*(pl-ph) + m.*(ch-cl);
+	//{:e}x1= v.*(pl-ph) + m.*(ch-cl);
 	MatrixXd eigen_ex1 = ((eigen_pl - eigen_ph).array().rowwise()*eigen_s2.array().transpose()
 		+ eigen_cdf_diff.array().rowwise()*eigen_mu.array().transpose()).matrix();
 
@@ -231,7 +231,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	SGVector<float64_t> f(m_mu.vlen);
 	Map<VectorXd> eigen_f(f.vector, f.vlen);
 
-	//%f = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
+	//{} = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
 	eigen_f = (eigen_ex2.array().colwise()*eigen_a.array()
 		+ eigen_ex1.array().colwise()*eigen_b.array()
 		+ eigen_ex0.array().colwise()*eigen_c.array()).colwise().sum().matrix();
@@ -251,13 +251,13 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute gm and gv
 	//and the formula of the appendix
-	REQUIRE(param, "Param is required (param should not be NULL)\n");
-	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	require(param, "Param is required (param should not be NULL)");
+	require(param->m_name, "Param name is required (param->m_name should not be NULL)");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
-	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
+	require(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using the piecewise bound ",
-		"wrt %s.%s parameter. The function only accepts mu and sigma2 as parameter",
+		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter",
 		get_name(), param->m_name);
 
 	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
@@ -362,8 +362,8 @@ bool CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<flo
 	status=CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 	if (status)
 	{
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
+		require(lab->get_label_type()==LT_BINARY,
+			"Labels must be type of CBinaryLabels");
 
 		m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
 

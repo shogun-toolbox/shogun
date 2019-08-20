@@ -91,8 +91,8 @@ void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 		{
 			subset.display_vector("subset");
 			latest->m_subset_idx.display_vector("last on stack");
-			SG_ERROR("%s::add_subset(): Provided index vector is "
-					"larger than the subsets on the stubset stack!\n", get_name());
+			error("{}::add_subset(): Provided index vector is "
+					"larger than the subsets on the stubset stack!", get_name());
 		}
 
 		/* check for range of indices */
@@ -101,8 +101,8 @@ void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 		{
 			subset.display_vector("subset");
 			latest->m_subset_idx.display_vector("last on stack");
-			SG_ERROR("%s::add_subset(): Provided index vector contains"
-					" indices larger than possible range!\n", get_name());
+			error("{}::add_subset(): Provided index vector contains"
+					" indices larger than possible range!", get_name());
 		}
 
 		/* clean up */
@@ -150,7 +150,7 @@ void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 
 void CSubsetStack::add_subset_in_place(SGVector<index_t> subset)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 void CSubsetStack::remove_subset()

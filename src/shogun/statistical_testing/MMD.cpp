@@ -55,7 +55,7 @@ EStatisticType statistic_type(machine_int_t method)
 		return ST_BIASED_FULL;
 	else
 	{
-		SG_SERROR("Unknown statistic type %d.\n", method);
+		error("Unknown statistic type {}.", method);
 		return ST_UNBIASED_FULL;
 	}
 }
@@ -68,7 +68,7 @@ EVarianceEstimationMethod variance_estimation_method(machine_int_t method)
 		return VEM_PERMUTATION;
 	else
 	{
-		SG_SERROR("Unknown variance estimation method %d.\n", method);
+		error("Unknown variance estimation method {}.", method);
 		return VEM_PERMUTATION;
 	}
 }
@@ -85,7 +85,7 @@ ENullApproximationMethod null_approximation_method(machine_int_t method)
 		return NAM_MMD2_GAMMA;
 	else
 	{
-		SG_SERROR("Unknown null approximation method %d.\n", method);
+		error("Unknown null approximation method {}.", method);
 		return NAM_MMD2_GAMMA;
 	}
 }
@@ -103,7 +103,7 @@ EKernelSelectionMethod kernel_selection_method(machine_int_t method)
 		return KSM_CROSS_VALIDATION;
 	else
 	{
-		SG_SERROR("Unknown kernel selection method %d.\n", method);
+		error("Unknown kernel selection method {}.", method);
 		return KSM_AUTO;
 	}
 }
@@ -181,12 +181,12 @@ void CMMD::add_kernel(CKernel* kernel)
 
 void CMMD::select_kernel()
 {
-	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 	auto& data_mgr=get_data_mgr();
 	data_mgr.set_train_mode(true);
 	CMMD::set_kernel(self->strategy->select_kernel(this));
 	data_mgr.set_train_mode(false);
-	SG_DEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 }
 
 void CMMD::cleanup()

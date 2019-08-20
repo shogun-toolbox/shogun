@@ -598,9 +598,9 @@ namespace shogun
 			* 0: Eigen::Success. Eigenvalues computation was successful
 			* 2: Eigen::NoConvergence. Iterative procedure did not converge.
 			*/
-			REQUIRE(
+			require(
 				solver.info() != Eigen::NoConvergence,
-				"Iterative procedure did not converge!\n");
+				"Iterative procedure did not converge!");
 
 			eigenvalues_eig = solver.eigenvalues().tail(k).template cast<T>();
 			eigenvectors_eig = solver.eigenvectors().rightCols(k).template cast<T>();
@@ -638,8 +638,8 @@ namespace shogun
 			* status < 0: the i-th argument had an illegal value
 			* status > 0: internal error
 			*/
-			REQUIRE(!(status < 0), "The %d-th argument han an illegal value.", -status)
-			REQUIRE(!(status > 0), "Internal error.")
+			require(!(status < 0), "The {}-th argument han an illegal value.", -status);
+			require(!(status > 0), "Internal error.");
 		}
 		#endif
 

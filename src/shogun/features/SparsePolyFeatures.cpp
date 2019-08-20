@@ -12,8 +12,7 @@ using namespace shogun;
 
 CSparsePolyFeatures::CSparsePolyFeatures()
 {
-	SG_UNSTABLE("CSparsePolyFeatures::CSparsePolyFeatures()",
-				"\n");
+	unstable(SOURCE_LOCATION);
 
 	m_feat = NULL;
 	m_degree = 0;
@@ -51,8 +50,8 @@ CSparsePolyFeatures::~CSparsePolyFeatures()
 
 CSparsePolyFeatures::CSparsePolyFeatures(const CSparsePolyFeatures & orig)
 {
-	SG_PRINT("CSparsePolyFeatures:\n")
-	SG_NOTIMPLEMENTED
+	io::print("CSparsePolyFeatures:\n");
+	not_implemented(SOURCE_LOCATION);
 }
 
 int32_t CSparsePolyFeatures::get_dim_feature_space() const
@@ -90,19 +89,19 @@ int32_t CSparsePolyFeatures::get_num_vectors() const
 
 void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 bool CSparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CSparsePolyFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
@@ -129,9 +128,9 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 float64_t
 CSparsePolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	REQUIRE(
+	require(
 	    vec2.vlen == m_output_dimensions,
-	    "Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n",
+	    "Dimensions don't match, vec2_dim={}, m_output_dimensions={}",
 	    vec2.vlen, m_output_dimensions);
 
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
@@ -168,7 +167,7 @@ CSparsePolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) cons
 			}
 		}
 		else if (m_degree==3)
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 	}
 
 	if (m_normalize)
@@ -181,7 +180,7 @@ CSparsePolyFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) cons
 void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len!=m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
+		error("Dimensions don't match, vec2_dim={}, m_output_dimensions={}", vec2_len, m_output_dimensions);
 
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
 
@@ -221,7 +220,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 		}
 	}
 	else if (m_degree==3)
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 
 	m_feat->free_feature_vector(vec_idx1);
 }

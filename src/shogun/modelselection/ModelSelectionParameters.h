@@ -111,7 +111,7 @@ public:
 	    m_value_type=value_type;
 	}
 
-	/** SG_PRINT's the tree of which this node is the base
+	/** prints the tree of which this node is the base
 	 *
 	 * @param prefix_num a number of tabs that is put before each output
 	 * to have a more readable print layout
@@ -216,7 +216,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 		ERangeType type, T step, T type_base)
 {
 	if (max<min)
-		SG_SERROR("unable build values: max=%f < min=%f\n", max, min)
+		error("unable build values: max={} < min={}", max, min);
 
 	/* create value vector, no ref-counting */
 	index_t num_values=CMath::round((max-min)/step)+1;
@@ -237,13 +237,13 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 			break;
 		case R_LOG:
 			if (current<=0)
-				SG_SERROR("log(x) with x=%f\n", current)
+				error("log(x) with x={}", current);
 
 			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
 			result.vector[i]=CMath::log2(current)/CMath::log2(type_base);
 			break;
 		default:
-			SG_SERROR("unknown range type!\n")
+			error("unknown range type!");
 			break;
 		}
 	}

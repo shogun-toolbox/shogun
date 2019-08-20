@@ -137,8 +137,8 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle not"
-						" possible with subset. Remove first\n", get_name());
+				error("{}::set_triangle_kernel_matrix_from_triangle not"
+						" possible with subset. Remove first", get_name());
 			}
 			return set_triangle_kernel_matrix_from_triangle_generic(tri_kernel_matrix);
 		}
@@ -160,8 +160,8 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle_generic "
-						"not possible with subset. Remove first\n", get_name());
+				error("{}::set_triangle_kernel_matrix_from_triangle_generic "
+						"not possible with subset. Remove first", get_name());
 			}
 			ASSERT(tri_kernel_matrix.vector)
 
@@ -170,12 +170,12 @@ class CCustomKernel: public CKernel
 
 			if (cols*(cols+1)/2 != len)
 			{
-				SG_ERROR("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n")
+				error("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements");
 				return false;
 			}
 
 			cleanup_custom();
-			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom kernel of size {}x{}", cols,cols)
 
 			float32_t* m = SG_MALLOC(float32_t, len);
 			kmatrix=SGMatrix<float32_t>(m, cols, cols);
@@ -217,8 +217,8 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_triangle_kernel_matrix_from_full_generic "
-						"not possible with subset. Remove first\n", get_name());
+				error("{}::set_triangle_kernel_matrix_from_full_generic "
+						"not possible with subset. Remove first", get_name());
 			}
 
 			int32_t rows = full_kernel_matrix.num_rows;
@@ -226,7 +226,7 @@ class CCustomKernel: public CKernel
 			ASSERT(rows==cols)
 
 			cleanup_custom();
-			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom kernel of size {}x{}", cols,cols)
 
 			float32_t* m = SG_MALLOC(float32_t, cols*(cols+1)/2);
 			kmatrix=SGMatrix<float32_t>(m, rows, cols);
@@ -263,8 +263,8 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_full_kernel_matrix_from_full "
-						"not possible with subset. Remove first\n", get_name());
+				error("{}::set_full_kernel_matrix_from_full "
+						"not possible with subset. Remove first", get_name());
 			}
 
 			cleanup_custom();
@@ -294,14 +294,14 @@ class CCustomKernel: public CKernel
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
-				SG_ERROR("%s::set_full_kernel_matrix_from_full "
-						"not possible with subset. Remove first\n", get_name());
+				error("{}::set_full_kernel_matrix_from_full "
+						"not possible with subset. Remove first", get_name());
 			}
 
 			cleanup_custom();
 			int32_t rows=full_kernel_matrix.num_rows;
 			int32_t cols=full_kernel_matrix.num_cols;
-			SG_DEBUG("using custom kernel of size %dx%d\n", rows,cols)
+			SG_DEBUG("using custom kernel of size {}x{}", rows,cols)
 
 			kmatrix=SGMatrix<float32_t>(rows,cols);
 			upper_diagonal = false;
@@ -545,16 +545,16 @@ class CCustomKernel: public CKernel
 		 */
 		SGMatrix<float32_t> get_float32_kernel_matrix()
 		{
-			REQUIRE(!m_row_subset_stack->has_subsets(), "%s::get_float32_kernel_matrix(): "
+			require(!m_row_subset_stack->has_subsets(), "{}::get_float32_kernel_matrix(): "
 						"Not possible with row subset active! If you want to"
-						" create a %s from another one with a subset, use "
-						"get_kernel_matrix() and the SGMatrix constructor!\n",
+						" create a {} from another one with a subset, use "
+						"get_kernel_matrix() and the SGMatrix constructor!",
 						get_name(), get_name());
 
-			REQUIRE(!m_col_subset_stack->has_subsets(), "%s::get_float32_kernel_matrix(): "
+			require(!m_col_subset_stack->has_subsets(), "{}::get_float32_kernel_matrix(): "
 					"Not possible with collumn subset active! If you want to"
-					" create a %s from another one with a subset, use "
-					"get_kernel_matrix() and the SGMatrix constructor!\n",
+					" create a {} from another one with a subset, use "
+					"get_kernel_matrix() and the SGMatrix constructor!",
 					get_name(), get_name());
 
 			return kmatrix;
@@ -572,8 +572,8 @@ class CCustomKernel: public CKernel
 		 */
 		virtual float64_t compute(int32_t row, int32_t col)
 		{
-			REQUIRE(kmatrix.matrix, "%s::compute(%d, %d): No kenrel matrix "
-					"set!\n", get_name(), row, col);
+			require(kmatrix.matrix, "{}::compute({}, {}): No kenrel matrix "
+					"set!", get_name(), row, col);
 
 			index_t real_row=m_row_subset_stack->subset_idx_conversion(row);
 			index_t real_col=m_col_subset_stack->subset_idx_conversion(col);

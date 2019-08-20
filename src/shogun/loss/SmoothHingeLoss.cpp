@@ -39,12 +39,12 @@ float64_t CSmoothHingeLoss::second_derivative(float64_t z)
 
 float64_t CSmoothHingeLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return -1;
 }
 
 float64_t CSmoothHingeLoss::get_square_grad(float64_t prediction, float64_t label)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return -1;
 }

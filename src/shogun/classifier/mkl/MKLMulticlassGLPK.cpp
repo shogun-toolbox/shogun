@@ -41,7 +41,7 @@ MKLMulticlassGLPK::~MKLMulticlassGLPK()
 
 MKLMulticlassGLPK MKLMulticlassGLPK::operator=(MKLMulticlassGLPK & gl)
 {
-	SG_ERROR(
+	error(
          " MKLMulticlassGLPK MKLMulticlassGLPK::operator=(...): must "
 			"not be called, glpk structure is currently not copyable");
 	return (*this);
@@ -49,7 +49,7 @@ MKLMulticlassGLPK MKLMulticlassGLPK::operator=(MKLMulticlassGLPK & gl)
 }
 MKLMulticlassGLPK::MKLMulticlassGLPK(MKLMulticlassGLPK & gl)
 {
-	SG_ERROR(
+	error(
          " MKLMulticlassGLPK::MKLMulticlassGLPK(MKLMulticlassGLPK & gl):"
 			" must not be called, glpk structure is currently not copyable");
 
@@ -61,8 +61,8 @@ void MKLMulticlassGLPK::setup(const int32_t numkernels2)
 	numkernels=numkernels2;
 	if (numkernels<=1)
 	{
-		SG_ERROR("void glpkwrapper::setup(const int32_tnumkernels): input "
-				"numkernels out of bounds: %d\n",numkernels);
+		error("void glpkwrapper::setup(const int32_tnumkernels): input "
+				"numkernels out of bounds: {}\n",numkernels);
 	}
 
 	if (!linearproblem)
@@ -113,9 +113,9 @@ void MKLMulticlassGLPK::setup(const int32_t numkernels2)
    SG_FREE(betacoeffs);
    betacoeffs=NULL;
 #else
-	SG_ERROR(
+	error(
 			"glpk.h from GNU glpk not included at compile time necessary "
-			"here\n");
+			"here");
 #endif
 
 }
@@ -163,9 +163,9 @@ void MKLMulticlassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
    betacoeffs=NULL;
 
 #else
-	SG_ERROR(
+	error(
 			"glpk.h from GNU glpk not included at compile time necessary "
-			"here\n");
+			"here");
 #endif
 }
 
@@ -192,11 +192,11 @@ void MKLMulticlassGLPK::computeweights(std::vector<float64_t> & weights2)
 		}
 	}
 	else
-	SG_ERROR("void glpkwrapper::computeweights(std::vector<float64_t> & "
-			"weights2): sum of weights nonpositive %f\n",sum);
+	error("void glpkwrapper::computeweights(std::vector<float64_t> & "
+			"weights2): sum of weights nonpositive {}",sum);
 #else
-	SG_ERROR(
+	error(
 			"glpk.h from GNU glpk not included at compile time necessary "
-			"here\n");
+			"here");
 #endif
 }

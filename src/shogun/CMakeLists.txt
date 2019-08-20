@@ -344,6 +344,19 @@ IF (NOT HAVE_STD_VARIANT)
   )
 ENDIF()
 
+# spdlog
+FIND_PACKAGE(spdlog)
+IF (NOT spdlog_FOUND)
+    include(external/spdlog)
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+          $<BUILD_INTERFACE:${spdlog_INCLUDE_DIR}>
+          $<INSTALL_INTERFACE:include/shogun/third_party>
+          )
+ELSE()
+    SET(USE_EXTERNAL_SPDLOG 1)
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${spdlog_INCLUDE_DIR})
+ENDIF()
+
 SHOGUN_DEPENDENCIES(
   LIBRARY GLPK
   SCOPE PRIVATE

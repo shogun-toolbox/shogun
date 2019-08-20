@@ -42,7 +42,7 @@ CStochasticProximityEmbedding::~CStochasticProximityEmbedding()
 void CStochasticProximityEmbedding::set_k(int32_t k)
 {
 	if ( k <= 0 )
-		SG_ERROR("Number of neighbors k must be greater than 0")
+		error("Number of neighbors k must be greater than 0");
 
 	m_k = k;
 }
@@ -65,7 +65,7 @@ ESPEStrategy CStochasticProximityEmbedding::get_strategy() const
 void CStochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 {
 	if ( tolerance <= 0 )
-		SG_ERROR("Tolerance regularization parameter must be greater "
+		error("Tolerance regularization parameter must be greater "
 			 "than 0");
 
 	m_tolerance = tolerance;
@@ -79,7 +79,7 @@ int32_t CStochasticProximityEmbedding::get_tolerance() const
 void CStochasticProximityEmbedding::set_nupdates(int32_t nupdates)
 {
 	if ( nupdates <= 0 )
-		SG_ERROR("The number of updates must be greater than 0")
+		error("The number of updates must be greater than 0");
 
 	m_nupdates = nupdates;
 }
@@ -108,7 +108,7 @@ CFeatures*
 CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 {
 	if ( !features )
-		SG_ERROR("Features are required to apply SPE\n")
+		error("Features are required to apply SPE");
 
 	// Shorthand for the DenseFeatures
 	CDenseFeatures< float64_t >* simple_features =
@@ -118,12 +118,12 @@ CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 	// Get and check the number of vectors
 	int32_t N = simple_features->get_num_vectors();
 	if ( m_strategy == SPE_LOCAL && m_k >= N )
-		SG_ERROR("The number of neighbors (%d) must be less than "
-		         "the number of vectors (%d)\n", m_k, N);
+		error("The number of neighbors ({}) must be less than "
+		         "the number of vectors ({})", m_k, N);
 
 	if ( 2*m_nupdates > N )
-		SG_ERROR("The number of vectors (%d) must be at least two times "
-			 "the number of updates (%d)\n", N, m_nupdates);
+		error("The number of vectors ({}) must be at least two times "
+			 "the number of updates ({})", N, m_nupdates);
 
 	m_distance->init(simple_features, simple_features);
 	CDenseFeatures< float64_t >* embedding = embed_distance(m_distance);

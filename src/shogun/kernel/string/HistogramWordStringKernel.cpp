@@ -63,7 +63,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ASSERT(l)
 	ASSERT(r)
 
-	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", l, r)
+	SG_DEBUG("init: lhs: {}   rhs: {}", fmt::ptr(l), fmt::ptr(r))
 	int32_t i;
 	initialized=false;
 
@@ -123,12 +123,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 		if ((!estimate) || (!estimate->check_models()))
 		{
-			SG_ERROR("no estimate available\n")
+			error("no estimate available");
 			return false ;
 		} ;
 		if (num_params2!=estimate->get_num_params())
 		{
-			SG_ERROR("number of parameters of estimate and feature representation do not match\n")
+			error("number of parameters of estimate and feature representation do not match");
 			return false ;
 		} ;
 
@@ -380,7 +380,7 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 #ifdef DEBUG_HWSK_COMPUTATION
 	float64_t result2 = compute_slow(idx_a, idx_b) ;
 	if (fabs(result - result2)>1e-10)
-		SG_ERROR("new=%e  old = %e  diff = %e\n", result, result2, result - result2)
+		error("new={:e}  old = {:e}  diff = {:e}", result, result2, result - result2);
 #endif
 	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);

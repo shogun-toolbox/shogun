@@ -26,11 +26,11 @@ CStochasticSOSVM::CStochasticSOSVM(
 		bool verbose)
 : RandomMixin<CLinearStructuredOutputMachine>(model, labs)
 {
-	REQUIRE(model != NULL && labs != NULL,
-		"%s::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
+	require(model != NULL && labs != NULL,
+		"{}::CStochasticSOSVM(): model and labels cannot be NULL!", get_name());
 
-	REQUIRE(labs->get_num_labels() > 0,
-		"%s::CStochasticSOSVM(): number of labels should be greater than 0!\n", get_name());
+	require(labs->get_num_labels() > 0,
+		"{}::CStochasticSOSVM(): number of labels should be greater than 0!", get_name());
 
 	init();
 	m_lambda = 1.0 / labs->get_num_labels();
@@ -62,7 +62,7 @@ EMachineType CStochasticSOSVM::get_classifier_type()
 
 bool CStochasticSOSVM::train_machine(CFeatures* data)
 {
-	SG_DEBUG("Entering CStochasticSOSVM::train_machine.\n");
+	SG_DEBUG("Entering CStochasticSOSVM::train_machine.");
 	if (data)
 		set_features(data);
 
@@ -70,14 +70,14 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	m_model->init_training();
 	// Check that the scenary is correct to start with training
 	m_model->check_training_setup();
-	SG_DEBUG("The training setup is correct.\n");
+	SG_DEBUG("The training setup is correct.");
 
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
 	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
 
-	SG_DEBUG("M=%d, N =%d.\n", M, N);
+	SG_DEBUG("M={}, N ={}.", M, N);
 
 	// Initialize the weight vector
 	m_w = SGVector<float64_t>(M);
@@ -136,8 +136,8 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 			else
 			{
-				SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
-						"to be set true\n", m_model->get_name());
+				error("model({}) should have either of psi_computed or psi_computed_sparse"
+						"to be set true", m_model->get_name());
 			}
 
 			w_s = psi_i.clone();
@@ -173,7 +173,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 				float64_t primal = CSOSVMHelper::primal_objective(w_debug, m_model, m_lambda);
 				float64_t train_error = CSOSVMHelper::average_loss(w_debug, m_model);
 
-				SG_DEBUG("pass %d (iteration %d), SVM primal = %f, train_error = %f \n",
+				SG_DEBUG("pass {} (iteration {}), SVM primal = {}, train_error = {} ",
 					pi, k, primal, train_error);
 
 				m_helper->add_debug_info(primal, (1.0*k) / N, train_error);
@@ -189,7 +189,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 		m_helper->terminate();
 
-	SG_DEBUG("Leaving CStochasticSOSVM::train_machine.\n");
+	SG_DEBUG("Leaving CStochasticSOSVM::train_machine.");
 	return true;
 }
 

@@ -87,7 +87,7 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 {
 	if (a==-1)
 	{
-		SG_INFO("estimating a.\n")
+		io::info("estimating a.");
 		pos_prob=SG_MALLOC(float64_t, pos->get_observations()->get_num_vectors());
 		neg_prob=SG_MALLOC(float64_t, pos->get_observations()->get_num_vectors());
 		for (int32_t i=0; i<pos->get_observations()->get_num_vectors(); i++)
@@ -107,7 +107,7 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 			if (da<=0)
 				ua=a;
 			a=(la+ua)/2;
-			SG_INFO("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua)
+			io::info("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e", a, da, la ,ua);
 		}
 		SG_FREE(pos_prob);
 		SG_FREE(neg_prob);
@@ -116,7 +116,7 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 	}
 
 	weight_a=a;
-	SG_INFO("setting opt_a: %g\n", a)
+	io::info("setting opt_a: {:g}", a);
 	return a;
 }
 
@@ -132,7 +132,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 
 	free_feature_matrix();
 
-	SG_INFO("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M())
+	io::info("pos_feat=[{},{},{},{}],neg_feat=[{},{},{},{}]", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M());
 
 	if (pos && pos->get_observations())
 		set_num_vectors(pos->get_observations()->get_num_vectors());
@@ -219,23 +219,23 @@ float64_t* CFKFeatures::set_feature_matrix()
 	num_vectors=pos->get_observations()->get_num_vectors();
 	ASSERT(num_vectors)
 
-	SG_INFO("allocating FK feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
+	io::info("allocating FK feature cache of size {:.2f}M", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
 	feature_matrix=SGMatrix<float64_t>(num_features,num_vectors);
 
-	SG_INFO("calculating FK feature matrix\n")
+	io::info("calculating FK feature matrix");
 
 	for (int32_t x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			SG_DEBUG("%02d%%.", (int) (100.0*x/num_vectors))
+			SG_DEBUG("{:02d}%%.", (int) (100.0*x/num_vectors))
 		else if (!(x % (num_vectors/200+1)))
 			SG_DEBUG(".")
 
 		compute_feature_vector(&feature_matrix.matrix[x*num_features], x, len);
 	}
 
-	SG_DONE()
+	io::progress_done();
 
 	num_vectors=get_num_vectors();
 	num_features=get_num_features();

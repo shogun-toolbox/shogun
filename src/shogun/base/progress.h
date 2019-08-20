@@ -60,7 +60,7 @@ namespace shogun
 #define SG_PROGRESS(...)                                                       \
 	progress(                                                                  \
 	    std::string(this->get_name()) + "::" + std::string(__FUNCTION__),      \
-	    *this->io, __VA_ARGS__)
+	    __VA_ARGS__)
 
 #define SG_SPROGRESS(...) progress(__FUNCTION__, __VA_ARGS__)
 
@@ -79,16 +79,15 @@ namespace shogun
 	public:
 		/**
 		 * Creates a @ref ProgressPrinter instance.
-		 * @param io SGIO object which will be used to print the progress bar.
 		 * @param max_value interval maximum value.
 		 * @param min_value interval minimum value.
 		 * @param prefix string which will be printed before the progress bar.
 		 * @param mode char mode (UTF8, ASCII etc.).
 		 */
 		ProgressPrinter(
-		    const SGIO& io, float64_t max_value, float64_t min_value,
+		    float64_t max_value, float64_t min_value,
 		    const std::string& prefix, const SG_PRG_MODE mode)
-		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
+		    : m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(mode), m_columns_num(0), m_rows_num(0),
 		      m_last_progress(0), m_last_progress_time(0),
 		      m_progress_start_time(CTime::get_curtime()),
@@ -172,7 +171,7 @@ namespace shogun
 		{
 
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
+			if (!env()->io()->get_show_progress())
 				return;
 
 			if (m_max_value <= m_min_value)
@@ -193,9 +192,9 @@ namespace shogun
 			    (m_columns_num - 50 - m_prefix.length()) * 0.9;
 
 			// TODO: this guy here brokes testing
-			// REQUIRE(
+			// require(
 			//    progress_bar_space > 0,
-			//    "Not enough terminal space to show the progress bar!\n")
+			//    "Not enough terminal space to show the progress bar!");
 
 			char str[1000];
 			float64_t runtime = CTime::get_curtime();
@@ -228,38 +227,33 @@ namespace shogun
 			}
 
 			/** Print the actual progress bar to screen **/
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			io::print("{} |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
 				if (m_current_value.load() - m_min_value > i * size_chunk)
 				{
-					m_io.message(
-					    MSG_MESSAGEONLY, "", "", -1, "%s",
-					    get_pb_char().c_str());
+					io::print("{}", get_pb_char().c_str());
 				}
 				else
 				{
-					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+					io::print(" ");
 				}
 			}
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", v);
+			io::print("| {:.2f}%", v);
 
 			if (estimate > 120)
 			{
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
-				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
-				    total_estimate / 60);
+				io::print(str, estimate / 60, total_estimate / 60);
 			}
 			else
 			{
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
-				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+				io::print(str, estimate, total_estimate);
 			}
 		}
 
@@ -271,7 +265,7 @@ namespace shogun
 		    float64_t max_value) const
 		{
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
+			if (!env()->io()->get_show_progress())
 				return;
 
 			m_current_value.store(current_val);
@@ -294,9 +288,9 @@ namespace shogun
 			    (m_columns_num - 50 - m_prefix.length()) * 0.9;
 
 			// TODO: this guy here brokes testing
-			// REQUIRE(
+			// require(
 			//    progress_bar_space > 0,
-			//    "Not enough terminal space to show the progress bar!\n")
+			//    "Not enough terminal space to show the progress bar!");
 
 			char str[1000];
 			float64_t runtime = CTime::get_curtime();
@@ -328,38 +322,33 @@ namespace shogun
 			}
 
 			/** Print the actual progress bar to screen **/
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			io::print("{} |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
 				if (m_current_value.load() - min_value > i * size_chunk)
 				{
-					m_io.message(
-					    MSG_MESSAGEONLY, "", "", -1, "%s",
-					    get_pb_char().c_str());
+					io::print("{}", get_pb_char().c_str());
 				}
 				else
 				{
-					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+					io::print(" ");
 				}
 			}
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", current_val);
+			io::print("| {:.2f}%", current_val);
 
 			if (estimate > 120)
 			{
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
-				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
-				    total_estimate / 60);
+				io::print(str, estimate / 60, total_estimate / 60);
 			}
 			else
 			{
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
-				m_io.message(
-				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+				io::print(str, estimate, total_estimate);
 			}
 		}
 
@@ -367,10 +356,10 @@ namespace shogun
 		void print_end() const
 		{
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
+			if (!env()->io()->get_show_progress())
 				return;
 
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
+			io::print("\n");
 		}
 
 		/**
@@ -416,8 +405,6 @@ namespace shogun
 			m_current_value++;
 		}
 
-		/** IO object */
-		SGIO m_io;
 		/** Maxmimum value */
 		float64_t m_max_value;
 		/** Minimum value */
@@ -460,8 +447,6 @@ namespace shogun
 		 * Constructor, initialize the progress bar manager.
 		 *
 		 * @param range the range to loop over
-		 * @param io the SGIO object which will be used to print the progress
-		 * bar
 		 * @param prefix the string prefix which will be printed before the
 		 * progress bar
 		 * @param mode the char mode used to print the progress bar (ASCII, UTF8
@@ -469,13 +454,13 @@ namespace shogun
 		 * @param condition premature stop condition for the loop
 		 */
 		PRange(
-		    Range<T> range, const SGIO& io, const std::string prefix,
+		    Range<T> range, const std::string prefix,
 		    const SG_PRG_MODE mode, std::function<bool()> condition)
 		    : m_range(range), m_condition(condition)
 		{
 			set_up_range();
 			m_printer = std::make_shared<ProgressPrinter>(
-			    io, m_end_range, m_begin_range, prefix, mode);
+				m_end_range, m_begin_range, prefix, mode);
 		}
 
 		/** @class Wrapper for Range<T>::Iterator spawned by @ref PRange. */
@@ -709,7 +694,6 @@ namespace shogun
 	 * @endcode
 	 *
 	 * @param   range   range used
-	 * @param   io      SGIO object
 	 * @param	mode	char printing mode (default: UTF8)
 	 * @param	prefix  string which will be printed before the progress bar
 	 * (default: PROGRESS: )
@@ -717,56 +701,24 @@ namespace shogun
 	 */
 	template <typename T>
 	inline PRange<T> progress(
-	    std::string prefix, const SGIO& io, Range<T> range,
+	    std::string prefix, Range<T> range,
 	    SG_PRG_MODE mode = UTF8,
 	    std::function<bool()> condition = []() { return true; })
 	{
-		return PRange<T>(range, io, prefix, mode, condition);
+		return PRange<T>(range, prefix, mode, condition);
 	}
 
-	/** Creates @ref PRange given a range that uses the global SGIO
-	 *
-	 * @code
-	 *  for (auto i : progress( range(0, 100) ) ) { ... }
-	 * @endcode
-	 *
-	 * @param   range   range used
-	 * @param	mode	char printing mode (default: UTF8)
-	 * @param	prefix  string which will be printed before the progress bar
-	 * (default: PROGRESS: )
-	 * @param	condition	premature stopping condition
-	 */
-	template <typename T>
-	inline PRange<T> progress(
-	    std::string prefix, Range<T> range, SG_PRG_MODE mode = UTF8,
-	    std::function<bool()> condition = []() { return true; })
-	{
-		return PRange<T>(range, *SG_IO, prefix, mode, condition);
-	}
-
-	/** Creates @ref PRange given a range that uses the global SGIO
-	 *
-	 * @param range range used
-	 * @param condition premature stopping condition
-	 */
-	template <typename T>
-	inline PRange<T> progress(
-	    std::string prefix, Range<T> range, std::function<bool()> condition)
-	{
-		return PRange<T>(range, *SG_IO, prefix, UTF8, condition);
-	}
 	/** Creates @ref PRange given a range and a stopping condition
 	 *
 	 * @param range range used
-	 * @param io SGIO object
 	 * @param condition premature stopping condition
 	 */
 	template <typename T>
 	inline PRange<T> progress(
-	    std::string prefix, const SGIO& io, Range<T> range,
+	    std::string prefix, Range<T> range,
 	    std::function<bool()> condition)
 	{
-		return PRange<T>(range, io, prefix, UTF8, condition);
+		return PRange<T>(range, prefix, UTF8, condition);
 	}
 };
 #endif /* __SG_PROGRESS_H__ */

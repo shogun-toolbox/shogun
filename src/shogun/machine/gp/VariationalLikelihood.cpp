@@ -71,7 +71,7 @@ SGVector<float64_t> CVariationalLikelihood::get_predictive_means(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_predictive_means(mu, s2, lab);
 }
 
@@ -79,7 +79,7 @@ SGVector<float64_t> CVariationalLikelihood::get_predictive_variances(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_predictive_variances(mu, s2, lab);
 }
 
@@ -87,7 +87,7 @@ SGVector<float64_t> CVariationalLikelihood::get_first_derivative(
 	const CLabels* lab, SGVector<float64_t> func,
 	const TParameter* param) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_first_derivative(lab, func, param);
 }
 
@@ -95,7 +95,7 @@ SGVector<float64_t> CVariationalLikelihood::get_second_derivative(
 	const CLabels* lab, SGVector<float64_t> func,
 	const TParameter* param) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_second_derivative(lab, func, param);
 }
 
@@ -103,27 +103,27 @@ SGVector<float64_t> CVariationalLikelihood::get_third_derivative(
 	const CLabels* lab, SGVector<float64_t> func,
 	const TParameter* param) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_third_derivative(lab, func, param);
 }
 
 ELikelihoodModelType CVariationalLikelihood::get_model_type() const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_model_type();
 }
 
 SGVector<float64_t> CVariationalLikelihood::get_log_probability_f(
 	const CLabels* lab, SGVector<float64_t> func) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_log_probability_f(lab, func);
 }
 
 SGVector<float64_t> CVariationalLikelihood::get_log_probability_derivative_f(
 	const CLabels* lab, SGVector<float64_t> func, index_t i) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_log_probability_derivative_f(lab, func, i);
 }
 
@@ -131,7 +131,7 @@ SGVector<float64_t> CVariationalLikelihood::get_log_zeroth_moments(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_log_zeroth_moments(mu, s2, lab);
 }
 
@@ -139,7 +139,7 @@ float64_t CVariationalLikelihood::get_first_moment(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab, index_t i) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_first_moment(mu, s2, lab, i);
 }
 
@@ -147,25 +147,25 @@ float64_t CVariationalLikelihood::get_second_moment(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab, index_t i) const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_second_moment(mu, s2, lab, i);
 }
 
 bool CVariationalLikelihood::supports_regression() const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->supports_regression();
 }
 
 bool CVariationalLikelihood::supports_binary() const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->supports_binary();
 }
 
 bool CVariationalLikelihood::supports_multiclass() const
 {
-	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->supports_multiclass();
 }
 

@@ -75,12 +75,12 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 
 bool CKRRNystrom::train_machine(CFeatures* data)
 {
-	REQUIRE(data, "No features provided.\n");
+	require(data, "No features provided.");
 
 	int32_t n=data->get_num_vectors();
 
-	REQUIRE(m_num_rkhs_basis <= n, "Number of sampled rows (%d) must be "
-			"less than number of data points (%d).\n", m_num_rkhs_basis, n);
+	require(m_num_rkhs_basis <= n, "Number of sampled rows ({}) must be "
+			"less than number of data points ({}).", m_num_rkhs_basis, n);
 	return CKernelRidgeRegression::train_machine(data);
 }
 
@@ -91,13 +91,13 @@ bool CKRRNystrom::solve_krr_system()
 	if (m_num_rkhs_basis == 0)
 	{
 		set_num_rkhs_basis((int32_t)std::ceil(n / 2.0));
-		SG_SWARNING("Number of sampled rows not set, default is half (%d) "
-					"of the number of data points (%d)\n", m_num_rkhs_basis, n);
+		io::warn("Number of sampled rows not set, default is half ({}) "
+					"of the number of data points ({})", m_num_rkhs_basis, n);
 	}
 
 	SGVector<float64_t> y = regression_labels(m_labels)->get_labels();
 	if (!y.data())
-		SG_ERROR("Labels not set.\n");
+		error("Labels not set.");
 	SGVector<int32_t> col=subsample_indices();
 	SGMatrix<float64_t> K_mm(m_num_rkhs_basis, m_num_rkhs_basis);
 	SGMatrix<float64_t> K_nm(n, m_num_rkhs_basis);
@@ -122,7 +122,7 @@ bool CKRRNystrom::solve_krr_system()
 	SelfAdjointEigenSolver<MatrixXd> solver(Kplus);
 	if (solver.info()!=Success)
 	{
-		SG_WARNING("Eigendecomposition failed.\n")
+		io::warn("Eigendecomposition failed.");
 		return false;
 	}
 

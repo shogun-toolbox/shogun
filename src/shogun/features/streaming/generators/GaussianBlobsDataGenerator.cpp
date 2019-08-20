@@ -77,7 +77,7 @@ void CGaussianBlobsDataGenerator::init()
 
 bool CGaussianBlobsDataGenerator::get_next_example()
 {
-	SG_SDEBUG("entering CGaussianBlobsDataGenerator::get_next_example()\n");
+	SG_DEBUG("entering CGaussianBlobsDataGenerator::get_next_example()");
 
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(2);
@@ -99,7 +99,7 @@ bool CGaussianBlobsDataGenerator::get_next_example()
 	/* save example back to superclass */
 	CGaussianBlobsDataGenerator::current_vector=result;
 
-	SG_SDEBUG("leaving CGaussianBlobsDataGenerator::get_next_example()\n");
+	SG_DEBUG("leaving CGaussianBlobsDataGenerator::get_next_example()");
 	return true;
 }
 

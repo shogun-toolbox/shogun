@@ -50,7 +50,7 @@ void CFactorGraphModel::init()
 
 void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 {
-	REQUIRE(ftype->get_w_dim() > 0, "%s::add_factor_type(): number of parameters can't be 0!\n",
+	require(ftype->get_w_dim() > 0, "{}::add_factor_type(): number of parameters can't be 0!",
 		get_name());
 
 	// check whether this ftype has been added
@@ -61,7 +61,7 @@ void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 		if (id == ft->get_type_id())
 		{
 			SG_UNREF(ft);
-			SG_PRINT("%s::add_factor_type(): factor_type (id = %d) has been added!\n",
+			io::print("{}::add_factor_type(): factor_type (id = {}) has been added!\n",
 				get_name(), id);
 
 			return;
@@ -167,7 +167,7 @@ int32_t CFactorGraphModel::get_dim() const
 
 SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 {
-	REQUIRE(m_factor_types != NULL, "%s::fparams_to_w(): no factor types!\n", get_name());
+	require(m_factor_types != NULL, "{}::fparams_to_w(): no factor types!", get_name());
 
 	if (m_w_cache.size() != get_dim())
 		m_w_cache.resize_vector(get_dim());
@@ -201,7 +201,7 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 		return;
 
 	if (m_verbose)
-		SG_SPRINT("****** update m_w_cache!\n");
+		io::print("****** update m_w_cache!\n");
 
 	ASSERT(w.size() == m_w_cache.size());
 	m_w_cache = w.clone();
@@ -292,7 +292,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	}
 
 	if (m_verbose)
-		SG_SPRINT("\n------ example %d\n", feat_idx);
+		io::print("\n------ example {}\n", feat_idx);
 
 	// update factor parameters
 	w_to_fparams(w);
@@ -300,7 +300,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 	if (m_verbose)
 	{
-		SG_SPRINT("energy table before loss-aug:\n");
+		io::print("energy table before loss-aug:\n");
 		fg->evaluate_energies();
 	}
 
@@ -326,7 +326,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 		if (m_verbose)
 		{
-			SG_SPRINT("energy table after loss-aug:\n");
+			io::print("energy table after loss-aug:\n");
 			fg->evaluate_energies();
 		}
 	}
@@ -350,20 +350,20 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 		float64_t dot_truth = linalg::dot(w, ret->psi_truth);
 		float64_t slack =  dot_pred + ret->delta - dot_truth;
 
-		SG_SPRINT("\n");
+		io::print("\n");
 		w.display_vector("w");
 
 		ret->psi_pred.display_vector("psi_pred");
 		states_star.display_vector("state_pred");
 
-		SG_SPRINT("dot_pred = %f, energy_pred = %f, delta = %f\n\n", dot_pred, l_energy_pred, ret->delta);
+		io::print("dot_pred = {}, energy_pred = {}, delta = {}\n\n", dot_pred, l_energy_pred, ret->delta);
 
 		ret->psi_truth.display_vector("psi_truth");
 		states_gt.display_vector("state_gt");
 
-		SG_SPRINT("dot_truth = %f, energy_gt = %f\n\n", dot_truth, energy_gt);
+		io::print("dot_truth = {}, energy_gt = {}\n\n", dot_truth, energy_gt);
 
-		SG_SPRINT("slack = %f, score = %f\n\n", slack, ret->score);
+		io::print("slack = {}, score = {}\n\n", slack, ret->score);
 	}
 
 	SG_UNREF(y_truth);
@@ -406,7 +406,7 @@ void CFactorGraphModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
-	REQUIRE(m_factor_types != NULL, "%s::init_primal_opt(): no factor types!\n", get_name());
+	require(m_factor_types != NULL, "{}::init_primal_opt(): no factor types!", get_name());
 
 	int32_t dim_w = get_dim();
 
@@ -428,7 +428,7 @@ void CFactorGraphModel::init_primal_opt(
 				// for pairwise factors with binary labels
 				if (card.size() == 2 &&  card[0] == 2 && card[1] == 2)
 				{
-					REQUIRE(w_dim == 4, "GraphCut doesn't support edge features currently.");
+					require(w_dim == 4, "GraphCut doesn't support edge features currently.");
 					SGVector<float64_t> fw = ftype->get_w();
 					SGVector<int32_t> fw_map = get_params_mapping(ftype->get_type_id());
 					ASSERT(fw_map.size() == fw.size());

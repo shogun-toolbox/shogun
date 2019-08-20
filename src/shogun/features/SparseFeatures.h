@@ -409,8 +409,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			/** print details of iterator (for debugging purposes)*/
 			void print_info()
 			{
-				SG_SPRINT("sv=%p, vidx=%d, num_feat_entries=%d, index=%d\n",
-						sv.features, vector_index, sv.num_feat_entries, index);
+				io::print("sv={}, vidx={}, num_feat_entries={}, index={}\n",
+						fmt::ptr(sv.features), vector_index, sv.num_feat_entries, index);
 			}
 		};
 		#endif

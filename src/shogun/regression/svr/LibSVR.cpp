@@ -38,7 +38,7 @@ CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
 		set_nu(svr_param);
 		break;
 	default:
-		SG_ERROR("CLibSVR::CLibSVR(): Unknown solver type!\n");
+		error("CLibSVR::CLibSVR(): Unknown solver type!");
 		break;
 	}
 
@@ -76,7 +76,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels");
 		kernel->init(data, data);
 	}
 
@@ -85,7 +85,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO("%d trainlabels\n", problem.l)
+	io::info("{} trainlabels", problem.l);
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -112,7 +112,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 		param.svm_type=NU_SVR;
 		break;
 	default:
-		SG_ERROR("%s::train_machine(): Unknown solver type!\n", get_name());
+		error("{}::train_machine(): Unknown solver type!", get_name());
 		break;
 	}
 
@@ -136,7 +136,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg)
+		error("Error: {}",error_msg);
 
 	model = svm_train(&problem, &param);
 

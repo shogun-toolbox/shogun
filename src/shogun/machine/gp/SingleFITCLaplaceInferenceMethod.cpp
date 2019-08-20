@@ -100,7 +100,7 @@ public:
 	virtual ~SingleFITCLaplaceInferenceMethodCostFunction() { clean(); }
 	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
 	{
-		REQUIRE(obj, "Obj must set\n");
+		require(obj, "Obj must set");
 		if(m_obj != obj)
 		{
 			SG_REF(obj);
@@ -116,7 +116,7 @@ public:
 
 	virtual float64_t get_cost()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_obj->get_psi_wrt_alpha();
 	}
 	void unset_target(bool is_unref)
@@ -129,13 +129,13 @@ public:
 	}
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		m_derivatives = SGVector<float64_t>((m_obj->m_al).vlen);
 		return m_obj->m_al;
 	}
 	virtual SGVector<float64_t> get_gradient()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		m_obj->get_gradient_wrt_alpha(m_derivatives);
 		return m_derivatives;
 	}
@@ -159,7 +159,7 @@ private:
 
 void CSingleFITCLaplaceNewtonOptimizer::set_target(CSingleFITCLaplaceInferenceMethod *obj)
 {
-	REQUIRE(obj, "Obj must set\n");
+	require(obj, "Obj must set");
 	if(m_obj != obj)
 	{
 		SG_REF(obj);
@@ -200,8 +200,8 @@ void CSingleFITCLaplaceNewtonOptimizer::init()
 
 float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 {
-	REQUIRE(m_obj,"Object not set\n");
-	//time complexity O(m^2*n)
+	require(m_obj,"Object not set");
+	//time complexity O(m^2*n);
 	Map<MatrixXd> eigen_kuu((m_obj->m_kuu).matrix, (m_obj->m_kuu).num_rows, (m_obj->m_kuu).num_cols);
 	Map<MatrixXd> eigen_V((m_obj->m_V).matrix, (m_obj->m_V).num_rows, (m_obj->m_V).num_cols);
 	Map<VectorXd> eigen_dg((m_obj->m_dg).vector, (m_obj->m_dg).vlen);
@@ -292,13 +292,13 @@ float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
 #else
-		SG_GPL_ONLY
+		gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 	}
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
 	{
-		SG_SWARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		io::warn("Max iterations ({}) reached, but convergence level ({}) is not yet below tolerance ({})", m_iter, Psi_Old-Psi_New, m_tolerance);
 	}
 	return Psi_New;
 }
@@ -351,7 +351,7 @@ void CSingleFITCLaplaceInferenceMethod::compute_gradient()
 
 void CSingleFITCLaplaceInferenceMethod::update()
 {
-	SG_DEBUG("entering\n");
+	SG_DEBUG("entering");
 
 	CInference::update();
 	update_init();
@@ -360,7 +360,7 @@ void CSingleFITCLaplaceInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving\n");
+	SG_DEBUG("leaving");
 }
 
 SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_diagonal_vector()
@@ -408,10 +408,10 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::compute_mvmK(SGVector<flo
 CSingleFITCLaplaceInferenceMethod* CSingleFITCLaplaceInferenceMethod::obtain_from_generic(
 		CInference* inference)
 {
-	REQUIRE(inference!=NULL, "Inference should be not NULL");
+	require(inference!=NULL, "Inference should be not NULL");
 
 	if (inference->get_inference_type()!=INF_FITC_LAPLACE_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleFITCLaplaceInferenceMethod!\n")
+		error("Provided inference is not of type CSingleFITCLaplaceInferenceMethod!");
 
 	SG_REF(inference);
 	return (CSingleFITCLaplaceInferenceMethod*)inference;
@@ -420,7 +420,7 @@ CSingleFITCLaplaceInferenceMethod* CSingleFITCLaplaceInferenceMethod::obtain_fro
 SGMatrix<float64_t> CSingleFITCLaplaceInferenceMethod::get_chol_inv(SGMatrix<float64_t> mtx)
 {
 	//time complexity O(m^3), where mtx is a m-by-m matrix
-	REQUIRE(mtx.num_rows==mtx.num_cols, "Matrix must be square\n");
+	require(mtx.num_rows==mtx.num_cols, "Matrix must be square");
 
 	Map<MatrixXd> eigen_mtx(mtx.matrix, mtx.num_rows, mtx.num_cols);
 	LLT<MatrixXd> chol(eigen_mtx.colwise().reverse().rowwise().reverse().matrix());
@@ -441,7 +441,7 @@ float64_t CSingleFITCLaplaceInferenceMethod::get_negative_log_marginal_likelihoo
 
 	if (m_Wneg)
 	{
-		SG_WARNING("nlZ cannot be computed since W is too negative");
+		io::warn("nlZ cannot be computed since W is too negative");
 		//nlZ = NaN;
 		return CMath::INFTY;
 	}
@@ -553,11 +553,11 @@ void CSingleFITCLaplaceInferenceMethod::update_init()
 
 void CSingleFITCLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
-	REQUIRE(minimizer, "Minimizer must set\n");
+	require(minimizer, "Minimizer must set");
 	if (!dynamic_cast<CSingleFITCLaplaceNewtonOptimizer*>(minimizer))
 	{
 		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
-		REQUIRE(opt, "The provided minimizer is not supported\n")
+		require(opt, "The provided minimizer is not supported");
 	}
 	CInference::register_minimizer(minimizer);
 }
@@ -578,7 +578,7 @@ void CSingleFITCLaplaceInferenceMethod::update_alpha()
 	else
 	{
 		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
-		REQUIRE(minimizer, "The provided minimizer is not supported\n");
+		require(minimizer, "The provided minimizer is not supported");
 
 		SingleFITCLaplaceInferenceMethodCostFunction *cost_fun=new SingleFITCLaplaceInferenceMethodCostFunction();
 		cost_fun->set_target(this);
@@ -792,14 +792,14 @@ float64_t CSingleFITCLaplaceInferenceMethod::get_derivative_related_cov(SGVector
 SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(param, "Param not set\n");
-	//time complexity O(m^2*n)
-	REQUIRE(!(strcmp(param->m_name, "log_scale")
+	require(param, "Param not set");
+	//time complexity O(m^2*n);
+	require(!(strcmp(param->m_name, "log_scale")
 		&& strcmp(param->m_name, "log_inducing_noise")
 		&& strcmp(param->m_name, "inducing_features")),
 		"Can't compute derivative of"
-		" the nagative log marginal likelihood wrt %s.%s parameter\n",
-		get_name(), param->m_name)
+		" the nagative log marginal likelihood wrt {}.{} parameter",
+		get_name(), param->m_name);
 
 	SGVector<float64_t> result;
 	int32_t len;
@@ -886,7 +886,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_likeli
 SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -957,7 +957,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	//time complexity O(m*n)
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -978,8 +978,8 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_mean(
 SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::derivative_helper_when_Wneg(
 	SGVector<float64_t> res, const TParameter *param)
 {
-	REQUIRE(param, "Param not set\n");
-	SG_WARNING("Derivative wrt %s cannot be computed since W (the Hessian (diagonal) matrix) is too negative\n", param->m_name);
+	require(param, "Param not set");
+	io::warn("Derivative wrt {} cannot be computed since W (the Hessian (diagonal) matrix) is too negative", param->m_name);
 	//dnlZ = struct('cov',0*hyp.cov, 'mean',0*hyp.mean, 'lik',0*hyp.lik);
 	res.zero();
 	return res;

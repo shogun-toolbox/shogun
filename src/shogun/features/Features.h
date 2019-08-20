@@ -229,7 +229,7 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* create_merged_copy(CList* others) const
 		{
-			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
+			error("{}::create_merged_copy() is not yet implemented!");
 			return NULL;
 		}
 
@@ -243,7 +243,7 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* create_merged_copy(CFeatures* other) const
 		{
-			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
+			error("{}::create_merged_copy() is not yet implemented!");
 			return NULL;
 		}
 
@@ -330,7 +330,7 @@ class CFeatures : public CSGObject
 #ifndef SWIG // SWIG should skip this part
 		virtual CFeatures* shallow_subset_copy()
 		{
-			SG_SNOTIMPLEMENTED;
+			not_implemented(SOURCE_LOCATION);;
 			return NULL;
 		}
 #endif

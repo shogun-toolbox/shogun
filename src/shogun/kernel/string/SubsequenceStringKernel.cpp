@@ -53,8 +53,8 @@ void CSubsequenceStringKernel::cleanup()
 float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	// sanity check
-	REQUIRE(lhs, "lhs feature vector is not set!\n")
-	REQUIRE(rhs, "rhs feature vector is not set!\n")
+	require(lhs, "lhs feature vector is not set!");
+	require(rhs, "rhs feature vector is not set!");
 
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
@@ -64,8 +64,8 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* bvec=dynamic_cast<CStringFeatures<char>*>(rhs)
 		->get_feature_vector(idx_b, blen, free_bvec);
 
-	REQUIRE(avec, "Feature vector for lhs is NULL!\n");
-	REQUIRE(bvec, "Feature vector for rhs is NULL!\n");
+	require(avec, "Feature vector for lhs is NULL!");
+	require(bvec, "Feature vector for rhs is NULL!");
 
 	// allocating memory for computing K' (Kp)
 	float64_t ***Kp=SG_MALLOC(float64_t**, m_maxlen+1);

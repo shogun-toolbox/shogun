@@ -56,7 +56,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		{
 			ASSERT(num<m_machines->get_num_elements() && num>=0)
 			if (machine != NULL && !is_acceptable_machine(machine))
-				SG_ERROR("Machine %s is not acceptable by %s", machine->get_name(), this->get_name())
+				error("Machine {} is not acceptable by {}", machine->get_name(), this->get_name());
 
 			m_machines->set_element(machine, num);
 			return true;

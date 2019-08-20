@@ -27,16 +27,16 @@ TEST(StringFeaturesTest,copy_subset)
 	//feature_subset.display_vector("feature subset");
 
 	f->add_subset(feature_subset);
-	//SG_SPRINT("feature vectors after setting subset on original data:\n");
+	//SG_PRINT("feature vectors after setting subset on original data:\n");
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
 	{
 		SGVector<char> vec=f->get_feature_vector(i);
 
-		//SG_SPRINT("%i: ", i);
+		//SG_PRINT("%i: ", i);
 		//for (index_t j=0; j<vec.vlen; ++j)
-		//	SG_SPRINT("%c", vec.vector[j]);
+		//	SG_PRINT("%c", vec.vector[j]);
 
-		//SG_SPRINT("\n");
+		//SG_PRINT("\n");
 
 		f->free_feature_vector(vec, i);
 	}
@@ -53,11 +53,11 @@ TEST(StringFeaturesTest,copy_subset)
 	{
 		SGVector<char> vec=subset_copy->get_feature_vector(i);
 
-		//SG_SPRINT("%i: ", i);
+		//SG_PRINT("%i: ", i);
 		//for (index_t j=0; j<vec.vlen; ++j)
-		//	SG_SPRINT("%c", vec.vector[j]);
+		//	SG_PRINT("%c", vec.vector[j]);
 
-		//SG_SPRINT("\n");
+		//SG_PRINT("\n");
 
 		subset_copy->free_feature_vector(vec, i);
 	}

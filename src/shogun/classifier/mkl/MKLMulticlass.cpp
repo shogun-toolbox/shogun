@@ -52,14 +52,14 @@ CMKLMulticlass::CMKLMulticlass( const CMKLMulticlass & cm)
 {
 	svm=NULL;
 	lpw=NULL;
-	SG_ERROR(
+	error(
          " CMKLMulticlass::CMKLMulticlass(const CMKLMulticlass & cm): must "
 			"not be called, glpk structure is currently not copyable");
 }
 
 CMKLMulticlass CMKLMulticlass::operator=( const CMKLMulticlass & cm)
 {
-		SG_ERROR(
+		error(
          " CMKLMulticlass CMKLMulticlass::operator=(...): must "
 			"not be called, glpk structure is currently not copyable");
 	return (*this);
@@ -70,7 +70,7 @@ void CMKLMulticlass::initsvm()
 {
    if (!m_labels)
 	{
-      SG_ERROR("CMKLMulticlass::initsvm(): the set labels is NULL\n")
+      error("CMKLMulticlass::initsvm(): the set labels is NULL");
 	}
 
 	SG_UNREF(svm);
@@ -82,7 +82,7 @@ void CMKLMulticlass::initsvm()
 
    if (m_labels->get_num_labels()<=0)
 	{
-      SG_ERROR("CMKLMulticlass::initsvm(): the number of labels is "
+      error("CMKLMulticlass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
 
@@ -93,13 +93,13 @@ void CMKLMulticlass::initlpsolver()
 {
    if (!m_kernel)
 	{
-      SG_ERROR("CMKLMulticlass::initlpsolver(): the set kernel is NULL\n")
+      error("CMKLMulticlass::initlpsolver(): the set kernel is NULL");
 	}
 
    if (m_kernel->get_kernel_type()!=K_COMBINED)
 	{
-      SG_ERROR("CMKLMulticlass::initlpsolver(): given kernel is not of type"
-            " K_COMBINED %d required by Multiclass Mkl \n",
+      error("CMKLMulticlass::initlpsolver(): given kernel is not of type"
+            " K_COMBINED {} required by Multiclass Mkl \n",
             m_kernel->get_kernel_type());
 	}
 
@@ -164,7 +164,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			delta+=0.5*normweightssquared[maxind];
 			//delta=fabs(delta);
-			SG_SINFO("L1 Norm chosen, MKL part of duality gap %f \n",delta)
+			io::info("L1 Norm chosen, MKL part of duality gap {} ",delta);
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return true;
@@ -190,10 +190,10 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			else
 			{
-            SG_SWARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
+            io::warn("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.");
 				delta=sqrt(delta);
 			}
-				SG_SINFO("weight delta %f \n",delta)
+				io::info("weight delta {} ",delta);
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
@@ -341,8 +341,8 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 	{
       if (m_labels->get_num_labels() != data->get_num_vectors())
       {
-         SG_ERROR("%s::train_machine(): Number of training vectors (%d) does"
-               " not match number of labels (%d)\n", get_name(),
+         error("{}::train_machine(): Number of training vectors ({}) does"
+               " not match number of labels ({})\n", get_name(),
                data->get_num_vectors(), m_labels->get_num_labels());
       }
       m_kernel->init(data, data);
@@ -452,5 +452,5 @@ void CMKLMulticlass::set_mkl_norm(float64_t norm)
 {
 	pnorm=norm;
 	if(pnorm<1 )
-      SG_ERROR("CMKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1")
+      error("CMKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1");
 }

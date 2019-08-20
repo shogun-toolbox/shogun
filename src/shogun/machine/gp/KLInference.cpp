@@ -51,7 +51,7 @@ public:
         virtual ~KLInferenceCostFunction() { SG_UNREF(m_obj); }
         void set_target(CKLInference *obj)
         {
-		REQUIRE(obj,"Obj must set\n");
+		require(obj,"Obj must set");
 		if(m_obj!=obj)
 		{
 			SG_REF(obj);
@@ -70,7 +70,7 @@ public:
 
         virtual float64_t get_cost()
         {
-                REQUIRE(m_obj,"Object not set\n");
+                require(m_obj,"Object not set");
                 bool status = m_obj->precompute();
                 if (!status)
                         return CMath::NOT_A_NUMBER;
@@ -80,13 +80,13 @@ public:
         }
         virtual SGVector<float64_t> obtain_variable_reference()
         {
-                REQUIRE(m_obj,"Object not set\n");
+                require(m_obj,"Object not set");
                 m_derivatives = SGVector<float64_t>((m_obj->m_alpha).vlen);
                 return m_obj->m_alpha;
         }
         virtual SGVector<float64_t> get_gradient()
         {
-                REQUIRE(m_obj,"Object not set\n");
+                require(m_obj,"Object not set");
 		m_obj->get_gradient_of_nlml_wrt_parameters(m_derivatives);
                 return m_derivatives;
         }
@@ -122,11 +122,11 @@ CKLInference::CKLInference(CKernel* kern,
 
 void CKLInference::check_variational_likelihood(CLikelihoodModel* mod) const
 {
-	REQUIRE(mod, "the likelihood model must not be NULL\n")
+	require(mod, "the likelihood model must not be NULL");
 	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(mod);
-	REQUIRE(lik,
-		"The provided likelihood model (%s) must support variational Gaussian inference. ",
-		"Please use a Variational Gaussian Likelihood model\n",
+	require(lik,
+		"The provided likelihood model ({}) must support variational Gaussian inference. ",
+		"Please use a Variational Gaussian Likelihood model",
 		mod->get_name());
 }
 
@@ -178,7 +178,7 @@ void CKLInference::compute_gradient()
 
 void CKLInference::update()
 {
-	SG_DEBUG("entering\n");
+	SG_DEBUG("entering");
 
 	CInference::update();
 	update_init();
@@ -187,30 +187,30 @@ void CKLInference::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving\n");
+	SG_DEBUG("leaving");
 }
 
 void CKLInference::set_noise_factor(float64_t noise_factor)
 {
-	REQUIRE(noise_factor>=0, "The noise_factor %.20f should be non-negative\n", noise_factor);
+	require(noise_factor>=0, "The noise_factor {:.20f} should be non-negative", noise_factor);
 	m_noise_factor=noise_factor;
 }
 
 void CKLInference::set_min_coeff_kernel(float64_t min_coeff_kernel)
 {
-	REQUIRE(min_coeff_kernel>=0, "The min_coeff_kernel %.20f should be non-negative\n", min_coeff_kernel);
+	require(min_coeff_kernel>=0, "The min_coeff_kernel {:.20f} should be non-negative", min_coeff_kernel);
 	m_min_coeff_kernel=min_coeff_kernel;
 }
 
 void CKLInference::set_max_attempt(index_t max_attempt)
 {
-	REQUIRE(max_attempt>=0, "The max_attempt %d should be non-negative. 0 means inifity attempts\n", max_attempt);
+	require(max_attempt>=0, "The max_attempt {} should be non-negative. 0 means inifity attempts", max_attempt);
 	m_max_attempt=max_attempt;
 }
 
 void CKLInference::set_exp_factor(float64_t exp_factor)
 {
-	REQUIRE(exp_factor>1.0, "The exp_factor %f should be greater than 1.0.\n", exp_factor);
+	require(exp_factor>1.0, "The exp_factor {} should be greater than 1.0.", exp_factor);
 	m_exp_factor=exp_factor;
 }
 
@@ -235,8 +235,8 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInference::update_init_helper()
 	while (Kernel_D.minCoeff()<=m_min_coeff_kernel)
 	{
 		if (m_max_attempt>0 && attempt_count>m_max_attempt)
-			SG_ERROR("The Kernel matrix is highly non-positive definite since the min_coeff_kernel is less than %.20f",
-				" even when adding %.20f noise to the diagonal elements at max %d attempts\n",
+			error("The Kernel matrix is highly non-positive definite since the min_coeff_kernel is less than {:.20f}",
+				" even when adding {:.20f} noise to the diagonal elements at max {} attempts",
 				m_min_coeff_kernel, noise_factor, m_max_attempt);
 		attempt_count++;
 		float64_t pre_noise_factor=noise_factor;
@@ -297,7 +297,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_likelihood_model(const TPar
 	SGVector<float64_t> lp_dhyp=lik->get_first_derivative_wrt_hyperparameter(param);
 	Map<VectorXd> eigen_lp_dhyp(lp_dhyp.vector, lp_dhyp.vlen);
 	SGVector<float64_t> result(1);
-	//%dnlZ.lik(j) = -sum(lp_dhyp);
+	//{}nlZ.lik(j) = -sum(lp_dhyp);
 	result[0]=-eigen_lp_dhyp.sum();
 
 	return result;
@@ -308,7 +308,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
 
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
@@ -317,7 +317,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 	{
 		SGVector<float64_t> dmu;
 
-		//%dm_t = feval(mean{:}, hyp.mean, x, j);
+		//{}m_t = feval(mean{:}, hyp.mean, x, j);
 		if (result.vlen==1)
 			dmu=m_mean->get_parameter_derivative(m_features, param);
 		else
@@ -325,7 +325,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 
-		//%dnlZ.mean(j) = -alpha'*dm_t;
+		//{}nlZ.mean(j) = -alpha'*dm_t;
 		result[i]=-eigen_alpha.dot(eigen_dmu);
 	}
 
@@ -342,7 +342,7 @@ float64_t CKLInference::optimization()
 
 	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
 
-	REQUIRE(opt, "FirstOrderMinimizer is required\n")
+	require(opt, "FirstOrderMinimizer is required");
 	opt->set_cost_function(cost_fun);
 
         float64_t nlml_opt = opt->minimize();
@@ -355,18 +355,18 @@ float64_t CKLInference::optimization()
 
 void CKLInference::register_minimizer(Minimizer* minimizer)
 {
-	REQUIRE(minimizer, "Minimizer must set\n");
+	require(minimizer, "Minimizer must set");
 	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
-	REQUIRE(opt, "FirstOrderMinimizer is required\n");
+	require(opt, "FirstOrderMinimizer is required");
 	CInference::register_minimizer(minimizer);
 }
 
 
 SGVector<float64_t> CKLInference::get_derivative_wrt_inference_method(const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt {}.{} parameter",
+			get_name(), param->m_name);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -380,7 +380,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_inference_method(const TPar
 
 SGVector<float64_t> CKLInference::get_derivative_wrt_kernel(const TParameter* param)
 {
-	REQUIRE(param, "Param not set\n");
+	require(param, "Param not set");
 	SGVector<float64_t> result;
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);

@@ -50,10 +50,10 @@ void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 {
 	CDenseFeatures<float64_t>* lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	dimensions=lhs->get_num_features();
-	REQUIRE(centers.num_cols == k,
-			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
-	REQUIRE(centers.num_rows == dimensions,
-			"Expected %d dimensionional cluster centers, got %d", dimensions, centers.num_rows);
+	require(centers.num_cols == k,
+			"Expected {} initial cluster centers, got {}", k, centers.num_cols);
+	require(centers.num_rows == dimensions,
+			"Expected {} dimensionional cluster centers, got {}", dimensions, centers.num_rows);
 	mus_initial = centers;
 	SG_UNREF(lhs);
 }
@@ -136,17 +136,17 @@ void CKMeansBase::compute_cluster_variances()
 
 void CKMeansBase::initialize_training(CFeatures* data)
 {
-	REQUIRE(distance, "Distance is not provided\n")
-	REQUIRE(
+	require(distance, "Distance is not provided");
+	require(
 	    distance->get_feature_type() == F_DREAL,
-	    "Distance's features type (%d) should be of type REAL (%d)\n")
-	REQUIRE(
+	    "Distance's features type ({}) should be of type REAL ({})");
+	require(
 	    max_iter > 0,
-	    "The number of iterations provided (%i) must be greater than 0\n",
-	    max_iter)
-	REQUIRE(
-	    k > 0, "The number of clusters provided (%i) must be greater than 0\n",
-	    k)
+	    "The number of iterations provided ({}) must be greater than 0",
+	    max_iter);
+	require(
+	    k > 0, "The number of clusters provided ({}) must be greater than 0",
+	    k);
 
 	if (data)
 		distance->init(data, data);
@@ -154,13 +154,13 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	CDenseFeatures<float64_t>* lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 
-	REQUIRE(lhs, "Lhs features of distance not provided");
+	require(lhs, "Lhs features of distance not provided");
 	int32_t lhs_size=lhs->get_num_vectors();
 	dimensions=lhs->get_num_features();
 	const int32_t centers_size=dimensions*k;
 
-	REQUIRE(lhs_size>0, "Lhs features should not be empty");
-	REQUIRE(dimensions>0, "Lhs features should have more than zero dimensions");
+	require(lhs_size>0, "Lhs features should not be empty");
+	require(dimensions>0, "Lhs features should have more than zero dimensions");
 
 	/* if kmeans++ to be used */
 	if (use_kmeanspp)

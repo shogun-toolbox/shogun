@@ -65,10 +65,10 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
-	REQUIRE(m_method, "Inference method should not be NULL\n")
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_multiclass(), "%s with %s doesn't support "
-			"multi classification\n", m_method->get_name(), lik->get_name())
+	require(m_method->supports_multiclass(), "{} with {} doesn't support "
+			"multi classification\n", m_method->get_name(), lik->get_name());
 	SG_UNREF(lik);
 
 	// if regression data equals to NULL, then apply classification on training
@@ -77,7 +77,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	{
 		if (m_method->get_inference_type()==INF_SPARSE)
 		{
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 		}
 		else
 			data=m_method->get_features();
@@ -107,10 +107,10 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
-	REQUIRE(m_method, "Inference method should not be NULL\n")
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
-			"binary classification\n", m_method->get_name(), lik->get_name())
+	require(m_method->supports_binary(), "{} with {} doesn't support "
+			"binary classification\n", m_method->get_name(), lik->get_name());
 	SG_UNREF(lik);
 
 	// if regression data equals to NULL, then apply classification on training
@@ -123,7 +123,7 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 			CSingleFITCLaplaceInferenceMethod* fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
 			data=fitc_method->get_inducing_features();
 #else
-			SG_GPL_ONLY
+			gpl_only(SOURCE_LOCATION);
 #endif //USE_GPL_SHOGUN
 		}
 		else
@@ -144,10 +144,10 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
-	REQUIRE(m_method, "Inference method should not be NULL\n")
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(), "%s with %s doesn't support "
-			"classification\n", m_method->get_name(), lik->get_name())
+	require(m_method->supports_binary() || m_method->supports_multiclass(), "{} with {} doesn't support "
+			"classification\n", m_method->get_name(), lik->get_name());
 	SG_UNREF(lik);
 
 	if (data)
@@ -159,7 +159,7 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 			CSingleFITCLaplaceInferenceMethod* fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
 			fitc_method->set_inducing_features(data);
 #else
-			SG_ERROR("Single FITC Laplace inference only supported under GPL.\n")
+			error("Single FITC Laplace inference only supported under GPL.");
 #endif //USE_GPL_SHOGUN
 		}
 		else
@@ -177,10 +177,10 @@ SGVector<float64_t> CGaussianProcessClassification::get_mean_vector(
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
-	REQUIRE(m_method, "Inference method should not be NULL\n")
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
-		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
+	require(m_method->supports_binary() || m_method->supports_multiclass(),
+		"{} with {} doesn't support classification", m_method->get_name(), lik->get_name());
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -199,10 +199,10 @@ SGVector<float64_t> CGaussianProcessClassification::get_variance_vector(
 {
 	// check whether given combination of inference method and
 	// likelihood function supports classification
-	REQUIRE(m_method, "Inference method should not be NULL\n")
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
-		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
+	require(m_method->supports_binary() || m_method->supports_multiclass(),
+		"{} with {} doesn't support classification", m_method->get_name(), lik->get_name());
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -221,10 +221,10 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
-	REQUIRE(m_method, "Inference method should not be NULL\n")
+	require(m_method, "Inference method should not be NULL");
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
-		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
+	require(m_method->supports_binary() || m_method->supports_multiclass(),
+		"{} with {} doesn't support classification", m_method->get_name(), lik->get_name());
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);

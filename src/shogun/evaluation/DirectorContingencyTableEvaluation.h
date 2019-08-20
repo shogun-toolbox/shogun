@@ -46,7 +46,7 @@ public:
 	 */
 	virtual float64_t get_custom_score()
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		return 0.0;
 	}
 
@@ -55,7 +55,7 @@ public:
 	 */
 	virtual EEvaluationDirection get_custom_direction()
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		return ED_MAXIMIZE;
 	}
 

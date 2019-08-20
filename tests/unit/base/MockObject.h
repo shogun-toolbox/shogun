@@ -18,7 +18,7 @@ namespace shogun
 	public:
 		CCloneEqualsMockParameter()
 		{
-			SG_SDEBUG("Creating new %s, at %p.\n", get_name(), this)
+			SG_DEBUG("Creating new {}, at {}.\n", get_name(), fmt::ptr(this))
 			m_was_cloned = false;
 			m_some_value = 1;
 

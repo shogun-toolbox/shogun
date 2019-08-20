@@ -30,7 +30,7 @@
  */
 
 #include <shogun/labels/MultilabelLabels.h>
-#include <shogun/io/SGIO.h>                    // for REQUIRE, SG_PRINT, etc
+#include <shogun/io/SGIO.h>                    // for require, io::print, etc
 
 using namespace shogun;
 
@@ -64,8 +64,8 @@ CMultilabelLabels::~CMultilabelLabels()
 void
 CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 {
-	REQUIRE(num_labels >= 0, "num_labels=%d should be >= 0", num_labels);
-	REQUIRE(num_classes > 0, "num_classes=%d should be > 0", num_classes);
+	require(num_labels >= 0, "num_labels={} should be >= 0", num_labels);
+	require(num_classes > 0, "num_classes={} should be > 0", num_classes);
 
 	// This one does consider the contained labels, so its simply BROKEN
 	// Can be disabled as
@@ -115,9 +115,9 @@ bool CMultilabelLabels::is_valid() const
 
 void CMultilabelLabels::ensure_valid(const char* context)
 {
-	REQUIRE(
+	require(
 	    is_valid(),
-	    "Multilabel labels need to be sorted and in [0, num_classes-1].\n");
+	    "Multilabel labels need to be sorted and in [0, num_classes-1].");
 }
 
 
@@ -163,7 +163,7 @@ SGVector <int32_t> ** CMultilabelLabels::get_class_labels() const
 		for (int32_t c_pos = 0; c_pos < m_labels[label_j].vlen; c_pos++)
 		{
 			int32_t class_i = m_labels[label_j][c_pos];
-			REQUIRE(class_i < get_num_classes(),
+			require(class_i < get_num_classes(),
 			        "class_i exceeded number of classes");
 			num_label_idx[class_i]++;
 		}
@@ -188,11 +188,11 @@ SGVector <int32_t> ** CMultilabelLabels::get_class_labels() const
 		{
 			// get class_i of current position
 			int32_t class_i = m_labels[label_j][c_pos];
-			REQUIRE(class_i < get_num_classes(),
+			require(class_i < get_num_classes(),
 			        "class_i exceeded number of classes");
 			// next free element in m_classes[class_i]:
 			int32_t l_pos = next_label_idx[class_i];
-			REQUIRE(l_pos < labels_list[class_i]->size(),
+			require(l_pos < labels_list[class_i]->size(),
 			        "l_pos exceeded length of label list");
 			next_label_idx[class_i]++;
 			// finally, story label_j into class-column
@@ -214,7 +214,7 @@ SGMatrix<int32_t>  CMultilabelLabels::get_labels() const
 
         for (int32_t i=0; i<m_num_labels; i++)
         {
-                REQUIRE(m_labels[i].vlen==n_outputs,
+                require(m_labels[i].vlen==n_outputs,
                         "This function is valid only for multiclass multiple output lables.");
 
                 for (int32_t j=0; j<n_outputs; j++)
@@ -225,8 +225,8 @@ SGMatrix<int32_t>  CMultilabelLabels::get_labels() const
 
 SGVector <int32_t> CMultilabelLabels::get_label(int32_t j)
 {
-	REQUIRE(j < get_num_labels(),
-	        "label index j=%d should be within [%d,%d[",
+	require(j < get_num_labels(),
+	        "label index j={} should be within [{},{}[",
 	        j, 0, get_num_labels());
 	return m_labels[j];
 }
@@ -241,7 +241,7 @@ SGVector <D> CMultilabelLabels::to_dense
 	for (int32_t i = 0; i < sparse->vlen; i++)
 	{
 		S index = (*sparse)[i];
-		REQUIRE(index < dense_len,
+		require(index < dense_len,
 		        "class index exceeded length of dense vector");
 		dense[index] = d_true;
 	}
@@ -260,8 +260,8 @@ SGVector <float64_t> CMultilabelLabels::to_dense <int32_t, float64_t>
 void
 CMultilabelLabels::set_label(int32_t j, SGVector <int32_t> label)
 {
-	REQUIRE(j < get_num_labels(),
-	        "label index j=%d should be within [%d,%d[",
+	require(j < get_num_labels(),
+	        "label index j={} should be within [{},{}[",
 	        j, 0, get_num_labels());
 	m_labels[j] = label;
 }
@@ -281,8 +281,8 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 		for (int32_t l_pos = 0; l_pos < labels_list[class_i]->vlen; l_pos++)
 		{
 			int32_t label_j = (*labels_list[class_i])[l_pos];
-			REQUIRE(label_j < get_num_labels(),
-			        "class_i=%d/%d :: label_j=%d/%d (l_pos=%d)\n",
+			require(label_j < get_num_labels(),
+			        "class_i={}/{} :: label_j={}/{} (l_pos={})",
 			        class_i, get_num_classes(), label_j, get_num_labels(),
 			        l_pos);
 			num_class_idx[label_j]++;
@@ -307,14 +307,14 @@ CMultilabelLabels::set_class_labels(SGVector <int32_t> ** labels_list)
 		{
 			// get class_i of current position
 			int32_t label_j = (*labels_list[class_i])[l_pos];
-			REQUIRE(label_j < get_num_labels(),
-			        "class_i=%d/%d :: label_j=%d/%d (l_pos=%d)\n",
+			require(label_j < get_num_labels(),
+			        "class_i={}/{} :: label_j={}/{} (l_pos={})",
 			        class_i, get_num_classes(), label_j, get_num_labels(),
 			        l_pos);
 
 			// next free element in m_labels[label_j]:
 			int32_t c_pos = next_class_idx[label_j];
-			REQUIRE(c_pos < m_labels[label_j].size(),
+			require(c_pos < m_labels[label_j].size(),
 			        "c_pos exceeded length of labels vector");
 			next_class_idx[label_j]++;
 
@@ -332,12 +332,12 @@ void
 CMultilabelLabels::display() const
 {
 	SGVector <int32_t> ** labels_list = get_class_labels();
-	SG_PRINT("printing %d binary label vectors for %d multilabels:\n",
+	io::print("printing {} binary label vectors for {} multilabels:\n",
 	         get_num_classes(), get_num_labels());
 
 	for (int32_t class_i = 0; class_i < get_num_classes(); class_i++)
 	{
-		SG_PRINT("  yC_{class_i=%d}", class_i);
+		io::print("  yC_{{class_i={}}}", class_i);
 		SGVector <float64_t> dense =
 		        to_dense <int32_t, float64_t> (labels_list[class_i],
 		                                       get_num_labels(), +1, -1);
@@ -346,12 +346,12 @@ CMultilabelLabels::display() const
 	}
 	SG_FREE(labels_list);
 
-	SG_PRINT("printing %d binary class vectors for %d labels:\n",
+	io::print("printing {} binary class vectors for {} labels:\n",
 	         get_num_labels(), get_num_classes());
 
 	for (int32_t j = 0; j < get_num_labels(); j++)
 	{
-		SG_PRINT("  y_{j=%d}", j);
+		io::print("  y_{{j={}}}", j);
 		SGVector <float64_t> dense =
 		        to_dense <int32_t , float64_t> (&m_labels[j], get_num_classes(),
 		                                        +1, -1);

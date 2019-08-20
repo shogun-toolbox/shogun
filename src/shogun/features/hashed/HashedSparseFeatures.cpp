@@ -283,20 +283,20 @@ int32_t CHashedSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num) cons
 template <class ST>
 void* CHashedSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 template <class ST>
 bool CHashedSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
 	void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 template <class ST>
 void CHashedSparseFeatures<ST>::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 template <class ST>

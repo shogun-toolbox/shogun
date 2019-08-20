@@ -21,7 +21,7 @@ CProbabilityDistribution::CProbabilityDistribution(int32_t dimension) :
 {
 	init();
 
-	REQUIRE(dimension>0, "Dimension of Distribution must be positive\n",
+	require(dimension>0, "Dimension of Distribution must be positive",
 			dimension);
 
 	m_dimension=dimension;
@@ -36,7 +36,7 @@ CProbabilityDistribution::~CProbabilityDistribution()
 SGMatrix<float64_t> CProbabilityDistribution::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
-	SG_ERROR("Not implemented in sub-class\n");
+	error("Not implemented in sub-class");
 	return SGMatrix<float64_t>();
 }
 
@@ -51,14 +51,14 @@ SGVector<float64_t> CProbabilityDistribution::sample() const
 SGVector<float64_t> CProbabilityDistribution::log_pdf_multiple(
 		SGMatrix<float64_t> samples) const
 {
-	SG_ERROR("Not implemented in sub-class\n");
+	error("Not implemented in sub-class");
 	return SGVector<float64_t>();
 }
 
 float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) const
 {
-	REQUIRE(sample_vec.vlen==m_dimension, "Sample dimension (%d) does not "
-			"match dimension of distribution (%d)\n", sample_vec.vlen,
+	require(sample_vec.vlen==m_dimension, "Sample dimension ({}) does not "
+			"match dimension of distribution ({})", sample_vec.vlen,
 			m_dimension);
 
 	SGMatrix<float64_t> s(m_dimension, 1);

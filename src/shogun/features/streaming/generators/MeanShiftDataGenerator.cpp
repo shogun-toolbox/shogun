@@ -32,8 +32,8 @@ CMeanShiftDataGenerator::~CMeanShiftDataGenerator()
 void CMeanShiftDataGenerator::set_mean_shift_model(float64_t mean_shift,
 		index_t dimension, index_t dimension_shift)
 {
-	REQUIRE(dimension_shift<dimension, "%s::set_mean_shift_model(%f,%d,%d): "
-			"Dimension of shift is larger than number of dimensions!\n",
+	require(dimension_shift<dimension, "{}::set_mean_shift_model({},{},{}): "
+			"Dimension of shift is larger than number of dimensions!",
 			mean_shift, dimension, dimension_shift);
 
 	m_dimension=dimension;
@@ -56,7 +56,7 @@ void CMeanShiftDataGenerator::init()
 
 bool CMeanShiftDataGenerator::get_next_example()
 {
-	SG_SDEBUG("entering\n");
+	SG_DEBUG("entering");
 
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(m_dimension);
@@ -70,7 +70,7 @@ bool CMeanShiftDataGenerator::get_next_example()
 	/* save example back to superclass */
 	CMeanShiftDataGenerator::current_vector=result;
 
-	SG_SDEBUG("leaving\n");
+	SG_DEBUG("leaving");
 	return true;
 }
 

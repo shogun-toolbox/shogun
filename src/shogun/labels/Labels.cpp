@@ -84,10 +84,10 @@ float64_t CLabels::get_value(int32_t idx)
 void CLabels::set_value(float64_t value, int32_t idx)
 {
 
-	REQUIRE(m_current_values.vector, "%s::set_value(%f, %d): No values vector"
-	        " set!\n", get_name(), value, idx);
-	REQUIRE(get_num_labels(), "%s::set_value(%f, %d): Number of values is "
-	        "zero!\n", get_name(), value, idx);
+	require(m_current_values.vector, "{}::set_value({}, {}): No values vector"
+	        " set!", get_name(), value, idx);
+	require(get_num_labels(), "{}::set_value({}, {}): Number of values is "
+	        "zero!", get_name(), value, idx);
 
 	int32_t real_num = m_subset_stack->subset_idx_conversion(idx);
 	m_current_values.vector[real_num] = value;
@@ -97,8 +97,8 @@ void CLabels::set_values(SGVector<float64_t> values)
 {
 	if (m_current_values.vlen != 0 && m_current_values.vlen != get_num_labels())
 	{
-		SG_ERROR("length of value values should match number of labels or"
-		         " have zero length (len(labels)=%d, len(values)=%d)\n",
+		error("length of value values should match number of labels or"
+		         " have zero length (len(labels)={}, len(values)={})",
 		         get_num_labels(), values.vlen);
 	}
 

@@ -79,7 +79,7 @@ public:
 	inline index_t get_size() const
 	{
 		if (!has_subsets())
-			SG_WARNING("CSubsetStack::get_size(): No subset in stack!\n")
+			io::warn("CSubsetStack::get_size(): No subset in stack!");
 
 		return has_subsets() ? m_active_subset->get_size() : -1;
 	}

@@ -62,7 +62,7 @@ float64_t CPlifArray::lookup_penalty(
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
 	{
-		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value)
+		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}",p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
 	float64_t ret = 0.0 ;
@@ -78,7 +78,7 @@ float64_t CPlifArray::lookup_penalty(
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
 	{
-		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value)
+		//io::warn("lookup_penalty: p_value: {} min_value: {}, max_value: {}",p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
 	float64_t ret = 0.0 ;
@@ -89,9 +89,9 @@ float64_t CPlifArray::lookup_penalty(
 #ifdef PLIFARRAY_DEBUG
 		CPlif * plif = (CPlif*)m_array[i] ;
 		if (plif->get_use_svm())
-			SG_PRINT("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1])
+			io::print("penalty[{}]={:1.5f} (use_svm={} -> {:1.5f})\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]);
 		else
-			SG_PRINT("penalty[%i]=%1.5f\n", i, val)
+			io::print("penalty[{}]={:1.5f}\n", i, val);
 #endif
 	}
 	return ret ;
@@ -128,10 +128,10 @@ int32_t CPlifArray::get_max_id() const
 
 void CPlifArray::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
-	SG_PRINT("get_used_svms: num: %i \n",m_array.get_num_elements())
+	io::print("get_used_svms: num: {} \n",m_array.get_num_elements());
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 	{
 		m_array[i]->get_used_svms(num_svms, svm_ids);
 	}
-	SG_PRINT("\n")
+	io::print("\n");
 }

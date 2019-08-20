@@ -51,7 +51,7 @@ public:
 	 */
 	void set_ratio(float64_t ratio)
 	{
-		REQUIRE(ratio>0.0 && ratio<1.0, "Ratio should be in [0,1] range\n")
+		require(ratio>0.0 && ratio<1.0, "Ratio should be in [0,1] range");
 		m_ratio=ratio;
 	}
 

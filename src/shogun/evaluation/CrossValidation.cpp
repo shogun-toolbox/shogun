@@ -59,11 +59,11 @@ CEvaluationResult* CCrossValidation::evaluate_impl() const
 	SGVector<float64_t> results(m_num_runs);
 
 	/* perform all the x-val runs */
-	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
+	SG_DEBUG("starting {} runs of cross-validation", m_num_runs)
 	for (auto i : SG_PROGRESS(range(m_num_runs)))
 	{
 		results[i] = evaluate_one_run(i);
-		SG_INFO("Result of cross-validation run %d/%d is %f\n", i+1, m_num_runs, results[i])
+		io::info("Result of cross-validation run {}/{} is {}", i+1, m_num_runs, results[i]);
 	}
 
 	/* construct evaluation result */
@@ -81,17 +81,17 @@ CEvaluationResult* CCrossValidation::evaluate_impl() const
 void CCrossValidation::set_num_runs(int32_t num_runs)
 {
 	if (num_runs < 1)
-		SG_ERROR("%d is an illegal number of repetitions\n", num_runs)
+		error("{} is an illegal number of repetitions", num_runs);
 
 	m_num_runs = num_runs;
 }
 
 float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 {
-	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
+	SG_DEBUG("entering {}::evaluate_one_run()", get_name())
 	index_t num_subsets = m_splitting_strategy->get_num_subsets();
 
-	SG_DEBUG("building index sets for %d-fold cross-validation\n", num_subsets)
+	SG_DEBUG("building index sets for {}-fold cross-validation", num_subsets)
 	m_splitting_strategy->build_subsets();
 
 	SGVector<float64_t> results(num_subsets);
@@ -128,7 +128,7 @@ float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 		SG_REF(result_labels);
 
 		results[i] = evaluation_criterion->evaluate(result_labels, labels_test);
-		SG_INFO("Result of cross-validation fold %d/%d is %f\n", i+1, num_subsets, results[i])
+		io::info("Result of cross-validation fold {}/{} is {}", i+1, num_subsets, results[i]);
 
 		SG_UNREF(machine);
 		SG_UNREF(features_train);
@@ -142,6 +142,6 @@ float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 	/* build arithmetic mean of results */
 	float64_t mean = CStatistics::mean(results);
 
-	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
+	SG_DEBUG("leaving {}::evaluate_one_run()", get_name())
 	return mean;
 }

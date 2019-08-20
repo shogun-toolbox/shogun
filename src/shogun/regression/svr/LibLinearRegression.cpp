@@ -84,8 +84,8 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 
 	if (num_vec!=num_train_labels)
 	{
-		SG_ERROR("number of vectors %d does not match "
-				"number of training labels %d\n",
+		error("number of vectors {} does not match "
+				"number of training labels {}",
 				num_vec, num_train_labels);
 	}
 
@@ -139,7 +139,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 			solve_l2r_l1l2_svr(w, &prob);
 			break;
 		default:
-			SG_ERROR("Error: unknown regression type\n")
+			error("Error: unknown regression type");
 			break;
 	}
 
@@ -349,9 +349,9 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	}
 
 	pb.complete_absolute();
-	SG_INFO("\noptimization finished, #iter = %d\n", iter)
+	io::info("optimization finished, #iter = {}", iter);
 	if(iter >= m_max_iter)
-		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n")
+		io::info("WARNING: reaching max number of iterations\nUsing -s 11 may be faster");
 
 	// calculate objective value
 	int nSV = 0;
@@ -363,8 +363,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			nSV++;
 	}
 
-	SG_INFO("Objective value = %lf\n", v)
-	SG_INFO("nSV = %d\n",nSV)
+	io::info("Objective value = {}", v);
+	io::info("nSV = {}",nSV);
 
 	delete [] index;
 }

@@ -355,11 +355,11 @@ namespace shogun
 		    const Any& any, PrimitiveLambdaT primitive_func,
 		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
-			SG_SWARNING(
-			    "Ignoring Any dispatch call.\n"
+			io::warn(
+			    "Ignoring Any dispatch call."
 			    "sg_any_dispatch requires a lambda function definition "
-			    "for the expected underlying type of Any (%s).\n",
-			    demangled_type<T>().c_str())
+			    "for the expected underlying type of Any ({}).",
+			    demangled_type<T>().c_str());
 		}
 
 		template <
@@ -371,9 +371,9 @@ namespace shogun
 		    const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
 		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
-			SG_SERROR(
-			    "Unsupported type %s\n",
-			    demangled_type(any.type_info().name()).c_str())
+			error(
+			    "Unsupported type {}",
+			    demangled_type(any.type_info().name()).c_str());
 		}
 
 		template <
@@ -504,10 +504,10 @@ static const typemap sg_non_integer_typemap = {
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
 		if (type == TYPE::T_UNDEFINED)
-			SG_SERROR(
-			    "Type %s is not part of %s\n",
+			error(
+			    "Type {} is not part of {}",
 			    demangled_type(any.type_info().name()).c_str(),
-			    type_internal::print_map(typesmap).c_str())
+			    type_internal::print_map(typesmap).c_str());
 		else
 			type_internal::sg_type_finder<SG_TYPES>(
 			    any, type, primitive_func, vector_func, matrix_func);

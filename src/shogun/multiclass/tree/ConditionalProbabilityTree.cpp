@@ -20,9 +20,9 @@ CMulticlassLabels* CConditionalProbabilityTree::apply_multiclass(CFeatures* data
 	if (data)
 	{
 		if (data->get_feature_class() != C_STREAMING_DENSE)
-			SG_ERROR("Expected StreamingDenseFeatures\n")
+			error("Expected StreamingDenseFeatures");
 		if (data->get_feature_type() != F_SHORTREAL)
-			SG_ERROR("Expected float32_t feature type\n")
+			error("Expected float32_t feature type");
 
 		set_features(dynamic_cast<CStreamingDenseFeatures<float32_t>* >(data));
 	}
@@ -97,15 +97,15 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (data->get_feature_class() != C_STREAMING_DENSE)
-			SG_ERROR("Expected StreamingDenseFeatures\n")
+			error("Expected StreamingDenseFeatures");
 		if (data->get_feature_type() != F_SHORTREAL)
-			SG_ERROR("Expected float32_t features\n")
+			error("Expected float32_t features");
 		set_features(dynamic_cast<CStreamingDenseFeatures<float32_t> *>(data));
 	}
 	else
 	{
 		if (!m_feats)
-			SG_ERROR("No data features provided\n")
+			error("No data features provided");
 	}
 
 	m_machines->reset_array();
@@ -216,18 +216,18 @@ void CConditionalProbabilityTree::train_path(CStreamingDenseFeatures<float32_t>*
 
 void CConditionalProbabilityTree::train_node(CStreamingDenseFeatures<float32_t>* ex, float64_t label, bnode_t *node)
 {
-	REQUIRE(node, "Node must not be NULL\n");
+	require(node, "Node must not be NULL");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
+	require(mch, "Instance of {} could not be casted to COnlineLibLinear", node->get_name());
 	mch->train_example(ex, label);
 	SG_UNREF(mch);
 }
 
 float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, bnode_t *node)
 {
-	REQUIRE(node, "Node must not be NULL\n");
+	require(node, "Node must not be NULL");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
+	require(mch, "Instance of {} could not be casted to COnlineLibLinear", node->get_name());
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 	SG_UNREF(mch);
 	// use sigmoid function to turn the decision value into valid probability

@@ -83,12 +83,12 @@ SGVector<int32_t> CProbingSampler::get_coloring_vector() const
 
 void CProbingSampler::precompute()
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	// if already precomputed, nothing to do
 	if (m_is_precomputed)
 	{
-		SG_DEBUG("Coloring vector already computed! Exiting!\n");
+		SG_DEBUG("Coloring vector already computed! Exiting!");
 		return;
 	}
 
@@ -158,8 +158,8 @@ void CProbingSampler::precompute()
 	std::vector<int32_t> vi_VertexColors;
 	Color->GetVertexColors(vi_VertexColors);
 
-	REQUIRE(vi_VertexColors.size()==static_cast<uint32_t>(m_dimension),
-		"dimension mismatch, %d vs %d!\n", vi_VertexColors.size(), m_dimension);
+	require(vi_VertexColors.size()==static_cast<uint32_t>(m_dimension),
+		"dimension mismatch, {} vs {}!", vi_VertexColors.size(), m_dimension);
 
 	m_coloring_vector=SGVector<int32_t>(vi_VertexColors.size());
 
@@ -172,7 +172,7 @@ void CProbingSampler::precompute()
 
 	Map<VectorXi> colors(m_coloring_vector.vector, m_coloring_vector.vlen);
 	m_num_samples=colors.maxCoeff()+1;
-	SG_DEBUG("Using %d samples (aka colours) for probing trace sampler\n",
+	SG_DEBUG("Using {} samples (aka colours) for probing trace sampler",
 			m_num_samples);
 
 	delete sp_str;
@@ -181,13 +181,13 @@ void CProbingSampler::precompute()
 	// set the precomputed flag true
 	m_is_precomputed=true;
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 }
 
 SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 {
-	REQUIRE(idx<m_num_samples, "Given index (%d) must be smaller than "
-			"number of samples to draw (%d)\n", idx, m_num_samples);
+	require(idx<m_num_samples, "Given index ({}) must be smaller than "
+			"number of samples to draw ({})", idx, m_num_samples);
 
 	SGVector<float64_t> s(m_dimension);
 	s.set_const(0.0);

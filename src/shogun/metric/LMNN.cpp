@@ -51,7 +51,7 @@ const char* CLMNN::get_name() const
 
 void CLMNN::train(SGMatrix<float64_t> init_transform)
 {
-	SG_DEBUG("Entering CLMNN::train().\n")
+	SG_DEBUG("Entering CLMNN::train().")
 
 	// Check training data and arguments, initializing, if necessary, init_transform
 	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform, m_k);
@@ -61,14 +61,14 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// cast is safe, check_training_setup ensures features are dense
 	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
 	CMulticlassLabels* y = multiclass_labels(m_labels);
-	SG_DEBUG("%d input vectors with %d dimensions.\n", x->get_num_vectors(), x->get_num_features());
+	SG_DEBUG("{} input vectors with {} dimensions.", x->get_num_vectors(), x->get_num_features());
 
 	auto& L = init_transform;
 	// Compute target or genuine neighbours
-	SG_DEBUG("Finding target nearest neighbors.\n")
+	SG_DEBUG("Finding target nearest neighbors.")
 	SGMatrix<index_t> target_nn = CLMNNImpl::find_target_nn(x, y, m_k);
 	// Initialize (sub-)gradient
-	SG_DEBUG("Summing outer products for (sub-)gradient initialization.\n")
+	SG_DEBUG("Summing outer products for (sub-)gradient initialization.")
 	auto gradient = CLMNNImpl::sum_outer_products(x, target_nn);
 	linalg::scale(gradient, gradient, 1 - m_regularization);
 	// Value of the objective function at every iteration
@@ -92,20 +92,20 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	while (!stop)
 	{
 		// Find current set of impostors
-		SG_DEBUG("Finding impostors.\n")
+		SG_DEBUG("Finding impostors.")
 		cur_impostors = CLMNNImpl::find_impostors(x,y,L,target_nn,iter,m_correction);
-		SG_DEBUG("Found %d impostors in the current set.\n", cur_impostors.size())
+		SG_DEBUG("Found {} impostors in the current set.", cur_impostors.size())
 
 		// (Sub-) gradient computation
-		SG_DEBUG("Updating gradient.\n")
+		SG_DEBUG("Updating gradient.")
 		CLMNNImpl::update_gradient(x, gradient, cur_impostors, prev_impostors, m_regularization);
 		// Take gradient step
-		SG_DEBUG("Taking gradient step.\n")
+		SG_DEBUG("Taking gradient step.")
 		CLMNNImpl::gradient_step(L, gradient, stepsize, m_diagonal);
 
 		// Compute the objective, trace of Mahalanobis distance matrix (L squared) times the gradient
 		// plus the number of current impostors to account for the margin
-		SG_DEBUG("Computing objective.\n")
+		SG_DEBUG("Computing objective.")
 		obj[iter] = m_regularization * cur_impostors.size();
 		obj[iter] +=
 		    linalg::trace_dot(linalg::matrix_prod(L, L, true, false), gradient);
@@ -124,7 +124,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		// Store statistics for this iteration
 		m_statistics->set(iter-1, obj[iter-1], stepsize, cur_impostors.size());
 
-		SG_DEBUG("iteration=%d, objective=%.4f, #impostors=%4d, stepsize=%.4E\n",
+		SG_DEBUG("iteration={}, objective={:.4f}, #impostors={:4d}, stepsize=%.4E",
 				iter, obj[iter-1], cur_impostors.size(), stepsize)
 
 		// Print progress bar iteration
@@ -141,7 +141,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	    SGMatrix<float64_t>::clone_matrix(L.matrix, nfeats, nfeats);
 	m_linear_transform = SGMatrix<float64_t>(cloned_data, nfeats, nfeats);
 
-	SG_DEBUG("Leaving CLMNN::train().\n")
+	SG_DEBUG("Leaving CLMNN::train().")
 }
 
 SGMatrix<float64_t> CLMNN::get_linear_transform() const
@@ -169,7 +169,7 @@ int32_t CLMNN::get_k() const
 
 void CLMNN::set_k(const int32_t k)
 {
-	REQUIRE(k>0, "The number of target neighbors per example must be larger than zero\n");
+	require(k>0, "The number of target neighbors per example must be larger than zero");
 	m_k = k;
 }
 
@@ -190,7 +190,7 @@ float64_t CLMNN::get_stepsize() const
 
 void CLMNN::set_stepsize(const float64_t stepsize)
 {
-	REQUIRE(stepsize>0, "The step size used in gradient descent must be larger than zero\n")
+	require(stepsize>0, "The step size used in gradient descent must be larger than zero");
 	m_stepsize = stepsize;
 }
 
@@ -201,8 +201,8 @@ float64_t CLMNN::get_stepsize_threshold() const
 
 void CLMNN::set_stepsize_threshold(const float64_t stepsize_threshold)
 {
-	REQUIRE(stepsize_threshold>0,
-			"The threshold for the step size must be larger than zero\n")
+	require(stepsize_threshold>0,
+			"The threshold for the step size must be larger than zero");
 	m_stepsize_threshold = stepsize_threshold;
 }
 
@@ -213,7 +213,7 @@ int32_t CLMNN::get_maxiter() const
 
 void CLMNN::set_maxiter(const int32_t maxiter)
 {
-	REQUIRE(maxiter>0, "The number of maximum iterations must be larger than zero\n")
+	require(maxiter>0, "The number of maximum iterations must be larger than zero");
 	m_maxiter = maxiter;
 }
 
@@ -234,8 +234,8 @@ float64_t CLMNN::get_obj_threshold() const
 
 void CLMNN::set_obj_threshold(const float64_t obj_threshold)
 {
-	REQUIRE(obj_threshold>0,
-			"The threshold for the objective must be larger than zero\n")
+	require(obj_threshold>0,
+			"The threshold for the objective must be larger than zero");
 	m_obj_threshold = obj_threshold;
 }
 
@@ -302,8 +302,8 @@ const char* CLMNNStatistics::get_name() const
 
 void CLMNNStatistics::resize(int32_t size)
 {
-	REQUIRE(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
-			 " Given value is %d.\n", size);
+	require(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
+			 " Given value is {}.", size);
 
 	obj.resize_vector(size);
 	stepsize.resize_vector(size);
@@ -313,8 +313,8 @@ void CLMNNStatistics::resize(int32_t size)
 void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_iter,
 		uint32_t num_impostors_iter)
 {
-	REQUIRE(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
-			"must be larger or equal to zero and less than the size (%d). Given valu is %d.\n", obj.vlen, iter);
+	require(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
+			"must be larger or equal to zero and less than the size ({}). Given valu is {}.", obj.vlen, iter);
 
 	obj[iter] = obj_iter;
 	stepsize[iter] = stepsize_iter;

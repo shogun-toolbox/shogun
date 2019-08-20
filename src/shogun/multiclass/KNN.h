@@ -111,7 +111,7 @@ class CKNN : public CDistanceMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
 		{
-			SG_ERROR("for performance reasons use apply() instead of apply(int32_t vec_idx)\n")
+			error("for performance reasons use apply() instead of apply(int32_t vec_idx)");
 			return 0;
 		}
 

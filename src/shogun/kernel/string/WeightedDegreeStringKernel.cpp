@@ -108,7 +108,7 @@ CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
 
 void CWeightedDegreeStringKernel::remove_lhs()
 {
-	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization\n")
+	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization")
 	delete_optimization();
 
 	if (tries!=NULL)
@@ -140,18 +140,18 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
+	SG_DEBUG("lhs_changed: {}", lhs_changed)
+	SG_DEBUG("rhs_changed: {}", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
 
 	int32_t len=sf_l->get_max_vector_length();
 	if (lhs_changed && !sf_l->have_same_length(len))
-		SG_ERROR("All strings in WD kernel must have same length (lhs wrong)!\n")
+		error("All strings in WD kernel must have same length (lhs wrong)!");
 
 	if (rhs_changed && !sf_r->have_same_length(len))
-		SG_ERROR("All strings in WD kernel must have same length (rhs wrong)!\n")
+		error("All strings in WD kernel must have same length (rhs wrong)!");
 
 	SG_UNREF(alphabet);
 	alphabet=sf_l->get_alphabet();
@@ -177,7 +177,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 
 void CWeightedDegreeStringKernel::cleanup()
 {
-	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization\n")
+	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization")
 	delete_optimization();
 
 	SG_FREE(block_weights);
@@ -202,12 +202,12 @@ void CWeightedDegreeStringKernel::cleanup()
 bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX, float64_t* alphas, int32_t tree_num)
 {
 	if (tree_num<0)
-		SG_DEBUG("deleting CWeightedDegreeStringKernel optimization\n")
+		SG_DEBUG("deleting CWeightedDegreeStringKernel optimization")
 
 	delete_optimization();
 
 	if (tree_num<0)
-		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization\n")
+		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization")
 
 	for (auto i : SG_PROGRESS(range(count)))
 	{
@@ -219,7 +219,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 			else
 				add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
 
-			//SG_DEBUG("number of used trie nodes: %i\n", tries.get_num_used_nodes())
+			//SG_DEBUG("number of used trie nodes: {}", tries.get_num_used_nodes())
 		}
 		else
 		{
@@ -619,7 +619,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	int32_t len=new_weights.num_cols;
 
 	if (d!=degree || len<0)
-		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree)
+		error("WD: Dimension mismatch (should be (seq_length | 1) x degree) got ({} x {})", len, degree);
 
 	degree=d;
 	length=len;
@@ -631,7 +631,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	weights_length=len+max_mismatch;
 
 
-	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length)
+	SG_DEBUG("Creating weights of size {}x{}", weights_degree, weights_length)
 	int32_t num_weights=weights_degree*weights_length;
 	SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, num_weights);
@@ -654,7 +654,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 	}
 
 	if (seq_length!=len)
-		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len)
+		error("seq_length = {}, position_weights_length={}", seq_length, len);
 
 	SG_FREE(position_weights);
 	position_weights=SG_MALLOC(float64_t, len);

@@ -34,7 +34,7 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 #endif
 
 #ifdef DEBUG_MOSEK
-	// Direct the environment's log stream to SG_PRINT
+	// Direct the environment's log stream to io::print
 	if ( m_rescode == MSK_RES_OK )
 	{
 		m_rescode = MSK_linkfunctoenvstream(m_env, MSK_STREAM_LOG,
@@ -55,7 +55,7 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 	}
 
 #ifdef DEBUG_MOSEK
-	// Direct the task's log stream to SG_PRINT
+	// Direct the task's log stream to io::print
 	if ( m_rescode == MSK_RES_OK )
 	{
 		m_rescode = MSK_linkfunctotaskstream(m_task, MSK_STREAM_LOG,
@@ -71,7 +71,7 @@ CMosek::~CMosek()
 
 void MSKAPI CMosek::print(void* handle, char str[])
 {
-	SG_SPRINT("%s", str)
+	io::print("{}", str);
 }
 
 MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
@@ -125,8 +125,8 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 		SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, +MSK_INFINITY);
 	}
 
-	REQUIRE(lb.vlen >= M, "CMosek::init_sosvm(): lb.vlen < dimension of feature space.\n");
-	REQUIRE(ub.vlen >= M, "CMosek::init_sosvm(): ub.vlen < dimension of feature space.\n");
+	require(lb.vlen >= M, "CMosek::init_sosvm(): lb.vlen < dimension of feature space.");
+	require(ub.vlen >= M, "CMosek::init_sosvm(): ub.vlen < dimension of feature space.");
 
 	for ( int32_t j = 0 ; j < num_var && m_rescode == MSK_RES_OK ; ++j )
 	{
@@ -190,8 +190,8 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 	m_rescode = wrapper_putaveclist(m_task, A);
 	m_rescode = wrapper_putboundlist(m_task, b);
 
-	REQUIRE(m_rescode == MSK_RES_OK, "MOSEK Error in CMosek::init_sosvm(). "
-			"Enable DEBUG_MOSEK for details.\n");
+	require(m_rescode == MSK_RES_OK, "MOSEK Error in CMosek::init_sosvm(). "
+			"Enable DEBUG_MOSEK for details.");
 
 	return m_rescode;
 }
@@ -317,8 +317,8 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	#error "Unsupported Mosek version"
 #endif
 
-	REQUIRE(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putaveclist(). "
-			"Enable DEBUG_MOSEK for details.\n");
+	require(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putaveclist(). "
+			"Enable DEBUG_MOSEK for details.");
 
 	return ret;
 }
@@ -345,8 +345,8 @@ MSKrescodee CMosek::wrapper_putboundlist(MSKtask_t & task, SGVector< float64_t >
 
 	SG_FREE(bk);
 
-	REQUIRE(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putboundlist(). "
-			"Enable DEBUG_MOSEK for details.\n");
+	require(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putboundlist(). "
+			"Enable DEBUG_MOSEK for details.");
 
 	return ret;
 }
@@ -436,18 +436,18 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 		case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
 		case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
 #ifdef DEBUG_MOSEK
-			SG_PRINT("Primal or dual infeasibility "
+			io::print("Primal or dual infeasibility "
 				 "certificate found\n");
 #endif
 			break;
 		case MSK_SOL_STA_UNKNOWN:
 #ifdef DEBUG_MOSEK
-			SG_PRINT("Undetermined solution status\n")
+			io::print("Undetermined solution status\n");
 #endif
 			break;
 		default:
 #ifdef DEBUG_MOSEK
-			SG_PRINT("Other solution status\n")
+			io::print("Other solution status\n");
 #endif
 			break;	// to avoid compile error when DEBUG_MOSEK
 				// is not defined
@@ -462,8 +462,8 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 
 		MSK_getcodedesc(m_rescode, symname, desc);
 
-		SG_PRINT("An error occurred optimizing with MOSEK\n")
-		SG_PRINT("ERROR %s - '%s'\n", symname, desc)
+		io::print("An error occurred optimizing with MOSEK\n");
+		io::print("ERROR {} - '{}'\n", symname, desc);
 	}
 
 	return m_rescode;
@@ -481,7 +481,7 @@ void CMosek::display_problem()
 	m_rescode = MSK_getnumvar(m_task, &num_var);
 	m_rescode = MSK_getnumcon(m_task, &num_con);
 
-	SG_PRINT("\nMatrix Q^0:\n")
+	io::print("\nMatrix Q^0:\n");
 	for ( int32_t i = 0 ; i < num_var ; ++i )
 	{
 		for ( int32_t j = 0 ; j < num_var ; ++j )
@@ -489,17 +489,17 @@ void CMosek::display_problem()
 			float64_t qij;
 			m_rescode = MSK_getqobjij(m_task, i, j, &qij);
 			if ( qij != 0.0 )
-				SG_PRINT("(%d,%d)\t%.2f\n", i, j, qij)
+				io::print("({},{})\t{:.2f}\n", i, j, qij);
 		}
 	}
-	SG_PRINT("\n")
+	io::print("\n");
 
-	SG_PRINT("\nVector c:\n")
+	io::print("\nVector c:\n");
 	SGVector< float64_t > c(num_var);
 	m_rescode = MSK_getc(m_task, c.vector);
 	c.display_vector();
 
-	SG_PRINT("\n\nMatrix A:\n")
+	io::print("\n\nMatrix A:\n");
 	for ( int32_t i = 0 ; i < num_con ; ++i )
 	{
 		for ( int32_t j = 0 ; j < num_var ; ++j )
@@ -507,31 +507,31 @@ void CMosek::display_problem()
 			float64_t aij;
 			m_rescode = MSK_getaij(m_task, i, j, &aij);
 			if ( aij != 0.0 )
-				SG_PRINT("(%d,%d)\t%.2f\n", i, j, aij)
+				io::print("({},{})\t{:.2f}\n", i, j, aij);
 		}
 	}
-	SG_PRINT("\n")
+	io::print("\n");
 
-	SG_PRINT("\nConstraint Bounds, vector b:\n")
+	io::print("\nConstraint Bounds, vector b:\n");
 	for ( int32_t i = 0 ; i < num_con ; ++i )
 	{
 		MSKboundkeye bk;
 		float64_t bl, bu;
 		m_rescode = MSK_getbound(m_task, MSK_ACC_CON, i, &bk, &bl, &bu);
 
-		SG_PRINT("%6.2f %6.2f\n", bl, bu)
+		io::print("{:6.2f} {:6.2f}\n", bl, bu);
 	}
 
-	SG_PRINT("\nVariable Bounds, vectors lb and ub:\n")
+	io::print("\nVariable Bounds, vectors lb and ub:\n");
 	for ( int32_t i = 0 ; i < num_var ; ++i )
 	{
 		MSKboundkeye bk;
 		float64_t bl, bu;
 		m_rescode = MSK_getbound(m_task, MSK_ACC_VAR, i, &bk, &bl, &bu);
 
-		SG_PRINT("%6.2f %6.2f\n", bl, bu)
+		io::print("{:6.2f} {:6.2f}\n", bl, bu);
 	}
-	SG_PRINT("\n")
+	io::print("\n");
 }
 
 

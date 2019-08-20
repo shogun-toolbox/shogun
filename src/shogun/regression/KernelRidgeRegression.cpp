@@ -55,7 +55,7 @@ bool CKernelRidgeRegression::solve_krr_system()
 	llt.compute(eigen_kernel_matrix);
 	if (llt.info() != Eigen::Success)
 	{
-		SG_WARNING("Features covariance matrix was not positive definite\n");
+		io::warn("Features covariance matrix was not positive definite");
 		return false;
 	}
 	eigen_alphas = llt.solve(eigen_y);
@@ -64,20 +64,20 @@ bool CKernelRidgeRegression::solve_krr_system()
 
 bool CKernelRidgeRegression::train_machine(CFeatures *data)
 {
-	REQUIRE(m_labels, "No labels set\n")
+	require(m_labels, "No labels set");
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels");
 		kernel->init(data, data);
 	}
 	ASSERT(kernel && kernel->has_features())
 
 	if (m_labels->get_num_labels() != kernel->get_num_vec_rhs())
 	{
-		SG_ERROR("Number of labels does not match number of kernel"
-			" columns (num_labels=%d cols=%d\n", m_labels->get_num_labels(), kernel->get_num_vec_rhs());
+		error("Number of labels does not match number of kernel"
+			" columns (num_labels={} cols={}", m_labels->get_num_labels(), kernel->get_num_vec_rhs());
 	}
 
 	// allocate alpha vector

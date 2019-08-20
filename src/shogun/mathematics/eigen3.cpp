@@ -18,15 +18,15 @@ namespace shogun
 template<typename T>
 SparseMatrix<T> EigenSparseUtil<T>::toEigenSparse(SGSparseMatrix<T> sg_matrix)
 	{
-		REQUIRE(sg_matrix.num_vectors>0,
+		require(sg_matrix.num_vectors>0,
 			"EigenSparseUtil::toEigenSparse(): \
-			Number of rows must be positive!\n");
-		REQUIRE(sg_matrix.num_features>0,
+			Number of rows must be positive!");
+		require(sg_matrix.num_features>0,
 			"EigenSparseUtil::toEigenSparse(): \
-			Number of cols must be positive!\n");
-		REQUIRE(sg_matrix.sparse_matrix,
+			Number of cols must be positive!");
+		require(sg_matrix.sparse_matrix,
 			"EigenSparseUtil::toEigenSparse(): \
-			sg_matrix is not initialized!\n");
+			sg_matrix is not initialized!");
 
 		index_t num_rows=sg_matrix.num_vectors;
 		index_t num_cols=sg_matrix.num_features;

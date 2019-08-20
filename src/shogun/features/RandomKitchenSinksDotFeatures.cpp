@@ -50,7 +50,7 @@ SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::generate_random_coefficients
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(CFile* loader)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
@@ -106,7 +106,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df
 float64_t CRandomKitchenSinksDotFeatures::dot(
 	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	SG_DEBUG("entering dense_dot()\n");
+	SG_DEBUG("entering dense_dot()");
 	ASSERT(vec2.size() == get_dim_feature_space());
 
 	float64_t dot_product = 0;
@@ -116,14 +116,14 @@ float64_t CRandomKitchenSinksDotFeatures::dot(
 		tmp_dot = post_dot(tmp_dot, i);
 		dot_product += tmp_dot * vec2[i];
 	}
-	SG_DEBUG("Leaving dense_dot()\n");
+	SG_DEBUG("Leaving dense_dot()");
 	return dot_product;
 }
 
 void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
 	int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
-	SG_DEBUG("Entering add_to_dense()\n");
+	SG_DEBUG("Entering add_to_dense()");
 	ASSERT(vec2_len == get_dim_feature_space());
 
 	for (index_t i=0; i<num_samples; i++)
@@ -135,7 +135,7 @@ void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
 		else
 			vec2[i] += alpha * tmp_dot;
 	}
-	SG_DEBUG("Leaving add_to_dense()\n");
+	SG_DEBUG("Leaving add_to_dense()");
 }
 
 int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num) const
@@ -145,20 +145,20 @@ int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num)
 
 void* CRandomKitchenSinksDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 
 bool CRandomKitchenSinksDotFeatures::get_next_feature(int32_t& index,
 	float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 
 void CRandomKitchenSinksDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 EFeatureType CRandomKitchenSinksDotFeatures::get_feature_type() const
@@ -183,7 +183,7 @@ const char* CRandomKitchenSinksDotFeatures::get_name() const
 
 CFeatures* CRandomKitchenSinksDotFeatures::duplicate() const
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 

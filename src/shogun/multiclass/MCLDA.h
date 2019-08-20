@@ -85,7 +85,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("MCLDA requires SIMPLE REAL valued features\n")
+				error("MCLDA requires SIMPLE REAL valued features");
 
 			SG_REF(feat);
 			SG_UNREF(m_features);

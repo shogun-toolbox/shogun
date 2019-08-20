@@ -24,22 +24,22 @@ CStructuredAccuracy::~CStructuredAccuracy()
 
 float64_t CStructuredAccuracy::evaluate(CLabels * predicted, CLabels * ground_truth)
 {
-	REQUIRE(predicted && ground_truth, "CLabels objects passed to evaluate "
-	        "cannot be null\n");
-	REQUIRE(predicted->get_num_labels() == ground_truth->get_num_labels(),
+	require(predicted && ground_truth, "CLabels objects passed to evaluate "
+	        "cannot be null");
+	require(predicted->get_num_labels() == ground_truth->get_num_labels(),
 	        "The number of predicted and ground truth labels must "
-	        "be the same\n");
-	REQUIRE(predicted->get_label_type() == LT_STRUCTURED, "The predicted "
-	        "labels must be of type CStructuredLabels\n");
-	REQUIRE(ground_truth->get_label_type() == LT_STRUCTURED, "The ground truth "
-	        "labels must be of type CStructuredLabels\n");
+	        "be the same");
+	require(predicted->get_label_type() == LT_STRUCTURED, "The predicted "
+	        "labels must be of type CStructuredLabels");
+	require(ground_truth->get_label_type() == LT_STRUCTURED, "The ground truth "
+	        "labels must be of type CStructuredLabels");
 
 	CStructuredLabels* pred_labs = predicted->as<CStructuredLabels>();
 	CStructuredLabels* true_labs = ground_truth->as<CStructuredLabels>();
 
-	REQUIRE(pred_labs->get_structured_data_type() ==
+	require(pred_labs->get_structured_data_type() ==
 	        true_labs->get_structured_data_type(), "Predicted and ground truth "
-	        "labels must be composed of the same structured data\n");
+	        "labels must be composed of the same structured data");
 
 	switch (pred_labs->get_structured_data_type())
 	{
@@ -53,7 +53,7 @@ float64_t CStructuredAccuracy::evaluate(CLabels * predicted, CLabels * ground_tr
 		return evaluate_sparse_multilabel(pred_labs, true_labs);
 
 	default:
-		SG_ERROR("Unknown structured data type for evaluation\n")
+		error("Unknown structured data type for evaluation");
 	}
 
 	return 0.0;
@@ -62,7 +62,7 @@ float64_t CStructuredAccuracy::evaluate(CLabels * predicted, CLabels * ground_tr
 SGMatrix<int32_t> CStructuredAccuracy::get_confusion_matrix(
         CLabels * predicted, CLabels * ground_truth)
 {
-	SG_SERROR("Not implemented\n")
+	error("Not implemented");
 	return SGMatrix<int32_t>();
 }
 
@@ -102,8 +102,8 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
 		SGVector<int32_t> true_seq_data = true_seq->get_data();
 		SGVector<int32_t> pred_seq_data = pred_seq->get_data();
 
-		REQUIRE(true_seq_data.size() == pred_seq_data.size(), "Corresponding ground "
-		        "truth and predicted sequences must be equally long\n");
+		require(true_seq_data.size() == pred_seq_data.size(), "Corresponding ground "
+		        "truth and predicted sequences must be equally long");
 
 		num_equal = 0;
 

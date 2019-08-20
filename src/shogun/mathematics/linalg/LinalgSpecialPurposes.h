@@ -51,15 +51,15 @@ namespace shogun
 		template <typename T>
 		void logistic(const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
-			REQUIRE(
+			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
-			REQUIRE(
+			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->logistic(a, result);
@@ -77,15 +77,15 @@ namespace shogun
 		void multiply_by_logistic_derivative(
 		    const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
-			REQUIRE(
+			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
-			REQUIRE(
+			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->multiply_by_logistic_derivative(
@@ -102,15 +102,15 @@ namespace shogun
 		void multiply_by_rectified_linear_derivative(
 		    const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
-			REQUIRE(
+			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
-			REQUIRE(
+			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->multiply_by_rectified_linear_derivative(
@@ -127,15 +127,15 @@ namespace shogun
 		template <typename T>
 		void rectified_linear(const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
-			REQUIRE(
+			require(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
-			                                     "(%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_rows, result.num_rows);
-			REQUIRE(
+			require(
 			    (a.num_cols == result.num_cols), "Number of columns of matrix "
-			                                     "a (%d) must match matrix "
-			                                     "result (%d).\n",
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).",
 			    a.num_cols, result.num_cols);
 
 			infer_backend(a, result)->rectified_linear(a, result);
@@ -164,13 +164,13 @@ namespace shogun
 		template <typename T>
 		T cross_entropy(const SGMatrix<T> p, const SGMatrix<T> q)
 		{
-			REQUIRE(
+			require(
 			    (p.num_rows == q.num_rows),
-			    "Number of rows of matrix p (%d) must match matrix q (%d).\n",
+			    "Number of rows of matrix p ({}) must match matrix q ({}).",
 			    p.num_rows, q.num_rows);
-			REQUIRE(
+			require(
 			    (p.num_cols == q.num_cols), "Number of columns of matrix p "
-			                                "(%d) must match matrix q (%d).\n",
+			                                "({}) must match matrix q ({}).",
 			    p.num_cols, q.num_cols);
 
 			return infer_backend(p, q)->cross_entropy(p, q);
@@ -186,13 +186,13 @@ namespace shogun
 		template <typename T>
 		T squared_error(const SGMatrix<T> p, const SGMatrix<T> q)
 		{
-			REQUIRE(
+			require(
 			    (p.num_rows == q.num_rows),
-			    "Number of rows of matrix p (%d) must match matrix q (%d).\n",
+			    "Number of rows of matrix p ({}) must match matrix q ({}).",
 			    p.num_rows, q.num_rows);
-			REQUIRE(
+			require(
 			    (p.num_cols == q.num_cols), "Number of columns of matrix p "
-			                                "(%d) must match matrix q (%d).\n",
+			                                "({}) must match matrix q ({}).",
 			    p.num_cols, q.num_cols);
 
 			return infer_backend(p, q)->squared_error(p, q);

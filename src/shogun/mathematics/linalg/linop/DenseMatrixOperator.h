@@ -79,7 +79,7 @@ public:
 	template<class Scalar>
 	inline operator CDenseMatrixOperator<Scalar>*() const
 	{
-		REQUIRE(m_operator.matrix, "Matrix is not initialized!\n");
+		require(m_operator.matrix, "Matrix is not initialized!");
 
 		SGMatrix<Scalar> casted_m(m_operator.num_rows, m_operator.num_cols);
 		for (index_t i=0; i<m_operator.num_cols; ++i)

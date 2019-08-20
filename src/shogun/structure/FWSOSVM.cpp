@@ -24,11 +24,11 @@ CFWSOSVM::CFWSOSVM(
 		bool verbose)
 : CLinearStructuredOutputMachine(model, labs)
 {
-	REQUIRE(model != NULL && labs != NULL,
-		"%s::CFWSOSVM(): model and labels cannot be NULL!\n", get_name());
+	require(model != NULL && labs != NULL,
+		"{}::CFWSOSVM(): model and labels cannot be NULL!", get_name());
 
-	REQUIRE(labs->get_num_labels() > 0,
-		"%s::CFWSOSVM(): number of labels should be greater than 0!\n", get_name());
+	require(labs->get_num_labels() > 0,
+		"{}::CFWSOSVM(): number of labels should be greater than 0!", get_name());
 
 	init();
 	m_lambda = 1.0 / labs->get_num_labels();
@@ -62,7 +62,7 @@ EMachineType CFWSOSVM::get_classifier_type()
 
 bool CFWSOSVM::train_machine(CFeatures* data)
 {
-	SG_DEBUG("Entering CFWSOSVM::train_machine.\n");
+	SG_DEBUG("Entering CFWSOSVM::train_machine.");
 	if (data)
 		set_features(data);
 
@@ -70,14 +70,14 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	m_model->init_training();
 	// Check that the scenary is correct to start with training
 	m_model->check_training_setup();
-	SG_DEBUG("The training setup is correct.\n");
+	SG_DEBUG("The training setup is correct.");
 
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
 	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
 
-	SG_DEBUG("M=%d, N =%d.\n", M, N);
+	SG_DEBUG("M={}, N ={}.", M, N);
 
 	// Initialize the weight vector
 	m_w = SGVector<float64_t>(M);
@@ -129,8 +129,8 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			}
 			else
 			{
-				SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
-						"to be set true\n", m_model->get_name());
+				error("model({}) should have either of psi_computed or psi_computed_sparse"
+						"to be set true", m_model->get_name());
 			}
 
 			// 3) loss_i = L(y_i, y_pred)
@@ -161,7 +161,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			ASSERT(CMath::fequals_abs(primal - dual, dual_gap, 1e-12));
 			float64_t train_error = CSOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
 
-			SG_SPRINT("pass %d (iteration %d), primal = %f, dual = %f, duality gap = %f, train_error = %f \n",
+			io::print("pass {} (iteration {}), primal = {}, dual = {}, duality gap = {}, train_error = {} \n",
 				pi, k, primal, dual, dual_gap, train_error);
 
 			m_helper->add_debug_info(primal, (1.0*k) / N, train_error, dual, dual_gap);
@@ -170,15 +170,15 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		// 6) check duality gap
 		if (dual_gap <= m_gap_threshold)
 		{
-			SG_DEBUG("iteration %d...\n", k);
-			SG_DEBUG("current gap: %f, gap_threshold: %f\n", dual_gap, m_gap_threshold);
-			SG_DEBUG("Duality gap below threshold -- stopping!\n");
+			SG_DEBUG("iteration {}...", k);
+			SG_DEBUG("current gap: {}, gap_threshold: {}", dual_gap, m_gap_threshold);
+			SG_DEBUG("Duality gap below threshold -- stopping!");
 			break; // stop main loop
 		}
 		else
 		{
-			SG_DEBUG("iteration %d...\n", k);
-			SG_DEBUG("current gap: %f.\n", dual_gap);
+			SG_DEBUG("iteration {}...", k);
+			SG_DEBUG("current gap: {}.", dual_gap);
 		}
 
 		// 7) step-size gamma
@@ -199,7 +199,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 		m_helper->terminate();
 
-	SG_DEBUG("Leaving CFWSOSVM::train_machine.\n");
+	SG_DEBUG("Leaving CFWSOSVM::train_machine.");
 	return true;
 }
 

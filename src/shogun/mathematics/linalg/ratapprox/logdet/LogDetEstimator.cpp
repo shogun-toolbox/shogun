@@ -54,8 +54,8 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 
 	SG_REF(m_trace_sampler);
 
-	SG_INFO(
-		"LogDetEstimator: %s with 1E-5 accuracy, %s as default\n",
+	io::info(
+		"LogDetEstimator: {} with 1E-5 accuracy, {} as default",
 		m_operator_log->get_name(), m_trace_sampler->get_name());
 }
 #endif //HAVE_LAPACK
@@ -105,20 +105,20 @@ COperatorFunction<float64_t>* CLogDetEstimator::get_operator_function(void) cons
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 {
-	SG_DEBUG("Entering\n");
-	SG_INFO("Computing %d log-det estimates\n", num_estimates);
+	SG_DEBUG("Entering");
+	io::info("Computing {} log-det estimates", num_estimates);
 
-	REQUIRE(m_operator_log, "Operator function is NULL\n");
+	require(m_operator_log, "Operator function is NULL");
 	// call the precompute of operator function to compute the prerequisites
 	m_operator_log->precompute();
 
-	REQUIRE(m_trace_sampler, "Trace sampler is NULL\n");
+	require(m_trace_sampler, "Trace sampler is NULL");
 	// call the precompute of the sampler
 	m_trace_sampler->precompute();
 
-	REQUIRE(m_operator_log->get_operator()->get_dimension()\
+	require(m_operator_log->get_operator()->get_dimension()\
 		==m_trace_sampler->get_dimension(),
-		"Mismatch in dimensions of the operator and trace-sampler, %d vs %d!\n",
+		"Mismatch in dimensions of the operator and trace-sampler, {} vs {}!",
 		m_operator_log->get_operator()->get_dimension(),
 		m_trace_sampler->get_dimension());
 
@@ -133,8 +133,8 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 		result = 0.0;
 		for (index_t j = 0; j < num_trace_samples; ++j)
 		{
-			SG_INFO(
-				"Computing log-determinant trace sample %d/%d\n", j,
+			io::info(
+				"Computing log-determinant trace sample {}/{}", j,
 				num_trace_samples);
 			// get the trace sampler vector
 			SGVector<float64_t> s = m_trace_sampler->sample(j);
@@ -144,22 +144,22 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 		samples[i] = result;
 	}
 
-	SG_INFO("Finished computing %d log-det estimates\n", num_estimates);
+	io::info("Finished computing {} log-det estimates", num_estimates);
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 	return samples;
 }
 
 SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	index_t num_estimates)
 {
-	SG_DEBUG("Entering...\n")
+	SG_DEBUG("Entering...")
 
-	REQUIRE(m_operator_log, "Operator function is NULL\n");
+	require(m_operator_log, "Operator function is NULL");
 	// call the precompute of operator function to compute all prerequisites
 	m_operator_log->precompute();
 
-	REQUIRE(m_trace_sampler, "Trace sampler is NULL\n");
+	require(m_trace_sampler, "Trace sampler is NULL");
 	// call the precompute of the sampler
 	m_trace_sampler->precompute();
 
@@ -171,8 +171,8 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	{
 		for (index_t j = 0; j < num_trace_samples; ++j)
 		{
-			SG_INFO(
-				"Computing log-determinant trace sample %d/%d\n", j,
+			io::info(
+				"Computing log-determinant trace sample {}/{}", j,
 				num_trace_samples);
 			// get the trace sampler vector
 			SGVector<float64_t> s = m_trace_sampler->sample(j);
@@ -184,7 +184,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 		}
 	}
 
-	SG_DEBUG("Leaving\n")
+	SG_DEBUG("Leaving")
 	return samples;
 }
 

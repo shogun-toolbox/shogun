@@ -129,10 +129,10 @@ namespace shogun
 		template<typename ST>
 		ST get_label_t(int32_t idx)
 		{
-			REQUIRE(idx<get_num_labels(), "The provided index (%d) is out of bounds (the last label has index (%d)).  "
-				"Please ensure that you're using a valid index number.", idx, get_num_labels())
-			REQUIRE(m_labels.vector, "You're attempting to get a label when there are in fact none!  "
-				"Please ensure that you initialized the labels correctly.")
+			require(idx<get_num_labels(), "The provided index ({}) is out of bounds (the last label has index ({})).  "
+				"Please ensure that you're using a valid index number.", idx, get_num_labels());
+			require(m_labels.vector, "You're attempting to get a label when there are in fact none!  "
+				"Please ensure that you initialized the labels correctly.");
 			int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 			return m_labels.vector[real_num];
 		}

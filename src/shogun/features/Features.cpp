@@ -40,7 +40,7 @@ CFeatures::CFeatures(CFile* loader)
 	init();
 
 	load(loader);
-	SG_INFO("Feature object loaded (%p)\n",this)
+	io::info("Feature object loaded ({})",fmt::ptr(this));
 }
 
 CFeatures::~CFeatures()
@@ -106,7 +106,7 @@ void CFeatures::list_preprocessors()
 
 	for (int32_t i=0; i<num_preproc; i++)
 	{
-		SG_INFO("preproc[%d]=%s\n", i, preproc->get_element(i)->get_name());
+		io::info("preproc[{}]={}", i, preproc->get_element(i)->get_name());
 	}
 }
 
@@ -122,104 +122,104 @@ int32_t CFeatures::get_cache_size() const
 
 bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CFeatures::list_feature_obj() const
 {
-	SG_INFO("%p - ", this)
+	io::info("{} - ", fmt::ptr(this));
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
-			SG_INFO("C_UNKNOWN ")
+			io::info("C_UNKNOWN ");
 			break;
 		case C_DENSE:
-			SG_INFO("C_DENSE ")
+			io::info("C_DENSE ");
 			break;
 		case C_SPARSE:
-			SG_INFO("C_SPARSE ")
+			io::info("C_SPARSE ");
 			break;
 		case C_STRING:
-			SG_INFO("C_STRING ")
+			io::info("C_STRING ");
 			break;
 		case C_COMBINED:
-			SG_INFO("C_COMBINED ")
+			io::info("C_COMBINED ");
 			break;
 		case C_COMBINED_DOT:
-			SG_INFO("C_COMBINED_DOT ")
+			io::info("C_COMBINED_DOT ");
 			break;
 		case C_WD:
-			SG_INFO("C_WD ")
+			io::info("C_WD ");
 			break;
 		case C_SPEC:
-			SG_INFO("C_SPEC ")
+			io::info("C_SPEC ");
 			break;
 		case C_WEIGHTEDSPEC:
-			SG_INFO("C_WEIGHTEDSPEC ")
+			io::info("C_WEIGHTEDSPEC ");
 			break;
 		case C_STREAMING_DENSE:
-			SG_INFO("C_STREAMING_DENSE ")
+			io::info("C_STREAMING_DENSE ");
 			break;
 		case C_STREAMING_SPARSE:
-			SG_INFO("C_STREAMING_SPARSE ")
+			io::info("C_STREAMING_SPARSE ");
 			break;
 		case C_STREAMING_STRING:
-			SG_INFO("C_STREAMING_STRING ")
+			io::info("C_STREAMING_STRING ");
 			break;
 		case C_STREAMING_VW:
-			SG_INFO("C_STREAMING_VW ")
+			io::info("C_STREAMING_VW ");
 			break;
 		case C_ANY:
-			SG_INFO("C_ANY ")
+			io::info("C_ANY ");
 			break;
 		default:
-         SG_ERROR("ERROR UNKNOWN FEATURE CLASS")
+         error("ERROR UNKNOWN FEATURE CLASS");
 	}
 
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			SG_INFO("F_UNKNOWN \n")
+			io::info("F_UNKNOWN ");
 			break;
 		case F_CHAR:
-			SG_INFO("F_CHAR \n")
+			io::info("F_CHAR ");
 			break;
 		case F_BYTE:
-			SG_INFO("F_BYTE \n")
+			io::info("F_BYTE ");
 			break;
 		case F_SHORT:
-			SG_INFO("F_SHORT \n")
+			io::info("F_SHORT ");
 			break;
 		case F_WORD:
-			SG_INFO("F_WORD \n")
+			io::info("F_WORD ");
 			break;
 		case F_INT:
-			SG_INFO("F_INT \n")
+			io::info("F_INT ");
 			break;
 		case F_UINT:
-			SG_INFO("F_UINT \n")
+			io::info("F_UINT ");
 			break;
 		case F_LONG:
-			SG_INFO("F_LONG \n")
+			io::info("F_LONG ");
 			break;
 		case F_ULONG:
-			SG_INFO("F_ULONG \n")
+			io::info("F_ULONG ");
 			break;
 		case F_SHORTREAL:
-			SG_INFO("F_SHORTEAL \n")
+			io::info("F_SHORTEAL ");
 			break;
 		case F_DREAL:
-			SG_INFO("F_DREAL \n")
+			io::info("F_DREAL ");
 			break;
 		case F_LONGREAL:
-			SG_INFO("F_LONGREAL \n")
+			io::info("F_LONGREAL ");
 			break;
 		case F_ANY:
-			SG_INFO("F_ANY \n")
+			io::info("F_ANY ");
 			break;
 		default:
-         SG_ERROR("ERROR UNKNOWN FEATURE TYPE\n")
+         error("ERROR UNKNOWN FEATURE TYPE");
 	}
 }
 
@@ -227,14 +227,14 @@ void CFeatures::list_feature_obj() const
 void CFeatures::load(CFile* loader)
 {
 	SG_SET_LOCALE_C;
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	SG_RESET_LOCALE;
 }
 
 void CFeatures::save(CFile* writer)
 {
 	SG_SET_LOCALE_C;
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	SG_RESET_LOCALE;
 }
 
@@ -297,15 +297,15 @@ CSubsetStack* CFeatures::get_subset_stack()
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
 {
-	SG_ERROR("%s::copy_subset(): copy_subset and therefore model storage of "
+	error("{}::copy_subset(): copy_subset and therefore model storage of "
 			"CMachine (required for cross-validation and model-selection is "
-			"not yet implemented yet. Ask developers!\n", get_name());
+			"not yet implemented yet. Ask developers!", get_name());
 	return NULL;
 }
 
 CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims) const
 {
-	SG_WARNING("%s::copy_dimension_subset():: Is not yet implemented!\n",
+	io::warn("{}::copy_dimension_subset():: Is not yet implemented!",
 			get_name());
 	return NULL;
 }

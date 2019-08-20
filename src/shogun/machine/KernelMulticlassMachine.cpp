@@ -17,15 +17,15 @@ void CKernelMulticlassMachine::store_model_features()
 {
 	CKernel *kernel= m_kernel;
 	if (!kernel)
-		SG_ERROR("%s::store_model_features(): kernel is needed to store SV "
-				"features.\n", get_name());
+		error("{}::store_model_features(): kernel is needed to store SV "
+				"features.", get_name());
 
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
 	if (!lhs)
 	{
-		SG_ERROR("%s::store_model_features(): kernel lhs is needed to store "
-		"SV features.\n", get_name());
+		error("{}::store_model_features(): kernel lhs is needed to store "
+		"SV features.", get_name());
 	}
 
 	/* this map will be abused as a map */
@@ -172,12 +172,12 @@ int32_t CKernelMulticlassMachine::get_num_rhs_vectors() const
 
 void CKernelMulticlassMachine::add_machine_subset(SGVector<index_t> subset)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 void CKernelMulticlassMachine::remove_machine_subset()
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 

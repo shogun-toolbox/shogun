@@ -371,7 +371,7 @@ void wrap_dstemr(char jobz, char range, int n, double* diag, double *subdiag,
 		int ldz, int nzc, int *isuppz, int tryrac, int *info)
 {
 #ifdef HAVE_ACML
-	SG_SNOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 #else
 	int lwork=-1;
 	int liwork=-1;

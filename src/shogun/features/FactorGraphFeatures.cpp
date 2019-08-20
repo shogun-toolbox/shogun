@@ -64,8 +64,8 @@ bool CFactorGraphFeatures::add_sample(CFactorGraph* example)
 
 CFactorGraph* CFactorGraphFeatures::get_sample(index_t idx)
 {
-	REQUIRE(m_samples != NULL, "%s::get_sample(): m_samples is NULL!\n", get_name());
-	REQUIRE(idx >= 0 && idx < get_num_vectors(), "%s::get_sample(): out of index!\n", get_name());
+	require(m_samples != NULL, "{}::get_sample(): m_samples is NULL!", get_name());
+	require(idx >= 0 && idx < get_num_vectors(), "{}::get_sample(): out of index!", get_name());
 
 	return dynamic_cast<CFactorGraph*>(m_samples->get_element(idx));
 }
@@ -77,12 +77,12 @@ void CFactorGraphFeatures::init()
 
 CFactorGraphFeatures* CFactorGraphFeatures::obtain_from_generic(CFeatures* base_feats)
 {
-	REQUIRE(base_feats != NULL, "CFactorGraphFeatures::obtain_from_generic(): base_feats is NULL!\n");
+	require(base_feats != NULL, "CFactorGraphFeatures::obtain_from_generic(): base_feats is NULL!");
 
 	if (base_feats->get_feature_class() == C_FACTOR_GRAPH)
 		return dynamic_cast<CFactorGraphFeatures*>(base_feats);
 	else
-		SG_SERROR("base_labels must be of dynamic type CFactorGraph!\n")
+		error("base_labels must be of dynamic type CFactorGraph!");
 
 	return NULL;
 }

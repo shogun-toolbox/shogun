@@ -88,8 +88,8 @@ EPreprocessorType CDensePreprocessor<ST>::get_type() const
 template <class ST>
 CFeatures* CDensePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 {
-	REQUIRE(features->get_feature_class()==C_DENSE, "Provided features (%d) "
-			"has to be of C_DENSE (%d) class!\n",
+	require(features->get_feature_class()==C_DENSE, "Provided features ({}) "
+			"has to be of C_DENSE ({}) class!",
 			features->get_feature_class(), C_DENSE);
 
 	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
@@ -103,10 +103,10 @@ template <class ST>
 CFeatures*
 CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
 {
-	REQUIRE(
+	require(
 		features->get_feature_class() == C_DENSE,
-		"Provided features (%d) "
-		"has to be of C_DENSE (%d) class!\n",
+		"Provided features ({}) "
+		"has to be of C_DENSE ({}) class!",
 		features->get_feature_class(), C_DENSE);
 
 	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
@@ -120,7 +120,7 @@ template <class ST>
 SGMatrix<ST>
 CDensePreprocessor<ST>::inverse_apply_to_matrix(SGMatrix<ST> matrix)
 {
-	SG_SNOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 
 	return SGMatrix<ST>();
 }

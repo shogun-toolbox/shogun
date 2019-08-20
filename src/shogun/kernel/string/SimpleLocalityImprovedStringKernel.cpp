@@ -62,7 +62,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 
 	pyramid_weights = SGVector<float64_t>(pyra_len);
 
-	SG_DEBUG("initializing pyramid weights: size=%ld length=%i\n",
+	SG_DEBUG("initializing pyramid weights: size={} length={}",
 		num_features, length);
 
 	float64_t PYRAL_pot;

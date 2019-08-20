@@ -50,7 +50,7 @@ public:
 		: CSGObject()
 	{
 		/* open_stream(bs.m_fname, bs.rw); */
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		set_generic<T>();
 	}
 
@@ -85,14 +85,14 @@ public:
 
 		fd = fopen(fname, flag);
 		if (!fd)
-			SG_ERROR("Error opening file '%s'\n", m_fname)
+			error("Error opening file '{}'", m_fname);
 
 		struct stat sb;
 		if (stat(fname, &sb) == -1)
-			SG_ERROR("Error determining file size of '%s'\n", m_fname)
+			error("Error determining file size of '{}'", m_fname);
 
 		length = sb.st_size;
-		SG_DEBUG("Opened file '%s' of size %ld byte\n", fname, length)
+		SG_DEBUG("Opened file '{}' of size {} byte", fname, length)
 	}
 
 	/** close a file stream */
@@ -171,11 +171,11 @@ public:
 		}
 
 		if (fseek(fd, ((long) sizeof(T)) * ((long) index), SEEK_SET) != 0)
-			SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T) * ((int64_t) index), m_fname)
+			error("Error seeking to {} (file '{}')", sizeof(T) * ((int64_t) index), m_fname);
 
-			if (fread(buffer, sizeof(T), num, fd) != num)
-				SG_ERROR("Error calling fread (file '%s')\n", m_fname)
-			}
+		if (fread(buffer, sizeof(T), num, fd) != num)
+			error("Error calling fread (file '{}')", m_fname);
+	}
 
 	/** read next
 	 *
@@ -201,12 +201,12 @@ public:
 	{
 
 		if (fseek(fd, ((long) sizeof(T)) * ((long) index), SEEK_SET) != 0)
-			SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T) * ((int64_t) index), m_fname)
+			error("Error seeking to {} (file '{}')", sizeof(T) * ((int64_t) index), m_fname);
 
 		T ptr;
 
 		if (fread(&ptr, sizeof(T), 1, fd) != 1)
-			SG_ERROR("Error calling fread (file '%s')\n", m_fname)
+			error("Error calling fread (file '{}')", m_fname);
 
 		return ptr;
 	}

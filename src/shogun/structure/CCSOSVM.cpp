@@ -112,7 +112,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	r = MSK_maketask(m_msk_env, 1, k, &task);
 
 	if (r != MSK_RES_OK)
-		SG_ERROR("Could not create MOSEK task: %d\n", r)
+		error("Could not create MOSEK task: {}", r);
 
 	r = MSK_inputdata(task,
 			1,k,
@@ -124,7 +124,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 			bkx,blx,bux);
 
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error setting input data: %d\n", r)
+		error("Error setting input data: {}", r);
 
 	/* coefficients for the Gram matrix */
 	t = 0;
@@ -141,7 +141,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 
 	r = MSK_putqobj(task, k*(k+1)/2, qsubi, qsubj, qval);
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error MSK_putqobj: %d\n", r)
+		error("Error MSK_putqobj: {}", r);
 
 	/* DEBUG */
 	/*
@@ -159,7 +159,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	r = MSK_optimize(task);
 
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error MSK_optimize: %d\n", r)
+		error("Error MSK_optimize: {}", r);
 
 	MSK_getsolutionslice(task,
 			MSK_SOL_ITR,
@@ -247,15 +247,15 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	expected_descent = -primal_obj_b;
 	initial_primal_obj = primal_obj_b;
 
-	SG_INFO("Running CCCP inner loop solver: ")
+	io::info("Running CCCP inner loop solver: ");
 
 	while ((!suff_decrease_cond) && (expected_descent<-m_eps) && (iter<m_max_iter))
 	{
 		++iter;
 		++size_active;
 
-		SG_DEBUG("ITER %d\n", iter)
-		SG_PRINT(".")
+		SG_DEBUG("ITER {}", iter)
+		io::print(".");
 
 		/* add constraint */
 		dXc.resize_array(size_active);
@@ -321,7 +321,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 					proximal_rhs[i] = (1+rho)*delta[i] - rho*gammaG0[i];
 					break;
 				default:
-					SG_ERROR("Invalid QPType: %d\n", m_qp_type)
+					error("Invalid QPType: {}", m_qp_type);
 			}
 		}
 
@@ -351,7 +351,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				*/
 				break;
 			default:
-				SG_ERROR("Invalid QPType: %d\n", m_qp_type)
+				error("Invalid QPType: {}", m_qp_type);
 		}
 
 		/* DEBUG */
@@ -398,10 +398,10 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				- new_constraint.dense_dot(1.0, w_b.vector, w_b.vlen, 0));
 
 		for (index_t j = 0; j < size_active; j++)
-			SG_DEBUG("alpha[%d]: %.8g, cut_error[%d]: %.8g\n", j, alpha[j], j, cut_error[j])
-		SG_DEBUG("sigma_k: %.8g\n", sigma_k)
-		SG_DEBUG("alphasum: %.8g\n", alphasum)
-		SG_DEBUG("g^T d: %.8g\n", gTd)
+			SG_DEBUG("alpha[{}]: {:.8g}, cut_error[{}]: {:.8g}", j, alpha[j], j, cut_error[j])
+		SG_DEBUG("sigma_k: {:.8g}", sigma_k)
+		SG_DEBUG("alphasum: {:.8g}", alphasum)
+		SG_DEBUG("g^T d: {:.8g}", gTd)
 
 		/* update cleanup information */
 		for (index_t j = 0; j < size_active; j++)
@@ -418,7 +418,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		/* print primal objective */
 		primal_obj = 0.5*linalg::dot(m_w, m_w)+m_C*value;
 
-		SG_DEBUG("ITER PRIMAL_OBJ %.4f\n", primal_obj)
+		SG_DEBUG("ITER PRIMAL_OBJ {:.4f}", primal_obj)
 
 		temp_var = linalg::dot(w_b, w_b);
 		proximal_term = 0.0;
@@ -432,15 +432,15 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 		primal_lower_bound = CMath::max(primal_lower_bound, reg_master_obj - 0.5*rho*(1+rho)*proximal_term);
 
-		SG_DEBUG("ITER REG_MASTER_OBJ: %.4f\n", reg_master_obj)
-		SG_DEBUG("ITER EXPECTED_DESCENT: %.4f\n", expected_descent)
-		SG_DEBUG("ITER PRIMLA_OBJ_B: %.4f\n", primal_obj_b)
-		SG_DEBUG("ITER RHO: %.4f\n", rho)
-		SG_DEBUG("ITER ||w-w_b||^2: %.4f\n", proximal_term)
-		SG_DEBUG("ITER PRIMAL_LOWER_BOUND: %.4f\n", primal_lower_bound)
-		SG_DEBUG("ITER V_K: %.4f\n", v_k)
-		SG_DEBUG("ITER margin: %.4f\n", margin)
-		SG_DEBUG("ITER psi*-psi: %.4f\n", value-margin)
+		SG_DEBUG("ITER REG_MASTER_OBJ: {:.4f}", reg_master_obj)
+		SG_DEBUG("ITER EXPECTED_DESCENT: {:.4f}", expected_descent)
+		SG_DEBUG("ITER PRIMLA_OBJ_B: {:.4f}", primal_obj_b)
+		SG_DEBUG("ITER RHO: {:.4f}", rho)
+		SG_DEBUG("ITER ||w-w_b||^2: {:.4f}", proximal_term)
+		SG_DEBUG("ITER PRIMAL_LOWER_BOUND: {:.4f}", primal_lower_bound)
+		SG_DEBUG("ITER V_K: {:.4f}", v_k)
+		SG_DEBUG("ITER margin: {:.4f}", margin)
+		SG_DEBUG("ITER psi*-psi: {:.4f}", value-margin)
 
 		obj_difference = primal_obj - primal_obj_b;
 
@@ -449,7 +449,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			/* extra condition to be met */
 			if ((gTd>m2*v_k)||(rho<min_rho+1E-8))
 			{
-				SG_DEBUG("SERIOUS STEP\n")
+				SG_DEBUG("SERIOUS STEP")
 
 				/* update cut_error */
 				for (index_t i = 0; i < size_active; i++)
@@ -471,7 +471,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			else
 			{
 				/* increase step size */
-				SG_DEBUG("NULL STEP: SS(ii) FAILS.\n")
+				SG_DEBUG("NULL STEP: SS(ii) FAILS.")
 
 				serious_counter--;
 				rho = CMath::max(rho/10,min_rho);
@@ -483,11 +483,11 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 			if ((cut_error[size_active-1]>m3*last_sigma_k)&&(CMath::abs(obj_difference)>last_z_k_norm+last_sigma_k))
 			{
-				SG_DEBUG("NULL STEP: NS(ii) FAILS.\n")
+				SG_DEBUG("NULL STEP: NS(ii) FAILS.")
 				rho = CMath::min(10*rho,m_max_rho);
 			}
 			else
-				SG_DEBUG("NULL STEP\n")
+				SG_DEBUG("NULL STEP")
 		}
 		/* update last_sigma_k */
 		last_sigma_k = sigma_k;
@@ -506,7 +506,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		}
 	} // end cutting plane while loop
 
-	SG_INFO(" Inner loop optimization finished.\n")
+	io::info(" Inner loop optimization finished.");
 
 	for (index_t j = 0; j < size_active; j++)
 		SG_FREE(G[j]);
@@ -548,8 +548,8 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		}
 		else
 		{
-			SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
-					"to be set true\n", m_model->get_name());
+			error("model({}) should have either of psi_computed or psi_computed_sparse"
+					"to be set true", m_model->get_name());
 		}
 		/*
 		printf("%.16lf %.16lf\n",
@@ -697,12 +697,12 @@ void CCCSOSVM::init()
 
 	/* check return code */
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error while creating mosek env: %d\n", r)
+		error("Error while creating mosek env: {}", r);
 
 	/* initialize the environment */
 	r = MSK_initenv(m_msk_env);
 	if (r != MSK_RES_OK)
-		SG_ERROR("Error while initializing mosek env: %d\n", r)
+		error("Error while initializing mosek env: {}", r);
 #endif
 
 	SG_ADD(&m_C, "m_C", "C");

@@ -30,7 +30,7 @@ public:
 	virtual ~GradientModelSelectionCostFunction() { SG_UNREF(m_obj); }
 	void set_target(CGradientModelSelection *obj)
 	{
-		REQUIRE(obj,"Obj must set\n");
+		require(obj,"Obj must set");
 		if(m_obj!=obj)
 		{
 			SG_REF(obj);
@@ -49,18 +49,18 @@ public:
 
 	virtual float64_t get_cost()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_obj->get_cost(m_val, m_grad, m_func_data);
 	}
 
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_val;
 	}
 	virtual SGVector<float64_t> get_gradient()
 	{
-		REQUIRE(m_obj,"Object not set\n");
+		require(m_obj,"Object not set");
 		return m_grad;
 	}
 
@@ -68,7 +68,7 @@ public:
 
 	virtual void set_func_data(void *func_data)
 	{
-		REQUIRE(func_data != NULL, "func_data must set\n");
+		require(func_data != NULL, "func_data must set");
 		m_func_data = func_data;
 	}
 
@@ -117,8 +117,8 @@ struct nlopt_params
 
 float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data)
 {
-	REQUIRE(func_data!=NULL, "func_data must set\n");
-	REQUIRE(model_vars.vlen==model_grads.vlen, "length of variable (%d) and gradient (%d) must equal\n",
+	require(func_data!=NULL, "func_data must set");
+	require(model_vars.vlen==model_grads.vlen, "length of variable ({}) and gradient ({}) must equal",
 		model_vars.vlen, model_grads.vlen);
 
 	nlopt_params* params=(nlopt_params*)func_data;
@@ -148,16 +148,16 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 				bool result=current_combination->set_parameter(param->m_name,
 						model_vars[offset++],	parent, j);
-				 REQUIRE(result, "Parameter %s not found in combination tree\n",
-						 param->m_name)
+				 require(result, "Parameter {} not found in combination tree",
+						 param->m_name);
 			}
 		}
 		else
 		{
 			bool result=current_combination->set_parameter(param->m_name,
 					model_vars[offset++], parent);
-			REQUIRE(result, "Parameter %s not found in combination tree\n",
-					param->m_name)
+			require(result, "Parameter {} not found in combination tree",
+					param->m_name);
 		}
 	}
 
@@ -166,7 +166,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	current_combination->apply_to_machine(machine);
 	if (print_state)
 	{
-		SG_SPRINT("Current combination\n");
+		io::print("Current combination\n");
 		current_combination->print_tree();
 	}
 	SG_UNREF(machine);
@@ -179,7 +179,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	if (print_state)
 	{
-		SG_SPRINT("Current result\n");
+		io::print("Current result\n");
 		gradient_result->print_result();
 	}
 
@@ -222,7 +222,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 			}
 		}
 
-		REQUIRE(derivative.vlen, "Can't find gradient wrt %s parameter!\n",
+		require(derivative.vlen, "Can't find gradient wrt {} parameter!",
 				node->key->m_name);
 
 		sg_memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
@@ -248,7 +248,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 void CGradientModelSelection::set_minimizer(FirstOrderMinimizer* minimizer)
 {
-	REQUIRE(minimizer!=NULL, "Minimizer must set\n");
+	require(minimizer!=NULL, "Minimizer must set");
 	SG_REF(minimizer);
 	SG_UNREF(m_mode_minimizer);
 	m_mode_minimizer=minimizer;
@@ -293,7 +293,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 		if (print_state)
 		{
-			SG_PRINT("Initial combination:\n");
+			io::print("Initial combination:\n");
 			current_combination->print_tree();
 		}
 
@@ -336,11 +336,11 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		{
 			if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
 			{
-				SG_PRINT("Minimizing objective function:\n");
+				io::print("Minimizing objective function:\n");
 			}
 			else
 			{
-				SG_PRINT("Maximizing objective function:\n");
+				io::print("Maximizing objective function:\n");
 			}
 		}
 
@@ -360,7 +360,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 		if (print_state)
 		{
-			SG_PRINT("Best combination:\n");
+			io::print("Best combination:\n");
 			current_combination->print_tree();
 		}
 
@@ -371,7 +371,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	}
 	else
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		return NULL;
 	}
 }

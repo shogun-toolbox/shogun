@@ -37,9 +37,7 @@ struct HASHEDWD_THREAD_PARAM
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()
 	:CDotFeatures()
 {
-	SG_UNSTABLE(
-		"CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()",
-		"\n");
+	unstable(SOURCE_LOCATION);
 
 	strings = NULL;
 
@@ -88,7 +86,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 	degree=order;
 	start_degree=start_order;
 	if (start_degree!=0)
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	from_degree=from_order;
 	m_hash_bits=hash_bits;
 	set_wd_weights();
@@ -152,8 +150,8 @@ float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, i
 float64_t CHashedWDFeaturesTransposed::dot(
     int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
-	REQUIRE(
-	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim=%d, w_dim=%d\n",
+	require(
+	    vec2.size() == w_dim, "Dimensions don't match, vec2_dim={}, w_dim={}",
 	    vec2.size(), w_dim);
 
 	float64_t sum=0;
@@ -180,7 +178,7 @@ float64_t CHashedWDFeaturesTransposed::dot(
 			uint32_t h =
 					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h)
+			io::print("vec[i]={}, k={}, offs={} o={} h={} \n", vec[i], k,offs, o, h);
 #endif
 			sum+=vec2[o+(h & mask)]*wd;
 			o+=partial_w_dim;
@@ -217,7 +215,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	ASSERT(num_threads>0)
 
 	if (dim != w_dim)
-		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
+		error("Dimensions don't match, vec_len={}, w_dim={}", dim, w_dim);
 
 	if (num_threads < 2)
 	{
@@ -303,7 +301,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	ASSERT(num_threads>0)
 
 	if (dim != w_dim)
-		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
+		error("Dimensions don't match, vec_len={}, w_dim={}", dim, w_dim);
 
 	if (num_threads < 2)
 	{
@@ -505,7 +503,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
+		error("Dimensions don't match, vec2_dim={}, w_dim={}", vec2_len, w_dim);
 
 	int32_t len;
 	bool free_vec1;
@@ -533,8 +531,8 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 			uint32_t h =
 					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h)
-			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o)
+			io::print("offs={} o={} h={} \n", offs, o, h);
+			io::print("vec[i]={}, k={}, offs={} o={}\n", vec[i], k,offs, o);
 #endif
 			vec2[o+(h & mask)]+=wd;
 			val[i] = h;
@@ -562,8 +560,8 @@ void CHashedWDFeaturesTransposed::set_wd_weights()
 	for (int32_t i=0; i<degree; i++)
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 
-	SG_DEBUG("created HashedWDFeaturesTransposed with d=%d (%d), alphabetsize=%d, "
-			"dim=%d partial_dim=%d num=%d, len=%d\n",
+	SG_DEBUG("created HashedWDFeaturesTransposed with d={} ({}), alphabetsize={}, "
+			"dim={} partial_dim={} num={}, len={}\n",
 			degree, from_degree, alphabet_size,
 			w_dim, partial_w_dim, num_strings, string_length);
 }
@@ -582,7 +580,7 @@ void CHashedWDFeaturesTransposed::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:%f\n", normalization_const)
+	SG_DEBUG("normalization_const:{}", normalization_const)
 }
 
 CFeatures* CHashedWDFeaturesTransposed::duplicate() const
@@ -592,17 +590,17 @@ CFeatures* CHashedWDFeaturesTransposed::duplicate() const
 
 void* CHashedWDFeaturesTransposed::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 bool CHashedWDFeaturesTransposed::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CHashedWDFeaturesTransposed::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }

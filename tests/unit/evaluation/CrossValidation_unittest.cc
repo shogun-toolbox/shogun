@@ -71,7 +71,7 @@ protected:
 			ec = new CMeanSquaredError();
 			break;
 		default:
-			SG_SNOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			break;
 		}
 		cv = new CCrossValidation(machine, features, labels, ss, ec);
@@ -167,7 +167,7 @@ protected:
 			break;
 
 		default:
-			SG_SERROR("Unsupported problem type: %d\n", pt);
+			error("Unsupported problem type: {}", pt);
 			FAIL();
 		}
 

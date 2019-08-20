@@ -180,7 +180,7 @@ class CWDSVMOcas : public CMachine
 			float64_t sum=0;
 			bool free_vec;
 			uint8_t* vec=features->get_feature_vector(num, len, free_vec);
-			//SG_INFO("len %d, string_length %d\n", len, string_length)
+			//io::info("len {}, string_length {}", len, string_length);
 			ASSERT(len==string_length)
 
 			for (int32_t j=0; j<string_length; j++)
@@ -207,7 +207,7 @@ class CWDSVMOcas : public CMachine
 				normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
 			normalization_const = std::sqrt(normalization_const);
-			SG_DEBUG("normalization_const:%f\n", normalization_const)
+			SG_DEBUG("normalization_const:{}", normalization_const)
 		}
 
 		/** get normalization const

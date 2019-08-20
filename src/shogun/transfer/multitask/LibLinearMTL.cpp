@@ -72,7 +72,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}
@@ -86,8 +86,8 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 
 	if (num_vec!=num_train_labels)
 	{
-		SG_ERROR("number of vectors %d does not match "
-				"number of training labels %d\n",
+		error("number of vectors {} does not match "
+				"number of training labels {}",
 				num_vec, num_train_labels);
 	}
 
@@ -126,8 +126,8 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	}
 	neg = prob.l - pos;
 
-	SG_INFO("%d training points %d dims\n", prob.l, prob.n)
-	SG_INFO("%d positives, %d negatives\n", pos, neg)
+	io::info("{} training points {} dims", prob.l, prob.n);
+	io::info("{} positives, {} negatives", pos, neg);
 
 	double Cp=C1;
 	double Cn=C2;
@@ -374,11 +374,11 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n",iter)
+	io::info("optimization finished, #iter = {}",iter);
 	if (iter >= max_iterations)
 	{
-		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
-				"(also see liblinear FAQ)\n\n");
+		io::warn("reaching max number of iterations\nUsing -s 2 may be faster"
+				"(also see liblinear FAQ)");
 	}
 
 
@@ -432,7 +432,7 @@ obj = reg_obj + C * loss_obj
 return obj
 */
 
-	SG_INFO("DONE to compute Primal OBJ\n")
+	io::info("DONE to compute Primal OBJ");
 	// calculate objective value
 	SGMatrix<float64_t> W = get_W();
 
@@ -479,7 +479,7 @@ return obj
 
 	}
 
-	SG_INFO("DONE to compute Primal OBJ, obj=%f\n",obj)
+	io::info("DONE to compute Primal OBJ, obj={}",obj);
 
 	return obj;
 }
@@ -501,7 +501,7 @@ obj -= 0.5 * M[s,t] * alphas[i] * alphas[j] * lt[i] * lt[j] * np.dot(xt[i], xt[j
 return obj
 */
 
-	SG_INFO("starting to compute DUAL OBJ\n")
+	io::info("starting to compute DUAL OBJ");
 
 	int32_t num_vec=features->get_num_vectors();
 

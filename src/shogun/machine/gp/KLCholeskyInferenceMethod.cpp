@@ -78,7 +78,7 @@ CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
-		SG_SERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
+		error("Provided inference is not of type CKLCholeskyInferenceMethod!");
 
 	SG_REF(inference);
 	return (CKLCholeskyInferenceMethod*)inference;
@@ -140,8 +140,8 @@ bool CKLCholeskyInferenceMethod::precompute()
 
 void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
-	REQUIRE(gradient.vlen==m_alpha.vlen,
-		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
+	require(gradient.vlen==m_alpha.vlen,
+		"The length of gradients ({}) should the same as the length of parameters ({})",
 		gradient.vlen, m_alpha.vlen);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);

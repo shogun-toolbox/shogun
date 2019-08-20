@@ -67,7 +67,7 @@ namespace shogun
 		 */
 		virtual void fit(CFeatures* features, CLabels* labels)
 		{
-			SG_SNOTIMPLEMENTED;
+			not_implemented(SOURCE_LOCATION);;
 		}
 
 		/** Apply transformation to features. If transformation is performed in
@@ -90,7 +90,7 @@ namespace shogun
 		virtual CFeatures*
 		inverse_transform(CFeatures* features, bool inplace = true)
 		{
-			SG_SNOTIMPLEMENTED;
+			not_implemented(SOURCE_LOCATION);;
 
 			return nullptr;
 		}

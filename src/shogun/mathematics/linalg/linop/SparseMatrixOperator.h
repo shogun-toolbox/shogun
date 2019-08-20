@@ -67,14 +67,14 @@ struct SparsityStructure
 		for (index_t i=0; i<m_num_rows; ++i)
 		{
 			index_t nnzs=m_ptr[i][0];
-			SG_SPRINT("Row number %d. Number of Non-zeros %d. Colums ", i, nnzs);
+			io::print("Row number {}. Number of Non-zeros {}. Colums ", i, nnzs);
 			for(index_t j=1; j<=nnzs; ++j)
 			{
-				SG_SPRINT("%d", m_ptr[i][j]);
+				io::print("{}", m_ptr[i][j]);
 				if (j<nnzs)
-					SG_SPRINT(", ");
+					io::print(", ");
 			}
-			SG_SPRINT("\n");
+			io::print("\n");
 		}
 	}
 
@@ -152,7 +152,7 @@ public:
 	template<class Scalar>
 	inline operator CSparseMatrixOperator<Scalar>*() const
 	{
-		REQUIRE(m_operator.sparse_matrix, "Matrix is not initialized!\n");
+		require(m_operator.sparse_matrix, "Matrix is not initialized!");
 		typedef SGSparseVector<Scalar> vector;
 		typedef SGSparseVectorEntry<Scalar> entry;
 

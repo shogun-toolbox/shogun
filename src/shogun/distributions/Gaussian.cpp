@@ -68,7 +68,7 @@ bool CGaussian::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n")
+				error("Specified features are not of type CDotFeatures");
 		set_features(data);
 	}
 
@@ -96,13 +96,13 @@ int32_t CGaussian::get_num_model_parameters()
 
 float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
@@ -302,7 +302,7 @@ SGMatrix<float64_t> CGaussian::get_cov()
 	if (m_cov_type==FULL)
 	{
 		if (!m_u.matrix)
-			SG_ERROR("Unitary matrix not set\n")
+			error("Unitary matrix not set");
 
 		SGMatrix<float64_t> temp_holder(m_mean.vlen, m_mean.vlen);
 		SGMatrix<float64_t> diag_holder(m_mean.vlen, m_mean.vlen);
@@ -385,7 +385,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 
 SGVector<float64_t> CGaussian::sample()
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 	SGMatrix<float64_t> r_matrix(m_mean.vlen, m_mean.vlen);
 	r_matrix.zero();
 
@@ -435,7 +435,7 @@ SGVector<float64_t> CGaussian::sample()
 	for (int32_t i = 0; i < m_mean.vlen; i++)
 		samp.vector[i] += m_mean.vector[i];
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 	return samp;
 }
 

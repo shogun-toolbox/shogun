@@ -32,7 +32,7 @@ namespace shogun
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_ERROR("Read function not supported by the feature type!") \
+		error("Read function not supported by the feature type!"); \
 	}
 
 GET_VECTOR(get_bool_vector, atoi, bool)
@@ -57,7 +57,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_ERROR("Read function not supported by the feature type!") \
+		error("Read function not supported by the feature type!"); \
 	}
 
 GET_VECTOR_AND_LABEL(get_bool_vector_and_label, str_to_bool, bool)
@@ -82,7 +82,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_ERROR("Read function not supported by the feature type!") \
+		error("Read function not supported by the feature type!"); \
 	}
 
 GET_STRING(get_bool_string, str_to_bool, bool)
@@ -107,7 +107,7 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		num_feat=-1;							\
-		SG_ERROR("Read function not supported by the feature type!") \
+		error("Read function not supported by the feature type!"); \
 	}
 
 GET_STRING_AND_LABEL(get_bool_string_and_label, str_to_bool, bool)
@@ -133,7 +133,7 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_ERROR("Read function not supported by the feature type!") \
+		error("Read function not supported by the feature type!"); \
 	}
 
 GET_SPARSE_VECTOR(get_bool_sparse_vector, str_to_bool, bool)
@@ -161,7 +161,7 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_ERROR("Read function not supported by the feature type!") \
+		error("Read function not supported by the feature type!"); \
 	}
 
 GET_SPARSE_VECTOR_AND_LABEL(get_bool_sparse_vector_and_label, str_to_bool, bool)
@@ -204,20 +204,20 @@ CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 		mode |= O_WRONLY;
 		break;
 	default:
-		SG_ERROR("Unknown mode '%c'\n", task)
+		error("Unknown mode '{}'", task);
 	}
 
 	if (filename)
 	{
 		int file = open((const char*) filename, mode);
 		if (file < 0)
-			SG_ERROR("Error opening file '%s'\n", filename)
+			error("Error opening file '{}'", filename);
 
 		buf = new CIOBuffer(file);
 		SG_REF(buf);
 	}
 	else
-		SG_ERROR("Error getting the file name!\n")
+		error("Error getting the file name!");
 }
 
 CStreamingFile::~CStreamingFile()

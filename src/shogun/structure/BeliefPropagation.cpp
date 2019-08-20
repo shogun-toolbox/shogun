@@ -17,7 +17,7 @@ using namespace shogun;
 CBeliefPropagation::CBeliefPropagation()
 	: CMAPInferImpl()
 {
-	SG_UNSTABLE("CBeliefPropagation::CBeliefPropagation()", "\n");
+	unstable(SOURCE_LOCATION);
 }
 
 CBeliefPropagation::CBeliefPropagation(CFactorGraph* fg)
@@ -31,7 +31,7 @@ CBeliefPropagation::~CBeliefPropagation()
 
 float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 {
-	SG_ERROR("%s::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
+	error("{}::inference(): please use TreeMaxProduct or LoopyMaxProduct!", get_name());
 	return 0;
 }
 
@@ -40,7 +40,7 @@ float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 CTreeMaxProduct::CTreeMaxProduct()
 	: CBeliefPropagation()
 {
-	SG_UNSTABLE("CTreeMaxProduct::CTreeMaxProduct()", "\n");
+	unstable(SOURCE_LOCATION);
 
 	init();
 }
@@ -116,7 +116,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	if (!dset->get_connected())
 	{
 		SG_UNREF(dset);
-		SG_ERROR("%s::get_root_indicators(): run connect_components() first!\n", get_name());
+		error("{}::get_root_indicators(): run connect_components() first!", get_name());
 	}
 
 	int32_t num_vars = m_fg->get_cardinalities().size();
@@ -207,9 +207,9 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 
 float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 {
-	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-		"%s::inference(): the output assignment should be prepared as"
-		"the same size as variables!\n", get_name());
+	require(assignment.size() == m_fg->get_cardinalities().size(),
+		"{}::inference(): the output assignment should be prepared as"
+		"the same size as variables!", get_name());
 
 	bottom_up_pass();
 	top_down_pass();
@@ -217,15 +217,15 @@ float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 	for (int32_t vi = 0; vi < assignment.size(); vi++)
 		assignment[vi] = m_states[vi];
 
-	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", m_fg->evaluate_energy(assignment));
-	SG_DEBUG("minimized energy = %f\n", -m_map_energy);
+	SG_DEBUG("fg.evaluate_energy(assignment) = {}", m_fg->evaluate_energy(assignment));
+	SG_DEBUG("minimized energy = {}", -m_map_energy);
 
 	return -m_map_energy;
 }
 
 void CTreeMaxProduct::bottom_up_pass()
 {
-	SG_DEBUG("\n***enter bottom_up_pass().\n");
+	SG_DEBUG("\n***enter bottom_up_pass().");
 	CDynamicObjectArray* facs = m_fg->get_factors();
 	SGVector<int32_t> cards = m_fg->get_cardinalities();
 
@@ -248,7 +248,7 @@ void CTreeMaxProduct::bottom_up_pass()
 	// on [Nowozin et al. 2011] for more detail.
 	for (uint32_t mi = 0; mi < m_msg_order.size(); ++mi)
 	{
-		SG_DEBUG("mi = %d, mtype: %d %d -> %d\n", mi,
+		SG_DEBUG("mi = {}, mtype: {} {} -> {}", mi,
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
 
 		if (m_msg_order[mi]->mtype == VAR_TO_FAC) // var -> factor
@@ -337,12 +337,12 @@ void CTreeMaxProduct::bottom_up_pass()
 
 		m_map_energy += *std::max_element(rmarg.begin(), rmarg.end());
 	}
-	SG_DEBUG("***leave bottom_up_pass().\n");
+	SG_DEBUG("***leave bottom_up_pass().");
 }
 
 void CTreeMaxProduct::top_down_pass()
 {
-	SG_DEBUG("\n***enter top_down_pass().\n");
+	SG_DEBUG("\n***enter top_down_pass().");
 	int32_t minf = std::numeric_limits<int32_t>::max();
 	CDynamicObjectArray* facs = m_fg->get_factors();
 	SGVector<int32_t> cards = m_fg->get_cardinalities();
@@ -392,7 +392,7 @@ void CTreeMaxProduct::top_down_pass()
 	//   compute r_f2v
 	for (int32_t mi = (int32_t)(m_msg_order.size()-1); mi >= 0; --mi)
 	{
-		SG_DEBUG("mi = %d, mtype: %d %d <- %d\n", mi,
+		SG_DEBUG("mi = {}, mtype: {} {} <- {}", mi,
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
 
 		if (m_msg_order[mi]->mtype == FAC_TO_VAR) // factor <- var
@@ -548,6 +548,6 @@ void CTreeMaxProduct::top_down_pass()
 	} // end for msg edge
 
 	SG_UNREF(facs);
-	SG_DEBUG("***leave top_down_pass().\n");
+	SG_DEBUG("***leave top_down_pass().");
 }
 

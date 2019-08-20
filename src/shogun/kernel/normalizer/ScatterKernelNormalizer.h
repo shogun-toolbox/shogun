@@ -52,8 +52,8 @@ public:
 		SG_REF(normalizer);
 		m_normalizer=normalizer;
 
-		SG_DEBUG("Constructing ScatterKernelNormalizer with const_diag=%g"
-				" const_offdiag=%g num_labels=%d and normalizer='%s'\n",
+		SG_DEBUG("Constructing ScatterKernelNormalizer with const_diag={:g}"
+				" const_offdiag={:g} num_labels={} and normalizer='{}'",
 				const_diag, const_offdiag, labels->get_num_labels(),
 				normalizer->get_name());
 	}
@@ -122,7 +122,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 	{
-		SG_ERROR("normalize_lhs not implemented")
+		error("normalize_lhs not implemented");
 		return 0;
 	}
 
@@ -132,7 +132,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 	{
-		SG_ERROR("normalize_rhs not implemented")
+		error("normalize_rhs not implemented");
 		return 0;
 	}
 

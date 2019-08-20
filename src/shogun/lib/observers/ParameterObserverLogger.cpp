@@ -50,8 +50,8 @@ void CParameterObserverLogger::on_next_impl(const TimedObservedValue& value)
 		stream << "{function}";
 	}
 
-	SG_PRINT(
-			"[%lu] \"%s\" = %s\n",
+	io::print(
+			"[%lu] \"{}\" = {}\n",
 			convert_to_millis(value.second), name.c_str(),
 			stream.str().c_str());
 }

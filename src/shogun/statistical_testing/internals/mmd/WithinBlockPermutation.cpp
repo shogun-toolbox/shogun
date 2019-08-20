@@ -48,7 +48,7 @@ using namespace mmd;
 WithinBlockPermutation::WithinBlockPermutation(index_t nx, index_t ny, EStatisticType type)
 : n_x(nx), n_y(ny), stype(type), terms()
 {
-	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
+	SG_DEBUG("number of samples are {} and {}!", n_x, n_y);
 	permuted_inds=SGVector<index_t>(n_x+n_y);
 	inverted_permuted_inds=SGVector<index_t>(permuted_inds.vlen);
 }
@@ -57,21 +57,21 @@ void WithinBlockPermutation::add_term(float32_t val, index_t i, index_t j)
 {
 	if (i<n_x && j<n_x && i<=j)
 	{
-		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_0!\n", i, j, val);
+		SG_DEBUG("Adding Kernel({},{})={} to term_0!", i, j, val);
 		terms.term[0]+=val;
 		if (i==j)
 			terms.diag[0]+=val;
 	}
 	else if (i>=n_x && j>=n_x && i<=j)
 	{
-		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_1!\n", i, j, val);
+		SG_DEBUG("Adding Kernel({},{})={} to term_1!", i, j, val);
 		terms.term[1]+=val;
 		if (i==j)
 			terms.diag[1]+=val;
 	}
 	else if (i>=n_x && j<n_x)
 	{
-		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_2!\n", i, j, val);
+		SG_DEBUG("Adding Kernel({},{})={} to term_2!", i, j, val);
 		terms.term[2]+=val;
 		if (i-n_x==j)
 			terms.diag[2]+=val;
@@ -81,7 +81,7 @@ void WithinBlockPermutation::add_term(float32_t val, index_t i, index_t j)
 template <typename PRNG>
 float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km, PRNG& prng)
 {
-	SG_SDEBUG("Entering!\n");
+	SG_DEBUG("Entering!");
 
 	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
 	random::shuffle(permuted_inds, prng);
@@ -99,8 +99,8 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km, PRNG
 
 	terms.term[0]=2*(terms.term[0]-terms.diag[0]);
 	terms.term[1]=2*(terms.term[1]-terms.diag[1]);
-	SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", terms.term[0]);
-	SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", terms.term[1]);
+	SG_DEBUG("term_0 sum (without diagonal) = {}!", terms.term[0]);
+	SG_DEBUG("term_1 sum (without diagonal) = {}!", terms.term[1]);
 	if (stype!=ST_BIASED_FULL)
 	{
 		terms.term[0]/=n_x*(n_x-1);
@@ -110,26 +110,26 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km, PRNG
 	{
 		terms.term[0]+=terms.diag[0];
 		terms.term[1]+=terms.diag[1];
-		SG_SDEBUG("term_0 sum (with diagonal) = %f!\n", terms.term[0]);
-		SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", terms.term[1]);
+		SG_DEBUG("term_0 sum (with diagonal) = {}!", terms.term[0]);
+		SG_DEBUG("term_1 sum (with diagonal) = {}!", terms.term[1]);
 		terms.term[0]/=n_x*n_x;
 		terms.term[1]/=n_y*n_y;
 	}
-	SG_SDEBUG("term_0 (normalized) = %f!\n", terms.term[0]);
-	SG_SDEBUG("term_1 (normalized) = %f!\n", terms.term[1]);
+	SG_DEBUG("term_0 (normalized) = {}!", terms.term[0]);
+	SG_DEBUG("term_1 (normalized) = {}!", terms.term[1]);
 
-	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", terms.term[2]);
+	SG_DEBUG("term_2 sum (with diagonal) = {}!", terms.term[2]);
 	if (stype==ST_UNBIASED_INCOMPLETE)
 	{
 		terms.term[2]-=terms.diag[2];
-		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", terms.term[2]);
+		SG_DEBUG("term_2 sum (without diagonal) = {}!", terms.term[2]);
 		terms.term[2]/=n_x*(n_x-1);
 	}
 	else
 		terms.term[2]/=n_x*n_y;
-	SG_SDEBUG("term_2 (normalized) = %f!\n", terms.term[2]);
+	SG_DEBUG("term_2 (normalized) = {}!", terms.term[2]);
 
-	SG_SDEBUG("Leaving!\n");
+	SG_DEBUG("Leaving!");
 	return terms.term[0]+terms.term[1]-2*terms.term[2];
 }
 

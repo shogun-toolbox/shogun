@@ -89,7 +89,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		error("error in svm file, line nr:{}", line_number);
 	}
 	else
 	{
@@ -97,7 +97,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("%SVM", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			error("error in svm file, line nr:{}", line_number);
 		}
 		line_number++;
 	}
@@ -106,19 +106,19 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		error("error in svm file, line nr:{}", line_number);
 	}
 
 	if (!feof(modelfl))
 		line_number++;
 
-	SG_INFO("loading %ld support vectors\n",int_buffer)
+	io::info("loading {} support vectors",int_buffer);
 	create_new_model(int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		error("error in svm file, line nr:{}", line_number);
 	}
 
 	if (!feof(modelfl))
@@ -129,7 +129,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		error("error in svm file, line nr:{}", line_number);
 	}
 
 	if (!feof(modelfl))
@@ -140,7 +140,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		error("error in svm file, line nr:{}", line_number);
 	}
 	else
 	{
@@ -148,7 +148,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("alphas=[", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			error("error in svm file, line nr:{}", line_number);
 		}
 		line_number++;
 	}
@@ -161,7 +161,7 @@ bool CSVM::load(FILE* modelfl)
 		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			error("error in svm file, line nr:{}", line_number);
 		}
 
 		if (!feof(modelfl))
@@ -174,7 +174,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
-		SG_ERROR("error in svm file, line nr:%d\n", line_number)
+		error("error in svm file, line nr:{}", line_number);
 	}
 	else
 	{
@@ -182,7 +182,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("];", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR("error in svm file, line nr:%d\n", line_number)
+			error("error in svm file, line nr:{}", line_number);
 		}
 		line_number++;
 	}
@@ -197,9 +197,9 @@ bool CSVM::save(FILE* modelfl)
 	SG_SET_LOCALE_C;
 
 	if (!kernel)
-		SG_ERROR("Kernel not defined!\n")
+		error("Kernel not defined!");
 
-	SG_INFO("Writing model file...")
+	io::info("Writing model file...");
 	fprintf(modelfl,"%%SVM\n");
 	fprintf(modelfl,"numsv=%d;\n", get_num_support_vectors());
 	fprintf(modelfl,"kernel='%s';\n", kernel->get_name());
@@ -213,7 +213,7 @@ bool CSVM::save(FILE* modelfl)
 
 	fprintf(modelfl, "];\n");
 
-	SG_DONE()
+	io::progress_done();
 	SG_RESET_LOCALE;
 	return true ;
 }
@@ -248,7 +248,7 @@ float64_t CSVM::compute_svm_dual_objective()
 		}
 	}
 	else
-		SG_ERROR("cannot compute objective, labels or kernel not set\n")
+		error("cannot compute objective, labels or kernel not set");
 
 	return objective;
 }
@@ -283,7 +283,7 @@ float64_t CSVM::compute_svm_primal_objective()
 
 	}
 	else
-		SG_ERROR("cannot compute objective, labels or kernel not set\n")
+		error("cannot compute objective, labels or kernel not set");
 
 	return regularizer+loss;
 }
@@ -305,14 +305,14 @@ void CSVM::set_linear_term(const SGVector<float64_t> linear_term)
 	ASSERT(linear_term.vector)
 
 	if (!m_labels)
-		SG_ERROR("Please assign labels first!\n")
+		error("Please assign labels first!");
 
 	int32_t num_labels=m_labels->get_num_labels();
 
 	if (num_labels != linear_term.vlen)
 	{
-		SG_ERROR("Number of labels (%d) does not match number"
-				"of entries (%d) in linear term \n", num_labels, linear_term.vlen);
+		error("Number of labels ({}) does not match number"
+				"of entries ({}) in linear term \n", num_labels, linear_term.vlen);
 	}
 
 	m_linear_term=linear_term;

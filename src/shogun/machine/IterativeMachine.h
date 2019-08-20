@@ -73,18 +73,18 @@ namespace shogun
 
 			if (m_complete)
 			{
-				SG_SINFO(
-				    "%s converged after %d iterations.\n", this->get_name(),
-				    m_current_iteration)
+				io::info(
+				    "{} converged after {} iterations.", this->get_name(),
+				    m_current_iteration);
 
 				this->end_training();
 			}
 			else if (!m_complete && m_current_iteration >= m_max_iterations)
 			{
-				SG_SWARNING(
-				    "%s did not converge after the maximum number of %d "
-				    "iterations.\n",
-				    this->get_name(), m_current_iteration)
+				io::warn(
+				    "{} did not converge after the maximum number of {} "
+				    "iterations.",
+				    this->get_name(), m_current_iteration);
 
 				this->end_training();
 			}

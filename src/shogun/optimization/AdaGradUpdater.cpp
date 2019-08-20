@@ -50,14 +50,14 @@ AdaGradUpdater::AdaGradUpdater(float64_t learning_rate,float64_t epsilon)
 
 void AdaGradUpdater::set_learning_rate(float64_t learning_rate)
 {
-	REQUIRE(learning_rate>0,"Learning_rate (%f) must be positive\n",
+	require(learning_rate>0,"Learning_rate ({}) must be positive",
 		learning_rate);
 	m_build_in_learning_rate=learning_rate;
 }
 
 void AdaGradUpdater::set_epsilon(float64_t epsilon)
 {
-	REQUIRE(epsilon>=0,"Epsilon (%f) must be non-negative\n",
+	require(epsilon>=0,"Epsilon ({}) must be non-negative",
 		epsilon);
 	m_epsilon=epsilon;
 }
@@ -81,7 +81,7 @@ void AdaGradUpdater::init()
 float64_t AdaGradUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t gradient, index_t idx, float64_t learning_rate)
 {
-	REQUIRE(idx>=0 && idx<m_gradient_accuracy.vlen, "The index (%d) is invalid\n", idx);
+	require(idx>=0 && idx<m_gradient_accuracy.vlen, "The index ({}) is invalid", idx);
 	float64_t scale=m_gradient_accuracy[idx]+gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
 	float64_t res =
@@ -92,8 +92,8 @@ float64_t AdaGradUpdater::get_negative_descend_direction(float64_t variable,
 void AdaGradUpdater::update_variable(SGVector<float64_t> variable_reference,
 	SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
 {
-	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
-		"The length of variable (%d) and the length of negative descend direction (%d) do not match\n",
+	require(variable_reference.vlen==raw_negative_descend_direction.vlen,
+		"The length of variable ({}) and the length of negative descend direction ({}) do not match",
 		variable_reference.vlen, raw_negative_descend_direction.vlen);
 	if(m_gradient_accuracy.vlen==0)
 	{

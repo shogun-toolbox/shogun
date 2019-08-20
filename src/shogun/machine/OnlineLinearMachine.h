@@ -150,7 +150,7 @@ class COnlineLinearMachine : public CMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
 		{
-			SG_NOTIMPLEMENTED
+			not_implemented(SOURCE_LOCATION);
 			return CMath::INFTY;
 		}
 
@@ -203,7 +203,7 @@ class COnlineLinearMachine : public CMachine
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example
 		 */
-		virtual void train_example(CStreamingDotFeatures *feature, float64_t label) { SG_NOTIMPLEMENTED }
+		virtual void train_example(CStreamingDotFeatures *feature, float64_t label) { not_implemented(SOURCE_LOCATION); }
 
 		/** whether train require labels */
 		virtual bool train_require_labels() const

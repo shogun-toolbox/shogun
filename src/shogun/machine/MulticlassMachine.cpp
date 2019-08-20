@@ -84,8 +84,8 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 
 CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
-	SG_DEBUG("entering %s::apply_multiclass(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("entering {}::apply_multiclass({} at {})",
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CMulticlassLabels* return_labels=NULL;
 
@@ -102,7 +102,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
-			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
+			error("num_machines = {}, did you train your machine?", num_machines);
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
 
@@ -159,7 +159,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 				for (int32_t r=0; r<num_classes; r++)
 					r_output_for_i[r] = output_for_i[r];
 
-				SG_DEBUG("%s::apply_multiclass(): sum(r_output_for_i) = %f\n",
+				SG_DEBUG("{}::apply_multiclass(): sum(r_output_for_i) = {}",
 					get_name(), SGVector<float64_t>::sum(r_output_for_i.vector,num_classes));
 			}
 
@@ -176,11 +176,11 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		return_labels=result;
 	}
 	else
-		SG_ERROR("Not ready")
+		error("Not ready");
 
 
-	SG_DEBUG("leaving %s::apply_multiclass(%s at %p)\n",
-				get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("leaving {}::apply_multiclass({} at {})",
+				get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 	return return_labels;
 }
 
@@ -201,8 +201,8 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
-			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
-		REQUIRE(n_outputs<=num_machines,"You request more outputs than machines available")
+			error("num_machines = {}, did you train your machine?", num_machines);
+		require(n_outputs<=num_machines,"You request more outputs than machines available");
 
 		CMultilabelLabels* result=new CMultilabelLabels(num_vectors, n_outputs);
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
@@ -227,7 +227,7 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 		return_labels=result;
 	}
 	else
-		SG_ERROR("Not ready")
+		error("Not ready");
 
 	return return_labels;
 }
@@ -238,7 +238,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	init_strategy();
 
 	if ( !data && !is_ready() )
-		SG_ERROR("Please provide training data.\n")
+		error("Please provide training data.");
 	else
 		init_machine_for_train(data);
 

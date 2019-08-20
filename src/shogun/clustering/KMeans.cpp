@@ -64,8 +64,8 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	for (auto iter : SG_PROGRESS(range(max_iter)))
 	{
 		if (iter==max_iter-1)
-			SG_SWARNING("KMeans clustering has reached maximum number of ( %d ) iterations without having converged. \
-				   	Terminating. \n", iter)
+			io::warn("KMeans clustering has reached maximum number of ( {} ) iterations without having converged. \
+				   	Terminating. ", iter);
 
 		changed=0;
 		auto rhs_mus = some<CDenseFeatures<float64_t>>(centers.clone());
@@ -172,7 +172,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		observe<SGMatrix<float64_t>>(iter, "mus");
 
 		if (iter%(max_iter/10) == 0)
-			SG_SINFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed)
+			io::info("Iteration[{}/{}]: Assignment of {} patterns changed.", iter, max_iter, changed);
 	}
 	distance->reset_precompute();
 	distance->replace_rhs(rhs_cache);

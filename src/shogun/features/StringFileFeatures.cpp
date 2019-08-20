@@ -40,7 +40,7 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 			if (!CStringFeatures<ST>::alphabet->is_valid((uint8_t) c))
 			{
 				CStringFileFeatures<ST>::cleanup();
-				SG_CLASS_ERROR(CStringFeatures<ST>, "Invalid character (%c) in line %d\n", c, line_nr)
+				error("Invalid character ({}) in line {}", c, line_nr);
 			}
 		}
 	}
@@ -67,8 +67,8 @@ template <class ST> void CStringFileFeatures<ST>::cleanup()
 
 template <class ST> void CStringFileFeatures<ST>::cleanup_feature_vector(int32_t num)
 {
-	SG_CLASS_ERROR(CStringFeatures<ST>, "Cleaning single feature vector not"
-			"supported by StringFileFeatures\n")
+	error("Cleaning single feature vector not"
+			"supported by StringFileFeatures");
 }
 
 template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int32_t granularity)
@@ -104,10 +104,10 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 			break;
 	}
 
-	SG_CLASS_INFO(CStringFeatures<ST>, "number of strings:%d\n", CStringFeatures<ST>::get_num_vectors())
-	SG_CLASS_INFO(CStringFeatures<ST>,"maximum string length:%d\n", CStringFeatures<ST>::get_max_vector_length())
-	SG_CLASS_INFO(CStringFeatures<ST>,"max_value_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_max_value_in_histogram())
-	SG_CLASS_INFO(CStringFeatures<ST>,"num_symbols_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram())
+	io::info("number of strings:{}", CStringFeatures<ST>::get_num_vectors());
+	io::info("maximum string length:{}", CStringFeatures<ST>::get_max_vector_length());
+	io::info("max_value_in_histogram:{}", CStringFeatures<ST>::alphabet->get_max_value_in_histogram());
+	io::info("num_symbols_in_histogram:{}", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram());
 
 	if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
 		CStringFileFeatures<ST>::cleanup();

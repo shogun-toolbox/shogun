@@ -429,19 +429,19 @@ template <class T>
 template <class T>
     void CInputParser<T>::start_parser()
 {
-	SG_SDEBUG("entering CInputParser::start_parser()\n")
+	SG_DEBUG("entering CInputParser::start_parser()")
     if (is_running())
     {
-        SG_SERROR("Parser thread is already running! Multiple parse threads not supported.\n")
+        error("Parser thread is already running! Multiple parse threads not supported.");
     }
 
-    SG_SDEBUG("creating parse thread\n")
+    SG_DEBUG("creating parse thread")
     if (examples_ring)
 		examples_ring->init_vector();
 	keep_running.store(true, std::memory_order_release);
 	parse_thread = std::thread(&parse_loop_entry_point, this);
 
-    SG_SDEBUG("leaving CInputParser::start_parser()\n")
+    SG_DEBUG("leaving CInputParser::start_parser()")
 }
 
 template <class T>
@@ -455,7 +455,7 @@ template <class T>
 template <class T>
     bool CInputParser<T>::is_running()
 {
-	SG_SDEBUG("entering CInputParser::is_running()\n")
+	SG_DEBUG("entering CInputParser::is_running()")
     bool ret;
 	std::lock_guard<std::mutex> lock(examples_state_lock);
 
@@ -467,7 +467,7 @@ template <class T>
     else
         ret = false;
 
-    SG_SDEBUG("leaving CInputParser::is_running(), returning %d\n", ret)
+    SG_DEBUG("leaving CInputParser::is_running(), returning {}", ret)
     return ret;
 }
 
@@ -647,16 +647,16 @@ template <class T>
 
 template <class T> void CInputParser<T>::end_parser()
 {
-	SG_SDEBUG("entering CInputParser::end_parser\n")
-	SG_SDEBUG("joining parse thread\n")
+	SG_DEBUG("entering CInputParser::end_parser")
+	SG_DEBUG("joining parse thread")
 	if (parse_thread.joinable())
 		parse_thread.join();
-    SG_SDEBUG("leaving CInputParser::end_parser\n")
+    SG_DEBUG("leaving CInputParser::end_parser")
 }
 
 template <class T> void CInputParser<T>::exit_parser()
 {
-	SG_SDEBUG("cancelling parse thread\n")
+	SG_DEBUG("cancelling parse thread")
 	keep_running.store(false, std::memory_order_release);
 	examples_state_changed.notify_one();
 	if (parse_thread.joinable())

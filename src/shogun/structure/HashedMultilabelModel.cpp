@@ -76,16 +76,16 @@ void CHashedMultilabelModel::set_misclass_cost(float64_t false_positive,
 
 void CHashedMultilabelModel::set_seeds(SGVector<uint32_t> seeds)
 {
-	REQUIRE(((CMultilabelSOLabels *)m_labels)->get_num_classes() == seeds.vlen,
-	        "Seeds for all the classes not provided. \n");
+	require(((CMultilabelSOLabels *)m_labels)->get_num_classes() == seeds.vlen,
+	        "Seeds for all the classes not provided. ");
 	m_seeds = seeds;
 }
 
 SGVector<float64_t> CHashedMultilabelModel::get_joint_feature_vector(
         int32_t feat_idx, CStructuredData * y)
 {
-	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
-	         "implemented for %s!\n", get_name());
+	error("compute_joint_feature(int32_t, CStructuredData*) is not "
+	         "implemented for {}!", get_name());
 
 	return SGVector<float64_t>();
 }
@@ -144,7 +144,7 @@ float64_t CHashedMultilabelModel::delta_loss(CStructuredData * y1,
 float64_t CHashedMultilabelModel::delta_loss(SGVector<float64_t> y1,
                 SGVector<float64_t> y2)
 {
-	REQUIRE(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
+	require(y1.vlen == y2.vlen, "Size of both the vectors should be same");
 
 	float64_t loss = 0;
 
@@ -204,8 +204,8 @@ SGVector<int32_t> CHashedMultilabelModel::to_sparse(SGVector<float64_t> dense_ve
 
 	for (index_t i = 0; i < dense_vec.vlen; i++)
 	{
-		REQUIRE(dense_vec[i] == d_true || dense_vec[i] == d_false,
-		        "The values of dense vector should be either (%d) or (%d).\n",
+		require(dense_vec[i] == d_true || dense_vec[i] == d_false,
+		        "The values of dense vector should be either ({}) or ({}).",
 		        d_true, d_false);
 
 		if (dense_vec[i] == d_true)
@@ -240,8 +240,8 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 	}
 	else
 	{
-		REQUIRE(m_num_classes > 0, "The model needs to be trained before using"
-		        "it for prediction.\n");
+		require(m_num_classes > 0, "The model needs to be trained before using"
+		        "it for prediction.");
 	}
 
 	int32_t dim = get_dim();

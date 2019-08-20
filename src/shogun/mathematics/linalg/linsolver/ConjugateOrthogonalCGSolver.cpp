@@ -22,28 +22,28 @@ namespace shogun
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
 	: CIterativeLinearSolver<complex128_t, float64_t>()
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver(bool store_residuals)
 	: CIterativeLinearSolver<complex128_t, float64_t>(store_residuals)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
+	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 	CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
 {
-	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Entering..\n");
+	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Entering..");
 
 	// sanity check
-	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n, %d vs %d",
+	require(A, "Operator is NULL!");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch!\n, {} vs {}",
 		A->get_dimension(), b.vlen);
 
 	// the final solution vector, initial guess is 0
@@ -81,7 +81,7 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 
 	for (it.begin(r); !it.end(r); ++it)
 	{
-		SG_DEBUG("CG iteration %d, residual norm %f\n",
+		SG_DEBUG("CG iteration {}, residual norm {}",
 			it.get_iter_info().iteration_count,
 			it.get_iter_info().residual_norm);
 
@@ -126,12 +126,12 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 	float64_t elapsed=time.cur_time_diff();
 
 	if (!it.succeeded(r))
-		SG_WARNING("Did not converge!\n");
+		io::warn("Did not converge!");
 
-	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
+	io::info("Iteration took {} times, residual norm={:.20f}, time elapsed={}",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
-	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Leaving..\n");
+	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Leaving..");
 	return result;
 }
 

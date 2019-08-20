@@ -88,7 +88,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 SGMatrix<float64_t> CPRCEvaluation::get_PRC()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first")
+		error("Uninitialized, please call evaluate first");
 
 	return m_PRC_graph;
 }
@@ -96,7 +96,7 @@ SGMatrix<float64_t> CPRCEvaluation::get_PRC()
 SGVector<float64_t> CPRCEvaluation::get_thresholds()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first")
+		error("Uninitialized, please call evaluate first");
 
 	return m_thresholds;
 }
@@ -104,7 +104,7 @@ SGVector<float64_t> CPRCEvaluation::get_thresholds()
 float64_t CPRCEvaluation::get_auPRC()
 {
 	if (!m_computed)
-			SG_ERROR("Uninitialized, please call evaluate first")
+			error("Uninitialized, please call evaluate first");
 
 	return m_auPRC;
 }

@@ -80,7 +80,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*)data);
 	}
@@ -96,10 +96,10 @@ bool CLibLinear::train_machine(CFeatures* data)
 	{
 		if (num_feat != num_train_labels)
 		{
-			SG_ERROR(
+			error(
 			    "L1 methods require the data to be transposed: "
-			    "number of features %d does not match number of "
-			    "training labels %d\n",
+			    "number of features {} does not match number of "
+			    "training labels {}",
 			    num_feat, num_train_labels);
 		}
 		CMath::swap(num_feat, num_vec);
@@ -108,9 +108,9 @@ bool CLibLinear::train_machine(CFeatures* data)
 	{
 		if (num_vec != num_train_labels)
 		{
-			SG_ERROR(
-			    "number of vectors %d does not match "
-			    "number of training labels %d\n",
+			error(
+			    "number of vectors {} does not match "
+			    "number of training labels {}",
 			    num_vec, num_train_labels);
 		}
 	}
@@ -151,7 +151,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		else if (prob.y[i] == -1)
 			Cs[i] = get_C2();
 		else
-			SG_ERROR("labels should be +1/-1 only\n")
+			error("labels should be +1/-1 only");
 	}
 
 	int pos = 0;
@@ -163,7 +163,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	}
 	neg = prob.l - pos;
 
-	SG_INFO("%d training points %d dims\n", prob.l, prob.n)
+	io::info("{} training points {} dims", prob.l, prob.n);
 
 	function* fun_obj = NULL;
 	switch (solver_type)
@@ -174,9 +174,9 @@ bool CLibLinear::train_machine(CFeatures* data)
 		CTron tron_obj(
 		    fun_obj, get_epsilon() * CMath::min(pos, neg) / prob.l,
 		    get_max_iterations());
-		SG_DEBUG("starting L2R_LR training via tron\n")
+		SG_DEBUG("starting L2R_LR training via tron")
 		tron_obj.tron(w.vector, m_max_train_time);
-		SG_DEBUG("done with tron\n")
+		SG_DEBUG("done with tron")
 		delete fun_obj;
 		break;
 	}
@@ -218,7 +218,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		break;
 	}
 	default:
-		SG_ERROR("Error: unknown solver_type\n")
+		error("Error: unknown solver_type");
 		break;
 	}
 
@@ -427,10 +427,10 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n",iter)
+	io::info("optimization finished, #iter = {}",iter);
 	if (iter >= get_max_iterations())
 	{
-		SG_WARNING(
+		io::warn(
 		    "reaching max number of iterations\nUsing -s 2 may be faster"
 		    "(also see liblinear FAQ)\n\n");
 	}
@@ -447,8 +447,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		if (alpha[i] > 0)
 			++nSV;
 	}
-	SG_INFO("Objective value = %lf\n", v / 2)
-	SG_INFO("nSV = %d\n", nSV)
+	io::info("Objective value = {}", v / 2);
+	io::info("nSV = {}", nSV);
 
 	SG_FREE(QD);
 	SG_FREE(alpha);
@@ -728,7 +728,7 @@ void CLibLinear::solve_l1r_l2_svc(
 			// recompute b[] if line search takes too many steps
 			if (num_linesearch >= max_num_linesearch)
 			{
-				SG_INFO("#")
+				io::info("#");
 				for (int i = 0; i < l; i++)
 					b[i] = 1;
 
@@ -775,9 +775,9 @@ void CLibLinear::solve_l1r_l2_svc(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n", iter)
+	io::info("optimization finished, #iter = {}", iter);
 	if (iter >= get_max_iterations())
-		SG_WARNING("\nWARNING: reaching max number of iterations\n")
+		io::warn("\nWARNING: reaching max number of iterations");
 
 	// calculate objective value
 
@@ -795,8 +795,8 @@ void CLibLinear::solve_l1r_l2_svc(
 		if (b[j] > 0)
 			v += C[GETI(j)] * b[j] * b[j];
 
-	SG_INFO("Objective value = %lf\n", v)
-	SG_INFO("#nonzeros/#features = %d/%d\n", nnz, w_size)
+	io::info("Objective value = {}", v);
+	io::info("#nonzeros/#features = {}/{}", nnz, w_size);
 
 	SG_FREE(index);
 	SG_FREE(y);
@@ -1097,7 +1097,7 @@ void CLibLinear::solve_l1r_lr(
 			// recompute exp_wTx[] if line search takes too many steps
 			if (num_linesearch >= max_num_linesearch)
 			{
-				SG_INFO("#")
+				io::info("#");
 				for (int i = 0; i < l; i++)
 					exp_wTx[i] = 0;
 
@@ -1149,9 +1149,9 @@ void CLibLinear::solve_l1r_lr(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n", iter)
+	io::info("optimization finished, #iter = {}", iter);
 	if (iter >= get_max_iterations())
-		SG_WARNING("\nWARNING: reaching max number of iterations\n")
+		io::warn("\nWARNING: reaching max number of iterations");
 
 	// calculate objective value
 
@@ -1169,8 +1169,8 @@ void CLibLinear::solve_l1r_lr(
 		else
 			v += C[GETI(j)] * log(1 + exp_wTx[j]);
 
-	SG_INFO("Objective value = %lf\n", v)
-	SG_INFO("#nonzeros/#features = %d/%d\n", nnz, w_size)
+	io::info("Objective value = {}", v);
+	io::info("#nonzeros/#features = {}/{}", nnz, w_size);
 
 	SG_FREE(index);
 	SG_FREE(y);
@@ -1344,11 +1344,11 @@ void CLibLinear::solve_l2r_lr_dual(
 	}
 
 	pb.complete_absolute();
-	SG_INFO("optimization finished, #iter = %d\n",iter)
+	io::info("optimization finished, #iter = {}",iter);
 
 	if (iter >= get_max_iterations())
-		SG_WARNING("reaching max number of iterations\nUsing -s 0 may be "
-		           "faster (also see FAQ)\n\n")
+		io::warn("reaching max number of iterations\nUsing -s 0 may be "
+		           "faster (also see FAQ)\n\n");
 
 	// calculate objective value
 
@@ -1360,7 +1360,7 @@ void CLibLinear::solve_l2r_lr_dual(
 		v += alpha[2 * i] * log(alpha[2 * i]) +
 		     alpha[2 * i + 1] * log(alpha[2 * i + 1]) -
 		     upper_bound[GETI(i)] * log(upper_bound[GETI(i)]);
-	SG_INFO("Objective value = %lf\n", v)
+	io::info("Objective value = {}", v);
 
 	delete[] xTx;
 	delete[] alpha;
@@ -1371,15 +1371,15 @@ void CLibLinear::solve_l2r_lr_dual(
 void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 {
 	if (!m_labels)
-		SG_ERROR("Please assign labels first!\n")
+		error("Please assign labels first!");
 
 	int32_t num_labels = m_labels->get_num_labels();
 
 	if (num_labels != linear_term.vlen)
 	{
-		SG_ERROR(
-		    "Number of labels (%d) does not match number"
-		    " of entries (%d) in linear term \n",
+		error(
+		    "Number of labels ({}) does not match number"
+		    " of entries ({}) in linear term \n",
 		    num_labels, linear_term.vlen);
 	}
 
@@ -1389,7 +1389,7 @@ void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 SGVector<float64_t> CLibLinear::get_linear_term()
 {
 	if (!m_linear_term.vlen || !m_linear_term.vector)
-		SG_ERROR("Please assign linear term first!\n")
+		error("Please assign linear term first!");
 
 	return m_linear_term;
 }
@@ -1397,7 +1397,7 @@ SGVector<float64_t> CLibLinear::get_linear_term()
 void CLibLinear::init_linear_term()
 {
 	if (!m_labels)
-		SG_ERROR("Please assign labels first!\n")
+		error("Please assign labels first!");
 
 	m_linear_term = SGVector<float64_t>(m_labels->get_num_labels());
 	SGVector<float64_t>::fill_vector(

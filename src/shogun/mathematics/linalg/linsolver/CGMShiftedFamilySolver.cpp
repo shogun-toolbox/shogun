@@ -49,16 +49,16 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
 	SGVector<complex128_t> shifts, SGVector<complex128_t> weights, bool negate)
 {
-	SG_DEBUG("Entering\n");
+	SG_DEBUG("Entering");
 
 	// sanity check
-	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch! [%d vs %d]\n",
+	require(A, "Operator is NULL!");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch! [{} vs {}]",
 		A->get_dimension(), b.vlen);
-	REQUIRE(shifts.vector,"Shifts are not initialized!\n");
-	REQUIRE(weights.vector,"Weights are not initialized!\n");
-	REQUIRE(shifts.vlen==weights.vlen, "Number of shifts and number of "
-		"weights are not equal! [%d vs %d]\n", shifts.vlen, weights.vlen);
+	require(shifts.vector,"Shifts are not initialized!");
+	require(weights.vector,"Weights are not initialized!");
+	require(shifts.vlen==weights.vlen, "Number of shifts and number of "
+		"weights are not equal! [{} vs {}]", shifts.vlen, weights.vlen);
 
 	// the solution matrix, one column per shift, initial guess 0 for all
 	MatrixXcd x_sh=MatrixXcd::Zero(b.vlen, shifts.vlen);
@@ -110,7 +110,7 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	for (it.begin(r); !it.end(r); ++it)
 	{
 
-		SG_DEBUG("CG iteration %d, residual norm %f\n",
+		SG_DEBUG("CG iteration {}, residual norm {}",
 				it.get_iter_info().iteration_count,
 				it.get_iter_info().residual_norm);
 
@@ -181,9 +181,9 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	float64_t elapsed=time.cur_time_diff();
 
 	if (!it.succeeded(r))
-		SG_WARNING("Did not converge!\n");
+		io::warn("Did not converge!");
 
-	SG_INFO("Iteration took %d times, residual norm=%.20lf, time elapsed=%f\n",
+	io::info("Iteration took {} times, residual norm={:.20f}, time elapsed={}",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	// compute the final result vector multiplied by weights
@@ -194,7 +194,7 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	for (index_t i=0; i<x_sh.cols(); ++i)
 		x+=x_sh.col(i)*weights[i];
 
-	SG_DEBUG("Leaving\n");
+	SG_DEBUG("Leaving");
 	return result;
 }
 

@@ -43,11 +43,11 @@ CKMeansMiniBatch::~CKMeansMiniBatch()
 
 void CKMeansMiniBatch::minibatch_KMeans()
 {
-	REQUIRE(batch_size>0,
-		"batch size not set to positive value. Current batch size %d \n", batch_size);
-	REQUIRE(
+	require(batch_size>0,
+		"batch size not set to positive value. Current batch size {} ", batch_size);
+	require(
 		max_iter > 0, "number of iterations not set to positive value. Current "
-		              "iterations %d \n",
+		              "iterations {} ",
 		max_iter);
 
 	CDenseFeatures<float64_t>* lhs=

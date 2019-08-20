@@ -114,7 +114,7 @@ public:
 	 */
 	virtual SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 		return SGVector<index_t>();
 	}
 
@@ -143,7 +143,7 @@ public:
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 
 	/** rescale multiclass outputs according to the selected heuristic
@@ -156,7 +156,7 @@ public:
 	virtual void rescale_outputs(SGVector<float64_t> outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 	{
-		SG_NOTIMPLEMENTED
+		not_implemented(SOURCE_LOCATION);
 	}
 
 private:

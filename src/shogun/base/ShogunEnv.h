@@ -18,7 +18,10 @@
 
 namespace shogun
 {
-	class SGIO;
+	namespace io
+	{
+		class SGIO;	
+	}
 	class SGLinalg;
 	class CSignal;
 
@@ -35,17 +38,11 @@ namespace shogun
 		 */
 		~ShogunEnv();
 
-		/** set the global io object
-		 *
-		 * @param io io object to use
-		 */
-		void set_global_io(SGIO* io);
-
 		/** get the global io object
 		 *
 		 * @return io object
 		 */
-		SGIO* io();
+		io::SGIO* io();
 
 		/** @return the globally over-ridden floating point epsilon for
 		 * CMath::fequals
@@ -93,7 +90,7 @@ namespace shogun
 		 */
 		void init_from_env();
 
-		SGIO* sg_io;
+		std::unique_ptr<io::SGIO> sg_io;
 		std::unique_ptr<CSignal> sg_signal;
 		std::unique_ptr<SGLinalg> sg_linalg;
 		float64_t sg_fequals_epsilon;

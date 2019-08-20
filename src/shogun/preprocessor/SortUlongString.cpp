@@ -46,7 +46,7 @@ void CSortUlongString::apply_to_string_list(std::vector<SGVector<uint64_t>>& str
 {
 	for (auto& vec : string_list)
 	{
-		SG_DEBUG("sorting string of length %i\n", vec.vlen);
+		SG_DEBUG("sorting string of length {}", vec.vlen);
 
 		//CMath::qsort(vec, len);
 		CMath::radix_sort(vec.vector, vec.vlen);

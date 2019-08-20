@@ -57,7 +57,7 @@ class CMosek : public CSGObject
 
 		/**
 		 * method used to direct the log stream of MOSEK
-		 * functions to SG_PRINT
+		 * functions to io::print
 		 *
 		 * @param handle function handler
 		 * @param str string to print on screen

@@ -32,13 +32,13 @@ CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab
 CDomainAdaptationSVM::~CDomainAdaptationSVM()
 {
 	SG_UNREF(presvm);
-	SG_DEBUG("deleting DomainAdaptationSVM\n")
+	SG_DEBUG("deleting DomainAdaptationSVM")
 }
 
 
 void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 {
-	REQUIRE(pre_svm != NULL, "Pre SVM should not be null");
+	require(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts
 	SG_REF(pre_svm);
 
@@ -50,23 +50,23 @@ void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 bool CDomainAdaptationSVM::is_presvm_sane()
 {
 	if (!presvm) {
-		SG_ERROR("presvm is null")
+		error("presvm is null");
 	}
 
 	if (presvm->get_num_support_vectors() == 0) {
-		SG_ERROR("presvm has no support vectors, please train first")
+		error("presvm has no support vectors, please train first");
 	}
 
 	if (presvm->get_bias() != 0) {
-		SG_ERROR("presvm bias not set to zero")
+		error("presvm bias not set to zero");
 	}
 
 	if (presvm->get_kernel()->get_kernel_type() != this->get_kernel()->get_kernel_type()) {
-		SG_ERROR("kernel types do not agree")
+		error("kernel types do not agree");
 	}
 
 	if (presvm->get_kernel()->get_feature_type() != this->get_kernel()->get_feature_type()) {
-		SG_ERROR("feature types do not agree")
+		error("feature types do not agree");
 	}
 
 	return true;
@@ -79,12 +79,12 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels");
 		kernel->init(data, data);
 	}
 
 	if (m_labels->get_label_type() != LT_BINARY)
-		SG_ERROR("DomainAdaptationSVM requires binary labels\n")
+		error("DomainAdaptationSVM requires binary labels");
 
 	ASSERT(presvm)
 	// set bias of parent svm to zero

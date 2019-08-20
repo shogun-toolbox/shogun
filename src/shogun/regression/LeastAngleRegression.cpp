@@ -333,7 +333,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		// early stopping with max number of non-zero variables
 		if (m_max_nonz > 0 && m_num_active >= m_max_nonz)
 			stop_cond = true;
-		SG_DEBUG("Added : %d , Dropped %d, Active set size %d max_corr %.17f \n", i_max_corr, i_kick, m_num_active, max_corr);
+		SG_DEBUG("Added : {} , Dropped {}, Active set size {} max_corr {:.17f} ", i_max_corr, i_kick, m_num_active, max_corr);
 
 		pb.print_progress();
 	}
@@ -358,9 +358,9 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 
 	if (max_corr / n_vec > m_epsilon)
 	{
-		SG_WARNING(
-		    "Convergence level (%f) not below tolerance (%f) after %d "
-		    "iterations.\n",
+		io::warn(
+		    "Convergence level ({}) not below tolerance ({}) after {} "
+		    "iterations.",
 		    max_corr / n_vec, m_epsilon, nloop);
 	}
 

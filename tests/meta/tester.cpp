@@ -55,23 +55,23 @@ int main(int argc, const char *argv[])
 	// print comparison output only if different as it it slow
 	if (!loaded_equals_ref || !ref_equals_loaded)
 	{
-		env()->io()->set_loglevel(MSG_DEBUG);
+		env()->io()->set_loglevel(io::MSG_DEBUG);
 		if (!loaded_equals_ref)
 		{
-			SG_SDEBUG(
-				"Test input different from reference input for %s\n",
+			SG_DEBUG(
+				"Test input different from reference input for {}\n",
 				a->get_name());
 			a->equals(a_ref);
 		}
 		else
 		{
-			SG_SDEBUG(
-				"Reference input different from test input for %s.\n",
+			SG_DEBUG(
+				"Reference input different from test input for {}.\n",
 				a->get_name());
 			a_ref->equals(a);
 		}
-		SG_SDEBUG(
-			"For details, run: diff %s %s\n", fname_full_generated.c_str(),
+		SG_DEBUG(
+			"For details, run: diff {} {}\n", fname_full_generated.c_str(),
 			fname_full_reference.c_str());
 	}
 

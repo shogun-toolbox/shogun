@@ -46,13 +46,13 @@ void CExponentialARDKernel::init()
 
 SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
 {
-	REQUIRE(hs, "Features not set!\n");
+	require(hs, "Features not set!");
 	CDenseFeatures<float64_t> * dense_hs=dynamic_cast<CDenseFeatures<float64_t> *>(hs);
 	if (dense_hs)
 		return dense_hs->get_feature_vector(idx);
 
 	CDotFeatures * dot_hs=dynamic_cast<CDotFeatures *>(hs);
-	REQUIRE(dot_hs, "Kernel only supports DotFeatures\n");
+	require(dot_hs, "Kernel only supports DotFeatures");
 	return dot_hs->get_computed_dot_feature_vector(idx);
 
 }
@@ -60,7 +60,7 @@ SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeat
 
 void CExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
 {
-	REQUIRE(weights.num_rows>0 && weights.num_cols>0, "Weights matrix is non-empty\n");
+	require(weights.num_rows>0 && weights.num_cols>0, "Weights matrix is non-empty");
 	if (weights.num_rows==1)
 	{
 		if(weights.num_cols>1)
@@ -99,7 +99,7 @@ void CExponentialARDKernel::lazy_update_weights()
 		}
 		else
 		{
-			SG_ERROR("Unsupported ARD type\n");
+			error("Unsupported ARD type");
 		}
 		update_parameter_hash();
 	}
@@ -113,7 +113,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weights()
 
 void CExponentialARDKernel::set_scalar_weights(float64_t weight)
 {
-	REQUIRE(weight>0, "Scalar (%f) weight should be positive\n",weight);
+	require(weight>0, "Scalar ({}) weight should be positive",weight);
 	m_log_weights=SGVector<float64_t>(1);
 	m_log_weights.set_const(std::log(weight));
 	m_ARD_type=KT_SCALAR;
@@ -124,13 +124,13 @@ void CExponentialARDKernel::set_scalar_weights(float64_t weight)
 
 void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 {
-	REQUIRE(rhs==NULL && lhs==NULL,
-		"Setting vector weights must be before initialize features\n");
-	REQUIRE(weights.vlen>0, "Vector weight should be non-empty\n");
+	require(rhs==NULL && lhs==NULL,
+		"Setting vector weights must be before initialize features");
+	require(weights.vlen>0, "Vector weight should be non-empty");
 	m_log_weights=SGVector<float64_t>(weights.vlen);
 	for(index_t i=0; i<weights.vlen; i++)
 	{
-		REQUIRE(weights[i]>0, "Each entry of vector weight (v[%d]=%f) should be positive\n",
+		require(weights[i]>0, "Each entry of vector weight (v[{}]={}) should be positive",
 			i,weights[i]);
 		m_log_weights[i] = std::log(weights[i]);
 	}
@@ -142,11 +142,11 @@ void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 
 void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 {
-	REQUIRE(rhs==NULL && lhs==NULL,
-		"Setting matrix weights must be before initialize features\n");
-	REQUIRE(weights.num_cols>0, "Matrix weight should be non-empty");
-	REQUIRE(weights.num_rows>=weights.num_cols,
-		"Number of row (%d) must be not less than number of column (%d)",
+	require(rhs==NULL && lhs==NULL,
+		"Setting matrix weights must be before initialize features");
+	require(weights.num_cols>0, "Matrix weight should be non-empty");
+	require(weights.num_rows>=weights.num_cols,
+		"Number of row ({}) must be not less than number of column ({})",
 		weights.num_rows, weights.num_cols);
 
 	m_weights_rows=weights.num_rows;
@@ -159,7 +159,7 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 	for (int i=0; i<weights.num_cols && i<weights.num_rows; i++)
 	{
 		float64_t* begin=weights.get_column_vector(i);
-		REQUIRE(begin[i]>0, "The diagonal entry of matrix weight (w(%d,%d)=%f) should be positive\n",
+		require(begin[i]>0, "The diagonal entry of matrix weight (w({},{})={}) should be positive",
 			i,i,begin[i]);
 		std::copy(begin+i,begin+weights.num_rows,m_log_weights.vector+offset);
 		m_log_weights[offset] = std::log(m_log_weights[offset]);
@@ -186,12 +186,12 @@ bool CExponentialARDKernel::init(CFeatures* l, CFeatures* r)
 	int32_t dim=((CDotFeatures*) l)->get_dim_feature_space();
 	if (m_ARD_type==KT_FULL)
 	{
-		REQUIRE(m_weights_rows==dim, "Dimension mismatch between features (%d) and weights (%d)\n",
+		require(m_weights_rows==dim, "Dimension mismatch between features ({}) and weights ({})",
 			dim, m_weights_rows);
 	}
 	else if (m_ARD_type==KT_DIAG)
 	{
-		REQUIRE(m_log_weights.vlen==dim, "Dimension mismatch between features (%d) and weights (%d)\n",
+		require(m_log_weights.vlen==dim, "Dimension mismatch between features ({}) and weights ({})",
 			dim, m_log_weights.vlen);
 	}
 	return init_normalizer();
@@ -200,7 +200,7 @@ bool CExponentialARDKernel::init(CFeatures* l, CFeatures* r)
 
 SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_t> vec)
 {
-	REQUIRE(m_ARD_type==KT_FULL || m_ARD_type==KT_DIAG, "This method only supports vector weights or matrix weights\n");
+	require(m_ARD_type==KT_FULL || m_ARD_type==KT_DIAG, "This method only supports vector weights or matrix weights");
 	SGMatrix<float64_t> res;
 	if (m_ARD_type==KT_FULL)
 	{
@@ -244,20 +244,20 @@ SGMatrix<float64_t> CExponentialARDKernel::compute_right_product(SGVector<float6
 		right=get_weighted_vector(vec);
 	else
 	{
-		SG_ERROR("Unsupported ARD type\n");
+		error("Unsupported ARD type");
 	}
 	return right;
 }
 
 void CExponentialARDKernel::check_weight_gradient_index(index_t index)
 {
-	REQUIRE(lhs, "Left features not set!\n");
-	REQUIRE(rhs, "Right features not set!\n");
+	require(lhs, "Left features not set!");
+	require(rhs, "Right features not set!");
 
 	if (m_ARD_type!=KT_SCALAR)
 	{
-		REQUIRE(index>=0, "Index (%d) must be non-negative\n",index);
-		REQUIRE(index<m_log_weights.vlen, "Index (%d) must be within #dimension of weights (%d)\n",
+		require(index>=0, "Index ({}) must be non-negative",index);
+		require(index<m_log_weights.vlen, "Index ({}) must be within #dimension of weights ({})",
 			index, m_log_weights.vlen);
 	}
 }

@@ -16,15 +16,15 @@ CROCEvaluation::~CROCEvaluation()
 
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	REQUIRE(predicted, "No predicted labels provided.\n");
-	REQUIRE(ground_truth, "No ground truth labels provided.\n");
-	REQUIRE(
+	require(predicted, "No predicted labels provided.");
+	require(ground_truth, "No ground truth labels provided.");
+	require(
 	    predicted->get_label_type() == LT_BINARY,
-	    "Given predicted labels (%d) must be binary (%d).\n",
+	    "Given predicted labels ({}) must be binary ({}).",
 	    predicted->get_label_type(), LT_BINARY);
-	REQUIRE(
+	require(
 	    ground_truth->get_label_type() == LT_BINARY,
-	    "Given ground truth labels (%d) must be binary (%d).\n",
+	    "Given ground truth labels ({}) must be binary ({}).",
 	    ground_truth->get_label_type(), LT_BINARY);
 
 	return evaluate_roc((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
@@ -89,10 +89,10 @@ float64_t CROCEvaluation::evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* 
 	}
 
 	// assure both number of positive and negative examples is >0
-	REQUIRE(pos_count>0, "%s::evaluate_roc(): Number of positive labels is "
-			"zero, ROC fails!\n", get_name());
-	REQUIRE(neg_count>0, "%s::evaluate_roc(): Number of negative labels is "
-			"zero, ROC fails!\n", get_name());
+	require(pos_count>0, "{}::evaluate_roc(): Number of positive labels is "
+			"zero, ROC fails!", get_name());
+	require(neg_count>0, "{}::evaluate_roc(): Number of negative labels is "
+			"zero, ROC fails!", get_name());
 
 	int32_t j = 0;
 	float64_t label;
@@ -133,7 +133,7 @@ float64_t CROCEvaluation::evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* 
 SGMatrix<float64_t> CROCEvaluation::get_ROC()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first")
+		error("Uninitialized, please call evaluate first");
 
 	return m_ROC_graph;
 }
@@ -141,7 +141,7 @@ SGMatrix<float64_t> CROCEvaluation::get_ROC()
 SGVector<float64_t> CROCEvaluation::get_thresholds()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first")
+		error("Uninitialized, please call evaluate first");
 
 	return m_thresholds;
 }
@@ -149,7 +149,7 @@ SGVector<float64_t> CROCEvaluation::get_thresholds()
 float64_t CROCEvaluation::get_auROC()
 {
 	if (!m_computed)
-			SG_ERROR("Uninitialized, please call evaluate first")
+			error("Uninitialized, please call evaluate first");
 
 	return m_auROC;
 }

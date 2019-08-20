@@ -6,241 +6,198 @@
  *          Saurabh Goyal
  */
 
+#define SPDLOG_NO_NAME
+#define SPDLOG_NO_THREAD_ID
+#define SPDLOG_DISABLE_DEFAULT_LOGGER
+#define SPDLOG_CLOCK_COARSE
+
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/memory.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/RefCount.h>
-
-#include <stdarg.h>
-#include <ctype.h>
-#include <sys/stat.h>
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-#include <stdlib.h>
-
-#ifdef _WIN32
-#define R_OK 4
-#endif
+#include <spdlog/spdlog.h>
+#include <spdlog/async.h>
+#include <spdlog/async_logger.h>
+#include <spdlog/sinks/base_sink.h>
+#include <spdlog/sinks/null_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using namespace shogun;
+using namespace shogun::io;
 
-const EMessageType SGIO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO, MSG_NOTICE,
-	MSG_WARN, MSG_ERROR, MSG_CRITICAL, MSG_ALERT, MSG_EMERGENCY, MSG_MESSAGEONLY};
-
-const char* SGIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
-	"[NOTICE] \0", "[WARN] \0", "[ERROR] \0",
-	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
-
-const char* SGIO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
-	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
-	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
-
-
-void print_default(FILE* target, const char* str)
+class Formatter : public spdlog::formatter
 {
-	fprintf(target, "%s", str);
-}
-
-SGIO::SGIO()
-    : target(stdout), show_progress(false), location_info(MSG_NONE),
-      syntax_highlight(true), loglevel(MSG_WARN)
-{
-	m_refcount = new RefCount();
-	print_message = &print_default;
-	print_warning = &print_default;
-	print_error = &print_default;
-}
-
-SGIO::SGIO(const SGIO& orig)
-    : target(orig.get_target()), show_progress(orig.get_show_progress()),
-      location_info(orig.get_location_info()),
-      syntax_highlight(orig.get_syntax_highlight()),
-      loglevel(orig.get_loglevel()),
-      print_message(orig.print_message),
-      print_warning(orig.print_warning),
-      print_error(orig.print_error)
-{
-	m_refcount = new RefCount();
-}
-
-std::string SGIO::format(
-    EMessageType prio, const char* function, const char* file, int32_t line,
-    const char* fmt, ...) const
-{
-	const char* msg_intro=get_msg_intro(prio);
-
-	char str[4096];
-	snprintf(str, sizeof(str), "%s", msg_intro);
-	int len = strlen(msg_intro);
-	char* s = str + len;
-
-	/* file and line are shown for warnings and worse */
-	if (location_info == MSG_LINE_AND_FILE || prio == MSG_WARN ||
-	    prio == MSG_ERROR)
+public:
+	Formatter(bool syntax_highlight)
 	{
-		snprintf(s, sizeof(str) - len, "In file %s line %d: ", file, line);
-		len = strlen(str);
-		s = str + len;
-	}
-	else if (location_info == MSG_FUNCTION)
-	{
-		snprintf(s, sizeof(str) - len, "%s: ", function);
-		len = strlen(str);
-		s = str + len;
-	}
-	else if (location_info == MSG_NONE)
-	{
-		;
+		if (syntax_highlight)
+			formatter_ = std::make_unique<spdlog::pattern_formatter>(
+			    "[%D %T %^%l%$] ", spdlog::pattern_time_type::local, "");
+		else
+			formatter_ = std::make_unique<spdlog::pattern_formatter>(
+			    "[%D %T %l] ", spdlog::pattern_time_type::local, "");
 	}
 
-	va_list list;
-	va_start(list, fmt);
-	vsnprintf(s, sizeof(str) - len, fmt, list);
-	va_end(list);
-
-	return std::string(str);
-}
-
-void SGIO::print(EMessageType prio, const std::string& msg) const
-{
-	switch (prio)
+	Formatter(const Formatter& orig) : formatter_(orig.formatter_->clone())
 	{
-	case MSG_GCDEBUG:
-	case MSG_DEBUG:
-	case MSG_INFO:
-	case MSG_NOTICE:
-	case MSG_MESSAGEONLY:
-		if (print_message)
-			print_message(target, msg.c_str());
-		break;
-
-	case MSG_WARN:
-		if (print_warning)
-			print_warning(target, msg.c_str());
-		break;
-
-	case MSG_ERROR:
-	case MSG_CRITICAL:
-	case MSG_ALERT:
-	case MSG_EMERGENCY:
-		if (print_error)
-			print_error(target, msg.c_str());
-		break;
-	default:
-		break;
 	}
 
-	fflush(target);
-}
-
-void SGIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
-{
-	const char* msg_intro=get_msg_intro(prio);
-
-	if (msg_intro)
+	void format(
+	    const spdlog::details::log_msg& msg, fmt::memory_buffer& dest) override
 	{
-		fprintf(target, "%s", msg_intro);
-		va_list list;
-		va_start(list,fmt);
-		vfprintf(target,fmt,list);
-		va_end(list);
+		using namespace spdlog::details::fmt_helper;
+		if (static_cast<EMessageType>(msg.level) == MSG_MESSAGEONLY)
+		{
+			append_string_view(msg.payload, dest);
+		}
+		else
+		{
+			formatter_->format(msg, dest);
+			if (!msg.source.empty())
+			{
+				dest.push_back('[');
+				// show filename and line only in debug build
+#ifdef DEBUG_BUILD
+				append_string_view(msg.source.filename, dest);
+				dest.push_back(':');
+				append_int(msg.source.line, dest);
+				dest.push_back(' ');
+#endif
+				append_string_view(msg.source.funcname, dest);
+				dest.push_back(']');
+				dest.push_back(' ');
+			}
+			append_string_view(msg.payload, dest);
+			dest.push_back('\n');
+		}
 	}
-}
 
-
-void SGIO::done()
-{
-	if (!show_progress)
-		return;
-
-	message(MSG_INFO, "", "", -1, "done.\n");
-}
-
-char* SGIO::skip_spaces(char* str)
-{
-	int32_t i=0;
-
-	if (str)
+	std::unique_ptr<spdlog::formatter> clone() const override
 	{
-		for (i=0; isspace(str[i]); i++);
-
-		return &str[i];
+		return std::make_unique<Formatter>(*this);
 	}
-	else
-		return str;
+
+private:
+	std::unique_ptr<spdlog::formatter> formatter_;
+};
+
+class SGIO::RedirectSink : public spdlog::sinks::base_sink<std::mutex>
+{
+public:
+	RedirectSink()
+	{
+		stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+		stderr_sink = stdout_sink;
+	}
+
+	void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink_)
+	{
+		set_sink_(stdout_sink, sink_);
+	}
+
+	void redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink_)
+	{
+		set_sink_(stderr_sink, sink_);
+	}
+
+protected:
+	void sink_it_(const spdlog::details::log_msg& msg) override
+	{
+		if (msg.level == spdlog::level::err)
+			stderr_sink->log(msg);
+		else
+			stdout_sink->log(msg);
+	}
+
+	void flush_() override
+	{
+		stdout_sink->flush();
+		if (stdout_sink != stderr_sink)
+			stderr_sink->flush();
+	}
+
+	void
+	set_formatter_(std::unique_ptr<spdlog::formatter> sink_formatter) override
+	{
+		if (stdout_sink != stderr_sink)
+			stderr_sink->set_formatter(sink_formatter->clone());
+		stdout_sink->set_formatter(std::move(sink_formatter));
+	}
+
+private:
+	void set_sink_(
+	    std::shared_ptr<spdlog::sinks::sink>& old_sink,
+	    const std::shared_ptr<spdlog::sinks::sink>& new_sink)
+	{
+		std::lock_guard<std::mutex> lock(mutex_);
+		flush_();
+		if (new_sink)
+			old_sink = new_sink;
+		else
+			old_sink = std::make_shared<spdlog::sinks::null_sink_mt>();
+	}
+
+	std::shared_ptr<spdlog::sinks::sink> stdout_sink;
+	std::shared_ptr<spdlog::sinks::sink> stderr_sink;
+};
+
+SGIO::SGIO() : show_progress(false)
+{
+	init_default_sink();
+	init_default_logger();
 }
 
-char* SGIO::skip_blanks(char* str)
+void SGIO::init_default_logger(uint64_t queue_size, uint64_t n_threads)
 {
-	int32_t i=0;
+	thread_pool =
+	    std::make_shared<spdlog::details::thread_pool>(queue_size, n_threads);
+	io_logger = std::make_shared<spdlog::async_logger>(
+	    "sg_global", io_sink, thread_pool,
+	    spdlog::async_overflow_policy::block);
+}
 
-	if (str)
+void SGIO::init_default_sink()
+{
+	io_sink = std::make_shared<RedirectSink>();
+	if (io_logger)
 	{
-		for (i=0; isblank(str[i]); i++);
-
-		return &str[i];
+		io_logger->sinks().clear();
+		io_logger->sinks().push_back(io_sink);
 	}
-	else
-		return str;
+	io_sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
+}
+
+void SGIO::message_(
+    EMessageType prio, const SourceLocation& loc,
+    const fmt::string_view& msg) const
+{
+	io_logger->log(
+	    {loc.file, loc.line, loc.function},
+	    static_cast<spdlog::level::level_enum>(prio), msg);
 }
 
 EMessageType SGIO::get_loglevel() const
 {
-	return loglevel;
+	return static_cast<EMessageType>(io_logger->level());
 }
 
 void SGIO::set_loglevel(EMessageType level)
 {
-	loglevel=level;
-}
-
-void SGIO::set_target(FILE* t)
-{
-	target=t;
-}
-
-const char* SGIO::get_msg_intro(EMessageType prio) const
-{
-	for (int32_t i=NUM_LOG_LEVELS-1; i>=0; i--)
-	{
-		if (levels[i]==prio)
-		{
-			if (syntax_highlight)
-				return message_strings_highlighted[i];
-			else
-				return message_strings[i];
-		}
-	}
-
-	return nullptr; // unreachable
+	io_logger->set_level(static_cast<spdlog::level::level_enum>(level));
 }
 
 char* SGIO::c_string_of_substring(substring s)
 {
-	uint32_t len = s.end - s.start+1;
+	uint32_t len = s.end - s.start + 1;
 	char* ret = SG_CALLOC(char, len);
-	sg_memcpy(ret,s.start,len-1);
+	sg_memcpy(ret, s.start, len - 1);
 	return ret;
-}
-
-void SGIO::print_substring(substring s)
-{
-	char* c_string = c_string_of_substring(s);
-	SG_SPRINT("%s\n", c_string)
-	SG_FREE(c_string);
 }
 
 float32_t SGIO::float_of_substring(substring s)
 {
 	char* endptr = s.end;
-	float32_t f = strtof(s.start,&endptr);
+	float32_t f = strtof(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
-		SG_SERROR("error: %s is not a float!\n", c_string_of_substring(s))
+		error("{} is not a float!", c_string_of_substring(s));
 
 	return f;
 }
@@ -248,9 +205,9 @@ float32_t SGIO::float_of_substring(substring s)
 float64_t SGIO::double_of_substring(substring s)
 {
 	char* endptr = s.end;
-	float64_t f = strtod(s.start,&endptr);
+	float64_t f = strtod(s.start, &endptr);
 	if (endptr == s.start && s.start != s.end)
-		SG_SERROR("Error!:%s is not a double!\n", c_string_of_substring(s))
+		error("{} is not a double!", c_string_of_substring(s));
 
 	return f;
 }
@@ -266,7 +223,7 @@ int32_t SGIO::int_of_substring(substring s)
 
 uint32_t SGIO::ulong_of_substring(substring s)
 {
-	return strtoul(s.start,NULL,10);
+	return strtoul(s.start, NULL, 10);
 }
 
 uint32_t SGIO::ss_length(substring s)
@@ -276,27 +233,34 @@ uint32_t SGIO::ss_length(substring s)
 
 SGIO::~SGIO()
 {
-	delete m_refcount;
+	io_logger->flush();
 }
 
-int32_t SGIO::ref()
+void SGIO::redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink)
 {
-	return m_refcount->ref();
+	io_sink->redirect_stdout(sink);
+	sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }
 
-int32_t SGIO::ref_count() const
+void SGIO::redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink)
 {
-	return m_refcount->ref_count();
+	io_sink->redirect_stderr(sink);
+	sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }
 
-int32_t SGIO::unref()
+bool SGIO::should_log(EMessageType prio) const
 {
-	int32_t rc = m_refcount->unref();
-	if (rc==0)
-	{
-		delete this;
-		return 0;
-	}
+	return io_logger->should_log(static_cast<spdlog::level::level_enum>(prio));
+}
 
-	return rc;
+void SGIO::enable_syntax_highlighting()
+{
+	syntax_highlight = true;
+	io_sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
+}
+
+void SGIO::disable_syntax_highlighting()
+{
+	syntax_highlight = false;
+	io_sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }

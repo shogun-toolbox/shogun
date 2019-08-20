@@ -107,10 +107,10 @@ public:
 	 */
 	virtual void set_inducing_features(CFeatures* feat)
 	{
-		REQUIRE(feat,"Input inducing features must be not empty\n");
+		require(feat,"Input inducing features must be not empty");
 		CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(feat);
-		REQUIRE(lat_type, "Inducing features (%s) must be"
-			" DotFeatures or one of its subclasses\n", feat->get_name());
+		require(lat_type, "Inducing features ({}) must be"
+			" DotFeatures or one of its subclasses", feat->get_name());
 		m_inducing_features=lat_type->get_computed_dot_feature_matrix();
 	}
 

@@ -40,7 +40,7 @@ extern "C" {
     SEXP rvec=$input;
     if (TYPEOF(rvec) != r_type || Rf_ncols(rvec)!=1)
     {
-        /*SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);*/
+        /*error("Expected Double Vector as argument {}", m_rhs_counter);*/
         SWIG_fail;
     }
 
@@ -98,7 +98,7 @@ TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint16_t, int, "Word")
 {
     if( TYPEOF($input) != r_type)
     {
-        /*SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);*/
+        /*error("Expected Double Matrix as argument {}", m_rhs_counter);*/
         SWIG_fail;
     }
 
@@ -159,7 +159,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
     if ($input == R_NilValue || TYPEOF($input) != STRSXP)
     {
-        /* SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);*/
+        /* error("Expected String List as argument {}", m_rhs_counter);*/
         SWIG_fail;
     }
 
@@ -181,7 +181,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
         }
         else
         {
-            /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
+            /*io::warn( "string with index {} has zero length.", i+1);*/
         }
     }
 }

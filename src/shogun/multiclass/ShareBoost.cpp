@@ -47,17 +47,17 @@ bool CShareBoost::train_machine(CFeatures* data)
 	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t>*>(m_features);
 
 	if (m_features == NULL)
-		SG_ERROR("No features given for training\n")
+		error("No features given for training");
 	if (m_labels == NULL)
-		SG_ERROR("No labels given for training\n")
+		error("No labels given for training");
 
 	init_strategy();
 
 	if (m_nonzero_feas <= 0)
-		SG_ERROR("Set a valid (> 0) number of non-zero features to seek before training\n")
+		error("Set a valid (> 0) number of non-zero features to seek before training");
 	if (m_nonzero_feas > fea->get_num_features())
-		SG_ERROR("Number of non-zero features (%d) cannot be larger than number of features (%d) in the data\n",
-				m_nonzero_feas, fea->get_num_features())
+		error("Number of non-zero features ({}) cannot be larger than number of features ({}) in the data",
+				m_nonzero_feas, fea->get_num_features());
 
 	m_fea = fea->get_feature_matrix();
 	m_rho = SGMatrix<float64_t>(m_multiclass_strategy->get_num_classes(), m_fea.num_cols);
@@ -87,7 +87,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 		optimize_coefficients();
 		float64_t t_optimize = timer->cur_time_diff();
 
-		SG_SDEBUG(" SB[round %03d]: (%8.4f + %8.4f) sec.\n", t,
+		SG_DEBUG(" SB[round {:03d}]: ({:8.4f} + {:8.4f}) sec.", t,
 				t_compute_pred + t_choose_feature, t_optimize);
 
 		timer->start();
@@ -201,6 +201,6 @@ void CShareBoost::set_features(CFeatures *f)
 {
 	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(f);
 	if (fea == NULL)
-		SG_ERROR("Require DenseFeatures<float64_t>\n")
+		error("Require DenseFeatures<float64_t>");
 	CLinearMulticlassMachine::set_features(fea);
 }

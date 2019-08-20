@@ -37,7 +37,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels");
 		kernel->init(data, data);
 	}
 	ASSERT(kernel->has_features())
@@ -133,7 +133,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-			SG_ERROR("no violation no convergence, should not happen!\n")
+			error("no violation no convergence, should not happen!");
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
@@ -153,11 +153,11 @@ bool CMPDSVM::train_machine(CFeatures* data)
 					       alphas[i] * alphas[j] * kernel->kernel(i, j);
 			}
 
-			SG_DEBUG("obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter)
+			SG_DEBUG("obj:{} pviol:{} dviol:{} maxpidx:{} iter:{}", obj, maxpviol, maxdviol, maxpidx, niter)
 		}
 
 		//for (int32_t i=0; i<n; i++)
-		//	SG_DEBUG("alphas:%f dalphas:%f\n", alphas[i], dalphas[i])
+		//	SG_DEBUG("alphas:{} dalphas:{}", alphas[i], dalphas[i])
 
 		primalcool = (maxpviol < primaleps*stopfac);
 		dualcool = (maxdviol < dualeps*stopfac) || (!free_alpha);
@@ -166,9 +166,9 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		if (primalcool && dualcool)
 		{
 			if (!free_alpha)
-				SG_INFO(" no free alpha, stopping! #iter=%d\n", niter)
+				io::info(" no free alpha, stopping! #iter={}", niter);
 			else
-				SG_INFO(" done! #iter=%d\n", niter)
+				io::info(" done! #iter={}", niter);
 			break;
 		}
 
@@ -230,7 +230,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 
 	pb.complete();
 	if (niter >= maxiter)
-		SG_WARNING("increase maxiter ... \n")
+		io::warn("increase maxiter ... ");
 
 
 	int32_t nsv=0;
@@ -257,8 +257,8 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 	}
 	compute_svm_dual_objective();
-	SG_INFO("obj = %.16f, rho = %.16f\n",get_objective(),get_bias())
-	SG_INFO("Number of SV: %ld\n", get_num_support_vectors())
+	io::info("obj = {:.16f}, rho = {:.16f}",get_objective(),get_bias());
+	io::info("Number of SV: {}", get_num_support_vectors());
 
 	SG_FREE(alphas);
 	SG_FREE(dalphas);

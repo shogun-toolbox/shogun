@@ -56,20 +56,20 @@ CMixtureModel::~CMixtureModel()
 
 bool CMixtureModel::train(CFeatures* data)
 {
-	REQUIRE(m_components->get_num_elements()>0,"mixture componenents not specified\n")
-	REQUIRE(m_components->get_num_elements()==m_weights.vlen,"number of weights (%d) does  not"
-		" match number of components (%d)\n",m_weights.vlen,m_components->get_num_elements())
+	require(m_components->get_num_elements()>0,"mixture componenents not specified");
+	require(m_components->get_num_elements()==m_weights.vlen,"number of weights ({}) does  not"
+		" match number of components ({})",m_weights.vlen,m_components->get_num_elements());
 
 	// set training features
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n")
+				error("Specified features are not of type CDotFeatures");
 		set_features(data);
 	}
 	else if (!features)
 	{
-		SG_ERROR("No features to train on.\n")
+		error("No features to train on.");
 	}
 
 	// set training points in all components of the mixture
@@ -82,7 +82,7 @@ bool CMixtureModel::train(CFeatures* data)
 	}
 
 	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
-	REQUIRE(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL")
+	require(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL");
 	int32_t num_vectors=dotdata->get_num_vectors();
 
 	// set data for EM
@@ -94,7 +94,7 @@ bool CMixtureModel::train(CFeatures* data)
 	// run EM
 	bool is_converged=em->iterate_em(m_max_iters,m_conv_tol);
 	if (!is_converged)
-		SG_WARNING("max iterations reached. No convergence yet!\n")
+		io::warn("max iterations reached. No convergence yet!");
 
 	SG_UNREF(em)
 	return true;
@@ -102,23 +102,23 @@ bool CMixtureModel::train(CFeatures* data)
 
 float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 {
-	REQUIRE(num_param==1,"number of parameters in mixture model is 1"
-	" (i.e. number of components). num_components should be 1. %d supplied\n",num_param)
+	require(num_param==1,"number of parameters in mixture model is 1"
+	" (i.e. number of components). num_components should be 1. {} supplied",num_param);
 
 	return std::log(static_cast<float64_t>(get_num_components()));
 }
 
 float64_t CMixtureModel::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
 float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 {
-	REQUIRE(features,"features not set\n")
-	REQUIRE(features->get_feature_class() == C_DENSE,"Dense features required\n")
-	REQUIRE(features->get_feature_type() == F_DREAL,"Real features required\n")
+	require(features,"features not set");
+	require(features->get_feature_class() == C_DENSE,"Dense features required");
+	require(features->get_feature_type() == F_DREAL,"Real features required");
 
 	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
@@ -166,8 +166,8 @@ index_t CMixtureModel::get_num_components() const
 
 CDistribution* CMixtureModel::get_component(index_t index) const
 {
-	REQUIRE(index<get_num_components(),"index supplied (%d) is greater than total mixture components (%d)\n"
-																				,index,get_num_components())
+	require(index<get_num_components(),"index supplied ({}) is greater than total mixture components ({})"
+																				,index,get_num_components());
 	return m_components->get_element(index)->as<CDistribution>();
 }
 
@@ -194,14 +194,14 @@ float64_t CMixtureModel::get_convergence_tolerance() const
 SGVector<float64_t> CMixtureModel::sample()
 {
 	// TBD
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CMixtureModel::cluster(SGVector<float64_t> point)
 {
 	// TBD
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return point;
 }
 

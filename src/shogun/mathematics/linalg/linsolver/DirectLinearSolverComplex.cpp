@@ -22,19 +22,19 @@ CDirectLinearSolverComplex::CDirectLinearSolverComplex()
 	: CLinearSolver<complex128_t, float64_t>(),
 	  m_type(DS_QR_NOPERM)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 }
 
 CDirectLinearSolverComplex::CDirectLinearSolverComplex(EDirectSolverType type)
 	: CLinearSolver<complex128_t, float64_t>(),
 	  m_type(type)
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
 }
 
 CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
+	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
 }
 
 SGVector<complex128_t> CDirectLinearSolverComplex::solve(
@@ -42,12 +42,12 @@ SGVector<complex128_t> CDirectLinearSolverComplex::solve(
 {
 	SGVector<complex128_t> x(b.vlen);
 
-	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
+	require(A, "Operator is NULL!");
+	require(A->get_dimension()==b.vlen, "Dimension mismatch!");
 
 	CDenseMatrixOperator<complex128_t> *op=
 		dynamic_cast<CDenseMatrixOperator<complex128_t>*>(A);
-	REQUIRE(op, "Operator is not CDenseMatrixOperator<complex128_t, float64_t> type!\n");
+	require(op, "Operator is not CDenseMatrixOperator<complex128_t, float64_t> type!");
 
 	SGMatrix<complex128_t> mat_A=op->get_matrix_operator();
 	Map<MatrixXcd> map_A(mat_A.matrix, mat_A.num_rows, mat_A.num_cols);
@@ -63,7 +63,7 @@ SGVector<complex128_t> CDirectLinearSolverComplex::solve(
 
 			// checking for success
 			if (llt.info()==NumericalIssue)
-				SG_WARNING("Matrix is not Hermitian positive definite!\n");
+				io::warn("Matrix is not Hermitian positive definite!");
 		}
 		break;
 	case DS_QR_NOPERM:

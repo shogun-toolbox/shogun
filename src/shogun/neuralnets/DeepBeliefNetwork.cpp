@@ -153,9 +153,9 @@ void CDeepBeliefNetwork::pre_train(CDenseFeatures< float64_t >* features)
 {
 	for (int32_t k=0; k<m_num_layers-1; k++)
 	{
-		SG_INFO("Pre-training RBM %i\n",k);
+		io::info("Pre-training RBM {}",k);
 		pre_train(k, features);
-		SG_INFO("Finished pre-training RBM %i\n",k);
+		io::info("Finished pre-training RBM {}",k);
 	}
 }
 
@@ -212,10 +212,10 @@ void CDeepBeliefNetwork::pre_train(int32_t index,
 
 void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 {
-	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
-	REQUIRE(features->get_num_features()==m_layer_sizes->element(0),
-		"Number of features (%i) must match the DBN's number of visible units "
-		"(%i)\n", features->get_num_features(), m_layer_sizes->element(0));
+	require(features != NULL, "Invalid (NULL) feature pointer");
+	require(features->get_num_features()==m_layer_sizes->element(0),
+		"Number of features ({}) must match the DBN's number of visible units "
+		"({})", features->get_num_features(), m_layer_sizes->element(0));
 
 	SGMatrix<float64_t> inputs = features->get_feature_matrix();
 
@@ -309,7 +309,7 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 
 				error /= m_batch_size;
 
-				SG_INFO("Epoch %i: reconstruction Error = %f\n",i, error);
+				io::info("Epoch {}: reconstruction Error = {}",i, error);
 			}
 			counter++;
 		}

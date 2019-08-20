@@ -13,8 +13,7 @@ using namespace shogun;
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
 	:CDotFeatures()
 {
-	SG_UNSTABLE("CImplicitWeightedSpecFeatures::"
-				"CImplicitWeightedSpecFeatures()", "\n");
+	unstable(SOURCE_LOCATION);
 
 	strings = NULL;
 	normalization_factors = NULL;
@@ -38,7 +37,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 	degree=str->get_order();
 	set_wd_weights();
 
-	SG_DEBUG("WEIGHTED SPEC alphasz=%d, size=%d, num_str=%d\n", alphabet_size,
+	SG_DEBUG("WEIGHTED SPEC alphasz={}, size={}, num_str={}", alphabet_size,
 			spec_size, num_strings);
 
 	if (normalize)
@@ -92,7 +91,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeig
 	num_strings(orig.num_strings),
 	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	SG_REF(strings);
 }
 
@@ -201,7 +200,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(
 			result*=normalization_factors[vec_idx1];
 	}
 	else
-		SG_ERROR("huh?\n")
+		error("huh?");
 
 	return result;
 }
@@ -252,8 +251,8 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=num_strings)
 	{
-		SG_ERROR("Index out of bounds (number of strings %d, you "
-				"requested %d)\n", num_strings, vector_index);
+		error("Index out of bounds (number of strings {}, you "
+				"requested {})", num_strings, vector_index);
 	}
 
 	wspec_feature_iterator* it=SG_MALLOC(wspec_feature_iterator, 1);

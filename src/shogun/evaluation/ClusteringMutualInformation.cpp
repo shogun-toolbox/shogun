@@ -19,7 +19,7 @@ float64_t CClusteringMutualInformation::evaluate_impl(CLabels* predicted, CLabel
 	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
 
 	if (label_p.vlen != label_g.vlen)
-		SG_ERROR("Number of classes are different\n")
+		error("Number of classes are different");
 	index_t n_class=label_p.vlen;
 	float64_t n_label=predicted->get_num_labels();
 

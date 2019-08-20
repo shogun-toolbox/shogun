@@ -35,8 +35,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		/** default constructor  */
 		CMemoryMappedFile() :CSGObject()
 		{
-			SG_UNSTABLE("CMemoryMappedFile::CMemoryMappedFile()",
-						"\n");
+			unstable(SOURCE_LOCATION);
 
 			fd = 0;
 			length = 0;
@@ -63,7 +62,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		CMemoryMappedFile(const char* fname, char flag='r', int64_t fsize=0)
 		: CSGObject()
 		{
-			REQUIRE(flag=='w' || flag=='r', "Only 'r' and 'w' flags are allowed")
+			require(flag=='w' || flag=='r', "Only 'r' and 'w' flags are allowed");
 
 			last_written_byte=0;
 			rw=flag;
@@ -91,18 +90,18 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				uint8_t byte=0;
 				DWORD bytes_written;
 				if ((SetFilePointerEx(fd, desired_len, NULL, FILE_BEGIN) == 0) || (WriteFile(fd, &byte, 1, &bytes_written, NULL) == 0))
-					SG_ERROR("Error creating file of size %ld bytes\n", fsize)
+					error("Error creating file of size {} bytes", fsize);
 			}
 
 			DWORD length = GetFileSize(fd, NULL);
 			if (length == INVALID_FILE_SIZE)
-				SG_ERROR("Error determining file size\n")
+				error("Error determining file size");
 
 			mapping = CreateFileMapping(fd, 0, mmap_prot, 0, 0, 0);
 
 			address = MapViewOfFile(mapping, mmap_flags, 0, 0, length);
 			if (address == NULL)
-				SG_ERROR("Error mapping file")
+				error("Error mapping file");
 #else
 			int open_flags=O_RDONLY;
 			int mmap_prot=PROT_READ;
@@ -117,23 +116,23 @@ template <class T> class CMemoryMappedFile : public CSGObject
 
 			fd = open(fname, open_flags, S_IRWXU | S_IRWXG | S_IRWXO);
 			if (fd == -1)
-				SG_ERROR("Error opening file\n")
+				error("Error opening file");
 
 			if (rw=='w' && fsize)
 			{
 				uint8_t byte=0;
 				if (lseek(fd, fsize, SEEK_SET) != fsize || write(fd, &byte, 1) != 1)
-					SG_ERROR("Error creating file of size %ld bytes\n", fsize)
+					error("Error creating file of size {} bytes", fsize);
 			}
 
 			struct stat sb;
 			if (fstat(fd, &sb) == -1)
-				SG_ERROR("Error determining file size\n")
+				error("Error determining file size");
 
 			length = sb.st_size;
 			address = mmap(NULL, length, mmap_prot, mmap_flags, fd, 0);
 			if (address == MAP_FAILED)
-				SG_ERROR("Error mapping file")
+				error("Error mapping file");
 #endif
 			set_generic<T>();
 		}
@@ -150,7 +149,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				desired_len.QuadPart = last_written_byte;
 				if ((SetFilePointerEx(fd, desired_len, NULL, FILE_BEGIN) == 0) || (SetEndOfFile(fd) == 0)) {
 					CloseHandle(fd);
-					SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte)
+					error("Error Truncating file to {} bytes", last_written_byte);
 				}
 			}
 			CloseHandle(fd);
@@ -160,7 +159,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 
 			{
 				close(fd);
-				SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte)
+				error("Error Truncating file to {} bytes", last_written_byte);
 			}
 			close(fd);
 #endif
@@ -242,7 +241,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		{
 			char* s = ((char*) address) + offs;
 			if (len+1+offs > length)
-				SG_ERROR("Writing beyond size of file\n")
+				error("Writing beyond size of file");
 
 			for (uint64_t i=0; i<len; i++)
 				s[i] = line[i];

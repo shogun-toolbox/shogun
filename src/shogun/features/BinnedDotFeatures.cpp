@@ -216,15 +216,15 @@ void CBinnedDotFeatures::assert_shape(int32_t vec2_len) const
 {
 	if (m_bins.num_cols*m_bins.num_rows != vec2_len)
 	{
-		SG_ERROR("Bin matrix has shape (%d,%d) = %d entries, not matching vector"
-				" length %d\n", m_bins.num_cols,m_bins.num_rows,
+		error("Bin matrix has shape ({},{}) = {} entries, not matching vector"
+				" length {}", m_bins.num_cols,m_bins.num_rows,
 				m_bins.num_cols*m_bins.num_rows,vec2_len);
 	}
 
 	if (m_features && m_bins.num_cols != m_features->get_num_features())
 	{
-		SG_ERROR("Number of colums (%d) doesn't match number of features "
-				"(%d)\n", m_bins.num_cols, m_features->get_num_features());
+		error("Number of colums ({}) doesn't match number of features "
+				"({})", m_bins.num_cols, m_features->get_num_features());
 	}
 
 }
@@ -239,19 +239,19 @@ int32_t CBinnedDotFeatures::get_nnz_features_for_vector(int32_t num) const
 
 void* CBinnedDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
 bool CBinnedDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
 void CBinnedDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 bool CBinnedDotFeatures::get_fill()

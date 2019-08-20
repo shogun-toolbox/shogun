@@ -47,8 +47,8 @@ MedianHeuristic::MedianHeuristic(KernelManager& km, CMMD* est) : KernelSelection
 {
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
-		REQUIRE(kernel_mgr.kernel_at(i)->get_kernel_type()==K_GAUSSIAN,
-			"The underlying kernel has to be a GaussianKernel (was %s)!\n",
+		require(kernel_mgr.kernel_at(i)->get_kernel_type()==K_GAUSSIAN,
+			"The underlying kernel has to be a GaussianKernel (was {})!",
 			kernel_mgr.kernel_at(i)->get_name());
 	}
 }
@@ -59,7 +59,7 @@ MedianHeuristic::~MedianHeuristic()
 
 void MedianHeuristic::init_measures()
 {
-	SG_SNOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 }
 
 void MedianHeuristic::compute_measures()
@@ -71,8 +71,8 @@ void MedianHeuristic::compute_measures()
 	SG_UNREF(tmp);
 
 	n=distance->get_num_vec_lhs();
-	REQUIRE(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
-		"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",
+	require(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
+		"Distance matrix is supposed to be a square matrix (was of dimension {}X{})!",
 		distance->get_num_vec_lhs(), distance->get_num_vec_rhs());
 	measures=SGVector<float64_t>((n*(n-1))/2);
 	index_t write_idx=0;
@@ -91,7 +91,7 @@ SGVector<float64_t> MedianHeuristic::get_measure_vector()
 
 SGMatrix<float64_t> MedianHeuristic::get_measure_matrix()
 {
-	REQUIRE(distance!=nullptr, "Distance is not initialized!\n");
+	require(distance!=nullptr, "Distance is not initialized!");
 	return distance->get_distance_matrix();
 }
 
@@ -99,7 +99,7 @@ CKernel* MedianHeuristic::select_kernel()
 {
 	compute_measures();
 	auto median_distance=measures[measures.size()/2];
-	SG_SDEBUG("kernel width (shogun): %f\n", median_distance);
+	SG_DEBUG("kernel width (shogun): {}", median_distance);
 
 	const auto num_kernels=kernel_mgr.num_kernels();
 	measures=SGVector<float64_t>(num_kernels);
@@ -110,6 +110,6 @@ CKernel* MedianHeuristic::select_kernel()
 	}
 
 	auto kernel_idx=(int64_t)std::distance(measures.data(), std::min_element(measures.data(), measures.data()+measures.size()));
-	SG_SDEBUG("Selected kernel at %d position!\n", kernel_idx);
+	SG_DEBUG("Selected kernel at {} position!", kernel_idx);
 	return kernel_mgr.kernel_at(kernel_idx);
 }

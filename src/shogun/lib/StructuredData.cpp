@@ -22,9 +22,9 @@ CStructuredData::~CStructuredData()
 
 EStructuredDataType CStructuredData::get_structured_data_type() const
 {
-	SG_ERROR("get_structured_data_type() not defined. \n"
+	error("get_structured_data_type() not defined. "
 		 "Make sure that STRUCTURED_DATA_TYPE(SDT) is defined "
-		 "in every class that inherits from CStructuredData.\n");
+		 "in every class that inherits from CStructuredData.");
 
 	return SDT_UNKNOWN;
 };

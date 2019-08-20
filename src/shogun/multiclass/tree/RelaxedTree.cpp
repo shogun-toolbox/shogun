@@ -41,7 +41,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	if (data != NULL)
 	{
 		CDenseFeatures<float64_t> *feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
-		REQUIRE(feats != NULL, ("Require non-NULL dense features of float64_t\n"))
+		require(feats != NULL, ("Require non-NULL dense features of float64_t"));
 		set_features(feats);
 	}
 
@@ -126,15 +126,15 @@ float64_t CRelaxedTree::apply_one(int32_t idx)
 bool CRelaxedTree::train_machine(CFeatures* data)
 {
 	if (m_machine_for_confusion_matrix == NULL)
-		SG_ERROR("Call set_machine_for_confusion_matrix before training\n")
+		error("Call set_machine_for_confusion_matrix before training");
 	if (m_kernel == NULL)
-		SG_ERROR("assign a valid kernel before training\n")
+		error("assign a valid kernel before training");
 
 	if (data)
 	{
 		CDenseFeatures<float64_t> *feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 		if (feats == NULL)
-			SG_ERROR("Require non-NULL dense features of float64_t\n")
+			error("Require non-NULL dense features of float64_t");
 		set_features(feats);
 	}
 

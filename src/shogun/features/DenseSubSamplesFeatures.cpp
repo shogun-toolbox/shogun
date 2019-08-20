@@ -107,13 +107,13 @@ template<class ST> int32_t CDenseSubSamplesFeatures<ST>::get_num_vectors() const
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<int32_t> idx)
 {
-	REQUIRE(m_fea, "Please set the features first\n");
+	require(m_fea, "Please set the features first");
 	int32_t total_vlen=m_fea->get_num_vectors();
 	for (int32_t i=0; i<idx.vlen; i++)
 	{
 		int32_t index=idx[i];
-		REQUIRE(index>=0 && index<total_vlen,
-			"The index (%d) in the vector idx is not valid since there are %d samples\n",
+		require(index>=0 && index<total_vlen,
+			"The index ({}) in the vector idx is not valid since there are {} samples",
 			index, total_vlen);
 	}
 	m_idx = idx;
@@ -127,8 +127,8 @@ template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
 	float64_t res=0.0;
 	if (df_f)
 	{
-		REQUIRE(df_f->get_feature_type()==get_feature_type(),"Features type do not match\n");
-		REQUIRE(df_f->get_feature_class()==get_feature_class(),"Features class do not match\n");
+		require(df_f->get_feature_type()==get_feature_type(),"Features type do not match");
+		require(df_f->get_feature_class()==get_feature_class(),"Features class do not match");
 		df_f->check_bound(vec_idx2);
 		res=m_fea->dot(m_idx[vec_idx1], df_f->m_fea, df_f->m_idx[vec_idx2]);
 	}
@@ -147,8 +147,8 @@ float64_t CDenseSubSamplesFeatures<ST>::dot(
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::check_bound(int32_t index) const
 {
-	REQUIRE(index<m_idx.vlen && index>=0,
-		"Index (%d) is out of bound (%d)\n", index, m_idx.vlen);
+	require(index<m_idx.vlen && index>=0,
+		"Index ({}) is out of bound ({})", index, m_idx.vlen);
 }
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::add_to_dense_vec(
@@ -167,21 +167,21 @@ template<class ST> int32_t CDenseSubSamplesFeatures<ST>::get_nnz_features_for_ve
 template<class ST> void* CDenseSubSamplesFeatures<ST>::get_feature_iterator(
 	int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 
 template<class ST> bool CDenseSubSamplesFeatures<ST>::get_next_feature(
 	int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::free_feature_iterator(
 	void* iterator)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 }
 
 template class CDenseSubSamplesFeatures<bool>;

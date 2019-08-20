@@ -93,19 +93,19 @@ CFisherLDA::~CFisherLDA()
 
 void CFisherLDA::fit(CFeatures* features)
 {
-	SG_SERROR("Labels for the given features are not specified!\n");
+	error("Labels for the given features are not specified!");
 }
 
 void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 {
-	REQUIRE(features, "Features are not provided!\n")
+	require(features, "Features are not provided!");
 
-	REQUIRE(labels, "Labels for the given features are not specified!\n")
+	require(labels, "Labels for the given features are not specified!");
 
-	REQUIRE(
+	require(
 	    labels->get_label_type() == LT_MULTICLASS,
 	    "The labels should be of "
-	    "the type MulticlassLabels! you provided %s\n",
+	    "the type MulticlassLabels! you provided {}\n",
 	    labels->get_name());
 
 	auto dense_features = features->as<CDenseFeatures<float64_t>>();
@@ -115,15 +115,15 @@ void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 	index_t num_vectors = dense_features->get_num_vectors();
 	index_t num_features = dense_features->get_num_features();
 
-	REQUIRE(
+	require(
 	    labels->get_num_labels() == num_vectors,
-	    "The number of samples provided (%d)"
-	    " must be equal to the number of labels provided(%d)\n",
+	    "The number of samples provided ({})"
+	    " must be equal to the number of labels provided({})\n",
 	    num_vectors, labels->get_num_labels());
 
 	int32_t num_class = multiclass_labels->get_num_classes();
 
-	REQUIRE(num_class > 1, "At least two classes are needed to perform LDA.\n")
+	require(num_class > 1, "At least two classes are needed to perform LDA.");
 
 	// clip number if Dimensions to be a valid number
 	if ((m_num_dim <= 0) || (m_num_dim > (num_class - 1)))
@@ -207,19 +207,19 @@ SGMatrix<float64_t> CFisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
 
-	SG_INFO("Transforming feature matrix\n")
+	io::info("Transforming feature matrix");
 	Map<MatrixXd> transform_matrix(
 	    m_transformation_matrix.matrix, m_transformation_matrix.num_rows,
 	    m_transformation_matrix.num_cols);
 
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
+	io::info("get Feature matrix: {}x{}", num_vectors, num_features);
 
 	Map<MatrixXd> feature_matrix(matrix.matrix, num_features, num_vectors);
 
 	feature_matrix.block(0, 0, m_num_dim, num_vectors) =
 	    transform_matrix.transpose() * feature_matrix;
 
-	SG_INFO("Form matrix of target dimension")
+	io::info("Form matrix of target dimension");
 	for (int32_t col=0; col<num_vectors; col++)
 	{
 		for (int32_t row=0; row<m_num_dim; row++)

@@ -50,8 +50,8 @@ CHypothesisTest::Self::Self(index_t num_distributions) : data_mgr(num_distributi
 
 CHypothesisTest::CHypothesisTest()
 {
-	SG_WARNING("An empty instance of this class should not be used! If you are seeing \
-			this error, please contact Shogun developers!\n");
+	io::warn("An empty instance of this class should not be used! If you are seeing \
+			this error, please contact Shogun developers!");
 }
 
 CHypothesisTest::CHypothesisTest(index_t num_distributions) : CSGObject()

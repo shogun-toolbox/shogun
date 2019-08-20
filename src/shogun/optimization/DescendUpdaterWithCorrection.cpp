@@ -54,9 +54,9 @@ void DescendUpdaterWithCorrection::set_descend_correction(DescendCorrection* cor
 void DescendUpdaterWithCorrection::update_variable(SGVector<float64_t> variable_reference,
 	SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
 {
-	REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
-	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
-		"The length of variable_reference (%d) and the length of gradient (%d) do not match\n",
+	require(variable_reference.vlen>0,"variable_reference must set");
+	require(variable_reference.vlen==raw_negative_descend_direction.vlen,
+		"The length of variable_reference ({}) and the length of gradient ({}) do not match",
 		variable_reference.vlen,raw_negative_descend_direction.vlen);
 
 	if(m_correction)

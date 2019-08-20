@@ -38,7 +38,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 
 		virtual float64_t distance_function(int32_t x, int32_t y)
 		{
-			SG_ERROR("Distance function of Director Distance needs to be overridden.\n")
+			error("Distance function of Director Distance needs to be overridden.");
 			return 0;
 		}
 
@@ -91,7 +91,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		{
 			if (env()->get_num_threads()!=1)
 			{
-				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n")
+				io::warn("Enforcing to use only one thread due to restrictions of directors");
 				env()->set_num_threads(1);
 			}
 			return CDistance::init(lhs, rhs);
