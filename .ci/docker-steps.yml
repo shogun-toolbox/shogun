@@ -77,6 +77,8 @@ steps:
     volumes: |
       $(build.sourcesDirectory):/src
       $(build.binariesDirectory):/build
+    envVars: |
+      R_LIBS_USER='/build'
     workDir: '/build'
     containerCommand: 'ninja install'
     detached: false
@@ -89,6 +91,8 @@ steps:
     volumes: |
       $(build.sourcesDirectory):/src
       $(build.binariesDirectory):/build
+    envVars: |
+      R_LIBS_USER='/build'
     workDir: '/build'
     containerCommand: 'ctest --output-on-failure -j 2'
     detached: false

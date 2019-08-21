@@ -55,13 +55,11 @@ LazyData: true
 EOF
 
 cat >"$2/NAMESPACE" <<EOF
-useDynLib(shogun, .registration = TRUE)
+useDynLib(shogun)
+exportPattern("^[^\\\.]")
 EOF
 
 cat >"$2/R/init.R" <<EOF
-.packageName <- "$2"
-#$2 <- function(...) .External("$2",...,PACKAGE="$2")
-
 # Load the shogun dynamic library at startup.
 #
 .First.lib <- function(lib,pkg)
