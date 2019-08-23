@@ -4,55 +4,58 @@
  * Authors: Sergey Lisitsyn
  */
 
-%{
-
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/memory.h>
-
-extern "C" {
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
-#include <R_ext/Rdynload.h>
-#include <Rembedded.h>
-#include <Rinterface.h>
-#include <R_ext/RS.h>
-#include <R_ext/Error.h>
-}
-
-/* workaround compile bug in R-modular interface */
-#ifndef ScalarReal
-#define ScalarReal      Rf_ScalarReal
-#endif
-
-%}
+%typemap("rtypecheck") int, int &, long, long &
+  %{ (is.integer($arg) || is.numeric($arg)) && length($arg) == 1 && $arg == as.integer($arg) %}
 
 /* One dimensional input arrays */
-%define TYPEMAP_IN_SGVECTOR(r_type, r_cast, sg_type, error_string)
+%define TYPEMAP_IN_SGVECTOR(sg_type)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
     shogun::SGVector<sg_type>
 {
-    $1 = (TYPEOF($input) == r_type && Rf_ncols($input)==1 ) ? 1 : 0;
+    $1 = (Rf_ncols($input) == 1) ? 1 : 0;
 }
 
 %typemap(in) shogun::SGVector<sg_type>
 {
-    SEXP rvec=$input;
-    if (TYPEOF(rvec) != r_type || Rf_ncols(rvec)!=1)
+    SEXP rvec = $input;
+    auto length = Rf_xlength(rvec);
+    shogun::SGVector<sg_type> sg_vec(length);
+    switch(TYPEOF(rvec))
     {
-        /*error("Expected Double Vector as argument {}", m_rhs_counter);*/
-        SWIG_fail;
+      case LGLSXP:
+        for(auto i = 0; i < length; i++)
+            sg_vec[i] = LOGICAL(rvec)[i];
+        break;
+      case INTSXP:
+        for(auto i = 0; i < length; i++)
+            sg_vec[i] = INTEGER(rvec)[i];
+        break;
+      case REALSXP:
+        for(auto i = 0; i < length; i++)
+            sg_vec[i] = REAL(rvec)[i];
+        break;
     }
-
-    $1 = shogun::SGVector<sg_type>((sg_type*) get_copy(r_cast(rvec), sizeof(sg_type)*LENGTH(rvec)), LENGTH(rvec));
+    $1 = sg_vec;
 }
+
 %typemap(freearg) shogun::SGVector<sg_type>
 {
 }
 %enddef
 
-TYPEMAP_IN_SGVECTOR(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
+TYPEMAP_IN_SGVECTOR(bool)
+TYPEMAP_IN_SGVECTOR(char)
+TYPEMAP_IN_SGVECTOR(uint8_t)
+TYPEMAP_IN_SGVECTOR(int16_t)
+TYPEMAP_IN_SGVECTOR(uint16_t)
+TYPEMAP_IN_SGVECTOR(int32_t)
+TYPEMAP_IN_SGVECTOR(uint32_t)
+TYPEMAP_IN_SGVECTOR(int64_t)
+TYPEMAP_IN_SGVECTOR(uint64_t)
+TYPEMAP_IN_SGVECTOR(float32_t)
+TYPEMAP_IN_SGVECTOR(float64_t)
+TYPEMAP_IN_SGVECTOR(floatmax_t)
+
 #undef TYPEMAP_IN_SGVECTOR
 
 /* One dimensional output arrays */
@@ -71,6 +74,7 @@ TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
 }
 
 %typemap("rtype") shogun::SGVector<sg_type>   r_type_string
+%typemap("rtypecheck") shogun::SGVector<sg_type> %{ (is.integer($arg) || is.numeric($arg) || is.logical($arg)) %}
 
 %typemap("scoerceout") shogun::SGVector<sg_type>
 %{ %}
