@@ -10,9 +10,40 @@
             "Element": "$name$$put('$keyword', $expr)",
             "Separator": "\n",
             "InitialSeperatorWhenArgs>0": false
-        }
+        },
+        "BoolVector": "$name <- vector(mode=\"logical\", $arguments)",
+        "CharVector": "$name <- vector(mode=\"integer\", $arguments)",
+        "ByteVector": "$name <- vector(mode=\"integer\", $arguments)",
+        "WordVector": "$name <- vector(mode=\"integer\", $arguments)",
+        "IntVector": "$name <- vector(mode=\"integer\", $arguments)",
+        "LongIntVector": "$name <- vector(mode=\"integer\", $arguments)",
+        "ULongIntVector": "$name <- vector(mode=\"integer\", $arguments)",
+        "ShortRealVector": "$name <- vector(mode=\"numeric\", $arguments)",
+        "RealVector": "$name <- vector(mode=\"numeric\", $arguments)",
+        "LongRealVector": "$name <- vector(mode=\"numeric\", $arguments)",
+        "BoolMatrix": "$name <- matrix(FALSE, $arguments)",
+        "CharMatrix": "$name <- matrix(0L, $arguments)",
+        "ByteMatrix": "$name <- matrix(0L, $arguments)",
+        "WordMatrix": "$name <- matrix(0L, $arguments)",
+        "IntMatrix": "$name <- matrix(0L, $arguments)",
+        "LongIntMatrix": "$name <- matrix(0L, $arguments)",
+        "ULongIntMatrix": "$name <- matrix(0L, $arguments)",
+        "ShortRealMatrix": "$name <- matrix(0L, $arguments)",
+        "RealMatrix": "$name <- matrix(0, $arguments)",
+        "LongRealMatrix": "$name <- matrix(0, $arguments)"
     },
-    "ListInit": {},
+    "ListInit": {
+        "BoolVector": "$name <- as.logical(c($arguments))",
+        "CharVector": "$name <- as.integer(c($arguments))",
+        "ByteVector": "$name <- as.integer(c($arguments))",
+        "WordVector": "$name <- as.integer(c($arguments))",
+        "IntVector": "$name <- as.integer(c($arguments))",
+        "LongIntVector": "$name <- as.integer(c($arguments))",
+        "ULongIntVector": "$name <- as.integer(c($arguments))",
+        "ShortRealVector": "$name <- as.numeric(c($arguments))",
+        "RealVector": "$name <- as.numeric(c($arguments))",
+        "LongRealVector": "$name <- as.numeric(c($arguments))"
+    },
     "Assign": "$identifier <- $expr",
     "Type": {
         "Default": "$typeName"
@@ -24,7 +55,7 @@
             "True": "TRUE",
             "False": "FALSE"
         },
-        "IntLiteral": "$number",
+        "IntLiteral": "${number}L",
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
         "MethodCall": {

@@ -95,7 +95,7 @@
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "shogun.$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"(int)$typeName.$value"
+        "Enum":"$typeName.$value"
     },
     "Element": {
         "Access": {

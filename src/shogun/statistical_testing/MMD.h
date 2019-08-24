@@ -137,7 +137,7 @@ public:
 	 * solving an optimization. If false, only a single kernel is selected among the
 	 * provided ones.
 	 */
-	void set_kernel_selection_strategy(machine_int_t method, bool weighted = false);
+	void set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted = false);
 
 	/**
 	 * Method that sets the specific kernel selection strategy based on the
@@ -149,7 +149,7 @@ public:
 	 * @param num_folds The number of folds (k) to be used in k-fold stratified cross-validation.
 	 * @param alpha The threshold to be used while performing test for the test-folds.
 	 */
-	void set_kernel_selection_strategy(machine_int_t method, index_t num_runs, index_t num_folds, float64_t alpha);
+	void set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
 
 	/**
 	 * Method that adds a kernel instance to be used for kernel selection. Please
@@ -220,7 +220,7 @@ public:
 	 *
 	 * @param stype The type of the estimator for MMD^2
 	 */
-	void set_statistic_type(machine_int_t stype);
+	void set_statistic_type(EStatisticType stype);
 
 	/** @return The type of the estimator for MMD^2 */
 	EStatisticType get_statistic_type() const;
@@ -230,7 +230,7 @@ public:
 	 *
 	 * @nmethod The null-approximation method
 	 */
-	void set_null_approximation_method(machine_int_t nmethod);
+	void set_null_approximation_method(ENullApproximationMethod nmethod);
 
 	/** @return The null-approximation method */
 	ENullApproximationMethod get_null_approximation_method() const;

@@ -122,7 +122,7 @@
         "StaticCall": "C$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"(machine_int_t)$typeName::$value"
+        "Enum":"$typeName::$value"
     },
     "Element": {
         "Access": {

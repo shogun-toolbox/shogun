@@ -278,17 +278,17 @@ namespace shogun
 #endif // SWIGJAVA
 
 #ifdef SWIGR
-	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGVector<typename extract_value_type<T>::value_type>, T>::value>>
-	void put_vector_scalar_dispatcher(const std::string& name, T vec)
+	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGVector<typename extract_value_type<T>::value_type>, T>::value> >
+	void put_vector_scalar_dispatcher(const std::string& name, T vector)
 	{
-		Tag<T> tag_vec(name);
-		if (vec.size() > 1 || $self->has(tag_vec))
+		if (Tag<T> tag_vec(name); vector.size() > 1 || $self->has(tag_vec))
 		{
-			$self->put(tag_vec, vec);
+			$self->put(tag_vec, vector);
 		}
 		else
 		{
-			PUT_SCALAR_DISPATCHER(X, name, vec[0])
+			auto value = vector[0];
+			PUT_SCALAR_DISPATCHER(X, name, value)
 		}
 	}
 #endif // SWIGR
@@ -305,10 +305,6 @@ namespace shogun
 %template(put) CSGObject::put<SGVector<bool>, SGVector<bool>>;
 #endif // SWIGR
 
-#ifndef SWIGJAVA
-%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
-#endif // SWIGJAVA
-
 #if !defined(SWIGJAVA) && !defined(SWIGR)
 %template(put) CSGObject::put<SGVector<int32_t>, SGVector<int32_t>>;
 %template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
@@ -319,6 +315,10 @@ namespace shogun
 %template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<int32_t>, int32_t>;
 %template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<float64_t>, float64_t>;
 #endif
+
+#ifndef SWIGJAVA
+%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+#endif // SWIGJAVA
 
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;

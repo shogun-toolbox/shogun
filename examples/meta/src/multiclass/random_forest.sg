@@ -15,7 +15,8 @@ MajorityVote m_vote()
 #![create_combination_rule]
 
 #![create_instance]
-RandomForest rand_forest(features_train, labels_train, 100)
+RandomForest rand_forest(features_train, labels_train)
+rand_forest.put("num_bags", 100)
 Parallel p = rand_forest.get_global_parallel()
 p.set_num_threads(1)
 rand_forest.put("seed", 1)

@@ -538,7 +538,10 @@ public:
 		          T>::type>
 	void put(const std::string& name, T value)
 	{
-		put(Tag<T>(name), value);
+		if constexpr (std::is_enum<T>::value)
+			put(Tag<machine_int_t>(name), static_cast<machine_int_t>(value));
+		else
+			put(Tag<T>(name), value);
 	}
 
 #ifndef SWIG

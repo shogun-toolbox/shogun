@@ -99,7 +99,7 @@ namespace shogun
 		return new CDenseFeatures<T>(mat);
 	}
 
-	CFeatures* features(CFile* file, machine_int_t primitive_type = PT_FLOAT64)
+	CFeatures* features(CFile* file, EPrimitiveType primitive_type = PT_FLOAT64)
 	{
 		require(file, "No file provided.");
 		CFeatures* result = nullptr;
@@ -129,8 +129,8 @@ namespace shogun
 	}
 
 	CFeatures* string_features(
-	    CFile* file, machine_int_t alphabet_type = DNA,
-	    machine_int_t primitive_type = PT_CHAR)
+	    CFile* file, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
 	{
 		require(file, "No file provided.");
 
@@ -138,7 +138,7 @@ namespace shogun
 		{
 		case PT_CHAR:
 		{
-			return new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
+			return new CStringFeatures<char>(file, alphabet_type);
 			break;
 		}
 		default:
@@ -163,7 +163,7 @@ namespace shogun
 	 */
 	CFeatures* string_features(
 	    CFeatures* features, int32_t start, int32_t p_order, int32_t gap,
-	    bool rev, machine_int_t primitive_type = PT_UINT16)
+	    bool rev, EPrimitiveType primitive_type = PT_UINT16)
 	{
 
 		require<std::invalid_argument>(features, "No features provided.");

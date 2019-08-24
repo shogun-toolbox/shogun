@@ -30,7 +30,7 @@ CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 void CLinearHMM::set_features(CFeatures* f)
 {
 	auto* string_feats = f->as<CStringFeatures<uint16_t>>();
-	REQUIRE(string_feats, "LinearHMM works with string features.");
+	require(string_feats, "LinearHMM works with string features.");
 
 	CDistribution::set_features(f);
 
@@ -248,9 +248,9 @@ SGMatrix<float64_t> CLinearHMM::get_transition_probs()
 
 bool CLinearHMM::set_transition_probs(const SGMatrix<float64_t>& probs)
 {
-	REQUIRE(
+	require(
 		probs.num_rows == num_symbols && probs.num_cols == sequence_length,
-		"Transition matrix should have a dimension of (%d, %d).", num_symbols, sequence_length)
+		"Transition matrix should have a dimension of (%d, %d).", num_symbols, sequence_length);
 
 	if (log_transition_probs.num_rows != num_symbols || log_transition_probs.num_cols != sequence_length)
 		log_transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
@@ -274,9 +274,9 @@ SGMatrix<float64_t> CLinearHMM::get_log_transition_probs()
 
 bool CLinearHMM::set_log_transition_probs(const SGMatrix<float64_t>& probs)
 {
-	REQUIRE(
+	require(
 		probs.num_rows == num_symbols && probs.num_cols == sequence_length,
-		"Transition matrix log should have a dimension of (%d, %d).", num_symbols, sequence_length)
+		"Transition matrix log should have a dimension of (%d, %d).", num_symbols, sequence_length);
 
 	if (log_transition_probs.num_rows != num_symbols || log_transition_probs.num_cols != sequence_length)
 		log_transition_probs = SGMatrix<float64_t>(num_symbols, sequence_length);
