@@ -22,6 +22,7 @@
 %newobject shogun::libsvm_file(std::string fname, char rw);
 %newobject shogun::pipeline;
 %newobject shogun::labels;
+%newobject shogun::distribution;
 
 %{
     #include <shogun/util/factory.h>

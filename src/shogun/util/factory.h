@@ -35,6 +35,7 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/transformer/Transformer.h>
+#include <shogun/distributions/Distribution.h>
 
 namespace shogun
 {
@@ -58,6 +59,7 @@ namespace shogun
 	CInference* gp_inference(const std::string& name);
 	CLossFunction* loss(const std::string& name);
 	ParameterObserver* parameter_observer(const std::string& name);
+	CDistribution* distribution(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -89,6 +91,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CLossFunction, loss)
 	BASE_CLASS_FACTORY(ParameterObserver, parameter_observer)
 	BASE_CLASS_FACTORY(CEvaluationResult, evaluation_result)
+	BASE_CLASS_FACTORY(CDistribution, distribution)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -160,7 +163,7 @@ namespace shogun
 	 */
 	CFeatures* string_features(
 	    CFeatures* features, int32_t start, int32_t p_order, int32_t gap,
-	    bool rev, machine_int_t primitive_type)
+	    bool rev, machine_int_t primitive_type = PT_UINT16)
 	{
 
 		require<std::invalid_argument>(features, "No features provided.");
