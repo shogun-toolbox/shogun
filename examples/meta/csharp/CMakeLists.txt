@@ -9,11 +9,6 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
     GET_META_EXAMPLE_VARS(${META_EXAMPLE} EXAMPLE_NAME EXAMPLE_REL_DIR EXAMPLE_NAME_WITH_DIR)
 
-    # FIXME: enable string features once typemap is fixed
-    if (EXAMPLE_NAME STREQUAL "string_features")
-		continue()
-    endif()
-
 	set(COMPILED_CSHARP_EXAMPLE ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.exe)
 	set(CSHARP_META_EXAMPLE_SOURCE ${CMAKE_BINARY_DIR}/examples/meta/csharp/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.cs)
 

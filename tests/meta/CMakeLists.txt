@@ -56,10 +56,7 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 			AddMetaIntegrationTest(java INTERFACE_JAVA)
 			#AddMetaIntegrationTest(r INTERFACE_R) # currently we have the r meta examples disabled, so no generated results that can be tested
 			AddMetaIntegrationTest(octave INTERFACE_OCTAVE)
-			# TODO: remove once string features typemap is fixed
-			IF (NOT ${NAME} STREQUAL "string_features")
-				AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
-			ENDIF()
+			AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
 			#AddMetaIntegrationTest(ruby INTERFACE_RUBY) # disabled due to potential swig bug, see https://github.com/shogun-toolbox/shogun/issues/4177
 			AddMetaIntegrationTest(scala INTERFACE_SCALA)
 			#AddMetaIntegrationTest(lua INTERFACE_LUA) # currently doesn't have meta examples
