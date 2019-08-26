@@ -281,6 +281,15 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %}
 #endif
 
+#ifdef SWIGCSHARP
+%typemap(cscode) shogun::CSGObject %{
+    // enable "putting" enums without casting
+    public void put(string name, Enum value) {
+        put(name, Convert.ToInt32(value));
+    }
+%}
+#endif // SWIGCSHARP
+
 %exception
 {
     try

@@ -148,6 +148,52 @@ import org.jblas.*;
     }
 %enddef
 
+%define PUT_SCALAR_DISPATCHER(Type, name, value)
+	Tag<Type> tag_t(name);
+	Tag<int32_t> tag_int32(name);
+	Tag<int64_t> tag_int64(name);
+	Tag<float64_t> tag_float64(name);
+
+	if ($self->has(tag_int32))
+	{
+		PUT_ENUM_INT_DISPATCHER(tag_int32, (int32_t) value);
+	}
+	else if ($self->has(tag_int64))
+	{
+		PUT_ENUM_INT_DISPATCHER(tag_int64, (int64_t) value);
+	}
+	else if ($self->has(tag_float64))
+		$self->put(tag_float64, (float64_t)value);
+#ifdef SWIGR
+	else if (Tag<SGVector<Type>> tag_tvec(name); $self->has(tag_tvec))
+	{
+		SGVector<Type> vec(1);
+		vec[0] = value;
+		$self->put(tag_tvec, vec);
+	}
+	else if (Tag<SGVector<int32_t>> tag_int32vec(name); $self->has(tag_int32vec))
+	{
+		SGVector<int32_t> vec(1);
+		vec[0] = value;
+		$self->put(tag_int32vec, vec);
+	}
+	else if (Tag<SGVector<float64_t>> tag_float64vec(name); $self->has(tag_float64vec))
+	{
+		SGVector<float64_t> vec(1);
+		vec[0] = value;
+		$self->put(tag_float64vec, vec);
+	}
+	else if (Tag<SGVector<bool>> tag_boolvec(name); $self->has(tag_boolvec))
+	{
+		SGVector<bool> vec(1);
+		vec[0] = value;
+		$self->put(tag_boolvec, vec);
+	}
+#endif
+	else
+		$self->put(tag_t, value);
+%enddef
+
 namespace shogun
 {
 %extend CSGObject
@@ -155,23 +201,7 @@ namespace shogun
 	template <typename T, typename U = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 	void put_scalar_dispatcher(const std::string& name, T value)
 	{
-		Tag<T> tag_t(name);
-		Tag<int32_t> tag_int32(name);
-		Tag<int64_t> tag_int64(name);
-		Tag<float64_t> tag_float64(name);
-
-		if ($self->has(tag_int32))
-		{
-			PUT_ENUM_INT_DISPATCHER(tag_int32, (int32_t) value);
-		}
-		else if ($self->has(tag_int64))
-		{
-			PUT_ENUM_INT_DISPATCHER(tag_int64, (int64_t) value);
-		}
-		else if ($self->has(tag_float64))
-			$self->put(tag_float64, (float64_t)value);
-		else
-			$self->put(tag_t, value);
+		PUT_SCALAR_DISPATCHER(T, name, value)
 	}
 
 	/* get method for strings to disambiguate it from get_option */
@@ -246,6 +276,22 @@ namespace shogun
 		return mat;
 	}
 #endif // SWIGJAVA
+
+#ifdef SWIGR
+	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGVector<typename extract_value_type<T>::value_type>, T>::value> >
+	void put_vector_scalar_dispatcher(const std::string& name, T vector)
+	{
+		if (Tag<T> tag_vec(name); vector.size() > 1 || $self->has(tag_vec))
+		{
+			$self->put(tag_vec, vector);
+		}
+		else
+		{
+			auto value = vector[0];
+			PUT_SCALAR_DISPATCHER(X, name, value)
+		}
+	}
+#endif // SWIGR
 }
 
 %template(put) CSGObject::put_scalar_dispatcher<int32_t, int32_t>;
@@ -255,15 +301,25 @@ namespace shogun
 %template(put) CSGObject::put_scalar_dispatcher<float64_t, float64_t>;
 %template(put) CSGObject::put_scalar_dispatcher<bool, bool>;
 
-
+#ifndef SWIGR
 %template(put) CSGObject::put<SGVector<bool>, SGVector<bool>>;
-#ifndef SWIGJAVA
+#endif // SWIGR
+
+#if !defined(SWIGJAVA) && !defined(SWIGR)
 %template(put) CSGObject::put<SGVector<int32_t>, SGVector<int32_t>>;
 %template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
-%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
-#else // SWIGJAVA
+#elif defined(SWIGJAVA)
 %template(put) CSGObject::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+#elif defined(SWIGR)
+%template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<bool>, bool>;
+%template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<int32_t>, int32_t>;
+%template(put) CSGObject::put_vector_scalar_dispatcher<SGVector<float64_t>, float64_t>;
+#endif
+
+#ifndef SWIGJAVA
+%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #endif // SWIGJAVA
+
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;
 %template(get_long) CSGObject::get<int64_t, void>;
@@ -311,4 +367,5 @@ PUT_ADD(CTokenizer)
 
 
 } // namespace shogun
+
 

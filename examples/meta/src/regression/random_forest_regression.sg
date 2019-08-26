@@ -15,7 +15,8 @@ MeanRule mean_rule()
 #![create_combination_rule]
 
 #![create_instance]
-RandomForest rand_forest(features_train, labels_train, 5)
+RandomForest rand_forest(features_train, labels_train)
+rand_forest.put("num_bags", 5)
 rand_forest.put("seed", 1)
 rand_forest.set_combination_rule(mean_rule)
 #![create_instance]

@@ -4,190 +4,229 @@
  * Authors: Sergey Lisitsyn
  */
 
-%{
+%typemap("rtypecheck") int, int &, long, long &
+%{ (is.integer($arg) || is.numeric($arg)) && length($arg) == 1 && $arg == as.integer($arg) %}
 
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/memory.h>
-
-extern "C" {
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
-#include <R_ext/Rdynload.h>
-#include <Rembedded.h>
-#include <Rinterface.h>
-#include <R_ext/RS.h>
-#include <R_ext/Error.h>
-}
-
-/* workaround compile bug in R-modular interface */
-#ifndef ScalarReal
-#define ScalarReal      Rf_ScalarReal
-#endif
-
-%}
+%typemap(scoercein) float, float*, float &, double, double *, double &
+%{ $input = as.numeric($input); %}
 
 /* One dimensional input arrays */
-%define TYPEMAP_IN_SGVECTOR(r_type, r_cast, sg_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-    shogun::SGVector<sg_type>
-{
-    $1 = (TYPEOF($input) == r_type && Rf_ncols($input)==1 ) ? 1 : 0;
-}
+%define TYPEMAP_SGVECTOR(sg_type, r_type, r_cast, r_type_string, condition)
 
 %typemap(in) shogun::SGVector<sg_type>
 {
-    SEXP rvec=$input;
-    if (TYPEOF(rvec) != r_type || Rf_ncols(rvec)!=1)
-    {
-        /*error("Expected Double Vector as argument {}", m_rhs_counter);*/
-        SWIG_fail;
-    }
+    SEXP rvec = $input;
+    int length = Rf_length(rvec);
+    $1 = shogun::SGVector<sg_type>(length);
 
-    $1 = shogun::SGVector<sg_type>((sg_type*) get_copy(r_cast(rvec), sizeof(sg_type)*LENGTH(rvec)), LENGTH(rvec));
+    SEXP coerced;
+    PROTECT(coerced = Rf_coerceVector(rvec, r_type));
+    std::copy_n(r_cast(coerced), length, $1.vector);
+    UNPROTECT(1);
 }
+
 %typemap(freearg) shogun::SGVector<sg_type>
 {
 }
-%enddef
 
-TYPEMAP_IN_SGVECTOR(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
-#undef TYPEMAP_IN_SGVECTOR
-
-/* One dimensional output arrays */
-%define TYPEMAP_OUT_SGVECTOR(r_type, r_cast, r_type_string, sg_type, if_type, error_string)
 %typemap(out) shogun::SGVector<sg_type>
 {
     sg_type* vec = $1.vector;
     int32_t len = $1.vlen;
 
-    Rf_protect( $result = Rf_allocVector(r_type, len) );
-
-    for (int32_t i=0; i<len; i++)
-        r_cast($result)[i]=(if_type) vec[i];
-
-    Rf_unprotect(1);
+    PROTECT($result = Rf_allocVector(r_type, len));
+    std::copy_n(vec, len, r_cast($result));
+    UNPROTECT(1);
 }
 
 %typemap("rtype") shogun::SGVector<sg_type>   r_type_string
+%typemap("rtypecheck") shogun::SGVector<sg_type> %{ (condition) && is.vector($arg) %}
 
 %typemap("scoerceout") shogun::SGVector<sg_type>
 %{ %}
 
 %enddef
 
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint8_t, int, "Byte")
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", int32_t, int, "Integer")
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", int16_t, int, "Short")
-TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, "numeric", float32_t, float, "Single Precision")
-TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, "numeric", float64_t, double, "Double Precision")
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint16_t, int, "Word")
+TYPEMAP_SGVECTOR(bool, LGLSXP, LOGICAL_POINTER, "logical", is.logical($arg))
+TYPEMAP_SGVECTOR(char, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(uint8_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(int16_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(uint16_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(int32_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(uint32_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(int64_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(uint64_t, INTSXP, INTEGER_POINTER, "integer", is.integer($arg))
+TYPEMAP_SGVECTOR(float32_t, REALSXP, NUMERIC_POINTER, "numeric", is.numeric($arg))
+TYPEMAP_SGVECTOR(float64_t, REALSXP, NUMERIC_POINTER, "numeric", is.numeric($arg))
+TYPEMAP_SGVECTOR(floatmax_t, REALSXP, NUMERIC_POINTER, "numeric", is.numeric($arg))
 
-#undef TYPEMAP_OUT_SGVECTOR
+#undef TYPEMAP_SGVECTOR
 
-%define TYPEMAP_IN_SGMATRIX(r_type, r_cast, sg_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        shogun::SGMatrix<sg_type>
-{
-
-    $1 = (TYPEOF($input) == r_type) ? 1 : 0;
-}
+%define TYPEMAP_SGMATRIX(sg_type, r_type, r_cast, condition)
 
 %typemap(in) shogun::SGMatrix<sg_type>
 {
-    if( TYPEOF($input) != r_type)
-    {
-        /*error("Expected Double Matrix as argument {}", m_rhs_counter);*/
-        SWIG_fail;
-    }
+    SEXP rvec = $input;
+    $1 = shogun::SGMatrix<sg_type>(Rf_nrows(rvec), Rf_ncols(rvec));
 
-    $1 = shogun::SGMatrix<sg_type>((sg_type*) get_copy(r_cast($input), ((size_t) Rf_nrows($input))*Rf_ncols($input)*sizeof(sg_type)), Rf_nrows($input), Rf_ncols($input));
+    SEXP coerced;
+    PROTECT(coerced = Rf_coerceVector(rvec, r_type));
+    std::copy_n(r_cast(coerced), $1.size(), $1.matrix);
+    UNPROTECT(1);
 }
+
 %typemap(freearg) shogun::SGMatrix<sg_type>
 {
 }
-%enddef
 
-TYPEMAP_IN_SGMATRIX(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN_SGMATRIX(REALSXP, REAL, float64_t, "Double Precision")
-#undef TYPEMAP_IN_SGMATRIX
-
-%define TYPEMAP_OUT_SGMATRIX(r_type, r_cast, sg_type, if_type, error_string)
 %typemap(out) shogun::SGMatrix<sg_type>
 {
     sg_type* matrix = $1.matrix;
-    int32_t num_feat = $1.num_rows;
-    int32_t num_vec = $1.num_cols;
+    int32_t rows = $1.num_rows;
+    int32_t cols = $1.num_cols;
 
-    Rf_protect( $result = Rf_allocMatrix(r_type, num_feat, num_vec) );
-
-    for (int32_t i=0; i<num_vec; i++)
-    {
-        for (int32_t j=0; j<num_feat; j++)
-            r_cast($result)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];
-    }
-
-    Rf_unprotect(1);
+    PROTECT($result = Rf_allocMatrix(r_type, rows, cols));
+    std::copy_n($1.matrix, $1.size(), r_cast($result));
+    UNPROTECT(1);
 }
 
 %typemap("rtype") shogun::SGMatrix<sg_type>   "matrix"
+%typemap("rtypecheck") shogun::SGMatrix<sg_type> %{ (condition) && is.matrix($arg) %}
 
 %typemap("scoerceout") shogun::SGMatrix<sg_type>
 %{ %}
 
 %enddef
 
-TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint8_t, int, "Byte")
-TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, int32_t, int, "Integer")
-TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, int16_t, int, "Short")
-TYPEMAP_OUT_SGMATRIX(REALSXP, REAL, float32_t, float, "Single Precision")
-TYPEMAP_OUT_SGMATRIX(REALSXP, REAL, float64_t, double, "Double Precision")
-TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
-#undef TYPEMAP_OUT_SGMATRIX
+TYPEMAP_SGMATRIX(bool, LGLSXP, LOGICAL_POINTER, is.logical($arg))
+TYPEMAP_SGMATRIX(char, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(uint8_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(int16_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(uint16_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(int32_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(uint32_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(int64_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(uint64_t, INTSXP, INTEGER_POINTER, is.integer($arg))
+TYPEMAP_SGMATRIX(float32_t, REALSXP, NUMERIC_POINTER, is.integer($arg) || is.numeric($arg))
+TYPEMAP_SGMATRIX(float64_t, REALSXP, NUMERIC_POINTER, is.integer($arg) || is.numeric($arg))
+TYPEMAP_SGMATRIX(floatmax_t, REALSXP, NUMERIC_POINTER, is.integer($arg) || is.numeric($arg))
+
+#undef TYPEMAP_SGMATRIX
 
 /* TODO INND ARRAYS */
 
 /* input typemap for CStringFeatures<char> etc */
-%define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
-%typemap(in) std::vector<shogun::SGVector<sg_type>>
+%define TYPEMAP_STRINGFEATURES(sg_type, r_type, r_cast)
+
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<sg_type>>), "header")
 {
-    std::vector<shogun::SGVector<sg_type>>& strs = $1;
-
-    int32_t max_len=0;
-    int32_t num_strings=0;
-
-    if ($input == R_NilValue || TYPEOF($input) != STRSXP)
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<sg_type>>)
+        (const SEXP& obj, std::vector<shogun::SGVector<sg_type>>& strings)
     {
-        /* error("Expected String List as argument {}", m_rhs_counter);*/
-        SWIG_fail;
-    }
-
-    num_strings=Rf_length($input);
-    ASSERT(num_strings>=1);
-    strs.reserve(num_strings);
-
-    for (int32_t i=0; i<num_strings; i++)
-    {
-        SEXPREC* s= STRING_ELT($input,i);
-        sg_type* c= (sg_type*) if_type(s);
-        int32_t len=LENGTH(s);
-        strs.emplace_back(len+1);
-        strs.back().vlen = len;
-        if (len>0)
+        unsigned int sexpsz = Rf_length(obj);
+        strings.reserve(sexpsz);
+        for (int listpos = 0; listpos < sexpsz; listpos++)
         {
-			sg_memcpy(strs.back().vector, c, len*sizeof(sg_type));
-            strs.back().vector[len]='\0'; /* zero terminate */
+            int vecsize = Rf_length(VECTOR_ELT(obj, listpos));
+            strings.emplace_back(vecsize);
+            std::copy_n(r_cast(VECTOR_ELT(obj, listpos)), vecsize, strings.back().vector);
         }
-        else
-        {
-            /*io::warn( "string with index {} has zero length.", i+1);*/
-        }
+        return SWIG_OK;
     }
 }
+
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<sg_type>>), "header")
+{
+    SEXP SWIG_From_dec(std::vector<shogun::SGVector<sg_type>>)
+        (const std::vector<shogun::SGVector<sg_type>>& vec_arr)
+    {
+        SEXP result;
+        PROTECT(result = Rf_allocVector(VECSXP, vec_arr.size()));
+        for (int pos = 0; pos < vec_arr.size(); pos++)
+        {
+            SET_VECTOR_ELT(result, pos, Rf_allocVector(r_type, vec_arr[pos].size()));
+            std::copy_n(vec_arr[pos].vector, vec_arr[pos].size(), r_cast(VECTOR_ELT(result, pos)));
+        }
+        UNPROTECT(1);
+        return result;
+    }
+}
+
+%typemap("rtypecheck") std::vector<shogun::SGVector<sg_type>>, const std::vector<shogun::SGVector<sg_type>>&
+%{ is.list($arg) && all(sapply($arg , is.integer) || sapply($arg, is.numeric)) %}
+
+%typemap("scoerceout") std::vector<shogun::SGVector<sg_type>>, const std::vector<shogun::SGVector<sg_type>>&
+%{ %}
+
+%val_in_typemap(std::vector<shogun::SGVector<sg_type>>);
+%val_out_typemap(std::vector<shogun::SGVector<sg_type>>);
+
 %enddef
 
-TYPEMAP_STRINGFEATURES_IN(STRSXP, char, CHAR, "Char")
+TYPEMAP_STRINGFEATURES(uint8_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(int16_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(uint16_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(int32_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(uint32_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(int64_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(uint64_t, INTSXP, INTEGER_POINTER)
+TYPEMAP_STRINGFEATURES(float32_t, REALSXP, NUMERIC_POINTER)
+TYPEMAP_STRINGFEATURES(float64_t, REALSXP, NUMERIC_POINTER)
+TYPEMAP_STRINGFEATURES(floatmax_t, REALSXP, NUMERIC_POINTER)
+
 #undef TYPEMAP_STRINGFEATURES_IN
 
-/* TODO STRING OUT TYPEMAPS */
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<char>>), "header")
+{
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<char>>)
+        (const SEXP& obj, std::vector<shogun::SGVector<char>>& vec_arr)
+    {
+        const size_t MAX_LEN = 1 << 16;
+        int sexpsz = Rf_length(obj);
+        vec_arr.reserve(sexpsz);
+        SEXP coerced;
+        PROTECT(coerced = Rf_coerceVector(obj, STRSXP));
+        for (int pos = 0; pos < sexpsz; pos++)
+        {
+            const char* cstr = CHAR(STRING_ELT(coerced, pos));
+            size_t len = strnlen(cstr, MAX_LEN);
+            if (len == MAX_LEN)
+            {
+                UNPROTECT(1);
+                return SWIG_ERROR;
+            }
+            vec_arr.emplace_back(len);
+            std::copy_n(cstr, len, vec_arr.back().vector);
+        }
+        UNPROTECT(1);
+        return SWIG_OK;
+    }
+}
+
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<char>>), "header")
+{
+    SEXP SWIG_From_dec(std::vector<shogun::SGVector<char>>)
+        (const std::vector<shogun::SGVector<char>>& vec_arr)
+    {
+        SEXP result;
+        PROTECT(result = Rf_allocVector(STRSXP, vec_arr.size()));
+        for (size_t pos = 0; pos < vec_arr.size(); pos++)
+        {
+            std::stringstream ss;
+            ss.write(vec_arr[pos].vector, vec_arr[pos].vlen);
+            std::string str = ss.str();
+            CHARACTER_POINTER(result)[pos] = Rf_mkChar(str.c_str());
+        }
+        UNPROTECT(1);
+        return result;
+    }
+}
+
+%typemap("scoerceout") std::vector<shogun::SGVector<char>>, const std::vector<shogun::SGVector<char>>&
+%{ %}
+
+%typemap("rtypecheck") std::vector<shogun::SGVector<char>>, const std::vector<shogun::SGVector<char>>&
+%{ is.character($arg) %}
+
+%val_in_typemap(std::vector<shogun::SGVector<char>>);
+%val_out_typemap(std::vector<shogun::SGVector<char>>);
