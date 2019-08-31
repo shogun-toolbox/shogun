@@ -104,13 +104,12 @@ SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 
 template <class T>
 SGMatrix<T>::SGMatrix(SGMatrix&& orig) noexcept
-	: SGReferencedData(std::move(orig)), matrix(orig.matrix),
-	  num_rows(orig.num_rows), num_cols(orig.num_cols),
+	: SGReferencedData(std::move(orig)),
+	  matrix{std::exchange(orig.matrix ,nullptr)},
+	  num_rows{std::exchange(orig.num_rows, 0)},
+	  num_cols{std::exchange(orig.num_cols, 0)},
 	  gpu_ptr(std::move(orig.gpu_ptr))
 {
-	orig.matrix = nullptr;
-	orig.num_rows = 0;
-	orig.num_cols = 0;
 	m_on_gpu.store(orig.m_on_gpu.load(
 			std::memory_order_acquire), std::memory_order_release);
 }
