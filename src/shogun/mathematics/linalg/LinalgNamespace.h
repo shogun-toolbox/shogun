@@ -54,6 +54,7 @@ namespace shogun
 		LinalgBackendBase* infer_backend(const Container<T>& a)
 		{
 			auto sg_linalg = env()->linalg();
+#ifdef HAVE_VIENNACL
 			if (a.on_gpu())
 			{
 				if (sg_linalg->get_gpu_backend())
@@ -69,6 +70,9 @@ namespace shogun
 			}
 			else
 				return sg_linalg->get_cpu_backend();
+#else
+			return sg_linalg->get_cpu_backend();
+#endif
 		}
 
 		/** Infer the appropriate backend for linalg operations
@@ -84,7 +88,8 @@ namespace shogun
 		infer_backend(const Container<T>& a, const Container<U>& b)
 		{
 			auto sg_linalg = env()->linalg();
-			if (a.on_gpu() && b.on_gpu())
+#ifdef HAVE_VIENNACL
+            if (a.on_gpu() && b.on_gpu())
 			{
 				if (sg_linalg->get_gpu_backend())
 					return sg_linalg->get_gpu_backend();
@@ -107,6 +112,9 @@ namespace shogun
 			}
 			else
 				return sg_linalg->get_cpu_backend();
+#else
+            return sg_linalg->get_cpu_backend();
+#endif
 		}
 
 		/** Infer the appropriate backend for linalg operations
@@ -123,6 +131,7 @@ namespace shogun
 		    const Container<T>& a, const Container<T>& b, const Container<T>& c)
 		{
 			auto sg_linalg = env()->linalg();
+#ifdef HAVE_VIENNACL
 			if (a.on_gpu() && b.on_gpu() && c.on_gpu())
 			{
 				if (sg_linalg->get_gpu_backend())
@@ -147,6 +156,9 @@ namespace shogun
 			}
 			else
 				return sg_linalg->get_cpu_backend();
+#else
+			return sg_linalg->get_cpu_backend();
+#endif
 		}
 
 		/**

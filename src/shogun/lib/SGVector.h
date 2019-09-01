@@ -90,7 +90,11 @@ template<class T> class SGVector : public SGReferencedData
 #endif
 		bool on_gpu() const
 		{
+#ifdef HAVE_VIENNACL
 			return gpu_ptr != NULL;
+#else
+			return false;
+#endif
 		}
 
 #ifndef SWIG // SWIG should skip this part
@@ -107,7 +111,9 @@ template<class T> class SGVector : public SGReferencedData
 		{
 			vector = SG_ALIGNED_MALLOC(T, vlen, alignment::container_alignment);
 			std::copy(beginIt, endIt, vector);
-			m_on_gpu.store(false, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+            m_on_gpu.store(false, std::memory_order_release);
+#endif
 		}
 
 		/** Construct SGVector from initializer list */
@@ -588,8 +594,10 @@ template<class T> class SGVector : public SGReferencedData
 		virtual void free_data();
 
 	private:
+#ifdef HAVE_VIENNACL
 		/** Atomic variable of vector on_gpu status */
 		std::atomic<bool> m_on_gpu;
+#endif
 
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
@@ -599,8 +607,10 @@ template<class T> class SGVector : public SGReferencedData
 #endif
 		void assert_on_cpu() const
 		{
-			if (on_gpu())
+#ifdef HAVE_VIENNACL
+            if (on_gpu())
 				error("Direct memory access not possible when data is in GPU memory.");
+#endif
 		}
 
 	public:
