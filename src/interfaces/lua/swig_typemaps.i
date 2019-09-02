@@ -21,12 +21,8 @@ int luaL_typerror (lua_State *L, int narg, const char *tname) {
 %define TYPEMAP_SGVECTOR(SGTYPE)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
-    if(!lua_istable(L, $input)) {
-        luaL_typerror(L, $input, "vector");
-        $1 = 0;
-    }
-    else {
-        $1 = 1;
+    $1 = lua_istable(L, $input);
+    if ($1) {
         int numitems = 0;
         numitems = lua_rawlen(L, ($input));
         if(numitems == 0) {
@@ -90,11 +86,8 @@ TYPEMAP_SGVECTOR(float64_t)
 #undef TYPEMAP_SGVECTOR
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<char> {
-    if(!lua_istable(L, $input)) {
-        luaL_typerror(L, $input, "vector");
-        $1 = 0;
-    }
-    else {
+    $1 = lua_istable(L, $input);
+    if ($1) {
         $1 = 1;
         int numitems = 0;
         numitems = lua_rawlen(L, ($input));
@@ -158,11 +151,8 @@ TYPEMAP_SGVECTOR(float64_t)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<SGTYPE>
 {
-    if(!lua_istable(L, $input)) {
-        luaL_typerror(L, $input, "matrix");
-        $1 = 0;
-    }
-    else {
+    $1 = lua_istable(L, $input);
+    if ($1) {
         $1 = 1;
         int rows = lua_rawlen(L, ($input));
         if(rows == 0) {
@@ -263,12 +253,8 @@ TYPEMAP_SGMATRIX(float64_t)
 %define TYPEMAP_STRINGFEATURES(SGTYPE, TYPECODE)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<SGTYPE>> {
-    if(!lua_istable(L, $input)) {
-        luaL_typerror(L, $input, "table");
-        $1 = 0;
-    }
-    else {
-        $1 = 1;
+    $1 = lua_istable(L, $input);
+    if ($1) {
         int numitems = 0;
         numitems = lua_rawlen(L, ($input));
         if(numitems == 0) {

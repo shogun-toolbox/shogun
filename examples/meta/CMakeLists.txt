@@ -130,13 +130,6 @@ ENDIF()
 
 ########### test all the enabled interfaces & install their files to examples
 
-# FIXME: these are the interfaces which has various problems
-# hence need to disable their testing
-# temporarily removed since lua modular currently
-# does not support overloaded c++ methods
-# see https://github.com/shogun-toolbox/shogun/issues/3018
-LIST(APPEND DISABLED_INTERFACES INTERFACE_LUA)
-
 # temporarily disabled. While the interface fully works, the new API does not
 # there is a potential bug in swig that needs fixing first
 # see https://github.com/shogun-toolbox/shogun/issues/4177
