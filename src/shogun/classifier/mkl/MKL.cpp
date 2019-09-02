@@ -286,7 +286,8 @@ void CMKL::register_params()
 
 	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps", ParameterProperties::HYPER);
 	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon", ParameterProperties::HYPER);
-	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.");
+	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.",
+			ParameterProperties::SETTING);
 	SG_ADD(&w_gap, "w_gap", "gap between interactions", ParameterProperties::MODEL);
 	SG_ADD(&rho, "rho", "objective after mkl iterations", ParameterProperties::MODEL);
 	SG_ADD(&lp_initialized, "lp_initialized", "if lp is Initialized", ParameterProperties::SETTING);
