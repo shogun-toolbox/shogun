@@ -313,13 +313,17 @@ void CKMeansBase::init()
 	    &k, "k", "k, the number of clusters",
 	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
 	    SG_CONSTRAINT(positive<>()));
-	SG_ADD(&dimensions, "dimensions", "Dimensions of data");
-	SG_ADD(&fixed_centers, "fixed_centers", "Use fixed centers");
-	SG_ADD(&R, "radiuses", "Cluster radiuses");
 	SG_ADD(
-	    &use_kmeanspp, "kmeanspp", "Whether use kmeans++",
-	    ParameterProperties::HYPER);
-	SG_ADD(&mus, "mus", "Cluster centers");
+	    &dimensions, "dimensions", "Dimensions of data",
+	    ParameterProperties::READONLY);
+	SG_ADD(
+	    &fixed_centers, "fixed_centers", "Whether to use fixed centers",
+	    ParameterProperties::HYPER | ParameterProperties::SETTING);
+	SG_ADD(&R, "radiuses", "Cluster radiuses", ParameterProperties::MODEL);
+	SG_ADD(
+	    &use_kmeanspp, "kmeanspp", "Whether to use kmeans++",
+	    ParameterProperties::HYPER | ParameterProperties::SETTING);
+	SG_ADD(&mus, "mus", "Cluster centers", ParameterProperties::MODEL);
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }

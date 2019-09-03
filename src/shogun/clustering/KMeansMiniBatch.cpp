@@ -8,8 +8,8 @@
 #include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 
@@ -121,13 +121,14 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 	return ret;
 }
 
-void CKMeansMiniBatch::init_mb_params()
-{
-	batch_size=100;
+	void CKMeansMiniBatch::init_mb_params()
+	{
+		batch_size = 100;
 
-	SG_ADD(
-		&batch_size, "batch_size", "batch size for mini-batch KMeans");
-}
+		SG_ADD(
+		    &batch_size, "batch_size", "batch size for mini-batch KMeans",
+		    ParameterProperties::HYPER | ParameterProperties::SETTING);
+	}
 
 bool CKMeansMiniBatch::train_machine(CFeatures* data)
 {
