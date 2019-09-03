@@ -842,5 +842,7 @@ void CGMM::register_params()
 	this->watch_param(
 	    "components", &m_components,
 	    AnyParameterProperties("Mixture components"));
-	SG_ADD(&m_coefficients, "coefficients", "Mixture coefficients.");
+	SG_ADD(
+	    &m_coefficients, "coefficients", "Mixture coefficients.",
+	    ParameterProperties::MODEL);
 }
