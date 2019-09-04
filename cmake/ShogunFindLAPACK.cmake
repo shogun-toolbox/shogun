@@ -97,7 +97,7 @@ IF (LAPACK_FOUND)
         SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC ${Atlas_INCLUDE_DIRS})
         IF (NOT FOUND_CBLAS_DGEMV)
           # this usually happens on RHEL/CentOS; usually having Atlas is good
-          SET(LAPACK_LIBRARIES ${Atlas_LIBRARIES})
+          LIST(APPEND LAPACK_LIBRARIES ${Atlas_LIBRARIES})
         ENDIF()
       ELSEIF(NOT FOUND_CBLAS_DGEMV)
           UNSET(LAPACK_FOUND CACHE)
