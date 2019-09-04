@@ -45,6 +45,8 @@ bool MulticlassSVM::create_multiclass_svm(int32_t num_classes)
 	if (num_classes>0)
 	{
 		m_machines.clear();
+		for (auto i: Range(0, m_multiclass_strategy->get_num_machines()))
+			m_machines.push_back(nullptr);
 		return true;
 	}
 	return false;
@@ -54,7 +56,7 @@ bool MulticlassSVM::set_svm(int32_t num, std::shared_ptr<SVM> svm)
 {
 	if (!m_machines.empty() && m_machines.size()>num && num>=0 && svm)
 	{
-		m_machines.insert(m_machines.begin()+num, svm);
+		m_machines[num] = svm;
 		return true;
 	}
 	return false;
