@@ -20,6 +20,7 @@ set(Atlas_LIB_SEARCH_PATHS
   /usr/lib/atlas-base
   /usr/lib64/atlas
   /usr/lib64/atlas-base
+  /usr/lib/x86_64-linux-gnu/atlas
   $ENV{Atlas_ROOT_DIR}
   $ENV{Atlas_ROOT_DIR}/lib
 )
