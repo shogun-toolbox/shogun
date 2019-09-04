@@ -37,13 +37,13 @@ jobs:
     maxParallel: 2
     matrix:
       clang:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
-        cmakeOptions: '-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
       gcc:
-        CC: "gcc-7"
-        CXX: "g++-7"
-        cmakeOptions: '-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        CC: "gcc"
+        CXX: "g++"
+        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-debian'
@@ -70,38 +70,38 @@ jobs:
     maxParallel: 7
     matrix:
       python:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
+        CC: "clang"
+        CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON'
         interfaceName: 'python'
       java:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
+        CC: "clang"
+        CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_JAVA=ON'
         interfaceName: 'java'
       csharp:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
+        CC: "clang"
+        CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_CSHARP=ON'
         interfaceName: 'csharp'
       r:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
+        CC: "clang"
+        CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
         interfaceName: 'r'
       lua:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
+        CC: "clang"
+        CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_LUA=ON'
         interfaceName: 'lua'
       octave:
-        CC: "gcc-7"
-        CXX: "g++-7"
+        CC: "gcc"
+        CXX: "g++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_OCTAVE=ON'
         interfaceName: 'octave'
       ruby:
-        CC: "clang-6.0"
-        CXX: "clang++-6.0"
+        CC: "clang"
+        CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_RUBY=ON'
         interfaceName: 'ruby'
 
@@ -112,7 +112,7 @@ jobs:
     targetPrefix: '$(build.binariesDirectory)/opt'
     libshogunArtifactName: 'libshogun-$(CC)'
     libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar'
-    commonSWIGCMakeFlags: '-DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+    commonSWIGCMakeFlags: '-G "Ninja" -DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
     ccacheDir: '$(build.binariesDirectory)/ccache'
     ccacheArtifactName: 'ccache-$(interfaceName)'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
@@ -157,7 +157,7 @@ jobs:
 
 - job: windows_libshogun
   displayName: Windows
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
 
   pool:
     vmImage: 'vs2017-win2016'

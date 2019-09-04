@@ -52,7 +52,7 @@ steps:
       envVars: |
         CCACHE_DIR=/build/ccache
       workDir: '/build'
-      containerCommand: 'make -s shogun'
+      containerCommand: 'ninja -j3 shogun'
       detached: false
 
 - task: docker@0
@@ -66,7 +66,7 @@ steps:
     envVars: |
       CCACHE_DIR=/build/ccache
     workDir: '/build'
-    containerCommand: 'make -j3 -s all'
+    containerCommand: 'ninja -j3 all'
     detached: false
 
 - task: docker@0
@@ -77,8 +77,10 @@ steps:
     volumes: |
       $(build.sourcesDirectory):/src
       $(build.binariesDirectory):/build
+    envVars: |
+      R_LIBS_USER='/build'
     workDir: '/build'
-    containerCommand: 'make install'
+    containerCommand: 'ninja install'
     detached: false
 
 - task: docker@0
@@ -89,6 +91,8 @@ steps:
     volumes: |
       $(build.sourcesDirectory):/src
       $(build.binariesDirectory):/build
+    envVars: |
+      R_LIBS_USER='/build'
     workDir: '/build'
     containerCommand: 'ctest --output-on-failure -j 2'
     detached: false
