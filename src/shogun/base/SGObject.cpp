@@ -14,9 +14,9 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/class_list.h>
-#include <shogun/io/visitors/ToStringVisitor.h>
-#include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/serialization/Deserializer.h>
+#include <shogun/io/serialization/Serializer.h>
+#include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
@@ -514,25 +514,26 @@ void SGObject::create_parameter(
 	self->create(_tag, parameter);
 }
 
-void SGObject::update_parameter(const BaseTag& _tag, const Any& value)
+void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_checks)
 {
 	auto& param = self->at(_tag);
 	auto& pprop = param.get_properties();
-	if (pprop.has_property(ParameterProperties::READONLY))
-		SG_ERROR(
-		    "%s::%s is marked as read-only and cannot be modified!\n",
-		    get_name(), _tag.name().c_str());
 
-	if (pprop.has_property(ParameterProperties::CONSTRAIN))
-	{
-		auto msg = self->map[_tag].get_constrain_function()(value);
-		if (!msg.empty())
-		{
-			SG_ERROR(
-					"%s::%s cannot be updated because it must be: %s!\n",
-					get_name(), _tag.name().c_str(), msg.c_str())
-		}
-	}
+    if (pprop.has_property(ParameterProperties::READONLY))
+        REQUIRE(!do_checks,
+            "%s::%s is marked as read-only and cannot be modified!\n",
+            get_name(), _tag.name().c_str());
+
+    if (pprop.has_property(ParameterProperties::CONSTRAIN))
+    {
+        auto msg = self->map[_tag].get_constrain_function()(value);
+        if (!msg.empty())
+        {
+            REQUIRE(!do_checks,
+                "%s::%s cannot be updated because it must be: %s!\n",
+                get_name(), _tag.name().c_str(), msg.c_str())
+        }
+    }
 	self->update(_tag, value);
 	for (auto& method : param.get_callbacks())
 		method();

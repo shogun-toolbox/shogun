@@ -421,18 +421,9 @@ namespace shogun
 			    value, "Cannot add to %s::%s, no object provided.\n",
 			    get_name(), name.c_str());
 			Tag<std::vector<std::shared_ptr<T>>> tag_vector(name);
-
-			auto push_back_lambda = [&value, this](auto& array) {
-				array.push_back(value);
-			};
-
-			if (sgo_details::dispatch_array_type<T>(
-			        shared_from_this(), name, std::move(push_back_lambda)))
-				return;
-			SG_ERROR(
-			    "Cannot add object %s to array parameter %s::%s of type %s.\n",
-			    value->get_name(), get_name(), name.c_str(),
-			    demangled_type<T>().c_str());
+			auto dispatched = get(tag_vector);
+			dispatched.push_back(value);
+			update_parameter(BaseTag(name), make_any(dispatched), false);
 		}
 
 #ifndef SWIG
@@ -1107,7 +1098,8 @@ namespace shogun
 		 * @param _tag name information of parameter
 		 * @param value new value of parameter
 		 */
-		void update_parameter(const BaseTag& _tag, const Any& value);
+		void update_parameter(
+		    const BaseTag& _tag, const Any& value, bool do_checks = true);
 
 		/** Getter for a class parameter, identified by a BaseTag.
 		 * Throws an exception if the class does not have such a parameter.
