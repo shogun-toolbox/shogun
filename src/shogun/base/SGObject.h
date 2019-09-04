@@ -53,12 +53,13 @@ class ObservedValueTemplated;
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-namespace sgo_details
-{
-template <typename T1, typename T2>
-bool dispatch_array_type(const SGObject* obj, std::string_view name,
-		T2&& lambda);
-}
+	namespace sgo_details
+	{
+		template <typename T1, typename T2>
+		bool dispatch_array_type(
+		    const std::shared_ptr<const SGObject>& obj, const std::string& name,
+		    T2&& lambda);
+	}  // namespace sgo_details
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // SWIG
 
@@ -1294,18 +1295,20 @@ std::shared_ptr<const T> make_clone(std::shared_ptr<const T> orig, ParameterProp
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace sgo_details
 {
-template <typename T1, typename T2>
-bool dispatch_array_type(const SGObject* obj, std::string_view name, T2&& lambda)
-{
-	Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
-	if (obj->has(tag_vector))
-	{
-		auto dispatched = obj->get(tag_vector);
-		lambda(dispatched);
-		return true;
-	}
-
-	return false;
+		template <typename T1, typename T2>
+		bool dispatch_array_type(
+		    const std::shared_ptr<const SGObject>& obj, const std::string& name,
+		    T2&& lambda)
+		{
+			Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
+			if (obj->has(tag_vector))
+			{
+				auto dispatched = obj->get(tag_vector);
+				lambda(dispatched);
+				return true;
+			}
+			return false;
+		}
 }
 
 struct GetByName

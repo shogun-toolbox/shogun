@@ -155,7 +155,7 @@ namespace shogun
 		std::shared_ptr<Labels> m_original_labels;
 
 		/** Vector with all the folds results */
-		std::vector<std::shared_ptr<CrossValidationFoldStorage>> m_folds_results;
+		std::vector<std::shared_ptr<EvaluationResult>> m_folds_results;
 	};
 }
 
