@@ -58,10 +58,6 @@ namespace shogun
 	{
 		template <typename T1, typename T2>
 		bool dispatch_array_type(
-		    const std::shared_ptr<SGObject>& obj, const std::string& name,
-		    T2&& lambda);
-		template <typename T1, typename T2>
-		bool dispatch_array_type(
 		    const std::shared_ptr<const SGObject>& obj, const std::string& name,
 		    T2&& lambda);
 	}  // namespace sgo_details
@@ -1282,26 +1278,6 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	namespace sgo_details
 	{
-		template <typename T1, typename T2>
-		bool dispatch_array_type(
-		    const std::shared_ptr<SGObject>& obj, const std::string& name,
-		    T2&& lambda)
-		{
-			Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
-			if (obj->has(tag_vector))
-			{
-				auto dispatched = obj->get(tag_vector);
-				lambda(dispatched);
-				// have to put the local copy back
-				// when we get a std::vector we get a copy, not a reference to
-				// the original so we need to replace the original with the
-				// copy, otherwise nothing happens here
-				obj->put(name, dispatched);
-				return true;
-			}
-			return false;
-		}
-
 		template <typename T1, typename T2>
 		bool dispatch_array_type(
 		    const std::shared_ptr<const SGObject>& obj, const std::string& name,
