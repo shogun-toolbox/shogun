@@ -43,7 +43,7 @@ config_tests = ["HAVE_HDF5", "HAVE_LAPACK",
 # TODO: remove once plugins are working
 class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix", 
         "SGStringList", "SGMatrixList", "SGCachedVector", "SGNDArray",
-        "ObservedValue", "ObservedValueTemplated", "ParameterObserverCV",
+        "ObservedValue", "ObservedValueTemplated",
         "ParameterObserverHistogram", "ParameterObserverScalar", "ParameterObserverTensorBoard",
         "TBOutputFormat", "Iterator", "Wrapper", "PIterator",
         "BitPackedFlatHashTableError", "TypedAnyPolicy", "NonOwningAnyPolicy",
