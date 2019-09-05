@@ -41,23 +41,24 @@
 #include <cassert>
 #include <limits>
 #include <map>
-#include <unordered_map>
 #include <stdexcept>
 #include <string.h>
 #include <string>
-#include <typeinfo>
 #include <type_traits>
+#include <typeinfo>
+#include <unordered_map>
 #include <vector>
 
 #include <shogun/util/traits.h>
 
 #include <shogun/util/traits.h>
 
-namespace shogun {
+namespace shogun
+{
 
 	namespace any_detail
 	{
-		std::string demangled_type_helper(const char *name);
+		std::string demangled_type_helper(const char* name);
 	}
 
 	/** Converts compiler-dependent name of class to
@@ -72,8 +73,9 @@ namespace shogun {
 		return any_detail::demangled_type_helper(name);
 	}
 
-    template <typename T = void>
-	std::string demangled_type(const char* name) {
+	template <typename T = void>
+	std::string demangled_type(const char* name)
+	{
 		return any_detail::demangled_type_helper(name);
 	}
 
@@ -141,6 +143,7 @@ namespace shogun {
 		{
 			return m_ptr;
 		}
+
 	private:
 		T** m_ptr;
 		S* m_length;
@@ -216,8 +219,8 @@ namespace shogun {
 		virtual void enter_vector(index_t* size) = 0;
 		virtual void enter_std_vector(size_t* size) = 0;
 		virtual void enter_map(size_t* size) = 0;
-		virtual void enter_matrix_row(index_t *rows, index_t *cols) =0;
-		virtual void exit_matrix_row(index_t *rows, index_t *cols)=0;
+		virtual void enter_matrix_row(index_t* rows, index_t* cols) = 0;
+		virtual void exit_matrix_row(index_t* rows, index_t* cols) = 0;
 		virtual void exit_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void exit_vector(index_t* size) = 0;
 		virtual void exit_std_vector(size_t* size) = 0;
@@ -227,26 +230,26 @@ namespace shogun {
 		void on_matrix_row(index_t* rows, index_t* cols, SGMatrix<T>* _v)
 		{
 			enter_matrix_row(rows, cols);
-			for(index_t i=0; i<*rows; i++)
+			for (index_t i = 0; i < *rows; i++)
 			{
 				on(std::addressof((*_v)(i, *cols)));
 			}
 			exit_matrix_row(rows, cols);
 		}
 
-		template<typename T>
+		template <typename T>
 		void on(SGVector<T>* _v)
 		{
 			auto size = _v->vlen;
 			enter_vector(std::addressof(size));
 			if (size != _v->vlen)
 				_v->resize_vector(size);
-			for (auto&& _value: *_v)
+			for (auto&& _value : *_v)
 				on(std::addressof(_value));
 			exit_vector(std::addressof(size));
 		}
 
-		template<typename T>
+		template <typename T>
 		void on(SGString<T>* _v)
 		{
 			auto size = _v->slen;
@@ -263,10 +266,10 @@ namespace shogun {
 			exit_vector(std::addressof(size));
 		}
 
-		template<typename T>
+		template <typename T>
 		void on(SGSparseVector<T>* _v)
 		{
-			auto size = _v->num_feat_entries*2;
+			auto size = _v->num_feat_entries * 2;
 			enter_vector(std::addressof(size));
 			assert(size % 2 == 0);
 			size /= 2;
@@ -280,18 +283,17 @@ namespace shogun {
 			exit_vector(std::addressof(size));
 		}
 
-		template<typename T>
+		template <typename T>
 		void on(SGSparseMatrix<T>* _m)
 		{
-			//FIXME
+			// FIXME
 			//_m->num_vectors;
 			//_m->num_features;
 			//_m->sparse_matrix;
 		}
 
-
-		template<class T, class S>
-		void on(ArrayReference<T,S>* _v)
+		template <class T, class S>
+		void on(ArrayReference<T, S>* _v)
 		{
 			auto size = *(_v->size());
 			enter_vector(std::addressof(size));
@@ -309,14 +311,14 @@ namespace shogun {
 			exit_vector(std::addressof(size));
 		}
 
-		template<class T, class S>
-		void on(Array2DReference<T,S>* _v)
+		template <class T, class S>
+		void on(Array2DReference<T, S>* _v)
 		{
 			auto shape = _v->size();
 			S rows = *shape.first;
 			S cols = *shape.second;
 			enter_matrix(shape.first, shape.second);
-			int64_t length = ((int64_t)*shape.first)*(*shape.second);
+			int64_t length = ((int64_t)*shape.first) * (*shape.second);
 			if ((rows != *shape.first) || (cols != *shape.second))
 			{
 				if (*_v->ptr() != nullptr)
@@ -330,7 +332,7 @@ namespace shogun {
 			exit_matrix(shape.first, shape.second);
 		}
 
-		template<typename T>
+		template <typename T>
 		void on(SGMatrix<T>* _matrix)
 		{
 			auto rows = _matrix->num_rows;
@@ -338,25 +340,27 @@ namespace shogun {
 			enter_matrix(std::addressof(rows), std::addressof(cols));
 			if ((rows != _matrix->num_rows) || (cols != _matrix->num_cols))
 				*_matrix = SGMatrix<T>(rows, cols);
-			for (auto index=0; index < cols; index++) {
-				on_matrix_row(std::addressof(rows), std::addressof(index), _matrix);
+			for (auto index = 0; index < cols; index++)
+			{
+				on_matrix_row(
+				    std::addressof(rows), std::addressof(index), _matrix);
 			}
 			exit_matrix(std::addressof(rows), std::addressof(cols));
 		}
 
-		template<class T>
+		template <class T>
 		void on(std::vector<T>* _v)
 		{
 			auto size = _v->size();
 			enter_std_vector(std::addressof(size));
 			if (size != _v->size())
 				_v->resize(size);
-			for (auto&& _value: *_v)
+			for (auto&& _value : *_v)
 				on(std::addressof(_value));
 			exit_std_vector(std::addressof(size));
 		}
 
-		template<class T1, class T2>
+		template <class T1, class T2>
 		void on(std::map<T1, T2>* _v)
 		{
 			auto size = _v->size();
@@ -376,7 +380,7 @@ namespace shogun {
 			else
 			{
 				// writing
-				for (auto _value: *_v)
+				for (auto _value : *_v)
 				{
 					on(std::addressof(_value.first));
 					on(std::addressof(_value.second));
@@ -385,7 +389,9 @@ namespace shogun {
 			exit_map(std::addressof(size));
 		}
 
-		template<class T, std::enable_if_t<std::is_base_of_v<SGObject, T>, T>* = nullptr>
+		template <
+		    class T,
+		    std::enable_if_t<std::is_base_of_v<SGObject, T>, T>* = nullptr>
 		void on(std::shared_ptr<T>* v)
 		{
 			on((std::shared_ptr<SGObject>*)v);
@@ -414,50 +420,59 @@ namespace shogun {
 		template <>
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
-		template<typename T, typename _ = void>
-		struct has_special_compare : std::false_type {};
+		template <typename T, typename _ = void>
+		struct has_special_compare : std::false_type
+		{
+		};
 
-		template<typename T>
+		template <typename T>
 		struct has_special_compare<
-			T,
-			traits::when_exists<
-				decltype(compare_impl_eq(std::declval<T>(), std::declval<T>()))
-			>
-		> : public std::true_type {};
+		    T, traits::when_exists<decltype(
+		           compare_impl_eq(std::declval<T>(), std::declval<T>()))>>
+		    : public std::true_type
+		{
+		};
 
-		template<typename T, typename _ = void>
-		struct has_hash : std::false_type {};
+		template <typename T, typename _ = void>
+		struct has_hash : std::false_type
+		{
+		};
 
-		template<typename T>
+		template <typename T>
 		struct has_hash<
-			T,
-			traits::when_exists<
-				decltype(std::declval<T>().hash())
-			>
-		> : public std::true_type {};
+		    T, traits::when_exists<decltype(std::declval<T>().hash())>>
+		    : public std::true_type
+		{
+		};
 
-		template<typename T, typename _ = void>
-		struct has_reset : std::false_type {};
+		template <typename T, typename _ = void>
+		struct has_reset : std::false_type
+		{
+		};
 
-		template<typename T>
+		template <typename T>
 		struct has_reset<
-			T,
-			traits::when_exists<
-				decltype(std::declval<T>().reset(std::declval<T>()))
-			>
-		> : public std::true_type {};
+		    T, traits::when_exists<decltype(std::declval<T>().reset(
+		           std::declval<T>()))>> : public std::true_type
+		{
+		};
 
-		template<typename T> 
-		struct is_shared_ptr : std::false_type {};
+		template <typename T>
+		struct is_shared_ptr : std::false_type
+		{
+		};
 
-		template<typename T>
-		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+		template <typename T>
+		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
+		{
+		};
 
 		template <class T, class U>
 		constexpr T cast(const U& value)
 		{
 			if constexpr (is_shared_ptr<U>::value)
-				return std::dynamic_pointer_cast<typename T::element_type>(value);
+				return std::dynamic_pointer_cast<typename T::element_type>(
+				    value);
 			else
 				return dynamic_cast<T>(value);
 		}
@@ -500,7 +515,8 @@ namespace shogun {
 				{
 					return false;
 				}
-				for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend(); ++l, ++r)
+				for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend();
+				     ++l, ++r)
 				{
 					if (!compare(*l, *r))
 					{
@@ -511,7 +527,8 @@ namespace shogun {
 			}
 			else if constexpr (traits::is_pair<T>::value)
 			{
-				return compare(lhs.first, rhs.first) && compare(lhs.second, rhs.second);
+				return compare(lhs.first, rhs.first) &&
+				       compare(lhs.second, rhs.second);
 			}
 			else if constexpr (traits::is_comparable<T>::value)
 			{
@@ -535,7 +552,9 @@ namespace shogun {
 			else
 			{
 				// we assert something that is false to see the type T
-				static_assert(std::is_same<T, Empty>::value, "Comparison is not supported");
+				static_assert(
+				    std::is_same<T, Empty>::value,
+				    "Comparison is not supported");
 			}
 		}
 
@@ -553,7 +572,8 @@ namespace shogun {
 			else if constexpr (traits::is_container<T>::value)
 			{
 				size_t result = 0;
-				for (const auto& it: value) {
+				for (const auto& it : value)
+				{
 					result ^= hash(it);
 				}
 				return result;
@@ -580,7 +600,8 @@ namespace shogun {
 			}
 			else if constexpr (traits::is_pair<T>::value)
 			{
-				return std::make_pair(clone_value(value.first), clone_value(value.second));
+				return std::make_pair(
+				    clone_value(value.first), clone_value(value.second));
 			}
 			else if constexpr (std::is_copy_constructible<T>::value)
 			{
@@ -589,7 +610,8 @@ namespace shogun {
 			else
 			{
 				// we assert something that is false to see the type T
-				static_assert(std::is_same<T, Empty>::value, "Clone is not supported");
+				static_assert(
+				    std::is_same<T, Empty>::value, "Clone is not supported");
 			}
 		}
 
@@ -605,9 +627,9 @@ namespace shogun {
 			{
 				T cloned;
 				std::transform(
-					value.cbegin(), value.cend(),
-					std::inserter(cloned, cloned.end()),
-					[](auto o) { return clone_value(o); });
+				    value.cbegin(), value.cend(),
+				    std::inserter(cloned, cloned.end()),
+				    [](auto o) { return clone_value(o); });
 				mutable_value_of<decltype(cloned)>(storage) = cloned;
 			}
 			else
@@ -655,7 +677,10 @@ namespace shogun {
 			{
 				return 0;
 			}
-			SG_FREE(ptr);
+			if constexpr (is_shared_ptr<T>::value)
+				delete[] ptr;
+			else
+				SG_FREE(ptr);
 			return 0;
 		}
 
@@ -672,7 +697,6 @@ namespace shogun {
 			{
 				free_object(ptr[i]);
 			}
-
 			SG_FREE(ptr);
 			return 0;
 		}
@@ -680,15 +704,16 @@ namespace shogun {
 		template <class T>
 		inline void copy_array(T* begin, T* end, T* dst)
 		{
-			std::transform(begin, end, dst, [](auto value) { return clone_value(value); });
+			std::transform(
+			    begin, end, dst, [](auto value) { return clone_value(value); });
 		}
 
-	}
+	} // namespace any_detail
 
+	using any_detail::compare;
+	using any_detail::mutable_value_of;
 	using any_detail::typed_pointer;
 	using any_detail::value_of;
-	using any_detail::mutable_value_of;
-	using any_detail::compare;
 
 	template <class T, class S>
 	bool ArrayReference<T, S>::equals(const ArrayReference<T, S>& other) const
@@ -926,7 +951,8 @@ namespace shogun {
 			visitor->on(static_cast<T*>(storage));
 		}
 
-		virtual size_t hash(void *storage) const override {
+		virtual size_t hash(void* storage) const override
+		{
 			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}
 	};
@@ -995,7 +1021,8 @@ namespace shogun {
 			visitor->on(static_cast<T*>(storage));
 		}
 
-		virtual size_t hash(void* storage) const override {
+		virtual size_t hash(void* storage) const override
+		{
 			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}
 	};
@@ -1031,7 +1058,8 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool PointerValueAnyPolicy<T>::matches_policy(const BaseAnyPolicy* other) const
+	bool
+	PointerValueAnyPolicy<T>::matches_policy(const BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -1053,7 +1081,6 @@ namespace shogun {
 	class Any
 	{
 	public:
-
 		/** Empty value constructor */
 		Any() : Any(owning_policy<Empty>(), nullptr)
 		{
@@ -1245,6 +1272,7 @@ namespace shogun {
 			}
 			policy->visit(storage, visitor);
 		}
+
 	private:
 		void set_or_inherit(const Any& other)
 		{
@@ -1339,6 +1367,6 @@ namespace shogun {
 	{
 		return any.as<T>();
 	}
-}
+} // namespace shogun
 
 #endif //_ANY_H_
