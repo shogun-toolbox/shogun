@@ -198,7 +198,6 @@ TEST(SGObjectEquals, different_type)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-/* FIXME
 TYPED_TEST(SGObjectClone, basic_checks)
 {
 	auto obj = std::make_shared<CloneEqualsMock<TypeParam>>();
@@ -209,12 +208,11 @@ TYPED_TEST(SGObjectClone, basic_checks)
 	ASSERT_NE(clone, nullptr);
 	EXPECT_EQ(1, clone.use_count());
 
-	auto clone_casted = clone->as<CloneEqualsMock<TypeParam>>();
+	auto clone_casted = clone->template as<CloneEqualsMock<TypeParam>>();
 	ASSERT_NE(clone_casted, nullptr);
 
 	EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
 }
-*/
 
 TYPED_TEST(SGObjectClone, equals_empty)
 {
@@ -243,11 +241,10 @@ TYPED_TEST(SGObjectClone, equals_non_empty)
 	EXPECT_TRUE(clone->equals(obj));
 }
 
-/* FIXME
 TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 {
 	auto obj = std::make_shared<CloneEqualsMock<TypeParam>>();
-	auto clone_casted = obj->clone()->as<CloneEqualsMock< TypeParam > >();
+	auto clone_casted = obj->clone()->template as<CloneEqualsMock< TypeParam > >();
 	ASSERT_NE(clone_casted, nullptr);
 
 	EXPECT_NE(clone_casted->m_object, obj->m_object);
@@ -258,7 +255,6 @@ TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 	for (auto i : range(obj->m_raw_vector_object_len))
 		EXPECT_NE(clone_casted->m_raw_vector_object[i], obj->m_raw_vector_object[i]);
 }
-*/
 
 TYPED_TEST(SGObjectClone, equals_other_has_null_param)
 {
