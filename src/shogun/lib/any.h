@@ -25,7 +25,6 @@
 #include <shogun/base/base_types.h>
 #include <shogun/util/converters.h>
 #include <shogun/util/traits.h>
-
 namespace shogun
 {
 
@@ -215,7 +214,7 @@ namespace shogun
 			enter_vector(std::addressof(size));
 			if (size != _v->vlen)
 				_v->resize_vector(size);
-			for (auto& _value : *_v)
+			for (auto&& _value : *_v)
 				on(std::addressof(_value));
 			exit_vector(std::addressof(size));
 		}
@@ -309,7 +308,7 @@ namespace shogun
 			enter_std_vector(std::addressof(size));
 			if (size != _v->size())
 				_v->resize(size);
-			for (auto&& _value: *_v)
+			for (auto&& _value : *_v)
 				on(std::addressof(_value));
 			exit_std_vector(std::addressof(size));
 		}
@@ -343,7 +342,9 @@ namespace shogun
 			exit_map(std::addressof(size));
 		}
 
-		template<class T, std::enable_if_t<std::is_base_of_v<SGObject, T>, T>* = nullptr>
+		template <
+		    class T,
+		    std::enable_if_t<std::is_base_of_v<SGObject, T>, T>* = nullptr>
 		void on(std::shared_ptr<T>* v)
 		{
 			on((std::shared_ptr<SGObject>*)v);
@@ -420,17 +421,22 @@ namespace shogun
 		};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-		template<typename T> 
-		struct is_shared_ptr : std::false_type {};
+		template <typename T>
+		struct is_shared_ptr : std::false_type
+		{
+		};
 
-		template<typename T>
-		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+		template <typename T>
+		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
+		{
+		};
 
 		template <class T, class U>
 		constexpr T cast(const U& value)
 		{
 			if constexpr (is_shared_ptr<U>::value)
-				return std::dynamic_pointer_cast<typename T::element_type>(value);
+				return std::dynamic_pointer_cast<typename T::element_type>(
+				    value);
 			else
 				return dynamic_cast<T>(value);
 		}
@@ -639,7 +645,10 @@ namespace shogun
 			{
 				return 0;
 			}
-			SG_FREE(ptr);
+			if constexpr (is_shared_ptr<T>::value)
+				delete[] ptr;
+			else
+				SG_FREE(ptr);
 			return 0;
 		}
 
@@ -656,7 +665,6 @@ namespace shogun
 			{
 				free_object(ptr[i]);
 			}
-
 			SG_FREE(ptr);
 			return 0;
 		}
