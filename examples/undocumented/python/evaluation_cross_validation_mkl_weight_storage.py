@@ -19,11 +19,9 @@ parameter_list = [[traindat,label_traindat]]
 def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
     from shogun import machine_evaluation
     from shogun import parameter_observer
-    from shogun import ContingencyTableEvaluation, ACCURACY
     from shogun import splitting_strategy
     from shogun import BinaryLabels
     from shogun import CombinedFeatures
-    from shogun import MKLClassification
     import shogun as sg
     import numpy as np
 
@@ -53,7 +51,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
         "StratifiedCrossValidationSplitting", labels=labels, num_subsets=5)
 
     # evaluation method
-    evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
+    evaluation_criterium=sg.evaluation("ContingencyTableEvaluation", type="ACCURACY")
 
     # cross-validation instance
     cross_validation = machine_evaluation(

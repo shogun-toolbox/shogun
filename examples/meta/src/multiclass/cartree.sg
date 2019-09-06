@@ -28,7 +28,7 @@ MulticlassLabels labels_predict = classifier.apply_multiclass(features_test)
 #![train_and_apply]
 
 #![evaluate_accuracy]
-MulticlassAccuracy eval()
+Evaluation eval = evaluation("MulticlassAccuracy")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

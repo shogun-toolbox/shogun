@@ -10,17 +10,16 @@ predicted = random.randn(len(ground_truth))
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_rocevaluation (ground_truth, predicted):
+	import shogun as sg
 	from shogun import BinaryLabels
-	from shogun import ROCEvaluation
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
 
-	evaluator = ROCEvaluation()
+	evaluator = sg.evaluation("ROCEvaluation")
 	evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	return evaluator.get_ROC(), evaluator.get_auROC()
-
+	return evaluator.get("ROC"), evaluator.get("auROC")
 
 if __name__=='__main__':
 	print('ROCEvaluation')

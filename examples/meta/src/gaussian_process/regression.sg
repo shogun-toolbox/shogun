@@ -41,7 +41,7 @@ best_theta.apply_to_machine(gp_regression)
 #![optimize_marginal_likelihood]
 
 #![evaluate_error_and_marginal_likelihood]
-MeanSquaredError eval()
+Evaluation eval = evaluation("MeanSquaredError")
 real mse = eval.evaluate(labels_predict, labels_test)
 real marg_ll = inference_method.get_negative_log_marginal_likelihood()
 #![evaluate_error_and_marginal_likelihood]

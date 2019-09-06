@@ -42,8 +42,9 @@
 
 #else
 
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
+#define VA_NARGS(...)                                                          \
+	VA_NARGS_IMPL(__VA_ARGS__, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
 #endif
 
@@ -69,7 +70,7 @@
 		}                                                                      \
 		else                                                                   \
 		{                                                                      \
-			error(                                                          \
+			error(                                                             \
 			    "Register parameter {}::{} with SG_ADD before adding options", \
 			    get_name(), param_name);                                       \
 		}                                                                      \
@@ -131,43 +132,53 @@
 #define SG_ADD_OPTION3(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION2(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION2(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION4(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION3(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION3(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION5(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION4(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION4(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION6(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION5(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION5(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION7(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION6(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION6(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION8(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION7(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION7(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION9(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION8(param_name, __VA_ARGS__)                                 \
+		SG_ADD_OPTION8(param_name, __VA_ARGS__)                                \
+	}
+#define SG_ADD_OPTION10(param_name, enum_value, ...)                           \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION9(param_name, __VA_ARGS__)                                \
+	}
+#define SG_ADD_OPTION11(param_name, enum_value, ...)                           \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION10(param_name, __VA_ARGS__)                               \
 	}
 #endif
 

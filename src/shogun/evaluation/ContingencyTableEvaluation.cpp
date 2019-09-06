@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
  *          Roman Votyakov, Viktor Gal
  */
 
@@ -10,7 +10,25 @@
 
 using namespace shogun;
 
-float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+CContingencyTableEvaluation::CContingencyTableEvaluation()
+    : CContingencyTableEvaluation(ACCURACY)
+{
+}
+
+CContingencyTableEvaluation::CContingencyTableEvaluation(
+    EContingencyTableMeasureType type)
+    : CBinaryClassEvaluation(), m_type(type), m_computed(false)
+{
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_type, "type", "type of measure to evaluate",
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(
+	        ACCURACY, ERROR_RATE, BAL, WRACC, F1, CROSS_CORRELATION, RECALL,
+	        PRECISION, SPECIFICITY, CUSTOM));
+}
+
+float64_t
+CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
 	require(
 	    predicted->get_num_labels() == ground_truth->get_num_labels(),
@@ -26,33 +44,34 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	compute_scores(predicted_binary.get(), ground_truth_binary.get());
 	switch (m_type)
 	{
-		case ACCURACY:
-			return get_accuracy();
-		case ERROR_RATE:
-			return get_error_rate();
-		case BAL:
-			return get_BAL();
-		case WRACC:
-			return get_WRACC();
-		case F1:
-			return get_F1();
-		case CROSS_CORRELATION:
-			return get_cross_correlation();
-		case RECALL:
-			return get_recall();
-		case PRECISION:
-			return get_precision();
-		case SPECIFICITY:
-			return get_specificity();
-		case CUSTOM:
-			return get_custom_score();
+	case ACCURACY:
+		return get_accuracy();
+	case ERROR_RATE:
+		return get_error_rate();
+	case BAL:
+		return get_BAL();
+	case WRACC:
+		return get_WRACC();
+	case F1:
+		return get_F1();
+	case CROSS_CORRELATION:
+		return get_cross_correlation();
+	case RECALL:
+		return get_recall();
+	case PRECISION:
+		return get_precision();
+	case SPECIFICITY:
+		return get_specificity();
+	case CUSTOM:
+		return get_custom_score();
 	}
 
 	not_implemented(SOURCE_LOCATION);
 	return 42;
 }
 
-EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() const
+EEvaluationDirection
+CContingencyTableEvaluation::get_evaluation_direction() const
 {
 	switch (m_type)
 	{
@@ -83,7 +102,8 @@ EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() con
 	return ED_MINIMIZE;
 }
 
-void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
+void CContingencyTableEvaluation::compute_scores(
+    CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;
@@ -91,18 +111,18 @@ void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBina
 	m_FN = 0.0;
 	m_N = predicted->get_num_labels();
 
-	for (int i=0; i<predicted->get_num_labels(); i++)
+	for (int i = 0; i < predicted->get_num_labels(); i++)
 	{
-		if (ground_truth->get_label(i)==1)
+		if (ground_truth->get_label(i) == 1)
 		{
-			if (predicted->get_label(i)==1)
+			if (predicted->get_label(i) == 1)
 				m_TP += 1.0;
 			else
 				m_FN += 1.0;
 		}
 		else
 		{
-			if (predicted->get_label(i)==1)
+			if (predicted->get_label(i) == 1)
 				m_FP += 1.0;
 			else
 				m_TN += 1.0;

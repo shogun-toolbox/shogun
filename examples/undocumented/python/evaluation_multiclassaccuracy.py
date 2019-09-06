@@ -11,12 +11,12 @@ parameter_list = [[ground_truth,predicted]]
 
 def evaluation_multiclassaccuracy (ground_truth, predicted):
 	from shogun import MulticlassLabels
-	from shogun import MulticlassAccuracy
+	import shogun as sg
 
 	ground_truth_labels = MulticlassLabels(ground_truth)
 	predicted_labels = MulticlassLabels(predicted)
 
-	evaluator = MulticlassAccuracy()
+	evaluator = sg.evaluation("MulticlassAccuracy")
 	accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return accuracy

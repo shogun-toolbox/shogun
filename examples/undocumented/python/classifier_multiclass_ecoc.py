@@ -12,9 +12,7 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5]]
 
 def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
 
-	import shogun
 	from shogun import ECOCStrategy, LinearMulticlassMachine
-	from shogun import MulticlassAccuracy
 	from shogun import MulticlassLabels
 	from shogun import ecoc_encoder
 	from shogun import ecoc_decoder
@@ -22,14 +20,14 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 
 	def nonabstract_class(name):
 		try:
-		    getattr(shogun, name)()
+		    getattr(sg, name)()
 		except TypeError:
 		    return False
 		return True
 
-	encoders = [x for x in dir(shogun)
+	encoders = [x for x in dir(sg)
 		    if re.match(r'ECOC.+Encoder', x) and nonabstract_class(x)]
-	decoders = [x for x in dir(shogun)
+	decoders = [x for x in dir(sg)
 		    if re.match(r'ECOC.+Decoder', x) and nonabstract_class(x)]
 
 	fea_train = sg.features(fm_train_real)
@@ -63,7 +61,7 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 		classifier.train()
 		label_pred = classifier.apply(fea_test)
 		if gnd_test is not None:
-		    evaluator = MulticlassAccuracy()
+		    evaluator = sg.evaluation("MulticlassAccuracy")
 		    acc = evaluator.evaluate(label_pred, gnd_test)
 		else:
 		    acc = None

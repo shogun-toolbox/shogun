@@ -18,11 +18,9 @@ parameter_list = [[traindat,label_traindat]]
 
 def modelselection_random_search_liblinear (traindat=traindat, label_traindat=label_traindat):
     from shogun import machine_evaluation
-    from shogun import ContingencyTableEvaluation, ACCURACY
     from shogun import splitting_strategy
     from shogun import RandomSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
-    from shogun import ParameterCombination
     from shogun import BinaryLabels
     import shogun as sg
 
@@ -52,7 +50,7 @@ def modelselection_random_search_liblinear (traindat=traindat, label_traindat=la
         "StratifiedCrossValidationSplitting", labels=labels, num_subsets=10)
 
     # evaluation method
-    evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
+    evaluation_criterium=sg.evaluation("ContingencyTableEvaluation", type="ACCURACY")
 
     # cross-validation instance
     cross_validation = machine_evaluation(

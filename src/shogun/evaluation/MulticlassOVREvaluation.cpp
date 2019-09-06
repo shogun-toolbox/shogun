@@ -13,14 +13,14 @@
 using namespace shogun;
 
 CMulticlassOVREvaluation::CMulticlassOVREvaluation() :
-	CEvaluation(), m_binary_evaluation(NULL), m_graph_results(NULL), m_num_graph_results(0)
+	CMulticlassOVREvaluation(nullptr)
 {
 }
 
 CMulticlassOVREvaluation::CMulticlassOVREvaluation(CBinaryClassEvaluation* binary_evaluation) :
-	CEvaluation(), m_binary_evaluation(NULL), m_graph_results(NULL), m_num_graph_results(0)
+	CEvaluation(), m_binary_evaluation(nullptr), m_graph_results(nullptr), m_num_graph_results(0)
 {
-	set_binary_evaluation(binary_evaluation);
+    SG_ADD((CEvaluation**)&m_binary_evaluation, "binary_evaluation", "binary evaluator")
 }
 
 CMulticlassOVREvaluation::~CMulticlassOVREvaluation()

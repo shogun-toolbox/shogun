@@ -13,12 +13,12 @@ parameter_list = [[ground_truth,predicted]]
 
 def evaluation_meansquarederror (ground_truth, predicted):
 	from shogun import RegressionLabels
-	from shogun import MeanSquaredError
+	import shogun as sg
 
 	ground_truth_labels = RegressionLabels(ground_truth)
 	predicted_labels = RegressionLabels(predicted)
 
-	evaluator = MeanSquaredError()
+	evaluator = sg.evaluation("MeanSquaredError")
 	mse = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return mse

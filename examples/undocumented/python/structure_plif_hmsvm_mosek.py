@@ -3,7 +3,8 @@
 parameter_list=[[100, 250, 10, 2]]
 
 def structure_plif_hmsvm_mosek (num_examples, example_length, num_features, num_noise_features):
-	from shogun import RealMatrixFeatures, TwoStateModel, StructuredAccuracy
+	import shogun as sg
+	from shogun import RealMatrixFeatures, TwoStateModel
 
 	try:
 		from shogun import PrimalMosekSOSVM
@@ -18,7 +19,7 @@ def structure_plif_hmsvm_mosek (num_examples, example_length, num_features, num_
 	#print(sosvm.get_w())
 
 	predicted = sosvm.apply(model.get_features())
-	evaluator = StructuredAccuracy()
+	evaluator = sg.evaluation("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, model.get_labels())
 	#print('Accuracy = %.4f' % acc)
 

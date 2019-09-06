@@ -10,16 +10,16 @@ predicted = random.randn(len(ground_truth))
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_prcevaluation (ground_truth, predicted):
+	import shogun as sg
 	from shogun import BinaryLabels
-	from shogun import PRCEvaluation
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
 
-	evaluator = PRCEvaluation()
+	evaluator = sg.evaluation("PRCEvaluation")
 	evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	return evaluator.get_PRC(), evaluator.get_auPRC()
+	return evaluator.get("PRC"), evaluator.get("auPRC")
 
 
 if __name__=='__main__':

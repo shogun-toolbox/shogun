@@ -30,12 +30,7 @@ class CROCEvaluation: public CBinaryClassEvaluation
 {
 public:
 	/** constructor */
-	CROCEvaluation() :
-		CBinaryClassEvaluation(), m_computed(false)
-	{
-		m_ROC_graph = SGMatrix<float64_t>();
-		m_thresholds = SGVector<float64_t>();
-	};
+	CROCEvaluation();
 
 	/** destructor */
 	virtual ~CROCEvaluation();
@@ -58,17 +53,17 @@ public:
 	/** get auROC
 	 * @return area under ROC (auROC)
 	 */
-	float64_t get_auROC();
+	float64_t get_auROC() const;
 
 	/** get ROC
 	 * @return ROC graph matrix
 	 */
-	SGMatrix<float64_t> get_ROC();
+	SGMatrix<float64_t> get_ROC() const;
 
 	/** get thresholds corresponding to points on the ROC graph
 	 * @return thresholds
 	 */
-	SGVector<float64_t> get_thresholds();
+	SGVector<float64_t> get_thresholds() const;
 
 protected:
 

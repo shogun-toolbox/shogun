@@ -7,14 +7,12 @@
 parameter_list=[[None]]
 
 def modelselection_parameter_tree (dummy):
-    from shogun import ParameterCombination
     from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun import PowerKernel
     from shogun import DistantSegmentsKernel
     from shogun import MinkowskiMetric
     import math
     import shogun as sg
-    import numpy as np
 
     root=ModelSelectionParameters()
 

@@ -20,12 +20,10 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun import machine_evaluation
-    from shogun import MeanSquaredError
     from shogun import splitting_strategy
     from shogun import RegressionLabels
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
-    from shogun import ParameterCombination
     import shogun as sg
 
     # training data
@@ -55,7 +53,7 @@ def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_t
         "CrossValidationSplitting", labels=labels, num_subsets=5)
 
     # evaluation method
-    evaluation_criterium=MeanSquaredError()
+    evaluation_criterium=sg.evaluation("MeanSquaredError")
 
     # cross-validation instance
     cross_validation = machine_evaluation(
