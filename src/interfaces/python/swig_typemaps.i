@@ -1029,22 +1029,6 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %pythoncode %{
 import sys
 
-# only change the order if you know what you're doing!
-# by default add new getter method names to the end
-# of the list
-_GETTERS = ["get",
-            "get_option",
-            "get_real",
-            "get_int",
-            "get_real_matrix",
-            "get_real_vector",
-            "get_int_vector",
-            "get_char_string_list",
-            "get_word_string_list",
-            "get_long",
-            "get_string"
-   ]
-
 _FACTORIES = ["distance",
               "evaluation",
               "kernel",
@@ -1094,34 +1078,6 @@ for factory in _FACTORIES:
     # that passes **kwargs to objects via .put (see _internal_factory_wrapper)
     _swig_monkey_patch(sys.modules[__name__], factory, _internal_factory_wrapper(factory_private_name, factory))
 
-# makes all the SGObject getters defined in _GETTERS private
-_internal_getter_methods = []
-for getter in _GETTERS:
-    _private_getter = "_{}".format(getter)
-    _rename_python_function(_sg_object, getter, _private_getter)
-    _internal_getter_methods.append(_sg_object.__dict__[_private_getter])
-
-def _internal_get_param(self, name, *args):
-    """
-    Returns the value of the given parameter.
-    The return type depends on the parameter,
-    e.g. could be a builtin scalar or a
-    numpy array representing a vector or matrix
-    """
-
-    for getter in _internal_getter_methods:
-        try:
-            return getter(self, name, *args)
-        except SystemError:
-            pass
-        except Exception:
-            raise
-    if name in self.parameter_names():
-        raise ValueError("The current Python API does not have a getter for '{}' of type '{}'".format(name, self.parameter_type(name)))
-    else:
-        raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
-
-_swig_monkey_patch(SGObject, "get", _internal_get_param)
 %}
 
 #endif /* HAVE_PYTHON */

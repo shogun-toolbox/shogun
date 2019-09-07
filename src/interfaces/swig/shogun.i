@@ -35,7 +35,377 @@
 #include <object.h>
 %{
     static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
+
+#include <shogun/lib/any.h>
+#include <shogun/io/SGIO.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+extern "C" {
+    #include <numpy/arrayobject.h>
+}
+namespace shogun
+{
+    template <typename T>
+    struct sg_to_npy_type {};
+
+    template <>
+    struct sg_to_npy_type<bool>
+    {
+        const static NPY_TYPES type = NPY_BOOL;
+    };
+    template <>
+    struct sg_to_npy_type<int8_t>
+    {
+        const static NPY_TYPES type = NPY_INT8;
+    };
+    template <>
+    struct sg_to_npy_type<int16_t>
+    {
+        const static NPY_TYPES type = NPY_INT16;
+    };
+    template <>
+    struct sg_to_npy_type<int32_t>
+    {
+        const static NPY_TYPES type = NPY_INT32;
+    };
+    template <>
+    struct sg_to_npy_type<int64_t>
+    {
+        const static NPY_TYPES type = NPY_INT64;
+    };
+    template <>
+    struct sg_to_npy_type<uint8_t>
+    {
+        const static NPY_TYPES type = NPY_UINT8;
+    };
+    template <>
+    struct sg_to_npy_type<uint16_t>
+    {
+        const static NPY_TYPES type = NPY_UINT16;
+    };
+    template <>
+    struct sg_to_npy_type<uint32_t>
+    {
+        const static NPY_TYPES type = NPY_UINT32;
+    };
+    template <>
+    struct sg_to_npy_type<uint64_t>
+    {
+        const static NPY_TYPES type = NPY_UINT64;
+    };
+    template <>
+    struct sg_to_npy_type<float32_t>
+    {
+        const static NPY_TYPES type = NPY_FLOAT32;
+    };
+    template <>
+    struct sg_to_npy_type<float64_t>
+    {
+        const static NPY_TYPES type = NPY_FLOAT64;
+    };
+    template <>
+    struct sg_to_npy_type<floatmax_t>
+    {
+        const static NPY_TYPES type = NPY_LONGDOUBLE;
+    };
+    template <>
+    struct sg_to_npy_type<complex128_t>
+    {
+        const static NPY_TYPES type = NPY_CDOUBLE;
+    };
+#ifdef PYTHON3 // str -> unicode for python3
+    template <>
+    struct sg_to_npy_type<char>
+    {
+        const static NPY_TYPES type = NPY_UNICODE;
+    };
+#else
+    template <>
+    struct sg_to_npy_type<char>
+    {
+        const static NPY_TYPES type = NPY_STRING;
+    };
+#endif
+
+    class PythonVisitor : public AnyVisitor {
+
+    public:
+        PythonVisitor(PyObject*& obj) : AnyVisitor(), m_py_obj(&obj) {
+        }
+
+        void on(bool *v) final
+        {
+            if (!dims)
+            {
+                *m_py_obj = *v ? Py_True : Py_False;
+                Py_INCREF(*m_py_obj);
+                return;
+            }
+            handle_pyarray(v);
+        }
+
+        void on(int8_t *v) final
+        {
+            if (!dims)
+            {
+                *m_py_obj = PyLong_FromLong(static_cast<long>(*v));
+                return;
+            }
+            handle_pyarray(v);
+        }
+
+        void on(int16_t *v) final
+        {
+            if (!dims)
+            {
+                *m_py_obj = PyLong_FromLong(static_cast<long>(*v));
+                return;
+            }
+            handle_pyarray(v);
+        }
+
+        void on(int32_t *v) final
+        {
+            if (!dims)
+            {
+                *m_py_obj = PyLong_FromLong(*v);
+                return;
+            }
+            handle_pyarray(v);
+        }
+
+        void on(int64_t *v) final
+        {
+            if (!dims)
+            {
+                *m_py_obj = PyLong_FromLongLong(*v);
+                return;
+            }
+            handle_pyarray(v);
+        }
+
+        void on(float32_t *v) final
+        {
+            if (!dims)
+            {
+                *m_py_obj = PyFloat_FromDouble(static_cast<double>(*v));
+                return;
+            }
+            handle_pyarray(v);
+        }
+
+        void on(float64_t *v) final
+        {
+          if (!dims)
+          {
+            *m_py_obj = PyFloat_FromDouble(static_cast<double>(*v));
+            return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(floatmax_t *v) final
+        {
+          if (!dims)
+          {
+              *m_py_obj = PyFloat_FromDouble(static_cast<double>(*v));
+              return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(std::string *v) final
+        {
+          if (!dims)
+          {
+              *m_py_obj = SWIG_FromCharPtr((const char *)v->c_str());
+              return;
+          }
+          handle_pyarray(v->c_str());
+        }
+
+        void on(CSGObject **v) final
+        {
+            *m_py_obj = SWIG_InternalNewPointerObj(SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
+        }
+
+        void on(char *v) final
+        {
+          if (!dims)
+          {
+              *m_py_obj = SWIG_FromCharPtr((const char *)v);
+              return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(uint8_t *v) final
+        {
+          if (!dims)
+          {
+            *m_py_obj = PyLong_FromUnsignedLong(static_cast<unsigned long>(*v));
+            return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(uint16_t *v) final
+        {
+          if (!dims)
+          {
+            *m_py_obj = PyLong_FromUnsignedLong(static_cast<unsigned long>(*v));
+            return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(uint32_t *v) final
+        {
+          if (!dims)
+          {
+            *m_py_obj = PyLong_FromSize_t(static_cast<size_t>(*v));
+            return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(uint64_t *v) final
+        {
+          if (!dims)
+          {
+            *m_py_obj = PyLong_FromUnsignedLong(static_cast<size_t>(*v));
+            return;
+          }
+          handle_pyarray(v);
+        }
+
+        void on(complex128_t *v) final
+        {
+          if (!dims)
+          {
+            *m_py_obj = PyComplex_FromDoubles(v->real(), v->imag());
+            return;
+          }
+          handle_pyarray(v);
+        }
+
+        void enter_matrix(index_t *rows, index_t *cols) final
+        {
+          dims = new npy_intp[2];
+          dims[0] = (npy_intp) *rows;
+          dims[1] = (npy_intp) *cols;
+          current_i = 0;
+          n_dims = 2;
+        }
+
+        void enter_vector(index_t *size) final
+        {
+          dims = new npy_intp[1];
+          *dims = (npy_intp) *size;
+          current_i = 0;
+          n_dims = 1;
+        }
+
+        void enter_std_vector(size_t *size) final
+        {
+        }
+
+        void enter_map(size_t *size) final
+        {
+        }
+
+        void exit_matrix(index_t *rows, index_t *cols) final
+        {
+        }
+
+        void exit_vector(index_t *size) final
+        {
+        }
+
+        void exit_std_vector(size_t *size) final
+        {
+        }
+
+        void exit_map(size_t *size) final
+        {
+        }
+
+        void enter_matrix_row(index_t *rows, index_t *cols) final
+        {
+          current_i = (*rows) * (*cols);
+        }
+
+        void exit_matrix_row(index_t *rows, index_t *cols) final
+        {
+        }
+
+    private:
+        PyObject** m_py_obj;
+        npy_intp* dims = nullptr;
+        npy_intp current_i;
+        int n_dims;
+
+        template <typename T>
+        void handle_pyarray(const T* v)
+        {
+            if (dims && !(*m_py_obj))
+            {
+                PyArray_Descr* descr=PyArray_DescrFromType(sg_to_npy_type<T>::type);
+                *m_py_obj = PyArray_NewFromDescr(&PyArray_Type,
+                    descr, n_dims, dims, NULL, NULL,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+                PyArray_ENABLEFLAGS((PyArrayObject*) m_py_obj, NPY_ARRAY_OWNDATA);
+            }
+            else if (!dims && !(*m_py_obj))
+            {
+                return;
+            }
+            ((T*)PyArray_DATA((PyArrayObject*)*m_py_obj))[current_i] = *v;
+            current_i++;
+        }
+    };
+}
+
 %}
+
+namespace shogun {
+    %extend CSGObject
+    {
+        PyObject* get(const std::string& name) const
+        {
+            PyObject* result = NULL;
+
+            const auto params = self->get_params();
+            auto find_iter = params.find(name);
+
+            if (find_iter == params.end())
+            {
+                PyErr_SetString(PyExc_RuntimeError, "ERROR!");
+                return NULL;
+            }
+
+            auto visitor = std::make_unique<PythonVisitor>(result);
+            const auto value = find_iter->second->get_value();
+            if (value.visitable())
+                value.visit(visitor.get());
+            else
+            {
+                // it's a function
+
+            }
+            if (!result)
+              PyErr_SetString(PyExc_RuntimeError, "Could not cast value!");
+            return result;
+        }
+        PyObject* get(const std::string& name, int index) const
+        {
+            PyObject* result = NULL;
+            auto* obj = $self->get(name, index);
+            result = SWIG_InternalNewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
+            return result;
+        }
+    }
+}
+
+%ignore get;
 
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
 %feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
@@ -43,7 +413,7 @@
 %feature("python:tp_print") shogun::CSGObject "print_sgobject";
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
-#endif
+#endif // SWIGPYTHON
 
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
@@ -320,6 +690,7 @@ namespace shogun
 %template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #endif // SWIGJAVA
 
+#ifndef SWIGPYTHON
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;
 %template(get_long) CSGObject::get<int64_t, void>;
@@ -335,7 +706,7 @@ namespace shogun
 %template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 %template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
-
+#endif // SWIGPYTHON
 %template(put) CSGObject::put<std::string, std::string>;
 
 %define PUT_ADD(sg_class)
