@@ -35,9 +35,9 @@
 #define INTERNAL_EXPAND(x) x
 #define INTERNAL_EXPAND_ARGS_PRIVATE(...)                                      \
 	INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(                            \
-	    __VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+	    __VA_ARGS__, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
 #define INTERNAL_GET_ARG_COUNT_PRIVATE(                                        \
-    _0_, _1_, _2_, _3_, _4_, _5_, _6_, _7_, _8_, _9_, count, ...)              \
+    _0_, _1_, _2_, _3_, _4_, _5_, _6_, _7_, _8_, _9_, _10_, _11_, count, ...)  \
 	count
 
 #else
@@ -124,6 +124,16 @@
 	}
 
 #define SG_ADD_OPTION9(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
+	}
+#define SG_ADD_OPTION10(param_name, enum_value, ...)                           \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
+	}
+#define SG_ADD_OPTION11(param_name, enum_value, ...)                           \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
