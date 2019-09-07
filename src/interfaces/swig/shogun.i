@@ -384,13 +384,13 @@ namespace shogun {
 
             auto visitor = std::make_unique<PythonVisitor>(result);
             const auto value = find_iter->second->get_value();
-            if (value.visitable())
-                value.visit(visitor.get());
-            else
-            {
-                // it's a function
-
-            }
+//            if (value.visitable())
+            value.visit(visitor.get());
+//            else
+//            {
+//                // it's a function
+//
+//            }
             if (!result)
               PyErr_SetString(PyExc_RuntimeError, "Could not cast value!");
             return result;
