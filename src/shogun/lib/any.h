@@ -358,8 +358,7 @@ namespace shogun
 
 		template <
 		    typename T,
-		    std::enable_if_t<!std::is_same_v<
-		        std::result_of<std::function<T()>>::type, void>>* = nullptr>
+		    std::enable_if_t<!std::is_same_v<T, void>>* = nullptr>
 		void on(std::function<T()>* v)
 		{
 			value = std::make_shared<T>((*v)());
