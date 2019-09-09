@@ -10,6 +10,8 @@
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/converter/Converter.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/distributions/Distribution.h>
+#include <shogun/ensemble/CombinationRule.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>
@@ -35,7 +37,6 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/transformer/Transformer.h>
-#include <shogun/distributions/Distribution.h>
 
 namespace shogun
 {
@@ -60,13 +61,14 @@ namespace shogun
 	CLossFunction* loss(const std::string& name);
 	ParameterObserver* parameter_observer(const std::string& name);
 	CDistribution* distribution(const std::string& name);
+	CCombinationRule* combination_rule(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
 	{                                                                          \
 		return create_object<T>(name.c_str());                                 \
 	}                                                                          \
-	T* as_## factory_name(CSGObject* obj)                                      \
+	T* as_##factory_name(CSGObject* obj)                                       \
 	{                                                                          \
 		return obj->as<T>();                                                   \
 	}
@@ -92,6 +94,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(ParameterObserver, parameter_observer)
 	BASE_CLASS_FACTORY(CEvaluationResult, evaluation_result)
 	BASE_CLASS_FACTORY(CDistribution, distribution)
+	BASE_CLASS_FACTORY(CCombinationRule, combination_rule)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -170,12 +173,11 @@ namespace shogun
 		require<std::invalid_argument>(
 		    features->get_feature_class() == C_STRING &&
 		        features->get_feature_type() == F_CHAR,
-		        "Given features must be char-based StringFeatures, "
-		        "provided ({}) have feature class ({}), feature type "
-		        "({}) and class name.",
-		        features->get_name(),
-				features->get_feature_class(),
-				features->get_feature_type());
+		    "Given features must be char-based StringFeatures, "
+		    "provided ({}) have feature class ({}), feature type "
+		    "({}) and class name.",
+		    features->get_name(), features->get_feature_class(),
+		    features->get_feature_type());
 
 		auto string_features = features->as<CStringFeatures<char>>();
 
@@ -184,8 +186,7 @@ namespace shogun
 		case PT_UINT16:
 		{
 			auto* alphabet = string_features->get_alphabet();
-			auto result =
-			    new CStringFeatures<uint16_t>(alphabet);
+			auto result = new CStringFeatures<uint16_t>(alphabet);
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
 			SG_UNREF(alphabet);
@@ -202,15 +203,17 @@ namespace shogun
 	/** Factory for CDenseSubsetFeatures.
 	 * TODO: Should be removed once the concept of feature views has arrived
 	 */
-	CFeatures* features_subset(CFeatures* base_features, SGVector<index_t> indices,
-			EPrimitiveType primitive_type = PT_FLOAT64)
+	CFeatures* features_subset(
+	    CFeatures* base_features, SGVector<index_t> indices,
+	    EPrimitiveType primitive_type = PT_FLOAT64)
 	{
 		require(base_features, "No base features provided.");
 
 		switch (primitive_type)
 		{
 		case PT_FLOAT64:
-			return new CDenseSubsetFeatures<float64_t>(base_features->as<CDenseFeatures<float64_t>>(), indices);
+			return new CDenseSubsetFeatures<float64_t>(
+			    base_features->as<CDenseFeatures<float64_t>>(), indices);
 			break;
 		default:
 			not_implemented(SOURCE_LOCATION);
@@ -219,19 +222,21 @@ namespace shogun
 		return nullptr;
 	}
 
-	template <typename T, typename T2 = typename std::enable_if_t<
-	                          std::is_floating_point<T>::value>>
+	template <
+	    typename T, typename T2 = typename std::enable_if_t<
+	                    std::is_floating_point<T>::value>>
 	CKernel* kernel(SGMatrix<T> kernel_matrix)
 	{
 		return new CCustomKernel(kernel_matrix);
 	}
 
 #ifndef SWIG // SWIG should skip this part
-	template <typename LT,
-	          std::enable_if_t<
-	              std::is_base_of<CDenseLabels, typename std::remove_pointer<
-	                                                LT>::type>::value,
-	              LT>* = nullptr>
+	template <
+	    typename LT,
+	    std::enable_if_t<
+	        std::is_base_of<
+	            CDenseLabels, typename std::remove_pointer<LT>::type>::value,
+	        LT>* = nullptr>
 	void try_labels(CDenseLabels*& labels, const SGVector<float64_t>& data)
 	{
 		if (!labels)
@@ -310,5 +315,5 @@ namespace shogun
 	{
 		return new CPipelineBuilder();
 	}
-}
+} // namespace shogun
 #endif // FACTORY_H_

@@ -31,6 +31,7 @@ namespace shogun
 	class CInference;
 	class CLossFunction;
 	class CTokenizer;
+	class CCombinationRule;
 
 	// type trait to enable certain methods only for shogun base types
 	// FIXME: use sg_interface to populate this trait
@@ -55,7 +56,8 @@ namespace shogun
 	                    std::is_same<CMeanFunction, T>::value ||
 	                    std::is_same<CLossFunction, T>::value ||
 	                    std::is_same<CTokenizer, T>::value ||
-	                    std::is_same<CEvaluationResult, T>::value>
+	                    std::is_same<CEvaluationResult, T>::value ||
+	                    std::is_same<CCombinationRule, T>::value>
 	{
 	};
 
