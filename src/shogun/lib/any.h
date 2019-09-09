@@ -13,7 +13,6 @@
 #include <functional>
 #include <limits>
 #include <map>
-#include <memory>
 #include <stdexcept>
 #include <string.h>
 #include <string>
@@ -361,16 +360,13 @@ namespace shogun
 		    std::enable_if_t<!std::is_same_v<T, void>>* = nullptr>
 		void on(std::function<T()>* v)
 		{
-			value = std::make_shared<T>((*v)());
-			return on(static_cast<T*>(value.get()));
+			T value = (*v)();
+			return on(std::addressof(value));
 		}
 
 		void on(...)
 		{
 		}
-
-	private:
-		std::shared_ptr<void> value;
 	};
 
 	namespace any_detail
