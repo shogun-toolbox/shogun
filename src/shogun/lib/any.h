@@ -786,6 +786,10 @@ namespace shogun
 
 		virtual bool is_functional() const = 0;
 
+		virtual bool is_void() const = 0;
+
+		virtual bool is_nothrow() const = 0;
+
 		virtual size_t hash(void* storage) const = 0;
 	};
 
@@ -821,6 +825,20 @@ namespace shogun
 		virtual bool is_functional() const override
 		{
 			return traits::is_functional<T>::value;
+		}
+
+		virtual bool is_void() const override
+		{
+			if constexpr (traits::is_functional<T>::value)
+				return std::is_same_v<typename T::result_type, void>;
+			return false;
+		}
+
+		virtual bool is_nothrow() const override
+		{
+			if constexpr (traits::is_functional<T>::value)
+				return std::is_nothrow_invocable<T>::value;
+			return false;
 		}
 	};
 

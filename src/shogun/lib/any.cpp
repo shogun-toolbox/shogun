@@ -181,6 +181,10 @@ namespace shogun
 
 	void Any::visit(AnyVisitor* visitor) const
 	{
+		if (!visitable() && !(policy->is_functional() && !policy->is_void()))
+		{
+			throw std::logic_error("Tried to visit non-visitable Any");
+		}
 		policy->visit(storage, visitor);
 	}
 

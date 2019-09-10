@@ -35,376 +35,7 @@
 #include <object.h>
 %{
 	static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
-
-	#include <shogun/lib/any.h>
-	#include <shogun/io/SGIO.h>
-	#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-	extern "C" {
-		#include <numpy/arrayobject.h>
-	}
-	#define SG_TO_NUMPY_TYPE_STRUCT(SG_TYPE, NPY_TYPE) \
-	template <>                                        \
-	struct sg_to_npy_type<SG_TYPE>                     \
-	{                                                  \
-		const static NPY_TYPES type = NPY_TYPE;        \
-	};
-
-	namespace shogun
-	{
-		template <typename T>
-		struct sg_to_npy_type {};
-		SG_TO_NUMPY_TYPE_STRUCT(bool,          NPY_BOOL)
-#ifdef PYTHON3 // str -> unicode for python3
-		SG_TO_NUMPY_TYPE_STRUCT(char,          NPY_UNICODE)
-#else
-		SG_TO_NUMPY_TYPE_STRUCT(char,          NPY_STRING)
-#endif
-		SG_TO_NUMPY_TYPE_STRUCT(int8_t,        NPY_INT8)
-		SG_TO_NUMPY_TYPE_STRUCT(uint8_t,       NPY_UINT8)
-		SG_TO_NUMPY_TYPE_STRUCT(int16_t,       NPY_INT16)
-		SG_TO_NUMPY_TYPE_STRUCT(uint16_t,      NPY_UINT16)
-		SG_TO_NUMPY_TYPE_STRUCT(int32_t,       NPY_INT32)
-		SG_TO_NUMPY_TYPE_STRUCT(uint32_t,      NPY_UINT32)
-		SG_TO_NUMPY_TYPE_STRUCT(int64_t,       NPY_INT64)
-		SG_TO_NUMPY_TYPE_STRUCT(uint64_t,      NPY_UINT64)
-		SG_TO_NUMPY_TYPE_STRUCT(float32_t,     NPY_FLOAT32)
-		SG_TO_NUMPY_TYPE_STRUCT(float64_t,     NPY_FLOAT64)
-		SG_TO_NUMPY_TYPE_STRUCT(complex128_t,  NPY_CDOUBLE)
-		SG_TO_NUMPY_TYPE_STRUCT(floatmax_t,    NPY_LONGDOUBLE)
-		SG_TO_NUMPY_TYPE_STRUCT(PyObject*,     NPY_OBJECT)
-		SG_TO_NUMPY_TYPE_STRUCT(CSGObject*,    NPY_OBJECT)
-#undef SG_TO_NUMPY_TYPE_STRUCT
-
-		class PythonVisitor : public AnyVisitor {
-
-		public:
-			PythonVisitor(PyObject*& obj) : AnyVisitor(), m_py_obj(&obj) {}
-
-            ~PythonVisitor()
-            {
-                if (dims)
-                    delete[] dims;
-            }
-
-			void on(bool *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(int8_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(int16_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(int32_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(int64_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(float32_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(float64_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(floatmax_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(std::string *v) final
-			{
-				handle_sg(v->c_str());
-			}
-
-			void on(CSGObject **v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(char *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(uint8_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(uint16_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(uint32_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(uint64_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void on(complex128_t *v) final
-			{
-				handle_sg(v);
-			}
-
-			void enter_matrix(index_t *rows, index_t *cols) final
-			{
-				// initialise some variables needed to initialise a pyarray	
-				dims = new npy_intp[2];
-				dims[0] = (npy_intp) *rows;
-				dims[1] = (npy_intp) *cols;
-				current_i = 0;
-				n_dims = 2;
-				nested_current_i = 0;
-				m_nested_py_obj = nullptr;
-			}
-
-			void enter_vector(index_t *size) final
-			{
-				dims = new npy_intp[1];
-				*dims = (npy_intp) *size;
-				current_i = 0;
-				n_dims = 1;
-				nested_current_i = 0;
-				m_nested_py_obj = nullptr;
-			}
-
-			void enter_std_vector(size_t *size) final
-			{
-				*m_py_obj = PyList_New(0);
-				current_i = 0;
-			}
-
-			void enter_map(size_t *size) final
-			{
-			}
-
-			void exit_matrix(index_t *rows, index_t *cols) final
-			{
-				m_nested_py_obj = nullptr;
-			}
-
-			void exit_vector(index_t *size) final
-			{
-				m_nested_py_obj = nullptr;
-			}
-
-			void exit_std_vector(size_t *size) final
-			{
-			}
-
-			void exit_map(size_t *size) final
-			{
-			}
-
-			void enter_matrix_row(index_t *rows, index_t *cols) final
-			{
-				current_i = (*rows) * (*cols);
-			}
-
-			void exit_matrix_row(index_t *rows, index_t *cols) final
-			{
-			}
-
-		private:
-
-			PythonVisitor(PyObject*& py_obj, npy_intp* dims_, 
-				npy_intp current_i_, int n_dims_): m_py_obj(&py_obj), 
-												   dims(dims_), 
-												   current_i(current_i_), 
-												   n_dims(n_dims_) 
-			{
-			}
-
-			template <typename T>
-			void handle_sg(const T* v)
-			{
-                // decide how to handle the current value being visited
-                // if we created an array dims and this is not a list it must be an array
-                // i.e. a value in a SGVector or SGMatrix
-				if ((dims && !(*m_py_obj)) || (*m_py_obj && !PyList_Check(*m_py_obj)))
-					handle_pyarray(v);
-                // this must be a value in std::vector, which will be represented by a pylist
-				else if (*m_py_obj && PyList_Check(*m_py_obj))
-					handle_pylist(v);
-				// this is a scalar, so try to translate it
-                else
-				  *m_py_obj = sg_to_python(v);
-			}
-
-			template <typename T>
-			PyObject* sg_to_python(const T* v)
-			{
-                // table of conversions from C++ to Python
-				if constexpr(std::is_same_v<T, bool>)
-				{
-					PyObject* result = *v ? Py_True : Py_False;
-					Py_INCREF(result);
-					return result;
-				}
-				if constexpr(std::is_same_v<T, int8_t>)
-					return PyLong_FromLong(static_cast<long>(*v));
-				if constexpr(std::is_same_v<T, int16_t>)
-					return PyLong_FromLong(static_cast<long>(*v));
-				if constexpr(std::is_same_v<T, int32_t>)
-					return PyLong_FromLong(*v);
-				if constexpr(std::is_same_v<T, int64_t>)
-					return PyLong_FromLongLong(*v);
-				if constexpr(std::is_same_v<T, float32_t>)
-					return PyFloat_FromDouble(static_cast<double>(*v));
-				if constexpr(std::is_same_v<T, float64_t>)
-					return PyFloat_FromDouble(static_cast<double>(*v));
-				if constexpr(std::is_same_v<T, floatmax_t>)
-					return PyFloat_FromDouble(static_cast<double>(*v));
-				if constexpr(std::is_same_v<T, char>)
-					return SWIG_FromCharPtr(v);
-				if constexpr(std::is_same_v<T, uint8_t>)
-					return PyLong_FromUnsignedLong(static_cast<unsigned long>(*v));
-				if constexpr(std::is_same_v<T, uint16_t>)
-					return  PyLong_FromUnsignedLong(static_cast<unsigned long>(*v));
-				if constexpr(std::is_same_v<T, uint32_t>)
-					return PyLong_FromSize_t(static_cast<size_t>(*v));
-				if constexpr(std::is_same_v<T, uint64_t>)
-					return PyLong_FromUnsignedLong(static_cast<size_t>(*v));
-				if constexpr(std::is_same_v<T, complex128_t>)
-					return PyComplex_FromDoubles(v->real(), v->imag());
-				if constexpr(std::is_same_v<T, CSGObject*>)
-					return SWIG_InternalNewPointerObj(SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
-				error("Cannot handle casting from shogun type {} to python type!", demangled_type<T>().c_str());
-			}
-
-			template <typename T>
-			void handle_pyarray(const T* v)
-			{
-				if constexpr(std::is_same_v<T, char>)
-				{
-                    // if it is char we will just get the whole buffer from the SGVector<char>
-                    // and make it a string. This is a special case of SGVector, where don't 
-                    // convert to a numpy array, but use pylist instead.
-                    // Use SWIG because it can handle this depending on Python version. 
-					if (!(*m_py_obj))
-						*m_py_obj = SWIG_FromCharPtr(v);
-				}
-				else
-				{
-                    // this is an array but we haven't instatiated one yet,
-                    // so let's do that first
-					if (dims && !(*m_py_obj))
-					{
-						PyArray_Descr* descr=PyArray_DescrFromType(sg_to_npy_type<T>::type);
-						*m_py_obj = PyArray_NewFromDescr(&PyArray_Type,
-							descr, n_dims, dims, NULL, NULL,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
-						PyArray_ENABLEFLAGS((PyArrayObject*) m_py_obj, NPY_ARRAY_OWNDATA);
-					}
-                    // shouldn't happen
-					else if (!dims && !(*m_py_obj))
-					{
-						return;
-					}
-                    // assign value v to the ith element of array buffer
-                    // which is in column major
-					((T*)PyArray_DATA((PyArrayObject*)*m_py_obj))[current_i] = *v;
-				}
-				current_i++;
-			}
-
-			template <typename T>
-			void handle_pylist(const T* v)
-			{
-				bool new_obj = m_nested_py_obj ? false : true;
-				auto nested_visitor = PythonVisitor(m_nested_py_obj, dims, nested_current_i, n_dims);
-				nested_visitor.on(const_cast<T*>(v));
-				if (m_nested_py_obj && new_obj)
-				{
-				  PyList_Append(*m_py_obj, m_nested_py_obj);
-				  current_i++;
-				}
-				else if (!m_nested_py_obj && !new_obj)
-					error("Could not cast shogun type {} to python type!", demangled_type<T>().c_str());
-
-				nested_current_i++;
-			}
-
-			PyObject** m_py_obj;
-			npy_intp* dims = nullptr;
-			npy_intp current_i;
-			int n_dims;
-			PyObject* m_nested_py_obj = nullptr;
-			npy_intp nested_current_i;
-		};
-	}
 %}
-
-namespace shogun {
-	%extend CSGObject
-	{
-		PyObject* get(const std::string& name) const
-		{
-			PyObject* result = nullptr;
-			try
-			{
-				const auto params = $self->get_params();
-				auto find_iter = params.find(name);
-
-				if (find_iter == params.end())
-				{
-					error("Could not find parameter {} in {}.", name.c_str(), $self->get_name());
-					return nullptr;
-				}
-
-				auto visitor = PythonVisitor(result);
-				find_iter->second->get_value().visit(&visitor);
-				if (!result)
-                {
-					error("Could not cast parameter {} to python object!", name.c_str());
-					return nullptr;
-			    }
-            }
-			catch(ShogunException& e)
-			{
-				SWIG_Error(SWIG_SystemError, const_cast<char*>(e.what()));
-				return nullptr;
-			}
-			return result;
-		}
-		PyObject* get(const std::string& name, int index) const
-		{
-			PyObject* result = nullptr;
-			try
-			{
-				CSGObject* obj = $self->get(name, index);
-				result = SWIG_InternalNewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
-			}
-			catch(ShogunException& e)
-			{
-				SWIG_Error(SWIG_SystemError, const_cast<char*>(e.what()));
-				return nullptr;
-			}
-			return result;
-		}
-	}
-}
-
-%ignore get;
 
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
 %feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
@@ -413,6 +44,70 @@ namespace shogun {
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
 #endif // SWIGPYTHON
+
+// all the code that depends on visitors
+#ifdef SWIGPYTHON //|| SWIGR
+%include "Visitors_implementation.i"
+%define VISITOR_GETTER(INTERFACE_BASETYPE, VISITOR_NAME)
+INTERFACE_BASETYPE get(const std::string& name) const
+{
+	INTERFACE_BASETYPE result = nullptr;
+	try
+	{
+		const auto params = $self->get_params();
+		auto find_iter = params.find(name);
+
+		if (find_iter == params.end())
+		{
+			error("Could not find parameter {}::{}.", $self->get_name(), name.c_str());
+			return nullptr;
+		}
+
+		auto visitor = VISITOR_NAME(result);
+		find_iter->second->get_value().visit(&visitor);
+		if (!result)
+        {
+			error("Could not cast parameter {}::{}!", $self->get_name(), name.c_str());
+			return nullptr;
+	    }
+    }
+	catch(ShogunException& e)
+	{
+		SWIG_Error(SWIG_SystemError, const_cast<char*>(e.what()));
+		return nullptr;
+	}
+	return result;
+}
+INTERFACE_BASETYPE get(const std::string& name, int index) const
+{
+	INTERFACE_BASETYPE result = nullptr;
+	try
+	{
+		CSGObject* obj = $self->get(name, index);
+		result = SWIG_InternalNewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
+	}
+	catch(ShogunException& e)
+	{
+		SWIG_Error(SWIG_SystemError, const_cast<char*>(e.what()));
+		return nullptr;
+	}
+	return result;
+}
+%enddef
+
+namespace shogun {
+	%extend CSGObject
+	{
+#ifdef SWIGPYTHON
+		VISITOR_GETTER(PyObject*, PythonVisitor)
+// #elif SWIGR
+// 		VISITOR_GETTER(SEXP, RVisitor)
+#endif
+	}
+}
+
+%ignore get;
+#endif // SWIGPYTHON //|| SWIGR
 
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
