@@ -42,18 +42,26 @@
 
 		protected:
 			template <typename T>
-			PyObject* create_array(const std::vector<std::ptrdiff_t>& dims)
+			PyObject* create_array(const T* val, const std::vector<std::ptrdiff_t>& dims)
 			{
+				T* copy;
+				if (dims.size() == 1)
+				{
+					copy = SG_MALLOC(T, dims[0]);
+					std::copy_n(const_cast<T*>(val), dims[0], copy);
+				}
+				else if (dims.size() == 2)
+				{
+					copy = SG_MALLOC(T, dims[0] * dims[1]);
+					std::copy_n(const_cast<T*>(val), dims[0]*dims[1], copy);
+				}
+				else
+					error("Expected an array with one or two dimensions, but got {}.", dims.size());
 				PyArray_Descr* descr=PyArray_DescrFromType(sg_to_npy_type<T>::type);
 				PyObject* result = PyArray_NewFromDescr(&PyArray_Type,
-					descr, dims.size(), const_cast<npy_intp*>(dims.data()), nullptr, nullptr,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, nullptr);
+					descr, dims.size(), const_cast<npy_intp*>(dims.data()), nullptr, (void*)copy,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, nullptr);
 				PyArray_ENABLEFLAGS((PyArrayObject*) result, NPY_ARRAY_OWNDATA);
 				return result;
-			}
-			template <typename T>
-			void assign_array_value(PyObject* array, const T* v, size_t i)
-			{
-				((T*)PyArray_DATA((PyArrayObject*) array))[i] = *v;
 			}
 
 			template <typename>
@@ -63,14 +71,10 @@
 				return PyList_New(0);
 			}
 
+			template <typename>
 			void append_to_list(PyObject* list, PyObject* v, size_t i)
 			{
 				PyList_Append(list, v);
-			}
-
-			bool is_list(PyObject* v)
-			{
-				return PyList_Check(v);
 			}
 
 			template <typename T>
@@ -78,11 +82,7 @@
 			{
 		        // table of conversions from C++ to Python
 				if constexpr(std::is_same_v<T, bool>)
-				{
-					PyObject* result = *v ? Py_True : Py_False;
-					Py_INCREF(result);
-					return result;
-				}
+					return PyBool_FromLong(*v ? 1 : 0);
 				if constexpr(std::is_same_v<T, int8_t>)
 					return PyLong_FromLong(static_cast<long>(*v));
 				if constexpr(std::is_same_v<T, int16_t>)
@@ -110,7 +110,7 @@
 				if constexpr(std::is_same_v<T, complex128_t>)
 					return PyComplex_FromDoubles(v->real(), v->imag());
 				if constexpr(std::is_same_v<T, CSGObject*>)
-					return SWIG_InternalNewPointerObj(SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
+					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
 				error("Cannot handle casting from shogun type {} to python type!", demangled_type<T>().c_str());
 			}
 		};

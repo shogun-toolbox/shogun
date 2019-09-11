@@ -341,6 +341,74 @@ namespace std {
     %template(StringStdVector) vector<string>;
 }
 
+// all the code that depends on visitors
+#if defined(SWIGPYTHON) || defined(SWIGR)
+%include "Visitors_implementation.i"
+%define VISITOR_GETTER(INTERFACE_BASETYPE, VISITOR_NAME)
+INTERFACE_BASETYPE get(const std::string& name) const
+{
+    INTERFACE_BASETYPE result = nullptr;
+    try
+    {
+        const auto params = $self->get_params();
+        auto find_iter = params.find(name);
+
+        if (find_iter == params.end())
+        {
+            error("Could not find parameter {}::{}.", $self->get_name(), name.c_str());
+            return nullptr;
+        }
+
+        auto visitor = VISITOR_NAME(result);
+        find_iter->second->get_value().visit(&visitor);
+        if (!result)
+        {
+            error("Could not cast parameter {}::{}!", $self->get_name(), name.c_str());
+            return nullptr;
+        }
+    }
+    catch(ShogunException& e)
+    {
+        SWIG_Error(SWIG_SystemError, const_cast<char*>(e.what()));
+        return nullptr;
+    }
+    return result;
+}
+INTERFACE_BASETYPE get(const std::string& name, int index) const
+{
+    INTERFACE_BASETYPE result = nullptr;
+    try
+    {
+        CSGObject* obj = $self->get(name, index);
+#if defined(SWIGPYTHON)
+        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
+#elif defined(SWIGR)
+        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
+#endif
+    }
+    catch(ShogunException& e)
+    {
+        SWIG_Error(SWIG_SystemError, const_cast<char*>(e.what()));
+        return nullptr;
+    }
+    return result;
+}
+%enddef
+
+namespace shogun {
+    %extend CSGObject
+    {
+#ifdef SWIGPYTHON
+        VISITOR_GETTER(PyObject*, PythonVisitor)
+#elif SWIGR
+        VISITOR_GETTER(SEXP, RVisitor)
+#endif
+    }
+}
+
+%ignore shogun::CSGObject::get;
+#endif // SWIGPYTHON || SWIGR
+
 %include <shogun/base/SGObject.h>
 
 /** Instantiate RandomMixin */

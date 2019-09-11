@@ -14,7 +14,7 @@
 			STD_MAP = 5
 		};
 
-				template <typename Derived, typename InterfaceBaseType>
+		template <typename Derived, typename InterfaceBaseType>
 		class GetterVisitorInterface: public AnyVisitor {
 
 		public:
@@ -23,7 +23,8 @@
 					m_interface_obj(&obj), 
 					m_type(SG_TYPE_TO_INTERFACE::NONE),
 					m_nested_type(SG_TYPE_TO_INTERFACE::NONE) 
-					{}
+			{
+			}
 
 			void on(bool *v) final
 			{
@@ -109,10 +110,11 @@
 			{
 				// initialise some variables needed to initialise a array	
 				dims = {(std::ptrdiff_t) *rows, (std::ptrdiff_t) *cols};
-				current_i = 0;
 				if (m_type == SG_TYPE_TO_INTERFACE::NONE)
-					m_type = SG_TYPE_TO_INTERFACE::MATRIX;
-
+					{
+						current_i = 0;
+						m_type = SG_TYPE_TO_INTERFACE::MATRIX;
+					}
 				else
 				{
 					m_nested_type = SG_TYPE_TO_INTERFACE::MATRIX;
@@ -124,9 +126,11 @@
 			void enter_vector(index_t *size) final
 			{
 				dims = {(std::ptrdiff_t) *size};
-				current_i = 0;
 				if (m_type == SG_TYPE_TO_INTERFACE::NONE)
+				{
+					current_i = 0;
 					m_type = SG_TYPE_TO_INTERFACE::VECTOR;
+				}
 				else
 				{
 					m_nested_type = SG_TYPE_TO_INTERFACE::VECTOR;
@@ -137,10 +141,12 @@
 
 			void enter_std_vector(size_t *size) final
 			{
-				current_i = 0;
-				dims = {(std::ptrdiff_t) *size};
+				list_size = *size;
 				if (m_type == SG_TYPE_TO_INTERFACE::NONE)
+				{
+					current_i = 0;
 					m_type = SG_TYPE_TO_INTERFACE::STD_VECTOR;
+				}
 				else
 					m_nested_type = SG_TYPE_TO_INTERFACE::STD_VECTOR;
 			}
@@ -180,8 +186,6 @@
 
 			void enter_matrix_row(index_t *rows, index_t *cols) final
 			{
-				// this is not needed, but has to give the right result 
-				current_i = (*rows) * (*cols);
 			}
 
 			void exit_matrix_row(index_t *rows, index_t *cols) final
@@ -192,6 +196,7 @@
 
 			GetterVisitorInterface(InterfaceBaseType& obj, std::vector<std::ptrdiff_t> dims_, 
 				size_t current_i_, SG_TYPE_TO_INTERFACE type): 
+				AnyVisitor(),
 				m_interface_obj(&obj), 
 				dims(dims_), 
 				current_i(current_i_),
@@ -225,21 +230,17 @@
 					// and make it a string. This is a special case of SGVector, where we don't 
 					// convert to an array, but use a string instead.
 					if (!(*m_interface_obj))
-						*m_interface_obj = SWIG_FromCharPtr(v);
+						*m_interface_obj = SWIG_FromCharPtrAndSize(v, dims[0]);
 				}
 				else
 				{
 					// this is an array but we haven't instatiated one yet,
 					// so let's do that first
 					if (!dims.empty() && !(*m_interface_obj))
-						*m_interface_obj = static_cast<Derived*>(this)->template create_array<T>(dims);		
+						*m_interface_obj = static_cast<Derived*>(this)->template create_array<T>(v, dims);		
 					else if (dims.empty() && !(*m_interface_obj))
-						error("Internal error!");
-					// assign value v to the ith element of array buffer
-					// which is in column major
-					static_cast<Derived*>(this)->assign_array_value(*m_interface_obj, v, current_i);
+						error("Could not determine the number of dimensions in array!");
 				}
-				current_i++;
 			}
 
 			template <typename T>
@@ -247,16 +248,20 @@
 			{
 				bool new_obj = m_nested_interface_obj ? false : true;
 				if (!(*m_interface_obj))
-					*m_interface_obj = static_cast<Derived*>(this)->template create_new_list<T>(dims[0]);
+					*m_interface_obj = static_cast<Derived*>(this)->template create_new_list<T>(list_size);
 
 				auto nested_visitor = GetterVisitorInterface(m_nested_interface_obj, dims, nested_current_i, m_nested_type);
-				nested_visitor.on(const_cast<T*>(v));
 				
+				if (m_nested_type == SG_TYPE_TO_INTERFACE::VECTOR || m_nested_type == SG_TYPE_TO_INTERFACE::MATRIX)
+					nested_visitor.handle_array(const_cast<T*>(v));
+				else
+					nested_visitor.on(const_cast<T*>(v));
+
 				// we only do this once, from here on the nested_visitor will directly
 				// modify the m_nested_interface_obj
 				if (m_nested_interface_obj && new_obj)
 				{
-					static_cast<Derived*>(this)->append_to_list(*m_interface_obj, m_nested_interface_obj, current_i);
+					static_cast<Derived*>(this)->template append_to_list<T>(*m_interface_obj, m_nested_interface_obj, current_i);
 					current_i++;
 				}
 				else if (!m_nested_interface_obj && !new_obj)
@@ -270,6 +275,9 @@
 			size_t current_i;
 			InterfaceBaseType m_nested_interface_obj = nullptr;
 			size_t nested_current_i;
+			size_t list_size;
+		
+		protected:
 			SG_TYPE_TO_INTERFACE m_type;
 			SG_TYPE_TO_INTERFACE m_nested_type;
 		};
