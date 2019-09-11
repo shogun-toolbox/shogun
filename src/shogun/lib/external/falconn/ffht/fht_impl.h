@@ -1,3 +1,6 @@
+#ifndef _FHT_IMPL_H
+#define _FHT_IMPL_H
+
 #ifdef __AVX__
 #include <immintrin.h>
 #endif
@@ -543,4 +546,5 @@ void FHTFloatIterativeLongHelperAVX(float *buffer, int len, int logLen) {
   }
 }
 
+#endif
 #endif

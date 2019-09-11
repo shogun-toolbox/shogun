@@ -178,6 +178,68 @@ IF(MSVC)
   target_link_libraries(shogun_deps INTERFACE winmm Shlwapi)
 ENDIF()
 
+########################### PCH
+if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
+  if (CCACHE_FOUND)
+    if (DEFINED ENV{CCACHE_SLOPPINESS})
+      if (NOT "$ENV{CCACHE_SLOPPINESS}" MATCHES "pch_defines" OR
+        NOT "$ENV{CCACHE_SLOPPINESS}" MATCHES "time_macros")
+        MESSAGE (WARNING
+          "ccache requires the environment variable CCACHE_SLOPPINESS to be set to \"pch_defines,time_macros\"."
+        )
+        SET(CCACHE_PCH_READY 0)
+      else()
+        SET(CCACHE_PCH_READY 1)
+      endif()
+    else()
+      execute_process(
+        COMMAND "${COMPILER_CACHE_EXECUTABLE}" "-p"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        RESULT_VARIABLE _result
+        OUTPUT_VARIABLE _ccacheConfig OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+      if (_result)
+        MESSAGE (WARNING "ccache configuration cannot be determined.")
+        SET(CCACHE_PCH_READY 0)
+      elseif (NOT _ccacheConfig MATCHES "sloppiness.*=.*time_macros" OR
+        NOT _ccacheConfig MATCHES "sloppiness.*=.*pch_defines")
+        MESSAGE (WARNING
+          "ccache requires configuration setting \"sloppiness\" to be set to \"pch_defines,time_macros\"."
+         )
+        SET(CCACHE_PCH_READY 0)
+      else()
+        SET(CCACHE_PCH_READY 1)
+      endif()
+    endif()
+
+  endif()
+
+  if (NOT CCACHE_FOUND OR CCACHE_PCH_READY)
+    message(STATUS "Using precompiled headers")
+    # FIXME: make sure all the headers are listed that could be precompiled
+    target_precompile_headers(libshogun
+      PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:${LIBSHOGUN_HEADERS}>"
+      PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:<algorithm$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<initializer_list$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<functional$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<map$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<memory$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<set$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<sstream$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<string$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<string_view$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<unordered_map$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<unordered_set$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<utility$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<vector$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<Eigen/Dense$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<Eigen/Sparse$<ANGLE-R>>
+        $<$<COMPILE_LANGUAGE:CXX>:<Eigen/SVD$<ANGLE-R>>)
+  endif()
+endif()
+
+
 ########################### compiler capabilities
 FIND_PACKAGE(Threads)
 IF (CMAKE_USE_PTHREADS_INIT)

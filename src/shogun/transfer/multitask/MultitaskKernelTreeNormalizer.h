@@ -26,30 +26,30 @@ namespace shogun
  *	structure between tasks.
  *
  */
-class Node: public SGObject
+class TaxonomyNode: public SGObject
 {
 public:
-	using NodeSet = std::set<std::shared_ptr<Node>>;
+	using NodeSet = std::set<std::shared_ptr<TaxonomyNode>>;
 	/** default constructor
 	 */
-    Node()
+    TaxonomyNode()
     {
         parent = NULL;
         beta = 1.0;
         node_id = 0;
     }
 
-    virtual ~Node()
+    virtual ~TaxonomyNode()
     {
     }
 
     /** get a list of all ancestors of this node
      *  @return set of Nodes
 	 */
-    Node::NodeSet get_path_root()
+    TaxonomyNode::NodeSet get_path_root()
     {
-        Node::NodeSet nodes_on_path;
-        std::shared_ptr<Node> node = shared_from_this()->as<Node>();
+        TaxonomyNode::NodeSet nodes_on_path;
+        std::shared_ptr<TaxonomyNode> node = shared_from_this()->as<TaxonomyNode>();
         while (node != NULL) {
             nodes_on_path.insert(node);
             node = node->parent;
@@ -64,8 +64,8 @@ public:
     {
 
         std::vector<int32_t> task_ids;
-        std::deque<std::shared_ptr<Node>> grey_nodes;
-        grey_nodes.push_back(shared_from_this()->as<Node>());
+        std::deque<std::shared_ptr<TaxonomyNode>> grey_nodes;
+        grey_nodes.push_back(shared_from_this()->as<TaxonomyNode>());
 
         while(grey_nodes.size() > 0)
         {
@@ -88,16 +88,16 @@ public:
     /** add child to current node
 	 *  @param node child node
 	 */
-    void add_child(std::shared_ptr<Node >node)
+    void add_child(std::shared_ptr<TaxonomyNode> node)
     {
-        node->parent = shared_from_this()->as<Node>();
+        node->parent = shared_from_this()->as<TaxonomyNode>();
         this->children.push_back(node);
     }
 
     /** @return object name */
     virtual const char *get_name() const
     {
-        return "Node";
+        return "TaxonomyNode";
     }
 
     /** @return boolean indicating, whether this node is a leaf */
@@ -125,10 +125,10 @@ public:
 protected:
 
 	/** parent node **/
-	std::shared_ptr<Node> parent;
+	std::shared_ptr<TaxonomyNode> parent;
 
 	/** list of child nodes **/
-	std::vector<std::shared_ptr<Node>> children;
+	std::vector<std::shared_ptr<TaxonomyNode>> children;
 
 	/** identifier of node **/
 	int32_t node_id;
@@ -149,7 +149,7 @@ public:
 	 */
 	Taxonomy()
 	{
-		root = std::make_shared<Node>();
+		root = std::make_shared<TaxonomyNode>();
 		nodes.push_back(root);
 
 		name2id = std::map<std::string, int32_t>();
@@ -167,7 +167,7 @@ public:
 	 *  @param task_id task identifier
 	 *  @return node with id task_id
 	 */
-	std::shared_ptr<Node> get_node(int32_t task_id) const {
+	std::shared_ptr<TaxonomyNode> get_node(int32_t task_id) const {
 		return nodes[task_id];
 	}
 
@@ -184,13 +184,13 @@ public:
 	 *  @param child_name name of child
 	 *  @param beta weight of child
 	 */
-	std::shared_ptr<Node> add_node(std::string parent_name, std::string child_name, float64_t beta)
+	std::shared_ptr<TaxonomyNode> add_node(std::string parent_name, std::string child_name, float64_t beta)
 	{
 		if (child_name=="")	error("child_name empty");
 		if (parent_name=="") error("parent_name empty");
 
 
-		auto child_node = std::make_shared<Node>();
+		auto child_node = std::make_shared<TaxonomyNode>();
 
 		child_node->beta = beta;
 
@@ -223,13 +223,13 @@ public:
 	 *  @param node_rhs node of right hand side
 	 *  @return intersection of the two sets of ancestors
 	 */
-	Node::NodeSet intersect_root_path(std::shared_ptr<Node> node_lhs, std::shared_ptr<Node> node_rhs) const
+	TaxonomyNode::NodeSet intersect_root_path(std::shared_ptr<TaxonomyNode> node_lhs, std::shared_ptr<TaxonomyNode> node_rhs) const
 	{
 
-		Node::NodeSet root_path_lhs = node_lhs->get_path_root();
-		Node::NodeSet root_path_rhs = node_rhs->get_path_root();
+		TaxonomyNode::NodeSet root_path_lhs = node_lhs->get_path_root();
+		TaxonomyNode::NodeSet root_path_rhs = node_rhs->get_path_root();
 
-		Node::NodeSet intersection;
+		TaxonomyNode::NodeSet intersection;
 
 		std::set_intersection(root_path_lhs.begin(), root_path_lhs.end(),
 							  root_path_rhs.begin(), root_path_rhs.end(),
@@ -251,14 +251,12 @@ public:
 		auto node_rhs = get_node(task_rhs);
 
 		// compute intersection of paths to root
-		Node::NodeSet intersection = intersect_root_path(node_lhs, node_rhs);
+		TaxonomyNode::NodeSet intersection = intersect_root_path(node_lhs, node_rhs);
 
 		// sum up weights
 		float64_t gamma = 0;
-		for (Node::NodeSet::const_iterator p = intersection.begin(); p != intersection.end(); ++p) {
-
+		for (TaxonomyNode::NodeSet::const_iterator p = intersection.begin(); p != intersection.end(); ++p)
 			gamma += (*p)->beta;
-		}
 
 		return gamma;
 
@@ -357,11 +355,11 @@ public:
 protected:
 
 	/** root */
-	std::shared_ptr<Node> root;
+	std::shared_ptr<TaxonomyNode> root;
 	/** name 2 id */
 	std::map<std::string, int32_t> name2id;
 	/** nodes */
-	std::vector<std::shared_ptr<Node>> nodes;
+	std::vector<std::shared_ptr<TaxonomyNode>> nodes;
 	/** task histogram */
 	std::map<int32_t, float64_t> task_histogram;
 

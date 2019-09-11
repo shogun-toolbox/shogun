@@ -12,11 +12,7 @@ endif()
 
 # handle REQUIRED and QUIET options
 include(FindPackageHandleStandardArgs)
-if (CMAKE_VERSION LESS 2.8.3)
-  find_package_handle_standard_args(CCache DEFAULT_MSG CCACHE CCACHE_VERSION)
-else ()
-  find_package_handle_standard_args(CCache REQUIRED_VARS CCACHE CCACHE_VERSION)
-endif ()
+find_package_handle_standard_args(CCache REQUIRED_VARS CCACHE CCACHE_VERSION)
 
 if (CCACHE_FOUND)
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")

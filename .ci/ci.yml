@@ -128,7 +128,7 @@ jobs:
     ccacheDir: '$(build.binariesDirectory)/ccache'
     ccacheArtifactName: 'ccache-macos'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
-    commonMacOSCMakeFlags: '-DBUILD_EXAMPLES=OFF -DBUNDLE_JSON=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF'
+    commonMacOSCMakeFlags: '-DBUILD_EXAMPLES=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF'
     openMPMacOSCMakeFlags:
       '-DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp"
       -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp"

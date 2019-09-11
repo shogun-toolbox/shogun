@@ -11,6 +11,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 
 #include <shogun/lib/Signal.h>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -137,7 +138,7 @@ bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 
 		wold=weightshistory[ weightshistory.size()-2 ];
 		wnew=weightshistory.back();
-		float64_t delta=0;
+		float64_t _delta=0;
 
 		ASSERT (wold.size()==wnew.size())
 
@@ -146,23 +147,23 @@ bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 		{
 			//check dual gap part for mkl
 
-			delta=oldalphaterm-curalphaterm;
+			_delta=oldalphaterm-curalphaterm;
 
 			int32_t maxind=0;
 			float64_t maxval=normweightssquared[maxind];
 			for (size_t i=0;i< wnew.size();++i)
 			{
-				delta+=-0.5*oldnormweightssquared[i]*wold[i];
+				_delta+=-0.5*oldnormweightssquared[i]*wold[i];
 				if(normweightssquared[i]>maxval)
 				{
 					maxind=i;
 					maxval=normweightssquared[i];
 				}
 			}
-			delta+=0.5*normweightssquared[maxind];
-			//delta=fabs(delta);
-			io::info("L1 Norm chosen, MKL part of duality gap {} ",delta);
-			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
+			_delta+=0.5*normweightssquared[maxind];
+			//_delta=fabs(_delta);
+			io::info("L1 Norm chosen, MKL part of duality gap {} ",_delta);
+			if( (_delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return true;
 			}
@@ -172,27 +173,27 @@ bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 		}
 		else
 		{
-			delta=0;
+			_delta=0;
 
 			float64_t deltaold=oldalphaterm,deltanew=curalphaterm;
 			for (size_t i=0;i< wnew.size();++i)
 			{
-				delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
+				_delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
 				deltaold+= -0.5*oldnormweightssquared[i]*wold[i];
 				deltanew+= -0.5*normweightssquared[i]*wnew[i];
 			}
 			if(deltanew>0)
 			{
-			delta=1-deltanew/deltaold;
+			_delta=1-deltanew/deltaold;
 			}
 			else
 			{
             io::warn("MKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.");
-				delta=sqrt(delta);
+				_delta=sqrt(_delta);
 			}
-				io::info("weight delta {} ",delta);
+				io::info("weight delta {} ",_delta);
 
-			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
+			if( (_delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return true;
 			}

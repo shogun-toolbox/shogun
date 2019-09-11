@@ -15,50 +15,50 @@ namespace shogun
 
 			~NullFileSystem() override = default;
 
-			std::unique_ptr<RandomAccessFile> new_random_access_file(
-				const std::string& fname) override
+			std::error_condition new_random_access_file(
+				const std::string& fname, std::unique_ptr<RandomAccessFile>*) const override
 			{
 				throw ShogunNotImplementedException("new_random_access_file unimplemented");
 			}
 
-			std::unique_ptr<WritableFile> new_writable_file(
-				const std::string& fname) override
+			std::error_condition new_writable_file(
+				const std::string& fname, std::unique_ptr<WritableFile>*) const override
 			{
 				throw ShogunNotImplementedException("NewWritableFile new_writable_file");
 			}
 
-			std::unique_ptr<WritableFile> new_appendable_file(
-				const std::string& fname) override
+			std::error_condition new_appendable_file(
+				const std::string& fname, std::unique_ptr<WritableFile>*) const override
 			{
 				throw ShogunNotImplementedException("new_appendable_file unimplemented");
 			}
 
-			bool file_exists(const std::string& fname) override
+			std::error_condition file_exists(const std::string& fname) const override
 			{
 				throw ShogunNotImplementedException("file_exists unimplemented");
 			}
 
-			void delete_file(const std::string& fname) override
+			std::error_condition delete_file(const std::string& fname) const override
 			{
 				throw ShogunNotImplementedException("delete_file unimplemented");
 			}
 
-			void create_dir(const std::string& dirname) override
+			std::error_condition create_dir(const std::string& dirname) const override
 			{
 				throw ShogunNotImplementedException("create_dir unimplemented");
 			}
 
-			void delete_dir(const std::string& dirname) override
+			std::error_condition delete_dir(const std::string& dirname) const override
 			{
 				throw ShogunNotImplementedException("delete_dir unimplemented");
 			}
 
-			int64_t get_file_size(const std::string& fname) override
+			int64_t get_file_size(const std::string& fname) const override
 			{
 				throw ShogunNotImplementedException("get_file_size unimplemented");
 			}
 
-			void rename_file(const std::string& src, const std::string& target) override
+			std::error_condition rename_file(const std::string& src, const std::string& target) const override
 			{
 				throw ShogunNotImplementedException("rename_file unimplemented");
 			}

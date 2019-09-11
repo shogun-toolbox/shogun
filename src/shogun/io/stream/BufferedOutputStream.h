@@ -11,64 +11,67 @@
 
 namespace shogun
 {
-	IGNORE_IN_CLASSLIST class BufferedOutputStream : public OutputStream
+	namespace io
 	{
-	public:
-		/**
-		 * Construct a buffered output stream
-		 *
-		 * @param os
-		 * @param buffer_bytes
-		 */
-		BufferedOutputStream(std::shared_ptr<OutputStream> os, index_t buffer_bytes = 4096):
-			OutputStream(), m_os(std::move(os))
+		IGNORE_IN_CLASSLIST class BufferedOutputStream : public OutputStream
 		{
+		public:
+			/**
+			 * Construct a buffered output stream
+			 *
+			 * @param os
+			 * @param buffer_bytes
+			 */
+			BufferedOutputStream(std::shared_ptr<OutputStream> os, index_t buffer_bytes = 4096):
+				OutputStream(), m_os(std::move(os))
+			{
 
-		}
+			}
 
-		BufferedOutputStream(BufferedOutputStream&& src):
-			OutputStream(), m_os(std::move(src.m_os))
-		{
-			src.m_os = nullptr;
-		}
+			BufferedOutputStream(BufferedOutputStream&& src):
+				OutputStream(), m_os(std::move(src.m_os))
+			{
+				src.m_os = nullptr;
+			}
 
-		BufferedOutputStream& operator=(BufferedOutputStream&& src)
-		{
-			m_os = std::move(src.m_os);
-			return *this;
-		}
+			BufferedOutputStream& operator=(BufferedOutputStream&& src)
+			{
+				m_os = std::move(src.m_os);
+				return *this;
+			}
 
-		~BufferedOutputStream() override
-		{
-			m_os->flush();
-			m_os->close();
-		}
+			~BufferedOutputStream() override
+			{
+				m_os->flush();
+				m_os->close();
+			}
 
-		std::error_condition write(void* buffer, int64_t size) override
-		{
-			m_os->write(buffer, size);
-		}
+			std::error_condition write(const void* buffer, int64_t size) override
+			{
+				m_os->write(buffer, size);
+			}
 
-		std::error_condition close() override
-		{
-			m_os->close();
-		}
+			std::error_condition close() override
+			{
+				m_os->close();
+			}
 
-		std::error_condition flush() override
-		{
-			m_os->flush();
-		}
+			std::error_condition flush() override
+			{
+				m_os->flush();
+			}
 
-		const char* get_name() const override
-		{
-			return "BufferedOutputStream";
-		}
+			const char* get_name() const override
+			{
+				return "BufferedOutputStream";
+			}
 
-	private:
-		std::shared_ptr<OutputStream> m_os;
+		private:
+			std::shared_ptr<OutputStream> m_os;
 
-		SG_DELETE_COPY_AND_ASSIGN(BufferedOutputStream);
-	};
-}
+			SG_DELETE_COPY_AND_ASSIGN(BufferedOutputStream);
+		};
+	} // namespace io
+} // namespace shogun
 
 #endif /* __BUFFERED_OUTPUT_STREAM_H__ */
