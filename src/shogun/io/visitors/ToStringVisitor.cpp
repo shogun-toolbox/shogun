@@ -10,59 +10,59 @@
 using namespace shogun;
 
 void ToStringVisitor::on(bool *v) {
-	stream() << (*v ? "true" : "false") << " ";
+	stream() << (*v ? "true" : "false");
 }
 
 void ToStringVisitor::on(int32_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(int64_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(int8_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(int16_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(std::string *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(CSGObject **v) {
 	if (*v) {
 		stream() << (*v)->get_name() << "(...) ";
 	} else {
-		stream() << "null ";
+		stream() << "null";
 	}
 }
 
 void ToStringVisitor::on(char *string) {
-	stream() << *string << " ";
+	stream() << *string;
 }
 
 void ToStringVisitor::on(uint8_t *uint8) {
-	stream() << *uint8 << " ";
+	stream() << *uint8;
 }
 
 void ToStringVisitor::on(uint16_t *uint16) {
-	stream() << *uint16 << " ";
+	stream() << *uint16;
 }
 
 void ToStringVisitor::on(uint32_t *uint32) {
-	stream() << *uint32 << " ";
+	stream() << *uint32;
 }
 
 void ToStringVisitor::on(uint64_t *uint64) {
-	stream() << *uint64 << " ";
+	stream() << *uint64;
 }
 
 void ToStringVisitor::on(complex128_t *complex128) {
-	stream() << *complex128 << " ";
+	stream() << *complex128;
 }
 
 void ToStringVisitor::enter_matrix(index_t *rows, index_t *cols) {
@@ -82,15 +82,15 @@ void ToStringVisitor::enter_map(size_t *size) {
 }
 
 void ToStringVisitor::on(float32_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(float64_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::on(floatmax_t *v) {
-	stream() << *v << " ";
+	stream() << *v;
 }
 
 void ToStringVisitor::exit_matrix(index_t *rows, index_t *cols) {
