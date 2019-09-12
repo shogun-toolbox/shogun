@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
 %{
 	#include <shogun/lib/any.h>
 	#include <shogun/io/SGIO.h>
@@ -235,11 +241,14 @@
 				else
 				{
 					// this is an array but we haven't instatiated one yet,
-					// so let's do that first
+					// so let's create one with the pointer to the first element
 					if (!dims.empty() && !(*m_interface_obj))
 						*m_interface_obj = static_cast<Derived*>(this)->template create_array<T>(v, dims);		
 					else if (dims.empty() && !(*m_interface_obj))
 						error("Could not determine the number of dimensions in array!");
+					// we copy all the data once with create_array, so we don't need to keep 
+					// updating the values of the array
+					// so we do nothing after this
 				}
 			}
 

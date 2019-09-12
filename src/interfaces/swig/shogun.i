@@ -203,13 +203,13 @@ namespace shogun
 	{
 		PUT_SCALAR_DISPATCHER(T, name, value)
 	}
-
+#if !defined(SWIGPYTHON) && !defined(SWIGR)
 	/* get method for strings to disambiguate it from get_option */
 	std::string get_string(const std::string& name) const
 	{
 		return $self->get<std::string>(name);
 	}
-
+#endif // !defined(SWIGPYTHON) && !defined(SWIGR)
 #ifdef SWIGJAVA
 	// templated since otherwise SWIG doesn't match the typemap for SGMatrix
 	// for the DoubleMatrix hack, X = float64_t and T = SGMatrix<X>
@@ -320,7 +320,6 @@ namespace shogun
 %template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #endif // SWIGJAVA
 
-#ifndef SWIGPYTHON
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;
 %template(get_long) CSGObject::get<int64_t, void>;
@@ -336,7 +335,6 @@ namespace shogun
 %template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 %template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
-#endif // SWIGPYTHON
 %template(put) CSGObject::put<std::string, std::string>;
 
 %define PUT_ADD(sg_class)

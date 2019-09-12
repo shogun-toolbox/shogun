@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
 %include "GetterVisitorInterface.i"
 %{
 	namespace shogun
@@ -150,7 +156,7 @@
 				if constexpr(std::is_same_v<T, complex128_t>)
 					return Rf_ScalarComplex(Rcomplex{v->real(), v->imag()});
 				if constexpr(std::is_same_v<T, CSGObject*>)
-					return SWIG_NewPointerObj(SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
+					return SWIG_R_NewPointerObj(SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
 				error("Cannot handle casting from shogun type {} to R type!", demangled_type<T>().c_str());
 			}
 		};
