@@ -671,7 +671,7 @@ std::string CSGObject::to_string() const
 		}
 		if (std::next(it) != (self->map.end()))
 		{
-			ss << ",";
+			ss << ", ";
 		}
 	}
 	ss << ")";
