@@ -2,30 +2,32 @@
 parameter_list = [[1000]]
 
 def evaluation_thresholds (index):
-	from shogun import BinaryLabels, ROCEvaluation
-	import numpy
-	numpy.random.seed(17)
-	output=numpy.arange(-1,1,0.001)
-	output=(0.3*output+0.7*(numpy.random.rand(len(output))-0.5))
+	from shogun import BinaryLabels
+	import shogun as sg
+	import numpy as np
+
+	np.random.seed(17)
+	output=np.arange(-1,1,0.001)
+	output=(0.3*output+0.7*(np.random.rand(len(output))-0.5))
 	label=[-1.0]*(len(output)//2)
 	label.extend([1.0]*(len(output)//2))
-	label=numpy.array(label)
+	label=np.array(label)
 
 	pred=BinaryLabels(output)
 	truth=BinaryLabels(label)
 
-	evaluator=ROCEvaluation()
+	evaluator=sg.evaluation("ROCEvaluation")
 	evaluator.evaluate(pred, truth)
 
-	[fp,tp]=evaluator.get_ROC()
+	[fp,tp]=evaluator.get("ROC")
 
-	thresh=evaluator.get_thresholds()
+	thresh=evaluator.get("thresholds")
 	b=thresh[index]
 
-	#print("tpr", numpy.mean(output[label>0]>b), tp[index])
-	#print("fpr", numpy.mean(output[label<0]>b), fp[index])
+	#print("tpr", np.mean(output[label>0]>b), tp[index])
+	#print("fpr", np.mean(output[label<0]>b), fp[index])
 
-	return tp[index],fp[index],numpy.mean(output[label>0]>b),numpy.mean(output[label<0]>b)
+	return tp[index],fp[index],np.mean(output[label>0]>b),np.mean(output[label<0]>b)
 
 if __name__=='__main__':
 	print('Evaluation with Thresholds')

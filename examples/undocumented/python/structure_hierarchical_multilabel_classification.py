@@ -9,7 +9,6 @@ multi-label classification. The data used:
 
 from shogun import MultilabelSOLabels, HierarchicalMultilabelModel
 from shogun import StochasticSOSVM
-from shogun import StructuredAccuracy
 import shogun as sg
 import numpy as np
 import time
@@ -118,7 +117,7 @@ def structure_hierarchical_multilabel_classification(train_file_name,
     test_features, test_labels, test_taxonomy = get_features_labels(test_file)
     assert(test_taxonomy.all() == train_taxonomy.all())
 
-    evaluator = StructuredAccuracy()
+    evaluator = sg.evaluation("StructuredAccuracy")
     outlabel = sgd.apply(test_features)
 
     print('>>> Accuracy of classification = %f' % evaluator.evaluate(

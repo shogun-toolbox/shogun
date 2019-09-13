@@ -24,7 +24,7 @@ RealMatrix m = qda.get_real_matrix("m_means")
 #![extract_mean_and_cov]
 
 #![evaluate_accuracy]
-MulticlassAccuracy eval()
+Evaluation eval = evaluation("MulticlassAccuracy")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

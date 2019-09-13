@@ -43,8 +43,8 @@ RealVector variances = gp_regression.get_variance_vector(features_test)
 #![compute_variance]
 
 #![evaluate_error]
-MeanSquaredError mserror()
-real mse = mserror.evaluate(labels_predict, labels_test)
+Evaluation eval = evaluation("MeanSquaredError")
+real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables

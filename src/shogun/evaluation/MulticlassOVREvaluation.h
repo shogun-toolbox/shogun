@@ -36,21 +36,6 @@ public:
 	/** destructor */
 	virtual ~CMulticlassOVREvaluation();
 
-	/** set evaluation */
-	void set_binary_evaluation(CBinaryClassEvaluation* binary_evaluation)
-	{
-		SG_REF(binary_evaluation);
-		SG_UNREF(m_binary_evaluation);
-		m_binary_evaluation = binary_evaluation;
-	}
-
-	/** get evaluation */
-	CBinaryClassEvaluation* get_binary_evaluation()
-	{
-		SG_REF(m_binary_evaluation);
-		return m_binary_evaluation;
-	}
-
 	/** evaluate accuracy
 	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct

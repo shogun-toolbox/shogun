@@ -11,42 +11,39 @@ parameter_list = [[ground_truth,predicted]]
 
 def evaluation_contingencytableevaluation (ground_truth, predicted):
 	from shogun import BinaryLabels
-	from shogun import ContingencyTableEvaluation
-	from shogun import AccuracyMeasure,ErrorRateMeasure,BALMeasure
-	from shogun import WRACCMeasure,F1Measure,CrossCorrelationMeasure
-	from shogun import RecallMeasure,PrecisionMeasure,SpecificityMeasure
+	import shogun as sg
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
 
-	base_evaluator = ContingencyTableEvaluation()
+	base_evaluator = sg.evaluation("ContingencyTableEvaluation")
 	base_evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = AccuracyMeasure()
+	evaluator = sg.evaluation("AccuracyMeasure")
 	accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = ErrorRateMeasure()
+	evaluator = sg.evaluation("ErrorRateMeasure")
 	errorrate = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = BALMeasure()
+	evaluator = sg.evaluation("BALMeasure")
 	bal = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = WRACCMeasure()
+	evaluator = sg.evaluation("WRACCMeasure")
 	wracc = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = F1Measure()
+	evaluator = sg.evaluation("F1Measure")
 	f1 = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = CrossCorrelationMeasure()
+	evaluator = sg.evaluation("CrossCorrelationMeasure")
 	crosscorrelation = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = RecallMeasure()
+	evaluator = sg.evaluation("RecallMeasure")
 	recall = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = PrecisionMeasure()
+	evaluator = sg.evaluation("PrecisionMeasure")
 	precision = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = SpecificityMeasure()
+	evaluator = sg.evaluation("SpecificityMeasure")
 	specificity = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return accuracy, errorrate, bal, wracc, f1, crosscorrelation, recall, precision, specificity

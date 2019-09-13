@@ -25,8 +25,8 @@ RealMatrix c = mc_lda.get_real_matrix("m_cov")
 #![extract_mean_and_cov]
 
 #![evaluate_accuracy]
-MulticlassAccuracy evals()
-real accuracy = evals.evaluate(labels_predict, labels_test)
+Evaluation eval = evaluation("MulticlassAccuracy")
+real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables

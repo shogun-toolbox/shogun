@@ -32,8 +32,8 @@ RealVector prob = gp_classifier.get_probabilities(features_train)
 #![extract_the_probabilities]
 
 #![evaluate_accuracy]
-MulticlassAccuracy evals()
-real accuracy = evals.evaluate(labels_predict, labels_test)
+Evaluation eval = evaluation("MulticlassAccuracy")
+real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # integration testing variables

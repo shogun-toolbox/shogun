@@ -5,18 +5,14 @@
 # Authors: Heiko Strathmann
 #
 
-from numpy import array
 from numpy import random
 import math
 
 from shogun import machine_evaluation
-from shogun import ContingencyTableEvaluation, ACCURACY
 from shogun import splitting_strategy
 from shogun import BinaryLabels
 from shogun import GridSearchModelSelection
 from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
-from shogun import ParameterCombination
-from shogun import Math
 import shogun as sg
 
 def create_param_tree():
@@ -91,13 +87,13 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# create svm
 	classifier=sg.machine("LibSVM")
 
-	# splitting strategy
+	# splitting strategySpl
 	splitting = splitting_strategy(
 		"StratifiedCrossValidationSplitting", labels=labels,
 		num_subsets=num_subsets, seed=1)
 
 	# accuracy evaluation
-	evaluation_criterion=ContingencyTableEvaluation(ACCURACY)
+	evaluation_criterion=sg.evaluation("ContingencyTableEvaluation", type="ACCURACY")
 
 	# cross validation class for evaluation in model selection
 	cross = machine_evaluation(

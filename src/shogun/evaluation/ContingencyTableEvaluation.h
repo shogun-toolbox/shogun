@@ -71,14 +71,12 @@ class CContingencyTableEvaluation: public CBinaryClassEvaluation
 public:
 
 	/** constructor */
-	CContingencyTableEvaluation() :
-		CBinaryClassEvaluation(), m_type(ACCURACY), m_computed(false) {};
+	CContingencyTableEvaluation();
 
 	/** constructor
 	 * @param type type of measure (e.g ACCURACY)
 	 */
-	CContingencyTableEvaluation(EContingencyTableMeasureType type) :
-		CBinaryClassEvaluation(), m_type(type), m_computed(false)  {};
+	CContingencyTableEvaluation(EContingencyTableMeasureType type);
 
 	/** destructor */
 	virtual ~CContingencyTableEvaluation() {};

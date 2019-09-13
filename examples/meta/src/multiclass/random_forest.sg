@@ -29,7 +29,7 @@ MulticlassLabels labels_predict = rand_forest.apply_multiclass(features_test)
 #![train_and_apply]
 
 #![evaluate_accuracy]
-MulticlassAccuracy acc()
+Evaluation acc = evaluation("MulticlassAccuracy")
 real oob = rand_forest.get_oob_error(acc)
 real accuracy = acc.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]

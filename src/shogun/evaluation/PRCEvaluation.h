@@ -25,13 +25,7 @@ class CPRCEvaluation: public CBinaryClassEvaluation
 {
 public:
 	/** constructor */
-	CPRCEvaluation() :
-		CBinaryClassEvaluation(), m_computed(false)
-	{
-		m_PRC_graph = SGMatrix<float64_t>();
-		m_thresholds = SGVector<float64_t>();
-		m_auPRC = 0.0;
-	};
+	CPRCEvaluation();
 
 	/** destructor */
 	virtual ~CPRCEvaluation();
@@ -54,19 +48,19 @@ public:
 	/** get auPRC
 	 * @return area under PRC (auPRC)
 	 */
-	float64_t get_auPRC();
+	float64_t get_auPRC() const;
 
 	/** get PRC
 	 * precision is dim0 (x)
 	 * recall is dim1 (y)
 	 * @return PRC graph matrix
 	 */
-	SGMatrix<float64_t> get_PRC();
+	SGMatrix<float64_t> get_PRC() const;
 
 	/** get thresholds corresponding to points on the PRC graph
 	 * @return thresholds
 	 */
-	SGVector<float64_t> get_thresholds();
+	SGVector<float64_t> get_thresholds() const;
 
 protected:
 

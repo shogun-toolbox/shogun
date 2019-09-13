@@ -20,10 +20,8 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun import machine_evaluation, splitting_strategy
-    from shogun import MeanSquaredError
     from shogun import RegressionLabels
     from shogun import GridSearchModelSelection
-    from shogun import ModelSelectionParameters
     import shogun as sg
 
     # training data
@@ -44,7 +42,7 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
         "CrossValidationSplitting", labels=labels, num_subsets=5)
 
     # evaluation method
-    evaluation_criterium=MeanSquaredError()
+    evaluation_criterium=sg.evaluation("MeanSquaredError")
 
     # cross-validation instance
     cross_validation = machine_evaluation(
@@ -85,7 +83,6 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
 # creates all the parameters to optimize
 def create_param_tree():
     from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
-    from shogun import ParameterCombination
     import math
     import shogun as sg
     root=ModelSelectionParameters()

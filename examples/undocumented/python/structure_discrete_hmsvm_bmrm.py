@@ -9,8 +9,9 @@ data_dict = scipy.io.loadmat('../data/hmsvm_data_large_integer.mat', struct_as_r
 parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
+	import shogun as sg
 	from shogun import RealMatrixFeatures, SequenceLabels, HMSVMModel, Sequence, TwoStateModel
-	from shogun import StructuredAccuracy, SMT_TWO_STATE
+	from shogun import SMT_TWO_STATE
 	try:
 		from shogun import DualLibQPBMSOSVM
 	except ImportError:
@@ -33,7 +34,7 @@ def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	#print sosvm.get_w()
 
 	predicted = sosvm.apply(features)
-	evaluator = StructuredAccuracy()
+	evaluator = sg.evaluation("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, labels)
 	#print('Accuracy = %.4f' % acc)
 

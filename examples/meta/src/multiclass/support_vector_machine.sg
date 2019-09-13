@@ -25,8 +25,8 @@ Labels labels_predict = svm.apply(features_test)
 #![train_and_apply]
 
 #![evaluate_accuracy]
-MulticlassAccuracy accu()
-real accuracy = accu.evaluate(labels_predict, labels_test)
+Evaluation acc = evaluation("MulticlassAccuracy")
+real accuracy = acc.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
