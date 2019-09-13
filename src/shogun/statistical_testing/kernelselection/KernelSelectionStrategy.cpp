@@ -112,7 +112,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 			#ifdef USE_GPL_SHOGUN
 			policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(kernel_mgr, estimator));
 			#else
-			SG_SGPL_ONLY
+			gpl_only(SOURCE_LOCATION);
 			#endif // USE_GPL_SHOGUN
 		else
 			policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(kernel_mgr, estimator));
@@ -127,7 +127,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 			require(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!");
 			policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(kernel_mgr, estimator));
 			#else
-			SG_SGPL_ONLY
+			gpl_only(SOURCE_LOCATION);
 			#endif // USE_GPL_SHOGUN
 		}
 		else
