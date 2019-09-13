@@ -65,7 +65,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	buffer_matrix_ ## type_name ## _info* info=NULL;
 
-	char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
+	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
 	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))

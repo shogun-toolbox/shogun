@@ -104,7 +104,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	view->ndim=1;
 
-	view->format=(char*) format_str;
+	view->format=format;
 	view->itemsize=sizeof( type_name );
 
 	view->len=shape[0]*view->itemsize;

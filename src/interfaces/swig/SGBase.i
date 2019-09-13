@@ -354,7 +354,7 @@ INTERFACE_BASETYPE get(const std::string& name) const
         auto find_iter = params.find(name);
         auto enum_map = $self->get_string_to_enum_map();
 
-        if (!enum_map.empty() && enum_map.count(name))
+        if (enum_map.count(name))
         {
             auto enum_as_string = $self->get<std::string>(name);
             result = SWIG_From_std_string(enum_as_string);
