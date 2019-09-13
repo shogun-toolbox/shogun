@@ -38,7 +38,7 @@ void CLibSVM::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvm_solver_type",
-	    "LibSVM Solver type", ParameterProperties::NONE,
+	    "LibSVM Solver type", ParameterProperties::SETTING,
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 

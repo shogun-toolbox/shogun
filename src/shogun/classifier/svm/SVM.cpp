@@ -47,11 +47,11 @@ void CSVM::set_defaults(int32_t num_sv)
 	SG_ADD(&tube_epsilon, "tube_epsilon",
 			"Tube epsilon for support vector regression.", ParameterProperties::HYPER);
 	SG_ADD(&nu, "nu", "", ParameterProperties::HYPER);
-	SG_ADD(&objective, "objective", "");
-	SG_ADD(&qpsize, "qpsize", "");
-	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.");
+	SG_ADD(&objective, "objective", "", ParameterProperties::HYPER);
+	SG_ADD(&qpsize, "qpsize", "", ParameterProperties::HYPER);
+	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.", ParameterProperties::SETTING);
 	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.");
-	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.");
+	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.", ParameterProperties::MODEL);
 
 	callback=NULL;
 	mkl=NULL;
@@ -300,7 +300,7 @@ float64_t* CSVM::get_linear_term_array()
 	return a;
 }
 
-void CSVM::set_linear_term(const SGVector<float64_t> linear_term)
+void CSVM::set_linear_term(const SGVector<float64_t>& linear_term)
 {
 	ASSERT(linear_term.vector)
 

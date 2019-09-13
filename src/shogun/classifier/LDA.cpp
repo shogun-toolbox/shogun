@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
- *          Michele Mazzoni, Bjoern Esser, Fernando Iglesias, Abhijeet Kislay, 
- *          Viktor Gal, Evan Shelhamer, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
+ *          Michele Mazzoni, Bjoern Esser, Fernando Iglesias, Abhijeet Kislay,
+ *          Viktor Gal, Evan Shelhamer, Giovanni De Toni,
  *          Christopher Goldsworthy
  */
 #include <shogun/lib/config.h>
@@ -25,8 +25,8 @@ CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
     : CDenseRealDispatch<CLDA, CLinearMachine>()
 {
 	init();
-	m_method=method;
-	m_gamma=gamma;
+	m_method = method;
+	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;
 }
 
@@ -57,11 +57,13 @@ void CLDA::init()
 	SG_ADD(
 	    &m_gamma, "gamma", "Regularization parameter",
 	    ParameterProperties::HYPER);
-	SG_ADD(&m_bdc_svd, "bdc_svd", "Use BDC-SVD algorithm");
+	SG_ADD(
+	    &m_bdc_svd, "bdc_svd", "Use BDC-SVD algorithm",
+	    ParameterProperties::SETTING)
 	SG_ADD_OPTIONS(
-	    (machine_int_t*)&m_method, "method",
-	    "Method used for LDA calculation", ParameterProperties::NONE,
-	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA));
+	    (machine_int_t*)&m_method, "method", "Method used for LDA calculation",
+	    ParameterProperties::SETTING,
+	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA))
 }
 
 CLDA::~CLDA()
@@ -92,9 +94,8 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 
 	// keep just one dimension to do binary classification
 	const index_t projection_dim = 1;
-	auto solver = std::unique_ptr<LDACanVarSolver<ST>>(
-	    new LDACanVarSolver<ST>(
-	        data, labels, projection_dim, m_gamma, m_bdc_svd));
+	auto solver = std::unique_ptr<LDACanVarSolver<ST>>(new LDACanVarSolver<ST>(
+	    data, labels, projection_dim, m_gamma, m_bdc_svd));
 
 	SGVector<ST> w_st(solver->get_eigenvectors());
 
@@ -157,10 +158,9 @@ bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 		w[i] = (float64_t)w_st[i];
 
 	set_w(w);
-	set_bias(
-	    static_cast<float64_t>(
-	        0.5 * (linalg::dot(w_neg, class_mean[0]) -
-	               linalg::dot(w_pos, class_mean[1]))));
+	set_bias(static_cast<float64_t>(
+	    0.5 * (linalg::dot(w_neg, class_mean[0]) -
+	           linalg::dot(w_pos, class_mean[1]))));
 
 	observe<SGVector<float64_t>>(0, "w");
 	observe<float64_t>(1, "bias");
