@@ -13,6 +13,7 @@
 
 #include <list>
 #include <memory>
+#include <string_view>
 
 namespace shogun
 {
@@ -119,7 +120,7 @@ namespace shogun
 		std::string to_string() const
 		{
 			std::stringstream ss;
-			ss << "Description: " << m_description << " with attributes: [";
+			ss << "Description: " << m_description.data() << " with attributes: [";
 			bool first_attrib = true;
 			for (const auto& it : kParameterPropNames)
 			{

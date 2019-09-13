@@ -380,7 +380,11 @@ void CSGObject::init()
 	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
 }
 
+#ifdef SWIG
+std::string CSGObject::get_description(const std::string& name) const
+#else
 std::string CSGObject::get_description(std::string_view name) const
+#endif
 {
 	auto it = self->map.find(BaseTag(name));
 	if (it != self->map.end())
@@ -642,7 +646,11 @@ std::vector<std::string> CSGObject::observable_names()
 	return list;
 }
 
+#ifdef SWIG
+bool CSGObject::has(const std::string& name) const
+#else
 bool CSGObject::has(std::string_view name) const
+#endif
 {
 	return has_parameter(BaseTag(name));
 }
@@ -800,7 +808,11 @@ void CSGObject::init_auto_params()
 	}
 }
 
+#ifdef SWIG
+CSGObject* CSGObject::get(const std::string& name, index_t index) const
+#else
 CSGObject* CSGObject::get(std::string_view name, index_t index) const
+#endif
 {
 	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
@@ -813,13 +825,19 @@ CSGObject* CSGObject::get(std::string_view name, index_t index) const
 	return result;
 }
 
+#ifndef SWIG
 CSGObject* CSGObject::get(std::string_view name, std::nothrow_t) const
     noexcept
 {
 	return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
 }
+#endif
 
+#ifdef SWIG
+CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
+#else
 CSGObject* CSGObject::get(std::string_view name) const noexcept(false)
+#endif
 {
 	if (!has(name))
 	{

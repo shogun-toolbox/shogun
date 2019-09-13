@@ -261,8 +261,11 @@ public:
 	 * @param name parameter's name
 	 * @return description of the parameter as a string
 	 */
+#ifdef SWIG
+	std::string get_description(const std::string& name) const;
+#else
 	std::string get_description(std::string_view name) const;
-
+#endif
 	/** prints all parameter registered for model selection and their type */
 	void print_modsel_params();
 
@@ -279,8 +282,11 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name
 	 */
+#ifdef SWIG
+	bool has(const std::string& name) const;
+#else
 	bool has(std::string_view name) const;
-
+#endif
 	/** Checks if object has a class parameter identified by a Tag.
 	 *
 	 * @param tag tag of the parameter containing name and type information
@@ -485,8 +491,13 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
+#ifdef SWIG
+	CSGObject* get(const std::string& name) const noexcept(false);
+#else
 	CSGObject* get(std::string_view name) const noexcept(false);
+#endif
 
+#ifndef SWIG
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Does not throw an error if class parameter object cannot be casted
 	 * to appropriate internal type.
@@ -495,7 +506,8 @@ public:
 	 * @return object parameter
 	 */
 	CSGObject* get(std::string_view name, std::nothrow_t) const noexcept;
-
+#endif
+	
 	/** Untyped getter for an object array class parameter, identified by a name
 	 * and an index.
 	 * Will attempt to get specified object of appropriate internal type.
@@ -505,7 +517,11 @@ public:
 	 * @index index of the parameter
 	 * @return object parameter
 	 */
+#ifdef SWIG
+	CSGObject* get(const std::string& name, index_t index) const;
+#else
 	CSGObject* get(std::string_view name, index_t index) const;
+#endif
 
 #ifndef SWIG
 	/** Typed setter for an object class parameter of a Shogun base class type,
