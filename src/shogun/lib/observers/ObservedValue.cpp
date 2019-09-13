@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-ObservedValue::ObservedValue(const int64_t step, const std::string& name)
+ObservedValue::ObservedValue(const int64_t step, std::string_view name)
     : CSGObject(), m_step(step), m_name(name), m_any_value(Any())
 {
 	SG_ADD(&m_step, "step", "Step", ParameterProperties::READONLY);

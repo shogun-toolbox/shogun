@@ -74,12 +74,12 @@ namespace shogun
 		{
 			init_random_seed();
 
-			Parent::add_callback_function("seed", [&]() {
+			Parent::add_callback_function(kSeed, [&]() {
 				m_prng = PRNG(Seedable<Parent>::m_seed);
 			});
 
 			Parent::watch_method(
-			    "set_random_seed", &this_t::set_random_seed);
+			    kSetRandomSeed, &this_t::set_random_seed);
 		}
 
 	protected:
@@ -97,6 +97,12 @@ namespace shogun
 		}
 
 		mutable PRNG m_prng;
+
+#ifndef SWIG
+	public:
+		static constexpr std::string_view kSetRandomSeed = "set_random_seed";
+		static constexpr std::string_view kSeed = "seed";
+#endif // SWIG
 	};
 
 	static inline void random_seed_callback(CSGObject* obj)

@@ -52,8 +52,8 @@ namespace shogun
         /** Constructor to initialize hash from name
          * @param _name name for tag
          */
-        explicit BaseTag(const std::string& _name) : 
-            m_name(_name), m_hash(std::hash<std::string>()(_name))
+        explicit BaseTag(std::string_view _name) : 
+            m_name(_name), m_hash(std::hash<std::string>()(_name.data()))
         {
         }
 

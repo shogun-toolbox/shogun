@@ -59,7 +59,7 @@ class ObservedValueTemplated;
 namespace sgo_details
 {
 template <typename T1, typename T2>
-bool dispatch_array_type(const CSGObject* obj, const std::string& name,
+bool dispatch_array_type(const CSGObject* obj, std::string_view name,
 		T2&& lambda);
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -70,7 +70,7 @@ template <class T, class K> class CMap;
 struct TParameter;
 template <class T> class DynArray;
 
-using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
+using stringToEnumMapType = std::unordered_map<std::string_view, std::unordered_map<std::string_view, machine_int_t>>;
 
 /*******************************************************************************
  * define reference counter macros
@@ -261,7 +261,7 @@ public:
 	 * @param name parameter's name
 	 * @return description of the parameter as a string
 	 */
-	std::string get_description(const std::string& name) const;
+	std::string get_description(std::string_view name) const;
 
 	/** prints all parameter registered for model selection and their type */
 	void print_modsel_params();
@@ -279,7 +279,7 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name
 	 */
-	bool has(const std::string& name) const;
+	bool has(std::string_view name) const;
 
 	/** Checks if object has a class parameter identified by a Tag.
 	 *
@@ -298,7 +298,7 @@ public:
 	 * @return true if the parameter exists with the input name and type
 	 */
 	template <typename T, typename U = void>
-	bool has(const std::string& name) const noexcept(true)
+	bool has(std::string_view name) const noexcept(true)
 	{
 		BaseTag tag(name);
 		if (!has_parameter(tag))
@@ -394,7 +394,11 @@ public:
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type,
 		      class Z = void>
+#ifdef SWIG
 	void put(const std::string& name, T* value)
+#else
+	void put(std::string_view name, T* value)
+#endif
 	{
 		put(Tag<T*>(name), value);
 	}
@@ -407,11 +411,15 @@ public:
 	*/
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
+#ifdef SWIG
 	void add(const std::string& name, T* value)
+#else
+	void add(std::string_view name, T* value)
+#endif
 	{
 		require(
 			value, "Cannot add to {}::{}, no object provided.", get_name(),
-			name.c_str());
+			name.data());
 
 		auto push_back_lambda = [&value](auto& array) {
 			array.push_back(value);
@@ -421,7 +429,7 @@ public:
 
 		error(
 		    "Cannot add object {} to array parameter {}::{} of type {}.",
-		    value->get_name(), get_name(), name.c_str(),
+		    value->get_name(), get_name(), name.data(),
 			demangled_type<T>().c_str());
 	}
 
@@ -438,7 +446,7 @@ public:
 	*/
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index, std::nothrow_t) const
+	T* get(std::string_view name, index_t index, std::nothrow_t) const
 	{
 		CSGObject* result = nullptr;
 
@@ -457,14 +465,14 @@ public:
 
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index) const
+	T* get(std::string_view name, index_t index) const
 	{
 		auto result = this->get<T>(name, index, std::nothrow);
 		if (!result)
 		{
 			error(
 				"Could not get array parameter {}::{}[{}] of type {}",
-				get_name(), name.c_str(), index, demangled_type<T>().c_str());
+				get_name(), name.data(), index, demangled_type<T>().c_str());
 		}
 		return result;
 	};
@@ -477,7 +485,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name) const noexcept(false);
+	CSGObject* get(std::string_view name) const noexcept(false);
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Does not throw an error if class parameter object cannot be casted
@@ -486,7 +494,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
+	CSGObject* get(std::string_view name, std::nothrow_t) const noexcept;
 
 	/** Untyped getter for an object array class parameter, identified by a name
 	 * and an index.
@@ -497,7 +505,7 @@ public:
 	 * @index index of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name, index_t index) const;
+	CSGObject* get(std::string_view name, index_t index) const;
 
 #ifndef SWIG
 	/** Typed setter for an object class parameter of a Shogun base class type,
@@ -507,7 +515,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-	void put(const std::string& name, Some<T> value)
+	void put(std::string_view name, Some<T> value)
 	{
 		put(name, value.get());
 	}
@@ -520,7 +528,7 @@ public:
 	* @param value value of the parameter
 	*/
 	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-	void add(const std::string& name, Some<T> value)
+	void add(std::string_view name, Some<T> value)
 	{
 		add(name, value.get());
 	}
@@ -536,7 +544,11 @@ public:
 		          !std::is_base_of<
 		              CSGObject, typename std::remove_pointer<T>::type>::value,
 		          T>::type>
+#ifdef SWIG
 	void put(const std::string& name, T value)
+#else
+	void put(std::string_view name, T value)
+#endif
 	{
 		if constexpr (std::is_enum<T>::value)
 			put(Tag<machine_int_t>(name), static_cast<machine_int_t>(value));
@@ -591,7 +603,7 @@ public:
 					exc.expected().c_str(), get_name(), _tag.name().c_str());
 			}
 		}
-		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
+		return std::string(string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name())));
 	}
 #endif
 
@@ -602,7 +614,11 @@ public:
 	 * @return value of the parameter corresponding to the input name and type
 	 */
 	template <typename T, typename U = void>
+#ifdef SWIG
 	T get(const std::string& name) const noexcept(false)
+#else
+	T get(std::string_view name) const noexcept(false)
+#endif
 	{
 		Tag<T> tag(name);
 		return get(tag);
@@ -613,13 +629,17 @@ public:
 	 * @param name name of the parameter
 	 * @return value of the parameter corresponding to the input name and type
 	 */
+#ifdef SWIG
 	void run(const std::string& name) const noexcept(false)
+#else
+	void run(std::string_view name) const noexcept(false)
+#endif
 	{
 		Tag<bool> tag(name);
 		auto param = get_function(tag);
 		if (!any_cast<bool>(param.get_value()))
 		{
-			error("Failed to run function {}::{}", get_name(), name.c_str());
+			error("Failed to run function {}::{}", get_name(), name.data());
 		}
 	}
 
@@ -785,7 +805,7 @@ protected:
 	 * @param value value of the parameter along with type information
 	 */
 	template <typename T>
-	void register_param(const std::string& name, const T& value)
+	void register_param(std::string_view name, const T& value)
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any(value)));
@@ -799,7 +819,7 @@ protected:
 	 */
 	template <typename T>
 	void watch_param(
-		const std::string& name, T* value,
+		std::string_view name, T* value,
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
@@ -817,7 +837,7 @@ protected:
 	 */
 	template <typename T>
 	void watch_param(
-			const std::string& name, T* value,
+			std::string_view name, T* value,
 			std::shared_ptr<params::AutoInit> auto_init,
 			AnyParameterProperties properties)
 	{
@@ -845,7 +865,7 @@ protected:
 	 */
 	template <typename T1, typename ...Args>
 	void watch_param(
-			const std::string& name, T1* value,
+			std::string_view name, T1* value,
 			Constraint<Args...>&& constrain_function,
 			AnyParameterProperties properties)
 	{
@@ -875,7 +895,7 @@ protected:
 	 */
 	template <typename T, typename S>
 	void watch_param(
-		const std::string& name, T** value, S* len,
+		std::string_view name, T** value, S* len,
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
@@ -895,7 +915,7 @@ protected:
 	 */
 	template <typename T, typename S>
 	void watch_param(
-		const std::string& name, T** value, S* rows, S* cols,
+		std::string_view name, T** value, S* rows, S* cols,
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
@@ -910,7 +930,7 @@ protected:
 	 * @param method pointer to the method
 	 */
 	template <typename T, typename S>
-	void watch_method(const std::string& name, T (S::*method)() const)
+	void watch_method(std::string_view name, T (S::*method)() const)
 	{
 		BaseTag tag(name);
 		AnyParameterProperties properties(
@@ -929,7 +949,7 @@ protected:
 	 * @param method pointer to the method
 	 */
 	template <typename T, typename S>
-	void watch_method(const std::string& name, T (S::*method)())
+	void watch_method(std::string_view name, T (S::*method)())
 	{
 		BaseTag tag(name);
 		AnyParameterProperties properties(
@@ -946,7 +966,7 @@ protected:
 	 * @param method pointer to the function
 	 */
 	void add_callback_function(
-		const std::string& name, std::function<void()> method);
+		std::string_view name, std::function<void()> method);
 #endif
 
 public:
@@ -980,7 +1000,7 @@ public:
 	 * @return the string representation of the enum (option name)
 	 */
 	std::string string_enum_reverse_lookup(
-			const std::string& param, machine_int_t value) const;
+			std::string_view param, machine_int_t value) const;
 
 	void visit_parameter(const BaseTag& _tag, AnyVisitor* v) const;
 protected:
@@ -1111,7 +1131,7 @@ protected:
 	 */
 	template <class T>
 	void observe(
-		const int64_t step, const std::string& name, const T& value,
+		const int64_t step, std::string_view name, const T& value,
 		const AnyParameterProperties properties) const
 	{
 		// If there are no observers attached, do not create/emit anything.
@@ -1134,8 +1154,8 @@ protected:
 	 */
 	template <class T>
 	void observe(
-		const int64_t step, const std::string& name,
-		const std::string& description, const T value) const
+		const int64_t step, std::string_view name,
+		std::string_view description, const T value) const
 	{
 		this->observe(
 			step, name, value,
@@ -1150,7 +1170,7 @@ protected:
 	 * @param name tag's name
 	 */
 	template <class T>
-	void observe(const int64_t step, const std::string& name) const
+	void observe(const int64_t step, std::string_view name) const
 	{
 		auto param = this->get_parameter(BaseTag(name));
 		auto cloned = any_cast<T>(param.get_value());
@@ -1166,7 +1186,7 @@ protected:
 	 * @param description a user oriented description
 	 */
 	void register_observable(
-		const std::string& name, const std::string& description);
+		std::string_view name, std::string_view description);
 
 /**
  * Get the current step for the observed values.
@@ -1246,7 +1266,7 @@ const T* make_clone(const T* orig, ParameterProperties pp = ParameterProperties:
 namespace sgo_details
 {
 template <typename T1, typename T2>
-bool dispatch_array_type(const CSGObject* obj, const std::string& name, T2&& lambda)
+bool dispatch_array_type(const CSGObject* obj, std::string_view name, T2&& lambda)
 {
 	Tag<CDynamicObjectArray*> tag_array_sg(name);
 	if (obj->has(tag_array_sg))
@@ -1278,13 +1298,13 @@ struct GetByNameIndex
 };
 
 template <typename T>
-CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByName)
+CSGObject* get_if_possible(const CSGObject* obj, std::string_view name, GetByName)
 {
 	return obj->has<T*>(name) ? obj->get<T*>(name) : nullptr;
 }
 
 template <typename T>
-CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
+CSGObject* get_if_possible(const CSGObject* obj, std::string_view name, GetByNameIndex how)
 {
 	CSGObject* result = nullptr;
 	result = obj->get<T>(name, how.m_index, std::nothrow);
@@ -1292,7 +1312,7 @@ CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByN
 }
 
 template<typename T>
-CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& name,
+CSGObject* get_dispatch_all_base_types(const CSGObject* obj, std::string_view name,
 		T&& how)
 {
 	if (auto* result = get_if_possible<CKernel>(obj, name, how))
@@ -1310,7 +1330,7 @@ CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& 
 }
 
 template<class T>
-CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
+CSGObject* get_by_tag(const CSGObject* obj, std::string_view name,
 		T&& how)
 {
 	return get_dispatch_all_base_types(obj, name, how);

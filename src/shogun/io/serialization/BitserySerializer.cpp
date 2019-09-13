@@ -109,7 +109,7 @@ void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CS
 	auto params = o->get_params();
 	for (auto it = params.begin(); it != params.end();)
 	{
-		if (!it->second->get_value().visitable())
+		if (!it->second->get_value().visitable() || !it->second->get_value().cloneable())
 			it = params.erase(it);
 		else
 			++it;

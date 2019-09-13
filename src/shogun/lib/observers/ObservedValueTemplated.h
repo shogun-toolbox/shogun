@@ -28,8 +28,8 @@ namespace shogun
 		 * @param value the observed value
 		 */
 		ObservedValueTemplated(
-		    const int64_t step, const std::string& name,
-		    const std::string& description, const T value)
+		    const int64_t step, const std::string_view name,
+		    const std::string_view description, const T value)
 		    : ObservedValue(step, name), m_observed_value(value)
 		{
 			this->watch_param(
@@ -47,7 +47,7 @@ namespace shogun
 		 * @param properties properties of that observed value
 		 */
 		ObservedValueTemplated(
-		    const int64_t step, const std::string& name, const T value,
+		    const int64_t step, std::string_view name, const T value,
 		    const AnyParameterProperties properties)
 		    : ObservedValue(step, name), m_observed_value(value)
 		{
