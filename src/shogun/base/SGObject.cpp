@@ -663,7 +663,14 @@ std::string CSGObject::to_string() const
 		}
 		else if (value.visitable())
 		{
-			value.visit(visitor.get());
+			try
+			{
+				value.visit(visitor.get());
+			}
+			catch(...)
+			{
+				ss << "null";
+			}
 		}
 		else
 		{
@@ -764,7 +771,7 @@ void CSGObject::for_each_param_of_type(
 
 	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
 		Any any_param = pair.second.get_value();
-		if (any_param.visitable())
+		if (any_param.visitable() && !pair.second.get_properties().has_property(ParameterProperties::RUNFUNCTION) && pair.first.name() != RandomMixin<CSGObject>::kSetRandomSeed)
 		{
 			const std::string name = pair.first.name();
 			visitor->set_name(name);

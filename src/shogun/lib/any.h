@@ -788,8 +788,6 @@ namespace shogun
 
 		virtual bool is_void() const = 0;
 
-		virtual bool is_nothrow() const = 0;
-
 		virtual size_t hash(void* storage) const = 0;
 	};
 
@@ -831,14 +829,7 @@ namespace shogun
 		{
 			if constexpr (traits::is_functional<T>::value)
 				return std::is_same_v<typename T::result_type, void>;
-			return false;
-		}
-
-		virtual bool is_nothrow() const override
-		{
-			if constexpr (traits::is_functional<T>::value)
-				return std::is_nothrow_invocable<T>::value;
-			return false;
+			return std::is_same_v<T, void>;
 		}
 	};
 
@@ -1152,6 +1143,9 @@ namespace shogun
 
 		/** @return true if Any object is visitable. */
 		bool visitable() const;
+
+		/** @return true if Any object is comparable. */
+		bool comparable() const;
 
 		/** @return true if Any object is hashable. */
 		bool hashable() const;

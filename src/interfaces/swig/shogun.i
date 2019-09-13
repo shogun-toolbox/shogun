@@ -134,7 +134,7 @@ import org.jblas.*;
     auto val = static_cast<machine_int_t>(VALUE);
     auto string_to_enum = string_to_enum_map[TAG.name()];
     auto count = std::count_if(string_to_enum.begin(), string_to_enum.end(),
-                               [val](const std::pair <std::string, machine_int_t> &p) {
+                               [val](const std::pair<std::string_view, machine_int_t>& p) {
                                    return val == p.second;
                                });
     if (count > 0)

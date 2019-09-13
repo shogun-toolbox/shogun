@@ -154,9 +154,14 @@ namespace shogun
 		return !policy->is_functional();
 	}
 
-	bool Any::visitable() const
+	bool Any::comparable() const
 	{
 		return !policy->is_functional();
+	}
+
+	bool Any::visitable() const
+	{
+		return !policy->is_functional() || (policy->is_functional() && !policy->is_void());
 	}
 
 	bool Any::hashable() const
@@ -181,7 +186,7 @@ namespace shogun
 
 	void Any::visit(AnyVisitor* visitor) const
 	{
-		if (!visitable() && !(policy->is_functional() && !policy->is_void()))
+		if (!visitable())
 		{
 			throw std::logic_error("Tried to visit non-visitable Any");
 		}

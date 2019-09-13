@@ -65,7 +65,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	buffer_matrix_ ## type_name ## _info* info=NULL;
 
-	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
+	char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
 	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
@@ -114,7 +114,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	view->ndim=2;
 
-	view->format=(char*) format_str;
+	view->format=format;
 	view->itemsize=sizeof( type_name );
 
 	view->len=(shape[0]*shape[1])*view->itemsize;

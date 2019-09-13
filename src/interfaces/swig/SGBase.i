@@ -435,7 +435,7 @@ namespace shogun
         std::vector<std::string> parameter_names() const {
             std::vector<std::string> result;
             for (auto const& each: $self->get_params()) {
-                result.push_back(each.first);
+                result.push_back(std::string(each.first));
             }
             return result;
         }
@@ -477,7 +477,7 @@ namespace shogun
             auto string_to_enum_map = param_to_enum_map[name];
 
             for (auto const& each: string_to_enum_map)
-                result.push_back(each.first);
+                result.push_back(std::string(each.first));
 
             return result;
         }
