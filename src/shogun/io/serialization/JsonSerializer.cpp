@@ -299,7 +299,7 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGOb
 	writer.StartObject();
 	for (const auto& p: params)
 	{
-		if (p.second->get_value().visitable())
+		if (p.second->get_value().visitable() && p.second->get_value().cloneable())
 		{
 			writer.Key(p.first.c_str());
 			p.second->get_value().visit(visitor);

@@ -81,7 +81,6 @@ TYPEMAP_SGVECTOR(floatmax_t, REALSXP, NUMERIC_POINTER, "numeric", is.numeric($ar
 
 %typemap(out) shogun::SGMatrix<sg_type>
 {
-    sg_type* matrix = $1.matrix;
     int32_t rows = $1.num_rows;
     int32_t cols = $1.num_cols;
 

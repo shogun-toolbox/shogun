@@ -154,9 +154,14 @@ namespace shogun
 		return !policy->is_functional();
 	}
 
-	bool Any::visitable() const
+	bool Any::comparable() const
 	{
 		return !policy->is_functional();
+	}
+
+	bool Any::visitable() const
+	{
+		return !policy->is_functional() || (policy->is_functional() && !policy->is_void());
 	}
 
 	bool Any::hashable() const

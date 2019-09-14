@@ -13,6 +13,7 @@
 
 #include <list>
 #include <memory>
+#include <string_view>
 
 namespace shogun
 {
@@ -80,9 +81,9 @@ namespace shogun
 		/** Constructor with description and all parameters set to false
 		 * @param description parameter description
 		 * */
-		AnyParameterProperties(const std::string& description)
-		    : m_description(description),
-		      m_attribute_mask(ParameterProperties::NONE)
+		AnyParameterProperties(
+				std::string_view description)
+				: m_description(description), m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
 		/** Mask constructor
@@ -90,7 +91,7 @@ namespace shogun
 		 * @param attribute_mask mask encoding parameter properties
 		 * */
 		AnyParameterProperties(
-		    const std::string& description, ParameterProperties attribute_mask)
+		    std::string_view description, ParameterProperties attribute_mask)
 		    : m_description(description), m_attribute_mask(attribute_mask)
 		{
 		}
@@ -100,7 +101,7 @@ namespace shogun
 		      m_attribute_mask(other.m_attribute_mask)
 		{
 		}
-		const std::string& get_description() const
+		std::string_view get_description() const
 		{
 			return m_description;
 		}
@@ -119,7 +120,7 @@ namespace shogun
 		std::string to_string() const
 		{
 			std::stringstream ss;
-			ss << "Description: " << m_description << " with attributes: [";
+			ss << "Description: " << m_description.data() << " with attributes: [";
 			bool first_attrib = true;
 			for (const auto& it : kParameterPropNames)
 			{
@@ -134,7 +135,7 @@ namespace shogun
 		}
 
 	private:
-		std::string m_description;
+		std::string_view m_description;
 		ParameterProperties m_attribute_mask;
 	};
 

@@ -26,7 +26,7 @@ namespace shogun
 		 * @param step step
 		 * @param name name of the observed value
 		 */
-		ObservedValue(const int64_t step, const std::string& name);
+		ObservedValue(const int64_t step, std::string_view name);
 
 		/**
 		 * Destructor

@@ -34,7 +34,7 @@
 #ifdef SWIGPYTHON
 #include <object.h>
 %{
-    static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
+	static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
 %}
 
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
@@ -43,7 +43,7 @@
 %feature("python:tp_print") shogun::CSGObject "print_sgobject";
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
-#endif
+#endif // SWIGPYTHON
 
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
@@ -134,7 +134,7 @@ import org.jblas.*;
     auto val = static_cast<machine_int_t>(VALUE);
     auto string_to_enum = string_to_enum_map[TAG.name()];
     auto count = std::count_if(string_to_enum.begin(), string_to_enum.end(),
-                               [val](const std::pair <std::string, machine_int_t> &p) {
+                               [val](const std::pair<std::string_view, machine_int_t>& p) {
                                    return val == p.second;
                                });
     if (count > 0)
@@ -203,13 +203,13 @@ namespace shogun
 	{
 		PUT_SCALAR_DISPATCHER(T, name, value)
 	}
-
+#if !defined(SWIGPYTHON) && !defined(SWIGR)
 	/* get method for strings to disambiguate it from get_option */
 	std::string get_string(const std::string& name) const
 	{
 		return $self->get<std::string>(name);
 	}
-
+#endif // !defined(SWIGPYTHON) && !defined(SWIGR)
 #ifdef SWIGJAVA
 	// templated since otherwise SWIG doesn't match the typemap for SGMatrix
 	// for the DoubleMatrix hack, X = float64_t and T = SGMatrix<X>
@@ -335,7 +335,6 @@ namespace shogun
 %template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 %template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
-
 %template(put) CSGObject::put<std::string, std::string>;
 
 %define PUT_ADD(sg_class)

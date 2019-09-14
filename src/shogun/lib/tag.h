@@ -51,8 +51,8 @@ namespace shogun
         /** Constructor
          * @param _name name of tag
          */
-        explicit Tag(const std::string& _name) : 
-            BaseTag(_name)
+        explicit Tag(std::string_view _name) : 
+            BaseTag(_name.data())
         {
         }
 

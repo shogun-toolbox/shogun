@@ -35,7 +35,7 @@ void ToStringVisitor::on(std::string *v) {
 
 void ToStringVisitor::on(CSGObject **v) {
 	if (*v) {
-		stream() << (*v)->get_name() << "(...) ";
+		stream() << (*v)->get_name() << "(...)";
 	} else {
 		stream() << "null";
 	}

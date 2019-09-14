@@ -25,6 +25,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,7 +59,7 @@ namespace shogun
 {
 
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
-	typedef std::unordered_map<std::string, std::string> ObsParamsList;
+	typedef std::unordered_map<std::string_view, std::string_view> ObsParamsList;
 
 	class CSGObject::Self
 	{
@@ -202,9 +203,9 @@ namespace shogun
 	class CSGObject::ParameterObserverList
 	{
 	public:
-		void register_param(const std::string& name, const std::string& description)
+		void register_param(std::string_view name, std::string_view description)
 		{
-			m_list_obs_params[name] = description;
+			m_list_obs_params[name.data()] = description;
 		}
 
 		ObsParamsList get_list() const
@@ -379,17 +380,21 @@ void CSGObject::init()
 	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
 }
 
+#ifdef SWIG
 std::string CSGObject::get_description(const std::string& name) const
+#else
+std::string CSGObject::get_description(std::string_view name) const
+#endif
 {
-	auto it = this->get_params().find(name);
-	if (it != this->get_params().end())
+	auto it = self->map.find(BaseTag(name));
+	if (it != self->map.end())
 	{
-		return it->second.get()->get_properties().get_description();
+		return std::string(it->second.get_properties().get_description());
 	}
 	else
 	{
 		error(
-		    "There is no parameter called '{}' in {}", name.c_str(),
+		    "There is no parameter called '{}' in {}", name.data(),
 		    this->get_name());
 		return "";
 	}
@@ -557,7 +562,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 }
 
 void CSGObject::add_callback_function(
-    const std::string& name, std::function<void()> function)
+    std::string_view name, std::function<void()> function)
 {
 	require(function, "Function object is not callable");
 	BaseTag tag(name);
@@ -627,7 +632,7 @@ void CSGObject::observe(ObservedValue* value) const
 }
 
 void CSGObject::register_observable(
-    const std::string& name, const std::string& description)
+    std::string_view name, std::string_view description)
 {
 	param_obs_list->register_param(name, description);
 }
@@ -641,7 +646,11 @@ std::vector<std::string> CSGObject::observable_names()
 	return list;
 }
 
+#ifdef SWIG
 bool CSGObject::has(const std::string& name) const
+#else
+bool CSGObject::has(std::string_view name) const
+#endif
 {
 	return has_parameter(BaseTag(name));
 }
@@ -663,7 +672,14 @@ std::string CSGObject::to_string() const
 		}
 		else if (value.visitable())
 		{
-			value.visit(visitor.get());
+			try
+			{
+				value.visit(visitor.get());
+			}
+			catch(...)
+			{
+				ss << "null";
+			}
 		}
 		else
 		{
@@ -683,7 +699,7 @@ std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_params
 {
 	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
 	for (auto const& each: self->map) {
-		result.emplace(each.first.name(), std::make_shared<const AnyParameter>(each.second));
+		result.emplace(each.first.name().data(), std::make_shared<const AnyParameter>(each.second));
 	}
 	return result;
 }
@@ -715,7 +731,7 @@ bool CSGObject::equals(const CSGObject* other) const
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
 
-		if (!own.visitable())
+		if (!own.comparable())
 		{
 			SG_DEBUG(
 			    "Skipping comparison of {}::{} of type {} as it is "
@@ -764,7 +780,7 @@ void CSGObject::for_each_param_of_type(
 
 	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
 		Any any_param = pair.second.get_value();
-		if (any_param.visitable())
+		if (any_param.visitable() && !pair.second.get_properties().has_property(ParameterProperties::RUNFUNCTION) && pair.first.name() != RandomMixin<CSGObject>::kSetRandomSeed)
 		{
 			const std::string name = pair.first.name();
 			visitor->set_name(name);
@@ -792,30 +808,40 @@ void CSGObject::init_auto_params()
 	}
 }
 
+#ifdef SWIG
 CSGObject* CSGObject::get(const std::string& name, index_t index) const
+#else
+CSGObject* CSGObject::get(std::string_view name, index_t index) const
+#endif
 {
 	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
 	{
 		error(
 			"Cannot get array parameter {}::{}[{}] of type {} as object.",
-			get_name(), name.c_str(), index,
+			get_name(), name.data(), index,
 			self->map[BaseTag(name)].get_value().type().c_str());
 	}
 	return result;
 }
 
-CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
+#ifndef SWIG
+CSGObject* CSGObject::get(std::string_view name, std::nothrow_t) const
     noexcept
 {
 	return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
 }
+#endif
 
+#ifdef SWIG
 CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
+#else
+CSGObject* CSGObject::get(std::string_view name) const noexcept(false)
+#endif
 {
 	if (!has(name))
 	{
-		error("Parameter {}::{} does not exist.", get_name(), name.c_str());
+		error("Parameter {}::{} does not exist.", get_name(), name.data());
 	}
 	if (auto* result = get(name, std::nothrow))
 	{
@@ -823,22 +849,22 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 	}
 	error(
 			"Cannot get parameter {}::{} of type {} as object.",
-			get_name(), name.c_str(),
-			self->map[BaseTag(name)].get_value().type().c_str());
+			get_name(), name.data(),
+			self->map[BaseTag(name.data())].get_value().type().c_str());
 	return nullptr;
 }
 
 std::string CSGObject::string_enum_reverse_lookup(
-    const std::string& param, machine_int_t value) const
+    std::string_view param, machine_int_t value) const
 {
 	auto param_enum_map = m_string_to_enum_map.at(param);
 	auto enum_value = value;
 	auto enum_map_it = std::find_if(
 	    param_enum_map.begin(), param_enum_map.end(),
-	    [&enum_value](const std::pair<std::string, machine_int_t>& p) {
+	    [&enum_value](const std::pair<std::string_view, machine_int_t>& p) {
 		    return p.second == enum_value;
 	    });
-	return enum_map_it->first;
+	return std::string(enum_map_it->first);
 }
 
 void CSGObject::visit_parameter(const BaseTag& _tag, AnyVisitor* v) const
