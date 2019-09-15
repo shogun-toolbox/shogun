@@ -186,5 +186,5 @@ void CRandomForest::init()
 	SG_REF(m_machine);
 	m_weights=SGVector<float64_t>();
 
-	SG_ADD(&m_weights,"m_weights","weights");
+	SG_ADD(&m_weights, kWeights, "weights");
 }

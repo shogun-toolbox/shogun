@@ -115,12 +115,13 @@ TEST_F(RandomForest, classify_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	auto eval = some<CMulticlassAccuracy>();
-	c->put("oob_error_metric", eval);
-	EXPECT_NEAR(0.7142857,c->get<float64_t>("oob_error"),1e-6);
+	CEvaluation* eval = new CMulticlassAccuracy();
+	c->put(CRandomForest::kOobEvaluationMetric, eval);
+	EXPECT_NEAR(0.7142857,c->get<float64_t>(CRandomForest::kOobError),1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
+	SG_UNREF(eval);
 }
 
 TEST_F(RandomForest, classify_non_nominal_test)
@@ -152,12 +153,13 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	auto eval = some<CMulticlassAccuracy>();
-	c->put("oob_error_metric", eval);
-	EXPECT_NEAR(0.714285,c->get<float64_t>("oob_error"),1e-6);
+	CEvaluation* eval = new CMulticlassAccuracy();
+	c->put(CRandomForest::kOobEvaluationMetric, eval);
+	EXPECT_NEAR(0.714285,c->get<float64_t>(CRandomForest::kOobError),1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
+	SG_UNREF(eval);
 }
 
 TEST_F(RandomForest, score_compare_sklearn_toydata)

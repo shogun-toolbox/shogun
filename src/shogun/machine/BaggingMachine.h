@@ -195,7 +195,21 @@ namespace shogun
 		CDynamicObjectArray* m_oob_indices;
 
 		/** metric to calculate the oob error */
-		CEvaluation* m_oob_error_metric;
+		CEvaluation* m_oob_evaluation_metric;
+
+#ifndef SWIG
+	public:
+		static constexpr std::string_view kFeatures = "features";
+		static constexpr std::string_view kNBags = "num_bags";
+		static constexpr std::string_view kBagSize = "bag_size";
+		static constexpr std::string_view kBags = "bags";
+		static constexpr std::string_view kCombinationRule = "combination_rule";
+		static constexpr std::string_view kAllOobIdx = "all_oob_idx";
+		static constexpr std::string_view kOobIndices = "oob_indices";
+		static constexpr std::string_view kMachine = "machine";
+		static constexpr std::string_view kOobError = "oob_error";
+		static constexpr std::string_view kOobEvaluationMetric = "oob_evaluation_metric";
+#endif	
 	};
 } // namespace shogun
 

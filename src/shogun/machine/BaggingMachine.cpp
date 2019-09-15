@@ -255,22 +255,22 @@ void CBaggingMachine::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 
 void CBaggingMachine::register_parameters()
 {
-	SG_ADD(&m_features, "features", "Train features for bagging");
+	SG_ADD(&m_features, kFeatures, "Train features for bagging");
 	SG_ADD(
-	    &m_num_bags, "num_bags", "Number of bags", ParameterProperties::HYPER);
+	    &m_num_bags, kNBags, "Number of bags", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_bag_size, "bag_size", "Number of vectors per bag",
+	    &m_bag_size, kBagSize, "Number of vectors per bag",
 	    ParameterProperties::HYPER);
-	SG_ADD(&m_bags, "bags", "Bags array");
+	SG_ADD(&m_bags, kBags, "Bags array");
 	SG_ADD(
-	    &m_combination_rule, "combination_rule",
+	    &m_combination_rule, kCombinationRule,
 	    "Combination rule to use for aggregating", ParameterProperties::HYPER);
-	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors");
-	SG_ADD(&m_oob_indices, "oob_indices", "OOB indices for each machine");
-	SG_ADD(&m_machine, "machine", "machine to use for bagging");
-	SG_ADD(&m_oob_error_metric, "oob_error_metric",
+	SG_ADD(&m_all_oob_idx, kAllOobIdx, "Indices of all oob vectors");
+	SG_ADD(&m_oob_indices, kOobIndices, "OOB indices for each machine");
+	SG_ADD(&m_machine, kMachine, "machine to use for bagging");
+	SG_ADD(&m_oob_evaluation_metric, kOobEvaluationMetric,
 	    "metric to calculate the oob error");
-	watch_method("oob_error", &CBaggingMachine::get_oob_error);
+	watch_method(kOobError, &CBaggingMachine::get_oob_error);
 }
 
 void CBaggingMachine::set_num_bags(int32_t num_bags)
@@ -318,7 +318,7 @@ void CBaggingMachine::init()
 	m_bag_size = 0;
 	m_all_oob_idx = SGVector<bool>();
 	m_oob_indices = nullptr;
-	m_oob_error_metric = nullptr;
+	m_oob_evaluation_metric = nullptr;
 }
 
 void CBaggingMachine::set_combination_rule(CCombinationRule* rule)
@@ -337,8 +337,7 @@ CCombinationRule* CBaggingMachine::get_combination_rule() const
 float64_t CBaggingMachine::get_oob_error() const
 {
 	require(
-	    m_oob_error_metric, "Need to set an oob error evaluation metric with "
-	                        ".put(\"oob_error_metric\", eval)!");
+	    m_oob_evaluation_metric, "Out of bag evaluation metric is not set!");
 	require(m_combination_rule, "Combination rule is not set!");
 	require(m_bags->get_num_elements() > 0, "BaggingMachine is not trained!");
 
@@ -414,7 +413,7 @@ float64_t CBaggingMachine::get_oob_error() const
 	SG_REF(predicted);
 
 	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
-	float64_t res = m_oob_error_metric->evaluate(predicted, m_labels);
+	float64_t res = m_oob_evaluation_metric->evaluate(predicted, m_labels);
 	m_labels->remove_subset();
 
 	SG_UNREF(predicted);

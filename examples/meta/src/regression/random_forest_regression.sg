@@ -25,7 +25,7 @@ RegressionLabels labels_predict = rand_forest.apply_regression(features_test)
 
 #![evaluate_error]
 Evaluation mse = evaluation("MeanSquaredError")
-rand_forest.put("oob_error_metric", mse)
+rand_forest.put("oob_evaluation_metric", mse)
 real oob = rand_forest.get_real("oob_error")
 real mserror = mse.evaluate(labels_predict, labels_test)
 #![evaluate_error]
