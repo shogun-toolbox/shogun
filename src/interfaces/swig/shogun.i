@@ -80,7 +80,6 @@
 %include "ModelSelection_includes.i"
 %include "Ensemble_includes.i"
 %include "NeuralNets_includes.i"
-%include "Boost_includes.i"
 
 %include "SGBase.i"
 %include "IO.i"
@@ -110,7 +109,6 @@
 %include "GaussianProcess.i"
 %include "Ensemble.i"
 %include "NeuralNets.i"
-%include "Boost.i"
 
 %include "ParameterObserver.i"
 %include "factory.i"
@@ -358,6 +356,7 @@ PUT_ADD(CSVM)
 PUT_ADD(CMeanFunction)
 PUT_ADD(CLikelihoodModel)
 PUT_ADD(CTokenizer)
+PUT_ADD(CLossFunction)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;
