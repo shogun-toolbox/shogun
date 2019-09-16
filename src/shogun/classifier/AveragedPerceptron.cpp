@@ -29,7 +29,7 @@ void CAveragedPerceptron::init()
 	cached_bias = 0.0;
 
 	SG_ADD(
-	    &learn_rate, "learn_rate", "Learning rate.", ParameterProperties::HYPER)
+	    &learn_rate, kLearnRate, "Learning rate.", ParameterProperties::HYPER)
 	SG_ADD(
 	    &cached_w, "cached_w", "Cached weights that contribute to the average.",
 	    ParameterProperties::MODEL)

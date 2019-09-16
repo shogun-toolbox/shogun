@@ -161,6 +161,10 @@ private:
 
 	/** Indices of pre-sorted features */
 	SGMatrix<index_t> m_sorted_indices;
+#ifndef SWIG
+public:
+	static constexpr std::string_view kWeights = "weights";
+#endif
 };
 } /* namespace shogun */
 #endif /* _RANDOMFOREST_H__ */

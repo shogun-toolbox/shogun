@@ -665,8 +665,7 @@ std::string CSGObject::to_string() const
 	{
 		ss << it->first.name() << "=";
 		auto value = it->second.get_value();
-		if (m_string_to_enum_map.find(it->first.name()) !=
-		    m_string_to_enum_map.end())
+		if (m_string_to_enum_map.count(it->first.name()))
 		{
 			ss << string_enum_reverse_lookup(it->first.name(), any_cast<machine_int_t>(value));
 		}
@@ -780,7 +779,8 @@ void CSGObject::for_each_param_of_type(
 
 	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
 		Any any_param = pair.second.get_value();
-		if (any_param.visitable() && !pair.second.get_properties().has_property(ParameterProperties::RUNFUNCTION) && pair.first.name() != RandomMixin<CSGObject>::kSetRandomSeed)
+		// functions aren't cloneable, but are visitable
+		if (any_param.cloneable())
 		{
 			const std::string name = pair.first.name();
 			visitor->set_name(name);

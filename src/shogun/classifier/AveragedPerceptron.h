@@ -79,6 +79,11 @@ namespace shogun
 	private:
 		float64_t cached_bias;
 		SGVector<float64_t> cached_w;
+
+#ifndef SWIG
+	public:
+		static constexpr std::string_view kLearnRate = "learn_rate";
+#endif
 	};
 } // namespace shogun
 

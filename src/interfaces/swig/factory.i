@@ -23,6 +23,7 @@
 %newobject shogun::pipeline;
 %newobject shogun::labels;
 %newobject shogun::distribution;
+%newobject shogun::combination_rule;
 
 %{
     #include <shogun/util/factory.h>

@@ -97,7 +97,7 @@ TEST_F(RandomForest, classify_nominal_test)
 {
 	int32_t seed = 2343;
 	CRandomForest* c =
-	    new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
+		new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
@@ -106,7 +106,7 @@ TEST_F(RandomForest, classify_nominal_test)
 	c->train(weather_features_train);
 
 	CMulticlassLabels* result =
-	    (CMulticlassLabels*)c->apply(weather_features_test);
+		(CMulticlassLabels*)c->apply(weather_features_test);
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -115,8 +115,9 @@ TEST_F(RandomForest, classify_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.7142857,c->get_oob_error(eval),1e-6);
+	CEvaluation* eval = new CMulticlassAccuracy();
+	c->put(CRandomForest::kOobEvaluationMetric, eval);
+	EXPECT_NEAR(0.7142857,c->get<float64_t>(CRandomForest::kOobError),1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
@@ -133,7 +134,7 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	weather_ft[3] = false;
 
 	CRandomForest* c =
-	    new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
+		new CRandomForest(weather_features_train, weather_labels_train, 100, 2);
 	c->set_feature_types(weather_ft);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
@@ -142,7 +143,7 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	c->train(weather_features_train);
 
 	CMulticlassLabels* result =
-	    (CMulticlassLabels*)c->apply(weather_features_test);
+		(CMulticlassLabels*)c->apply(weather_features_test);
 	SGVector<float64_t> res_vector=result->get_labels();
 	SGVector<float64_t> values_vector = result->get_values();
 
@@ -152,8 +153,9 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.714285,c->get_oob_error(eval),1e-6);
+	CEvaluation* eval = new CMulticlassAccuracy();
+	c->put(CRandomForest::kOobEvaluationMetric, eval);
+	EXPECT_NEAR(0.714285,c->get<float64_t>(CRandomForest::kOobError),1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
@@ -171,7 +173,7 @@ TEST_F(RandomForest, score_compare_sklearn_toydata)
 	SGMatrix<float64_t> data(data_A, 2, 4, false);
 
 	CDenseFeatures<float64_t>* features_train =
-	    new CDenseFeatures<float64_t>(data);
+		new CDenseFeatures<float64_t>(data);
 
 	float64_t labels[] = {0.0, 0.0, 1.0, 1.0};
 	SGVector<float64_t> lab(labels, 4);
@@ -222,7 +224,7 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 		data_B(0, i) = i < 5 ? uniform_int_dist(prng, {0, 5}) : uniform_int_dist(prng, {5, 10});
 	}
 	CDenseFeatures<float64_t>* features_train =
-	    new CDenseFeatures<float64_t>(data_B);
+		new CDenseFeatures<float64_t>(data_B);
 
 	float64_t labels[] = {0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 	SGVector<float64_t> lab(labels, num_train);
@@ -236,10 +238,10 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 	}
 
 	CDenseFeatures<float64_t>* features_test =
-	    new CDenseFeatures<float64_t>(test_data);
+		new CDenseFeatures<float64_t>(test_data);
 
 	CRandomForest* c =
-	    new CRandomForest(features_train, labels_train, num_trees, 1);
+		new CRandomForest(features_train, labels_train, num_trees, 1);
 	SGVector<bool> ft = SGVector<bool>(1);
 	ft[0] = false;
 	c->set_feature_types(ft);

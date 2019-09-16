@@ -84,13 +84,26 @@ using stringToEnumMapType = std::unordered_map<std::string_view, std::unordered_
  * Macros for registering parameter properties
  ******************************************************************************/
 
+#ifndef SWIG
+SG_FORCED_INLINE const char* convert_string_to_char(std::string_view name)
+{
+    return name.data();
+}
+
+SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
+{
+    return name;
+}
+#endif
+
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
 		auto pprop =                                                           \
 		    AnyParameterProperties(description, this->m_default_mask);         \
-		this->m_parameters->add(param, name, description);                     \
+		const char* name_char = convert_string_to_char(name);                  \
+		this->m_parameters->add(param, name_char, description);                \
 		this->watch_param(name, param, pprop);                                 \
-	}
+}
 
 #define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
@@ -102,12 +115,14 @@ using stringToEnumMapType = std::unordered_map<std::string_view, std::unordered_
 		mask |= this->m_default_mask;                                          \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, mask);                         \
-		this->m_parameters->add(param, name, description);                     \
+		const char* name_char = convert_string_to_char(name);                  \
+		this->m_parameters->add(param, name_char, description);                \
 		this->watch_param(name, param, pprop);                                 \
 		if (pprop.has_property(ParameterProperties::HYPER))                    \
-			this->m_model_selection_parameters->add(param, name, description); \
+			this->m_model_selection_parameters->add(                           \
+			    param, name_char, description);                                \
 		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
-			this->m_gradient_parameters->add(param, name, description);        \
+			this->m_gradient_parameters->add(param, name_char, description);   \
 	}
 
 #define SG_ADD5(                                                               \
@@ -117,12 +132,14 @@ using stringToEnumMapType = std::unordered_map<std::string_view, std::unordered_
 		mask |= this->m_default_mask;                                          \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, mask);                         \
-		this->m_parameters->add(param, name, description);                     \
+		const char* name_char = convert_string_to_char(name);                  \
+		this->m_parameters->add(param, name_char, description);                \
 		this->watch_param(name, param, auto_or_constraint, pprop);             \
 		if (pprop.has_property(ParameterProperties::HYPER))                    \
-			this->m_model_selection_parameters->add(param, name, description); \
+			this->m_model_selection_parameters->add(                           \
+			    param, name_char, description);                                \
 		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
-			this->m_gradient_parameters->add(param, name, description);        \
+			this->m_gradient_parameters->add(param, name_char, description);   \
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
