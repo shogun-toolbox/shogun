@@ -232,6 +232,16 @@ protected:
 
 	/** gamma - weak learner weights */
 	CDynamicArray<float64_t>* m_gamma;
+#ifndef SWIG
+public:
+	static constexpr std::string_view kMachine = "machine";
+	static constexpr std::string_view kLoss = "loss";
+	static constexpr std::string_view kNumIterations = "num_iterations";
+	static constexpr std::string_view kSubsetFrac = "subset_frac";
+	static constexpr std::string_view kLearningRate = "learning_rate";
+	static constexpr std::string_view kWeakLearners = "weak_learners";
+	static constexpr std::string_view kGamma = "gamma";
+#endif
 };
 }/* shogun */
 

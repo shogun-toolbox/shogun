@@ -389,8 +389,8 @@ float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *param
 
 void CStochasticGBMachine::init()
 {
-	m_machine=NULL;
-	m_loss=NULL;
+	m_machine=nullptr;
+	m_loss=nullptr;
 	m_num_iter=0;
 	m_subset_frac=0;
 	m_learning_rate=0;
@@ -399,13 +399,13 @@ void CStochasticGBMachine::init()
 	SG_REF(m_weak_learners);
 
 	m_gamma=new CDynamicArray<float64_t>();
-	SG_REF(m_gamma);
+	SG_REF(m_gamma); 
 
-	SG_ADD((CSGObject**)&m_machine,"m_machine","machine");
-	SG_ADD((CSGObject**)&m_loss,"m_loss","loss function");
-	SG_ADD(&m_num_iter,"m_num_iter","number of iterations");
-	SG_ADD(&m_subset_frac,"m_subset_frac","subset fraction");
-	SG_ADD(&m_learning_rate,"m_learning_rate","learning rate");
-	SG_ADD((CSGObject**)&m_weak_learners,"m_weak_learners","array of weak learners");
-	SG_ADD((CSGObject**)&m_gamma,"m_gamma","array of learner weights");
+	SG_ADD(&m_machine, kMachine, "machine");
+	SG_ADD(&m_loss, kLoss, "loss function");
+	SG_ADD(&m_num_iter, kNumIterations, "number of iterations");
+	SG_ADD(&m_subset_frac, kSubsetFrac, "subset fraction");
+	SG_ADD(&m_learning_rate, kLearningRate, "learning rate");
+	SG_ADD(&m_weak_learners, kWeakLearners, "array of weak learners");
+	SG_ADD((CSGObject**)&m_gamma, kGamma, "array of learner weights");
 }
