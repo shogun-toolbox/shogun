@@ -8,9 +8,11 @@ set PIP_INSTALL=pip install -q
 
 @rem Use clcache for faster builds
 pip install -q git+https://github.com/frerich/clcache.git
+clcache -M 3221225472
 clcache -s
 set CLCACHE_SERVER=1
 set CLCACHE_HARDLINK=1
+set CLCACHE_NODIRECT=1
 powershell.exe -Command "Start-Process clcache-server"
 
 if %errorlevel% neq 0 exit /b %errorlevel%
