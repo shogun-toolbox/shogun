@@ -7,6 +7,8 @@ namespace shogun
 {
 	namespace traits
 	{
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 		template<typename... Ts>
 		struct try_to_declare {};
 
@@ -147,7 +149,8 @@ namespace shogun
 
 		template<typename T>
 		using returns_void = std::is_same<typename T::result_type, void>;
-
+		
+		#endif // DOXYGEN_SHOULD_SKIP_THIS
 	} // namespace traits
 } // namespace shogun
 #endif
