@@ -383,6 +383,7 @@ namespace shogun
 		template <>
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		template <typename T, typename _ = void>
 		struct has_special_compare : std::false_type
 		{
@@ -419,6 +420,7 @@ namespace shogun
 		           std::declval<T>()))>> : public std::true_type
 		{
 		};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 		template <class T>
 		constexpr T& mutable_value_of(void** ptr)
