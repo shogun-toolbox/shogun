@@ -7,7 +7,6 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DotFeatures.h>

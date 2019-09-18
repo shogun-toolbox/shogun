@@ -62,8 +62,8 @@ public:
 	float64_t get_value();
 	virtual const char* get_name() const {return "PiecewiseQuadraticObject";}
 private:
-	SGVector<float64_t> get_gradient(TParameter * param);
-	SGVector<float64_t> get_variable(TParameter * param);
+	SGVector<float64_t> get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
+	SGVector<float64_t> get_variable(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
 	void init();
 	SGVector<float64_t> m_init_x;
 	SGVector<float64_t> m_truth_x;

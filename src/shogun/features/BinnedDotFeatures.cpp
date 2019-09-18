@@ -6,7 +6,7 @@
  */
 
 #include <shogun/features/BinnedDotFeatures.h>
-#include <shogun/base/Parameter.h>
+
 
 using namespace shogun;
 

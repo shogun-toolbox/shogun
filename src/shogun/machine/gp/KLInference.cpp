@@ -34,6 +34,7 @@
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
@@ -275,7 +276,7 @@ float64_t KLInference::get_negative_log_marginal_likelihood()
 	return get_negative_log_marginal_likelihood_helper();
 }
 
-SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	auto lik=get_variational_likelihood();
 	if (!lik->supports_derivative_wrt_hyperparameter())
@@ -291,14 +292,15 @@ SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(const TPara
 	return result;
 }
 
-SGVector<float64_t> KLInference::get_derivative_wrt_mean(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_mean(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
 
-	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = ShapeVisitor();
+	param.second->get_value().visit(&visitor);
+	int64_t len= visitor.get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -345,11 +347,11 @@ void KLInference::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 }
 
 
-SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	REQUIRE(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+			get_name(), param.first.c_str())
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -361,11 +363,12 @@ SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(const TPara
 	return result;
 }
 
-SGVector<float64_t> KLInference::get_derivative_wrt_kernel(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_kernel(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = ShapeVisitor();
+	param.second->get_value().visit(&visitor);
+	int64_t len= visitor.get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)

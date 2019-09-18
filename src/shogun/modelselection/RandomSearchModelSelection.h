@@ -8,6 +8,8 @@
 #ifndef RANDOMSEARCHMODELSELECTION_H_
 #define RANDOMSEARCHMODELSELECTION_H_
 
+#if 0
+
 #include <shogun/lib/config.h>
 
 #include <shogun/modelselection/ModelSelection.h>
@@ -70,4 +72,5 @@ protected:
 	float64_t m_ratio;
 };
 }
+#endif
 #endif /* RANDOMSEARCHMODELSELECTION_H_ */

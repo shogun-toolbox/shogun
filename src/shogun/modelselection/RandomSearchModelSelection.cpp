@@ -13,6 +13,7 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/modelselection/RandomSearchModelSelection.h>
 
+#if 0
 using namespace shogun;
 
 RandomSearchModelSelection::RandomSearchModelSelection() : RandomMixin<ModelSelection>()
@@ -136,3 +137,4 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 
 	return best_combination;
 }
+#endif

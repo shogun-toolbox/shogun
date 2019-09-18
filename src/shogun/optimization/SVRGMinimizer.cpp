@@ -30,7 +30,7 @@
  */
 #include <shogun/optimization/SVRGMinimizer.h>
 #include <shogun/optimization/SGDMinimizer.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 SVRGMinimizer::SVRGMinimizer()
@@ -120,7 +120,7 @@ float64_t SVRGMinimizer::minimize()
 
 			std::copy(var.vector, var.vector+var.vlen, variable_reference.vector);
 			for(index_t idx=0; idx<grad_new.vlen; idx++)
-				grad_new[idx]+=(m_average_gradient[idx]-grad_old[idx]);
+			grad_new[idx]+=(m_average_gradient[idx]-grad_old[idx]);
 
 			update_gradient(grad_new,variable_reference);
 			m_gradient_updater->update_variable(variable_reference,grad_new,learning_rate);

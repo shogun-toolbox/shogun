@@ -65,12 +65,11 @@ SGVector<float64_t> ConstMean::get_mean_vector(std::shared_ptr<const Features> f
 }
 
 SGVector<float64_t> ConstMean::get_parameter_derivative(std::shared_ptr<const Features> features,
-	const TParameter* param, index_t index)
+	const std::pair<std::string, std::shared_ptr<const AnyParameter>>&  param, index_t index)
 {
 	REQUIRE(features,"The features should NOT be NULL\n");
-	REQUIRE(param,"The param should NOT be NULL\n");
 
-	if (!strcmp(param->m_name, "mean"))
+	if (param.first == "mean")
 	{
 		SGVector<float64_t> derivative(features->get_num_vectors());
 		derivative.set_const(1.0);
@@ -78,7 +77,7 @@ SGVector<float64_t> ConstMean::get_parameter_derivative(std::shared_ptr<const Fe
 	}
 	else
 	{
-		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param.first.c_str());
 		return SGVector<float64_t>();
 	}
 }

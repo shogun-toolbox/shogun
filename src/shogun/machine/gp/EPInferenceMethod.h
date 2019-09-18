@@ -287,42 +287,42 @@ protected:
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class
 	 *
-	 * @param param parameter of CInference class
+	 * @param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
+			const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
 	 *
-	 * @param param parameter of given likelihood model
+	 * @param parameter of given likelihood model
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
 	 *
-	 * @param param parameter of given kernel
+	 * @param parameter of given kernel
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
+			const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
 	 *
-	 * @param param parameter of given mean function
+	 * @param parameter of given mean function
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
 
 private:
 	void init();

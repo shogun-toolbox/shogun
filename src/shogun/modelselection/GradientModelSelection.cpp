@@ -6,6 +6,7 @@
  *          Soeren Sonnenburg
  */
 
+#if 0
 #include <shogun/modelselection/GradientModelSelection.h>
 
 #include <shogun/base/progress.h>
@@ -365,3 +366,4 @@ std::shared_ptr<ParameterCombination> GradientModelSelection::select_model(bool 
 }
 
 }
+#endif

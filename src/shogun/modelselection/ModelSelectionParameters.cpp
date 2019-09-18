@@ -5,6 +5,7 @@
  *          Bjoern Esser, Leon Kuchenbecker
  */
 
+#if 0
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/lib/DataType.h>
@@ -13,7 +14,6 @@
 #include <shogun/mathematics/UniformIntDistribution.h>
 
 using namespace shogun;
-
 ModelSelectionParameters::ModelSelectionParameters()
 {
 	init();
@@ -706,3 +706,4 @@ void ModelSelectionParameters::delete_values()
 		}
 	}
 }
+#endif

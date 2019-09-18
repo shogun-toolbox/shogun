@@ -1059,9 +1059,6 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_logit_likelihood
 
 	abs_tolerance = Math::get_abs_tolerance(3.359093542091830, rel_tolerance);
 	EXPECT_NEAR(nml, 3.359093542091830, abs_tolerance);
-
-	// clean up
-	
 }
 
 TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
@@ -1119,9 +1116,6 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_probit_likelihoo
 
  	abs_tolerance = Math::get_abs_tolerance(3.900050836490685, rel_tolerance);
 	EXPECT_NEAR(nml, 3.900050836490685, abs_tolerance);
-
-	// clean up
-	
 }
 
 TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
@@ -1162,7 +1156,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1170,15 +1164,10 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
-	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_df=gradient["log_df"][0];
+	float64_t dnlZ_sigma=gradient["log_sigma"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
@@ -1205,11 +1194,6 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	EXPECT_NEAR(dnlZ_ell, -0.805849415403716, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.418521621175371, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.418521621175371, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
@@ -1255,7 +1239,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1263,11 +1247,8 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
@@ -1284,11 +1265,6 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 	EXPECT_NEAR(dnlZ_ell, 0.275308238001720, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.138232607204219, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.138232607204219, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -1334,7 +1310,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1342,11 +1318,8 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
@@ -1363,10 +1336,5 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 	EXPECT_NEAR(dnlZ_ell, 0.299593140038451, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(0.401789648589235, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, 0.401789648589235, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 #endif //USE_GPL_SHOGUN

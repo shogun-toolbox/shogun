@@ -5,7 +5,7 @@
  */
 
 #include <shogun/features/Subset.h>
-#include <shogun/base/Parameter.h>
+
 
 using namespace shogun;
 

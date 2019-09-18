@@ -37,6 +37,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGStringList.h>
+#include <shogun/lib/type_case.h>
 
 namespace shogun
 {
@@ -145,10 +146,15 @@ public:
 protected:
 	virtual void init()
 	{
-		set_generic<T>();
-		m_value = SGStringList<T>();
-		m_parameters->add_vector(&m_value.strings, &m_value.num_strings, "value",
-				"Serialized value");
+		if constexpr (type_internal::is_sg_primitive<T>::value)
+			set_generic<T>();
+		// FIXME(?): std::vector<bool> is not a container
+		// doesn't play well with the parameter framework
+		if constexpr (!std::is_same<T, bool>::value)
+			watch_param("value", &m_value);
+		else
+			SG_WARNING("std::vector<bool> is not currently serializable. "
+					   "Use SGVector<bool> instead.");
 	}
 
 	SGStringList<T> m_value;

@@ -8,6 +8,8 @@
 #ifndef __PARAMETERCOMBINATION_H__
 #define __PARAMETERCOMBINATION_H__
 
+#if 0
+
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/Map.h>
@@ -333,4 +335,5 @@ protected:
 	uint32_t m_parameters_length;
 };
 }
+#endif
 #endif /* __PARAMETERCOMBINATION_H__ */

@@ -32,7 +32,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/optimization/L1Penalty.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 SMIDASMinimizer::SMIDASMinimizer()

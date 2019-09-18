@@ -11,6 +11,7 @@
 
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
+#if 0
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -29,7 +30,6 @@
 #include <shogun/modelselection/GradientModelSelection.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/NLOPTMinimizer.h>
-
 
 using namespace shogun;
 
@@ -184,3 +184,4 @@ TEST(GradientModelSelection,select_model_ep_inference)
 
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
+#endif

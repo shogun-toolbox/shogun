@@ -86,9 +86,6 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 	float64_t ell2=ell/weight;
 	auto kernel2=std::make_shared<GaussianKernel>(10, 2*ell2*ell2);
 
-
-
-
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
 
@@ -117,12 +114,6 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 			EXPECT_NEAR(mat(i,j),mat2(i,j),abs_tolerance);
 		}
 	}
-
-	// cleanup
-
-
-
-
 }
 
 TEST(GaussianARDKernel_scalar,get_parameter_gradient)
@@ -169,17 +160,17 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	float64_t ell2=ell/weight;
 	auto kernel2=std::make_shared<GaussianKernel>(10, 2*ell2*ell2);
 
-
-
-
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
 
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_weights");
-	TParameter* width_param2=kernel2->m_gradient_parameters->get_parameter("log_width");
+	auto params1 = kernel->get_params();
+	auto params2 = kernel2->get_params();
 
-	SGMatrix<float64_t> mat=kernel->get_parameter_gradient(width_param);
-	SGMatrix<float64_t> mat2=kernel2->get_parameter_gradient(width_param2);
+	auto width_param=params1.find("log_weights");
+	auto width_param2=params2.find("log_width");
+
+	SGMatrix<float64_t> mat=kernel->get_parameter_gradient(*width_param);
+	SGMatrix<float64_t> mat2=kernel2->get_parameter_gradient(*width_param2);
 	for(int32_t i=0;i<mat.num_rows;i++)
 	{
 		for(int32_t j=0;j<mat.num_cols;j++)
@@ -192,8 +183,8 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	kernel->init(features_train, features_train);
 	kernel2->init(features_train, features_train);
 
-	mat=kernel->get_parameter_gradient(width_param);
-	mat2=kernel2->get_parameter_gradient(width_param2);
+	mat=kernel->get_parameter_gradient(*width_param);
+	mat2=kernel2->get_parameter_gradient(*width_param2);
 	for(int32_t i=0;i<mat.num_rows;i++)
 	{
 		for(int32_t j=0;j<mat.num_cols;j++)
@@ -202,12 +193,6 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 			EXPECT_NEAR(mat(i,j),-mat2(i,j),abs_tolerance);
 		}
 	}
-
-	// cleanup
-
-
-
-
 }
 
 TEST(GaussianARDKernel_vector,get_kernel_matrix)
@@ -255,8 +240,6 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
 	kernel->set_vector_weights(weights);
-
-
 
 	kernel->init(features_train, latent_features_train);
 
@@ -340,10 +323,6 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
-	// cleanup
-
-
-
 }
 
 TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
@@ -390,9 +369,6 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-
-
-
 	kernel->init(latent_features_train, latent_features_train2);
 	//result from GPML 3.5
 	//1.000000000000000   0.702682587860637   0.004907454025841
@@ -419,10 +395,6 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	EXPECT_NEAR(mat(2,1),  0.053362341348083,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
-
-	// cleanup
-
-
 
 }
 
@@ -561,10 +533,6 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
-	// cleanup
-
-
-
 }
 
 TEST(GaussianARDKernel,get_kernel_diagonal)
@@ -644,11 +612,6 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 		abs_tolerance=Math::get_abs_tolerance(vec2[i],rel_tolerance);
 		EXPECT_NEAR(vec[i],vec2[i],abs_tolerance);
 	}
-
-	// cleanup
-
-
-
 }
 
 TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
@@ -695,17 +658,17 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	float64_t ell2=ell/weight;
 	auto kernel2=std::make_shared<GaussianKernel>(10, 2*ell2*ell2);
 
-
-
-
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
 
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_weights");
-	TParameter* width_param2=kernel2->m_gradient_parameters->get_parameter("log_width");
+	auto params1 = kernel->get_params();
+	auto params2 = kernel2->get_params();
 
-	SGVector<float64_t> vec=kernel->get_parameter_gradient_diagonal(width_param);
-	SGVector<float64_t> vec2=kernel2->get_parameter_gradient_diagonal(width_param2);
+	auto width_param=params1.find("log_weights");
+	auto width_param2=params2.find("log_width");
+
+	SGVector<float64_t> vec=kernel->get_parameter_gradient_diagonal(*width_param);
+	SGVector<float64_t> vec2=kernel2->get_parameter_gradient_diagonal(*width_param2);
 	for(int32_t j=0;j<vec.vlen;j++)
 	{
 		abs_tolerance=Math::get_abs_tolerance(-vec2[j],rel_tolerance);
@@ -715,17 +678,11 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	kernel->init(features_train, features_train);
 	kernel2->init(features_train, features_train);
 
-	vec=kernel->get_parameter_gradient_diagonal(width_param);
-	vec2=kernel2->get_parameter_gradient_diagonal(width_param2);
+	vec=kernel->get_parameter_gradient_diagonal(*width_param);
+	vec2=kernel2->get_parameter_gradient_diagonal(*width_param2);
 	for(int32_t j=0;j<vec.vlen;j++)
 	{
 		abs_tolerance=Math::get_abs_tolerance(-vec2[j],rel_tolerance);
 		EXPECT_NEAR(vec[j],-vec2[j],abs_tolerance);
 	}
-
-	// cleanup
-
-
-
-
 }

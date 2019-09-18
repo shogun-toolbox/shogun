@@ -7,7 +7,7 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
+
 #include <shogun/base/progress.h>
 #include <shogun/clustering/GMM.h>
 #include <shogun/clustering/KMeans.h>

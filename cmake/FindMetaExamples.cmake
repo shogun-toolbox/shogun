@@ -51,6 +51,10 @@ function(get_excluded_meta_examples)
 			binary/multiple_kernel_learning.sg
 		)
 	ENDIF()
+
+  # TODO: remove me when model selection is fixed
+  LIST(APPEND EXCLUDED_META_EXAMPLES
+      gaussian_process/regression.sg)
   
   # remove double entries to avoid errors due to "double" removing
   LIST(LENGTH EXCLUDED_META_EXAMPLES NUM_EXCLUDED)

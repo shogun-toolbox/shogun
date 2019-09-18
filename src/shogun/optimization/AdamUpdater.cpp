@@ -31,7 +31,7 @@
 
 #include <shogun/optimization/AdamUpdater.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+
 
 using namespace shogun;
 

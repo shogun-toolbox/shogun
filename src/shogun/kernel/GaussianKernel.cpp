@@ -88,12 +88,12 @@ void GaussianKernel::set_width(float64_t w)
 	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
-SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
+SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param, index_t index)
 {
 	REQUIRE(lhs, "Left hand side features must be set!\n")
 	REQUIRE(rhs, "Rightt hand side features must be set!\n")
 
-	if (!strcmp(param->m_name, "log_width"))
+	if (param.first == "log_width")
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
 		for (int k=0; k<num_rhs; k++)
@@ -109,7 +109,7 @@ SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(const TParameter* par
 	}
 	else
 	{
-		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param.first.c_str());
 		return SGMatrix<float64_t>();
 	}
 }

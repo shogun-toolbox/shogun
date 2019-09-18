@@ -6,7 +6,7 @@
  *          Evgeniy Andreev, Viktor Gal, Bjoern Esser
  */
 
-#include <shogun/base/Parameter.h>
+
 #include <shogun/base/progress.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>

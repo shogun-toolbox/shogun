@@ -420,7 +420,7 @@ SGVector<float64_t> StudentsTLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> StudentsTLikelihood::get_first_derivative(std::shared_ptr<const Labels> lab,
-		SGVector<float64_t> func, const TParameter* param) const
+		SGVector<float64_t> func, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -442,7 +442,7 @@ SGVector<float64_t> StudentsTLikelihood::get_first_derivative(std::shared_ptr<co
 	VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
 	float64_t df=get_degrees_freedom();
 
-	if (!strcmp(param->m_name, "log_df"))
+	if (param.first == "log_df")
 	{
 		// compute derivative of log probability wrt df:
 		// lp_ddf=df*(dloggamma(df/2+1/2)-dloggamma(df/2))/2-1/2-
@@ -468,7 +468,7 @@ SGVector<float64_t> StudentsTLikelihood::get_first_derivative(std::shared_ptr<co
 
 		return r;
 	}
-	else if (!strcmp(param->m_name, "log_sigma"))
+	else if (param.first == "log_sigma")
 	{
 		// compute derivative of log probability wrt sigma:
 		// lp_dsigma=(df+1)*r2./a-1
@@ -486,7 +486,7 @@ SGVector<float64_t> StudentsTLikelihood::get_first_derivative(std::shared_ptr<co
 }
 
 SGVector<float64_t> StudentsTLikelihood::get_second_derivative(std::shared_ptr<const Labels> lab,
-		SGVector<float64_t> func, const TParameter* param) const
+		SGVector<float64_t> func, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -513,7 +513,7 @@ SGVector<float64_t> StudentsTLikelihood::get_second_derivative(std::shared_ptr<c
 		eigen_r2 + std::exp(m_log_sigma * 2.0) * df * VectorXd::Ones(r.vlen);
 	VectorXd a2=a.cwiseProduct(a);
 
-	if (!strcmp(param->m_name, "log_df"))
+	if (param.first == "log_df")
 	{
 		// compute derivative of first derivative of log probability wrt df:
 		// dlp_ddf=df*r.*(a-sigma^2*(df+1))./a2
@@ -528,7 +528,7 @@ SGVector<float64_t> StudentsTLikelihood::get_second_derivative(std::shared_ptr<c
 
 		return r;
 	}
-	else if (!strcmp(param->m_name, "log_sigma"))
+	else if (param.first == "log_sigma")
 	{
 		// compute derivative of first derivative of log probability wrt sigma:
 		// dlp_dsigma=-(df+1)*2*df*sigma^2*r./a2
@@ -542,7 +542,7 @@ SGVector<float64_t> StudentsTLikelihood::get_second_derivative(std::shared_ptr<c
 }
 
 SGVector<float64_t> StudentsTLikelihood::get_third_derivative(std::shared_ptr<const Labels> lab,
-		SGVector<float64_t> func, const TParameter* param) const
+		SGVector<float64_t> func, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -569,7 +569,7 @@ SGVector<float64_t> StudentsTLikelihood::get_third_derivative(std::shared_ptr<co
 		eigen_r2 + std::exp(m_log_sigma * 2.0) * df * VectorXd::Ones(r.vlen);
 	VectorXd a3=(a.cwiseProduct(a)).cwiseProduct(a);
 
-	if (!strcmp(param->m_name, "log_df"))
+	if (param.first == "log_df")
 	{
 		// compute derivative of second derivative of log probability wrt df:
 		// d2lp_ddf=df*(r2.*(r2-3*sigma^2*(1+df))+df*sigma^4)./a3
@@ -583,7 +583,7 @@ SGVector<float64_t> StudentsTLikelihood::get_third_derivative(std::shared_ptr<co
 
 		return r;
 	}
-	else if (!strcmp(param->m_name, "log_sigma"))
+	else if (param.first == "log_sigma")
 	{
 		// compute derivative of second derivative of log probability wrt sigma:
 		// d2lp_dsigma=(df+1)*2*df*sigma^2*(a-4*r2)./a3

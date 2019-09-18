@@ -8,6 +8,9 @@
 #ifndef __GRIDSEARCHMODELSELECTION_H_
 #define __GRIDSEARCHMODELSELECTION_H_
 
+
+#if 0
+
 #include <shogun/lib/config.h>
 
 #include <shogun/modelselection/ModelSelection.h>
@@ -48,4 +51,5 @@ public:
 	virtual const char* get_name() const { return "GridSearchModelSelection"; }
 };
 }
+#endif
 #endif /* __GRIDSEARCHMODELSELECTION_H_ */

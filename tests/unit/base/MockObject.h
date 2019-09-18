@@ -1,4 +1,4 @@
-#include <shogun/base/Parameter.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/base/range.h>
 #include <shogun/lib/SGMatrix.h>

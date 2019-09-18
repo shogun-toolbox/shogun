@@ -21,7 +21,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 #include <shogun/features/Features.h>
-#include <shogun/base/Parameter.h>
+
 
 #include <shogun/classifier/svm/SVM.h>
 

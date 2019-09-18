@@ -32,7 +32,7 @@
 #include <shogun/optimization/FirstOrderStochasticMinimizer.h>
 #include <shogun/optimization/SparsePenalty.h>
 #include <shogun/optimization/ProximalPenalty.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 void FirstOrderStochasticMinimizer::set_gradient_updater(std::shared_ptr<DescendUpdater> gradient_updater)

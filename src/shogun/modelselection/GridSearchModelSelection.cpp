@@ -5,6 +5,8 @@
  *          Giovanni De Toni, Thoralf Klein, Roman Votyakov, Kyle McQuisten
  */
 
+#if 0
+
 #include <shogun/base/progress.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/machine/Machine.h>
@@ -128,3 +130,5 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 
 	return best_combination;
 }
+
+#endif

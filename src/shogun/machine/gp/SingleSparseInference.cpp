@@ -38,6 +38,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 
@@ -84,8 +85,8 @@ public:
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		m_obj->compute_gradient();
-		TParameter* param=m_obj->m_gradient_parameters->get_parameter("inducing_features");
-		SGVector<float64_t> derivatives=m_obj->get_derivative_wrt_inducing_features(param);
+		auto param=m_obj->get_params().find("inducing_features");
+		SGVector<float64_t> derivatives=m_obj->get_derivative_wrt_inducing_features(*param);
 		return derivatives;
 	}
         virtual SGVector<float64_t> get_lower_bound()
@@ -178,22 +179,21 @@ void SingleSparseInference::check_fully_sparse()
 }
 
 SGVector<float64_t> SingleSparseInference::get_derivative_wrt_inference_method(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	// the time complexity O(m^2*n) if the TO DO is done
-	REQUIRE(param, "Param not set\n");
-	REQUIRE(!(strcmp(param->m_name, "log_scale")
-			&& strcmp(param->m_name, "log_inducing_noise")
-			&& strcmp(param->m_name, "inducing_features")),
+	REQUIRE(param.first == "log_scale"
+			|| param.first == "log_inducing_noise"
+			|| param.first == "inducing_features",
 		    "Can't compute derivative of"
 			" the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+			get_name(), param.first.c_str())
 
-	if (!strcmp(param->m_name, "log_inducing_noise"))
+	if (param.first == "log_inducing_noise")
 		// wrt inducing_noise
 		// compute derivative wrt inducing noise
 		return get_derivative_wrt_inducing_noise(param);
-	else if (!strcmp(param->m_name, "inducing_features"))
+	else if (param.first == "inducing_features")
 	{
 		SGVector<float64_t> res;
 		if (!m_fully_sparse)
@@ -202,7 +202,7 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_inference_method(
 			int32_t num_samples=m_inducing_features.num_cols;
 			res=SGVector<float64_t>(dim*num_samples);
 			SG_WARNING("Derivative wrt %s cannot be computed since the kernel does not support fully sparse inference\n",
-				param->m_name);
+				param.first.c_str());
 			res.zero();
 			return res;
 		}
@@ -230,11 +230,12 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_inference_method(
 }
 
 SGVector<float64_t> SingleSparseInference::get_derivative_wrt_kernel(
-	const TParameter* param)
+	const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = ShapeVisitor();
+	param.second->get_value().visit(&visitor);
+	int64_t len= visitor.get_size();
 	result=SGVector<float64_t>(len);
 
 	auto inducing_features=get_inducing_features();

@@ -38,8 +38,7 @@
 #include <shogun/optimization/ConstLearningRate.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/SVRGMinimizer.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Map.h>
+
 #include <shogun/optimization/StandardMomentumCorrection.h>
 #include <shogun/optimization/AdaDeltaUpdater.h>
 #include <shogun/optimization/AdamUpdater.h>
@@ -85,11 +84,10 @@ float64_t CRegressionExample::get_cost()
 	return 0.5*(e_y-(e_x*e_w)).array().pow(2.0).sum();
 }
 
-SGVector<float64_t> CRegressionExample::get_gradient(TParameter * param)
+SGVector<float64_t> CRegressionExample::get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
-	REQUIRE(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
+	REQUIRE(param.first == "r_w", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str());
 	SGVector<float64_t> res(m_w.vlen);
 	res.set_const(0.0);
 
@@ -102,20 +100,17 @@ SGVector<float64_t> CRegressionExample::get_gradient(TParameter * param)
 	return res;
 }
 
-SGVector<float64_t> CRegressionExample::get_variable(TParameter * param)
+SGVector<float64_t> CRegressionExample::get_variable(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
-
-	REQUIRE(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
+	REQUIRE(param.first == "r_w", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str());
 	return m_w;
 }
 
-SGVector<float64_t> CRegressionExample::get_gradient(TParameter * param, index_t idx)
+SGVector<float64_t> CRegressionExample::get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param, index_t idx)
 {
-	REQUIRE(param, "param not set\n");
-	REQUIRE(!strcmp(param->m_name, "r_w"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
+	REQUIRE(param.first == "r_w", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str());
 	REQUIRE(idx>=0 && idx<m_y.vlen,"out of bound\n");
 	SGVector<float64_t> res(m_w.vlen);
 	res.set_const(0.0);
@@ -150,8 +145,6 @@ void RegressionForTestCostFunction::set_target(std::shared_ptr<CRegressionExampl
 {
 	if(m_obj!=obj)
 	{
-
-
 		m_obj=obj;
 	}
 }
@@ -171,22 +164,16 @@ int32_t RegressionForTestCostFunction::get_sample_size()
 SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-
-	index_t num_gradients=parameters->get_num_elements();
 	SGVector<float64_t> grad;
-	for(index_t i=0; i<num_gradients; i++)
-	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-		{
-			grad=m_obj->get_gradient(node->key);
-			for(index_t idx=0; idx<grad.vlen; idx++)
-				grad[idx]/=get_sample_size();
-		}
-	}
 
+	for (const auto& param: parameters)
+	{
+		grad = m_obj->get_gradient(param.first);
+		for(index_t idx=0; idx<grad.vlen; idx++)
+			grad[idx]/=get_sample_size();
+	}
 
 	return grad;
 }
@@ -208,17 +195,15 @@ bool RegressionForTestCostFunction::next_sample()
 SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
-	SGVector<float64_t> variable;
-	for(index_t idx=0; idx<num_variables; idx++)
-	{
-		auto node=parameters->get_node_ptr(idx);
-		if(node && node->data==m_obj.get())
-			variable=m_obj->get_variable(node->key);
-	}
 
+	SGVector<float64_t> variable;
+	for (const auto& param: parameters)
+	{
+		if(param.second==m_obj)
+			variable=m_obj->get_variable(param.first);
+	}
 
 	return variable;
 }
@@ -226,19 +211,16 @@ SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 SGVector<float64_t> RegressionForTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
-	index_t num_gradients=parameters->get_num_elements();
 	SGVector<float64_t> grad;
 
-	for(index_t idx=0; idx<num_gradients; idx++)
+	for(const auto& param: parameters)
 	{
-		auto node=parameters->get_node_ptr(idx);
-		if(node && node->data==m_obj.get())
-			grad=m_obj->get_gradient(node->key, m_idx);
+		if(param.second==m_obj)
+			grad=m_obj->get_gradient(param.first, m_idx);
 	}
-
 
 	return grad;
 }

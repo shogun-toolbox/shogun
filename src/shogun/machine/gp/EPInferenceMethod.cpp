@@ -34,10 +34,11 @@
 #include <shogun/machine/gp/EPInferenceMethod.h>
 
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/RandomNamespace.h>
@@ -475,11 +476,11 @@ void EPInferenceMethod::update_deriv()
 }
 
 SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	REQUIRE(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+			get_name(), param.first.c_str())
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
@@ -494,21 +495,22 @@ SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_inference_method(
 }
 
 SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	SG_NOTIMPLEMENTED
 	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
 
-	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = ShapeVisitor();
+	param.second->get_value().visit(&visitor);
+	int64_t len= visitor.get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -531,7 +533,7 @@ SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_kernel(
 }
 
 SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	SG_NOTIMPLEMENTED
 	return SGVector<float64_t>();

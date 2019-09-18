@@ -31,13 +31,14 @@
 
 #include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 
-#include <shogun/machine/gp/StudentsTLikelihood.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/features/DotFeatures.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
 #endif //USE_GPL_SHOGUN
+#include <shogun/machine/gp/StudentsTLikelihood.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/features/DotFeatures.h>
 #include <shogun/optimization/FirstOrderMinimizer.h>
 
 using namespace shogun;
@@ -784,20 +785,19 @@ float64_t SingleFITCLaplaceInferenceMethod::get_derivative_related_cov(SGVector<
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "Param not set\n");
 	//time complexity O(m^2*n)
-	REQUIRE(!(strcmp(param->m_name, "log_scale")
-		&& strcmp(param->m_name, "log_inducing_noise")
-		&& strcmp(param->m_name, "inducing_features")),
+	REQUIRE(param.first == "log_scale"
+		|| param.first == "log_inducing_noise"
+		|| param.first == "inducing_features",
 		"Can't compute derivative of"
 		" the nagative log marginal likelihood wrt %s.%s parameter\n",
-		get_name(), param->m_name)
+		get_name(), param.first.c_str())
 
 	SGVector<float64_t> result;
 	int32_t len;
-	if (!strcmp(param->m_name, "inducing_features"))
+	if (param.first == "inducing_features")
 	{
 		if(m_Wneg)
 		{
@@ -819,7 +819,7 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inferen
 		return derivative_helper_when_Wneg(result, param);
 	}
 
-	if (!strcmp(param->m_name, "log_inducing_noise"))
+	if (param.first == "log_inducing_noise")
 		// wrt inducing_noise
 		// compute derivative wrt inducing noise
 		return get_derivative_wrt_inducing_noise(param);
@@ -843,7 +843,7 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inferen
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	SGVector<float64_t> result(1);
 	if (m_Wneg)
@@ -878,11 +878,12 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_likelih
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = ShapeVisitor();
+	param.second->get_value().visit(&visitor);
+	int64_t len= visitor.get_size();
 	result=SGVector<float64_t>(len);
 
 	if (m_Wneg)
@@ -948,12 +949,13 @@ float64_t SingleFITCLaplaceInferenceMethod::get_derivative_implicit_term_helper(
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	//time complexity O(m*n)
-	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = ShapeVisitor();
+	param.second->get_value().visit(&visitor);
+	int64_t len= visitor.get_size();
 	result=SGVector<float64_t>(len);
 
 	if (m_Wneg)
@@ -970,17 +972,16 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_mean(
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::derivative_helper_when_Wneg(
-	SGVector<float64_t> res, const TParameter *param)
+	SGVector<float64_t> res, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "Param not set\n");
-	SG_WARNING("Derivative wrt %s cannot be computed since W (the Hessian (diagonal) matrix) is too negative\n", param->m_name);
+	SG_WARNING("Derivative wrt %s cannot be computed since W (the Hessian (diagonal) matrix) is too negative\n", param.first.c_str());
 	//dnlZ = struct('cov',0*hyp.cov, 'mean',0*hyp.mean, 'lik',0*hyp.lik);
 	res.zero();
 	return res;
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducing_features(
-	const TParameter* param)
+	const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	//time complexity depends on the implementation of the provided kernel
 	//time complexity is at least O(max((p*n*m),(m^2*n))), where p is the dimension (#) of features
@@ -1027,7 +1028,7 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducin
 }
 
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducing_noise(
-	const TParameter* param)
+	const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
 	//time complexity O(m^2*n)
 	//explicit term

@@ -7,7 +7,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
-#include <shogun/base/Parameter.h>
+
 
 #include <shogun/distance/HammingWordDistance.h>
 #include <shogun/features/Features.h>

@@ -31,7 +31,7 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/base/Parameter.h>
+
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>

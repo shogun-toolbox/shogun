@@ -112,7 +112,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_variational_first_derivative(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const;
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -131,7 +131,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const;
 
 	/** initialize the default bound for this class */
 	void set_default_variational_bound();

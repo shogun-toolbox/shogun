@@ -61,7 +61,9 @@ class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix",
         "WindowsFileSystem", "LocalWindowsFileSystem", "LocalPosixFileSystem",
         "NullFileSystem", "FilterVisitor", "RandomMixin", "MaxCrossValidation",
         "StreamingDataFetcher", "MaxMeasure", "MaxTestPower",
-        "MedianHeuristic", "WeightedMaxMeasure", "WeightedMaxTestPower"]
+        "MedianHeuristic", "WeightedMaxMeasure", "WeightedMaxTestPower",
+        "ShapeVisitor", "GradientModelSelection", "GridSearchModelSelection",
+        "ModelSelectionParameters", "ParameterCombination", "RandomSearchModelSelection"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
 SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"

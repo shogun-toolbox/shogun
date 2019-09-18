@@ -32,8 +32,7 @@
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <gtest/gtest.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Map.h>
+
 #include <shogun/optimization/NLOPTMinimizer.h>
 CPiecewiseQuadraticObject2::CPiecewiseQuadraticObject2()
 	:SGObject()
@@ -78,14 +77,13 @@ float64_t CPiecewiseQuadraticObject2::get_value()
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
+	REQUIRE(param.first == "init_x", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str())
 
 	SGVector<float64_t> res;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		res=SGVector<float64_t>(m_init_x.vlen);
 		REQUIRE(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
@@ -97,27 +95,23 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
 	}
 	return res;
 }
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
+	REQUIRE(param.first == "init_x", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str())
 
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
-
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 		return m_init_x;
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
-
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
-
+	REQUIRE(param.first == "init_x", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str())
+	
 	SGVector<float64_t> bound;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		bound=SGVector<float64_t>(m_init_x.vlen);
 		bound.set_const(m_x_upper_bound);
@@ -125,15 +119,13 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * par
 	return bound;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
-
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
+	REQUIRE(param.first == "init_x", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str());
 
 	SGVector<float64_t> bound;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		bound=SGVector<float64_t>(m_init_x.vlen);
 		bound.set_const(m_x_lower_bound);
@@ -174,74 +166,53 @@ float64_t NLOPTTestCostFunction::get_cost()
 SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
-	for(index_t i=0; i<num_variables; i++)
-	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			bound=m_obj->get_lower_bound(node->key);
-	}
-	
+	for (const auto& p: parameters)
+		bound=m_obj->get_lower_bound(p.first);
+
 	return bound;
 }
 
 SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
-	for(index_t i=0; i<num_variables; i++)
-	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			bound=m_obj->get_upper_bound(node->key);
-	}
-	
+	for (const auto& p: parameters)
+		bound=m_obj->get_upper_bound(p.first);
+
 	return bound;
 }
 
 SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
 
-	for(index_t i=0; i<num_variables; i++)
-	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			variable=m_obj->get_variable(node->key);
-	
-	}
-	
+	for (const auto& p: parameters)
+		variable=m_obj->get_variable(p.first);
+
 	return variable;
 }
 
 SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
-	index_t num_gradients=parameters->get_num_elements();
 	SGVector<float64_t> gradient;
 
-	for(index_t i=0; i<num_gradients; i++)
-	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			gradient=m_obj->get_gradient(node->key);
-	}
-	
+	for (const auto& p: parameters)
+		gradient=m_obj->get_gradient(p.first);
+
 	return gradient;
 }
 

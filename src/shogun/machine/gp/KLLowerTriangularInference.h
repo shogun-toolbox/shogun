@@ -110,9 +110,9 @@ protected:
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
 	 * Note that
-	 * get_derivative_wrt_inference_method(const TParameter* param)
+	 * get_derivative_wrt_inference_method
 	 * and
-	 * get_derivative_wrt_kernel(const TParameter* param)
+	 * get_derivative_wrt_kernel
 	 * will call this function
 	 *
 	 * @param dK the gradient wrt hyperparameter related to cov

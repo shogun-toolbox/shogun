@@ -8,6 +8,7 @@
 #ifndef __MODELSELECTIONPARAMETERS_H_
 #define __MODELSELECTIONPARAMETERS_H_
 
+#if 0
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
@@ -253,4 +254,5 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 }
 
 }
+#endif
 #endif /* __MODELSELECTIONPARAMETERS_H_ */

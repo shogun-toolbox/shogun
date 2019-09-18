@@ -10,6 +10,8 @@
 
 #include <shogun/lib/config.h>
 
+#if 0
+
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 
@@ -61,4 +63,7 @@ protected:
 	std::shared_ptr<MachineEvaluation> m_machine_eval;
 };
 }
+
+#endif
+
 #endif /* __MODELSELECTION_H_ */

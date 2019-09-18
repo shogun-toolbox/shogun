@@ -151,7 +151,7 @@ SGVector<float64_t> GaussianLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> GaussianLikelihood::get_first_derivative(std::shared_ptr<const Labels> lab,
-		SGVector<float64_t> func, const TParameter* param) const
+		SGVector<float64_t> func, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -164,7 +164,7 @@ SGVector<float64_t> GaussianLikelihood::get_first_derivative(std::shared_ptr<con
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	if (strcmp(param->m_name, "log_sigma"))
+	if (param.first != "log_sigma")
 		return SGVector<float64_t>();
 
 	SGVector<float64_t> y=lab->as<RegressionLabels>()->get_labels();
@@ -182,7 +182,7 @@ SGVector<float64_t> GaussianLikelihood::get_first_derivative(std::shared_ptr<con
 }
 
 SGVector<float64_t> GaussianLikelihood::get_second_derivative(std::shared_ptr<const Labels> lab,
-		SGVector<float64_t> func, const TParameter* param) const
+		SGVector<float64_t> func, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -190,7 +190,7 @@ SGVector<float64_t> GaussianLikelihood::get_second_derivative(std::shared_ptr<co
 	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector\n")
 
-	if (strcmp(param->m_name, "log_sigma"))
+	if (param.first != "log_sigma")
 		return SGVector<float64_t>();
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -210,7 +210,7 @@ SGVector<float64_t> GaussianLikelihood::get_second_derivative(std::shared_ptr<co
 }
 
 SGVector<float64_t> GaussianLikelihood::get_third_derivative(std::shared_ptr<const Labels> lab,
-		SGVector<float64_t> func, const TParameter* param) const
+		SGVector<float64_t> func, const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -218,7 +218,7 @@ SGVector<float64_t> GaussianLikelihood::get_third_derivative(std::shared_ptr<con
 	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector\n")
 
-	if (strcmp(param->m_name, "log_sigma"))
+	if (param.first != "log_sigma")
 		return SGVector<float64_t>();
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);

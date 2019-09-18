@@ -7,7 +7,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
-#include <shogun/base/Parameter.h>
+
 
 #include <shogun/distributions/LinearHMM.h>
 #include <shogun/features/StringFeatures.h>
@@ -297,13 +297,13 @@ void LinearHMM::init()
 	transition_probs = NULL;
 	log_transition_probs = NULL;
 
-	m_parameters->add_matrix(&transition_probs, &num_symbols, &sequence_length,
-			"transition_probs", "Transition probabilities.");
+	// m_parameters->add_matrix(&transition_probs, &num_symbols, &sequence_length,
+	// 		"transition_probs", "Transition probabilities.");
 	watch_param(
 	    "transition_probs", &transition_probs, &num_symbols, &sequence_length);
 
-	m_parameters->add_matrix(&log_transition_probs, &num_symbols, &sequence_length,
-			"log_transition_probs", "Transition probabilities (logspace).");
+	// m_parameters->add_matrix(&log_transition_probs, &num_symbols, &sequence_length,
+	// 		"log_transition_probs", "Transition probabilities (logspace).");
 	watch_param(
 	    "log_transition_probs", &log_transition_probs, &num_symbols,
 	    &sequence_length);

@@ -31,7 +31,7 @@
 
 #include <shogun/optimization/DescendUpdaterWithCorrection.h>
 #include <shogun/optimization/MomentumCorrection.h>
-#include <shogun/base/Parameter.h>
+
 
 using namespace shogun;
 

@@ -90,7 +90,7 @@ public:
 	 * @return derivative of mean function with respect to parameter
 	 */
 	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
-			const TParameter* param, index_t index=-1);
+			const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param, index_t index=-1);
 private:
 
 	void init();

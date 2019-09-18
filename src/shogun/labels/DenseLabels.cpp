@@ -5,7 +5,7 @@
  *          Fernando Iglesias, Michele Mazzoni, Chiyuan Zhang
  */
 
-#include <shogun/base/Parameter.h>
+
 #include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/DenseLabels.h>

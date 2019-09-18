@@ -298,8 +298,6 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassificationTest::TearDown();
-
-		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
@@ -324,7 +322,6 @@ public:
 		    kernel, features_train, mean, labels_train, likelihood);
 		auto opt = std::make_shared<NLOPTMinimizer>();
 		inf->register_minimizer(opt);
-
 		// train gaussian process classifier
 		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
@@ -332,7 +329,6 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassificationTest::TearDown();
-		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;

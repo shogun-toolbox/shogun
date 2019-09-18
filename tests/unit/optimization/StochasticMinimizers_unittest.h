@@ -111,9 +111,9 @@ public:
 	void set_init_w(SGVector<float64_t> w){m_w=w;}
 private:
 	int get_sample_size();
-	SGVector<float64_t> get_gradient(TParameter * param, index_t idx);
-	SGVector<float64_t> get_gradient(TParameter * param);
-	SGVector<float64_t> get_variable(TParameter * param);
+	SGVector<float64_t> get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param, index_t idx);
+	SGVector<float64_t> get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
+	SGVector<float64_t> get_variable(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param);
 	SGMatrix<float64_t> m_x;
 	SGVector<float64_t> m_w;
 	SGVector<float64_t> m_y;

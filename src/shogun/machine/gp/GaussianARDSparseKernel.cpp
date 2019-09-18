@@ -74,20 +74,18 @@ std::shared_ptr<GaussianARDSparseKernel> GaussianARDSparseKernel::obtain_from_ge
 }
 
 SGVector<float64_t> GaussianARDSparseKernel::get_parameter_gradient_diagonal(
-		const TParameter* param, index_t index)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param, index_t index)
 {
-	REQUIRE(param, "Param not set\n");
-	if (!strcmp(param->m_name, "inducing_features"))
+	if (param.first == "inducing_features")
 		return Kernel::get_parameter_gradient_diagonal(param, index);
 	else
 		return GaussianARDKernel::get_parameter_gradient_diagonal(param, index);
 }
 
 SGMatrix<float64_t> GaussianARDSparseKernel::get_parameter_gradient(
-		const TParameter* param, index_t index)
+		const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param, index_t index)
 {
-	REQUIRE(param, "Param not set\n");
-	if (!strcmp(param->m_name, "inducing_features"))
+	if (param.first == "inducing_features")
 	{
 		REQUIRE(lhs, "Left features not set!\n");
 		REQUIRE(rhs, "Right features not set!\n");

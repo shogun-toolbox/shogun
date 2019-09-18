@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 
 #include <random>
 #include <vector>

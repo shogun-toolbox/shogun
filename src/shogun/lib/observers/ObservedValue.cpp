@@ -4,7 +4,7 @@
  * Authors: Giovanni De Toni
  */
 
-#include <shogun/base/Parameter.h>
+
 #include <shogun/lib/observers/ObservedValue.h>
 
 using namespace shogun;

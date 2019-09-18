@@ -113,8 +113,6 @@ public:
 	 */
 	void set_inference_method(std::shared_ptr<Inference> method)
 	{
-		
-		
 		m_method=method;
 	}
 

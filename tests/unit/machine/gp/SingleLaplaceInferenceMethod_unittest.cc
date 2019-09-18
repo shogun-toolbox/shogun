@@ -821,7 +821,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_l
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -829,13 +829,9 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_l
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -847,10 +843,6 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_l
 	EXPECT_NEAR(dnlZ_ell, -0.85103, 1E-5);
 	EXPECT_NEAR(dnlZ_sf2, -0.57052, 1E-5);
 
-	// clean up
-	
-	
-	
 }
 
 TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
@@ -891,7 +883,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likeliho
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -899,15 +891,10 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likeliho
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
-	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_df=gradient["log_df"][0];
+	float64_t dnlZ_sigma=gradient["log_sigma"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -971,7 +958,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -979,11 +966,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -992,11 +976,6 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	// -0.068637
 	EXPECT_NEAR(dnlZ_ell, 0.266464, 1E-6);
 	EXPECT_NEAR(dnlZ_sf2, -0.068637, 1E-6);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood2)
@@ -1044,7 +1023,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	inf->set_scale(3.0);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1052,11 +1031,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -1064,11 +1040,6 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	// 0.491724666688135 -0.009208911107503
 	EXPECT_NEAR(dnlZ_ell, 0.491724666688135, 1E-6);
 	EXPECT_NEAR(dnlZ_sf2, -0.009208911107503, 1E-6);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -1113,7 +1084,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_lik
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1121,11 +1092,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_lik
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -1133,12 +1101,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_lik
 	// -0.034178
 	// 0.108246
 	EXPECT_NEAR(dnlZ_ell, -0.034178, 1E-6);
-	EXPECT_NEAR(dnlZ_sf2, 0.108246, 1E-6);
-
-	// clean up
-	
-	
-	
+	EXPECT_NEAR(dnlZ_sf2, 0.108246, 1E-6);	
 }
 
 TEST(SingleLaplaceInferenceMethod,get_posterior_mean_probit_likelihood)

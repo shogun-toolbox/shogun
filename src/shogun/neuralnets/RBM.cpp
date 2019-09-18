@@ -34,7 +34,7 @@
 #include <shogun/neuralnets/RBM.h>
 
 
-#include <shogun/base/Parameter.h>
+
 #include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>

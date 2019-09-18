@@ -30,7 +30,7 @@
  */
 
 #include <shogun/optimization/ConstLearningRate.h>
-#include <shogun/base/Parameter.h>
+
 
 using namespace shogun;
 

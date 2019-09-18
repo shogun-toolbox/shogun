@@ -30,8 +30,7 @@
  */
 #include <gtest/gtest.h>
 #include "LBFGSMinimizer_unittest.h"
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Map.h>
+
 LBFGSTestCostFunction::LBFGSTestCostFunction()
 	:FirstOrderCostFunction()
 {
@@ -67,43 +66,34 @@ float64_t LBFGSTestCostFunction::get_cost()
 SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 
-	SGVector<float64_t> variables;
-
-	for(index_t i=0; i<num_variables; i++)
+	SGVector<float64_t> variable;
+	for (const auto& param: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-		{
-			variables=m_obj->get_variable(node->key);
-		}
+		if(param.second==m_obj)
+			variable=m_obj->get_variable(param.first);
 	}
 
-	return variables;
+	return variable;
 }
 
 SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<std::pair<std::string, std::shared_ptr<const AnyParameter>>, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
-	index_t num_gradients=parameters->get_num_elements();
-	SGVector<float64_t> gradients;
+	SGVector<float64_t> grad;
 
-	for(index_t i=0; i<num_gradients; i++)
+	for(const auto& param: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-		{
-			gradients=m_obj->get_gradient(node->key);
-		}
+		if(param.second==m_obj)
+			grad=m_obj->get_gradient(param.first);
 	}
 
-	return gradients;
+	return grad;
 }
 
 
@@ -151,36 +141,28 @@ float64_t CPiecewiseQuadraticObject::get_value()
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject::get_gradient(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject::get_gradient(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
+	REQUIRE(param.first == "init_x", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str());
 
 	SGVector<float64_t> res;
-	if (!strcmp(param->m_name, "init_x"))
+	res=SGVector<float64_t>(m_init_x.vlen);
+	REQUIRE(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
+	for(index_t i=0; i<res.vlen; i++)
 	{
-		res=SGVector<float64_t>(m_init_x.vlen);
-		REQUIRE(m_init_x.vlen==m_truth_x.vlen, "the length must be the same\n");
-		for(index_t i=0; i<res.vlen; i++)
-		{
-			float64_t grad=2.0*(m_init_x[i]-m_truth_x[i]);
-			res[i]=grad;
-		}
+		float64_t grad=2.0*(m_init_x[i]-m_truth_x[i]);
+		res[i]=grad;
 	}
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(const std::pair<std::string, std::shared_ptr<const AnyParameter>>& param)
 {
-	REQUIRE(param, "param not set\n");
+	REQUIRE(param.first == "init_x", "Can't compute derivative wrt %s.%s parameter\n",
+		get_name(), param.first.c_str());
 
-	REQUIRE(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt %s.%s parameter\n",
-		get_name(), param->m_name);
-
-	if (!strcmp(param->m_name, "init_x"))
-		return m_init_x;
-	return SGVector<float64_t>();
+	return m_init_x;
 }
 
 TEST(LBFGSMinimizer,test1)
