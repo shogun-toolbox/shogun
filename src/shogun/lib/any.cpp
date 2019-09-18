@@ -164,6 +164,12 @@ namespace shogun
 		return !policy->is_functional() || (policy->is_functional() && !policy->is_void());
 	}
 
+	bool Any::safe_visitable() const
+	{
+		const bool is_safe = policy->is_functional() ? policy->is_nothrow() : true;
+		return visitable() && is_safe;
+	}
+
 	bool Any::hashable() const
 	{
 		return !policy->is_functional();
