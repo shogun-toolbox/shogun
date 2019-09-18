@@ -24,7 +24,7 @@ namespace shogun {
 	class ToStringVisitor : public AnyVisitor {
 
 	public:
-		ToStringVisitor(std::stringstream *ss) : AnyVisitor(), m_stream(ss) {
+		ToStringVisitor(std::stringstream *ss) : AnyVisitor(), m_stream(ss), m_buffer() {
 		}
 
 		virtual void on(bool *v);
@@ -83,6 +83,7 @@ namespace shogun {
 
 	private:
 		std::stringstream *m_stream;
+		std::string m_buffer;
 	};
 }
 
