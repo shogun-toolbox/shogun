@@ -669,16 +669,9 @@ std::string CSGObject::to_string() const
 		{
 			ss << string_enum_reverse_lookup(it->first.name(), any_cast<machine_int_t>(value));
 		}
-		else if (value.visitable())
+		else if (value.safe_visitable())
 		{
-			try
-			{
-				value.visit(visitor.get());
-			}
-			catch(...)
-			{
-				ss << "null";
-			}
+			value.visit(visitor.get());
 		}
 		else
 		{
@@ -779,8 +772,7 @@ void CSGObject::for_each_param_of_type(
 
 	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
 		Any any_param = pair.second.get_value();
-		// functions aren't cloneable, but are visitable
-		if (any_param.cloneable())
+		if (any_param.safe_visitable())
 		{
 			const std::string name = pair.first.name();
 			visitor->set_name(name);
