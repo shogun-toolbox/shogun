@@ -33,6 +33,8 @@
 #include <utility>
 #include <vector>
 
+//#include <shogun/base/array_type.h>
+
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
@@ -64,6 +66,21 @@ bool dispatch_array_type(const CSGObject* obj, std::string_view name,
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // SWIG
+
+class CSGObject;
+struct s_visitor {
+	virtual bool visit(CSGObject*) = 0;
+};
+
+template <typename T1, typename T2>
+struct array_type : s_visitor {
+	private:
+	std::string_view name;
+	T2 lambda;
+	public:
+	explicit array_type(std::string_view n_s, T2&& n_lambda) : name(n_s), lambda(n_lambda) {}
+	bool visit(CSGObject*) override; 
+};
 
 template <class T, class K> class CMap;
 
@@ -160,6 +177,7 @@ SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
+
 class CSGObject
 {
 public:
@@ -202,6 +220,10 @@ public:
 	 * @return reference count
 	 */
 	int32_t unref();
+
+	bool dispatch(s_visitor& v) {
+    	return v.visit(this);
+	}
 
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
@@ -447,13 +469,19 @@ public:
 		auto push_back_lambda = [&value](auto& array) {
 			array.push_back(value);
 		};
-		if (sgo_details::dispatch_array_type<T>(this, name, push_back_lambda))
+
+		s_visitor* a_t = new array_type<T, decltype(push_back_lambda)>(name, push_back_lambda);
+
+		if (dispatch(*a_t)) {
+			delete a_t;
 			return;
+		}
 
 		error(
 		    "Cannot add object {} to array parameter {}::{} of type {}.",
 		    value->get_name(), get_name(), name.data(),
 			demangled_type<T>().c_str());
+		delete a_t;
 	}
 
 #ifndef SWIG
@@ -1276,6 +1304,18 @@ protected:
 		int64_t m_next_subscription_index;
 	};
 
+//namespace shogun {
+// class array_type : public s_visitor {
+// private:
+// 	std::string_view s;
+// public:
+// 	explicit array_type(std::string_view n_s) : s(n_s) {}
+// 	bool visit(CSGObject* mo) override {
+// 		mo->get_name();
+// 		return true;
+// 	}
+// };
+
 template <class T>
 T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
 {
@@ -1316,7 +1356,6 @@ bool dispatch_array_type(const CSGObject* obj, std::string_view name, T2&& lambd
 		lambda(dispatched);
 		return true;
 	}
-
 	return false;
 }
 
@@ -1372,6 +1411,25 @@ CSGObject* get_by_tag(const CSGObject* obj, std::string_view name,
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 #endif //SWIG
+template <typename T1, typename T2>
+bool array_type<T1, T2>::visit(CSGObject* obj) {
+	Tag<CDynamicObjectArray*> tag_array_sg(name);
+	if (obj->has(tag_array_sg))
+	{
+		auto dispatched = obj->get(tag_array_sg);
+		lambda(*dispatched); // is stored as a pointer
+		return true;
+	}
+
+	Tag<std::vector<T1*>> tag_vector(name);
+	if (obj->has(tag_vector))
+	{
+		auto dispatched = obj->get(tag_vector);
+		lambda(dispatched);
+		return true;
+	}
+	return true;
+}
 
 }
 #endif // __SGOBJECT_H__

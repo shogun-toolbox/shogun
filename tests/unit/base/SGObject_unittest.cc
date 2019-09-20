@@ -633,3 +633,10 @@ TEST(SGObject, constrained_parameter)
     EXPECT_THROW(obj->put("constrained_parameter", 10), ShogunException);
     EXPECT_EQ(obj->get<int32_t>("constrained_parameter"), 1);
 }
+
+// TEST (SGObject, print_name) {
+// 	auto obj = some<CMockObject>();
+// 	s_visitor* a_type = new array_type();
+// 	obj->dispatch(*a_type);
+// 	delete a_type;
+// }
