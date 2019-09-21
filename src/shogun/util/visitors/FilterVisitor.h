@@ -43,6 +43,11 @@ namespace shogun
 			on_impl(v);
 		}
 
+		virtual void on(std::vector<bool>::reference* v) override
+		{
+			on_impl(v);
+		}
+
 		virtual void on(int8_t* v) override
 		{
 			on_impl(v);

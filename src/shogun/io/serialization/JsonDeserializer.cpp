@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <stack>
+#include <iostream>
 
 #include <shogun/base/class_list.h>
 #include <shogun/base/macros.h>
@@ -15,6 +16,8 @@
 
 #include <rapidjson/reader.h>
 #include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/ostreamwrapper.h>
 
 using namespace rapidjson;
 using namespace shogun;
@@ -41,6 +44,11 @@ public:
 	~JSONReaderVisitor() override {}
 
 	void on(bool* v) override
+	{
+		*v = next_element<bool>(&ValueType::GetBool);
+		SG_SDEBUG("read bool with value %d\n", *v);
+	}
+	void on(std::vector<bool>::reference* v) override
 	{
 		*v = next_element<bool>(&ValueType::GetBool);
 		SG_SDEBUG("read bool with value %d\n", *v);

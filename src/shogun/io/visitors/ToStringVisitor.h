@@ -29,6 +29,8 @@ namespace shogun {
 
 		virtual void on(bool *v);
 
+		virtual void on(std::vector<bool>::reference *v);
+
 		virtual void on(int8_t *v);
 
 		virtual void on(int16_t *v);

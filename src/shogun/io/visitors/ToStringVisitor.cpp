@@ -13,6 +13,10 @@ void ToStringVisitor::on(bool *v) {
 	stream() << (*v ? "true" : "false") << " ";
 }
 
+void ToStringVisitor::on(std::vector<bool>::reference *v) {
+	stream() << (*v ? "true" : "false") << " ";
+}
+
 void ToStringVisitor::on(int32_t *v) {
 	stream() << *v << " ";
 }
