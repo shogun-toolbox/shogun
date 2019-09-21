@@ -69,8 +69,6 @@
 %include <shogun/lib/SGMatrix.h>
 %include <shogun/lib/SGSparseVector.h>
 %include <shogun/lib/SGSparseMatrix.h>
-%include <shogun/lib/SGString.h>
-%include <shogun/lib/SGStringList.h>
 %include <shogun/lib/SGNDArray.h>
 namespace shogun
 {
@@ -151,80 +149,6 @@ namespace shogun
 #endif
 #ifdef USE_COMPLEX128
     %template(ComplexSparseMatrix) SGSparseMatrix<complex128_t>;
-#endif
-
-#ifdef USE_BOOL
-    %template(BoolStringList) SGStringList<bool>;
-#endif
-#ifdef USE_CHAR
-    %template(CharStringList) SGStringList<char>;
-#endif
-#ifdef USE_UINT8
-    %template(ByteStringList) SGStringList<uint8_t>;
-#endif
-#ifdef USE_UINT16
-    %template(WordStringList) SGStringList<uint16_t>;
-#endif
-#ifdef USE_INT16
-    %template(ShortStringList) SGStringList<int16_t>;
-#endif
-#ifdef USE_INT32
-    %template(IntStringList)  SGStringList<int32_t>;
-#endif
-#ifdef USE_UINT32
-    %template(UIntStringList)  SGStringList<uint32_t>;
-#endif
-#ifdef USE_INT64
-    %template(LongIntStringList)  SGStringList<int64_t>;
-#endif
-#ifdef USE_UINT64
-    %template(ULongIntStringList)  SGStringList<uint64_t>;
-#endif
-#ifdef USE_FLOAT32
-    %template(ShortRealStringList) SGStringList<float32_t>;
-#endif
-#ifdef USE_FLOAT64
-    %template(RealStringList) SGStringList<float64_t>;
-#endif
-#ifdef USE_FLOATMAX
-    %template(LongRealStringList) SGStringList<floatmax_t>;
-#endif
-
-#ifdef USE_BOOL
-    %template(BoolString) SGString<bool>;
-#endif
-#ifdef USE_CHAR
-    %template(CharString) SGString<char>;
-#endif
-#ifdef USE_UINT8
-    %template(ByteString) SGString<uint8_t>;
-#endif
-#ifdef USE_UINT16
-    %template(WordString) SGString<uint16_t>;
-#endif
-#ifdef USE_INT16
-    %template(ShortString) SGString<int16_t>;
-#endif
-#ifdef USE_INT32
-    %template(IntString)  SGString<int32_t>;
-#endif
-#ifdef USE_UINT32
-    %template(UIntString)  SGString<uint32_t>;
-#endif
-#ifdef USE_INT64
-    %template(LongIntString)  SGString<int64_t>;
-#endif
-#ifdef USE_UINT64
-    %template(ULongIntString)  SGString<uint64_t>;
-#endif
-#ifdef USE_FLOAT32
-    %template(ShortRealString) SGString<float32_t>;
-#endif
-#ifdef USE_FLOAT64
-    %template(RealString) SGString<float64_t>;
-#endif
-#ifdef USE_FLOATMAX
-    %template(LongRealString) SGString<floatmax_t>;
 #endif
 
 #if !defined(SWIGPERL)
@@ -358,7 +282,6 @@ namespace shogun
 #endif
 }
 
-
 /* Include Class Headers to make them visible from within the target language */
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
@@ -426,8 +349,8 @@ namespace shogun
         $self->append_element(v, name);
     }
 
-    template <typename T, typename X = typename std::enable_if_t<std::is_same<SGStringList<typename extract_value_type<T>::value_type>, T>::value>>
-    void append_element_string_list(T v, const char* name="")
+    template <typename T>
+    void append_element_string_list(const std::vector<SGVector<T>>& v, const char* name="")
     {
         $self->append_element(v, name);
     }
@@ -458,8 +381,8 @@ namespace shogun
 #ifdef USE_INT32
     %template(append_element_int) DynamicObjectArray::append_element<int32_t, int32_t>;
 #endif
-	%template(append_element_string_char_list) DynamicObjectArray::append_element_string_list<SGStringList<char>, SGStringList<char>>;
-	%template(append_element_string_word_list) DynamicObjectArray::append_element_string_list<SGStringList<uint16_t>, SGStringList<uint16_t>>;
+    %template(append_element_string_char_list) DynamicObjectArray::append_element_string_list<char>;
+    %template(append_element_string_word_list) DynamicObjectArray::append_element_string_list<uint16_t>;
 }
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>

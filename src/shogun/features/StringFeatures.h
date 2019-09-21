@@ -19,15 +19,13 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/Alphabet.h>
-#include <shogun/lib/SGString.h>
 
 namespace shogun
 {
 class Alphabet;
 template <class T> class DynamicArray;
 class File;
-template <class T> class SGString;
-template <class T> class SGStringList;
+template <class T> class SGVector;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct SSKDoubleFeature
@@ -86,14 +84,14 @@ template <class ST> class StringFeatures : public Features
 		 * @param string_list
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		StringFeatures(SGStringList<ST> string_list, EAlphabet alpha);
+		StringFeatures(const std::vector<SGVector<ST>>& string_list, EAlphabet alpha);
 
 		/** constructor
 		 *
 		 * @param string_list
 		 * @param alpha an actual alphabet
 		 */
-		StringFeatures(SGStringList<ST> string_list, std::shared_ptr<Alphabet> alpha);
+		StringFeatures(const std::vector<SGVector<ST>>& string_list, std::shared_ptr<Alphabet> alpha);
 
 		/** constructor
 		 *
@@ -218,7 +216,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param num_vec number of vectors in matrix
 		 * @return transposed string features
 		 */
-		SGString<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec);
+		std::vector<SGVector<ST>> get_transposed_matrix();
 
 		/** free feature vector
 		 *
@@ -264,7 +262,7 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * @return maximum vector/string length
 		 */
-		virtual int32_t get_max_vector_length();
+		virtual int32_t get_max_vector_length() const;
 
 		/** @return number of vectors, possibly of subset */
 		virtual int32_t get_num_vectors() const;
@@ -380,7 +378,7 @@ template <class ST> class StringFeatures : public Features
 		 * not possible with subset
 		 *
 		 */
-        void set_features(SGStringList<ST> feats);
+        bool set_features(const std::vector<SGVector<ST>>& string_list);
 
 		/** set features
 		 *
@@ -391,8 +389,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param p_max_string_length maximum string length
 		 * @return if setting was successful
 		 */
-		bool set_features(SGString<ST>* p_features, int32_t p_num_vectors,
-				int32_t p_max_string_length);
+		bool set_features(const SGVector<ST>* p_features, int32_t p_num_vectors);
 
 		/** append features
 		 * If the given string features have a subset, only this will be copied
@@ -416,23 +413,19 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * @return if setting was successful
 		 */
-		bool append_features(SGString<ST>* p_features, int32_t p_num_vectors,
-				int32_t p_max_string_length);
+		bool append_features(const std::vector<SGVector<ST>>& p_features);
 
+		/** returns a copy of the string_list vector (swig friendly)
+		 * @return string_list
+		 */
+		const std::vector<SGVector<ST>>& get_string_list() const;
+
+#ifndef SWIG
 		/** get_string_list
 		 * @return string_list
 		 */
-        SGStringList<ST> get_string_list() const;
-
-		/** get_features
-		 *
-		 * not possible with subset
-		 *
-		 * @param num_str number of strings (returned)
-		 * @param max_str_len maximal string length (returned)
-		 * @return string features
-		 */
-		virtual SGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len) const;
+		std::vector<SGVector<ST>>& get_string_list();
+#endif // SWIG
 
 		/** copy_features
 		 *
@@ -442,7 +435,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual SGString<ST>* copy_features(int32_t& num_str, int32_t& max_str_len);
+		virtual std::vector<SGVector<ST>> copy_features();
 
 		/** get_features  (swig compatible)
 		 *
@@ -451,7 +444,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param dst string features (returned)
 		 * @param num_str number of strings (returned)
 		 */
-		virtual void get_features(SGString<ST>** dst, int32_t* num_str);
+		virtual void get_features(std::vector<SGVector<ST>>* dst);
 
 		/** save features to file
 		 *
@@ -581,12 +574,6 @@ template <class ST> class StringFeatures : public Features
 		 */
 		ST embed_word(ST* seq, int32_t len);
 
-		/** determine new maximum string length
-		 *
-		 * possible with subset
-		 */
-		void determine_maximum_string_length();
-
 		/** get a zero terminated copy of the string
 		 *
 		 * @param str the string to copy
@@ -594,7 +581,7 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * note that this function is only sensible for character strings
 		 */
-		static ST* get_zero_terminated_string_copy(SGString<ST> str);
+		static ST* get_zero_terminated_string_copy(SGVector<ST> str);
 
 		/** set feature vector for sample num
 		 *
@@ -656,20 +643,11 @@ template <class ST> class StringFeatures : public Features
 		/** alphabet */
 		std::shared_ptr<Alphabet> alphabet;
 
-		/** number of string vectors (for subset, is updated) */
-		int32_t num_vectors;
-
 		/** this contains the array of features */
-		SGString<ST>* features;
+		std::vector<SGVector<ST>> features;
 
 		/** true when single string / created by sliding window */
-		ST* single_string;
-
-		/// length of prior single string
-		int32_t length_of_single_string;
-
-		/** length of longest string (for subset, is updated) */
-		int32_t max_string_length;
+		SGVector<ST> single_string;
 
 		/// number of used symbols
 		floatmax_t num_symbols;
@@ -681,10 +659,7 @@ template <class ST> class StringFeatures : public Features
 		int32_t order;
 
 		/// order used in higher order mapping
-		ST* symbol_mask_table;
-
-		/// order used in higher order mapping
-		int32_t symbol_mask_table_len;
+		SGVector<ST> symbol_mask_table;
 
 		/// preprocess on-the-fly?
 		bool preprocess_on_get;

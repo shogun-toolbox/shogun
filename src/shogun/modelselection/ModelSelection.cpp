@@ -9,8 +9,6 @@
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/evaluation/CrossValidation.h>
-#include <shogun/base/Parameter.h>
-
 
 using namespace shogun;
 

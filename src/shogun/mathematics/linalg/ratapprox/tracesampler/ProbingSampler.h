@@ -43,7 +43,6 @@ enum EColoringVariant
 };
 
 template<class T> class SGVector;
-template<class T> class SGString;
 template<class T> class SparseMatrixOperator;
 
 /** @brief Class that provides a sample method for probing vector using

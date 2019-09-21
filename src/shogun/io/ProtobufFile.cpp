@@ -13,7 +13,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 #include <google/protobuf/message.h>
 
 using namespace shogun;
@@ -208,7 +208,7 @@ SET_SPARSE_MATRIX(uint16_t)
 
 #define GET_STRING_LIST(sg_type) \
 void ProtobufFile::get_string_list( \
-			SGString<sg_type>*& strings, int32_t& num_str, \
+			SGVector<sg_type>*& strings, int32_t& num_str, \
 			int32_t& max_string_len) \
 { \
 	read_and_validate_global_header(ShogunVersion::STRING_LIST); \
@@ -234,7 +234,7 @@ GET_STRING_LIST(uint16_t)
 
 #define SET_STRING_LIST(sg_type) \
 void ProtobufFile::set_string_list( \
-			const SGString<sg_type>* strings, int32_t num_str) \
+			const SGVector<sg_type>* strings, int32_t num_str) \
 { \
 	write_global_header(ShogunVersion::STRING_LIST); \
 	write_string_list_header(strings, num_str); \
@@ -380,16 +380,16 @@ WRITE_SPARSE_MATRIX_HEADER(uint16_t)
 #undef WRITE_SPARSE_MATRIX_HEADER
 
 #define WRITE_STRING_LIST_HEADER(sg_type) \
-void ProtobufFile::write_string_list_header(const SGString<sg_type>* strings, int32_t num_str) \
+void ProtobufFile::write_string_list_header(const SGVector<sg_type>* strings, int32_t num_str) \
 { \
 	int32_t max_string_len=0; \
 	StringListHeader data_header; \
 	data_header.set_num_str(num_str); \
 	for (int32_t i=0; i<num_str; i++) \
 	{ \
-		data_header.add_str_len(strings[i].slen); \
-		if (strings[i].slen>max_string_len) \
-			max_string_len=strings[i].slen; \
+		data_header.add_str_len(strings[i].vlen); \
+		if (strings[i].vlen>max_string_len) \
+			max_string_len=strings[i].vlen; \
 	} \
 	data_header.set_max_string_len(max_string_len); \
 	write_message(data_header); \
@@ -614,9 +614,9 @@ WRITE_SPARSE_MATRIX(UInt32Chunk, uint16_t)
 
 #define READ_STRING_LIST(chunk_type, sg_type) \
 void ProtobufFile::read_string_list( \
-			SGString<sg_type>*& strings, const StringListHeader& data_header) \
+			SGVector<sg_type>*& strings, const StringListHeader& data_header) \
 { \
-	strings=SG_MALLOC(SGString<sg_type>, data_header.num_str()); \
+	strings=SG_MALLOC(SGVector<sg_type>, data_header.num_str()); \
 	\
 	chunk_type chunk; \
 	read_message(chunk); \
@@ -624,10 +624,10 @@ void ProtobufFile::read_string_list( \
 	int32_t buffer_counter=0; \
 	for (uint32_t i=0; i<data_header.num_str(); i++) \
 	{ \
-		strings[i]=SGString<sg_type>(data_header.str_len(i)); \
-		for (int32_t j=0; j<strings[i].slen; j++) \
+		strings[i]=SGVector<sg_type>(data_header.str_len(i)); \
+		for (int32_t j=0; j<strings[i].vlen; j++) \
 		{ \
-			strings[i].string[j]=chunk.data(buffer_counter); \
+			strings[i].vector[j]=chunk.data(buffer_counter); \
 			buffer_counter++; \
 			\
 			if (buffer_counter==elements_in_message) \
@@ -655,16 +655,16 @@ READ_STRING_LIST(UInt64Chunk, uint64_t)
 
 #define WRITE_STRING_LIST(chunk_type, sg_type) \
 void ProtobufFile::write_string_list( \
-			const SGString<sg_type>* strings, int32_t num_str) \
+			const SGVector<sg_type>* strings, int32_t num_str) \
 { \
 	chunk_type chunk; \
 	int32_t elements_in_message=message_size/sizeof(sg_type); \
 	int32_t buffer_counter=0; \
 	for (int32_t i=0; i<num_str; i++) \
 	{ \
-		for (int32_t j=0; j<strings[i].slen; j++) \
+		for (int32_t j=0; j<strings[i].vlen; j++) \
 		{ \
-			chunk.add_data(strings[i].string[j]); \
+			chunk.add_data(strings[i].vector[j]); \
 			buffer_counter++; \
 			\
 			if (buffer_counter==elements_in_message) \

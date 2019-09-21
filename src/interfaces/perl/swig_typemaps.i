@@ -51,7 +51,7 @@
       }
 
     template <class type>
-      static bool string_to_pdl(SV* rsv, SGStringList<type> sg_strings, int typecode)
+      static bool string_to_pdl(SV* rsv, std::vector<SGVector<type>>& sg_strings, int typecode)
             {
                 pdl* it = PDL->pdlnew();
 #if 0
@@ -75,10 +75,12 @@
                 if(!it) {
                     return false;
                 }
-                shogun::SGString<type>* sg_str = sg_strings.strings;
-                int32_t sg_num = sg_strings.num_strings;
+                int32_t sg_num = sg_strings.size();
                 //work out max len!
-                STRLEN sg_slen_max = sg_strings.max_string_length;
+                STRLEN sg_slen_max = 0;
+                for(auto& str : sg_strings)
+                    sg_slen_max = std::max(sg_slen_max, (STRLEN) str.size());
+
                 if(sg_slen_max <= 0) {
                     warn("this is an all-null string dimension");
                     return false;
@@ -94,7 +96,7 @@
                 }
                 for(int32_t i = 0; i < sg_num; i++) {
                     //PTZ121012 really to check this with unicode types also...
-                    sg_memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].string, sizeof(type) * sg_str[i].slen);
+                    sg_memcpy((type*) data_pdl + (i * sg_slen_max), sg_strings[i].vector, sizeof(type) * sg_strings[i].vlen);
                     //PTZ121012 shall have calloced also...
                 }
                 PDL->SetSV_PDL(rsv, it);
@@ -224,7 +226,7 @@ fail:
          */
     //TODO::PTZ121114 really to put into pdl.i
     template <class type>
-      static bool string_from_pdl(SGStringList< type >& sg_strings, SV* sv, U32 typecode)
+      static bool string_from_pdl(std::vector<SGVector<type>>& sg_strings, SV* sv, U32 typecode)
             {
                 pdl* it = if_piddle(sv);
                 if(it) {
@@ -253,17 +255,10 @@ fail:
                         return false;
                     }
                     int l_sz = it->nvals / l_len_max;
-                    SGString< type >* l_ss = SG_MALLOC(SGString< type >, l_sz);
-                    if(!l_ss) {
-                        return false;
-                    }
-                    sg_strings.strings = l_ss;
-                    sg_strings.num_strings = l_sz;
-                    sg_strings.max_string_length = 0;
+                    sg_strings.reserve(l_sz);
 
                     PDL_Long* inds = (PDL_Long*) pdl_malloc(sizeof(PDL_Long) * it->ndims);
                     if(!inds) {
-                        SG_FREE(l_ss);
                         return false;
                     }
                     for(int i = 0; i < it->ndims; i++) inds[i] = 0;
@@ -279,30 +274,11 @@ fail:
                         el_len = strnlen(el_str, l_len_max);
                         if(i + el_len > it->nvals) {
                             warn("string_from_pdl::offset error in string conversion::bayling out");
-                            for(int32_t j = 0; j < lind; j++)
-                                l_ss[j].~SGString< type >();
-                            SG_FREE(l_ss);
                             //free(inds);
                             return false;
                         }
-                        new(&l_ss[lind]) SGString< type >();
-                        l_ss[lind].slen = el_len;
-                        l_ss[lind].string = NULL;
-                        if(el_len > 0) {
-                            l_ss[lind].string = SG_MALLOC(type, el_len);
-                            if(!l_ss[lind].string) {
-			      warn("string_from_pdl::out of memory");
-			      for(int32_t j = 0; j <= lind; j++)
-                                    l_ss[j].~SGString< type >();
-                                SG_FREE(l_ss);
-                                //free(inds);
-                                return false;
-                            }
-                            sg_memcpy(l_ss[lind].string, el_str, el_len);
-                            if(el_len > sg_strings.max_string_length) {
-                                sg_strings.max_string_length = el_len;
-                            }
-                        }
+                        sg_strings.emplace_back(el_len);
+                        sg_memcpy(sg_strings.back().vector, el_str, el_len);
                         lind++;
 			stop = 1;
 			for(int n = ndims - 1; 0 < n; n--) {
@@ -322,32 +298,21 @@ fail:
 
     //TODO:PTZ121114 later...
         template <class type>
-            static bool string_from_perl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
+            static bool string_from_perl(std::vector<SGVector<type>>& sg_strings, SV* sv, U32 typecode)
             {
                 //PTZ121011 pure perl, but not used create another typemap...like string_from_perl
-                sg_strings->max_string_length = 0;
                 if(is_array(sv)) {
                     AV* l_av = (AV*) SvRV(sv);   /* dereference */
                     int l_sz = av_len(l_av) + 1;
-                    shogun::SGString<type>* l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
-                    sg_strings.strings = l_ss;
+                    sg_strings.reserve(l_sz);
                     for (int32_t i = 0; i <= l_sz; i++) {
                         STRLEN el_len;
                         SV** el_psv = av_fetch(l_av, i, 0);
                         const char* el_str = SvPV(*el_psv, el_len);
-                        new (&l_ss[i]) SGString<type>();
+                        sg_strings.emplace_back(el_len);
                         //PTZ121002 free *el_psv?
-                        l_ss[i].slen = el_len;
-                        l_ss[i].string = NULL;
-                        if (el_len > 0) {
-                            l_ss[i].string = SG_MALLOC(type, el_len);
-                            sg_memcpy(l_ss[i].string, el_str, el_len);
-                            if(el_len > sg_strings.max_string_length) {
-                                sg_strings.max_string_length = el_len;
-                            }
-                        }
+                        sg_memcpy(sg_strings.back().vector, el_str, el_len);
                     }
-                    sg_strings.num_strings = l_sz;
                     return true;
                 }
                 return false;
@@ -745,7 +710,7 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type, typecode)
-%typecheck(SWIG_TYPECHECK_POINTER) shogun::SGStringList< type >
+%typecheck(SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<type>>
 {
   void * s_p = 0;
   int res = SWIG_ConvertPtr($input, &s_p, $&1_descriptor, 0);
@@ -755,13 +720,10 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
     $1 = is_pdl_string($input, typecode);
   }
 }
-%typemap(in) shogun::SGStringList< type >
+%typemap(in) std::vector<shogun::SGVector<type>>
 {
-  void * s_p = 0;
-  int res = SWIG_ConvertPtr($input, &s_p, $&1_descriptor, 0);
-  if(SWIG_IsOK(res) && s_p) {
-    $1 = *(reinterpret_cast< shogun::SGStringList< type > * >(s_p));
-  } else if(!string_from_pdl< type >($1, $input, typecode)) {
+  auto& strings = $1;
+  if(!string_from_pdl< type >(strings, $input, typecode)) {
     SWIG_fail;
   }
 }
@@ -786,7 +748,7 @@ TYPEMAP_STRINGFEATURES_IN(SV*,		 PDL_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_OUT(type, typecode)
-%typemap(out) shogun::SGStringList<type>
+%typemap(out) std::vector<shogun::SGVector<type>>
 {
   SWIG_Object r = VOID_Object;
   if(!string_to_pdl(r, $1, typecode)) SWIG_fail;

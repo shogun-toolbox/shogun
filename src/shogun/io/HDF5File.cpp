@@ -189,7 +189,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void HDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void HDF5File::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 
@@ -316,7 +316,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void HDF5File::fname(const SGString<sg_type>* strings, int32_t num_str)	\
+void HDF5File::fname(const SGVector<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n")											\

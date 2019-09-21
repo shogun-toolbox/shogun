@@ -42,7 +42,6 @@ HashedWDFeaturesTransposed::HashedWDFeaturesTransposed()
 		"\n");
 
 	strings = NULL;
-	transposed_strings = NULL;
 
 	degree = 0;
 	start_degree = 0;
@@ -72,10 +71,11 @@ HashedWDFeaturesTransposed::HashedWDFeaturesTransposed(std::shared_ptr<StringFea
 
 
 	strings=str;
-	int32_t transposed_num_feat=0;
-	int32_t transposed_num_vec=0;
-	transposed_strings=str->get_transposed(transposed_num_feat, transposed_num_vec);
-
+	transposed_strings=std::move(str->get_transposed_matrix());
+	int32_t transposed_num_feat = transposed_strings.size();
+	int32_t transposed_num_vec = 
+		transposed_strings.empty()? 0 : transposed_strings.back().size();
+	
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
 	ASSERT(transposed_num_feat==num_strings)
@@ -111,11 +111,6 @@ HashedWDFeaturesTransposed::HashedWDFeaturesTransposed(const HashedWDFeaturesTra
 
 HashedWDFeaturesTransposed::~HashedWDFeaturesTransposed()
 {
-	for (int32_t i=0; i<string_length; i++)
-		SG_FREE(transposed_strings[i].string);
-	SG_FREE(transposed_strings);
-
-
 	SG_FREE(wd_weights);
 }
 
@@ -390,7 +385,7 @@ void* HashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	int32_t string_length=hf->string_length;
 	int32_t degree=hf->degree;
 	float64_t* wd_weights=hf->wd_weights;
-	SGString<uint8_t>* transposed_strings=hf->transposed_strings;
+	auto& transposed_strings=hf->transposed_strings;
 	uint32_t mask=hf->mask;
 	int32_t partial_w_dim=hf->partial_w_dim;
 	float64_t normalization_const=hf->normalization_const;
@@ -407,7 +402,7 @@ void* HashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			for (int32_t k=0; k<degree && i+k<string_length; k++)
 			{
 				const float64_t wd = wd_weights[k];
-				uint8_t* dim=transposed_strings[i+k].string;
+				uint8_t* dim=transposed_strings[i+k].vector;
 				uint32_t carry = 0;
 				uint32_t chunk = 0;
 				for (int32_t j=start; j<stop; j++)
@@ -458,7 +453,7 @@ void* HashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			for (int32_t k=0; k<degree && i+k<string_length; k++)
 			{
 				const float64_t wd = wd_weights[k];
-				uint8_t* dim=transposed_strings[i+k].string;
+				uint8_t* dim=transposed_strings[i+k].vector;
 				uint32_t carry = 0;
 				uint32_t chunk = 0;
 

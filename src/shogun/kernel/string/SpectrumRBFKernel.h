@@ -152,7 +152,7 @@ class SpectrumRBFKernel: public StringKernel<char>
 		/** sequence labels */
 		std::vector<std::string> sequence_labels; // profile
 		/** sequences */
-		SGString<char>* sequences; // profile
+		SGVector<char>* sequences; // profile
 		/** string features */
 		std::shared_ptr<StringFeatures<char>> string_features;
 		/** nof sequences */

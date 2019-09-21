@@ -177,8 +177,9 @@ namespace shogun
 		{
 		case PT_UINT16:
 		{
+			auto alphabet = string_features->get_alphabet();
 			auto result =
-			    std::make_shared<StringFeatures<uint16_t>>(string_features->get_alphabet());
+			    std::make_shared<StringFeatures<uint16_t>>(alphabet);
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
 			REQUIRE(success, "Failed to obtain from string char features.\n");

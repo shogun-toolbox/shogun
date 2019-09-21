@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-template <class ST> class SGString;
+template <class ST> class SGVector;
 template <class ST> class SGSparseVector;
 struct TSGDataType;
 
@@ -149,43 +149,43 @@ public:
 	 */
 	//@{
 	virtual void get_string_list(
-			SGString<bool>*& strings, int32_t& num_str,
+			SGVector<bool>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<int8_t>*& strings, int32_t& num_str,
+			SGVector<int8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<uint8_t>*& strings, int32_t& num_str,
+			SGVector<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<char>*& strings, int32_t& num_str,
+			SGVector<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<int32_t>*& strings, int32_t& num_str,
+			SGVector<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<uint32_t>*& strings, int32_t& num_str,
+			SGVector<uint32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<int16_t>*& strings, int32_t& num_str,
+			SGVector<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<uint16_t>*& strings, int32_t& num_str,
+			SGVector<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<int64_t>*& strings, int32_t& num_str,
+			SGVector<int64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<uint64_t>*& strings, int32_t& num_str,
+			SGVector<uint64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<float32_t>*& strings, int32_t& num_str,
+			SGVector<float32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<float64_t>*& strings, int32_t& num_str,
+			SGVector<float64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
-			SGString<floatmax_t>*& strings, int32_t& num_str,
+			SGVector<floatmax_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	//@}
 
@@ -197,7 +197,7 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void get_int8_string_list(shogun::SGString<signed char>*&, int32_t&, int32_t&)
+	virtual void get_int8_string_list(shogun::SGVector<signed char>*&, int32_t&, int32_t&)
 	{
 		SG_NOTIMPLEMENTED
 	}
@@ -209,7 +209,7 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_int8_string_list(const shogun::SGString<signed char>*, int32_t)
+	virtual void set_int8_string_list(const shogun::SGVector<signed char>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
@@ -360,55 +360,55 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<bool>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<bool>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<uint8_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<uint8_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<int8_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<int8_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<char>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<char>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<int32_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<int32_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<uint32_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<uint32_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<int16_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<int16_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<uint16_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<uint16_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<int64_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<int64_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<uint64_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<uint64_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<float32_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<float32_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<float64_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<float64_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<floatmax_t>*, int32_t)
+	virtual void set_string_list(const shogun::SGVector<floatmax_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}

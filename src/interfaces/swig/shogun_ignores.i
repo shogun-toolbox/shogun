@@ -78,7 +78,6 @@
 %ignore shogun::SGSparseVectorEntry;
 %ignore shogun::CParameter;
 
-%ignore shogun::SGString;
 %ignore sparse_dot;
 %ignore dense_dot;
 %ignore add_to_dense_vec;
@@ -123,13 +122,13 @@
 %ignore shogun::SparseFeatures::clean_tsparse;
 
 %ignore shogun::CStringFeatures::get_feature_vector(int32_t, int32_t&, bool&);
-%ignore shogun::CStringFeatures::set_features(SGString<ST>*, int32_t, int32_t);
-%ignore shogun::CStringFeatures::append_features(SGString<ST>*, int32_t, int32_t);
+%ignore shogun::CStringFeatures::set_features(SGVector<ST>*, int32_t, int32_t);
+%ignore shogun::CStringFeatures::append_features(SGVector<ST>*, int32_t, int32_t);
 %ignore shogun::CStringFeatures::get_features(int32_t&, int32_t&);
 %ignore shogun::CStringFeatures::get_transposed(int32_t&, int32_t&);
-%ignore shogun::CStringFeatures::get_features(SGString<ST>**, int32_t*);
+%ignore shogun::CStringFeatures::get_features(SGVector<ST>**, int32_t*);
 %ignore shogun::CStringFeatures::copy_features(int32_t&, int32_t&);
-%ignore shogun::CStringFeatures::get_zero_terminated_string_copy(SGString<ST>);
+%ignore shogun::CStringFeatures::get_zero_terminated_string_copy(SGVector<ST>);
 %ignore shogun::CStringFeatures::unembed_word;
 %ignore shogun::CStringFeatures::embed_word;
 %ignore shogun::CStringFeatures::set_feature_vector(int32_t, ST*, int32_t);

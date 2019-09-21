@@ -8,14 +8,14 @@
 #include "utils/Utils.h"
 #include <gtest/gtest.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/memory.h>
 
 using namespace shogun;
 
 TEST(StringFeaturesTest,copy_subset)
 {
-	SGStringList<char> strings = generateRandomStringData();
+	std::mt19937_64 prng(25);
+	std::vector<SGVector<char>> strings = generateRandomStringData(prng);
 
 	/* create num_feautres 2-dimensional vectors */
 	auto f=std::make_shared<StringFeatures<char>>(strings, ALPHANUM);
@@ -68,7 +68,7 @@ TEST(StringFeaturesTest,copy_subset)
 		for (index_t j=0; j<vec.vlen; ++j)
 		{
 			index_t offset_idx=i+(offset_copy+offset_subset);
-			EXPECT_EQ(vec.vector[j], strings.strings[offset_idx].string[j]);
+			EXPECT_EQ(vec.vector[j], strings[offset_idx].vector[j]);
 		}
 
 		subset_copy->free_feature_vector(vec, i);
@@ -80,7 +80,8 @@ TEST(StringFeaturesTest,copy_subset)
 
 TEST(StringFeaturesTest,equals)
 {
-	SGStringList<char> strings = generateRandomStringData();
+	std::mt19937_64 prng(25);
+	std::vector<SGVector<char>> strings = generateRandomStringData(prng);
 
 	auto f=std::make_shared<StringFeatures<char>>(strings, ALPHANUM);
 	auto f_clone = f->clone()->as<StringFeatures<char>>();

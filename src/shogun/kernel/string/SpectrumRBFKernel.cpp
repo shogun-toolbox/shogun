@@ -16,7 +16,6 @@
 #include <shogun/kernel/string/SpectrumRBFKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/mathematics/Math.h>
 
 #include <vector>
@@ -47,10 +46,9 @@ SpectrumRBFKernel::SpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int32
 	sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	read_profiles_and_sequences();
-	SGStringList<char> string_list;
-	string_list.strings = sequences;
-	string_list.num_strings = nof_sequences;
-	string_list.max_string_length = max_sequence_length;
+	std::vector<SGVector<char>> string_list;
+	string_list.reserve(nof_sequences);
+	std::copy_n(sequences, nof_sequences, std::back_inserter(string_list));
 
 	//string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, PROTEIN);
 	string_features = std::make_shared<StringFeatures<char>>(string_list, IUPAC_AMINO_ACID);
@@ -248,15 +246,15 @@ void SpectrumRBFKernel::read_profiles_and_sequences()
 	fin.close();
 
 	nof_sequences = seqs.size();
-	sequences = SG_MALLOC(SGString<char>, nof_sequences);
+	sequences = SG_MALLOC(SGVector<char>, nof_sequences);
 
 	int max_len = 0;
 	for (int i=0; i < nof_sequences; ++i)
 	{
 		int len = seqs[i].length();
-		sequences[i].string = SG_MALLOC(char, len+1);
-		sequences[i].slen = len;
-		strcpy(sequences[i].string, seqs[i].c_str());
+		sequences[i] = SGVector<char>(len+1);
+		sequences[i].vlen = len;
+		strcpy(sequences[i].vector, seqs[i].c_str());
 
 		if (len > max_len) max_len = len;
 	}

@@ -1,10 +1,8 @@
-
 #include <shogun/base/SGObject.h>
 #include <shogun/base/range.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
@@ -136,18 +134,18 @@ namespace shogun
 			    "raw_vector_basic", &m_raw_vector_basic,
 			    &m_raw_vector_basic_len);
 
-			m_raw_vector_sg_string_len = 7;
-			m_raw_vector_sg_string =
-			    new SGString<T>[m_raw_vector_sg_string_len];
-			for (auto i : range(m_raw_vector_sg_string_len))
+			m_raw_vector_sg_vector_len = 7;
+			m_raw_vector_sg_vector =
+			    new SGVector<T>[m_raw_vector_sg_vector_len];
+			for (auto i : range(m_raw_vector_sg_vector_len))
 			{
-				m_raw_vector_sg_string[i] = SGString<T>(i + 1, true);
-				for (auto j : range(m_raw_vector_sg_string[i].slen))
-					m_raw_vector_sg_string[i].string[j] = 1;
+				m_raw_vector_sg_vector[i] = SGVector<T>(i + 1, true);
+				for (auto j : range(m_raw_vector_sg_vector[i].vlen))
+					m_raw_vector_sg_vector[i].vector[j] = 1;
 			}
 			watch_param(
-			    "raw_vector_sg_string", &m_raw_vector_sg_string,
-			    &m_raw_vector_sg_string_len);
+			    "raw_vector_sg_vector", &m_raw_vector_sg_vector,
+			    &m_raw_vector_sg_vector_len);
 
 			m_raw_vector_object_len = 6;
 			m_raw_vector_object =
@@ -167,9 +165,7 @@ namespace shogun
 				m_raw_vector_object[i].reset();
 			delete[] m_raw_vector_object;
 
-			for (auto i : range(m_raw_vector_sg_string_len))
-				m_raw_vector_sg_string[i].free_string();
-			delete[] m_raw_vector_sg_string;
+			delete[] m_raw_vector_sg_vector;
 		}
 
 		void init_raw_matrix()
@@ -213,8 +209,8 @@ namespace shogun
 		T* m_raw_vector_basic;
 		index_t m_raw_vector_basic_len;
 
-		SGString<T>* m_raw_vector_sg_string;
-		index_t m_raw_vector_sg_string_len;
+		SGVector<T>* m_raw_vector_sg_vector;
+		index_t m_raw_vector_sg_vector_len;
 
 		std::shared_ptr<CloneEqualsMockParameter<T>>* m_raw_vector_object;
 		index_t m_raw_vector_object_len;

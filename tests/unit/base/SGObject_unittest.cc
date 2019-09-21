@@ -153,12 +153,12 @@ TYPED_TEST(SGObjectEquals, different_raw_vector_basic)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TYPED_TEST(SGObjectEquals, different_raw_vector_sg_string)
+TYPED_TEST(SGObjectEquals, different_raw_vector_sg_vector)
 {
 	auto obj1 = std::make_shared<CloneEqualsMock<TypeParam>>();
 	auto obj2 = std::make_shared<CloneEqualsMock<TypeParam>>();
 
-	obj1->m_raw_vector_sg_string[0].string[0] -= 1;
+	obj1->m_raw_vector_sg_vector[0].vector[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
 }
@@ -233,7 +233,7 @@ TYPED_TEST(SGObjectClone, equals_non_empty)
 	obj->m_sg_sparse_matrix.sparse_matrix[0].features[0].entry -= 1;
 	obj->m_raw_vector_basic[0] -= 1;
 	obj->m_raw_matrix_basic[0] -= 1;
-	obj->m_raw_vector_sg_string[0].string[0] -= 1;
+	obj->m_raw_vector_sg_vector[0].vector[0] -= 1;
 	obj->m_raw_vector_object[0]->m_some_value -= 1;
 
 	auto clone = obj->clone();
@@ -248,7 +248,7 @@ TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 
 	EXPECT_NE(clone_casted->m_object, obj->m_object);
 	EXPECT_NE(clone_casted->m_raw_vector_basic, obj->m_raw_vector_basic);
-	EXPECT_NE(clone_casted->m_raw_vector_sg_string, obj->m_raw_vector_sg_string);
+	EXPECT_NE(clone_casted->m_raw_vector_sg_vector, obj->m_raw_vector_sg_vector);
 
 	EXPECT_NE(clone_casted->m_raw_vector_object, obj->m_raw_vector_object);
 	for (auto i : range(obj->m_raw_vector_object_len))

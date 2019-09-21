@@ -18,7 +18,7 @@ namespace shogun
 class DelimiterTokenizer;
 class LineReader;
 class Parser;
-template <class ST> class SGString;
+template <class ST> class SGVector;
 template <class T> class SGSparseVector;
 
 /** @brief read sparse real valued features in svm light format

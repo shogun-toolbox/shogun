@@ -50,7 +50,7 @@ public:
 	virtual EPreprocessorType get_type() const { return P_SORTWORDSTRING; }
 
 protected:
-	virtual void apply_to_string_list(SGStringList<uint16_t> string_list);
+	virtual void apply_to_string_list(std::vector<SGVector<uint16_t>>& string_list);
 };
 }
 #endif

@@ -633,80 +633,79 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, JTYPE, JAVATYPE, JNITYPE, CLASSDESC)
 
-%typemap(jni) shogun::SGStringList<SGTYPE>	%{jobjectArray%}
-%typemap(jtype) shogun::SGStringList<SGTYPE>		%{JTYPE[][]%}
-%typemap(jstype) shogun::SGStringList<SGTYPE>	%{JTYPE[][]%}
+%typemap(jni) std::vector<shogun::SGVector<SGTYPE>>	%{jobjectArray%}
+%typemap(jtype) std::vector<shogun::SGVector<SGTYPE>>	%{JTYPE[][]%}
+%typemap(jstype) std::vector<shogun::SGVector<SGTYPE>>	%{JTYPE[][]%}
 
-%typemap(in) shogun::SGStringList<SGTYPE> {
-	int32_t size = 0;
-	int32_t i;
-	int32_t len, max_len = 0;
-
-	if (!$input) {
-		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-		return $null;
-	}
-
-	size = JCALL1(GetArrayLength, jenv, $input);
-	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, size);
-
-	for (i = 0; i < size; i++) {
-		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
-		len = JCALL1(GetArrayLength, jenv, jarr);
-		max_len = shogun::Math::max(len, max_len);
-
-		strings[i].slen=len;
-		strings[i].string=NULL;
-
-		if (len >0) {
-			strings[i].string = SG_MALLOC(SGTYPE, len);
-			sg_memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<SGTYPE>>), "header")
+{
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<SGTYPE>>)
+    	(JNIEnv* jenv, const jobjectArray& input, std::vector<shogun::SGVector<SGTYPE>>& strings)
+    {
+		if (!input) {
+			SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+			return SWIG_ERROR;
 		}
-	}
 
-	SGStringList<SGTYPE> sl;
-	sl.strings=strings;
-	sl.num_strings=size;
-	sl.max_string_length=max_len;
-	$1 = sl;
+		int32_t size = JCALL1(GetArrayLength, jenv, input);
+		strings.reserve(size);
+
+		for (int32_t i = 0; i < size; i++) {
+			##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, input, i);
+			int32_t len = JCALL1(GetArrayLength, jenv, jarr);
+
+			JNITYPE* carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
+			
+			strings.emplace_back(len);
+			std::copy_n(carr, len, strings.back().vector);
+
+			JCALL3(Release##JAVATYPE##ArrayElements, jenv, jarr, carr, 0);
+		}
+		return SWIG_OK;
+    }
 }
 
-%typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGString<SGTYPE>* string_array = $1.strings;
-	int32_t num_strings = $1.num_strings;
-	
-	// class for inner array (the invidivual strings)
-	jclass cls = JCALL1(FindClass, jenv, CLASSDESC);
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<SGTYPE>>), "header")
+{
+    jobjectArray SWIG_From_dec(std::vector<shogun::SGVector<SGTYPE>>)
+    	(JNIEnv* jenv, const std::vector<shogun::SGVector<SGTYPE>>& string_array)
+    {
+		int32_t num_strings = string_array.size();
 
-	// create outer array of inner array types
-	jobjectArray outer = JCALL3(NewObjectArray, jenv, num_strings, cls, NULL);
+		// class for inner array (the invidivual strings)
+		jclass cls = JCALL1(FindClass, jenv, CLASSDESC);
 
-	for (auto i : range(num_strings)) {
-		auto string = string_array[i];
-		auto slen = string.slen;
-		
-		##JNITYPE##Array inner = JCALL1(New##JAVATYPE##Array, jenv, slen);
+		// create outer array of inner array types
+		jobjectArray outer = JCALL3(NewObjectArray, jenv, num_strings, cls, NULL);
 
-		// convert to java type and pass to inner array
-		JNITYPE* inner_data = SG_MALLOC(JNITYPE, slen);
-		for (auto j : range(slen))
-		{
-			inner_data[j] = (JNITYPE)string.string[j];
+		for (auto i : range(num_strings)) {
+			auto& string = string_array[i];
+			auto slen = string.vlen;
+			
+			##JNITYPE##Array inner = JCALL1(New##JAVATYPE##Array, jenv, slen);
+
+			// convert to java type and pass to inner array
+			SGVector<JNITYPE> inner_data(slen);
+			std::copy_n(string.vector, slen, inner_data.vector);
+
+			JCALL4(Set##JAVATYPE##ArrayRegion, jenv, inner, 0, slen, inner_data.vector);
+			
+			// place inner into outer array
+			JCALL3(SetObjectArrayElement, jenv, outer, i, inner);
+			JCALL1(DeleteLocalRef, jenv, inner);
 		}
-		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, inner, 0, slen, inner_data);
-		
-		// place inner into outer array
-		JCALL3(SetObjectArrayElement, jenv, outer, i, inner);
-		JCALL1(DeleteLocalRef, jenv, inner);
-	}
-	$result = outer;
+		return outer;
+    }
 }
 
-%typemap(javain) shogun::SGStringList<SGTYPE> "$javainput"
-%typemap(javaout) shogun::SGStringList<SGTYPE> {
+%typemap(javain) std::vector<shogun::SGVector<SGTYPE>> "$javainput"
+%typemap(javaout) std::vector<shogun::SGVector<SGTYPE>> {
 	return $jnicall;
 }
 
+%apply std::vector<shogun::SGVector<SGTYPE>> { const std::vector<shogun::SGVector<SGTYPE>>& };
+%val_in_typemap_with_args(std::vector<shogun::SGVector<SGTYPE>>, jenv);
+%val_out_typemap_with_args(std::vector<shogun::SGVector<SGTYPE>>, jenv);
 %enddef
 
 TYPEMAP_STRINGFEATURES(bool, boolean, Boolean, jboolean, "[Z")
@@ -723,66 +722,67 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 
 #undef TYPEMAP_STRINGFEATURES
 
-/* input/output typemap for SGStringList<char> */
-%typemap(jni) shogun::SGStringList<char>	%{jobjectArray%}
-%typemap(jtype) shogun::SGStringList<char>		%{String []%}
-%typemap(jstype) shogun::SGStringList<char>	%{String []%}
+/* input/output typemap for std::vector<shogun::SGVector<char>> */
+%typemap(jni) std::vector<shogun::SGVector<char>> %{jobjectArray%}
+%typemap(jtype) std::vector<shogun::SGVector<char>> %{String []%}
+%typemap(jstype) std::vector<shogun::SGVector<char>> %{String []%}
 
-%typemap(in) shogun::SGStringList<char> {
-	int32_t size = 0;
-	int32_t i;
-	int32_t len, max_len = 0;
-
-	if (!$input) {
-		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-		return $null;
-	}
-
-	size = JCALL1(GetArrayLength, jenv, $input);
-	shogun::SGString<char>* strings=SG_MALLOC(shogun::SGString<char>, size);
-
-	for (i = 0; i < size; i++) {
-		jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
-
-		len = JCALL1(GetStringUTFLength, jenv, jstr);
-		max_len = shogun::Math::max(len, max_len);
-		const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
-
-		strings[i].slen = len;
-		strings[i].string = NULL;
-
-		if (len > 0) {
-			strings[i].string = SG_MALLOC(char, len);
-			sg_memcpy(strings[i].string, str, len);
+%fragment(SWIG_AsVal_frag(std::vector<shogun::SGVector<char>>), "header")
+{
+    int SWIG_AsVal_dec(std::vector<shogun::SGVector<char>>)
+    	(JNIEnv* jenv, const jobjectArray& input, std::vector<shogun::SGVector<char>>& strings)
+    {
+		if (!input) {
+			SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+			return SWIG_ERROR;
 		}
-		JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
-	}
 
-	SGStringList<char> sl;
-	sl.strings = strings;
-	sl.num_strings = size;
-	sl.max_string_length = max_len;
-	$1 = sl;
+		int32_t size = JCALL1(GetArrayLength, jenv, input);
+		strings.reserve(size);
+
+		for (int32_t i = 0; i < size; i++) {
+			jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, input, i);
+
+			int32_t len = JCALL1(GetStringUTFLength, jenv, jstr);
+			const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
+
+			strings.emplace_back(len);
+			sg_memcpy(strings.back().vector, str, len);
+
+			JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
+		}
+		return SWIG_OK;
+    }
 }
 
-%typemap(out) shogun::SGStringList<char> {
-	shogun::SGString<char>* str = $1.strings;
-	int32_t i, j, num = $1.num_strings;
-	jclass cls;
-	jobjectArray res;
+%fragment(SWIG_From_frag(std::vector<shogun::SGVector<char>>), "header")
+{
+    jobjectArray SWIG_From_dec(std::vector<shogun::SGVector<char>>)
+    	(JNIEnv* jenv, const std::vector<shogun::SGVector<char>>& str)
+    {
+		int32_t num = str.size();
 
-	cls = JCALL1(FindClass, jenv, "java/lang/String");
-	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
+		jclass cls = JCALL1(FindClass, jenv, "java/lang/String");
+		jobjectArray res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
 
-	for (i = 0; i < num; i++) {
-		jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].string);
-		JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
-		JCALL1(DeleteLocalRef, jenv, jstr);
-	}
-	$result = res;
+		for (int32_t i = 0; i < num; i++) {
+			// add null terminator
+			SGVector<char> tmp(str[i].size() + 1);
+			sg_memcpy(tmp.vector, str[i].vector, str[i].size() * sizeof(char));
+
+			jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, tmp.vector);
+			JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
+			JCALL1(DeleteLocalRef, jenv, jstr);
+		}
+		return res;
+    }
 }
 
-%typemap(javain) shogun::SGStringList<char> "$javainput"
-%typemap(javaout) shogun::SGStringList<char> {
+%typemap(javain) std::vector<shogun::SGVector<char>> "$javainput"
+%typemap(javaout) std::vector<shogun::SGVector<char>> {
 	return $jnicall;
 }
+
+%apply std::vector<shogun::SGVector<char>> { const std::vector<shogun::SGVector<char>>& };
+%val_in_typemap_with_args(std::vector<shogun::SGVector<char>>, jenv);
+%val_out_typemap_with_args(std::vector<shogun::SGVector<char>>, jenv);

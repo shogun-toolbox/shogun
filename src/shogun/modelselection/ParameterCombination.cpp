@@ -7,7 +7,6 @@
 
 #if 0
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/machine/Machine.h>
 #include <set>
 #include <string>

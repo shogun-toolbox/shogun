@@ -11,7 +11,6 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/common.h>
 #include <shogun/preprocessor/Preprocessor.h>
 
@@ -60,7 +59,7 @@ template <class ST> class StringPreprocessor : public Preprocessor
 		 *
 		 * @param string_list the string list to be preprocessed
 		 */
-		virtual void apply_to_string_list(SGStringList<ST> string_list) = 0;
+		virtual void apply_to_string_list(std::vector<SGVector<ST>>& string_list) = 0;
 };
 
 }

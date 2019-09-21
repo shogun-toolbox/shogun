@@ -13,8 +13,6 @@
 #include <string>
 #include <cstring>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
-
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>

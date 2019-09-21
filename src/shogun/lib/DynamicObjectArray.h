@@ -213,9 +213,9 @@ class DynamicObjectArray : public SGObject
 		}
 
 		template <typename T>
-		inline bool append_element(SGStringList<T> e, const char* name="")
+		inline bool append_element(const std::vector<SGVector<T>>& e, const char* name="")
 		{
-			return append_element(std::make_shared<StringListSerializable<T>>(e, name));
+			return append_element(std::make_shared<VectorListSerializable<T>>(e, name));
 		}
 
 		/** append array element to the end of array

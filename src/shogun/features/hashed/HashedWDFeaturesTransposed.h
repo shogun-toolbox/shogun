@@ -226,7 +226,7 @@ class HashedWDFeaturesTransposed : public DotFeatures
 		std::shared_ptr<StringFeatures<uint8_t>> strings;
 
 		/** pointer to transposed strings */
-		SGString<uint8_t>* transposed_strings;
+		std::vector<SGVector<uint8_t>> transposed_strings;
 
 		/** degree */
 		int32_t degree;

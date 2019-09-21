@@ -12,8 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/Map.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun

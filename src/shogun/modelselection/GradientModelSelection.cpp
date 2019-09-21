@@ -17,7 +17,6 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

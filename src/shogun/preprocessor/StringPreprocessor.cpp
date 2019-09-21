@@ -110,7 +110,7 @@ namespace shogun
 			string_features = std::make_shared<StringFeatures<ST>>(*string_features);
 		}
 
-		auto string_list = string_features->get_string_list();
+		auto& string_list = string_features->get_string_list();
 
 		apply_to_string_list(string_list);
 

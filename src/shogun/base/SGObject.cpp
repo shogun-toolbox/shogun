@@ -17,7 +17,6 @@
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 

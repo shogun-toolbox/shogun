@@ -10,14 +10,14 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 BinaryFile::BinaryFile()
 {
-	SG_UNSTABLE("CBinaryFile::CBinaryFile()", "\n")
+	SG_UNSTABLE("BinaryFile::BinaryFile()", "\n")
 }
 
 BinaryFile::BinaryFile(FILE* f, const char* name) : File(f, name)
@@ -177,7 +177,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, 
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void BinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void BinaryFile::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 	strings=NULL;																				\
 	num_str=0;																					\
@@ -193,18 +193,16 @@ void BinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& m
 	if (fread(&num_str, sizeof(int32_t), 1, file)!=1)											\
 		SG_ERROR("Failed to read number of strings\n")											\
 																								\
-	strings=SG_MALLOC(SGString<sg_type>, num_str);														\
+	strings=SG_MALLOC(SGVector<sg_type>, num_str);														\
 																								\
 	for (int32_t i=0; i<num_str; i++)															\
 	{																							\
 		int32_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i)				\
-		strings[i].slen=len;																	\
-		sg_type* str = SG_MALLOC(sg_type, len);														\
-		if (fread(str, sizeof(sg_type), len, file)!= (size_t) len)								\
+		strings[i] = SGVector<sg_type>(len);													\
+		if (fread(strings[i].vector, sizeof(sg_type), len, file)!= (size_t) len)				\
 			SG_ERROR("Failed to read string %d\n", i)											\
-		strings[i].string=str;																	\
 	}																							\
 }
 
@@ -350,7 +348,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void BinaryFile::fname(const SGString<sg_type>* strings, int32_t num_str)	\
+void BinaryFile::fname(const SGVector<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n")											\
@@ -358,9 +356,9 @@ void BinaryFile::fname(const SGString<sg_type>* strings, int32_t num_str)	\
 	TSGDataType t dtype; write_header(&t);								                \
 	for (int32_t i=0; i<num_str; i++)													\
 	{																					\
-		int32_t len = strings[i].slen;												\
+		int32_t len = strings[i].vlen;												\
 		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||								\
-				(fwrite(strings[i].string, sizeof(sg_type), len, file)!= (size_t) len))	\
+				(fwrite(strings[i].vector, sizeof(sg_type), len, file)!= (size_t) len))	\
 			SG_ERROR("Failed to write Sparse Matrix\n")								\
 	}																					\
 }

@@ -15,7 +15,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/io/streaming/InputParser.h>
 
-#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/Alphabet.h>
 
@@ -151,11 +151,11 @@ public:
 	virtual bool get_next_example();
 
 	/**
-	 * Return the current feature vector as an SGString<T>.
+	 * Return the current feature vector as an SGVector<T>.
 	 *
-	 * @return The vector as SGString<T>
+	 * @return The vector as SGVector<T>
 	 */
-	SGString<T> get_vector();
+	SGVector<T> get_vector();
 
 	/**
 	 * Return the label of the current example as a float.
@@ -247,14 +247,8 @@ protected:
 	/// If remapping is enabled, this is the target alphabet
 	std::shared_ptr<Alphabet> alpha_bin;
 
-	/// The current example's string as an SGString<T>
-	SGString<T> current_sgstring;
-
-	/// The current example's string as a T*
-	T* current_string;
-
-	/// The length of the current string
-	int32_t current_length;
+	/// The current example's string
+	SGVector<T> current_string;
 
 	/// The label of the current example, if applicable
 	float64_t current_label;

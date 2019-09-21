@@ -150,11 +150,12 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
-%typemap(in) shogun::SGStringList<sg_type>
+%typemap(in) std::vector<shogun::SGVector<sg_type>>
 {
+    std::vector<shogun::SGVector<sg_type>>& strs = $1;
+
     int32_t max_len=0;
     int32_t num_strings=0;
-    shogun::SGString<sg_type>* strs=NULL;
 
     if ($input == R_NilValue || TYPEOF($input) != STRSXP)
     {
@@ -164,36 +165,25 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
     num_strings=Rf_length($input);
     ASSERT(num_strings>=1);
-    strs=SG_MALLOC(shogun::SGString<sg_type>, num_strings);
+    strs.reserve(num_strings);
 
     for (int32_t i=0; i<num_strings; i++)
     {
         SEXPREC* s= STRING_ELT($input,i);
         sg_type* c= (sg_type*) if_type(s);
         int32_t len=LENGTH(s);
-
+        strs.emplace_back(len+1);
+        strs.back().vlen = len;
         if (len>0)
         {
-			sg_type* dst=SG_MALLOC(sg_type, len+1);
-            /*ASSERT(strs[i].string);*/
-			strs[i].string=(sg_type*) sg_memcpy(dst, c, len*sizeof(sg_type));
-            strs[i].string[len]='\0'; /* zero terminate */
-            strs[i].slen=len;
-            max_len=Math::max(max_len, len);
+			sg_memcpy(strs.back().vector, c, len*sizeof(sg_type));
+            strs.back().vector[len]='\0'; /* zero terminate */
         }
         else
         {
             /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-            strs[i].slen=0;
-            strs[i].string=NULL;
         }
     }
-
-    SGStringList<sg_type> sl;
-    sl.strings=strs;
-    sl.num_strings=num_strings;
-    sl.max_string_length=max_len;
-    $1 = sl;
 }
 %enddef
 

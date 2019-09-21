@@ -5,7 +5,6 @@
 #include <shogun/io/MLDataHDF5File.h>
 #include <shogun/io/HDF5File.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGMatrix.h>
 
 #include <unistd.h>

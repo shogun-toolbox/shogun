@@ -41,15 +41,12 @@ bool SortWordString::save(FILE* f)
 	return false;
 }
 
-void SortWordString::apply_to_string_list(SGStringList<uint16_t> string_list)
+void SortWordString::apply_to_string_list(std::vector<SGVector<uint16_t>>& string_list)
 {
-	for (auto i : range(string_list.num_strings))
+	for (auto& vec : string_list)
 	{
-		int32_t len = 0 ;
-		auto& vec = string_list.strings[i];
-
 		//Math::qsort(vec, len);
-		Math::radix_sort(vec.string, vec.slen);
+		Math::radix_sort(vec.vector, vec.vlen);
 	}
 }
 

@@ -367,28 +367,24 @@ SET_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_SPARSE_MATRIX
 
 void CSVFile::get_string_list(
-			SGString<char>*& strings, int32_t& num_str,
+			SGVector<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)
 {
-	SGVector<char> line;
 	int32_t current_line_idx=0;
 	int32_t num_tokens=0;
 
 	max_string_len=0;
 	num_str=get_stats(num_tokens);
-	strings=SG_MALLOC(SGString<char>, num_str);
+	strings=SG_MALLOC(SGVector<char>, num_str);
 
 	skip_lines(m_num_to_skip);
 	while (m_line_reader->has_next())
 	{
-		line=m_line_reader->read_line();
-		strings[current_line_idx].slen=line.vlen;
-		strings[current_line_idx].string=SG_MALLOC(char, line.vlen);
-		for (int32_t i=0; i<line.vlen; i++)
-			strings[current_line_idx].string[i]=line[i];
+		strings[current_line_idx]=m_line_reader->read_line();
 
-		if (line.vlen>max_string_len)
-			max_string_len=line.vlen;
+		index_t line_length = strings[current_line_idx].vlen;
+		if (line_length>max_string_len)
+			max_string_len=line_length;
 
 		current_line_idx++;
 	}
@@ -398,7 +394,7 @@ void CSVFile::get_string_list(
 
 #define GET_STRING_LIST(sg_type) \
 void CSVFile::get_string_list( \
-			SGString<sg_type>*& strings, int32_t& num_str, \
+			SGVector<sg_type>*& strings, int32_t& num_str, \
 			int32_t& max_string_len) \
 { \
 	SG_NOTIMPLEMENTED \
@@ -418,19 +414,19 @@ GET_STRING_LIST(uint16_t)
 #undef GET_STRING_LIST
 
 void CSVFile::set_string_list(
-			const SGString<char>* strings, int32_t num_str)
+			const SGVector<char>* strings, int32_t num_str)
 {
 	for (int32_t i=0; i<num_str; i++)
 	{
-		for (int32_t j=0; j<strings[i].slen; j++)
-			fprintf(file, "%c", strings[i].string[j]);
+		for (int32_t j=0; j<strings[i].vlen; j++)
+			fprintf(file, "%c", strings[i].vector[j]);
 		fprintf(file, "\n");
 	}
 }
 
 #define SET_STRING_LIST(sg_type) \
 void CSVFile::set_string_list( \
-			const SGString<sg_type>* strings, int32_t num_str) \
+			const SGVector<sg_type>* strings, int32_t num_str) \
 { \
 	SG_NOTIMPLEMENTED \
 }

@@ -19,6 +19,7 @@
 "The `shogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
 
+
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %module(directors="1", docstring=DOCSTR) shogun
 #else
@@ -50,6 +51,7 @@
 #endif
 #endif
 
+%include "std_vector.i"
 %include "shogun_ignores.i"
 %include "RandomMixin.i"
 %include "std_shared_ptr.i" 
@@ -269,8 +271,8 @@ namespace shogun
 %template(get_int) SGObject::get<int32_t, void>;
 %template(get_long) SGObject::get<int64_t, void>;
 %template(get_real_matrix) SGObject::get<SGMatrix<float64_t>, void>;
-%template(get_char_string_list) SGObject::get<SGStringList<char>, void>;
-%template(get_word_string_list) SGObject::get<SGStringList<uint16_t>, void>;
+%template(get_char_string_list) SGObject::get<std::vector<SGVector<char>>, void>;
+%template(get_word_string_list) SGObject::get<std::vector<SGVector<uint16_t>>, void>;
 %template(get_option) SGObject::get<std::string, void>;
 
 #ifndef SWIGJAVA
