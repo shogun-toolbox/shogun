@@ -241,9 +241,6 @@ TEST(CrossValidationMMD, unbiased_full)
 			}
 		}
 	}
-
-
-
 }
 
 TEST(CrossValidationMMD, unbiased_incomplete)
@@ -341,7 +338,4 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 			}
 		}
 	}
-
-
-
 }
