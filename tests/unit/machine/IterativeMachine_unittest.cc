@@ -10,6 +10,7 @@
 
 #include "environments/LinearTestEnvironment.h"
 #include "utils/SGObjectIterator.h"
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/classifier/AveragedPerceptron.h>
 #include <shogun/classifier/Perceptron.h>
 #include <shogun/classifier/svm/NewtonSVM.h>
@@ -26,11 +27,11 @@ extern LinearTestEnvironment* linear_test_env;
 #if 0
 TEST(IterativeMachine, continue_training_consistency)
 {
-	auto env = linear_test_env->getBinaryLabelData();
-	auto features = wrap(env->get_features_train());
-	auto labels = wrap(env->get_labels_train());
-	auto test_features = wrap(env->get_features_test());
-	auto test_labels = wrap(env->get_labels_test());
+	auto env_data = linear_test_env->getBinaryLabelData();
+	auto features = wrap(env_data->get_features_train());
+	auto labels = wrap(env_data->get_labels_train());
+	auto test_features = wrap(env_data->get_features_test());
+	auto test_labels = wrap(env_data->get_labels_test());
 
 	auto range = sg_object_iterator<untemplated_sgobject>(sg_linear_machines);
 	for (auto machine_obj : range)
@@ -54,7 +55,7 @@ TEST(IterativeMachine, continue_training_consistency)
 		auto callback = [&iter, max_iters]() {
 			if (iter >= max_iters)
 			{
-				get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+				env()->signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
 				return true;
 			}
 			iter++;

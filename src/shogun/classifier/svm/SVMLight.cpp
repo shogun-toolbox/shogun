@@ -237,7 +237,7 @@ bool SVMLight::train_machine(std::shared_ptr<Features> data)
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG("threads = %i\n", parallel->get_num_threads())
+	SG_DEBUG("threads = %i\n", env()->get_num_threads())
 	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
 	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
 	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))
@@ -1059,7 +1059,7 @@ void SVMLight::compute_matrices_for_optimization_parallel(
 {
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
+	int32_t num_threads=env()->get_num_threads();
 #else
 	int32_t num_threads=1;
 #endif
@@ -1474,7 +1474,7 @@ void SVMLight::update_linear_component(
 			{
 				// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-				int32_t num_threads=parallel->get_num_threads();
+				int32_t num_threads=env()->get_num_threads();
 #else
 				int32_t num_threads=1;
 #endif
@@ -1653,7 +1653,7 @@ void SVMLight::update_linear_component_mkl_linadd(
 	}
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
+	int32_t num_threads=env()->get_num_threads();
 #else
 	int32_t num_threads=1;
 #endif
@@ -2156,7 +2156,7 @@ void SVMLight::reactivate_inactive_examples(
 		  {
 		  		// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-				int32_t num_threads=parallel->get_num_threads();
+				int32_t num_threads=env()->get_num_threads();
 #else
 				int32_t num_threads=1;
 #endif
@@ -2294,7 +2294,7 @@ void SVMLight::reactivate_inactive_examples(
 		  compute_index(changed,totdoc,changed2dnum);
 
 
-		  //TODO: PUT THIS BACK IN!!!!!!!! int32_t num_threads=parallel->get_num_threads();
+		  //TODO: PUT THIS BACK IN!!!!!!!! int32_t num_threads=env()->get_num_threads();
 		  int32_t num_threads=1;
 		  ASSERT(num_threads>0)
 

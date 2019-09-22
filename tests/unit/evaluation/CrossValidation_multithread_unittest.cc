@@ -30,7 +30,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -106,23 +105,17 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 
 	cross->set_autolock(false);
 	cross->set_num_runs(4);
-	cross->parallel->set_num_threads(1);
+	cross->get_global_parallel()->set_num_threads(1);
 
 	auto result1=cross->evaluate()->as<CrossValidationResult>();;
 	float64_t mean1 = result1->get_mean();
 
-	cross->parallel->set_num_threads(3);
+	cross->get_global_parallel()->set_num_threads(3);
 
 	auto result2=cross->evaluate()->as<CrossValidationResult>();;
 	float64_t mean2 = result2->get_mean();
 
 	EXPECT_EQ(mean1, mean2);
-
-	/* clean up */
-
-
-
-
 }
 
 TEST(CrossValidation_multithread, KNN)
@@ -158,20 +151,15 @@ TEST(CrossValidation_multithread, KNN)
 
 	cross->set_autolock(false);
 	cross->set_num_runs(4);
-	cross->parallel->set_num_threads(1);
+	cross->get_global_parallel()->set_num_threads(1);
 
 	auto result1=cross->evaluate()->as<CrossValidationResult>();
 	float64_t mean1 = result1->get_mean();
 
-	cross->parallel->set_num_threads(3);
+	cross->get_global_parallel()->set_num_threads(3);
 
 	auto result2=cross->evaluate()->as<CrossValidationResult>();
 	float64_t mean2 = result2->get_mean();
 
 	EXPECT_EQ(mean1, mean2);
-
-
-
-
-
 }

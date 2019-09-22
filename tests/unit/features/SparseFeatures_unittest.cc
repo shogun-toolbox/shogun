@@ -4,6 +4,7 @@
  * Authors: Heiko Strathmann
  */
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
@@ -34,7 +35,7 @@ TEST(SparseFeaturesTest,serialization)
 	/* create sparse features */
 	auto sparse_features=std::make_shared<SparseFeatures<int32_t>>(data);
 
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	std::string filename("sparseFeatures.json");
 	ASSERT_TRUE(fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;

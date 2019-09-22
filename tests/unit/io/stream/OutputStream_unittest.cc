@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <fstream>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/stream/FileOutputStream.h>
 
 using namespace shogun;
@@ -10,7 +11,7 @@ TEST(FileOutputStream, write)
 {
 	string fname = "test123";
 	string_view test_str("asdf");
-	auto fs_registry = io::FileSystemRegistry::instance();
+	auto fs_registry = env();
 	auto r = fs_registry->file_exists(fname);
 	ASSERT_TRUE(r);
 

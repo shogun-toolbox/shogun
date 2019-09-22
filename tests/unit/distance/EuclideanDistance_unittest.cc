@@ -6,11 +6,11 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubSamplesFeatures.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/base/init.h>
 
 using namespace shogun;
 
@@ -90,7 +90,7 @@ TEST(EuclideanDistance,get_distance_matrix)
 	// put features into distance object to compute squared Euclidean distances
 	auto euclidean=std::make_shared<EuclideanDistance>(features_lhs,features_rhs);
 	euclidean->set_disable_sqrt(true);
-	euclidean->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 
 	SGMatrix<float64_t> distance_matrix=euclidean->get_distance_matrix();
 
@@ -121,7 +121,7 @@ TEST(EuclideanDistance, heterogenous_features)
 
 	auto euclidean=std::make_shared<EuclideanDistance>();
 	euclidean->set_disable_sqrt(true);
-	euclidean->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 
 	float64_t accuracy=1E-15;
 

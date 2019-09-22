@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
@@ -206,7 +207,7 @@ TEST(CombinedKernelTest, DISABLED_serialization)
 
 	combined->set_subkernel_weights(weights);
 
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	std::string filename("combined_kernel.weights");
 	ASSERT_TRUE(fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;

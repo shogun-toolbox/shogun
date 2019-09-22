@@ -28,7 +28,6 @@ using namespace shogun;
 Parallel::Parallel()
 {
 	num_threads=get_num_cpus();
-	m_refcount = new RefCount();
 #ifdef HAVE_OPENMP
 	omp_set_dynamic(0);
 	omp_set_num_threads(num_threads);
@@ -38,7 +37,6 @@ Parallel::Parallel()
 Parallel::Parallel(const Parallel& orig)
 {
 	num_threads=orig.get_num_threads();
-	m_refcount = new RefCount();
 #ifdef HAVE_OPENMP
 	omp_set_dynamic(0);
 	omp_set_num_threads(num_threads);
@@ -47,7 +45,6 @@ Parallel::Parallel(const Parallel& orig)
 
 Parallel::~Parallel()
 {
-	delete m_refcount;
 }
 
 int32_t Parallel::get_num_cpus() const
@@ -90,27 +87,4 @@ void Parallel::set_num_threads(int32_t n)
 int32_t Parallel::get_num_threads() const
 {
 	return num_threads;
-}
-
-int32_t Parallel::ref()
-{
-	return m_refcount->ref();
-}
-
-int32_t Parallel::ref_count() const
-{
-	return m_refcount->ref_count();
-}
-
-int32_t Parallel::unref()
-{
-	int32_t rc = m_refcount->unref();
-
-	if (rc==0)
-	{
-		delete this;
-		return 0;
-	}
-
-	return rc;
 }

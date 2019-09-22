@@ -31,9 +31,6 @@ public:
 
 	virtual void TearDown()
 	{
-
-
-
 	}
 
 	void load_toy_data()
@@ -71,7 +68,7 @@ TEST_F(BaggingMachineTest, classify_CART)
 
 	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
 
-	c->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);
@@ -103,7 +100,7 @@ TEST_F(BaggingMachineTest, output_binary)
 
 	cart->set_feature_types(ft);
 	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
-	c->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);

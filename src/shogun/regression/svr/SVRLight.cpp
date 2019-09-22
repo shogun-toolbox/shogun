@@ -428,7 +428,7 @@ void SVRLight::update_linear_component(
 			{
 			// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-				int32_t num_threads=parallel->get_num_threads();
+				int32_t num_threads=env()->get_num_threads();
 #else
 				int32_t num_threads=1;
 #endif

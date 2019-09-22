@@ -63,7 +63,8 @@ class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix",
         "StreamingDataFetcher", "MaxMeasure", "MaxTestPower",
         "MedianHeuristic", "WeightedMaxMeasure", "WeightedMaxTestPower",
         "ShapeVisitor", "GradientModelSelection", "GridSearchModelSelection",
-        "ModelSelectionParameters", "ParameterCombination", "RandomSearchModelSelection"]
+        "ModelSelectionParameters", "ParameterCombination", "RandomSearchModelSelection",
+        "ShogunEnv"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
 SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"

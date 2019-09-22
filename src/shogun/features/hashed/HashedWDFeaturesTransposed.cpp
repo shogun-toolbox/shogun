@@ -205,7 +205,7 @@ void HashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t star
 
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
+	int32_t num_threads=env()->get_num_threads();
 #else
 	int32_t num_threads=1;
 #endif
@@ -291,7 +291,7 @@ void HashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int 
 
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
+	int32_t num_threads=env()->get_num_threads();
 #else
 	int32_t num_threads=1;
 #endif

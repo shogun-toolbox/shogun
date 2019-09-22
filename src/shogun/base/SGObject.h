@@ -216,7 +216,13 @@ namespace shogun
 		 */
 		virtual bool deserialize(std::shared_ptr<io::Deserializer> deser);
 
-		/**
+	  /** get the parallel object
+	    *
+	    * @return parallel object
+        */
+        Parallel* get_global_parallel();
+		
+        /**
 		 * Return the description of a registered parameter given its name
 		 * @param name parameter's name
 		 * @return description of the parameter as a string
@@ -1205,12 +1211,6 @@ namespace shogun
 	public:
 		/** io */
 		SGIO* io;
-
-		/** parallel */
-		Parallel* parallel;
-
-		/** version */
-		Version* version;
 
 		/** Hash of parameter values*/
 		size_t m_hash;

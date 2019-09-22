@@ -28,9 +28,9 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/config.h>
 #ifdef HAVE_OPENMP
-#include <shogun/base/init.h>
 #include <shogun/base/Parallel.h>
 #include <gtest/gtest.h>
 #include <omp.h>
@@ -42,7 +42,7 @@ TEST(Parallel, openmp_get_num_threads)
 	int32_t omp_num_threads=omp_get_num_threads();
 	ASSERT_EQ(1, omp_num_threads);
 
-	int32_t sg_num_threads=get_global_parallel()->get_num_threads();
+	int32_t sg_num_threads = env()->get_num_threads();
 #pragma omp parallel
 	{
 		#pragma omp master
@@ -54,11 +54,11 @@ TEST(Parallel, openmp_get_num_threads)
 
 TEST(Parallel, openmp_set_num_threads)
 {
-	int32_t orig_num_threads=get_global_parallel()->get_num_threads();
+	int32_t orig_num_threads = env()->get_num_threads();
 	int32_t omp_num_threads=omp_get_num_threads();
 
 	int32_t desired_num_threads=10;
-	get_global_parallel()->set_num_threads(desired_num_threads);
+	env()->set_num_threads(desired_num_threads);
 
 #pragma omp parallel
 	{
@@ -68,6 +68,6 @@ TEST(Parallel, openmp_set_num_threads)
 
 	ASSERT_EQ(desired_num_threads, omp_num_threads);
 
-	get_global_parallel()->set_num_threads(orig_num_threads);
+	env()->set_num_threads(orig_num_threads);
 }
 #endif // HAVE_OPENMP

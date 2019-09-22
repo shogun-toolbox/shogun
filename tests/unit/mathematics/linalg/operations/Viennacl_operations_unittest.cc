@@ -15,7 +15,7 @@ using namespace linalg;
 
 TEST(LinalgBackendViennaCL, SGVector_add)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const float32_t alpha = 0.3;
 	const float32_t beta = -1.5;
@@ -42,7 +42,7 @@ TEST(LinalgBackendViennaCL, SGVector_add)
 
 TEST(LinalgBackendViennaCL, SGMatrix_add)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const float32_t alpha = 0.3;
 	const float32_t beta = -1.5;
@@ -69,7 +69,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_add)
 
 TEST(LinalgBackendViennaCL, SGVector_add_in_place)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const float32_t alpha = 0.3;
 	const float32_t beta = -1.5;
@@ -95,7 +95,7 @@ TEST(LinalgBackendViennaCL, SGVector_add_in_place)
 
 TEST(LinalgBackendViennaCL, SGMatrix_add_in_place)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const float32_t alpha = 0.3;
 	const float32_t beta = -1.5;
@@ -147,7 +147,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_cross_entropy)
 
 TEST(LinalgBackendViennaCL, SGVector_dot)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 3;
 	SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
@@ -164,7 +164,7 @@ TEST(LinalgBackendViennaCL, SGVector_dot)
 
 TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const auto m = 3;
 	SGMatrix<float64_t> A(m, m);
@@ -208,7 +208,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
 
 TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product_in_place)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const auto m = 3;
 	SGMatrix<float64_t> A(m, m);
@@ -443,7 +443,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_matrix_product_in_place)
 
 TEST(LinalgBackendViennaCL, SGVector_mean)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 6;
 	SGVector<int32_t> vec(size);
@@ -459,7 +459,7 @@ TEST(LinalgBackendViennaCL, SGVector_mean)
 
 TEST(LinalgBackendViennaCL, SGVector_max)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	SGVector<float32_t> A(9);
 	SGVector<float32_t> A_gpu;
@@ -474,7 +474,7 @@ TEST(LinalgBackendViennaCL, SGVector_max)
 
 TEST(LinalgBackendViennaCL, SGMatrix_max)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<float32_t> A(nrows, ncols);
@@ -490,7 +490,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_max)
 
 TEST(LinalgBackendViennaCL, SGMatrix_mean)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2;
 	const index_t ncols = 3;
@@ -530,7 +530,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_multiply_by_logistic_derivative)
 
 TEST(LinalgBackendViennaCL, SGMatrix_multiply_by_rectified_linear_derivative)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	SGMatrix<float64_t> A(3, 3), A_gpu;
 	SGMatrix<float64_t> B(3, 3), B_gpu;
@@ -572,7 +572,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_rectified_linear)
 
 TEST(LinalgBackendViennaCL, SGVector_scale)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 5;
 	const float32_t alpha = 0.3;
@@ -591,7 +591,7 @@ TEST(LinalgBackendViennaCL, SGVector_scale)
 
 TEST(LinalgBackendViennaCL, SGMatrix_scale)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const float32_t alpha = 0.3;
 	const index_t nrows = 2, ncols = 3;
@@ -611,7 +611,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_scale)
 
 TEST(LinalgBackendViennaCL, SGVector_scale_in_place)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 5;
 	const float32_t alpha = 0.3;
@@ -629,7 +629,7 @@ TEST(LinalgBackendViennaCL, SGVector_scale_in_place)
 
 TEST(LinalgBackendViennaCL, SGMatrix_scale_in_place)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const float32_t alpha = 0.3;
 	const index_t nrows = 2, ncols = 3;
@@ -650,7 +650,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_scale_in_place)
 
 TEST(LinalgBackendViennaCL, SGVector_set_const)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 5;
 	const float32_t value = 2;
@@ -667,7 +667,7 @@ TEST(LinalgBackendViennaCL, SGVector_set_const)
 
 TEST(LinalgBackendViennaCL, SGMatrix_set_const)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	const float64_t value = 2;
@@ -738,7 +738,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_squared_error)
 
 TEST(LinalgBackendViennaCL, SGVector_sum)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> vec(size), vec_gpu;
@@ -751,7 +751,7 @@ TEST(LinalgBackendViennaCL, SGVector_sum)
 
 TEST(LinalgBackendViennaCL, SGMatrix_sum)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), a_gpu(nrows, ncols);
@@ -766,7 +766,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_sum)
 
 TEST(LinalgBackendViennaCL, SGMatrix_sum_no_diag)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), a_gpu(nrows, ncols);
@@ -781,7 +781,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_sum_no_diag)
 
 TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> mat(nrows, ncols), mat_gpu;
@@ -805,7 +805,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum)
 
 TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum_no_diag)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> mat(nrows, ncols), mat_gpu;
@@ -825,7 +825,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum_no_diag)
 
 TEST(LinalgBackendViennaCL, SGMatrix_rowwise_sum)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> mat(nrows, ncols), mat_gpu;
@@ -849,7 +849,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_rowwise_sum)
 
 TEST(LinalgBackendViennaCL, SGMatrix_rowwise_sum_no_diag)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	env()->linalg()->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> mat(nrows, ncols), mat_gpu;

@@ -1,5 +1,4 @@
 #include <shogun/io/UAIFile.h>
-#include <shogun/base/init.h>
 
 #include <gtest/gtest.h>
 

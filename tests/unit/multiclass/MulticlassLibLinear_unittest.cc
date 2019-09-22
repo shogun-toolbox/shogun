@@ -4,6 +4,7 @@
  * Authors: Heiko Strathmann
  */
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/NormalDistribution.h>
@@ -53,7 +54,7 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 
 	auto mocas=std::make_shared<MulticlassLibLinear>(C, features,
 			labels);
-	mocas->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	mocas->set_epsilon(1e-5);
 	mocas->train();
 

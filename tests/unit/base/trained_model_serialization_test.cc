@@ -3,6 +3,7 @@
 #include "environments/MultiLabelTestEnvironment.h"
 #include "environments/RegressionTestEnvironment.h"
 #include "utils/Utils.h"
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
@@ -30,7 +31,7 @@ class TrainedModelSerializationFixture : public ::testing::Test
 protected:
 	void SetUp()
 	{
-		fs = io::FileSystemRegistry::instance();
+		fs = env();
 		machine = std::make_shared<T>();
 		this->load_data(this->machine->get_machine_problem_type());
 	}
@@ -119,10 +120,10 @@ protected:
 		auto deserialized_predictions =
 		    deserialized_machine->apply(test_feats);
 
-		set_global_fequals_epsilon(1e-7);
+		env()->set_global_fequals_epsilon(1e-7);
 		if (!predictions->equals(deserialized_predictions))
 			return false;
-		set_global_fequals_epsilon(0);
+		env()->set_global_fequals_epsilon(0);
 		return true;
 	}
 

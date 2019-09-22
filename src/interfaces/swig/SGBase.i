@@ -77,7 +77,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  /* required for python */
  #define SWIG_FILE_WITH_INIT
 
- #include <shogun/base/init.h>
+ #include <shogun/base/ShogunEnv.h>
  #include <shogun/lib/common.h>
  #include <shogun/io/SGIO.h>
  #include <shogun/lib/exception/ShogunException.h>
@@ -138,17 +138,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #ifdef SWIGPYTHON
         import_array();
 #endif
-
-#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
-#ifndef DISABLE_CANCEL_CALLBACK
-        shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
-                &sg_global_print_error);
-#else
-        shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
-                &sg_global_print_error);
-#endif
-#endif
-
 
 #ifdef SWIGRUBY
         rb_require("narray");
@@ -318,8 +307,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
-/* %ignore init_shogun;
-%ignore exit_shogun; */
 %ignore sg_print_message;
 %ignore sg_print_warning;
 %ignore sg_print_error;
@@ -341,9 +328,6 @@ namespace std {
     %template(StringStdVector) vector<string>;
 }
 
-#ifndef SWIGR
-%include <shogun/base/init.h>
-#endif
 %include <shogun/base/SGObject.h>
 
 /** Instantiate RandomMixin */

@@ -12,12 +12,14 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/exception/ShogunException.h>
 
 #include <memory>
 #include <string.h>
 #include <locale.h>
 #include <sys/types.h>
+#include <functional>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -27,8 +29,6 @@ namespace shogun
 {
 	class RefCount;
 	class SGIO;
-	/** shogun IO */
-	extern std::shared_ptr<SGIO> sg_io;
 }
 
 
@@ -144,38 +144,40 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 		io->done();								\
 }
 
-// printf like function using the global sg_io object
+// printf like function using the global SG_IO object
+#define SG_IO env()->io()
+
 #define SG_SGCDEBUG(...) {											\
-	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_GCDEBUG)))			\
-		sg_io->message(MSG_GCDEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);\
+	if (SG_UNLIKELY(SG_IO->loglevel_above(MSG_GCDEBUG)))			\
+		SG_IO->message(MSG_GCDEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);\
 }
 
 #define SG_SDEBUG(...) {											\
-	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_DEBUG)))			\
-		sg_io->message(MSG_DEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+	if (SG_UNLIKELY(SG_IO->loglevel_above(MSG_DEBUG)))			\
+		SG_IO->message(MSG_DEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
 #define SG_SINFO(...) {												\
-	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_INFO)))				\
-		sg_io->message(MSG_INFO,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
+	if (SG_UNLIKELY(SG_IO->loglevel_above(MSG_INFO)))				\
+		SG_IO->message(MSG_INFO,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
-#define SG_SWARNING(...) { sg_io->message(MSG_WARN,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SWARNING(...) { SG_IO->message(MSG_WARN,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_STHROW(Exception, ...)                                              \
 	{                                                                          \
-		sg_io->template error<Exception>(                                      \
+		SG_IO->template error<Exception>(                                      \
 		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
 	}
 #define SG_SERROR(...) SG_STHROW(ShogunException, __VA_ARGS__)
-#define SG_SPRINT(...) { sg_io->message(MSG_MESSAGEONLY,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SPRINT(...) { SG_IO->message(MSG_MESSAGEONLY,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 
 #define SG_SDONE() {								\
-	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
-		sg_io->done();								\
+	if (SG_UNLIKELY(SG_IO->get_show_progress()))	\
+		SG_IO->done();								\
 }
 
-#define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_SGPL_ONLY { sg_io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_SNOTIMPLEMENTED { SG_IO->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_SGPL_ONLY { SG_IO->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\
@@ -397,9 +399,9 @@ class SGIO
 		{
 			show_progress=true;
 
-			// static functions like SVM::classify_example_helper call SG_PROGRESS
-			if (sg_io.get()!=this)
-				sg_io->enable_progress();
+			// static functions like CSVM::classify_example_helper call SG_PROGRESS
+			if (SG_IO!=this)
+				SG_IO->enable_progress();
 		}
 
 		/** disable progress bar */
@@ -407,9 +409,9 @@ class SGIO
 		{
 			show_progress=false;
 
-			// static functions like SVM::classify_example_helper call SG_PROGRESS
-			if (sg_io.get()!=this)
-				sg_io->disable_progress();
+			// static functions like CSVM::classify_example_helper call SG_PROGRESS
+			if (SG_IO!=this)
+				SG_IO->disable_progress();
 		}
 
 		/** enable displaying of file and line when printing messages etc
@@ -421,8 +423,8 @@ class SGIO
 		{
 			location_info = location;
 
-			if (sg_io.get()!=this)
-				sg_io->set_location_info(location);
+			if (SG_IO!=this)
+				SG_IO->set_location_info(location);
 		}
 
 		/** enable syntax highlighting */
@@ -430,8 +432,8 @@ class SGIO
 		{
 			syntax_highlight=true;
 
-			if (sg_io.get()!=this)
-				sg_io->enable_syntax_highlighting();
+			if (SG_IO!=this)
+				SG_IO->enable_syntax_highlighting();
 		}
 
 		/** disable syntax highlighting */
@@ -439,8 +441,8 @@ class SGIO
 		{
 			syntax_highlight=false;
 
-			if (sg_io.get()!=this)
-				sg_io->disable_syntax_highlighting();
+			if (SG_IO!=this)
+				SG_IO->disable_syntax_highlighting();
 		}
 
 		/**
@@ -545,6 +547,12 @@ class SGIO
 
 	private:
 		RefCount* m_refcount;
+		/// function called to print normal messages
+		std::function<void(FILE*, const char*)> print_message;
+		/// function called to print warning messages
+		std::function<void(FILE*, const char*)> print_warning;
+		/// function called to print error messages
+		std::function<void(FILE*, const char*)> print_error;
 };
 
 template <typename... Args>

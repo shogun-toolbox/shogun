@@ -1,5 +1,6 @@
 
 #include <shogun/base/progress.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/MemoryMappedFile.h>
 #include <shogun/io/fs/FileSystem.h>
@@ -700,7 +701,7 @@ template<class ST> bool StringFeatures<ST>::load_from_directory(char* dirname)
 	remove_all_subsets();
 
 	std::vector<std::string> children;
-	auto fs_registry = io::FileSystemRegistry::instance();
+	auto fs_registry = env();
 	REQUIRE(!fs_registry->is_directory(dirname),
 		"Specified path ('%s') is not a directory!", dirname);
 	auto r = fs_registry->get_children(dirname, &children);

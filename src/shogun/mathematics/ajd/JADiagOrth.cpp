@@ -1,8 +1,5 @@
 #include <shogun/mathematics/ajd/JADiagOrth.h>
 
-
-#include <shogun/base/init.h>
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 

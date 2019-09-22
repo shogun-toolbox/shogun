@@ -184,7 +184,7 @@ HMM::HMM(std::shared_ptr<HMM> h)
 : RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
+	SG_INFO("hmm is using %i separate tables\n",  env()->get_num_threads())
 #endif
 
 	this->N=h->get_N();
@@ -202,7 +202,7 @@ HMM::HMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 	model=NULL ;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
+	SG_INFO("hmm is using %i separate tables\n",  env()->get_num_threads())
 #endif
 
 	status=initialize_hmm(p_model, p_PSEUDO);
@@ -218,7 +218,7 @@ HMM::HMM(
 	model=NULL ;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
+	SG_INFO("hmm is using %i separate tables\n",  env()->get_num_threads())
 #endif
 
 	initialize_hmm(model, p_PSEUDO);
@@ -389,7 +389,7 @@ HMM::HMM(FILE* model_file, float64_t p_PSEUDO)
 : RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
+	SG_INFO("hmm is using %i separate tables\n",  env()->get_num_threads())
 #endif
 
 	status=initialize_hmm(NULL, p_PSEUDO, model_file);
@@ -432,7 +432,7 @@ HMM::~HMM()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		if (mem_initialized)
 		{
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 			{
 				SG_FREE(alpha_cache[i].table);
 				SG_FREE(beta_cache[i].table);
@@ -460,7 +460,7 @@ HMM::~HMM()
 	{
 		if (mem_initialized)
 		{
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 				SG_FREE(arrayS[i]);
 		}
 		SG_FREE(arrayS);
@@ -477,7 +477,7 @@ HMM::~HMM()
 		{
 			SG_FREE(path_prob_updated);
 			SG_FREE(path_prob_dimension);
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 				SG_FREE(path[i]);
 		}
 #endif //USE_HMMPARALLEL_STRUCTURES
@@ -514,7 +514,7 @@ bool HMM::alloc_state_dependend_arrays()
 	}
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	for (int32_t i=0; i<env()->get_num_threads(); i++)
 	{
 		arrayN1[i]=SG_MALLOC(float64_t, N);
 		arrayN2[i]=SG_MALLOC(float64_t, N);
@@ -526,7 +526,7 @@ bool HMM::alloc_state_dependend_arrays()
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	for (int32_t i=0; i<env()->get_num_threads(); i++)
 		arrayS[i]=SG_MALLOC(float64_t, (int32_t)(this->N/2+1));
 #else //USE_HMMPARALLEL_STRUCTURES
 	arrayS=SG_MALLOC(float64_t, (int32_t)(this->N/2+1));
@@ -561,7 +561,7 @@ void HMM::free_state_dependend_arrays()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	if (arrayN1 && arrayN2)
 	{
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		for (int32_t i=0; i<env()->get_num_threads(); i++)
 		{
 			SG_FREE(arrayN1[i]);
 			SG_FREE(arrayN2[i]);
@@ -617,11 +617,11 @@ bool HMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
 	this->reused_caches=false;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	alpha_cache=SG_MALLOC(T_ALPHA_BETA, parallel->get_num_threads());
-	beta_cache=SG_MALLOC(T_ALPHA_BETA, parallel->get_num_threads());
-	states_per_observation_psi=SG_MALLOC(P_STATES, parallel->get_num_threads());
+	alpha_cache=SG_MALLOC(T_ALPHA_BETA, env()->get_num_threads());
+	beta_cache=SG_MALLOC(T_ALPHA_BETA, env()->get_num_threads());
+	states_per_observation_psi=SG_MALLOC(P_STATES, env()->get_num_threads());
 
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	for (int32_t i=0; i<env()->get_num_threads(); i++)
 	{
 		this->alpha_cache[i].table=NULL;
 		this->beta_cache[i].table=NULL;
@@ -642,12 +642,12 @@ bool HMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
 		files_ok= files_ok && load_model(modelfile);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	path_prob_updated=SG_MALLOC(bool, parallel->get_num_threads());
-	path_prob_dimension=SG_MALLOC(int, parallel->get_num_threads());
+	path_prob_updated=SG_MALLOC(bool, env()->get_num_threads());
+	path_prob_dimension=SG_MALLOC(int, env()->get_num_threads());
 
-	path=SG_MALLOC(P_STATES, parallel->get_num_threads());
+	path=SG_MALLOC(P_STATES, env()->get_num_threads());
 
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	for (int32_t i=0; i<env()->get_num_threads(); i++)
 		this->path[i]=NULL;
 
 #else // USE_HMMPARALLEL_STRUCTURES
@@ -656,13 +656,13 @@ bool HMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayN1=SG_MALLOC(float64_t*, parallel->get_num_threads());
-	arrayN2=SG_MALLOC(float64_t*, parallel->get_num_threads());
+	arrayN1=SG_MALLOC(float64_t*, env()->get_num_threads());
+	arrayN2=SG_MALLOC(float64_t*, env()->get_num_threads());
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayS=SG_MALLOC(float64_t*, parallel->get_num_threads());
+	arrayS=SG_MALLOC(float64_t*, env()->get_num_threads());
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
 
@@ -1293,17 +1293,17 @@ float64_t HMM::model_probability_comp()
 
 float64_t CHMM::model_probability_comp()
 {
-	pthread_t *threads=SG_MALLOC(pthread_t, parallel->get_num_threads());
-	S_BW_THREAD_PARAM *params=SG_MALLOC(S_BW_THREAD_PARAM, parallel->get_num_threads());
+	pthread_t *threads=SG_MALLOC(pthread_t, env()->get_num_threads());
+	S_BW_THREAD_PARAM *params=SG_MALLOC(S_BW_THREAD_PARAM, env()->get_num_threads());
 
 	SG_INFO("computing full model probablity\n")
 	mod_prob=0;
 
-	for (int32_t cpu=0; cpu<parallel->get_num_threads(); cpu++)
+	for (int32_t cpu=0; cpu<env()->get_num_threads(); cpu++)
 	{
 		params[cpu].hmm=this ;
-		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/parallel->get_num_threads();
-		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/parallel->get_num_threads();
+		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/env()->get_num_threads();
+		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/env()->get_num_threads();
 		params[cpu].p_buf=SG_MALLOC(float64_t, N);
 		params[cpu].q_buf=SG_MALLOC(float64_t, N);
 		params[cpu].a_buf=SG_MALLOC(float64_t, N*N);
@@ -1311,13 +1311,13 @@ float64_t CHMM::model_probability_comp()
 		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, (void*)&params[cpu]);
 	}
 
-	for (int32_t cpu=0; cpu<parallel->get_num_threads(); cpu++)
+	for (int32_t cpu=0; cpu<env()->get_num_threads(); cpu++)
 	{
 		pthread_join(threads[cpu], NULL);
 		mod_prob+=params[cpu].ret;
 	}
 
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	for (int32_t i=0; i<env()->get_num_threads(); i++)
 	{
 		SG_FREE(params[i].p_buf);
 		SG_FREE(params[i].q_buf);
@@ -1451,7 +1451,7 @@ void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 	}
 	invalidate_model();
 
-	int32_t num_threads = parallel->get_num_threads();
+	int32_t num_threads = env()->get_num_threads();
 
 	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
 	S_BW_THREAD_PARAM *params=SG_MALLOC(S_BW_THREAD_PARAM, num_threads);
@@ -1470,7 +1470,7 @@ void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 		int32_t start = p_observations->get_num_vectors()*cpu / num_threads;
 		int32_t stop=p_observations->get_num_vectors()*(cpu+1) / num_threads;
 
-		if (cpu == parallel->get_num_threads()-1)
+		if (cpu == env()->get_num_threads()-1)
 			stop=p_observations->get_num_vectors();
 
 		ASSERT(start<stop)
@@ -1804,7 +1804,7 @@ void HMM::estimate_model_baum_welch_defined(std::shared_ptr<HMM> estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	int32_t num_threads = parallel->get_num_threads();
+	int32_t num_threads = env()->get_num_threads();
 	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
 	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
 
@@ -1968,7 +1968,7 @@ void HMM::estimate_model_viterbi(std::shared_ptr<HMM> estimate)
 	float64_t allpatprob=0 ;
 
 #ifdef USE_HMMPARALLEL
-	int32_t num_threads = parallel->get_num_threads();
+	int32_t num_threads = env()->get_num_threads();
 	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
 	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
 
@@ -2093,7 +2093,7 @@ void HMM::estimate_model_viterbi_defined(std::shared_ptr<HMM> estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	int32_t num_threads = parallel->get_num_threads();
+	int32_t num_threads = env()->get_num_threads();
 	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
 	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
 #endif
@@ -2785,7 +2785,7 @@ void HMM::invalidate_model()
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		for (int32_t i=0; i<env()->get_num_threads(); i++)
 		{
 			this->alpha_cache[i].updated=false;
 			this->beta_cache[i].updated=false;
@@ -4391,7 +4391,7 @@ bool HMM::save_model_derivatives_bin(FILE* file)
 		SG_INFO("writing derivatives of changed weights only\n")
 
 #ifdef USE_HMMPARALLEL
-	int32_t num_threads = parallel->get_num_threads();
+	int32_t num_threads = env()->get_num_threads();
 	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
 	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
 
@@ -5280,7 +5280,7 @@ void HMM::set_observation_nocache(std::shared_ptr<StringFeatures<uint16_t>> obs)
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		for (int32_t i=0; i<env()->get_num_threads(); i++)
 		{
 			SG_FREE(alpha_cache[i].table);
 			SG_FREE(beta_cache[i].table);
@@ -5336,7 +5336,7 @@ void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::s
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		for (int32_t i=0; i<env()->get_num_threads(); i++)
 		{
 			SG_FREE(alpha_cache[i].table);
 			SG_FREE(beta_cache[i].table);
@@ -5369,7 +5369,7 @@ void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::s
 		if (lambda)
 		{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 			{
 				this->alpha_cache[i].table= lambda->alpha_cache[i].table;
 				this->beta_cache[i].table=	lambda->beta_cache[i].table;
@@ -5390,7 +5390,7 @@ void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::s
 			this->reused_caches=false;
 #ifdef USE_HMMPARALLEL_STRUCTURES
 			SG_INFO("allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float32_t)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N)
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 			{
 				if ((states_per_observation_psi[i]=SG_MALLOC(T_STATES,max_T*N))!=NULL)
 					SG_DEBUG("path_table[%i] successfully allocated\n",i)
@@ -5411,7 +5411,7 @@ void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::s
 			SG_INFO("allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float32_t)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N)
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 			{
 				if ((alpha_cache[i].table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N))!=NULL)
 					SG_DEBUG("alpha_cache[%i].table successfully allocated\n",i)
@@ -5437,7 +5437,7 @@ void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::s
 #endif // USE_HMMPARALLEL_STRUCTURES
 #else // USE_HMMCACHE
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			for (int32_t i=0; i<env()->get_num_threads(); i++)
 			{
 				alpha_cache[i].table=NULL ;
 				beta_cache[i].table=NULL ;

@@ -34,7 +34,6 @@
 */
 #include <gtest/gtest.h>
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/evaluation/MeanSquaredError.h>

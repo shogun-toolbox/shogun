@@ -60,10 +60,10 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 */
 		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
-			if (this->parallel->get_num_threads()!=1)
+			if (env()->get_num_threads()!=1)
 			{
 				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n")
-				this->parallel->set_num_threads(1);
+				env()->set_num_threads(1);
 			}
 			return Kernel::init(l, r);
 		}

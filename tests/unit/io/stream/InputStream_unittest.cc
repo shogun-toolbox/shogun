@@ -5,6 +5,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/stream/FileInputStream.h>
 #ifdef HAVE_LIBARCHIVE
 #include <shogun/io/stream/ArchiveInputStream.h>
@@ -19,7 +20,7 @@ public:
 	io::FileSystemRegistry* fs_registry;
 	virtual void SetUp()
 	{
-		fs_registry = io::FileSystemRegistry::instance();
+		fs_registry = env();
 	}
 
 	virtual void TearDown() {}

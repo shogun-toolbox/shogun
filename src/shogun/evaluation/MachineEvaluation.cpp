@@ -13,7 +13,6 @@
 #include <shogun/mathematics/Statistics.h>
 
 #include <rxcpp/rx-lite.hpp>
-#include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;

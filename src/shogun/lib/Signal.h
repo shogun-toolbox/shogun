@@ -30,7 +30,7 @@ namespace shogun
 	 *  option bewteen: immediately exit the running method and fall back to
 	 *  the command line, prematurely stop the current algoritmh and do nothing.
 	 */
-	class Signal : public SGObject
+	class Signal
 	{
 	public:
 		typedef rxcpp::subjects::subject<int> SGSubjectS;

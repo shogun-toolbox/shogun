@@ -29,6 +29,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/evaluation/MeanSquaredError.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>

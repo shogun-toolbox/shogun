@@ -358,13 +358,13 @@ int WDSVMOcas::add_new_cut(
 	SGVector<float32_t> new_a(nDim);
 #ifdef HAVE_PTHREAD
 
-	wdocas_thread_params_add* params_add=SG_MALLOC(wdocas_thread_params_add, o->parallel->get_num_threads());
-	pthread_t* threads=SG_MALLOC(pthread_t, o->parallel->get_num_threads());
+	wdocas_thread_params_add* params_add=SG_MALLOC(wdocas_thread_params_add, env()->get_num_threads());
+	pthread_t* threads=SG_MALLOC(pthread_t, env()->get_num_threads());
 
 	int32_t string_length = o->string_length;
 	int32_t t;
-	int32_t nthreads=o->parallel->get_num_threads()-1;
-	int32_t step= string_length/o->parallel->get_num_threads();
+	int32_t nthreads=env()->get_num_threads()-1;
+	int32_t step= string_length/env()->get_num_threads();
 
 	if (step<1)
 	{
@@ -543,16 +543,16 @@ int WDSVMOcas::compute_output( float64_t *output, void* ptr )
 #ifdef HAVE_PTHREAD
 	auto o = (WDSVMOcas*)ptr;
 	int32_t nData=o->num_vec;
-	wdocas_thread_params_output* params_output=SG_MALLOC(wdocas_thread_params_output, o->parallel->get_num_threads());
-	pthread_t* threads = SG_MALLOC(pthread_t, o->parallel->get_num_threads());
+	wdocas_thread_params_output* params_output=SG_MALLOC(wdocas_thread_params_output, env()->get_num_threads());
+	pthread_t* threads = SG_MALLOC(pthread_t, env()->get_num_threads());
 
 	float32_t* out=SG_MALLOC(float32_t, nData);
 	int32_t* val=SG_MALLOC(int32_t, nData);
 	memset(out, 0, sizeof(float32_t)*nData);
 
 	int32_t t;
-	int32_t nthreads=o->parallel->get_num_threads()-1;
-	int32_t step= nData/o->parallel->get_num_threads();
+	int32_t nthreads=env()->get_num_threads()-1;
+	int32_t step= nData/env()->get_num_threads();
 
 	if (step<1)
 	{

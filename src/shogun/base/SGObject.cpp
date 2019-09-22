@@ -10,6 +10,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/class_list.h>
@@ -119,10 +120,6 @@ namespace shogun
 
 	class Parallel;
 
-	extern std::shared_ptr<Parallel> sg_parallel;
-	extern std::shared_ptr<SGIO> sg_io;
-	extern std::shared_ptr<Version> sg_version;
-
 	template<> void SGObject::set_generic<bool>()
 	{
 		m_generic = PT_BOOL;
@@ -226,8 +223,7 @@ SGObject::SGObject() : self(), param_obs_list()
 }
 
 SGObject::SGObject(const SGObject& orig)
-    : self(), param_obs_list(), io(orig.io), parallel(orig.parallel),
-      version(orig.version)
+    : self(), param_obs_list(), io(orig.io)
 {
 	init();
 	set_global_objects();
@@ -254,14 +250,7 @@ std::shared_ptr<SGObject> SGObject::deep_copy() const
 
 void SGObject::set_global_objects()
 {
-	if (!sg_io || !sg_parallel || !sg_version)
-	{
-		fprintf(stderr, "call init_shogun() before using the library, dying.\n");
-		exit(1);
-	}
-	io=sg_io.get();
-	parallel=sg_parallel.get();
-	version=sg_version.get();
+	io = env()->io();
 }
 
 void SGObject::update_parameter_hash()
@@ -278,10 +267,14 @@ bool SGObject::parameter_hash_changed() const
 	return (m_hash!=hash());
 }
 
+Parallel* SGObject::get_global_parallel()
+{
+	return env();
+}
+
 bool SGObject::is_generic(EPrimitiveType* generic) const
 {
 	*generic = m_generic;
-
 	return m_generic != PT_NOT_GENERIC;
 }
 
@@ -328,8 +321,6 @@ void SGObject::init()
 {
 
 	io = NULL;
-	parallel = NULL;
-	version = NULL;
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;

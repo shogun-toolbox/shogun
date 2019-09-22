@@ -35,8 +35,7 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
-#include <shogun/base/init.h>
-
+#include <functional>
 #include <algorithm>
 #include <cassert>
 #include <limits>
@@ -49,8 +48,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <shogun/util/traits.h>
-
+#include <shogun/base/base_types.h>
+#include <shogun/lib/common.h>
 #include <shogun/util/traits.h>
 
 namespace shogun

@@ -5,6 +5,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/io/ShogunErrc.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/stream/FileInputStream.h>
@@ -35,7 +36,7 @@ static error_condition write_to_file(io::FileSystemRegistry* fs,
 
 TEST(BufferedInputStream, read)
 {
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	string filename = "bis_test";
 	ASSERT_FALSE(write_to_file(fs, filename, "foobarbaz"));
 	std::unique_ptr<io::RandomAccessFile> file;
@@ -74,7 +75,7 @@ TEST(BufferedInputStream, read)
 
 TEST(BufferedInputStream, skip)
 {
-	auto fs = io::FileSystemRegistry::instance();
+	auto fs = env();
 	string filename = "bis_test_skip";
 	ASSERT_FALSE(write_to_file(fs, filename, "foobarbaz"));
 	std::unique_ptr<io::RandomAccessFile> file;

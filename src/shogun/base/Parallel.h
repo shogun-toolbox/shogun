@@ -14,7 +14,6 @@
 
 namespace shogun
 {
-class RefCount;
 /** @brief Class Parallel provides helper functions for multithreading.
  *
  * For example it can be used to determine the number of CPU cores in your
@@ -48,25 +47,12 @@ public:
 	 */
 	int32_t get_num_threads() const;
 
-	/** ref
-	 * @return current ref counter
-	 */
-	int32_t ref();
-
-	/** get ref count
-	 * @return current ref counter
-	 */
-	int32_t ref_count() const;
-
-	/** unref
-	 * @return current ref counter
-	 */
-	int32_t unref();
+	// FIXME: Should be dropped, but needed to be wrappable by some
+	int32_t ref() { return 1; }
+	int32_t ref_count() const { return 1; }
+	int32_t unref() { return 1; }
 
 private:
-	/** ref counter */
-	RefCount* m_refcount;
-
 	/** number of threads */
 	int32_t num_threads;
 };

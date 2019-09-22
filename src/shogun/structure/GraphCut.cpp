@@ -539,7 +539,7 @@ float64_t GraphCut::compute_maxflow()
 	// start the main loop
 	while (true)
 	{
-		if (sg_io->get_loglevel() == MSG_DEBUG)
+		if (io->get_loglevel() == MSG_DEBUG)
 			test_consistency(current_node);
 
 		GCEdge* connecting_edge;
@@ -566,7 +566,7 @@ float64_t GraphCut::compute_maxflow()
 		adopt();
 	}
 
-	if (sg_io->get_loglevel() == MSG_DEBUG)
+	if (io->get_loglevel() == MSG_DEBUG)
 		test_consistency();
 
 	return m_flow;

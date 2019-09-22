@@ -101,7 +101,7 @@ TEST_F(RandomForestTest, classify_nominal_test)
 	c->set_feature_types(weather_ft);
 	auto mv = std::make_shared<MajorityVote>();
 	c->set_combination_rule(mv);
-	c->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	c->put("seed", seed);
 	c->train(weather_features_train);
 
@@ -133,7 +133,7 @@ TEST_F(RandomForestTest, classify_non_nominal_test)
 	c->set_feature_types(weather_ft);
 	auto mv = std::make_shared<MajorityVote>();
 	c->set_combination_rule(mv);
-	c->parallel->set_num_threads(1);
+	env()->set_num_threads(1);
 	c->put("seed", seed);
 	c->train(weather_features_train);
 

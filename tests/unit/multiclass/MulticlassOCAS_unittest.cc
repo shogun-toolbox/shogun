@@ -22,7 +22,7 @@ TEST(MulticlassOCASTest,train)
   auto ground_truth =
 	  std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
   auto mocas = std::make_shared<MulticlassOCAS>(C, train_feats, ground_truth);
-  mocas->parallel->set_num_threads(1);
+  env()->set_num_threads(1);
   mocas->set_epsilon(1e-5);
   mocas->train();
 

@@ -33,6 +33,7 @@
 #ifndef LINALG_NAMESPACE_H_
 #define LINALG_NAMESPACE_H_
 
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/SGLinalg.h>
@@ -52,6 +53,7 @@ namespace shogun
 		template <typename T, template <typename> class Container>
 		LinalgBackendBase* infer_backend(const Container<T>& a)
 		{
+			auto sg_linalg = env()->linalg();
 			if (a.on_gpu())
 			{
 				if (sg_linalg->get_gpu_backend())
@@ -81,6 +83,7 @@ namespace shogun
 		LinalgBackendBase*
 		infer_backend(const Container<T>& a, const Container<U>& b)
 		{
+			auto sg_linalg = env()->linalg();
 			if (a.on_gpu() && b.on_gpu())
 			{
 				if (sg_linalg->get_gpu_backend())
@@ -119,6 +122,7 @@ namespace shogun
 		LinalgBackendBase* infer_backend(
 		    const Container<T>& a, const Container<T>& b, const Container<T>& c)
 		{
+			auto sg_linalg = env()->linalg();
 			if (a.on_gpu() && b.on_gpu() && c.on_gpu())
 			{
 				if (sg_linalg->get_gpu_backend())
@@ -156,6 +160,7 @@ namespace shogun
 		template <typename T>
 		void to_gpu(const SGVector<T>& a, SGVector<T>& b)
 		{
+			auto sg_linalg = env()->linalg();
 			sg_linalg->m_gpu_transfer.lock();
 
 			if (a.on_gpu())
@@ -192,6 +197,7 @@ namespace shogun
 		template <typename T>
 		void to_gpu(const SGMatrix<T>& a, SGMatrix<T>& b)
 		{
+			auto sg_linalg = env()->linalg();
 			sg_linalg->m_gpu_transfer.lock();
 
 			if (a.on_gpu())
@@ -239,6 +245,7 @@ namespace shogun
 		template <typename T>
 		void from_gpu(SGVector<T>& a, SGVector<T>& b)
 		{
+			auto sg_linalg = env()->linalg();
 			sg_linalg->m_gpu_transfer.lock();
 			if (a.on_gpu())
 			{
@@ -278,6 +285,7 @@ namespace shogun
 		template <typename T>
 		void from_gpu(SGMatrix<T>& a, SGMatrix<T>& b)
 		{
+			auto sg_linalg = env()->linalg();
 			sg_linalg->m_gpu_transfer.lock();
 			if (a.on_gpu())
 			{
@@ -995,7 +1003,7 @@ namespace shogun
 	 		as matrix blocks are on CPU.\n",
 			    result.on_gpu());
 
-			sg_linalg->get_cpu_backend()->element_prod(
+			env()->linalg()->get_cpu_backend()->element_prod(
 			    A, B, result, transpose_A, transpose_B);
 		}
 
@@ -1745,7 +1753,7 @@ namespace shogun
 		template <typename T>
 		T sum(const Block<SGMatrix<T>>& a, bool no_diag = false)
 		{
-			return sg_linalg->get_cpu_backend()->sum(a, no_diag);
+			return env()->linalg()->get_cpu_backend()->sum(a, no_diag);
 		}
 
 		/**
@@ -1776,7 +1784,7 @@ namespace shogun
 		T sum_symmetric(const Block<SGMatrix<T>>& a, bool no_diag = false)
 		{
 			REQUIRE(a.m_row_size == a.m_col_size, "Matrix is not square!\n");
-			return sg_linalg->get_cpu_backend()->sum_symmetric(a, no_diag);
+			return env()->linalg()->get_cpu_backend()->sum_symmetric(a, no_diag);
 		}
 
 		/**
@@ -1810,7 +1818,7 @@ namespace shogun
 		SGVector<T>
 		colwise_sum(const Block<SGMatrix<T>>& a, bool no_diag = false)
 		{
-			return sg_linalg->get_cpu_backend()->colwise_sum(a, no_diag);
+			return env()->linalg()->get_cpu_backend()->colwise_sum(a, no_diag);
 		}
 
 		/**
@@ -1843,7 +1851,7 @@ namespace shogun
 		SGVector<T>
 		rowwise_sum(const Block<SGMatrix<T>>& a, bool no_diag = false)
 		{
-			return sg_linalg->get_cpu_backend()->rowwise_sum(a, no_diag);
+			return env()->linalg()->get_cpu_backend()->rowwise_sum(a, no_diag);
 		}
 
 		/**

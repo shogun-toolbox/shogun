@@ -8,7 +8,6 @@
 #define __STOPPABLESGOBJECT_H_
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/init.h>
 
 #include <condition_variable>
 #include <mutex>

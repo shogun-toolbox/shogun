@@ -8,7 +8,7 @@
 #include "utils/SGObjectIterator.h"
 #include <gtest/gtest.h>
 #include <iterator>
-
+#include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/class_list.h>
 #include <shogun/base/range.h>
@@ -92,7 +92,7 @@ TYPED_TEST(SGObjectAll, serialization_empty_json)
 
 		generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-		auto fs = io::FileSystemRegistry::instance();
+		auto fs = env();
 		ASSERT_FALSE(fs->file_exists(filename));
 		std::unique_ptr<io::WritableFile> file;
 		ASSERT_FALSE(fs->new_writable_file(filename, &file));
@@ -109,9 +109,9 @@ TYPED_TEST(SGObjectAll, serialization_empty_json)
 		auto loaded = deserializer->read_object();
 
 		// set accuracy to tolerate lossy formats
-		set_global_fequals_epsilon(1e-14);
+		env()->set_global_fequals_epsilon(1e-14);
 		ASSERT_TRUE(obj->equals(loaded));
-		set_global_fequals_epsilon(0);
+		env()->set_global_fequals_epsilon(0);
 		ASSERT_FALSE(fs->delete_file(filename));
 	}
 }

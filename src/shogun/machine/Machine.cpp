@@ -7,7 +7,6 @@
  */
 
 #include <rxcpp/rx-lite.hpp>
-#include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
 
