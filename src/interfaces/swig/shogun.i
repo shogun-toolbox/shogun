@@ -86,15 +86,16 @@
 %include "bagging_includes.i"
 %include "Boost_includes.i"
 
+
 %include "SGBase.i"
-%include "IO.i"
 %include "Library.i"
+%include "IO.i"
 %include "Mathematics.i"
 %include "Features.i"
+%include "Machine.i"
 %include "Transformer.i"
 %include "Converter.i"
 %include "Preprocessor.i"
-%include "Machine.i"
 %include "Evaluation.i"
 %include "Distance.i"
 %include "Kernel.i"
@@ -116,6 +117,7 @@
 %include "NeuralNets.i"
 %include "bagging.i"
 %include "Boost.i"
+%include "Machine_extensions.i"
 
 %include "ParameterObserver.i"
 %include "factory.i"

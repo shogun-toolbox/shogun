@@ -4,6 +4,7 @@
  * Authors: Sergey Lisitsyn
  */
 
+#if 0 // fix model selection
 /* These functions return new Objects */
 %newobject *::select_model();
 %newobject CParameterCombination::copy_tree();
@@ -31,3 +32,4 @@
 #ifdef USE_GPL_SHOGUN
 %include <shogun/modelselection/GradientModelSelection.h>
 #endif //USE_GPL_SHOGUN
+# endif

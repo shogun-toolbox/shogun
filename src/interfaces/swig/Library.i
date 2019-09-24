@@ -317,7 +317,6 @@ namespace shogun
 #ifdef USE_FLOAT64
         %template(DynamicRealArray) DynamicArray<float64_t>;
 #endif
-        %template(DynamicPlifArray) std::vector<shogun::PlifBase*>;
 }
 /* Hash */
 %include <shogun/lib/Hash.h>
