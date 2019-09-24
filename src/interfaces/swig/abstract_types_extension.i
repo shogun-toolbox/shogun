@@ -5,7 +5,6 @@
  */
 
 %include "Latent.i"
-%rename(ObjectDetector) CObjectDetector;
 
 #if defined(SWIGPERL)
  //PTZ121108 example of classifier in examples/undocumented/libshogun/classifier_latent_svm.cpp
@@ -17,24 +16,24 @@
 %inline %{
   namespace shogun {
 #define HOG_SIZE 1488
-    struct CBoundingBox : public Data
+    struct BoundingBox : public Data
     {
-    CBoundingBox(int32_t x, int32_t y) : Data(), x_pos(x), y_pos(y) {};
+    BoundingBox(int32_t x, int32_t y) : Data(), x_pos(x), y_pos(y) {};
       int32_t x_pos, y_pos;
       virtual const char* get_name() const { return "BoundingBox"; }
     };
-    struct CHOGFeatures : public Data
+    struct HOGFeatures : public Data
     {
-    CHOGFeatures(int32_t w, int32_t h) : Data(), width(w), height(h) {};
+    HOGFeatures(int32_t w, int32_t h) : Data(), width(w), height(h) {};
       int32_t width, height;
       float64_t ***hog;
       virtual const char* get_name() const { return "HOGFeatures"; }
     };
-    class CObjectDetector: public LatentModel
+    class ObjectDetector: public LatentModel
     {
     public:
-      CObjectDetector() {};
-    CObjectDetector(LatentFeatures* feat, CLatentLabels* labels)
+      ObjectDetector() {};
+    ObjectDetector(const sdt::shared_ptr<LatentFeatures>& feat, const std::shared_ptr<LatentLabels>& labels)
       : LatentModel(feat, labels) {};
       virtual ~CObjectDetector() {};
       virtual int32_t get_dim() const { return HOG_SIZE; };
@@ -45,18 +44,18 @@
 	SGMatrix<float64_t> psi_m(dim, num_examples);
 	for (int32_t i = 0; i < num_examples; ++i)
 	  {
-	    CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(i);
-	    CBoundingBox* bb = (CBoundingBox*) m_labels->get_latent_label(i);
+	    auto hf = m_features->get_sample(i)->as<HOGFeatures>();
+	    auto bb = m_labels->get_latent_label(i)->as<BoundingBox>();
 	    sg_memcpy(psi_m.matrix+i*dim, hf->hog[bb->x_pos][bb->y_pos], dim*sizeof(float64_t));
 	  }
-	DenseFeatures<float64_t>* psi_feats = new DenseFeatures<float64_t>(psi_m);
+	auto psi_feats = std::make_shared<DenseFeatures<float64_t>>(psi_m);
 	return psi_feats;
       };
-      virtual Data* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
+      virtual std::shared_ptr<Data> infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
       {
 	int32_t pos_x = 0, pos_y = 0;
 	float64_t max_score = -Math::INFTY;
-	CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
+	auto hf = m_features->get_sample(idx)->as<HOGFeatures>();
 	for (int i = 0; i < hf->width; ++i)
 	  {
 	    for (int j = 0; j < hf->height; ++j)
@@ -71,8 +70,7 @@
 	      }
 	  }
 	SG_SDEBUG("%d %d %f\n", pos_x, pos_y, max_score);
-	CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
-	SG_REF(h);
+	auto h = std::make_shared<CBoundingBox>(pos_x, pos_y);
 	return h;
       };
     };

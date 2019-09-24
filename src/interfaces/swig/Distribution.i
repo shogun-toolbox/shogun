@@ -27,6 +27,7 @@
 %include <shogun/distributions/Distribution.h>
 
 /** Instantiate RandomMixin */
+%shared_ptr(shogun::RandomMixin<shogun::Distribution, std::mt19937_64>)
 %template(RandomMixinDistribution) shogun::RandomMixin<shogun::Distribution, std::mt19937_64>;
 
 %include <shogun/distributions/Histogram.h>

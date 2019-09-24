@@ -1,3 +1,4 @@
+#if 0 // fix when model selection works again
 %{
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
@@ -8,3 +9,4 @@
 #endif //USE_GPL_SHOGUN
 #include <shogun/modelselection/ParameterCombination.h>
 %}
+#endif

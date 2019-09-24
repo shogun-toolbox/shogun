@@ -17,10 +17,10 @@ namespace shogun
 		public:
 			Deserializer();
 			virtual ~Deserializer();
-			virtual void attach(std::shared_ptr<InputStream> stream);
+			virtual void attach(std::shared_ptr<io::InputStream> stream);
 			virtual std::shared_ptr<SGObject> read_object() = 0;
 			virtual void read(std::shared_ptr<SGObject> _this) = 0;
-			std::shared_ptr<InputStream> stream() const;
+			std::shared_ptr<io::InputStream> stream() const;
 
 		private:
 			std::shared_ptr<InputStream> m_stream;

@@ -12,6 +12,8 @@
 %shared_ptr(shogun::CSVFile)
 %shared_ptr(shogun::LibSVMFile)
 %shared_ptr(shogun::StreamingAsciiFile)
+%shared_ptr(shogun::io::InputStream)
+%shared_ptr(shogun::io::OutputStream)
 %shared_ptr(shogun::io::Serializer)
 %shared_ptr(shogun::io::Deserializer)
 %shared_ptr(shogun::io::BitserySerializer)

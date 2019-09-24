@@ -197,7 +197,7 @@ template <class T> class DynamicArray :public SGObject
 		{
 			return m_array.size();
 		}
-
+#ifndef SWIG
 		/** get array element at index
 		 *
 		 * @param idx1 index 1
@@ -233,7 +233,7 @@ template <class T> class DynamicArray :public SGObject
 		{
 			return m_array[idx1+dim1_size*(idx2+dim2_size*idx3)];
 		}
-
+#endif
 		/** get element of given array at given index
 		 *
 		 * @param p_array another array
@@ -269,12 +269,12 @@ template <class T> class DynamicArray :public SGObject
 			ASSERT(idx3>=0 && idx3<dim3_size)
 			return p_array[idx1+p_dim1_size*(idx2+p_dim2_size*idx3)];
 		}
-
+#ifndef SWIG
 		/** gets last array element
 		 *
 		 * @return array element at last index
 		 */
-		inline ReferenceType get_last_element() const
+		inline ConstReferenceType get_last_element() const
 		{
 			return m_array.back();
 		}
@@ -286,7 +286,7 @@ template <class T> class DynamicArray :public SGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline ReferenceType get_element_safe(int32_t index) const
+		inline ConstReferenceType get_element_safe(int32_t index) const
 		{
 			if (index>=get_num_elements())
 			{
@@ -295,7 +295,7 @@ template <class T> class DynamicArray :public SGObject
 			}
 			return m_array[index];
 		}
-
+#endif
 		/** set array element at index
 		 *
 		 * @param e element to set
@@ -532,7 +532,7 @@ template <class T> class DynamicArray :public SGObject
 		{
 			m_array.clear();
 		}
-
+#ifndef SWIG
 		/** operator overload for array read only access
 		 * use set_element() for write access (will also make the array
 		 * dynamically grow)
@@ -558,7 +558,7 @@ template <class T> class DynamicArray :public SGObject
 		{
 			return m_array[index];
 		}
-
+#endif
 		/** operator overload for array assignment
 		 *
 		 * @param orig original array

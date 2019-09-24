@@ -327,7 +327,7 @@ namespace std {
     %template(DoubleStdVector) vector<float64_t>;
     %template(StringStdVector) vector<string>;
 }
-
+%shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %include <shogun/base/SGObject.h>
 
 /** Instantiate RandomMixin */
@@ -418,7 +418,7 @@ namespace shogun
                 serializer = std::make_shared<io::BitserySerializer>();
             auto byte_stream = std::make_shared<io::ByteArrayOutputStream>();
             serializer->attach(byte_stream);
-            serializer->write(wrap($self));
+            serializer->write(std::shared_ptr<SGObject>($self));
             auto serialized_obj = byte_stream->content();
 #ifdef PYTHON3
             PyObject* str=PyBytes_FromStringAndSize(serialized_obj.data(), serialized_obj.size());

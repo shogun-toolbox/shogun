@@ -9,6 +9,7 @@
 %shared_ptr(shogun::TreeMachine<shogun::RelaxedTreeNodeData>)
 %shared_ptr(shogun::TreeMachine<id3TreeNodeData>)
 %shared_ptr(shogun::TreeMachine<C45TreeNodeData>)
+%shared_ptr(shogun::RandomMixin<TreeMachine<CARTreeNodeData>, std::mt19937_64>)
 %shared_ptr(shogun::TreeMachine<CARTreeNodeData>)
 %shared_ptr(shogun::TreeMachine<CHAIDTreeNodeData>)
 %shared_ptr(shogun::TreeMachine<id3TreeNodeData>)

@@ -20,6 +20,11 @@ namespace shogun
 	class PipelineBuilder : public SGObject
 	{
 	public:
+
+		PipelineBuilder()
+		{
+		}
+
 		virtual ~PipelineBuilder();
 
 		/** Add a transformer with default name to pipeline. The name is
