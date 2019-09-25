@@ -54,7 +54,11 @@
 %include "std_vector.i"
 %include "shogun_ignores.i"
 %include "RandomMixin.i"
+#ifdef SWIGR
+%include "boost_shared_ptr.i"
+#else
 %include "std_shared_ptr.i" 
+#endif
 
 %include "Machine_includes.i"
 %include "Classifier_includes.i"
