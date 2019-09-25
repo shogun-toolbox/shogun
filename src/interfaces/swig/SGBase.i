@@ -8,7 +8,6 @@
 %include "stdint.i"
 %include "std_string.i"
 %include "exception.i"
-%include "std_shared_ptr.i"
 
 #ifdef SWIGJAVA
 %typemap(javainterfaces) shogun::SGObject "java.io.Externalizable"
