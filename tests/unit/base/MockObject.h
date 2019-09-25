@@ -269,10 +269,6 @@ namespace shogun
 			SG_UNREF(m_object);
 		}
 
-		// void dispatch(s_visitor& v) {
-        //     v.visit(this);
-		// }
-
 		const char* get_name() const override
 		{
 			return "MockObject";

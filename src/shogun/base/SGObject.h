@@ -33,8 +33,6 @@
 #include <utility>
 #include <vector>
 
-//#include <shogun/base/array_type.h>
-
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
@@ -1303,18 +1301,6 @@ protected:
 		std::map<int64_t, rxcpp::subscription> m_subscriptions;
 		int64_t m_next_subscription_index;
 	};
-
-//namespace shogun {
-// class array_type : public s_visitor {
-// private:
-// 	std::string_view s;
-// public:
-// 	explicit array_type(std::string_view n_s) : s(n_s) {}
-// 	bool visit(CSGObject* mo) override {
-// 		mo->get_name();
-// 		return true;
-// 	}
-// };
 
 template <class T>
 T* make_clone(T* orig, ParameterProperties pp = ParameterProperties::ALL)
