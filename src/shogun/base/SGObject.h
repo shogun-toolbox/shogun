@@ -68,6 +68,7 @@ bool dispatch_array_type(const CSGObject* obj, std::string_view name,
 class CSGObject;
 struct s_visitor {
 	virtual bool visit(CSGObject*) = 0;
+	virtual ~s_visitor() {}
 };
 
 template <typename T1, typename T2>
@@ -468,7 +469,7 @@ public:
 			array.push_back(value);
 		};
 
-		s_visitor* a_t = new array_type<T, decltype(push_back_lambda)>(name, push_back_lambda);
+		s_visitor* a_t = new array_type<T, decltype(push_back_lambda)>(name, std::move(push_back_lambda));
 
 		if (dispatch(*a_t)) {
 			delete a_t;
