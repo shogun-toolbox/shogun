@@ -70,12 +70,12 @@ struct s_visitor {
 };
 
 template <typename T1, typename T2>
-struct array_type : s_visitor {
+struct s_array_type : s_visitor {
 	private:
 	std::string_view name;
 	T2 lambda;
 	public:
-	explicit array_type(std::string_view n_s, T2&& n_lambda) : name(n_s), lambda(n_lambda) {}
+	explicit s_array_type(std::string_view n_s, T2&& n_lambda) : name(n_s), lambda(n_lambda) {}
 	bool visit(CSGObject*) override; 
 };
 
@@ -472,7 +472,7 @@ public:
 			array.push_back(value);
 		};
 
-		s_visitor* a_t = new array_type<T, decltype(push_back_lambda)>(name, std::move(push_back_lambda));
+		s_visitor* a_t = new s_array_type<T, decltype(push_back_lambda)>(name, std::move(push_back_lambda));
 
 		if (dispatch(*a_t)) {
 			delete a_t;
@@ -1402,7 +1402,7 @@ CSGObject* get_by_tag(const CSGObject* obj, std::string_view name,
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 #endif //SWIG
 template <typename T1, typename T2>
-bool array_type<T1, T2>::visit(CSGObject* obj) {
+bool s_array_type<T1, T2>::visit(CSGObject* obj) {
 	Tag<CDynamicObjectArray*> tag_array_sg(name);
 	if (obj->has(tag_array_sg))
 	{
