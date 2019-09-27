@@ -62,8 +62,6 @@ template <typename T1, typename T2>
 bool dispatch_array_type(const CSGObject* obj, std::string_view name,
 		T2&& lambda);
 }
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-#endif // SWIG
 
 class CSGObject;
 struct s_visitor {
@@ -80,6 +78,9 @@ struct array_type : s_visitor {
 	explicit array_type(std::string_view n_s, T2&& n_lambda) : name(n_s), lambda(n_lambda) {}
 	bool visit(CSGObject*) override; 
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+#endif // SWIG
 
 template <class T, class K> class CMap;
 
@@ -220,9 +221,11 @@ public:
 	 */
 	int32_t unref();
 
+#ifndef SWIG
 	bool dispatch(s_visitor& v) {
-    	return v.visit(this);
+		return v.visit(this);
 	}
+#endif
 
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
