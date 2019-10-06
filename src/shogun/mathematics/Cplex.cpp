@@ -103,94 +103,94 @@ bool CCplex::setup_subgradientlpm_QP(
 	int* cmatind=SG_MALLOC(int, cmatsize);
 	double* cmatval=SG_MALLOC(double, cmatsize);
 
-	for (int32_t i=0; i<num_variables; i++)
+	// xi part
+	for (int32_t i = 0; i < num_dim; i++)
 	{
 		obj[i]=0;
+		lb[i] = -CPX_INFBOUND;
+		ub[i] = +CPX_INFBOUND;
+	}
 
-		if (i<num_dim) //xi part
-		{
-			lb[i]=-CPX_INFBOUND;
-			ub[i]=+CPX_INFBOUND;
-		}
-		else //beta part
-		{
-			lb[i]=0.0;
-			ub[i]=1.0;
-		}
+	// beta part
+	for (int32_t i = num_dim; i < num_variables; i++)
+	{
+		obj[i] = 0;
+		lb[i] = 0.0;
+		ub[i] = 1.0;
 	}
 
 	int32_t offs=0;
-	for (int32_t i=0; i<num_variables; i++)
+	for (int32_t i = 0; i < num_dim; i++)
 	{
-		if (i<num_dim) //sum_xi
-		{
-			sense[i]='E';
-			cmatbeg[i]=offs;
-			cmatcnt[i]=1;
-			cmatind[offs]=offs;
-			cmatval[offs]=1.0;
-			offs++;
-			ASSERT(offs<cmatsize)
-		}
-		else if (i<num_dim+num_zero) // Z_w*beta_w
-		{
-			cmatbeg[i]=offs;
-			cmatcnt[i]=1;
-			cmatind[offs]=w_zero[i-num_dim];
-			cmatval[offs]=-1.0;
-			offs++;
-			ASSERT(offs<cmatsize)
-		}
-		else // Z_x*beta_x
-		{
-			int32_t idx=idx_bound[i-num_dim-num_zero];
-			int32_t vlen=0;
-			bool vfree=false;
-			//io::print("idx={}\n", idx);
-			SGSparseVector<float64_t> vec=features->get_sparse_feature_vector(idx);
-			//io::print("vlen={}\n", vlen);
+		sense[i] = 'E';
+		cmatbeg[i] = offs;
+		cmatcnt[i] = 1;
+		cmatind[offs] = offs;
+		cmatval[offs] = 1.0;
+		offs++;
+		ASSERT(offs < cmatsize)
+	}
 
-			cmatbeg[i]=offs;
-			cmatcnt[i]=vlen;
+	for (int32_t i = num_dim; i < num_dim + num_zero; i++)
+	{
+		cmatbeg[i] = offs;
+		cmatcnt[i] = 1;
+		cmatind[offs] = w_zero[i - num_dim];
+		cmatval[offs] = -1.0;
+		offs++;
+		ASSERT(offs < cmatsize)
+	}
 
-			float64_t val= -C*labels->get_confidence(idx);
+	for (int32_t i = num_dim + num_zero; i < num_variables; i++)
+	{
+		int32_t idx = idx_bound[i - num_dim - num_zero];
+		int32_t vlen = 0;
+		bool vfree = false;
+		// io::print("idx={}\n", idx);
+		SGSparseVector<float64_t> vec =
+		    features->get_sparse_feature_vector(idx);
+		// io::print("vlen={}\n", vlen);
 
-			if (vlen>0)
+		cmatbeg[i] = offs;
+		cmatcnt[i] = vlen;
+
+		float64_t val = -C * labels->get_confidence(idx);
+
+		if (vlen > 0)
+		{
+			for (int32_t j = 0; j < vlen; j++)
 			{
-				for (int32_t j=0; j<vlen; j++)
-				{
-					cmatind[offs]=vec.features[j].feat_index;
-					cmatval[offs]=-val*vec.features[j].entry;
-					offs++;
-					ASSERT(offs<cmatsize)
-					//io::print("vec[{}]={:10.10f}\n", j, vec.features[j].entry);
-				}
-
-				if (use_bias)
-				{
-					cmatcnt[i]++;
-					cmatind[offs]=num_dim-1;
-					cmatval[offs]=-val;
-					offs++;
-					ASSERT(offs<cmatsize)
-				}
-			}
-			else
-			{
-				if (use_bias)
-				{
-					cmatcnt[i]++;
-					cmatind[offs]=num_dim-1;
-					cmatval[offs]=-val;
-				}
-				else
-					cmatval[offs]=0.0;
+				cmatind[offs] = vec.features[j].feat_index;
+				cmatval[offs] = -val * vec.features[j].entry;
 				offs++;
 				ASSERT(offs<cmatsize)
+				// io::print("vec[{}]={:10.10f}\n", j, vec.features[j].entry);
 			}
 
-			features->free_feature_vector(vec, idx);
+			if (use_bias)
+			{
+				cmatcnt[i]++;
+				cmatind[offs] = num_dim - 1;
+				cmatval[offs] = -val;
+				offs++;
+				ASSERT(offs < cmatsize)
+			}
 		}
+		else
+		{
+			if (use_bias)
+			{
+				cmatcnt[i]++;
+				cmatind[offs] = num_dim - 1;
+				cmatval[offs] = -val;
+			}
+			else
+				cmatval[offs] = 0.0;
+			offs++;
+			ASSERT(offs < cmatsize)
+		}
+
+		features->free_feature_vector(vec, idx);
 	}
 
 	result = CPXcopylp(env, lp, num_variables, num_dim, CPX_MIN,
@@ -218,41 +218,40 @@ bool CCplex::setup_subgradientlpm_QP(
 
 	float64_t diag=2.0;
 
-	for (int32_t i=0; i<num_variables; i++)
+	for (int32_t i = 0; i < num_dim; i++)
 	{
-		if (i<num_dim) //|| (!use_bias && i<num_dim)) //xi
 		//if ((i<num_dim-1) || (!use_bias && i<num_dim)) //xi
-		{
-			qmatbeg[i]=i;
-			qmatcnt[i]=1;
-			qmatind[i]=i;
-			qmatval[i]=diag;
-		}
-		else
-		{
-			//qmatbeg[i]= (use_bias) ? (num_dim-1) : (num_dim);
-			qmatbeg[i]= num_dim;
-			qmatcnt[i]=0;
-			qmatind[i]=0;
-			qmatval[i]=0;
-		}
+		qmatbeg[i] = i;
+		qmatcnt[i] = 1;
+		qmatind[i] = i;
+		qmatval[i] = diag;
 	}
 
-	if (result)
-		result = CPXcopyquad(env, lp, qmatbeg, qmatcnt, qmatind, qmatval) == 0;
+	for (int32_t i = num_dim; i < num_variables; i++)
+	{
+		// qmatbeg[i]= (use_bias) ? (num_dim-1) : (num_dim);
+		qmatbeg[i] = num_dim;
+		qmatcnt[i] = 0;
+		qmatind[i] = 0;
+		qmatval[i] = 0;
+	}
+}
 
-	SG_FREE(qmatbeg);
-	SG_FREE(qmatcnt);
-	SG_FREE(qmatind);
-	SG_FREE(qmatval);
+if (result)
+	result = CPXcopyquad(env, lp, qmatbeg, qmatcnt, qmatind, qmatval) == 0;
 
-	if (!result)
-		error("CPXcopyquad failed.");
+SG_FREE(qmatbeg);
+SG_FREE(qmatcnt);
+SG_FREE(qmatind);
+SG_FREE(qmatval);
 
-	//write_problem("problem.lp");
-	//write_Q("problem.qp");
+if (!result)
+	error("CPXcopyquad failed.");
 
-	return result;
+// write_problem("problem.lp");
+// write_Q("problem.qp");
+
+return result;
 }
 
 bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
