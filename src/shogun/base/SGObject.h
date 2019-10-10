@@ -76,6 +76,9 @@ struct s_array_type : s_visitor {
 	T2 lambda;
 	public:
 	explicit s_array_type(std::string_view n_s, T2&& n_lambda) : name(n_s), lambda(n_lambda) {}
+
+
+
 	bool visit(CSGObject*) override; 
 };
 
@@ -472,10 +475,9 @@ public:
 			array.push_back(value);
 		};
 
-		s_visitor* a_t = new s_array_type<T, decltype(push_back_lambda)>(name, std::move(push_back_lambda));
+		std::unique_ptr<s_visitor> a_t = std::make_unique<s_array_type<T, decltype(push_back_lambda)>>(name, std::move(push_back_lambda));
 
 		if (dispatch(*a_t)) {
-			delete a_t;
 			return;
 		}
 
@@ -483,7 +485,6 @@ public:
 		    "Cannot add object {} to array parameter {}::{} of type {}.",
 		    value->get_name(), get_name(), name.data(),
 			demangled_type<T>().c_str());
-		delete a_t;
 	}
 
 #ifndef SWIG
