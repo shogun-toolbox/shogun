@@ -279,7 +279,6 @@ void BaggingMachine::init()
 	m_num_bags = 0;
 	m_bag_size = 0;
 	m_all_oob_idx = SGVector<bool>();
-	m_oob_indices = nullptr;
 	m_oob_evaluation_metric = nullptr;
 }
 

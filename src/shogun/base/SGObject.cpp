@@ -448,23 +448,23 @@ void SGObject::create_parameter(
 	self->create(_tag, parameter);
 }
 
-void SGObject::update_parameter(const BaseTag& _tag, const Any& value)
+void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_checks)
 {
 	auto& param = self->at(_tag);
 	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
-		error(
-		    "{}::{} is marked as read-only and cannot be modified!",
-		    get_name(), _tag.name().c_str());
+	        require(!do_checks,
+			"{}::{} is marked as read-only and cannot be modified!",
+	          	get_name(), _tag.name().c_str());
 
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
 	{
 		auto msg = self->map[_tag].get_constrain_function()(value);
 		if (!msg.empty())
 		{
-			error(
-					"{}::{} cannot be updated because it must be: {}!",
-					get_name(), _tag.name().c_str(), msg.c_str());
+			require(!do_checks,
+				"{}::{} cannot be updated because it must be: {}!",
+				get_name(), _tag.name().c_str(), msg.c_str());
 		}
 	}
 	self->update(_tag, value);

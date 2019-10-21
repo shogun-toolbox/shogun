@@ -101,9 +101,9 @@ class ProductKernel : public Kernel
 		inline bool insert_kernel(std::shared_ptr<Kernel> k, int32_t idx)
 		{
 			ASSERT(k)
-			REQUIRE(
+			require(
 			    idx >= 0 && idx < get_num_subkernels(),
-			    "Index idx (%d) is out of range (0-%d)", idx,
+			    "Index idx ({}) is out of range (0-{})", idx,
 			    get_num_subkernels());
 
 			adjust_num_lhs_rhs_initialized(k);
@@ -140,9 +140,9 @@ class ProductKernel : public Kernel
 		 */
 		inline bool delete_kernel(int32_t idx)
 		{
-			REQUIRE(
+			require(
 			    idx >= 0 && idx < kernel_array.size(),
-			    "Index idx (%d) is out of range (0-%d)", idx,
+			    "Index idx ({}) is out of range (0-{})", idx,
 			    kernel_array.size());
 
 			kernel_array.erase(kernel_array.begin() + idx);

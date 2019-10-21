@@ -52,7 +52,6 @@ bool FactorGraphFeatures::add_sample(std::shared_ptr<FactorGraph> example)
 
 std::shared_ptr<FactorGraph> FactorGraphFeatures::get_sample(index_t idx)
 {
-	require(m_samples != NULL, "{}::get_sample(): m_samples is NULL!", get_name());
 	require(idx >= 0 && idx < get_num_vectors(), "{}::get_sample(): out of index!", get_name());
 	return m_samples[idx];
 }

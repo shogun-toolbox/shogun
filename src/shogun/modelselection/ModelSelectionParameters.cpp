@@ -347,7 +347,7 @@ ModelSelectionParameters::get_combinations(
 
 	SG_DEBUG("{}------>entering ModelSelectionParameters::get_combinations() "
 			"for \"{}\"", prefix, m_node_name ? m_node_name : "root");
-	std::vector<std::shared_ptr<parametercombination>> result;
+	std::vector<std::shared_ptr<ParameterCombination>> result;
 
 	/* value case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value

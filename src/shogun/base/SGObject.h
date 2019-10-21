@@ -57,7 +57,7 @@ class ObservedValueTemplated;
 	{
 		template <typename T1, typename T2>
 		bool dispatch_array_type(
-		    const std::shared_ptr<const SGObject>& obj, const std::string& name,
+		    const std::shared_ptr<const SGObject>& obj, std::string_view name,
 		    T2&& lambda);
 	}  // namespace sgo_details
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -405,17 +405,10 @@ public:
 		require(
 			value, "Cannot add to {}::{}, no object provided.", get_name(),
 			name.data());
-
-		auto push_back_lambda = [&value](auto& array) {
-			array.push_back(value);
-		};
-		if (sgo_details::dispatch_array_type<T>(this, name, push_back_lambda))
-			return;
-
-		error(
-		    "Cannot add object {} to array parameter {}::{} of type {}.",
-		    value->get_name(), get_name(), name.data(),
-			demangled_type<T>().c_str());
+		Tag<std::vector<std::shared_ptr<T>>> tag_vector(name);
+		auto dispatched = get(tag_vector);
+		dispatched.push_back(value);
+		update_parameter(BaseTag(name), make_any(dispatched), false);
 	}
 
 #ifndef SWIG
@@ -438,7 +431,7 @@ public:
 		auto get_lambda = [&index, &result](auto& array) {
 			result = array.at(index);
 		};
-		if (sgo_details::dispatch_array_type<T>(this, name, get_lambda))
+		if (sgo_details::dispatch_array_type<T>(shared_from_this(), name, get_lambda))
 		{
 			ASSERT(result);
 			// guard against mixed types in the array
@@ -1105,7 +1098,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @param value new value of parameter
 	 */
-	void update_parameter(const BaseTag& _tag, const Any& value);
+	void update_parameter(const BaseTag& _tag, const Any& value, bool do_checks = true);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -1297,7 +1290,7 @@ namespace sgo_details
 {
 		template <typename T1, typename T2>
 		bool dispatch_array_type(
-		    const std::shared_ptr<const SGObject>& obj, const std::string& name,
+		    const std::shared_ptr<const SGObject>& obj, std::string_view name,
 		    T2&& lambda)
 		{
 			Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
@@ -1309,57 +1302,56 @@ namespace sgo_details
 			}
 			return false;
 		}
-}
 
-struct GetByName
-{
-};
+		struct GetByName
+		{
+		};
 
-struct GetByNameIndex
-{
-	GetByNameIndex(index_t index) : m_index(index) {}
-	index_t m_index;
-};
+		struct GetByNameIndex
+		{
+			GetByNameIndex(index_t index) : m_index(index) {}
+			index_t m_index;
+		};
 
-template <typename T>
-std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, std::string_view name, GetByName)
-{
-	return obj->has<T>(name) ? obj->get<T>(name) : nullptr;
-}
+		template <typename T>
+		std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, std::string_view name, GetByName)
+		{
+			return obj->has<T>(name) ? obj->get<T>(name) : nullptr;
+		}
 
-template <typename T>
-std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, std::string_view name, GetByNameIndex how)
-{
-	std::shared_ptr<SGObject> result = nullptr;
-	result = obj->get<T>(name, how.m_index, std::nothrow);
-	return result;
-}
+		template <typename T>
+		std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, std::string_view name, GetByNameIndex how)
+		{
+			std::shared_ptr<SGObject> result = nullptr;
+			result = obj->get<T>(name, how.m_index, std::nothrow);
+			return result;
+		}
 
-template<typename T>
-std::shared_ptr<SGObject> get_dispatch_all_base_types(const std::shared_ptr<const SGObject>& obj, std::string_view name,
-		T&& how)
-{
-	if (auto result = get_if_possible<Kernel>(obj, name, how))
-		return result;
-	if (auto result = get_if_possible<Features>(obj, name, how))
-		return result;
-	if (auto result = get_if_possible<Machine>(obj, name, how))
-		return result;
-	if (auto result = get_if_possible<Labels>(obj, name, how))
-		return result;
-	if (auto result = get_if_possible<EvaluationResult>(obj, name, how))
-		return result;
+		template<typename T>
+		std::shared_ptr<SGObject> get_dispatch_all_base_types(const std::shared_ptr<const SGObject>& obj, std::string_view name,
+			T&& how)
+		{
+			if (auto result = get_if_possible<Kernel>(obj, name, how))
+				return result;
+			if (auto result = get_if_possible<Features>(obj, name, how))
+				return result;
+			if (auto result = get_if_possible<Machine>(obj, name, how))
+				return result;
+			if (auto result = get_if_possible<Labels>(obj, name, how))
+				return result;
+			if (auto result = get_if_possible<EvaluationResult>(obj, name, how))
+				return result;
 
-	return nullptr;
-}
+			return nullptr;
+		}
 
-template<class T>
-std::shared_ptr<SGObject> get_by_tag(const std::shared_ptr<const SGObject>& obj, std::string_view name,
-		T&& how)
-{
-	return get_dispatch_all_base_types(obj, name, how);
-}
-}
+		template<class T>
+		std::shared_ptr<SGObject> get_by_tag(const std::shared_ptr<const SGObject>& obj, std::string_view name,
+			T&& how)
+		{
+			return get_dispatch_all_base_types(obj, name, how);
+		}
+} // namespace sgo_details
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 #endif //SWIG

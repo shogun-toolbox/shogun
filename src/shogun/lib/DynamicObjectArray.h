@@ -148,7 +148,9 @@ class DynamicObjectArray : public SGObject
 			if (index >= utils::safe_convert<index_t>(m_array.size()))
 			{
 				error("array index out of bounds ({} >= {})",
+					index, m_array.size());
 			}
+
 			return get_element(index);
 		}
 

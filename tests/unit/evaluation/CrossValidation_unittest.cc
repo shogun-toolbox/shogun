@@ -25,14 +25,8 @@
 #include <shogun/regression/svr/LibLinearRegression.h>
 
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-
-
-
-using namespace shogun;
-
-
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace std;
