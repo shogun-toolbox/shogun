@@ -11,6 +11,7 @@
 
 #include <shogun/features/StringFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/distributions/Distribution.h>
 
 namespace shogun

@@ -254,9 +254,9 @@ bool CombinedDotFeatures::append_feature_obj(std::shared_ptr<DotFeatures> obj)
 
 bool CombinedDotFeatures::delete_feature_obj(int32_t idx)
 {
-	REQUIRE(
+	require(
 	    idx >= 0 && idx < feature_array.size(),
-	    "Index idx (%d) is out of range (0-%d)", idx, feature_array.size());
+	    "Index idx ({}) is out of range (0-{})", idx, feature_array.size());
 
 	feature_array.erase(feature_array.begin() + idx);
 	update_dim_feature_space_and_num_vec();
