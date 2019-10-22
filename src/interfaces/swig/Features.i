@@ -189,6 +189,7 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
     %shared_ptr(shogun::DenseSubsetFeatures<float64_t>)
     %shared_ptr(shogun::MatrixFeatures<float64_t>)
     %shared_ptr(shogun::DenseFeatures<float64_t>);
+    %shared_ptr(shogun::Seedable<shogun::StreamingDenseFeatures<float64_t>>);
     %shared_ptr(shogun::RandomMixin<shogun::StreamingDenseFeatures<float64_t>, std::mt19937_64>)
 #endif
 #ifdef USE_FLOATMAX

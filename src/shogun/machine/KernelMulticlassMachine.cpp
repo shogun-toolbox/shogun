@@ -5,11 +5,12 @@
  *          Soeren Sonnenburg
  */
 
-#include <shogun/lib/Set.h>
 #include <shogun/machine/KernelMulticlassMachine.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/machine/KernelMachine.h>
+
+#include <unordered_set>
 
 using namespace shogun;
 
@@ -29,20 +30,16 @@ void KernelMulticlassMachine::store_model_features()
 	}
 
 	/* this map will be abused as a map */
-	Set<index_t> all_sv;
+	std::unordered_set<index_t> all_sv;
 	for (auto m: m_machines)
 	{
 		auto machine=m->as<KernelMachine>();
 		for (index_t j=0; j<machine->get_num_support_vectors(); ++j)
-			all_sv.add(machine->get_support_vector(j));
-
-
+			all_sv.emplace(machine->get_support_vector(j));
 	}
 
 	/* convert map to vector of SV */
-	SGVector<index_t> sv_idx(all_sv.get_num_elements());
-	for (index_t i=0; i<sv_idx.vlen; ++i)
-		sv_idx[i]=*all_sv.get_element_ptr(i);
+	SGVector<index_t> sv_idx(all_sv.begin(), all_sv.end());
 
 	auto sv_features=lhs->copy_subset(sv_idx);
 
@@ -67,16 +64,12 @@ void KernelMulticlassMachine::store_model_features()
 
 			/* the position of this old index in the map is the position of
 			 * the SV in the new features */
-			index_t new_sv_idx=all_sv.index_of(current_sv_idx);
+			index_t new_sv_idx=std::distance(all_sv.begin(), all_sv.find(current_sv_idx));
 
 			machine->set_support_vector(j, new_sv_idx);
 		}
 
-
 	}
-
-
-
 }
 
 KernelMulticlassMachine::KernelMulticlassMachine() : MulticlassMachine(), m_kernel(NULL)

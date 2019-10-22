@@ -24,7 +24,7 @@ svm_kernel2.init(feats_train, feats_train)
 #![create_kernel]
 
 #![obtain_dasvm_from_the_previous_svm]
-Machine dasvm = machine("DomainAdaptationSVM", C1=1.0, C2=1.0, kernel=svm_kernel2, labels=labels_train, presvm=svm, B=1.0)
+Machine dasvm = machine("DomainAdaptationSVM", C1=1.0, C2=1.0, kernel=svm_kernel2, labels=labels_train, presvm=as_svm(svm), B=1.0)
 #![obtain_dasvm_from_the_previous_svm]
 
 #![train_and_apply]

@@ -32,7 +32,7 @@
 		SG_TO_R_TYPE_STRUCT(float64_t,     REALSXP)
 		SG_TO_R_TYPE_STRUCT(complex128_t,  REALSXP)
 		SG_TO_R_TYPE_STRUCT(floatmax_t,    REALSXP)
-		// SG_TO_R_TYPE_STRUCT(CSGObject*,    EXTPTRSXP) // not sure what to put here
+		// SG_TO_R_TYPE_STRUCT(SGObject*,    EXTPTRSXP) // not sure what to put here
 		#undef SG_TO_R_TYPE_STRUCT
 
 		class RVisitor: public GetterVisitorInterface<RVisitor, SEXP>
@@ -48,7 +48,7 @@
 			{
 				SEXP result;
 				size_t len;
-				if constexpr(std::is_same_v<T, CSGObject*>)
+				if constexpr(std::is_same_v<T, SGObject*>)
 				{
 					error("Cannot handle SGObject arrays!");
 					return nullptr;
@@ -88,7 +88,7 @@
 				// here we need to know the type
 				// we use a vector instead of a list in R ¯\_(ツ)_/¯
 				SEXP result;
-				if constexpr(std::is_same_v<T, CSGObject*>)
+				if constexpr(std::is_same_v<T, SGObject*>)
 				{
 					error("Cannot handle SGObject lists!");
 					return nullptr;
@@ -114,7 +114,7 @@
 			template <typename T>
 			void append_to_list(SEXP array, SEXP v, size_t i)
 			{
-				if constexpr(std::is_same_v<T, CSGObject*>)
+				if constexpr(std::is_same_v<T, SGObject*>)
 					error("Cannot handle SGObject lists!");
 				// special situation where we set array element to a char pointer (CHARSXP)
 				else if constexpr (std::is_same_v<T, char>)
@@ -155,8 +155,10 @@
 					return Rf_ScalarInteger(static_cast<int>(*v));
 				if constexpr(std::is_same_v<T, complex128_t>)
 					return Rf_ScalarComplex(Rcomplex{v->real(), v->imag()});
-				if constexpr(std::is_same_v<T, CSGObject*>)
+				if constexpr(std::is_same_v<T, SGObject*>)
 					return SWIG_R_NewPointerObj(SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
+				if constexpr(std::is_same_v<T, std::shared_ptr<SGObject>>)
+					return SWIG_R_NewPointerObj(SWIG_as_voidptr(v), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
 				error("Cannot handle casting from shogun type {} to R type!", demangled_type<T>().c_str());
 			}
 		};

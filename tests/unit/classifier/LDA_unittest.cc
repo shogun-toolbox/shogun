@@ -105,7 +105,7 @@ void test_with_method(
 	generate_test_data<float64_t>(lab, feat);
 
 	auto features = std::make_shared<DenseFeatures<float64_t>>(feat);
-	auto labels = std::make_shared<BinaryLabels>(lab);
+	std::shared_ptr<Labels> labels = std::make_shared<BinaryLabels>(lab);
 
 	auto lda = std::make_shared<LDA>(0, method);
 	lda->put("labels", labels);
@@ -199,7 +199,7 @@ TEST(LDA, num_classes_in_labels_exception)
 {
 	SGVector<float64_t> lab{1, -1, 2};
 	SGMatrix<float64_t> feat(1, 3);
-	auto labels = std::make_shared<MulticlassLabels>(lab);
+	std::shared_ptr<Labels> labels = std::make_shared<MulticlassLabels>(lab);
 	auto features = std::make_shared<DenseFeatures<float64_t>>(feat);
 	auto lda = std::make_shared<LDA>(0, SVD_LDA);
 	lda->put("labels", labels);

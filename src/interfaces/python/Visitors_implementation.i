@@ -23,6 +23,7 @@
 		template <typename T>
 		struct sg_to_npy_type {};
 		SG_TO_NUMPY_TYPE_STRUCT(bool,          NPY_BOOL)
+		SG_TO_NUMPY_TYPE_STRUCT(std::vector<bool>::reference,          NPY_BOOL)
 		SG_TO_NUMPY_TYPE_STRUCT(char,          NPY_UNICODE)
 		SG_TO_NUMPY_TYPE_STRUCT(int8_t,        NPY_INT8)
 		SG_TO_NUMPY_TYPE_STRUCT(uint8_t,       NPY_UINT8)
@@ -36,7 +37,8 @@
 		SG_TO_NUMPY_TYPE_STRUCT(float64_t,     NPY_FLOAT64)
 		SG_TO_NUMPY_TYPE_STRUCT(complex128_t,  NPY_CDOUBLE)
 		SG_TO_NUMPY_TYPE_STRUCT(floatmax_t,    NPY_LONGDOUBLE)
-		SG_TO_NUMPY_TYPE_STRUCT(CSGObject*,    NPY_OBJECT)
+		SG_TO_NUMPY_TYPE_STRUCT(SGObject*,    NPY_OBJECT)
+		SG_TO_NUMPY_TYPE_STRUCT(std::shared_ptr<SGObject>,    NPY_OBJECT)
 		#undef SG_TO_NUMPY_TYPE_STRUCT
 
 		class PythonVisitor: public GetterVisitorInterface<PythonVisitor, PyObject*>
@@ -89,6 +91,8 @@
 		        // table of conversions from C++ to Python
 				if constexpr(std::is_same_v<T, bool>)
 					return PyBool_FromLong(*v ? 1 : 0);
+				if constexpr(std::is_same_v<T, std::vector<bool>::reference>)
+					return PyBool_FromLong(*v ? 1 : 0);
 				if constexpr(std::is_same_v<T, int8_t>)
 					return PyLong_FromLong(static_cast<long>(*v));
 				if constexpr(std::is_same_v<T, int16_t>)
@@ -115,8 +119,10 @@
 					return PyLong_FromUnsignedLong(static_cast<size_t>(*v));
 				if constexpr(std::is_same_v<T, complex128_t>)
 					return PyComplex_FromDoubles(v->real(), v->imag());
-				if constexpr(std::is_same_v<T, CSGObject*>)
-					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__CSGObject, 0);
+				if constexpr(std::is_same_v<T, SGObject*>)
+					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__SGObject, 0);
+				if constexpr(std::is_same_v<T, std::shared_ptr<SGObject>>)
+					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(v), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
 				error("Cannot handle casting from shogun type {} to python type!", demangled_type<T>().c_str());
 			}
 		};

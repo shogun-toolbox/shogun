@@ -149,6 +149,16 @@ namespace shogun
 
 		template<typename T>
 		using returns_void = std::is_same<typename T::result_type, void>;
+
+		template <typename T>
+		struct is_shared_ptr : std::false_type
+		{
+		};
+
+		template <typename T>
+		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
+		{
+		};
 		
 		#endif // DOXYGEN_SHOULD_SKIP_THIS
 	} // namespace traits

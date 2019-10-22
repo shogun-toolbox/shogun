@@ -41,19 +41,21 @@ protected:
 
 	void init()
 	{
-		this->generate_data(this->machine->get_machine_problem_type());
-
 		if constexpr (std::is_base_of_v<KernelMachine, T>)
 		{
 			auto m = std::make_shared<T>();
 			m->set_kernel(std::make_shared<GaussianKernel>());
 			machine = m;
 		}
-		if constexpr (std::is_base_of_v<DistanceMachine, T>)
+		else if constexpr (std::is_base_of_v<DistanceMachine, T>)
 		{
 			auto m = std::make_shared<T>();
 			m->set_distance(std::make_shared<EuclideanDistance>());
 			machine = m;
+		}
+		else 
+		{
+			machine = std::make_shared<T>();
 		}
 		this->generate_data(this->machine->get_machine_problem_type());
 		auto ss = std::make_shared<CrossValidationSplitting>(labels, 5);

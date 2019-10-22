@@ -61,7 +61,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_REACTIVATE_LINADD
 {
-	std::shared_ptr<Kernel> kernel;
+	Kernel* kernel;
 	float64_t* lin;
 	float64_t* last_lin;
 	int32_t* active;
@@ -77,12 +77,12 @@ struct S_THREAD_PARAM_SVMLIGHT
 	int32_t start, end;
 	int32_t * active2dnum ;
 	int32_t * docs ;
-	std::shared_ptr<Kernel> kernel ;
+	Kernel* kernel;
 };
 
 struct S_THREAD_PARAM_REACTIVATE_VANILLA
 {
-	std::shared_ptr<Kernel> kernel;
+	Kernel* kernel;
 	float64_t* lin;
 	float64_t* aicache;
 	float64_t* a;
@@ -154,7 +154,7 @@ void SVMLight::init()
 
 	// svm variables
 	W=NULL;
-	model=SG_MALLOC(MODEL, 1);
+	model=new MODEL;
 	learn_parm=SG_MALLOC(LEARN_PARM, 1);
 	model->supvec=NULL;
 	model->alpha=NULL;
@@ -171,7 +171,7 @@ SVMLight::~SVMLight()
   SG_FREE(model->supvec);
   SG_FREE(model->alpha);
   SG_FREE(model->index);
-  SG_FREE(model);
+  delete model;
   SG_FREE(learn_parm);
 
   // MKL stuff
@@ -1498,7 +1498,7 @@ void SVMLight::update_linear_component(
 
 					for (int32_t t=0; t<num_threads-1; t++)
 					{
-						params[t].kernel = kernel ;
+						params[t].kernel = kernel.get();
 						params[t].lin = lin ;
 						params[t].docs = docs ;
 						params[t].active2dnum=active2dnum ;
@@ -1673,7 +1673,7 @@ void SVMLight::update_linear_component_mkl_linadd(
 
 		for (int32_t t=0; t<num_threads-1; t++)
 		{
-			params[t].kernel = kernel;
+			params[t].kernel = kernel.get();
 			params[t].W = W;
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
@@ -2164,7 +2164,7 @@ void SVMLight::reactivate_inactive_examples(
 			  if (num_threads < 2)
 			  {
 				  S_THREAD_PARAM_REACTIVATE_LINADD params;
-				  params.kernel=kernel;
+				  params.kernel=kernel.get();
 				  params.lin=lin;
 				  params.last_lin=shrink_state->last_lin;
 				  params.docs=docs;
@@ -2182,7 +2182,7 @@ void SVMLight::reactivate_inactive_examples(
 
 				  for (t=0; t<num_threads-1; t++)
 				  {
-					  params[t].kernel=kernel;
+					  params[t].kernel = kernel.get();
 					  params[t].lin=lin;
 					  params[t].last_lin=shrink_state->last_lin;
 					  params[t].docs=docs;
@@ -2192,7 +2192,7 @@ void SVMLight::reactivate_inactive_examples(
 					  pthread_create(&threads[t], NULL, SVMLight::reactivate_inactive_examples_linadd_helper, (void*)&params[t]);
 				  }
 
-				  params[t].kernel=kernel;
+				  params[t].kernel = kernel.get();
 				  params[t].lin=lin;
 				  params[t].last_lin=shrink_state->last_lin;
 				  params[t].docs=docs;
@@ -2329,7 +2329,7 @@ void SVMLight::reactivate_inactive_examples(
 				  int32_t thr;
 				  for (thr=0; thr<num_threads-1; thr++)
 				  {
-					  params[thr].kernel=kernel;
+					  params[thr].kernel = kernel.get();
 					  params[thr].lin=&tmp_lin[thr*totdoc];
 					  params[thr].aicache=&tmp_aicache[thr*totdoc];
 					  params[thr].a=a;
@@ -2342,7 +2342,7 @@ void SVMLight::reactivate_inactive_examples(
 					  pthread_create(&threads[thr], NULL, SVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[thr]);
 				  }
 
-				  params[thr].kernel=kernel;
+				  params[thr].kernel = kernel.get();
 				  params[thr].lin=&tmp_lin[thr*totdoc];
 				  params[thr].aicache=&tmp_aicache[thr*totdoc];
 				  params[thr].a=a;

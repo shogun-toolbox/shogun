@@ -31,7 +31,7 @@ TEST(ProtobufFileTest, vector_int32)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_int32_output.txt",'w');
 	fout->set_vector(data.vector, len);
-
+	fout.reset();
 
 	SGVector<int32_t> data_from_file(true);
 	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_int32_output.txt",'r');
@@ -59,7 +59,7 @@ TEST(ProtobufFileTest, vector_float64)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_float64_output.txt",'w');
 	fout->set_vector(data.vector, len);
-
+	fout.reset();
 
 	SGVector<float64_t> data_from_file(true);
 	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_float64_output.txt",'r');
@@ -93,7 +93,7 @@ TEST(ProtobufFileTest, matrix_int32)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_int32_output.txt",'w');
 	fout->set_matrix(data.matrix, num_cols, num_rows);
-
+	fout.reset();
 
 	SGMatrix<int32_t> data_from_file(true);
 	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_int32_output.txt",'r');
@@ -128,7 +128,7 @@ TEST(ProtobufFileTest, matrix_float64)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_float64_output.txt",'w');
 	fout->set_matrix(data.matrix, num_cols, num_rows);
-
+	fout.reset();
 
 	SGMatrix<float64_t> data_from_file(true);
 	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_float64_output.txt",'r');
@@ -176,7 +176,7 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_int32_output.txt", 'w');
 	fout->set_sparse_matrix(data, num_feat, num_vec);
-
+	fout.reset();
 
 	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_int32_output.txt", 'r');
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file);
@@ -232,7 +232,7 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_float64_output.txt", 'w');
 	fout->set_sparse_matrix(data, num_feat, num_vec);
-
+	fout.reset();
 
 	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_float64_output.txt", 'r');
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file);
@@ -275,7 +275,7 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 
 	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_string_list_char_output.txt",'w');
 	fout->set_string_list(strings, num_str);
-
+	fout.reset();
 
 	SGVector<char>* data_from_file=NULL;
 	int32_t num_str_from_file=0;

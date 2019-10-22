@@ -16,6 +16,7 @@
 %shared_ptr(shogun::PositionalPWM)
 %shared_ptr(shogun::Gaussian)
 %shared_ptr(shogun::GMM)
+%shared_ptr(shogun::ProbabilityDistribution)
 %shared_ptr(shogun::KernelDensity)
 %shared_ptr(shogun::GaussianDistribution)
 
@@ -23,7 +24,7 @@
 %include <shogun/distributions/Distribution.h>
 
 /** Instantiate RandomMixin */
-%shared_ptr(shogun::Seedable<shogun::Distribution, std::mt19937_64>)
+%shared_ptr(shogun::Seedable<shogun::Distribution>)
 %template(SeedableDistribution) shogun::Seedable<shogun::Distribution>;
 %shared_ptr(shogun::RandomMixin<shogun::Distribution, std::mt19937_64>)
 %template(RandomMixinDistribution) shogun::RandomMixin<shogun::Distribution, std::mt19937_64>;

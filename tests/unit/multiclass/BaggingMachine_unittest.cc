@@ -110,6 +110,7 @@ TEST_F(BaggingMachineTest, mock_train)
 	}
 
 	bm->train();
+	EXPECT_TRUE(Mock::VerifyAndClearExpectations(mm.get()));
 }
 
 TEST_F(BaggingMachineTest, classify_CART)
@@ -138,10 +139,9 @@ TEST_F(BaggingMachineTest, classify_CART)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	auto eval = std::make_shared<MulticlassAccuracy>();
+	std::shared_ptr<Evaluation> eval = std::make_shared<MulticlassAccuracy>();
 	c->put(BaggingMachine::kOobEvaluationMetric, eval);
 	EXPECT_NEAR(0.642857,c->get<float64_t>(BaggingMachine::kOobError),1e-6);
-
 }
 
 TEST_F(BaggingMachineTest, output_binary)
@@ -175,8 +175,6 @@ TEST_F(BaggingMachineTest, output_binary)
 	EXPECT_DOUBLE_EQ(0.3, values_vector[2]);
 	EXPECT_DOUBLE_EQ(1.0, values_vector[3]);
 	EXPECT_DOUBLE_EQ(0.7, values_vector[4]);
-
-
 }
 
 TEST_F(BaggingMachineTest, output_multiclass_probs_sum_to_one)

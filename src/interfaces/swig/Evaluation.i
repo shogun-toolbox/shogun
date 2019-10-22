@@ -10,6 +10,7 @@
 
 %shared_ptr(shogun::Evaluation)
 %shared_ptr(shogun::EvaluationResult)
+%shared_ptr(shogun::ClusteringEvaluation)
 %shared_ptr(shogun::ClusteringAccuracy)
 %shared_ptr(shogun::ClusteringMutualInformation)
 %shared_ptr(shogun::DifferentiableFunction)

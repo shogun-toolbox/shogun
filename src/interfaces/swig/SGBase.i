@@ -31,7 +31,6 @@ public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
 
     String obj_serialized = byteArrayOS.as_string();
     out.write(obj_serialized.getBytes());
-*/
 }
 
 public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
@@ -296,14 +295,14 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         SWIG_fail;
     }
 #endif
-    catch (std::bad_alloc)
+    catch (std::bad_alloc&)
     {
         SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
         SWIG_fail;
 #endif
     }
-    catch (shogun::ShogunException e)
+    catch (shogun::ShogunException& e)
     {
         SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
@@ -382,11 +381,11 @@ INTERFACE_BASETYPE get(const std::string& name, int index) const
     INTERFACE_BASETYPE result = nullptr;
     try
     {
-        SGObject* obj = $self->get(name, index);
+        std::shared_ptr<SGObject> obj = $self->get(name, index);
 #if defined(SWIGPYTHON)
-        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__SGObject, 0);
+        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(&obj), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
 #elif defined(SWIGR)
-        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__SGObject, 0);
+        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(&obj), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
 #endif
     }
     catch(ShogunException& e)
@@ -412,6 +411,7 @@ namespace shogun {
 %ignore shogun::SGObject::get;
 #endif // SWIGPYTHON || SWIGR
 
+%shared_ptr(shogun::Seedable<shogun::SGObject>)
 %shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %include <shogun/base/SGObject.h>
 

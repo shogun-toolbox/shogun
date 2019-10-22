@@ -176,7 +176,7 @@ void DomainAdaptationSVM::init()
 	B = 0;
 	train_factor = 1.0;
 
-	SG_ADD((std::shared_ptr<SGObject>*) &presvm, "presvm", "SVM to regularize against.");
+	SG_ADD(&presvm, "presvm", "SVM to regularize against.");
 	SG_ADD(&B, "B", "regularization parameter B.", ParameterProperties::HYPER);
 	SG_ADD(&train_factor, "train_factor",
 			"flag to switch off regularization in training.", ParameterProperties::HYPER);

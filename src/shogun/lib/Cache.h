@@ -70,7 +70,7 @@ template<class T> class Cache : public SGObject
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
-			io::info("doing without cache.");
+			SG_DEBUG("doing without cache.");
 			cache_block=NULL;
 			lookup_table=NULL;
 			cache_table=NULL;
