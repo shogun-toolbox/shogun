@@ -63,7 +63,7 @@ void ParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 		if (m_verbose)
 			print_observed_value(recalled_value);
 	}
-	catch (ShogunException e)
+	catch (ShogunException& e)
 	{
 		io::print(
 		    "{}: Received an observed value named {} which is a not a "

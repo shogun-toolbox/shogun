@@ -14,29 +14,29 @@ if sys.version_info < (3, 0):
 # different reasons are given below.
 IGNORE = set([
     # LinearMachines
-    'CFeatureBlockLogisticRegression', 'LibLinearMTL',
-    'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
-    'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
-    'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
-    'LatentSVM', 'CLatentSOSVM', 'CDomainAdaptationSVMLinear',
+    'FeatureBlockLogisticRegression', 'LibLinearMTL',
+    'MultitaskLinearMachine', 'MultitaskLogisticRegression',
+    'MultitaskL12LogisticRegression', 'MultitaskLeastSquaresRegression',
+    'MultitaskTraceLogisticRegression', 'MultitaskClusteredLogisticRegression',
+    'LatentSVM', 'LatentSOSVM', 'DomainAdaptationSVMLinear',
     'CLinearLatentMachine',
 
     # KernelMachines
-    'CDomainAdaptationSVM', 'MKLRegression',
+    'DomainAdaptationSVM', 'MKLRegression',
     'MKLClassification', 'MKLOneClass',
     'SVM', # doesn't implement a solver
     'MKL',
 
     # LinearMulticlassMachines
-    'CDomainAdaptationMulticlassLibLinear',
-    'CMulticlassTreeGuidedLogisticRegression',
-    'CShareBoost', # apply() takes features subset
+    'DomainAdaptationMulticlassLibLinear',
+    'MulticlassTreeGuidedLogisticRegression',
+    'ShareBoost', # apply() takes features subset
 
     # KernelMulticlassMachines
-    'CMulticlassSVM', # doesn't implement a solver
+    'MulticlassSVM', # doesn't implement a solver
     'MKLMulticlass',
     'ScatterSVM', # error C <= 0
-    'CMulticlassLibSVM' # error C <= 0
+    'MulticlassLibSVM' # error C <= 0
 ])
 
 # Classes that inherit from their template parameter, e.g.

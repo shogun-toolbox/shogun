@@ -37,6 +37,11 @@
 				handle_sg(v);
 			}
 
+			void on(std::vector<bool>::reference *v) final
+			{
+				handle_sg(v);
+			}
+
 			void on(int8_t *v) final
 			{
 				handle_sg(v);
@@ -77,7 +82,7 @@
 				handle_sg(v->c_str());
 			}
 
-			void on(CSGObject **v) final
+			void on(std::shared_ptr<SGObject> *v) final
 			{
 				handle_sg(v);
 			}

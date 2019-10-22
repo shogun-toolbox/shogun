@@ -89,6 +89,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(MeanFunction, gp_mean)
 	BASE_CLASS_FACTORY(Inference, gp_inference)
 	BASE_CLASS_FACTORY(DifferentiableFunction, differentiable)
+	BASE_CLASS_FACTORY(LossFunction, loss)
 	BASE_CLASS_FACTORY(ParameterObserver, parameter_observer)
 	BASE_CLASS_FACTORY(EvaluationResult, evaluation_result)
 	BASE_CLASS_FACTORY(Distribution, distribution)

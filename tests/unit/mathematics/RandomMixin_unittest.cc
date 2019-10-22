@@ -104,25 +104,25 @@ public:
 TEST(RandomMixin, reproducibility_test)
 {
 	auto mock_random = std::make_unique<MockRandom>();
-	mock_random->put("seed", 123);
-	EXPECT_EQ(mock_random->get<int32_t>("seed"), 123);
+	mock_random->put(random::kSeed, 123);
+	EXPECT_EQ(123, mock_random->get<int32_t>(random::kSeed));
 
 	std::array<decltype(mock_random->sample()), 100> values1;
 	for(auto& val : values1)
 		val = mock_random->sample();
 
-	mock_random->put("seed", 345);
-	EXPECT_EQ(mock_random->get<int32_t>("seed"), 345);
+	mock_random->put(random::kSeed, 345);
+	EXPECT_EQ(345, mock_random->get<int32_t>(random::kSeed));
 
 	std::array<decltype(mock_random->sample()), 100> values2;
 	for(auto& val : values2)
 		val = mock_random->sample();
 
-	mock_random->put("seed", 123);
+	mock_random->put(random::kSeed, 123);
 	for(auto& val : values1)
 		EXPECT_EQ(mock_random->sample(), val);
 
-	mock_random->put("seed", 345);
+	mock_random->put(random::kSeed, 345);
 	for(auto& val : values2)
 		EXPECT_EQ(mock_random->sample(), val);
 }
@@ -130,11 +130,11 @@ TEST(RandomMixin, reproducibility_test)
 TEST(RandomMixin, one_level_nesting_test)
 {
 	auto obj = std::make_unique<OneLevelNested>();
-	obj->put("seed", 123);
+	obj->put(random::kSeed, 123);
 	
-	EXPECT_EQ(obj->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj3->get<int32_t>(random::kSeed));
 	
 	auto random_value = obj->sample();
 	EXPECT_EQ(random_value, obj->obj1->sample());
@@ -144,16 +144,16 @@ TEST(RandomMixin, one_level_nesting_test)
 TEST(RandomMixin, two_level_nesting_test)
 {
 	auto obj = std::make_unique<TwoLevelNested>();
-	obj->put("seed", 123);
+	obj->put(random::kSeed, 123);
 
-	EXPECT_EQ(obj->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj3->get<int32_t>(random::kSeed));
 
-	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->obj3->get<int32_t>(random::kSeed));
 	
-	EXPECT_EQ(obj->obj2->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj2->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->obj2->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj2->obj3->get<int32_t>(random::kSeed));
 }

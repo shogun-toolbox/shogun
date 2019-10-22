@@ -555,14 +555,14 @@ static PyObject* class_name ## _cleanup_custom(PyObject *self, PyObject *args)
 			arg1->cleanup();
 		}
 
-		catch (std::bad_alloc)
+		catch (std::bad_alloc&)
 		{
 			SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
 
 			SWIG_fail;
 
 		}
-		catch (shogun::ShogunException e)
+		catch (shogun::ShogunException& e)
 		{
 			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 

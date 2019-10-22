@@ -86,10 +86,6 @@ public:
 		feature_types[3] = true;
 
 		weather_ft = feature_types;
-
-
-
-
 	}
 };
 
@@ -115,7 +111,7 @@ TEST_F(RandomForestTest, classify_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	auto eval=std::make_shared<MulticlassAccuracy>();
+	std::shared_ptr<Evaluation> eval=std::make_shared<MulticlassAccuracy>();
 	c->put(RandomForest::kOobEvaluationMetric, eval);
 	EXPECT_NEAR(0.7142857,c->get<float64_t>(RandomForest::kOobError),1e-6);
 }
@@ -149,7 +145,7 @@ TEST_F(RandomForestTest, classify_non_nominal_test)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	auto eval=std::make_shared<MulticlassAccuracy>();
+	std::shared_ptr<Evaluation> eval=std::make_shared<MulticlassAccuracy>();
 	c->put(RandomForest::kOobEvaluationMetric, eval);
 	EXPECT_NEAR(0.714285,c->get<float64_t>(RandomForest::kOobError),1e-6);
 }

@@ -332,11 +332,7 @@ void SGObject::init()
 	watch_method("num_subscriptions", &SGObject::get_num_subscriptions);
 }
 
-#ifdef SWIG
-std::string SGObject::get_description(const std::string& name) const
-#else
 std::string SGObject::get_description(std::string_view name) const
-#endif
 {
 	auto it = self->map.find(BaseTag(name));
 	if (it != self->map.end())
@@ -563,11 +559,7 @@ std::vector<std::string> SGObject::observable_names()
 	return list;
 }
 
-#ifdef SWIG
-bool SGObject::has(const std::string& name) const
-#else
 bool SGObject::has(std::string_view name) const
-#endif
 {
 	return has_parameter(BaseTag(name));
 }
@@ -720,11 +712,7 @@ void SGObject::init_auto_params()
 	}
 }
 
-#ifdef SWIG
-std::shared_ptr<SGObject> SGObject::get(const std::string& name, index_t index) const
-#else
 std::shared_ptr<SGObject> SGObject::get(std::string_view name, index_t index) const
-#endif
 {
 	auto result = sgo_details::get_by_tag(shared_from_this(), name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
@@ -737,19 +725,13 @@ std::shared_ptr<SGObject> SGObject::get(std::string_view name, index_t index) co
 	return result;
 }
 
-#ifndef SWIG
 std::shared_ptr<SGObject> SGObject::get(std::string_view name, std::nothrow_t) const
     noexcept
 {
 	return sgo_details::get_by_tag(shared_from_this(), name, sgo_details::GetByName());
 }
-#endif
 
-#ifdef SWIG
-std::shared_ptr<SGObject> SGObject::get(const std::string& name) const noexcept(false)
-#else
 std::shared_ptr<SGObject> SGObject::get(std::string_view name) const noexcept(false)
-#endif
 {
 	if (!has(name))
 	{

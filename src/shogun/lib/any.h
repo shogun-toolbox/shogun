@@ -422,20 +422,10 @@ namespace shogun
 		};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-		template <typename T>
-		struct is_shared_ptr : std::false_type
-		{
-		};
-
-		template <typename T>
-		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
-		{
-		};
-
 		template <class T, class U>
 		constexpr T cast(const U& value)
 		{
-			if constexpr (is_shared_ptr<U>::value)
+			if constexpr (traits::is_shared_ptr<U>::value)
 				return std::dynamic_pointer_cast<typename T::element_type>(
 				    value);
 			else
@@ -646,7 +636,7 @@ namespace shogun
 			{
 				return 0;
 			}
-			if constexpr (is_shared_ptr<T>::value)
+			if constexpr (traits::is_shared_ptr<T>::value)
 				delete[] ptr;
 			else
 				SG_FREE(ptr);
@@ -1304,10 +1294,25 @@ namespace shogun
 		{
 			Any::register_caster<T, SGObject*>(
 			    [](T value) { return dynamic_cast<SGObject*>(value); });
-			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>)
+			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>
+					&& !std::is_same_v<Derived, base_type<Derived>>)
 				Any::register_caster<T, base_type<Derived>*>([](T value) {
 					return dynamic_cast<base_type<Derived>*>(value);
 				});
+		}
+		if constexpr (traits::is_shared_ptr<T>::value)
+		{
+			using SharedType = typename T::element_type;
+			if constexpr (std::is_base_of_v<SGObject, SharedType>)
+			{
+				Any::register_caster<T, std::shared_ptr<SGObject>>(
+						[](T value) { return std::dynamic_pointer_cast<SGObject>(value); });
+				if constexpr (!std::is_same_v<std::nullptr_t, base_type<SharedType>>
+						&& !std::is_same_v<SharedType, base_type<SharedType>>)
+					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](T value) {
+						return std::dynamic_pointer_cast<base_type<SharedType>>(value);
+					});
+			}
 		}
 		if constexpr (std::is_arithmetic_v<T>)
 		{

@@ -19,14 +19,14 @@ namespace shogun
 		template <typename U>
 		void on_impl(U* v)
 		{
-			if constexpr (std::is_same<T, U>::value)
+			if constexpr (std::is_same_v<T, U>)
 				m_operation(m_name, v);
 
-			if constexpr (std::is_pointer<U>::value)
+			if constexpr (std::is_pointer_v<U>)
 			{
-				if constexpr (std::is_base_of<
-								typename std::remove_pointer<U>::type,
-								typename std::remove_pointer<T>::type>::value)
+				if constexpr (std::is_base_of_v<
+					typename std::remove_pointer_t<U>,
+					typename std::remove_pointer_t<T>>)
 				{
 					// this is misleading, since it returns a pointer to this local
 					// variable, instead of the original one
@@ -35,6 +35,22 @@ namespace shogun
 						m_operation(m_name, &obj);
 				}
 			}
+
+			if constexpr (traits::is_shared_ptr<U>::value)
+			{
+				if constexpr (std::is_base_of_v<
+					typename std::remove_pointer_t<typename U::element_type>,
+					typename std::remove_pointer_t<T>>)
+				{
+					// this is misleading, since it returns a pointer to this local
+					// variable, instead of the original one
+					auto obj = std::dynamic_pointer_cast<std::remove_pointer_t<T>>(*v).get();
+					if (obj)
+						m_operation(m_name, &obj);
+
+				}
+			}
+
 			return;
 		}
 

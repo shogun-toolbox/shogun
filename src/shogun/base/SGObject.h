@@ -490,35 +490,6 @@ public:
 	std::shared_ptr<SGObject> get(std::string_view name, index_t index) const;
 #endif
 
-#ifndef SWIG
-	/** Typed setter for an object class parameter of a Shogun base class type,
-	 * identified by a name.
-	 *
-	 * @param name name of the parameter
-	 * @param value value of the parameter
-	 *
-	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-	void put(std::string_view name, std::shared_ptr<T> value)
-	{
-		put(name, value);
-	}
-	*/
-
-	/** Typed appender for an object class parameter of a Shogun base class
-	* type,
-	* identified by a name.
-	*
-	* @param name name of the parameter
-	* @param value value of the parameter
-	*
-	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-	void add(std::string_view name, std::shared_ptr<T> value)
-	{
-		add(name, value);
-	}
-	*/
-#endif // SWIG
-
 	/** Typed setter for a non-object class parameter, identified by a name.
 	 *
 	 * @param name name of the parameter

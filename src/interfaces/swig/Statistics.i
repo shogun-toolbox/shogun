@@ -9,6 +9,7 @@
 %shared_ptr(shogun::TwoDistributionTest)
 %shared_ptr(shogun::IndependenceTest)
 %shared_ptr(shogun::TwoSampleTest)
+%shared_ptr(shogun::Seedable<shogun::TwoSampleTest>)
 %shared_ptr(shogun::RandomMixin<shogun::TwoSampleTest, std::mt19937_64>)
 %shared_ptr(shogun::MMD)
 %shared_ptr(shogun::StreamingMMD)

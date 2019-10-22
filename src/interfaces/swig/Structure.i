@@ -52,6 +52,7 @@
 %shared_ptr(shogun::SOSVMHelper)
 %shared_ptr(shogun::StructuredOutputMachine)
 %shared_ptr(shogun::LinearStructuredOutputMachine)
+%shared_ptr(shogun::Seedable<shogun::LinearStructuredOutputMachine>)
 %shared_ptr(shogun::RandomMixin<shogun::LinearStructuredOutputMachine, std::mt19937_64>)
 %shared_ptr(shogun::KernelStructuredOutputMachine)
 

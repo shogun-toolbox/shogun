@@ -168,7 +168,7 @@ void StreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& b
 			cm.data(i)=kernel_clone->get_kernel_matrix<float32_t>();
 			kernel_clone->remove_lhs_and_rhs();
 		}
-		catch (ShogunException e)
+		catch (ShogunException& e)
 		{
 			error("{}, Try using less number of blocks per burst!", e.what());
 		}
