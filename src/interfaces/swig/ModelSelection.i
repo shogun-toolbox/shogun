@@ -5,6 +5,7 @@
  */
 
 /* These functions return new Objects */
+#ifdef ENABLE_MODEL_SELECTION
 %newobject *::select_model();
 %newobject CParameterCombination::copy_tree();
 %newobject CParameterCombination::leaf_sets_multiplication();
@@ -31,3 +32,5 @@
 #ifdef USE_GPL_SHOGUN
 %include <shogun/modelselection/GradientModelSelection.h>
 #endif //USE_GPL_SHOGUN
+#endif
+

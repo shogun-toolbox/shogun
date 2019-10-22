@@ -34,7 +34,7 @@
 #ifdef SWIGPYTHON
 #include <object.h>
 %{
-	static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
+        static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
 %}
 
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::SGObject::__str__;
@@ -83,16 +83,18 @@
 %include "ModelSelection_includes.i"
 %include "Ensemble_includes.i"
 %include "NeuralNets_includes.i"
+%include "bagging_includes.i"
+%include "Boost_includes.i"
 
 %include "SGBase.i"
-%include "IO.i"
 %include "Library.i"
+%include "IO.i"
 %include "Mathematics.i"
 %include "Features.i"
+%include "Machine.i"
 %include "Transformer.i"
 %include "Converter.i"
 %include "Preprocessor.i"
-%include "Machine.i"
 %include "Evaluation.i"
 %include "Distance.i"
 %include "Kernel.i"
@@ -112,6 +114,9 @@
 %include "GaussianProcess.i"
 %include "Ensemble.i"
 %include "NeuralNets.i"
+%include "bagging.i"
+%include "Boost.i"
+%include "Machine_extensions.i"
 
 %include "ParameterObserver.i"
 %include "factory.i"

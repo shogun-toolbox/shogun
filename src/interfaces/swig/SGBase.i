@@ -416,8 +416,8 @@ namespace shogun {
 %include <shogun/base/SGObject.h>
 
 /** Instantiate RandomMixin */
-%template(SeedableSGObject) shogun::Seedable<shogun::CSGObject>;
-%template(RandomMixinSGObject) shogun::RandomMixin<shogun::CSGObject, std::mt19937_64>;
+%template(SeedableSGObject) shogun::Seedable<shogun::SGObject>;
+%template(RandomMixinSGObject) shogun::RandomMixin<shogun::SGObject, std::mt19937_64>;
 
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
@@ -536,7 +536,7 @@ namespace shogun
             else
                 deser = std::make_shared<io::BitseryDeserializer>();
 
-            auto byte_input_stream = some<io::ByteArrayInputStream>(str, len);
+            auto byte_input_stream = std::make_shared<io::ByteArrayInputStream>(str, len);
             deser->attach(byte_input_stream);
             $self->deserialize(deser);
         }

@@ -23,8 +23,8 @@
 %include <shogun/distributions/Distribution.h>
 
 /** Instantiate RandomMixin */
-%template(SeedableDistribution) shogun::Seedable<shogun::CDistribution>;
-%template(RandomMixinDistribution) shogun::RandomMixin<shogun::CDistribution, std::mt19937_64>;
+%template(SeedableDistribution) shogun::Seedable<shogun::Distribution>;
+%template(RandomMixinDistribution) shogun::RandomMixin<shogun::Distribution, std::mt19937_64>;
 
 %include <shogun/distributions/HMM.h>
 %include <shogun/distributions/PositionalPWM.h>

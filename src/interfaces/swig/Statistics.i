@@ -26,8 +26,8 @@
 %include <shogun/statistical_testing/TwoSampleTest.h>
 
 /** Instantiate RandomMixin */
-%template(SeedableTwoSampleTest) shogun::Seedable<shogun::CTwoSampleTest>;
-%template(RandomMixinTwoSampleTest) shogun::RandomMixin<shogun::CTwoSampleTest, std::mt19937_64>;
+%template(SeedableTwoSampleTest) shogun::Seedable<shogun::TwoSampleTest>;
+%template(RandomMixinTwoSampleTest) shogun::RandomMixin<shogun::TwoSampleTest, std::mt19937_64>;
 
 %include <shogun/statistical_testing/MMD.h>
 %include <shogun/statistical_testing/StreamingMMD.h>
