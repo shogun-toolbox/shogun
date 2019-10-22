@@ -41,7 +41,9 @@ bool CMaternKernel::init(CFeatures* l, CFeatures* r)
 
 void CMaternKernel::init()
 {
-	SG_ADD(&nu, "order", "order of the Bessel function of the second kind", ParameterProperties::HYPER)
+	nu = 1.5;
+
+	SG_ADD(&nu, "nu", "order of the Bessel function of the second kind", ParameterProperties::HYPER)
 }
 
 float64_t CMaternKernel::compute(int32_t idx_a, int32_t idx_b)
@@ -69,7 +71,13 @@ float64_t CMaternKernel::compute(int32_t idx_a, int32_t idx_b)
 	{
 		float64_t ratio = std::sqrt(2 * nu) * dist / width;
 		// bessel function of the second kind
+#ifdef __clang__
+		// clang hasn't implemented mathematical special functions in the C++17 standard at this point
+		// note that yn casts nu to an integer
+		float64_t bessel = yn(nu, ratio);
+#else
 		float64_t bessel = std::cyl_neumann(nu, ratio);
+#endif
 		result = std::pow(2, 1 - nu) / std::tgamma(nu) * std::pow(ratio, nu) * bessel;
 	}
 
