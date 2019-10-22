@@ -6,6 +6,8 @@
  */
 
 #include <shogun/modelselection/ModelSelection.h>
+
+#ifdef ENABLE_MODEL_SELECTION
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/base/Parameter.h>
@@ -46,3 +48,6 @@ ModelSelection::~ModelSelection()
 	
 	
 }
+
+#endif
+

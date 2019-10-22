@@ -130,7 +130,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param, index_t index=-1);
+	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param, index_t index=-1);
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 * variables which are not PARAMETER::ADD'ed. Make sure that at first

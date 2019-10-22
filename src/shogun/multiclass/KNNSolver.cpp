@@ -5,7 +5,6 @@
  
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/multiclass/KNNSolver.h>
 

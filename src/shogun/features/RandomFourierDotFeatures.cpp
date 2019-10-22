@@ -4,7 +4,6 @@
  * Authors: Evangelos Anagnostopoulos, Bjoern Esser
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/RandomFourierDotFeatures.h>
 #include <shogun/mathematics/NormalDistribution.h>

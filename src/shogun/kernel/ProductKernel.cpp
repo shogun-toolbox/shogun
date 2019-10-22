@@ -231,11 +231,10 @@ void ProductKernel::init()
 }
 
 SGMatrix<float64_t> ProductKernel::get_parameter_gradient(
-		const TParameter* param, index_t index)
+		Parameters::const_reference param, index_t index)
 {
 	auto k=get_kernel(0);
 	SGMatrix<float64_t> temp_kernel=k->get_kernel_matrix();
-
 
 	bool found_derivative=false;
 
@@ -269,8 +268,6 @@ SGMatrix<float64_t> ProductKernel::get_parameter_gradient(
 					temp_kernel(g,h)*=cur_matrix(g,h);
 			}
 		}
-
-
 	}
 
 	if (found_derivative)

@@ -10,7 +10,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>

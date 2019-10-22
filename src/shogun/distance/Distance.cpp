@@ -10,7 +10,6 @@
  */
 
 #include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>

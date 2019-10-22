@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
@@ -23,9 +22,9 @@ class DifferentiableFunction : public SGObject
 {
 public:
 	/** default constructor */
-	DifferentiableFunction();
+	DifferentiableFunction(): SGObject() {}
 
-	virtual ~DifferentiableFunction();
+	virtual ~DifferentiableFunction() {}
 
 	/** get the gradient
 	 *
@@ -34,8 +33,9 @@ public:
 	 * @return map of gradient. Keys are names of parameters, values are values
 	 * of derivative with respect to that parameter.
 	 */
-	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> get_gradient(
-			std::shared_ptr<CMap<TParameter*, SGObject*>> parameters)=0;
+
+	virtual std::map<std::string, SGVector<float64_t>> get_gradient(
+		std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters)=0; 	
 
 	/** get the function value
 	 *

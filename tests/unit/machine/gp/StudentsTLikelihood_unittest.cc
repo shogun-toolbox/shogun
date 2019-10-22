@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <gtest/gtest.h>
@@ -270,13 +269,14 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
+	auto params = likelihood->get_params();
+	auto param1 = params.find("log_sigma");
+	auto param2 = params.find("log_df");
 
 	SGVector<float64_t> lp_dhyp1=likelihood->get_first_derivative(labels, func,
-			param1);
+			*param1);
 	SGVector<float64_t> lp_dhyp2=likelihood->get_first_derivative(labels, func,
-			param2);
+			*param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -291,10 +291,6 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	EXPECT_NEAR(lp_dhyp2[2], 0.084673, 1E-6);
 	EXPECT_NEAR(lp_dhyp2[3], 0.067721, 1E-6);
 	EXPECT_NEAR(lp_dhyp2[4], 0.090007, 1E-6);
-
-	// clean up
-
-
 }
 
 TEST(StudentsTLikelihood,get_second_derivative)
@@ -324,13 +320,14 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
+	auto params = likelihood->get_params();
+	auto param1 = params.find("log_sigma");
+	auto param2 = params.find("log_df");
 
 	SGVector<float64_t> dlp_dhyp1=likelihood->get_second_derivative(labels,
-			func, param1);
+			func, *param1);
 	SGVector<float64_t> dlp_dhyp2=likelihood->get_second_derivative(labels,
-			func, param2);
+			func, *param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -345,10 +342,6 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	EXPECT_NEAR(dlp_dhyp2[2], 0.38610, 1E-5);
 	EXPECT_NEAR(dlp_dhyp2[3], -0.39073, 1E-5);
 	EXPECT_NEAR(dlp_dhyp2[4], -0.32973, 1E-5);
-
-	// clean up
-
-
 }
 
 TEST(StudentsTLikelihood,get_third_derivative)
@@ -378,13 +371,14 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
+	auto params = likelihood->get_params();
+	auto param1 = params.find("log_sigma");
+	auto param2 = params.find("log_df");
 
 	SGVector<float64_t> d2lp_dhyp1=likelihood->get_third_derivative(labels,
-			func, param1);
+			func, *param1);
 	SGVector<float64_t> d2lp_dhyp2=likelihood->get_third_derivative(labels,
-			func, param2);
+			func, *param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -399,9 +393,6 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	EXPECT_NEAR(d2lp_dhyp2[2], -2.8918, 1E-4);
 	EXPECT_NEAR(d2lp_dhyp2[3], 2.6874, 1E-4);
 	EXPECT_NEAR(d2lp_dhyp2[4], -4.6860, 1E-4);
-
-	// clean up
-
 
 }
 

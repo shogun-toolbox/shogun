@@ -30,8 +30,7 @@
  */
 #include <gtest/gtest.h>
 #include "LBFGSMinimizer_unittest.h"
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Map.h>
+
 LBFGSTestCostFunction::LBFGSTestCostFunction()
 	:FirstOrderCostFunction()
 {
@@ -48,7 +47,7 @@ LBFGSTestCostFunction::~LBFGSTestCostFunction()
 
 }
 
-void LBFGSTestCostFunction::set_target(std::shared_ptr<CPiecewiseQuadraticObject >obj)
+void LBFGSTestCostFunction::set_target(std::shared_ptr<PiecewiseQuadraticObject >obj)
 {
 	if(obj!=m_obj)
 	{
@@ -67,57 +66,50 @@ float64_t LBFGSTestCostFunction::get_cost()
 SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 {
 	require(m_obj,"object not set");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 
-	SGVector<float64_t> variables;
-
-	for(index_t i=0; i<num_variables; i++)
+	SGVector<float64_t> variable;
+	for (const auto& param: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
+		if(param.second==m_obj) 
 		{
-			variables=m_obj->get_variable(node->key);
+			variable=m_obj->get_variable(param.first);
 		}
 	}
 
-	return variables;
+	return variable;
 }
 
 SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 {
 	require(m_obj,"object not set");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
-	index_t num_gradients=parameters->get_num_elements();
-	SGVector<float64_t> gradients;
+	SGVector<float64_t> grad;
 
-	for(index_t i=0; i<num_gradients; i++)
+	for(const auto& param: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-		{
-			gradients=m_obj->get_gradient(node->key);
-		}
+		if(param.second==m_obj)
+			grad=m_obj->get_gradient(param.first);
 	}
 
-	return gradients;
+	return grad;
 }
 
 
-CPiecewiseQuadraticObject::CPiecewiseQuadraticObject()
+PiecewiseQuadraticObject::PiecewiseQuadraticObject()
 	:SGObject()
 {
 	init();
 }
 
-CPiecewiseQuadraticObject::~CPiecewiseQuadraticObject()
+PiecewiseQuadraticObject::~PiecewiseQuadraticObject()
 {
 }
 
-void CPiecewiseQuadraticObject::init()
+void PiecewiseQuadraticObject::init()
 {
 	m_init_x=SGVector<float64_t>();
 	m_truth_x=SGVector<float64_t>();
@@ -128,18 +120,18 @@ void CPiecewiseQuadraticObject::init()
 	SG_ADD(&m_truth_x, "truth_x", "truth_x");
 }
 
-void CPiecewiseQuadraticObject::set_init_x(SGVector<float64_t> init_x)
+void PiecewiseQuadraticObject::set_init_x(SGVector<float64_t> init_x)
 {
 	m_init_x=init_x;
 }
 
-void CPiecewiseQuadraticObject::set_truth_x(SGVector<float64_t> truth_x)
+void PiecewiseQuadraticObject::set_truth_x(SGVector<float64_t> truth_x)
 {
 	m_truth_x=truth_x;
 }
 
 
-float64_t CPiecewiseQuadraticObject::get_value()
+float64_t PiecewiseQuadraticObject::get_value()
 {
 	require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same");
 	float64_t res=0.0;
@@ -151,14 +143,13 @@ float64_t CPiecewiseQuadraticObject::get_value()
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject::get_gradient(TParameter * param)
+SGVector<float64_t> PiecewiseQuadraticObject::get_gradient(Parameters::const_reference param)
 {
-	require(param, "param not set");
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> res;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		res=SGVector<float64_t>(m_init_x.vlen);
 		require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same");
@@ -171,21 +162,17 @@ SGVector<float64_t> CPiecewiseQuadraticObject::get_gradient(TParameter * param)
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(TParameter * param)
+SGVector<float64_t> PiecewiseQuadraticObject::get_variable(Parameters::const_reference param)
 {
-	require(param, "param not set");
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
-
-	if (!strcmp(param->m_name, "init_x"))
-		return m_init_x;
-	return SGVector<float64_t>();
+	return m_init_x;
 }
 
 TEST(LBFGSMinimizer,test1)
 {
-	auto obj=std::make_shared<CPiecewiseQuadraticObject>();
+	auto obj=std::make_shared<PiecewiseQuadraticObject>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -206,7 +193,7 @@ TEST(LBFGSMinimizer,test1)
 
 TEST(LBFGSMinimizer,test2)
 {
-	auto obj=std::make_shared<CPiecewiseQuadraticObject>();
+	auto obj=std::make_shared<PiecewiseQuadraticObject>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);

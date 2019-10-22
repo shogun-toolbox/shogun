@@ -32,6 +32,7 @@
 
 #include <shogun/machine/gp/SingleFITCInference.h>
 
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/features/DotFeatures.h>
@@ -155,12 +156,13 @@ float64_t SingleFITCInference::get_derivative_related_mean(SGVector<float64_t> d
 }
 
 SGVector<float64_t> SingleFITCInference::get_derivative_wrt_mean(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	//time complexity O(n)
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -177,13 +179,12 @@ SGVector<float64_t> SingleFITCInference::get_derivative_wrt_mean(
 }
 
 SGVector<float64_t> SingleFITCInference::get_derivative_wrt_inducing_noise(
-	const TParameter* param)
+	Parameters::const_reference param)
 {
 	//time complexity O(m^2*n)
-	require(param, "Param not set");
-	require(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
+	require(param.first == "log_inducing_noise", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
@@ -208,7 +209,7 @@ SGVector<float64_t> SingleFITCInference::get_derivative_wrt_inducing_noise(
 }
 
 SGVector<float64_t> SingleFITCInference::get_derivative_related_inducing_features(
-	SGMatrix<float64_t> BdK, const TParameter* param)
+	SGMatrix<float64_t> BdK, Parameters::const_reference param)
 {
 	//time complexity depends on the implementation of the provided kernel
 	//time complexity is at least O(p*n*m), where p is the dimension (#) of features
@@ -256,7 +257,7 @@ SGVector<float64_t> SingleFITCInference::get_derivative_related_inducing_feature
 	return deriv_lat;
 }
 
-SGVector<float64_t> SingleFITCInference::get_derivative_wrt_inducing_features(const TParameter* param)
+SGVector<float64_t> SingleFITCInference::get_derivative_wrt_inducing_features(Parameters::const_reference param)
 {
 	//time complexity depends on the implementation of the provided kernel
 	//time complexity is at least O(max((p*n*m),(m^2*n))), where p is the dimension (#) of features

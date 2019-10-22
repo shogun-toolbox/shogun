@@ -7,7 +7,6 @@
 #include <shogun/lib/IndexBlockTree.h>
 #include <shogun/lib/IndexBlock.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/List.h>
 #include <vector>
 
 using namespace std;
@@ -90,17 +89,15 @@ void fill_ind_recursive(tree_node_t* node, vector<block_tree_node_t>* tree_nodes
 void collect_tree_nodes_recursive(std::shared_ptr<IndexBlock> subtree_root_block, vector<block_tree_node_t>* tree_nodes)
 {
 	auto sub_blocks = subtree_root_block->get_sub_blocks();
-	if (sub_blocks->get_num_elements()>0)
+	if (sub_blocks.size()>0)
 	{
-		auto iterator = std::static_pointer_cast<IndexBlock>(sub_blocks->get_first_element());
-		do
+		for (const auto& iterator: sub_blocks)
 		{
 			SG_DEBUG("Block [{} {}] ",iterator->get_min_index(), iterator->get_max_index())
 			tree_nodes->push_back(block_tree_node_t(iterator->get_min_index(),iterator->get_max_index(),iterator->get_weight()));
 			if (iterator->get_num_sub_blocks()>0)
 				collect_tree_nodes_recursive(iterator, tree_nodes);
 		}
-		while ((iterator = std::static_pointer_cast<IndexBlock>(sub_blocks->get_next_element())) != NULL);
 	}
 }
 
@@ -270,9 +267,9 @@ SGVector<float64_t> IndexBlockTree::get_SLEP_ind_t() const
 	else
 	{
 		ASSERT(m_root_block)
-		auto blocks = std::make_shared<List>(true);
 
-		vector<block_tree_node_t> tree_nodes = vector<block_tree_node_t>();
+		vector<IndexBlock> blocks;
+		vector<block_tree_node_t> tree_nodes;
 
 		collect_tree_nodes_recursive(m_root_block, &tree_nodes);
 
@@ -288,8 +285,6 @@ SGVector<float64_t> IndexBlockTree::get_SLEP_ind_t() const
 			ind_t[3+i*3+1] = tree_nodes[i].t_max_index;
 			ind_t[3+i*3+2] = tree_nodes[i].weight;
 		}
-
-
 
 		return ind_t;
 	}

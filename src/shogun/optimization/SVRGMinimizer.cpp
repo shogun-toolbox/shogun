@@ -30,7 +30,7 @@
  */
 #include <shogun/optimization/SVRGMinimizer.h>
 #include <shogun/optimization/SGDMinimizer.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 SVRGMinimizer::SVRGMinimizer()

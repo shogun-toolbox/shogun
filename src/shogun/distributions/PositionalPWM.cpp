@@ -5,7 +5,6 @@
  */
 #include <shogun/distributions/PositionalPWM.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/StringFeatures.h>
 

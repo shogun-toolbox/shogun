@@ -189,7 +189,7 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	inf->enable_optimizing_inducing_features(false);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -197,13 +197,9 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-
-	float64_t dnlZ_sf2=gradient->get_element(scale_param)[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_width=(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_width=gradient["log_width"][0];
 
 	// comparison of partial derivatives of negative log marginal likelihood
 	// result from varsgp package:
@@ -217,12 +213,6 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_lik, -91.123579890090099, 1E-5);
 	EXPECT_NEAR(dnlZ_width, 11.103836410254763, 1E-5);
 	EXPECT_NEAR(dnlZ_sf2, 17.692318958964869, 1E-5);
-
-	// clean up
-
-
-
-
 }
 
 TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_features)
@@ -293,7 +283,7 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	inf->enable_optimizing_inducing_features(false);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -301,8 +291,7 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> dnlZ_lat=gradient->get_element(lat_param);
+	SGVector<float64_t> dnlZ_lat=gradient["inducing_features"];
 	SGMatrix<float64_t> deriv_lat(dnlZ_lat.vector, dim, m, false);
 	// get parameters to compute derivatives
 	// comparison of partial derivatives of negative log marginal likelihood
@@ -325,10 +314,4 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	EXPECT_NEAR(deriv_lat(1,1),  -7.260614222976087,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.000050353461401, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(1,2),  -0.000050353461401,  abs_tolerance);
-
-	// clean up
-
-
-
-
 }

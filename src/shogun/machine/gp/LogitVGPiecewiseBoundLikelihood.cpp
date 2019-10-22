@@ -246,19 +246,17 @@ SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_variational_expection()
 
 
 SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_variational_first_derivative(
-		const TParameter* param) const
+		Parameters::const_reference param) const
 {
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute gm and gv
 	//and the formula of the appendix
-	require(param, "Param is required (param should not be NULL)");
-	require(param->m_name, "Param name is required (param->m_name should not be NULL)");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
-	require(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
+	require(param.first == "mu" || param.first == "sigma2",
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using the piecewise bound ",
 		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter",
-		get_name(), param->m_name);
+		get_name(), param.first);
 
 	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
 	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
@@ -288,7 +286,7 @@ SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_variational_first_deriv
 
 	SGVector<float64_t> result(m_mu.vlen);
 
-	if (strcmp(param->m_name, "mu") == 0)
+	if (param.first == "mu")
 	{
 		//Compute the derivative wrt mu
 
@@ -516,7 +514,7 @@ void LogitVGPiecewiseBoundLikelihood::precompute()
 }
 
 SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_first_derivative_wrt_hyperparameter(
-	const TParameter* param) const
+	Parameters::const_reference param) const
 {
 	return SGVector<float64_t>();
 }

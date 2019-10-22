@@ -8,7 +8,6 @@
 #define EIGEN_SOLVER_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 
 namespace shogun

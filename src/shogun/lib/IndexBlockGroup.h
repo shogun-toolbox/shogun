@@ -11,12 +11,10 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/IndexBlockRelation.h>
+#include <shogun/lib/IndexBlock.h>
 
 namespace shogun
 {
-
-class IndexBlock;
-class List;
 
 /** @brief class IndexBlockGroup used to represent
  * group-based feature relation.
@@ -57,7 +55,7 @@ public:
 protected:
 
 	/** blocks in group */
-	std::shared_ptr<List> m_blocks;
+	std::vector<std::shared_ptr<IndexBlock>> m_blocks;
 
 };
 

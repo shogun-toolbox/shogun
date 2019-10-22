@@ -85,7 +85,7 @@ SGVector<float64_t> VariationalLikelihood::get_predictive_variances(
 
 SGVector<float64_t> VariationalLikelihood::get_first_derivative(
 	std::shared_ptr<const Labels> lab, SGVector<float64_t> func,
-	const TParameter* param) const
+	Parameters::const_reference param) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_first_derivative(lab, func, param);
@@ -93,7 +93,7 @@ SGVector<float64_t> VariationalLikelihood::get_first_derivative(
 
 SGVector<float64_t> VariationalLikelihood::get_second_derivative(
 	std::shared_ptr<const Labels> lab, SGVector<float64_t> func,
-	const TParameter* param) const
+	Parameters::const_reference param) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_second_derivative(lab, func, param);
@@ -101,7 +101,7 @@ SGVector<float64_t> VariationalLikelihood::get_second_derivative(
 
 SGVector<float64_t> VariationalLikelihood::get_third_derivative(
 	std::shared_ptr<const Labels> lab, SGVector<float64_t> func,
-	const TParameter* param) const
+	Parameters::const_reference param) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_third_derivative(lab, func, param);

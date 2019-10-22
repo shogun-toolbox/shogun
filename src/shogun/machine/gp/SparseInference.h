@@ -173,7 +173,7 @@ public:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param)=0;
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param)=0;
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -240,7 +240,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -250,7 +250,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -260,7 +260,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -270,7 +270,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt
 	 * inducing noise (noise from inducing features) parameter
@@ -296,7 +296,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** inducing features for approximation */
 	SGMatrix<float64_t> m_inducing_features;

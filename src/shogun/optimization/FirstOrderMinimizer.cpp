@@ -29,7 +29,6 @@
  *
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/optimization/FirstOrderMinimizer.h>
 using namespace shogun;
 

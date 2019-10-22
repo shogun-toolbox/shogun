@@ -33,7 +33,6 @@
 
 #include <shogun/neuralnets/DeepBeliefNetwork.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>

@@ -32,7 +32,6 @@
 #include <shogun/optimization/AdaDeltaUpdater.h>
 #include <shogun/optimization/MomentumCorrection.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

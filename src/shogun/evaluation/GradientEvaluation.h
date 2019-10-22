@@ -85,7 +85,7 @@ private:
 	std::shared_ptr<DifferentiableFunction> m_diff;
 
 	/** parameter dictionary of differentiable function */
-	mutable std::shared_ptr<CMap<TParameter*, SGObject*>>  m_parameter_dictionary;
+	mutable std::map<Parameters::value_type, std::shared_ptr<SGObject>> m_parameter_dictionary; 
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */

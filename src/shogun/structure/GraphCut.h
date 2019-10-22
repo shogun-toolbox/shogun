@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/List.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/structure/MAPInference.h>

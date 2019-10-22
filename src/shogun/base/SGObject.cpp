@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
@@ -18,7 +17,6 @@
 #include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/serialization/Deserializer.h>
-#include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/observers/ParameterObserver.h>
@@ -43,9 +41,12 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
+#include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/optimization/FirstOrderCostFunction.h>
 
 #include <shogun/lib/observers/ObservedValue.h>
 #include <shogun/util/visitors/FilterVisitor.h>
@@ -235,10 +236,6 @@ SGObject::SGObject(const SGObject& orig)
 SGObject::~SGObject()
 {
 	SG_TRACE("SGObject destroyed ({})", fmt::ptr(this));
-
-	delete m_parameters;
-	delete m_model_selection_parameters;
-	delete m_gradient_parameters;
 }
 
 std::shared_ptr<SGObject> SGObject::shallow_copy() const
@@ -320,9 +317,6 @@ void SGObject::save_serializable_post() noexcept(false)
 
 void SGObject::init()
 {
-	m_parameters = new Parameter();
-	m_model_selection_parameters = new Parameter();
-	m_gradient_parameters=new Parameter();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
@@ -358,48 +352,19 @@ std::string SGObject::get_description(std::string_view name) const
 	}
 }
 
-void SGObject::print_modsel_params()
+void SGObject::build_gradient_parameter_dictionary(std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict)
 {
-	io::print("parameters available for model selection for {}:\n", get_name());
+	for (auto& param: self->filter(ParameterProperties::GRADIENT)) 
+		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this(); 
 
-	index_t num_param=m_model_selection_parameters->get_num_parameters();
-
-	if (!num_param)
-		io::print("\tnone\n");
-
-	for (index_t i=0; i<num_param; i++)
+	for (const auto& param: self->filter(ParameterProperties::HYPER)) 
 	{
-		TParameter* current=m_model_selection_parameters->get_parameter(i);
-		index_t  l=200;
-		char* type=SG_MALLOC(char, l);
-		if (type)
-		{
-			current->m_datatype.to_string(type, l);
-			io::print("\t{} ({}): {}\n", current->m_name, current->m_description,
-					type);
-			SG_FREE(type);
-		}
-	}
-}
-
-void SGObject::build_gradient_parameter_dictionary(std::shared_ptr<CMap<TParameter*, SGObject*>> dict)
-{
-	for (index_t i=0; i<m_gradient_parameters->get_num_parameters(); i++)
-	{
-		TParameter* p=m_gradient_parameters->get_parameter(i);
-		dict->add(p, this);
-	}
-
-	for (index_t i=0; i<m_model_selection_parameters->get_num_parameters(); i++)
-	{
-		TParameter* p=m_model_selection_parameters->get_parameter(i);
-		SGObject* child=*(SGObject**)(p->m_parameter);
-
-		if ((p->m_datatype.m_ptype == PT_SGOBJECT) &&
-				(p->m_datatype.m_ctype == CT_SCALAR) &&	child)
-		{
+		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName())) 
+			child->build_gradient_parameter_dictionary(dict); 
+		else if (auto child = get(param.first.name(), std::nothrow))
 			child->build_gradient_parameter_dictionary(dict);
-		}
+		else
+			SG_DEBUG("Parameter {} is not a SGObject. Skipping...", param.first.name().c_str())
 	}
 }
 

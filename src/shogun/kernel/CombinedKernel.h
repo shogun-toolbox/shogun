@@ -11,7 +11,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/List.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -412,7 +411,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+		SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
 				index_t index=-1);
 
 		/** Get the Kernel array
@@ -426,15 +425,14 @@ class CombinedKernel : public Kernel
 		}
 
 		/** Returns a list of all the different CombinedKernels produced by the
-		* cross-product between the kernel lists The returned list performs
-		* reference counting on the contained CombinedKernels.
+		 * cross-product between the kernel lists.
 		*
 		* @param kernel_list a list of lists of kernels. Each sub-list must
 		* contain kernels of the same type
 		*
 		* @return a list of CombinedKernels.
 		*/
-		static std::shared_ptr<List> combine_kernels(std::shared_ptr<List> kernel_list);
+		static std::vector<std::shared_ptr<CombinedKernel>> combine_kernels(std::vector<std::vector<std::shared_ptr<Kernel>>> kernel_list);
 
 		/** Enable to find weight for subkernels during model selection
 		 */

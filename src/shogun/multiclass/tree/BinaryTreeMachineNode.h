@@ -34,7 +34,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
 
 namespace shogun

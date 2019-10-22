@@ -9,7 +9,6 @@
 #include <gtest/gtest.h>
 #include <iterator>
 #include <shogun/base/ShogunEnv.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/class_list.h>
 #include <shogun/base/range.h>
@@ -117,48 +116,3 @@ TYPED_TEST(SGObjectAll, serialization_empty_json)
 	}
 }
 
-// temporary test until old parameter framework is gone
-// enable test to hunt for parameters not registered in tags
-// see https://github.com/shogun-toolbox/shogun/issues/4117
-// not typed as all template instantiations will have the same tags
-TEST(SGObjectAll, DISABLED_tag_coverage)
-{
-	auto class_names = available_objects();
-
-	for (auto class_name : class_names)
-	{
-		auto obj = create(class_name.c_str(), PT_NOT_GENERIC);
-
-		// templated classes cannot be created in the above way
-		if (!obj)
-		{
-			// only test single generic type here: all types have the same
-			// parameter names
-			obj = create(class_name.c_str(), PT_FLOAT64);
-		}
-
-		// obj must exist now, whether templated or not
-		ASSERT_NE(obj, nullptr);
-
-		// old parameter framework names
-		std::vector<std::string> old_names;
-		for (auto i : range(obj->m_parameters->get_num_parameters()))
-			old_names.push_back(obj->m_parameters->get_parameter(i)->m_name);
-
-		std::vector<std::string> tag_names;
-		std::transform(obj->get_params().cbegin(), obj->get_params().cend(), std::back_inserter(tag_names),
-			[](const std::pair<std::string, std::shared_ptr<const AnyParameter>>& each) -> std::string {
-			return each.first;
-		});
-
-		// hack to increase readability of error messages
-		old_names.push_back("_Shogun class: " + class_name);
-		tag_names.push_back("_Shogun class: " + class_name);
-
-		// comparing std::vector depends on order
-		std::sort(old_names.begin(), old_names.end());
-		std::sort(tag_names.begin(), tag_names.end());
-
-		EXPECT_EQ(tag_names, old_names);
-	}
-}

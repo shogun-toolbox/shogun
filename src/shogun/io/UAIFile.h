@@ -13,7 +13,6 @@
 #include <shogun/io/LineReader.h>
 #include <shogun/io/Parser.h>
 #include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

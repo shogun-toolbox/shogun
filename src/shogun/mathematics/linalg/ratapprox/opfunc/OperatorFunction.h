@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 
 namespace shogun

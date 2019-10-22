@@ -7,7 +7,6 @@
  */
 
 #include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>

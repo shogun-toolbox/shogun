@@ -34,6 +34,7 @@
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
@@ -274,7 +275,7 @@ float64_t KLInference::get_negative_log_marginal_likelihood()
 	return get_negative_log_marginal_likelihood_helper();
 }
 
-SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(Parameters::const_reference param)
 {
 	auto lik=get_variational_likelihood();
 	if (!lik->supports_derivative_wrt_hyperparameter())
@@ -290,14 +291,15 @@ SGVector<float64_t> KLInference::get_derivative_wrt_likelihood_model(const TPara
 	return result;
 }
 
-SGVector<float64_t> KLInference::get_derivative_wrt_mean(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_mean(Parameters::const_reference param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -344,11 +346,11 @@ void KLInference::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 }
 
 
-SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	require(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -360,11 +362,12 @@ SGVector<float64_t> KLInference::get_derivative_wrt_inference_method(const TPara
 	return result;
 }
 
-SGVector<float64_t> KLInference::get_derivative_wrt_kernel(const TParameter* param)
+SGVector<float64_t> KLInference::get_derivative_wrt_kernel(Parameters::const_reference param)
 {
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)

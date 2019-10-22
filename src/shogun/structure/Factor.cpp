@@ -6,7 +6,6 @@
  */
 
 #include <shogun/structure/Factor.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

@@ -5,7 +5,6 @@
  *          Evan Shelhamer
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/common.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/features/Features.h>

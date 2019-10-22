@@ -10,7 +10,6 @@
 
 %shared_ptr(shogun::Cache)
 %shared_ptr(shogun::ListElement)
-%shared_ptr(shogun::List)
 %shared_ptr(shogun::Signal)
 %shared_ptr(shogun::Time)
 %shared_ptr(shogun::Hash)

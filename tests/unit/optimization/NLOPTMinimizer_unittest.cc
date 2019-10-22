@@ -32,7 +32,6 @@
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <gtest/gtest.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/Map.h>
 #include <shogun/optimization/NLOPTMinimizer.h>
 CPiecewiseQuadraticObject2::CPiecewiseQuadraticObject2()
@@ -78,14 +77,13 @@ float64_t CPiecewiseQuadraticObject2::get_value()
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(Parameters::const_reference param)
 {
-	require(param, "param not set");
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> res;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		res=SGVector<float64_t>(m_init_x.vlen);
 		require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same");
@@ -97,27 +95,23 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
 	}
 	return res;
 }
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(Parameters::const_reference param)
 {
-	require(param, "param not set");
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
-
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 		return m_init_x;
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(Parameters::const_reference param)
 {
-	require(param, "param not set");
-
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> bound;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		bound=SGVector<float64_t>(m_init_x.vlen);
 		bound.set_const(m_x_upper_bound);
@@ -125,15 +119,13 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * par
 	return bound;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(Parameters::const_reference param)
 {
-	require(param, "param not set");
-
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> bound;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		bound=SGVector<float64_t>(m_init_x.vlen);
 		bound.set_const(m_x_lower_bound);
@@ -174,17 +166,12 @@ float64_t NLOPTTestCostFunction::get_cost()
 SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 {
 	require(m_obj,"object not set");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
-	for(index_t i=0; i<num_variables; i++)
-	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			bound=m_obj->get_lower_bound(node->key);
-	}
+	for (const auto& p: parameters)
+		bound=m_obj->get_lower_bound(p.first);
 	
 	return bound;
 }
@@ -192,16 +179,13 @@ SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 {
 	require(m_obj,"object not set");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
-	for(index_t i=0; i<num_variables; i++)
+	for (const auto& p: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			bound=m_obj->get_upper_bound(node->key);
+		bound=m_obj->get_upper_bound(p.first);
 	}
 	
 	return bound;
@@ -210,17 +194,13 @@ SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 {
 	require(m_obj,"object not set");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
 
-	for(index_t i=0; i<num_variables; i++)
+	for (const auto& p: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			variable=m_obj->get_variable(node->key);
-	
+		variable=m_obj->get_variable(p.first);
 	}
 	
 	return variable;
@@ -229,17 +209,13 @@ SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 {
 	require(m_obj,"object not set");
-	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
-	index_t num_gradients=parameters->get_num_elements();
 	SGVector<float64_t> gradient;
-
-	for(index_t i=0; i<num_gradients; i++)
+	for (const auto& p: parameters)
 	{
-		auto node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj.get())
-			gradient=m_obj->get_gradient(node->key);
+		gradient=m_obj->get_gradient(p.first);
 	}
 	
 	return gradient;

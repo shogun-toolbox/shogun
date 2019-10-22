@@ -5,6 +5,7 @@
  *          Roman Votyakov, Bjoern Esser, Esben Sorig, Sanuj Sharma
  */
 
+#ifdef ENABLE_MODEL_SELECTION
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/Machine.h>
@@ -842,3 +843,4 @@ void ParameterCombination::build_parameter_parent_map(
 
 	}
 }
+#endif

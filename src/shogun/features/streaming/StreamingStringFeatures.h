@@ -11,7 +11,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/io/streaming/InputParser.h>
 

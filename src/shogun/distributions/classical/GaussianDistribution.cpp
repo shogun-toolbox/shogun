@@ -6,8 +6,6 @@
 
 #include <shogun/distributions/classical/GaussianDistribution.h>
 
-
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/RandomNamespace.h>

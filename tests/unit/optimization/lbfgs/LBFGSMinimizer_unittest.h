@@ -34,36 +34,36 @@
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 using namespace shogun;
-class CPiecewiseQuadraticObject;
+class PiecewiseQuadraticObject;
 
 class LBFGSTestCostFunction: public FirstOrderCostFunction
 {
 public:
 	LBFGSTestCostFunction();
 	virtual ~LBFGSTestCostFunction();
-	void set_target(std::shared_ptr<CPiecewiseQuadraticObject> obj);
+	void set_target(std::shared_ptr<PiecewiseQuadraticObject> obj);
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
 	virtual const char* get_name() const { return "LBFGSTestCostFunction"; }
 private:
 	void init();
-	std::shared_ptr<CPiecewiseQuadraticObject> m_obj;
+	std::shared_ptr<PiecewiseQuadraticObject> m_obj;
 };
 
-class CPiecewiseQuadraticObject: public SGObject
+class PiecewiseQuadraticObject: public SGObject
 {
 friend class LBFGSTestCostFunction;
 public:
-	CPiecewiseQuadraticObject();
-	virtual ~CPiecewiseQuadraticObject();
+	PiecewiseQuadraticObject();
+	virtual ~PiecewiseQuadraticObject();
 	void set_init_x(SGVector<float64_t> init_x);
 	void set_truth_x(SGVector<float64_t> truth_x);
 	float64_t get_value();
 	virtual const char* get_name() const {return "PiecewiseQuadraticObject";}
 private:
-	SGVector<float64_t> get_gradient(TParameter * param);
-	SGVector<float64_t> get_variable(TParameter * param);
+	SGVector<float64_t> get_gradient(Parameters::const_reference param);
+	SGVector<float64_t> get_variable(Parameters::const_reference param);
 	void init();
 	SGVector<float64_t> m_init_x;
 	SGVector<float64_t> m_truth_x;

@@ -8,6 +8,7 @@
 
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/mathematics/Math.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
@@ -68,13 +69,10 @@ class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 public:
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
 	virtual ~SingleLaplaceInferenceMethodCostFunction() {  }
-	void set_target(std::shared_ptr<SingleLaplaceInferenceMethod >obj)
+	void set_target(const std::shared_ptr<SingleLaplaceInferenceMethod>& obj)
 	{
-		require(obj, "Obj must set");
 		if(m_obj != obj)
 		{
-
-
 			m_obj=obj;
 		}
 	}
@@ -601,11 +599,11 @@ void SingleLaplaceInferenceMethod::update_deriv()
 }
 
 SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	require(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -634,7 +632,7 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_inference_m
 }
 
 SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of K, Z, g and dfhat
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -669,7 +667,7 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_likelihood_
 }
 
 SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -678,9 +676,10 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();	
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -713,7 +712,7 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 }
 
 SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -721,9 +720,10 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_mean(
 	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();	
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)

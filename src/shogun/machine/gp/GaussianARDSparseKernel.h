@@ -102,7 +102,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
 		index_t index=-1);
 
 	/** return diagonal part of derivative with respect to specified parameter
@@ -113,7 +113,7 @@ public:
 	 * @return diagonal part of gradient with respect to parameter
 	 */
 	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
-		const TParameter* param, index_t index=-1);
+		Parameters::const_reference param, index_t index=-1);
 };
 }
 

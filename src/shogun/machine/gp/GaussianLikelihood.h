@@ -176,7 +176,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the first derivative of log likelihood with respect to
 	 * function location, i.e. \f$\frac{\partial log(P(y|f))}{\partial f}\f$
@@ -189,7 +189,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_second_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the second derivative of log likelihood with respect
 	 * to function location, i.e. \f$\frac{\partial^{2} log(P(y|f))}{\partial
@@ -202,7 +202,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_third_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:

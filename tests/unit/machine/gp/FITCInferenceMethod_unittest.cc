@@ -538,7 +538,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	inf->set_inducing_noise(ind_noise);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -546,16 +546,10 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
 	dnlZ_lik+=dnlZ_noise;
 	// comparison of partial derivatives of negative log marginal likelihood
 	// with result from GPML package:
@@ -566,12 +560,6 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_lik, 2.1930, 1E-4);
 	EXPECT_NEAR(dnlZ_ell, -1.67233, 1E-5);
 	EXPECT_NEAR(dnlZ_sf2, 0.55979, 1E-5);
-
-	// clean up
-
-
-
-
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
@@ -629,7 +617,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	inf->set_inducing_noise(ind_noise);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -637,16 +625,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
 
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 	dnlZ_lik+=dnlZ_noise;
 
 	// comparison of partial derivatives of negative log marginal likelihood
@@ -654,12 +637,6 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	EXPECT_NEAR(dnlZ_lik, 2.4566, 1E-4);
 	EXPECT_NEAR(dnlZ_ell, -2.5158, 1E-4);
 	EXPECT_NEAR(dnlZ_sf2, 2.7023, 1E-4);
-
-	// clean up
-
-
-
-
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
@@ -740,7 +717,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -748,18 +725,12 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
-	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
+	float64_t dnlZ_mean=gradient["mean"][0];
 
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
-	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];
-
-	SGVector<float64_t> dnlz_weights_vec=gradient->get_element(weights_param);
+	SGVector<float64_t> dnlz_weights_vec=gradient["log_weights"];
 
 	dnlZ_lik+=dnlZ_noise;
 
@@ -891,7 +862,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -899,18 +870,12 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
-	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
+	float64_t dnlZ_mean=gradient["mean"][0];
 
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
-	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];
-
-	SGVector<float64_t> dnlz_weights_vec=gradient->get_element(weights_param);
+	SGVector<float64_t> dnlz_weights_vec=gradient["log_weights"];
 	//SGMatrix<float64_t> dnlz_weights(dnlz_weights_vec.vector,t_dim, dim, false);
 
 	dnlZ_lik+=dnlZ_noise;
@@ -1026,7 +991,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1046,8 +1011,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	// -0.002696862602213   0.155565442024638   0.182559104195480
 	// -0.122912900116072   0.243421751386864   0.069745929240874
 
-	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> tmp=gradient->get_element(lat_param);
+	SGVector<float64_t> tmp=gradient["inducing_features"];
 	SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
 
 	abs_tolorance = Math::get_abs_tolerance(-0.002696862602213, rel_tolorance);
@@ -1063,10 +1027,4 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	EXPECT_NEAR(deriv_lat(1,1),  0.243421751386864,  abs_tolorance);
 	abs_tolorance = Math::get_abs_tolerance(0.069745929240874, rel_tolorance);
 	EXPECT_NEAR(deriv_lat(1,2),  0.069745929240874,  abs_tolorance);
-
-	// clean up
-
-
-
-
 }

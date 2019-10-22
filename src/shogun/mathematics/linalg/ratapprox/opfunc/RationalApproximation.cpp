@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/JacobiEllipticFunctions.h>

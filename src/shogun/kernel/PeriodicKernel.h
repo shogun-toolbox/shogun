@@ -129,7 +129,7 @@ class PeriodicKernel: public DotKernel
 		 * @return gradient with respect to parameter
 		 */
 		virtual SGMatrix<float64_t> get_parameter_gradient(
-			const TParameter* param, index_t index=-1);
+			Parameters::const_reference param, index_t index=-1);
 
 	protected:
 		/** compute kernel function for features a and b

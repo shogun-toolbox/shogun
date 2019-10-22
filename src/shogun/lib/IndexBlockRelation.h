@@ -10,11 +10,11 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/IndexBlock.h>
 
 namespace shogun
 {
 
-class List;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EIndexBlockRelationType
@@ -50,7 +50,7 @@ public:
 protected:
 
 	/** check list of blocks */
-	bool check_blocks_list(std::shared_ptr<List> blocks);
+	bool check_blocks_list(std::vector<std::shared_ptr<IndexBlock>> blocks);
 
 };
 

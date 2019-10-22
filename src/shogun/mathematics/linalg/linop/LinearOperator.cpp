@@ -5,7 +5,6 @@
  */
 
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

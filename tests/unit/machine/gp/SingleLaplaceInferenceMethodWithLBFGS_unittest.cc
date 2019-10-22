@@ -400,7 +400,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -408,11 +408,8 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison the result from GPML package with the minfunc function:
 	/*cov =
@@ -423,11 +420,6 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	EXPECT_NEAR(dnlZ_ell, -0.034178423415816, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(0.108245557597861, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, 0.108245557597861, abs_tolerance);
-
-	// clean up
-
-
-
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
@@ -988,7 +980,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -996,11 +988,8 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison the result from GPML package with the minfunc function:
 	/*cov =
@@ -1011,11 +1000,6 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	EXPECT_NEAR(dnlZ_ell, 0.266463865609896, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.068636643738048, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.068636643738048, abs_tolerance);
-
-	// clean up
-
-
-
 }
 
 
@@ -1348,7 +1332,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1356,13 +1340,9 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison the result from GPML package with the minfunc function:
 	/*cov =
@@ -1377,11 +1357,6 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	EXPECT_NEAR(dnlZ_ell, -0.851031385976160, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.570516239076101, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.570516239076101, abs_tolerance);
-
-	// clean up
-
-
-
 }
 
 
@@ -1713,7 +1688,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1721,15 +1696,10 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
-	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_df=gradient["log_df"][0];
+	float64_t dnlZ_sigma=gradient["log_sigma"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison the result from GPML package with the minfunc function:
 	/*cov =
@@ -1747,10 +1717,5 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	EXPECT_NEAR(dnlZ_ell, -0.843641535114105, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.301771081861900, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.301771081861900, abs_tolerance);
-
-	// clean up
-
-
-
 }
 #endif //USE_GPL_SHOGUN

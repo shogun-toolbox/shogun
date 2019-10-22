@@ -10,11 +10,9 @@
 
 #include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <iostream>
 #include <vector>
 
 using namespace shogun;

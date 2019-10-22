@@ -97,7 +97,7 @@ public:
 	 * @return the value of of the derivative
 	 *
 	 */
-	virtual SGVector<float64_t> get_dual_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_dual_first_derivative(Parameters::const_reference param) const;
 
 	/** get the upper bound for dual parameter (lambda)
 	 *

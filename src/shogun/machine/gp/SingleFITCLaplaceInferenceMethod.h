@@ -44,7 +44,7 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * SingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
+ * SingleFITCInference::get_derivative_wrt_kernel(Parameters::const_reference param),
  * depends on the implementation of virtual kernel method,
  * Kernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
@@ -206,7 +206,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -216,7 +216,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -226,7 +226,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -236,7 +236,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** efficiently compute the Cholesky decomposition of inverse of the input matrix
 	 * chol(inv(mtx))
@@ -276,7 +276,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param);
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt inducing noise
 	 *
@@ -284,7 +284,7 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(const TParameter* param);
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt param
 	 * when W has at least one negative element
@@ -294,7 +294,7 @@ protected:
 	 *
 	 * @return derivative when W has negative element(s)
 	 */
-	virtual SGVector<float64_t> derivative_helper_when_Wneg(SGVector<float64_t> res, const TParameter* param);
+	virtual SGVector<float64_t> derivative_helper_when_Wneg(SGVector<float64_t> res, Parameters::const_reference param);
 
 	/** compute variables which are required to compute negative log marginal
 	 * likelihood full derivatives wrt  cov-like hyperparameter \f$\theta\f$

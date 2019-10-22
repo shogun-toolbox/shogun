@@ -87,7 +87,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -105,7 +105,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
 
 	/** set the variational distribution given data and parameters
 	 *
@@ -196,7 +196,7 @@ public:
 	 * @return the value of of the derivative
 	 *
 	 */
-	virtual SGVector<float64_t> get_dual_first_derivative(const TParameter* param) const=0;
+	virtual SGVector<float64_t> get_dual_first_derivative(Parameters::const_reference param) const=0;
 
 	/** set the m_strict_scale
 	 *

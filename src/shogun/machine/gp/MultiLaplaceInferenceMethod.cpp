@@ -44,6 +44,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
 #endif //USE_GPL_SHOGUN
@@ -164,7 +165,7 @@ float64_t MultiLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 }
 
 SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	//SoftMax likelihood does not have this kind of derivative
 	error("Not Implemented!");
@@ -426,11 +427,11 @@ float64_t MultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t>
 }
 
 SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	require(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -445,14 +446,15 @@ SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_inference_me
 }
 
 SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -472,7 +474,7 @@ SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 }
 
 SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -480,9 +482,10 @@ SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)

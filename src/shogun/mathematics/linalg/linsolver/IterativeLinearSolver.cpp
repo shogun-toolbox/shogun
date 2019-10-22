@@ -5,7 +5,6 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
 
 namespace shogun

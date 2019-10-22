@@ -5,6 +5,7 @@
  *          Soeren Sonnenburg, Sergey Lisitsyn, Roman Votyakov, Kyle McQuisten
  */
 
+#ifdef ENABLE_MODEL_SELECTION
 #include <shogun/base/progress.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/machine/Machine.h>
@@ -136,3 +137,4 @@ std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(b
 
 	return best_combination;
 }
+#endif

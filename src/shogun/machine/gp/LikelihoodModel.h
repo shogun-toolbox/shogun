@@ -36,7 +36,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/SGMatrix.h>
@@ -191,9 +190,9 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const
+			SGVector<float64_t> func, Parameters::const_reference param) const
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
 
@@ -209,9 +208,9 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_second_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const
+			SGVector<float64_t> func, Parameters::const_reference param) const
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
 
@@ -226,9 +225,9 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_third_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const
+			SGVector<float64_t> func, Parameters::const_reference param) const
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
 

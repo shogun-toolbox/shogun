@@ -10,6 +10,8 @@
 
 #include <shogun/lib/config.h>
 
+#ifdef ENABLE_MODEL_SELECTION
+
 #include <shogun/lib/Map.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
@@ -333,4 +335,5 @@ protected:
 	uint32_t m_parameters_length;
 };
 }
+#endif
 #endif /* __PARAMETERCOMBINATION_H__ */

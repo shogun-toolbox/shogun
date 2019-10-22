@@ -28,7 +28,7 @@
  *
  */
 #include <shogun/optimization/SMDMinimizer.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 SMDMinimizer::SMDMinimizer()

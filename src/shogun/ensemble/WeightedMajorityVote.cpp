@@ -5,7 +5,6 @@
  */
 
 #include <shogun/ensemble/WeightedMajorityVote.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <map>

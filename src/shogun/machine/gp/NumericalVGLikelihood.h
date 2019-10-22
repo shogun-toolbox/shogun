@@ -104,7 +104,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
@@ -114,7 +114,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
 
 	/** set the number of Gaussian Hermite point used to compute variational expection
 	 *

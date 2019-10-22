@@ -12,6 +12,8 @@
 
 #include <shogun/modelselection/ModelSelection.h>
 
+#ifdef ENABLE_MODEL_SELECTION
+
 namespace shogun
 {
 class ModelSelectionParameters;
@@ -48,4 +50,5 @@ public:
 	virtual const char* get_name() const { return "GridSearchModelSelection"; }
 };
 }
+#endif
 #endif /* __GRIDSEARCHMODELSELECTION_H_ */

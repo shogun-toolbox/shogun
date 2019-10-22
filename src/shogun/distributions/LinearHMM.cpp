@@ -7,8 +7,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
-#include <shogun/base/Parameter.h>
-
 #include <shogun/distributions/LinearHMM.h>
 #include <shogun/features/StringFeatures.h>
 

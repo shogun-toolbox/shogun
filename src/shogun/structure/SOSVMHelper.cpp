@@ -6,7 +6,6 @@
  */
 
 #include <shogun/structure/SOSVMHelper.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 

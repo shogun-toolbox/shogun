@@ -176,9 +176,9 @@ TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	auto lab = std::make_shared<RegressionLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-
-	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
+	auto params=lik->get_params();
+	auto s2_param = params.find("sigma2");
+	SGVector<float64_t> dv = lik->get_variational_first_derivative(*s2_param);
 
 	// comparison of the result with result from the Matlab code
 
@@ -202,12 +202,6 @@ TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	EXPECT_NEAR(dv[8],  0.00051160390311292137,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(0.00013735836053601773, rel_tolerance);
 	EXPECT_NEAR(dv[9],  0.00013735836053601773,  abs_tolerance);
-
-
-
-	// clean up
-	
-	
 }
 
 TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_mu)
@@ -259,9 +253,9 @@ TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_mu)
 	auto lab = std::make_shared<RegressionLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-
-	SGVector<float64_t> dm = lik->get_variational_first_derivative(mu_param);
+	auto params = lik->get_params();
+	auto mu_param = params.find("mu");
+	SGVector<float64_t> dm = lik->get_variational_first_derivative(*mu_param);
 
 	// comparison of the result with result from the Matlab code
 	abs_tolerance = Math::get_abs_tolerance(0.67693242326614289084, rel_tolerance);
@@ -284,10 +278,5 @@ TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_mu)
 	EXPECT_NEAR(dm[8],  -0.06310506928193947151,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.03233772132982468128, rel_tolerance);
 	EXPECT_NEAR(dm[9],  -0.03233772132982468128,  abs_tolerance);
-
-
-	// clean up
-	
-	
 }
 #endif //USE_GPL_SHOGUN
