@@ -15,6 +15,8 @@
 
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/HDF5File.h>
+#include <shogun/io/stream/InputStream.h>
+#include <shogun/io/stream/OutputStream.h>
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/serialization/Deserializer.h>
 #include <shogun/io/serialization/BitserySerializer.h>
@@ -23,4 +25,6 @@
 #include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/io/SimpleFile.h>
 #include <shogun/io/MemoryMappedFile.h>
+
+#include <shogun/lib/Compressor.h>
 %}

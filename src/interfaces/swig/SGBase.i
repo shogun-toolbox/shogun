@@ -277,7 +277,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 #ifdef SWIGCSHARP
-%typemap(cscode) shogun::CSGObject %{
+%typemap(cscode) shogun::SGObject %{
     // enable "putting" enums without casting
     public void put(string name, Enum value) {
         put(name, Convert.ToInt32(value));
@@ -383,11 +383,11 @@ INTERFACE_BASETYPE get(const std::string& name, int index) const
     INTERFACE_BASETYPE result = nullptr;
     try
     {
-        CSGObject* obj = $self->get(name, index);
+        SGObject* obj = $self->get(name, index);
 #if defined(SWIGPYTHON)
-        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
+        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__SGObject, 0);
 #elif defined(SWIGR)
-        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__CSGObject, 0);
+        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(obj), SWIGTYPE_p_shogun__SGObject, 0);
 #endif
     }
     catch(ShogunException& e)
@@ -400,7 +400,7 @@ INTERFACE_BASETYPE get(const std::string& name, int index) const
 %enddef
 
 namespace shogun {
-    %extend CSGObject
+    %extend SGObject
     {
 #ifdef SWIGPYTHON
         VISITOR_GETTER(PyObject*, PythonVisitor)
@@ -410,9 +410,10 @@ namespace shogun {
     }
 }
 
-%ignore shogun::CSGObject::get;
+%ignore shogun::SGObject::get;
 #endif // SWIGPYTHON || SWIGR
 
+%shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %include <shogun/base/SGObject.h>
 
 /** Instantiate RandomMixin */
@@ -504,7 +505,7 @@ namespace shogun
                 serializer = std::make_shared<io::BitserySerializer>();
             auto byte_stream = std::make_shared<io::ByteArrayOutputStream>();
             serializer->attach(byte_stream);
-            serializer->write(wrap($self));
+            serializer->write(std::shared_ptr<SGObject>($self));
             auto serialized_obj = byte_stream->content();
 #ifdef PYTHON3
             PyObject* str=PyBytes_FromStringAndSize(serialized_obj.data(), serialized_obj.size());

@@ -20,7 +20,7 @@
 #ifdef USE_FLOAT64
 %shared_ptr(shogun::LinearOperator<float64_t>)
 %shared_ptr(shogun::MatrixOperator<float64_t>)
-%shared_ptr(shagun::SparseMatrixOperator<float64_t>)
+%shared_ptr(shogun::SparseMatrixOperator<float64_t>)
 %shared_ptr(shogun::DenseMatrixOperator<float64_t>)
 %shared_ptr(shogun::LinearSolver<float64_t, float64_t>)
 %shared_ptr(shogun::IterativeLinearSolver<float64_t,float64_t>)

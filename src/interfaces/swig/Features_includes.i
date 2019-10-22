@@ -1,5 +1,4 @@
 %{
-#include <shogun/lib/Compressor.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h> 
