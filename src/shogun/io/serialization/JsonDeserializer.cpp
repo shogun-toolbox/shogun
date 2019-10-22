@@ -45,6 +45,11 @@ public:
 		*v = next_element<bool>(&ValueType::GetBool);
 		SG_DEBUG("read bool with value {}", *v);
 	}
+	void on(std::vector<bool>::reference* v) override
+	{
+		*v = next_element<bool>(&ValueType::GetBool);
+		SG_DEBUG("read bool with value {}", *v);
+	}
 	void on(char* v) override
 	{
 		*v = utils::safe_convert<char>(next_element<int32_t>(&ValueType::GetInt));

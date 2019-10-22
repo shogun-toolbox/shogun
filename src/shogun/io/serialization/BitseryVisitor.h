@@ -27,6 +27,11 @@ namespace shogun
 				{
 					m_s.boolValue(*v);
 				}
+				void on(std::vector<bool>::reference* v) override
+				{
+					bool tmp = *v;
+					m_s.boolValue(tmp);
+				}
 				void on(char* v) override
 				{
 					m_s.value1b(*v);

@@ -60,6 +60,12 @@ public:
 		m_json_writer.Bool(*v);
 		close_container();
 	}
+	void on(std::vector<bool>::reference* v) override
+	{
+		SG_DEBUG("writing bool with value {}", *v);
+		m_json_writer.Bool(*v);
+		close_container();
+	}
 	void on(char* v) override
 	{
 		SG_DEBUG("writing char with value {}", *v);

@@ -170,6 +170,7 @@ namespace shogun
 		virtual ~AnyVisitor() = default;
 
 		virtual void on(bool*) = 0;
+		virtual void on(std::vector<bool>::reference*) = 0;
 		virtual void on(char*) = 0;
 		virtual void on(int8_t*) = 0;
 		virtual void on(uint8_t*) = 0;
