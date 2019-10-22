@@ -1,3 +1,4 @@
+#ifdef ENABLE_MODEL_SELECTION
 %{
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
@@ -8,3 +9,4 @@
 #endif //USE_GPL_SHOGUN
 #include <shogun/modelselection/ParameterCombination.h>
 %}
+#endif

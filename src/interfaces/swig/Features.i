@@ -189,6 +189,7 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
     %shared_ptr(shogun::DenseSubsetFeatures<float64_t>)
     %shared_ptr(shogun::MatrixFeatures<float64_t>)
     %shared_ptr(shogun::DenseFeatures<float64_t>);
+    %shared_ptr(shogun::RandomMixin<shogun::StreamingDenseFeatures<float64_t>, std::mt19937_64>)
 #endif
 #ifdef USE_FLOATMAX
     %shared_ptr(shogun::StringFeatures<floatmax_t>)
@@ -204,7 +205,6 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
 %include <shogun/features/Alphabet.h>
-%include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
 %include <shogun/features/DirectorDotFeatures.h>

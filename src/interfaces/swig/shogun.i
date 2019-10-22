@@ -55,7 +55,6 @@
 %include "shogun_ignores.i"
 %include "RandomMixin.i"
 %include "std_shared_ptr.i" 
-%shared_ptr(shogun::SparseMatrixOperator<float64_t>)
 
 %include "Machine_includes.i"
 %include "Classifier_includes.i"

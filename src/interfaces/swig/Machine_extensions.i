@@ -4,6 +4,10 @@
  * Authors: Gil Hoben, Heiko Strathmann, Sergey Lisitsyn
  */
 
+// have to be declared after transformers
+%shared_ptr(shogun::PipelineBuilder)
+%shared_ptr(shogun::Pipeline)
+%include "shogun/machine/Pipeline.h"
 
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 
@@ -50,7 +54,7 @@
 %define APPLY_LATENT(CLASS)
     %extend CLASS
     {
-        std::shared_ptr<CLatentLabels> apply(std::shared_ptr<Features> data=NULL)
+        std::shared_ptr<LatentLabels> apply(std::shared_ptr<Features> data=NULL)
         {
             return $self->apply_latent(data);
         }

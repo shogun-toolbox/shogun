@@ -9,6 +9,7 @@
 #endif
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
+%shared_ptr(shogun::DirectorDistance)
 %feature("director") shogun::DirectorDistance;
 %feature("director:except") {
     if ($error != NULL) {

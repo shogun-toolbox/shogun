@@ -17,12 +17,12 @@ namespace shogun
 		public:
 			Serializer();
 			virtual ~Serializer();
-			virtual void attach(std::shared_ptr<OutputStream> stream);
+			virtual void attach(std::shared_ptr<io::OutputStream> stream);
 			virtual void write(std::shared_ptr<SGObject> object) noexcept(false) = 0;
-			std::shared_ptr<OutputStream> stream() const;
+			std::shared_ptr<io::OutputStream> stream() const;
 
 		private:
-			std::shared_ptr<OutputStream> m_stream;
+			std::shared_ptr<io::OutputStream> m_stream;
 		};
 
 		void serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, std::shared_ptr<Serializer> _serializer);
