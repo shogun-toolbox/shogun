@@ -115,7 +115,7 @@ TEST(SingleFITCInference,set_kernel)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -124,19 +124,13 @@ TEST(SingleFITCInference,set_kernel)
 
 	// get parameters to compute derivatives
 	//TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
-	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
+	float64_t dnlZ_mean=gradient["mean"][0];
 
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
-	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];
-
-	float64_t dnlz_weight1=-(gradient->get_element(weights_param))[0];
-	float64_t dnlz_weight2=-(gradient->get_element(weights_param))[1];
+	float64_t dnlz_weight1=-gradient["log_weights"][0];
+	float64_t dnlz_weight2=-gradient["log_weights"][1];
 
 	dnlZ_lik+=dnlZ_noise;
 
@@ -159,8 +153,7 @@ TEST(SingleFITCInference,set_kernel)
 	EXPECT_NEAR(dnlz_weight1,-1.198447375458836, 1E-10);
 	EXPECT_NEAR(dnlz_weight2, -1.690346553000929, 1E-10);
 
-	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> tmp=gradient->get_element(lat_param);
+	SGVector<float64_t> tmp=gradient["inducing_features"];
 	SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
 
 	EXPECT_NEAR(deriv_lat(0,0), -0.005894683010959, 1E-10);
@@ -172,24 +165,18 @@ TEST(SingleFITCInference,set_kernel)
 	EXPECT_NEAR(deriv_lat(0,2), 0.101340718980114, 1E-10);
 	EXPECT_NEAR(deriv_lat(1,2), 0.127863406431433, 1E-10);
 
-	// clean up
-
-
-
-
 	auto kernel2=std::make_shared<GaussianKernel>(10, 2.0);
 	inf->set_kernel(kernel2);
 
 	// build parameter dictionary
-	auto parameter_dictionary2=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary2;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary2);
 
 	// compute derivatives wrt parameters
 	auto gradient2=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary2);
 
-	TParameter* lat_param2=inf->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> tmp2=gradient2->get_element(lat_param2);
+	SGVector<float64_t> tmp2=gradient2["inducing_features"];
 	SGMatrix<float64_t> deriv_lat2(tmp2.vector, dim, m, false);
 
 	//Since GaussianKernel does not fully support FITC inference, the derivatives are all zeros.
@@ -201,10 +188,4 @@ TEST(SingleFITCInference,set_kernel)
 
 	EXPECT_NEAR(deriv_lat2(0,2), 0, 1E-10);
 	EXPECT_NEAR(deriv_lat2(1,2), 0, 1E-10);
-
-
-
-
-
-
 }

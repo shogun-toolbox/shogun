@@ -847,9 +847,9 @@ class Kernel : public SGObject
 		 * @return gradient with respect to parameter
 		 */
 		virtual SGMatrix<float64_t> get_parameter_gradient(
-				const TParameter* param, index_t index=-1)
+				Parameters::const_reference param, index_t index=-1)
 		{
-			error("Can't compute derivative wrt {} parameter", param->m_name);
+			error("Can't compute derivative wrt {} parameter", param.first);
 			return SGMatrix<float64_t>();
 		}
 
@@ -861,7 +861,7 @@ class Kernel : public SGObject
 		 * @return diagonal part of gradient with respect to parameter
 		 */
 		virtual SGVector<float64_t> get_parameter_gradient_diagonal(
-				const TParameter* param, index_t index=-1)
+				Parameters::const_reference param, index_t index=-1)
 		{
 			return get_parameter_gradient(param,index).get_diagonal_vector();
 		}

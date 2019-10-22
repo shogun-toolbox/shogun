@@ -6,7 +6,6 @@
 
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

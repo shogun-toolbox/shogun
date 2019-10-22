@@ -30,7 +30,7 @@
  */
 
 #include <shogun/optimization/DescendCorrection.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 void DescendCorrection::set_correction_weight(float64_t weight)

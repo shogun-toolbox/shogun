@@ -7,7 +7,6 @@
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

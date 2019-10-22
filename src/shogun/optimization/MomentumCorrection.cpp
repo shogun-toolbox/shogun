@@ -30,7 +30,7 @@
  */
 
 #include <shogun/optimization/MomentumCorrection.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 void MomentumCorrection::initialize_previous_direction(index_t len)

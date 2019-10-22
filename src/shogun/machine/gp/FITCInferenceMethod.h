@@ -31,7 +31,7 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * SingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
+ * SingleFITCInference::get_derivative_wrt_kernel(Parameters::const_reference param),
  * depends on the implementation of virtual kernel method,
  * Kernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
@@ -182,7 +182,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** update gradients */
 	virtual void compute_gradient();

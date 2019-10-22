@@ -45,7 +45,11 @@ SG_TYPED_TEST_CASE(DynamicArrayFixture, sg_all_primitive_types, complex128_t);
 TYPED_TEST(DynamicArrayFixture, array_ctor)
 {
 	EXPECT_EQ(5, this->wrapper_array->get_num_elements());
-	EXPECT_EQ(5, this->wrapper_array->get_array_size());
+	// there is no guaranteed that a bool vector can have a capacity of 10
+	// on 64 bit architecture the capacity is usually a multiple of 64
+	// never trust a std::vector<bool>
+	if constexpr(!std::is_same_v<TypeParam, bool>)
+		EXPECT_EQ(5, this->wrapper_array->get_array_size());	
 	for (index_t i = 0; i < 5; i++)
 	{
 		EXPECT_EQ(this->wrapper_array->get_element(i), (TypeParam)i);
@@ -55,7 +59,9 @@ TYPED_TEST(DynamicArrayFixture, array_ctor)
 TYPED_TEST(DynamicArrayFixture, resize_array)
 {
 	this->wrapper_array->resize_array(10);
-	EXPECT_EQ(10, this->wrapper_array->get_array_size());
+	// see test above
+	if constexpr(!std::is_same_v<TypeParam, bool>)
+		EXPECT_EQ(10, this->wrapper_array->get_array_size());
 }
 
 TYPED_TEST(DynamicArrayFixture, set_array)

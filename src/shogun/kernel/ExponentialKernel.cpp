@@ -5,7 +5,6 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/kernel/ExponentialKernel.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>

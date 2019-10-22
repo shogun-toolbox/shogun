@@ -7,7 +7,6 @@
 
 #include <shogun/machine/DistanceMachine.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/base/Parameter.h>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>

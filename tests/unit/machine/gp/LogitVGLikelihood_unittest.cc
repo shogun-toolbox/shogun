@@ -169,9 +169,9 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-
-	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
+	auto params = lik->get_params();
+	auto s2_param = params.find("sigma2");
+	SGVector<float64_t> dv = lik->get_variational_first_derivative(*s2_param);
 
 	// comparison of the result with result from the Matlab code
 
@@ -248,9 +248,9 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_mu)
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-
-	SGVector<float64_t> dm = lik->get_variational_first_derivative(mu_param);
+	auto params = lik->get_params();
+	auto mu_param = params.find("mu");
+	SGVector<float64_t> dm = lik->get_variational_first_derivative(*mu_param);
 
 	// comparison of the result with result from the Matlab code
 

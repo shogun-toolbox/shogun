@@ -9,7 +9,6 @@
 #include <shogun/features/Features.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
 
 #include <string.h>
 

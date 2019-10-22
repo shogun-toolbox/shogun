@@ -175,9 +175,10 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
+	auto params=lik->get_params();
+	auto s2_param = params.find("sigma2");
 
-	SGVector<float64_t> gvi = lik->get_variational_first_derivative(s2_param);
+	SGVector<float64_t> gvi = lik->get_variational_first_derivative(*s2_param);
 
 	// comparison of the result with result from the Matlab code
 	abs_tolerance = Math::get_abs_tolerance(-0.124427581470330, rel_tolerance);
@@ -200,10 +201,6 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	EXPECT_NEAR(gvi[8],  -0.00000000000000220044, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.000000017317396, rel_tolerance);
 	EXPECT_NEAR(gvi[9],  -0.000000017317396,  abs_tolerance);
-
-	// clean up
-
-
 }
 
 TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
@@ -254,9 +251,10 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
+	auto params = lik->get_params();
+	auto mu_param = params.find("mu");
 
-	SGVector<float64_t> gmi = lik->get_variational_first_derivative(mu_param);
+	SGVector<float64_t> gmi = lik->get_variational_first_derivative(*mu_param);
 
 	// comparison of the result with result from the Matlab code
 	abs_tolerance = Math::get_abs_tolerance(0.474998473339850, rel_tolerance);
@@ -279,9 +277,5 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	EXPECT_NEAR(gmi[8],  -0.999999999999995,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.999999835858964, rel_tolerance);
 	EXPECT_NEAR(gmi[9],  -0.999999835858964,  abs_tolerance);
-
-	// clean up
-
-
 }
 

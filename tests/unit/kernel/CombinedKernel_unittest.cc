@@ -243,30 +243,27 @@ TEST(CombinedKernelTest, DISABLED_serialization)
 
 TEST(CombinedKernelTest,combination)
 {
-	auto combined_list = CombinedKernel::combine_kernels(std::make_shared<List>());
-	EXPECT_EQ(combined_list->get_num_elements(),0);
+	std::vector<std::vector<std::shared_ptr<Kernel>>> kernel_list;
+	auto combined_list = CombinedKernel::combine_kernels(kernel_list);
+	EXPECT_EQ(0, combined_list.size());
 
-
-	auto kernel_list = std::make_shared<List>(true);
 	combined_list = CombinedKernel::combine_kernels(kernel_list);
-	EXPECT_EQ(combined_list->get_num_elements(),0);
+	EXPECT_EQ(0, combined_list.size());
 
-
-	auto sub_list_1 = std::make_shared<List>(true);
+	std::vector<std::shared_ptr<Kernel>> sub_list_1;
 	auto ck1 = std::make_shared<GaussianKernel>(10,3);
-	sub_list_1->append_element(ck1);
+	sub_list_1.push_back(ck1);
 	auto ck2 = std::make_shared<GaussianKernel>(10,5);
-	sub_list_1->append_element(ck2);
+	sub_list_1.push_back(ck2);
 	auto ck3 = std::make_shared<GaussianKernel>(10,7);
-	sub_list_1->append_element(ck3);
-	kernel_list->insert_element(sub_list_1);
+	sub_list_1.push_back(ck3);
+	kernel_list.push_back(sub_list_1);
 
 	float64_t combs1[3]= {3, 5, 7};
 
 	combined_list = CombinedKernel::combine_kernels(kernel_list);
 	index_t i = 0;
-	for (auto kernel=combined_list->get_first_element(); kernel;
-			kernel=combined_list->get_next_element())
+	for (const auto& kernel: combined_list)
 	{
 		auto c_kernel = kernel->as<CombinedKernel>();
 		auto subkernel = c_kernel->get_first_kernel();
@@ -277,12 +274,12 @@ TEST(CombinedKernelTest,combination)
 	}
 
 
-	auto sub_list_2 = std::make_shared<List>(true);
+	std::vector<std::shared_ptr<Kernel>> sub_list_2;
 	auto ck4 = std::make_shared<GaussianKernel>(20,21);
-	sub_list_2->append_element(ck4);
+	sub_list_2.push_back(ck4);
 	auto ck5 = std::make_shared<GaussianKernel>(20,31);
-	sub_list_2->append_element(ck5);
-	kernel_list->append_element(sub_list_2);
+	sub_list_2.push_back(ck5);
+	kernel_list.push_back(sub_list_2);
 
 	float64_t combs2[2][6] = {{   3,   5,    7,  3,   5,    7},
 											{ 21, 21, 21, 31, 31, 31}};
@@ -290,8 +287,7 @@ TEST(CombinedKernelTest,combination)
 	combined_list = CombinedKernel::combine_kernels(kernel_list);
 
 	index_t j = 0;
-	for (auto kernel=combined_list->get_first_element(); kernel;
-			kernel=combined_list->get_next_element())
+	for (const auto& kernel: combined_list)
 	{
 		auto c_kernel = kernel->as<CombinedKernel>();
 		EXPECT_EQ(c_kernel->get_num_subkernels(), 2);
@@ -305,18 +301,16 @@ TEST(CombinedKernelTest,combination)
 		++j;
 	}
 
-
-
-	auto sub_list_3 = std::make_shared<List>(true);
+	std::vector<std::shared_ptr<Kernel>> sub_list_3;
 	auto ck6 = std::make_shared<GaussianKernel>(25, 109);
-	sub_list_3->append_element(ck6);
+	sub_list_3.push_back(ck6);
 	auto ck7 = std::make_shared<GaussianKernel>(25, 203);
-	sub_list_3->append_element(ck7);
+	sub_list_3.push_back(ck7);
 	auto ck8 = std::make_shared<GaussianKernel>(25, 308);
-	sub_list_3->append_element(ck8);
+	sub_list_3.push_back(ck8);
 	auto ck9 = std::make_shared<GaussianKernel>(25, 404);
-	sub_list_3->append_element(ck9);
-	kernel_list->append_element(sub_list_3);
+	sub_list_3.push_back(ck9);
+	kernel_list.push_back(sub_list_3);
 
 	float64_t combs[3][24] = {
 		{	3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7},
@@ -327,8 +321,7 @@ TEST(CombinedKernelTest,combination)
 	combined_list = CombinedKernel::combine_kernels(kernel_list);
 
 	j = 0;
-	for (auto kernel=combined_list->get_first_element(); kernel;
-			kernel=combined_list->get_next_element())
+	for (const auto& kernel: combined_list)
 	{
 		auto c_kernel = kernel->as<CombinedKernel>();
 		i = 0;
@@ -341,7 +334,4 @@ TEST(CombinedKernelTest,combination)
 		}
 		++j;
 	}
-
-
-
 }

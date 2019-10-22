@@ -5,7 +5,6 @@
  */
 
 #include <shogun/features/hashed/HashedDenseFeatures.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/io/SGIO.h>

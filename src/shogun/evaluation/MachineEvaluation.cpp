@@ -4,7 +4,6 @@
  * Authors: Jacob Walker, Heiko Strathmann, Giovanni De Toni
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MachineEvaluation.h>

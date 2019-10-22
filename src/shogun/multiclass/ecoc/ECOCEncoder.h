@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGMatrix.h>

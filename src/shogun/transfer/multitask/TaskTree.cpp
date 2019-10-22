@@ -25,7 +25,7 @@ struct task_tree_node_t
 int32_t count_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
 {
 	auto sub_tasks = subtree_root_block->get_subtasks();
-	int32_t n_sub_tasks = sub_tasks->get_num_elements();
+	int32_t n_sub_tasks = sub_tasks.size();
 	if (n_sub_tasks==0)
 	{
 
@@ -34,13 +34,8 @@ int32_t count_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
 	else
 	{
 		int32_t sum = 0;
-		auto iterator = sub_tasks->get_first_element()->as<Task>();
-		do
-		{
-			sum += count_leaf_tasks_recursive(iterator);
-		}
-		while ((iterator = sub_tasks->get_next_element()->as<Task>()) != NULL);
-
+		for (const auto& task: sub_tasks)
+			sum += count_leaf_tasks_recursive(task);
 
 		return sum;
 	}
@@ -50,42 +45,36 @@ void collect_tree_tasks_recursive(std::shared_ptr<Task> subtree_root_block, vect
 {
 	int32_t lower = low;
 	auto sub_blocks = subtree_root_block->get_subtasks();
-	if (sub_blocks->get_num_elements()>0)
+	if (!sub_blocks.empty())
 	{
-		auto iterator = sub_blocks->get_first_element()->as<Task>();
-		do
+		for(const auto& task: sub_blocks)
 		{
-			if (iterator->get_num_subtasks()>0)
+			if (task->get_num_subtasks()>0)
 			{
-				int32_t n_leaves = count_leaf_tasks_recursive(iterator);
+				int32_t n_leaves = count_leaf_tasks_recursive(task);
 				//SG_DEBUG("Block [{} {}] has {} leaf childs ",iterator->get_min_index(), iterator->get_max_index(), n_leaves)
-				tree_nodes->push_back(task_tree_node_t(lower,lower+n_leaves-1,iterator->get_weight()));
-				collect_tree_tasks_recursive(iterator, tree_nodes, lower);
+				tree_nodes->push_back(task_tree_node_t(lower,lower+n_leaves-1,task->get_weight()));
+				collect_tree_tasks_recursive(task, tree_nodes, lower);
 				lower = lower + n_leaves;
 			}
 			else
 				lower++;
 		}
-		while ((iterator = sub_blocks->get_next_element()->as<Task>()) != NULL);
 	}
 
 }
 
-void collect_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block, std::shared_ptr<List> list)
+void collect_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block, std::vector<std::shared_ptr<Task>>& list)
 {
 	auto sub_blocks = subtree_root_block->get_subtasks();
-	if (sub_blocks->get_num_elements() == 0)
+	if (!sub_blocks.empty())
 	{
-		list->append_element(subtree_root_block);
+		list.push_back(subtree_root_block);
 	}
 	else
 	{
-		auto iterator = sub_blocks->get_first_element()->as<Task>();
-		do
-		{
-			collect_leaf_tasks_recursive(iterator, list);
-		}
-		while ((iterator = sub_blocks->get_next_element()->as<Task>()) != NULL);
+		for (const auto& block: sub_blocks)
+			collect_leaf_tasks_recursive(block, list);
 	}
 
 }
@@ -94,31 +83,25 @@ int32_t count_leaft_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
 {
 	auto sub_blocks = subtree_root_block->get_subtasks();
 	int32_t r = 0;
-	if (sub_blocks->get_num_elements() == 0)
+	if (!sub_blocks.empty())
 	{
 		return 1;
 	}
 	else
 	{
-		auto iterator = sub_blocks->get_first_element()->as<Task>();
-		do
-		{
-			r += count_leaf_tasks_recursive(iterator);
-		}
-		while ((iterator = sub_blocks->get_next_element()->as<Task>()) != NULL);
+		for (const auto& block: sub_blocks)
+			r += count_leaf_tasks_recursive(block);
 	}
 
 	return r;
 }
 
-TaskTree::TaskTree() : TaskRelation(),
-	m_root_task(NULL)
+TaskTree::TaskTree() : TaskRelation()
 {
 
 }
 
-TaskTree::TaskTree(std::shared_ptr<Task> root_task) : TaskRelation(),
-	m_root_task(NULL)
+TaskTree::TaskTree(std::shared_ptr<Task> root_task) : TaskRelation()
 {
 	set_root_task(root_task);
 }
@@ -130,30 +113,24 @@ TaskTree::~TaskTree()
 
 SGVector<index_t>* TaskTree::get_tasks_indices() const
 {
-	auto blocks = std::make_shared<List>(true);
+	std::vector<std::shared_ptr<Task>> blocks;
 	collect_leaf_tasks_recursive(m_root_task, blocks);
-	SG_DEBUG("Collected {} leaf blocks", blocks->get_num_elements())
+	SG_DEBUG("Collected {} leaf blocks", blocks.size())
 	//check_blocks_list(blocks);
 
 	//SGVector<index_t> ind(blocks->get_num_elements()+1);
 
 	int t_i = 0;
 	//ind[0] = 0;
-	//
-	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, blocks->get_num_elements());
-	auto iterator = blocks->get_first_element()->as<Task>();
-	do
+	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, blocks.size());
+	for (const auto& task: blocks)
 	{
-		tasks_indices[t_i] = iterator->get_indices();
+		tasks_indices[t_i] = task->get_indices();
 		//require(iterator->is_contiguous(),"Task is not contiguous");
 		//ind[t_i+1] = iterator->get_indices()[iterator->get_indices().vlen-1] + 1;
 		//SG_DEBUG("Block = [{},{}]", iterator->get_min_index(), iterator->get_max_index())
 		t_i++;
 	}
-	while ((iterator = blocks->get_next_element()->as<Task>()) != NULL);
-
-
-
 	return tasks_indices;
 }
 

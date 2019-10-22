@@ -143,12 +143,16 @@ void KLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<flo
 
 	auto lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-	SGVector<float64_t> dv=lik->get_variational_first_derivative(s2_param);
+	auto params = lik->get_params();	
+	require(params.count("sigma2"), "Could not find sigma2 parameter in {}", lik->get_name());
+	auto s2_param=params.find("sigma2");
+	SGVector<float64_t> dv=lik->get_variational_first_derivative(*s2_param);
 	Map<VectorXd> eigen_dv(dv.vector, dv.vlen);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-	SGVector<float64_t> df=lik->get_variational_first_derivative(mu_param);
+	//FIXME
+	require(params.count("mu"), "Could not find mu parameter in {}", lik->get_name());
+	auto mu_param=params.find("mu");
+	SGVector<float64_t> df=lik->get_variational_first_derivative(*mu_param);
 	Map<VectorXd> eigen_df(df.vector, df.vlen);
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);

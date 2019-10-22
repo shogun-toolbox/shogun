@@ -5,7 +5,6 @@
  *          Weijie Lin, Bjoern Esser, Sergey Lisitsyn
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>

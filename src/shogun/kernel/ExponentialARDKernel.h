@@ -187,7 +187,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
 			index_t index=-1)=0;
 
 	/** setter for feature/dimension weight (scalar kernel)

@@ -1151,7 +1151,7 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1159,15 +1159,10 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
-	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_df=gradient["log_df"][0];
+	float64_t dnlZ_sigma=gradient["log_sigma"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
@@ -1192,11 +1187,6 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 	EXPECT_NEAR(dnlZ_ell, -0.80584941351205596760, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.41852168768504860452, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.41852168768504860452, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
@@ -1242,7 +1232,7 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likel
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1250,11 +1240,8 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likel
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
@@ -1271,11 +1258,6 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likel
 	EXPECT_NEAR(dnlZ_ell, 0.275308215764774, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.138232606081787, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.138232606081787, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -1320,7 +1302,7 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1328,11 +1310,8 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
@@ -1349,10 +1328,5 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 	EXPECT_NEAR(dnlZ_ell, -0.034304800769586, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(0.028091203761949, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, 0.028091203761949, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 #endif //USE_GPL_SHOGUN

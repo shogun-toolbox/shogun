@@ -31,7 +31,7 @@
 
 #include <shogun/optimization/PNormMappingFunction.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 void PNormMappingFunction::set_norm(float64_t p)

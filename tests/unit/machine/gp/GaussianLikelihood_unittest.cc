@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
@@ -51,10 +50,6 @@ TEST(GaussianLikelihood,get_predictive_log_probabilities)
 	EXPECT_NEAR(lp[2], -1.054630503782619, 1E-15);
 	EXPECT_NEAR(lp[3], -0.773126383739893, 1E-15);
 	EXPECT_NEAR(lp[4], -0.344377779665387, 1E-15);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_predictive_means)
@@ -95,10 +90,6 @@ TEST(GaussianLikelihood,get_predictive_means)
 	EXPECT_NEAR(mu[2], -0.50885000000000002, 1E-15);
 	EXPECT_NEAR(mu[3], -0.17185000000000000, 1E-15);
 	EXPECT_NEAR(mu[4], 0.00388000000000000, 1E-15);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_predictive_variances)
@@ -139,10 +130,6 @@ TEST(GaussianLikelihood,get_predictive_variances)
 	EXPECT_NEAR(s2[2], 1.016900000000000, 1E-15);
 	EXPECT_NEAR(s2[3], 0.716900000000000, 1E-15);
 	EXPECT_NEAR(s2[4], 0.316900000000000, 1E-15);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_log_probability_f)
@@ -180,9 +167,6 @@ TEST(GaussianLikelihood,get_log_probability_f)
 	EXPECT_NEAR(lp[2], 0.779063286446143, 1E-15);
 	EXPECT_NEAR(lp[3], 0.992445605972769, 1E-15);
 	EXPECT_NEAR(lp[4], 0.678324614848509, 1E-15);
-
-	// clean up
-
 
 }
 
@@ -235,10 +219,6 @@ TEST(GaussianLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[2], 0, 1E-5);
 	EXPECT_NEAR(d3lp[3], 0, 1E-5);
 	EXPECT_NEAR(d3lp[4], 0, 1E-5);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_first_derivative)
@@ -268,10 +248,10 @@ TEST(GaussianLikelihood,get_first_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-
+	auto params=likelihood->get_params();
+	auto log_sigma = params.find("log_sigma");
 	SGVector<float64_t> lp_dhyp=likelihood->get_first_derivative(labels, func,
-			param);
+			*log_sigma);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter with
 	// result from GPML package
@@ -280,10 +260,6 @@ TEST(GaussianLikelihood,get_first_derivative)
 	EXPECT_NEAR(lp_dhyp[2], -0.31556, 1E-5);
 	EXPECT_NEAR(lp_dhyp[3], -0.74233, 1E-5);
 	EXPECT_NEAR(lp_dhyp[4], -0.11408, 1E-5);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_second_derivative)
@@ -313,10 +289,10 @@ TEST(GaussianLikelihood,get_second_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-
+	auto params = likelihood->get_params();
+	auto log_sigma = params.find("log_sigma");
 	SGVector<float64_t> dlp_dhyp=likelihood->get_second_derivative(labels, func,
-			param);
+			*log_sigma);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
@@ -325,10 +301,6 @@ TEST(GaussianLikelihood,get_second_derivative)
 	EXPECT_NEAR(dlp_dhyp[2], 12.7278, 1E-4);
 	EXPECT_NEAR(dlp_dhyp[3], -7.8095, 1E-4);
 	EXPECT_NEAR(dlp_dhyp[4], -14.4805, 1E-4);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_third_derivative)
@@ -358,10 +330,10 @@ TEST(GaussianLikelihood,get_third_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-
+	auto params = likelihood->get_params();
+	auto log_sigma = params.find("log_sigma");
 	SGVector<float64_t> d2lp_dhyp=likelihood->get_third_derivative(labels, func,
-			param);
+			*log_sigma);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
@@ -370,10 +342,6 @@ TEST(GaussianLikelihood,get_third_derivative)
 	EXPECT_NEAR(d2lp_dhyp[2], 118.34, 1E-2);
 	EXPECT_NEAR(d2lp_dhyp[3], 118.34, 1E-2);
 	EXPECT_NEAR(d2lp_dhyp[4], 118.34, 1E-2);
-
-	// clean up
-
-
 }
 
 TEST(GaussianLikelihood,get_first_moments)
@@ -414,52 +382,5 @@ TEST(GaussianLikelihood,get_first_moments)
 	EXPECT_NEAR(mu[2], -8.45664765463661e-03, 1E-15);
 	EXPECT_NEAR(mu[3], -4.05114381364208e-03, 1E-15);
 	EXPECT_NEAR(mu[4], 2.06917008520038e-04, 1E-15);
-
-	// clean up
-
-
 }
 
-TEST(GaussianLikelihood,get_second_moments)
-{
-	// create some easy data:
-	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
-	index_t n=5;
-
-	SGVector<float64_t> lab(n);
-	SGVector<float64_t> s2(n);
-	SGVector<float64_t> mu(n);
-
-	lab.set_const(0.0);
-
-	s2[0]=0.1;
-	s2[1]=0.2;
-	s2[2]=1.0;
-	s2[3]=0.7;
-	s2[4]=0.3;
-
-	mu[0]=-2.18236;
-	mu[1]=-1.30906;
-	mu[2]=-0.50885;
-	mu[3]=-0.17185;
-	mu[4]=0.00388;
-
-	// shogun representation of labels
-	auto labels=std::make_shared<RegressionLabels>(lab);
-
-	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
-
-	s2=likelihood->get_second_moments(mu, s2, labels);
-
-	// comparison of the second moment with result from GPML package
-	EXPECT_NEAR(s2[0], 0.0144568006843456, 1E-15);
-	EXPECT_NEAR(s2[1], 0.0155832180728446, 1E-15);
-	EXPECT_NEAR(s2[2], 0.0166191365916019, 1E-15);
-	EXPECT_NEAR(s2[3], 0.0165016041288882, 1E-15);
-	EXPECT_NEAR(s2[4], 0.0159987377721679, 1E-15);
-
-	// clean up
-
-
-}

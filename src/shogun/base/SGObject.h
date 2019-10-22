@@ -25,9 +25,9 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
+#include <shogun/util/clone.h>
 
 #include <map>
-#include <shogun/util/clone.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -38,7 +38,6 @@
 namespace shogun
 {
 class Parallel;
-class Parameter;
 class ParameterObserverInterface;
 class ObservedValue;
 class ParameterObserver;
@@ -62,10 +61,6 @@ class ObservedValueTemplated;
 	}  // namespace sgo_details
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // SWIG
-
-template <class T, class K> class CMap;
-
-struct TParameter;
 
 using stringToEnumMapType = std::unordered_map<std::string_view, std::unordered_map<std::string_view, machine_int_t>>;
 
@@ -147,6 +142,8 @@ public:
 		std::shared_ptr<ObservedValue>,
 		rxcpp::observer<std::shared_ptr<ObservedValue>, void, void, void, void>>
 		SGSubscriber;
+
+	using Parameters = std::map<std::string, std::shared_ptr<const AnyParameter>>;
 
 	/** default constructor */
 	SGObject();
@@ -237,16 +234,14 @@ public:
 #else
 	std::string get_description(std::string_view name) const;
 #endif
-	/** prints all parameter registered for model selection and their type */
-	void print_modsel_params();
-
 	/** Builds a dictionary of all parameters in SGObject as well of those
 	 *  of SGObjects that are parameters of this object. Dictionary maps
 	 *  parameters to the objects that own them.
 	 *
 	 * @param dict dictionary of parameters to be built.
 	 */
-	void build_gradient_parameter_dictionary(std::shared_ptr<CMap<TParameter*, SGObject*>> dict);
+	void build_gradient_parameter_dictionary(
+ 		    std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict);
 
 	/** Checks if object has a class parameter identified by a name.
 	 *
@@ -673,7 +668,7 @@ public:
 	 * of the object.
 	 *
 	 */
-	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
+	Parameters get_params() const;
 
 	/** Calls a function on every parameter of type T with the name of the
 	 * parameter and the parameter itself as arguments
@@ -1233,15 +1228,6 @@ protected:
 		stringToEnumMapType m_string_to_enum_map;
 
 	public:
-		/** parameters */
-		Parameter* m_parameters;
-
-		/** model selection parameters */
-		Parameter* m_model_selection_parameters;
-
-		/** parameters wrt which we can compute gradients */
-		Parameter* m_gradient_parameters;
-
 		/** Hash of parameter values*/
 		mutable size_t m_hash;
 
@@ -1340,6 +1326,10 @@ namespace sgo_details
 			if (auto result = get_if_possible<Labels>(obj, name, how))
 				return result;
 			if (auto result = get_if_possible<EvaluationResult>(obj, name, how))
+				return result;
+			if (auto result = get_if_possible<LikelihoodModel>(obj, name, how))
+				return result;
+			if (auto result = get_if_possible<MeanFunction>(obj, name, how))
 				return result;
 
 			return nullptr;

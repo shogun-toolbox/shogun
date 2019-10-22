@@ -6,7 +6,6 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/NormalDistribution.h>

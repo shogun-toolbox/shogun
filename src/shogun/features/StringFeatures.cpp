@@ -1,4 +1,3 @@
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/features/StringFeatures.h>

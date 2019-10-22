@@ -184,12 +184,15 @@ void KLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<f
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-	m_dv=lik->get_variational_first_derivative(s2_param);
+	auto params = lik->get_params();
+	require(params.count("sigma2"), "Could not find sigma2 parameter in {}", lik->get_name());
+	auto s2_param=params.find("sigma2");
+	m_dv=lik->get_variational_first_derivative(*s2_param);
 	Map<VectorXd> eigen_dv(m_dv.vector, m_dv.vlen);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-	m_df=lik->get_variational_first_derivative(mu_param);
+	require(params.count("sigma2"), "Could not find mu parameter in {}", lik->get_name());
+	auto mu_param=params.find("mu");
+	m_df=lik->get_variational_first_derivative(*mu_param);
 	Map<VectorXd> eigen_df(m_df.vector, m_df.vlen);
 	//U=inv(L')*diag(sW)
 	MatrixXd eigen_U=eigen_L.triangularView<Upper>().adjoint().solve(MatrixXd(eigen_sW.asDiagonal()));

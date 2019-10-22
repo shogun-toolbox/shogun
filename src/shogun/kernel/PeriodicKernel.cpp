@@ -104,12 +104,12 @@ void PeriodicKernel::precompute_squared()
 }
 
 SGMatrix<float64_t> PeriodicKernel::get_parameter_gradient(
-	const TParameter* param, index_t index)
+	Parameters::const_reference param, index_t index)
 {
 	require(lhs, "Left-hand-side features not set!");
 	require(rhs, "Right-hand-side features not set!");
 
-	if (!strcmp(param->m_name, "length_scale"))
+	if (param.first == "length_scale")
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
 
@@ -127,7 +127,7 @@ SGMatrix<float64_t> PeriodicKernel::get_parameter_gradient(
 
 		return derivative;
 	}
-	else if (!strcmp(param->m_name, "period"))
+	else if (param.first == "period")
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
 
@@ -146,7 +146,7 @@ SGMatrix<float64_t> PeriodicKernel::get_parameter_gradient(
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first.c_str());
 		return SGMatrix<float64_t>();
 	}
 }

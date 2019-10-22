@@ -413,7 +413,7 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -421,10 +421,6 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
 
 
 	// result from GPML 3.5 package:
@@ -437,12 +433,11 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	//0.036402571652033   2.291652389327975
 	//0  -0.000362096140397
 
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_mean=gradient["mean"][0];
+	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
 
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];
-	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
-
-	SGVector<float64_t> dnlz_weights_vec=gradient->get_element(weights_param);
+	SGVector<float64_t> dnlz_weights_vec=gradient["log_weights"];
 
 	abs_tolorance = Math::get_abs_tolerance(-0.244187111559869, rel_tolorance);
 	EXPECT_NEAR(dnlZ_sf2, -0.244187111559869,  abs_tolorance);
@@ -465,11 +460,5 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	//TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
 	//SGVector<float64_t> tmp=gradient->get_element(lat_param);
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
-
-	// clean up
-
-
-
-
 }
 #endif //USE_GPL_SHOGUN

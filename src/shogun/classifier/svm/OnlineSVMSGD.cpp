@@ -5,7 +5,6 @@
  *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/classifier/svm/OnlineSVMSGD.h>
 #include <shogun/lib/Signal.h>

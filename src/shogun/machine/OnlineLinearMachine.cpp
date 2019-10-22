@@ -7,7 +7,6 @@
  */
 
 #include <shogun/machine/OnlineLinearMachine.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>

@@ -31,7 +31,6 @@
 
 #include <shogun/optimization/InverseScalingLearningRate.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 float64_t InverseScalingLearningRate::get_learning_rate(int32_t iter_counter)

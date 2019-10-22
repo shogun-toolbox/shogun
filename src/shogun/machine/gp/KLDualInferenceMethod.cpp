@@ -370,8 +370,10 @@ void KLDualInferenceMethod::get_gradient_of_dual_objective_wrt_parameters(SGVect
 
 	auto lik= get_dual_variational_likelihood();
 
-	TParameter* lambda_param=lik->m_parameters->get_parameter("lambda");
-	SGVector<float64_t>d_lambda=lik->get_dual_first_derivative(lambda_param);
+	auto params = lik->get_params();
+	require(params.count("lambda"), "Could not find mu parameter in {}", lik->get_name());
+	auto lambda_param=params.find("lambda");
+	SGVector<float64_t>d_lambda=lik->get_dual_first_derivative(*lambda_param);
 	Map<VectorXd> eigen_d_lambda(d_lambda.vector, d_lambda.vlen);
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -531,10 +533,14 @@ void KLDualInferenceMethod::update_alpha()
 
 	nlml_new=optimization();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-	m_dv=lik->get_variational_first_derivative(s2_param);
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-	m_df=lik->get_variational_first_derivative(mu_param);
+
+	auto params = lik->get_params();
+	require(params.count("sigma2"), "Could not find sigma2 parameter in {}", lik->get_name());
+	auto s2_param=params.find("sigma2");
+	m_dv=lik->get_variational_first_derivative(*s2_param);
+	require(params.count("mu"), "Could not find mu parameter in {}", lik->get_name());
+	auto mu_param=params.find("mu");
+	m_df=lik->get_variational_first_derivative(*mu_param);
 }
 
 float64_t KLDualInferenceMethod::optimization()

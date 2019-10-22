@@ -462,7 +462,7 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -470,11 +470,8 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/f9c9439698c1b0a0934a
@@ -491,10 +488,5 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	EXPECT_NEAR(dnlZ_ell, 0.588696171221606, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(0.031118659018803, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, 0.031118659018803, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 #endif //USE_GPL_SHOGUN

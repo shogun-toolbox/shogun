@@ -1,4 +1,3 @@
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/exception/NotFittedException.h>
 #include <shogun/transformer/Transformer.h>
 

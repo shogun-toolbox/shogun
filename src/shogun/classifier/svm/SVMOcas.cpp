@@ -9,7 +9,6 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>

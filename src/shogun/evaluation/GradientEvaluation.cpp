@@ -25,23 +25,18 @@ GradientEvaluation::GradientEvaluation(std::shared_ptr<Machine> machine, std::sh
 void GradientEvaluation::init()
 {
 	m_diff=NULL;
-	m_parameter_dictionary=NULL;
 
 	SG_ADD(
-	    &m_diff, "differentiable_function", "Differentiable "
-	                                        "function",
+	    &m_diff, "differentiable_function", "Differentiable function",
 	    ParameterProperties::HYPER);
 }
 
 GradientEvaluation::~GradientEvaluation()
 {
-
-
 }
 
 void GradientEvaluation::update_parameter_dictionary() const
 {
-	m_parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_diff->build_gradient_parameter_dictionary(m_parameter_dictionary);
 }
 
@@ -61,10 +56,11 @@ std::shared_ptr<EvaluationResult> GradientEvaluation::evaluate_impl() const
 
 	// set gradient and parameter dictionary
 	result->set_gradient(gradient);
-	result->set_paramter_dictionary(m_parameter_dictionary);
+	std::map<std::string, std::shared_ptr<SGObject>> param_dictionary;
+	for (const auto& p: m_parameter_dictionary)
+		param_dictionary.emplace(p.first.first, p.second);	
 
-
-
+	result->set_parameter_dictionary(param_dictionary);
 	update_parameter_hash();
 
 	return result;

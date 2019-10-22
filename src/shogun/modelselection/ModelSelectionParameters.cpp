@@ -5,6 +5,7 @@
  *          Bjoern Esser, Leon Kuchenbecker
  */
 
+#ifdef ENABLE_MODEL_SELECTION
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/lib/DataType.h>
@@ -705,3 +706,4 @@ void ModelSelectionParameters::delete_values()
 		}
 	}
 }
+#endif

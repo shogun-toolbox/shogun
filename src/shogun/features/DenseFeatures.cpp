@@ -11,7 +11,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>

@@ -41,9 +41,6 @@ Task::Task(SGVector<index_t> indices,
 
 void Task::init()
 {
-	m_subtasks = std::make_shared<List>(true);
-
-
 	SG_ADD((std::shared_ptr<SGObject>*)&m_subtasks,"subtasks","subtasks of given task");
 	SG_ADD(&m_indices,"indices","indices of task");
 	SG_ADD(&m_weight,"weight","weight of task");
@@ -87,16 +84,15 @@ void Task::add_subtask(std::shared_ptr<Task> subtask)
 		if (!found)
 			error("Subtask contains indices that are not contained in this task");
 	}
-	m_subtasks->append_element(subtask);
+	m_subtasks.push_back(subtask);
 }
 
-std::shared_ptr<List> Task::get_subtasks()
+std::vector<std::shared_ptr<Task>> Task::get_subtasks()
 {
-
 	return m_subtasks;
 }
 
 int32_t Task::get_num_subtasks()
 {
-	return m_subtasks->get_num_elements();
+	return m_subtasks.size();
 }

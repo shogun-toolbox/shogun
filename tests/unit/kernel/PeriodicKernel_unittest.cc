@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-static void is_eqauls(const SGMatrix<float64_t> a, SGMatrix<float64_t> b, float64_t tolerance = 1E-15)
+static void is_equals(const SGMatrix<float64_t> a, SGMatrix<float64_t> b, float64_t tolerance = 1E-15)
 {
 	EXPECT_TRUE((a.num_rows == b.num_rows) && (a.num_cols == b.num_cols));
 
@@ -45,10 +45,7 @@ TEST(PeriodicKernelTest,test_kernel_matrix)
 	expected_kernel_matrix(1,2) = 0.14718930341788436;
 	expected_kernel_matrix(2,2) = 1.0;
 
-	is_eqauls(expected_kernel_matrix, computed_kernel_matrix);
-
-	// Clean up
-
+	is_equals(expected_kernel_matrix, computed_kernel_matrix);
 }
 
 TEST(PeriodicKernelTest,test_derivative_width)
@@ -66,9 +63,9 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 
 	// Compute derivative matrix
-	Parameter *parameters = kernel->m_parameters;
-	TParameter *width = parameters->get_parameter("length_scale");
-	SGMatrix<float64_t> dMatrix = kernel->get_parameter_gradient(width);
+	auto params = kernel->get_params();
+	auto width = params.find("length_scale");
+	SGMatrix<float64_t> dMatrix = kernel->get_parameter_gradient(*width);
 
 	// Define expected derivative matrix
 	SGMatrix<float64_t> expected_derivative_matrix(3,3);
@@ -82,10 +79,7 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	expected_derivative_matrix(1,2) = 0.564039932473408001;
 	expected_derivative_matrix(2,2) = 0.0;
 
-	is_eqauls(expected_derivative_matrix, dMatrix);
-
-	// Clean up
-
+	is_equals(expected_derivative_matrix, dMatrix);
 }
 
 TEST(PeriodicKernelTest,test_derivative_period)
@@ -103,9 +97,9 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 
 	// Compute derivative matrix
-	Parameter *parameters = kernel->m_parameters;
-	TParameter *period = parameters->get_parameter("period");
-	SGMatrix<float64_t> dMatrix = kernel->get_parameter_gradient(period);
+	auto params = kernel->get_params();
+	auto period = params.find("period");
+	SGMatrix<float64_t> dMatrix = kernel->get_parameter_gradient(*period);
 
 	// Define expected derivative matrix
 	SGMatrix<float64_t> expected_derivative_matrix(3,3);
@@ -119,8 +113,5 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	expected_derivative_matrix(1,2) = -0.0419672133442629894;
 	expected_derivative_matrix(2,2) = 0.0;
 
-	is_eqauls(expected_derivative_matrix, dMatrix);
-
-	// Clean up
-
+	is_equals(expected_derivative_matrix, dMatrix);
 }

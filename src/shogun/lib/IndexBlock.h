@@ -15,8 +15,6 @@
 namespace shogun
 {
 
-class List;
-
 /** @brief class IndexBlock used to represent
  * contiguous indices of one group (e.g. block of related features)
  */
@@ -56,7 +54,7 @@ public:
 	virtual const char* get_name() const { return "IndexBlock"; };
 
 	/** get subtasks */
-	std::shared_ptr<List> get_sub_blocks();
+	std::vector<std::shared_ptr<IndexBlock>> get_sub_blocks();
 
 	/** get num subtasks */
 	int32_t get_num_sub_blocks();
@@ -77,7 +75,7 @@ private:
 	float64_t m_weight;
 
 	/** subtasks */
-	std::shared_ptr<List> m_sub_blocks;
+	std::vector<std::shared_ptr<IndexBlock>> m_sub_blocks;
 
 };
 

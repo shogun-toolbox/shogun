@@ -1,5 +1,4 @@
 #include <shogun/features/IndexFeatures.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

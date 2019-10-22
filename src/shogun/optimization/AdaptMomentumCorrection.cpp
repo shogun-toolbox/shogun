@@ -30,7 +30,7 @@
  */
 
 #include <shogun/optimization/AdaptMomentumCorrection.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 void AdaptMomentumCorrection::set_momentum_correction(std::shared_ptr<MomentumCorrection> correction)

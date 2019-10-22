@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
+#ifdef ENABLE_MODEL_SELECTION
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 
@@ -184,3 +185,4 @@ TEST(GradientModelSelection,select_model_ep_inference)
 
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
+#endif

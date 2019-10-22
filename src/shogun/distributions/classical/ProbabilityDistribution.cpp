@@ -5,7 +5,6 @@
  */
 
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 

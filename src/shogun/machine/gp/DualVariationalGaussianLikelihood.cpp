@@ -74,7 +74,7 @@ void DualVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
 	var_lik->set_noise_factor(noise_factor);
 }
 
-SGVector<float64_t> DualVariationalGaussianLikelihood::get_variational_first_derivative(const TParameter* param) const
+SGVector<float64_t> DualVariationalGaussianLikelihood::get_variational_first_derivative(Parameters::const_reference param) const
 {
 	auto var_lik=get_variational_likelihood();
 	return var_lik->get_variational_first_derivative(param);
@@ -86,7 +86,7 @@ bool DualVariationalGaussianLikelihood::supports_derivative_wrt_hyperparameter()
 	return var_lik->supports_derivative_wrt_hyperparameter();
 }
 
-SGVector<float64_t> DualVariationalGaussianLikelihood::get_first_derivative_wrt_hyperparameter(const TParameter* param) const
+SGVector<float64_t> DualVariationalGaussianLikelihood::get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const
 {
 	auto var_lik=get_variational_likelihood();
 	return var_lik->get_first_derivative_wrt_hyperparameter(param);

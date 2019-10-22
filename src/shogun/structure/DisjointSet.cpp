@@ -5,7 +5,6 @@
  */
 
 #include <shogun/structure/DisjointSet.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

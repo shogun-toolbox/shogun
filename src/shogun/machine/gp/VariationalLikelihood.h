@@ -73,7 +73,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const=0;
+	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const=0;
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
 	 *
@@ -223,7 +223,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the first derivative of log likelihood with respect to
 	 * function location, i.e. \f$\frac{\partial log(p(y|f))}{\partial f}\f$
@@ -236,7 +236,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_second_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the second derivative of log likelihood with respect
 	 * to function location, i.e. \f$\frac{\partial^{2} log(p(y|f))}{\partial
@@ -249,7 +249,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_third_derivative(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -267,7 +267,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const=0;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const=0;
 
 protected:
 	/** this method is called to initialize m_likelihood in init()*/

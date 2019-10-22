@@ -31,7 +31,7 @@
 
 #include <shogun/optimization/RmsPropUpdater.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 RmsPropUpdater::RmsPropUpdater()

@@ -17,7 +17,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/io/Serializable.h>
 #include <shogun/util/converters.h>
 #include <shogun/mathematics/RandomNamespace.h>

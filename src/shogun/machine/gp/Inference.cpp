@@ -78,12 +78,6 @@ Inference::Inference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> f
 
 Inference::~Inference()
 {
-
-
-
-
-
-
 }
 
 void Inference::init()
@@ -181,58 +175,55 @@ float64_t Inference::get_marginal_likelihood_estimate(
 	return Math::log_mean_exp(sum);
 }
 
-std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> Inference::
-get_negative_log_marginal_likelihood_derivatives(std::shared_ptr<CMap<TParameter*, SGObject*>> params)
+std::map<std::string, SGVector<float64_t>> Inference::
+get_negative_log_marginal_likelihood_derivatives(std::map<Parameters::value_type, std::shared_ptr<SGObject>> params)
 {
-	require(params->get_num_elements(), "Number of parameters should be greater "
+	require(!params.empty(), "Number of parameters should be greater "
 			"than zero");
 
 	compute_gradient();
 
 	// get number of derivatives
-	const index_t num_deriv=params->get_num_elements();
+	const index_t num_deriv=params.size();
 
 	// create map of derivatives
-	auto result=
-		std::make_shared<CMap<TParameter*, SGVector<float64_t>>>(num_deriv, num_deriv);
-
-
+	std::map<std::string, SGVector<float64_t>> result;
 
 	#pragma omp parallel for
 	for (index_t i=0; i<num_deriv; i++)
 	{
-        CMapNode<TParameter*, SGObject*>* node=params->get_node_ptr(i);
-        SGVector<float64_t> gradient;
+        	SGVector<float64_t> gradient;
+		auto node = std::next(params.begin(), i);
 
-		if(node->data == this)
+		if((node->second).get() == this)
 		{
 			// try to find dervative wrt InferenceMethod.parameter
-			gradient=this->get_derivative_wrt_inference_method(node->key);
+			gradient=this->get_derivative_wrt_inference_method(node->first);
 		}
-        else if (node->data == this->m_model.get())
+		else if (node->second == this->m_model)
 		{
 			// try to find derivative wrt LikelihoodModel.parameter
-			gradient=this->get_derivative_wrt_likelihood_model(node->key);
+			gradient=this->get_derivative_wrt_likelihood_model(node->first);
 		}
-		else if (node->data ==this->m_kernel.get())
+		else if (node->second ==this->m_kernel)
 		{
 			// try to find derivative wrt Kernel.parameter
-			gradient=this->get_derivative_wrt_kernel(node->key);
+			gradient=this->get_derivative_wrt_kernel(node->first);
 		}
-		else if (node->data ==this->m_mean.get())
+		else if (node->second ==this->m_mean)
 		{
 			// try to find derivative wrt MeanFunction.parameter
-			gradient=this->get_derivative_wrt_mean(node->key);
+			gradient=this->get_derivative_wrt_mean(node->first);
 		}
 		else
 		{
 			error("Can't compute derivative of negative log marginal "
-					"likelihood wrt {}.{}", node->data->get_name(), node->key->m_name);
+					"likelihood wrt {}.{}", node->second->get_name(), node->first.first);
 		}
 
 		#pragma omp critical
 		{
-			result->add(node->key, gradient);
+			result[node->first.first] = gradient;
 		}
 	}
 

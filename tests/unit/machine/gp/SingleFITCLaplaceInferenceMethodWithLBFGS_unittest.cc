@@ -409,7 +409,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -426,15 +426,10 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	//0.125896281241220  -0.067325533249551  -0.007553979244171
 	//
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
-
-	float64_t dnlz_weight1=-(gradient->get_element(weights_param))[0];
-	float64_t dnlz_weight2=-(gradient->get_element(weights_param))[1];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-
-	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> dnlZ_lat=gradient->get_element(lat_param);
+	float64_t dnlz_weight1=-gradient["log_weights"][0];
+	float64_t dnlz_weight2=-gradient["log_weights"][1];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	SGVector<float64_t> dnlZ_lat=gradient["inducing_features"]; 
 	SGMatrix<float64_t> deriv_lat(dnlZ_lat.vector, dim, m, false);
 
 	abs_tolorance = Math::get_abs_tolerance(0.579311763908738, rel_tolorance);
@@ -458,10 +453,4 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	EXPECT_NEAR(deriv_lat(1,1),  -0.067325533249551,  abs_tolorance);
 	abs_tolorance = Math::get_abs_tolerance(-0.007553979244171, rel_tolorance);
 	EXPECT_NEAR(deriv_lat(1,2),  -0.007553979244171,  abs_tolorance);
-
-	// clean up
-
-
-
-
 }

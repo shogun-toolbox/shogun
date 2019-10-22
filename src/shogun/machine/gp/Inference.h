@@ -168,9 +168,9 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >>
+	virtual std::map<std::string, SGVector<float64_t>>
 	get_negative_log_marginal_likelihood_derivatives(
-		std::shared_ptr<CMap<TParameter*, SGObject*>> parameters);
+		std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters);
 
 	/** get alpha vector
 	 *
@@ -242,10 +242,10 @@ public:
 	 * @return map of gradient. Keys are names of parameters, values are values
 	 * of derivative with respect to that parameter.
 	 */
-	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> get_gradient(
-			std::shared_ptr<CMap<TParameter*, SGObject*>> parameters)
+	virtual std::map<std::string, SGVector<float64_t>> get_gradient(
+		std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters)
 	{
-        return get_negative_log_marginal_likelihood_derivatives(parameters);
+	        return get_negative_log_marginal_likelihood_derivatives(parameters);
 	}
 
 	/** get the function value
@@ -418,7 +418,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -428,7 +428,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -438,7 +438,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -448,7 +448,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param)=0;
+			Parameters::const_reference param)=0;
 
 	/** update gradients */
 	virtual void compute_gradient();

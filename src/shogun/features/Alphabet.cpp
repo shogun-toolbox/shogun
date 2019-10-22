@@ -11,7 +11,6 @@
 
 #include <shogun/features/Alphabet.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

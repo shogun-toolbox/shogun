@@ -38,6 +38,7 @@
 
 #include <shogun/machine/gp/VarDTCInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
@@ -306,11 +307,11 @@ SGMatrix<float64_t> VarDTCInferenceMethod::get_posterior_covariance()
 }
 
 SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
+	require(param.first == "log_sigma", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			m_model->get_name(), param->m_name);
+			m_model->get_name(), param.first);
 
 	SGVector<float64_t> dlik(1);
 
@@ -334,7 +335,7 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
 }
 
 SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_inducing_features(
-	const TParameter* param)
+	Parameters::const_reference param)
 {
 	//[DXu DXunm] = kernelSparseGradInd(model, Tmm, Tnm);
     //DXu_neg = DXu + DXunm/model.sigma2;
@@ -381,12 +382,11 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_inducing_features(
 }
 
 SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_inducing_noise(
-	const TParameter* param)
+	Parameters::const_reference param)
 {
-	require(param, "Param not set");
-	require(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
+	require(param.first == "log_inducing_noise", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	SGVector<float64_t> result(1);
@@ -414,11 +414,12 @@ float64_t VarDTCInferenceMethod::get_derivative_related_cov(SGVector<float64_t> 
 }
 
 SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_mean(
-	const TParameter* param)
+	Parameters::const_reference param)
 {
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();	
 	result=SGVector<float64_t>(len);
 
 	SGVector<float64_t> y=m_labels->as<RegressionLabels>()->get_labels();

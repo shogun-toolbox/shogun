@@ -1162,7 +1162,7 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1170,15 +1170,10 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
-	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_df=gradient["log_df"][0];
+	float64_t dnlZ_sigma=gradient["log_sigma"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
@@ -1202,11 +1197,6 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	EXPECT_NEAR(dnlZ_ell, -0.802268825425508, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.421067396716859, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.421067396716859, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
@@ -1252,7 +1242,7 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1260,11 +1250,8 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
@@ -1281,11 +1268,6 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 	EXPECT_NEAR(dnlZ_ell, 2.285921615561960, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.432276087896124, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.432276087896124, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 
 TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -1331,7 +1313,7 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1339,11 +1321,8 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
@@ -1360,10 +1339,5 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 	EXPECT_NEAR(dnlZ_ell, 4.180258730739274, abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.462089650290405, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.462089650290405, abs_tolerance);
-
-	// clean up
-	
-	
-	
 }
 #endif //USE_GPL_SHOGUN

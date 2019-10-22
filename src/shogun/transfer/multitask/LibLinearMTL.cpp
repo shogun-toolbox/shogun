@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>

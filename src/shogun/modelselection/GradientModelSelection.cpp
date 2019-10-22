@@ -8,6 +8,7 @@
 
 #include <shogun/modelselection/GradientModelSelection.h>
 
+#ifdef ENABLE_MODEL_SELECTION
 #include <shogun/base/progress.h>
 #include <shogun/evaluation/GradientResult.h>
 #include <shogun/machine/Machine.h>
@@ -16,7 +17,6 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
-#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
@@ -363,3 +363,5 @@ std::shared_ptr<ParameterCombination> GradientModelSelection::select_model(bool 
 }
 
 }
+
+#endif

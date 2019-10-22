@@ -13,7 +13,6 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/machine/OnlineLinearMachine.h>
 
 namespace shogun

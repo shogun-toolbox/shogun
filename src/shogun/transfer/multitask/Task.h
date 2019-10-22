@@ -9,8 +9,10 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/List.h>
+
+#include <vector>
 
 namespace shogun
 {
@@ -100,7 +102,7 @@ public:
 	 *
 	 * @return subtasks of the task
 	 */
-	std::shared_ptr<List> get_subtasks();
+	std::vector<std::shared_ptr<Task>> get_subtasks();
 
 	/** get number of subtasks
 	 *
@@ -122,7 +124,7 @@ private:
 protected:
 
 	/** subtasks */
-	std::shared_ptr<List> m_subtasks;
+	std::vector<std::shared_ptr<Task>> m_subtasks;
 
 	/** name of the block */
 	const char* m_name;

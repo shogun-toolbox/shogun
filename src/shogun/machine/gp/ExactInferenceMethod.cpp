@@ -33,9 +33,9 @@
  */
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 
-
-#include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -283,11 +283,11 @@ void ExactInferenceMethod::update_deriv()
 }
 
 SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	require(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
@@ -314,11 +314,11 @@ std::shared_ptr<ExactInferenceMethod> ExactInferenceMethod::obtain_from_generic(
 }
 
 SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
+	require(param.first == "log_sigma", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			m_model->get_name(), param->m_name);
+			m_model->get_name(), param.first);
 
 	// get the sigma variable from the Gaussian likelihood model
 	auto lik = m_model->as<GaussianLikelihood>();
@@ -337,14 +337,15 @@ SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_likelihood_model(
 }
 
 SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -367,14 +368,15 @@ SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_kernel(
 }
 
 SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		Parameters::const_reference param)
 {
 	// create eigen representation of alpha vector
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)

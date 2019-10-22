@@ -31,7 +31,6 @@
 
 #include <shogun/optimization/AdaGradUpdater.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 using namespace shogun;
 
 AdaGradUpdater::AdaGradUpdater()

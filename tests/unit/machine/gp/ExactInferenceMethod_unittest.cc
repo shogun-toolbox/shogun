@@ -233,20 +233,17 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 			mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);	
 
 	// compute derivatives wrt parameters
 	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -257,10 +254,6 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_lik, 0.10638, 1E-5);
 	EXPECT_NEAR(dnlZ_ell, -0.015133, 1E-6);
 	EXPECT_NEAR(dnlZ_sf2, 1.699483, 1E-6);
-
-
-
-
 }
 
 TEST(ExactInferenceMethod,get_posterior_mean)
@@ -313,9 +306,6 @@ TEST(ExactInferenceMethod,get_posterior_mean)
 	EXPECT_NEAR(mu[2], -1.07628454651757055, 1E-15);
 	EXPECT_NEAR(mu[3], 1.23483449459758354, 1E-15);
 	EXPECT_NEAR(mu[4], -0.07500012155336166, 1E-15);
-
-	// clean up
-
 }
 
 TEST(ExactInferenceMethod,get_posterior_covariance)
@@ -421,9 +411,6 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 	EXPECT_NEAR(Sigma(4,3),  0.0000000942718277538447182,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(0.0569395017595935928889084, rel_tolerance);
 	EXPECT_NEAR(Sigma(4,4),  0.0569395017595935928889084,  abs_tolerance);
-
-	// clean up
-
 }
 
 TEST(ExactInferenceMethod,get_posterior_mean2)
@@ -484,7 +471,4 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	EXPECT_NEAR(mu[3],  0.3235837493820302168678893,  abs_tolerance);
 	abs_tolerance = Math::get_abs_tolerance(-0.9860387397670280495987072, rel_tolerance);
 	EXPECT_NEAR(mu[4],  -0.9860387397670280495987072,  abs_tolerance);
-
-	// clean up
-
 }

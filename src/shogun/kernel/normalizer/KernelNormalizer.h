@@ -10,7 +10,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/kernel/Kernel.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

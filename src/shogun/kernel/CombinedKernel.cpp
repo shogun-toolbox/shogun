@@ -776,11 +776,11 @@ void CombinedKernel::enable_subkernel_weight_learning()
 }
 
 SGMatrix<float64_t> CombinedKernel::get_parameter_gradient(
-		const TParameter* param, index_t index)
+		Parameters::const_reference param, index_t index)
 {
 	SGMatrix<float64_t> result;
 
-	if (!strcmp(param->m_name, "combined_kernel_weight"))
+	if (param.first == "combined_kernel_weight")
 	{
 		if (append_subkernel_weights)
 		{
@@ -788,8 +788,6 @@ SGMatrix<float64_t> CombinedKernel::get_parameter_gradient(
 			{
 				auto k=get_kernel(k_idx);
 				result=k->get_parameter_gradient(param, index);
-
-
 
 				if (result.num_cols*result.num_rows>0)
 					return result;
@@ -802,15 +800,13 @@ SGMatrix<float64_t> CombinedKernel::get_parameter_gradient(
 				auto k=get_kernel(k_idx);
 				result=k->get_kernel_matrix();
 
-
-
 				return result;
 			}
 		}
 	}
 	else
 	{
-		if (!strcmp(param->m_name, "subkernel_log_weights"))
+		if (param.first == "subkernel_log_weights")
 		{
 			if(enable_subkernel_weight_opt)
 			{
@@ -875,8 +871,6 @@ SGMatrix<float64_t> CombinedKernel::get_parameter_gradient(
 						}
 					}
 				}
-
-
 			}
 		}
 	}
@@ -897,43 +891,26 @@ std::shared_ptr<CombinedKernel> CombinedKernel::obtain_from_generic(std::shared_
 	return std::static_pointer_cast<CombinedKernel>(kernel);
 }
 
-std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kernel_list)
+std::vector<std::shared_ptr<CombinedKernel>> CombinedKernel::combine_kernels(std::vector<std::vector<std::shared_ptr<Kernel>>> kernel_list)
 {
-	auto return_list = std::make_shared<List>(true);
+	std::vector<std::shared_ptr<CombinedKernel>> return_list;
 
-
-	if (!kernel_list)
-		return return_list;
-
-	if (kernel_list->get_num_elements()==0)
+	if (kernel_list.empty())
 		return return_list;
 
 	int32_t num_combinations = 1;
 	int32_t list_index = 0;
 
 	/* calculation of total combinations */
-	auto list = kernel_list->get_first_element();
-	while (list)
+	for (const auto& c_list: kernel_list)
 	{
-		auto c_list= std::dynamic_pointer_cast<List>(list);
-		if (!c_list)
-		{
-			error("CombinedKernel::combine_kernels() : Failed to cast list of type "
-					"{} to type List", list->get_name());
-		}
-
-		if (c_list->get_num_elements()==0)
+		if (c_list.empty())
 		{
 			error("CombinedKernel::combine_kernels() : Sub-list in position {} "
 					"is empty.", list_index);
 		}
 
-		num_combinations *= c_list->get_num_elements();
-
-		if (kernel_list->get_delete_data())
-
-
-		list = kernel_list->get_next_element();
+		num_combinations *= c_list.size();
 		++list_index;
 	}
 
@@ -943,25 +920,24 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 	for (index_t i=0; i<num_combinations; ++i)
 	{
 		auto c_kernel = std::make_shared<CombinedKernel>();
-		return_list->append_element(c_kernel);
+		return_list.push_back(c_kernel);
 		kernel_array.push_back(c_kernel);
 	}
 
 	/* first pass */
-	list = kernel_list->get_first_element();
-	auto c_list = std::dynamic_pointer_cast<List>(list);
+	auto c_list = kernel_list.begin();
 
 	/* kernel index in the list */
-	index_t kernel_index = 0;
+	int32_t kernel_index = 0;
 
 	/* here we duplicate the first list in the following form
 	*  a,b,c,d,   a,b,c,d  ......   a,b,c,d  ---- for  a total of num_combinations elements
 	*/
 	EKernelType prev_kernel_type = K_UNKNOWN;
 	bool first_kernel = true;
-	for (auto kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
+	for (auto kernel=c_list->begin(); kernel != c_list->end(); ++kernel)
 	{
-		auto c_kernel = std::dynamic_pointer_cast<Kernel>(kernel);
+		auto c_kernel = *kernel;
 
 		if (first_kernel)
 			 first_kernel = false;
@@ -973,10 +949,9 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 
 		prev_kernel_type = c_kernel->get_kernel_type();
 
-		for (index_t index=kernel_index; index<num_combinations; index+=c_list->get_num_elements())
+		for (auto index=kernel_index; index<num_combinations; index+=c_list->size())
 		{
-			auto comb_kernel =
-			    std::dynamic_pointer_cast<CombinedKernel>(kernel_array[index]);
+			auto comb_kernel = std::dynamic_pointer_cast<CombinedKernel>(kernel_array[index]);
 			comb_kernel->append_kernel(c_kernel);
 
 		}
@@ -984,23 +959,21 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 	}
 
 	/* how often each kernel of the sub-list must appear */
-	int32_t freq = c_list->get_num_elements();
+	int32_t freq = c_list->size();
 
 	/* in this loop we replicate each kernel freq times
 	*  until we assign to all the CombinedKernels a sub-kernel from this list
 	*  That is for num_combinations */
-	list = kernel_list->get_next_element();
+	++c_list;
 	list_index = 1;
-	while (list)
+	while (c_list != kernel_list.end())
 	{
-		c_list = std::dynamic_pointer_cast<List>(list);
-
 		/* index of kernel in the list */
 		kernel_index = 0;
 		first_kernel = true;
-		for (auto kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
+		for (auto kernel=c_list->begin(); kernel != c_list->end(); ++kernel) 
 		{
-			auto c_kernel = std::dynamic_pointer_cast<Kernel>(kernel);
+			auto c_kernel = *kernel;
 
 			if (first_kernel)
 				first_kernel = false;
@@ -1013,14 +986,12 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 			prev_kernel_type = c_kernel->get_kernel_type();
 
 			/* moves the index so that we keep filling in, the way we do, until we reach the end of the list of combinedkernels */
-			for (index_t base=kernel_index*freq; base<num_combinations; base+=c_list->get_num_elements()*freq)
+			for (auto base=kernel_index*freq; base<num_combinations; base+=c_list->size()*freq)
 			{
 				/* inserts freq consecutives times the current kernel */
 				for (index_t index=0; index<freq; ++index)
 				{
-					auto comb_kernel =
-					    std::dynamic_pointer_cast<CombinedKernel>(
-					        kernel_array[base + index]);
+					auto comb_kernel = std::dynamic_pointer_cast<CombinedKernel>(kernel_array[base + index]);
 					comb_kernel->append_kernel(c_kernel);
 
 				}
@@ -1029,9 +1000,9 @@ std::shared_ptr<List> CombinedKernel::combine_kernels(std::shared_ptr<List> kern
 
 		}
 
-		freq *= c_list->get_num_elements();
+		freq *= c_list->size();
 
-		list = kernel_list->get_next_element();
+		++c_list;
 		++list_index;
 	}
 

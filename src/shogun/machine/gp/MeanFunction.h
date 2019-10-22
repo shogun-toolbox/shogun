@@ -35,7 +35,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -71,9 +70,9 @@ public:
 	 * @return derivative of mean function with respect to parameter
 	 */
 	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
-			const TParameter* param, index_t index=-1)
+			Parameters::const_reference param, index_t index=-1)
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
 };

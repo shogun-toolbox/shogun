@@ -6,13 +6,11 @@
  *          Leon Kuchenbecker
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
-#include <shogun/lib/List.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>

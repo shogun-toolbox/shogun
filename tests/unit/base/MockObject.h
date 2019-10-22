@@ -1,4 +1,3 @@
-#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/range.h>
 #include <shogun/lib/SGMatrix.h>
@@ -147,9 +146,6 @@ namespace shogun
 			watch_param(
 			    "raw_vector_sg_vector", &m_raw_vector_sg_vector,
 			    &m_raw_vector_sg_vector_len);
-			m_parameters->add_vector(
-			    &m_raw_vector_sg_vector, &m_raw_vector_sg_vector_len,
-			    "raw_vector_sg_vector", "The raw vector sg_vector");
 
 			m_raw_vector_object_len = 6;
 			m_raw_vector_object =

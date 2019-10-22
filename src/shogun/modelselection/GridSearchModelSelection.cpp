@@ -9,6 +9,8 @@
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/modelselection/GridSearchModelSelection.h>
+
+#ifdef ENABLE_MODEL_SELECTION
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 
@@ -128,3 +130,5 @@ std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(boo
 
 	return best_combination;
 }
+#endif
+

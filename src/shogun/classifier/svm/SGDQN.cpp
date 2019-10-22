@@ -5,7 +5,6 @@
  *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Bjoern Esser
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
 #include <shogun/classifier/svm/SGDQN.h>
 #include <shogun/labels/BinaryLabels.h>
