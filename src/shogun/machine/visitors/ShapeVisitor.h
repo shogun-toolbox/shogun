@@ -20,6 +20,10 @@ namespace shogun
 			{
 				++m_size;
 			}
+			virtual void on(std::vector<bool>::reference*) final
+			{
+				++m_size;
+			}
 			virtual void on(char*) final
 			{
 				++m_size;

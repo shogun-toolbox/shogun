@@ -12,7 +12,9 @@ using namespace shogun;
 void ToStringVisitor::on(bool *v) {
 	stream() << (*v ? "true" : "false") << m_buffer;
 }
-
+void ToStringVisitor::on(std::vector<bool>::reference *v) {
+	stream() << (*v ? "true" : "false") << " ";
+}
 void ToStringVisitor::on(int32_t *v) {
 	stream() << *v << m_buffer;
 }
