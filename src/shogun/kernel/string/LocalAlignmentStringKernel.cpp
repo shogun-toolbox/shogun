@@ -88,7 +88,7 @@ LocalAlignmentStringKernel::LocalAlignmentStringKernel(int32_t size)
 }
 
 LocalAlignmentStringKernel::LocalAlignmentStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 	float64_t opening, float64_t extension)
 : StringKernel<char>()
 {

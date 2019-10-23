@@ -67,7 +67,7 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 */
-	ShiftInvariantKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r);
+	ShiftInvariantKernel(const std::shared_ptr<Features >&l, const std::shared_ptr<Features >&r);
 
 	/** Destructor. */
 	virtual ~ShiftInvariantKernel();
@@ -146,7 +146,7 @@ private:
 	 *
 	 * @param precomputed_distance The precomputed distance object.
 	 */
-	void set_precomputed_distance(std::shared_ptr<CustomDistance> precomputed_distance);
+	void set_precomputed_distance(const std::shared_ptr<CustomDistance>& precomputed_distance);
 
 	/** @return the precomputed distance. */
 	std::shared_ptr<CustomDistance> get_precomputed_distance() const;

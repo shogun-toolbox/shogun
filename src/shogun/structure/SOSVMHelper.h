@@ -50,7 +50,7 @@ public:
 	 * @param lbda regularization parameter lambda
 	 * @return primal objective value
 	 */
-	static float64_t primal_objective(SGVector<float64_t> w, std::shared_ptr<StructuredModel> model, float64_t lbda);
+	static float64_t primal_objective(const SGVector<float64_t>& w, const std::shared_ptr<StructuredModel>& model, float64_t lbda);
 
 	/** Computes the Lagrange dual objective of n-slack structured SVM
 	 * Let \f$ Y_i \f$ denote the output space of sample i, and \f$ m = \sum_i |Y_i| \f$.
@@ -64,7 +64,7 @@ public:
 	 * @param lbda regularization parameter lambda
 	 * @return dual objective value
 	 */
-	static float64_t dual_objective(SGVector<float64_t> w, float64_t aloss, float64_t lbda);
+	static float64_t dual_objective(const SGVector<float64_t>& w, float64_t aloss, float64_t lbda);
 
 	/** Return the average loss for the predictions
 	 *
@@ -73,7 +73,7 @@ public:
 	 * @param is_ub whether to compute the upper bound of average loss
 	 * @return average loss
 	 */
-	static float64_t average_loss(SGVector<float64_t> w, std::shared_ptr<StructuredModel> model, bool is_ub = false);
+	static float64_t average_loss(const SGVector<float64_t>& w, const std::shared_ptr<StructuredModel>& model, bool is_ub = false);
 
 	/** add debug information
 	 *

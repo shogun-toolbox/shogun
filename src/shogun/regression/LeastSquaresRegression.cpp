@@ -12,6 +12,8 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LeastSquaresRegression::LeastSquaresRegression()
@@ -21,7 +23,7 @@ LeastSquaresRegression::LeastSquaresRegression()
 }
 
 LeastSquaresRegression::LeastSquaresRegression(std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab)
-: LinearRidgeRegression(0, data, lab)
+: LinearRidgeRegression(0, std::move(data), std::move(lab))
 {
 }
 #endif

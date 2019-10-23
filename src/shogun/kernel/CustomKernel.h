@@ -42,7 +42,7 @@ class CustomKernel: public Kernel
 		 * compute custom kernel from given kernel matrix
 		 * @param k kernel matrix
 		 */
-		CustomKernel(std::shared_ptr<Kernel> k);
+		CustomKernel(const std::shared_ptr<Kernel>& k);
 
 		/** constructor
 		 *
@@ -51,7 +51,7 @@ class CustomKernel: public Kernel
 		 *
 		 * @param km kernel matrix
 		 */
-		CustomKernel(SGMatrix<float64_t> km);
+		CustomKernel(const SGMatrix<float64_t>& km);
 
 		/** constructor
 		 *
@@ -60,7 +60,7 @@ class CustomKernel: public Kernel
 		 *
 		 * @param km kernel matrix
 		 */
-		CustomKernel(SGMatrix<float32_t> km);
+		CustomKernel(const SGMatrix<float32_t>& km);
 
 		/**
 		 *

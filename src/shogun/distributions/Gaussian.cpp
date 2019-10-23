@@ -289,7 +289,7 @@ void Gaussian::set_cov(SGMatrix<float64_t> cov)
 	init();
 }
 
-void Gaussian::set_d(const SGVector<float64_t> d)
+void Gaussian::set_d(const SGVector<float64_t>& d)
 {
 	m_d = d;
 	init();
@@ -439,7 +439,7 @@ SGVector<float64_t> Gaussian::sample()
 	return samp;
 }
 
-std::shared_ptr<Gaussian> Gaussian::obtain_from_generic(std::shared_ptr<Distribution> distribution)
+std::shared_ptr<Gaussian> Gaussian::obtain_from_generic(const std::shared_ptr<Distribution>& distribution)
 {
 	if (!distribution)
 		return NULL;

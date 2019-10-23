@@ -39,6 +39,8 @@
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/NormalDistribution.h>
 
+#include <utility>
+
 using namespace shogun;
 
 RBM::RBM() : RandomMixin<SGObject>()
@@ -250,7 +252,7 @@ std::shared_ptr<DenseFeatures< float64_t >> RBM::sample_group_with_evidence(int3
 	require(E<m_num_visible_groups,
 		"Visible group index ({}) out of bounds ({})", E, m_num_visible);
 
-	sample_with_evidence(E, evidence, num_gibbs_steps);
+	sample_with_evidence(E, std::move(evidence), num_gibbs_steps);
 
 	SGMatrix<float64_t> result(m_visible_group_sizes[V], m_batch_size);
 

@@ -15,6 +15,8 @@
 #include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
 
+#include <utility>
+
 namespace shogun
 {
 
@@ -29,11 +31,11 @@ RationalApproximation::RationalApproximation()
 RationalApproximation::RationalApproximation(
 	std::shared_ptr<LinearOperator<float64_t>> linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
 	float64_t desired_accuracy, EOperatorFunction function_type)
-	: OperatorFunction<float64_t>(linear_operator, function_type)
+	: OperatorFunction<float64_t>(std::move(linear_operator), function_type)
 {
 	init();
 
-	m_eigen_solver=eigen_solver;
+	m_eigen_solver=std::move(eigen_solver);
 	
 
 	m_desired_accuracy=desired_accuracy;

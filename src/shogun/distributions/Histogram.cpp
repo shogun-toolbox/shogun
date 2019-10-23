@@ -18,7 +18,7 @@ Histogram::Histogram()
 	init();
 }
 
-Histogram::Histogram(std::shared_ptr<StringFeatures<uint16_t>> f)
+Histogram::Histogram(const std::shared_ptr<StringFeatures<uint16_t>>& f)
 : Distribution()
 {
 	init();

@@ -33,6 +33,8 @@
 #include <shogun/optimization/L1Penalty.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SMIDASMinimizer::SMIDASMinimizer()
@@ -46,7 +48,7 @@ SMIDASMinimizer::~SMIDASMinimizer()
 }
 
 SMIDASMinimizer::SMIDASMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
-	:SMDMinimizer(fun)
+	:SMDMinimizer(std::move(fun))
 {
 	init();
 }

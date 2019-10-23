@@ -29,7 +29,7 @@ public:
 	 *
 	 * @param card cardinalities of all the variables in the factor graph
 	 */
-	FactorGraph(const SGVector<int32_t> card);
+	FactorGraph(const SGVector<int32_t>& card);
 
 	/** Copy constructor
 	 *
@@ -47,13 +47,13 @@ public:
 	 *
 	 * @param factor a factor pointer
 	 */
-	void add_factor(std::shared_ptr<Factor> factor);
+	void add_factor(const std::shared_ptr<Factor>& factor);
 
 	/** add a data source
 	 *
 	 * @param datasource a factor data source
 	 */
-	void add_data_source(std::shared_ptr<FactorDataSource> datasource);
+	void add_data_source(const std::shared_ptr<FactorDataSource>& datasource);
 
 	/** @return all the factors */
 	std::vector<std::shared_ptr<Factor>> get_factors() const;
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @param cards cardinalities of all variables
 	 */
-	void set_cardinalities(SGVector<int32_t> cards);
+	void set_cardinalities(const SGVector<int32_t>& cards);
 
 	/** compute energy tables in the factor graph */
 	void compute_energies();
@@ -81,13 +81,13 @@ public:
 	 *
 	 * @param state an assignment
 	 */
-	float64_t evaluate_energy(const SGVector<int32_t> state) const;
+	float64_t evaluate_energy(const SGVector<int32_t>& state) const;
 
 	/** evaluate energy for a given fully observed assignment
 	 *
 	 * @param obs factor graph observation
 	 */
-	float64_t evaluate_energy(std::shared_ptr<const FactorGraphObservation> obs) const;
+	float64_t evaluate_energy(const std::shared_ptr<const FactorGraphObservation>& obs) const;
 
 	/** @return energy table for the graph */
 	SGVector<float64_t> evaluate_energies() const;

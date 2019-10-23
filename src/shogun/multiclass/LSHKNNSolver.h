@@ -42,7 +42,7 @@ class LSHKNNSolver : public KNNSolver
 		 * @param lsh_l m_lsh_l
 		 * @param lsh_t m_lsh_t
 		 */
-		LSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t);
+		LSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels, const int32_t lsh_l, const int32_t lsh_t);
 
 		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 

@@ -57,7 +57,7 @@ namespace shogun
 			 *
 			 * @param label latent label
 			 */
-			void add_latent_label(std::shared_ptr<Data> label);
+			void add_latent_label(const std::shared_ptr<Data>& label);
 
 			/** set latent label at a given index
 			 *

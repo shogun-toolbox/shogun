@@ -7,6 +7,8 @@
 
 #include <shogun/features/BinnedDotFeatures.h>
 
+#include <utility>
+
 using namespace shogun;
 
 BinnedDotFeatures::BinnedDotFeatures(int32_t size)
@@ -23,7 +25,7 @@ BinnedDotFeatures::BinnedDotFeatures(const BinnedDotFeatures & orig)
 	init();
 }
 
-BinnedDotFeatures::BinnedDotFeatures(std::shared_ptr<Features> sf, SGMatrix<float64_t> bins)
+BinnedDotFeatures::BinnedDotFeatures(const std::shared_ptr<Features>& sf, const SGMatrix<float64_t>& bins)
 {
 	init();
 	set_simple_features(std::static_pointer_cast<DenseFeatures<float64_t>>(sf));
@@ -274,7 +276,7 @@ void BinnedDotFeatures::set_norm_one(bool norm_one)
 	m_norm_one=norm_one;
 }
 
-void BinnedDotFeatures::set_bins(SGMatrix<float64_t> bins)
+void BinnedDotFeatures::set_bins(const SGMatrix<float64_t>& bins)
 {
 	m_bins=bins;
 }
@@ -286,7 +288,7 @@ SGMatrix<float64_t> BinnedDotFeatures::get_bins()
 
 void BinnedDotFeatures::set_simple_features(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
-	m_features=features;
+	m_features=std::move(features);
 }
 
 std::shared_ptr<DenseFeatures<float64_t>> BinnedDotFeatures::get_simple_features()

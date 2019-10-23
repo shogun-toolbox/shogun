@@ -10,6 +10,8 @@
 #include <shogun/multiclass/GMNPLib.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 
+#include <utility>
+
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN
 #define PLUS_INF  INT_MAX
@@ -25,7 +27,7 @@ GMNPSVM::GMNPSVM()
 }
 
 GMNPSVM::GMNPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab))
 {
 	init();
 }

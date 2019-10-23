@@ -17,7 +17,7 @@
 using namespace shogun;
 
 void check_consistency_observable(
-    const std::shared_ptr<KMeans> kmeans, std::shared_ptr<ParameterObserver> observer)
+    const std::shared_ptr<KMeans>& kmeans, const std::shared_ptr<ParameterObserver>& observer)
 {
 	auto total_observations = observer->get<int32_t>("num_observations");
 	auto observation = observer->get_observation(total_observations - 1);

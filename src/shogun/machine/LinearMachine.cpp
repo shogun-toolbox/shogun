@@ -11,6 +11,7 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/LinearMachine.h>
+#include <utility>
 
 using namespace shogun;
 
@@ -19,7 +20,7 @@ LinearMachine::LinearMachine(): Machine()
 	init();
 }
 
-LinearMachine::LinearMachine(std::shared_ptr<LinearMachine> machine) : Machine()
+LinearMachine::LinearMachine(const std::shared_ptr<LinearMachine>& machine) : Machine()
 {
 	init();
 	require(machine, "No machine provided.");
@@ -110,7 +111,7 @@ void LinearMachine::set_features(std::shared_ptr<DotFeatures> feat)
 {
 
 
-	features=feat;
+	features=std::move(feat);
 }
 
 std::shared_ptr<DotFeatures> LinearMachine::get_features()

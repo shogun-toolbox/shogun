@@ -39,7 +39,7 @@ class KMeansMiniBatch : public KMeansBase
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans aloverride private method c++gorithm
 		*/
-		KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
+		KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, const SGMatrix<float64_t>& centers_i);
 		
 		virtual ~KMeansMiniBatch();
 

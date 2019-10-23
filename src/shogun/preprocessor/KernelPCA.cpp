@@ -10,8 +10,9 @@
 #include <shogun/mathematics/Math.h>
 
 #include <limits>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <utility>
 
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
@@ -29,7 +30,7 @@ KernelPCA::KernelPCA() : Preprocessor()
 KernelPCA::KernelPCA(std::shared_ptr<Kernel> k) : Preprocessor()
 {
 	init();
-	set_kernel(k);
+	set_kernel(std::move(k));
 }
 
 void KernelPCA::init()
@@ -146,7 +147,7 @@ SGMatrix<float64_t> KernelPCA::apply_to_feature_matrix(std::shared_ptr<Features>
 	assert_fitted();
 	int32_t n = m_init_features->get_num_vectors();
 
-	m_kernel->init(features, m_init_features);
+	m_kernel->init(std::move(features), m_init_features);
 	auto kernel_matrix = m_kernel->get_kernel_matrix();
 
 	auto rows_sum = linalg::rowwise_sum(kernel_matrix);
@@ -231,7 +232,7 @@ void KernelPCA::set_kernel(std::shared_ptr<Kernel> kernel)
 {
 
 
-	m_kernel = kernel;
+	m_kernel = std::move(kernel);
 }
 
 std::shared_ptr<Kernel> KernelPCA::get_kernel() const

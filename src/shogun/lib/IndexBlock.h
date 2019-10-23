@@ -62,7 +62,7 @@ public:
 	/** adds sub-block
 	 * @param sub_block subtask to add
 	 */
-	void add_sub_block(std::shared_ptr<IndexBlock> sub_block);
+	void add_sub_block(const std::shared_ptr<IndexBlock>& sub_block);
 
 private:
 	/** min index */

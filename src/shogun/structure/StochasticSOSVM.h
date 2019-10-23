@@ -40,7 +40,7 @@ public:
 	 * @param do_weighted_averaging whether mix w with previous average weights
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	StochasticSOSVM(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs,
+	StochasticSOSVM(const std::shared_ptr<StructuredModel>& model, const std::shared_ptr<StructuredLabels>& labs,
 		bool do_weighted_averaging = true, bool verbose = false);
 
 	/** destructor */

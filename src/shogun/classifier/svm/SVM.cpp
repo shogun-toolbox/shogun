@@ -15,6 +15,8 @@
 
 #include <string.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SVM::SVM(int32_t num_sv)
@@ -28,8 +30,8 @@ SVM::SVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
 {
 	set_defaults();
 	set_C(C,C);
-	set_labels(lab);
-	set_kernel(k);
+	set_labels(std::move(lab));
+	set_kernel(std::move(k));
 }
 
 SVM::~SVM()
@@ -222,7 +224,7 @@ void SVM::set_callback_function(std::shared_ptr<MKL> m, bool (*cb)
 {
 
 
-	mkl=m;
+	mkl=std::move(m);
 
 	callback=cb;
 }

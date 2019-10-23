@@ -41,7 +41,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	StreamingHashedSparseFeatures (std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size,
+	StreamingHashedSparseFeatures (const std::shared_ptr<StreamingFile>& file, bool is_labelled, int32_t size,
 				int32_t d = 512, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/**

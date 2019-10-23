@@ -150,7 +150,7 @@ public:
 	 * @param j     label index
 	 * @param label sparse label
 	 */
-	void set_label(int32_t j, SGVector<int32_t> label);
+	void set_label(int32_t j, const SGVector<int32_t>& label);
 
 	/** assigning class labels */
 	void set_class_labels(SGVector <int32_t> ** labels_list);

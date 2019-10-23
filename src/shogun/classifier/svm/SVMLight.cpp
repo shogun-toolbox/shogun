@@ -54,6 +54,8 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 
+#include <utility>
+
 #endif
 
 using namespace shogun;
@@ -135,7 +137,7 @@ SVMLight::SVMLight()
 }
 
 SVMLight::SVMLight(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: SVM(C, k, lab)
+: SVM(C, std::move(k), std::move(lab))
 {
 	init();
 }

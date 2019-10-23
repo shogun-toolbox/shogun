@@ -52,7 +52,7 @@ public:
 	DenseSubSamplesFeatures();
 
 	/** constructor */
-	DenseSubSamplesFeatures(std::shared_ptr<DenseFeatures<ST>> fea, SGVector<int32_t> idx);
+	DenseSubSamplesFeatures(std::shared_ptr<DenseFeatures<ST>> fea, const SGVector<int32_t>& idx);
 
     /** destructor */
 	virtual ~DenseSubSamplesFeatures();

@@ -8,6 +8,8 @@
 
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -16,11 +18,11 @@ CustomMahalanobisDistance::CustomMahalanobisDistance() : RealDistance()
 	register_params();
 }
 
-CustomMahalanobisDistance::CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, SGMatrix<float64_t> m)
+CustomMahalanobisDistance::CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, const SGMatrix<float64_t>& m)
 : RealDistance()
 {
 	register_params();
-	RealDistance::init(l, r);
+	RealDistance::init(std::move(l), std::move(r));
 	m_mahalanobis_matrix = m;
 }
 

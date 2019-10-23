@@ -7,6 +7,8 @@
 #include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 RationalQuadraticKernel::RationalQuadraticKernel(): Kernel(0), m_distance(NULL), m_coef(0.001)
@@ -15,7 +17,7 @@ RationalQuadraticKernel::RationalQuadraticKernel(): Kernel(0), m_distance(NULL),
 }
 
 RationalQuadraticKernel::RationalQuadraticKernel(int32_t cache, float64_t coef, std::shared_ptr<Distance> distance)
-: Kernel(cache), m_distance(distance), m_coef(coef)
+: Kernel(cache), m_distance(std::move(distance)), m_coef(coef)
 {
 	ASSERT(m_distance)
 	
@@ -23,12 +25,12 @@ RationalQuadraticKernel::RationalQuadraticKernel(int32_t cache, float64_t coef, 
 }
 
 RationalQuadraticKernel::RationalQuadraticKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t coef, std::shared_ptr<Distance> dist)
-: Kernel(10), m_distance(dist), m_coef(coef)
+: Kernel(10), m_distance(std::move(dist)), m_coef(coef)
 {
 	ASSERT(m_distance)
 	
 	init();
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 RationalQuadraticKernel::~RationalQuadraticKernel()

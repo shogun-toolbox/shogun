@@ -31,7 +31,7 @@ SimpleLocalityImprovedStringKernel::SimpleLocalityImprovedStringKernel(
 }
 
 SimpleLocalityImprovedStringKernel::SimpleLocalityImprovedStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 	int32_t len, int32_t id, int32_t od)
 : StringKernel<char>()
 {

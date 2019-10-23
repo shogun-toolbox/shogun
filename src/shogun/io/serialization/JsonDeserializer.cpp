@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <stack>
+#include <utility>
 
 #include <shogun/base/class_list.h>
 #include <shogun/base/macros.h>
@@ -245,7 +246,7 @@ public:
 	typedef char Ch;
 
 	IStreamAdapter(std::shared_ptr<InputStream> is, size_t buffer_size = 65536):
-		m_stream(is),
+		m_stream(std::move(is)),
 		m_buffer_size(buffer_size)
 	{
 		m_buffer.reserve(m_buffer_size);
@@ -314,7 +315,7 @@ private:
 };
 
 template<typename V>
-std::shared_ptr<SGObject> object_reader(const V* v, JSONReaderVisitor<V>* visitor, std::shared_ptr<SGObject> _this = nullptr)
+std::shared_ptr<SGObject> object_reader(const V* v, JSONReaderVisitor<V>* visitor, const std::shared_ptr<SGObject>& _this = nullptr)
 {
 	const V& value = *v;
 	require(v != nullptr, "Value should be set!");

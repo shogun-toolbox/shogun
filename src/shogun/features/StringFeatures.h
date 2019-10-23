@@ -104,7 +104,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param loader File object via which to load data
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		StringFeatures(std::shared_ptr<File> loader, EAlphabet alpha=DNA);
+		StringFeatures(const std::shared_ptr<File>& loader, EAlphabet alpha=DNA);
 
 		/** destructor */
 		virtual ~StringFeatures();
@@ -499,7 +499,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param skip skip
 		 * @return something inty
 		 */
-		int32_t obtain_by_position_list(int32_t window_size, std::shared_ptr<DynamicArray<int32_t>> positions,
+		int32_t obtain_by_position_list(int32_t window_size, const std::shared_ptr<DynamicArray<int32_t>>& positions,
 				int32_t skip=0);
 
 		/** obtain string features from char features

@@ -7,7 +7,7 @@ IndexFeatures::IndexFeatures()
 	init();
 }
 
-IndexFeatures::IndexFeatures(SGVector<index_t> feature_index)
+IndexFeatures::IndexFeatures(const SGVector<index_t>& feature_index)
 {
 	init();
 	set_feature_index(feature_index);

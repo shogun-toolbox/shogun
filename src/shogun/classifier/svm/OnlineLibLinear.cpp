@@ -12,6 +12,8 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/Time.h>
 
+#include <utility>
+
 using namespace shogun;
 
 OnlineLibLinear::OnlineLibLinear()
@@ -38,10 +40,10 @@ OnlineLibLinear::OnlineLibLinear(
 		C2=C_reg;
 		use_bias=true;
 
-		set_features(traindat);
+		set_features(std::move(traindat));
 }
 
-OnlineLibLinear::OnlineLibLinear(std::shared_ptr<OnlineLibLinear >mch)
+OnlineLibLinear::OnlineLibLinear(const std::shared_ptr<OnlineLibLinear >&mch)
 	: OnlineLinearMachine()
 {
 	init();
@@ -126,7 +128,7 @@ void OnlineLibLinear::stop_train()
 	io::info("gap = {:g}", gap);
 }
 
-void OnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
+void OnlineLibLinear::train_one(const SGVector<float32_t>& ex, float64_t label)
 {
 	alpha_current = 0;
 	int32_t y_current = 0;

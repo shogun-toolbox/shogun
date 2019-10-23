@@ -7,6 +7,8 @@
 #include <shogun/kernel/WaveKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 WaveKernel::WaveKernel(): Kernel(0), m_distance(NULL), m_theta(1.0)
@@ -15,7 +17,7 @@ WaveKernel::WaveKernel(): Kernel(0), m_distance(NULL), m_theta(1.0)
 }
 
 WaveKernel::WaveKernel(int32_t cache, float64_t theta, std::shared_ptr<Distance> dist)
-: Kernel(cache), m_distance(dist), m_theta(theta)
+: Kernel(cache), m_distance(std::move(dist)), m_theta(theta)
 {
 	init();
 	ASSERT(m_distance)
@@ -23,12 +25,12 @@ WaveKernel::WaveKernel(int32_t cache, float64_t theta, std::shared_ptr<Distance>
 }
 
 WaveKernel::WaveKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t theta, std::shared_ptr<Distance> dist)
-: Kernel(10), m_distance(dist), m_theta(theta)
+: Kernel(10), m_distance(std::move(dist)), m_theta(theta)
 {
 	init();
 	ASSERT(m_distance)
 	
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 WaveKernel::~WaveKernel()

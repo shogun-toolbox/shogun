@@ -51,7 +51,7 @@ class SVMOcas : public LinearMachine
 		 * @param trainlab labels for training features
 		 */
 		SVMOcas(
-			float64_t C, std::shared_ptr<Features> traindat,
+			float64_t C, const std::shared_ptr<Features>& traindat,
 			std::shared_ptr<Labels> trainlab);
 		virtual ~SVMOcas();
 

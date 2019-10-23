@@ -62,7 +62,7 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 */
-	EuclideanDistance(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r);
+	EuclideanDistance(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r);
 
 	/** destructor */
 	virtual ~EuclideanDistance();

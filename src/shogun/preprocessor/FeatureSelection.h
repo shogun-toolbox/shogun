@@ -306,7 +306,7 @@ protected:
 	 * @param features the feature object
 	 * @return the number of features
 	 */
-	index_t get_num_features(std::shared_ptr<Features> features) const;
+	index_t get_num_features(const std::shared_ptr<Features>& features) const;
 
 	/** Target dimension */
 	index_t m_target_dim;

@@ -121,13 +121,13 @@ SGVector<float64_t> Statistics::matrix_variance(SGMatrix<float64_t> values,
 	return result;
 }
 
-float64_t Statistics::std_deviation(SGVector<float64_t> values)
+float64_t Statistics::std_deviation(const SGVector<float64_t>& values)
 {
 	return std::sqrt(variance(values));
 }
 
 SGVector<float64_t> Statistics::matrix_std_deviation(
-		SGMatrix<float64_t> values, bool col_wise)
+		const SGMatrix<float64_t>& values, bool col_wise)
 {
 	SGVector<float64_t> var=Statistics::matrix_variance(values, col_wise);
 	for (index_t i=0; i<var.vlen; ++i)
@@ -688,7 +688,7 @@ float64_t Statistics::log_det(SGMatrix<float64_t> m)
 	return retval;
 }
 
-float64_t Statistics::log_det(const SGSparseMatrix<float64_t> m)
+float64_t Statistics::log_det(const SGSparseMatrix<float64_t>& m)
 {
 	typedef SparseMatrix<float64_t> MatrixType;
 	const MatrixType &M=EigenSparseUtil<float64_t>::toEigenSparse(m);

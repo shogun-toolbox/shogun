@@ -31,6 +31,8 @@
 #include <shogun/machine/RandomForest.h>
 #include <shogun/multiclass/tree/RandomCARTree.h>
 
+#include <utility>
+
 using namespace shogun;
 
 RandomForest::RandomForest()
@@ -57,8 +59,8 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 	init();
 
 
-	m_features=features;
-	set_labels(labels);
+	m_features=std::move(features);
+	set_labels(std::move(labels));
 
 	set_num_bags(num_bags);
 
@@ -66,14 +68,14 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 		m_machine->as<RandomCARTree>()->set_feature_subset_size(rand_numfeats);
 }
 
-RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, SGVector<float64_t> weights, int32_t num_bags, int32_t rand_numfeats)
+RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, const SGVector<float64_t>& weights, int32_t num_bags, int32_t rand_numfeats)
 : BaggingMachine()
 {
 	init();
 
 
-	m_features=features;
-	set_labels(labels);
+	m_features=std::move(features);
+	set_labels(std::move(labels));
 	m_weights=weights;
 
 	set_num_bags(num_bags);
@@ -91,7 +93,7 @@ void RandomForest::set_machine(std::shared_ptr<Machine> machine)
 	error("Machine is set as CRandomCART and cannot be changed");
 }
 
-void RandomForest::set_weights(SGVector<float64_t> weights)
+void RandomForest::set_weights(const SGVector<float64_t>& weights)
 {
 	m_weights=weights;
 }
@@ -101,7 +103,7 @@ SGVector<float64_t> RandomForest::get_weights() const
 	return m_weights;
 }
 
-void RandomForest::set_feature_types(SGVector<bool> ft)
+void RandomForest::set_feature_types(const SGVector<bool>& ft)
 {
 	require(m_machine,"m_machine is NULL. It is expected to be RandomCARTree");
 	m_machine->as<RandomCARTree>()->set_feature_types(ft);

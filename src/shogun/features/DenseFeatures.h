@@ -90,13 +90,13 @@ public:
 	 *
 	 * @param features DotFeatures object
 	 */
-	DenseFeatures(std::shared_ptr<DotFeatures> features);
+	DenseFeatures(const std::shared_ptr<DotFeatures>& features);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	DenseFeatures(std::shared_ptr<File> loader);
+	DenseFeatures(const std::shared_ptr<File>& loader);
 
 	/** duplicate feature object
 	 *

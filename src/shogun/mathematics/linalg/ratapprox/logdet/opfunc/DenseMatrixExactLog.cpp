@@ -29,7 +29,7 @@ namespace shogun
 	}
 
 	DenseMatrixExactLog::DenseMatrixExactLog(
-	    std::shared_ptr<DenseMatrixOperator<float64_t>> op)
+	    const std::shared_ptr<DenseMatrixOperator<float64_t>>& op)
 	    : OperatorFunction<float64_t>(op->as<LinearOperator<float64_t>>(), OF_LOG)
 	{
 	}

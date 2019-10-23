@@ -19,7 +19,7 @@ SparseEuclideanDistance::SparseEuclideanDistance()
 }
 
 SparseEuclideanDistance::SparseEuclideanDistance(
-	std::shared_ptr<SparseFeatures<float64_t>> l, std::shared_ptr<SparseFeatures<float64_t>> r)
+	const std::shared_ptr<SparseFeatures<float64_t>>& l, const std::shared_ptr<SparseFeatures<float64_t>>& r)
 : SparseDistance<float64_t>()
 {
 	init();

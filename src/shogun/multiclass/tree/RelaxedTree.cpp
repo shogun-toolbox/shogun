@@ -4,10 +4,11 @@
  * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sanuj Sharma, Bjoern Esser
  */
 
-#include <limits>
-#include <queue>
 #include <algorithm>
 #include <functional>
+#include <limits>
+#include <queue>
+#include <utility>
 
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/BinaryLabels.h>
@@ -241,7 +242,7 @@ std::shared_ptr<RelaxedTree::bnode_t> RelaxedTree::train_node(const SGMatrix<flo
 	return node;
 }
 
-float64_t RelaxedTree::compute_score(SGVector<int32_t> mu, std::shared_ptr<SVM >svm)
+float64_t RelaxedTree::compute_score(SGVector<int32_t> mu, const std::shared_ptr<SVM >&svm)
 {
 	float64_t num_pos=0, num_neg=0;
 	for (int32_t i=0; i < mu.vlen; ++i)
@@ -258,7 +259,7 @@ float64_t RelaxedTree::compute_score(SGVector<int32_t> mu, std::shared_ptr<SVM >
 	return score;
 }
 
-SGVector<int32_t> RelaxedTree::train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, std::shared_ptr<SVM >svm)
+SGVector<int32_t> RelaxedTree::train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, const std::shared_ptr<SVM >&svm)
 {
 	SGVector<int32_t> mu(classes.vlen), prev_mu(classes.vlen);
 	mu.zero();
@@ -376,7 +377,7 @@ SGVector<int32_t> RelaxedTree::color_label_space(std::shared_ptr<SVM >svm, SGVec
 	SGVector<int32_t> mu(classes.vlen);
 	auto labels = multiclass_labels(m_labels);
 
-	SGVector<float64_t> resp = eval_binary_model_K(svm);
+	SGVector<float64_t> resp = eval_binary_model_K(std::move(svm));
 	ASSERT(resp.vlen == labels->get_num_labels())
 
 	SGVector<float64_t> xi_pos_class(classes.vlen), xi_neg_class(classes.vlen);
@@ -873,7 +874,7 @@ void RelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVec
 	}
 }
 
-SGVector<float64_t> RelaxedTree::eval_binary_model_K(std::shared_ptr<SVM >svm)
+SGVector<float64_t> RelaxedTree::eval_binary_model_K(const std::shared_ptr<SVM >&svm)
 {
 	auto lab = svm->apply_regression(m_feats);
 	SGVector<float64_t> resp(lab->get_num_labels());

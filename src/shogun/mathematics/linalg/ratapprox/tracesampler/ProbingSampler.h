@@ -64,7 +64,7 @@ public:
 	 * @param ordering the ordering variant
 	 * @param coloring the coloring variant
 	 */
-	ProbingSampler(std::shared_ptr<SparseMatrixOperator<float64_t>> matrix_operator,
+	ProbingSampler(const std::shared_ptr<SparseMatrixOperator<float64_t>>& matrix_operator,
 		int64_t power=1, EOrderingVariant ordering=NATURAL,
 		EColoringVariant coloring=DISTANCE_TWO);
 
@@ -75,7 +75,7 @@ public:
 	 * set the coloring vector
 	 * @param coloring_vector the coloring vector
 	 */
-	void set_coloring_vector(SGVector<int32_t> coloring_vector);
+	void set_coloring_vector(const SGVector<int32_t>& coloring_vector);
 
 	/** @return the coloring vector */
 	SGVector<int32_t> get_coloring_vector() const;

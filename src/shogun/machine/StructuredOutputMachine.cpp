@@ -12,6 +12,8 @@
 
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 StructuredOutputMachine::StructuredOutputMachine()
@@ -22,8 +24,8 @@ StructuredOutputMachine::StructuredOutputMachine()
 
 StructuredOutputMachine::StructuredOutputMachine(
 		std::shared_ptr<StructuredModel>  model,
-		std::shared_ptr<StructuredLabels> labs)
-: Machine(), m_model(model), m_surrogate_loss(NULL)
+		const std::shared_ptr<StructuredLabels>& labs)
+: Machine(), m_model(std::move(model)), m_surrogate_loss(NULL)
 {
 
 	set_labels(labs);
@@ -41,7 +43,7 @@ void StructuredOutputMachine::set_model(std::shared_ptr<StructuredModel> model)
 {
 
 
-	m_model = model;
+	m_model = std::move(model);
 }
 
 std::shared_ptr<StructuredModel> StructuredOutputMachine::get_model() const
@@ -70,7 +72,7 @@ void StructuredOutputMachine::set_labels(std::shared_ptr<Labels> lab)
 
 void StructuredOutputMachine::set_features(std::shared_ptr<Features> f)
 {
-	m_model->set_features(f);
+	m_model->set_features(std::move(f));
 }
 
 std::shared_ptr<Features> StructuredOutputMachine::get_features() const
@@ -82,7 +84,7 @@ void StructuredOutputMachine::set_surrogate_loss(std::shared_ptr<LossFunction> l
 {
 
 
-	m_surrogate_loss = loss;
+	m_surrogate_loss = std::move(loss);
 }
 
 std::shared_ptr<LossFunction> StructuredOutputMachine::get_surrogate_loss() const

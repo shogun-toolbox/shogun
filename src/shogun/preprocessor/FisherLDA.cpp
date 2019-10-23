@@ -44,6 +44,8 @@
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
 
+#include <utility>
+
 using namespace std;
 using namespace Eigen;
 using namespace shogun;
@@ -141,14 +143,14 @@ void FisherLDA::solver_canvar(
 {
 	auto solver = std::unique_ptr<LDACanVarSolver<float64_t>>(
 	    new LDACanVarSolver<float64_t>(
-	        features, labels, m_num_dim, m_gamma, m_bdc_svd, m_threshold));
+	        std::move(features), std::move(labels), m_num_dim, m_gamma, m_bdc_svd, m_threshold));
 
 	m_transformation_matrix = solver->get_eigenvectors();
 	m_eigenvalues_vector = solver->get_eigenvalues();
 }
 
 void FisherLDA::solver_classic(
-    std::shared_ptr<DenseFeatures<float64_t>> features, std::shared_ptr<MulticlassLabels> labels)
+    const std::shared_ptr<DenseFeatures<float64_t>>& features, const std::shared_ptr<MulticlassLabels>& labels)
 {
 	SGMatrix<float64_t> data = features->get_feature_matrix();
 	index_t num_features = data.num_rows;

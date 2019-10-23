@@ -253,7 +253,7 @@ SGVector<index_t> FeatureSelection<ST>::get_selected_feats()
 }
 
 template <class ST>
-index_t FeatureSelection<ST>::get_num_features(std::shared_ptr<Features> features) const
+index_t FeatureSelection<ST>::get_num_features(const std::shared_ptr<Features>& features) const
 {
 	require(features, "Features not initialized!");
 

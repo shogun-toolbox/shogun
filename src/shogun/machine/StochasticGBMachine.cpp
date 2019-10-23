@@ -37,7 +37,7 @@
 
 using namespace shogun;
 
-StochasticGBMachine::StochasticGBMachine(std::shared_ptr<Machine> machine, std::shared_ptr<LossFunction> loss, int32_t num_iterations,
+StochasticGBMachine::StochasticGBMachine(const std::shared_ptr<Machine>& machine, const std::shared_ptr<LossFunction>& loss, int32_t num_iterations,
 						float64_t learning_rate, float64_t subset_fraction)
 : RandomMixin<Machine>()
 {
@@ -68,7 +68,7 @@ StochasticGBMachine::~StochasticGBMachine()
 
 }
 
-void StochasticGBMachine::set_machine(std::shared_ptr<Machine> machine)
+void StochasticGBMachine::set_machine(const std::shared_ptr<Machine>& machine)
 {
 	require(machine,"Supplied machine is NULL");
 
@@ -216,7 +216,7 @@ bool StochasticGBMachine::train_machine(std::shared_ptr<Features> data)
 }
 
 float64_t StochasticGBMachine::compute_multiplier(
-    std::shared_ptr<RegressionLabels> f, std::shared_ptr<RegressionLabels> hm, std::shared_ptr<Labels> labs)
+    const std::shared_ptr<RegressionLabels>& f, const std::shared_ptr<RegressionLabels>& hm, const std::shared_ptr<Labels>& labs)
 {
 	require(f->get_num_labels()==hm->get_num_labels(),"The number of labels in both input parameters should be equal");
 
@@ -232,7 +232,7 @@ float64_t StochasticGBMachine::compute_multiplier(
 	return ret;
 }
 
-std::shared_ptr<Machine> StochasticGBMachine::fit_model(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<RegressionLabels> labels)
+std::shared_ptr<Machine> StochasticGBMachine::fit_model(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<RegressionLabels>& labels)
 {
 	// clone base machine
 	auto c=m_machine->clone()->as<Machine>();
@@ -244,7 +244,7 @@ std::shared_ptr<Machine> StochasticGBMachine::fit_model(std::shared_ptr<DenseFea
 }
 
 std::shared_ptr<RegressionLabels> StochasticGBMachine::compute_pseudo_residuals(
-    std::shared_ptr<RegressionLabels> inter_f, std::shared_ptr<Labels> labs)
+    const std::shared_ptr<RegressionLabels>& inter_f, const std::shared_ptr<Labels>& labs)
 {
 	auto labels = labs->as<DenseLabels>()->get_labels();
 	SGVector<float64_t> f=inter_f->get_labels();

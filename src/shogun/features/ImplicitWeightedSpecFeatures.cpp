@@ -25,7 +25,7 @@ ImplicitWeightedSpecFeatures::ImplicitWeightedSpecFeatures()
 	spec_weights = 0;
 }
 
-ImplicitWeightedSpecFeatures::ImplicitWeightedSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize) : DotFeatures()
+ImplicitWeightedSpecFeatures::ImplicitWeightedSpecFeatures(const std::shared_ptr<StringFeatures<uint16_t>>& str, bool normalize) : DotFeatures()
 {
 	ASSERT(str)
 	strings=str;

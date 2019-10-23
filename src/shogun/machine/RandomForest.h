@@ -73,7 +73,7 @@ public:
 	 * @param num_bags number of trees in forest
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees
 	 */
-	RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
+	RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, const SGVector<float64_t>& weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** destructor */
 	virtual ~RandomForest();
@@ -94,7 +94,7 @@ public:
 	 *
 	 * @param weights of training feature vectors
 	 */
-	void set_weights(SGVector<float64_t> weights);
+	void set_weights(const SGVector<float64_t>& weights);
 
 	/** get weights
 	 *
@@ -106,7 +106,7 @@ public:
 	 *
 	 * @param ft bool vector true for nominal feature false for continuous feature type
 	 */
-	void set_feature_types(SGVector<bool> ft);
+	void set_feature_types(const SGVector<bool>& ft);
 
 	/** get feature types of various features
 	 *

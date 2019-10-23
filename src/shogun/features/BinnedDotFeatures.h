@@ -56,7 +56,7 @@ class BinnedDotFeatures : public DotFeatures
 		 * binned features
 		 * @param bins a matrix with bins to compute binned features from
 		 */
-		BinnedDotFeatures(std::shared_ptr<Features> sf, SGMatrix<float64_t> bins);
+		BinnedDotFeatures(const std::shared_ptr<Features>& sf, const SGMatrix<float64_t>& bins);
 
 		virtual ~BinnedDotFeatures();
 
@@ -181,7 +181,7 @@ class BinnedDotFeatures : public DotFeatures
 		 *
 		 * @param bins - bins to convert features into
 		 */
-		void set_bins(SGMatrix<float64_t> bins);
+		void set_bins(const SGMatrix<float64_t>& bins);
 
 		/** get current bins
 		 *

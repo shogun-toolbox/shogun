@@ -93,7 +93,7 @@ template SGMatrix<float64_t> DataGenerator::generate_checkboard_data<std::mt1993
 template <typename PRNG>
 SGMatrix<float64_t> DataGenerator::generate_mean_data(index_t m,
 		index_t dim, float64_t mean_shift, PRNG& prng,
-		SGMatrix<float64_t> target)
+		const SGMatrix<float64_t>& target)
 {
 	/* evtl. allocate space */
 	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
@@ -112,12 +112,12 @@ SGMatrix<float64_t> DataGenerator::generate_mean_data(index_t m,
 
 template SGMatrix<float64_t> DataGenerator::generate_mean_data<std::mt19937_64>(index_t m,
 		index_t dim, float64_t mean_shift, std::mt19937_64& prng,
-		SGMatrix<float64_t> target);
+		const SGMatrix<float64_t>& target);
 
 
 template <typename PRNG>
 SGMatrix<float64_t> DataGenerator::generate_sym_mix_gauss(index_t m,
-		float64_t d, float64_t angle, PRNG& prng, SGMatrix<float64_t> target)
+		float64_t d, float64_t angle, PRNG& prng, const SGMatrix<float64_t>& target)
 {
 	/* evtl. allocate space */
 	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
@@ -148,7 +148,7 @@ SGMatrix<float64_t> DataGenerator::generate_sym_mix_gauss(index_t m,
 }
 
 template SGMatrix<float64_t> DataGenerator::generate_sym_mix_gauss<std::mt19937_64>(index_t m,
-		float64_t d, float64_t angle, std::mt19937_64& prng, SGMatrix<float64_t> target);
+		float64_t d, float64_t angle, std::mt19937_64& prng, const SGMatrix<float64_t>& target);
 
 
 template <typename PRNG>

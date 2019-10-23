@@ -13,6 +13,7 @@
 
 #include <rxcpp/rx-lite.hpp>
 #include <shogun/lib/Signal.h>
+#include <utility>
 
 using namespace shogun;
 
@@ -27,11 +28,11 @@ MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shar
 {
 	init();
 
-	m_machine = machine;
-	m_features = features;
-	m_labels = labels;
-	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criterion = evaluation_criterion;
+	m_machine = std::move(machine);
+	m_features = std::move(features);
+	m_labels = std::move(labels);
+	m_splitting_strategy = std::move(splitting_strategy);
+	m_evaluation_criterion = std::move(evaluation_criterion);
 
 
 
@@ -46,10 +47,10 @@ MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shar
 {
 	init();
 
-	m_machine = machine;
-	m_labels = labels;
-	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criterion = evaluation_criterion;
+	m_machine = std::move(machine);
+	m_labels = std::move(labels);
+	m_splitting_strategy = std::move(splitting_strategy);
+	m_evaluation_criterion = std::move(evaluation_criterion);
 
 
 

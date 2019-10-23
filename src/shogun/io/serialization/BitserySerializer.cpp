@@ -98,7 +98,7 @@ struct OutputStreamAdapter
 
 // cannot use context because of circular dependency :(
 template<typename Writer>
-void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, std::shared_ptr<SGObject> o) noexcept(false)
+void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, const std::shared_ptr<SGObject>& o) noexcept(false)
 {
 	pre_serialize(o);
 	writer.value8b(sizeof(o.get()));

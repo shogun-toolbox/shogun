@@ -32,7 +32,7 @@ ICAConverter::~ICAConverter()
 {
 }
 
-void ICAConverter::set_mixing_matrix(SGMatrix<float64_t> mixing_matrix)
+void ICAConverter::set_mixing_matrix(const SGMatrix<float64_t>& mixing_matrix)
 {
 	m_mixing_matrix = mixing_matrix;
 }

@@ -7,6 +7,8 @@
 
 #include <shogun/structure/StructuredModel.h>
 
+#include <utility>
+
 using namespace shogun;
 
 ResultSet::ResultSet()
@@ -49,8 +51,8 @@ StructuredModel::StructuredModel(
 {
 	init();
 
-	set_labels(labels);
-	set_features(features);
+	set_labels(std::move(labels));
+	set_features(std::move(features));
 }
 
 StructuredModel::~StructuredModel()
@@ -76,7 +78,7 @@ void StructuredModel::set_labels(std::shared_ptr<StructuredLabels> labels)
 {
 
 
-	m_labels = labels;
+	m_labels = std::move(labels);
 }
 
 std::shared_ptr<StructuredLabels> StructuredModel::get_labels()
@@ -89,7 +91,7 @@ void StructuredModel::set_features(std::shared_ptr<Features> features)
 {
 
 
-	m_features = features;
+	m_features = std::move(features);
 }
 
 std::shared_ptr<Features> StructuredModel::get_features()
@@ -144,7 +146,7 @@ float64_t StructuredModel::delta_loss(int32_t ytrue_idx, std::shared_ptr<Structu
 			"The label index must be inside [0, num_labels-1]");
 
 	auto ytrue = m_labels->get_label(ytrue_idx);
-	float64_t ret = delta_loss(ytrue, ypred);
+	float64_t ret = delta_loss(ytrue, std::move(ypred));
 
 	return ret;
 }

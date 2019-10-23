@@ -194,7 +194,7 @@ class DotFeatures : public Features
 		 * @return mean returned
 		 */
 		static SGVector<float64_t>
-		compute_mean(std::shared_ptr<DotFeatures> lhs, std::shared_ptr<DotFeatures> rhs);
+		compute_mean(const std::shared_ptr<DotFeatures>& lhs, const std::shared_ptr<DotFeatures>& rhs);
 
 		/** get covariance
 		 *
@@ -216,7 +216,7 @@ class DotFeatures : public Features
 		 * @return covariance
 		 */
 		static SGMatrix<float64_t> compute_cov(
-		    std::shared_ptr<DotFeatures> lhs, std::shared_ptr<DotFeatures> rhs,
+		    const std::shared_ptr<DotFeatures>& lhs, const std::shared_ptr<DotFeatures>& rhs,
 		    bool copy_data_for_speed = true);
 
 	private:

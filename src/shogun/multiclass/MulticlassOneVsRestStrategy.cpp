@@ -108,7 +108,7 @@ void MulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> output
 }
 
 void MulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> outputs,
-		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
+		const SGVector<float64_t>& As, const SGVector<float64_t>& Bs)
 {
 	if (m_num_classes != outputs.vlen)
 	{

@@ -43,6 +43,8 @@
 #include <shogun/machine/gp/SingleFITCInference.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -54,7 +56,7 @@ GaussianProcessMachine::GaussianProcessMachine()
 GaussianProcessMachine::GaussianProcessMachine(std::shared_ptr<Inference> method)
 {
 	init();
-	set_inference_method(method);
+	set_inference_method(std::move(method));
 }
 
 void GaussianProcessMachine::init()
@@ -72,7 +74,7 @@ GaussianProcessMachine::~GaussianProcessMachine()
 
 }
 
-SGVector<float64_t> GaussianProcessMachine::get_posterior_means(std::shared_ptr<Features> data)
+SGVector<float64_t> GaussianProcessMachine::get_posterior_means(const std::shared_ptr<Features>& data)
 {
 	require(m_method, "Inference method should not be NULL");
 
@@ -132,7 +134,7 @@ SGVector<float64_t> GaussianProcessMachine::get_posterior_means(std::shared_ptr<
 }
 
 SGVector<float64_t> GaussianProcessMachine::get_posterior_variances(
-		std::shared_ptr<Features> data)
+		const std::shared_ptr<Features>& data)
 {
 	require(m_method, "Inference method should not be NULL");
 

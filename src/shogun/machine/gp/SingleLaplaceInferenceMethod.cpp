@@ -16,6 +16,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/FirstOrderMinimizer.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -112,7 +114,7 @@ private:
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 
-void SingleLaplaceNewtonOptimizer::set_target(std::shared_ptr<SingleLaplaceInferenceMethod >obj)
+void SingleLaplaceNewtonOptimizer::set_target(const std::shared_ptr<SingleLaplaceInferenceMethod >&obj)
 {
 	require(obj, "Obj must set");
 	if(m_obj != obj)
@@ -265,7 +267,7 @@ SingleLaplaceInferenceMethod::SingleLaplaceInferenceMethod() : LaplaceInference(
 
 SingleLaplaceInferenceMethod::SingleLaplaceInferenceMethod(std::shared_ptr<Kernel> kern,
 		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
-		: LaplaceInference(kern, feat, m, lab, mod)
+		: LaplaceInference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod))
 {
 	init();
 }
@@ -289,7 +291,7 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_diagonal_vector()
 }
 
 std::shared_ptr<SingleLaplaceInferenceMethod> SingleLaplaceInferenceMethod::obtain_from_generic(
-		std::shared_ptr<Inference> inference)
+		const std::shared_ptr<Inference>& inference)
 {
 	if (inference==NULL)
 		return NULL;

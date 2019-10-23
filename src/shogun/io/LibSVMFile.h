@@ -333,7 +333,7 @@ private:
 	int32_t get_num_lines();
 
 	/** is it a feature entry */
-	bool is_feat_entry(const SGVector<char> entry);
+	bool is_feat_entry(const SGVector<char>& entry);
 private:
 	/** delimiter for index and data in sparse entries */
 	char m_delimiter_feat;

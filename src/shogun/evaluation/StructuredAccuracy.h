@@ -44,7 +44,7 @@ public:
 	 *
 	 * @return confusion matrix
 	 */
-	static SGMatrix<int32_t> get_confusion_matrix(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth);
+	static SGMatrix<int32_t> get_confusion_matrix(const std::shared_ptr<Labels >& predicted, const std::shared_ptr<Labels >& ground_truth);
 
 	/** whether the evaluation criterion has to be maximimed or minimized
 	*
@@ -69,7 +69,7 @@ private:
 	 *
 	 * @return accuracy
 	 */
-	float64_t evaluate_real(std::shared_ptr<StructuredLabels > predicted, std::shared_ptr<StructuredLabels > ground_truth);
+	float64_t evaluate_real(const std::shared_ptr<StructuredLabels >& predicted, const std::shared_ptr<StructuredLabels >& ground_truth);
 
 	/** evaluate accuracy for structured labels composed of sequences
 	 *
@@ -78,7 +78,7 @@ private:
 	 *
 	 * @return accuracy
 	 */
-	float64_t evaluate_sequence(std::shared_ptr<StructuredLabels > predicted, std::shared_ptr<StructuredLabels > ground_truth);
+	float64_t evaluate_sequence(const std::shared_ptr<StructuredLabels >& predicted, const std::shared_ptr<StructuredLabels >& ground_truth);
 
 	/** evaluate accuracy for structured labels composed of sparse multi
 	 * labels. Formally the accuracy is defined as
@@ -93,8 +93,8 @@ private:
 	 *
 	 * @return accuracy
 	 */
-	float64_t evaluate_sparse_multilabel(std::shared_ptr<StructuredLabels > predicted,
-	                                     std::shared_ptr<StructuredLabels > ground_truth);
+	float64_t evaluate_sparse_multilabel(const std::shared_ptr<StructuredLabels >& predicted,
+	                                     const std::shared_ptr<StructuredLabels >& ground_truth);
 
 }; /* class StructuredAccuracy*/
 

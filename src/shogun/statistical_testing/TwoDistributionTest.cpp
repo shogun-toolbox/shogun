@@ -95,7 +95,7 @@ const index_t TwoDistributionTest::get_num_samples_q() const
 	return dm.num_samples_at(1);
 }
 
-std::shared_ptr<CustomDistance> TwoDistributionTest::compute_distance(std::shared_ptr<Distance> distance)
+std::shared_ptr<CustomDistance> TwoDistributionTest::compute_distance(const std::shared_ptr<Distance>& distance)
 {
 	auto& data_mgr=get_data_mgr();
 	bool is_blockwise=data_mgr.is_blockwise();
@@ -124,7 +124,7 @@ std::shared_ptr<CustomDistance> TwoDistributionTest::compute_distance(std::share
 	return precomputed_distance;
 }
 
-std::shared_ptr<CustomDistance> TwoDistributionTest::compute_joint_distance(std::shared_ptr<Distance> distance)
+std::shared_ptr<CustomDistance> TwoDistributionTest::compute_joint_distance(const std::shared_ptr<Distance>& distance)
 {
 	require(distance!=nullptr, "Distance instance cannot be NULL!");
 	auto& data_mgr=get_data_mgr();

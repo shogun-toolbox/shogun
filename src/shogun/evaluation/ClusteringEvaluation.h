@@ -33,7 +33,7 @@ public:
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 */
-	std::shared_ptr<Labels> best_map(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	std::shared_ptr<Labels> best_map(const std::shared_ptr<Labels>& predicted, const std::shared_ptr<Labels>& ground_truth);
 
 	/** evaluate labels
 	 * @param predicted labels for evaluating
@@ -63,7 +63,7 @@ protected:
 	/** find number of mismatches in the two labels sequence.
 	 * @see find_match_count
 	 */
-	int32_t find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2);
+	int32_t find_mismatch_count(SGVector<int32_t> l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2);
 
 private:
 	// A flag to find best match between predicted labels and the ground truth

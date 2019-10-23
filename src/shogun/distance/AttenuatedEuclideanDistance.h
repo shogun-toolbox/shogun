@@ -44,7 +44,7 @@ class AttenuatedEuclideanDistance: public RealDistance
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		AttenuatedEuclideanDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		AttenuatedEuclideanDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
 		virtual ~AttenuatedEuclideanDistance();
 
 		/** init distance

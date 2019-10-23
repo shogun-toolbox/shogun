@@ -258,7 +258,7 @@ SGVector <float64_t> MultilabelLabels::to_dense <int32_t, float64_t>
 (SGVector <int32_t> *, int32_t, float64_t, float64_t);
 
 void
-MultilabelLabels::set_label(int32_t j, SGVector <int32_t> label)
+MultilabelLabels::set_label(int32_t j, const SGVector <int32_t>& label)
 {
 	require(j < get_num_labels(),
 	        "label index j={} should be within [{},{}[",

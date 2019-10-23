@@ -33,6 +33,8 @@
 #include <shogun/statistical_testing/internals/DataFetcherFactory.h>
 #include <shogun/features/Features.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
@@ -46,7 +48,7 @@ InitPerFeature::~InitPerFeature()
 
 InitPerFeature& InitPerFeature::operator=(std::shared_ptr<Features> feats)
 {
-	m_fetcher = DataFetcherFactory::get_instance(feats);
+	m_fetcher = DataFetcherFactory::get_instance(std::move(feats));
 	return *this;
 }
 

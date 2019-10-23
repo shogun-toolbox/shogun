@@ -402,7 +402,7 @@ class CombinedKernel : public Kernel
 		 * @param kernel kernel to cast to CombinedKernel
 		 * @return casted version of kernel.
 		 */
-		static std::shared_ptr<CombinedKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
+		static std::shared_ptr<CombinedKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 #ifndef SWIG
 		/** return derivative with respect to specified parameter
@@ -510,8 +510,8 @@ class CombinedKernel : public Kernel
 		 * @return init succesful
 		 */
 		bool init_with_extracted_subsets(
-		    std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs, SGVector<index_t> lhs_subset,
-		    SGVector<index_t> rhs_subset);
+		    const std::shared_ptr<Features>& lhs, const std::shared_ptr<Features>& rhs, const SGVector<index_t>& lhs_subset,
+		    const SGVector<index_t>& rhs_subset);
 
 	protected:
 		/** list of kernels */

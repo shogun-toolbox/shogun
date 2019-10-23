@@ -44,7 +44,7 @@ Autoencoder::Autoencoder() : NeuralNetwork()
 	init();
 }
 
-Autoencoder::Autoencoder(int32_t num_inputs, std::shared_ptr<NeuralLayer> hidden_layer,
+Autoencoder::Autoencoder(int32_t num_inputs, const std::shared_ptr<NeuralLayer>& hidden_layer,
 	std::shared_ptr<NeuralLayer> decoding_layer, float64_t sigma) : NeuralNetwork()
 {
 	init();
@@ -69,8 +69,8 @@ Autoencoder::Autoencoder(int32_t num_inputs, std::shared_ptr<NeuralLayer> hidden
 
 Autoencoder::Autoencoder(
 	int32_t input_width, int32_t input_height, int32_t input_num_channels,
-	std::shared_ptr<NeuralConvolutionalLayer> hidden_layer,
-	std::shared_ptr<NeuralConvolutionalLayer> decoding_layer,
+	const std::shared_ptr<NeuralConvolutionalLayer>& hidden_layer,
+	const std::shared_ptr<NeuralConvolutionalLayer>& decoding_layer,
 	float64_t sigma)
 	: NeuralNetwork()
 {

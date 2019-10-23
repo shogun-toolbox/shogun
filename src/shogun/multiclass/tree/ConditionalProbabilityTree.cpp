@@ -54,7 +54,7 @@ int32_t ConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t>
 	return Math::arg_max(probs.vector, 1, probs.vlen);
 }
 
-void ConditionalProbabilityTree::compute_conditional_probabilities(SGVector<float32_t> ex)
+void ConditionalProbabilityTree::compute_conditional_probabilities(const SGVector<float32_t>& ex)
 {
 	stack<std::shared_ptr<bnode_t>> nodes;
 	nodes.push(m_root->as<bnode_t>());
@@ -137,7 +137,7 @@ bool ConditionalProbabilityTree::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-void ConditionalProbabilityTree::train_example(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, int32_t label)
+void ConditionalProbabilityTree::train_example(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex, int32_t label)
 {
 	if (!m_root)
 	{
@@ -195,7 +195,7 @@ void ConditionalProbabilityTree::train_example(std::shared_ptr<StreamingDenseFea
 	}
 }
 
-void ConditionalProbabilityTree::train_path(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, std::shared_ptr<bnode_t> node)
+void ConditionalProbabilityTree::train_path(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex, std::shared_ptr<bnode_t> node)
 {
 	float64_t node_label = 0;
 	train_node(ex, node_label, node);
@@ -214,7 +214,7 @@ void ConditionalProbabilityTree::train_path(std::shared_ptr<StreamingDenseFeatur
 	}
 }
 
-void ConditionalProbabilityTree::train_node(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node)
+void ConditionalProbabilityTree::train_node(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex, float64_t label, const std::shared_ptr<bnode_t>& node)
 {
 	require(node, "Node must not be NULL");
 	auto mch = m_machines.at(node->machine())->as<OnlineLibLinear>();
@@ -223,7 +223,7 @@ void ConditionalProbabilityTree::train_node(std::shared_ptr<StreamingDenseFeatur
 
 }
 
-float64_t ConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, std::shared_ptr<bnode_t> node)
+float64_t ConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, const std::shared_ptr<bnode_t>& node)
 {
 	require(node, "Node must not be NULL");
 	auto mch = m_machines.at(node->machine())->as<OnlineLibLinear>();
@@ -234,7 +234,7 @@ float64_t ConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, std::
 	return 1.0 / (1 + std::exp(-pred));
 }
 
-int32_t ConditionalProbabilityTree::create_machine(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex)
+int32_t ConditionalProbabilityTree::create_machine(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex)
 {
 	auto mch = std::make_shared<OnlineLibLinear>();
 	mch->start_train();

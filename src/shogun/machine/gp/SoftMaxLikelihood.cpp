@@ -115,7 +115,7 @@ SGVector<float64_t> SoftMaxLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> SoftMaxLikelihood::get_log_probability_derivative1_f(
-			std::shared_ptr<const Labels> lab, SGMatrix<float64_t> func) const
+			const std::shared_ptr<const Labels>& lab, SGMatrix<float64_t> func) const
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require(lab->get_label_type()==LT_MULTICLASS,
@@ -228,7 +228,7 @@ void SoftMaxLikelihood::set_num_samples(index_t num_samples)
 }
 
 SGVector<float64_t> SoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, EMCSamplerType option) const
+	SGVector<float64_t> s2, const std::shared_ptr<const Labels >&lab, EMCSamplerType option) const
 {
 	const index_t C=s2.vlen/mu.vlen;
 	const index_t n=mu.vlen/C;

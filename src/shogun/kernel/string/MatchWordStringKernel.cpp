@@ -26,7 +26,7 @@ MatchWordStringKernel::MatchWordStringKernel(int32_t size, int32_t d)
 }
 
 MatchWordStringKernel::MatchWordStringKernel(
-		std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, int32_t d)
+		const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, int32_t d)
 : StringKernel<uint16_t>()
 {
 	init();

@@ -204,14 +204,14 @@ protected:
 	/** init node */
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 	/** train node with initialization */
-	SGVector<int32_t> train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, std::shared_ptr<SVM >svm);
+	SGVector<int32_t> train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, const std::shared_ptr<SVM >&svm);
 
 	/** compute score */
-	float64_t compute_score(SGVector<int32_t> mu, std::shared_ptr<SVM >svm);
+	float64_t compute_score(SGVector<int32_t> mu, const std::shared_ptr<SVM >&svm);
 	/** color label space */
 	SGVector<int32_t> color_label_space(std::shared_ptr<SVM >svm, SGVector<int32_t> classes);
 	/** evaluate binary model K */
-	SGVector<float64_t> eval_binary_model_K(std::shared_ptr<SVM >svm);
+	SGVector<float64_t> eval_binary_model_K(const std::shared_ptr<SVM >&svm);
 
 	/** enforce balance constraints upper */
 	void enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);

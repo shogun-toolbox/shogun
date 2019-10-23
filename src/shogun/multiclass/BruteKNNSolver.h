@@ -37,7 +37,7 @@ class BruteKNNSolver : public KNNSolver
 		 * @param train_labels m_train_labels
 		 * @param NN nn
 		 */
-		BruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN);
+		BruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels, const SGMatrix<index_t>& NN);
 
 		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 

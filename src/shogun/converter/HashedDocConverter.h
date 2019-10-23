@@ -118,7 +118,7 @@ public:
 protected:
 
 	/** init */
-	void init(std::shared_ptr<Tokenizer> tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
+	void init(const std::shared_ptr<Tokenizer>& tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
 
 	/** This method takes a dynamic array as an argument, sorts it and returns the number
 	 * of the distinct elements(indices here) in the array.

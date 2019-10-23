@@ -85,7 +85,7 @@ public:
 	 *
 	 * @return posterior means
 	 */
-	SGVector<float64_t> get_posterior_means(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_posterior_means(const std::shared_ptr<Features>& data);
 
 	/** returns a variance \f$\sigma^2\f$ of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
@@ -95,7 +95,7 @@ public:
 	 *
 	 * @return posterior variances
 	 */
-	SGVector<float64_t> get_posterior_variances(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_posterior_variances(const std::shared_ptr<Features>& data);
 
 	/** get inference method
 	 *

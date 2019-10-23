@@ -5,6 +5,7 @@
  */
 
 #include <shogun/transfer/multitask/TaskTree.h>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -22,7 +23,7 @@ struct task_tree_node_t
 	float64_t weight;
 };
 
-int32_t count_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
+int32_t count_leaf_tasks_recursive(const std::shared_ptr<Task>& subtree_root_block)
 {
 	auto sub_tasks = subtree_root_block->get_subtasks();
 	int32_t n_sub_tasks = sub_tasks.size();
@@ -41,7 +42,7 @@ int32_t count_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
 	}
 }
 
-void collect_tree_tasks_recursive(std::shared_ptr<Task> subtree_root_block, vector<task_tree_node_t>* tree_nodes, int low)
+void collect_tree_tasks_recursive(const std::shared_ptr<Task>& subtree_root_block, vector<task_tree_node_t>* tree_nodes, int low)
 {
 	int32_t lower = low;
 	auto sub_blocks = subtree_root_block->get_subtasks();
@@ -64,7 +65,7 @@ void collect_tree_tasks_recursive(std::shared_ptr<Task> subtree_root_block, vect
 
 }
 
-void collect_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block, std::vector<std::shared_ptr<Task>>& list)
+void collect_leaf_tasks_recursive(const std::shared_ptr<Task>& subtree_root_block, std::vector<std::shared_ptr<Task>>& list)
 {
 	auto sub_blocks = subtree_root_block->get_subtasks();
 	if (!sub_blocks.empty())
@@ -79,7 +80,7 @@ void collect_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block, std:
 
 }
 
-int32_t count_leaft_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
+int32_t count_leaft_tasks_recursive(const std::shared_ptr<Task>& subtree_root_block)
 {
 	auto sub_blocks = subtree_root_block->get_subtasks();
 	int32_t r = 0;
@@ -103,7 +104,7 @@ TaskTree::TaskTree() : TaskRelation()
 
 TaskTree::TaskTree(std::shared_ptr<Task> root_task) : TaskRelation()
 {
-	set_root_task(root_task);
+	set_root_task(std::move(root_task));
 }
 
 TaskTree::~TaskTree()

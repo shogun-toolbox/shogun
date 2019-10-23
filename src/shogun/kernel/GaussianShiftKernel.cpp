@@ -26,7 +26,7 @@ GaussianShiftKernel::GaussianShiftKernel(
 }
 
 GaussianShiftKernel::GaussianShiftKernel(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, float64_t w, int32_t ms, int32_t ss,
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, float64_t w, int32_t ms, int32_t ss,
 	int32_t size)
 : GaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {

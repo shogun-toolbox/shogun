@@ -18,7 +18,7 @@ LinearStringKernel::LinearStringKernel()
 }
 
 LinearStringKernel::LinearStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r)
 : StringKernel<char>(0)
 {
 	init(l, r);

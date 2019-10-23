@@ -52,7 +52,7 @@ class WaveletKernel: public DotKernel
 		 * @param Wdilation is Dilation coefficient
 		 * @param Wtranslation is Translation coefficient
 		 */
-		WaveletKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
+		WaveletKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
 
 		virtual ~WaveletKernel();
 

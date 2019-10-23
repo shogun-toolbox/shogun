@@ -26,7 +26,7 @@ WeightedCommWordStringKernel::WeightedCommWordStringKernel(
 }
 
 WeightedCommWordStringKernel::WeightedCommWordStringKernel(
-	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, bool us,
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, bool us,
 	int32_t size)
 : CommWordStringKernel(size, us)
 {

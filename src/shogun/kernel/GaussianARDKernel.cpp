@@ -58,8 +58,8 @@ GaussianARDKernel::GaussianARDKernel(int32_t size)
 	init();
 }
 
-GaussianARDKernel::GaussianARDKernel(std::shared_ptr<DotFeatures> l,
-		std::shared_ptr<DotFeatures> r, int32_t size)
+GaussianARDKernel::GaussianARDKernel(const std::shared_ptr<DotFeatures>& l,
+		const std::shared_ptr<DotFeatures>& r, int32_t size)
 		: ExponentialARDKernel(size)
 {
 	init();
@@ -98,7 +98,7 @@ void GaussianARDKernel::precompute_squared()
 }
 
 
-std::shared_ptr<GaussianARDKernel> GaussianARDKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<GaussianARDKernel> GaussianARDKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
 	{

@@ -62,7 +62,7 @@ public:
 	 * @param values vector of values
 	 * @return variance of given values
 	 */
-	static float64_t std_deviation(SGVector<float64_t> values);
+	static float64_t std_deviation(const SGVector<float64_t>& values);
 
 	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
 	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
@@ -105,7 +105,7 @@ public:
 	 * @return variance of given values
 	 */
 	static SGVector<float64_t> matrix_std_deviation(
-			SGMatrix<float64_t> values, bool col_wise=true);
+			const SGMatrix<float64_t>& values, bool col_wise=true);
 
 	/** Computes the empirical estimate of the DxD covariance matrix of the given
 	 * data which is organized as num_cols variables with num_rows observations.
@@ -384,7 +384,7 @@ public:
 	 * @param m input sparse matrix
 	 * @return the log determinant value
 	 */
-	static float64_t log_det(const SGSparseMatrix<float64_t> m);
+	static float64_t log_det(const SGSparseMatrix<float64_t>& m);
 
 	/** Sampling from a multivariate Gaussian distribution with
 	 * dense covariance matrix

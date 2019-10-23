@@ -11,6 +11,8 @@
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 namespace shogun
@@ -29,7 +31,7 @@ HashedDocConverter::HashedDocConverter(int32_t hash_bits, bool normalize,
 HashedDocConverter::HashedDocConverter(std::shared_ptr<Tokenizer> tzer,
 	int32_t hash_bits, bool normalize, int32_t n_grams, int32_t skips) : Converter()
 {
-	init(tzer, hash_bits, normalize, n_grams, skips);
+	init(std::move(tzer), hash_bits, normalize, n_grams, skips);
 }
 
 HashedDocConverter::~HashedDocConverter()
@@ -37,7 +39,7 @@ HashedDocConverter::~HashedDocConverter()
 
 }
 
-void HashedDocConverter::init(std::shared_ptr<Tokenizer> tzer, int32_t hash_bits, bool normalize,
+void HashedDocConverter::init(const std::shared_ptr<Tokenizer>& tzer, int32_t hash_bits, bool normalize,
 	int32_t n_grams, int32_t skips)
 {
 	num_bits = hash_bits;

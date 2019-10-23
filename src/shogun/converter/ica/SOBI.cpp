@@ -37,7 +37,7 @@ SOBI::~SOBI()
 {
 }
 
-void SOBI::set_tau(SGVector<float64_t> tau)
+void SOBI::set_tau(const SGVector<float64_t>& tau)
 {
 	m_tau = tau;
 }

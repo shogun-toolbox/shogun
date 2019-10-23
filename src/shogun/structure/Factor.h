@@ -31,13 +31,13 @@ public:
 	 *
 	 * @param dense dense factor data
 	 */
-	FactorDataSource(SGVector<float64_t> dense);
+	FactorDataSource(const SGVector<float64_t>& dense);
 
 	/** constructor
 	 *
 	 * @param sparse sparse factor data
 	 */
-	FactorDataSource(SGSparseVector<float64_t> sparse);
+	FactorDataSource(const SGSparseVector<float64_t>& sparse);
 
 	/** destructor */
 	virtual ~FactorDataSource();
@@ -95,7 +95,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data dense data, can be empty
 	 */
-	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
+	Factor(const std::shared_ptr<TableFactorType>& ftype, const SGVector<int32_t>& var_index, const SGVector<float64_t>& data);
 
 	/** Constructor
 	 *
@@ -103,8 +103,8 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_sparse sparse data, can be empty
 	 */
-	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index,
-		SGSparseVector<float64_t> data_sparse);
+	Factor(const std::shared_ptr<TableFactorType>& ftype, const SGVector<int32_t>& var_index,
+		const SGSparseVector<float64_t>& data_sparse);
 
 	/** Constructor
 	 *
@@ -112,7 +112,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_source common data for many factors
 	 */
-	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index,
+	Factor(const std::shared_ptr<TableFactorType>& ftype, const SGVector<int32_t>& var_index,
 		std::shared_ptr<FactorDataSource> data_source);
 
 	/** deconstructor */
@@ -140,7 +140,7 @@ public:
 	 *
 	 * @param vars indices of variables
 	 */
-	void set_variables(SGVector<int32_t> vars);
+	void set_variables(const SGVector<int32_t>& vars);
 
 	/** @return cardinalities of variables */
 	const SGVector<int32_t> get_cardinalities() const;
@@ -155,7 +155,7 @@ public:
 	 *
 	 * @param data_dense data vector
 	 */
-	void set_data(SGVector<float64_t> data_dense);
+	void set_data(const SGVector<float64_t>& data_dense);
 
 	/** set sparse data
 	 *
@@ -184,7 +184,7 @@ public:
 	/** set energies with new values
 	 * @param ft_energies new energy table
 	 */
-	void set_energies(SGVector<float64_t> ft_energies);
+	void set_energies(const SGVector<float64_t>& ft_energies);
 
 	/** set energy for a particular state
 	 * @param ei index in the energy table
@@ -196,7 +196,7 @@ public:
 	 * @param state variable assignments
 	 * @return energy
 	 */
-	float64_t evaluate_energy(const SGVector<int32_t> state) const;
+	float64_t evaluate_energy(const SGVector<int32_t>& state) const;
 
 	/** Compute energy table */
 	void compute_energies();
@@ -207,7 +207,7 @@ public:
 	 * @param parameter_gradient output gradients
 	 * @param mult multiplier
 	 */
-	void compute_gradients(const SGVector<float64_t> marginals,
+	void compute_gradients(const SGVector<float64_t>& marginals,
 		SGVector<float64_t>& parameter_gradient, double mult = 1.0) const;
 
 protected:

@@ -48,7 +48,7 @@ class FixedDegreeStringKernel: public StringKernel<char>
 		 * @param degree the degree
 		 */
 		FixedDegreeStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			int32_t degree);
 
 		virtual ~FixedDegreeStringKernel();

@@ -7,6 +7,8 @@
 
 #include <shogun/structure/Factor.h>
 
+#include <utility>
+
 using namespace shogun;
 
 Factor::Factor() : SGObject()
@@ -14,9 +16,9 @@ Factor::Factor() : SGObject()
 	init();
 }
 
-Factor::Factor(std::shared_ptr<TableFactorType> ftype,
-	SGVector<int32_t> var_index,
-	SGVector<float64_t> data) : SGObject()
+Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
+	const SGVector<int32_t>& var_index,
+	const SGVector<float64_t>& data) : SGObject()
 {
 	init();
 	m_factor_type = ftype;
@@ -37,9 +39,9 @@ Factor::Factor(std::shared_ptr<TableFactorType> ftype,
 
 }
 
-Factor::Factor(std::shared_ptr<TableFactorType> ftype,
-	SGVector<int32_t> var_index,
-	SGSparseVector<float64_t> data_sparse) : SGObject()
+Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
+	const SGVector<int32_t>& var_index,
+	const SGSparseVector<float64_t>& data_sparse) : SGObject()
 {
 	init();
 	m_factor_type = ftype;
@@ -60,14 +62,14 @@ Factor::Factor(std::shared_ptr<TableFactorType> ftype,
 
 }
 
-Factor::Factor(std::shared_ptr<TableFactorType> ftype,
-	SGVector<int32_t> var_index,
+Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
+	const SGVector<int32_t>& var_index,
 	std::shared_ptr<FactorDataSource> data_source) : SGObject()
 {
 	init();
 	m_factor_type = ftype;
 	m_var_index = var_index;
-	m_data_source = data_source;
+	m_data_source = std::move(data_source);
 	m_is_data_dep = true;
 
 	ASSERT(m_factor_type != NULL);
@@ -95,7 +97,7 @@ std::shared_ptr<TableFactorType> Factor::get_factor_type() const
 
 void Factor::set_factor_type(std::shared_ptr<TableFactorType> ftype)
 {
-	m_factor_type = ftype;
+	m_factor_type = std::move(ftype);
 
 }
 
@@ -109,7 +111,7 @@ const int32_t Factor::get_num_vars() const
 	return m_var_index.size();
 }
 
-void Factor::set_variables(SGVector<int32_t> vars)
+void Factor::set_variables(const SGVector<int32_t>& vars)
 {
 	m_var_index = vars.clone();
 }
@@ -135,7 +137,7 @@ SGSparseVector<float64_t> Factor::get_data_sparse() const
 	return m_data_sparse;
 }
 
-void Factor::set_data(SGVector<float64_t> data_dense)
+void Factor::set_data(const SGVector<float64_t>& data_dense)
 {
 	m_data = data_dense.clone();
 	m_is_data_dep = true;
@@ -177,7 +179,7 @@ float64_t Factor::get_energy(int32_t index) const
 	return get_energies()[index]; // note for data indep, we get m_w not m_energies
 }
 
-void Factor::set_energies(SGVector<float64_t> ft_energies)
+void Factor::set_energies(const SGVector<float64_t>& ft_energies)
 {
 	require(m_factor_type->get_num_assignments() == ft_energies.size(),
 		"{}::set_energies(): ft_energies is not a valid energy table!", get_name());
@@ -196,7 +198,7 @@ void Factor::set_energy(int32_t ei, float64_t value)
 	m_energies[ei] = value;
 }
 
-float64_t Factor::evaluate_energy(const SGVector<int32_t> state) const
+float64_t Factor::evaluate_energy(const SGVector<int32_t>& state) const
 {
 	int32_t index = m_factor_type->index_from_universe_assignment(state, m_var_index);
 	return get_energy(index);
@@ -222,7 +224,7 @@ void Factor::compute_energies()
 }
 
 void Factor::compute_gradients(
-	const SGVector<float64_t> marginals,
+	const SGVector<float64_t>& marginals,
 	SGVector<float64_t>& parameter_gradient,
 	float64_t mult) const
 {
@@ -255,14 +257,14 @@ FactorDataSource::FactorDataSource() : SGObject()
 	init();
 }
 
-FactorDataSource::FactorDataSource(SGVector<float64_t> dense)
+FactorDataSource::FactorDataSource(const SGVector<float64_t>& dense)
 	: SGObject()
 {
 	init();
 	m_dense = dense;
 }
 
-FactorDataSource::FactorDataSource(SGSparseVector<float64_t> sparse)
+FactorDataSource::FactorDataSource(const SGSparseVector<float64_t>& sparse)
 	: SGObject()
 {
 	init();

@@ -12,6 +12,8 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MPDSVM::MPDSVM()
@@ -20,7 +22,7 @@ MPDSVM::MPDSVM()
 }
 
 MPDSVM::MPDSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: SVM(C, k, lab)
+: SVM(C, std::move(k), std::move(lab))
 {
 }
 

@@ -8,6 +8,7 @@
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/StoppableSGObject.h>
+#include <utility>
 
 using namespace shogun;
 
@@ -37,7 +38,7 @@ rxcpp::subscription StoppableSGObject::connect_to_signal_handler()
 
 void StoppableSGObject::set_callback(std::function<bool()> callback)
 {
-	m_callback = callback;
+	m_callback = std::move(callback);
 }
 
 void StoppableSGObject::reset_computation_variables()

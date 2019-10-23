@@ -57,7 +57,7 @@ public:
 	 * @param params kernel parameters (see kernel's description in KernelName to see what each kernel expects)
 	 */
 	RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features, int32_t D, KernelName kernel_name,
-			SGVector<float64_t> params);
+			const SGVector<float64_t>& params);
 
 	/** constructor that uses the specified random coefficients.
 	 *
@@ -68,13 +68,13 @@ public:
 	 * @param coeff pre-computed random coefficients to use
 	 */
 	RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features, int32_t D, KernelName kernel_name,
-			SGVector<float64_t> params, SGMatrix<float64_t> coeff);
+			const SGVector<float64_t>& params, const SGMatrix<float64_t>& coeff);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	RandomFourierDotFeatures(std::shared_ptr<File> loader);
+	RandomFourierDotFeatures(const std::shared_ptr<File>& loader);
 
 	/** copy constructor */
 	RandomFourierDotFeatures(const RandomFourierDotFeatures& orig);
@@ -106,7 +106,7 @@ protected:
 	virtual SGVector<float64_t> generate_random_parameter_vector();
 
 private:
-	void init(KernelName kernel_name, SGVector<float64_t> params);
+	void init(KernelName kernel_name, const SGVector<float64_t>& params);
 
 private:
 	/** the kernel to approximate */

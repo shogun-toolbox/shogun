@@ -12,6 +12,8 @@
 
 #include <string.h>
 
+#include <utility>
+
 using namespace shogun;
 
 Features::Features(int32_t size)
@@ -36,7 +38,7 @@ Features::Features(std::shared_ptr<File> loader)
 {
 	init();
 
-	load(loader);
+	load(std::move(loader));
 	io::info("Feature object loaded ({})",fmt::ptr(this));
 }
 
@@ -132,7 +134,7 @@ void Features::save(std::shared_ptr<File> writer)
 	SG_RESET_LOCALE;
 }
 
-bool Features::check_feature_compatibility(std::shared_ptr<Features> f) const
+bool Features::check_feature_compatibility(const std::shared_ptr<Features>& f) const
 {
 	bool result=false;
 

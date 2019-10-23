@@ -88,31 +88,31 @@ protected:
 	 * @param ex the example being trained
 	 * @param label the label of this training example
 	 */
-	void train_example(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, int32_t label);
+	void train_example(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex, int32_t label);
 
 	/** train on a path from a node up to the root
 	 * @param ex the instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, std::shared_ptr<bnode_t> node);
+	void train_path(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex, std::shared_ptr<bnode_t> node);
 
 	/** train a single node
 	 * @param ex the example being trained
 	 * @param label label
 	 * @param node the node
 	 */
-	void train_node(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node);
+	void train_node(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex, float64_t label, const std::shared_ptr<bnode_t>& node);
 
 	/** predict a single node
 	 * @param ex the example being predicted
 	 * @param node the node
 	 */
-	float64_t predict_node(SGVector<float32_t> ex, std::shared_ptr<bnode_t> node);
+	float64_t predict_node(SGVector<float32_t> ex, const std::shared_ptr<bnode_t>& node);
 
 	/** create a new OnlineLinear machine for a node
 	 * @param ex the Example instance for training the new machine
 	 */
-	int32_t create_machine(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex);
+	int32_t create_machine(const std::shared_ptr<StreamingDenseFeatures<float32_t>>& ex);
 
 	/** decide which subtree to go, when training the tree structure.
 	 * @param node the node being decided
@@ -122,7 +122,7 @@ protected:
 	virtual bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex)=0;
 
 	/** compute conditional probabilities for ex along the whole tree for predicting */
-	void compute_conditional_probabilities(SGVector<float32_t> ex);
+	void compute_conditional_probabilities(const SGVector<float32_t>& ex);
 
 	/** accumulate along the path to the root the conditional probability for a
 	 * particular leaf node.

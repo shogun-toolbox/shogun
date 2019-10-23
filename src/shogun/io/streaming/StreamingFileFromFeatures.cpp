@@ -6,6 +6,8 @@
 
 #include <shogun/io/streaming/StreamingFileFromFeatures.h>
 
+#include <utility>
+
 using namespace shogun;
 
 StreamingFileFromFeatures::StreamingFileFromFeatures()
@@ -18,14 +20,14 @@ StreamingFileFromFeatures::StreamingFileFromFeatures()
 StreamingFileFromFeatures::StreamingFileFromFeatures(std::shared_ptr<Features> feat)
 	: StreamingFile()
 {
-	features=feat;
+	features=std::move(feat);
 	labels=NULL;
 }
 
 StreamingFileFromFeatures::StreamingFileFromFeatures(std::shared_ptr<Features> feat, float64_t* lab)
 	: StreamingFile()
 {
-	features=feat;
+	features=std::move(feat);
 	labels=lab;
 }
 

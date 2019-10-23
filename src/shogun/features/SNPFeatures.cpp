@@ -27,7 +27,7 @@ SNPFeatures::SNPFeatures()
 	m_str_maj = NULL;
 }
 
-SNPFeatures::SNPFeatures(std::shared_ptr<StringFeatures<uint8_t>> str) : DotFeatures(),
+SNPFeatures::SNPFeatures(const std::shared_ptr<StringFeatures<uint8_t>>& str) : DotFeatures(),
 	m_str_min(NULL), m_str_maj(NULL)
 {
 	ASSERT(str)
@@ -289,7 +289,7 @@ void SNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
 	}
 }
 
-void SNPFeatures::obtain_base_strings(std::shared_ptr<SNPFeatures> snp)
+void SNPFeatures::obtain_base_strings(const std::shared_ptr<SNPFeatures>& snp)
 {
 	SG_FREE(m_str_min);
 	SG_FREE(m_str_maj);
@@ -405,7 +405,7 @@ SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 	return SGMatrix<float64_t>(h, nsym, string_length/2);
 }
 
-SGMatrix<float64_t> SNPFeatures::get_2x3_table(std::shared_ptr<SNPFeatures> pos, std::shared_ptr<SNPFeatures> neg)
+SGMatrix<float64_t> SNPFeatures::get_2x3_table(const std::shared_ptr<SNPFeatures>& pos, const std::shared_ptr<SNPFeatures>& neg)
 {
 
 	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length())

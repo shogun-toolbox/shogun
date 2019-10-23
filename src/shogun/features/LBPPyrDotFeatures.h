@@ -36,7 +36,7 @@ class LBPPyrDotFeatures : public DotFeatures
 		 * @param image_h image height
 		 * @param num_pyramids the number of pyramids to consider
 		 */
-		LBPPyrDotFeatures(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w, int32_t image_h,
+		LBPPyrDotFeatures(const std::shared_ptr<DenseFeatures<uint32_t>>& image_set, int32_t image_w, int32_t image_h,
 			uint16_t num_pyramids);
 
 		/** Destructor */

@@ -18,8 +18,8 @@ FactorType::FactorType() : SGObject()
 
 FactorType::FactorType(
 	int32_t id,
-	SGVector<int32_t> card,
-	SGVector<float64_t> w)
+	const SGVector<int32_t>& card,
+	const SGVector<float64_t>& w)
 	: SGObject()
 {
 	init();
@@ -79,7 +79,7 @@ const SGVector<float64_t> FactorType::get_w() const
 	return m_w;
 }
 
-void FactorType::set_w(SGVector<float64_t> w)
+void FactorType::set_w(const SGVector<float64_t>& w)
 {
 	m_w = w.clone();
 }
@@ -137,8 +137,8 @@ TableFactorType::TableFactorType()
 
 TableFactorType::TableFactorType(
 	int32_t id,
-	SGVector<int32_t> card,
-	SGVector<float64_t> w)
+	const SGVector<int32_t>& card,
+	const SGVector<float64_t>& w)
 	: FactorType(id, card, w)
 {
 }
@@ -162,7 +162,7 @@ SGVector<int32_t> TableFactorType::assignment_from_index(int32_t ei) const
 	return assig;
 }
 
-int32_t TableFactorType::index_from_assignment(const SGVector<int32_t> assig) const
+int32_t TableFactorType::index_from_assignment(const SGVector<int32_t>& assig) const
 {
 	ASSERT(assig.size() == get_cardinalities().size());
 	int32_t index = 0;
@@ -183,8 +183,8 @@ int32_t TableFactorType::index_from_new_state(
 }
 
 int32_t TableFactorType::index_from_universe_assignment(
-	const SGVector<int32_t> assig,
-	const SGVector<int32_t> var_index) const
+	const SGVector<int32_t>& assig,
+	const SGVector<int32_t>& var_index) const
 {
 	ASSERT(var_index.size() == m_cards.size());
 	int32_t index = 0;

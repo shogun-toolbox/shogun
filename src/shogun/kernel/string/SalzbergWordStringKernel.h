@@ -36,7 +36,7 @@ class SalzbergWordStringKernel: public StringKernel<uint16_t>
 		 * @param pie the plugin estimate
 		 * @param labels optional labels to set prior from
 		 */
-		SalzbergWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie, std::shared_ptr<Labels> labels=NULL);
+		SalzbergWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie, const std::shared_ptr<Labels>& labels=NULL);
 
 		/** constructor
 		 *
@@ -46,8 +46,8 @@ class SalzbergWordStringKernel: public StringKernel<uint16_t>
 		 * @param labels optional labels to set prior from
 		 */
 		SalzbergWordStringKernel(
-			std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
-			std::shared_ptr<PluginEstimate >pie, std::shared_ptr<Labels> labels=NULL);
+			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
+			const std::shared_ptr<PluginEstimate >&pie, const std::shared_ptr<Labels>& labels=NULL);
 
 		virtual ~SalzbergWordStringKernel();
 
@@ -68,7 +68,7 @@ class SalzbergWordStringKernel: public StringKernel<uint16_t>
 		 *
 		 * @param labels labels to set prior probabilites from
 		 */
-		void set_prior_probs_from_labels(std::shared_ptr<Labels> labels);
+		void set_prior_probs_from_labels(const std::shared_ptr<Labels>& labels);
 
 		/** initialize kernel
 		 *

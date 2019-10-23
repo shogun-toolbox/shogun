@@ -53,7 +53,7 @@ protected:
 	std::ostream& ostream_;
 };
 
-bool ends_with(std::string long_str, std::string short_str)
+bool ends_with(const std::string& long_str, const std::string& short_str)
 {
 	return long_str.compare(
 	           long_str.length() - short_str.length(), short_str.length(),

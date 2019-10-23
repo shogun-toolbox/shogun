@@ -37,7 +37,7 @@ FFSep::~FFSep()
 {
 }
 
-void FFSep::set_tau(SGVector<float64_t> tau)
+void FFSep::set_tau(const SGVector<float64_t>& tau)
 {
 	m_tau = tau;
 }

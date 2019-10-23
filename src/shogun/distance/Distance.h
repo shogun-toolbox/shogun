@@ -202,13 +202,13 @@ class Distance : public SGObject
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(std::shared_ptr<File> loader);
+		void load(const std::shared_ptr<File>& loader);
 
 		/** save kernel matrix
 		 *
 		 * @param writer File object via which to save data
 		 */
-		void save(std::shared_ptr<File> writer);
+		void save(const std::shared_ptr<File>& writer);
 
 		/** get left-hand side features used in distance matrix
 		 *

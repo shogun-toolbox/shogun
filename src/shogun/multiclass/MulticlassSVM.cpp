@@ -9,6 +9,8 @@
 #include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MulticlassSVM::MulticlassSVM()
@@ -17,14 +19,14 @@ MulticlassSVM::MulticlassSVM()
 }
 
 MulticlassSVM::MulticlassSVM(std::shared_ptr<MulticlassStrategy >strategy)
-	:KernelMulticlassMachine(strategy, NULL, std::make_shared<SVM>(0), NULL)
+	:KernelMulticlassMachine(std::move(strategy), NULL, std::make_shared<SVM>(0), NULL)
 {
 	init();
 }
 
 MulticlassSVM::MulticlassSVM(
 	std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-	: KernelMulticlassMachine(strategy, k, std::make_shared<SVM>(C, k, lab), lab)
+	: KernelMulticlassMachine(std::move(strategy), k, std::make_shared<SVM>(C, k, lab), lab)
 {
 	init();
 	m_C=C;
@@ -52,7 +54,7 @@ bool MulticlassSVM::create_multiclass_svm(int32_t num_classes)
 	return false;
 }
 
-bool MulticlassSVM::set_svm(int32_t num, std::shared_ptr<SVM> svm)
+bool MulticlassSVM::set_svm(int32_t num, const std::shared_ptr<SVM>& svm)
 {
 	if (!m_machines.empty() && m_machines.size()>num && num>=0 && svm)
 	{

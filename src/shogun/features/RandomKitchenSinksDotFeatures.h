@@ -67,13 +67,13 @@ public:
 	 * @param coeff the random coefficients to use
 	 */
 	RandomKitchenSinksDotFeatures(std::shared_ptr<DotFeatures> dataset, int32_t K,
-			SGMatrix<float64_t> coeff);
+			const SGMatrix<float64_t>& coeff);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	RandomKitchenSinksDotFeatures(std::shared_ptr<File> loader);
+	RandomKitchenSinksDotFeatures(const std::shared_ptr<File>& loader);
 
 	/** copy constructor */
 	RandomKitchenSinksDotFeatures(const RandomKitchenSinksDotFeatures& orig);

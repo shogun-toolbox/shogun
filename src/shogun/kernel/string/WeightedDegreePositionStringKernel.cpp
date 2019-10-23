@@ -74,7 +74,7 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 }
 
 WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
-	int32_t size, SGVector<float64_t> w, int32_t d, int32_t mm, SGVector<int32_t> s,
+	int32_t size, SGVector<float64_t> w, int32_t d, int32_t mm, const SGVector<int32_t>& s,
 	int32_t mkls)
 : StringKernel<char>(size)
 {
@@ -98,7 +98,7 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 }
 
 WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t d)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t d)
 : StringKernel<char>()
 {
 	init();
@@ -1807,7 +1807,7 @@ void WeightedDegreePositionStringKernel::prepare_POIM2(SGMatrix<float64_t> distr
 }
 
 void WeightedDegreePositionStringKernel::compute_POIM2(
-	int32_t max_degree, std::shared_ptr<SVM> svm)
+	int32_t max_degree, const std::shared_ptr<SVM>& svm)
 {
 	ASSERT(svm)
 	int32_t num_suppvec=svm->get_num_support_vectors();

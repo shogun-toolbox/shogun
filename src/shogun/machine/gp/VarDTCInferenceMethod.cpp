@@ -43,6 +43,8 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -53,7 +55,7 @@ VarDTCInferenceMethod::VarDTCInferenceMethod() : SingleSparseInference()
 
 VarDTCInferenceMethod::VarDTCInferenceMethod(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
 		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
-		: SingleSparseInference(kern, feat, m, lab, mod, lat)
+		: SingleSparseInference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod), std::move(lat))
 {
 	init();
 }
@@ -111,7 +113,7 @@ void VarDTCInferenceMethod::update()
 }
 
 std::shared_ptr<VarDTCInferenceMethod> VarDTCInferenceMethod::obtain_from_generic(
-		std::shared_ptr<Inference> inference)
+		const std::shared_ptr<Inference>& inference)
 {
 	if (inference==NULL)
 		return NULL;

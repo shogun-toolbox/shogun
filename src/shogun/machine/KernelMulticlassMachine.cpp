@@ -11,6 +11,7 @@
 #include <shogun/machine/KernelMachine.h>
 
 #include <unordered_set>
+#include <utility>
 
 using namespace shogun;
 
@@ -84,9 +85,9 @@ KernelMulticlassMachine::KernelMulticlassMachine() : MulticlassMachine(), m_kern
  * @param labs labels
  */
 KernelMulticlassMachine::KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs) :
-	MulticlassMachine(strategy,machine,labs), m_kernel(NULL)
+	MulticlassMachine(std::move(strategy),std::move(machine),std::move(labs)), m_kernel(NULL)
 {
-	set_kernel(kernel);
+	set_kernel(std::move(kernel));
 	SG_ADD(&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
 }
 
@@ -100,7 +101,7 @@ KernelMulticlassMachine::~KernelMulticlassMachine()
  *
  * @param k kernel
  */
-void KernelMulticlassMachine::set_kernel(std::shared_ptr<Kernel> k)
+void KernelMulticlassMachine::set_kernel(const std::shared_ptr<Kernel>& k)
 {
 	m_machine->as<KernelMachine>()->set_kernel(k);
 

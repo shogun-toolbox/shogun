@@ -44,7 +44,7 @@ public:
 	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	Task(SGVector<index_t> indices, float64_t weight=1.0, const char* name="task");
+	Task(const SGVector<index_t>& indices, float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
 	virtual ~Task();
@@ -96,7 +96,7 @@ public:
 	 *
 	 * @param sub_task subtask to add
 	 */
-	void add_subtask(std::shared_ptr<Task> sub_task);
+	void add_subtask(const std::shared_ptr<Task>& sub_task);
 
 	/** get all subtasks of the task
 	 *

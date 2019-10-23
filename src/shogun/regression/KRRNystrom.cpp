@@ -30,11 +30,12 @@
  */
 
 #include <limits>
-#include <shogun/regression/KRRNystrom.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/regression/KRRNystrom.h>
+#include <utility>
 
 using namespace shogun;
 using namespace Eigen;
@@ -45,7 +46,7 @@ KRRNystrom::KRRNystrom() : RandomMixin<KernelRidgeRegression>()
 }
 
 KRRNystrom::KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: RandomMixin<KernelRidgeRegression>(tau, k, lab)
+: RandomMixin<KernelRidgeRegression>(tau, std::move(k), std::move(lab))
 {
 	init();
 

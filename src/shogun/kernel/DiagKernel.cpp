@@ -10,6 +10,8 @@
 
 #include <shogun/kernel/DiagKernel.h>
 
+#include <utility>
+
 using namespace shogun;
 
 DiagKernel::DiagKernel()
@@ -30,7 +32,7 @@ DiagKernel::DiagKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r,
 {
 	init();
 	diag=d;
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 DiagKernel::~DiagKernel()

@@ -16,6 +16,7 @@
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
 
+#include <utility>
 #include <vector>
 
 using namespace Eigen;
@@ -31,14 +32,14 @@ LDA::LDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
 }
 
 LDA::LDA(
-    float64_t gamma, std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab,
+    float64_t gamma, const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab,
     ELDAMethod method, bool bdc_svd)
     : DenseRealDispatch<LDA, LinearMachine>(), m_gamma(gamma)
 {
 	init();
 
 	features = traindat;
-	m_labels = trainlab;
+	m_labels = std::move(trainlab);
 	m_method = method;
 	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;

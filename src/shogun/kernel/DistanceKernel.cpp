@@ -11,6 +11,8 @@
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/features/DenseFeatures.h>
 
+#include <utility>
+
 using namespace shogun;
 
 DistanceKernel::DistanceKernel()
@@ -20,7 +22,7 @@ DistanceKernel::DistanceKernel()
 }
 
 DistanceKernel::DistanceKernel(int32_t size, float64_t w, std::shared_ptr<Distance> d)
-: Kernel(size), distance(d)
+: Kernel(size), distance(std::move(d))
 {
 	ASSERT(distance)
 	set_width(w);
@@ -30,12 +32,12 @@ DistanceKernel::DistanceKernel(int32_t size, float64_t w, std::shared_ptr<Distan
 
 DistanceKernel::DistanceKernel(
 	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t w , std::shared_ptr<Distance> d)
-: Kernel(10), distance(d)
+: Kernel(10), distance(std::move(d))
 {
 	set_width(w);
 	ASSERT(distance)
 	
-	init(l, r);
+	init(std::move(l), std::move(r));
 	register_params();
 }
 

@@ -14,6 +14,7 @@
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <typeinfo>
+#include <utility>
 
 using namespace Eigen;
 namespace shogun
@@ -26,15 +27,15 @@ namespace shogun
 }
 
 LogRationalApproximationIndividual::LogRationalApproximationIndividual(
-	std::shared_ptr<MatrixOperator<float64_t>> linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
+	const std::shared_ptr<MatrixOperator<float64_t>>& linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
 	std::shared_ptr<LinearSolver<complex128_t, float64_t>> linear_solver,
 	float64_t desired_accuracy)
 	: RationalApproximation(
-	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
+	      linear_operator, std::move(eigen_solver), desired_accuracy, OF_LOG)
 {
 	init();
 
-	m_linear_solver=linear_solver;
+	m_linear_solver=std::move(linear_solver);
 
 }
 

@@ -32,7 +32,7 @@ public:
 	ShareBoost();
 
 	/** constructor */
-	ShareBoost(std::shared_ptr<DenseFeatures<float64_t> >features, std::shared_ptr<MulticlassLabels >labs, int32_t num_nonzero_feas);
+	ShareBoost(const std::shared_ptr<DenseFeatures<float64_t> >&features, const std::shared_ptr<MulticlassLabels >&labs, int32_t num_nonzero_feas);
 
     /** destructor */
 	virtual ~ShareBoost() {}
@@ -47,7 +47,7 @@ public:
 	int32_t get_num_nonzero_feas() const { return m_nonzero_feas; }
 
 	/** assign features */
-	void set_features(std::shared_ptr<Features >f);
+	void set_features(const std::shared_ptr<Features >&f);
 
 	/** get active set */
 	SGVector<int32_t> get_activeset();

@@ -1,6 +1,8 @@
 #include <shogun/kernel/GaussianCompactKernel.h>
 #include <shogun/features/DotFeatures.h>
 
+#include <utility>
+
 using namespace shogun;
 
 GaussianCompactKernel::GaussianCompactKernel() : GaussianKernel()
@@ -14,7 +16,7 @@ GaussianCompactKernel::GaussianCompactKernel(int32_t size, float64_t width)
 
 GaussianCompactKernel::GaussianCompactKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
                                               float64_t width, int32_t size)
-                                              : GaussianKernel(l, r,
+                                              : GaussianKernel(std::move(l), std::move(r),
                                                                 width, size)
 {
 }

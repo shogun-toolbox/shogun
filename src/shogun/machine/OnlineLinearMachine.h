@@ -227,7 +227,7 @@ class OnlineLinearMachine : public Machine
 		 * @param data features to compute outputs
 		 * @return outputs
 		 */
-		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
+		SGVector<float64_t> apply_get_outputs(const std::shared_ptr<Features>& data);
 
 	protected:
 		/** w */

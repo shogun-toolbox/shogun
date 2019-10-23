@@ -23,7 +23,7 @@ ShareBoost::ShareBoost()
 	init_sb_params();
 }
 
-ShareBoost::ShareBoost(std::shared_ptr<DenseFeatures<float64_t> >features, std::shared_ptr<MulticlassLabels >labs, int32_t num_nonzero_feas)
+ShareBoost::ShareBoost(const std::shared_ptr<DenseFeatures<float64_t> >&features, const std::shared_ptr<MulticlassLabels >&labs, int32_t num_nonzero_feas)
 	:LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), features, NULL, labs), m_nonzero_feas(num_nonzero_feas)
 {
 	init_sb_params();
@@ -197,7 +197,7 @@ void ShareBoost::optimize_coefficients()
 	optimizer.optimize();
 }
 
-void ShareBoost::set_features(std::shared_ptr<Features >f)
+void ShareBoost::set_features(const std::shared_ptr<Features >&f)
 {
 	auto fea = f->as<DenseFeatures<float64_t>>();
 	if (fea == NULL)

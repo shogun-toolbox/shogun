@@ -34,7 +34,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	FactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
+	FactorType(int32_t id, const SGVector<int32_t>& card, const SGVector<float64_t>& w);
 
 	/** deconstructor */
 	virtual ~FactorType();
@@ -61,7 +61,7 @@ public:
 	 *
 	 * @param w factor parameters
 	 */
-	void set_w(SGVector<float64_t> w);
+	void set_w(const SGVector<float64_t>& w);
 
 	/** @return dimension of the factor parameter vector */
 	virtual int32_t get_w_dim() const;
@@ -127,7 +127,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	TableFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
+	TableFactorType(int32_t id, const SGVector<int32_t>& card, const SGVector<float64_t>& w);
 
 	/** deconstructor */
 	virtual ~TableFactorType();
@@ -168,7 +168,7 @@ public:
 	 * @param assig variable assignments
 	 * @return energy index
 	 */
-	int32_t index_from_assignment(const SGVector<int32_t> assig) const;
+	int32_t index_from_assignment(const SGVector<int32_t>& assig) const;
 
 	/** energy index in the table of a factor given an universe assignment
 	 *
@@ -176,8 +176,8 @@ public:
 	 * @param var_index variable indices of that particular factor
 	 * @return energy index
 	 */
-	int32_t index_from_universe_assignment(const SGVector<int32_t> assig,
-		const SGVector<int32_t> var_index) const;
+	int32_t index_from_universe_assignment(const SGVector<int32_t>& assig,
+		const SGVector<int32_t>& var_index) const;
 
 	/** compute energy values from parameters for a specific factor.
 	 *

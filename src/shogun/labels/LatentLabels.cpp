@@ -7,6 +7,8 @@
 
 #include <shogun/labels/LatentLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LatentLabels::LatentLabels()
@@ -27,7 +29,7 @@ LatentLabels::LatentLabels(std::shared_ptr<Labels> labels)
 	: Labels()
 {
 	init();
-	set_labels(labels);
+	set_labels(std::move(labels));
 
 	int32_t num_labels = 0;
 	if (m_labels)
@@ -65,7 +67,7 @@ std::shared_ptr<Data> LatentLabels::get_latent_label(int32_t idx)
 	return m_latent_labels[idx];
 }
 
-void LatentLabels::add_latent_label(std::shared_ptr<Data> label)
+void LatentLabels::add_latent_label(const std::shared_ptr<Data>& label)
 {
 	m_latent_labels.push_back(label);
 }
@@ -74,7 +76,7 @@ bool LatentLabels::set_latent_label(int32_t idx, std::shared_ptr<Data> label)
 {
 	if (idx >= 0 && idx < get_num_labels())
 	{
-		m_latent_labels[idx] = label;
+		m_latent_labels[idx] = std::move(label);
 		return true;
 	}
 	else
@@ -108,7 +110,7 @@ void LatentLabels::set_labels(std::shared_ptr<Labels> labels)
 {
 	
 	
-	m_labels = labels;
+	m_labels = std::move(labels);
 }
 
 std::shared_ptr<Labels> LatentLabels::get_labels() const

@@ -18,7 +18,7 @@ CustomDistance::CustomDistance() : Distance()
 	init();
 }
 
-CustomDistance::CustomDistance(std::shared_ptr<Distance> d) : Distance()
+CustomDistance::CustomDistance(const std::shared_ptr<Distance>& d) : Distance()
 {
 	init();
 

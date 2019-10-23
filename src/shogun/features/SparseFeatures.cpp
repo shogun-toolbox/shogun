@@ -55,7 +55,7 @@ template<> SparseFeatures<complex128_t>::SparseFeatures(std::shared_ptr<DenseFea
 	not_implemented(SOURCE_LOCATION);;
 }
 
-template<class ST> SparseFeatures<ST>::SparseFeatures(std::shared_ptr<File> loader)
+template<class ST> SparseFeatures<ST>::SparseFeatures(const std::shared_ptr<File>& loader)
 : DotFeatures(), feature_cache(NULL)
 {
 	init();
@@ -362,8 +362,8 @@ template<> float64_t* SparseFeatures<complex128_t>::compute_squared(float64_t* s
 }
 
 template<class ST> float64_t SparseFeatures<ST>::compute_squared_norm(
-		std::shared_ptr<SparseFeatures<float64_t>> lhs, float64_t* sq_lhs, int32_t idx_a,
-		std::shared_ptr<SparseFeatures<float64_t>> rhs, float64_t* sq_rhs, int32_t idx_b)
+		const std::shared_ptr<SparseFeatures<float64_t>>& lhs, float64_t* sq_lhs, int32_t idx_a,
+		const std::shared_ptr<SparseFeatures<float64_t>>& rhs, float64_t* sq_rhs, int32_t idx_b)
 {
 	int32_t i,j;
 	ASSERT(lhs)

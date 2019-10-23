@@ -9,6 +9,8 @@
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/EuclideanDistance.h>
 
+#include <utility>
+
 using namespace shogun;
 
 namespace shogun
@@ -46,7 +48,7 @@ void EmbeddingConverter::set_distance(std::shared_ptr<Distance> distance)
 {
 	
 	
-	m_distance = distance;
+	m_distance = std::move(distance);
 }
 
 std::shared_ptr<Distance> EmbeddingConverter::get_distance() const
@@ -59,7 +61,7 @@ void EmbeddingConverter::set_kernel(std::shared_ptr<Kernel> kernel)
 {
 	
 	
-	m_kernel = kernel;
+	m_kernel = std::move(kernel);
 }
 
 std::shared_ptr<Kernel> EmbeddingConverter::get_kernel() const

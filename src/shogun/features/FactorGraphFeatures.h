@@ -67,7 +67,7 @@ class FactorGraphFeatures : public Features
 		 * @param fg a factor graph instance
 		 * @return whether the sample has been added successfully
 		 */
-		bool add_sample(std::shared_ptr<FactorGraph> fg);
+		bool add_sample(const std::shared_ptr<FactorGraph>& fg);
 
 		/** get a graph instance
 		 *
@@ -81,7 +81,7 @@ class FactorGraphFeatures : public Features
 		 * @param base_feats its dynamic type must be FactorGraphFeatures
 		 * @return pointer to FactorGraphFeatures
 		 */
-		static std::shared_ptr<FactorGraphFeatures> obtain_from_generic(std::shared_ptr<Features> base_feats);
+		static std::shared_ptr<FactorGraphFeatures> obtain_from_generic(const std::shared_ptr<Features>& base_feats);
 
 	protected:
 		/** array of FactorGraph */

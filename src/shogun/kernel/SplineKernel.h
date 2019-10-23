@@ -42,7 +42,7 @@ class SplineKernel: public DotKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		SplineKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r);
+		SplineKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r);
 
 		virtual ~SplineKernel();
 

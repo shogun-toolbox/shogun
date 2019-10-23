@@ -17,7 +17,7 @@ GaussianProcessRegression::GaussianProcessRegression()
 {
 }
 
-GaussianProcessRegression::GaussianProcessRegression(std::shared_ptr<Inference> method)
+GaussianProcessRegression::GaussianProcessRegression(const std::shared_ptr<Inference>& method)
 		: GaussianProcessMachine(method)
 {
 	// set labels
@@ -98,7 +98,7 @@ bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-SGVector<float64_t> GaussianProcessRegression::get_mean_vector(std::shared_ptr<Features> data)
+SGVector<float64_t> GaussianProcessRegression::get_mean_vector(const std::shared_ptr<Features>& data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
@@ -119,7 +119,7 @@ SGVector<float64_t> GaussianProcessRegression::get_mean_vector(std::shared_ptr<F
 }
 
 SGVector<float64_t> GaussianProcessRegression::get_variance_vector(
-		std::shared_ptr<Features> data)
+		const std::shared_ptr<Features>& data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression

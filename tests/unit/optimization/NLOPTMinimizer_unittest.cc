@@ -55,12 +55,12 @@ void CPiecewiseQuadraticObject2::init()
 	SG_ADD(&m_truth_x, "truth_x", "truth_x");
 }
 
-void CPiecewiseQuadraticObject2::set_init_x(SGVector<float64_t> init_x)
+void CPiecewiseQuadraticObject2::set_init_x(const SGVector<float64_t>& init_x)
 {
 	m_init_x=init_x;
 }
 
-void CPiecewiseQuadraticObject2::set_truth_x(SGVector<float64_t> truth_x)
+void CPiecewiseQuadraticObject2::set_truth_x(const SGVector<float64_t>& truth_x)
 {
 	m_truth_x=truth_x;
 }
@@ -149,7 +149,7 @@ NLOPTTestCostFunction::~NLOPTTestCostFunction()
 	
 }
 
-void NLOPTTestCostFunction::set_target(std::shared_ptr<CPiecewiseQuadraticObject2 >obj)
+void NLOPTTestCostFunction::set_target(const std::shared_ptr<CPiecewiseQuadraticObject2 >&obj)
 {
 	if(obj!=m_obj)
 	{

@@ -15,7 +15,7 @@ using namespace Eigen;
 
 #include <shogun/lib/external/falconn/lsh_nn_table.h>
 
-LSHKNNSolver::LSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t):
+LSHKNNSolver::LSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels, const int32_t lsh_l, const int32_t lsh_t):
 KNNSolver(k, q, num_classes, min_label, train_labels)
 {
 	init();

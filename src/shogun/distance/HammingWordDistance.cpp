@@ -28,7 +28,7 @@ HammingWordDistance::HammingWordDistance(bool sign)
 }
 
 HammingWordDistance::HammingWordDistance(
-	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, bool sign)
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, bool sign)
 : StringDistance<uint16_t>()
 {
 	init();

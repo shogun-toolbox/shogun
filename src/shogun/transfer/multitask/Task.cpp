@@ -30,7 +30,7 @@ Task::Task(index_t min_index, index_t max_index,
 	m_name = name;
 }
 
-Task::Task(SGVector<index_t> indices,
+Task::Task(const SGVector<index_t>& indices,
              float64_t weight, const char* name) :
 	SGObject()
 {
@@ -67,7 +67,7 @@ bool Task::is_contiguous()
 	return result;
 }
 
-void Task::add_subtask(std::shared_ptr<Task> subtask)
+void Task::add_subtask(const std::shared_ptr<Task>& subtask)
 {
 	SGVector<index_t> subtask_indices = subtask->get_indices();
 	for (int32_t i=0; i<subtask_indices.vlen; i++)

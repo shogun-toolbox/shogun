@@ -77,7 +77,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 * @param degree degree
 		 */
 		WeightedDegreeStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t degree);
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t degree);
 
 		virtual ~WeightedDegreeStringKernel();
 

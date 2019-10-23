@@ -60,7 +60,7 @@ class KMeans : public KMeansBase
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		 */
-		KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
+		KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, const SGMatrix<float64_t>& centers_i);
 
 		virtual ~KMeans();
 

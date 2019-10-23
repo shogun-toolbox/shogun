@@ -40,7 +40,7 @@ template<class ST> DenseSubSamplesFeatures<ST>::DenseSubSamplesFeatures()
 }
 
 template<class ST> DenseSubSamplesFeatures<ST>::DenseSubSamplesFeatures(
-	std::shared_ptr<DenseFeatures<ST>> fea, SGVector<int32_t> idx)
+	std::shared_ptr<DenseFeatures<ST>> fea, const SGVector<int32_t>& idx)
 	:DotFeatures()
 {
 	init();

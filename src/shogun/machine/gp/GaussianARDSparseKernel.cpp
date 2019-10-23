@@ -32,6 +32,8 @@
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 GaussianARDSparseKernel::GaussianARDSparseKernel() : GaussianARDKernel()
@@ -56,12 +58,12 @@ GaussianARDSparseKernel::GaussianARDSparseKernel(int32_t size)
 
 GaussianARDSparseKernel::GaussianARDSparseKernel(std::shared_ptr<DotFeatures> l,
 		std::shared_ptr<DotFeatures> r, int32_t size)
-		: GaussianARDKernel(l, r, size)
+		: GaussianARDKernel(std::move(l), std::move(r), size)
 {
 	initialize_sparse_kernel();
 }
 
-std::shared_ptr<GaussianARDSparseKernel> GaussianARDSparseKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<GaussianARDSparseKernel> GaussianARDSparseKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
 	{

@@ -33,7 +33,7 @@ class SNPFeatures : public DotFeatures
 		 *
 		 * @param str stringfeatures (of bytes)
 		 */
-		SNPFeatures(std::shared_ptr<StringFeatures<uint8_t>> str);
+		SNPFeatures(const std::shared_ptr<StringFeatures<uint8_t>>& str);
 
 		/** copy constructor */
 		SNPFeatures(const SNPFeatures & orig);
@@ -175,7 +175,7 @@ class SNPFeatures : public DotFeatures
 		 *
 		 * @param snp optionally compute base string for snp too
 		 */
-		void obtain_base_strings(std::shared_ptr<SNPFeatures> snp=NULL);
+		void obtain_base_strings(const std::shared_ptr<SNPFeatures>& snp=NULL);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SNPFeatures"; }
@@ -187,7 +187,7 @@ class SNPFeatures : public DotFeatures
 		/**
 		 * compute 2x3 histogram table
 		 */
-		static SGMatrix<float64_t> get_2x3_table(std::shared_ptr<SNPFeatures> pos, std::shared_ptr<SNPFeatures> neg);
+		static SGMatrix<float64_t> get_2x3_table(const std::shared_ptr<SNPFeatures>& pos, const std::shared_ptr<SNPFeatures>& neg);
 
 	private:
 		/** determine minor and major base strings from current strings

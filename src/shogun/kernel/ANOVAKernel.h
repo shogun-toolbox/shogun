@@ -50,7 +50,7 @@ public:
 	 * @param cache cache size
 	 */
 	ANOVAKernel(
-		std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, int32_t d, int32_t cache);
+		const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, int32_t d, int32_t cache);
 
 	virtual ~ANOVAKernel();
 
@@ -109,7 +109,7 @@ public:
 	 * @param kernel Kernel to cast. Must be CANOVAKernel. Might be NULL
 	 * @return casted CANOVAKernel object, NULL if input was NULL
 	 */
-	static std::shared_ptr<ANOVAKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
+	static std::shared_ptr<ANOVAKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 protected:
 
 	/**

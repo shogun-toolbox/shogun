@@ -18,7 +18,7 @@ ExponentialKernel::ExponentialKernel()
 }
 
 ExponentialKernel::ExponentialKernel(
-	std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, float64_t width, std::shared_ptr<Distance> distance, int32_t size)
+	const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t width, const std::shared_ptr<Distance>& distance, int32_t size)
 : DotKernel(size), m_distance(distance), m_width(width)
 {
 	init();

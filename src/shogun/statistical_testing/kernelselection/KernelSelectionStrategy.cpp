@@ -48,6 +48,8 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
+
+#include <utility>
 #endif //USE_GPL_SHOGUN
 
 using namespace shogun;
@@ -235,7 +237,7 @@ bool KernelSelectionStrategy::get_weighted() const
 
 void KernelSelectionStrategy::add_kernel(std::shared_ptr<Kernel> kernel)
 {
-	self->kernel_mgr.push_back(kernel);
+	self->kernel_mgr.push_back(std::move(kernel));
 }
 
 std::shared_ptr<Kernel> KernelSelectionStrategy::select_kernel(std::shared_ptr<MMD> estimator)
@@ -244,7 +246,7 @@ std::shared_ptr<Kernel> KernelSelectionStrategy::select_kernel(std::shared_ptr<M
 	require(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!");
 	SG_DEBUG("Selecting kernels from a total of {} kernels!", num_kernels);
 
-	self->init_policy(estimator);
+	self->init_policy(std::move(estimator));
 	ASSERT(self->policy!=nullptr);
 
 	return self->policy->select_kernel();

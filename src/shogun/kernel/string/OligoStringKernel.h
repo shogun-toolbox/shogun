@@ -53,7 +53,7 @@ class OligoStringKernel : public StringKernel<char>
 		 * @param width - equivalent to 2*sigma^2
 		 */
 		OligoStringKernel(
-				std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+				const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 				int32_t k, float64_t width);
 
 		/** Destructor */

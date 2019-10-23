@@ -32,6 +32,8 @@
  */
 #include <shogun/machine/gp/LikelihoodModel.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LikelihoodModel::LikelihoodModel()
@@ -45,7 +47,7 @@ LikelihoodModel::~LikelihoodModel()
 SGVector<float64_t> LikelihoodModel::get_predictive_log_probabilities(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels >lab)
 {
-	return get_log_zeroth_moments(mu, s2, lab);
+	return get_log_zeroth_moments(mu, s2, std::move(lab));
 }
 
 SGVector<float64_t> LikelihoodModel::get_log_probability_fmatrix(

@@ -88,7 +88,7 @@ class TOPFeatures : public DenseFeatures<float64_t>
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		void set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n);
+		void set_models(const std::shared_ptr<HMM>& p, const std::shared_ptr<HMM>& n);
 
 		/** set feature matrix
 		 *
@@ -108,7 +108,7 @@ class TOPFeatures : public DenseFeatures<float64_t>
 		 * @param hmm_idx HMM index
 		 * @return if computing was successful
 		 */
-		bool compute_relevant_indizes(std::shared_ptr<HMM> hmm, T_HMM_INDIZES* hmm_idx);
+		bool compute_relevant_indizes(const std::shared_ptr<HMM>& hmm, T_HMM_INDIZES* hmm_idx);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "TOPFeatures"; }

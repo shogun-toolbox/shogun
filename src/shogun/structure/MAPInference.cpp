@@ -10,6 +10,8 @@
 #include <shogun/structure/GEMPLP.h>
 #include <shogun/labels/FactorGraphLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MAPInference::MAPInference() : SGObject()
@@ -113,7 +115,7 @@ MAPInferImpl::MAPInferImpl(std::shared_ptr<FactorGraph> fg)
 	: SGObject()
 {
 	register_parameters();
-	m_fg = fg;
+	m_fg = std::move(fg);
 }
 
 MAPInferImpl::~MAPInferImpl()

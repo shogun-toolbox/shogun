@@ -9,13 +9,15 @@
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 StreamingHashedDocDotFeatures::StreamingHashedDocDotFeatures(std::shared_ptr<StreamingFile> file,
 	bool is_labelled, int32_t size,	std::shared_ptr<Tokenizer> tzer, int32_t bits)
 : StreamingDotFeatures()
 {
-	init(file, is_labelled, size, tzer, bits, true, 1, 0);
+	init(std::move(file), is_labelled, size, std::move(tzer), bits, true, 1, 0);
 }
 
 StreamingHashedDocDotFeatures::StreamingHashedDocDotFeatures() : StreamingDotFeatures()
@@ -32,12 +34,12 @@ StreamingHashedDocDotFeatures::StreamingHashedDocDotFeatures(
 	bool is_labelled = (lab != NULL);
 	int32_t size=1024;
 
-	init(file, is_labelled, size, tzer, bits, true, 1, 0);
+	init(file, is_labelled, size, std::move(tzer), bits, true, 1, 0);
 
 	parser.set_free_vectors_on_destruct(false);
 	seekable= true;
 }
-void StreamingHashedDocDotFeatures::init(std::shared_ptr<StreamingFile> file, bool is_labelled,
+void StreamingHashedDocDotFeatures::init(const std::shared_ptr<StreamingFile>& file, bool is_labelled,
 	int32_t size, std::shared_ptr<Tokenizer> tzer, int32_t bits, bool normalize, int32_t n_grams, int32_t skips)
 {
 	num_bits = bits;

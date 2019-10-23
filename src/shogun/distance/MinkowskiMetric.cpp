@@ -26,7 +26,7 @@ MinkowskiMetric::MinkowskiMetric(float64_t k_)
 }
 
 MinkowskiMetric::MinkowskiMetric(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, float64_t k_)
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, float64_t k_)
 : DenseDistance<float64_t>()
 {
 	init();

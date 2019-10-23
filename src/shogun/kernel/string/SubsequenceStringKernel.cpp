@@ -25,8 +25,8 @@ SubsequenceStringKernel::SubsequenceStringKernel(int32_t size, int32_t maxlen,
 	register_params();
 }
 
-SubsequenceStringKernel::SubsequenceStringKernel(std::shared_ptr<StringFeatures<char>> l,
-		std::shared_ptr<StringFeatures<char>> r, int32_t maxlen, float64_t lambda)
+SubsequenceStringKernel::SubsequenceStringKernel(const std::shared_ptr<StringFeatures<char>>& l,
+		const std::shared_ptr<StringFeatures<char>>& r, int32_t maxlen, float64_t lambda)
 : StringKernel<char>(10), m_maxlen(maxlen), m_lambda(lambda)
 {
 	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());

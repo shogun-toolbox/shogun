@@ -63,7 +63,7 @@ class IndexFeatures : public DummyFeatures
 		 *
 		 * @param feature_index feature index vector
 		 */
-		IndexFeatures(SGVector<index_t> feature_index);
+		IndexFeatures(const SGVector<index_t>& feature_index);
 
 		/** destructor */
 		virtual ~IndexFeatures();

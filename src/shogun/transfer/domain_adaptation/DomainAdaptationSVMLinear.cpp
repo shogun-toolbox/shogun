@@ -8,11 +8,12 @@
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
+#include <utility>
 #include <vector>
 
 using namespace shogun;
@@ -24,9 +25,9 @@ DomainAdaptationSVMLinear::DomainAdaptationSVMLinear() : LibLinear(L2R_L1LOSS_SV
 }
 
 
-DomainAdaptationSVMLinear::DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<DotFeatures> f, std::shared_ptr<Labels> lab, std::shared_ptr<LinearMachine> pre_svm, float64_t B_param) : LibLinear(C, f, lab)
+DomainAdaptationSVMLinear::DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<DotFeatures> f, std::shared_ptr<Labels> lab, std::shared_ptr<LinearMachine> pre_svm, float64_t B_param) : LibLinear(C, std::move(f), std::move(lab))
 {
-	init(pre_svm, B_param);
+	init(std::move(pre_svm), B_param);
 
 }
 
@@ -38,7 +39,7 @@ DomainAdaptationSVMLinear::~DomainAdaptationSVMLinear()
 }
 
 
-void DomainAdaptationSVMLinear::init(std::shared_ptr<LinearMachine> pre_svm, float64_t B_param)
+void DomainAdaptationSVMLinear::init(const std::shared_ptr<LinearMachine>& pre_svm, float64_t B_param)
 {
 
 	if (pre_svm)

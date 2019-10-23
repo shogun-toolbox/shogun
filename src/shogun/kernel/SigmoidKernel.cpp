@@ -26,7 +26,7 @@ SigmoidKernel::SigmoidKernel(int32_t size, float64_t g, float64_t c)
 }
 
 SigmoidKernel::SigmoidKernel(
-    std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size, float64_t g, float64_t c)
+    const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t size, float64_t g, float64_t c)
     : DotKernel(size)
 {
 	init();

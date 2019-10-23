@@ -37,7 +37,7 @@ class ImplicitWeightedSpecFeatures : public DotFeatures
 		 * @param str stringfeatures (of words)
 		 * @param normalize whether to use sqrtdiag normalization
 		 */
-		ImplicitWeightedSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize=true);
+		ImplicitWeightedSpecFeatures(const std::shared_ptr<StringFeatures<uint16_t>>& str, bool normalize=true);
 
 		/** copy constructor */
 		ImplicitWeightedSpecFeatures(const ImplicitWeightedSpecFeatures & orig);

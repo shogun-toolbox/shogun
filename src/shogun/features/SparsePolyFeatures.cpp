@@ -24,7 +24,7 @@ SparsePolyFeatures::SparsePolyFeatures(): DotFeatures()
 	m_hash_bits = 0;
 }
 
-SparsePolyFeatures::SparsePolyFeatures(std::shared_ptr<SparseFeatures<float64_t>> feat, int32_t degree, bool normalize, int32_t hash_bits)
+SparsePolyFeatures::SparsePolyFeatures(const std::shared_ptr<SparseFeatures<float64_t>>& feat, int32_t degree, bool normalize, int32_t hash_bits)
 	: DotFeatures(), m_normalization_values(NULL)
 {
 	ASSERT(feat)

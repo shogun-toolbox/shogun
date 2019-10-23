@@ -42,7 +42,7 @@ class KDTREEKNNSolver : public KNNSolver
 		 * @param train_labels m_train_labels
 		 * @param leaf_size m_leaf_size
 		 */
-		KDTREEKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t leaf_size);
+		KDTREEKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels, const int32_t leaf_size);
 
 		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 

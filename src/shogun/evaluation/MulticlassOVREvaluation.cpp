@@ -17,7 +17,7 @@ MulticlassOVREvaluation::MulticlassOVREvaluation() :
 {
 }
 
-MulticlassOVREvaluation::MulticlassOVREvaluation(std::shared_ptr<BinaryClassEvaluation> binary_evaluation) :
+MulticlassOVREvaluation::MulticlassOVREvaluation(const std::shared_ptr<BinaryClassEvaluation>& binary_evaluation) :
 	Evaluation(), m_binary_evaluation(nullptr), m_graph_results(nullptr), m_num_graph_results(0)
 {
     SG_ADD((std::shared_ptr<Evaluation>*)&m_binary_evaluation, "binary_evaluation", "binary evaluator")

@@ -29,6 +29,8 @@
  */
 #include <shogun/optimization/SMDMinimizer.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SMDMinimizer::SMDMinimizer()
@@ -43,7 +45,7 @@ SMDMinimizer::~SMDMinimizer()
 }
 
 SMDMinimizer::SMDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
-	:FirstOrderStochasticMinimizer(fun)
+	:FirstOrderStochasticMinimizer(std::move(fun))
 {
 	init();
 }

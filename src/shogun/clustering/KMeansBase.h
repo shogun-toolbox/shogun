@@ -43,7 +43,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		*/
-		KMeansBase(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
+		KMeansBase(int32_t k_i, std::shared_ptr<Distance> d_i, const SGMatrix<float64_t>& centers_i);
 		
 		virtual ~KMeansBase();
 
@@ -92,7 +92,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 
 	protected:
 		/** Initialize training for KMeans algorithms */
-		void initialize_training(std::shared_ptr<Features> data=NULL);
+		void initialize_training(const std::shared_ptr<Features>& data=NULL);
 
 		/** K-Means++ algorithm to initialize cluster centers
 		*

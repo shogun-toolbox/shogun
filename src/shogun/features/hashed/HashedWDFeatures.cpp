@@ -30,7 +30,7 @@ HashedWDFeatures::HashedWDFeatures() :DotFeatures()
 	normalization_const = 0.0;
 }
 
-HashedWDFeatures::HashedWDFeatures(std::shared_ptr<StringFeatures<uint8_t>> str,
+HashedWDFeatures::HashedWDFeatures(const std::shared_ptr<StringFeatures<uint8_t>>& str,
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : DotFeatures()
 {

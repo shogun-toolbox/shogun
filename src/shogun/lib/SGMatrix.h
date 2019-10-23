@@ -461,13 +461,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(std::shared_ptr<File> loader);
+		void load(const std::shared_ptr<File>& loader);
 
 		/** Save matrix to file
 		 *
 		 * @param saver File object via which to save data
 		 */
-		void save(std::shared_ptr<File> saver);
+		void save(const std::shared_ptr<File>& saver);
 #endif // #ifndef SWIG // SWIG should skip this part
 
 	protected:

@@ -28,7 +28,7 @@ class ManhattanWordDistance: public StringDistance<uint16_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		ManhattanWordDistance(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r);
+		ManhattanWordDistance(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r);
 		virtual ~ManhattanWordDistance();
 
 		/** init distance

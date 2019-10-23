@@ -22,7 +22,7 @@ WaveletKernel::WaveletKernel(int32_t size, float64_t a, float64_t c)
 }
 
 WaveletKernel::WaveletKernel(
-	std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size, float64_t a, float64_t c)
+	const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t size, float64_t a, float64_t c)
 : DotKernel(size), Wdilation(a), Wtranslation(c)
 {
 	init();

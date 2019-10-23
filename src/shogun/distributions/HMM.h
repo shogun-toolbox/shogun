@@ -490,7 +490,7 @@ class HMM : public RandomMixin<Distribution>
 		HMM(FILE* model_file, float64_t PSEUDO);
 
 		/// Constructor - Clone model h
-		HMM(std::shared_ptr<HMM> h);
+		HMM(const std::shared_ptr<HMM>& h);
 
 		/// Destructor - Cleanup
 		virtual ~HMM();
@@ -635,31 +635,31 @@ class HMM : public RandomMixin<Distribution>
 		/** uses baum-welch-algorithm to train a fully connected HMM.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_baum_welch(std::shared_ptr<HMM> train);
-		void estimate_model_baum_welch_trans(std::shared_ptr<HMM> train);
+		void estimate_model_baum_welch(const std::shared_ptr<HMM>& train);
+		void estimate_model_baum_welch_trans(const std::shared_ptr<HMM>& train);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		void ab_buf_comp(
 			float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
 			float64_t* b_buf, int32_t dim) ;
 #else
-		void estimate_model_baum_welch_old(std::shared_ptr<HMM> train);
+		void estimate_model_baum_welch_old(const std::shared_ptr<HMM>& train);
 #endif
 
 		/** uses baum-welch-algorithm to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_baum_welch_defined(std::shared_ptr<HMM> train);
+		void estimate_model_baum_welch_defined(const std::shared_ptr<HMM>& train);
 
 		/** uses viterbi training to train a fully connected HMM
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_viterbi(std::shared_ptr<HMM> train);
+		void estimate_model_viterbi(const std::shared_ptr<HMM>& train);
 
 		/** uses viterbi training to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_viterbi_defined(std::shared_ptr<HMM> train);
+		void estimate_model_viterbi_defined(const std::shared_ptr<HMM>& train);
 
 		//@}
 
@@ -699,12 +699,12 @@ class HMM : public RandomMixin<Distribution>
 		/// the other state is the start state of the append_model.
 		/// transition probability from state 1 to states 1 is 1
 		bool append_model(
-			std::shared_ptr<HMM> append_model, float64_t* cur_out, float64_t* app_out);
+			const std::shared_ptr<HMM>& append_model, float64_t* cur_out, float64_t* app_out);
 
 		/// appends the append_model to the current hmm, here
 		/// no extra states are created. former q_i are multiplied by q_ji
 		/// to give the a_ij from the current hmm to the append_model
-		bool append_model(std::shared_ptr<HMM> append_model);
+		bool append_model(const std::shared_ptr<HMM>& append_model);
 
 		/// set any model parameter with probability smaller than value to ZERO
 		void chop(float64_t value);
@@ -729,7 +729,7 @@ class HMM : public RandomMixin<Distribution>
 		void clear_model_defined();
 
 		/// copies the the modelparameters from l
-		void copy_model(std::shared_ptr<HMM> l);
+		void copy_model(const std::shared_ptr<HMM>& l);
 
 		/** invalidates all caches.
 		 * this function has to be called when direct changes to the model have been made.
@@ -785,12 +785,12 @@ class HMM : public RandomMixin<Distribution>
 		 * sets the observation pointer and initializes observation-dependent caches
 		 * if hmm is given, then the caches of the model hmm are used
 		 */
-		void set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::shared_ptr<HMM> hmm=NULL);
+		void set_observations(const std::shared_ptr<StringFeatures<uint16_t>>& obs, const std::shared_ptr<HMM>& hmm=NULL);
 
 		/** set new observations
 		 * only set the observation pointer and drop caches if there were any
 		 */
-		void set_observation_nocache(std::shared_ptr<StringFeatures<uint16_t>> obs);
+		void set_observation_nocache(const std::shared_ptr<StringFeatures<uint16_t>>& obs);
 
 		/// return observation pointer
 		inline std::shared_ptr<StringFeatures<uint16_t>> get_observations()

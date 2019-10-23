@@ -30,14 +30,15 @@
 
 #include <algorithm>
 #include <numeric>
-#include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/statistical_testing/internals/Block.h>
+#include <utility>
 
 using namespace shogun;
 using namespace internal;
 
-Block::Block(std::shared_ptr<Features> feats, index_t index, index_t size) : m_feats(feats)
+Block::Block(std::shared_ptr<Features> feats, index_t index, index_t size) : m_feats(std::move(feats))
 {
 	require(m_feats!=nullptr, "Underlying feature object cannot be null!");
 
@@ -69,7 +70,7 @@ Block::~Block()
 
 }
 
-std::vector<Block> Block::create_blocks(std::shared_ptr<Features> feats, index_t num_blocks, index_t size)
+std::vector<Block> Block::create_blocks(const std::shared_ptr<Features>& feats, index_t num_blocks, index_t size)
 {
 	std::vector<Block> vec;
 	for (index_t i=0; i<num_blocks; ++i)

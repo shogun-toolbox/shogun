@@ -29,7 +29,7 @@ PlifArray::~PlifArray()
 {
 }
 
-void PlifArray::add_plif(std::shared_ptr<PlifBase> new_plif)
+void PlifArray::add_plif(const std::shared_ptr<PlifBase>& new_plif)
 {
 	ASSERT(new_plif)
 	m_array.push_back(new_plif) ;

@@ -62,7 +62,7 @@ class MulticlassSVM : public KernelMulticlassMachine
 		 * @param svm SVM to set
 		 * @return if setting was successful
 		 */
-		bool set_svm(int32_t num, std::shared_ptr<SVM> svm);
+		bool set_svm(int32_t num, const std::shared_ptr<SVM>& svm);
 
 		/** get SVM
 		 *

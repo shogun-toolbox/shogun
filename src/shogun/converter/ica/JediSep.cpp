@@ -37,7 +37,7 @@ JediSep::~JediSep()
 {
 }
 
-void JediSep::set_tau(SGVector<float64_t> tau)
+void JediSep::set_tau(const SGVector<float64_t>& tau)
 {
 	m_tau = tau;
 }

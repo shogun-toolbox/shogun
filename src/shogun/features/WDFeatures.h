@@ -35,7 +35,7 @@ class WDFeatures : public DotFeatures
 		 * @param order of wd kernel
 		 * @param from_order use first order weights from higher order weighting
 		 */
-		WDFeatures(std::shared_ptr<StringFeatures<uint8_t>> str, int32_t order, int32_t from_order);
+		WDFeatures(const std::shared_ptr<StringFeatures<uint8_t>>& str, int32_t order, int32_t from_order);
 
 		/** copy constructor */
 		WDFeatures(const WDFeatures & orig);

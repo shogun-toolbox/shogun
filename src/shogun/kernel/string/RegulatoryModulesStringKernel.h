@@ -48,7 +48,7 @@ class RegulatoryModulesStringKernel: public StringKernel<char>
 		 * @param window size of window around motifs to compute wds kernels on
 		 * @param size cache size
 		 */
-		RegulatoryModulesStringKernel(std::shared_ptr<StringFeatures<char>> lstr, std::shared_ptr<StringFeatures<char>> rstr,
+		RegulatoryModulesStringKernel(const std::shared_ptr<StringFeatures<char>>& lstr, const std::shared_ptr<StringFeatures<char>>& rstr,
 			std::shared_ptr<DenseFeatures<uint16_t>> lpos, std::shared_ptr<DenseFeatures<uint16_t>> rpos,
 			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
@@ -81,7 +81,7 @@ class RegulatoryModulesStringKernel: public StringKernel<char>
 		 * @param positions_rhs motif positions on rhs
 		 */
 		void set_motif_positions(
-			std::shared_ptr<DenseFeatures<uint16_t>> positions_lhs, std::shared_ptr<DenseFeatures<uint16_t>> positions_rhs);
+			const std::shared_ptr<DenseFeatures<uint16_t>>& positions_lhs, const std::shared_ptr<DenseFeatures<uint16_t>>& positions_rhs);
 
 	protected:
 		/** compute kernel function for features a and b

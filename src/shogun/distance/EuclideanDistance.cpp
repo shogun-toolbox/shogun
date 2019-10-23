@@ -19,7 +19,7 @@ EuclideanDistance::EuclideanDistance() : Distance()
 	register_params();
 }
 
-EuclideanDistance::EuclideanDistance(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r) : Distance()
+EuclideanDistance::EuclideanDistance(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r) : Distance()
 {
 	register_params();
 	init(l, r);

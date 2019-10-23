@@ -26,7 +26,7 @@ IndexBlock::~IndexBlock()
 
 }
 
-void IndexBlock::add_sub_block(std::shared_ptr<IndexBlock> sub_block)
+void IndexBlock::add_sub_block(const std::shared_ptr<IndexBlock>& sub_block)
 {
 	ASSERT(sub_block->get_min_index()>=m_min_index)
 	ASSERT(sub_block->get_max_index()<=m_max_index)

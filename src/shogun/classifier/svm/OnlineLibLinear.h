@@ -59,7 +59,7 @@ public:
 		 * Copy Constructor
 		 * @param mch another OnlineLibLinear machine
 		 */
-		OnlineLibLinear(std::shared_ptr<OnlineLibLinear >mch);
+		OnlineLibLinear(const std::shared_ptr<OnlineLibLinear >&mch);
 
 		/** Destructor */
 		virtual ~OnlineLibLinear();
@@ -128,7 +128,7 @@ private:
 		 * @param ex the example being trained
 		 * @param label label of this example
 		 */
-		void train_one(SGVector<float32_t> ex, float64_t label);
+		void train_one(const SGVector<float32_t>& ex, float64_t label);
 
 		/** train on one *sparse* vector
 		 * @param ex the example being trained

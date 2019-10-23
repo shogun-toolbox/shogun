@@ -21,6 +21,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include <utility>
+
 using namespace shogun;
 
 //#define USE_TMP_ARRAYCLASS
@@ -689,7 +691,7 @@ void DynProg::set_orf_info(SGMatrix<int32_t> orf_info)
 	m_orf_info.set_array(orf_info.matrix, orf_info.num_rows, orf_info.num_cols, true, true) ;
 }
 
-void DynProg::set_sparse_features(std::shared_ptr<SparseFeatures<float64_t>> seq_sparse1, std::shared_ptr<SparseFeatures<float64_t>> seq_sparse2)
+void DynProg::set_sparse_features(const std::shared_ptr<SparseFeatures<float64_t>>& seq_sparse1, const std::shared_ptr<SparseFeatures<float64_t>>& seq_sparse2)
 {
 	if ((!seq_sparse1 && seq_sparse2) || (seq_sparse1 && !seq_sparse2))
 		error("Sparse features must either both be NULL or both NON-NULL");
@@ -702,7 +704,7 @@ void DynProg::set_plif_matrices(std::shared_ptr<PlifMatrix> pm)
 {
 
 
-	m_plif_matrices=pm;
+	m_plif_matrices=std::move(pm);
 
 
 }
@@ -2438,6 +2440,6 @@ void DynProg::lookup_content_svm_values(const int32_t from_state, const int32_t 
 }
 void DynProg::set_intron_list(std::shared_ptr<IntronList> intron_list, int32_t num_plifs)
 {
-	m_intron_list = intron_list;
+	m_intron_list = std::move(intron_list);
 	m_num_intron_plifs = num_plifs;
 }

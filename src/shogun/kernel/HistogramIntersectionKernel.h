@@ -46,7 +46,7 @@ class HistogramIntersectionKernel: public DotKernel
 		 * @param size cache size
 		 */
 		HistogramIntersectionKernel(
-			std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
+			const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			float64_t beta=1.0, int32_t size=10);
 
 		virtual ~HistogramIntersectionKernel();

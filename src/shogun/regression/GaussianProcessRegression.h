@@ -38,7 +38,7 @@ public:
 	 *
 	 * @param method chosen inference method
 	 */
-	GaussianProcessRegression(std::shared_ptr<Inference> method);
+	GaussianProcessRegression(const std::shared_ptr<Inference>& method);
 
 	virtual ~GaussianProcessRegression();
 
@@ -53,13 +53,13 @@ public:
 	 *
 	 * @return predicted mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_mean_vector(const std::shared_ptr<Features>& data);
 
 	/** get variance vector
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_variance_vector(const std::shared_ptr<Features>& data);
 
 	/** get classifier type
 	 *

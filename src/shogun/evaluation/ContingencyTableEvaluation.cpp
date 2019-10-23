@@ -102,7 +102,7 @@ ContingencyTableEvaluation::get_evaluation_direction() const
 	return ED_MINIMIZE;
 }
 
-void ContingencyTableEvaluation::compute_scores(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth)
+void ContingencyTableEvaluation::compute_scores(const std::shared_ptr<BinaryLabels>& predicted, const std::shared_ptr<BinaryLabels>& ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;

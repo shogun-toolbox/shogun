@@ -18,6 +18,8 @@
 
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -34,40 +36,40 @@ QDA::QDA(float64_t tolerance, bool store_covs)
 	m_store_covs = store_covs;
 }
 
-QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(trainlab);
+	set_labels(std::move(trainlab));
 }
 
-QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(trainlab);
+	set_labels(std::move(trainlab));
 	m_tolerance = tolerance;
 }
 
-QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, bool store_covs)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, bool store_covs)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(trainlab);
+	set_labels(std::move(trainlab));
 	m_store_covs = store_covs;
 }
 
 
 
-QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(trainlab);
+	set_labels(std::move(trainlab));
 	m_tolerance = tolerance;
 	m_store_covs = store_covs;
 }

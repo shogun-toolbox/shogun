@@ -47,7 +47,7 @@ LBFGSTestCostFunction::~LBFGSTestCostFunction()
 
 }
 
-void LBFGSTestCostFunction::set_target(std::shared_ptr<PiecewiseQuadraticObject >obj)
+void LBFGSTestCostFunction::set_target(const std::shared_ptr<PiecewiseQuadraticObject >&obj)
 {
 	if(obj!=m_obj)
 	{
@@ -120,12 +120,12 @@ void PiecewiseQuadraticObject::init()
 	SG_ADD(&m_truth_x, "truth_x", "truth_x");
 }
 
-void PiecewiseQuadraticObject::set_init_x(SGVector<float64_t> init_x)
+void PiecewiseQuadraticObject::set_init_x(const SGVector<float64_t>& init_x)
 {
 	m_init_x=init_x;
 }
 
-void PiecewiseQuadraticObject::set_truth_x(SGVector<float64_t> truth_x)
+void PiecewiseQuadraticObject::set_truth_x(const SGVector<float64_t>& truth_x)
 {
 	m_truth_x=truth_x;
 }

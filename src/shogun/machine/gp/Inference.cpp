@@ -38,6 +38,8 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 Inference::Inference()
@@ -69,11 +71,11 @@ Inference::Inference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> f
 {
 	init();
 
-	set_kernel(kernel);
-	set_features(features);
-	set_labels(labels);
-	set_model(model);
-	set_mean(mean);
+	set_kernel(std::move(kernel));
+	set_features(std::move(features));
+	set_labels(std::move(labels));
+	set_model(std::move(model));
+	set_mean(std::move(mean));
 }
 
 Inference::~Inference()

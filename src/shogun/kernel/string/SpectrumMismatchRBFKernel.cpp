@@ -46,8 +46,8 @@ SpectrumMismatchRBFKernel::SpectrumMismatchRBFKernel(int32_t size,
 	register_params();
 }
 
-SpectrumMismatchRBFKernel::SpectrumMismatchRBFKernel(std::shared_ptr<StringFeatures<char>> l,
-		std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix_,
+SpectrumMismatchRBFKernel::SpectrumMismatchRBFKernel(const std::shared_ptr<StringFeatures<char>>& l,
+		const std::shared_ptr<StringFeatures<char>>& r, int32_t size, float64_t* AA_matrix_,
 		int32_t nr, int32_t nc, int32_t degree_, int32_t max_mismatch_,
 		float64_t width_) :
 		StringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(
@@ -123,7 +123,7 @@ float64_t SpectrumMismatchRBFKernel::AA_helper(std::string &path,
 }
 
 void SpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
-		std::vector<struct joint_list_struct> &joint_list, std::string path,
+		std::vector<struct joint_list_struct> &joint_list, const std::string& path,
 		unsigned int d)
 {
 	const char* AA="ACDEFGHIKLMNPQRSTVWY";

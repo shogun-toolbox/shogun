@@ -219,7 +219,7 @@ class CombinedDotFeatures : public DotFeatures
 		 * @param idx position where to insert the feature obj
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(std::shared_ptr<DotFeatures> obj, int32_t idx);
+		bool insert_feature_obj(const std::shared_ptr<DotFeatures>& obj, int32_t idx);
 
 		/** append feature object
 		 *

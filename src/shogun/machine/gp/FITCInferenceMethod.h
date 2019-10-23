@@ -77,7 +77,7 @@ public:
 	 * @param inference inference method
 	 * @return casted FITCInferenceMethod object
 	 */
-	static std::shared_ptr<FITCInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
+	static std::shared_ptr<FITCInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *

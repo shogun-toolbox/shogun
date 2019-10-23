@@ -39,7 +39,7 @@ float64_t ROCEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared
 	return evaluate_roc(binary_labels(predicted),binary_labels(ground_truth));
 }
 
-float64_t ROCEvaluation::evaluate_roc(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth)
+float64_t ROCEvaluation::evaluate_roc(const std::shared_ptr<BinaryLabels>& predicted, const std::shared_ptr<BinaryLabels>& ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())

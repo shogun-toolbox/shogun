@@ -49,7 +49,7 @@ using std::unique_ptr;
 struct MultiKernelQuadraticTimeMMD::Self
 {
 	Self(QuadraticTimeMMD* owner);
-	void update_pairwise_distance(std::shared_ptr<Distance >distance);
+	void update_pairwise_distance(const std::shared_ptr<Distance >&distance);
 
 	QuadraticTimeMMD* m_owner;
 	std::shared_ptr<CustomDistance> m_pairwise_distance;
@@ -65,7 +65,7 @@ MultiKernelQuadraticTimeMMD::Self::Self(QuadraticTimeMMD* owner) : m_owner(owner
 {
 }
 
-void MultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(std::shared_ptr<Distance> distance)
+void MultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(const std::shared_ptr<Distance>& distance)
 {
 	ASSERT(distance);
 	if (m_dtype==distance->get_distance_type())
@@ -95,7 +95,7 @@ MultiKernelQuadraticTimeMMD::~MultiKernelQuadraticTimeMMD()
 	cleanup();
 }
 
-void MultiKernelQuadraticTimeMMD::add_kernel(std::shared_ptr<Kernel >kernel)
+void MultiKernelQuadraticTimeMMD::add_kernel(const std::shared_ptr<Kernel >&kernel)
 {
 	ASSERT(self->m_owner);
 	require(kernel, "Kernel instance cannot be NULL!");

@@ -82,7 +82,7 @@ void ParameterObserverCV::on_complete()
 }
 
 void ParameterObserverCV::print_observed_value(
-    std::shared_ptr<CrossValidationStorage> value) const
+    const std::shared_ptr<CrossValidationStorage>& value) const
 {
 	for (index_t i = 0; i < value->get<index_t>("num_folds"); i++)
 	{
@@ -108,7 +108,7 @@ void ParameterObserverCV::print_observed_value(
 	}
 }
 
-void ParameterObserverCV::print_machine_information(std::shared_ptr<Machine> machine) const
+void ParameterObserverCV::print_machine_information(const std::shared_ptr<Machine>& machine) const
 {
 	if (std::dynamic_pointer_cast<LinearMachine>(machine))
 	{

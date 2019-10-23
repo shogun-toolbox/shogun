@@ -14,6 +14,6 @@ LOOCrossValidationSplitting::LOOCrossValidationSplitting() :
 {}
 
 LOOCrossValidationSplitting::LOOCrossValidationSplitting(
-		std::shared_ptr<Labels> labels) :
+		const std::shared_ptr<Labels>& labels) :
 	CrossValidationSplitting(labels, labels->get_num_labels())
 {}

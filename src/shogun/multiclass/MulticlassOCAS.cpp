@@ -11,6 +11,8 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/labels/MulticlassLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 struct mocas_data
@@ -38,8 +40,8 @@ MulticlassOCAS::MulticlassOCAS() :
 	set_buf_size(5000);
 }
 
-MulticlassOCAS::MulticlassOCAS(float64_t C, std::shared_ptr<Features> train_features, std::shared_ptr<Labels> train_labels) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), train_features->as<DotFeatures>(), NULL, train_labels), m_C(C)
+MulticlassOCAS::MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& train_features, std::shared_ptr<Labels> train_labels) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), train_features->as<DotFeatures>(), NULL, std::move(train_labels)), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);

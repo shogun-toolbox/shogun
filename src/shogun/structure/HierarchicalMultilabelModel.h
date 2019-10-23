@@ -45,7 +45,7 @@ public:
 	 * class or not
 	 */
 	HierarchicalMultilabelModel(std::shared_ptr<Features > features, std::shared_ptr<StructuredLabels > labels,
-	                             SGVector<int32_t> taxonomy, bool leaf_nodes_mandatory = false);
+	                             const SGVector<int32_t>& taxonomy, bool leaf_nodes_mandatory = false);
 
 	/** destructor */
 	virtual ~HierarchicalMultilabelModel();

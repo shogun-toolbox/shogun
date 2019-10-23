@@ -37,7 +37,7 @@ class HammingWordDistance: public StringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 * @param use_sign if sign shall be used
 		 */
-		HammingWordDistance(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, bool use_sign);
+		HammingWordDistance(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, bool use_sign);
 		virtual ~HammingWordDistance();
 
 		/** init distance

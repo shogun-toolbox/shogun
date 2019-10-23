@@ -32,7 +32,7 @@ public:
 	 * @param do_line_search whether do analytical line search
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	FWSOSVM(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs,
+	FWSOSVM(const std::shared_ptr<StructuredModel>& model, const std::shared_ptr<StructuredLabels>& labs,
 			bool do_line_search = true, bool verbose = false);
 
 	/** destructor */

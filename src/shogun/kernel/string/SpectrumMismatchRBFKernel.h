@@ -66,8 +66,8 @@ public:
 	 * @param max_mismatch
 	 * @param width
 	 */
-	SpectrumMismatchRBFKernel(std::shared_ptr<StringFeatures<char>> l,
-			std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix_,
+	SpectrumMismatchRBFKernel(const std::shared_ptr<StringFeatures<char>>& l,
+			const std::shared_ptr<StringFeatures<char>>& r, int32_t size, float64_t* AA_matrix_,
 			int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch,
 			float64_t width);
 
@@ -182,7 +182,7 @@ protected:
 	 */
 	void compute_helper_all(const char* joint_seq,
 			std::vector<struct joint_list_struct> & joint_list,
-			std::string path, unsigned int d);
+			const std::string& path, unsigned int d);
 
 	/** computer all */
 	void compute_all();

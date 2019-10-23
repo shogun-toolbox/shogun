@@ -11,6 +11,8 @@
 #include <shogun/structure/MultilabelModel.h>
 #include <shogun/structure/MultilabelSOLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MultilabelModel::MultilabelModel()
@@ -20,7 +22,7 @@ MultilabelModel::MultilabelModel()
 }
 
 MultilabelModel::MultilabelModel(std::shared_ptr<Features > features, std::shared_ptr<StructuredLabels > labels)
-	: StructuredModel(features, labels)
+	: StructuredModel(std::move(features), std::move(labels))
 {
 	init();
 }

@@ -96,7 +96,7 @@ public:
 	 * @param lik likelihood model
 	 * @return casted GaussianLikelihood object
 	 */
-	static std::shared_ptr<GaussianLikelihood> obtain_from_generic(std::shared_ptr<LikelihoodModel> lik);
+	static std::shared_ptr<GaussianLikelihood> obtain_from_generic(const std::shared_ptr<LikelihoodModel>& lik);
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *

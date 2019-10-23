@@ -32,7 +32,7 @@ class GNPPLib: public SGObject
    * @param num_data number of data
    * @param reg_const reg const
    */
-  GNPPLib(float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data, float64_t reg_const);
+  GNPPLib(float64_t* vector_y, const std::shared_ptr<Kernel>& kernel, int32_t num_data, float64_t reg_const);
   virtual ~GNPPLib();
 
   /** --------------------------------------------------------------

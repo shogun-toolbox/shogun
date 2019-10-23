@@ -20,8 +20,8 @@ StochasticSOSVM::StochasticSOSVM()
 }
 
 StochasticSOSVM::StochasticSOSVM(
-		std::shared_ptr<StructuredModel>  model,
-		std::shared_ptr<StructuredLabels> labs,
+		const std::shared_ptr<StructuredModel>&  model,
+		const std::shared_ptr<StructuredLabels>& labs,
 		bool do_weighted_averaging,
 		bool verbose)
 : RandomMixin<LinearStructuredOutputMachine>(model, labs)

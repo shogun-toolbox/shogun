@@ -43,6 +43,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -193,8 +195,8 @@ public:
 	{
 
 
-		m_f=f;
-		m_g=g;
+		m_f=std::move(f);
+		m_g=std::move(g);
 	}
 
 	virtual ~ProductFunction()
@@ -291,7 +293,7 @@ StudentsTLikelihood::~StudentsTLikelihood()
 }
 
 std::shared_ptr<StudentsTLikelihood> StudentsTLikelihood::obtain_from_generic(
-		std::shared_ptr<LikelihoodModel> lik)
+		const std::shared_ptr<LikelihoodModel>& lik)
 {
 	ASSERT(lik!=NULL);
 

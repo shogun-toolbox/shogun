@@ -14,6 +14,8 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/labels/MultilabelLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MulticlassMachine::MulticlassMachine()
@@ -27,12 +29,12 @@ MulticlassMachine::MulticlassMachine()
 MulticlassMachine::MulticlassMachine(
 		std::shared_ptr<MulticlassStrategy >strategy,
 		std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs)
-: BaseMulticlassMachine(), m_multiclass_strategy(strategy)
+: BaseMulticlassMachine(), m_multiclass_strategy(std::move(strategy))
 {
 
-	set_labels(labs);
+	set_labels(std::move(labs));
 
-	m_machine = machine;
+	m_machine = std::move(machine);
 	register_parameters();
 }
 

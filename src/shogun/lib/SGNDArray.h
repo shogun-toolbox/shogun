@@ -45,7 +45,7 @@ template<class T> class SGNDArray : public SGReferencedData
 		 * @param d dimentions of the array
 		 * @param ref_counting if true, count the reference
 		 */
-		SGNDArray(SGVector<index_t> d, bool ref_counting=true);
+		SGNDArray(const SGVector<index_t>& d, bool ref_counting=true);
 
 		/** copy constructor
 		 *

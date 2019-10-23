@@ -18,6 +18,8 @@
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 
+#include <utility>
+
 
 using namespace shogun;
 
@@ -39,8 +41,8 @@ LibLinear::LibLinear(float64_t C, std::shared_ptr<DotFeatures> traindat, std::sh
 	set_C(C, C);
 	set_bias_enabled(true);
 
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 	init_linear_term();
 }
 

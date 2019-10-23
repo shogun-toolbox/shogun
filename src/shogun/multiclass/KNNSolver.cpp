@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-KNNSolver::KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels)
+KNNSolver::KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels)
 : DistanceMachine()
 {
 	init();

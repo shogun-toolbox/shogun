@@ -290,7 +290,7 @@ private:
 };
 
 template<typename Writer>
-void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, std::shared_ptr<SGObject> object) noexcept(false)
+void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, const std::shared_ptr<SGObject>& object) noexcept(false)
 {
 	pre_serialize(object);
 

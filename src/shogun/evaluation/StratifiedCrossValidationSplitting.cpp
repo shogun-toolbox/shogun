@@ -11,6 +11,8 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 StratifiedCrossValidationSplitting::StratifiedCrossValidationSplitting() :
@@ -20,7 +22,7 @@ StratifiedCrossValidationSplitting::StratifiedCrossValidationSplitting() :
 
 StratifiedCrossValidationSplitting::StratifiedCrossValidationSplitting(
 		std::shared_ptr<Labels> labels, index_t num_subsets) :
-	RandomMixin<SplittingStrategy>(labels, num_subsets)
+	RandomMixin<SplittingStrategy>(std::move(labels), num_subsets)
 {
 }
 

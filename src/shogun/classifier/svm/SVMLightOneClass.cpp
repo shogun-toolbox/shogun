@@ -30,13 +30,15 @@ extern "C" {
 
 #include <shogun/base/Parallel.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SVMLightOneClass::SVMLightOneClass(float64_t C, std::shared_ptr<Kernel> k)
 : SVMLight()
 {
 	set_C(C,C);
-	set_kernel(k);
+	set_kernel(std::move(k));
 }
 
 SVMLightOneClass::SVMLightOneClass()

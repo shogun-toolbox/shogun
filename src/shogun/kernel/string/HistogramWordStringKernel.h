@@ -40,7 +40,7 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 		 * @param pie plugin estimate
 		 */
 		HistogramWordStringKernel(
-			std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
+			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
 			std::shared_ptr<PluginEstimate> pie);
 
 		virtual ~HistogramWordStringKernel();

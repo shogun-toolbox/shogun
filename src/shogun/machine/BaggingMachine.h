@@ -143,7 +143,7 @@ namespace shogun
 		 * @param data the data to compute the output for
 		 * @return predictions
 		 */
-		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
+		SGVector<float64_t> apply_get_outputs(const std::shared_ptr<Features>& data);
 
 		/** helper function for the apply_{binary,..} functions that
 		 * computes the output probabilities without combination rules

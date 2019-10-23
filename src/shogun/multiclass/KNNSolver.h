@@ -35,7 +35,7 @@ class KNNSolver : public DistanceMachine
 		 * @param min_label m_min_label
 		 * @param train_labels m_train_labels 
 		 */
-		KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels);
+		KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels);
 
 		/** compute the histogram of class outputs of the k nearest 
 		 * neighbors to a test vector and return the index of the most frequent class

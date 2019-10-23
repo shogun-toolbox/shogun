@@ -7,6 +7,8 @@
 #include <shogun/kernel/LogKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LogKernel::LogKernel(): Kernel(0), m_distance(NULL), m_degree(1.8)
@@ -15,7 +17,7 @@ LogKernel::LogKernel(): Kernel(0), m_distance(NULL), m_degree(1.8)
 }
 
 LogKernel::LogKernel(int32_t cache, float64_t degree, std::shared_ptr<Distance> dist)
-: Kernel(cache), m_distance(dist), m_degree(degree)
+: Kernel(cache), m_distance(std::move(dist)), m_degree(degree)
 {
 	init();
 	ASSERT(m_distance)
@@ -23,12 +25,12 @@ LogKernel::LogKernel(int32_t cache, float64_t degree, std::shared_ptr<Distance> 
 }
 
 LogKernel::LogKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t degree, std::shared_ptr<Distance> dist)
-: Kernel(10), m_distance(dist), m_degree(degree)
+: Kernel(10), m_distance(std::move(dist)), m_degree(degree)
 {
 	init();
 	ASSERT(m_distance)
 	
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 LogKernel::~LogKernel()

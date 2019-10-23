@@ -44,7 +44,7 @@ CustomKernel::CustomKernel()
 	init();
 }
 
-CustomKernel::CustomKernel(std::shared_ptr<Kernel> k)
+CustomKernel::CustomKernel(const std::shared_ptr<Kernel>& k)
 : Kernel(10)
 {
 	SG_TRACE("created CustomKernel");
@@ -65,7 +65,7 @@ CustomKernel::CustomKernel(std::shared_ptr<Kernel> k)
 	}
 }
 
-CustomKernel::CustomKernel(SGMatrix<float64_t> km)
+CustomKernel::CustomKernel(const SGMatrix<float64_t>& km)
 : Kernel(10), upper_diagonal(false)
 {
 	SG_TRACE("Entering");
@@ -74,7 +74,7 @@ CustomKernel::CustomKernel(SGMatrix<float64_t> km)
 	SG_TRACE("Leaving");
 }
 
-CustomKernel::CustomKernel(SGMatrix<float32_t> km)
+CustomKernel::CustomKernel(const SGMatrix<float32_t>& km)
 : Kernel(10), upper_diagonal(false)
 {
 	SG_TRACE("Entering");

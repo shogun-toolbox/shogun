@@ -58,7 +58,7 @@ namespace shogun
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		MahalanobisDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		MahalanobisDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
 		virtual ~MahalanobisDistance();
 
 		/** init distance

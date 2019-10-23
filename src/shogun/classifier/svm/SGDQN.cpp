@@ -12,6 +12,8 @@
 #include <shogun/loss/HingeLoss.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SGDQN::SGDQN()
@@ -36,8 +38,8 @@ SGDQN::SGDQN(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr
 	C1=C;
 	C2=C;
 
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 }
 
 SGDQN::~SGDQN()
@@ -49,7 +51,7 @@ void SGDQN::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
 
 
-	loss=loss_func;
+	loss=std::move(loss_func);
 }
 
 void SGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)

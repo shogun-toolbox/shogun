@@ -40,6 +40,7 @@
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 
 #include <string>
+#include <utility>
 
 using namespace shogun;
 
@@ -79,7 +80,7 @@ DeepAutoencoder::DeepAutoencoder(
 
 void DeepAutoencoder::pre_train(std::shared_ptr<Features> data)
 {
-	SGMatrix<float64_t> data_matrix = features_to_matrix(data);
+	SGMatrix<float64_t> data_matrix = features_to_matrix(std::move(data));
 
 	int32_t num_encoding_layers = (m_num_layers-1)/2;
 	for (int32_t i=1; i<=num_encoding_layers; i++)

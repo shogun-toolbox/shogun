@@ -25,9 +25,9 @@ namespace shogun
 			std::shared_ptr<io::OutputStream> m_stream;
 		};
 
-		void serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, std::shared_ptr<Serializer> _serializer);
-		void pre_serialize(std::shared_ptr<SGObject> obj) noexcept(false);
-		void post_serialize(std::shared_ptr<SGObject> obj) noexcept(false);
+		void serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, const std::shared_ptr<Serializer>& _serializer);
+		void pre_serialize(const std::shared_ptr<SGObject>& obj) noexcept(false);
+		void post_serialize(const std::shared_ptr<SGObject>& obj) noexcept(false);
 	}
 }
 

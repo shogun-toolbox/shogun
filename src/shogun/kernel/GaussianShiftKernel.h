@@ -61,7 +61,7 @@ class GaussianShiftKernel: public GaussianKernel
 		 * @param size cache size
 		 */
 		GaussianShiftKernel(
-			std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
+			const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			float64_t width, int32_t max_shift, int32_t shift_step,
 			int32_t size=10);
 

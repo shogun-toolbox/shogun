@@ -46,6 +46,8 @@
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <utility>
+
 using namespace Eigen;
 
 namespace shogun
@@ -57,7 +59,7 @@ friend class KLDualInferenceMethodMinimizer;
 public:
 	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
 	virtual ~KLDualInferenceMethodCostFunction() {  }
-	void set_target(std::shared_ptr<KLDualInferenceMethod >obj)
+	void set_target(const std::shared_ptr<KLDualInferenceMethod >&obj)
 	{
 		require(obj, "Obj must set");
 		if(m_obj != obj)
@@ -214,13 +216,13 @@ KLDualInferenceMethod::KLDualInferenceMethod() : KLInference()
 
 KLDualInferenceMethod::KLDualInferenceMethod(std::shared_ptr<Kernel> kern,
 		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
-		: KLInference(kern, feat, m, lab, mod)
+		: KLInference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod))
 {
 	init();
 }
 
 std::shared_ptr<KLDualInferenceMethod> KLDualInferenceMethod::obtain_from_generic(
-		std::shared_ptr<Inference> inference)
+		const std::shared_ptr<Inference>& inference)
 {
 	if (inference==NULL)
 		return NULL;

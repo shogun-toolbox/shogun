@@ -8,6 +8,8 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 FKFeatures::FKFeatures() : DenseFeatures<float64_t>()
@@ -20,7 +22,7 @@ FKFeatures::FKFeatures(int32_t size, std::shared_ptr<HMM> p, std::shared_ptr<HMM
 {
 	init();
 	weight_a=-1;
-	set_models(p,n);
+	set_models(std::move(p),std::move(n));
 }
 
 FKFeatures::FKFeatures(const FKFeatures &orig)
@@ -119,7 +121,7 @@ float64_t FKFeatures::set_opt_a(float64_t a)
 	return a;
 }
 
-void FKFeatures::set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n)
+void FKFeatures::set_models(const std::shared_ptr<HMM>& p, const std::shared_ptr<HMM>& n)
 {
 	ASSERT(p && n)
 

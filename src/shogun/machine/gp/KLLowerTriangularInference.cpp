@@ -45,6 +45,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 
+#include <utility>
+
 using namespace Eigen;
 
 namespace shogun
@@ -57,7 +59,7 @@ KLLowerTriangularInference::KLLowerTriangularInference() : KLInference()
 
 KLLowerTriangularInference::KLLowerTriangularInference(std::shared_ptr<Kernel> kern,
 		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
-		: KLInference(kern, feat, m, lab, mod)
+		: KLInference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod))
 {
 	init();
 }
@@ -117,7 +119,7 @@ void KLLowerTriangularInference::update_init()
 	m_mean_vec=m_mean->get_mean_vector(m_features);
 }
 
-MatrixXd KLLowerTriangularInference::solve_inverse(MatrixXd eigen_A)
+MatrixXd KLLowerTriangularInference::solve_inverse(const MatrixXd& eigen_A)
 {
 	Map<VectorXi> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
 	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);

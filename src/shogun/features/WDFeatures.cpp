@@ -26,7 +26,7 @@ WDFeatures::WDFeatures() :DotFeatures()
 	normalization_const = 0.0;
 }
 
-WDFeatures::WDFeatures(std::shared_ptr<StringFeatures<uint8_t>> str,
+WDFeatures::WDFeatures(const std::shared_ptr<StringFeatures<uint8_t>>& str,
 		int32_t order, int32_t from_order) : DotFeatures()
 {
 	ASSERT(str)

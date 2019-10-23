@@ -69,13 +69,13 @@ namespace shogun
 		 * Print data contained into a CrossValidationStorage object.
 		 * @param value CrossValidationStorage object
 		 */
-		void print_observed_value(std::shared_ptr<CrossValidationStorage> value) const;
+		void print_observed_value(const std::shared_ptr<CrossValidationStorage>& value) const;
 
 		/**
 		 * Print information of a machine
 		 * @param machine given machine
 		 */
-		void print_machine_information(std::shared_ptr<Machine> machine) const;
+		void print_machine_information(const std::shared_ptr<Machine>& machine) const;
 
 	protected:
 		virtual void on_next_impl(const TimedObservedValue& value);

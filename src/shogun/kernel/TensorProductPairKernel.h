@@ -51,7 +51,7 @@ class TensorProductPairKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @param subkernel the subkernel
 		 */
-		TensorProductPairKernel(std::shared_ptr<DenseFeatures<int32_t>> l, std::shared_ptr<DenseFeatures<int32_t>> r, std::shared_ptr<Kernel> subkernel);
+		TensorProductPairKernel(const std::shared_ptr<DenseFeatures<int32_t>>& l, const std::shared_ptr<DenseFeatures<int32_t>>& r, std::shared_ptr<Kernel> subkernel);
 
 		virtual ~TensorProductPairKernel();
 

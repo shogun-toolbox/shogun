@@ -103,14 +103,14 @@ public:
 	 * @param size cache size
 	 * @param width kernel width
 	 */
-	GaussianARDKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
+	GaussianARDKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 		int32_t size=10);
 
 	/** @param kernel is casted to GaussianARDKernel, error if not possible
 	 * is SG_REF'ed
 	 * @return casted GaussianARDKernel object
 	 */
-	static std::shared_ptr<GaussianARDKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
+	static std::shared_ptr<GaussianARDKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 	/** initialize kernel
 	 *

@@ -9,6 +9,8 @@
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 RegulatoryModulesStringKernel::RegulatoryModulesStringKernel()
@@ -24,13 +26,13 @@ RegulatoryModulesStringKernel::RegulatoryModulesStringKernel(
 	init();
 }
 
-RegulatoryModulesStringKernel::RegulatoryModulesStringKernel(std::shared_ptr<StringFeatures<char>> lstr, std::shared_ptr<StringFeatures<char>> rstr,
+RegulatoryModulesStringKernel::RegulatoryModulesStringKernel(const std::shared_ptr<StringFeatures<char>>& lstr, const std::shared_ptr<StringFeatures<char>>& rstr,
 		std::shared_ptr<DenseFeatures<uint16_t>> lpos, std::shared_ptr<DenseFeatures<uint16_t>> rpos,
 		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
 : StringKernel<char>(size)
 {
 	init();
-	set_motif_positions(lpos, rpos);
+	set_motif_positions(std::move(lpos), std::move(rpos));
 	init(lstr,rstr);
 }
 
@@ -81,7 +83,7 @@ bool RegulatoryModulesStringKernel::init(std::shared_ptr<Features> l, std::share
 }
 
 void RegulatoryModulesStringKernel::set_motif_positions(
-		std::shared_ptr<DenseFeatures<uint16_t>> positions_lhs, std::shared_ptr<DenseFeatures<uint16_t>> positions_rhs)
+		const std::shared_ptr<DenseFeatures<uint16_t>>& positions_lhs, const std::shared_ptr<DenseFeatures<uint16_t>>& positions_rhs)
 {
 	ASSERT(positions_lhs)
 	ASSERT(positions_rhs)

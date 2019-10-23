@@ -42,7 +42,7 @@ class NLOPTTestCostFunction: public FirstOrderBoundConstraintsCostFunction
 public:
 	NLOPTTestCostFunction();
 	virtual ~NLOPTTestCostFunction();
-	void set_target(std::shared_ptr<CPiecewiseQuadraticObject2> obj);
+	void set_target(const std::shared_ptr<CPiecewiseQuadraticObject2>& obj);
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
@@ -60,8 +60,8 @@ friend class NLOPTTestCostFunction;
 public:
 	CPiecewiseQuadraticObject2();
 	virtual ~CPiecewiseQuadraticObject2();
-	void set_init_x(SGVector<float64_t> init_x);
-	void set_truth_x(SGVector<float64_t> truth_x);
+	void set_init_x(const SGVector<float64_t>& init_x);
+	void set_truth_x(const SGVector<float64_t>& truth_x);
 
 	void set_x_lower_bound(float64_t lower_bound){m_x_lower_bound=lower_bound;}
 	void set_x_upper_bound(float64_t upper_bound){m_x_upper_bound=upper_bound;}

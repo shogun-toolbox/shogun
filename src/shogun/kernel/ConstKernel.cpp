@@ -10,6 +10,8 @@
 #include <shogun/kernel/ConstKernel.h>
 #include <shogun/features/Features.h>
 
+#include <utility>
+
 using namespace shogun;
 
 ConstKernel::ConstKernel()
@@ -30,7 +32,7 @@ ConstKernel::ConstKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> 
 {
 	init();
 	const_value=c;
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 ConstKernel::~ConstKernel()

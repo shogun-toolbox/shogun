@@ -49,7 +49,7 @@ class Chi2Kernel: public DotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		Chi2Kernel(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
+		Chi2Kernel(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 				float64_t width, int32_t size=10);
 
 		virtual ~Chi2Kernel();
@@ -69,7 +69,7 @@ class Chi2Kernel: public DotKernel
 		 * is SG_REF'ed
 		 * @return casted GaussianKernel object
 		 */
-		static std::shared_ptr<Chi2Kernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
+		static std::shared_ptr<Chi2Kernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 		/** return what type of kernel we are
 		 *

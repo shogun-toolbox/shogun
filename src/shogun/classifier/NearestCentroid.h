@@ -45,7 +45,7 @@ public:
 	 * @param distance distance
 	 * @param trainlab labels for training
 	 */
-	NearestCentroid(std::shared_ptr<Distance> distance, std::shared_ptr<Labels> trainlab);
+	NearestCentroid(const std::shared_ptr<Distance>& distance, const std::shared_ptr<Labels>& trainlab);
 
 	/** Destructor
 	 */

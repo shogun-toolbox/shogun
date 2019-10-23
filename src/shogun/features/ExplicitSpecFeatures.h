@@ -33,7 +33,7 @@ class ExplicitSpecFeatures : public DotFeatures
 		 * @param str stringfeatures (of words)
 		 * @param normalize whether to use sqrtdiag normalization
 		 */
-		ExplicitSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize=true);
+		ExplicitSpecFeatures(const std::shared_ptr<StringFeatures<uint16_t>>& str, bool normalize=true);
 
 		/** copy constructor */
 		ExplicitSpecFeatures(const ExplicitSpecFeatures & orig);
@@ -166,7 +166,7 @@ class ExplicitSpecFeatures : public DotFeatures
 		 *
 		 * @param str the string feature object already in k-mer format
 		 */
-		void obtain_kmer_spectrum(std::shared_ptr<StringFeatures<uint16_t>> str);
+		void obtain_kmer_spectrum(const std::shared_ptr<StringFeatures<uint16_t>>& str);
 
 		/** free kmer spectrum */
 		void delete_kmer_spectrum();

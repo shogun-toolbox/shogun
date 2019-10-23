@@ -72,7 +72,7 @@ public:
 	 * @param maxlen maximum length of the subsequence
 	 * @param lambda the penalty parameter
 	 */
-	SubsequenceStringKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+	SubsequenceStringKernel(const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 		int32_t maxlen, float64_t lambda);
 
 	/** destructor */

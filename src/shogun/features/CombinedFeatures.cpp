@@ -58,7 +58,7 @@ std::shared_ptr<Features> CombinedFeatures::get_feature_obj(int32_t idx) const
 	return feature_array[idx];
 }
 
-bool CombinedFeatures::check_feature_obj_compatibility(std::shared_ptr<CombinedFeatures> comb_feat)
+bool CombinedFeatures::check_feature_obj_compatibility(const std::shared_ptr<CombinedFeatures>& comb_feat)
 {
 	bool result=false;
 
@@ -113,7 +113,7 @@ std::shared_ptr<Features> CombinedFeatures::get_last_feature_obj() const
 	return get_feature_obj(get_num_feature_obj()-1);
 }
 
-bool CombinedFeatures::insert_feature_obj(std::shared_ptr<Features> obj, int32_t idx)
+bool CombinedFeatures::insert_feature_obj(const std::shared_ptr<Features>& obj, int32_t idx)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();

@@ -68,7 +68,7 @@ template<class ST> StringFeatures<ST>::StringFeatures(std::shared_ptr<Alphabet> 
 	original_num_symbols=num_symbols;
 }
 
-template<class ST> StringFeatures<ST>::StringFeatures(std::shared_ptr<File> loader, EAlphabet alpha)
+template<class ST> StringFeatures<ST>::StringFeatures(const std::shared_ptr<File>& loader, EAlphabet alpha)
 : StringFeatures(alpha)
 {
 	load(loader);
@@ -1092,7 +1092,7 @@ template<class ST> int32_t StringFeatures<ST>::obtain_by_sliding_window(int32_t 
 	return num_vectors;
 }
 
-template<class ST> int32_t StringFeatures<ST>::obtain_by_position_list(int32_t window_size, std::shared_ptr<DynamicArray<int32_t>> positions,
+template<class ST> int32_t StringFeatures<ST>::obtain_by_position_list(int32_t window_size, const std::shared_ptr<DynamicArray<int32_t>>& positions,
 		int32_t skip)
 {
 	if (m_subset_stack->has_subsets())

@@ -35,7 +35,7 @@ public:
 	 * @param observed_state Discrete labeling of a set of variables.
 	 * @param loss_weights weighted loss for each variable
 	 */
-	FactorGraphObservation(SGVector<int32_t> observed_state,
+	FactorGraphObservation(const SGVector<int32_t>& observed_state,
 		SGVector<float64_t> loss_weights);
 
 	~FactorGraphObservation() { }
@@ -67,7 +67,7 @@ public:
 	 *
 	 * @param loss_weights weights for weighted hamming loss
 	 */
-	void set_loss_weights(SGVector<float64_t> loss_weights);
+	void set_loss_weights(const SGVector<float64_t>& loss_weights);
 
 protected:
 	/** loss weights, usually for weighted hamming loss */

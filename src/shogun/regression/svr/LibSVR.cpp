@@ -13,6 +13,8 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LibSVR::LibSVR()
@@ -42,8 +44,8 @@ LibSVR::LibSVR(float64_t C, float64_t svr_param, std::shared_ptr<Kernel> k, std:
 		break;
 	}
 
-	set_labels(lab);
-	set_kernel(k);
+	set_labels(std::move(lab));
+	set_kernel(std::move(k));
 	solver_type=st;
 }
 

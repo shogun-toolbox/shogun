@@ -69,7 +69,7 @@ class LinearMachine : public Machine
 		virtual ~LinearMachine();
 
 		/** copy constructor */
-		LinearMachine(std::shared_ptr<LinearMachine> machine);
+		LinearMachine(const std::shared_ptr<LinearMachine>& machine);
 
 		/** get w
 		 *

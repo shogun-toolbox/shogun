@@ -48,7 +48,7 @@ class SOBI: public ICAConverter
 		/** setter for tau parameter
 		 * @param tau vector
 		 */
-		void set_tau(SGVector<float64_t> tau);
+		void set_tau(const SGVector<float64_t>& tau);
 
 		/** getter for time sep cov matrices
 		 * @return cov matrices

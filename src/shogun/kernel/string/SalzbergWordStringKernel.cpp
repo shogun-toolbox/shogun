@@ -13,6 +13,8 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/classifier/PluginEstimate.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SalzbergWordStringKernel::SalzbergWordStringKernel()
@@ -21,19 +23,19 @@ SalzbergWordStringKernel::SalzbergWordStringKernel()
 	init();
 }
 
-SalzbergWordStringKernel::SalzbergWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie, std::shared_ptr<Labels> labels)
+SalzbergWordStringKernel::SalzbergWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie, const std::shared_ptr<Labels>& labels)
 : StringKernel<uint16_t>(size)
 {
 	init();
-	estimate=pie;
+	estimate=std::move(pie);
 
 	if (labels)
 		set_prior_probs_from_labels(labels);
 }
 
 SalzbergWordStringKernel::SalzbergWordStringKernel(
-	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
-	std::shared_ptr<PluginEstimate> pie, std::shared_ptr<Labels> labels)
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
+	const std::shared_ptr<PluginEstimate>& pie, const std::shared_ptr<Labels>& labels)
 : StringKernel<uint16_t>(10),estimate(pie)
 {
 	init();
@@ -346,7 +348,7 @@ float64_t SalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void SalzbergWordStringKernel::set_prior_probs_from_labels(std::shared_ptr<Labels> labels)
+void SalzbergWordStringKernel::set_prior_probs_from_labels(const std::shared_ptr<Labels>& labels)
 {
 	ASSERT(labels)
 	ASSERT(labels->get_label_type() == LT_BINARY)

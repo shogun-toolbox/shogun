@@ -10,8 +10,9 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/MulticlassLabels.h>
 
-#include <vector>
 #include <shogun/lib/Signal.h>
+#include <utility>
+#include <vector>
 
 using namespace shogun;
 
@@ -28,7 +29,7 @@ MKLMulticlass::MKLMulticlass()
 }
 
 MKLMulticlass::MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab))
 {
 	svm=NULL;
 	lpw=NULL;

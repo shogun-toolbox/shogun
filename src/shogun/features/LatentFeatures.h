@@ -67,7 +67,7 @@ namespace shogun
 			 *
 			 * @param example the user defined Data
 			 */
-			bool add_sample(std::shared_ptr<Data> example);
+			bool add_sample(const std::shared_ptr<Data>& example);
 
 			/** get latent example
 			 *
@@ -80,7 +80,7 @@ namespace shogun
 			 *
 			 * @param base_feats its dynamic type must be LatentFeatures
 			 */
-			static std::shared_ptr<LatentFeatures> obtain_from_generic(std::shared_ptr<Features> base_feats);
+			static std::shared_ptr<LatentFeatures> obtain_from_generic(const std::shared_ptr<Features>& base_feats);
 		protected:
 			/** array of Data */
 			std::vector<std::shared_ptr<Data>> m_samples;

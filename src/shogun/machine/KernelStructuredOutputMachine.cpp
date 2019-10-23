@@ -7,6 +7,8 @@
 #include <shogun/machine/KernelStructuredOutputMachine.h>
 #include <shogun/kernel/Kernel.h>
 
+#include <utility>
+
 using namespace shogun;
 
 KernelStructuredOutputMachine::KernelStructuredOutputMachine()
@@ -19,9 +21,9 @@ KernelStructuredOutputMachine::KernelStructuredOutputMachine(
 		std::shared_ptr<StructuredModel>  model,
 		std::shared_ptr<StructuredLabels> labs,
 		std::shared_ptr<Kernel>           kernel)
-: StructuredOutputMachine(model, labs), m_kernel(NULL)
+: StructuredOutputMachine(std::move(model), std::move(labs)), m_kernel(NULL)
 {
-	set_kernel(kernel);
+	set_kernel(std::move(kernel));
 	register_parameters();
 }
 
@@ -34,7 +36,7 @@ void KernelStructuredOutputMachine::set_kernel(std::shared_ptr<Kernel> k)
 {
 	
 	
-	m_kernel = k;
+	m_kernel = std::move(k);
 }
 
 std::shared_ptr<Kernel> KernelStructuredOutputMachine::get_kernel() const

@@ -7,6 +7,8 @@
 #include <shogun/structure/GraphCut.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 GraphCut::GraphCut()
@@ -18,7 +20,7 @@ GraphCut::GraphCut()
 }
 
 GraphCut::GraphCut(std::shared_ptr<FactorGraph> fg)
-	: MAPInferImpl(fg)
+	: MAPInferImpl(std::move(fg))
 {
 	ASSERT(m_fg != NULL);
 
@@ -206,7 +208,7 @@ float64_t GraphCut::inference(SGVector<int32_t> assignment)
 	return m_map_energy;
 }
 
-void GraphCut::add_factor(std::shared_ptr<Factor> factor)
+void GraphCut::add_factor(const std::shared_ptr<Factor>& factor)
 {
 	SGVector<int32_t> fcards = factor->get_cardinalities();
 

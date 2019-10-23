@@ -42,6 +42,8 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -56,7 +58,7 @@ public:
         SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
         virtual ~SingleSparseInferenceCostFunction() {  }
 	virtual const char* get_name() const { return "SingleSparseInferenceCostFunction"; }
-        void set_target(std::shared_ptr<SingleSparseInference >obj)
+        void set_target(const std::shared_ptr<SingleSparseInference >&obj)
 	{
 		require(obj,"Object not set");
 		if(obj!=m_obj)
@@ -117,7 +119,7 @@ SingleSparseInference::SingleSparseInference() : SparseInference()
 
 SingleSparseInference::SingleSparseInference(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
 		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
-		: SparseInference(kern, feat, m, lab, mod, lat)
+		: SparseInference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod), std::move(lat))
 {
 	init();
 	check_fully_sparse();

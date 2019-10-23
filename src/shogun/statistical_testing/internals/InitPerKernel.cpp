@@ -31,6 +31,8 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/internals/InitPerKernel.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
@@ -45,7 +47,7 @@ InitPerKernel::~InitPerKernel()
 InitPerKernel& InitPerKernel::operator=(std::shared_ptr<Kernel> kernel)
 {
 
-	m_kernel = kernel;
+	m_kernel = std::move(kernel);
 	return *this;
 }
 

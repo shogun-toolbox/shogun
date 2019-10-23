@@ -30,7 +30,7 @@ ProbingSampler::ProbingSampler() : RandomMixin<TraceSampler>()
 }
 
 ProbingSampler::ProbingSampler(
-	std::shared_ptr<SparseMatrixOperator<float64_t>> matrix_operator, int64_t power,
+	const std::shared_ptr<SparseMatrixOperator<float64_t>>& matrix_operator, int64_t power,
 	EOrderingVariant ordering, EColoringVariant coloring)
 	: RandomMixin<TraceSampler>(matrix_operator->get_dimension())
 {
@@ -68,7 +68,7 @@ ProbingSampler::~ProbingSampler()
 {
 }
 
-void ProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)
+void ProbingSampler::set_coloring_vector(const SGVector<int32_t>& coloring_vector)
 {
 	m_coloring_vector=coloring_vector;
 	m_is_precomputed=true;

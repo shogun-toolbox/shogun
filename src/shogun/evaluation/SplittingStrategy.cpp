@@ -14,7 +14,7 @@ SplittingStrategy::SplittingStrategy()
 	init();
 }
 
-SplittingStrategy::SplittingStrategy(std::shared_ptr<Labels> labels, int32_t num_subsets)
+SplittingStrategy::SplittingStrategy(const std::shared_ptr<Labels>& labels, int32_t num_subsets)
 {
 	init();
 

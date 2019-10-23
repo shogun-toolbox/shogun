@@ -17,7 +17,7 @@ BrayCurtisDistance::BrayCurtisDistance()
 {
 }
 
-BrayCurtisDistance::BrayCurtisDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+BrayCurtisDistance::BrayCurtisDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r)
 : DenseDistance<float64_t>()
 {
 	init(l, r);

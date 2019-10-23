@@ -52,7 +52,7 @@ public:
 	 *
 	 * @param ftype pointer to new factor type
 	 */
-	void add_factor_type(std::shared_ptr<FactorType> ftype);
+	void add_factor_type(const std::shared_ptr<FactorType>& ftype);
 
 	/** delete a factor type
 	 *
@@ -85,7 +85,7 @@ public:
 	 *
 	 * @param w new global parameter vector
 	 */
-	void w_to_fparams(SGVector<float64_t> w);
+	void w_to_fparams(const SGVector<float64_t>& w);
 
 	/**
 	 * get joint feature vector

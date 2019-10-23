@@ -16,6 +16,8 @@
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/regression/svr/LibLinearRegression.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LibLinearRegression::LibLinearRegression() :
@@ -31,8 +33,8 @@ LibLinearRegression::LibLinearRegression(float64_t C, std::shared_ptr<DotFeature
 	register_parameters();
 	init_defaults();
 	set_C(C);
-	set_features(feats);
-	set_labels(labs);
+	set_features(std::move(feats));
+	set_labels(std::move(labs));
 }
 
 void LibLinearRegression::init_defaults()

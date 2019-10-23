@@ -46,7 +46,7 @@ class GaussianShortRealKernel: public DotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		GaussianShortRealKernel(std::shared_ptr<DenseFeatures<float32_t>> l, std::shared_ptr<DenseFeatures<float32_t>> r,
+		GaussianShortRealKernel(const std::shared_ptr<DenseFeatures<float32_t>>& l, const std::shared_ptr<DenseFeatures<float32_t>>& r,
 			float64_t width, int32_t size=10);
 
 		virtual ~GaussianShortRealKernel();

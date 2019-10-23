@@ -18,12 +18,12 @@ IndexBlockGroup::~IndexBlockGroup()
 
 }
 
-void IndexBlockGroup::add_block(std::shared_ptr<IndexBlock> block)
+void IndexBlockGroup::add_block(const std::shared_ptr<IndexBlock>& block)
 {
 	m_blocks.push_back(block);
 }
 
-void IndexBlockGroup::remove_block(std::shared_ptr<IndexBlock> block)
+void IndexBlockGroup::remove_block(const std::shared_ptr<IndexBlock>& block)
 {
 	not_implemented(SOURCE_LOCATION);
 }

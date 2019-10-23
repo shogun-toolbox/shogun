@@ -87,7 +87,7 @@ protected:
 	 * @param indx2 indices of 2nd involved class of training machines
 	 */
 	void rescale_heuris_price(SGVector<float64_t> outputs,
-		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+		const SGVector<int32_t>& indx1, const SGVector<int32_t>& indx2);
 
 	/** OVO Hastie's heuristic see [1]
 	 * @param outputs a vector of output from each machine (in that order)
@@ -95,7 +95,7 @@ protected:
 	 * @param indx2 indices of 2nd involved class of training machines
 	 */
 	void rescale_heuris_hastie(SGVector<float64_t> outputs,
-		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+		const SGVector<int32_t>& indx1, const SGVector<int32_t>& indx2);
 
 	/** OVO Hamamura's heuristic see [1]
 	 * @param outputs a vector of output from each machine (in that order)
@@ -103,7 +103,7 @@ protected:
 	 * @param indx2 indices of 2nd involved class of training machines
 	 */
 	void rescale_heuris_hamamura(SGVector<float64_t> outputs,
-		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+		const SGVector<int32_t>& indx1, const SGVector<int32_t>& indx2);
 
 private:
 	/** register parameters */

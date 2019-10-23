@@ -54,7 +54,7 @@ class StructuredOutputMachine : public Machine
 		 * @param model structured model with application specific functions
 		 * @param labs structured labels
 		 */
-		StructuredOutputMachine(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs);
+		StructuredOutputMachine(std::shared_ptr<StructuredModel> model, const std::shared_ptr<StructuredLabels>& labs);
 
 		/** destructor */
 		virtual ~StructuredOutputMachine();
