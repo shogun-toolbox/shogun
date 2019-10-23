@@ -93,6 +93,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_expection();
 
+#ifndef SWIG
 	/** get derivative of the variational expection of log LogitLikelihood
 	 * using numerical integration with respect to given parameter
 	 *
@@ -115,6 +116,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+#endif
 
 	/** set the number of Gaussian Hermite point used to compute variational expection
 	 *

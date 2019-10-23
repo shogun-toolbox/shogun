@@ -168,12 +168,14 @@ public:
 	 */
 	virtual float64_t get_inducing_noise();
 
+#ifndef SWIG
 	/** returns derivative of negative log marginal likelihood wrt inducing features (input)
 	 * Note that in order to call this method, kernel must support Sparse inference
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param)=0;
+#endif
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the

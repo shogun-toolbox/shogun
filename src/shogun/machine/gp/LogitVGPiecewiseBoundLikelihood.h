@@ -101,6 +101,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_expection();
 
+#ifndef SWIG
 	/** get derivative of the variational expection of log LogitLikelihood
 	 * using the piecewise bound with respect to given parameter
 	 *
@@ -113,6 +114,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
+#endif
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -122,7 +124,7 @@ public:
 	 */
 	virtual bool supports_derivative_wrt_hyperparameter() const { return false; }
 
-
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
 	 * Note that variational parameters are NOT considered as hyperparameters
@@ -132,6 +134,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+#endif
 
 	/** initialize the default bound for this class */
 	void set_default_variational_bound();

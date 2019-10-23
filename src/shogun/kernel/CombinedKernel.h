@@ -404,6 +404,7 @@ class CombinedKernel : public Kernel
 		 */
 		static std::shared_ptr<CombinedKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
 
+#ifndef SWIG
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter
@@ -413,6 +414,7 @@ class CombinedKernel : public Kernel
 		 */
 		SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
 				index_t index=-1);
+#endif
 
 		/** Get the Kernel array
 		 *

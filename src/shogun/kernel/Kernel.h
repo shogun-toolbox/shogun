@@ -839,6 +839,8 @@ class Kernel : public SGObject
 		 */
 		virtual void set_subkernel_weights(SGVector<float64_t> weights);
 
+
+#ifndef SWIG
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter
@@ -865,6 +867,7 @@ class Kernel : public SGObject
 		{
 			return get_parameter_gradient(param,index).get_diagonal_vector();
 		}
+#endif
 
 		/** Obtains a kernel from a generic SGObject with error checking. Note
 		 * that if passing NULL, result will be NULL
