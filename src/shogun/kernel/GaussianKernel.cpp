@@ -11,7 +11,11 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/mathematics/Math.h>
+<<<<<<< HEAD
 #include <stan/math/rev/scal.hpp>
+=======
+#include <stan/math.hpp>
+>>>>>>> autodiff gaussian width parameter
 
 using namespace shogun;
 
@@ -108,10 +112,17 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 #pragma omp parallel for
 			for (int j=0; j<num_lhs; j++)
 			{
+<<<<<<< HEAD
 				auto f = exp(-CShiftInvariantKernel::distance(j, k) / constant_part);
 				f.grad();
 				derivative(j, k) = log_width.adj();
 				stan::math::set_zero_all_adjoints();
+=======
+				stan::math::var log_width = m_log_width;	
+				auto f = exp(-CShiftInvariantKernel::distance(j, k) / (exp(log_width * 2.0) * 2.0));
+				f.grad();
+				derivative(j, k) = log_width.adj();
+>>>>>>> autodiff gaussian width parameter
 			}
 		}
 		return derivative;
