@@ -11,6 +11,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/mathematics/Math.h>
+#include <stan/math.hpp>
 
 using namespace shogun;
 
@@ -90,6 +91,9 @@ void CGaussianKernel::set_width(float64_t w)
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
 {
+	using std::exp;
+	using std::log;
+
 	require(lhs, "Left hand side features must be set!");
 	require(rhs, "Rightt hand side features must be set!");
 
@@ -101,8 +105,10 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 #pragma omp parallel for
 			for (int j=0; j<num_lhs; j++)
 			{
-				float64_t element=distance(j, k);
-				derivative(j, k) = std::exp(-element) * element * 2.0;
+				stan::math::var log_width = m_log_width;	
+				auto f = exp(-CShiftInvariantKernel::distance(j, k) / (exp(log_width * 2.0) * 2.0));
+				f.grad();
+				derivative(j, k) = log_width.adj();
 			}
 		}
 		return derivative;
@@ -118,7 +124,7 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
     float64_t result=distance(idx_a, idx_b);
 	return std::exp(-result);
-}
+}	
 
 void CGaussianKernel::load_serializable_post() noexcept(false)
 {
