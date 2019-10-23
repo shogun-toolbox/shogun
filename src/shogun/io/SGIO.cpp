@@ -19,6 +19,7 @@
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/version.h>
 
 using namespace shogun;
 using namespace shogun::io;
@@ -26,6 +27,12 @@ using namespace shogun::io;
 class Formatter : public spdlog::formatter
 {
 public:
+#if ((SPDLOG_VER_MAJOR == 1) && (SPDLOG_VER_MINOR < 4))
+	using mem_buffer = fmt::memory_buffer;
+#else
+	using mem_buffer = spdlog::memory_buf_t;
+#endif
+
 	Formatter(bool syntax_highlight)
 	{
 		if (syntax_highlight)
@@ -41,7 +48,7 @@ public:
 	}
 
 	void format(
-	    const spdlog::details::log_msg& msg, fmt::memory_buffer& dest) override
+	    const spdlog::details::log_msg& msg, mem_buffer& dest) override
 	{
 		using namespace spdlog::details::fmt_helper;
 		if (static_cast<EMessageType>(msg.level) == MSG_MESSAGEONLY)
