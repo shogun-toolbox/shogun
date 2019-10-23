@@ -66,8 +66,8 @@ namespace shogun
 	io::SourceLocation{__FILE__, __LINE__, __PRETTY_FUNCTION__}
 
 #ifdef DEBUG_BUILD
-#define SG_GCDEBUG(...)                                                        \
-	env()->io()->message(io::MSG_GCDEBUG, SOURCE_LOCATION, __VA_ARGS__);
+#define SG_TRACE(...)                                                          \
+	env()->io()->message(io::MSG_TRACE, SOURCE_LOCATION, __VA_ARGS__)
 
 #define SG_DEBUG(...)                                                          \
 	env()->io()->message(io::MSG_DEBUG, SOURCE_LOCATION, __VA_ARGS__);
@@ -78,7 +78,7 @@ namespace shogun
 			error(SOURCE_LOCATION, "assertion {} failed", #x);                 \
 	}
 #else
-#define SG_GCDEBUG(...) (void)0;
+#define SG_TRACE(...) (void)0
 #define SG_DEBUG(...) (void)0;
 #define ASSERT(...) (void)0;
 #endif // DEBUG_BUILD
@@ -110,7 +110,7 @@ namespace shogun
 		 */
 		enum EMessageType
 		{
-			MSG_GCDEBUG = 0,
+			MSG_TRACE = 0,
 			MSG_DEBUG = 1,
 			MSG_INFO = 2,
 			MSG_WARN = 3,

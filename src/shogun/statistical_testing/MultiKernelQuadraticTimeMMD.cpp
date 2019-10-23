@@ -165,7 +165,7 @@ SGVector<bool> CMultiKernelQuadraticTimeMMD::perform_test(float64_t alpha)
 
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager& kernel_mgr)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!", kernel_mgr.num_kernels());
 
 	const auto nx=self->m_owner->get_num_samples_p();
@@ -187,13 +187,13 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 	for (auto i=0; i<result.vlen; ++i)
 		result[i]=self->m_owner->normalize_statistic(result[i]);
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return result;
 }
 
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManager& kernel_mgr)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!", kernel_mgr.num_kernels());
 
 	const auto nx=self->m_owner->get_num_samples_p();
@@ -210,13 +210,13 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManage
 
 	kernel_mgr.unset_precomputed_distance();
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return result;
 }
 
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager& kernel_mgr)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(kernel_mgr.num_kernels()>0, "Number of kernels ({}) have to be greater than 0!", kernel_mgr.num_kernels());
 	require(self->m_owner->get_statistic_type()==ST_UNBIASED_FULL, "Only possible with UNBIASED_FULL!");
 
@@ -234,13 +234,13 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager
 
 	kernel_mgr.unset_precomputed_distance();
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return result;
 }
 
 SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManager& kernel_mgr)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
 		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!");
 
@@ -267,13 +267,13 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 	for (index_t i=0; i<result.size(); ++i)
 		result.matrix[i]=self->m_owner->normalize_statistic(result.matrix[i]);
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return result;
 }
 
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& kernel_mgr)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
 		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!");
 
@@ -297,7 +297,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& 
 
 	kernel_mgr.unset_precomputed_distance();
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return result;
 }
 

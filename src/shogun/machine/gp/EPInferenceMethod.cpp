@@ -163,7 +163,7 @@ void CEPInferenceMethod::compute_gradient()
 
 void CEPInferenceMethod::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	// update kernel and feature matrix
 	CInference::update();
@@ -313,7 +313,7 @@ void CEPInferenceMethod::update()
 	// update hash of the parameters
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 void CEPInferenceMethod::update_alpha()

@@ -52,7 +52,7 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 float64_t
 CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(sample.vector, "Sample is not initialized!");
 	require(m_linear_operator, "Operator is not initialized!");
 

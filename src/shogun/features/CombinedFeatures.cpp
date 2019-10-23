@@ -174,7 +174,7 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 {
 	/* TODO, if all features are the same, only one copy should be created
 	 * in memory */
-	SG_DEBUG("entering {}::create_merged_copy()", get_name())
+	SG_TRACE("entering {}::create_merged_copy()", get_name());
 	if (get_feature_type()!=other->get_feature_type() ||
 			get_feature_class()!=other->get_feature_class() ||
 			strcmp(get_name(), other->get_name()))
@@ -209,13 +209,13 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 		SG_UNREF(current_other);
 	}
 
-	SG_DEBUG("leaving {}::create_merged_copy()", get_name())
+	SG_TRACE("leaving {}::create_merged_copy()", get_name());
 	return result;
 }
 
 void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 {
-	SG_DEBUG("entering {}::add_subset()", get_name())
+	SG_TRACE("entering {}::add_subset()", get_name());
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -238,12 +238,12 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving {}::add_subset()", get_name())
+	SG_TRACE("leaving {}::add_subset()", get_name());
 }
 
 void CCombinedFeatures::remove_subset()
 {
-	SG_DEBUG("entering {}::remove_subset()", get_name())
+	SG_TRACE("entering {}::remove_subset()", get_name());
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -265,12 +265,12 @@ void CCombinedFeatures::remove_subset()
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving {}::remove_subset()", get_name())
+	SG_TRACE("leaving {}::remove_subset()", get_name());
 }
 
 void CCombinedFeatures::remove_all_subsets()
 {
-	SG_DEBUG("entering {}::remove_all_subsets()", get_name())
+	SG_TRACE("entering {}::remove_all_subsets()", get_name());
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -292,7 +292,7 @@ void CCombinedFeatures::remove_all_subsets()
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving {}::remove_all_subsets()", get_name())
+	SG_TRACE("leaving {}::remove_all_subsets()", get_name());
 }
 
 CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices) const

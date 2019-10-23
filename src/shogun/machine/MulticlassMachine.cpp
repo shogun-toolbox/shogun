@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Chiyuan Zhang, Fernando Iglesias, 
- *          Soeren Sonnenburg, Heiko Strathmann, Jiaolong Xu, Evgeniy Andreev, 
+ * Authors: Sergey Lisitsyn, Chiyuan Zhang, Fernando Iglesias,
+ *          Soeren Sonnenburg, Heiko Strathmann, Jiaolong Xu, Evgeniy Andreev,
  *          Evan Shelhamer, Shell Hu, Thoralf Klein, Viktor Gal
  */
 
@@ -84,7 +84,7 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 
 CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
-	SG_DEBUG("entering {}::apply_multiclass({} at {})",
+	SG_TRACE("entering {}::apply_multiclass({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CMulticlassLabels* return_labels=NULL;
@@ -179,7 +179,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		error("Not ready");
 
 
-	SG_DEBUG("leaving {}::apply_multiclass({} at {})",
+	SG_TRACE("leaving {}::apply_multiclass({} at {})",
 				get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 	return return_labels;
 }

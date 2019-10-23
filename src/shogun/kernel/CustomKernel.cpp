@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Pan Deng, 
- *          Sergey Lisitsyn, Khaled Nasr, Evgeniy Andreev, Evan Shelhamer, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Pan Deng,
+ *          Sergey Lisitsyn, Khaled Nasr, Evgeniy Andreev, Evan Shelhamer,
  *          Liang Pang
  */
 
@@ -40,14 +40,14 @@ void CCustomKernel::init()
 CCustomKernel::CCustomKernel()
 : CKernel(10), kmatrix(), upper_diagonal(false)
 {
-	SG_DEBUG("created CCustomKernel")
+	SG_TRACE("created CCustomKernel");
 	init();
 }
 
 CCustomKernel::CCustomKernel(CKernel* k)
 : CKernel(10)
 {
-	SG_DEBUG("created CCustomKernel")
+	SG_TRACE("created CCustomKernel");
 	init();
 
 	/* if constructed from a custom kernel, use same kernel matrix */
@@ -68,28 +68,28 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering")
+	SG_TRACE("Entering");
 	init();
 	set_full_kernel_matrix_from_full(km, true);
-	SG_DEBUG("Leaving")
+	SG_TRACE("Leaving");
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering")
+	SG_TRACE("Entering");
 	init();
 	set_full_kernel_matrix_from_full(km, true);
-	SG_DEBUG("Leaving")
+	SG_TRACE("Leaving");
 }
 
 CCustomKernel::~CCustomKernel()
 {
-	SG_DEBUG("Entering")
+	SG_TRACE("Entering");
 	cleanup();
 	SG_UNREF(m_row_subset_stack);
 	SG_UNREF(m_col_subset_stack);
-	SG_DEBUG("Leaving")
+	SG_TRACE("Leaving");
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
@@ -155,7 +155,7 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
@@ -173,7 +173,7 @@ float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 			"Please use smaller blocks!", block_size, block_begin, block_begin);
 	require(block_size>=1, "Invalid block size ({})!", block_size);
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum_symmetric(block(kmatrix, block_begin,
 				block_begin, block_size, block_size), no_diag);
@@ -183,7 +183,7 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 		index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
@@ -213,7 +213,7 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 		no_diag=false;
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum(block(kmatrix, block_begin_row, block_begin_col,
 				block_size_row, block_size_col), no_diag);
@@ -222,7 +222,7 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 		block_begin, index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
@@ -249,7 +249,7 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 	for (index_t i=0; i<s.vlen; ++i)
 		sum[i]=s[i];
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum;
 }
@@ -257,7 +257,7 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 		index_t block_begin, index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
@@ -294,7 +294,7 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	for (index_t i=0; i<sq_sum.vlen; ++i)
 		row_sum(i, 1)=sq_sum[i];
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return row_sum;
 }
@@ -303,7 +303,7 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 		block_begin_row, index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 	{
@@ -352,21 +352,21 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 	for (index_t i=0; i<colwise.vlen; ++i)
 		sum[i+rowwise.vlen]=colwise[i];
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum;
 }
 
 void CCustomKernel::cleanup_custom()
 {
-	SG_DEBUG("Entering")
+	SG_TRACE("Entering");
 	remove_all_row_subsets();
 	remove_all_col_subsets();
 
 	kmatrix=SGMatrix<float32_t>();
 	upper_diagonal=false;
 
-	SG_DEBUG("Leaving")
+	SG_TRACE("Leaving");
 }
 
 void CCustomKernel::cleanup()

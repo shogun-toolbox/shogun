@@ -16,9 +16,9 @@ CStreamingFeatures::CStreamingFeatures() : CFeatures()
 
 CStreamingFeatures::~CStreamingFeatures()
 {
-	SG_DEBUG("entering CStreamingFeatures::~CStreamingFeatures()")
+	SG_TRACE("entering CStreamingFeatures::~CStreamingFeatures()");
 	SG_UNREF(working_file);
-	SG_DEBUG("leaving CStreamingFeatures::~CStreamingFeatures()")
+	SG_TRACE("leaving CStreamingFeatures::~CStreamingFeatures()");
 }
 
 void CStreamingFeatures::set_read_functions()

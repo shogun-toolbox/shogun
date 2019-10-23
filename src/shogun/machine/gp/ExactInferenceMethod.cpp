@@ -77,7 +77,7 @@ void CExactInferenceMethod::compute_gradient()
 
 void CExactInferenceMethod::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_chol();
@@ -85,7 +85,7 @@ void CExactInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 void CExactInferenceMethod::check_members() const

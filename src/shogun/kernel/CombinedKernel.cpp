@@ -81,7 +81,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	bool result = true;
 	index_t f_idx = 0;
 
-	SG_DEBUG("Starting for loop for kernels")
+	SG_TRACE("Starting for loop for kernels");
 	for (index_t k_idx = 0; k_idx < get_num_kernels() && result; k_idx++)
 	{
 		k = get_kernel(k_idx);
@@ -357,7 +357,7 @@ float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 bool CCombinedKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t *weights)
 {
-	SG_DEBUG("initializing CCombinedKernel optimization")
+	SG_TRACE("initializing CCombinedKernel optimization");
 
 	delete_optimization();
 
@@ -600,7 +600,7 @@ void CCombinedKernel::compute_by_subkernel(
 
 const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
-	SG_DEBUG("entering CCombinedKernel::get_subkernel_weights()")
+	SG_TRACE("entering CCombinedKernel::get_subkernel_weights()");
 
 	num_weights = get_num_subkernels() ;
 	SG_FREE(subkernel_weights_buffer);
@@ -638,7 +638,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		}
 	}
 
-	SG_DEBUG("leaving CCombinedKernel::get_subkernel_weights()")
+	SG_TRACE("leaving CCombinedKernel::get_subkernel_weights()");
 	return subkernel_weights_buffer ;
 }
 

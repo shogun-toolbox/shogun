@@ -63,7 +63,7 @@ CDependenceMaximization::~CDependenceMaximization()
 CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 		index_t idx)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	// remove the dimension specified by the index, i.e. get X\X_i
 	// NULL check is handled in CFeatureSelection::get_num_features call
@@ -84,14 +84,14 @@ CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 		dims.display_vector("dims");
 
 	// the following already does a SG_REF on the newly created feature
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return features->copy_dimension_subset(dims);
 }
 
 float64_t CDependenceMaximization::compute_measures(CFeatures* features,
 		index_t idx)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	// remove the dimension (feat) specified by the index idx
 	CFeatures* reduced_feats=create_transformed_copy(features, idx);
@@ -108,14 +108,14 @@ float64_t CDependenceMaximization::compute_measures(CFeatures* features,
 
 	SG_UNREF(reduced_feats);
 
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return statistic;
 }
 
 CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 		SGVector<index_t> argsorted)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	require(m_num_remove>0, "Number or percentage of features to be removed is "
 			"not set! Please use set_num_remove() to set this!");
@@ -157,7 +157,7 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	SG_UNREF(features);
 
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return reduced_feats;
 }
 

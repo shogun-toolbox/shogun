@@ -92,7 +92,7 @@ void CFeatureSelection<ST>::cleanup()
 template <class ST>
 CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	// precompute whenever appropriate for performing the rest of the tasks
 	precompute();
@@ -171,14 +171,14 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 	// sanity check
 	ASSERT(m_subset->get_size()==m_target_dim);
 
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return features;
 }
 
 template <class ST>
 CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	// remove previously computed feature subsets
 	m_subset->remove_all_subsets();
@@ -213,7 +213,7 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 			return features;
 	}
 
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 template <class ST>

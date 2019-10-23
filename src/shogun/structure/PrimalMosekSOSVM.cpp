@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Shell Hu, Abinash Panda, Viktor Gal, 
+ * Authors: Fernando Iglesias, Shell Hu, Abinash Panda, Viktor Gal,
  *          Bjoern Esser, Sergey Lisitsyn, Soeren Sonnenburg, Sanuj Sharma
  */
 
@@ -51,7 +51,7 @@ CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 
 bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 {
-	SG_DEBUG("Entering CPrimalMosekSOSVM::train_machine.");
+	SG_TRACE("Entering CPrimalMosekSOSVM::train_machine.");
 	if (data)
 		set_features(data);
 
@@ -194,7 +194,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		}
 
 		// Solve the QP
-		SG_DEBUG("Entering Mosek QP solver.");
+		SG_TRACE("Entering Mosek QP solver.");
 
 		mosek->optimize(sol);
 		for ( int32_t i = 0 ; i < M+num_aux+N ; ++i )

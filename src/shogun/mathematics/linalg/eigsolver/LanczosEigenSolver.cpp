@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soumyajit De, Sunil Mahendrakar, Viktor Gal, 
+ * Authors: Heiko Strathmann, Soumyajit De, Sunil Mahendrakar, Viktor Gal,
  *          Thoralf Klein, Bjoern Esser
  */
 
@@ -58,7 +58,7 @@ CLanczosEigenSolver::~CLanczosEigenSolver()
 
 void CLanczosEigenSolver::compute()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	if (m_is_computed_min && m_is_computed_max)
 	{
@@ -162,7 +162,7 @@ void CLanczosEigenSolver::compute()
 			io::warn("Some error occured while computing eigenvalues!");
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 }
 
 }

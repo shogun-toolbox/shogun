@@ -351,7 +351,7 @@ void CSingleFITCLaplaceInferenceMethod::compute_gradient()
 
 void CSingleFITCLaplaceInferenceMethod::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_init();
@@ -360,7 +360,7 @@ void CSingleFITCLaplaceInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_diagonal_vector()
@@ -1164,7 +1164,7 @@ void CSingleFITCLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_
 	eigen_f=eigen_tmp+eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
-		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
+		m_model->get_log_probability_derivative_f(m_labels, f, 1);
 
 	Map<VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 

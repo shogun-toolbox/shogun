@@ -58,20 +58,20 @@ DataManager::~DataManager()
 
 index_t DataManager::get_num_samples() const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	index_t n=0;
 	typedef const std::unique_ptr<DataFetcher> fetcher_type;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { return f->m_num_samples==0; }))
 		error("number of samples from all the distributions are not set!");
 	else
 		std::for_each(fetchers.begin(), fetchers.end(), [&n](fetcher_type& f) { n+=f->m_num_samples; });
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return n;
 }
 
 index_t DataManager::get_min_blocksize() const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	index_t min_blocksize=0;
 	typedef const std::unique_ptr<DataFetcher> fetcher_type;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { return f->m_num_samples==0; }))
@@ -84,13 +84,13 @@ index_t DataManager::get_min_blocksize() const
 		min_blocksize=get_num_samples()/divisor;
 	}
 	SG_DEBUG("min blocksize is {}!", min_blocksize);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return min_blocksize;
 }
 
 void DataManager::set_blocksize(index_t blocksize)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	auto n=get_num_samples();
 
 	require(n>0,
@@ -111,12 +111,12 @@ void DataManager::set_blocksize(index_t blocksize)
 		fetchers[i]->fetch_blockwise().with_blocksize(blocksize*m/n);
 		SG_DEBUG("block[{}].size = ", i, blocksize*m/n);
 	}
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(num_blocks_per_burst>0,
 	   	"Number of blocks per burst ({}) has to be greater than 0!",
 		num_blocks_per_burst);
@@ -140,26 +140,26 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 
 	for (size_t i=0; i<fetchers.size(); ++i)
 		fetchers[i]->fetch_blockwise().with_num_blocks_per_burst(num_blocks_per_burst);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 InitPerFeature DataManager::samples_at(index_t i)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return InitPerFeature(fetchers[i]);
 }
 
 CFeatures* DataManager::samples_at(index_t i) const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	if (fetchers[i]!=nullptr)
 		return fetchers[i]->m_samples;
 	else
@@ -168,21 +168,21 @@ CFeatures* DataManager::samples_at(index_t i) const
 
 index_t& DataManager::num_samples_at(index_t i)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return fetchers[i]->m_num_samples;
 }
 
 const index_t DataManager::num_samples_at(index_t i) const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	if (fetchers[i]!=nullptr)
 		return fetchers[i]->get_num_samples();
 	else
@@ -191,11 +191,11 @@ const index_t DataManager::num_samples_at(index_t i) const
 
 const index_t DataManager::blocksize_at(index_t i) const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<(int64_t)fetchers.size(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, fetchers.size()-1);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	if (fetchers[i]!=nullptr)
 		return fetchers[i]->m_block_details.m_blocksize;
 	else
@@ -204,19 +204,19 @@ const index_t DataManager::blocksize_at(index_t i) const
 
 void DataManager::set_blockwise(bool blockwise)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	for (size_t i=0; i<fetchers.size(); ++i)
 		fetchers[i]->set_blockwise(blockwise);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 const bool DataManager::is_blockwise() const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	bool blockwise=true;
 	for (size_t i=0; i<fetchers.size(); ++i)
 		blockwise&=!fetchers[i]->m_block_details.m_full_data;
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return blockwise;
 }
 
@@ -329,25 +329,25 @@ index_t DataManager::get_num_folds() const
 
 void DataManager::shuffle_features()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->shuffle_features(); });
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void DataManager::unshuffle_features()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->unshuffle_features(); });
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void DataManager::init_active_subset()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	require(train_test_mode,
 		"Train-test subset cannot be used without turning on Train/Test mode first!"
@@ -361,12 +361,12 @@ void DataManager::init_active_subset()
 		f->set_train_test_ratio(train_test_ratio);
 		f->init_active_subset();
 	});
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void DataManager::use_fold(index_t idx)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	require(train_test_mode,
 		"Fold subset cannot be used without turning on Train/Test mode first!"
@@ -382,12 +382,12 @@ void DataManager::use_fold(index_t idx)
 		f->set_train_test_ratio(train_test_ratio);
 		f->use_fold(idx);
 	});
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void DataManager::start()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(fetchers.size()>0, "Features are not set!");
 
 	if (train_test_mode && !cross_validation_mode)
@@ -395,12 +395,12 @@ void DataManager::start()
 
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->start(); });
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 NextSamples DataManager::next()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	// sets the number of feature objects (number of distributions)
 	NextSamples next_samples(fetchers.size());
@@ -424,24 +424,24 @@ NextSamples DataManager::next()
 			SG_UNREF(feats);
 		}
 	}
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return next_samples;
 }
 
 void DataManager::end()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->end(); });
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void DataManager::reset()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->reset(); });
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Viktor Gal, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Viktor Gal,
  *          Vladislav Horbatiuk, Weijie Lin, Sergey Lisitsyn, Sanuj Sharma
  */
 
@@ -52,11 +52,11 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
-	SG_DEBUG("entering {}::~CStreamingDenseFeatures()", get_name())
+	SG_TRACE("entering {}::~CStreamingDenseFeatures()", get_name());
 	/* needed to prevent double free memory errors */
 	current_vector.vector=NULL;
 	current_vector.vlen=0;
-	SG_DEBUG("leaving {}::~CStreamingDenseFeatures()", get_name())
+	SG_TRACE("leaving {}::~CStreamingDenseFeatures()", get_name());
 }
 
 template<class T> void CStreamingDenseFeatures<T>::reset_stream()
@@ -216,12 +216,12 @@ void CStreamingDenseFeatures<T>::end_parser()
 template<class T>
 bool CStreamingDenseFeatures<T>::get_next_example()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 	bool ret_value;
 	ret_value=(bool)parser.get_next_example(current_vector.vector,
 			current_vector.vlen, current_label);
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 	return ret_value;
 }
 
@@ -293,7 +293,7 @@ template<class T>
 CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		index_t num_elements)
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 	SG_DEBUG("Streaming {} elements", num_elements)
 
 	require(num_elements>0, "Requested number of feature vectors ({}) must be "

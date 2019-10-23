@@ -16,18 +16,18 @@ namespace shogun
 CNormalSampler::CNormalSampler()
 	: RandomMixin<CTraceSampler>()
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CNormalSampler::CNormalSampler(index_t dimension)
 	: RandomMixin<CTraceSampler>(dimension)
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CNormalSampler::~CNormalSampler()
 {
-	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 void CNormalSampler::precompute()

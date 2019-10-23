@@ -107,7 +107,7 @@ void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
 SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		CMulticlassLabels* y, int32_t k)
 {
-	SG_DEBUG("Entering CLMNNImpl::find_target_nn().")
+	SG_TRACE("Entering CLMNNImpl::find_target_nn().");
 
 	// get the number of features
 	int32_t d = x->get_num_features();
@@ -155,7 +155,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		SG_UNREF(knn)
 	}
 
-	SG_DEBUG("Leaving CLMNNImpl::find_target_nn().")
+	SG_TRACE("Leaving CLMNNImpl::find_target_nn().");
 
 	return target_neighbors;
 }
@@ -189,7 +189,7 @@ ImpostorsSetType CLMNNImpl::find_impostors(
     const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
     const int32_t iter, const int32_t correction)
 {
-	SG_DEBUG("Entering CLMNNImpl::find_impostors().")
+	SG_TRACE("Entering CLMNNImpl::find_impostors().");
 
 	// get the number of neighbors
 	int32_t k = target_nn.num_rows;
@@ -221,7 +221,7 @@ ImpostorsSetType CLMNNImpl::find_impostors(
 		    SGMatrix<float64_t>(LX), sqdists, Nexact, target_nn);
 	}
 
-	SG_DEBUG("Leaving CLMNNImpl::find_impostors().")
+	SG_TRACE("Leaving CLMNNImpl::find_impostors().");
 
 	return N;
 }
@@ -348,7 +348,7 @@ bool CLMNNImpl::check_termination(
 
 SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* features)
 {
-	SG_DEBUG("Initializing LMNN transform using PCA.");
+	SG_TRACE("Initializing LMNN transform using PCA.");
 
 	// Substract the mean of the features
 	// Create clone of the features to keep the input features unmodified
@@ -408,7 +408,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(
     const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
     CMulticlassLabels* y, const SGMatrix<index_t>& target_nn, int32_t k)
 {
-	SG_DEBUG("Entering CLMNNImpl::find_impostors_exact().")
+	SG_TRACE("Entering CLMNNImpl::find_impostors_exact().");
 
 	// initialize empty impostors set
 	ImpostorsSetType N = ImpostorsSetType();
@@ -455,7 +455,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(
 
 	SG_UNREF(lx);
 
-	SG_DEBUG("Leaving CLMNNImpl::find_impostors_exact().")
+	SG_TRACE("Leaving CLMNNImpl::find_impostors_exact().");
 
 	return N;
 }
@@ -464,7 +464,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(
     const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
     const ImpostorsSetType& Nexact, const SGMatrix<index_t>& target_nn)
 {
-	SG_DEBUG("Entering CLMNNImpl::find_impostors_approx().")
+	SG_TRACE("Entering CLMNNImpl::find_impostors_approx().");
 
 	// initialize empty impostors set
 	ImpostorsSetType N = ImpostorsSetType();
@@ -489,7 +489,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(
 			N.insert(*it);
 	}
 
-	SG_DEBUG("Leaving CLMNNImpl::find_impostors_approx().")
+	SG_TRACE("Leaving CLMNNImpl::find_impostors_approx().");
 
 	return N;
 }

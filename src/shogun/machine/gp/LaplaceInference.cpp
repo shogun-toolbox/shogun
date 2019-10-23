@@ -80,7 +80,7 @@ void CLaplaceInference::compute_gradient()
 }
 void CLaplaceInference::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_alpha();
@@ -88,7 +88,7 @@ void CLaplaceInference::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 SGVector<float64_t> CLaplaceInference::get_alpha()

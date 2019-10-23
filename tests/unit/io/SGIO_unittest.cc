@@ -119,7 +119,7 @@ TEST(SGIO, loglevels_redirection)
 	env()->io()->redirect_stdout(stdout_sink);
 	env()->io()->redirect_stderr(stderr_sink);
 
-	EMessageType loglevels[] = {MSG_GCDEBUG,    MSG_DEBUG, MSG_INFO,
+	EMessageType loglevels[] = {MSG_TRACE,    MSG_DEBUG, MSG_INFO,
 	                            MSG_WARN,       MSG_ERROR, MSG_CRITICAL,
 	                            MSG_MESSAGEONLY};
 	env()->io()->set_loglevel(loglevels[0]);

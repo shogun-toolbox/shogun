@@ -88,7 +88,7 @@ ELabelType CBinaryLabels::get_label_type() const
 
 void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 {
-	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()")
+	SG_TRACE("entering CBinaryLabels::scores_to_probabilities()");
 
 	require(m_current_values.vector, "{}::scores_to_probabilities() requires "
 	        "values vector!", get_name());
@@ -112,7 +112,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 		                          : 1.0 / (1 + std::exp(fApB));
 	}
 
-	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()")
+	SG_TRACE("leaving CBinaryLabels::scores_to_probabilities()");
 }
 
 CLabels* CBinaryLabels::shallow_subset_copy()

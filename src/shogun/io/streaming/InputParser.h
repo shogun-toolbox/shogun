@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Viktor Gal, Soeren Sonnenburg, Soumyajit De, 
+ * Authors: Heiko Strathmann, Viktor Gal, Soeren Sonnenburg, Soumyajit De,
  *          Yuyu Zhang, Thoralf Klein, Sergey Lisitsyn, Wu Lin
  */
 
@@ -429,19 +429,19 @@ template <class T>
 template <class T>
     void CInputParser<T>::start_parser()
 {
-	SG_DEBUG("entering CInputParser::start_parser()")
+	SG_TRACE("entering CInputParser::start_parser()");
     if (is_running())
     {
         error("Parser thread is already running! Multiple parse threads not supported.");
     }
 
-    SG_DEBUG("creating parse thread")
+    SG_TRACE("creating parse thread");
     if (examples_ring)
 		examples_ring->init_vector();
 	keep_running.store(true, std::memory_order_release);
 	parse_thread = std::thread(&parse_loop_entry_point, this);
 
-    SG_DEBUG("leaving CInputParser::start_parser()")
+    SG_TRACE("leaving CInputParser::start_parser()");
 }
 
 template <class T>
@@ -455,7 +455,7 @@ template <class T>
 template <class T>
     bool CInputParser<T>::is_running()
 {
-	SG_DEBUG("entering CInputParser::is_running()")
+	SG_TRACE("entering CInputParser::is_running()");
     bool ret;
 	std::lock_guard<std::mutex> lock(examples_state_lock);
 
@@ -467,7 +467,7 @@ template <class T>
     else
         ret = false;
 
-    SG_DEBUG("leaving CInputParser::is_running(), returning {}", ret)
+    SG_TRACE("leaving CInputParser::is_running(), returning {}", ret);
     return ret;
 }
 
@@ -647,16 +647,16 @@ template <class T>
 
 template <class T> void CInputParser<T>::end_parser()
 {
-	SG_DEBUG("entering CInputParser::end_parser")
-	SG_DEBUG("joining parse thread")
+	SG_TRACE("entering CInputParser::end_parser");
+	SG_TRACE("joining parse thread");
 	if (parse_thread.joinable())
 		parse_thread.join();
-    SG_DEBUG("leaving CInputParser::end_parser")
+    SG_TRACE("leaving CInputParser::end_parser");
 }
 
 template <class T> void CInputParser<T>::exit_parser()
 {
-	SG_DEBUG("cancelling parse thread")
+	SG_TRACE("cancelling parse thread");
 	keep_running.store(false, std::memory_order_release);
 	examples_state_changed.notify_one();
 	if (parse_thread.joinable())

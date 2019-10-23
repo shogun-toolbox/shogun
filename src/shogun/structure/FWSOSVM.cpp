@@ -62,7 +62,7 @@ EMachineType CFWSOSVM::get_classifier_type()
 
 bool CFWSOSVM::train_machine(CFeatures* data)
 {
-	SG_DEBUG("Entering CFWSOSVM::train_machine.");
+	SG_TRACE("Entering CFWSOSVM::train_machine.");
 	if (data)
 		set_features(data);
 
@@ -199,7 +199,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 		m_helper->terminate();
 
-	SG_DEBUG("Leaving CFWSOSVM::train_machine.");
+	SG_TRACE("Leaving CFWSOSVM::train_machine.");
 	return true;
 }
 

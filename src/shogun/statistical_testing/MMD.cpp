@@ -115,12 +115,12 @@ void CMMD::add_kernel(CKernel* kernel)
 
 void CMMD::select_kernel()
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	auto& data_mgr=get_data_mgr();
 	data_mgr.set_train_mode(true);
 	CMMD::set_kernel(self->strategy->select_kernel(this));
 	data_mgr.set_train_mode(false);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void CMMD::cleanup()

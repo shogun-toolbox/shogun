@@ -102,7 +102,7 @@ struct CQuadraticTimeMMD::Self
 	VarianceH0 variance_h0_job;
 	VarianceH1 variance_h1_job;
 	PermutationMMD permutation_job;
-	
+
 	NormalDistribution<float64_t> normal_dist;
 	CQuadraticTimeMMD::prng_type& prng;
 
@@ -318,7 +318,7 @@ float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
 
 float64_t CQuadraticTimeMMD::compute_statistic()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(get_kernel(), "Kernel is not set!");
 
 	self->init_statistic_job();
@@ -340,14 +340,13 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 	}
 
 	statistic=normalize_statistic(statistic);
-
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return statistic;
 }
 
 SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(owner.get_kernel(), "Kernel is not set!");
 
 	init_permutation_job();
@@ -372,13 +371,13 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	for (auto i=0; i<result.vlen; ++i)
 		null_samples[i]=owner.normalize_statistic(result[i]);
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return null_samples;
 }
 
 SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	require(owner.get_kernel(), "Kernel is not set!");
 	require(precompute, "MMD2_SPECTRUM is not possible without precomputing the kernel matrix!");
 
@@ -429,13 +428,13 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 		null_samples[i]=null_sample;
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return null_samples;
 }
 
 SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	require(owner.get_kernel(), "Kernel is not set!");
 	require(precompute, "MMD2_GAMMA is not possible without precomputing the kernel matrix!");
@@ -499,7 +498,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 	result[0]=a;
 	result[1]=b;
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return result;
 }
 

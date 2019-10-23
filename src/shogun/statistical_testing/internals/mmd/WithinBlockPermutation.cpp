@@ -81,7 +81,7 @@ void WithinBlockPermutation::add_term(float32_t val, index_t i, index_t j)
 template <typename PRNG>
 float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km, PRNG& prng)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
 	random::shuffle(permuted_inds, prng);
@@ -129,7 +129,7 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km, PRNG
 		terms.term[2]/=n_x*n_y;
 	SG_DEBUG("term_2 (normalized) = {}!", terms.term[2]);
 
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return terms.term[0]+terms.term[1]-2*terms.term[2];
 }
 

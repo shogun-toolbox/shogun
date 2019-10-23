@@ -88,7 +88,7 @@ void CMachineEvaluation::init()
 
 CEvaluationResult* CMachineEvaluation::evaluate() const
 {
-	SG_DEBUG("entering {}::evaluate()", get_name())
+	SG_TRACE("entering {}::evaluate()", get_name());
 
 	require(
 	    m_machine, "{}::evaluate() is only possible if a machine is "
@@ -107,7 +107,7 @@ CEvaluationResult* CMachineEvaluation::evaluate() const
 
 	CEvaluationResult* result = evaluate_impl();
 
-	SG_DEBUG("leaving {}::evaluate()", get_name())
+	SG_TRACE("leaving {}::evaluate()", get_name());
 	return result;
 };
 

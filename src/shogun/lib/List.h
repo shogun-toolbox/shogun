@@ -100,7 +100,7 @@ class CList : public CSGObject
 
 		virtual ~CList()
 		{
-			SG_DEBUG("Destroying List {}", fmt::ptr(this))
+			SG_TRACE("Destroying List {}", fmt::ptr(this));
 
 			delete_all_elements();
 		}
@@ -321,7 +321,7 @@ class CList : public CSGObject
 		 */
 		inline bool append_element(CSGObject* data)
 		{
-			SG_DEBUG("Entering");
+			SG_TRACE("Entering");
 
 			// none available, case is shattered in insert_element()
 			if (current != NULL)
@@ -332,7 +332,7 @@ class CList : public CSGObject
 					if (delete_data)
 						SG_UNREF(e);
 					// if successor exists use insert_element()
-					SG_DEBUG("Leaving");
+					SG_TRACE("Leaving");
 					return insert_element(data);
 				}
 				else
@@ -351,20 +351,20 @@ class CList : public CSGObject
 						if (delete_data)
 							SG_REF(data);
 
-						SG_DEBUG("Leaving");
+						SG_TRACE("Leaving");
 						return true;
 					}
 					else
 					{
 						io::warn("Error in allocating memory for new element!");
-						SG_DEBUG("Leaving");
+						SG_TRACE("Leaving");
 						return false;
 					}
 				}
 			}
 			else
 			{
-				SG_DEBUG("Leaving");
+				SG_TRACE("Leaving");
 				return insert_element(data);
 			}
 		}
@@ -492,7 +492,7 @@ class CList : public CSGObject
 		 */
 		inline CSGObject* delete_element()
 		{
-			SG_DEBUG("Entering");
+			SG_TRACE("Entering");
 			CSGObject* data = current ? current->data : NULL;
 
 			if (num_elements>0)
@@ -502,7 +502,7 @@ class CList : public CSGObject
 			{
 				if (delete_data)
 				{
-					SG_GCDEBUG("Decreasing refcount of {}({})!",
+					SG_TRACE("Decreasing refcount of {}({})!",
 							data->get_name(), fmt::ptr(data));
 					SG_UNREF(data);
 				}
@@ -528,11 +528,11 @@ class CList : public CSGObject
 
 				delete element;
 
-				SG_DEBUG("Leaving");
+				SG_TRACE("Leaving");
 				return data;
 			}
 
-			SG_DEBUG("Leaving");
+			SG_TRACE("Leaving");
 			return NULL;
 		}
 

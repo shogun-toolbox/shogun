@@ -225,7 +225,7 @@ CSGObject::CSGObject() : self(), param_obs_list()
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject created ({})", fmt::ptr(this))
+	SG_TRACE("SGObject created ({})", fmt::ptr(this));
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
@@ -234,12 +234,12 @@ CSGObject::CSGObject(const CSGObject& orig)
 	init();
 	m_refcount = new RefCount(0);
 
-	SG_GCDEBUG("SGObject copied ({})", fmt::ptr(this))
+	SG_TRACE("SGObject copied ({})", fmt::ptr(this));
 }
 
 CSGObject::~CSGObject()
 {
-	SG_GCDEBUG("SGObject destroyed ({})", fmt::ptr(this))
+	SG_TRACE("SGObject destroyed ({})", fmt::ptr(this));
 
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -253,14 +253,14 @@ CSGObject::~CSGObject()
 int32_t CSGObject::ref()
 {
 	int32_t count = m_refcount->ref();
-	SG_GCDEBUG("ref() refcount {} obj {} ({}) increased", count, this->get_name(), fmt::ptr(this))
+	SG_TRACE("ref() refcount {} obj {} ({}) increased", count, this->get_name(), fmt::ptr(this));
 	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::ref_count()
 {
 	int32_t count = m_refcount->ref_count();
-	SG_GCDEBUG("ref_count(): refcount {}, obj {} ({})", count, this->get_name(), fmt::ptr(this))
+	SG_TRACE("ref_count(): refcount {}, obj {} ({})", count, this->get_name(), fmt::ptr(this));
 	return m_refcount->ref_count();
 }
 
@@ -269,13 +269,13 @@ int32_t CSGObject::unref()
 	int32_t count = m_refcount->unref();
 	if (count<=0)
 	{
-		SG_GCDEBUG("unref() refcount {}, obj {} ({}) destroying", count, this->get_name(), fmt::ptr(this))
+		SG_TRACE("unref() refcount {}, obj {} ({}) destroying", count, this->get_name(), fmt::ptr(this));
 		delete this;
 		return 0;
 	}
 	else
 	{
-		SG_GCDEBUG("unref() refcount {} obj {} ({}) decreased", count, this->get_name(), fmt::ptr(this))
+		SG_TRACE("unref() refcount {} obj {} ({}) decreased", count, this->get_name(), fmt::ptr(this));
 		return m_refcount->ref_count();
 	}
 }
@@ -294,18 +294,15 @@ CSGObject * CSGObject::deep_copy() const
 
 void CSGObject::update_parameter_hash() const
 {
-	SG_DEBUG("entering")
+	SG_TRACE("entering");
 
 	m_hash = hash();
 
-	SG_DEBUG("leaving")
+	SG_TRACE("leaving");
 }
 
 bool CSGObject::parameter_hash_changed() const
 {
-	SG_DEBUG("entering")
-
-	SG_DEBUG("leaving")
 	return (m_hash!=hash());
 }
 

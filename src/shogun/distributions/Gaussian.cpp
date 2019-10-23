@@ -385,7 +385,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 
 SGVector<float64_t> CGaussian::sample()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	SGMatrix<float64_t> r_matrix(m_mean.vlen, m_mean.vlen);
 	r_matrix.zero();
 
@@ -435,7 +435,7 @@ SGVector<float64_t> CGaussian::sample()
 	for (int32_t i = 0; i < m_mean.vlen; i++)
 		samp.vector[i] += m_mean.vector[i];
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return samp;
 }
 

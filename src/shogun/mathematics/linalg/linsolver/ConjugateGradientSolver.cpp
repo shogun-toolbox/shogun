@@ -23,24 +23,24 @@ namespace shogun
 CConjugateGradientSolver::CConjugateGradientSolver()
 	: CIterativeLinearSolver<float64_t>()
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateGradientSolver::CConjugateGradientSolver(bool store_residuals)
 	: CIterativeLinearSolver<float64_t>(store_residuals)
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateGradientSolver::~CConjugateGradientSolver()
 {
-	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this));
+	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<float64_t> CConjugateGradientSolver::solve(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
-	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..");
+	SG_TRACE("CConjugateGradientSolve::solve(): Entering..");
 
 	// sanity check
 	require(A, "Operator is NULL!");
@@ -131,7 +131,7 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 	io::info("Iteration took {} times, residual norm={:.20f}, time elapsed={}",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
-	SG_DEBUG("CConjugateGradientSolve::solve(): Leaving..");
+	SG_TRACE("CConjugateGradientSolve::solve(): Leaving..");
 	return result;
 }
 

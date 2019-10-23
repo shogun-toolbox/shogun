@@ -1,5 +1,6 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/RefCount.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
@@ -45,9 +46,7 @@ int32_t SGReferencedData::ref_count()
 
 	int32_t c = m_refcount->ref_count();
 
-#ifdef DEBUG_SGVECTOR
-	SG_GCDEBUG("ref_count(): refcount {}, data {}", c, fmt::ptr(this))
-#endif
+	SG_TRACE("ref_count(): refcount {}, data {}", c, fmt::ptr(this));
 	return c;
 }
 
@@ -70,9 +69,7 @@ int32_t SGReferencedData::ref()
 
 	int32_t c = m_refcount->ref();
 
-#ifdef DEBUG_SGVECTOR
-	SG_GCDEBUG("ref() refcount {} data {} increased", c, fmt::ptr(this))
-#endif
+	SG_TRACE("ref() refcount {} data {} increased", c, fmt::ptr(this));
 	return c;
 }
 
@@ -94,9 +91,7 @@ int32_t SGReferencedData::unref()
 
 	if (c<=0)
 	{
-#ifdef DEBUG_SGVECTOR
-		SG_GCDEBUG("unref() refcount {} data {} destroying", c, fmt::ptr(this))
-#endif
+		SG_TRACE("unref() refcount {} data {} destroying", c, fmt::ptr(this));
 		free_data();
 		delete m_refcount;
 		m_refcount=NULL;
@@ -104,9 +99,7 @@ int32_t SGReferencedData::unref()
 	}
 	else
 	{
-#ifdef DEBUG_SGVECTOR
-		SG_GCDEBUG("unref() refcount {} data {} decreased", c, fmt::ptr(this))
-#endif
+		SG_TRACE("unref() refcount {} data {} decreased", c, fmt::ptr(this));
 		init_data();
 		m_refcount=NULL;
 		return c;

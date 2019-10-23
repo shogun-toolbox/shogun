@@ -44,7 +44,7 @@ using namespace internal;
 
 KernelManager::KernelManager()
 {
-	SG_DEBUG("Kernel manager instance initialized!");
+	SG_TRACE("Kernel manager instance initialized!");
 }
 
 KernelManager::KernelManager(index_t num_kernels)
@@ -69,37 +69,37 @@ void KernelManager::clear()
 
 InitPerKernel KernelManager::kernel_at(index_t i)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return InitPerKernel(m_kernels[i]);
 }
 
 CKernel* KernelManager::kernel_at(index_t i) const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
 	if (m_precomputed_kernels[i]==nullptr)
 	{
-		SG_DEBUG("Leaving!");
+		SG_TRACE("Leaving!");
 		return m_kernels[i].get();
 	}
 	SG_DEBUG("Precomputed kernel exists!");
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return m_precomputed_kernels[i].get();
 }
 
 void KernelManager::push_back(CKernel* kernel)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	SG_REF(kernel);
 	m_kernels.push_back(std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); }));
 	m_precomputed_kernels.push_back(nullptr);
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 const index_t KernelManager::num_kernels() const
@@ -112,7 +112,7 @@ const index_t KernelManager::num_kernels() const
 
 void KernelManager::precompute_kernel_at(index_t i)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
@@ -127,18 +127,18 @@ void KernelManager::precompute_kernel_at(index_t i)
 		SG_DEBUG("Kernel type {} is precomputed and replaced internally with {}!",
 			kernel->get_name(), m_precomputed_kernels[i]->get_name());
 	}
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 void KernelManager::restore_kernel_at(index_t i)
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 	require(i<num_kernels(),
 			"Value of i ({}) should be between 0 and {}, inclusive!",
 			i, num_kernels()-1);
 	m_precomputed_kernels[i]=nullptr;
 	SG_DEBUG("Precomputed kernel (if any) was deleted!");
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 }
 
 bool KernelManager::same_distance_type() const

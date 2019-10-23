@@ -22,19 +22,19 @@ CDirectLinearSolverComplex::CDirectLinearSolverComplex()
 	: CLinearSolver<complex128_t, float64_t>(),
 	  m_type(DS_QR_NOPERM)
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CDirectLinearSolverComplex::CDirectLinearSolverComplex(EDirectSolverType type)
 	: CLinearSolver<complex128_t, float64_t>(),
 	  m_type(type)
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 {
-	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<complex128_t> CDirectLinearSolverComplex::solve(

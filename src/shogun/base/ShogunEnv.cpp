@@ -62,8 +62,12 @@ void ShogunEnv::init_from_env()
 	env_log_val = getenv("SHOGUN_LOG_LEVEL");
 	if (env_log_val)
 	{
-		if (strncmp(env_log_val, "DEBUG", 5) == 0)
+		if (strncmp(env_log_val, "TRACE", 5) == 0)
+			sg_io->set_loglevel(io::MSG_TRACE);
+		else if (strncmp(env_log_val, "DEBUG", 5) == 0)
 			sg_io->set_loglevel(io::MSG_DEBUG);
+		else if (strncmp(env_log_val, "INFO", 4) == 0)
+			sg_io->set_loglevel(io::MSG_INFO);
 		else if (strncmp(env_log_val, "WARN", 4) == 0)
 			sg_io->set_loglevel(io::MSG_WARN);
 		else if (strncmp(env_log_val, "ERROR", 5) == 0)

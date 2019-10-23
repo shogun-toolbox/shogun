@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin,
  *          Fernando Iglesias, Thoralf Klein
  */
 
@@ -253,7 +253,7 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	SG_DEBUG("entering {}::apply_get_outputs({} at {})",
+	SG_TRACE("entering {}::apply_get_outputs({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	require(kernel, "{}::apply_get_outputs(): No kernel assigned!");
@@ -382,7 +382,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 	}
 
-	SG_DEBUG("leaving {}::apply_get_outputs({} at {})",
+	SG_TRACE("leaving {}::apply_get_outputs({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return output;

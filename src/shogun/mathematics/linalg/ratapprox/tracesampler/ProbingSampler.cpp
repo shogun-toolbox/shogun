@@ -83,7 +83,7 @@ SGVector<int32_t> CProbingSampler::get_coloring_vector() const
 
 void CProbingSampler::precompute()
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	// if already precomputed, nothing to do
 	if (m_is_precomputed)
@@ -181,7 +181,7 @@ void CProbingSampler::precompute()
 	// set the precomputed flag true
 	m_is_precomputed=true;
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 }
 
 SGVector<float64_t> CProbingSampler::sample(index_t idx) const

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Abinash Panda, Shell Hu, Soeren Sonnenburg, Fernando Iglesias, 
+ * Authors: Abinash Panda, Shell Hu, Soeren Sonnenburg, Fernando Iglesias,
  *          Bjoern Esser
  */
 
@@ -62,7 +62,7 @@ EMachineType CStochasticSOSVM::get_classifier_type()
 
 bool CStochasticSOSVM::train_machine(CFeatures* data)
 {
-	SG_DEBUG("Entering CStochasticSOSVM::train_machine.");
+	SG_TRACE("Entering CStochasticSOSVM::train_machine.");
 	if (data)
 		set_features(data);
 
@@ -189,7 +189,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 		m_helper->terminate();
 
-	SG_DEBUG("Leaving CStochasticSOSVM::train_machine.");
+	SG_TRACE("Leaving CStochasticSOSVM::train_machine.");
 	return true;
 }
 

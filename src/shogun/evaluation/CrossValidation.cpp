@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
- *          Sergey Lisitsyn, Saurabh Mahindre, Jacob Walker, Viktor Gal, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni,
+ *          Sergey Lisitsyn, Saurabh Mahindre, Jacob Walker, Viktor Gal,
  *          Leon Kuchenbecker
  */
 
@@ -59,7 +59,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl() const
 	SGVector<float64_t> results(m_num_runs);
 
 	/* perform all the x-val runs */
-	SG_DEBUG("starting {} runs of cross-validation", m_num_runs)
+	SG_DEBUG("starting {} runs of cross-validation", m_num_runs);
 	for (auto i : SG_PROGRESS(range(m_num_runs)))
 	{
 		results[i] = evaluate_one_run(i);
@@ -88,7 +88,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 
 float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 {
-	SG_DEBUG("entering {}::evaluate_one_run()", get_name())
+	SG_TRACE("entering {}::evaluate_one_run()", get_name());
 	index_t num_subsets = m_splitting_strategy->get_num_subsets();
 
 	SG_DEBUG("building index sets for {}-fold cross-validation", num_subsets)
@@ -142,6 +142,6 @@ float64_t CCrossValidation::evaluate_one_run(int64_t index) const
 	/* build arithmetic mean of results */
 	float64_t mean = CStatistics::mean(results);
 
-	SG_DEBUG("leaving {}::evaluate_one_run()", get_name())
+	SG_TRACE("leaving {}::evaluate_one_run()", get_name());
 	return mean;
 }

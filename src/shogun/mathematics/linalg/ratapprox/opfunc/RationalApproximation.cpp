@@ -24,7 +24,7 @@ CRationalApproximation::CRationalApproximation()
 {
 	init();
 
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CRationalApproximation::CRationalApproximation(
@@ -39,14 +39,14 @@ CRationalApproximation::CRationalApproximation(
 
 	m_desired_accuracy=desired_accuracy;
 
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CRationalApproximation::~CRationalApproximation()
 {
 	SG_UNREF(m_eigen_solver);
 
-	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 void CRationalApproximation::init()

@@ -72,7 +72,7 @@ void CFITCInferenceMethod::compute_gradient()
 
 void CFITCInferenceMethod::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_chol();
@@ -80,7 +80,7 @@ void CFITCInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(

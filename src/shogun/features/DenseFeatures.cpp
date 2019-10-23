@@ -541,7 +541,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 template<class ST>
 CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
 {
-	SG_DEBUG("Entering!");
+	SG_TRACE("Entering!");
 
 	// sanity checks
 	index_t max=CMath::max(dims.vector, dims.vlen);
@@ -564,7 +564,7 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) con
 	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
 	SG_REF(result);
 
-	SG_DEBUG("Leaving!");
+	SG_TRACE("Leaving!");
 	return result;
 }
 
@@ -676,7 +676,7 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 template <class ST>
 CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 {
-	SG_DEBUG("Entering.");
+	SG_TRACE("Entering.");
 
 	require(others!=nullptr, "The list of other feature instances is not initialized!");
 
@@ -723,7 +723,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 
 	auto result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("Leaving.");
+	SG_TRACE("Leaving.");
 	return result;
 }
 

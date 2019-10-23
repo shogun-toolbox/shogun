@@ -98,7 +98,7 @@ void CVarDTCInferenceMethod::compute_gradient()
 
 void CVarDTCInferenceMethod::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_chol();
@@ -106,7 +106,7 @@ void CVarDTCInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 CVarDTCInferenceMethod* CVarDTCInferenceMethod::obtain_from_generic(
@@ -135,7 +135,7 @@ void CVarDTCInferenceMethod::check_members() const
 SGVector<float64_t> CVarDTCInferenceMethod::get_diagonal_vector()
 {
 	not_implemented(SOURCE_LOCATION);
-	//the inference method does not need to use this 
+	//the inference method does not need to use this
 	return SGVector<float64_t>();
 }
 
@@ -187,7 +187,7 @@ void CVarDTCInferenceMethod::update_chol()
 	        MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 	m_inv_Lm=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
 	Map<MatrixXd> eigen_inv_Lm(m_inv_Lm.matrix, m_inv_Lm.num_rows, m_inv_Lm.num_cols);
-	//invLm = Lm\eye(model.m); 
+	//invLm = Lm\eye(model.m);
 	eigen_inv_Lm=Luu.matrixU().solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	m_Knm_inv_Lm=SGMatrix<float64_t>(m_ktru.num_cols, m_ktru.num_rows);
@@ -198,16 +198,16 @@ void CVarDTCInferenceMethod::update_chol()
 
 	m_Tmm=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_C(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
-	//C = KnmInvLm'*KnmInvLm; 
+	//C = KnmInvLm'*KnmInvLm;
 	eigen_C=eigen_Knm_inv_Lm.transpose()*eigen_Knm_inv_Lm;
 
 	m_inv_La=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_inv_La(m_inv_La.matrix, m_inv_La.num_rows, m_inv_La.num_cols);
-	//A = sigma2*eye(model.m) + C;    
+	//A = sigma2*eye(model.m) + C;
 	LLT<MatrixXd> chol_A(m_sigma2*MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols)+eigen_C);
 
 	//La = chol(A);
-	//invLa =  La\eye(model.m);  
+	//invLa =  La\eye(model.m);
 	eigen_inv_La=chol_A.matrixU().solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	//L=-invLm*invLm' +  sigma2*(invLm*invLa*invLa'*invLm');
@@ -234,12 +234,12 @@ void CVarDTCInferenceMethod::update_alpha()
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
-	//yKnmInvLm = (model.y'*KnmInvLm);  
-	//yKnmInvLmInvLa = yKnmInvLm*invLa;     
+	//yKnmInvLm = (model.y'*KnmInvLm);
+	//yKnmInvLmInvLa = yKnmInvLm*invLa;
 	VectorXd y_cor=eigen_y-eigen_m;
 	VectorXd eigen_y_Knm_inv_Lm_inv_La_transpose=eigen_inv_La.transpose()*(
 		eigen_Knm_inv_Lm.transpose()*y_cor);
-	//alpha = invLm*invLa*yKnmInvLmInvLa'; 
+	//alpha = invLm*invLa*yKnmInvLmInvLa';
 	m_alpha=SGVector<float64_t>(m_kuu.num_rows);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	eigen_alpha=eigen_inv_Lm*eigen_inv_La*eigen_y_Knm_inv_Lm_inv_La_transpose;
@@ -269,18 +269,18 @@ void CVarDTCInferenceMethod::update_deriv()
 	float64_t sigma=lik->get_sigma();
 	m_sigma2=sigma*sigma;
 
-	//invLmInvLa = invLm*invLa;  
-	//invA = invLmInvLa*invLmInvLa';    
-	//yKnmInvA = yKnmInvLmInvLa*invLmInvLa'; 
-	//invKmm = invLm*invLm'; 
-	//Tmm = sigma2*invA + yKnmInvA'*yKnmInvA;  
+	//invLmInvLa = invLm*invLa;
+	//invA = invLmInvLa*invLmInvLa';
+	//yKnmInvA = yKnmInvLmInvLa*invLmInvLa';
+	//invKmm = invLm*invLm';
+	//Tmm = sigma2*invA + yKnmInvA'*yKnmInvA;
 	//Tmm = invKmm - Tmm;
 	MatrixXd Tmm=-eigen_L-eigen_alpha*eigen_alpha.transpose();
 
 	// Tnm = model.Knm*Tmm;
 	eigen_Tnm = (eigen_ktru.transpose() * std::exp(m_log_scale * 2.0)) * Tmm;
 
-	//Tmm = Tmm - (invLm*(C*invLm'))/sigma2; 
+	//Tmm = Tmm - (invLm*(C*invLm'))/sigma2;
 	eigen_Tmm = Tmm - (eigen_inv_Lm*eigen_C*eigen_inv_Lm.transpose()/m_sigma2);
 
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
@@ -288,7 +288,7 @@ void CVarDTCInferenceMethod::update_deriv()
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
-	//Tnm = Tnm + (model.y*yKnmInvA); 
+	//Tnm = Tnm + (model.y*yKnmInvA);
 	eigen_Tnm += (eigen_y-eigen_m)*eigen_alpha.transpose();
 }
 
@@ -329,7 +329,7 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
 	             MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols)) *
 	        eigen_alpha;
 	//Dlik_neg = - (model.n-model.m) + model.yy/sigma2 - 2*F3 - sigma2aux - 2*TrK;
-	
+
 	dlik[0]=(m_ktru.num_cols-m_ktru.num_rows)-m_yy/m_sigma2+2.0*m_f3+sigma2aux+2.0*m_trk;
 	return dlik;
 }
@@ -339,7 +339,7 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_features
 {
 	//[DXu DXunm] = kernelSparseGradInd(model, Tmm, Tnm);
     //DXu_neg = DXu + DXunm/model.sigma2;
-	
+
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	Map<MatrixXd> eigen_Tnm(m_Tnm.matrix, m_Tnm.num_rows, m_Tnm.num_cols);
 
@@ -406,7 +406,7 @@ float64_t CVarDTCInferenceMethod::get_derivative_related_cov(SGVector<float64_t>
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	Map<MatrixXd> eigen_Tnm(m_Tnm.matrix, m_Tnm.num_rows, m_Tnm.num_cols);
 
-	//[Dkern Dkernnm DTrKnn] = kernelSparseGradHyp(model, Tmm, Tnm); 
+	//[Dkern Dkernnm DTrKnn] = kernelSparseGradHyp(model, Tmm, Tnm);
 	//Dkern_neg = 0.5*Dkern + Dkernnm/model.sigma2 - (0.5/model.sigma2)*DTrKnn;
 	float64_t dkern= -0.5*eigen_dKuui.cwiseProduct(eigen_Tmm).sum()
 		-eigen_dKui.cwiseProduct(eigen_Tnm.transpose()).sum()/m_sigma2

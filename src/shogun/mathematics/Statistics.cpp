@@ -984,7 +984,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 
 CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
 {
-	SG_DEBUG("entering CStatistics::fit_sigmoid()")
+	SG_TRACE("entering CStatistics::fit_sigmoid()");
 
 	require(scores.vector, "CStatistics::fit_sigmoid() requires "
 			"scores vector!");
@@ -1144,7 +1144,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	result.a=a;
 	result.b=b;
 
-	SG_DEBUG("leaving CStatistics::fit_sigmoid()")
+	SG_TRACE("leaving CStatistics::fit_sigmoid()");
 	return result;
 }
 

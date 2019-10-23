@@ -105,7 +105,7 @@ COperatorFunction<float64_t>* CLogDetEstimator::get_operator_function(void) cons
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 	io::info("Computing {} log-det estimates", num_estimates);
 
 	require(m_operator_log, "Operator function is NULL");
@@ -146,14 +146,14 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 
 	io::info("Finished computing {} log-det estimates", num_estimates);
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 	return samples;
 }
 
 SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	index_t num_estimates)
 {
-	SG_DEBUG("Entering...")
+	SG_TRACE("Entering...");
 
 	require(m_operator_log, "Operator function is NULL");
 	// call the precompute of operator function to compute all prerequisites
@@ -184,7 +184,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 		}
 	}
 
-	SG_DEBUG("Leaving")
+	SG_TRACE("Leaving");
 	return samples;
 }
 

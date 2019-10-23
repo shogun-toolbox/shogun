@@ -51,7 +51,7 @@ const char* CLMNN::get_name() const
 
 void CLMNN::train(SGMatrix<float64_t> init_transform)
 {
-	SG_DEBUG("Entering CLMNN::train().")
+	SG_TRACE("Entering CLMNN::train().");
 
 	// Check training data and arguments, initializing, if necessary, init_transform
 	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform, m_k);
@@ -141,7 +141,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	    SGMatrix<float64_t>::clone_matrix(L.matrix, nfeats, nfeats);
 	m_linear_transform = SGMatrix<float64_t>(cloned_data, nfeats, nfeats);
 
-	SG_DEBUG("Leaving CLMNN::train().")
+	SG_TRACE("Leaving CLMNN::train().");
 }
 
 SGMatrix<float64_t> CLMNN::get_linear_transform() const

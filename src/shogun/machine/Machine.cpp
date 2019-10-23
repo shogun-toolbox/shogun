@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Giovanni De Toni, 
- *          Soeren Sonnenburg, Chiyuan Zhang, Thoralf Klein, Evgeniy Andreev, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Giovanni De Toni,
+ *          Soeren Sonnenburg, Chiyuan Zhang, Thoralf Klein, Evgeniy Andreev,
  *          Evan Shelhamer, Fernando Iglesias
  */
 
@@ -115,7 +115,7 @@ ESolverType CMachine::get_solver_type()
 
 CLabels* CMachine::apply(CFeatures* data)
 {
-	SG_DEBUG("entering {}::apply({} at {})",
+	SG_TRACE("entering {}::apply({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	CLabels* result=NULL;
@@ -142,7 +142,7 @@ CLabels* CMachine::apply(CFeatures* data)
 			break;
 	}
 
-	SG_DEBUG("leaving {}::apply({} at {})",
+	SG_TRACE("leaving {}::apply({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
 
 	return result;

@@ -76,7 +76,7 @@ public:
                         return CMath::NOT_A_NUMBER;
                 float64_t nlml=m_obj->get_nlml_wrt_parameters();
                 return nlml;
-        
+
         }
         virtual SGVector<float64_t> obtain_variable_reference()
         {
@@ -178,7 +178,7 @@ void CKLInference::compute_gradient()
 
 void CKLInference::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_init();
@@ -187,7 +187,7 @@ void CKLInference::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 void CKLInference::set_noise_factor(float64_t noise_factor)

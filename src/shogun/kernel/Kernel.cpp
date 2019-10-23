@@ -127,7 +127,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
 
-	SG_DEBUG("leaving CKernel::init({}, {})", fmt::ptr(l), fmt::ptr(r))
+	SG_TRACE("leaving CKernel::init({}, {})", fmt::ptr(l), fmt::ptr(r));
 	return true;
 }
 
@@ -993,7 +993,7 @@ template <class T> struct K_THREAD_PARAM
 float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 		bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	require(has_features(), "No features assigned to kernel");
 	require(lhs_equals_rhs, "The kernel matrix is not symmetric!");
@@ -1036,7 +1036,7 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 		}
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum;
 }
@@ -1044,7 +1044,7 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 		index_t block_size_row, index_t block_size_col, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	require(has_features(), "No features assigned to kernel");
 	require(block_begin_row>=0 && block_begin_row<num_lhs &&
@@ -1081,7 +1081,7 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 		}
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum;
 }
@@ -1089,7 +1089,7 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	require(has_features(), "No features assigned to kernel");
 	require(lhs_equals_rhs, "The kernel matrix is not symmetric!");
@@ -1135,7 +1135,7 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 		}
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return row_sum;
 }
@@ -1143,7 +1143,7 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
 		block_begin, index_t block_size, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	require(has_features(), "No features assigned to kernel");
 	require(lhs_equals_rhs, "The kernel matrix is not symmetric!");
@@ -1194,7 +1194,7 @@ SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
 		}
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return row_sum;
 }
@@ -1203,7 +1203,7 @@ SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
 		index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
-	SG_DEBUG("Entering");
+	SG_TRACE("Entering");
 
 	require(has_features(), "No features assigned to kernel");
 	require(block_begin_row>=0 && block_begin_row<num_lhs &&
@@ -1248,7 +1248,7 @@ SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
 		}
 	}
 
-	SG_DEBUG("Leaving");
+	SG_TRACE("Leaving");
 
 	return sum;
 }

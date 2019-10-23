@@ -22,24 +22,24 @@ namespace shogun
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
 	: CIterativeLinearSolver<complex128_t, float64_t>()
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver(bool store_residuals)
 	: CIterativeLinearSolver<complex128_t, float64_t>(store_residuals)
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this));
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 {
-	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this));
+	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 	CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
 {
-	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Entering..");
+	SG_TRACE("CConjugateOrthogonalCGSolver::solve(): Entering..");
 
 	// sanity check
 	require(A, "Operator is NULL!");

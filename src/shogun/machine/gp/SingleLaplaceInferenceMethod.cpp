@@ -65,7 +65,7 @@ public:
 
 class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
-public: 
+public:
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
 	virtual ~SingleLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
 	void set_target(CSingleLaplaceInferenceMethod *obj)
@@ -433,7 +433,7 @@ void CSingleLaplaceInferenceMethod::update_chol()
 
 void CSingleLaplaceInferenceMethod::update()
 {
-	SG_DEBUG("entering");
+	SG_TRACE("entering");
 
 	CInference::update();
 	update_init();
@@ -442,7 +442,7 @@ void CSingleLaplaceInferenceMethod::update()
 	m_gradient_update=false;
 	update_parameter_hash();
 
-	SG_DEBUG("leaving");
+	SG_TRACE("leaving");
 }
 
 
@@ -820,7 +820,7 @@ void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> g
 		kernel * ((eigen_alpha)*std::exp(m_log_scale * 2.0)) + eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
-		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
+		m_model->get_log_probability_derivative_f(m_labels, f, 1);
 
 	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 

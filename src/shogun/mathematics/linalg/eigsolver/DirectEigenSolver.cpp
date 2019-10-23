@@ -19,19 +19,19 @@ namespace shogun
 CDirectEigenSolver::CDirectEigenSolver()
 	: CEigenSolver()
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CDirectEigenSolver::CDirectEigenSolver(
 	CDenseMatrixOperator<float64_t>* linear_operator)
 	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
 {
-	SG_GCDEBUG("{} created ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
 CDirectEigenSolver::~CDirectEigenSolver()
 {
-	SG_GCDEBUG("{} destroyed ({})", this->get_name(), fmt::ptr(this))
+	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
 void CDirectEigenSolver::compute()
