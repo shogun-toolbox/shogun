@@ -11,7 +11,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/mathematics/Math.h>
-#include <stan/math.hpp>
+#include <stan/math/rev/scal.hpp>
 
 using namespace shogun;
 
