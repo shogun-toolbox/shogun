@@ -13,6 +13,8 @@
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 
+#include <utility>
+
 using namespace Eigen;
 namespace shogun
 {
@@ -27,11 +29,11 @@ LogRationalApproximationCGM::LogRationalApproximationCGM(
 	std::shared_ptr<LinearOperator<float64_t>> linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
 	std::shared_ptr<CGMShiftedFamilySolver> linear_solver, float64_t desired_accuracy)
 	: RationalApproximation(
-	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
+	      std::move(linear_operator), std::move(eigen_solver), desired_accuracy, OF_LOG)
 {
 	init();
 
-	m_linear_solver=linear_solver;
+	m_linear_solver=std::move(linear_solver);
 
 }
 

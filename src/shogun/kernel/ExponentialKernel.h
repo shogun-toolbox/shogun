@@ -44,8 +44,8 @@ class ExponentialKernel: public DotKernel
 		 * @param distance distance to be used
 		 * @param size cache size
 		 */
-		ExponentialKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
-			float64_t width, std::shared_ptr<Distance> distance, int32_t size);
+		ExponentialKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
+			float64_t width, const std::shared_ptr<Distance>& distance, int32_t size);
 
 		/** destructor */
 		virtual ~ExponentialKernel();

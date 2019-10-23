@@ -31,7 +31,7 @@ PolyKernel::PolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
 }
 
 PolyKernel::PolyKernel(
-    std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t d, float64_t c, float64_t gamma,
+    const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t d, float64_t c, float64_t gamma,
     int32_t size)
     : DotKernel(size)
 {

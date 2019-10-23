@@ -4,9 +4,10 @@
  * Authors: Jiaolong Xu, Sanuj Sharma, Bjoern Esser, Yori Zwols
  */
 
-#include <shogun/structure/GEMPLP.h>
-#include <shogun/io/SGIO.h>
 #include <algorithm>
+#include <shogun/io/SGIO.h>
+#include <shogun/structure/GEMPLP.h>
+#include <utility>
 
 using namespace shogun;
 using namespace std;
@@ -19,7 +20,7 @@ GEMPLP::GEMPLP()
 }
 
 GEMPLP::GEMPLP(std::shared_ptr<FactorGraph> fg, Parameter param)
-	: MAPInferImpl(fg),
+	: MAPInferImpl(std::move(fg)),
 	  m_param(param)
 {
 	ASSERT(m_fg != NULL);
@@ -125,7 +126,7 @@ void GEMPLP::init()
 	}
 }
 
-SGNDArray<float64_t> GEMPLP::convert_energy_to_potential(std::shared_ptr<Factor> factor)
+SGNDArray<float64_t> GEMPLP::convert_energy_to_potential(const std::shared_ptr<Factor>& factor)
 {
 	SGVector<float64_t> energies = factor->get_energies();
 	SGVector<int32_t> cards = factor->get_cardinalities();

@@ -12,6 +12,8 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -27,8 +29,8 @@ KernelRidgeRegression::KernelRidgeRegression(float64_t tau, std::shared_ptr<Kern
 	init();
 
 	set_tau(tau);
-	set_labels(lab);
-	set_kernel(k);
+	set_labels(std::move(lab));
+	set_kernel(std::move(k));
 }
 
 void KernelRidgeRegression::init()

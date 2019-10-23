@@ -44,7 +44,7 @@ class RegressionLabels : public DenseLabels
 		 *
 		 * @param src labels to set
 		 */
-		RegressionLabels(const SGVector<float64_t> src);
+		RegressionLabels(SGVector<float64_t> src);
 
 		/** constructor
 		 *
@@ -72,7 +72,7 @@ class RegressionLabels : public DenseLabels
 };
 
 #ifndef SWIG
-std::shared_ptr<RegressionLabels> regression_labels(std::shared_ptr<Labels> orig);
+std::shared_ptr<RegressionLabels> regression_labels(const std::shared_ptr<Labels>& orig);
 #endif // SWIG
 }
 #endif

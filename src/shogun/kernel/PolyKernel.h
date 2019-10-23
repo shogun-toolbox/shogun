@@ -44,7 +44,7 @@ class PolyKernel: public DotKernel
 		 * @param c trade-off parameter
 		 * @param size cache size
 		 */
-		PolyKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
+		PolyKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 			int32_t d, float64_t c, float64_t gamma, int32_t size=10);
 
 		/** constructor

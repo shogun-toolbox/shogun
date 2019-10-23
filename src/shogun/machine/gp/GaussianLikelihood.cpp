@@ -60,7 +60,7 @@ GaussianLikelihood::~GaussianLikelihood()
 }
 
 std::shared_ptr<GaussianLikelihood> GaussianLikelihood::obtain_from_generic(
-		std::shared_ptr<LikelihoodModel> lik)
+		const std::shared_ptr<LikelihoodModel>& lik)
 {
 	ASSERT(lik!=NULL);
 

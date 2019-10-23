@@ -9,13 +9,14 @@
 
 #ifdef HAVE_LAPACK
 
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 #include <shogun/mathematics/linalg/linsolver/IterativeSolverIterator.h>
-#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <utility>
 #include <vector>
-#include <shogun/lib/SGVector.h>
 
 using namespace Eigen;
 
@@ -30,7 +31,7 @@ LanczosEigenSolver::LanczosEigenSolver()
 
 LanczosEigenSolver::LanczosEigenSolver(
 	std::shared_ptr<LinearOperator<float64_t>> linear_operator)
-	: EigenSolver(linear_operator)
+	: EigenSolver(std::move(linear_operator))
 {
 	init();
 }

@@ -88,7 +88,7 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	void add_kernel(std::shared_ptr<Kernel> kernel);
+	void add_kernel(const std::shared_ptr<Kernel>& kernel);
 
 	/**
 	 * Method that does internal cleanups (essentially releases memory from the

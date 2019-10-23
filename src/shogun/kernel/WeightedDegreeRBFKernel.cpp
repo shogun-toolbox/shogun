@@ -27,7 +27,7 @@ WeightedDegreeRBFKernel::WeightedDegreeRBFKernel(int32_t size, float64_t w, int3
 }
 
 WeightedDegreeRBFKernel::WeightedDegreeRBFKernel(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, float64_t w, int32_t d, int32_t nof_prop, int32_t size)
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, float64_t w, int32_t d, int32_t nof_prop, int32_t size)
 : DotKernel(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
 {
 	init_wd_weights();

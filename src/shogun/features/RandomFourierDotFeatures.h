@@ -74,7 +74,7 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	RandomFourierDotFeatures(std::shared_ptr<File> loader);
+	RandomFourierDotFeatures(const std::shared_ptr<File>& loader);
 
 	/** copy constructor */
 	RandomFourierDotFeatures(const RandomFourierDotFeatures& orig);
@@ -106,7 +106,7 @@ protected:
 	virtual SGVector<float64_t> generate_random_parameter_vector();
 
 private:
-	void init(KernelName kernel_name, SGVector<float64_t> params);
+	void init(KernelName kernel_name, const SGVector<float64_t>& params);
 
 private:
 	/** the kernel to approximate */

@@ -38,7 +38,7 @@ void MKLClassification::init_training()
 	require(m_labels->get_num_labels(), "Number of labels is zero.");
 }
 
-std::shared_ptr<MKLClassification> MKLClassification::obtain_from_generic(std::shared_ptr<Machine> machine)
+std::shared_ptr<MKLClassification> MKLClassification::obtain_from_generic(const std::shared_ptr<Machine>& machine)
 {
 	if (machine == NULL)
 		return NULL;

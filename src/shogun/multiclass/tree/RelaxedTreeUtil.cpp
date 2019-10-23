@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(std::shared_ptr<BaseMulticlassMachine >machine, std::shared_ptr<Features >X, std::shared_ptr<MulticlassLabels >Y, int32_t num_classes)
+SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(const std::shared_ptr<BaseMulticlassMachine >&machine, const std::shared_ptr<Features >&X, std::shared_ptr<MulticlassLabels >Y, int32_t num_classes)
 {
 	const int32_t N_splits = 2; // 5
 	auto split = std::make_shared<CrossValidationSplitting>(Y, N_splits);
@@ -59,7 +59,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(std::shared_ptr<B
 	return conf_mat;
 }
 
-void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, std::shared_ptr<MulticlassLabels >gt, std::shared_ptr<MulticlassLabels >pred)
+void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, const std::shared_ptr<MulticlassLabels >&gt, const std::shared_ptr<MulticlassLabels >&pred)
 {
 	SGMatrix<int32_t> conf_mat_int = MulticlassAccuracy::get_confusion_matrix(pred, gt);
 

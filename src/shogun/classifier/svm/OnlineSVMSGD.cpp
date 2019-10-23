@@ -12,6 +12,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 OnlineSVMSGD::OnlineSVMSGD()
@@ -36,7 +38,7 @@ OnlineSVMSGD::OnlineSVMSGD(float64_t C, std::shared_ptr<StreamingDotFeatures> tr
 	C1=C;
 	C2=C;
 
-	set_features(traindat);
+	set_features(std::move(traindat));
 }
 
 OnlineSVMSGD::~OnlineSVMSGD()
@@ -48,7 +50,7 @@ void OnlineSVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
 
 
-	loss=loss_func;
+	loss=std::move(loss_func);
 }
 
 bool OnlineSVMSGD::train(std::shared_ptr<Features> data)

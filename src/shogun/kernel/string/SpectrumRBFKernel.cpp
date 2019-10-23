@@ -57,7 +57,7 @@ SpectrumRBFKernel::SpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int32
 }
 
 SpectrumRBFKernel::SpectrumRBFKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix_, int32_t degree_, float64_t width_)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t size, float64_t* AA_matrix_, int32_t degree_, float64_t width_)
 : StringKernel<char>(size), alphabet(NULL), degree(degree_), width(width_), sequences(NULL), string_features(NULL), nof_sequences(0), max_sequence_length(0)
 {
 	target_letter_0=-1 ;

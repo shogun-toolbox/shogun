@@ -12,6 +12,8 @@
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/lib/DynamicArray.h>
 
+#include <utility>
+
 using namespace shogun;
 
 HierarchicalMultilabelModel::HierarchicalMultilabelModel()
@@ -23,7 +25,7 @@ HierarchicalMultilabelModel::HierarchicalMultilabelModel()
 HierarchicalMultilabelModel::HierarchicalMultilabelModel(std::shared_ptr<Features > features,
                 std::shared_ptr<StructuredLabels > labels, SGVector<int32_t> taxonomy,
                 bool leaf_nodes_mandatory)
-	: StructuredModel(features, labels)
+	: StructuredModel(std::move(features), std::move(labels))
 {
 	init(taxonomy, leaf_nodes_mandatory);
 }

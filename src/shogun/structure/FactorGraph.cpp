@@ -65,7 +65,7 @@ void FactorGraph::init()
 	m_dset = std::make_shared<DisjointSet>(m_cardinalities.size());
 }
 
-void FactorGraph::add_factor(std::shared_ptr<Factor> factor)
+void FactorGraph::add_factor(const std::shared_ptr<Factor>& factor)
 {
 	m_factors.push_back(factor);
 	m_num_edges += factor->get_variables().size();
@@ -75,7 +75,7 @@ void FactorGraph::add_factor(std::shared_ptr<Factor> factor)
 		m_dset->set_connected(false);
 }
 
-void FactorGraph::add_data_source(std::shared_ptr<FactorDataSource> datasource)
+void FactorGraph::add_data_source(const std::shared_ptr<FactorDataSource>& datasource)
 {
 	m_datasources.push_back(datasource);
 }
@@ -144,7 +144,7 @@ float64_t FactorGraph::evaluate_energy(const SGVector<int32_t> state) const
 	return energy;
 }
 
-float64_t FactorGraph::evaluate_energy(std::shared_ptr<const FactorGraphObservation> obs) const
+float64_t FactorGraph::evaluate_energy(const std::shared_ptr<const FactorGraphObservation>& obs) const
 {
 	return evaluate_energy(obs->get_data());
 }

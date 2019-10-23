@@ -7,6 +7,8 @@
 #include <shogun/kernel/MultiquadricKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MultiquadricKernel::MultiquadricKernel(): Kernel(0), m_distance(NULL), m_coef(0.0001)
@@ -15,7 +17,7 @@ MultiquadricKernel::MultiquadricKernel(): Kernel(0), m_distance(NULL), m_coef(0.
 }
 
 MultiquadricKernel::MultiquadricKernel(int32_t cache, float64_t coef, std::shared_ptr<Distance> dist)
-: Kernel(cache), m_distance(dist), m_coef(coef)
+: Kernel(cache), m_distance(std::move(dist)), m_coef(coef)
 {
 	ASSERT(m_distance)
 	
@@ -23,11 +25,11 @@ MultiquadricKernel::MultiquadricKernel(int32_t cache, float64_t coef, std::share
 }
 
 MultiquadricKernel::MultiquadricKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t coef, std::shared_ptr<Distance> dist)
-: Kernel(10), m_distance(dist), m_coef(coef)
+: Kernel(10), m_distance(std::move(dist)), m_coef(coef)
 {
 	ASSERT(m_distance)
 	
-	init(l, r);
+	init(std::move(l), std::move(r));
 	init();
 }
 

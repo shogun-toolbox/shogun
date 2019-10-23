@@ -45,7 +45,7 @@ namespace shogun
 			 * @param model structured output model
 			 * @param w initial w (optional)
 			 */
-			CCSOSVM(std::shared_ptr<StructuredModel> model, SGVector<float64_t> w = SGVector<float64_t>());
+			CCSOSVM(const std::shared_ptr<StructuredModel>& model, SGVector<float64_t> w = SGVector<float64_t>());
 
 			/** destructor */
 			virtual ~CCSOSVM();

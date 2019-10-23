@@ -33,7 +33,7 @@ FixedDegreeStringKernel::FixedDegreeStringKernel(int32_t size, int32_t d)
 }
 
 FixedDegreeStringKernel::FixedDegreeStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t d)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t d)
 : StringKernel<char>(10), degree(d)
 {
 	init();

@@ -8,6 +8,7 @@
 #include <shogun/converter/KernelLocallyLinearEmbedding.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <utility>
 
 using namespace shogun;
 
@@ -19,7 +20,7 @@ KernelLocallyLinearEmbedding::KernelLocallyLinearEmbedding() :
 KernelLocallyLinearEmbedding::KernelLocallyLinearEmbedding(std::shared_ptr<Kernel> kernel) :
 		LocallyLinearEmbedding()
 {
-	set_kernel(kernel);
+	set_kernel(std::move(kernel));
 }
 
 const char* KernelLocallyLinearEmbedding::get_name() const
@@ -52,7 +53,7 @@ KernelLocallyLinearEmbedding::transform(std::shared_ptr<Features> features, bool
 	return embedding;
 }
 
-std::shared_ptr<DenseFeatures<float64_t>> KernelLocallyLinearEmbedding::embed_kernel(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<DenseFeatures<float64_t>> KernelLocallyLinearEmbedding::embed_kernel(const std::shared_ptr<Kernel>& kernel)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;

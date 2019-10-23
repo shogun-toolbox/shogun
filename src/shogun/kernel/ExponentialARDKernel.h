@@ -157,7 +157,7 @@ public:
 	 * @param r features of right-hand side
 	 * @param size cache size
 	 */
-	ExponentialARDKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
+	ExponentialARDKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 			int32_t size=10);
 
 

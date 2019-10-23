@@ -48,7 +48,7 @@ class StreamingDataFetcher : public DataFetcher
 {
 	friend class DataManager;
 public:
-	StreamingDataFetcher(std::shared_ptr<StreamingFeatures> samples);
+	StreamingDataFetcher(const std::shared_ptr<StreamingFeatures>& samples);
 	virtual ~StreamingDataFetcher();
 	void set_num_samples(index_t num_samples);
 

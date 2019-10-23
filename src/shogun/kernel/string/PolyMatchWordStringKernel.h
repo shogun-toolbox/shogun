@@ -54,7 +54,7 @@ class PolyMatchWordStringKernel: public StringKernel<uint16_t>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		PolyMatchWordStringKernel(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, int32_t degree, bool inhomogene);
+		PolyMatchWordStringKernel(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, int32_t degree, bool inhomogene);
 
 		virtual ~PolyMatchWordStringKernel();
 

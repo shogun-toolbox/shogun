@@ -14,6 +14,7 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/KernelMachine.h>
+#include <utility>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
@@ -42,7 +43,7 @@ KernelMachine::KernelMachine() : Machine()
     init();
 }
 
-KernelMachine::KernelMachine(std::shared_ptr<Kernel> k, SGVector<float64_t> alphas,
+KernelMachine::KernelMachine(const std::shared_ptr<Kernel>& k, SGVector<float64_t> alphas,
         SGVector<int32_t> svs, float64_t b) : Machine()
 {
     init();
@@ -56,7 +57,7 @@ KernelMachine::KernelMachine(std::shared_ptr<Kernel> k, SGVector<float64_t> alph
     set_bias(b);
 }
 
-KernelMachine::KernelMachine(std::shared_ptr<KernelMachine> machine) : Machine()
+KernelMachine::KernelMachine(const std::shared_ptr<KernelMachine>& machine) : Machine()
 {
 	init();
 
@@ -79,7 +80,7 @@ KernelMachine::~KernelMachine()
 
 void KernelMachine::set_kernel(std::shared_ptr<Kernel> k)
 {
-	kernel=k;
+	kernel=std::move(k);
 }
 
 std::shared_ptr<Kernel> KernelMachine::get_kernel()
@@ -248,7 +249,7 @@ std::shared_ptr<BinaryLabels> KernelMachine::apply_binary(std::shared_ptr<Featur
 	return std::make_shared<BinaryLabels>(outputs);
 }
 
-SGVector<float64_t> KernelMachine::apply_get_outputs(std::shared_ptr<Features> data)
+SGVector<float64_t> KernelMachine::apply_get_outputs(const std::shared_ptr<Features>& data)
 {
 	SG_TRACE("entering {}::apply_get_outputs({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));

@@ -37,7 +37,7 @@ public:
 	 * @param from_order use first order weights from higher order weighting
 	 * @param hash_bits number of bits in hash
 	 */
-	HashedWDFeatures(std::shared_ptr<StringFeatures<uint8_t>> str, int32_t start_order,
+	HashedWDFeatures(const std::shared_ptr<StringFeatures<uint8_t>>& str, int32_t start_order,
 			int32_t order, int32_t from_order, int32_t hash_bits=12);
 
 	/** copy constructor */

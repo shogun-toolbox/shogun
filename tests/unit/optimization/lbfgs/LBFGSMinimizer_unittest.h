@@ -41,7 +41,7 @@ class LBFGSTestCostFunction: public FirstOrderCostFunction
 public:
 	LBFGSTestCostFunction();
 	virtual ~LBFGSTestCostFunction();
-	void set_target(std::shared_ptr<PiecewiseQuadraticObject> obj);
+	void set_target(const std::shared_ptr<PiecewiseQuadraticObject>& obj);
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
@@ -57,8 +57,8 @@ friend class LBFGSTestCostFunction;
 public:
 	PiecewiseQuadraticObject();
 	virtual ~PiecewiseQuadraticObject();
-	void set_init_x(SGVector<float64_t> init_x);
-	void set_truth_x(SGVector<float64_t> truth_x);
+	void set_init_x(const SGVector<float64_t>& init_x);
+	void set_truth_x(const SGVector<float64_t>& truth_x);
 	float64_t get_value();
 	virtual const char* get_name() const {return "PiecewiseQuadraticObject";}
 private:

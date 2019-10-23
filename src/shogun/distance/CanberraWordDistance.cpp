@@ -19,7 +19,7 @@ CanberraWordDistance::CanberraWordDistance()
 }
 
 CanberraWordDistance::CanberraWordDistance(
-	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r)
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r)
 : StringDistance<uint16_t>()
 {
 	SG_DEBUG("CCanberraWordDistance created")

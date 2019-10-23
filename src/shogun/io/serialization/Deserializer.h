@@ -26,9 +26,9 @@ namespace shogun
 			std::shared_ptr<io::InputStream> m_stream;
 		};
 
-		std::shared_ptr<SGObject> deserialize(const std::string& _path, std::shared_ptr<Deserializer> _deser);
-		void pre_deserialize(std::shared_ptr<SGObject> obj) noexcept(false);
-		void post_deserialize(std::shared_ptr<SGObject> obj) noexcept(false);
+		std::shared_ptr<SGObject> deserialize(const std::string& _path, const std::shared_ptr<Deserializer>& _deser);
+		void pre_deserialize(const std::shared_ptr<SGObject>& obj) noexcept(false);
+		void post_deserialize(const std::shared_ptr<SGObject>& obj) noexcept(false);
 
 	}
 }

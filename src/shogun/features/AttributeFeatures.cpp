@@ -8,6 +8,8 @@
 #include <shogun/features/AttributeFeatures.h>
 #include <shogun/lib/memory.h>
 
+#include <utility>
+
 using namespace shogun;
 
 AttributeFeatures::AttributeFeatures()
@@ -37,7 +39,7 @@ bool AttributeFeatures::set_attribute(char* attr_name, std::shared_ptr<Features>
 {
 	T_ATTRIBUTE a;
 	a.attr_name=get_strdup(attr_name);
-	a.attr_obj=attr_obj;
+	a.attr_obj=std::move(attr_obj);
 
 	int32_t idx = find_attr_index(attr_name);
 	if (idx == -1)

@@ -45,7 +45,7 @@ int32_t LatentFeatures::get_num_vectors() const
 	return m_samples.size();
 }
 
-bool LatentFeatures::add_sample(std::shared_ptr<Data> example)
+bool LatentFeatures::add_sample(const std::shared_ptr<Data>& example)
 {
 	m_samples.push_back(example);
 	return true;
@@ -64,7 +64,7 @@ void LatentFeatures::init()
 	SG_ADD(&m_samples, "samples", "Array of examples");
 }
 
-std::shared_ptr<LatentFeatures> LatentFeatures::obtain_from_generic(std::shared_ptr<Features> base_feats)
+std::shared_ptr<LatentFeatures> LatentFeatures::obtain_from_generic(const std::shared_ptr<Features>& base_feats)
 {
 	ASSERT(base_feats != NULL)
 	if (base_feats->get_feature_class() == C_LATENT)

@@ -81,7 +81,7 @@ std::shared_ptr<NeuralLayers> NeuralLayers::softmax(int32_t size)
 	return with_layer(std::make_shared<NeuralSoftmaxLayer>(size));
 }
 
-std::shared_ptr<NeuralLayers> NeuralLayers::with_layer(std::shared_ptr<NeuralLayer> layer)
+std::shared_ptr<NeuralLayers> NeuralLayers::with_layer(const std::shared_ptr<NeuralLayer>& layer)
 {
 	m_layers.push_back(layer);
 	return shared_from_this()->as<NeuralLayers>();

@@ -51,7 +51,7 @@ GaussianProcessClassification::GaussianProcessClassification()
 }
 
 GaussianProcessClassification::GaussianProcessClassification(
-		std::shared_ptr<Inference> method) : GaussianProcessMachine(method)
+		const std::shared_ptr<Inference>& method) : GaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
@@ -166,7 +166,7 @@ bool GaussianProcessClassification::train_machine(std::shared_ptr<Features> data
 }
 
 SGVector<float64_t> GaussianProcessClassification::get_mean_vector(
-		std::shared_ptr<Features> data)
+		const std::shared_ptr<Features>& data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
@@ -187,7 +187,7 @@ SGVector<float64_t> GaussianProcessClassification::get_mean_vector(
 }
 
 SGVector<float64_t> GaussianProcessClassification::get_variance_vector(
-		std::shared_ptr<Features> data)
+		const std::shared_ptr<Features>& data)
 {
 	// check whether given combination of inference method and
 	// likelihood function supports classification
@@ -208,7 +208,7 @@ SGVector<float64_t> GaussianProcessClassification::get_variance_vector(
 }
 
 SGVector<float64_t> GaussianProcessClassification::get_probabilities(
-		std::shared_ptr<Features> data)
+		const std::shared_ptr<Features>& data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification

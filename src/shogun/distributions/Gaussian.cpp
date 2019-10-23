@@ -439,7 +439,7 @@ SGVector<float64_t> Gaussian::sample()
 	return samp;
 }
 
-std::shared_ptr<Gaussian> Gaussian::obtain_from_generic(std::shared_ptr<Distribution> distribution)
+std::shared_ptr<Gaussian> Gaussian::obtain_from_generic(const std::shared_ptr<Distribution>& distribution)
 {
 	if (!distribution)
 		return NULL;

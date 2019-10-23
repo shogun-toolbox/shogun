@@ -13,6 +13,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 DenseLabels::DenseLabels()
@@ -39,7 +41,7 @@ DenseLabels::DenseLabels(std::shared_ptr<File> loader)
 : Labels()
 {
 	init();
-	load(loader);
+	load(std::move(loader));
 }
 
 DenseLabels::~DenseLabels()
@@ -151,7 +153,7 @@ void DenseLabels::load(std::shared_ptr<File> loader)
 {
 	remove_subset();
 	m_labels = SGVector<float64_t>();
-	m_labels.load(loader);
+	m_labels.load(std::move(loader));
 }
 
 void DenseLabels::save(std::shared_ptr<File> writer)
@@ -159,7 +161,7 @@ void DenseLabels::save(std::shared_ptr<File> writer)
 	if (m_subset_stack->has_subsets())
 		error("save() is not possible on subset");
 
-	m_labels.save(writer);
+	m_labels.save(std::move(writer));
 }
 
 bool DenseLabels::set_label(int32_t idx, float64_t label)

@@ -63,7 +63,7 @@ namespace shogun
 		 * used as an initial guess if supported by the algorithm
 		 * @param mixing_matrix the initial estimate for the mixing matrix
 		 */
-		void set_mixing_matrix(SGMatrix<float64_t>mixing_matrix);
+		void set_mixing_matrix(SGMatrix<float64_t> mixing_matrix);
 
 		/** getter for mixing_matrix
 		 * @return mixing_matrix the final estimated mixing matrix

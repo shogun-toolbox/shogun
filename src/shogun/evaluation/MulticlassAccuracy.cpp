@@ -48,7 +48,7 @@ float64_t MulticlassAccuracy::evaluate(std::shared_ptr<Labels> predicted, std::s
 	return 0.0;
 }
 
-SGMatrix<int32_t> MulticlassAccuracy::get_confusion_matrix(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
+SGMatrix<int32_t> MulticlassAccuracy::get_confusion_matrix(const std::shared_ptr<Labels>& predicted, const std::shared_ptr<Labels>& ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	int32_t length = ground_truth->get_num_labels();

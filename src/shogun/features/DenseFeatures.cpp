@@ -65,14 +65,14 @@ template<class ST> DenseFeatures<ST>::DenseFeatures(ST* src, int32_t num_feat, i
 	init();
 	set_feature_matrix(SGMatrix<ST>(src, num_feat, num_vec));
 }
-template<class ST> DenseFeatures<ST>::DenseFeatures(std::shared_ptr<File> loader) :
+template<class ST> DenseFeatures<ST>::DenseFeatures(const std::shared_ptr<File>& loader) :
 		DotFeatures()
 {
 	init();
 	load(loader);
 }
 
-template<class ST> DenseFeatures<ST>::DenseFeatures(std::shared_ptr<DotFeatures> features) :
+template<class ST> DenseFeatures<ST>::DenseFeatures(const std::shared_ptr<DotFeatures>& features) :
 		DotFeatures()
 {
 	init();

@@ -11,6 +11,8 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 void AUCKernel::init()
@@ -27,7 +29,7 @@ AUCKernel::AUCKernel() : DotKernel(0), subkernel(nullptr), labels(nullptr)
 }
 
 AUCKernel::AUCKernel(int32_t size, std::shared_ptr<Kernel> s, std::shared_ptr<Labels> l)
-    : DotKernel(size), subkernel(s), labels(l)
+    : DotKernel(size), subkernel(std::move(s)), labels(std::move(l))
 {
 	init();
 }

@@ -45,7 +45,7 @@ class SigmoidKernel: public DotKernel
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		SigmoidKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size,
+		SigmoidKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t size,
 			float64_t gamma, float64_t coef0);
 
 		virtual ~SigmoidKernel();

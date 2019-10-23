@@ -78,7 +78,7 @@ class CombinedFeatures : public Features
 		 * @param comb_feat feature to check for compatibility
 		 * @return if feature is compatible
 		 */
-		bool check_feature_obj_compatibility(std::shared_ptr<CombinedFeatures> comb_feat);
+		bool check_feature_obj_compatibility(const std::shared_ptr<CombinedFeatures>& comb_feat);
 
 		/** get first feature object
 		 *
@@ -106,7 +106,7 @@ class CombinedFeatures : public Features
 		 * @param idx the index where to insert the feature object
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(std::shared_ptr<Features> obj, int32_t idx);
+		bool insert_feature_obj(const std::shared_ptr<Features>& obj, int32_t idx);
 
 		/** append feature object to the end of this CombinedFeatures object array
 		 *

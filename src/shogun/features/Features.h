@@ -191,7 +191,7 @@ class Features : public SGObject
 		 * @param f features to check for compatibility
 		 * @return if features are compatible
 		 */
-		bool check_feature_compatibility(std::shared_ptr<Features> f) const;
+		bool check_feature_compatibility(const std::shared_ptr<Features>& f) const;
 
 		/** check if features have given property
 		 *

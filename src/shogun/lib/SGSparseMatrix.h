@@ -147,7 +147,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(std::shared_ptr<File> loader);
+		void load(const std::shared_ptr<File>& loader);
 
 		/** load sparse matrix from libsvm file together with labels
 		 *
@@ -156,20 +156,20 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 * ascending order) after loading
 		 * @return label vector
 		 */
-		SGVector<float64_t> load_with_labels(std::shared_ptr<LibSVMFile> libsvm_file, bool do_sort_features=true);
+		SGVector<float64_t> load_with_labels(const std::shared_ptr<LibSVMFile>& libsvm_file, bool do_sort_features=true);
 
 		/** save sparse matrix to file
 		 *
 		 * @param saver File object via which to save data
 		 */
-		void save(std::shared_ptr<File> saver);
+		void save(const std::shared_ptr<File>& saver);
 
 		/** save sparse matrix together with labels to file
 		 *
 		 * @param saver File object via which to save data
 		 * @param labels label vector
 		 */
-		void save_with_labels(std::shared_ptr<LibSVMFile> saver, SGVector<float64_t> labels);
+		void save_with_labels(const std::shared_ptr<LibSVMFile>& saver, SGVector<float64_t> labels);
 
 		/** return the transposed of the sparse matrix */
 		SGSparseMatrix<T> get_transposed();

@@ -57,7 +57,7 @@ std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass(std::share
 	return apply_multiclass_from_current_node(data->as<DenseFeatures<float64_t>>(), current, true);
 }
 
-void C45ClassifierTree::prune_tree(std::shared_ptr<Features> validation_data, std::shared_ptr<Labels> validation_labels, float64_t epsilon)
+void C45ClassifierTree::prune_tree(const std::shared_ptr<Features>& validation_data, const std::shared_ptr<Labels>& validation_labels, float64_t epsilon)
 {
 	auto current=get_root();
 	prune_tree_from_current_node(validation_data->as<DenseFeatures<float64_t>>(),
@@ -145,8 +145,8 @@ bool C45ClassifierTree::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(std::shared_ptr<Features> data, SGVector<float64_t> weights,
-	std::shared_ptr<MulticlassLabels> class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
+std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(const std::shared_ptr<Features>& data, SGVector<float64_t> weights,
+	const std::shared_ptr<MulticlassLabels>& class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
 	require(data,"data matrix cannot be NULL");
 	require(class_labels,"class labels cannot be NULL");
@@ -415,8 +415,8 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(st
 	return node;
 }
 
-void C45ClassifierTree::prune_tree_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
-		std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon)
+void C45ClassifierTree::prune_tree_from_current_node(const std::shared_ptr<DenseFeatures<float64_t>>& feats,
+		const std::shared_ptr<MulticlassLabels>& gnd_truth, const std::shared_ptr<node_t>& current, float64_t epsilon)
 {
 	// if leaf node then skip pruning
 	if (current->data.attribute_id==-1)
@@ -538,8 +538,8 @@ void C45ClassifierTree::prune_tree_from_current_node(std::shared_ptr<DenseFeatur
 
 }
 
-float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data,
-				SGVector<float64_t> weights, std::shared_ptr<MulticlassLabels> class_labels)
+float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data,
+				SGVector<float64_t> weights, const std::shared_ptr<MulticlassLabels>& class_labels)
 {
 	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
@@ -637,7 +637,7 @@ float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, std::
 	return gain;
 }
 
-float64_t C45ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels, SGVector<float64_t> weights)
+float64_t C45ClassifierTree::entropy(const std::shared_ptr<MulticlassLabels>& labels, SGVector<float64_t> weights)
 {
 	SGVector<float64_t> log_ratios(labels->get_unique_labels().size());
 	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
@@ -662,8 +662,8 @@ float64_t C45ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels, S
 	return Statistics::entropy(log_ratios.vector,log_ratios.vlen);
 }
 
-std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
-									std::shared_ptr<node_t> current, bool set_certainty)
+std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass_from_current_node(const std::shared_ptr<DenseFeatures<float64_t>>& feats,
+									const std::shared_ptr<node_t>& current, bool set_certainty)
 {
 	require(feats, "Features should not be NULL");
 	require(current, "Current node should not be NULL");

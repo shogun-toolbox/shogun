@@ -19,6 +19,8 @@
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
 
+#include <utility>
+
 namespace shogun
 {
 
@@ -66,10 +68,10 @@ LogDetEstimator::LogDetEstimator(
 {
 	init();
 
-	m_trace_sampler=trace_sampler;
+	m_trace_sampler=std::move(trace_sampler);
 
 
-	m_operator_log=operator_log;
+	m_operator_log=std::move(operator_log);
 
 }
 

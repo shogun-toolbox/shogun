@@ -36,6 +36,8 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/multiclass/tree/ID3ClassifierTree.h>
 
+#include <utility>
+
 using namespace shogun;
 
 ID3ClassifierTree::ID3ClassifierTree()
@@ -59,7 +61,7 @@ bool ID3ClassifierTree::prune_tree(std::shared_ptr<DenseFeatures<float64_t>> val
 			std::shared_ptr<MulticlassLabels> validation_labels, float64_t epsilon)
 {
 	auto current = get_root();
-	prune_tree_machine(validation_data, validation_labels, current, epsilon);
+	prune_tree_machine(std::move(validation_data), std::move(validation_labels), current, epsilon);
 
 
 	return true;
@@ -79,8 +81,8 @@ bool ID3ClassifierTree::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(std::shared_ptr<Features> data,
-	std::shared_ptr<MulticlassLabels> class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
+std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(const std::shared_ptr<Features>& data,
+	const std::shared_ptr<MulticlassLabels>& class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
 	auto node = std::make_shared<node_t>();
 	auto feats = data->as<DenseFeatures<float64_t>>();
@@ -204,8 +206,8 @@ std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(st
 	return node;
 }
 
-float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data,
-								std::shared_ptr<MulticlassLabels> class_labels)
+float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data,
+								const std::shared_ptr<MulticlassLabels>& class_labels)
 {
 	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
@@ -259,7 +261,7 @@ float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std::
 	return gain;
 }
 
-float64_t ID3ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels)
+float64_t ID3ClassifierTree::entropy(const std::shared_ptr<MulticlassLabels>& labels)
 {
 	SGVector<float64_t> log_ratios = SGVector<float64_t>
 			(labels->get_unique_labels().size());
@@ -283,8 +285,8 @@ float64_t ID3ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels)
 	return Statistics::entropy(log_ratios.vector, log_ratios.vlen);
 }
 
-void ID3ClassifierTree::prune_tree_machine(std::shared_ptr<DenseFeatures<float64_t>> feats,
-		std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon)
+void ID3ClassifierTree::prune_tree_machine(const std::shared_ptr<DenseFeatures<float64_t>>& feats,
+		const std::shared_ptr<MulticlassLabels>& gnd_truth, const std::shared_ptr<node_t>& current, float64_t epsilon)
 {
 	SGMatrix<float64_t> feature_matrix = feats->get_feature_matrix();
 	auto children = current->get_children();
@@ -344,8 +346,8 @@ void ID3ClassifierTree::prune_tree_machine(std::shared_ptr<DenseFeatures<float64
 	}
 }
 
-std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
-											std::shared_ptr<node_t> current)
+std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass_from_current_node(const std::shared_ptr<DenseFeatures<float64_t>>& feats,
+											const std::shared_ptr<node_t>& current)
 {
 	require(feats, "Features should not be NULL");
 	require(current, "Current node should not be NULL");

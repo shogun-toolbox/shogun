@@ -82,7 +82,7 @@ struct heap_comparator
 	}
 } comparator;
 
-std::set<index_t> get_neighbors_indices(std::shared_ptr<Distance> distance_object, index_t feature_vector_index, index_t n_neighbors);
+std::set<index_t> get_neighbors_indices(const std::shared_ptr<Distance>& distance_object, index_t feature_vector_index, index_t n_neighbors);
 
 void check_similarity_of_sets(const std::set<index_t>& first_set, const std::set<index_t>& second_set, float64_t min_similarity_level);
 
@@ -149,7 +149,7 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 
 }
 
-std::set<index_t> get_neighbors_indices(std::shared_ptr<Distance> distance_object, index_t feature_vector_index, index_t n_neighbors)
+std::set<index_t> get_neighbors_indices(const std::shared_ptr<Distance>& distance_object, index_t feature_vector_index, index_t n_neighbors)
 {
 	index_t n_vectors = distance_object->get_num_vec_lhs();
 	EXPECT_EQ(n_vectors, distance_object->get_num_vec_rhs());

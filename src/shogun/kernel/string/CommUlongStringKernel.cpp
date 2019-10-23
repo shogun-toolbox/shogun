@@ -34,7 +34,7 @@ CommUlongStringKernel::CommUlongStringKernel(bool us, int32_t size)
 }
 
 CommUlongStringKernel::CommUlongStringKernel(
-	std::shared_ptr<StringFeatures<uint64_t>> l, std::shared_ptr<StringFeatures<uint64_t>> r, bool us,
+	const std::shared_ptr<StringFeatures<uint64_t>>& l, const std::shared_ptr<StringFeatures<uint64_t>>& r, bool us,
 	int32_t size)
 : StringKernel<uint64_t>(size)
 {

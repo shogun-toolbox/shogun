@@ -4,9 +4,10 @@
  * Authors: Bjoern Esser, Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/RandomKitchenSinksDotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/RandomKitchenSinksDotFeatures.h>
 #include <typeinfo>
+#include <utility>
 
 namespace shogun
 {
@@ -22,13 +23,13 @@ RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures()
 RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(
 	std::shared_ptr<DotFeatures> dataset, int32_t K)
 {
-	init(dataset, K);
+	init(std::move(dataset), K);
 }
 
 RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(
 	std::shared_ptr<DotFeatures> dataset, int32_t K, SGMatrix<float64_t> coeff)
 {
-	init(dataset, K);
+	init(std::move(dataset), K);
 	random_coeff = coeff;
 }
 
@@ -48,7 +49,7 @@ SGMatrix<float64_t> RandomKitchenSinksDotFeatures::generate_random_coefficients(
 	return random_params;
 }
 
-RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(std::shared_ptr<File> loader)
+RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(const std::shared_ptr<File>& loader)
 {
 	not_implemented(SOURCE_LOCATION);;
 }
@@ -68,7 +69,7 @@ RandomKitchenSinksDotFeatures::~RandomKitchenSinksDotFeatures()
 void RandomKitchenSinksDotFeatures::init(std::shared_ptr<DotFeatures> dataset,
 	int32_t K)
 {
-	feats = dataset;
+	feats = std::move(dataset);
 
 
 	num_samples = K;

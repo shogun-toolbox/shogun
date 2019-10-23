@@ -49,7 +49,7 @@ class QDA : public NativeMulticlassMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab);
+		QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab);
 
 		/** constructor
 		 *
@@ -57,7 +57,7 @@ class QDA : public NativeMulticlassMachine
 		 * @param trainlab labels for training features
 		 * @param tolerance tolerance used in training
 		 */
-		QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance);
+		QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance);
 
 		/** constructor
 		 *
@@ -65,7 +65,7 @@ class QDA : public NativeMulticlassMachine
 		 * @param trainlab labels for training features
 		 * @param store_covs whether to store the within class covariances
 		 */
-		QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, bool store_covs);
+		QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, bool store_covs);
 
 		/** constructor
 		 *
@@ -74,7 +74,7 @@ class QDA : public NativeMulticlassMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
 		 */
-		QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs);
+		QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs);
 
 		virtual ~QDA();
 

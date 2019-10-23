@@ -96,7 +96,7 @@ struct InputStreamAdapter
 };
 
 template<typename Reader>
-std::shared_ptr<SGObject> object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, std::shared_ptr<SGObject> _this = nullptr)
+std::shared_ptr<SGObject> object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, const std::shared_ptr<SGObject>& _this = nullptr)
 {
 	size_t obj_magic;
 	reader.value8b(obj_magic);

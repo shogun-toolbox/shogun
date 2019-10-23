@@ -50,7 +50,7 @@ void SOSVMHelper::init()
 	m_train_error.zero();
 }
 
-float64_t SOSVMHelper::primal_objective(SGVector<float64_t> w, std::shared_ptr<StructuredModel> model, float64_t lbda)
+float64_t SOSVMHelper::primal_objective(SGVector<float64_t> w, const std::shared_ptr<StructuredModel>& model, float64_t lbda)
 {
 	float64_t hinge_losses = 0.0;
 	auto labels = model->get_labels();
@@ -81,7 +81,7 @@ float64_t SOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t aloss, fl
 	return (-lbda/2 * linalg::dot(w, w) + aloss);
 }
 
-float64_t SOSVMHelper::average_loss(SGVector<float64_t> w, std::shared_ptr<StructuredModel> model, bool is_ub)
+float64_t SOSVMHelper::average_loss(SGVector<float64_t> w, const std::shared_ptr<StructuredModel>& model, bool is_ub)
 {
 	float64_t loss = 0.0;
 	auto labels = model->get_labels();

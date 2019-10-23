@@ -44,7 +44,7 @@ CustomKernel::CustomKernel()
 	init();
 }
 
-CustomKernel::CustomKernel(std::shared_ptr<Kernel> k)
+CustomKernel::CustomKernel(const std::shared_ptr<Kernel>& k)
 : Kernel(10)
 {
 	SG_TRACE("created CustomKernel");

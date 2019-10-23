@@ -9,6 +9,8 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 CrossValidationSplitting::CrossValidationSplitting() :
@@ -18,7 +20,7 @@ CrossValidationSplitting::CrossValidationSplitting() :
 
 CrossValidationSplitting::CrossValidationSplitting(
 		std::shared_ptr<Labels> labels, index_t num_subsets) :
-	RandomMixin<SplittingStrategy>(labels, num_subsets)
+	RandomMixin<SplittingStrategy>(std::move(labels), num_subsets)
 {
 }
 

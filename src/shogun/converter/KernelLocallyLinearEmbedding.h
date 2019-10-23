@@ -57,7 +57,7 @@ public:
 	/** embed kernel (kernel should be inited)
 	 * @param kernel kernel to construct embed
 	 */
-	std::shared_ptr<DenseFeatures<float64_t>> embed_kernel(std::shared_ptr<Kernel> kernel);
+	std::shared_ptr<DenseFeatures<float64_t>> embed_kernel(const std::shared_ptr<Kernel>& kernel);
 
 	/** get name */
 	virtual const char* get_name() const;

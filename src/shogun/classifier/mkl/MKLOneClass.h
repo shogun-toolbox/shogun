@@ -27,7 +27,7 @@ class MKLOneClass : public MKL
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		MKLOneClass(std::shared_ptr<SVM> s=NULL);
+		MKLOneClass(const std::shared_ptr<SVM>& s=NULL);
 
 		/** Destructor
 		 */

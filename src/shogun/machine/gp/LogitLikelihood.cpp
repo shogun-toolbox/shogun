@@ -38,6 +38,8 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -154,8 +156,8 @@ public:
 	{
 
 
-		m_f=f;
-		m_g=g;
+		m_f=std::move(f);
+		m_g=std::move(g);
 	}
 
 	virtual ~ProductFunction()

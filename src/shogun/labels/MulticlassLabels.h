@@ -61,7 +61,7 @@ class MulticlassLabels : public DenseLabels
 		 *
 		 * @param labels Binary labels
 		 */
-		MulticlassLabels(std::shared_ptr<BinaryLabels> labels);
+		MulticlassLabels(const std::shared_ptr<BinaryLabels>& labels);
 
 		/** copy constructor */
 		MulticlassLabels(const MulticlassLabels& orig);
@@ -150,7 +150,7 @@ class MulticlassLabels : public DenseLabels
 		 * @param labels generic Labels instance
 		 * @return the casted pointer (already SG_REF'ed)
 		 */
-		static std::shared_ptr<MulticlassLabels> obtain_from_generic(std::shared_ptr<Labels> labels);
+		static std::shared_ptr<MulticlassLabels> obtain_from_generic(const std::shared_ptr<Labels>& labels);
 
 	private:
 		/** initialises and register parameters */
@@ -163,7 +163,7 @@ class MulticlassLabels : public DenseLabels
 };
 
 #ifndef SWIG
-std::shared_ptr<MulticlassLabels> multiclass_labels(std::shared_ptr<Labels> orig);
+std::shared_ptr<MulticlassLabels> multiclass_labels(const std::shared_ptr<Labels>& orig);
 #endif // SWIG
 }
 #endif

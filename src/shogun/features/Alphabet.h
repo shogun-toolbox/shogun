@@ -110,7 +110,7 @@ class Alphabet : public SGObject
 		 *
 		 * @param alpha alphabet to use
 		 */
-		Alphabet(std::shared_ptr<Alphabet> alpha);
+		Alphabet(const std::shared_ptr<Alphabet>& alpha);
 		virtual ~Alphabet();
 
 		/** set alphabet and initialize mapping table (for remap)

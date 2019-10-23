@@ -8,6 +8,8 @@
 #include <shogun/mathematics/Math.h>
 #include <math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 BesselKernel::BesselKernel():DistanceKernel(),order(0.0),degree(0)
@@ -17,7 +19,7 @@ BesselKernel::BesselKernel():DistanceKernel(),order(0.0),degree(0)
 
 BesselKernel::BesselKernel(int32_t size, float64_t v, float64_t w,
 		int32_t n, std::shared_ptr<Distance> dist) :
-	DistanceKernel(size,w,dist), order(v), degree(n)
+	DistanceKernel(size,w,std::move(dist)), order(v), degree(n)
 {
 	ASSERT(distance)
 	
@@ -26,12 +28,12 @@ BesselKernel::BesselKernel(int32_t size, float64_t v, float64_t w,
 
 BesselKernel::BesselKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t v,
 		float64_t w, int32_t n, std::shared_ptr<Distance> dist, int32_t size) :
-	DistanceKernel(size,w,dist), order(v), degree(n)
+	DistanceKernel(size,w,std::move(dist)), order(v), degree(n)
 {
 	init();
 	ASSERT(distance)
 	
-	init(l,r);
+	init(std::move(l),std::move(r));
 }
 
 BesselKernel::~BesselKernel()

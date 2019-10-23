@@ -93,7 +93,7 @@ std::shared_ptr<Kernel> KernelManager::kernel_at(index_t i) const
 	return m_precomputed_kernels[i];
 }
 
-void KernelManager::push_back(std::shared_ptr<Kernel> kernel)
+void KernelManager::push_back(const std::shared_ptr<Kernel>& kernel)
 {
 	SG_TRACE("Entering!");
 	m_kernels.push_back(kernel);
@@ -200,7 +200,7 @@ std::shared_ptr<Distance> KernelManager::get_distance_instance() const
 	return distance;
 }
 
-void KernelManager::set_precomputed_distance(std::shared_ptr<CustomDistance> distance) const
+void KernelManager::set_precomputed_distance(const std::shared_ptr<CustomDistance>& distance) const
 {
 	require(distance!=nullptr, "Distance instance cannot be null!");
 	for (auto i=0; i<num_kernels(); ++i)

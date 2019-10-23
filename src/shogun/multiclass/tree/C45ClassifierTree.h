@@ -109,7 +109,7 @@ public:
 	 * @param validation_labels multiclass labels from validation dataset
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
-	void prune_tree(std::shared_ptr<Features> validation_data, std::shared_ptr<Labels> validation_labels, float64_t epsilon=0.f);
+	void prune_tree(const std::shared_ptr<Features>& validation_data, const std::shared_ptr<Labels>& validation_labels, float64_t epsilon=0.f);
 
 	/** certainty of classification done by apply_multiclass.
 	 * For each data point reaching a leaf node, it computes the ratio of weight of training data
@@ -164,7 +164,7 @@ private:
 	 * @param level tree depth
 	 * @return pointer to the root of the C45 subtree
 	 */
-	std::shared_ptr<node_t> C45train(std::shared_ptr<Features> data, SGVector<float64_t> weights, std::shared_ptr<MulticlassLabels> class_labels,
+	std::shared_ptr<node_t> C45train(const std::shared_ptr<Features>& data, SGVector<float64_t> weights, const std::shared_ptr<MulticlassLabels>& class_labels,
 							SGVector<int32_t> id_values, int level = 0);
 
 	/** recursive tree pruning method - called within prune_tree method
@@ -174,7 +174,7 @@ private:
 	 * @param current root of current subtree
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
-	void prune_tree_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon);
+	void prune_tree_from_current_node(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<MulticlassLabels>& gnd_truth, const std::shared_ptr<node_t>& current, float64_t epsilon);
 
 	/** informational gain attribute for selecting best feature at each node of C4.5 Tree
 	 *
@@ -184,8 +184,8 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */
-	float64_t informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data, SGVector<float64_t> weights,
-									 std::shared_ptr<MulticlassLabels> class_labels);
+	float64_t informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data, SGVector<float64_t> weights,
+									 const std::shared_ptr<MulticlassLabels>& class_labels);
 
 	/** computes entropy (aka randomness) in data
 	 *
@@ -193,7 +193,7 @@ private:
 	 * @param weights weights associated with each of the labels
 	 * @return entropy
 	 */
-	float64_t entropy(std::shared_ptr<MulticlassLabels> labels, SGVector<float64_t> weights);
+	float64_t entropy(const std::shared_ptr<MulticlassLabels>& labels, SGVector<float64_t> weights);
 
 	/** uses current subtree to classify data
 	 *
@@ -202,7 +202,7 @@ private:
 	 * @param set_certainty whether to calculate certainty values or not
 	 * @return classification labels of input data
 	 */
-	std::shared_ptr<MulticlassLabels> apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<node_t> current, bool set_certainty=false);
+	std::shared_ptr<MulticlassLabels> apply_multiclass_from_current_node(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<node_t>& current, bool set_certainty=false);
 
 	/** initializes members of class */
 	void init();

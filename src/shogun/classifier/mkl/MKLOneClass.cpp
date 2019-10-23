@@ -3,7 +3,7 @@
 
 using namespace shogun;
 
-MKLOneClass::MKLOneClass(std::shared_ptr<SVM> s) : MKL(s)
+MKLOneClass::MKLOneClass(const std::shared_ptr<SVM>& s) : MKL(s)
 {
 	if (!s)
 		set_svm(std::make_shared<LibSVMOneClass>());

@@ -36,7 +36,7 @@ class BrayCurtisDistance: public DenseDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		BrayCurtisDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		BrayCurtisDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
 		virtual ~BrayCurtisDistance();
 
 		/** init distance

@@ -23,7 +23,7 @@ ANOVAKernel::ANOVAKernel(int32_t cache, int32_t d)
 }
 
 ANOVAKernel::ANOVAKernel(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, int32_t d, int32_t cache)
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, int32_t d, int32_t cache)
   : DotKernel(cache), cardinality(d)
 {
 	register_params();
@@ -173,7 +173,7 @@ float64_t ANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int3
 	return result;
 }
 
-std::shared_ptr<ANOVAKernel> ANOVAKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<ANOVAKernel> ANOVAKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
 {
 	if (!kernel)
 		return NULL;

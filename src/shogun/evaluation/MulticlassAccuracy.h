@@ -56,7 +56,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return confusion matrix
 	 */
-	static SGMatrix<int32_t> get_confusion_matrix(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	static SGMatrix<int32_t> get_confusion_matrix(const std::shared_ptr<Labels>& predicted, const std::shared_ptr<Labels>& ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

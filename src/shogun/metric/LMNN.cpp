@@ -12,6 +12,8 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/metric/LMNNImpl.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LMNN::LMNN()
@@ -22,11 +24,11 @@ LMNN::LMNN()
 
 }
 
-LMNN::LMNN(std::shared_ptr<Features> features, std::shared_ptr<MulticlassLabels> labels, int32_t k)
+LMNN::LMNN(std::shared_ptr<Features> features, const std::shared_ptr<MulticlassLabels>& labels, int32_t k)
 {
 	init();
 
-	m_features = features;
+	m_features = std::move(features);
 	m_labels = labels;
 	m_k = k;
 

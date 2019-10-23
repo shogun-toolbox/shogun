@@ -19,7 +19,7 @@ StreamingHashedSparseFeatures<ST>::StreamingHashedSparseFeatures()
 }
 
 template <class ST>
-StreamingHashedSparseFeatures<ST>::StreamingHashedSparseFeatures(std::shared_ptr<StreamingFile> file,
+StreamingHashedSparseFeatures<ST>::StreamingHashedSparseFeatures(const std::shared_ptr<StreamingFile>& file,
 	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);

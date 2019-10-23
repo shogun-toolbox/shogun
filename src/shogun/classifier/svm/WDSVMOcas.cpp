@@ -19,6 +19,8 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -82,8 +84,8 @@ WDSVMOcas::WDSVMOcas(
 	w=NULL;
 	old_w=NULL;
 	method=SVM_OCAS;
-	features=traindat;
-	set_labels(trainlab);
+	features=std::move(traindat);
+	set_labels(std::move(trainlab));
 	wd_weights=NULL;
 	w_offsets=NULL;
 	normalization_const=1.0;
@@ -106,7 +108,7 @@ std::shared_ptr<RegressionLabels> WDSVMOcas::apply_regression(std::shared_ptr<Fe
 	return std::make_shared<RegressionLabels>(outputs);
 }
 
-SGVector<float64_t> WDSVMOcas::apply_get_outputs(std::shared_ptr<Features> data)
+SGVector<float64_t> WDSVMOcas::apply_get_outputs(const std::shared_ptr<Features>& data)
 {
 	if (data)
 	{

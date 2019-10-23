@@ -17,6 +17,8 @@
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
+
+#include <utility>
 #endif
 
 using namespace shogun;
@@ -37,7 +39,7 @@ DotFeatures::DotFeatures(const DotFeatures & orig)
 
 
 DotFeatures::DotFeatures(std::shared_ptr<File> loader)
-	:Features(loader)
+	:Features(std::move(loader))
 {
 	init();
 }
@@ -232,7 +234,7 @@ SGVector<float64_t> DotFeatures::get_std(bool colwise) const
 }
 
 SGVector<float64_t>
-DotFeatures::compute_mean(std::shared_ptr<DotFeatures> lhs, std::shared_ptr<DotFeatures> rhs)
+DotFeatures::compute_mean(const std::shared_ptr<DotFeatures>& lhs, const std::shared_ptr<DotFeatures>& rhs)
 {
 	ASSERT(lhs && rhs)
 	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space())
@@ -303,7 +305,7 @@ SGMatrix<float64_t> DotFeatures::get_cov(bool copy_data_for_speed) const
 }
 
 SGMatrix<float64_t> DotFeatures::compute_cov(
-    std::shared_ptr<DotFeatures> lhs, std::shared_ptr<DotFeatures> rhs, bool copy_data_for_speed)
+    const std::shared_ptr<DotFeatures>& lhs, const std::shared_ptr<DotFeatures>& rhs, bool copy_data_for_speed)
 {
 	std::shared_ptr<DotFeatures> feats[2];
 	feats[0]=lhs;

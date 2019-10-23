@@ -172,8 +172,8 @@ ExponentialARDKernel::ExponentialARDKernel(int32_t size) : DotKernel(size)
 	init();
 }
 
-ExponentialARDKernel::ExponentialARDKernel(std::shared_ptr<DotFeatures> l,
-		std::shared_ptr<DotFeatures> r, int32_t size)	: DotKernel(size)
+ExponentialARDKernel::ExponentialARDKernel(const std::shared_ptr<DotFeatures>& l,
+		const std::shared_ptr<DotFeatures>& r, int32_t size)	: DotKernel(size)
 {
 	init();
 	init(l,r);

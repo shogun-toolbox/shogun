@@ -9,6 +9,8 @@
 #include <shogun/latent/LatentModel.h>
 #include <shogun/machine/LinearLatentMachine.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LinearLatentMachine::LinearLatentMachine()
@@ -22,7 +24,7 @@ LinearLatentMachine::LinearLatentMachine(std::shared_ptr<LatentModel> model, flo
 {
 	init();
 	m_C= C;
-	set_model(model);
+	set_model(std::move(model));
 
 	index_t feat_dim = m_model->get_dim();
 	SGVector<float64_t> w;
@@ -47,7 +49,7 @@ std::shared_ptr<LatentLabels> LinearLatentMachine::apply_latent(std::shared_ptr<
 	return apply_latent();
 }
 
-void LinearLatentMachine::set_model(std::shared_ptr<LatentModel> latent_model)
+void LinearLatentMachine::set_model(const std::shared_ptr<LatentModel>& latent_model)
 {
 	ASSERT(latent_model != NULL)
 

@@ -7,6 +7,8 @@
 #include <shogun/kernel/TStudentKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 void TStudentKernel::init()
@@ -22,7 +24,7 @@ TStudentKernel::TStudentKernel(): Kernel(0), distance(NULL), degree(1.0)
 }
 
 TStudentKernel::TStudentKernel(int32_t cache, float64_t d, std::shared_ptr<Distance> dist)
-: Kernel(cache), distance(dist), degree(d)
+: Kernel(cache), distance(std::move(dist)), degree(d)
 {
 	init();
 	ASSERT(distance)
@@ -30,12 +32,12 @@ TStudentKernel::TStudentKernel(int32_t cache, float64_t d, std::shared_ptr<Dista
 }
 
 TStudentKernel::TStudentKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t d, std::shared_ptr<Distance> dist)
-: Kernel(10), distance(dist), degree(d)
+: Kernel(10), distance(std::move(dist)), degree(d)
 {
 	init();
 	ASSERT(distance)
 	
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 TStudentKernel::~TStudentKernel()

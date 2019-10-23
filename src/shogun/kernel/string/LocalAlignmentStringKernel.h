@@ -40,7 +40,7 @@ class LocalAlignmentStringKernel: public StringKernel<char>
 		 * @param extension gap extension penalty
 		 */
 		LocalAlignmentStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			float64_t opening=10, float64_t extension=2);
 
 		virtual ~LocalAlignmentStringKernel();

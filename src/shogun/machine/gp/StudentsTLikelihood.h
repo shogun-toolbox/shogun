@@ -118,7 +118,7 @@ public:
 	 * @param likelihood likelihood model
 	 * @return casted StudentsTLikelihood object
 	 */
-	static std::shared_ptr<StudentsTLikelihood> obtain_from_generic(std::shared_ptr<LikelihoodModel> likelihood);
+	static std::shared_ptr<StudentsTLikelihood> obtain_from_generic(const std::shared_ptr<LikelihoodModel>& likelihood);
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *

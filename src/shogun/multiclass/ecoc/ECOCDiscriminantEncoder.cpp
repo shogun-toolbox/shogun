@@ -42,12 +42,12 @@ void ECOCDiscriminantEncoder::init()
     SG_ADD(&m_features, "features", "Features")
 }
 
-void ECOCDiscriminantEncoder::set_features(std::shared_ptr<Features >features)
+void ECOCDiscriminantEncoder::set_features(const std::shared_ptr<Features >&features)
 {
     m_features = features->as<DenseFeatures<float64_t>>();
 }
 
-void ECOCDiscriminantEncoder::set_labels(std::shared_ptr<Labels >labels)
+void ECOCDiscriminantEncoder::set_labels(const std::shared_ptr<Labels >&labels)
 {
     m_labels = labels->as<MulticlassLabels>();
 }

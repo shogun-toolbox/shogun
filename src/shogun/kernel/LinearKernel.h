@@ -39,7 +39,7 @@ class LinearKernel: public DotKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		LinearKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r);
+		LinearKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r);
 
 		virtual ~LinearKernel();
 

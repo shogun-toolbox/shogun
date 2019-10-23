@@ -9,6 +9,8 @@
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 
+#include <utility>
+
 namespace shogun {
 
 enum KernelName;
@@ -20,7 +22,7 @@ RandomFourierDotFeatures::RandomFourierDotFeatures()
 
 RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params)
-: RandomKitchenSinksDotFeatures(features, D)
+: RandomKitchenSinksDotFeatures(std::move(features), D)
 {
 	init(kernel_name, params);
 	random_coeff = generate_random_coefficients();
@@ -29,12 +31,12 @@ RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<DotFeatures> 
 RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params,
 	SGMatrix<float64_t> coeff)
-: RandomKitchenSinksDotFeatures(features, D, coeff)
+: RandomKitchenSinksDotFeatures(std::move(features), D, coeff)
 {
 	init(kernel_name, params);
 }
 
-RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<File> loader)
+RandomFourierDotFeatures::RandomFourierDotFeatures(const std::shared_ptr<File>& loader)
 {
 	not_implemented(SOURCE_LOCATION);;
 }
@@ -50,7 +52,7 @@ RandomFourierDotFeatures::~RandomFourierDotFeatures()
 }
 
 	void RandomFourierDotFeatures::init(
-	    KernelName kernel_name, SGVector<float64_t> params)
+	    KernelName kernel_name, const SGVector<float64_t>& params)
 	{
 		kernel = kernel_name;
 		kernel_params = params;

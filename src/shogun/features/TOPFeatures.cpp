@@ -8,6 +8,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 TOPFeatures::TOPFeatures()
@@ -23,7 +25,7 @@ TOPFeatures::TOPFeatures(
 	neglinear=neglin;
 	poslinear=poslin;
 
-	set_models(p,n);
+	set_models(std::move(p),std::move(n));
 }
 
 TOPFeatures::TOPFeatures(const TOPFeatures &orig)
@@ -56,7 +58,7 @@ TOPFeatures::~TOPFeatures()
 	
 }
 
-void TOPFeatures::set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n)
+void TOPFeatures::set_models(const std::shared_ptr<HMM>& p, const std::shared_ptr<HMM>& n)
 {
 	ASSERT(p && n)
 	
@@ -221,7 +223,7 @@ float64_t* TOPFeatures::set_feature_matrix()
 	return feature_matrix.matrix;
 }
 
-bool TOPFeatures::compute_relevant_indizes(std::shared_ptr<HMM> hmm, T_HMM_INDIZES* hmm_idx)
+bool TOPFeatures::compute_relevant_indizes(const std::shared_ptr<HMM>& hmm, T_HMM_INDIZES* hmm_idx)
 {
 	int32_t i=0;
 	int32_t j=0;

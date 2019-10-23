@@ -7,10 +7,11 @@
  */
 
 #include <list>
-#include <shogun/lib/Signal.h>
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/CombinedKernel.h>
+#include <shogun/lib/Signal.h>
+#include <utility>
 
 #ifdef USE_GLPK
 #include <glpk.h>
@@ -240,7 +241,7 @@ MKL::MKL(std::shared_ptr<SVM> s) : SVM()
 {
 	SG_DEBUG("creating MKL object {}", fmt::ptr(this))
 	register_params();
-	set_constraint_generator(s);
+	set_constraint_generator(std::move(s));
 	self->init();
 }
 

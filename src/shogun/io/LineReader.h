@@ -63,7 +63,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(std::shared_ptr<Tokenizer> tokenizer);
+	void set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "LineReader"; }

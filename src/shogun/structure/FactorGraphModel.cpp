@@ -12,6 +12,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <unordered_map>
+#include <utility>
 typedef std::unordered_map<int32_t, int32_t> factor_counts_type;
 
 using namespace shogun;
@@ -23,7 +24,7 @@ FactorGraphModel::FactorGraphModel()
 }
 
 FactorGraphModel::FactorGraphModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels,
-	EMAPInferType inf_type, bool verbose) : StructuredModel(features, labels)
+	EMAPInferType inf_type, bool verbose) : StructuredModel(std::move(features), std::move(labels))
 {
 	init();
 	m_inf_type = inf_type;
@@ -48,7 +49,7 @@ void FactorGraphModel::init()
 
 }
 
-void FactorGraphModel::add_factor_type(std::shared_ptr<FactorType> ftype)
+void FactorGraphModel::add_factor_type(const std::shared_ptr<FactorType>& ftype)
 {
 	require(ftype->get_w_dim() > 0, "{}::add_factor_type(): number of parameters can't be 0!",
 		get_name());

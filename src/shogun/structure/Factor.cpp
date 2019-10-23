@@ -7,6 +7,8 @@
 
 #include <shogun/structure/Factor.h>
 
+#include <utility>
+
 using namespace shogun;
 
 Factor::Factor() : SGObject()
@@ -14,7 +16,7 @@ Factor::Factor() : SGObject()
 	init();
 }
 
-Factor::Factor(std::shared_ptr<TableFactorType> ftype,
+Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
 	SGVector<int32_t> var_index,
 	SGVector<float64_t> data) : SGObject()
 {
@@ -37,7 +39,7 @@ Factor::Factor(std::shared_ptr<TableFactorType> ftype,
 
 }
 
-Factor::Factor(std::shared_ptr<TableFactorType> ftype,
+Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
 	SGVector<int32_t> var_index,
 	SGSparseVector<float64_t> data_sparse) : SGObject()
 {
@@ -60,14 +62,14 @@ Factor::Factor(std::shared_ptr<TableFactorType> ftype,
 
 }
 
-Factor::Factor(std::shared_ptr<TableFactorType> ftype,
+Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
 	SGVector<int32_t> var_index,
 	std::shared_ptr<FactorDataSource> data_source) : SGObject()
 {
 	init();
 	m_factor_type = ftype;
 	m_var_index = var_index;
-	m_data_source = data_source;
+	m_data_source = std::move(data_source);
 	m_is_data_dep = true;
 
 	ASSERT(m_factor_type != NULL);
@@ -95,7 +97,7 @@ std::shared_ptr<TableFactorType> Factor::get_factor_type() const
 
 void Factor::set_factor_type(std::shared_ptr<TableFactorType> ftype)
 {
-	m_factor_type = ftype;
+	m_factor_type = std::move(ftype);
 
 }
 

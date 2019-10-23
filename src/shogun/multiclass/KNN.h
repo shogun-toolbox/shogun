@@ -80,7 +80,7 @@ class KNN : public DistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		KNN(int32_t k, std::shared_ptr<Distance> d, std::shared_ptr<Labels> trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
+		KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
 
 		virtual ~KNN();
 

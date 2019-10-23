@@ -43,7 +43,7 @@ SVRGMinimizer::~SVRGMinimizer()
 {
 }
 
-SVRGMinimizer::SVRGMinimizer(std::shared_ptr<FirstOrderSAGCostFunction >fun)
+SVRGMinimizer::SVRGMinimizer(const std::shared_ptr<FirstOrderSAGCostFunction >&fun)
 	:FirstOrderStochasticMinimizer(fun)
 {
 	init();

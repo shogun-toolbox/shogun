@@ -22,11 +22,11 @@ namespace shogun
 class DenseFeaturesMock : public DenseFeatures<float64_t>
 {
 public:
-	DenseFeaturesMock(SGMatrix<float64_t> data) : DenseFeatures<float64_t>(data)
+	DenseFeaturesMock(const SGMatrix<float64_t>& data) : DenseFeatures<float64_t>(data)
 	{
 	}
 
-	void copy_feature_matrix_public(SGMatrix<float64_t> target, index_t column_offset)
+	void copy_feature_matrix_public(const SGMatrix<float64_t>& target, index_t column_offset)
 	{
 		copy_feature_matrix(target, column_offset);
 	}

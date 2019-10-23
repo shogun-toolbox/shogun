@@ -46,7 +46,7 @@ public:
 	 * @param labels labels to be (possibly) used for splitting
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
-	SplittingStrategy(std::shared_ptr<Labels> labels, index_t num_subsets);
+	SplittingStrategy(const std::shared_ptr<Labels>& labels, index_t num_subsets);
 
 	/** destructor */
 	virtual ~SplittingStrategy();

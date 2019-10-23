@@ -104,7 +104,7 @@ namespace shogun
 			 *
 			 * @param latent_model user defined latent model
 			 */
-			void set_model(std::shared_ptr<LatentModel> latent_model);
+			void set_model(const std::shared_ptr<LatentModel>& latent_model);
 
 			virtual bool train_require_labels() const
 			{

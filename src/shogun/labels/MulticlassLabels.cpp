@@ -2,6 +2,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <utility>
 
 using namespace shogun;
 
@@ -15,18 +16,18 @@ MulticlassLabels::MulticlassLabels(int32_t num_labels) : DenseLabels(num_labels)
 	init();
 }
 
-MulticlassLabels::MulticlassLabels(const SGVector<float64_t> src) : DenseLabels()
+MulticlassLabels::MulticlassLabels(SGVector<float64_t> src) : DenseLabels()
 {
 	init();
 	set_labels(src);
 }
 
-MulticlassLabels::MulticlassLabels(std::shared_ptr<File> loader) : DenseLabels(loader)
+MulticlassLabels::MulticlassLabels(std::shared_ptr<File> loader) : DenseLabels(std::move(loader))
 {
 	init();
 }
 
-MulticlassLabels::MulticlassLabels(std::shared_ptr<BinaryLabels> labels)
+MulticlassLabels::MulticlassLabels(const std::shared_ptr<BinaryLabels>& labels)
     : DenseLabels(labels->get_num_labels())
 {
 	init();
@@ -184,7 +185,7 @@ std::shared_ptr<Labels> MulticlassLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-std::shared_ptr<MulticlassLabels> MulticlassLabels::obtain_from_generic(std::shared_ptr<Labels> labels)
+std::shared_ptr<MulticlassLabels> MulticlassLabels::obtain_from_generic(const std::shared_ptr<Labels>& labels)
 {
 	if (labels == NULL)
 		return NULL;
@@ -205,7 +206,7 @@ std::shared_ptr<Labels> MulticlassLabels::duplicate() const
 
 namespace shogun
 {
-	SG_FORCED_INLINE std::shared_ptr<MulticlassLabels> to_multiclass(std::shared_ptr<DenseLabels> orig)
+	SG_FORCED_INLINE std::shared_ptr<MulticlassLabels> to_multiclass(const std::shared_ptr<DenseLabels>& orig)
 	{
 		auto result_vector = orig->get_labels();
 		std::set<int32_t> unique(result_vector.begin(), result_vector.end());
@@ -239,7 +240,7 @@ namespace shogun
 		return std::make_shared<MulticlassLabels>(result_vector);
 	}
 
-	std::shared_ptr<MulticlassLabels> multiclass_labels(std::shared_ptr<Labels> orig)
+	std::shared_ptr<MulticlassLabels> multiclass_labels(const std::shared_ptr<Labels>& orig)
 	{
 		require(orig, "No labels provided.");
 		try

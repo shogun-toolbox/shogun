@@ -7,6 +7,8 @@
 #include <shogun/kernel/CauchyKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 CauchyKernel::CauchyKernel(): Kernel(0), m_distance(NULL), m_sigma(1.0)
@@ -15,7 +17,7 @@ CauchyKernel::CauchyKernel(): Kernel(0), m_distance(NULL), m_sigma(1.0)
 }
 
 CauchyKernel::CauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<Distance> dist)
-: Kernel(cache), m_distance(dist), m_sigma(sigma)
+: Kernel(cache), m_distance(std::move(dist)), m_sigma(sigma)
 {
 	init();
 	ASSERT(m_distance)
@@ -23,12 +25,12 @@ CauchyKernel::CauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<Dista
 }
 
 CauchyKernel::CauchyKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma, std::shared_ptr<Distance> dist)
-: Kernel(10), m_distance(dist), m_sigma(sigma)
+: Kernel(10), m_distance(std::move(dist)), m_sigma(sigma)
 {
 	init();
 	ASSERT(m_distance)
 	
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 CauchyKernel::~CauchyKernel()

@@ -95,7 +95,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data dense data, can be empty
 	 */
-	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
+	Factor(const std::shared_ptr<TableFactorType>& ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
 
 	/** Constructor
 	 *
@@ -103,7 +103,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_sparse sparse data, can be empty
 	 */
-	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index,
+	Factor(const std::shared_ptr<TableFactorType>& ftype, SGVector<int32_t> var_index,
 		SGSparseVector<float64_t> data_sparse);
 
 	/** Constructor
@@ -112,7 +112,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_source common data for many factors
 	 */
-	Factor(std::shared_ptr<TableFactorType> ftype, SGVector<int32_t> var_index,
+	Factor(const std::shared_ptr<TableFactorType>& ftype, SGVector<int32_t> var_index,
 		std::shared_ptr<FactorDataSource> data_source);
 
 	/** deconstructor */

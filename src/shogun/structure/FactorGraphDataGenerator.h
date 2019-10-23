@@ -111,7 +111,7 @@ public:
 	 */
 	void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
 	                        SGMatrix< int32_t > edge_list, const std::vector<std::shared_ptr<TableFactorType>> &v_factor_type,
-	                        std::shared_ptr<FactorGraphFeatures> fg_feats, std::shared_ptr<FactorGraphLabels> fg_labels);
+	                        const std::shared_ptr<FactorGraphFeatures>& fg_feats, const std::shared_ptr<FactorGraphLabels>& fg_labels);
 
 	/** Define factor type
 	 *

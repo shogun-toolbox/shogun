@@ -16,7 +16,7 @@ ChiSquareDistance::ChiSquareDistance() : DenseDistance<float64_t>()
 {
 }
 
-ChiSquareDistance::ChiSquareDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+ChiSquareDistance::ChiSquareDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r)
 : DenseDistance<float64_t>()
 {
 	init(l, r);

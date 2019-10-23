@@ -493,7 +493,7 @@ void SGObject::add_callback_function(
 	param.add_callback_function(std::move(function));
 }
 
-void SGObject::subscribe(std::shared_ptr<ParameterObserver> obs)
+void SGObject::subscribe(const std::shared_ptr<ParameterObserver>& obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -520,7 +520,7 @@ void SGObject::subscribe(std::shared_ptr<ParameterObserver> obs)
 	m_next_subscription_index++;
 }
 
-void SGObject::unsubscribe(std::shared_ptr<ParameterObserver> obs)
+void SGObject::unsubscribe(const std::shared_ptr<ParameterObserver>& obs)
 {
 
 	int64_t index = obs->get<int64_t>("subscription_id");

@@ -30,19 +30,20 @@
  */
 
 #include <algorithm>
-#include <shogun/lib/SGVector.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/statistical_testing/StreamingMMD.h>
-#include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
+#include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/StreamingMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
+#include <utility>
 
 using namespace shogun;
 using namespace internal;
 
-MaxTestPower::MaxTestPower(KernelManager& km, std::shared_ptr<MMD> est) : MaxMeasure(km, est), lambda(1E-5)
+MaxTestPower::MaxTestPower(KernelManager& km, std::shared_ptr<MMD> est) : MaxMeasure(km, std::move(est)), lambda(1E-5)
 {
 }
 

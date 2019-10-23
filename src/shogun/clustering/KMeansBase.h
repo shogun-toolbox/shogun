@@ -92,7 +92,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 
 	protected:
 		/** Initialize training for KMeans algorithms */
-		void initialize_training(std::shared_ptr<Features> data=NULL);
+		void initialize_training(const std::shared_ptr<Features>& data=NULL);
 
 		/** K-Means++ algorithm to initialize cluster centers
 		*

@@ -32,7 +32,7 @@ GaussianKernel::GaussianKernel(int32_t size, float64_t w) : ShiftInvariantKernel
 	set_cache_size(size);
 }
 
-GaussianKernel::GaussianKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, float64_t w, int32_t size) : ShiftInvariantKernel()
+GaussianKernel::GaussianKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t w, int32_t size) : ShiftInvariantKernel()
 {
 	register_params();
 	set_width(w);
@@ -45,7 +45,7 @@ GaussianKernel::~GaussianKernel()
 	cleanup();
 }
 
-std::shared_ptr<GaussianKernel> GaussianKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<GaussianKernel> GaussianKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
 {
 	require(kernel->get_kernel_type()==K_GAUSSIAN,
 		"Provided kernel ({}) must be of type GaussianKernel!", kernel->get_name());

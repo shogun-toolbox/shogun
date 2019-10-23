@@ -31,7 +31,7 @@ class Histogram : public Distribution
 		 *
 		 * @param f histogram's features
 		 */
-		Histogram(std::shared_ptr<StringFeatures<uint16_t>> f);
+		Histogram(const std::shared_ptr<StringFeatures<uint16_t>>& f);
 		virtual ~Histogram();
 
 		/** learn distribution

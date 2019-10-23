@@ -41,7 +41,7 @@ class LMNN : public SGObject
 		 * @param labels labels of the features
 		 * @param k number of target neighbours per example
 		 */
-		LMNN(std::shared_ptr<Features> features, std::shared_ptr<MulticlassLabels> labels, int32_t k);
+		LMNN(std::shared_ptr<Features> features, const std::shared_ptr<MulticlassLabels>& labels, int32_t k);
 
 		/** destructor */
 		virtual ~LMNN();

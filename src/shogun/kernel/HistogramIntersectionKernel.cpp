@@ -24,7 +24,7 @@ HistogramIntersectionKernel::HistogramIntersectionKernel(int32_t size)
 }
 
 HistogramIntersectionKernel::HistogramIntersectionKernel(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 	float64_t beta, int32_t size)
 : DotKernel(size), m_beta(beta)
 {

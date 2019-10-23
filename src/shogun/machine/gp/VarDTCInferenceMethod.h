@@ -87,7 +87,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CVarDTCInferenceMethod object
 	 */
-	static std::shared_ptr<VarDTCInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
+	static std::shared_ptr<VarDTCInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *

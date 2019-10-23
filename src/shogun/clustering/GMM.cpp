@@ -14,10 +14,11 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/KNN.h>
+#include <utility>
 #include <vector>
 
 using namespace shogun;
@@ -762,7 +763,7 @@ vector<shared_ptr<Gaussian>> GMM::get_comp()
 
 void GMM::set_comp(vector<shared_ptr<Gaussian>> components)
 {
-	m_components=components;
+	m_components=std::move(components);
 }
 
 SGMatrix<float64_t> GMM::alpha_init(SGMatrix<float64_t> init_means)

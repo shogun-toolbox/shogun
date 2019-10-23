@@ -32,6 +32,7 @@
 #include <numeric>
 #include <shogun/features/Features.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
+#include <utility>
 
 using namespace shogun;
 using namespace internal;
@@ -42,7 +43,7 @@ DataFetcher::DataFetcher() : m_num_samples(0), train_test_mode(false),
 }
 
 DataFetcher::DataFetcher(std::shared_ptr<Features> samples) : train_test_mode(false),
-   	train_mode(false), m_samples(samples), features_shuffled(false)
+   	train_mode(false), m_samples(std::move(samples)), features_shuffled(false)
 {
 	require(m_samples!=nullptr, "Samples cannot be null!");
 	m_num_samples=m_samples->get_num_vectors();

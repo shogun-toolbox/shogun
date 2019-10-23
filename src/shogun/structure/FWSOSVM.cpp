@@ -18,8 +18,8 @@ FWSOSVM::FWSOSVM()
 }
 
 FWSOSVM::FWSOSVM(
-		std::shared_ptr<StructuredModel>  model,
-		std::shared_ptr<StructuredLabels> labs,
+		const std::shared_ptr<StructuredModel>&  model,
+		const std::shared_ptr<StructuredLabels>& labs,
 		bool do_line_search,
 		bool verbose)
 : LinearStructuredOutputMachine(model, labs)

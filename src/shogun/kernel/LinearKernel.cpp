@@ -18,7 +18,7 @@ LinearKernel::LinearKernel()
 	properties |= KP_LINADD;
 }
 
-LinearKernel::LinearKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r)
+LinearKernel::LinearKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r)
 : DotKernel(0)
 {
 	properties |= KP_LINADD;

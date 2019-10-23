@@ -77,7 +77,7 @@ float64_t Distribution::update_params_em(const SGVector<float64_t> alpha_k)
 	return -1;
 }
 
-std::shared_ptr<Distribution> Distribution::obtain_from_generic(std::shared_ptr<SGObject> object)
+std::shared_ptr<Distribution> Distribution::obtain_from_generic(const std::shared_ptr<SGObject>& object)
 {
 	if (!object)
 		return NULL;

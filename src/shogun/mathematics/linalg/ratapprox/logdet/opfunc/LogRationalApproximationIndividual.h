@@ -42,7 +42,7 @@ public:
 	 * the number of shifts automatically
 	 */
 	LogRationalApproximationIndividual(
-		std::shared_ptr<MatrixOperator<float64_t>> linear_operator,
+		const std::shared_ptr<MatrixOperator<float64_t>>& linear_operator,
 		std::shared_ptr<EigenSolver> eigen_solver,
 		std::shared_ptr<LinearSolver<complex128_t, float64_t>> linear_solver,
 		float64_t desired_accuracy);

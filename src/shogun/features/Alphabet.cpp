@@ -88,7 +88,7 @@ Alphabet::Alphabet(EAlphabet alpha)
 	set_alphabet(alpha);
 }
 
-Alphabet::Alphabet(std::shared_ptr<Alphabet> a)
+Alphabet::Alphabet(const std::shared_ptr<Alphabet>& a)
 : SGObject()
 {
 	init();

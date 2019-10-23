@@ -11,6 +11,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 using namespace shogun;
 
@@ -41,7 +42,7 @@ void CircularBuffer::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
 {
 	
 	
-	m_tokenizer=tokenizer;
+	m_tokenizer=std::move(tokenizer);
 }
 
 int32_t CircularBuffer::push(SGVector<char> source)

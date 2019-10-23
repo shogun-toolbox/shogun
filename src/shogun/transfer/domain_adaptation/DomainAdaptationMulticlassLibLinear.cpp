@@ -9,6 +9,8 @@
 #include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
 #include <shogun/labels/MulticlassLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 DomainAdaptationMulticlassLibLinear::DomainAdaptationMulticlassLibLinear() :
@@ -20,11 +22,11 @@ DomainAdaptationMulticlassLibLinear::DomainAdaptationMulticlassLibLinear() :
 DomainAdaptationMulticlassLibLinear::DomainAdaptationMulticlassLibLinear(
 		float64_t target_C, std::shared_ptr<DotFeatures> target_features, std::shared_ptr<Labels> target_labels,
 		std::shared_ptr<LinearMulticlassMachine> source_machine) :
-	MulticlassLibLinear(target_C,target_features,target_labels)
+	MulticlassLibLinear(target_C,std::move(target_features),std::move(target_labels))
 {
 	init_defaults();
 
-	set_source_machine(source_machine);
+	set_source_machine(std::move(source_machine));
 }
 
 void DomainAdaptationMulticlassLibLinear::init_defaults()
@@ -67,7 +69,7 @@ void DomainAdaptationMulticlassLibLinear::set_source_machine(
 {
 
 
-	m_source_machine = source_machine;
+	m_source_machine = std::move(source_machine);
 }
 
 void DomainAdaptationMulticlassLibLinear::register_parameters()

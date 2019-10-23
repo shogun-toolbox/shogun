@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
+#include <utility>
 
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -37,7 +38,7 @@ bool CImpostorNode::operator<(const CImpostorNode& rhs) const
 }
 
 void LMNNImpl::check_training_setup(
-    std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, SGMatrix<float64_t>& init_transform,
+    const std::shared_ptr<Features>& features, const std::shared_ptr<Labels>& labels, SGMatrix<float64_t>& init_transform,
     int32_t k)
 {
 	require(features->has_property(FP_DOT),
@@ -67,7 +68,7 @@ void LMNNImpl::check_training_setup(
 
 void LMNNImpl::check_maximum_k(std::shared_ptr<Labels> labels, int32_t k)
 {
-	auto y = multiclass_labels(labels);
+	auto y = multiclass_labels(std::move(labels));
 	SGVector<int32_t> int_labels = y->get_int_labels();
 
 	// back-up initial values because they will be overwritten by unique
@@ -104,8 +105,8 @@ void LMNNImpl::check_maximum_k(std::shared_ptr<Labels> labels, int32_t k)
 	    min_num_examples, k);
 }
 
-SGMatrix<index_t> LMNNImpl::find_target_nn(std::shared_ptr<DenseFeatures<float64_t>> x,
-		std::shared_ptr<MulticlassLabels> y, int32_t k)
+SGMatrix<index_t> LMNNImpl::find_target_nn(const std::shared_ptr<DenseFeatures<float64_t>>& x,
+		const std::shared_ptr<MulticlassLabels>& y, int32_t k)
 {
 	SG_TRACE("Entering LMNNImpl::find_target_nn().");
 
@@ -161,7 +162,7 @@ SGMatrix<index_t> LMNNImpl::find_target_nn(std::shared_ptr<DenseFeatures<float64
 }
 
 SGMatrix<float64_t> LMNNImpl::sum_outer_products(
-    std::shared_ptr<DenseFeatures<float64_t>> x, const SGMatrix<index_t>& target_nn)
+    const std::shared_ptr<DenseFeatures<float64_t>>& x, const SGMatrix<index_t>& target_nn)
 {
 	// get the number of features
 	int32_t d = x->get_num_features();
@@ -185,7 +186,7 @@ SGMatrix<float64_t> LMNNImpl::sum_outer_products(
 }
 
 ImpostorsSetType LMNNImpl::find_impostors(
-    std::shared_ptr<DenseFeatures<float64_t>> x, std::shared_ptr<MulticlassLabels> y,
+    const std::shared_ptr<DenseFeatures<float64_t>>& x, std::shared_ptr<MulticlassLabels> y,
     const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
     const int32_t iter, const int32_t correction)
 {
@@ -212,7 +213,7 @@ ImpostorsSetType LMNNImpl::find_impostors(
 	if ((iter % correction)==0)
 	{
 		Nexact = LMNNImpl::find_impostors_exact(
-		    SGMatrix<float64_t>(LX), sqdists, y, target_nn, k);
+		    SGMatrix<float64_t>(LX), sqdists, std::move(y), target_nn, k);
 		N = Nexact;
 	}
 	else
@@ -227,7 +228,7 @@ ImpostorsSetType LMNNImpl::find_impostors(
 }
 
 void LMNNImpl::update_gradient(
-    std::shared_ptr<DenseFeatures<float64_t>> x, SGMatrix<float64_t>& G,
+    const std::shared_ptr<DenseFeatures<float64_t>>& x, SGMatrix<float64_t>& G,
     const ImpostorsSetType& Nc, const ImpostorsSetType& Np,
     float64_t regularization)
 {
@@ -346,7 +347,7 @@ bool LMNNImpl::check_termination(
 	return false;
 }
 
-SGMatrix<float64_t> LMNNImpl::compute_pca_transform(std::shared_ptr<DenseFeatures<float64_t>> features)
+SGMatrix<float64_t> LMNNImpl::compute_pca_transform(const std::shared_ptr<DenseFeatures<float64_t>>& features)
 {
 	SG_TRACE("Initializing LMNN transform using PCA.");
 
@@ -406,7 +407,7 @@ SGMatrix<float64_t> LMNNImpl::compute_sqdists(
 
 ImpostorsSetType LMNNImpl::find_impostors_exact(
     const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
-    std::shared_ptr<MulticlassLabels> y, const SGMatrix<index_t>& target_nn, int32_t k)
+    const std::shared_ptr<MulticlassLabels>& y, const SGMatrix<index_t>& target_nn, int32_t k)
 {
 	SG_TRACE("Entering LMNNImpl::find_impostors_exact().");
 
@@ -519,7 +520,7 @@ SGVector<float64_t> LMNNImpl::compute_impostors_sqdists(
 	return sqdists;
 }
 
-std::vector<index_t> LMNNImpl::get_examples_label(std::shared_ptr<MulticlassLabels> y,
+std::vector<index_t> LMNNImpl::get_examples_label(const std::shared_ptr<MulticlassLabels>& y,
 		float64_t yi)
 {
 	// indices of the examples with label equal to yi
@@ -534,7 +535,7 @@ std::vector<index_t> LMNNImpl::get_examples_label(std::shared_ptr<MulticlassLabe
 	return idxs;
 }
 
-std::vector<index_t> LMNNImpl::get_examples_gtlabel(std::shared_ptr<MulticlassLabels> y,
+std::vector<index_t> LMNNImpl::get_examples_gtlabel(const std::shared_ptr<MulticlassLabels>& y,
 		float64_t yi)
 {
 	// indices of the examples with label equal greater than yi
@@ -549,7 +550,7 @@ std::vector<index_t> LMNNImpl::get_examples_gtlabel(std::shared_ptr<MulticlassLa
 	return idxs;
 }
 
-std::shared_ptr<EuclideanDistance> LMNNImpl::setup_distance(std::shared_ptr<DenseFeatures<float64_t>> x,
+std::shared_ptr<EuclideanDistance> LMNNImpl::setup_distance(const std::shared_ptr<DenseFeatures<float64_t>>& x,
 		std::vector<index_t>& a, std::vector<index_t>& b)
 {
 	// create new features only containing examples whose indices are in a

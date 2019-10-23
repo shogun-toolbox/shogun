@@ -9,6 +9,8 @@
 
 #include <shogun/structure/MultilabelSOLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MultilabelSOLabels::MultilabelSOLabels() : StructuredLabels()
@@ -36,7 +38,7 @@ MultilabelSOLabels::MultilabelSOLabels(std::shared_ptr<MultilabelLabels > multil
 {
 	init();
 
-	m_multilabel_labels = multilabel_labels;
+	m_multilabel_labels = std::move(multilabel_labels);
 }
 
 void MultilabelSOLabels::init()
@@ -126,7 +128,7 @@ void MultilabelSOLabels::ensure_valid(const char * context)
 	m_multilabel_labels->ensure_valid(context);
 }
 
-SGVector<float64_t> MultilabelSOLabels::to_dense(std::shared_ptr<StructuredData > label,
+SGVector<float64_t> MultilabelSOLabels::to_dense(const std::shared_ptr<StructuredData >& label,
                 int32_t dense_dim, float64_t d_true, float64_t d_false)
 {
 	auto slabel = label->as<SparseMultilabel>();

@@ -16,7 +16,7 @@ AttenuatedEuclideanDistance::AttenuatedEuclideanDistance() : RealDistance()
 	init();
 }
 
-AttenuatedEuclideanDistance::AttenuatedEuclideanDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+AttenuatedEuclideanDistance::AttenuatedEuclideanDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r)
 : RealDistance()
 {
 	init();

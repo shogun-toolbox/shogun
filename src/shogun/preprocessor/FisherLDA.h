@@ -186,7 +186,7 @@ class MulticlassLabels;
 		 * @param labels multiclass labels.
 		 */
 		void solver_classic(
-		    std::shared_ptr<DenseFeatures<float64_t>> features, std::shared_ptr<MulticlassLabels> labels);
+		    const std::shared_ptr<DenseFeatures<float64_t>>& features, const std::shared_ptr<MulticlassLabels>& labels);
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;

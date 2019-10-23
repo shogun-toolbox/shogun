@@ -622,7 +622,7 @@ void NeuralNetwork::set_batch_size(int32_t batch_size)
 	}
 }
 
-SGMatrix<float64_t> NeuralNetwork::features_to_matrix(std::shared_ptr<Features> features)
+SGMatrix<float64_t> NeuralNetwork::features_to_matrix(const std::shared_ptr<Features>& features)
 {
 	require(features != NULL, "Invalid (NULL) feature pointer");
 	require(features->get_feature_type() == F_DREAL,
@@ -638,7 +638,7 @@ SGMatrix<float64_t> NeuralNetwork::features_to_matrix(std::shared_ptr<Features> 
 	return inputs->get_feature_matrix();
 }
 
-SGMatrix<float64_t> NeuralNetwork::labels_to_matrix(std::shared_ptr<Labels> labs)
+SGMatrix<float64_t> NeuralNetwork::labels_to_matrix(const std::shared_ptr<Labels>& labs)
 {
 	require(labs != NULL, "Invalid (NULL) labels pointer");
 

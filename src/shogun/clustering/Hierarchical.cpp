@@ -13,6 +13,8 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -37,7 +39,7 @@ Hierarchical::Hierarchical(int32_t merges_, std::shared_ptr<Distance> d)
 {
 	init();
 	merges = merges_;
-	set_distance(d);
+	set_distance(std::move(d));
 	register_parameters();
 }
 

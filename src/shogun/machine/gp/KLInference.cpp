@@ -38,6 +38,8 @@
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
+#include <utility>
+
 
 using namespace Eigen;
 
@@ -50,7 +52,7 @@ class KLInferenceCostFunction: public FirstOrderCostFunction
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }
         virtual ~KLInferenceCostFunction() {  }
-        void set_target(std::shared_ptr<KLInference>obj)
+        void set_target(const std::shared_ptr<KLInference>&obj)
         {
 			require(obj,"Obj must set");
 			m_obj=obj;
@@ -102,7 +104,7 @@ KLInference::KLInference() : Inference()
 
 KLInference::KLInference(std::shared_ptr<Kernel> kern,
 		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
-		: Inference(kern, feat, m, lab, mod)
+		: Inference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod))
 {
 	init();
 	check_variational_likelihood(m_model);

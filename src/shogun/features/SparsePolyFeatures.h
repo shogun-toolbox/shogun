@@ -35,7 +35,7 @@ class SparsePolyFeatures : public DotFeatures
 		 * @param normalize normalize kernel
 		 * @param hash_bits number of bits in hashd feature space
 		 */
-		SparsePolyFeatures(std::shared_ptr<SparseFeatures<float64_t>> feat, int32_t degree, bool normalize, int32_t hash_bits);
+		SparsePolyFeatures(const std::shared_ptr<SparseFeatures<float64_t>>& feat, int32_t degree, bool normalize, int32_t hash_bits);
 
 		virtual ~SparsePolyFeatures();
 

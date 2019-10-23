@@ -17,8 +17,8 @@ SparseSpatialSampleStringKernel::SparseSpatialSampleStringKernel()
 {
 }
 
-SparseSpatialSampleStringKernel::SparseSpatialSampleStringKernel(std::shared_ptr<StringFeatures<char>> l,
-		std::shared_ptr<StringFeatures<char>> r) : StringKernel<char>(0), t(2), d(5)
+SparseSpatialSampleStringKernel::SparseSpatialSampleStringKernel(const std::shared_ptr<StringFeatures<char>>& l,
+		const std::shared_ptr<StringFeatures<char>>& r) : StringKernel<char>(0), t(2), d(5)
 {
 	init(l, r);
 }

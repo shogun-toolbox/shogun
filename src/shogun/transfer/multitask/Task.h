@@ -96,7 +96,7 @@ public:
 	 *
 	 * @param sub_task subtask to add
 	 */
-	void add_subtask(std::shared_ptr<Task> sub_task);
+	void add_subtask(const std::shared_ptr<Task>& sub_task);
 
 	/** get all subtasks of the task
 	 *

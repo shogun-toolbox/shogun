@@ -39,7 +39,7 @@ ShiftInvariantKernel::ShiftInvariantKernel() : Kernel(0)
 	register_params();
 }
 
-ShiftInvariantKernel::ShiftInvariantKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r) : Kernel(l, r, 0)
+ShiftInvariantKernel::ShiftInvariantKernel(const std::shared_ptr<Features >&l, const std::shared_ptr<Features >&r) : Kernel(l, r, 0)
 {
 	register_params();
 	init(l, r);
@@ -109,7 +109,7 @@ void ShiftInvariantKernel::register_params()
 	m_precomputed_distance=NULL;
 }
 
-void ShiftInvariantKernel::set_precomputed_distance(std::shared_ptr<CustomDistance> precomputed_distance)
+void ShiftInvariantKernel::set_precomputed_distance(const std::shared_ptr<CustomDistance>& precomputed_distance)
 {
 	require(precomputed_distance, "The precomputed distance instance cannot be NULL!");
 	m_precomputed_distance=precomputed_distance;

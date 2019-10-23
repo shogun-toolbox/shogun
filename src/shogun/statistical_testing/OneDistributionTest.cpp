@@ -32,6 +32,8 @@
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/TestTypes.h>
 
+#include <utility>
+
 using namespace shogun;
 
 OneDistributionTest::OneDistributionTest() : HypothesisTest(internal::OneDistributionTest::num_feats)
@@ -45,7 +47,7 @@ OneDistributionTest::~OneDistributionTest()
 void OneDistributionTest::set_samples(std::shared_ptr<Features> samples)
 {
 	auto& data_mgr=get_data_mgr();
-	data_mgr.samples_at(0)=samples;
+	data_mgr.samples_at(0)=std::move(samples);
 }
 
 std::shared_ptr<Features> OneDistributionTest::get_samples() const

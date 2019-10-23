@@ -79,7 +79,7 @@ template <class ST> class SparseFeatures : public DotFeatures
 		 *
 		 * @param loader File object to load data from
 		 */
-		SparseFeatures(std::shared_ptr<File> loader);
+		SparseFeatures(const std::shared_ptr<File>& loader);
 
 		/** default destructor */
 		virtual ~SparseFeatures();
@@ -317,9 +317,9 @@ template <class ST> class SparseFeatures : public DotFeatures
 		 * @param sq_rhs squared values of right-hand side
 		 * @param idx_b index of right-hand side's vector to compute
 		 */
-		float64_t compute_squared_norm(std::shared_ptr<SparseFeatures<float64_t>> lhs,
+		float64_t compute_squared_norm(const std::shared_ptr<SparseFeatures<float64_t>>& lhs,
 				float64_t* sq_lhs, int32_t idx_a,
-				std::shared_ptr<SparseFeatures<float64_t>> rhs, float64_t* sq_rhs,
+				const std::shared_ptr<SparseFeatures<float64_t>>& rhs, float64_t* sq_rhs,
 				int32_t idx_b);
 
 		/** load features from file

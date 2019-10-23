@@ -16,7 +16,7 @@ ChebyshewMetric::ChebyshewMetric() : DenseDistance<float64_t>()
 {
 }
 
-ChebyshewMetric::ChebyshewMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+ChebyshewMetric::ChebyshewMetric(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r)
 : DenseDistance<float64_t>()
 {
 	init(l, r);

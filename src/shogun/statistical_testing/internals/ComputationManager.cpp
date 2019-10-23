@@ -31,6 +31,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
@@ -54,7 +56,7 @@ SGMatrix<float32_t>& ComputationManager::data(index_t i)
 
 void ComputationManager::enqueue_job(std::function<float32_t(SGMatrix<float32_t>)> job)
 {
-	job_array.push_back(job);
+	job_array.push_back(std::move(job));
 }
 
 void ComputationManager::compute_data_parallel_jobs()

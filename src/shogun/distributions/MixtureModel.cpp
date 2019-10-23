@@ -34,6 +34,8 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/EMMixtureModel.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MixtureModel::MixtureModel()
@@ -44,7 +46,7 @@ MixtureModel::MixtureModel()
 MixtureModel::MixtureModel(std::vector<std::shared_ptr<Distribution>> components, SGVector<float64_t> weights)
 {
 	init();
-	m_components=components;
+	m_components=std::move(components);
 
 	m_weights=weights;
 }
@@ -149,7 +151,7 @@ std::vector<std::shared_ptr<Distribution>> MixtureModel::get_components() const
 
 void MixtureModel::set_components(std::vector<std::shared_ptr<Distribution>> components)
 {
-	m_components=components;
+	m_components=std::move(components);
 }
 
 index_t MixtureModel::get_num_components() const

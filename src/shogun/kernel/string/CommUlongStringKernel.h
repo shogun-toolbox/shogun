@@ -64,7 +64,7 @@ class CommUlongStringKernel: public StringKernel<uint64_t>
 		 * @param size cache size
 		 */
 		CommUlongStringKernel(
-			std::shared_ptr<StringFeatures<uint64_t>> l, std::shared_ptr<StringFeatures<uint64_t>> r,
+			const std::shared_ptr<StringFeatures<uint64_t>>& l, const std::shared_ptr<StringFeatures<uint64_t>>& r,
 			bool use_sign=false,
 			int32_t size=10);
 

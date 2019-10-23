@@ -21,7 +21,7 @@ MahalanobisDistance::MahalanobisDistance() : RealDistance()
 	init();
 }
 
-MahalanobisDistance::MahalanobisDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+MahalanobisDistance::MahalanobisDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r)
 : RealDistance()
 {
 	init();

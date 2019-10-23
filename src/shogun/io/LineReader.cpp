@@ -5,11 +5,12 @@
  *          Heiko Strathmann
  */
 
+#include <cstdio>
 #include <shogun/io/LineReader.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/CircularBuffer.h>
 #include <shogun/lib/Tokenizer.h>
-#include <shogun/io/SGIO.h>
-#include <cstdio>
+#include <utility>
 
 using namespace shogun;
 
@@ -28,7 +29,7 @@ LineReader::LineReader(FILE* stream, std::shared_ptr<Tokenizer> tokenizer)
 	m_max_token_length=10*1024*1024;
 
 	
-	m_tokenizer=tokenizer;
+	m_tokenizer=std::move(tokenizer);
 
 	m_buffer=std::make_shared<CircularBuffer>(m_max_token_length);
 	m_buffer->set_tokenizer(m_tokenizer);
@@ -42,7 +43,7 @@ LineReader::LineReader(int32_t max_token_length, FILE* stream, std::shared_ptr<T
 	m_max_token_length=max_token_length;
 
 	
-	m_tokenizer=tokenizer;
+	m_tokenizer=std::move(tokenizer);
 
 	m_buffer=std::make_shared<CircularBuffer>(m_max_token_length);
 	m_buffer->set_tokenizer(m_tokenizer);
@@ -107,7 +108,7 @@ void LineReader::reset()
 	m_buffer->clear();
 }
 
-void LineReader::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
+void LineReader::set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer)
 {
 	
 	

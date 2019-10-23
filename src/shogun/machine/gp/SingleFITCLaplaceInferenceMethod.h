@@ -97,7 +97,7 @@ public:
 	 * @param inference inference method
 	 * @return casted SingleFITCLaplaceInferenceMethod object
 	 */
-	static std::shared_ptr<SingleFITCLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
+	static std::shared_ptr<SingleFITCLaplaceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/**
 	 * @return whether combination of Laplace approximation inference method and
@@ -401,7 +401,7 @@ public:
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(std::shared_ptr<SingleFITCLaplaceInferenceMethod >obj);
+	void set_target(const std::shared_ptr<SingleFITCLaplaceInferenceMethod >&obj);
 
 	/** Unset the inference method
 	 * @param is_unref do we SG_UNREF the method

@@ -36,7 +36,7 @@ GNPPLib::GNPPLib()
 }
 
 GNPPLib::GNPPLib(
-	float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data, float64_t reg_const)
+	float64_t* vector_y, const std::shared_ptr<Kernel>& kernel, int32_t num_data, float64_t reg_const)
 : SGObject()
 {
   m_reg_const = reg_const;

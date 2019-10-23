@@ -43,7 +43,7 @@ class DomainAdaptationSVM : public SVMLight
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 * */
-		void init(std::shared_ptr<SVM> presvm, float64_t B);
+		void init(const std::shared_ptr<SVM>& presvm, float64_t B);
 
 		/** get classifier type
 		 *

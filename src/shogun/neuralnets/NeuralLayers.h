@@ -112,7 +112,7 @@ public:
 	 *
 	 * @param layer layer to add
 	 */
-	std::shared_ptr<NeuralLayers> with_layer(std::shared_ptr<NeuralLayer> layer);
+	std::shared_ptr<NeuralLayers> with_layer(const std::shared_ptr<NeuralLayer>& layer);
 
 	/** Finalizes
 	 */

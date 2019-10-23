@@ -12,6 +12,8 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Statistics.h>
 
+#include <utility>
+
 using namespace shogun;
 
 BinaryLabels::BinaryLabels() : DenseLabels()
@@ -57,7 +59,7 @@ BinaryLabels::BinaryLabels(SGVector<float64_t> src, float64_t threshold) : Dense
 	set_values(src);
 }
 
-BinaryLabels::BinaryLabels(std::shared_ptr<File > loader) : DenseLabels(loader)
+BinaryLabels::BinaryLabels(std::shared_ptr<File > loader) : DenseLabels(std::move(loader))
 {
 }
 
@@ -140,7 +142,7 @@ std::shared_ptr<Labels> BinaryLabels::duplicate() const
 
 namespace shogun
 {
-	std::shared_ptr<BinaryLabels> binary_labels(std::shared_ptr<Labels> orig)
+	std::shared_ptr<BinaryLabels> binary_labels(const std::shared_ptr<Labels>& orig)
 	{
 		require(orig, "No labels provided.");
 		try

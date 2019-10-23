@@ -393,7 +393,7 @@ int32_t LibSVMFile::get_num_lines()
 	return num_lines;
 }
 
-bool LibSVMFile::is_feat_entry(const SGVector<char> entry)
+bool LibSVMFile::is_feat_entry(const SGVector<char>& entry)
 {
 	auto parser = std::make_shared<Parser>();
 	parser->set_tokenizer(m_delimiter_feat_tokenizer);

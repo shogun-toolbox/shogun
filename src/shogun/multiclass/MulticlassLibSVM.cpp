@@ -10,6 +10,8 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MulticlassLibSVM::MulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
@@ -18,7 +20,7 @@ MulticlassLibSVM::MulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
 }
 
 MulticlassLibSVM::MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>(), C, k, lab), solver_type(LIBSVM_C_SVC)
+: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>(), C, std::move(k), std::move(lab)), solver_type(LIBSVM_C_SVC)
 {
 }
 

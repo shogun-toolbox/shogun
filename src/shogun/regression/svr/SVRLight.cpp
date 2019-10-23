@@ -32,6 +32,8 @@ extern "C" {
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
+
+#include <utility>
 #endif
 
 using namespace shogun;
@@ -49,7 +51,7 @@ struct S_THREAD_PARAM_SVRLIGHT
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 SVRLight::SVRLight(float64_t C, float64_t eps, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: SVMLight(C, k, lab)
+: SVMLight(C, std::move(k), std::move(lab))
 {
 	set_tube_epsilon(eps);
 }

@@ -8,6 +8,8 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 ECOCStrategy::ECOCStrategy() : MulticlassStrategy()
@@ -19,8 +21,8 @@ ECOCStrategy::ECOCStrategy(std::shared_ptr<ECOCEncoder >encoder, std::shared_ptr
 	: MulticlassStrategy()
 {
     init();
-    m_encoder=encoder;
-    m_decoder=decoder;
+    m_encoder=std::move(encoder);
+    m_decoder=std::move(decoder);
 
 
 }

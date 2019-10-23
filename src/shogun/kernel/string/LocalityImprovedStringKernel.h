@@ -49,7 +49,7 @@ class LocalityImprovedStringKernel: public StringKernel<char>
 		 * @param outer_degree outer degree
 		 */
 		LocalityImprovedStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			int32_t length, int32_t inner_degree, int32_t outer_degree);
 
 		virtual ~LocalityImprovedStringKernel();

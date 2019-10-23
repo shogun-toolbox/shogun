@@ -29,7 +29,7 @@ PolyMatchStringKernel::PolyMatchStringKernel(int32_t size, int32_t d, bool i)
 }
 
 PolyMatchStringKernel::PolyMatchStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t d, bool i)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t d, bool i)
 : StringKernel<char>(10)
 {
 	init();

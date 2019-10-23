@@ -72,7 +72,7 @@ protected:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	float64_t evaluate_roc(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth);
+	float64_t evaluate_roc(const std::shared_ptr<BinaryLabels>& predicted, const std::shared_ptr<BinaryLabels>& ground_truth);
 
 protected:
 

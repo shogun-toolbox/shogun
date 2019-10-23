@@ -38,6 +38,8 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 using std::unique_ptr;
@@ -108,7 +110,7 @@ KernelSelectionStrategy const* MMD::get_kernel_selection_strategy() const
 
 void MMD::add_kernel(std::shared_ptr<Kernel> kernel)
 {
-	self->strategy->add_kernel(kernel);
+	self->strategy->add_kernel(std::move(kernel));
 }
 
 void MMD::select_kernel()

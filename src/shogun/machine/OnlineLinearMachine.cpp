@@ -41,7 +41,7 @@ std::shared_ptr<RegressionLabels> OnlineLinearMachine::apply_regression(std::sha
 	return std::make_shared<RegressionLabels>(outputs);
 }
 
-SGVector<float64_t> OnlineLinearMachine::apply_get_outputs(std::shared_ptr<Features> data)
+SGVector<float64_t> OnlineLinearMachine::apply_get_outputs(const std::shared_ptr<Features>& data)
 {
 	if (data)
 	{

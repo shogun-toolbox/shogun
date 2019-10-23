@@ -47,13 +47,13 @@ public:
 	 *
 	 * @param factor a factor pointer
 	 */
-	void add_factor(std::shared_ptr<Factor> factor);
+	void add_factor(const std::shared_ptr<Factor>& factor);
 
 	/** add a data source
 	 *
 	 * @param datasource a factor data source
 	 */
-	void add_data_source(std::shared_ptr<FactorDataSource> datasource);
+	void add_data_source(const std::shared_ptr<FactorDataSource>& datasource);
 
 	/** @return all the factors */
 	std::vector<std::shared_ptr<Factor>> get_factors() const;
@@ -87,7 +87,7 @@ public:
 	 *
 	 * @param obs factor graph observation
 	 */
-	float64_t evaluate_energy(std::shared_ptr<const FactorGraphObservation> obs) const;
+	float64_t evaluate_energy(const std::shared_ptr<const FactorGraphObservation>& obs) const;
 
 	/** @return energy table for the graph */
 	SGVector<float64_t> evaluate_energies() const;

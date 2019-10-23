@@ -22,7 +22,7 @@ JensenShannonKernel::JensenShannonKernel(int32_t size)
 }
 
 JensenShannonKernel::JensenShannonKernel(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, int32_t size)
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, int32_t size)
 : DotKernel(size)
 {
 	init(l,r);

@@ -59,8 +59,8 @@ void CombinedKernel::init_subkernel_weights()
 	set_subkernel_weights(wt);
 }
 bool CombinedKernel::init_with_extracted_subsets(
-    std::shared_ptr<Features> l, std::shared_ptr<Features> r, SGVector<index_t> lhs_subset,
-    SGVector<index_t> rhs_subset)
+    const std::shared_ptr<Features>& l, const std::shared_ptr<Features>& r, const SGVector<index_t>& lhs_subset,
+    const SGVector<index_t>& rhs_subset)
 {
 
 	auto l_combined = std::dynamic_pointer_cast<CombinedFeatures>(l);
@@ -878,7 +878,7 @@ SGMatrix<float64_t> CombinedKernel::get_parameter_gradient(
 	return result;
 }
 
-std::shared_ptr<CombinedKernel> CombinedKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<CombinedKernel> CombinedKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
 {
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{

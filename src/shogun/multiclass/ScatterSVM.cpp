@@ -15,6 +15,8 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 ScatterSVM::ScatterSVM()
@@ -31,7 +33,7 @@ ScatterSVM::ScatterSVM(SCATTER_TYPE type)
 }
 
 ScatterSVM::ScatterSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab), scatter_type(NO_BIAS_LIBSVM),
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab)), scatter_type(NO_BIAS_LIBSVM),
 	norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 }

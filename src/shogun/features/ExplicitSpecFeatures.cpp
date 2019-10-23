@@ -25,7 +25,7 @@ ExplicitSpecFeatures::ExplicitSpecFeatures() :DotFeatures()
 }
 
 
-ExplicitSpecFeatures::ExplicitSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize) : DotFeatures()
+ExplicitSpecFeatures::ExplicitSpecFeatures(const std::shared_ptr<StringFeatures<uint16_t>>& str, bool normalize) : DotFeatures()
 {
 	ASSERT(str)
 
@@ -99,7 +99,7 @@ void ExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 	}
 }
 
-void ExplicitSpecFeatures::obtain_kmer_spectrum(std::shared_ptr<StringFeatures<uint16_t>> str)
+void ExplicitSpecFeatures::obtain_kmer_spectrum(const std::shared_ptr<StringFeatures<uint16_t>>& str)
 {
 	k_spectrum= SG_MALLOC(float64_t*, num_strings);
 

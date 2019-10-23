@@ -8,6 +8,8 @@
 #include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/evaluation/GradientResult.h>
 
+#include <utility>
+
 using namespace shogun;
 
 GradientEvaluation::GradientEvaluation() : MachineEvaluation()
@@ -17,7 +19,7 @@ GradientEvaluation::GradientEvaluation() : MachineEvaluation()
 
 GradientEvaluation::GradientEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
 		std::shared_ptr<Labels> labels, std::shared_ptr<Evaluation> evaluation_crit, bool autolock) :
-		MachineEvaluation(machine, features, labels, NULL, evaluation_crit, autolock)
+		MachineEvaluation(std::move(machine), std::move(features), std::move(labels), NULL, std::move(evaluation_crit), autolock)
 {
 	init();
 }

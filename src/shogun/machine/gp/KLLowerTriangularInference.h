@@ -144,7 +144,7 @@ protected:
 	 *
 	 * @return inv(corrected_Kernel*sq(m_scale))*A:
 	 */
-	Eigen::MatrixXd solve_inverse(Eigen::MatrixXd A);
+	Eigen::MatrixXd solve_inverse(const Eigen::MatrixXd& A);
 
 	/** correct the kernel matrix and factorizated the corrected Kernel matrix
 	 * for update

@@ -15,6 +15,8 @@
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -29,7 +31,7 @@ KMeansBase::KMeansBase(int32_t k_, std::shared_ptr<Distance> d, bool use_kmpp)
 {
 	init();
 	k=k_;
-	set_distance(d);
+	set_distance(std::move(d));
 	use_kmeanspp=use_kmpp;
 }
 
@@ -38,7 +40,7 @@ KMeansBase::KMeansBase(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<floa
 {
 	init();
 	k = k_i;
-	set_distance(d_i);
+	set_distance(std::move(d_i));
 	set_initial_centers(centers_i);
 }
 
@@ -131,7 +133,7 @@ void KMeansBase::compute_cluster_variances()
 	}
 }
 
-void KMeansBase::initialize_training(std::shared_ptr<Features> data)
+void KMeansBase::initialize_training(const std::shared_ptr<Features>& data)
 {
 	require(distance, "Distance is not provided");
 	require(

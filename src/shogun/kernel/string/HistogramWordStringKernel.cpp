@@ -11,6 +11,8 @@
 #include <shogun/classifier/PluginEstimate.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 HistogramWordStringKernel::HistogramWordStringKernel()
@@ -24,17 +26,17 @@ HistogramWordStringKernel::HistogramWordStringKernel(int32_t size, std::shared_p
 {
 	init();
 
-	estimate=pie;
+	estimate=std::move(pie);
 
 }
 
 HistogramWordStringKernel::HistogramWordStringKernel(
-	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, std::shared_ptr<PluginEstimate> pie)
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, std::shared_ptr<PluginEstimate> pie)
 : StringKernel<uint16_t>()
 {
 	init();
 
-	estimate=pie;
+	estimate=std::move(pie);
 	init(l, r);
 }
 

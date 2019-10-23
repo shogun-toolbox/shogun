@@ -46,7 +46,7 @@ public:
 	 * @param train_examples train examples
 	 * @param train_labels labels corresponding to train_examples
 	 */
-	GaussianNaiveBayes(std::shared_ptr<Features> train_examples, std::shared_ptr<Labels> train_labels);
+	GaussianNaiveBayes(const std::shared_ptr<Features>& train_examples, const std::shared_ptr<Labels>& train_labels);
 
 	/** destructor
 	 *

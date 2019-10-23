@@ -28,7 +28,7 @@ GaussianMatchStringKernel::GaussianMatchStringKernel(int32_t size, float64_t w)
 }
 
 GaussianMatchStringKernel::GaussianMatchStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, float64_t w)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, float64_t w)
 : StringKernel<char>(10), width(w)
 {
 	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());

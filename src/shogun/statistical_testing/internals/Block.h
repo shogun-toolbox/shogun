@@ -89,7 +89,7 @@ public:
 	 * @param num_blocks The number of blocks to be formed.
 	 * @param size The size of the block (number of feature vectors).
 	 */
-	static std::vector<Block> create_blocks(std::shared_ptr<Features> feats, index_t num_blocks, index_t size);
+	static std::vector<Block> create_blocks(const std::shared_ptr<Features>& feats, index_t num_blocks, index_t size);
 
 	/**
 	 * Operator overloading for getting the block object as a naked ptr (non-const, unsafe).

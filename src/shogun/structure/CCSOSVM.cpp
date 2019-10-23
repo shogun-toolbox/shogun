@@ -19,7 +19,7 @@ CCSOSVM::CCSOSVM()
 	init();
 }
 
-CCSOSVM::CCSOSVM(std::shared_ptr<StructuredModel> model, SGVector<float64_t> w)
+CCSOSVM::CCSOSVM(const std::shared_ptr<StructuredModel>& model, SGVector<float64_t> w)
 	: LinearStructuredOutputMachine(model, model->get_labels())
 {
 	init();

@@ -7,6 +7,8 @@
 #include <shogun/kernel/InverseMultiQuadricKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 InverseMultiQuadricKernel::InverseMultiQuadricKernel(): Kernel(0), distance(NULL), coef(0.0001)
@@ -15,18 +17,18 @@ InverseMultiQuadricKernel::InverseMultiQuadricKernel(): Kernel(0), distance(NULL
 }
 
 InverseMultiQuadricKernel::InverseMultiQuadricKernel(int32_t cache, float64_t coefficient, std::shared_ptr<Distance> dist)
-: Kernel(cache), distance(dist), coef(coefficient)
+: Kernel(cache), distance(std::move(dist)), coef(coefficient)
 {
 	
 	init();
 }
 
 InverseMultiQuadricKernel::InverseMultiQuadricKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t coefficient, std::shared_ptr<Distance> dist)
-: Kernel(10), distance(dist), coef(coefficient)
+: Kernel(10), distance(std::move(dist)), coef(coefficient)
 {
 	
 	init();
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 InverseMultiQuadricKernel::~InverseMultiQuadricKernel()

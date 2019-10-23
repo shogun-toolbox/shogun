@@ -88,7 +88,7 @@ void StructuredLabels::init()
 	m_sdt = SDT_UNKNOWN;
 }
 
-void StructuredLabels::ensure_valid_sdt(std::shared_ptr<StructuredData> label)
+void StructuredLabels::ensure_valid_sdt(const std::shared_ptr<StructuredData>& label)
 {
 	if ( m_sdt == SDT_UNKNOWN )
 	{

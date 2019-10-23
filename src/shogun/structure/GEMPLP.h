@@ -123,7 +123,7 @@ public:
 	 * @param factor factor which contains energy
 	 * @return potential of the region in MPLP
 	 */
-	SGNDArray<float64_t> convert_energy_to_potential(std::shared_ptr<Factor> factor);
+	SGNDArray<float64_t> convert_energy_to_potential(const std::shared_ptr<Factor>& factor);
 
 public:
 	/** GEMPLP parameter */

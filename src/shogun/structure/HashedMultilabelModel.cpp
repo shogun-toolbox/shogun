@@ -13,6 +13,8 @@
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/lib/DynamicArray.h>
 
+#include <utility>
+
 using namespace shogun;
 
 HashedMultilabelModel::HashedMultilabelModel()
@@ -22,7 +24,7 @@ HashedMultilabelModel::HashedMultilabelModel()
 }
 
 HashedMultilabelModel::HashedMultilabelModel(std::shared_ptr<Features > features,
-                std::shared_ptr<StructuredLabels > labels, int32_t dim) : StructuredModel(features, labels)
+                std::shared_ptr<StructuredLabels > labels, int32_t dim) : StructuredModel(std::move(features), std::move(labels))
 {
 	init(dim);
 }

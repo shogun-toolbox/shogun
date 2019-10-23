@@ -42,7 +42,7 @@ class JensenShannonKernel: public DotKernel
 		 * @param size cache size
 		 */
 		JensenShannonKernel(
-			std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
+			const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			int32_t size=10);
 
 		virtual ~JensenShannonKernel();

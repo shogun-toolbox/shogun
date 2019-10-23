@@ -112,7 +112,7 @@ class StructuredLabels : public Labels
 		void init();
 
 		/** ensure that the correct structured data type is used */
-		void ensure_valid_sdt(std::shared_ptr<StructuredData> label);
+		void ensure_valid_sdt(const std::shared_ptr<StructuredData>& label);
 
 	protected:
 		/** the vector of labels */

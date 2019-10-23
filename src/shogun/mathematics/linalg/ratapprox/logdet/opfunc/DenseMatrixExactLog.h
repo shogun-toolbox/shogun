@@ -31,7 +31,7 @@ public:
 	 *
 	 * @param op the dense matrix linear operator for this operator function
 	 */
-	DenseMatrixExactLog(std::shared_ptr<DenseMatrixOperator<float64_t>> op);
+	DenseMatrixExactLog(const std::shared_ptr<DenseMatrixOperator<float64_t>>& op);
 
 	/** destructor */
 	virtual ~DenseMatrixExactLog();

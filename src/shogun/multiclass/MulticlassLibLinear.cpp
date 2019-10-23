@@ -13,6 +13,8 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/labels/MulticlassLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MulticlassLibLinear::MulticlassLibLinear() :
@@ -23,7 +25,7 @@ MulticlassLibLinear::MulticlassLibLinear() :
 }
 
 MulticlassLibLinear::MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs) :
-	RandomMixin<LinearMulticlassMachine>(std::make_shared<MulticlassOneVsRestStrategy>(),features,nullptr,labs)
+	RandomMixin<LinearMulticlassMachine>(std::make_shared<MulticlassOneVsRestStrategy>(),std::move(features),nullptr,std::move(labs))
 {
 	register_parameters();
 	init_defaults();

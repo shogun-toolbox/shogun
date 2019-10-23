@@ -3,6 +3,8 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 RegressionLabels::RegressionLabels() : DenseLabels()
@@ -13,12 +15,12 @@ RegressionLabels::RegressionLabels(int32_t num_labels) : DenseLabels(num_labels)
 {
 }
 
-RegressionLabels::RegressionLabels(const SGVector<float64_t> src) : DenseLabels()
+RegressionLabels::RegressionLabels(SGVector<float64_t> src) : DenseLabels()
 {
 	set_labels(src);
 }
 
-RegressionLabels::RegressionLabels(std::shared_ptr<File> loader) : DenseLabels(loader)
+RegressionLabels::RegressionLabels(std::shared_ptr<File> loader) : DenseLabels(std::move(loader))
 {
 }
 
@@ -46,7 +48,7 @@ std::shared_ptr<Labels> RegressionLabels::duplicate() const
 
 namespace shogun
 {
-	std::shared_ptr<RegressionLabels> regression_labels(std::shared_ptr<Labels> orig)
+	std::shared_ptr<RegressionLabels> regression_labels(const std::shared_ptr<Labels>& orig)
 	{
 		require(orig, "No labels provided.");
 		try

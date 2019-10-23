@@ -7,6 +7,8 @@
 #include <shogun/kernel/SphericalKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SphericalKernel::SphericalKernel(): Kernel(0), distance(NULL)
@@ -16,7 +18,7 @@ SphericalKernel::SphericalKernel(): Kernel(0), distance(NULL)
 }
 
 SphericalKernel::SphericalKernel(int32_t size, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(size), distance(dist)
+: Kernel(size), distance(std::move(dist))
 {
 	ASSERT(distance)
 	
@@ -26,13 +28,13 @@ SphericalKernel::SphericalKernel(int32_t size, float64_t sig, std::shared_ptr<Di
 
 SphericalKernel::SphericalKernel(
 	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(10), distance(dist)
+: Kernel(10), distance(std::move(dist))
 {
 	ASSERT(distance)
 	
 	register_params();
 	set_sigma(sig);
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 SphericalKernel::~SphericalKernel()

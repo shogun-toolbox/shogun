@@ -182,7 +182,7 @@ public:
 	 *
 	 * @return SGVector<float64_t> dense vector of dimension dense_dim
 	 */
-	static SGVector<float64_t> to_dense(std::shared_ptr<StructuredData > label,
+	static SGVector<float64_t> to_dense(const std::shared_ptr<StructuredData >& label,
 	                                    int32_t dense_dim, float64_t d_true, float64_t d_false);
 
 private:

@@ -7,6 +7,8 @@
 #include <shogun/latent/LatentModel.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LatentModel::LatentModel()
@@ -19,8 +21,8 @@ LatentModel::LatentModel()
 }
 
 LatentModel::LatentModel(std::shared_ptr<LatentFeatures> feats, std::shared_ptr<LatentLabels> labels, bool do_caching)
-	: m_features(feats),
-	m_labels(labels),
+	: m_features(std::move(feats)),
+	m_labels(std::move(labels)),
 	m_do_caching(do_caching),
 	m_cached_psi(NULL)
 {
@@ -45,7 +47,7 @@ void LatentModel::set_labels(std::shared_ptr<LatentLabels> labs)
 {
 
 
-	m_labels = labs;
+	m_labels = std::move(labs);
 }
 
 std::shared_ptr<LatentLabels> LatentModel::get_labels() const
@@ -58,7 +60,7 @@ void LatentModel::set_features(std::shared_ptr<LatentFeatures> feats)
 {
 
 
-	m_features = feats;
+	m_features = std::move(feats);
 }
 
 void LatentModel::argmax_h(const SGVector<float64_t>& w)

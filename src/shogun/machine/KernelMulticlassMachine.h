@@ -47,7 +47,7 @@ class KernelMulticlassMachine : public MulticlassMachine
 		 *
 		 * @param k kernel
 		 */
-		void set_kernel(std::shared_ptr<Kernel> k);
+		void set_kernel(const std::shared_ptr<Kernel>& k);
 
 		/** get kernel
 		 *

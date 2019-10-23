@@ -29,7 +29,7 @@ class SparseEuclideanDistance: public SparseDistance<float64_t>
 		 * @param r features of right-hand side
 		 */
 		SparseEuclideanDistance(
-			std::shared_ptr<SparseFeatures<float64_t>> l, std::shared_ptr<SparseFeatures<float64_t>> r);
+			const std::shared_ptr<SparseFeatures<float64_t>>& l, const std::shared_ptr<SparseFeatures<float64_t>>& r);
 		virtual ~SparseEuclideanDistance();
 
 		/** init distance

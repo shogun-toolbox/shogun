@@ -41,6 +41,8 @@
 #endif //USE_GPL_SHOGUN
 #include <shogun/lib/SGVector.h>
 
+#include <utility>
+
 using namespace shogun;
 
 /** @brief Class of the simple function
@@ -208,8 +210,8 @@ public:
 	{
 		
 		
-		m_f=f;
-		m_g=g;
+		m_f=std::move(f);
+		m_g=std::move(g);
 	}
 
 	virtual ~ProductFunction()
@@ -253,7 +255,7 @@ public:
 	TransformFunction(std::shared_ptr<Function> f, float64_t mu, float64_t sigma)
 	{
 		
-		m_f=f;
+		m_f=std::move(f);
 		m_mu=mu;
 		m_sigma=sigma;
 	}

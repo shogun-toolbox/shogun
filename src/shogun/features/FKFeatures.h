@@ -59,7 +59,7 @@ class FKFeatures: public DenseFeatures<float64_t>
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		void set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n);
+		void set_models(const std::shared_ptr<HMM>& p, const std::shared_ptr<HMM>& n);
 
 		/** set weight a
 		 *

@@ -14,6 +14,8 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/evaluation/Evaluation.h>
 
+#include <utility>
+
 using namespace shogun;
 
 BaggingMachine::BaggingMachine() : RandomMixin<Machine>()
@@ -25,8 +27,8 @@ BaggingMachine::BaggingMachine() : RandomMixin<Machine>()
 BaggingMachine::BaggingMachine(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels)
     : BaggingMachine()
 {
-	set_labels(labels);
-	m_features = features;
+	set_labels(std::move(labels));
+	m_features = std::move(features);
 }
 
 std::shared_ptr<BinaryLabels> BaggingMachine::apply_binary(std::shared_ptr<Features> data)
@@ -88,7 +90,7 @@ std::shared_ptr<RegressionLabels> BaggingMachine::apply_regression(std::shared_p
 	return std::make_shared<RegressionLabels>(apply_get_outputs(data));
 }
 
-SGVector<float64_t> BaggingMachine::apply_get_outputs(std::shared_ptr<Features> data)
+SGVector<float64_t> BaggingMachine::apply_get_outputs(const std::shared_ptr<Features>& data)
 {
 	ASSERT(data != NULL);
 	require(m_combination_rule != NULL, "Combination rule is not set!");
@@ -267,7 +269,7 @@ std::shared_ptr<Machine> BaggingMachine::get_machine() const
 
 void BaggingMachine::set_machine(std::shared_ptr<Machine> machine)
 {
-	m_machine = machine;
+	m_machine = std::move(machine);
 }
 
 void BaggingMachine::init()
@@ -284,7 +286,7 @@ void BaggingMachine::init()
 
 void BaggingMachine::set_combination_rule(std::shared_ptr<CombinationRule> rule)
 {
-	m_combination_rule = rule;
+	m_combination_rule = std::move(rule);
 }
 
 std::shared_ptr<CombinationRule> BaggingMachine::get_combination_rule() const

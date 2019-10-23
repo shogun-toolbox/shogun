@@ -4,9 +4,10 @@
  * Authors: Sergey Lisitsyn, Thoralf Klein, Soeren Sonnenburg, Bjoern Esser
  */
 
-#include <shogun/lib/IndexBlockTree.h>
 #include <shogun/lib/IndexBlock.h>
+#include <shogun/lib/IndexBlockTree.h>
 #include <shogun/lib/SGMatrix.h>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -86,7 +87,7 @@ void fill_ind_recursive(tree_node_t* node, vector<block_tree_node_t>* tree_nodes
 	}
 }
 
-void collect_tree_nodes_recursive(std::shared_ptr<IndexBlock> subtree_root_block, vector<block_tree_node_t>* tree_nodes)
+void collect_tree_nodes_recursive(const std::shared_ptr<IndexBlock>& subtree_root_block, vector<block_tree_node_t>* tree_nodes)
 {
 	auto sub_blocks = subtree_root_block->get_sub_blocks();
 	if (sub_blocks.size()>0)
@@ -111,7 +112,7 @@ IndexBlockTree::IndexBlockTree() :
 IndexBlockTree::IndexBlockTree(std::shared_ptr<IndexBlock> root_block) : IndexBlockRelation(),
 	m_root_block(NULL), m_general(false)
 {
-	set_root_block(root_block);
+	set_root_block(std::move(root_block));
 }
 
 IndexBlockTree::IndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode) :
@@ -210,7 +211,7 @@ IndexBlockTree::IndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool includ
 	SG_FREE(nodes);
 }
 
-IndexBlockTree::IndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t) :
+IndexBlockTree::IndexBlockTree(const SGVector<float64_t>& G, const SGVector<float64_t>& ind_t) :
 	IndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
@@ -240,7 +241,7 @@ void IndexBlockTree::set_root_block(std::shared_ptr<IndexBlock> root_block)
 {
 
 
-	m_root_block = root_block;
+	m_root_block = std::move(root_block);
 }
 
 SGVector<index_t> IndexBlockTree::get_SLEP_ind()

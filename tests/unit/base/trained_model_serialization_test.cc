@@ -83,7 +83,7 @@ protected:
 	}
 
 	bool serialize_machine(
-	    std::shared_ptr<Machine> cmachine, std::string& filename)
+	    const std::shared_ptr<Machine>& cmachine, std::string& filename)
 	{
 		std::string class_name = cmachine->get_name();
 		filename = "shogun-unittest-trained-model-serialization-" + class_name +
@@ -127,7 +127,7 @@ protected:
 		return true;
 	}
 
-	bool deserialize_machine(std::string filename)
+	bool deserialize_machine(const std::string& filename)
 	{
 		std::unique_ptr<io::RandomAccessFile> raf;
 		if (fs->new_random_access_file(filename, &raf))

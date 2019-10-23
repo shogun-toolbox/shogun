@@ -4,12 +4,13 @@
  * Authors: Shell Hu, Soeren Sonnenburg, Bjoern Esser
  */
 
-#include <shogun/structure/BeliefPropagation.h>
-#include <shogun/io/SGIO.h>
-#include <numeric>
 #include <algorithm>
 #include <functional>
+#include <numeric>
+#include <shogun/io/SGIO.h>
+#include <shogun/structure/BeliefPropagation.h>
 #include <stack>
+#include <utility>
 
 using namespace shogun;
 
@@ -20,7 +21,7 @@ BeliefPropagation::BeliefPropagation()
 }
 
 BeliefPropagation::BeliefPropagation(std::shared_ptr<FactorGraph> fg)
-	: MAPInferImpl(fg)
+	: MAPInferImpl(std::move(fg))
 {
 }
 
@@ -45,7 +46,7 @@ TreeMaxProduct::TreeMaxProduct()
 }
 
 TreeMaxProduct::TreeMaxProduct(std::shared_ptr<FactorGraph> fg)
-	: BeliefPropagation(fg)
+	: BeliefPropagation(std::move(fg))
 {
 	ASSERT(m_fg != NULL);
 

@@ -227,7 +227,7 @@ public:
 	void best_path_set_segment_ids_mask(const std::vector<int32_t>& segment_ids, const std::vector<float64_t>& segment_mask, int32_t m);
 
 	/** set sparse feature matrices */
-	void set_sparse_features(std::shared_ptr<SparseFeatures<float64_t>> seq_sparse1, std::shared_ptr<SparseFeatures<float64_t>> seq_sparse2);
+	void set_sparse_features(const std::shared_ptr<SparseFeatures<float64_t>>& seq_sparse1, const std::shared_ptr<SparseFeatures<float64_t>>& seq_sparse2);
 
 	/** set plif matrices
 	 *

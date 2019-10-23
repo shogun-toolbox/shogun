@@ -81,7 +81,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param degree degree
 		 */
 		WeightedDegreePositionStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t degree);
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t degree);
 
 		virtual ~WeightedDegreePositionStringKernel();
 
@@ -585,7 +585,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param svm SVM
 		 */
 
-		void compute_POIM2(int32_t max_degree, std::shared_ptr<SVM> svm);
+		void compute_POIM2(int32_t max_degree, const std::shared_ptr<SVM>& svm);
 
 		/** get POIM2
 		 *

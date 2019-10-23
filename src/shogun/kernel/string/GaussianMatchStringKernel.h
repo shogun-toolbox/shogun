@@ -49,7 +49,7 @@ class GaussianMatchStringKernel: public StringKernel<char>
 		 * @param width width
 		 */
 		GaussianMatchStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			float64_t width);
 
 		virtual ~GaussianMatchStringKernel();

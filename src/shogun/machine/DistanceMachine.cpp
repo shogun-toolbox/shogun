@@ -10,6 +10,8 @@
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
+
+#include <utility>
 #endif
 
 using namespace shogun;
@@ -148,7 +150,7 @@ void DistanceMachine::set_distance(std::shared_ptr<Distance> d)
 {
 
 
-	distance=d;
+	distance=std::move(d);
 }
 
 std::shared_ptr<Distance> DistanceMachine::get_distance() const

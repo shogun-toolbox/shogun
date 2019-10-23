@@ -550,13 +550,13 @@ protected:
 	/** Ensures the given features are suitable for use with the network and
 	 * returns their feature matrix
 	 */
-	SGMatrix<float64_t> features_to_matrix(std::shared_ptr<Features> features);
+	SGMatrix<float64_t> features_to_matrix(const std::shared_ptr<Features>& features);
 
 	/** converts the given labels into a matrix suitable for use with network
 	 *
 	 * @return matrix of size get_num_outputs()*num_labels
 	 */
-	SGMatrix<float64_t> labels_to_matrix(std::shared_ptr<Labels> labs);
+	SGMatrix<float64_t> labels_to_matrix(const std::shared_ptr<Labels>& labs);
 
 private:
 	void init();

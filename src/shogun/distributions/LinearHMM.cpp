@@ -17,7 +17,7 @@ LinearHMM::LinearHMM() : Distribution()
 	init();
 }
 
-LinearHMM::LinearHMM(std::shared_ptr<StringFeatures<uint16_t>> f)
+LinearHMM::LinearHMM(const std::shared_ptr<StringFeatures<uint16_t>>& f)
 : Distribution()
 {
 	init();

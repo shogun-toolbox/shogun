@@ -197,7 +197,7 @@ class Distribution : public SGObject
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static std::shared_ptr<Distribution> obtain_from_generic(std::shared_ptr<SGObject> object);
+		static std::shared_ptr<Distribution> obtain_from_generic(const std::shared_ptr<SGObject>& object);
 
 	protected:
 		/** feature vectors */

@@ -15,6 +15,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 //#define DEBUG_NEWTON
 //#define V_NEWTON
 using namespace shogun;
@@ -37,8 +39,8 @@ NewtonSVM::NewtonSVM(
 	prec=1e-6;
 	C=c;
 	t = 0;
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 }
 
 
@@ -141,7 +143,7 @@ void NewtonSVM::iteration()
 		m_complete = true;
 }
 
-void NewtonSVM::line_search_linear(const SGVector<float64_t> d)
+void NewtonSVM::line_search_linear(const SGVector<float64_t>& d)
 {
 	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
 	SGVector<float64_t> outz(x_n);

@@ -99,7 +99,7 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 	private:
 		void obj_fun_linear();
 
-		void line_search_linear(SGVector<float64_t> d);
+		void line_search_linear(const SGVector<float64_t>& d);
 
 	protected:
 		/** lambda=1/C */

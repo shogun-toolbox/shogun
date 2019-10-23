@@ -55,12 +55,12 @@ class KernelMachine : public Machine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		KernelMachine(std::shared_ptr<Kernel> k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
+		KernelMachine(const std::shared_ptr<Kernel>& k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
 
 		/** copy constructor
 		 * @param machine machine having parameters to copy
 		 */
-		KernelMachine(std::shared_ptr<KernelMachine> machine);
+		KernelMachine(const std::shared_ptr<KernelMachine>& machine);
 
 		/** destructor */
 		virtual ~KernelMachine();
@@ -236,7 +236,7 @@ class KernelMachine : public Machine
 		 * @param data features to compute outputs
 		 * @return outputs
 		 */
-		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
+		SGVector<float64_t> apply_get_outputs(const std::shared_ptr<Features>& data);
 
 
 	private:

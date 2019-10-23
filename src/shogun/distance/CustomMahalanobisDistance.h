@@ -37,7 +37,7 @@ class CustomMahalanobisDistance : public RealDistance
 		 * @param r features of right hand side
 		 * @param m Mahalanobis matrix used to compute distances
 		 */
-		CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, SGMatrix<float64_t> m);
+		CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, const SGMatrix<float64_t>& m);
 
 		/** destructor */
 		virtual ~CustomMahalanobisDistance();

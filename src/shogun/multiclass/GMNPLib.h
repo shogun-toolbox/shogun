@@ -69,7 +69,7 @@ class GMNPLib: public SGObject
 		 * @param reg_const reg const
 		 */
 		GMNPLib(
-			float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data,
+			float64_t* vector_y, const std::shared_ptr<Kernel>& kernel, int32_t num_data,
 			int32_t num_virtual_data, int32_t num_classes, float64_t reg_const);
 
 		virtual ~GMNPLib();

@@ -8,12 +8,13 @@
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <iostream>
+#include <shogun/io/SGIO.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
+#include <utility>
 #include <vector>
 
 using namespace shogun;
@@ -23,10 +24,10 @@ DomainAdaptationSVM::DomainAdaptationSVM() : SVMLight()
 	init();
 }
 
-DomainAdaptationSVM::DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> pre_svm, float64_t B_param) : SVMLight(C, k, lab)
+DomainAdaptationSVM::DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> pre_svm, float64_t B_param) : SVMLight(C, std::move(k), std::move(lab))
 {
 	init();
-	init(pre_svm, B_param);
+	init(std::move(pre_svm), B_param);
 }
 
 DomainAdaptationSVM::~DomainAdaptationSVM()
@@ -35,7 +36,7 @@ DomainAdaptationSVM::~DomainAdaptationSVM()
 }
 
 
-void DomainAdaptationSVM::init(std::shared_ptr<SVM> pre_svm, float64_t B_param)
+void DomainAdaptationSVM::init(const std::shared_ptr<SVM>& pre_svm, float64_t B_param)
 {
 	require(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts

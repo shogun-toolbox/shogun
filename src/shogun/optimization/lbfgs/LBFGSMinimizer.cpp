@@ -32,6 +32,8 @@
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 namespace shogun
 {
 LBFGSMinimizer::LBFGSMinimizer()
@@ -45,7 +47,7 @@ LBFGSMinimizer::~LBFGSMinimizer()
 }
 
 LBFGSMinimizer::LBFGSMinimizer(std::shared_ptr<FirstOrderCostFunction >fun)
-	:FirstOrderMinimizer(fun)
+	:FirstOrderMinimizer(std::move(fun))
 {
 	auto bound_constraints_fun
 		=std::dynamic_pointer_cast<FirstOrderBoundConstraintsCostFunction>(m_fun);

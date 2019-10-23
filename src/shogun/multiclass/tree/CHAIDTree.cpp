@@ -197,7 +197,7 @@ bool CHAIDTree::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDTree::CHAIDtrain(std::shared_ptr<Features> data, SGVector<float64_t> weights, std::shared_ptr<Labels> labels, int32_t level)
+std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDTree::CHAIDtrain(const std::shared_ptr<Features>& data, SGVector<float64_t> weights, const std::shared_ptr<Labels>& labels, int32_t level)
 {
 	require(data,"data matrix cannot be empty");
 	require(labels,"labels cannot be NULL");
@@ -662,7 +662,7 @@ SGVector<int32_t> CHAIDTree::merge_categories_nominal(SGVector<float64_t> feats,
 	return cat;
 }
 
-std::shared_ptr<Labels> CHAIDTree::apply_tree(std::shared_ptr<Features> data)
+std::shared_ptr<Labels> CHAIDTree::apply_tree(const std::shared_ptr<Features>& data)
 {
 	auto feats=data->as<DenseFeatures<float64_t>>();
 
@@ -674,7 +674,7 @@ std::shared_ptr<Labels> CHAIDTree::apply_tree(std::shared_ptr<Features> data)
 	return apply_from_current_node(fmat, m_root);
 }
 
-std::shared_ptr<Labels> CHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, std::shared_ptr<node_t> current)
+std::shared_ptr<Labels> CHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, const std::shared_ptr<node_t>& current)
 {
 	require(current != NULL, "The tree cannot be empty.");
 	int32_t num_vecs=fmat.num_cols;
@@ -844,7 +844,7 @@ float64_t CHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int3
 	return 0.0;
 }
 
-float64_t CHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights)
+float64_t CHAIDTree::p_value(SGVector<float64_t> feat, const SGVector<float64_t>& labels, const SGVector<float64_t>& weights)
 {
 	switch (m_dependent_vartype)
 	{
@@ -1295,7 +1295,7 @@ float64_t CHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector<
 	return dev;
 }
 
-bool CHAIDTree::continuous_to_ordinal(std::shared_ptr<DenseFeatures<float64_t>> feats)
+bool CHAIDTree::continuous_to_ordinal(const std::shared_ptr<DenseFeatures<float64_t>>& feats)
 {
 	// assimilate continuous breakpoints
 	int32_t count_cont=0;
@@ -1354,7 +1354,7 @@ bool CHAIDTree::continuous_to_ordinal(std::shared_ptr<DenseFeatures<float64_t>> 
 	return true;
 }
 
-void CHAIDTree::modify_data_matrix(std::shared_ptr<DenseFeatures<float64_t>> feats)
+void CHAIDTree::modify_data_matrix(const std::shared_ptr<DenseFeatures<float64_t>>& feats)
 {
 	int32_t c=0;
 	for (int32_t i=0;i<feats->get_num_features();i++)

@@ -9,6 +9,8 @@
 #include <shogun/classifier/svm/GNPPLib.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 
@@ -18,7 +20,7 @@ GNPPSVM::GNPPSVM()
 }
 
 GNPPSVM::GNPPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: SVM(C, k, lab)
+: SVM(C, std::move(k), std::move(lab))
 {
 }
 

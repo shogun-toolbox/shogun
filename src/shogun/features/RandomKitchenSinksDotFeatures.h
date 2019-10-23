@@ -73,7 +73,7 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	RandomKitchenSinksDotFeatures(std::shared_ptr<File> loader);
+	RandomKitchenSinksDotFeatures(const std::shared_ptr<File>& loader);
 
 	/** copy constructor */
 	RandomKitchenSinksDotFeatures(const RandomKitchenSinksDotFeatures& orig);

@@ -11,6 +11,8 @@
 #include <shogun/distance/KernelDistance.h>
 #include <shogun/features/DenseFeatures.h>
 
+#include <utility>
+
 using namespace shogun;
 
 KernelDistance::KernelDistance() : Distance()
@@ -23,7 +25,7 @@ KernelDistance::KernelDistance(float64_t w, std::shared_ptr<Kernel> k)
 {
 	init();
 
-	kernel=k;
+	kernel=std::move(k);
 	width=w;
 	ASSERT(kernel)
 	
@@ -35,12 +37,12 @@ KernelDistance::KernelDistance(
 {
 	init();
 
-	kernel=k;
+	kernel=std::move(k);
 	width=w;
 	ASSERT(kernel)
 	
 
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 KernelDistance::~KernelDistance()

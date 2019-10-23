@@ -707,14 +707,14 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe(std::shared_ptr<ParameterObserver> obs);
+	void subscribe(const std::shared_ptr<ParameterObserver>& obs);
 
 	/**
 	 * Detach an observer from the current SGObject.
 	 * @param subscription_index the index obtained by calling the subscribe
 	 * procedure
 	 */
-	void unsubscribe(std::shared_ptr<ParameterObserver> obs);
+	void unsubscribe(const std::shared_ptr<ParameterObserver>& obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();

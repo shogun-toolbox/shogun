@@ -29,21 +29,22 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <vector>
 #include <algorithm>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
+#include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
+#include <utility>
+#include <vector>
 
 using namespace shogun;
 using namespace internal;
 
-MedianHeuristic::MedianHeuristic(KernelManager& km, std::shared_ptr<MMD> est) : KernelSelection(km, est), distance(nullptr)
+MedianHeuristic::MedianHeuristic(KernelManager& km, std::shared_ptr<MMD> est) : KernelSelection(km, std::move(est)), distance(nullptr)
 {
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{

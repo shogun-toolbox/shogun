@@ -36,7 +36,7 @@ class CustomDistance: public Distance
 		 * compute custom distance from given distance matrix
 		 * @param d distance matrix
 		 */
-		CustomDistance(std::shared_ptr<Distance> d);
+		CustomDistance(const std::shared_ptr<Distance>& d);
 
 		/** constructor
 		 * @param distance_matrix distance matrix

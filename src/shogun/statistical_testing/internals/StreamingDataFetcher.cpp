@@ -38,7 +38,7 @@
 using namespace shogun;
 using namespace internal;
 
-StreamingDataFetcher::StreamingDataFetcher(std::shared_ptr<StreamingFeatures> samples)
+StreamingDataFetcher::StreamingDataFetcher(const std::shared_ptr<StreamingFeatures>& samples)
 : DataFetcher(), parser_running(false)
 {
 	require(samples!=nullptr, "Samples cannot be null!");

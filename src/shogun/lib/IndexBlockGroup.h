@@ -35,12 +35,12 @@ public:
 	/** add IndexBlock to the group
 	 * @param block IndexBlock to add
 	 */
-	void add_block(std::shared_ptr<IndexBlock> block);
+	void add_block(const std::shared_ptr<IndexBlock>& block);
 
 	/** remove IndexBlock from the group
 	 * @param block IndexBlock to remove
 	 */
-	void remove_block(std::shared_ptr<IndexBlock> block);
+	void remove_block(const std::shared_ptr<IndexBlock>& block);
 
 	/** returns information about IndexBlocks in
 	 * SLEP "ind" format

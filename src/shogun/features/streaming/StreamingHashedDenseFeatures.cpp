@@ -18,7 +18,7 @@ StreamingHashedDenseFeatures<ST>::StreamingHashedDenseFeatures()
 }
 
 template <class ST>
-StreamingHashedDenseFeatures<ST>::StreamingHashedDenseFeatures(std::shared_ptr<StreamingFile> file,
+StreamingHashedDenseFeatures<ST>::StreamingHashedDenseFeatures(const std::shared_ptr<StreamingFile>& file,
 	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);

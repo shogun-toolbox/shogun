@@ -106,7 +106,7 @@ public:
 	 * @param inference inference method
 	 * @return casted KLDiagonalInferenceMethod object
 	 */
-	static std::shared_ptr<KLDiagonalInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
+	static std::shared_ptr<KLDiagonalInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get alpha vector
 	 *

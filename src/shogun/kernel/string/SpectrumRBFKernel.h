@@ -48,7 +48,7 @@ class SpectrumRBFKernel: public StringKernel<char>
 		 * @param width
 		 */
 		SpectrumRBFKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
 		/** destructor */
 		virtual ~SpectrumRBFKernel();

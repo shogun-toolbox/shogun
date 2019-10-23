@@ -16,7 +16,7 @@ PolyFeatures::PolyFeatures() :DotFeatures()
 	register_parameters();
 }
 
-PolyFeatures::PolyFeatures(std::shared_ptr<DenseFeatures<float64_t>> feat, int32_t degree, bool normalize)
+PolyFeatures::PolyFeatures(const std::shared_ptr<DenseFeatures<float64_t>>& feat, int32_t degree, bool normalize)
 	: DotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
 		m_normalization_values(NULL)
 {

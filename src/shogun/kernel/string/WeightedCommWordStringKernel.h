@@ -65,7 +65,7 @@ class WeightedCommWordStringKernel: public CommWordStringKernel
 		 * @param size cache size
 		 */
 		WeightedCommWordStringKernel(
-			std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
+			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
 			bool use_sign=false, int32_t size=10);
 
 		virtual ~WeightedCommWordStringKernel();

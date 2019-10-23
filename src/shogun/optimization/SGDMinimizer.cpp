@@ -31,6 +31,8 @@
 #include <shogun/optimization/SGDMinimizer.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
 #include <shogun/lib/config.h>
+
+#include <utility>
 using namespace shogun;
 
 SGDMinimizer::SGDMinimizer()
@@ -44,7 +46,7 @@ SGDMinimizer::~SGDMinimizer()
 }
 
 SGDMinimizer::SGDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
-	:FirstOrderStochasticMinimizer(fun)
+	:FirstOrderStochasticMinimizer(std::move(fun))
 {
 	init();
 }

@@ -16,7 +16,7 @@ JensenMetric::JensenMetric() : DenseDistance<float64_t>()
 {
 }
 
-JensenMetric::JensenMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+JensenMetric::JensenMetric(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r)
 : DenseDistance<float64_t>()
 {
 	init(l, r);

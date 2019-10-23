@@ -34,6 +34,8 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/TestTypes.h>
 
+#include <utility>
+
 using namespace shogun;
 
 struct IndependenceTest::Self
@@ -57,7 +59,7 @@ IndependenceTest::~IndependenceTest()
 
 void IndependenceTest::set_kernel_p(std::shared_ptr<Kernel> kernel_p)
 {
-	self->kernel_mgr.kernel_at(0)=kernel_p;
+	self->kernel_mgr.kernel_at(0)=std::move(kernel_p);
 }
 
 std::shared_ptr<Kernel> IndependenceTest::get_kernel_p() const
@@ -67,7 +69,7 @@ std::shared_ptr<Kernel> IndependenceTest::get_kernel_p() const
 
 void IndependenceTest::set_kernel_q(std::shared_ptr<Kernel> kernel_q)
 {
-	self->kernel_mgr.kernel_at(1)=kernel_q;
+	self->kernel_mgr.kernel_at(1)=std::move(kernel_q);
 }
 
 std::shared_ptr<Kernel> IndependenceTest::get_kernel_q() const

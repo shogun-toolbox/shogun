@@ -16,6 +16,8 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SVMOcas::SVMOcas()
@@ -32,7 +34,7 @@ SVMOcas::SVMOcas(E_SVM_TYPE type)
 }
 
 SVMOcas::SVMOcas(
-	float64_t C, std::shared_ptr<Features> traindat, std::shared_ptr<Labels> trainlab)
+	float64_t C, const std::shared_ptr<Features>& traindat, std::shared_ptr<Labels> trainlab)
 : LinearMachine()
 {
 	init();
@@ -40,7 +42,7 @@ SVMOcas::SVMOcas(
 	C2=C;
 
 	set_features(std::dynamic_pointer_cast<DotFeatures>(traindat));
-	set_labels(trainlab);
+	set_labels(std::move(trainlab));
 }
 
 

@@ -797,7 +797,7 @@ void SGVector<T>::scale(T alpha)
 	scale_vector(alpha, vector, vlen);
 }
 
-template<class T> void SGVector<T>::load(std::shared_ptr<File> loader)
+template<class T> void SGVector<T>::load(const std::shared_ptr<File>& loader)
 {
 	require(loader, "No file provided.");
 	unref();
@@ -813,12 +813,12 @@ template<class T> void SGVector<T>::load(std::shared_ptr<File> loader)
 }
 
 template<>
-void SGVector<complex128_t>::load(std::shared_ptr<File> loader)
+void SGVector<complex128_t>::load(const std::shared_ptr<File>& loader)
 {
 	error("SGVector::load():: Not supported for complex128_t");
 }
 
-template<class T> void SGVector<T>::save(std::shared_ptr<File> saver)
+template<class T> void SGVector<T>::save(const std::shared_ptr<File>& saver)
 {
 	require(saver, "Requires a valid 'c FILE pointer'");
 
@@ -829,7 +829,7 @@ template<class T> void SGVector<T>::save(std::shared_ptr<File> saver)
 }
 
 template<>
-void SGVector<complex128_t>::save(std::shared_ptr<File> saver)
+void SGVector<complex128_t>::save(const std::shared_ptr<File>& saver)
 {
 	error("SGVector::save():: Not supported for complex128_t");
 }

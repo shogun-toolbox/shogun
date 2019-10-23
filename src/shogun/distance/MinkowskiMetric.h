@@ -53,7 +53,7 @@ class MinkowskiMetric: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @param k parameter k
 		 */
-		MinkowskiMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, float64_t k);
+		MinkowskiMetric(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, float64_t k);
 		virtual ~MinkowskiMetric();
 
 		/** constructor

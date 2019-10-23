@@ -56,7 +56,7 @@ class SNPStringKernel: public StringKernel<char>
 		 * @param inhomogene whether inhomogeneous poly
 		 */
 		SNPStringKernel(
-			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			int32_t degree, int32_t win_len, bool inhomogene);
 
 		virtual ~SNPStringKernel();

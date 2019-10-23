@@ -33,7 +33,7 @@ class PolyFeatures : public DotFeatures
 		 * @param degree degree of the polynomial kernel
 		 * @param normalize normalize kernel
 		 */
-		PolyFeatures(std::shared_ptr<DenseFeatures<float64_t>> feat, int32_t degree, bool normalize);
+		PolyFeatures(const std::shared_ptr<DenseFeatures<float64_t>>& feat, int32_t degree, bool normalize);
 
 		virtual ~PolyFeatures();
 

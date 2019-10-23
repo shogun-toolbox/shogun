@@ -29,6 +29,8 @@
 #ifdef HAVE_OPENMP
 #include <omp.h>
 
+#include <utility>
+
 #endif
 
 using namespace shogun;
@@ -42,7 +44,7 @@ Distance::Distance() : SGObject()
 Distance::Distance(std::shared_ptr<Features> p_lhs, std::shared_ptr<Features> p_rhs) : SGObject()
 {
 	init();
-	init(p_lhs, p_rhs);
+	init(std::move(p_lhs), std::move(p_rhs));
 }
 
 Distance::~Distance()
@@ -107,13 +109,13 @@ bool Distance::check_compatibility(std::shared_ptr<Features> l, std::shared_ptr<
 	return true;
 }
 
-void Distance::load(std::shared_ptr<File> loader)
+void Distance::load(const std::shared_ptr<File>& loader)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void Distance::save(std::shared_ptr<File> writer)
+void Distance::save(const std::shared_ptr<File>& writer)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;

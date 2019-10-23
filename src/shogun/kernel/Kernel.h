@@ -485,13 +485,13 @@ class Kernel : public SGObject
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(std::shared_ptr<File> loader);
+		void load(const std::shared_ptr<File>& loader);
 
 		/** save kernel matrix
 		 *
 		 * @param writer File object via which to save data
 		 */
-		void save(std::shared_ptr<File> writer);
+		void save(const std::shared_ptr<File>& writer);
 
 		/** get left-hand side of features used in kernel
 		 *
@@ -772,7 +772,7 @@ class Kernel : public SGObject
 		 * @param svm svm model
 		 * @return if initializing was successful
 		 */
-		bool init_optimization_svm(std::shared_ptr<SVM> svm) ;
+		bool init_optimization_svm(const std::shared_ptr<SVM>& svm) ;
 
 		/** compute optimized
 		 *
@@ -874,7 +874,7 @@ class Kernel : public SGObject
 		 * @param kernel Object to cast to Kernel, is *not* SG_REFed
 		 * @return object casted to Kernel, NULL if not possible
 		 */
-		static std::shared_ptr<Kernel> obtain_from_generic(std::shared_ptr<SGObject> kernel);
+		static std::shared_ptr<Kernel> obtain_from_generic(const std::shared_ptr<SGObject>& kernel);
 	protected:
 		/** set property
 		 *

@@ -30,6 +30,8 @@
 #endif
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 Kernel::Kernel() : SGObject()
@@ -60,7 +62,7 @@ Kernel::Kernel(std::shared_ptr<Features> p_lhs, std::shared_ptr<Features> p_rhs,
 	cache_size=size;
 
 	set_normalizer(std::make_shared<IdentityKernelNormalizer>());
-	init(p_lhs, p_rhs);
+	init(std::move(p_lhs), std::move(p_rhs));
 	register_params();
 }
 
@@ -602,13 +604,13 @@ KERNELCACHE_ELEM* Kernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 }
 #endif //USE_SVMLIGHT
 
-void Kernel::load(std::shared_ptr<File> loader)
+void Kernel::load(const std::shared_ptr<File>& loader)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void Kernel::save(std::shared_ptr<File> writer)
+void Kernel::save(const std::shared_ptr<File>& writer)
 {
 	SGMatrix<float64_t> k_matrix=get_kernel_matrix<float64_t>();
 	SG_SET_LOCALE_C;
@@ -851,7 +853,7 @@ void Kernel::set_subkernel_weights(const SGVector<float64_t> weights)
 	combined_kernel_weight = weights.vector[0] ;
 }
 
-std::shared_ptr<Kernel> Kernel::obtain_from_generic(std::shared_ptr<SGObject> kernel)
+std::shared_ptr<Kernel> Kernel::obtain_from_generic(const std::shared_ptr<SGObject>& kernel)
 {
 	if (kernel)
 	{
@@ -865,7 +867,7 @@ std::shared_ptr<Kernel> Kernel::obtain_from_generic(std::shared_ptr<SGObject> ke
 		return NULL;
 }
 
-bool Kernel::init_optimization_svm(std::shared_ptr<SVM > svm)
+bool Kernel::init_optimization_svm(const std::shared_ptr<SVM >& svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);

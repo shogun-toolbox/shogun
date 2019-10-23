@@ -75,14 +75,14 @@ public:
 	 *
 	 * @param data data for tree formation
 	 */
-	void build_tree(std::shared_ptr<DenseFeatures<float64_t>> data);
+	void build_tree(const std::shared_ptr<DenseFeatures<float64_t>>& data);
 
 	/** apply knn
 	 *
 	 * @param data vectors whose KNNs are required
 	 * @param k K value in KNN
 	 */
-	void query_knn(std::shared_ptr<DenseFeatures<float64_t>> data, int32_t k);
+	void query_knn(const std::shared_ptr<DenseFeatures<float64_t>>& data, int32_t k);
 
 	/** get log of kernel density at query points
 	 *
@@ -106,7 +106,7 @@ public:
 	 * @param rtol relative tolerance
 	 * @return log kernel density
 	 */
-	SGVector<float64_t> log_kernel_density_dual(SGMatrix<float64_t> test, SGVector<index_t> qid, std::shared_ptr<bnode_t> qroot, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol);
+	SGVector<float64_t> log_kernel_density_dual(SGMatrix<float64_t> test, SGVector<index_t> qid, const std::shared_ptr<bnode_t>& qroot, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol);
 
 	/** distance b/w KNN vectors and query vectors
 	 *
@@ -213,7 +213,7 @@ private:
 	 * @param arr current query vector
 	 * @param dim dimension of query vector
 	 */
-	void query_knn_single(std::shared_ptr<KNNHeap> heap, float64_t min_dist, std::shared_ptr<bnode_t> node, float64_t* arr, int32_t dim);
+	void query_knn_single(const std::shared_ptr<KNNHeap>& heap, float64_t min_dist, const std::shared_ptr<bnode_t>& node, float64_t* arr, int32_t dim);
 
 	/** find kde at each query point
 	 *
@@ -229,7 +229,7 @@ private:
 	 * @param min_bound_global stores the globally calculated min kernel density at query point
 	 * @param spread_global spread of kernel values accross entire tree
 	 */
-	void get_kde_single(std::shared_ptr<bnode_t> node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
+	void get_kde_single(const std::shared_ptr<bnode_t>& node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
 	float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global);
 
 	/** depth-first traversal in dual trees for KDE
@@ -249,7 +249,7 @@ private:
 	 * @param min_bound_global stores the globally calculated min kernel density for all query points
 	 * @param spread_global spread of kernel values accross entire reference tree for all query points in query tree
 	 */
-	void kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnode_t> querynode, SGVector<index_t> qid, SGMatrix<float64_t> qdata, SGVector<float64_t> log_density,
+	void kde_dual(const std::shared_ptr<bnode_t>& refnode, const std::shared_ptr<bnode_t>& querynode, SGVector<index_t> qid, SGMatrix<float64_t> qdata, SGVector<float64_t> log_density,
 	EKernelType kernel_type, float64_t h, float64_t log_atol, float64_t log_rtol, float64_t log_norm, float64_t min_bound_node,
 	float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global);
 
@@ -275,7 +275,7 @@ private:
 	 * @param node node which is to be split
 	 * @return split dimension
 	 */
-	index_t find_split_dim(std::shared_ptr<bnode_t> node);
+	index_t find_split_dim(const std::shared_ptr<bnode_t>& node);
 
 	/** log-sum-exp trick for 2 numbers
 	 *

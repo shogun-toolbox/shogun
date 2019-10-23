@@ -233,7 +233,7 @@ std::shared_ptr<DotFeatures> CombinedDotFeatures::get_feature_obj(int32_t idx) c
 	return feature_array[idx]->as<DotFeatures>();
 }
 
-bool CombinedDotFeatures::insert_feature_obj(std::shared_ptr<DotFeatures> obj, int32_t idx)
+bool CombinedDotFeatures::insert_feature_obj(const std::shared_ptr<DotFeatures>& obj, int32_t idx)
 {
 	ASSERT(obj)
 	feature_array.insert(feature_array.begin() + idx, obj);

@@ -21,6 +21,8 @@
 #include <time.h>
 #include <ctype.h>
 
+#include <utility>
+
 #define VAL_MACRO log((default_value == 0) ? (uniform_real_dist(m_prng)) : default_value)
 #define ARRAY_SIZE 65336
 
@@ -180,7 +182,7 @@ HMM::HMM()
 	mem_initialized = false;
 }
 
-HMM::HMM(std::shared_ptr<HMM> h)
+HMM::HMM(const std::shared_ptr<HMM>& h)
 : RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
@@ -222,7 +224,7 @@ HMM::HMM(
 #endif
 
 	initialize_hmm(model, p_PSEUDO);
-	set_observations(obs);
+	set_observations(std::move(obs));
 }
 
 HMM::HMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
@@ -1526,7 +1528,7 @@ void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 #else // USE_HMMPARALLEL
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void HMM::estimate_model_baum_welch(std::shared_ptr<HMM> estimate)
+void HMM::estimate_model_baum_welch(const std::shared_ptr<HMM>& estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum, b_sum;	//numerator
@@ -1612,7 +1614,7 @@ void HMM::estimate_model_baum_welch(std::shared_ptr<HMM> estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void HMM::estimate_model_baum_welch_old(std::shared_ptr<HMM> estimate)
+void HMM::estimate_model_baum_welch_old(const std::shared_ptr<HMM>& estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum, b_sum;	//numerator
@@ -1697,7 +1699,7 @@ void HMM::estimate_model_baum_welch_old(std::shared_ptr<HMM> estimate)
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 // optimize only p, q, a but not b
-void HMM::estimate_model_baum_welch_trans(std::shared_ptr<HMM> estimate)
+void HMM::estimate_model_baum_welch_trans(const std::shared_ptr<HMM>& estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum;	//numerator
@@ -1767,7 +1769,7 @@ void HMM::estimate_model_baum_welch_trans(std::shared_ptr<HMM> estimate)
 
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void HMM::estimate_model_baum_welch_defined(std::shared_ptr<HMM> estimate)
+void HMM::estimate_model_baum_welch_defined(const std::shared_ptr<HMM>& estimate)
 {
 	int32_t i,j,old_i,k,t,dim;
 	float64_t a_sum_num, b_sum_num;		//numerator
@@ -1943,7 +1945,7 @@ void HMM::estimate_model_baum_welch_defined(std::shared_ptr<HMM> estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using viterbi algorithm
-void HMM::estimate_model_viterbi(std::shared_ptr<HMM> estimate)
+void HMM::estimate_model_viterbi(const std::shared_ptr<HMM>& estimate)
 {
 	int32_t i,j,t;
 	float64_t sum;
@@ -2070,7 +2072,7 @@ void HMM::estimate_model_viterbi(std::shared_ptr<HMM> estimate)
 }
 
 // estimate parameters listed in learn_x
-void HMM::estimate_model_viterbi_defined(std::shared_ptr<HMM> estimate)
+void HMM::estimate_model_viterbi_defined(const std::shared_ptr<HMM>& estimate)
 {
 	int32_t i,j,k,t;
 	float64_t sum;
@@ -2699,7 +2701,7 @@ void HMM::clear_model_defined()
 	}
 }
 
-void HMM::copy_model(std::shared_ptr<HMM> l)
+void HMM::copy_model(const std::shared_ptr<HMM>& l)
 {
 	int32_t i,j;
 	for (i=0; i<N; i++)
@@ -4861,7 +4863,7 @@ void HMM::normalize(bool keep_dead_states)
 	invalidate_model();
 }
 
-bool HMM::append_model(std::shared_ptr<HMM> app_model)
+bool HMM::append_model(const std::shared_ptr<HMM>& app_model)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N();
@@ -4953,7 +4955,7 @@ bool HMM::append_model(std::shared_ptr<HMM> app_model)
 	return result;
 }
 
-bool HMM::append_model(std::shared_ptr<HMM> app_model, float64_t* cur_out, float64_t* app_out)
+bool HMM::append_model(const std::shared_ptr<HMM>& app_model, float64_t* cur_out, float64_t* app_out)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N()+2;
@@ -5267,7 +5269,7 @@ bool HMM::linear_train(bool right_align)
 		return false;
 }
 
-void HMM::set_observation_nocache(std::shared_ptr<StringFeatures<uint16_t>> obs)
+void HMM::set_observation_nocache(const std::shared_ptr<StringFeatures<uint16_t>>& obs)
 {
 	ASSERT(obs)
 	p_observations=obs;
@@ -5309,7 +5311,7 @@ void HMM::set_observation_nocache(std::shared_ptr<StringFeatures<uint16_t>> obs)
 	invalidate_model();
 }
 
-void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::shared_ptr<HMM> lambda)
+void HMM::set_observations(const std::shared_ptr<StringFeatures<uint16_t>>& obs, const std::shared_ptr<HMM>& lambda)
 {
 	ASSERT(obs)
 

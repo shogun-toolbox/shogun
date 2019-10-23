@@ -37,7 +37,7 @@ class WeightedDegreeRBFKernel: public DotKernel
 		 * @param nof_properties number of properties per amino acid
 		 * @param size cache size
 		 */
-		WeightedDegreeRBFKernel(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
+		WeightedDegreeRBFKernel(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			float64_t width, int32_t degree, int32_t nof_properties, int32_t size=10);
 
 		virtual ~WeightedDegreeRBFKernel();

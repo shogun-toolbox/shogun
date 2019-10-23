@@ -121,7 +121,7 @@ public:
 	 * @return A newly created CustomDistance instance representing the
 	 * pre-computed pair-wise distance between the samples.
 	 */
-	std::shared_ptr<CustomDistance> compute_distance(std::shared_ptr<Distance> distance);
+	std::shared_ptr<CustomDistance> compute_distance(const std::shared_ptr<Distance>& distance);
 
 	/**
 	 * Method that pre-computes the pair-wise distance between the joint samples using
@@ -133,7 +133,7 @@ public:
 	 * @return A newly created CustomDistance instance representing the
 	 * pre-computed pair-wise distance between the joint samples.
 	 */
-	std::shared_ptr<CustomDistance> compute_joint_distance(std::shared_ptr<Distance> distance);
+	std::shared_ptr<CustomDistance> compute_joint_distance(const std::shared_ptr<Distance>& distance);
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

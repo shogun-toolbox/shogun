@@ -55,7 +55,7 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	HashedDocDotFeatures(std::shared_ptr<File> loader);
+	HashedDocDotFeatures(const std::shared_ptr<File>& loader);
 
 	/** destructor */
 	virtual ~HashedDocDotFeatures();

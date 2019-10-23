@@ -63,7 +63,7 @@ public:
 	 * @param subset_fraction fraction of trainining vectors to be chosen randomly w/o replacement
 	 * @param learning_rate shrinkage factor
 	 */
-	StochasticGBMachine(std::shared_ptr<Machine> machine=NULL, std::shared_ptr<LossFunction> loss=NULL, int32_t num_iterations=100,
+	StochasticGBMachine(const std::shared_ptr<Machine>& machine=NULL, const std::shared_ptr<LossFunction>& loss=NULL, int32_t num_iterations=100,
 						float64_t learning_rate=1.0, float64_t subset_fraction=0.6);
 
 	/** Destructor */
@@ -79,7 +79,7 @@ public:
 	 *
 	 * @param machine machine
 	 */
-	void set_machine(std::shared_ptr<Machine> machine);
+	void set_machine(const std::shared_ptr<Machine>& machine);
 
 	/** get machine
 	 *
@@ -159,7 +159,7 @@ protected:
 	 * the ensemble model
 	 */
 	float64_t compute_multiplier(
-		std::shared_ptr<RegressionLabels> f, std::shared_ptr<RegressionLabels> hm, std::shared_ptr<Labels> labs);
+		const std::shared_ptr<RegressionLabels>& f, const std::shared_ptr<RegressionLabels>& hm, const std::shared_ptr<Labels>& labs);
 
 	/** train base model
 	 *
@@ -167,7 +167,7 @@ protected:
 	 * @param labels training labels
 	 * @return trained base model
 	 */
-	std::shared_ptr<Machine> fit_model(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<RegressionLabels> labels);
+	std::shared_ptr<Machine> fit_model(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<RegressionLabels>& labels);
 
 	/** compute pseudo_residuals
 	 *
@@ -176,7 +176,7 @@ protected:
 	 * @return pseudo_residuals
 	 */
 	std::shared_ptr<RegressionLabels>
-	compute_pseudo_residuals(std::shared_ptr<RegressionLabels> inter_f, std::shared_ptr<Labels> labs);
+	compute_pseudo_residuals(const std::shared_ptr<RegressionLabels>& inter_f, const std::shared_ptr<Labels>& labs);
 
 	/** add randomized subset to relevant parameters
 	 *

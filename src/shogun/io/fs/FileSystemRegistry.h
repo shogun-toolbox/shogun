@@ -30,7 +30,7 @@ namespace shogun
 			/**
 			 *
 			 */
-			void register_fs(const std::string& scheme, Factory factory);
+			void register_fs(const std::string& scheme, const Factory& factory);
 
 			/**
 			 *

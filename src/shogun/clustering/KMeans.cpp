@@ -15,6 +15,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace Eigen;
 using namespace shogun;
 
@@ -26,11 +28,11 @@ KMeans::KMeans():KMeansBase()
 {
 }
 
-KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, d_i, use_kmpp_i)
+KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, std::move(d_i), use_kmpp_i)
 {
 }
 
-KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, d_i, centers_i)
+KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, std::move(d_i), centers_i)
 {
 }
 

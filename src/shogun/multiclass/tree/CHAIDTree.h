@@ -242,7 +242,7 @@ private:
 	 * @param level current depth of tree
 	 * @return pointer to the root of the CHAID subtree
 	 */
-	std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDtrain(std::shared_ptr<Features> data, SGVector<float64_t> weights, std::shared_ptr<Labels> labels, int32_t level);
+	std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDtrain(const std::shared_ptr<Features>& data, SGVector<float64_t> weights, const std::shared_ptr<Labels>& labels, int32_t level);
 
 	/** executes merge step of the tree growing process for ordinal features
 	 *
@@ -271,7 +271,7 @@ private:
 	 * @param data test data to be classified/regressed
 	 * @return classification/regression labels of input data
 	 */
-	std::shared_ptr<Labels> apply_tree(std::shared_ptr<Features> data);
+	std::shared_ptr<Labels> apply_tree(const std::shared_ptr<Features>& data);
 
 	/** uses current subtree to classify/regress data
 	 *
@@ -279,7 +279,7 @@ private:
 	 * @param current root of current subtree
 	 * @return classification/regression labels of input data
 	 */
-	std::shared_ptr<Labels> apply_from_current_node(SGMatrix<float64_t> fmat, std::shared_ptr<node_t> current);
+	std::shared_ptr<Labels> apply_from_current_node(SGMatrix<float64_t> fmat, const std::shared_ptr<node_t>& current);
 
 	/** handles missing values category for ordinal feature type
 	 *
@@ -309,7 +309,7 @@ private:
 	 * @param weights weights associated with data
 	 * @return p_value of the data
 	 */
-	float64_t p_value(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights);
+	float64_t p_value(SGVector<float64_t> feat, const SGVector<float64_t>& labels, const SGVector<float64_t>& weights);
 
 	/** calculates ANOVA F-statistic
 	 *
@@ -376,14 +376,14 @@ private:
 	 * @param feats features
 	 * @return whether data matrix is updated
 	 */
-	bool continuous_to_ordinal(std::shared_ptr<DenseFeatures<float64_t>> feats);
+	bool continuous_to_ordinal(const std::shared_ptr<DenseFeatures<float64_t>>& feats);
 
 	/** converts continuous features to ordinal using conversion matrix m_cont_breakpoints.
 	 * NOTE : This method changes data matrix.
 	 *
 	 * @param feats features
 	 */
-	void modify_data_matrix(std::shared_ptr<DenseFeatures<float64_t>> feats);
+	void modify_data_matrix(const std::shared_ptr<DenseFeatures<float64_t>>& feats);
 
 	/** initializes members of class */
 	void init();

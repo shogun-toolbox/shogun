@@ -17,7 +17,7 @@ SplineKernel::SplineKernel() : DotKernel()
 {
 }
 
-SplineKernel::SplineKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r) : DotKernel()
+SplineKernel::SplineKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r) : DotKernel()
 {
 	init(l,r);
 }

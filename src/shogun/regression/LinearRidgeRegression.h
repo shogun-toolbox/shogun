@@ -69,7 +69,7 @@ namespace shogun
 		 * @param data training data
 		 * @param lab labels
 		 */
-		LinearRidgeRegression(float64_t tau, std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab);
+		LinearRidgeRegression(float64_t tau, const std::shared_ptr<DenseFeatures<float64_t>>& data, std::shared_ptr<Labels> lab);
 		virtual ~LinearRidgeRegression() {}
 
 		/** set regularization constant

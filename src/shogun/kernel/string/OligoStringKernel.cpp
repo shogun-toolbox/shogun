@@ -29,7 +29,7 @@ OligoStringKernel::OligoStringKernel(int32_t cache_sz, int32_t kmer_len, float64
 }
 
 OligoStringKernel::OligoStringKernel(
-		std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+		const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 		int32_t kmer_len, float64_t w)
 : StringKernel<char>()
 {

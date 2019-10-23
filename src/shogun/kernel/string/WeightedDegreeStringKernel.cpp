@@ -76,7 +76,7 @@ WeightedDegreeStringKernel::WeightedDegreeStringKernel(SGVector<float64_t> w)
 }
 
 WeightedDegreeStringKernel::WeightedDegreeStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t d)
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t d)
 : StringKernel<char>(10)
 {
 	init();

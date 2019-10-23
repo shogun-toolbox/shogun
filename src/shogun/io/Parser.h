@@ -29,7 +29,7 @@ public:
 	 * @param string the text to parse
 	 * @param tokenizer tokenizer
 	 */
-	Parser(SGVector<char> string, std::shared_ptr<Tokenizer> tokenizer);
+	Parser(const SGVector<char>& string, std::shared_ptr<Tokenizer> tokenizer);
 
 	/** destructor */
 	virtual ~Parser();
@@ -75,7 +75,7 @@ public:
 	 *
 	 * @param text the text to tokenize
 	 */
-	void set_text(SGVector<char> text);
+	void set_text(const SGVector<char>& text);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "Parser"; }

@@ -19,7 +19,7 @@ namespace shogun{
 		init();
 	}
 
-	NearestCentroid::NearestCentroid(std::shared_ptr<Distance> d, std::shared_ptr<Labels> trainlab) : DistanceMachine()
+	NearestCentroid::NearestCentroid(const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab) : DistanceMachine()
 	{
 		init();
 		ASSERT(d)

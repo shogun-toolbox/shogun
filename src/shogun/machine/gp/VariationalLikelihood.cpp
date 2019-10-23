@@ -32,6 +32,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/VariationalLikelihood.h>
 
+#include <utility>
+
 namespace shogun
 {
 
@@ -49,7 +51,7 @@ VariationalLikelihood::~VariationalLikelihood()
 void VariationalLikelihood::set_likelihood(std::shared_ptr<LikelihoodModel > lik)
 {
 	
-	m_likelihood=lik;
+	m_likelihood=std::move(lik);
 	
 }
 

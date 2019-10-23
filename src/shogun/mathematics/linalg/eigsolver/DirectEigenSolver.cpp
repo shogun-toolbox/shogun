@@ -23,7 +23,7 @@ DirectEigenSolver::DirectEigenSolver()
 }
 
 DirectEigenSolver::DirectEigenSolver(
-	std::shared_ptr<DenseMatrixOperator<float64_t>> linear_operator)
+	const std::shared_ptr<DenseMatrixOperator<float64_t>>& linear_operator)
 	: EigenSolver(linear_operator->as<LinearOperator<float64_t>>())
 {
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));

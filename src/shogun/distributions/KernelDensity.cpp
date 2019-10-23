@@ -91,7 +91,7 @@ bool KernelDensity::train(std::shared_ptr<Features> data)
 	return true;
 }
 
-SGVector<float64_t> KernelDensity::get_log_density(std::shared_ptr<DenseFeatures<float64_t>> test, int32_t leaf_size)
+SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<DenseFeatures<float64_t>>& test, int32_t leaf_size)
 {
 	require(test,"data not supplied");
 

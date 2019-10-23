@@ -41,7 +41,7 @@ class SparseSpatialSampleStringKernel: public StringKernel<char>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		SparseSpatialSampleStringKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r);
+		SparseSpatialSampleStringKernel(const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r);
 
 		virtual ~SparseSpatialSampleStringKernel();
 

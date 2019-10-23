@@ -39,7 +39,7 @@ class LinearStructuredOutputMachine : public StructuredOutputMachine
 		 *
 		 * @param w weight vector to set
 		 */
-		void set_w(SGVector< float64_t > w);
+		void set_w(SGVector<float64_t> w);
 
 		/** get w
 		 *

@@ -10,6 +10,7 @@
 #include <shogun/mathematics/Math.h>
 
 #include <cmath>
+#include <utility>
 
 namespace shogun
 {
@@ -22,7 +23,7 @@ HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, std::shared_ptr<St
 	if ( (n_grams==1 && skips!=0) || (skips<0))
 		skips = 0;
 
-	init(hash_bits, docs, tzer, normalize, n_grams, skips);
+	init(hash_bits, std::move(docs), std::move(tzer), normalize, n_grams, skips);
 }
 
 HashedDocDotFeatures::HashedDocDotFeatures(const HashedDocDotFeatures& orig)
@@ -32,7 +33,7 @@ HashedDocDotFeatures::HashedDocDotFeatures(const HashedDocDotFeatures& orig)
 			orig.ngrams, orig.tokens_to_skip);
 }
 
-HashedDocDotFeatures::HashedDocDotFeatures(std::shared_ptr<File> loader)
+HashedDocDotFeatures::HashedDocDotFeatures(const std::shared_ptr<File>& loader)
 {
 	not_implemented(SOURCE_LOCATION);;
 }
@@ -43,8 +44,8 @@ void HashedDocDotFeatures::init(int32_t hash_bits, std::shared_ptr<StringFeature
 	num_bits = hash_bits;
 	ngrams = n_grams;
 	tokens_to_skip = skips;
-	doc_collection = docs;
-	tokenizer = tzer;
+	doc_collection = std::move(docs);
+	tokenizer = std::move(tzer);
 	should_normalize = normalize;
 
 	if (!tokenizer)
@@ -260,7 +261,7 @@ uint32_t HashedDocDotFeatures::calculate_token_hash(char* token,
 void HashedDocDotFeatures::set_doc_collection(std::shared_ptr<StringFeatures<char>> docs)
 {
 
-	doc_collection = docs;
+	doc_collection = std::move(docs);
 }
 
 int32_t HashedDocDotFeatures::get_nnz_features_for_vector(int32_t num) const

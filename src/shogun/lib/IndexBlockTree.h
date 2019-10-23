@@ -49,7 +49,7 @@ public:
 	 * @param G custom G containing mapping indices
 	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
-	IndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
+	IndexBlockTree(const SGVector<float64_t>& G, const SGVector<float64_t>& ind_t);
 #endif
 
 	/** constructor from basic precomputed indices

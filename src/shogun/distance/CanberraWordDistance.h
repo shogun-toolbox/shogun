@@ -28,7 +28,7 @@ class CanberraWordDistance: public StringDistance<uint16_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CanberraWordDistance(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r);
+		CanberraWordDistance(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r);
 		virtual ~CanberraWordDistance();
 
 		/** init distance

@@ -9,6 +9,8 @@
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/stream/FileOutputStream.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace shogun::io;
 
@@ -22,7 +24,7 @@ Serializer::~Serializer()
 
 void Serializer::attach(std::shared_ptr<OutputStream> stream)
 {
-    m_stream = stream;
+    m_stream = std::move(stream);
 }
 
 std::shared_ptr<OutputStream> Serializer::stream() const
@@ -31,7 +33,7 @@ std::shared_ptr<OutputStream> Serializer::stream() const
 	return m_stream;
 }
 
-void shogun::io::pre_serialize(std::shared_ptr<SGObject> obj) noexcept(false)
+void shogun::io::pre_serialize(const std::shared_ptr<SGObject>& obj) noexcept(false)
 {
 	obj->save_serializable_pre();
 
@@ -43,7 +45,7 @@ void shogun::io::pre_serialize(std::shared_ptr<SGObject> obj) noexcept(false)
 	}
 }
 
-void shogun::io::post_serialize(std::shared_ptr<SGObject> obj) noexcept(false)
+void shogun::io::post_serialize(const std::shared_ptr<SGObject>& obj) noexcept(false)
 {
 	obj->save_serializable_post();
 
@@ -55,7 +57,7 @@ void shogun::io::post_serialize(std::shared_ptr<SGObject> obj) noexcept(false)
 	}
 }
 
-void shogun::io::serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, std::shared_ptr<Serializer> _serializer)
+void shogun::io::serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, const std::shared_ptr<Serializer>& _serializer)
 {
 	auto fs = env();
 	std::error_condition ec;
@@ -65,5 +67,5 @@ void shogun::io::serialize(const std::string& _path, std::shared_ptr<SGObject> _
 
 	auto fos = std::make_shared<io::FileOutputStream>(file.get());
 	_serializer->attach(fos);
-	_serializer->write(_obj);
+	_serializer->write(std::move(_obj));
 }

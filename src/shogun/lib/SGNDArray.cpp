@@ -42,7 +42,7 @@ template<class T> SGNDArray<T>::SGNDArray(index_t* d, index_t nd, bool ref_count
 	array = SG_MALLOC(T, len_array);
 }
 
-template<class T> SGNDArray<T>::SGNDArray(const SGVector<index_t> dimensions, bool ref_counting) :
+template<class T> SGNDArray<T>::SGNDArray(const SGVector<index_t>& dimensions, bool ref_counting) :
 	SGReferencedData(ref_counting)
 {
 	num_dims = dimensions.size();

@@ -30,7 +30,7 @@ class MulticlassOCAS : public LinearMulticlassMachine
 		 * @param features features
 		 * @param labs labels
 		 */
-		MulticlassOCAS(float64_t C, std::shared_ptr<Features> features, std::shared_ptr<Labels> labs);
+		MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
 		virtual ~MulticlassOCAS();

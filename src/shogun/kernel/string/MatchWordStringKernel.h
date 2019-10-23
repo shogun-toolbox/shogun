@@ -51,7 +51,7 @@ class MatchWordStringKernel: public StringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		MatchWordStringKernel(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, int32_t degree);
+		MatchWordStringKernel(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, int32_t degree);
 
 		virtual ~MatchWordStringKernel();
 

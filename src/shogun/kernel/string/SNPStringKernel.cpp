@@ -34,7 +34,7 @@ SNPStringKernel::SNPStringKernel(int32_t size,
 }
 
 SNPStringKernel::SNPStringKernel(
-	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 	int32_t degree, int32_t win_len, bool inhomogene)
 : StringKernel<char>(10), m_degree(degree), m_win_len(2*win_len),
 	m_inhomogene(inhomogene)

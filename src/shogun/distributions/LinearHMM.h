@@ -44,7 +44,7 @@ class LinearHMM : public Distribution
 		 *
 		 * @param f features to use
 		 */
-		LinearHMM(std::shared_ptr<StringFeatures<uint16_t>> f);
+		LinearHMM(const std::shared_ptr<StringFeatures<uint16_t>>& f);
 
 		/** constructor
 		 *

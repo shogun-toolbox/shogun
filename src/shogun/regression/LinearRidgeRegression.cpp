@@ -11,6 +11,8 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/regression/LinearRidgeRegression.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LinearRidgeRegression::LinearRidgeRegression()
@@ -20,13 +22,13 @@ LinearRidgeRegression::LinearRidgeRegression()
 }
 
 LinearRidgeRegression::LinearRidgeRegression(
-    float64_t tau, std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab)
+    float64_t tau, const std::shared_ptr<DenseFeatures<float64_t>>& data, std::shared_ptr<Labels> lab)
     : DenseRealDispatch<LinearRidgeRegression, LinearMachine>()
 {
 	init();
 
 	set_tau(tau);
-	set_labels(lab);
+	set_labels(std::move(lab));
 	set_features(data);
 }
 

@@ -16,6 +16,8 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/View.h>
 
+#include <utility>
+
 using namespace shogun;
 
 CrossValidation::CrossValidation() : Seedable<MachineEvaluation>()
@@ -27,7 +29,7 @@ CrossValidation::CrossValidation(
     std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
     std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion)
     : Seedable<MachineEvaluation>(
-          machine, features, labels, splitting_strategy, evaluation_criterion)
+          std::move(machine), std::move(features), std::move(labels), std::move(splitting_strategy), std::move(evaluation_criterion))
 {
 	init();
 }
@@ -36,7 +38,7 @@ CrossValidation::CrossValidation(
     std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
     std::shared_ptr<Evaluation> evaluation_criterion)
     : Seedable<MachineEvaluation>(
-          machine, labels, splitting_strategy, evaluation_criterion)
+          std::move(machine), std::move(labels), std::move(splitting_strategy), std::move(evaluation_criterion))
 {
 	init();
 }

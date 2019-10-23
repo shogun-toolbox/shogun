@@ -13,6 +13,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 HMSVMModel::HMSVMModel()
@@ -22,7 +24,7 @@ HMSVMModel::HMSVMModel()
 }
 
 HMSVMModel::HMSVMModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels, EStateModelType smt, int32_t num_obs, bool use_plifs)
-: StructuredModel(features, labels)
+: StructuredModel(std::move(features), std::move(labels))
 {
 	init();
 	m_num_obs = num_obs;

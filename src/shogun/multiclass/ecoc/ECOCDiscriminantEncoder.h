@@ -40,10 +40,10 @@ public:
     virtual ~ECOCDiscriminantEncoder();
 
     /** set features */
-    void set_features(std::shared_ptr<Features >features);
+    void set_features(const std::shared_ptr<Features >&features);
 
     /** set labels */
-    void set_labels(std::shared_ptr<Labels >labels);
+    void set_labels(const std::shared_ptr<Labels >&labels);
 
     /** set sffs iterations
      * @param iterations number of sffs iterations

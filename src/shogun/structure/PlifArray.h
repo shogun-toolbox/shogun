@@ -28,7 +28,7 @@ class PlifArray: public PlifBase
 		 *
 		 * @param new_plif the new plif to be added
 		 */
-		void add_plif(std::shared_ptr<PlifBase> new_plif);
+		void add_plif(const std::shared_ptr<PlifBase>& new_plif);
 
 		/** clear */
 		void clear();

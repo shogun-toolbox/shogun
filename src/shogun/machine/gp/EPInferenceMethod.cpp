@@ -42,6 +42,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -66,7 +68,7 @@ EPInferenceMethod::EPInferenceMethod()
 
 EPInferenceMethod::EPInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 		std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model)
-		: RandomMixin<Inference>(kernel, features, mean, labels, model)
+		: RandomMixin<Inference>(std::move(kernel), std::move(features), std::move(mean), std::move(labels), std::move(model))
 {
 	init();
 }
@@ -89,7 +91,7 @@ void EPInferenceMethod::init()
 }
 
 std::shared_ptr<EPInferenceMethod> EPInferenceMethod::obtain_from_generic(
-		std::shared_ptr<Inference> inference)
+		const std::shared_ptr<Inference>& inference)
 {
 	if (inference==NULL)
 		return NULL;

@@ -247,7 +247,7 @@ public:
 protected:
 
 	/** get scores for TP, FP, TN, FN */
-	void compute_scores(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth);
+	void compute_scores(const std::shared_ptr<BinaryLabels>& predicted, const std::shared_ptr<BinaryLabels>& ground_truth);
 
 	/** type of measure to evaluate */
 	EContingencyTableMeasureType m_type;

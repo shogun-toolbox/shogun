@@ -121,7 +121,7 @@ std::shared_ptr<RegressionLabels> CARTree::apply_regression(std::shared_ptr<Feat
 	return apply_from_current_node(data->as<DenseFeatures<float64_t>>(), current)->as<RegressionLabels>();
 }
 
-void CARTree::prune_using_test_dataset(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<Labels> gnd_truth, SGVector<float64_t> weights)
+void CARTree::prune_using_test_dataset(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<Labels>& gnd_truth, SGVector<float64_t> weights)
 {
 	if (weights.vlen==0)
 	{
@@ -292,7 +292,7 @@ void CARTree::set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<in
 	m_sorted_indices=sorted_indices;
 }
 
-void CARTree::pre_sort_features(std::shared_ptr<Features> data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices)
+void CARTree::pre_sort_features(const std::shared_ptr<Features>& data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices)
 {
 	SGMatrix<float64_t> mat=(data)->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	sorted_feats = SGMatrix<float64_t>(mat.num_cols, mat.num_rows);
@@ -1079,7 +1079,7 @@ float64_t CARTree::least_squares_deviation(const SGVector<float64_t>& feats, con
 	return dev/total_weight;
 }
 
-std::shared_ptr<Labels> CARTree::apply_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<bnode_t> current)
+std::shared_ptr<Labels> CARTree::apply_from_current_node(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<bnode_t>& current)
 {
 	auto num_vecs=feats->get_num_vectors();
 	require(num_vecs>0, "No data provided in apply");
@@ -1162,7 +1162,7 @@ std::shared_ptr<Labels> CARTree::apply_from_current_node(std::shared_ptr<DenseFe
 	return NULL;
 }
 
-void CARTree::prune_by_cross_validation(std::shared_ptr<DenseFeatures<float64_t>> data, int32_t folds)
+void CARTree::prune_by_cross_validation(const std::shared_ptr<DenseFeatures<float64_t>>& data, int32_t folds)
 {
 	auto num_vecs=data->get_num_vectors();
 
@@ -1283,7 +1283,7 @@ void CARTree::prune_by_cross_validation(std::shared_ptr<DenseFeatures<float64_t>
 
 }
 
-float64_t CARTree::compute_error(std::shared_ptr<Labels> labels, std::shared_ptr<Labels> reference, SGVector<float64_t> weights) const
+float64_t CARTree::compute_error(const std::shared_ptr<Labels>& labels, const std::shared_ptr<Labels>& reference, SGVector<float64_t> weights) const
 {
 	require(labels,"input labels cannot be NULL");
 	require(reference,"reference labels cannot be NULL");
@@ -1321,7 +1321,7 @@ float64_t CARTree::compute_error(std::shared_ptr<Labels> labels, std::shared_ptr
 	return 0.;
 }
 
-std::vector<std::shared_ptr<CARTree::bnode_t>> CARTree::prune_tree(std::shared_ptr<TreeMachine<CARTreeNodeData>> tree)
+std::vector<std::shared_ptr<CARTree::bnode_t>> CARTree::prune_tree(const std::shared_ptr<TreeMachine<CARTreeNodeData>>& tree)
 {
 	require(tree, "Tree not provided for pruning.");
 
@@ -1360,7 +1360,7 @@ std::vector<std::shared_ptr<CARTree::bnode_t>> CARTree::prune_tree(std::shared_p
 	return trees;
 }
 
-float64_t CARTree::find_weakest_alpha(std::shared_ptr<bnode_t> node) const
+float64_t CARTree::find_weakest_alpha(const std::shared_ptr<bnode_t>& node) const
 {
 	if (node->data.num_leaves!=1)
 	{
@@ -1381,7 +1381,7 @@ float64_t CARTree::find_weakest_alpha(std::shared_ptr<bnode_t> node) const
 	return Math::MAX_REAL_NUMBER;
 }
 
-void CARTree::cut_weakest_link(std::shared_ptr<bnode_t> node, float64_t alpha)
+void CARTree::cut_weakest_link(const std::shared_ptr<bnode_t>& node, float64_t alpha)
 {
 	if (node->data.num_leaves==1)
 		return;
@@ -1411,7 +1411,7 @@ void CARTree::cut_weakest_link(std::shared_ptr<bnode_t> node, float64_t alpha)
 	}
 }
 
-void CARTree::form_t1(std::shared_ptr<bnode_t> node)
+void CARTree::form_t1(const std::shared_ptr<bnode_t>& node)
 {
 	if (node->data.num_leaves!=1)
 	{

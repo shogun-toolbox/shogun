@@ -8,6 +8,8 @@
 #include <shogun/classifier/svm/LibSVMOneClass.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LibSVMOneClass::LibSVMOneClass()
@@ -16,7 +18,7 @@ LibSVMOneClass::LibSVMOneClass()
 }
 
 LibSVMOneClass::LibSVMOneClass(float64_t C, std::shared_ptr<Kernel> k)
-: SVM(C, k, NULL)
+: SVM(C, std::move(k), NULL)
 {
 }
 

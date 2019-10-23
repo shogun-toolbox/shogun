@@ -130,7 +130,7 @@ public:
 };
 
 #ifndef SWIG
-std::shared_ptr<BinaryLabels> binary_labels(std::shared_ptr<Labels> orig);
+std::shared_ptr<BinaryLabels> binary_labels(const std::shared_ptr<Labels>& orig);
 #endif // SWIG
 }
 #endif

@@ -5,6 +5,7 @@
  *          Soeren Sonnenburg, Bjoern Esser
  */
 
+#include <utility>
 #include <vector>
 
 #include <shogun/lib/config.h>
@@ -37,8 +38,8 @@ LibLinearMTL::LibLinearMTL(
 	C2=C;
 	use_bias=true;
 
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 
 }
 

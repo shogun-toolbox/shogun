@@ -224,7 +224,7 @@ public:
 	void set_k_skip_n_grams(int32_t k, int32_t n);
 
 private:
-	void init(std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size, std::shared_ptr<Tokenizer> tzer,
+	void init(const std::shared_ptr<StreamingFile>& file, bool is_labelled, int32_t size, std::shared_ptr<Tokenizer> tzer,
 		int32_t bits, bool normalize, int32_t n_grams, int32_t skips);
 
 protected:

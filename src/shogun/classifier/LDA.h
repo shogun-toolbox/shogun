@@ -126,7 +126,7 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 * [default = BDC-SVD]
 		 */
 		LDA(
-		    float64_t gamma, std::shared_ptr<DenseFeatures<float64_t>> traindat,
+		    float64_t gamma, const std::shared_ptr<DenseFeatures<float64_t>>& traindat,
 		    std::shared_ptr<Labels> trainlab, ELDAMethod method = AUTO_LDA,
 		    bool bdc_svd = true);
 		virtual ~LDA();

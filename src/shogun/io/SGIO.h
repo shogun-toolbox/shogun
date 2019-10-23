@@ -153,10 +153,10 @@ namespace shogun
 			virtual ~SGIO();
 
 			/** redirects stdout to another sink */
-			void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink);
+			void redirect_stdout(const std::shared_ptr<spdlog::sinks::sink>& sink);
 
 			/** redirects stderr to another sink */
-			void redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink);
+			void redirect_stderr(const std::shared_ptr<spdlog::sinks::sink>& sink);
 
 			/** (re)initializes the default (asynchronous) logger
 			 *

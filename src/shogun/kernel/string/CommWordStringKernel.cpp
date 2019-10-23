@@ -30,7 +30,7 @@ CommWordStringKernel::CommWordStringKernel(int32_t size, bool s)
 }
 
 CommWordStringKernel::CommWordStringKernel(
-	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
 	bool s, int32_t size) : StringKernel<uint16_t>(size)
 {
 	init();

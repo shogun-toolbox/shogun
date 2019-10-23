@@ -24,7 +24,7 @@ GaussianShortRealKernel::GaussianShortRealKernel(int32_t size, float64_t w)
 }
 
 GaussianShortRealKernel::GaussianShortRealKernel(
-	std::shared_ptr<DenseFeatures<float32_t>> l, std::shared_ptr<DenseFeatures<float32_t>> r, float64_t w, int32_t size)
+	const std::shared_ptr<DenseFeatures<float32_t>>& l, const std::shared_ptr<DenseFeatures<float32_t>>& r, float64_t w, int32_t size)
 : DotKernel(size), width(w)
 {
 	init(l,r);

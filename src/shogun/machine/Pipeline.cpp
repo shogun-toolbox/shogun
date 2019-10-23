@@ -17,7 +17,7 @@ namespace shogun
 	{
 	}
 
-	std::shared_ptr<PipelineBuilder> PipelineBuilder::over(std::shared_ptr<Transformer> transformer)
+	std::shared_ptr<PipelineBuilder> PipelineBuilder::over(const std::shared_ptr<Transformer>& transformer)
 	{
 		return over(transformer->get_name(), transformer);
 	}
@@ -38,7 +38,7 @@ namespace shogun
 		return shared_from_this()->as<PipelineBuilder>();
 	}
 
-	std::shared_ptr<Pipeline> PipelineBuilder::then(std::shared_ptr<Machine> machine)
+	std::shared_ptr<Pipeline> PipelineBuilder::then(const std::shared_ptr<Machine>& machine)
 	{
 		return then(machine->get_name(), machine);
 	}

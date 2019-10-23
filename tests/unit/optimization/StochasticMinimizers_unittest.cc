@@ -140,7 +140,7 @@ RegressionForTestCostFunction::~RegressionForTestCostFunction()
 
 }
 
-void RegressionForTestCostFunction::set_target(std::shared_ptr<CRegressionExample >obj)
+void RegressionForTestCostFunction::set_target(const std::shared_ptr<CRegressionExample >&obj)
 {
 	if(m_obj!=obj)
 	{

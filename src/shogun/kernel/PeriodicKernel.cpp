@@ -44,7 +44,7 @@ PeriodicKernel::PeriodicKernel(float64_t ls, float64_t p, int32_t s) : DotKernel
 	set_period(p);
 }
 
-PeriodicKernel::PeriodicKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, float64_t ls,
+PeriodicKernel::PeriodicKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t ls,
 	float64_t p, int32_t s) : DotKernel(s)
 {
 	init();
@@ -54,7 +54,7 @@ PeriodicKernel::PeriodicKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<D
 }
 
 void PeriodicKernel::precompute_squared_helper(SGVector<float64_t>& buf,
-	std::shared_ptr<DotFeatures> df)
+	const std::shared_ptr<DotFeatures>& df)
 {
 	int32_t num_vec=df->get_num_vectors();
 	buf=SGVector<float64_t>(num_vec);

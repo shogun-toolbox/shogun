@@ -8,6 +8,8 @@
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 
@@ -49,9 +51,9 @@ void MulticlassStrategy::train_start(std::shared_ptr<MulticlassLabels >orig_labe
 {
 	if (m_train_labels != NULL)
 		error("Stop the previous training task before starting a new one!");
-	m_train_labels=train_labels;
+	m_train_labels=std::move(train_labels);
 
-	m_orig_labels=orig_labels;
+	m_orig_labels=std::move(orig_labels);
 	m_train_iter=0;
 }
 

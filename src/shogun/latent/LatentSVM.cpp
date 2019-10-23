@@ -6,6 +6,7 @@
 
 #include <shogun/latent/LatentSVM.h>
 #include <typeinfo>
+#include <utility>
 
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/latent/LatentModel.h>
@@ -18,7 +19,7 @@ LatentSVM::LatentSVM()
 }
 
 LatentSVM::LatentSVM(std::shared_ptr<LatentModel> model, float64_t C)
-	: LinearLatentMachine(model, C)
+	: LinearLatentMachine(std::move(model), C)
 {
 }
 

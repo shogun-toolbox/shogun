@@ -8,6 +8,8 @@
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/features/Features.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LinearStructuredOutputMachine::LinearStructuredOutputMachine()
@@ -19,7 +21,7 @@ LinearStructuredOutputMachine::LinearStructuredOutputMachine()
 LinearStructuredOutputMachine::LinearStructuredOutputMachine(
 		std::shared_ptr<StructuredModel>  model,
 		std::shared_ptr<StructuredLabels> labs)
-: StructuredOutputMachine(model, labs)
+: StructuredOutputMachine(std::move(model), std::move(labs))
 {
 	register_parameters();
 }
@@ -28,7 +30,7 @@ LinearStructuredOutputMachine::~LinearStructuredOutputMachine()
 {
 }
 
-void LinearStructuredOutputMachine::set_w(SGVector< float64_t > w)
+void LinearStructuredOutputMachine::set_w(SGVector<float64_t> w)
 {
 	m_w = w;
 }

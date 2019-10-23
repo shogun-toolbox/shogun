@@ -107,7 +107,7 @@ protected:
 	 * @param Bs fitted sigmoid parameters b one for each machine
 	 */
 	void rescale_heuris_softmax(SGVector<float64_t> outputs,
-			const SGVector<float64_t> As, const SGVector<float64_t> Bs);
+			const SGVector<float64_t>& As, const SGVector<float64_t>& Bs);
 
 };
 

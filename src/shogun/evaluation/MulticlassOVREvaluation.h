@@ -31,7 +31,7 @@ public:
 	MulticlassOVREvaluation();
 
 	/** constructor */
-	MulticlassOVREvaluation(std::shared_ptr<BinaryClassEvaluation> binary_evaluation);
+	MulticlassOVREvaluation(const std::shared_ptr<BinaryClassEvaluation>& binary_evaluation);
 
 	/** destructor */
 	virtual ~MulticlassOVREvaluation();

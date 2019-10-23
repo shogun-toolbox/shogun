@@ -72,7 +72,7 @@ class PeriodicKernel: public DotKernel
 		 * @param period period
 		 * @param size cache size. Default value: 10
 		 */
-		PeriodicKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
+		PeriodicKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 			float64_t length_scale, float64_t period, int32_t size=10);
 
 		virtual ~PeriodicKernel() { };
@@ -169,7 +169,7 @@ class PeriodicKernel: public DotKernel
 		 * @param buf buffer to store squared terms
 		 * @param df dot feature object based on which k(i,i) is computed
 		 * */
-		void precompute_squared_helper(SGVector<float64_t>& buf, std::shared_ptr<DotFeatures> df);
+		void precompute_squared_helper(SGVector<float64_t>& buf, const std::shared_ptr<DotFeatures>& df);
 
 		void init();
 

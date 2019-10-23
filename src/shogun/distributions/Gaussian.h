@@ -214,7 +214,7 @@ class Gaussian : public RandomMixin<Distribution>
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static std::shared_ptr<Gaussian> obtain_from_generic(std::shared_ptr<Distribution> distribution);
+		static std::shared_ptr<Gaussian> obtain_from_generic(const std::shared_ptr<Distribution>& distribution);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Gaussian"; }

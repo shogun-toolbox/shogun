@@ -60,14 +60,14 @@ float64_t StructuredAccuracy::evaluate(std::shared_ptr<Labels > predicted, std::
 }
 
 SGMatrix<int32_t> StructuredAccuracy::get_confusion_matrix(
-        std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth)
+        const std::shared_ptr<Labels >& predicted, const std::shared_ptr<Labels >& ground_truth)
 {
 	error("Not implemented");
 	return SGMatrix<int32_t>();
 }
 
-float64_t StructuredAccuracy::evaluate_real(std::shared_ptr<StructuredLabels > predicted,
-                std::shared_ptr<StructuredLabels > ground_truth)
+float64_t StructuredAccuracy::evaluate_real(const std::shared_ptr<StructuredLabels >& predicted,
+                const std::shared_ptr<StructuredLabels >& ground_truth)
 {
 	int32_t length = predicted->get_num_labels();
 	int32_t num_equal = 0;
@@ -86,8 +86,8 @@ float64_t StructuredAccuracy::evaluate_real(std::shared_ptr<StructuredLabels > p
 	return (1.0 * num_equal) / length;
 }
 
-float64_t StructuredAccuracy::evaluate_sequence(std::shared_ptr<StructuredLabels > predicted,
-                std::shared_ptr<StructuredLabels > ground_truth)
+float64_t StructuredAccuracy::evaluate_sequence(const std::shared_ptr<StructuredLabels >& predicted,
+                const std::shared_ptr<StructuredLabels >& ground_truth)
 {
 	int32_t length = predicted->get_num_labels();
 	// Accuracy of each each label
@@ -122,8 +122,8 @@ float64_t StructuredAccuracy::evaluate_sequence(std::shared_ptr<StructuredLabels
 	return Statistics::mean(accuracies);
 }
 
-float64_t StructuredAccuracy::evaluate_sparse_multilabel(std::shared_ptr<StructuredLabels > predicted,
-                std::shared_ptr<StructuredLabels > ground_truth)
+float64_t StructuredAccuracy::evaluate_sparse_multilabel(const std::shared_ptr<StructuredLabels >& predicted,
+                const std::shared_ptr<StructuredLabels >& ground_truth)
 {
 	auto multi_pred = std::static_pointer_cast<MultilabelSOLabels>(predicted);
 	auto multi_truth = std::static_pointer_cast<MultilabelSOLabels>(ground_truth);

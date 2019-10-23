@@ -9,6 +9,8 @@
 #include <shogun/kernel/TensorProductPairKernel.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 TensorProductPairKernel::TensorProductPairKernel()
@@ -18,14 +20,14 @@ TensorProductPairKernel::TensorProductPairKernel()
 }
 
 TensorProductPairKernel::TensorProductPairKernel(int32_t size, std::shared_ptr<Kernel> s)
-: DotKernel(size), subkernel(s)
+: DotKernel(size), subkernel(std::move(s))
 {
 
 	register_params();
 }
 
-TensorProductPairKernel::TensorProductPairKernel(std::shared_ptr<DenseFeatures<int32_t>> l, std::shared_ptr<DenseFeatures<int32_t>> r, std::shared_ptr<Kernel> s)
-: DotKernel(10), subkernel(s)
+TensorProductPairKernel::TensorProductPairKernel(const std::shared_ptr<DenseFeatures<int32_t>>& l, const std::shared_ptr<DenseFeatures<int32_t>>& r, std::shared_ptr<Kernel> s)
+: DotKernel(10), subkernel(std::move(s))
 {
 
 	init(l, r);

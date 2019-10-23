@@ -9,6 +9,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 #define LIBLBP_INDEX(ROW,COL,NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
@@ -19,7 +21,7 @@ LBPPyrDotFeatures::LBPPyrDotFeatures() : DotFeatures()
 	vec_nDim = 0;
 }
 
-LBPPyrDotFeatures::LBPPyrDotFeatures(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w,
+LBPPyrDotFeatures::LBPPyrDotFeatures(const std::shared_ptr<DenseFeatures<uint32_t>>& image_set, int32_t image_w,
 	int32_t image_h, uint16_t num_pyramids) : DotFeatures()
 {
 	ASSERT(image_set)
@@ -29,7 +31,7 @@ LBPPyrDotFeatures::LBPPyrDotFeatures(std::shared_ptr<DenseFeatures<uint32_t>> im
 
 void LBPPyrDotFeatures::init(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w, int32_t image_h)
 {
-	images = image_set;
+	images = std::move(image_set);
 
 	image_width = image_w;
 	image_height = image_h;

@@ -8,6 +8,8 @@
 #include <shogun/io/Parser.h>
 #include <shogun/lib/Tokenizer.h>
 
+#include <utility>
+
 using namespace shogun;
 
 Parser::Parser()
@@ -15,14 +17,14 @@ Parser::Parser()
 	init();
 }
 
-Parser::Parser(SGVector<char> text, std::shared_ptr<Tokenizer> tokenizer)
+Parser::Parser(const SGVector<char>& text, std::shared_ptr<Tokenizer> tokenizer)
 {
 	init();
 
 	m_text=text;
 
 	
-	m_tokenizer=tokenizer;
+	m_tokenizer=std::move(tokenizer);
 
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
@@ -132,7 +134,7 @@ READ_REAL_METHOD(read_long_real, strtod, floatmax_t)
 #endif
 #undef READ_REAL_METHOD
 
-void Parser::set_text(SGVector<char> text)
+void Parser::set_text(const SGVector<char>& text)
 {
 	m_text=text;
 
@@ -144,7 +146,7 @@ void Parser::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
 {
 	
 	
-	m_tokenizer=tokenizer;
+	m_tokenizer=std::move(tokenizer);
 
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);

@@ -91,7 +91,7 @@ public:
 	 * is SG_REF'ed
 	 * @return casted GaussianARDSparseKernel object
 	 */
-	static std::shared_ptr<GaussianARDSparseKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
+	static std::shared_ptr<GaussianARDSparseKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 	/** return derivative with respect to specified parameter
 	 *

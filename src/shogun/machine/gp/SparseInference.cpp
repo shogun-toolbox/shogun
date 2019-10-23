@@ -37,6 +37,8 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -89,10 +91,10 @@ void SparseInference::convert_features()
 
 SparseInference::SparseInference(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
 		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
-		: Inference(kern, feat, m, lab, mod)
+		: Inference(std::move(kern), std::move(feat), std::move(m), std::move(lab), std::move(mod))
 {
 	init();
-	set_inducing_features(lat);
+	set_inducing_features(std::move(lat));
 }
 
 void SparseInference::init()

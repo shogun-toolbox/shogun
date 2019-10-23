@@ -17,6 +17,8 @@
 
 #include <shogun/mathematics/eigen3.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -29,7 +31,7 @@ MCLDA::MCLDA(float64_t tolerance, bool store_cov)
 
 }
 
-MCLDA::MCLDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_cov)
+MCLDA::MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_cov)
 : NativeMulticlassMachine()
 {
 	init();
@@ -38,7 +40,7 @@ MCLDA::MCLDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr
 	m_store_cov=store_cov;
 
 	set_features(traindat);
-	set_labels(trainlab);
+	set_labels(std::move(trainlab));
 }
 
 MCLDA::~MCLDA()

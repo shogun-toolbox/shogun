@@ -62,7 +62,7 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	GaussianProcessClassification(std::shared_ptr<Inference> method);
+	GaussianProcessClassification(const std::shared_ptr<Inference>& method);
 
 	virtual ~GaussianProcessClassification();
 
@@ -80,7 +80,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_mean_vector(const std::shared_ptr<Features>& data);
 
 	/** returns a vector of the posterior predictive variances
 	 *
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_variance_vector(const std::shared_ptr<Features>& data);
 
 	/** returns probabilities \f$p(y_*=1)\f$ for each (test) feature \f$x_*\f$
 	 *
@@ -96,7 +96,7 @@ public:
 	 *
 	 * @return vector of probabilities
 	 */
-	SGVector<float64_t> get_probabilities(std::shared_ptr<Features> data);
+	SGVector<float64_t> get_probabilities(const std::shared_ptr<Features>& data);
 
 	/** get classifier type
 	 *

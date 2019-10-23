@@ -13,6 +13,8 @@
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 
+#include <utility>
+
 #ifdef _WIN32
 #undef far
 #undef near
@@ -27,12 +29,12 @@ KMeansMiniBatch::KMeansMiniBatch():KMeansBase()
 	init_mb_params();
 }
 
-KMeansMiniBatch::KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, d_i, use_kmpp_i)
+KMeansMiniBatch::KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, std::move(d_i), use_kmpp_i)
 {
 	init_mb_params();
 }
 
-KMeansMiniBatch::KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, d_i, centers_i)
+KMeansMiniBatch::KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, std::move(d_i), centers_i)
 {
 	init_mb_params();
 }

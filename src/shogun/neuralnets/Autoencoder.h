@@ -100,7 +100,7 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * parameters
 	 */
-	Autoencoder(int32_t num_inputs, std::shared_ptr<NeuralLayer> hidden_layer,
+	Autoencoder(int32_t num_inputs, const std::shared_ptr<NeuralLayer>& hidden_layer,
 		std::shared_ptr<NeuralLayer> decoding_layer=NULL, float64_t sigma = 0.01);
 
 	/** Constructor for convolutional autoencoders
@@ -115,8 +115,8 @@ public:
 	 * parameters
 	 */
 	Autoencoder(int32_t input_width, int32_t input_height, int32_t input_num_channels,
-		std::shared_ptr<NeuralConvolutionalLayer> hidden_layer,
-		std::shared_ptr<NeuralConvolutionalLayer> decoding_layer, float64_t sigma = 0.01);
+		const std::shared_ptr<NeuralConvolutionalLayer>& hidden_layer,
+		const std::shared_ptr<NeuralConvolutionalLayer>& decoding_layer, float64_t sigma = 0.01);
 
 	/** Trains the autoencoder
 	 *

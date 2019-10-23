@@ -285,7 +285,7 @@ private:
 	 * @return the statistics based on mc sampler
 	 */
 	SGVector<float64_t> predictive_helper(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, std::shared_ptr<const Labels >lab, EMCSamplerType option) const;
+	SGVector<float64_t> s2, const std::shared_ptr<const Labels >&lab, EMCSamplerType option) const;
 
 	/** the Monte method sampler
 	 *
@@ -313,7 +313,7 @@ private:
 	 *
 	 * @return derivative (NxC matrix linearized in column major format)
 	 */
-	SGVector<float64_t> get_log_probability_derivative1_f(std::shared_ptr<const Labels> lab, SGMatrix<float64_t> func) const;
+	SGVector<float64_t> get_log_probability_derivative1_f(const std::shared_ptr<const Labels>& lab, SGMatrix<float64_t> func) const;
 
 	/** get 2nd derivative of log likelihood \f$log(p(y|f))\f$ with respect to
 	 * location function \f$f\f$

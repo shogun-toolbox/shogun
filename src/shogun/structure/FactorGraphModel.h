@@ -52,7 +52,7 @@ public:
 	 *
 	 * @param ftype pointer to new factor type
 	 */
-	void add_factor_type(std::shared_ptr<FactorType> ftype);
+	void add_factor_type(const std::shared_ptr<FactorType>& ftype);
 
 	/** delete a factor type
 	 *

@@ -9,6 +9,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LibSVM::LibSVM()
@@ -25,7 +27,7 @@ LibSVM::LibSVM(LIBSVM_SOLVER_TYPE st)
 
 
 LibSVM::LibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, LIBSVM_SOLVER_TYPE st)
-: SVM(C, k, lab), solver_type(st)
+: SVM(C, std::move(k), std::move(lab)), solver_type(st)
 {
 	register_params();
 }

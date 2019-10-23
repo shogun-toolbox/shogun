@@ -230,7 +230,7 @@ private:
 	 *
 	 * @param factor the factor to add
 	 */
-	void add_factor(std::shared_ptr<Factor> factor);
+	void add_factor(const std::shared_ptr<Factor>& factor);
 
 	/** Get the triple node id in s-t graph (for factor order = 3)
 	 *

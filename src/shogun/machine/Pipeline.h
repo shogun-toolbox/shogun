@@ -28,7 +28,7 @@ namespace shogun
 		 * @param transformer the transformer
 		 * @return the current pipeline builder
 		 */
-		std::shared_ptr<PipelineBuilder> over(std::shared_ptr<Transformer> transformer);
+		std::shared_ptr<PipelineBuilder> over(const std::shared_ptr<Transformer>& transformer);
 
 		/** Add a transformer with given name to pipeline
 		 * @param name the name of the transformer
@@ -44,7 +44,7 @@ namespace shogun
 		 * @param machine the machine
 		 * @return the current pipeline
 		 */
-		std::shared_ptr<Pipeline> then(std::shared_ptr<Machine> machine);
+		std::shared_ptr<Pipeline> then(const std::shared_ptr<Machine>& machine);
 
 		/** Add a machine with given name to pipeline. Pipeline may have only
 		 * one machine. build() will be called to create a new pipeline

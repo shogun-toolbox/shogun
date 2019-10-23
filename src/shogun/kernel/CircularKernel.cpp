@@ -7,6 +7,8 @@
 #include <shogun/kernel/CircularKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 CircularKernel::CircularKernel(): Kernel(0), distance(NULL)
@@ -16,7 +18,7 @@ CircularKernel::CircularKernel(): Kernel(0), distance(NULL)
 }
 
 CircularKernel::CircularKernel(int32_t size, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(size), distance(dist)
+: Kernel(size), distance(std::move(dist))
 {
 	ASSERT(distance)
 	
@@ -27,13 +29,13 @@ CircularKernel::CircularKernel(int32_t size, float64_t sig, std::shared_ptr<Dist
 
 CircularKernel::CircularKernel(
 	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(10), distance(dist)
+: Kernel(10), distance(std::move(dist))
 {
 	ASSERT(distance)
 	
 	set_sigma(sig);
 	init();
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
 CircularKernel::~CircularKernel()

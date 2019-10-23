@@ -15,6 +15,8 @@
 
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 //#define DEBUG_KNN
 
 using namespace shogun;
@@ -25,7 +27,7 @@ KNN::KNN()
 	init();
 }
 
-KNN::KNN(int32_t k, std::shared_ptr<Distance> d, std::shared_ptr<Labels> trainlab, KNN_SOLVER knn_solver)
+KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver)
 : DistanceMachine()
 {
 	init();
@@ -264,7 +266,7 @@ void KNN::init_distance(std::shared_ptr<Features> data)
 	{
 		error("No vectors on left hand side");
 	}
-	distance->init(lhs, data);
+	distance->init(lhs, std::move(data));
 }
 
 bool KNN::load(FILE* srcfile)

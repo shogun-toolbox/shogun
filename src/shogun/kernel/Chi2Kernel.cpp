@@ -31,7 +31,7 @@ Chi2Kernel::Chi2Kernel(int32_t size, float64_t w)
 }
 
 Chi2Kernel::Chi2Kernel(
-	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, float64_t w, int32_t size)
+	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, float64_t w, int32_t size)
 : DotKernel(size), width(w)
 {
 	init();
@@ -85,7 +85,7 @@ float64_t Chi2Kernel::get_width()
 	return width;
 }
 
-std::shared_ptr<Chi2Kernel> Chi2Kernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
+std::shared_ptr<Chi2Kernel> Chi2Kernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
 {
 	if (kernel->get_kernel_type()!=K_CHI2)
 	{

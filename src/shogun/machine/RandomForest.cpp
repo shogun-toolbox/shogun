@@ -31,6 +31,8 @@
 #include <shogun/machine/RandomForest.h>
 #include <shogun/multiclass/tree/RandomCARTree.h>
 
+#include <utility>
+
 using namespace shogun;
 
 RandomForest::RandomForest()
@@ -57,8 +59,8 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 	init();
 
 
-	m_features=features;
-	set_labels(labels);
+	m_features=std::move(features);
+	set_labels(std::move(labels));
 
 	set_num_bags(num_bags);
 
@@ -72,8 +74,8 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 	init();
 
 
-	m_features=features;
-	set_labels(labels);
+	m_features=std::move(features);
+	set_labels(std::move(labels));
 	m_weights=weights;
 
 	set_num_bags(num_bags);
