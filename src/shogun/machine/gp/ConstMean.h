@@ -81,6 +81,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const;
 
+#ifndef SWIG
 	/** returns the derivative of the mean function
 	 *
 	 * @param features features to compute mean function
@@ -91,6 +92,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
 			Parameters::const_reference param, index_t index=-1);
+#endif
 private:
 
 	void init();

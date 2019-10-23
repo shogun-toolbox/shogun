@@ -180,6 +180,7 @@ public:
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
 			std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const=0;
 
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * parameter
 	 *
@@ -230,6 +231,7 @@ public:
 		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
+#endif
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:

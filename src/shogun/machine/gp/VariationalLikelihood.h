@@ -66,6 +66,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_expection()=0;
 
+#ifndef SWIG
 	/** get derivative of the variational expection of log likelihood
 	 * with respect to given parameter
 	 *
@@ -74,6 +75,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const=0;
+#endif
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
 	 *
@@ -213,6 +215,7 @@ public:
 	 */
 	virtual bool supports_multiclass() const;
 
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * parameter
 	 *
@@ -250,6 +253,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_third_derivative(std::shared_ptr<const Labels> lab,
 			SGVector<float64_t> func, Parameters::const_reference param) const;
+#endif
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -259,6 +263,7 @@ public:
 	 */
 	virtual bool supports_derivative_wrt_hyperparameter() const=0;
 
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
 	 * Note that variational parameters are NOT considered as hyperparameters
@@ -268,6 +273,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const=0;
+#endif
 
 protected:
 	/** this method is called to initialize m_likelihood in init()*/

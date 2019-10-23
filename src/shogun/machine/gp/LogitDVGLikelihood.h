@@ -91,6 +91,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_dual_objective_value();
 
+#ifndef SWIG
 	/** get the derivative of the dual objective function with respect to param
 	 *
 	 * @param param parameter
@@ -98,6 +99,7 @@ public:
 	 *
 	 */
 	virtual SGVector<float64_t> get_dual_first_derivative(Parameters::const_reference param) const;
+#endif
 
 	/** get the upper bound for dual parameter (lambda)
 	 *
