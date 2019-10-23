@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include <spdlog/sinks/base_sink.h>
+#include <spdlog/version.h>
 
 #include <mutex>
 
@@ -31,8 +32,13 @@ public:
 protected:
 	void sink_it_(const spdlog::details::log_msg& msg) override
 	{
+#if ((SPDLOG_VER_MAJOR == 1) && (SPDLOG_VER_MINOR < 4))
 		fmt::memory_buffer formatted;
 		sink::formatter_->format(msg, formatted);
+#else
+		spdlog::memory_buf_t formatted;
+		formatter_->format(msg, formatted);
+#endif
 		ostream_.write(
 		    formatted.data(), static_cast<std::streamsize>(formatted.size()));
 		ostream_.flush();
