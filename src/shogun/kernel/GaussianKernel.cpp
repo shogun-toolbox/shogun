@@ -95,20 +95,23 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 	using std::log;
 
 	require(lhs, "Left hand side features must be set!");
-	require(rhs, "Rightt hand side features must be set!");
+	require(rhs, "Right hand side features must be set!");
 
 	if (!strcmp(param->m_name, "log_width"))
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
+		stan::math::var log_width = m_log_width;	
+		auto constant_part = exp(log_width * 2.0) * 2.0;
+		
 		for (int k=0; k<num_rhs; k++)
 		{
 #pragma omp parallel for
 			for (int j=0; j<num_lhs; j++)
 			{
-				stan::math::var log_width = m_log_width;	
-				auto f = exp(-CShiftInvariantKernel::distance(j, k) / (exp(log_width * 2.0) * 2.0));
+				auto f = exp(-CShiftInvariantKernel::distance(j, k) / constant_part);
 				f.grad();
 				derivative(j, k) = log_width.adj();
+				stan::math::set_zero_all_adjoints();
 			}
 		}
 		return derivative;
