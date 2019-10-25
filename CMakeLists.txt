@@ -409,9 +409,15 @@ ENDIF()
 
 OPTION(ENABLE_DOXYGEN "Enable using doxygen" ON)
 IF (ENABLE_DOXYGEN)
-	FIND_PACKAGE(Doxygen 1.8.6 REQUIRED)
+	FIND_PACKAGE(Doxygen 1.8.6)
 	IF(DOXYGEN_FOUND)
 		SET(HAVE_DOXYGEN 1)
+	ELSE()
+		MESSAGE(WARNING
+			"Doxygen based documentation generation is enabled, but couldn't find doxygen.\n"
+			"In order to turn of this warning either disable doxygen documentation"
+			"generation with -DENABLE_DOXYGEN=OFF cmake option or install doxygen."
+		)
 	ENDIF()
 ENDIF()
 
