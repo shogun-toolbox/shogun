@@ -108,7 +108,7 @@ float64_t FKFeatures::set_opt_a(float64_t a)
 			if (da<=0)
 				ua=a;
 			a=(la+ua)/2;
-			io::info("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e", a, da, la ,ua);
+			io::info("opt_a: a={:e}  deriv={:e}  la={:e}  ua={:e}", a, da, la ,ua);
 		}
 		SG_FREE(pos_prob);
 		SG_FREE(neg_prob);

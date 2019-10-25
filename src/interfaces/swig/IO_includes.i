@@ -10,13 +10,13 @@
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/io/stream/ByteArrayInputStream.h>
-#include <shogun/io/stream/ByteArrayOutputStream.h>
 
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/HDF5File.h>
 #include <shogun/io/stream/InputStream.h>
 #include <shogun/io/stream/OutputStream.h>
+#include <shogun/io/stream/ByteArrayInputStream.h>
+#include <shogun/io/stream/ByteArrayOutputStream.h>
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/serialization/Deserializer.h>
 #include <shogun/io/serialization/BitserySerializer.h>

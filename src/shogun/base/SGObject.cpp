@@ -693,7 +693,7 @@ void SGObject::for_each_param_of_type(
 template void shogun::SGObject::for_each_param_of_type<SGObject*>(
     std::function<void(const std::string&, SGObject**)>);
 
-bool SGObject::equals(std::shared_ptr<const SGObject> other) const
+bool SGObject::equals(const std::shared_ptr<const SGObject>& other) const
 {
 	return this->equals(other.get());
 }

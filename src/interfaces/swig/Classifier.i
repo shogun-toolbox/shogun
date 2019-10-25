@@ -11,7 +11,7 @@
 #endif
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%feature("director") shogun::CDirectorLinearMachine;
+%feature("director") shogun::DirectorLinearMachine;
 %feature("director") shogun::DirectorKernelMachine;
 %feature("director:except") {
     if ($error != NULL) {

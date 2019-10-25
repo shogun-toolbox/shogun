@@ -5561,7 +5561,7 @@ bool HMM::converged(float64_t x, float64_t y)
 	float64_t diff=y-x;
 	float64_t absdiff=fabs(diff);
 
-	io::info("\n #{:03d}\tbest result so far: {} (eps: {})", iteration_count, y, diff);
+	io::info("#{:03d}\tbest result so far: {} (eps: {})", iteration_count, y, diff);
 
 	if (iteration_count--==0 || (absdiff<epsilon && conv_it<=0))
 	{
@@ -5583,8 +5583,9 @@ bool HMM::converged(float64_t x, float64_t y)
 
 bool HMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 {
-	auto estimate=std::shared_ptr<HMM>(this);
-	auto working=std::shared_ptr<HMM>(this);
+	auto working=this->as<HMM>();
+	auto estimate=std::make_shared<HMM>(working);
+
 	float64_t prob_max=-Math::INFTY;
 	float64_t prob=-Math::INFTY;
 	float64_t prob_train=Math::ALMOST_NEG_INFTY;

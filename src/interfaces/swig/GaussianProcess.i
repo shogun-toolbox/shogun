@@ -10,6 +10,8 @@
 %shared_ptr(shogun::ConstMean)
 
 %shared_ptr(shogun::Inference)
+%shared_ptr(shogun::Seedable<shogun::Inference>)
+%shared_ptr(shogun::RandomMixin<shogun::Inference, std::mt19937_64>)
 %shared_ptr(shogun::ExactInferenceMethod)
 %shared_ptr(shogun::LaplaceInference)
 %shared_ptr(shogun::SparseInference)
@@ -23,6 +25,8 @@
 %shared_ptr(shogun::EPInferenceMethod)
 
 %shared_ptr(shogun::LikelihoodModel)
+%shared_ptr(shogun::Seedable<shogun::LikelihoodModel>)
+%shared_ptr(shogun::RandomMixin<shogun::LikelihoodModel, std::mt19937_64>)
 %shared_ptr(shogun::ProbitLikelihood)
 %shared_ptr(shogun::LogitLikelihood)
 %shared_ptr(shogun::SoftMaxLikelihood)
@@ -58,6 +62,8 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/machine/gp/LikelihoodModel.h>
+%template(SeeableLikelihoodModel) shogun::Seedable<shogun::LikelihoodModel>;
+%template(RandomMixinLikelihoodModel) shogun::RandomMixin<shogun::LikelihoodModel, std::mt19937_64>;
 %include <shogun/machine/gp/ProbitLikelihood.h>
 %include <shogun/machine/gp/LogitLikelihood.h>
 %include <shogun/machine/gp/SoftMaxLikelihood.h>
@@ -79,6 +85,8 @@
 %include <shogun/machine/gp/ConstMean.h>
 
 %include <shogun/machine/gp/Inference.h>
+%template(SeeableInference) shogun::Seedable<shogun::Inference>;
+%template(RandomMixinInference) shogun::RandomMixin<shogun::Inference, std::mt19937_64>;
 %include <shogun/machine/gp/LaplaceInference.h>
 %include <shogun/machine/gp/SparseInference.h>
 %include <shogun/machine/gp/SingleSparseInference.h>

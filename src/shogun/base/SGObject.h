@@ -496,10 +496,9 @@ public:
 	 * @param value value of the parameter along with type information
 	 */
 	template <typename T,
-		      typename T2 = typename std::enable_if<
-		          !std::is_base_of<
-		              SGObject, typename std::remove_pointer<T>::type>::value,
-		          T>::type>
+		 typename T2 = typename std::enable_if_t<
+		          !std::is_base_of_v<
+		              SGObject, typename std::remove_pointer_t<T>>, T>>
 #ifdef SWIG
 	void put(const std::string& name, T value)
 #else
@@ -991,7 +990,7 @@ public:
 	 * @param other object to compare with
 	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(std::shared_ptr<const SGObject> other) const;
+	virtual bool equals(const std::shared_ptr<const SGObject>& other) const;
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.

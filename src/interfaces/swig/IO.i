@@ -176,6 +176,8 @@ namespace shogun
 %include <shogun/io/serialization/BitseryDeserializer.h>
 %include <shogun/io/serialization/JsonSerializer.h>
 %include <shogun/io/serialization/JsonDeserializer.h>
+%include <shogun/io/stream/InputStream.h>
+%include <shogun/io/stream/OutputStream.h>
 %include <shogun/io/stream/ByteArrayInputStream.h>
 %include <shogun/io/stream/ByteArrayOutputStream.h>
 
