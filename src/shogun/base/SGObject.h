@@ -65,6 +65,15 @@ bool dispatch_array_type(const CSGObject* obj, std::string_view name,
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // SWIG
 
+struct InterfaceVisitor
+{
+	CSGObject* value;
+}
+
+Any::register_visitor<InterfaceType, InterfaceVisitor>([] (auto value, auto visitor) {
+        visitor->value = value;
+});
+
 template <class T, class K> class CMap;
 
 struct TParameter;
@@ -1346,19 +1355,15 @@ CSGObject* get_if_possible(const CSGObject* obj, std::string_view name, GetByNam
 
 template<typename T>
 CSGObject* get_dispatch_all_base_types(const CSGObject* obj, std::string_view name,
-		T&& how)
+ 		T&& how)
 {
-	if (auto* result = get_if_possible<CKernel>(obj, name, how))
-		return result;
-	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
-		return result;
-	if (auto* result = get_if_possible<CMachine>(obj, name, how))
-		return result;
-	if (auto* result = get_if_possible<CLabels>(obj, name, how))
-		return result;
-	if (auto* result = get_if_possible<CEvaluationResult>(obj, name, how))
-		return result;
-
+	auto param = get_parameter(name);
+	InterfaceVisitor iv;
+	param.get_value().visit_with(&iv);
+	
+	if (iv->value)
+		return value
+	
 	return nullptr;
 }
 
