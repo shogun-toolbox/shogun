@@ -411,6 +411,11 @@ namespace shogun {
 %ignore shogun::SGObject::get;
 #endif // SWIGPYTHON || SWIGR
 
+#if defined(SWIGJAVA) || defined(SWIGCSHARP)
+%rename(sg_equals) SGObject::equals(const SGObject*);
+%rename(sg_equals) SGObject::equals(const std::shared_ptr<const SGObject>&);
+#endif // SWIGJAVA || SWIGCSHARP
+
 %shared_ptr(shogun::Seedable<shogun::SGObject>)
 %shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %include <shogun/base/SGObject.h>

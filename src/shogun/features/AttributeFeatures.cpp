@@ -46,6 +46,7 @@ bool AttributeFeatures::set_attribute(char* attr_name, std::shared_ptr<Features>
 		features.push_back(a);
 	else
 		features[idx] = a;
+	return true;
 }
 
 bool AttributeFeatures::del_attribute(char* attr_name)

@@ -27,6 +27,8 @@
 %ignore SGIO;
 #endif
 
+%ignore *::equals(const SGObject*) const;
+
 %ignore ref;
 %ignore unref;
 

@@ -10,6 +10,8 @@
 
 /* Trace samplers */
 %shared_ptr(shogun::TraceSampler)
+%shared_ptr(shogun::Seedable<shogun::TraceSampler>)
+%shared_ptr(shogun::RandomMixin<shogun::TraceSampler, std::mt19937_64>)
 %shared_ptr(shogun::NormalSampler)
 %shared_ptr(shogun::ProbingSampler)
 
@@ -182,6 +184,12 @@ namespace shogun
 
 /* Log-det framework */
 %include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+namespace shogun
+{
+    %template(SeedableTraceSampler) Seedable<TraceSampler>;
+    %template(RandomMixinTraceSampler) RandomMixin<TraceSampler, std::mt19937_64>;
+}
+
 %include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
 %include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 
