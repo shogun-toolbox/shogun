@@ -68,11 +68,7 @@ bool dispatch_array_type(const CSGObject* obj, std::string_view name,
 struct InterfaceVisitor
 {
 	CSGObject* value;
-}
-
-Any::register_visitor<InterfaceType, InterfaceVisitor>([] (auto value, auto visitor) {
-        visitor->value = value;
-});
+};
 
 template <class T, class K> class CMap;
 
@@ -866,6 +862,13 @@ protected:
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+		
+		if constexpr (is_sg_base<T>::value) {
+			Any::register_visitor<T, InterfaceVisitor>([] (auto n_value, auto visitor) {
+					visitor->value = n_value;
+			});
+		}
+
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.
@@ -891,6 +894,12 @@ protected:
 				tag,
 				AnyParameter(
 						make_any_ref(value), properties, std::move(auto_init)));
+
+		if constexpr (is_sg_base<T>::value) {
+			Any::register_visitor<T, InterfaceVisitor>([] (auto n_value, auto visitor) {
+					visitor->value = n_value;
+			});
+		}
 	}
 
 #ifndef SWIG
@@ -924,6 +933,11 @@ protected:
 							constrain_function.run(casted_val, result);
 							return result;
 						}));
+		if constexpr (is_sg_base<T1>::value) {
+			Any::register_visitor<T1, InterfaceVisitor>([] (auto n_value, auto visitor) {
+					visitor->value = n_value;
+			});
+		}
 	}
 #endif
 
@@ -963,6 +977,12 @@ protected:
 		BaseTag tag(name);
 		create_parameter(
 			tag, AnyParameter(make_any_ref(value, rows, cols), properties));
+
+		if constexpr (is_sg_base<T>::value) {
+			Any::register_visitor<T, InterfaceVisitor>([] (auto n_value, auto visitor) {
+					visitor->value = n_value;
+			});
+		}
 	}
 
 #ifndef SWIG
@@ -1353,26 +1373,15 @@ CSGObject* get_if_possible(const CSGObject* obj, std::string_view name, GetByNam
 	return result;
 }
 
-template<typename T>
-CSGObject* get_dispatch_all_base_types(const CSGObject* obj, std::string_view name,
- 		T&& how)
-{
-	auto param = get_parameter(name);
+template<class T>
+CSGObject* get_by_tag(const CSGObject* obj, std::string_view name) {
+	BaseTag tag(name);
+	auto param = obj->get_parameter(tag);
 	InterfaceVisitor iv;
 	param.get_value().visit_with(&iv);
-	
-	if (iv->value)
-		return value
-	
+	if (iv.value)
+		return iv.value;
 	return nullptr;
-}
-
-template<class T>
-CSGObject* get_by_tag(const CSGObject* obj, std::string_view name,
-		T&& how)
-{
-	return get_dispatch_all_base_types(obj, name, how);
-}
 }
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS

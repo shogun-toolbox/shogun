@@ -803,7 +803,9 @@ CSGObject* CSGObject::get(const std::string& name, index_t index) const
 CSGObject* CSGObject::get(std::string_view name, index_t index) const
 #endif
 {
-	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
+	//auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
+	auto* result = sgo_details::get_by_tag(this, name);
+
 	if (!result && has(name))
 	{
 		error(
@@ -818,7 +820,8 @@ CSGObject* CSGObject::get(std::string_view name, index_t index) const
 CSGObject* CSGObject::get(std::string_view name, std::nothrow_t) const
     noexcept
 {
-	return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
+	//return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
+	return sgo_details::get_by_tag(name);
 }
 #endif
 
