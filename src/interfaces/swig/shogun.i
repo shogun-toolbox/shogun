@@ -89,6 +89,26 @@
 %include "bagging_includes.i"
 %include "Boost_includes.i"
 
+%shared_ptr(shogun::Machine)
+%shared_ptr(shogun::Kernel)
+%shared_ptr(shogun::Distance)
+%shared_ptr(shogun::Features)
+%shared_ptr(shogun::Labels)
+%shared_ptr(shogun::ECOCEncoder)
+%shared_ptr(shogun::ECOCDecoder)
+%shared_ptr(shogun::MulticlassStrategy)
+%shared_ptr(shogun::CombinationRule)
+%shared_ptr(shogun::Inference)
+%shared_ptr(shogun::DifferentiableFunction)
+%shared_ptr(shogun::NeuralLayer)
+%shared_ptr(shogun::SplittingStrategy)
+%shared_ptr(shogun::Evaluation)
+%shared_ptr(shogun::SVM)
+%shared_ptr(shogun::MeanFunction)
+%shared_ptr(shogun::LikelihoodModel)
+%shared_ptr(shogun::Tokenizer)
+%shared_ptr(shogun::LossFunction)
+
 %include "SGBase.i"
 %include "Library.i"
 %include "IO.i"
