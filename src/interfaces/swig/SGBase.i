@@ -383,9 +383,9 @@ INTERFACE_BASETYPE get(const std::string& name, int index) const
     {
         std::shared_ptr<SGObject> obj = $self->get(name, index);
 #if defined(SWIGPYTHON)
-        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(&obj), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
+        result = SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(&obj), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, 0);
 #elif defined(SWIGR)
-        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(&obj), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
+        result = SWIG_R_NewPointerObj(SWIG_as_voidptr(&obj), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, 0);
 #endif
     }
     catch(ShogunException& e)
