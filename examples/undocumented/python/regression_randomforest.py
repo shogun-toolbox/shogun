@@ -12,7 +12,7 @@ parameter_list = [[500,50,15,0.2,feattypes]]
 
 def regression_randomforest(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
-		from shogun import RegressionLabels, CSVFile, RandomForest, MeanRule, PT_REGRESSION
+		from shogun import RegressionLabels, CSVFile
 	except ImportError:
 		print("Could not import Shogun modules")
 		return
@@ -33,14 +33,16 @@ def regression_randomforest(num_train=500,num_test=50,x_range=15,noise_var=0.2,f
 	train_labels=RegressionLabels(Y_train[0])
 
 	# Random Forest formation
-	rand_forest=RandomForest(feats_train,train_labels,20,1)
-	rand_forest.set_feature_types(ft)
-	rand_forest.set_machine_problem_type(PT_REGRESSION)
-	rand_forest.set_combination_rule(MeanRule())
+	rand_forest=sg.machine("RandomForest", features=feats_train, labels=train_labels, num_bags=20)
+	m = rand_forest.get("machine")
+	m.put("m_randsubset_size", 1)
+	m.put("nominal", ft)	
+	rand_forest.put("combination_rule", sg.combination_rule("MeanRule"))
+	rand_forest.get_global_parallel().set_num_threads(1)
 	rand_forest.train()
 
 	# Regress test data
-	output=rand_forest.apply_regression(feats_test).get_labels()
+	output=rand_forest.apply_regression(feats_test).get("labels")
 
 	return rand_forest,output
 

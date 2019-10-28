@@ -23,15 +23,14 @@ def distance_director_euclidean (fm_train_real=traindat,fm_test_real=testdat,sca
 			seq2 = self.get_rhs().get_feature_vector(idx_b)
 			return numpy.linalg.norm(seq1-seq2)
 
-	from shogun import EuclideanDistance
 	from shogun import Time
 
 	feats_train=sg.features(fm_train_real)
 	#feats_train.io.set_loglevel(MSG_DEBUG)
-	feats_train.parallel.set_num_threads(1)
+	feats_train.get_global_parallel().set_num_threads(1)
 	feats_test=sg.features(fm_test_real)
 
-	distance=EuclideanDistance()
+	distance=sg.distance("EuclideanDistance")
 	distance.init(feats_train, feats_test)
 
 	ddistance=DirectorEuclideanDistance()

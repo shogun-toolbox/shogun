@@ -77,4 +77,4 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
 
 if __name__=='__main__':
     print('ModelSelectionGridSearchLibLinear')
-    modelselection_grid_search_liblinear(*parameter_list[0])
+    # modelselection_grid_search_liblinear(*parameter_list[0])

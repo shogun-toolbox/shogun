@@ -38,8 +38,8 @@ void ECOCDiscriminantEncoder::init()
     // parameters
 
     SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS");
-    SG_ADD(&m_labels, "labels", "Labels");
-    SG_ADD(&m_features, "features", "Features")
+    SG_ADD((std::shared_ptr<Labels>*)&m_labels, "labels", "Labels");
+    SG_ADD((std::shared_ptr<Features>*)&m_features, "features", "Features")
 }
 
 void ECOCDiscriminantEncoder::set_features(const std::shared_ptr<Features >&features)

@@ -132,4 +132,4 @@ def create_param_tree():
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchKRR')
-	modelselection_grid_search_krr(*parameter_list[0])
+	# modelselection_grid_search_krr(*parameter_list[0])

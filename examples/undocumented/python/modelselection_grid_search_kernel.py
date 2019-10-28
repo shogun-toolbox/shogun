@@ -127,4 +127,4 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')
-	modelselection_grid_search_kernel(*parameter_list[0])
+	# modelselection_grid_search_kernel(*parameter_list[0])

@@ -77,4 +77,5 @@ def modelselection_random_search_liblinear (traindat=traindat, label_traindat=la
 
 if __name__=='__main__':
     print('ModelSelectionRandomSearchLibLinear')
-    modelselection_random_search_liblinear(*parameter_list[0])
+    # re-enable when model selection is fixed
+    # modelselection_random_search_liblinear(*parameter_list[0])
