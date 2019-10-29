@@ -27,7 +27,7 @@ TEST(MLDataHDF5File, read_matrix)
 	char* fname = mktemp(strdup("/tmp/read_matrix.XXXXXX"));
 	auto fout=std::make_shared<HDF5File>(fname,'w', (char*)"/data/data");
 	fout->set_matrix(data, num_rows, num_cols);
-
+	fout.reset();
 
 	SGMatrix<float64_t> tmp(true);
 	auto fin=std::make_shared<MLDataHDF5File>(&fname[5], "/data/data", "file:///tmp/");
