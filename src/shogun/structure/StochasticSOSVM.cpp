@@ -90,11 +90,7 @@ bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
 	// logging
 	if (m_verbose)
 	{
-		if (m_helper != NULL)
-
-
 		m_helper = std::make_shared<SOSVMHelper>();
-
 	}
 
 	int32_t debug_iter = 1;

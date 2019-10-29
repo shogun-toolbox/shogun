@@ -89,11 +89,7 @@ bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 	// logging
 	if (m_verbose)
 	{
-		if (m_helper != NULL)
-
-
-		m_helper = std::shared_ptr<SOSVMHelper>();
-
+		m_helper = std::make_shared<SOSVMHelper>();
 	}
 
 	// Main loop
