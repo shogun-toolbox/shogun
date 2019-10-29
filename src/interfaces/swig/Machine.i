@@ -14,3 +14,4 @@
 %shared_ptr(shogun::DistanceMachine)
 %shared_ptr(shogun::IterativeMachine<LinearMachine>)
 
+SHARED_RANDOM_INTERFACE(shogun::Machine)

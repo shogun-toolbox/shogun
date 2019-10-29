@@ -13,6 +13,7 @@
 
 /* Remove C Prefix */
 %shared_ptr(shogun::DistanceMachine)
+SHARED_RANDOM_INTERFACE(shogun::DistanceMachine)
 %shared_ptr(shogun::Hierarchical)
 %shared_ptr(shogun::KMeans)
 %shared_ptr(shogun::KMeansBase)
@@ -22,6 +23,7 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/DistanceMachine.h>
+RANDOM_INTERFACE(DistanceMachine)
 %include <shogun/clustering/KMeansBase.h> 
 %include <shogun/clustering/KMeans.h>
 %include <shogun/clustering/KMeansMiniBatch.h>

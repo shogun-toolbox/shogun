@@ -18,6 +18,7 @@
 
 %shared_ptr(shogun::BalancedConditionalProbabilityTree)
 %shared_ptr(shogun::ConditionalProbabilityTree)
+SHARED_RANDOM_INTERFACE(shogun::ConditionalProbabilityTree)
 %shared_ptr(shogun::RandomConditionalProbabilityTree)
 %shared_ptr(shogun::RelaxedTree)
 
@@ -37,6 +38,7 @@
 %shared_ptr(shogun::LinearMulticlassMachine)
 %shared_ptr(shogun::KernelMulticlassMachine)
 %shared_ptr(shogun::MulticlassSVM)
+SHARED_RANDOM_INTERFACE(shogun::MulticlassSVM)
 %shared_ptr(shogun::MKLMulticlass)
 
 %shared_ptr(shogun::ECOCStrategy)
@@ -44,8 +46,7 @@
 %shared_ptr(shogun::ECOCDecoder)
 %shared_ptr(shogun::ECOCOVREncoder)
 %shared_ptr(shogun::ECOCOVOEncoder)
-%shared_ptr(shogun::Seedable<shogun::ECOCEncoder>)
-%shared_ptr(shogun::RandomMixin<shogun::ECOCEncoder, std::mt19937_64>)
+SHARED_RANDOM_INTERFACE(shogun::ECOCEncoder)
 %shared_ptr(shogun::ECOCRandomSparseEncoder)
 %shared_ptr(shogun::ECOCRandomDenseEncoder)
 %shared_ptr(shogun::ECOCDiscriminantEncoder)
@@ -62,7 +63,6 @@
 %shared_ptr(shogun::MulticlassLogisticRegression)
 %shared_ptr(shogun::MulticlassOCAS)
 #endif //USE_GPL_SHOGUN
-%shared_ptr(shogun::MulticlassSVM)
 %shared_ptr(shogun::MulticlassLibLinear)
 
 %shared_ptr(shogun::LaRank)
@@ -84,33 +84,29 @@ namespace shogun
 {
     %template(TreeMachineWithConditionalProbabilityTreeNodeData) TreeMachine<ConditionalProbabilityTreeNodeData>;
     %template(TreeMachineWithRelaxedTreeNodeData) TreeMachine<RelaxedTreeNodeData>;
-  /*  %template(TreeMachineWithID3TreeNodeData) TreeMachine<id3TreeNodeData>;
-    %template(TreeMachineWithC45TreeNodeData) TreeMachine<C45TreeNodeData>;
-    %template(TreeMachineWithCARTreeNodeData) TreeMachine<CARTreeNodeData>;
-    %template(TreeMachineWithCHAIDTreeNodeData) TreeMachine<CHAIDTreeNodeData>;
-*/
-    /** Instantiate RandomMixin *
-    %template(SeedableTreeMachine) Seedable<TreeMachine<CARTreeNodeData>>;
-    %template(RandomMixinTreeMachine) RandomMixin<TreeMachine<CARTreeNodeData>, std::mt19937_64>;
-*/
 }
 
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+RANDOM_INTERFACE(ConditionalProbabilityTree)
 %include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RelaxedTree.h>
 %include <shogun/multiclass/tree/TreeMachineNode.h>
 
-%include <shogun/multiclass/tree/ID3ClassifierTree.h>
+%include <shogun/multiclass/tree/ID3TreeNodeData.h>
 %template(TreeMachineWithID3TreeNodeData) shogun::TreeMachine<shogun::id3TreeNodeData>;
-%include <shogun/multiclass/tree/C45ClassifierTree.h>
+%include <shogun/multiclass/tree/ID3ClassifierTree.h>
+%include <shogun/multiclass/tree/C45TreeNodeData.h>
 %template(TreeMachineWithC45TreeNodeData) shogun::TreeMachine<shogun::C45TreeNodeData>;
-%include <shogun/multiclass/tree/CARTree.h>
+%include <shogun/multiclass/tree/C45ClassifierTree.h>
+%include <shogun/multiclass/tree/CARTreeNodeData.h>
 %template(TreeMachineWithCARTreeNodeData) shogun::TreeMachine<shogun::CARTreeNodeData>;
 %template(SeedableTreeMachine) shogun::Seedable<shogun::TreeMachine<shogun::CARTreeNodeData>>;
 %template(RandomMixinTreeMachine) shogun::RandomMixin<shogun::TreeMachine<shogun::CARTreeNodeData>, std::mt19937_64>;
-%include <shogun/multiclass/tree/CHAIDTree.h>
+%include <shogun/multiclass/tree/CARTree.h>
+%include <shogun/multiclass/tree/CHAIDTreeNodeData.h>
 %template(TreeMachineWithCHAIDTreeNodeData) shogun::TreeMachine<shogun::CHAIDTreeNodeData>;
+%include <shogun/multiclass/tree/CHAIDTree.h>
 
 %include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>
@@ -121,15 +117,11 @@ namespace shogun
 %include <shogun/machine/LinearMulticlassMachine.h>
 %include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/multiclass/MulticlassSVM.h>
+RANDOM_INTERFACE(MulticlassSVM)
 %include <shogun/classifier/mkl/MKLMulticlass.h>
 
 %include <shogun/multiclass/ecoc/ECOCEncoder.h>
-namespace shogun
-{
-    /** Instantiate RandomMixin */
-    %template(SeedableECOCEncoder) Seedable<ECOCEncoder>;
-    %template(RandomMixinECOCEncoder) RandomMixin<ECOCEncoder, std::mt19937_64>;
-}
+RANDOM_INTERFACE(ECOCEncoder)
 
 %include <shogun/multiclass/ecoc/ECOCDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
@@ -152,7 +144,6 @@ namespace shogun
 %include <shogun/multiclass/MulticlassOCAS.h>
 %include <shogun/multiclass/LaRank.h>
 #endif // USE_GPL_SHOGUN
-%include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/multiclass/ScatterSVM.h>
 %include <shogun/multiclass/GMNPSVM.h>
 %include <shogun/multiclass/KNN.h>

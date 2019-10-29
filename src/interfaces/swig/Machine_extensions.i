@@ -135,6 +135,3 @@ APPLY_LATENT(shogun::LatentSVM);
 
 #endif
 
-/** Instantiate RandomMixin */
-%template(RandomMixinMachine) shogun::RandomMixin<shogun::Machine, std::mt19937_64>;
-

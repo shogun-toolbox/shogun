@@ -52,8 +52,7 @@
 %shared_ptr(shogun::SOSVMHelper)
 %shared_ptr(shogun::StructuredOutputMachine)
 %shared_ptr(shogun::LinearStructuredOutputMachine)
-%shared_ptr(shogun::Seedable<shogun::LinearStructuredOutputMachine>)
-%shared_ptr(shogun::RandomMixin<shogun::LinearStructuredOutputMachine, std::mt19937_64>)
+SHARED_RANDOM_INTERFACE(shogun::LinearStructuredOutputMachine)
 %shared_ptr(shogun::KernelStructuredOutputMachine)
 
 #ifdef USE_GPL_SHOGUN
@@ -106,10 +105,7 @@
 %include <shogun/structure/SOSVMHelper.h>
 %include <shogun/machine/StructuredOutputMachine.h>
 %include <shogun/machine/LinearStructuredOutputMachine.h>
-
-/** Instantiate RandomMixin */
-%template(SeedableLinearStructured) shogun::Seedable<shogun::LinearStructuredOutputMachine>;
-%template(RandomMixinLinearStructured) shogun::RandomMixin<shogun::LinearStructuredOutputMachine, std::mt19937_64>;
+RANDOM_INTERFACE(LinearStructuredOutputMachine)
 
 %include <shogun/machine/KernelStructuredOutputMachine.h>
 

@@ -45,20 +45,29 @@
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
 #endif // SWIGPYTHON
 
+%define SHARED_RANDOM_INTERFACE(SG_CLASS)
+%shared_ptr(shogun::Seedable<SG_CLASS>)
+%shared_ptr(shogun::RandomMixin<SG_CLASS, std::mt19937_64>)
+%enddef
+
+%define RANDOM_INTERFACE(SG_CLASS)
+namespace shogun
+{
+        %template(Seedable##SG_CLASS) Seedable<SG_CLASS>;
+        %template(RandomMixin##SG_CLASS) RandomMixin<SG_CLASS, std::mt19937_64>;
+}
+%enddef
+
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
 %include "shogun_doxygen.i"
 #endif
 #endif
 
-%include "std_vector.i"
+%include <std_vector.i>
 %include "shogun_ignores.i"
 %include "RandomMixin.i"
-#ifdef SWIGR
-%include "boost_shared_ptr.i"
-#else
-%include "std_shared_ptr.i" 
-#endif
+%include <std_shared_ptr.i>
 
 %include "Machine_includes.i"
 %include "Classifier_includes.i"
@@ -108,6 +117,9 @@
 %shared_ptr(shogun::LikelihoodModel)
 %shared_ptr(shogun::Tokenizer)
 %shared_ptr(shogun::LossFunction)
+%shared_ptr(shogun::io::Serializer)
+%shared_ptr(shogun::io::Deserializer)
+%shared_ptr(shogun::ParameterObserver)
 
 %include "SGBase.i"
 %include "Library.i"

@@ -122,7 +122,7 @@
 				if constexpr(std::is_same_v<T, SGObject*>)
 					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(*v), SWIGTYPE_p_shogun__SGObject, 0);
 				if constexpr(std::is_same_v<T, std::shared_ptr<SGObject>>)
-					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(v), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, SWIG_POINTER_OWN);
+					return SWIG_Python_NewPointerObj(nullptr, SWIG_as_voidptr(v), SWIGTYPE_p_std__shared_ptrT_shogun__SGObject_t, 0);
 				error("Cannot handle casting from shogun type {} to python type!", demangled_type<T>().c_str());
 			}
 		};

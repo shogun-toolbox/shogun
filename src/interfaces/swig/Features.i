@@ -28,11 +28,12 @@
 #define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 #endif
 
-%shared_ptr(shogun::Alphabet)
-%shared_ptr(shogun::Features)
-%shared_ptr(shogun::AttributeFeatures)
-%shared_ptr(shogun::StreamingFeatures)
-%shared_ptr(shogun::DotFeatures)
+%shared_ptr(shogun::Alphabet);
+%shared_ptr(shogun::Features);
+%shared_ptr(shogun::AttributeFeatures);
+%shared_ptr(shogun::StreamingFeatures);
+%shared_ptr(shogun::DotFeatures);
+SHARED_RANDOM_INTERFACE(shogun::DotFeatures)
 %shared_ptr(shogun::DirectorDotFeatures)
 %shared_ptr(shogun::BinnedDotFeatures)
 %shared_ptr(shogun::StreamingDotFeatures)
@@ -45,6 +46,7 @@
 %shared_ptr(shogun::HashedDocDotFeatures)
 %shared_ptr(shogun::StreamingHashedDocDotFeatures)
 %shared_ptr(shogun::RandomKitchenSinksDotFeatures)
+SHARED_RANDOM_INTERFACE(shogun::RandomKitchenSinksDotFeatures)
 %shared_ptr(shogun::RandomFourierDotFeatures)
 %shared_ptr(shogun::Labels)
 
@@ -208,6 +210,7 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
 %include <shogun/features/Alphabet.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
+RANDOM_INTERFACE(DotFeatures)
 %include <shogun/features/DirectorDotFeatures.h>
 %include <shogun/features/BinnedDotFeatures.h>
 %include <shogun/features/streaming/StreamingFeatures.h>
@@ -543,6 +546,7 @@ namespace shogun
 %include <shogun/features/hashed/HashedDocDotFeatures.h>
 %include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
 %include <shogun/features/RandomKitchenSinksDotFeatures.h>
+RANDOM_INTERFACE(RandomKitchenSinksDotFeatures)
 %include <shogun/features/RandomFourierDotFeatures.h>
 
 %include <shogun/labels/Labels.h>

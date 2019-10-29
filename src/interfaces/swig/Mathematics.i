@@ -63,8 +63,8 @@ namespace shogun
 #endif
 
 #ifdef USE_COMPLEX128
-%rename(shogun::pow_complex128_float64) Math::pow(complex128_t,float64_t)
-%rename(shogun::pow_complex128_int32) Math::pow(complex128_t,int32_t)
+/*%rename(shogun::pow_complex128_float64) Math::pow(complex128_t,float64_t)
+%rename(shogun::pow_complex128_int32) Math::pow(complex128_t,int32_t)*/
 #endif
 
 #endif // defined(SWIGLUA) || defined(SWIGR)

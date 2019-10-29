@@ -9,8 +9,7 @@
 %shared_ptr(shogun::TwoDistributionTest)
 %shared_ptr(shogun::IndependenceTest)
 %shared_ptr(shogun::TwoSampleTest)
-%shared_ptr(shogun::Seedable<shogun::TwoSampleTest>)
-%shared_ptr(shogun::RandomMixin<shogun::TwoSampleTest, std::mt19937_64>)
+SHARED_RANDOM_INTERFACE(shogun::TwoSampleTest)
 %shared_ptr(shogun::MMD)
 %shared_ptr(shogun::StreamingMMD)
 %shared_ptr(shogun::LinearTimeMMD)
@@ -26,10 +25,7 @@
 %include <shogun/statistical_testing/TwoDistributionTest.h>
 %include <shogun/statistical_testing/IndependenceTest.h>
 %include <shogun/statistical_testing/TwoSampleTest.h>
-
-/** Instantiate RandomMixin */
-%template(SeedableTwoSampleTest) shogun::Seedable<shogun::TwoSampleTest>;
-%template(RandomMixinTwoSampleTest) shogun::RandomMixin<shogun::TwoSampleTest, std::mt19937_64>;
+RANDOM_INTERFACE(TwoSampleTest)
 
 %include <shogun/statistical_testing/MMD.h>
 %include <shogun/statistical_testing/StreamingMMD.h>

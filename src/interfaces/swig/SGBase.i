@@ -5,9 +5,9 @@
  */
 
 /* base includes required by any module */
-%include "stdint.i"
-%include "std_string.i"
-%include "exception.i"
+%include <stdint.i>
+%include <std_string.i>
+%include <exception.i>
 
 #ifdef SWIGJAVA
 %typemap(javainterfaces) shogun::SGObject "java.io.Externalizable"
@@ -328,7 +328,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %include "typemaps_utilities.i"
 %include "swig_typemaps.i"
 
-%include "std_vector.i"
+%include <std_vector.i>
 namespace std {
     %template(IntStdVector) vector<int32_t>;
     %template(DoubleStdVector) vector<float64_t>;
@@ -410,11 +410,6 @@ namespace shogun {
 
 %ignore shogun::SGObject::get;
 #endif // SWIGPYTHON || SWIGR
-
-#if defined(SWIGJAVA) || defined(SWIGCSHARP)
-%rename(sg_equals) SGObject::equals(const SGObject*);
-%rename(sg_equals) SGObject::equals(const std::shared_ptr<const SGObject>&);
-#endif // SWIGJAVA || SWIGCSHARP
 
 %shared_ptr(shogun::Seedable<shogun::SGObject>)
 %shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)

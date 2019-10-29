@@ -29,7 +29,9 @@
 %shared_ptr(shogun::GPBTSVM)
 #endif //USE_GPL_SHOGUN
 %shared_ptr(shogun::LDA)
+%shared_ptr(shogun::DenseRealDispatch<shogun::LDA, shogun::LinearMachine>)
 %shared_ptr(shogun::LinearMachine)
+%shared_ptr(shogun::IterativeMachine<shogun::LinearMachine>)
 %shared_ptr(shogun::OnlineLinearMachine)
 %shared_ptr(shogun::LPBoost)
 %shared_ptr(shogun::LPM)
@@ -59,20 +61,24 @@
 #endif //USE_GPL_SHOGUN
 %shared_ptr(shogun::DirectorLinearMachine)
 %shared_ptr(shogun::DirectorKernelMachine)
-%shared_ptr(shogun::BaggingMachine)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
+%include <shogun/machine/IterativeMachine.h>
+%include <shogun/machine/FeatureDispatchCRTP.h>
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/machine/LinearMachine.h>
+%template(LinearIterativeMachine) shogun::IterativeMachine<shogun::LinearMachine>;
 %include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
 #ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/GPBTSVM.h>
 #endif //USE_GPL_SHOGUN
 %include <shogun/classifier/LDA.h>
+%template(DenseDispatchLDA) shogun::DenseRealDispatch<shogun::LDA, shogun::LinearMachine>;
+
 %include <shogun/classifier/LPBoost.h>
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
@@ -98,4 +104,3 @@
 #endif //USE_GPL_SHOGUN
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
-%include <shogun/machine/BaggingMachine.h>
