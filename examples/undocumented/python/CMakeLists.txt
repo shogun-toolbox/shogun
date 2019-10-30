@@ -7,7 +7,6 @@ IF (NOT USE_GPL_SHOGUN)
 	LIST(REMOVE_ITEM PYTHON_EXAMPLES
 	"classifier_svmlin.py"
 	"kernel_distantsegments.py"
-	"modelselection_parameter_tree.py"
 	"variational_classifier.py"
 	"evaluation_cross_validation_multiclass_storage.py"
 	"classifier_larank.py"

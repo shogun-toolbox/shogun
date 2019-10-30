@@ -22,11 +22,6 @@ function(get_excluded_meta_examples)
     is_set(${SHOGUN_CONFIG} HAVE_LAPACK)
     is_set(${SHOGUN_CONFIG} USE_SVMLIGHT)
 
-    IF(NOT HAVE_NLOPT)
-        LIST(APPEND EXCLUDED_META_EXAMPLES
-            gaussian_process/regression.sg
-            )
-    ENDIF()
 
 	IF(NOT USE_GPL_SHOGUN)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
@@ -34,7 +29,6 @@ function(get_excluded_meta_examples)
       statistical_testing/linear_time_maximum_mean_discrepancy.sg
       statistical_testing/quadratic_time_maximum_mean_discrepancy.sg
       gaussian_process/classifier.sg
-      gaussian_process/regression.sg
       binary/svmlin.sg
       binary/svmsgd.sg
       )
@@ -55,10 +49,6 @@ function(get_excluded_meta_examples)
 		)
 	ENDIF()
   
-  # TODO: remove me when model selection is fixed
-  LIST(APPEND EXCLUDED_META_EXAMPLES
-    gaussian_process/regression.sg)
-
   # remove double entries to avoid errors due to "double" removing
   LIST(LENGTH EXCLUDED_META_EXAMPLES NUM_EXCLUDED)
   IF(NUM_EXCLUDED GREATER 0)
