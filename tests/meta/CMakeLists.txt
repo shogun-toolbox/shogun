@@ -59,7 +59,6 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 			AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
 			#AddMetaIntegrationTest(ruby INTERFACE_RUBY) # disabled due to potential swig bug, see https://github.com/shogun-toolbox/shogun/issues/4177
 			AddMetaIntegrationTest(scala INTERFACE_SCALA)
-			#AddMetaIntegrationTest(lua INTERFACE_LUA) # currently doesn't have meta examples
 		ENDIF()
 	ENDIF()
 ENDFOREACH()

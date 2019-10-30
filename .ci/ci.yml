@@ -89,11 +89,6 @@ jobs:
         CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
         interfaceName: 'r'
-      lua:
-        CC: "clang"
-        CXX: "clang++"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_LUA=ON'
-        interfaceName: 'lua'
       octave:
         CC: "gcc"
         CXX: "g++"

@@ -186,3 +186,4 @@ namespace shogun
 
 %include <shogun/io/SimpleFile.h>
 %include <shogun/io/MemoryMappedFile.h>
+

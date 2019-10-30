@@ -45,7 +45,6 @@ Shogun is implemented in C++ and offers automatically generated, unified interfa
 |ruby              | *stable* (no known problems)                              |
 |csharp            | *stable* (no known problems)                              |
 |r                 | *beta*   (most examples work, static calls unavailable)   |
-|lua               | *alpha*  (many examples work, string typemaps are unstable, overloaded methods unavailable)                   |
 |perl              | *pre-alpha* (work in progress quality)                    |
 |js                | *pre-alpha* (work in progress quality)                    |
 

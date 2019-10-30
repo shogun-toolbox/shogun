@@ -900,7 +900,7 @@ if __name__ == "__main__":
     parser.add_argument("-t",
                         "--target",
                         nargs='?',
-                        help="Translation target. Possible values: cpp, python, java, r, octave, csharp, ruby, lua. (default: python)")
+                        help="Translation target. Possible values: cpp, python, java, r, octave, csharp, ruby. (default: python)")
     parser.add_argument("path",
                         nargs='?',
                         help="Path to input file. If not specified input is read from stdin")

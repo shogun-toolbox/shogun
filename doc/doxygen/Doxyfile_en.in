@@ -861,7 +861,6 @@ EXAMPLE_PATTERNS       = *.cpp \
                          *.m \
                          *.cs \
                          *.java \
-                         *.lua \
                          *.rb \
                          *.generated \
                          LICENSE* \
