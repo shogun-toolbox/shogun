@@ -13,6 +13,7 @@
 %shared_ptr(shogun::Signal)
 %shared_ptr(shogun::Time)
 %shared_ptr(shogun::Hash)
+%shared_ptr(shogun::Compressor)
 %shared_ptr(shogun::StructuredData)
 %shared_ptr(shogun::DynamicObjectArray)
 %shared_ptr(shogun::Tokenizer)
@@ -327,6 +328,7 @@ namespace shogun
 %include <shogun/lib/Signal.h>
 %include <shogun/lib/Time.h>
 %include <shogun/lib/Trie.h>
+%include <shogun/lib/Compressor.h>
 %include <shogun/lib/StructuredDataTypes.h>
 %include <shogun/lib/StructuredData.h>
 %include <shogun/lib/DynamicObjectArray.h>

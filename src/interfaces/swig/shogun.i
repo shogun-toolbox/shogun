@@ -120,6 +120,7 @@ namespace shogun
 %shared_ptr(shogun::io::Serializer)
 %shared_ptr(shogun::io::Deserializer)
 %shared_ptr(shogun::ParameterObserver)
+%shared_ptr(shogun::Preprocessor)
 
 %include "SGBase.i"
 %include "Library.i"
