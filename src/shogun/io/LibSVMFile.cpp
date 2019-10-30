@@ -14,6 +14,9 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGVector.h>
 
+#include <algorithm>
+#include <vector>
+
 using namespace shogun;
 
 LibSVMFile::LibSVMFile()
@@ -232,9 +235,8 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 				{                                                              \
 					num_label_entries++;                                       \
 					float64_t label_val = m_parser->read_real();               \
-                                                                               \
-					if (std::find(classes.begin(),classes.end(),label_val)     \ 
-							== classes.end())                                  \
+													\
+					if (std::find(classes.begin(),classes.end(),label_val) == classes.end()) \
 						classes.push_back(label_val);                          \
                                                                                \
 					entries_label.push_back(label_val);                        \
