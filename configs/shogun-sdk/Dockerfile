@@ -17,12 +17,6 @@ RUN apt-get update -qq && apt-get upgrade -y && \
 RUN pip3 install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme codecov
 RUN gem install narray
 
-ADD http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.19.tar.gz /tmp/
-RUN cd /tmp && \
-    tar zxpf arprec-2.2.19.tar.gz && \
-    cd arprec && ./configure --enable-shared && \
-    make install && ldconfig
-
 ADD https://github.com/ReactiveX/RxCpp/archive/4.1.0.tar.gz /tmp/
 RUN cd /tmp;\
     tar -xvf 4.1.0.tar.gz;\
@@ -47,4 +41,4 @@ RUN cd /tmp;\
     cd swig-rel-4.0.1;\
     ./autogen.sh;\
     ./configure;\
-    make install;
+    make && make install && ldconfig
