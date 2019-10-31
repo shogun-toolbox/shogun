@@ -159,10 +159,13 @@ if (LIBSHOGUN_BUILD_STATIC)
 
   if(MSVC)
     target_link_libraries(shogun-static PUBLIC winmm.lib Shlwapi.lib)
+    target_compile_definitions(shogun-static PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
   endif()
 ENDIF()
 
 IF(MSVC)
+  target_compile_definitions(shogun PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
+  target_compile_definitions(shogun_deps INTERFACE _ENABLE_EXTENDED_ALIGNED_STORAGE)
   IF(MSVC_VERSION VERSION_LESS "1700")
     include(external/MSIntTypes)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
