@@ -235,12 +235,12 @@ bool KernelSelectionStrategy::get_weighted() const
 	return self->weighted;
 }
 
-void KernelSelectionStrategy::add_kernel(std::shared_ptr<Kernel> kernel)
+void KernelSelectionStrategy::add_kernel(std::shared_ptr<shogun::Kernel> kernel)
 {
 	self->kernel_mgr.push_back(std::move(kernel));
 }
 
-std::shared_ptr<Kernel> KernelSelectionStrategy::select_kernel(std::shared_ptr<MMD> estimator)
+std::shared_ptr<shogun::Kernel> KernelSelectionStrategy::select_kernel(std::shared_ptr<MMD> estimator)
 {
 	auto num_kernels=self->kernel_mgr.num_kernels();
 	require(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!");

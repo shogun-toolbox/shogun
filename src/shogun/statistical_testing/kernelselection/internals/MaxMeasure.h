@@ -52,7 +52,7 @@ public:
 	MaxMeasure(const MaxMeasure& other)=delete;
 	~MaxMeasure();
 	MaxMeasure& operator=(const MaxMeasure& other)=delete;
-	virtual std::shared_ptr<Kernel> select_kernel();
+	virtual std::shared_ptr<shogun::Kernel> select_kernel();
 	virtual SGVector<float64_t> get_measure_vector();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:

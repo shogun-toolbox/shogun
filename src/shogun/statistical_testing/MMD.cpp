@@ -108,7 +108,7 @@ KernelSelectionStrategy const* MMD::get_kernel_selection_strategy() const
 	return self->strategy.get();
 }
 
-void MMD::add_kernel(std::shared_ptr<Kernel> kernel)
+void MMD::add_kernel(std::shared_ptr<shogun::Kernel> kernel)
 {
 	self->strategy->add_kernel(std::move(kernel));
 }

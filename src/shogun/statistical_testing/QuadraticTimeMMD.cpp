@@ -193,7 +193,7 @@ void QuadraticTimeMMD::init()
 {
 	self=std::make_unique<Self>(*this, m_prng);
 	self->multi_kernel = shared_ptr<MultiKernelQuadraticTimeMMD>(
-		new MultiKernelQuadraticTimeMMD(this));	
+		new MultiKernelQuadraticTimeMMD(this));
 	watch_param("multi_kernel", &(self->multi_kernel));
 }
 
@@ -270,7 +270,7 @@ std::shared_ptr<Features> QuadraticTimeMMD::get_p_and_q()
 	return samples_p_and_q;
 }
 
-void QuadraticTimeMMD::set_kernel(std::shared_ptr<Kernel> kernel)
+void QuadraticTimeMMD::set_kernel(std::shared_ptr<shogun::Kernel> kernel)
 {
 	if (kernel!=get_kernel())
 	{

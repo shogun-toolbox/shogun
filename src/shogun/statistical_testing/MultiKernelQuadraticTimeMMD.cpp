@@ -95,7 +95,7 @@ MultiKernelQuadraticTimeMMD::~MultiKernelQuadraticTimeMMD()
 	cleanup();
 }
 
-void MultiKernelQuadraticTimeMMD::add_kernel(const std::shared_ptr<Kernel >&kernel)
+void MultiKernelQuadraticTimeMMD::add_kernel(const std::shared_ptr<shogun::Kernel>& kernel)
 {
 	ASSERT(self->m_owner);
 	require(kernel, "Kernel instance cannot be NULL!");

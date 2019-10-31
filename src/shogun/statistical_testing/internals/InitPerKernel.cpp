@@ -51,7 +51,7 @@ InitPerKernel& InitPerKernel::operator=(std::shared_ptr<Kernel> kernel)
 	return *this;
 }
 
-InitPerKernel::operator std::shared_ptr<Kernel>() const
+InitPerKernel::operator std::shared_ptr<shogun::Kernel>() const
 {
 	return m_kernel;
 }

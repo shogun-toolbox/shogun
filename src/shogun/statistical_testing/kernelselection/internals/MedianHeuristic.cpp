@@ -96,7 +96,7 @@ SGMatrix<float64_t> MedianHeuristic::get_measure_matrix()
 	return distance->get_distance_matrix();
 }
 
-std::shared_ptr<Kernel> MedianHeuristic::select_kernel()
+std::shared_ptr<shogun::Kernel> MedianHeuristic::select_kernel()
 {
 	compute_measures();
 	auto median_distance=measures[measures.size()/2];

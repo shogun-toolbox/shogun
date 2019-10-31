@@ -94,7 +94,7 @@ void MaxMeasure::compute_measures()
 	}
 }
 
-std::shared_ptr<Kernel> MaxMeasure::select_kernel()
+std::shared_ptr<shogun::Kernel> MaxMeasure::select_kernel()
 {
 	compute_measures();
 	ASSERT(measures.size()==kernel_mgr.num_kernels());

@@ -128,7 +128,7 @@ void MaxCrossValidation<PRNG>::compute_measures()
 
 			for (auto k=0; k<num_kernels; ++k)
 			{
-				std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
+				std::shared_ptr<shogun::Kernel> kernel=kernel_mgr.kernel_at(k);
 				kernel->init(samples_p_and_q, samples_p_and_q);
 			}
 
@@ -136,7 +136,7 @@ void MaxCrossValidation<PRNG>::compute_measures()
 
 			for (auto k=0; k<num_kernels; ++k)
 			{
-				std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
+				std::shared_ptr<shogun::Kernel> kernel=kernel_mgr.kernel_at(k);
 				kernel->remove_lhs_and_rhs();
 			}
 
@@ -174,7 +174,7 @@ void MaxCrossValidation<PRNG>::compute_measures()
 }
 
 template <typename PRNG>
-std::shared_ptr<Kernel> MaxCrossValidation<PRNG>::select_kernel()
+std::shared_ptr<shogun::Kernel> MaxCrossValidation<PRNG>::select_kernel()
 {
 	init_measures();
 	compute_measures();

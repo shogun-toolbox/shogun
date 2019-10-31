@@ -77,7 +77,7 @@ InitPerKernel KernelManager::kernel_at(index_t i)
 	return InitPerKernel(m_kernels[i]);
 }
 
-std::shared_ptr<Kernel> KernelManager::kernel_at(index_t i) const
+std::shared_ptr<shogun::Kernel> KernelManager::kernel_at(index_t i) const
 {
 	SG_TRACE("Entering!");
 	require(i<num_kernels(),
@@ -93,7 +93,7 @@ std::shared_ptr<Kernel> KernelManager::kernel_at(index_t i) const
 	return m_precomputed_kernels[i];
 }
 
-void KernelManager::push_back(const std::shared_ptr<Kernel>& kernel)
+void KernelManager::push_back(const std::shared_ptr<shogun::Kernel>& kernel)
 {
 	SG_TRACE("Entering!");
 	m_kernels.push_back(kernel);
@@ -205,7 +205,7 @@ void KernelManager::set_precomputed_distance(const std::shared_ptr<CustomDistanc
 	require(distance!=nullptr, "Distance instance cannot be null!");
 	for (auto i=0; i<num_kernels(); ++i)
 	{
-		std::shared_ptr<Kernel> kernel=kernel_at(i);
+		std::shared_ptr<shogun::Kernel> kernel=kernel_at(i);
 		auto shift_inv_kernel=kernel->as<ShiftInvariantKernel>();
 		require(shift_inv_kernel!=nullptr, "Kernel instance (was {}) must be of CShiftInvarintKernel type!", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=distance;
@@ -218,7 +218,7 @@ void KernelManager::unset_precomputed_distance() const
 {
 	for (auto i=0; i<num_kernels(); ++i)
 	{
-		std::shared_ptr<Kernel> kernel=kernel_at(i);
+		std::shared_ptr<shogun::Kernel> kernel=kernel_at(i);
 		auto shift_inv_kernel=kernel->as<ShiftInvariantKernel>();
 		require(shift_inv_kernel!=nullptr, "Kernel instance (was {}) must be of CShiftInvarintKernel type!", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=nullptr;

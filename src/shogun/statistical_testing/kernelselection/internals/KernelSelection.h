@@ -55,7 +55,7 @@ public:
 	KernelSelection(const KernelSelection& other)=delete;
 	virtual ~KernelSelection();
 	KernelSelection& operator=(const KernelSelection& other)=delete;
-	virtual std::shared_ptr<Kernel> select_kernel()=0;
+	virtual std::shared_ptr<shogun::Kernel> select_kernel()=0;
 	virtual SGMatrix<float64_t> get_measure_matrix()=0;
 	virtual SGVector<float64_t> get_measure_vector()=0;
 protected:

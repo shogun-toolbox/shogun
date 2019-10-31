@@ -66,7 +66,7 @@ struct StreamingMMD::Self
 	void create_computation_jobs();
 
 	void merge_samples(NextSamples&, FeatureVector&) const;
-	void compute_kernel(ComputationManager&, FeatureVector&, std::shared_ptr<Kernel>) const;
+	void compute_kernel(ComputationManager&, FeatureVector&, std::shared_ptr<shogun::Kernel>) const;
 	void compute_jobs(ComputationManager&) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
@@ -154,7 +154,7 @@ void StreamingMMD::Self::merge_samples(NextSamples& next_burst, FeatureVector& b
 	next_burst.clear();
 }
 
-void StreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& blocks, std::shared_ptr<Kernel> kernel) const
+void StreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& blocks, std::shared_ptr<shogun::Kernel> kernel) const
 {
 	require(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!");
 	cm.num_data(blocks.size());
