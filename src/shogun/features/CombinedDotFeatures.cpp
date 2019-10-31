@@ -178,7 +178,7 @@ void CombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 
 void* CombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
+	combined_feature_iterator* it = new combined_feature_iterator;
 
 	it->f=get_feature_obj(0);
 	it->iterator_idx = 0;
@@ -224,7 +224,7 @@ void CombinedDotFeatures::free_feature_iterator(void* iterator)
 		if (it->iterator && it->f)
 			it->f->free_feature_iterator(it->iterator);
 
-		SG_FREE(it);
+		delete it;
 	}
 }
 
