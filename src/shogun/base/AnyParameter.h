@@ -174,7 +174,6 @@ namespace shogun
 		      m_callback_functions(other.m_callback_functions)
 		{
 		}
-
 		AnyParameter(AnyParameter&& other) noexcept
 		    : m_value(std::move(other.m_value)), m_properties(other.m_properties),
 		      m_init_function(std::move(other.m_init_function)),
@@ -182,7 +181,6 @@ namespace shogun
 		      m_callback_functions(std::move(other.m_callback_functions))
 		{
 		}
-
 
 		Any get_value() const
 		{
@@ -223,6 +221,20 @@ namespace shogun
 		const auto& get_callbacks() const
 		{
 			return m_callback_functions;
+		}
+
+		AnyParameter& operator=(AnyParameter&& other)
+		{
+			if (this != &other)
+			{
+				m_value.reset();
+				m_value = std::move(other.m_value);
+				m_properties = other.m_properties;
+				m_init_function = std::move(other.m_init_function);
+				m_constrain_function = std::move(other.m_constrain_function);
+				m_callback_functions = std::move(other.m_callback_functions);
+			}
+			return *this;
 		}
 
 		/** Equality operator which compares value but not properties.

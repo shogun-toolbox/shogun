@@ -215,4 +215,10 @@ namespace shogun
 		return !(lhs == rhs);
 	}
 
+	void Any::reset()
+	{
+		policy->clear(&storage);
+		policy = owning_policy<Empty>();
+		storage = nullptr;
+	}
 }
