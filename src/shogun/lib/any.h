@@ -1193,6 +1193,12 @@ namespace shogun
 		 */
 		size_t hash() const;
 
+		/**
+		 * Reset content of Any
+		 * TODO: add support for any reassignment and then this could go
+		 */
+		void reset();
+
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
 		 * @param visitor visitor object to use

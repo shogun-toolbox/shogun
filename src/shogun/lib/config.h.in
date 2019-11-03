@@ -98,6 +98,11 @@
 #cmakedefine USE_EXTERNAL_SPDLOG 1
 #cmakedefine DEBUG_BUILD 1
 
+/* parameter backend */
+#cmakedefine USE_VECTOR_BACKEND 1
+#cmakedefine USE_MAP_BACKEND 1
+#cmakedefine USE_SORTED_VECTOR_BACKEND 1
+
 #ifdef __CLING__
 #pragma cling add_library_path(@SHOGUN_CLING_LIBRARY_DIR@)
 #pragma cling load("libshogun")

@@ -60,19 +60,42 @@ namespace shogun
         /** Copy constructor
          * @param other basetag object to be copied
          */
-        BaseTag(const BaseTag& other) : 
+        BaseTag(const BaseTag& other) :
             m_name(other.m_name), m_hash(other.m_hash)
         {
         }
+
+        /** Move constructor
+         * @param other basetag object to be copied
+         */
+        BaseTag(BaseTag&& other)
+        {
+		*this = std::move(other);
+        }
+
 
         /** Class Assignment operator
          * @param other basetag object to be assigned
          */
         BaseTag& operator=(const BaseTag& other)
         {
-            m_name = other.m_name;
-            m_hash = other.m_hash;
-            return *this;
+		if (this != &other)
+		{
+			m_name = other.m_name;
+			m_hash = other.m_hash;
+		}
+		return *this;
+        }
+
+        BaseTag& operator=(BaseTag&& other)
+        {
+		if (this != &other)
+		{
+			m_name = std::move(other.m_name);
+			m_hash = other.m_hash;
+			other.m_hash = 0;
+		}
+		return *this;
         }
 
 		/** @return name of Tag */
