@@ -33,7 +33,19 @@
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
+#include <shogun/base/ParameterInterface.h>
+#ifdef USE_VECTOR_BACKEND
+#include <shogun/base/VectorParameter.h>
+using ParameterBackend = shogun::detail::VectorParameter;
+#elif USE_MAP_BACKEND
+#include <shogun/base/MapParameter.h>
+using ParameterBackend = shogun::detail::MapParameter;
+#elif USE_SORTED_VECTOR_BACKEND
+#include <shogun/base/SortedVectorParameter.h>
+using ParameterBackend = shogun::detail::SortedVectorParameter;
+#endif
 #include <shogun/distance/Distance.h>
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/features/DotFeatures.h>
@@ -56,71 +68,9 @@
 namespace shogun
 {
 
-	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 	typedef std::unordered_map<std::string_view, std::string_view> ObsParamsList;
 
-	class SGObject::Self
-	{
-	public:
-		void create(BaseTag&& tag, AnyParameter&& parameter)
-		{
-			if (has(tag))
-			{
-				error("Can not register {} twice", tag.name().c_str());
-			}
-			map.emplace(std::move(tag), std::move(parameter));
-		}
-
-		void update(const BaseTag& tag, const Any& value)
-		{
-			if (!has(tag))
-			{
-				error(
-				    "Can not update unregistered parameter {}",
-				    tag.name().c_str());
-			}
-			map.at(tag).set_value(value);
-		}
-
-		AnyParameter& at(const BaseTag& tag)
-		{
-			return map.at(tag);
-		}
-
-		const AnyParameter& at(const BaseTag& tag) const
-		{
-			return map.at(tag);
-		}
-
-		AnyParameter get(const BaseTag& tag) const
-		{
-			if(!has(tag))
-				return AnyParameter();
-			return map.at(tag);
-		}
-
-		bool has(const BaseTag& tag) const
-		{
-			return map.find(tag) != map.end();
-		}
-
-		ParametersMap filter(ParameterProperties pprop) const
-		{
-			ParametersMap result;
-			std::copy_if(
-			    map.cbegin(), map.cend(), std::inserter(result, result.end()),
-			    [&pprop](const auto& each) {
-					auto p = each.second.get_properties();
-					// if the filter mask is ALL, also include parameters with no set properties (NONE)
-				    return p.has_property(pprop) ||
-								(pprop==ParameterProperties::ALL &&
-								p.compare_mask(ParameterProperties::NONE));
-			    });
-			return result;
-		}
-
-		ParametersMap map;
-	};
+	class SGObject::Self: public detail::ParameterInterface<ParameterBackend> {};
 
 	class Parallel;
 
@@ -218,7 +168,7 @@ namespace shogun
 
 using namespace shogun;
 
-SGObject::SGObject() : self(), param_obs_list()
+SGObject::SGObject() : self(std::make_unique<Self>()), param_obs_list()
 {
 	init();
 
@@ -226,7 +176,7 @@ SGObject::SGObject() : self(), param_obs_list()
 }
 
 SGObject::SGObject(const SGObject& orig)
-    : self(), param_obs_list()
+    : self(std::make_unique<Self>()), param_obs_list()
 {
 	init();
 
@@ -334,8 +284,8 @@ void SGObject::init()
 
 std::string SGObject::get_description(std::string_view name) const
 {
-	auto it = self->map.find(BaseTag(name));
-	if (it != self->map.end())
+	auto it = self->find(BaseTag(name));
+	if (it != self->end())
 	{
 		return std::string(it->second.get_properties().get_description());
 	}
@@ -350,13 +300,13 @@ std::string SGObject::get_description(std::string_view name) const
 
 void SGObject::build_gradient_parameter_dictionary(std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict)
 {
-	for (auto& param: self->filter(ParameterProperties::GRADIENT)) 
-		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this(); 
+	for (auto& param: self->filter(ParameterProperties::GRADIENT))
+		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this();
 
-	for (const auto& param: self->filter(ParameterProperties::HYPER)) 
+	for (const auto& param: self->filter(ParameterProperties::HYPER))
 	{
-		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName())) 
-			child->build_gradient_parameter_dictionary(dict); 
+		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName()))
+			child->build_gradient_parameter_dictionary(dict);
 		else if (auto child = get(param.first.name(), std::nothrow))
 			child->build_gradient_parameter_dictionary(dict);
 		else
@@ -379,7 +329,7 @@ std::shared_ptr<SGObject> SGObject::clone(ParameterProperties pp) const
 	          "SGObject::create_empty() overridden.\n",
 	    get_name());
 
-	for (const auto &it : self->filter(pp))
+	for (const auto& it : self->filter(pp))
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
@@ -420,7 +370,7 @@ void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_c
 
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
 	{
-		auto msg = self->map[_tag].get_constrain_function()(value);
+		auto msg = self->find(_tag)->second.get_constrain_function()(value);
 		if (!msg.empty())
 		{
 			require(!do_checks,
@@ -477,7 +427,7 @@ AnyParameter SGObject::get_function(const BaseTag& _tag) const
 
 bool SGObject::has_parameter(const BaseTag& _tag) const
 {
-	return self->has(_tag);
+	return std::get<0>(self->has(_tag));
 }
 
 void SGObject::add_callback_function(
@@ -570,7 +520,7 @@ std::string SGObject::to_string() const
 	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
 	ss << get_name();
 	ss << "(";
-	for (auto it = self->map.begin(); it != self->map.end(); ++it)
+	for (auto it = self->begin(); it != self->end(); ++it)
 	{
 		ss << it->first.name() << "=";
 		auto value = it->second.get_value();
@@ -586,7 +536,7 @@ std::string SGObject::to_string() const
 		{
 			ss << "{function}";
 		}
-		if (std::next(it) != (self->map.end()))
+		if (std::next(it) != (self->end()))
 		{
 			ss << ", ";
 		}
@@ -599,7 +549,7 @@ std::string SGObject::to_string() const
 std::map<std::string, std::shared_ptr<const AnyParameter>> SGObject::get_params() const
 {
 	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
-	for (auto const& each: self->map) {
+	for (auto const& each: *self) {
 		result.emplace(each.first.name().data(), std::make_shared<const AnyParameter>(each.second));
 	}
 	return result;
@@ -627,7 +577,7 @@ bool SGObject::equals(const SGObject* other) const
 	}
 
 	/* Assumption: objects of same type have same set of tags. */
-	for (const auto &it : self->map)
+	for (const auto& it : *self)
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
@@ -677,9 +627,8 @@ void SGObject::for_each_param_of_type(
     std::function<void(const std::string&, T*)> operation)
 {
 	auto visitor = std::make_unique<FilterVisitor<T>>(operation);
-	const auto& param_map = self->map;
 
-	std::for_each(param_map.begin(), param_map.end(), [&](auto& pair) {
+	std::for_each(self->begin(), self->end(), [&](auto& pair) {
 		Any any_param = pair.second.get_value();
 		if (any_param.safe_visitable())
 		{
@@ -720,7 +669,7 @@ std::shared_ptr<SGObject> SGObject::get(std::string_view name, index_t index) co
 		error(
 			"Cannot get array parameter {}::{}[{}] of type {} as object.",
 			get_name(), name.data(), index,
-			self->map[BaseTag(name)].get_value().type().c_str());
+			self->find(BaseTag(name))->second.get_value().type().c_str());
 	}
 	return result;
 }
@@ -744,7 +693,7 @@ std::shared_ptr<SGObject> SGObject::get(std::string_view name) const noexcept(fa
 	error(
 			"Cannot get parameter {}::{} of type {} as object.",
 			get_name(), name.data(),
-			self->map[BaseTag(name.data())].get_value().type().c_str());
+			self->find(BaseTag(name.data()))->second.get_value().type().c_str());
 	return nullptr;
 }
 
