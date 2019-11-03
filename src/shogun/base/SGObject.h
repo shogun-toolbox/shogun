@@ -1076,7 +1076,7 @@ private:
 	AnyParameter get_function(const BaseTag& _tag) const;
 
 	class Self;
-	Unique<Self> self;
+	std::unique_ptr<Self> self;
 
 	class ParameterObserverList;
 	Unique<ParameterObserverList> param_obs_list;
