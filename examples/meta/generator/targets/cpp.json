@@ -1,5 +1,5 @@
 {
-    "Program": "#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\nusing namespace shogun::io;\n\nint main(int, char*[])\n{\n\n$program\nreturn 0;\n}\n",
+    "Program": "#include <shogun/base/some.h>\n#include <shogun/io/stream/OutputStream.h>\n${dependencies}\n\nusing namespace shogun;\nusing namespace shogun::io;\n\nint main(int, char*[])\n{\n\n$program\nreturn 0;\n}\n",
     "Dependencies": {
         "IncludeAllClasses": true,
         "IncludeEnums": true,
