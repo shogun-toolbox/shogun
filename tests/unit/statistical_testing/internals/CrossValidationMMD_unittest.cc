@@ -107,6 +107,7 @@ TEST(CrossValidationMMD, biased_full)
 	kfold_p->put("seed", seed);
 	kfold_q->put("seed", seed);
 
+	std::mt19937_64 permPRNG(seed);
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
@@ -134,7 +135,7 @@ TEST(CrossValidationMMD, biased_full)
 					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
-				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), prng);
+				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), permPRNG);
 
 				EXPECT_EQ(cv.m_rejections(current_run*num_folds+current_fold, k), p_value<alpha);
 
@@ -206,6 +207,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	kfold_p->put("seed", seed);
 	kfold_q->put("seed", seed);
 
+	std::mt19937_64 permPRNG(seed);
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
@@ -233,7 +235,7 @@ TEST(CrossValidationMMD, unbiased_full)
 					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
-				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), prng);
+				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), permPRNG);
 
 				EXPECT_EQ(cv.m_rejections(current_run*num_folds+current_fold, k), p_value<alpha);
 
@@ -306,6 +308,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	kfold_p->put("seed", seed);
 	kfold_q->put("seed", seed);
 
+	std::mt19937_64 permPRNG(seed);
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
@@ -333,7 +336,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
-				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), prng);
+				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>(), permPRNG);
 
 				EXPECT_EQ(cv.m_rejections(current_run*num_folds+current_fold, k), p_value<alpha);
 
