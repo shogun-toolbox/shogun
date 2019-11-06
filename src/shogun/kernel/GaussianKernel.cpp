@@ -6,8 +6,6 @@
  *          Tonmoy Saikia, Sergey Lisitsyn, Matt Aasted, Sanuj Sharma
  */
 
-#include <Eigen/Core>
-#include <unsupported/Eigen/AutoDiff>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DotFeatures.h>
@@ -89,21 +87,21 @@ void CGaussianKernel::set_width(float64_t w)
 {
 	require(w>0, "width ({}) must be positive",w);
 	m_log_width = std::log(w / 2.0) / 2.0;
+	m_eigen_log_width.value() = m_log_width;
 }
 
-auto CGaussianKernel::kernel_function(int32_t idx_a, int32_t idx_b) const
+auto CGaussianKernel::kernel_function(int32_t idx_a, int32_t idx_b)
 {
 	// this could be written as Eigen::Matrix<float64_t, n_differentiable_params, 1>;
-	using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
-	Eigen::AutoDiffScalar<EigenScalar> eigen_log_width(m_log_width);
-	// resize(n_differentiable_params)
-	eigen_log_width.derivatives().resize(1);
+	m_eigen_log_width.value() = m_log_width;
+
 	// this could be written as 
-	// eigen_log_width.derivatives() = EigenScalar::Unit(1,i);
+	// eigen_log_width.derivatives() = EigenScalar::Unit(n_differentiable_params, i);
 	// where i is the idx of the adjoint
-	eigen_log_width.derivatives() = EigenScalar::Unit(1,0);
+	m_eigen_log_width.derivatives() = Eigen::VectorXd::Unit(1,0);
+
 	auto el = CShiftInvariantKernel::distance(idx_a, idx_b);
-	return exp(-el / (exp(eigen_log_width * 2.0) * 2.0));
+	return exp(-el / (exp(m_eigen_log_width * 2.0) * 2.0));
 }
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
@@ -119,12 +117,10 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 		
 		for (int k=0; k<num_rhs; k++)
 		{
-#pragma omp parallel for
+// #pragma omp parallel for
 			for (int j=0; j<num_lhs; j++)
 			{
-				// this could be written as Eigen::Matrix<float64_t, n_differentiable_params, 1>;
-				using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
-				Eigen::AutoDiffScalar<EigenScalar> kernel = kernel_function(j, k);
+				auto kernel = kernel_function(j, k);
 				// 0 is the index of the width parameter
 				derivative(j, k) = kernel.derivatives()(0);
 			}
@@ -140,10 +136,8 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	// this could be written as Eigen::Matrix<float64_t, n_differentiable_params, 1>;
-	using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
-	Eigen::AutoDiffScalar<EigenScalar> kernel = kernel_function(idx_a, idx_b);
-    return kernel.value();
+	auto kernel = kernel_function(idx_a, idx_b);
+	return kernel.value();
 }	
 
 void CGaussianKernel::load_serializable_post() noexcept(false)

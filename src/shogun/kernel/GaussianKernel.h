@@ -11,6 +11,8 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/kernel/ShiftInvariantKernel.h>
+#include <shogun/mathematics/eigen3.h>
+#include <unsupported/Eigen/AutoDiff>
 
 namespace shogun
 {
@@ -130,7 +132,7 @@ public:
 	 * 
 	 * @return expression template of kernel function
 	 */
-	auto kernel_function(int32_t idx_a, int32_t idx_b) const;
+	auto kernel_function(int32_t idx_a, int32_t idx_b);
 #endif
 	/** return derivative with respect to specified parameter
 	 *
@@ -183,6 +185,7 @@ private:
 protected:
 	/** width */
 	float64_t m_log_width;
+	Eigen::AutoDiffScalar<Eigen::VectorXd> m_eigen_log_width;
 };
 
 }
