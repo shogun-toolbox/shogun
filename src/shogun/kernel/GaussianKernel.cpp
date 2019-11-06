@@ -136,8 +136,13 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	float64_t result;
+	#pragma omp critical
+{
 	auto kernel = kernel_function(idx_a, idx_b);
-	return kernel.value();
+	result = kernel.value();
+}
+	return result;
 }	
 
 void CGaussianKernel::load_serializable_post() noexcept(false)
