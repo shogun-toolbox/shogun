@@ -91,6 +91,21 @@ void CGaussianKernel::set_width(float64_t w)
 	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
+auto CGaussianKernel::kernel_function(int32_t idx_a, int32_t idx_b) const
+{
+	// this could be written as Eigen::Matrix<float64_t, n_differentiable_params, 1>;
+	using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
+	Eigen::AutoDiffScalar<EigenScalar> eigen_log_width(m_log_width);
+	// resize(n_differentiable_params)
+	eigen_log_width.derivatives().resize(1);
+	// this could be written as 
+	// eigen_log_width.derivatives() = EigenScalar::Unit(1,i);
+	// where i is the idx of the adjoint
+	eigen_log_width.derivatives() = EigenScalar::Unit(1,0);
+	auto el = CShiftInvariantKernel::distance(idx_a, idx_b);
+	return exp(-el / (exp(eigen_log_width * 2.0) * 2.0));
+}
+
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
 {
 	using std::exp;
@@ -101,17 +116,16 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 	if (!strcmp(param->m_name, "log_width"))
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
-		using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
-		Eigen::AutoDiffScalar<EigenScalar> eigen_log_width = m_log_width;
 		
 		for (int k=0; k<num_rhs; k++)
 		{
 #pragma omp parallel for
 			for (int j=0; j<num_lhs; j++)
 			{
-				eigen_log_width.derivatives() = EigenScalar::Unit(1,0);
-				auto el = CShiftInvariantKernel::distance(j, k);
-				Eigen::AutoDiffScalar<EigenScalar> kernel = exp(-el / (exp(eigen_log_width * 2.0) * 2.0));
+				// this could be written as Eigen::Matrix<float64_t, n_differentiable_params, 1>;
+				using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
+				Eigen::AutoDiffScalar<EigenScalar> kernel = kernel_function(j, k);
+				// 0 is the index of the width parameter
 				derivative(j, k) = kernel.derivatives()(0);
 			}
 		}
@@ -126,8 +140,10 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-    float64_t result=distance(idx_a, idx_b);
-	return std::exp(-result);
+	// this could be written as Eigen::Matrix<float64_t, n_differentiable_params, 1>;
+	using EigenScalar = Eigen::Matrix<float64_t, 1, 1>;
+	Eigen::AutoDiffScalar<EigenScalar> kernel = kernel_function(idx_a, idx_b);
+    return kernel.value();
 }	
 
 void CGaussianKernel::load_serializable_post() noexcept(false)

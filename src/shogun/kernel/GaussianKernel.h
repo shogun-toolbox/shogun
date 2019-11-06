@@ -123,6 +123,15 @@ public:
 		return std::exp(m_log_width * 2.0) * 2.0;
 	}
 
+#ifndef SWIG
+	/**
+	 *	Returns a lazily evaluated Eigen expression template
+	 *  that tracks the gradient of differentiable hyperparameters
+	 * 
+	 * @return expression template of kernel function
+	 */
+	auto kernel_function(int32_t idx_a, int32_t idx_b) const;
+#endif
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param param the parameter
