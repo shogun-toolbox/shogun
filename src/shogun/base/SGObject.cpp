@@ -350,13 +350,13 @@ std::string SGObject::get_description(std::string_view name) const
 
 void SGObject::build_gradient_parameter_dictionary(std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict)
 {
-	for (auto& param: self->filter(ParameterProperties::GRADIENT)) 
-		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this(); 
+	for (auto& param: self->filter(ParameterProperties::GRADIENT))
+		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this();
 
-	for (const auto& param: self->filter(ParameterProperties::HYPER)) 
+	for (const auto& param: self->filter(ParameterProperties::HYPER))
 	{
-		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName())) 
-			child->build_gradient_parameter_dictionary(dict); 
+		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName()))
+			child->build_gradient_parameter_dictionary(dict);
 		else if (auto child = get(param.first.name(), std::nothrow))
 			child->build_gradient_parameter_dictionary(dict);
 		else
@@ -700,7 +700,7 @@ bool SGObject::equals(const std::shared_ptr<const SGObject>& other) const
 
 std::shared_ptr<SGObject> SGObject::create_empty() const
 {
-	return create(this->get_name(), this->m_generic);
+//	return create(this->get_name(), this->m_generic);
 }
 
 void SGObject::init_auto_params()

@@ -23,6 +23,150 @@ OPTION(LIBSHOGUN_BUILD_STATIC "Build libshogun static library")
 OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
 OPTION(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
+SET(SHOGUN_CORE_HEADERS
+  base/base_types.h
+  base/class_list.h
+  base/constraint.h
+  base/macros.h
+  base/Parallel.h
+  base/progress.h
+  base/range.h
+  base/SGObject.h
+  base/ShogunEnv.h
+  base/unique.h
+  base/variant.h
+  base/Version.h
+  distance/Distance.h
+  evaluation/Evaluation.h
+  evaluation/EvaluationResult.h
+  features/Features.h
+  features/Subset.h
+  features/SubsetStack.h
+  io/Serializable.h
+  io/File.h
+  io/ShogunErrc.h
+  io/fmt/fmt.h
+  io/fs/FileSystem.h
+  io/fs/FileSystemRegistry.h
+  io/fs/Path.h
+  io/fs/PosixFileSystem.h
+  io/fs/WindowsFileSystem.h
+  io/serialization/Deserializer.h
+  io/serialization/Serializer.h
+  io/stream/InputStream.h
+  io/stream/OutputStream.h
+  io/stream/FileInputStream.h
+  io/stream/FileOutputStream.h
+  io/stream/BufferedInputStream.h
+  io/stream/BufferedOutputStream.h
+  io/SGIO.h
+  io/visitors/ToStringVisitor.h
+  kernel/Kernel.h
+  labels/Labels.h
+  lib/exception/ShogunException.h
+  lib/any.h
+  lib/basetag.h
+  lib/cpu.h
+  lib/common.h
+  lib/DataType.h
+  lib/DynamicArray.h
+  lib/DynamicObjectArray.h
+  lib/GPUMatrix.h
+  lib/GPUVector.h
+  lib/memory.h
+  lib/RefCount.h
+  lib/RxCppHeader.h
+  lib/sg_types.h
+  lib/SGCachedVector.h
+  lib/SGMatrix.h
+  lib/SGMatrixList.h
+  lib/SGNDArray.h
+  lib/SGReferencedData.h
+  lib/SGSparseMatrix.h
+  lib/SGSparseVector.h
+  lib/SGVector.h
+  lib/Signal.h
+  lib/StoppableSGObject.h
+  lib/tag.h
+  lib/Time.h
+  lib/Tokenizer.h
+  lib/type_case.h
+  lib/View.h
+  loss/LossFunction.h
+  machine/Machine.h
+  machine/gp/LikelihoodModel.h
+  machine/Pipeline.h
+  mathematics/linalg/internal/Block.h
+  mathematics/linalg/LinalgBackendBase.h
+  mathematics/linalg/LinalgNamespace.h
+  mathematics/linalg/LinalgEnums.h
+  mathematics/linalg/LinalgMacros.h
+  mathematics/linalg/SGLinalg.h
+  mathematics/Math.h
+  mathematics/RandomMixin.h
+  mathematics/RandomNamespace.h
+  mathematics/Seedable.h
+  multiclass/MulticlassStrategy.h
+  transformer/Transformer.h
+  util/clone.h
+  util/converters.h
+  util/factory.h
+  util/hash.h
+  util/iterators.h
+  util/system.h
+  util/traits.h
+)
+
+SET(SHOGUN_CORE_SOURCES
+  base/Parallel.cpp
+  base/SGObject.cpp
+  base/ShogunEnv.cpp
+  base/Version.cpp
+  distance/Distance.cpp
+  features/Features.cpp
+  features/Subset.cpp
+  features/SubsetStack.cpp
+  io/fs/FileSystemRegistry.cpp
+  io/fs/Path.cpp
+  io/fs/PosixFileSystem.cpp
+  io/fs/WindowsFileSystem.cpp
+  io/File.cpp
+  io/ShogunErrc.cpp
+  io/serialization/Deserializer.cpp
+  io/serialization/Serializer.cpp
+  io/stream/InputStream.cpp
+  io/stream/BufferedInputStream.cpp
+  io/stream/FileInputStream.cpp
+  io/stream/OutputStream.cpp
+  io/SGIO.cpp
+  io/visitors/ToStringVisitor.cpp
+  kernel/Kernel.cpp
+  labels/Labels.cpp
+  lib/exception/ShogunException.cpp
+  lib/any.cpp
+  lib/DataType.cpp
+  lib/GPUMatrix.cpp
+  lib/GPUVector.cpp
+  lib/memory.cpp
+  lib/SGMatrix.cpp
+  lib/SGMatrixList.cpp
+  lib/SGNDArray.cpp
+  lib/SGReferencedData.cpp
+  lib/SGSparseMatrix.cpp
+  lib/SGSparseVector.cpp
+  lib/Signal.cpp
+  lib/StoppableSGObject.cpp
+  lib/SGVector.cpp
+  lib/Time.cpp
+  lib/Tokenizer.cpp
+  machine/Machine.cpp
+  machine/gp/LikelihoodModel.cpp
+  machine/Pipeline.cpp
+  mathematics/Math.cpp
+  multiclass/MulticlassStrategy.cpp
+  transformer/Transformer.cpp
+)
+
 IF (LIB_INSTALL_DIR)
   SET(SHOGUN_LIB_INSTALL ${LIB_INSTALL_DIR})
 ELSE()
@@ -62,6 +206,15 @@ OPTION(USE_SVMLIGHT "SVMLight" ON)
 IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
     MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included. Disable by USE_SVMLIGHT=OFF")
 ENDIF()
+
+add_library(shogun-core SHARED ${SHOGUN_CORE_HEADERS} ${SHOGUN_CORE_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+set_property(TARGET shogun-core PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+set_target_properties(
+  shogun-core PROPERTIES
+  VERSION ${LIBSHOGUNVER}
+  SOVERSION ${LIBSHOGUNSO}
+  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR})
+set_property(TARGET shogun-core APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
 
 # add target to compile the libshogun sources
 add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
@@ -335,7 +488,7 @@ IF (TFLogger_FOUND)
 ENDIF()
 
 #### LAPACK
-include(ShogunFindLAPACK)
+#include(ShogunFindLAPACK)
 
 CHECK_CXX_SOURCE_COMPILES("#include <variant>\n int main(int argc, char** argv) { std::variant<int, float> v; return 0; }" HAVE_STD_VARIANT)
 # variant
@@ -352,9 +505,9 @@ FIND_PACKAGE(spdlog)
 IF (NOT spdlog_FOUND)
     include(external/spdlog)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-          $<BUILD_INTERFACE:${spdlog_INCLUDE_DIR}>
-          $<INSTALL_INTERFACE:include/shogun/third_party>
-          )
+      $<BUILD_INTERFACE:${spdlog_INCLUDE_DIR}>
+      $<INSTALL_INTERFACE:include/shogun/third_party>
+    )
 ELSE()
     SET(USE_EXTERNAL_SPDLOG 1)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${spdlog_INCLUDE_DIR})
@@ -523,6 +676,7 @@ OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point value
 # add bundled libraries to dependency
 if(SHOGUN_DEPENDS)
   add_dependencies(libshogun ${SHOGUN_DEPENDS})
+  add_dependencies(shogun-core ${SHOGUN_DEPENDS})
 endif()
 
 OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
@@ -546,6 +700,44 @@ endif()
 # FIXME: remove all the INCLUDES/SYSTEM_INCLUDES/POSTLINKFLAGS
 include_directories(${INCLUDES})
 target_link_libraries(shogun PUBLIC ${POSTLINKFLAGS})
+
+##### testing
+IF (ENABLE_TESTING)
+  enable_testing()
+  FIND_PACKAGE(Jinja2)
+  FIND_PACKAGE(Ctags)
+
+  # Find GTEST and GMOCK frameworks
+  include(external/GoogleTestNMock)
+  ExternalProject_Get_Property(GoogleMock source_dir)
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
+  LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
+
+  add_library(shogun_test_main ${CMAKE_CURRENT_SOURCE_DIR}/util/unittest_main.cc)
+  if (APPLE)
+    target_link_libraries(shogun_test_main
+      gmock
+      gtest
+      shogun-core
+    )
+  elseif(MSVC)
+    target_link_libraries(shogun_test_main
+      gmock
+      gtest
+      shogun-core
+    )
+  else()
+    target_link_libraries(shogun_test_main
+      gmock
+      gtest
+      shogun-core
+    )
+  endif()
+
+  set(SHOGUN_TEST_LINK_LIBS shogun_test_main)
+
+  ADD_SHOGUN_TEST(lib/any_test)
+ENDIF()
 
 ################# benchmarking
 IF (BUILD_BENCHMARKS)

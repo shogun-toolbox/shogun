@@ -58,7 +58,7 @@ namespace shogun
 		SGLinalg()
 		{
 			cpu_backend =
-			    std::unique_ptr<LinalgBackendBase>(new LinalgBackendEigen());
+			    std::make_unique<LinalgBackendBase>();
 			gpu_backend = nullptr;
 			linalg_warnings = true;
 		}

@@ -867,24 +867,6 @@ std::shared_ptr<Kernel> Kernel::obtain_from_generic(const std::shared_ptr<SGObje
 		return NULL;
 }
 
-bool Kernel::init_optimization_svm(const std::shared_ptr<SVM >& svm)
-{
-	int32_t num_suppvec=svm->get_num_support_vectors();
-	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
-	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
-
-	for (int32_t i=0; i<num_suppvec; i++)
-	{
-		sv_idx[i]    = svm->get_support_vector(i);
-		sv_weight[i] = svm->get_alpha(i);
-	}
-	bool ret = init_optimization(num_suppvec, sv_idx, sv_weight);
-
-	SG_FREE(sv_idx);
-	SG_FREE(sv_weight);
-	return ret;
-}
-
 void Kernel::load_serializable_post() noexcept(false)
 {
 	SGObject::load_serializable_post();

@@ -196,12 +196,13 @@ macro(ADD_LIBRARY_DEPENDENCY)
 endmacro()
 
 macro(SHOGUN_DEPENDENCIES)
-	ADD_LIBRARY_DEPENDENCY(TARGETS shogun shogun-static libshogun shogun_deps ${ARGN})
+	ADD_LIBRARY_DEPENDENCY(TARGETS shogun shogun-static libshogun shogun_deps shogun-core ${ARGN})
 endmacro()
 
 function(SHOGUN_LINK_LIBS)
 	set(SCOPE PRIVATE)
 	target_link_libraries(shogun ${SCOPE} ${ARGN})
+	target_link_libraries(shogun-core ${SCOPE} ${ARGN})
 	if (LIBSHOGUN_BUILD_STATIC)
 		target_link_libraries(shogun-static ${SCOPE} ${ARGN})
 	endif()
@@ -212,6 +213,7 @@ function(SHOGUN_COMPILE_OPTS)
 	set(SCOPE PRIVATE)
 	target_compile_options(libshogun ${SCOPE} ${ARGN})
 	target_compile_options(shogun ${SCOPE} ${ARGN})
+	target_compile_options(shogun-core ${SCOPE} ${ARGN})
 	if (LIBSHOGUN_BUILD_STATIC)
 		target_compile_options(shogun-static ${SCOPE} ${ARGN})
 	endif()
@@ -229,6 +231,7 @@ function(SHOGUN_INCLUDE_DIRS)
 	endif()
 	target_include_directories(libshogun ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
 	target_include_directories(shogun ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
+	target_include_directories(shogun-core ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
 	if (LIBSHOGUN_BUILD_STATIC)
 		target_include_directories(shogun-static ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
 	endif()
@@ -326,5 +329,30 @@ function(ADD_SHOGUN_BENCHMARK REL_BENCHMARK_NAME)
 	set_tests_properties(${BENCHMARK_NAME} PROPERTIES LABELS "benchmark")
 	if(ARGN)
 		set_tests_properties(${BENCHMARK_NAME} PROPERTIES ${ARGN})
+	endif()
+endfunction()
+
+
+function(ADD_SHOGUN_TEST REL_TEST_NAME)
+	get_filename_component(TEST_NAME ${REL_TEST_NAME} NAME_WE)
+
+	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${REL_TEST_NAME}.cc)
+		# This benchmark has a corresponding .cc file, set it up as an executable.
+		add_executable(${TEST_NAME} "${REL_TEST_NAME}.cc")
+		set_target_properties (${TEST_NAME}
+			PROPERTIES
+			RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+			RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin
+			RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
+		)
+		target_link_libraries(${TEST_NAME} ${SHOGUN_TEST_LINK_LIBS})
+		target_include_directories(${TEST_NAME} PRIVATE ${source_dir}/googlemock/include ${source_dir}/googletest/include)
+		set(NO_COLOR "--color_print=false")
+	endif()
+
+	add_test(${TEST_NAME} ${CMAKE_BINARY_DIR}/bin/${TEST_NAME} ${NO_COLOR})
+	set_tests_properties(${TEST_NAME} PROPERTIES LABELS "test")
+	if(ARGN)
+		set_tests_properties(${TEST_NAME} PROPERTIES ${ARGN})
 	endif()
 endfunction()

@@ -767,13 +767,6 @@ class Kernel : public SGObject
 		 */
 		virtual bool delete_optimization();
 
-		/** initialize optimization
-		 *
-		 * @param svm svm model
-		 * @return if initializing was successful
-		 */
-		bool init_optimization_svm(const std::shared_ptr<SVM>& svm) ;
-
 		/** compute optimized
 		 *
 		 * @param vector_idx index to compute

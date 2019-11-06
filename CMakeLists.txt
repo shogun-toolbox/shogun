@@ -579,7 +579,7 @@ IF(ENABLE_TESTING)
 			if (NOT LIBSHOGUN)
 				MESSAGE(FATAL_ERROR "Cannot compile tests without libshogun!")
 			ENDIF()
-			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
+			#add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
 		ENDIF()
 
 		IF(BUILD_META_EXAMPLES AND NOT DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
