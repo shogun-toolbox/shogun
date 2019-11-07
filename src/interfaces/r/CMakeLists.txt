@@ -1,3 +1,4 @@
+MESSAGE(FATAL_ERROR "R interface currenlty does not work, see swig/swig#1660 issue")
 IF (SWIG_VERSION VERSION_LESS 4.0.0)
 	MESSAGE(FATAL_ERROR "For R interface SWIG 4.0.0 or later is required")
 ENDIF()
