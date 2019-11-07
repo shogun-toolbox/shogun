@@ -53,8 +53,8 @@
 %define RANDOM_INTERFACE(SG_CLASS)
 namespace shogun
 {
-        %template(Seedable##SG_CLASS) Seedable<SG_CLASS>;
-        %template(RandomMixin##SG_CLASS) RandomMixin<SG_CLASS, std::mt19937_64>;
+        %template(Seedable ## SG_CLASS) Seedable<SG_CLASS>;
+        %template(Random ## SG_CLASS) RandomMixin<SG_CLASS, std::mt19937_64>;
 }
 %enddef
 

@@ -76,8 +76,8 @@
 #ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/GPBTSVM.h>
 #endif //USE_GPL_SHOGUN
-%include <shogun/classifier/LDA.h>
 %template(DenseDispatchLDA) shogun::DenseRealDispatch<shogun::LDA, shogun::LinearMachine>;
+%include <shogun/classifier/LDA.h>
 
 %include <shogun/classifier/LPBoost.h>
 %include <shogun/classifier/LPM.h>

@@ -264,6 +264,7 @@ public:
 		return has<T>(tag.name());
 	}
 
+#ifndef SWIG
 	/** Checks if a type exists for a class parameter identified by a name.
 	 *
 	 * @param name name of the parameter
@@ -288,7 +289,7 @@ public:
 		const Any value = get_parameter(tag).get_value();
 		return value.has_type<std::shared_ptr<T>>();
 	}
-#ifndef SWIG
+
 	/** Setter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
@@ -1096,12 +1097,6 @@ protected:
 	{
 		return static_cast<index_t>(m_subscriptions.size());
 	}
-
-	/**
-	 * Observe a parameter value and emit them to observer.
-	 * @param value Observed parameter's value
-	 */
-//	void observe(const std::shared_ptr<ObservedValue> value) const;
 
 	/**
 	 * Observe a parameter value, given a pointer.

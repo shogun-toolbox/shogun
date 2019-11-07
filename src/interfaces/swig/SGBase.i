@@ -320,6 +320,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_cancel_computations;
 
 %shared_ptr(shogun::SGObject)
+%shared_ptr(shogun::Seedable<shogun::SGObject>)
+%shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %shared_ptr(shogun::StoppableSGObject)
 
 %include <shogun/lib/common.h>
@@ -412,13 +414,8 @@ namespace shogun {
 %ignore shogun::SGObject::get;
 #endif // SWIGPYTHON || SWIGR
 
-%shared_ptr(shogun::Seedable<shogun::SGObject>)
-%shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %include <shogun/base/SGObject.h>
-
-/** Instantiate RandomMixin */
-%template(SeedableSGObject) shogun::Seedable<shogun::SGObject>;
-%template(RandomMixinSGObject) shogun::RandomMixin<shogun::SGObject, std::mt19937_64>;
+RANDOM_INTERFACE(SGObject)
 
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>

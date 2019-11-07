@@ -30,6 +30,7 @@
 
 %shared_ptr(shogun::MultitaskROCEvaluation)
 
+SHARED_RANDOM_INTERFACE(shogun::LinearMachine)
 %shared_ptr(shogun::LibLinearMTL)
 
 /* Domain adaptation renames */
@@ -57,6 +58,7 @@
 #endif //USE_GPL_SHOGUN
 
 %include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
+RANDOM_INTERFACE(LinearMachine)
 %include <shogun/transfer/multitask/LibLinearMTL.h>
 
 #ifdef USE_GPL_SHOGUN
