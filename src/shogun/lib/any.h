@@ -25,7 +25,6 @@
 #include <shogun/base/base_types.h>
 #include <shogun/util/converters.h>
 #include <shogun/util/traits.h>
-
 namespace shogun
 {
 
@@ -52,7 +51,7 @@ namespace shogun
 		return any_detail::demangled_type_helper(name);
 	}
 
-	class CSGObject;
+	class SGObject;
 	template <class T>
 	class SGVector;
 	template <class T>
@@ -171,6 +170,7 @@ namespace shogun
 		virtual ~AnyVisitor() = default;
 
 		virtual void on(bool*) = 0;
+		virtual void on(std::vector<bool>::reference*) = 0;
 		virtual void on(char*) = 0;
 		virtual void on(int8_t*) = 0;
 		virtual void on(uint8_t*) = 0;
@@ -184,7 +184,7 @@ namespace shogun
 		virtual void on(float64_t*) = 0;
 		virtual void on(floatmax_t*) = 0;
 		virtual void on(complex128_t*) = 0;
-		virtual void on(CSGObject**) = 0;
+		virtual void on(std::shared_ptr<SGObject>*) = 0;
 		virtual void on(std::string*) = 0;
 		virtual void enter_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void enter_vector(index_t* size) = 0;
@@ -215,7 +215,7 @@ namespace shogun
 			enter_vector(std::addressof(size));
 			if (size != _v->vlen)
 				_v->resize_vector(size);
-			for (auto& _value : *_v)
+			for (auto&& _value : *_v)
 				on(std::addressof(_value));
 			exit_vector(std::addressof(size));
 		}
@@ -309,7 +309,7 @@ namespace shogun
 			enter_std_vector(std::addressof(size));
 			if (size != _v->size())
 				_v->resize(size);
-			for (auto& _value : *_v)
+			for (auto&& _value : *_v)
 				on(std::addressof(_value));
 			exit_std_vector(std::addressof(size));
 		}
@@ -345,10 +345,10 @@ namespace shogun
 
 		template <
 		    class T,
-		    std::enable_if_t<std::is_base_of_v<CSGObject, T>, T>* = nullptr>
-		void on(T** v)
+		    std::enable_if_t<std::is_base_of_v<SGObject, T>, T>* = nullptr>
+		void on(std::shared_ptr<T>* v)
 		{
-			on((CSGObject**)v);
+			on((std::shared_ptr<SGObject>*)v);
 		}
 
 		void on(Empty*)
@@ -421,6 +421,16 @@ namespace shogun
 		{
 		};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+		template <class T, class U>
+		constexpr T cast(const U& value)
+		{
+			if constexpr (traits::is_shared_ptr<U>::value)
+				return std::dynamic_pointer_cast<typename T::element_type>(
+				    value);
+			else
+				return dynamic_cast<T>(value);
+		}
 
 		template <class T>
 		constexpr T& mutable_value_of(void** ptr)
@@ -537,7 +547,11 @@ namespace shogun
 				if (!value)
 					return nullptr;
 
-				return dynamic_cast<T>(value->clone());
+				auto cloned = value->clone();
+				if constexpr(std::is_same_v<T, decltype(cloned)>)
+					return cloned;
+				else
+					return cast<T>(cloned);
 			}
 			else if constexpr (traits::has_clone<T>::value)
 			{
@@ -622,11 +636,14 @@ namespace shogun
 			{
 				return 0;
 			}
-			SG_FREE(ptr);
+			if constexpr (traits::is_shared_ptr<T>::value)
+				delete[] ptr;
+			else
+				SG_FREE(ptr);
 			return 0;
 		}
 
-		void free_object(CSGObject* obj);
+		void free_object(SGObject* obj);
 
 		template <class T, class S>
 		inline auto free_array(T** ptr, S size) -> decltype(ptr[0]->unref())
@@ -639,7 +656,6 @@ namespace shogun
 			{
 				free_object(ptr[i]);
 			}
-
 			SG_FREE(ptr);
 			return 0;
 		}
@@ -1035,8 +1051,8 @@ namespace shogun
 
 	/** @brief Allows to store objects of arbitrary types
 	 * by using a BaseAnyPolicy and provides a type agnostic API.
-	 * See its usage in CSGObject::Self, CSGObject::set(), CSGObject::get()
-	 * and CSGObject::has().
+	 * See its usage in SGObject::Self, SGObject::set(), SGObject::get()
+	 * and SGObject::has().
 	 * .
 	 */
 	class Any
@@ -1274,14 +1290,29 @@ namespace shogun
 	inline void register_casts()
 	{
 		using Derived = std::remove_pointer_t<T>;
-		if constexpr (std::is_base_of_v<CSGObject, Derived>)
+		if constexpr (std::is_base_of_v<SGObject, Derived>)
 		{
-			Any::register_caster<T, CSGObject*>(
-			    [](T value) { return dynamic_cast<CSGObject*>(value); });
-			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>)
+			Any::register_caster<T, SGObject*>(
+			    [](T value) { return dynamic_cast<SGObject*>(value); });
+			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>
+					&& !std::is_same_v<Derived, base_type<Derived>>)
 				Any::register_caster<T, base_type<Derived>*>([](T value) {
 					return dynamic_cast<base_type<Derived>*>(value);
 				});
+		}
+		if constexpr (traits::is_shared_ptr<T>::value)
+		{
+			using SharedType = typename T::element_type;
+			if constexpr (std::is_base_of_v<SGObject, SharedType>)
+			{
+				Any::register_caster<T, std::shared_ptr<SGObject>>(
+						[](T value) { return std::dynamic_pointer_cast<SGObject>(value); });
+				if constexpr (!std::is_same_v<std::nullptr_t, base_type<SharedType>>
+						&& !std::is_same_v<SharedType, base_type<SharedType>>)
+					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](T value) {
+						return std::dynamic_pointer_cast<base_type<SharedType>>(value);
+					});
+			}
 		}
 		if constexpr (std::is_arithmetic_v<T>)
 		{

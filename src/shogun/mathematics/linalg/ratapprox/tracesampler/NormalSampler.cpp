@@ -13,29 +13,29 @@
 namespace shogun
 {
 
-CNormalSampler::CNormalSampler()
-	: RandomMixin<CTraceSampler>()
+NormalSampler::NormalSampler()
+	: RandomMixin<TraceSampler>()
 {
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
-CNormalSampler::CNormalSampler(index_t dimension)
-	: RandomMixin<CTraceSampler>(dimension)
+NormalSampler::NormalSampler(index_t dimension)
+	: RandomMixin<TraceSampler>(dimension)
 {
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
-CNormalSampler::~CNormalSampler()
+NormalSampler::~NormalSampler()
 {
 	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
-void CNormalSampler::precompute()
+void NormalSampler::precompute()
 {
 	m_num_samples=1;
 }
 
-SGVector<float64_t> CNormalSampler::sample(index_t idx) const
+SGVector<float64_t> NormalSampler::sample(index_t idx) const
 {
 	// ignore idx since it doesnt matter, all samples are independent
 	SGVector<float64_t> s(m_dimension);

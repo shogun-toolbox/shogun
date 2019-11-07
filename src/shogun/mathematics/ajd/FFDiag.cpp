@@ -8,7 +8,7 @@ using namespace Eigen;
 
 void getW(float64_t *C, int *ptN, int *ptK, float64_t *W);
 
-SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> FFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int n = C0.dims[0];
@@ -69,7 +69,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 		crit.push_back(f);
 
 		if (inum > 1)
-			df = CMath::abs(crit[inum-1]-crit[inum]);
+			df = Math::abs(crit[inum-1]-crit[inum]);
 
 		inum++;
 	}

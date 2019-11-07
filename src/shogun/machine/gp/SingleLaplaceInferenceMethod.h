@@ -29,13 +29,13 @@ namespace shogun
  * This specific implementation was adapted from the infLaplace.m file in the
  * GPML toolbox.
  */
-class CSingleLaplaceInferenceMethod: public CLaplaceInference
+class SingleLaplaceInferenceMethod: public LaplaceInference
 {
-friend class CSingleLaplaceNewtonOptimizer; 
+friend class SingleLaplaceNewtonOptimizer; 
 friend class SingleLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
-	CSingleLaplaceInferenceMethod();
+	SingleLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -45,10 +45,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CSingleLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	SingleLaplaceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CSingleLaplaceInferenceMethod();
+	virtual ~SingleLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -65,9 +65,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CSingleLaplaceInferenceMethod object
+	 * @return casted SingleLaplaceInferenceMethod object
 	 */
-	static CSingleLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<SingleLaplaceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -137,7 +137,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 
 	/** initialize the update  */
@@ -165,7 +165,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -175,7 +175,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -185,7 +185,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -195,7 +195,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** compute the function value given the current alpha
 	 *
@@ -240,19 +240,19 @@ protected:
 
 
 /** @brief The build-in minimizer for SingleLaplaceInference */
-class CSingleLaplaceNewtonOptimizer: public Minimizer
+class SingleLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	CSingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	SingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
 	virtual const char* get_name() const { return "SingleLaplaceNewtonOptimizer"; }
 
-	virtual ~CSingleLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	virtual ~SingleLaplaceNewtonOptimizer() {  }
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(CSingleLaplaceInferenceMethod *obj);
+	void set_target(const std::shared_ptr<SingleLaplaceInferenceMethod >&obj);
 
 	/** Unset the inference method
 	 * @param is_unref do we SG_UNREF the method
@@ -293,7 +293,7 @@ private:
 	void init();
 
 	/** the inference method */
-	CSingleLaplaceInferenceMethod *m_obj;
+	std::shared_ptr<SingleLaplaceInferenceMethod >m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;

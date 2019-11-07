@@ -21,18 +21,18 @@ namespace shogun
  * constant otherwise, i.e.\f$k({\bf x_i}, {\bf x_j})= \delta_{ij} c\f$
  *
  */
-class CDiagKernel: public CKernel
+class DiagKernel: public Kernel
 {
 	public:
 		/** default constructor  */
-		CDiagKernel();
+		DiagKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param diag diagonal
 		 */
-		CDiagKernel(int32_t size, float64_t diag=1.0);
+		DiagKernel(int32_t size, float64_t diag=1.0);
 
 		/** constructor
 		 *
@@ -40,9 +40,9 @@ class CDiagKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @param diag diagonal
 		 */
-		CDiagKernel(CFeatures* l, CFeatures* r, float64_t diag=1.0);
+		DiagKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t diag=1.0);
 
-		virtual ~CDiagKernel();
+		virtual ~DiagKernel();
 
 		/** initialize kernel
 		 *
@@ -50,7 +50,7 @@ class CDiagKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return feature type the kernel can deal with
 		 *

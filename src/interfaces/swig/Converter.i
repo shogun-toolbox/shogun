@@ -4,10 +4,8 @@
  * Authors: Sergey Lisitsyn
  */
 
-%rename(EmbeddingConverter) CEmbeddingConverter;
-
-%newobject shogun::*::embed_kernel;
-%newobject shogun::*::embed_distance;
+%shared_ptr(shogun::Converter)
+%shared_ptr(shogun::EmbeddingConverter)
 
 %include <shogun/converter/Converter.h>
 %include <shogun/converter/EmbeddingConverter.h>

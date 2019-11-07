@@ -4,10 +4,10 @@
  * Authors: Sergey Lisitsyn, Thoralf Klein, Soeren Sonnenburg, Bjoern Esser
  */
 
-#include <shogun/lib/IndexBlockTree.h>
 #include <shogun/lib/IndexBlock.h>
+#include <shogun/lib/IndexBlockTree.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/List.h>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -87,40 +87,36 @@ void fill_ind_recursive(tree_node_t* node, vector<block_tree_node_t>* tree_nodes
 	}
 }
 
-void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_tree_node_t>* tree_nodes)
+void collect_tree_nodes_recursive(const std::shared_ptr<IndexBlock>& subtree_root_block, vector<block_tree_node_t>* tree_nodes)
 {
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
-	if (sub_blocks->get_num_elements()>0)
+	auto sub_blocks = subtree_root_block->get_sub_blocks();
+	if (sub_blocks.size()>0)
 	{
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
-		do
+		for (const auto& iterator: sub_blocks)
 		{
 			SG_DEBUG("Block [{} {}] ",iterator->get_min_index(), iterator->get_max_index())
 			tree_nodes->push_back(block_tree_node_t(iterator->get_min_index(),iterator->get_max_index(),iterator->get_weight()));
 			if (iterator->get_num_sub_blocks()>0)
 				collect_tree_nodes_recursive(iterator, tree_nodes);
-			SG_UNREF(iterator);
 		}
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
 	}
-	SG_UNREF(sub_blocks);
 }
 
-CIndexBlockTree::CIndexBlockTree() :
-	CIndexBlockRelation(), m_root_block(NULL),
+IndexBlockTree::IndexBlockTree() :
+	IndexBlockRelation(), m_root_block(NULL),
 	m_general(false)
 {
 
 }
 
-CIndexBlockTree::CIndexBlockTree(CIndexBlock* root_block) : CIndexBlockRelation(),
+IndexBlockTree::IndexBlockTree(std::shared_ptr<IndexBlock> root_block) : IndexBlockRelation(),
 	m_root_block(NULL), m_general(false)
 {
-	set_root_block(root_block);
+	set_root_block(std::move(root_block));
 }
 
-CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode) :
-	CIndexBlockRelation(),
+IndexBlockTree::IndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode) :
+	IndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
 	ASSERT(adjacency_matrix.num_rows == adjacency_matrix.num_cols)
@@ -215,56 +211,56 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 	SG_FREE(nodes);
 }
 
-CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t) :
-	CIndexBlockRelation(),
+IndexBlockTree::IndexBlockTree(const SGVector<float64_t>& G, const SGVector<float64_t>& ind_t) :
+	IndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
 	m_precomputed_G = G;
 	m_precomputed_ind_t = ind_t;
 }
 
-CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> ind_t) :
-	CIndexBlockRelation(),
+IndexBlockTree::IndexBlockTree(SGVector<float64_t> ind_t) :
+	IndexBlockRelation(),
 	m_root_block(NULL), m_general(false)
 {
 	m_precomputed_ind_t = ind_t;
 }
 
-CIndexBlockTree::~CIndexBlockTree()
+IndexBlockTree::~IndexBlockTree()
 {
-	SG_UNREF(m_root_block);
+
 }
 
-CIndexBlock* CIndexBlockTree::get_root_block() const
+std::shared_ptr<IndexBlock> IndexBlockTree::get_root_block() const
 {
-	SG_REF(m_root_block);
+
 	return m_root_block;
 }
 
-void CIndexBlockTree::set_root_block(CIndexBlock* root_block)
+void IndexBlockTree::set_root_block(std::shared_ptr<IndexBlock> root_block)
 {
-	SG_REF(root_block);
-	SG_UNREF(m_root_block);
-	m_root_block = root_block;
+
+
+	m_root_block = std::move(root_block);
 }
 
-SGVector<index_t> CIndexBlockTree::get_SLEP_ind()
+SGVector<index_t> IndexBlockTree::get_SLEP_ind()
 {
 	not_implemented(SOURCE_LOCATION);
 	return SGVector<index_t>();
 }
 
-SGVector<float64_t> CIndexBlockTree::get_SLEP_G()
+SGVector<float64_t> IndexBlockTree::get_SLEP_G()
 {
 	return m_precomputed_G;
 }
 
-bool CIndexBlockTree::is_general() const
+bool IndexBlockTree::is_general() const
 {
 	return m_general;
 }
 
-SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
+SGVector<float64_t> IndexBlockTree::get_SLEP_ind_t() const
 {
 	if (m_precomputed_ind_t.vlen)
 		return m_precomputed_ind_t;
@@ -272,9 +268,9 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
 	else
 	{
 		ASSERT(m_root_block)
-		CList* blocks = new CList(true);
 
-		vector<block_tree_node_t> tree_nodes = vector<block_tree_node_t>();
+		vector<IndexBlock> blocks;
+		vector<block_tree_node_t> tree_nodes;
 
 		collect_tree_nodes_recursive(m_root_block, &tree_nodes);
 
@@ -290,8 +286,6 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
 			ind_t[3+i*3+1] = tree_nodes[i].t_max_index;
 			ind_t[3+i*3+2] = tree_nodes[i].weight;
 		}
-
-		SG_UNREF(blocks);
 
 		return ind_t;
 	}

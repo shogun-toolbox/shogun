@@ -38,7 +38,7 @@ TEST(CQDiag, diagonalize)
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(uniform_int_dist(prng));
+			tmp(j,j) *= Math::abs(uniform_int_dist(prng));
 	}
 
 	// Mixing and demixing matrices
@@ -53,7 +53,7 @@ TEST(CQDiag, diagonalize)
 	}
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CQDiag::diagonalize(C, prng);
+	SGMatrix<float64_t> V = QDiag::diagonalize(C, prng);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);

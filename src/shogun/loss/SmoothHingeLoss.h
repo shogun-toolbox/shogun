@@ -16,18 +16,18 @@ namespace shogun
 /** @brief CSmoothHingeLoss implements
  * the smooth hinge loss function.
  */
-class CSmoothHingeLoss: public CLossFunction
+class SmoothHingeLoss: public LossFunction
 {
 public:
 	/**
 	 * Constructor
 	 */
-	CSmoothHingeLoss(): CLossFunction() {};
+	SmoothHingeLoss(): LossFunction() {};
 
 	/**
 	 * Destructor
 	 */
-	~CSmoothHingeLoss() {};
+	~SmoothHingeLoss() {};
 
 	/**
 	 * Get loss for an example

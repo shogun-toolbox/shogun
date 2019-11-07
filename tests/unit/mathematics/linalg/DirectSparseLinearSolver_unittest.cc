@@ -25,17 +25,17 @@ TEST(DirectSparseLinearSolver, solve)
 	const int32_t seed = 10;
 	const index_t size=100000;
 	SGSparseMatrix<float64_t> sm(size, size);
-	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(sm);
+	auto A=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 	SGVector<float64_t> diag(size);
 	float64_t difficulty=5;
 
 	std::mt19937_64 prng(seed);
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
-		diag[i]=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)+0.0001;
+		diag[i]=Math::pow(Math::abs(normal_dist(prng)), difficulty)+0.0001;
 	A->set_diagonal(diag);
 
-	CDirectSparseLinearSolver* linear_solver=new CDirectSparseLinearSolver();
+	auto linear_solver=std::make_shared<DirectSparseLinearSolver>();
 	SGVector<float64_t> b(size);
 	b.set_const(0.5);
 
@@ -46,6 +46,6 @@ TEST(DirectSparseLinearSolver, solve)
 
 	EXPECT_NEAR((map_Ax-map_b).norm(), 0.0, 1E-10);
 
-	SG_UNREF(linear_solver);
-	SG_UNREF(A);
+
+
 }

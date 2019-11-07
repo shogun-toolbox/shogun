@@ -15,11 +15,9 @@ int main(int argc, char** argv)
 		matrix.matrix[i]=i;
 
 	// shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features= new DenseFeatures<float64_t>(matrix);
 
 	ASSERT(features->parameter_hash_changed());
-
-	SG_UNREF(features);
 
 	return 0;
 }

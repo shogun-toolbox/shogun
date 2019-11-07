@@ -35,7 +35,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -46,13 +45,13 @@ namespace shogun
  * This class takes the mean of data used for Gaussian Process Regression. It
  * also includes the derivatives of the specified function.
  */
-class CMeanFunction : public CSGObject
+class MeanFunction : public SGObject
 {
 public:
 	/** constructor */
-	CMeanFunction() { }
+	MeanFunction() { }
 
-	virtual ~CMeanFunction() { }
+	virtual ~MeanFunction() { }
 
 	/** returns the mean of the specified data
 	 *
@@ -60,8 +59,9 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const=0;
+	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const=0;
 
+#ifndef SWIG
 	/** returns the derivative of the mean function
 	 *
 	 * @param features features to compute mean function
@@ -70,12 +70,13 @@ public:
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_derivative(const CFeatures* features,
-			const TParameter* param, index_t index=-1)
+	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
+			Parameters::const_reference param, index_t index=-1)
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
+#endif
 };
 }
 #endif /* CMEANFUNCTION_H_ */

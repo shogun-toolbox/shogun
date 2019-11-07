@@ -17,21 +17,21 @@ namespace shogun
  *  e.g. a matrix
  */
 template<class T>
-class CLinearOperator : public CSGObject
+class LinearOperator : public SGObject
 {
 public:
 	/** default constructor */
-	CLinearOperator();
+	LinearOperator();
 
 	/**
 	 * constructor
 	 *
 	 * @param dimension dimension of the vector on which the operator can be applied
 	 */
-	CLinearOperator(index_t dimension);
+	LinearOperator(index_t dimension);
 
 	/** destructor */
-	virtual ~CLinearOperator();
+	virtual ~LinearOperator();
 
 	/** @return the dimension on which the linear operator can apply */
 	const index_t get_dimension() const;

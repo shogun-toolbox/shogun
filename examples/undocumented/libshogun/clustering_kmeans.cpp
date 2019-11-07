@@ -47,35 +47,32 @@ int main(int argc, char **argv)
 				idx+=j;
 				idx+=k*dim_features;
 				float64_t entry=cluster_centers.matrix[i*dim_features+j];
-				data.matrix[idx]=CMath::normal_random(entry, cluster_std_dev);
+				data.matrix[idx]=Math::normal_random(entry, cluster_std_dev);
 			}
 		}
 	}
 
-	/* create features, SG_REF to avoid deletion */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> (data);
-	SG_REF(features);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	/* create labels for cluster centers */
-	CMulticlassLabels* labels=new CMulticlassLabels(num_features);
+	auto labels=std::make_shared<MulticlassLabels>(num_features);
 	for (index_t i=0; i<num_features; ++i)
 		labels->set_label(i, i%2==0 ? 0 : 1);
 
 	/* create distance */
-	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
+	auto distance=std::make_shared<EuclideanDistance>(features, features);
 
 	/* create distance machine */
-	CKMeans* clustering=new CKMeans(num_clusters, distance);
+	auto clustering=std::make_shared<KMeans>(num_clusters, distance);
 	clustering->train(features);
 
 	/* build clusters */
-	CMulticlassLabels* result = clustering->apply()->as<CMulticlassLabels>();
+	auto result = clustering->apply()->as<MulticlassLabels>();
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
 	/* print cluster centers */
-	CDenseFeatures<float64_t>* centers=
-			(CDenseFeatures<float64_t>*)distance->get_lhs();
+	auto centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 
@@ -86,11 +83,6 @@ int main(int argc, char **argv)
 			cluster_centers.num_cols, "real centers");
 
 	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(centers);
-	SG_UNREF(clustering);
-	SG_UNREF(labels);
-	SG_UNREF(features);
 
 	return 0;
 }

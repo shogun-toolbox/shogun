@@ -16,29 +16,29 @@
 
 namespace shogun
 {
-template <class ST> class CStringFeatures;
+template <class ST> class StringFeatures;
 
 /** @brief Template class StringPreprocessor, base class for preprocessors (cf.
- * CPreprocessor) that apply to CStringFeatures (i.e. strings of variable
+ * Preprocessor) that apply to CStringFeatures (i.e. strings of variable
  * length).
  *
  * Two new functions apply_to_string() and apply_to_string_list()
  * are defined in this interface that need to be implemented in each particular
  * preprocessor operating on CStringFeatures.
  */
-template <class ST> class CStringPreprocessor : public CPreprocessor
+template <class ST> class StringPreprocessor : public Preprocessor
 {
 	public:
 		/** constructor
 		 */
-		CStringPreprocessor() : CPreprocessor() {}
+		StringPreprocessor() : Preprocessor() {}
 
 		/** Apply transformation to string features.
 		 *
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/// apply preproc on single feature vector
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;

@@ -51,7 +51,7 @@ void getgauss(float64_t & y1, float64_t & y2)
 
 
 void gendata(std::vector<float64_t> & x,std::vector<float64_t> & y,
-		CMulticlassLabels*& lab)
+		std::shared_ptr<MulticlassLabels>& lab)
 {
 	int32_t totalsize=240;
 	int32_t class1size=80;
@@ -83,7 +83,7 @@ void gendata(std::vector<float64_t> & x,std::vector<float64_t> & y,
 	}
 
 	//set labels
-	lab=new CMulticlassLabels(x.size());
+	lab.reset(new MulticlassLabels(x.size()));
 	for(size_t i=0; i< x.size();++i)
 	{
 		if((int32_t)i < class1size)
@@ -194,11 +194,10 @@ void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,float64_t * & ker3,
 
 void tester()
 {
-	CMulticlassLabels* lab=NULL;
+	std::shared_ptr<MulticlassLabels> lab;
 	std::vector<float64_t> x,y;
 
 	gendata(x,y, lab);
-	SG_REF(lab);
 
 	float64_t* ker1=NULL;
 	float64_t* ker2=NULL;
@@ -212,11 +211,11 @@ void tester()
 	gentrainkernel( ker1 , ker2, ker3 , autosigma, n1, n2, n3,x,y);
 	numdata=x.size();
 
-	CCombinedKernel* ker=new CCombinedKernel();
+	auto ker=std::make_shared<CombinedKernel>();
 
-	CCustomKernel* kernel1=new CCustomKernel();
-	CCustomKernel* kernel2=new CCustomKernel();
-	CCustomKernel* kernel3=new CCustomKernel();
+	auto kernel1=std::make_shared<CustomKernel>();
+	auto kernel2=std::make_shared<CustomKernel>();
+	auto kernel3=std::make_shared<CustomKernel>();
 
 	kernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker1, numdata,numdata,false));
 	kernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker2, numdata,numdata,false));
@@ -233,7 +232,7 @@ void tester()
 	//here comes the core stuff
 	float64_t regconst=1.0;
 
-	CMKLMulticlass* tsvm =new CMKLMulticlass(regconst, ker, lab);
+	auto tsvm =std::make_shared<MKLMulticlass>(regconst, ker, lab);
 
 	tsvm->set_epsilon(0.0001); // SVM epsilon
 	// MKL parameters
@@ -246,7 +245,7 @@ void tester()
 	SG_SPRINT("finished svm training\n");
 
 	//starting svm testing on training data
-	CMulticlassLabels* res = tsvm->apply()->as<CMulticlassLabels>();
+	auto res = tsvm->apply()->as<MulticlassLabels>();
 	ASSERT(res);
 
 	float64_t err=0;
@@ -261,12 +260,11 @@ void tester()
 	SG_SPRINT("random guess error would be: %f \n",2/3.0);
 
 	//generate test data
-	CMulticlassLabels* tlab=NULL;
+	std::shared_ptr<MulticlassLabels> tlab;
 
 	std::vector<float64_t> tx,ty;
 
 	gendata( tx,ty,tlab);
-	SG_REF(tlab);
 
 	float64_t* tker1=NULL;
 	float64_t* tker2=NULL;
@@ -275,11 +273,10 @@ void tester()
 	gentestkernel(tker1,tker2,tker3, autosigma, n1,n2,n3, x,y, tx,ty);
 	int32_t numdatatest=tx.size();
 
-	CCombinedKernel* tker=new CCombinedKernel();
-	SG_REF(tker);
-	CCustomKernel* tkernel1=new CCustomKernel();
-	CCustomKernel* tkernel2=new CCustomKernel();
-	CCustomKernel* tkernel3=new CCustomKernel();
+	auto tker=std::make_shared<CombinedKernel>();
+	auto tkernel1=std::make_shared<CustomKernel>();
+	auto tkernel2=std::make_shared<CustomKernel>();
+	auto tkernel3=std::make_shared<CustomKernel>();
 
 	tkernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker1,numdata, numdatatest, false));
 	tkernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest, false));
@@ -308,7 +305,7 @@ void tester()
 	tsvm->set_kernel(tker);
 
 	//compute classification error, check mem
-	CMulticlassLabels* tres = tsvm->apply()->as<CMulticlassLabels>();
+	auto tres = tsvm->apply()->as<MulticlassLabels>();
 
 	float64_t terr=0;
 	for(int32_t i=0; i<numdatatest;++i)
@@ -321,12 +318,6 @@ void tester()
 	SG_SPRINT("prediction error on test data (3 classes): %f ",terr);
 	SG_SPRINT("random guess error would be: %f \n",2/3.0);
 
-	SG_UNREF(tsvm);
-	SG_UNREF(res);
-	SG_UNREF(tres);
-	SG_UNREF(lab);
-	SG_UNREF(tlab);
-	SG_UNREF(tker);
 
 	SG_SPRINT( "finished \n");
 }

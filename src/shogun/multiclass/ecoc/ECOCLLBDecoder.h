@@ -18,14 +18,14 @@ namespace shogun
  * Using OVREncoder with this Decoder should be equivlalent to
  * traditional OVR Strategy.
  */
-class CECOCLLBDecoder: public CECOCSimpleDecoder
+class ECOCLLBDecoder: public ECOCSimpleDecoder
 {
 public:
     /** constructor */
-    CECOCLLBDecoder() {}
+    ECOCLLBDecoder() {}
 
     /** destructor */
-    virtual ~CECOCLLBDecoder() {}
+    virtual ~ECOCLLBDecoder() {}
 
     /** get name */
     virtual const char* get_name() const { return "ECOCLLBDecoder"; }

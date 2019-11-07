@@ -19,9 +19,9 @@ namespace shogun
  * Performs support vector regression while learning kernel weights at the same
  * time. Makes only sense if multiple kernels are used.
  *
- * \sa CMKL
+ * \sa MKL
  */
-class CMKLRegression : public CMKL
+class MKLRegression : public MKL
 {
 	public:
 		/** problem type */
@@ -31,11 +31,11 @@ class CMKLRegression : public CMKL
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLRegression(CSVM* s=NULL);
+		MKLRegression(std::shared_ptr<SVM> s=NULL);
 
 		/** Destructor
 		 */
-		virtual ~CMKLRegression();
+		virtual ~MKLRegression();
 
 		/** compute beta independent term from objective, e.g., in 2-class MKL
 		 * sum_i alpha_i etc

@@ -29,7 +29,7 @@ public:
 	 * @param num_classes number of classes
 	 * @return num_classes-by-num_classes confusion matrix.
 	 */
-	SGMatrix<float64_t> estimate_confusion_matrix(CBaseMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes);
+	SGMatrix<float64_t> estimate_confusion_matrix(const std::shared_ptr<BaseMulticlassMachine >&machine, const std::shared_ptr<Features >&X, std::shared_ptr<MulticlassLabels >Y, int32_t num_classes);
 
 	/**
 	 * Get confusion matrix.
@@ -37,7 +37,7 @@ public:
 	 * @param gt ground-truth labels
 	 * @param pred predicted labels
 	 */
-	void get_confusion_matrix(SGMatrix<float64_t> &conf_mat, CMulticlassLabels *gt, CMulticlassLabels *pred);
+	void get_confusion_matrix(SGMatrix<float64_t> &conf_mat, const std::shared_ptr<MulticlassLabels >&gt, const std::shared_ptr<MulticlassLabels >&pred);
 };
 
 } /* shogun */

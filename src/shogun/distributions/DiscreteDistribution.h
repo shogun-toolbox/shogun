@@ -38,14 +38,14 @@ namespace shogun
 
 /** @brief This is the base interface class for all discrete distributions.
  */
-class CDiscreteDistribution : public CDistribution
+class DiscreteDistribution : public Distribution
 {
 	public:
 		/* constructor */
-		CDiscreteDistribution() : CDistribution() {	};
+		DiscreteDistribution() : Distribution() {	};
 
 		/* destructor */
-		~CDiscreteDistribution() {	};
+		~DiscreteDistribution() {	};
 
 		/** learn distribution
 		 *
@@ -53,7 +53,7 @@ class CDiscreteDistribution : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)=0;
+		virtual bool train(Features* data=NULL)=0;
 
 		/** get number of parameters in model
 		 *

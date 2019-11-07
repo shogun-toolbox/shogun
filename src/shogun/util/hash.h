@@ -11,9 +11,9 @@
 
 namespace std
 {
-	template<> struct hash<shogun::CSGObject>
+	template<> struct hash<shogun::SGObject>
 	{
-		typedef shogun::CSGObject argument_type;
+		typedef shogun::SGObject argument_type;
 		typedef std::size_t result_type;
 
 		result_type operator()(const argument_type& o) const

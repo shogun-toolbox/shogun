@@ -32,7 +32,6 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/observers/ParameterObserver.h>

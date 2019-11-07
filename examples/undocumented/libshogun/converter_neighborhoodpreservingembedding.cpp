@@ -20,16 +20,12 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
+	DenseFeatures<double>* features = new DenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	CNeighborhoodPreservingEmbedding* npe = new CNeighborhoodPreservingEmbedding();
 	npe->set_target_dim(2);
 	npe->set_k(15);
 	npe->get_global_parallel()->set_num_threads(4);
 	auto embedding = npe->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(npe);
-	SG_UNREF(features);
 	return 0;
 }
 #else //USE_GPL_SHOGUN

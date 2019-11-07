@@ -52,7 +52,7 @@ TEST(DataManager, full_data_one_distribution_normal_feats)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -63,7 +63,7 @@ TEST(DataManager, full_data_one_distribution_normal_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp=static_cast<CFeatures*>(next_burst[0][0]);
+	std::shared_ptr<Features> tmp=next_burst[0][0];
 	ASSERT_TRUE(tmp!=nullptr);
 	ASSERT_TRUE(tmp->get_num_vectors()==num_vec);
 
@@ -82,8 +82,8 @@ TEST(DataManager, full_data_one_distribution_streaming_feats)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto streaming_p=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -95,7 +95,7 @@ TEST(DataManager, full_data_one_distribution_streaming_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp=static_cast<CFeatures*>(next_burst[0][0]);
+	std::shared_ptr<Features> tmp=next_burst[0][0];
 	ASSERT_TRUE(tmp!=nullptr);
 	ASSERT_TRUE(tmp->get_num_vectors()==num_vec);
 
@@ -117,9 +117,9 @@ TEST(DataManager, full_data_two_distributions_normal_feats)
 	SGMatrix<float64_t> data_q(dim, num_vec);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -131,8 +131,8 @@ TEST(DataManager, full_data_two_distributions_normal_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	std::shared_ptr<Features> tmp_p=next_burst[0][0];
+	std::shared_ptr<Features> tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -155,11 +155,11 @@ TEST(DataManager, full_data_two_distributions_streaming_feats)
 	SGMatrix<float64_t> data_q(dim, num_vec);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
-	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
-	auto streaming_q=new CStreamingDenseFeatures<float64_t>(feats_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
+	auto streaming_p=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_q=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -173,8 +173,8 @@ TEST(DataManager, full_data_two_distributions_streaming_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	std::shared_ptr<Features> tmp_p=next_burst[0][0];
+	std::shared_ptr<Features> tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -196,7 +196,7 @@ TEST(DataManager, block_data_one_distribution_normal_feats)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -215,7 +215,7 @@ TEST(DataManager, block_data_one_distribution_normal_feats)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp=static_cast<CFeatures*>(next_burst[0][i]);
+			std::shared_ptr<Features> tmp=next_burst[0][i];
 			ASSERT_TRUE(tmp!=nullptr);
 			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();
@@ -236,8 +236,8 @@ TEST(DataManager, block_data_one_distribution_streaming_feats)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto streaming_p=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -257,7 +257,7 @@ TEST(DataManager, block_data_one_distribution_streaming_feats)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp=static_cast<CFeatures*>(next_burst[0][i]);
+			std::shared_ptr<Features> tmp=next_burst[0][i];
 			ASSERT_TRUE(tmp!=nullptr);
 			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();
@@ -281,9 +281,9 @@ TEST(DataManager, block_data_two_distributions_normal_feats_equal_blocksize)
 	SGMatrix<float64_t> data_q(dim, num_vec);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -303,8 +303,8 @@ TEST(DataManager, block_data_two_distributions_normal_feats_equal_blocksize)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -330,11 +330,11 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_equal_blocksize)
 	SGMatrix<float64_t> data_q(dim, num_vec);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
-	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
-	auto streaming_q=new CStreamingDenseFeatures<float64_t>(feats_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
+	auto streaming_p=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_q=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -356,8 +356,8 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_equal_blocksize)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -387,9 +387,9 @@ TEST(DataManager, block_data_two_distributions_normal_feats_different_blocksize)
 	SGMatrix<float64_t> data_q(dim, num_vec_q);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec_q, dim*num_vec_p);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -409,8 +409,8 @@ TEST(DataManager, block_data_two_distributions_normal_feats_different_blocksize)
 	{
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize_p);
@@ -442,11 +442,11 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_different_blocksi
 	SGMatrix<float64_t> data_q(dim, num_vec_q);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec_q, dim*num_vec_p);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
-	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
-	auto streaming_q=new CStreamingDenseFeatures<float64_t>(feats_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
+	auto streaming_p=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_q=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -468,8 +468,8 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_different_blocksi
 	{
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize_p);
@@ -496,9 +496,9 @@ TEST(DataManager, train_test_whole_dense)
 	SGMatrix<float64_t> data_q(dim, num_vec);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -515,8 +515,8 @@ TEST(DataManager, train_test_whole_dense)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	std::shared_ptr<Features> tmp_p=next_burst[0][0];
+	std::shared_ptr<Features> tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -535,8 +535,8 @@ TEST(DataManager, train_test_whole_dense)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	tmp_p=next_burst[0][0];
+	tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -555,8 +555,8 @@ TEST(DataManager, train_test_whole_dense)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	tmp_p=next_burst[0][0];
+	tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -583,9 +583,9 @@ TEST(DataManager, train_test_blockwise_dense)
 	SGMatrix<float64_t> data_q(dim, num_vec);
 	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
 
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	using feat_type=DenseFeatures<float64_t>;
+	auto feats_p=std::make_shared<feat_type>(data_p);
+	auto feats_q=std::make_shared<feat_type>(data_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -610,8 +610,8 @@ TEST(DataManager, train_test_blockwise_dense)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -637,8 +637,8 @@ TEST(DataManager, train_test_blockwise_dense)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -664,8 +664,8 @@ TEST(DataManager, train_test_blockwise_dense)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -687,8 +687,8 @@ TEST(DataManager, train_test_whole_streaming)
 	const float64_t difference=0.5;
 
 	DataManager mgr(num_distributions);
-	mgr.samples_at(0)=new CMeanShiftDataGenerator(0, dim, 0);
-	mgr.samples_at(1)=new CMeanShiftDataGenerator(difference, dim, 0);
+	mgr.samples_at(0)=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	mgr.samples_at(1)=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	mgr.num_samples_at(0)=num_vec;
 	mgr.num_samples_at(1)=num_vec;
 
@@ -703,8 +703,8 @@ TEST(DataManager, train_test_whole_streaming)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	std::shared_ptr<Features> tmp_p=next_burst[0][0];
+	std::shared_ptr<Features> tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -723,8 +723,8 @@ TEST(DataManager, train_test_whole_streaming)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	tmp_p=next_burst[0][0];
+	tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -744,8 +744,8 @@ TEST(DataManager, train_test_whole_streaming)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
-	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
+	tmp_p=next_burst[0][0];
+	tmp_q=next_burst[1][0];
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -768,8 +768,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 	const float64_t difference=0.5;
 
 	DataManager mgr(num_distributions);
-	mgr.samples_at(0)=new CMeanShiftDataGenerator(0, dim, 0);
-	mgr.samples_at(1)=new CMeanShiftDataGenerator(difference, dim, 0);
+	mgr.samples_at(0)=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	mgr.samples_at(1)=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	mgr.num_samples_at(0)=num_vec;
 	mgr.num_samples_at(1)=num_vec;
 	mgr.set_blocksize(blocksize);
@@ -792,8 +792,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -819,8 +819,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -847,8 +847,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
-			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
+			std::shared_ptr<Features> tmp_p=next_burst[0][i];
+			std::shared_ptr<Features> tmp_q=next_burst[1][i];
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -872,7 +872,7 @@ TEST(DataManager, set_blockwise_on_off)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=feats_p;
@@ -884,7 +884,7 @@ TEST(DataManager, set_blockwise_on_off)
 	auto next_burst=mgr.next();
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
-	auto casted=static_cast<CFeatures*>(next_burst[0][0]);
+	std::shared_ptr<Features> casted=next_burst[0][0];
 	ASSERT_TRUE(casted!=nullptr);
 	ASSERT_TRUE(casted->get_num_vectors()==num_vec);
 
@@ -902,7 +902,7 @@ TEST(DataManager, set_blockwise_on_off)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp=static_cast<CFeatures*>(next_burst[0][i]);
+			std::shared_ptr<Features> tmp=next_burst[0][i];
 			ASSERT_TRUE(tmp!=nullptr);
 			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();

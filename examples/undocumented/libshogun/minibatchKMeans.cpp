@@ -30,43 +30,36 @@ int main(int argc, char **argv)
 	data.display_matrix(data.matrix, 2, 4, "rectangle_coordinates");
 
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> (data);
-	SG_REF(features);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t> (data);
 
-	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeans* clustering=new CKMeans(2, distance, true);
+	EuclideanDistance* distance=new EuclideanDistance(features, features);
+	KMeans* clustering=new KMeans(2, distance, true);
 
 	clustering->train(features);
-	CMulticlassLabels* result = clustering->apply()->as<CMulticlassLabels>();
+	MulticlassLabels* result = clustering->apply()->as<MulticlassLabels>();
 
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
-	CDenseFeatures<float64_t>* centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	DenseFeatures<float64_t>* centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 	centers_matrix.display_matrix(centers_matrix.matrix,
 			centers_matrix.num_rows, centers_matrix.num_cols, "learnt centers using Lloyd's KMeans");
 
-	SG_UNREF(centers);
-	SG_UNREF(result);
 
 	clustering->set_train_method(KMM_MINI_BATCH);
 	clustering->set_mbKMeans_params(2,10);
 	clustering->train(features);
-	result = clustering->apply()->as<CMulticlassLabels>();
+	result = clustering->apply()->as<MulticlassLabels>();
 
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
-	centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	centers=(DenseFeatures<float64_t>*)distance->get_lhs();
 	centers_matrix=centers->get_feature_matrix();
 	centers_matrix.display_matrix(centers_matrix.matrix, centers_matrix.num_rows,
 			centers_matrix.num_cols, "learnt centers using mini-batch KMeans");
 
-	SG_UNREF(centers);
-	SG_UNREF(result);
-	SG_UNREF(clustering);
-	SG_UNREF(features);
 
 	return 0;
 }

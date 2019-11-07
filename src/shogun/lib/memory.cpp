@@ -24,7 +24,6 @@
 
 using namespace shogun;
 
-
 SG_FORCED_INLINE bool allocation_error(void *p, size_t size, const char* op_str)
 {
 	const size_t buf_len=128;

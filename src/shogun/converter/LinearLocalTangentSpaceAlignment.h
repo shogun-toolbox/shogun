@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class LinearLocalTangentSpaceAlignment converter used to
  * construct embeddings as described in:
@@ -35,21 +35,21 @@ class CDistance;
  * sg('create_converter','lltsa',k);
  *
  */
-class CLinearLocalTangentSpaceAlignment: public CLocalTangentSpaceAlignment
+class LinearLocalTangentSpaceAlignment: public LocalTangentSpaceAlignment
 {
 public:
 
 	/** constructor */
-	CLinearLocalTangentSpaceAlignment();
+	LinearLocalTangentSpaceAlignment();
 
 	/** destructor */
-	virtual ~CLinearLocalTangentSpaceAlignment();
+	virtual ~LinearLocalTangentSpaceAlignment();
 
 	/** get name */
 	virtual const char* get_name() const;
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 };
 }
 

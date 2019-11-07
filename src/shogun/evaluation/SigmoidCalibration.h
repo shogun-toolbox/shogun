@@ -24,14 +24,14 @@ namespace shogun
 	* comparisons to regularized likelihood methods.
 	* Advances in large margin classifiers. 1999
 	*/
-	class CSigmoidCalibration : public CCalibration
+	class SigmoidCalibration : public Calibration
 	{
 	public:
 		/** Constructor. */
-		CSigmoidCalibration();
+		SigmoidCalibration();
 
 		/** Destructor. */
-		virtual ~CSigmoidCalibration();
+		virtual ~SigmoidCalibration();
 
 		/** Get name. */
 		virtual const char* get_name() const
@@ -45,14 +45,14 @@ namespace shogun
 		* @return Indicates whether the calibration was succesful
 		**/
 		virtual bool
-		fit_binary(CBinaryLabels* predictions, CBinaryLabels* targets);
+		fit_binary(std::shared_ptr<BinaryLabels> predictions, std::shared_ptr<BinaryLabels> targets);
 
 		/** Calibrate binary predictions based on parameters learned by calling
 		*fit.
 		* @param predictions The predictions outputted by the machine
 		* @return Calibrated binary labels
 		**/
-		virtual CBinaryLabels* calibrate_binary(CBinaryLabels* predictions);
+		virtual std::shared_ptr<BinaryLabels> calibrate_binary(std::shared_ptr<BinaryLabels> predictions);
 
 		/** Fit calibration parameters for multiclass labels. Fits sigmoid
 		* parameters for each class seperately.
@@ -61,7 +61,7 @@ namespace shogun
 		* @return Indicates whether the calibration was succesful
 		**/
 		virtual bool fit_multiclass(
-		    CMulticlassLabels* predictions, CMulticlassLabels* targets);
+		    std::shared_ptr<MulticlassLabels> predictions, std::shared_ptr<MulticlassLabels> targets);
 
 		/** Calibrate multiclass predictions based on parameters learned by
 		*calling fit.
@@ -69,8 +69,8 @@ namespace shogun
 		* @param predictions The predictions outputted by the machine
 		* @return Calibrated binary labels
 		**/
-		virtual CMulticlassLabels*
-		calibrate_multiclass(CMulticlassLabels* predictions);
+		virtual std::shared_ptr<MulticlassLabels>
+		calibrate_multiclass(std::shared_ptr<MulticlassLabels> predictions);
 
 		/** Set maximum number of iterations
 		* @param maxiter maximum number of iterations
@@ -123,7 +123,7 @@ namespace shogun
 		* @param params The sigmoid paramters to be used for calibration
 		*/
 		SGVector<float64_t> calibrate_values(
-		    SGVector<float64_t> values, CStatistics::SigmoidParamters params);
+		    SGVector<float64_t> values, Statistics::SigmoidParamters params);
 
 	private:
 		/** Stores parameter A of sigmoid for each class. In case of binary

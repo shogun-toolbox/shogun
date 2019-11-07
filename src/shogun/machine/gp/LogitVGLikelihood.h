@@ -54,12 +54,12 @@ template<class C> class SGMatrix;
  * \f]
  *
  */
-class CLogitVGLikelihood : public CNumericalVGLikelihood
+class LogitVGLikelihood : public NumericalVGLikelihood
 {
 public:
-	CLogitVGLikelihood();
+	LogitVGLikelihood();
 
-	virtual ~CLogitVGLikelihood();
+	virtual ~LogitVGLikelihood();
 
 	/** returns the name of the likelihood model
 	 *

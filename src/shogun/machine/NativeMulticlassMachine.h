@@ -15,16 +15,16 @@ namespace shogun
 {
 
 /** @brief experimental abstract native multiclass machine class */
-class CNativeMulticlassMachine : public CMulticlassMachine
+class NativeMulticlassMachine : public MulticlassMachine
 {
 	public:
 		/** default constructor  */
-		CNativeMulticlassMachine()
+		NativeMulticlassMachine()
 		{
 		}
 
 		/** destructor */
-		virtual ~CNativeMulticlassMachine()
+		virtual ~NativeMulticlassMachine()
 		{
 		}
 
@@ -42,16 +42,16 @@ class CNativeMulticlassMachine : public CMulticlassMachine
 		void clear_machines() { }
 
 		/** abstract init machine for training method */
-		virtual bool init_machine_for_train(CFeatures* data) { return true; }
+		virtual bool init_machine_for_train(std::shared_ptr<Features> data) { return true; }
 
 		/** abstract init machines for applying method */
-		virtual bool init_machines_for_apply(CFeatures* data) { return true; }
+		virtual bool init_machines_for_apply(std::shared_ptr<Features> data) { return true; }
 
 		/** check whether machine is ready */
 		virtual bool is_ready() { return true; }
 
 		/** obtain machine from trained one */
-		virtual CMachine* get_machine_from_trained(CMachine* machine) const { return NULL; }
+		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const { return NULL; }
 
 		/** get num rhs vectors */
 		virtual int32_t get_num_rhs_vectors() const { return 0; }
@@ -66,7 +66,7 @@ class CNativeMulticlassMachine : public CMulticlassMachine
 		virtual void remove_machine_subset() { }
 
 		/** whether the machine is acceptable in set_machine */
-		virtual bool is_acceptable_machine(CMachine *machine) { return true; }
+		virtual bool is_acceptable_machine(std::shared_ptr<Machine >machine) { return true; }
 
 };
 }

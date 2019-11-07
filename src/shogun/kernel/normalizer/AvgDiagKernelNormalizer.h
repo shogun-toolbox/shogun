@@ -26,7 +26,7 @@ namespace shogun
 * k'(x,x')= \frac{k(x,x')}{scale}
 * \f]
 */
-class CAvgDiagKernelNormalizer : public CKernelNormalizer
+class AvgDiagKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** constructor
@@ -34,22 +34,22 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param c scale parameter, if <= 0 scaling will be computed from the
 		 * avg of the kernel diagonal elements
 		 */
-		CAvgDiagKernelNormalizer(float64_t c=0.0) : CKernelNormalizer()
+		AvgDiagKernelNormalizer(float64_t c=0.0) : KernelNormalizer()
 		{
 			scale=c;
 
-			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER);
+			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    ParameterProperties::HYPER)*/;
 		}
 
 		/** default destructor */
-		virtual ~CAvgDiagKernelNormalizer()
+		virtual ~AvgDiagKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			if (scale<=0)
 			{
@@ -57,8 +57,8 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 				int32_t num=k->get_num_vec_lhs();
 				ASSERT(num>0)
 
-				CFeatures* old_lhs=k->lhs;
-				CFeatures* old_rhs=k->rhs;
+				auto old_lhs=k->lhs;
+				auto old_rhs=k->rhs;
 				k->lhs=old_lhs;
 				k->rhs=old_lhs;
 

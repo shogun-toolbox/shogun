@@ -32,7 +32,7 @@
 #ifndef L2PENALTY_H
 #define L2PENALTY_H
 #include <shogun/optimization/Penalty.h>
-#include <shogun/base/Parameter.h>
+
 namespace shogun
 {
 /** @brief The class implements L2 penalty/regularization within the FirstOrderMinimizer framework.

@@ -38,7 +38,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 namespace internal
 {
@@ -50,7 +50,7 @@ class DataFetcher
 	friend class DataManager;
 	friend class InitPerFeature;
 public:
-	DataFetcher(CFeatures* samples);
+	DataFetcher(std::shared_ptr<Features> samples);
 	virtual ~DataFetcher();
 
 	void set_blockwise(bool blockwise);
@@ -71,7 +71,7 @@ public:
 	virtual void init_active_subset();
 
 	virtual void start();
-	virtual CFeatures* next();
+	virtual std::shared_ptr<Features> next();
 	virtual void reset();
 	virtual void end();
 
@@ -94,7 +94,7 @@ protected:
 	bool train_mode;
 	float64_t train_test_ratio;
 private:
-	CFeatures* m_samples;
+	std::shared_ptr<Features> m_samples;
 	SGVector<index_t> shuffle_subset;
 	SGVector<index_t> active_subset;
 	bool features_shuffled;

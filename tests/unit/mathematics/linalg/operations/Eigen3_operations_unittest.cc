@@ -763,14 +763,14 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, eigensolver)
 
 	eigen_solver(m, eigenvalues, eigenvectors);
 
-	auto args = CMath::argsort(eigenvalues);
+	auto args = Math::argsort(eigenvalues);
 	for (index_t i = 0; i < n; ++i)
 	{
 		index_t idx = args[i];
 		EXPECT_NEAR(eigenvalues[idx], result_eigenvalues[i], 1e-6);
 
 		auto s =
-		    CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
+		    Math::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
 		for (index_t j = 0; j < n; ++j)
 			EXPECT_NEAR(
 			    eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
@@ -799,14 +799,14 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, eigensolver_symmetric)
 
 	eigen_solver(m, eigenvalues, eigenvectors);
 
-	auto args = CMath::argsort(eigenvalues);
+	auto args = Math::argsort(eigenvalues);
 	for (index_t i = 0; i < n; ++i)
 	{
 		index_t idx = args[i];
 		EXPECT_NEAR(eigenvalues[idx], result_eigenvalues[i], 1e-5);
 
 		auto s =
-		    CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
+		    Math::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
 		for (index_t j = 0; j < n; ++j)
 			EXPECT_NEAR(
 			    eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
@@ -1592,7 +1592,7 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_rectified_linear)
 
 	for (index_t i = 0; i < 9; ++i)
 		EXPECT_NEAR(
-		    CMath::max(static_cast<TypeParam>(0.0), A[i]), B[i],
+		    Math::max(static_cast<TypeParam>(0.0), A[i]), B[i],
 		    get_epsilon<TypeParam>());
 }
 
@@ -2003,7 +2003,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_svd_jacobi_thinU)
 
 	for (index_t i = 0; i < n; ++i)
 	{
-		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		auto c = Math::sign(U[i * m] * result_U[i * m]);
 		for (index_t j = 0; j < m; ++j)
 			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-6);
 	}
@@ -2034,7 +2034,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_svd_jacobi_fullU)
 
 	for (index_t i = 0; i < n; ++i)
 	{
-		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		auto c = Math::sign(U[i * m] * result_U[i * m]);
 		for (index_t j = 0; j < m; ++j)
 			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-6);
 	}
@@ -2064,7 +2064,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_svd_bdc_thinU)
 
 	for (index_t i = 0; i < n; ++i)
 	{
-		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		auto c = Math::sign(U[i * m] * result_U[i * m]);
 		for (index_t j = 0; j < m; ++j)
 			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-6);
 	}
@@ -2095,7 +2095,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_svd_bdc_fullU)
 
 	for (index_t i = 0; i < n; ++i)
 	{
-		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		auto c = Math::sign(U[i * m] * result_U[i * m]);
 		for (index_t j = 0; j < m; ++j)
 			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-6);
 	}

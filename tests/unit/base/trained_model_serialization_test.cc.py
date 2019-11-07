@@ -14,35 +14,35 @@ if sys.version_info < (3, 0):
 # different reasons are given below.
 IGNORE = set([
     # LinearMachines
-    'CFeatureBlockLogisticRegression', 'CLibLinearMTL',
-    'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
-    'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
-    'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
-    'CLatentSVM', 'CLatentSOSVM', 'CDomainAdaptationSVMLinear',
+    'FeatureBlockLogisticRegression', 'LibLinearMTL',
+    'MultitaskLinearMachine', 'MultitaskLogisticRegression',
+    'MultitaskL12LogisticRegression', 'MultitaskLeastSquaresRegression',
+    'MultitaskTraceLogisticRegression', 'MultitaskClusteredLogisticRegression',
+    'LatentSVM', 'LatentSOSVM', 'DomainAdaptationSVMLinear',
     'CLinearLatentMachine',
 
     # KernelMachines
-    'CDomainAdaptationSVM', 'CMKLRegression',
-    'CMKLClassification', 'CMKLOneClass',
-    'CSVM', # doesn't implement a solver
-    'CMKL',
+    'DomainAdaptationSVM', 'MKLRegression',
+    'MKLClassification', 'MKLOneClass',
+    'SVM', # doesn't implement a solver
+    'MKL',
 
     # LinearMulticlassMachines
-    'CDomainAdaptationMulticlassLibLinear',
-    'CMulticlassTreeGuidedLogisticRegression',
-    'CShareBoost', # apply() takes features subset
+    'DomainAdaptationMulticlassLibLinear',
+    'MulticlassTreeGuidedLogisticRegression',
+    'ShareBoost', # apply() takes features subset
 
     # KernelMulticlassMachines
-    'CMulticlassSVM', # doesn't implement a solver
-    'CMKLMulticlass',
-    'CScatterSVM', # error C <= 0
-    'CMulticlassLibSVM' # error C <= 0
+    'MulticlassSVM', # doesn't implement a solver
+    'MKLMulticlass',
+    'ScatterSVM', # error C <= 0
+    'MulticlassLibSVM' # error C <= 0
 ])
 
 # Classes that inherit from their template parameter, e.g.
 # template <class T> bar : public T { ... }
 # We need to check inheritance differently for those
-MIXINS = set(["CIterativeMachine"])
+MIXINS = set(["IterativeMachine"])
 
 def read_defined_guards(config_file):
     with open(config_file) as f:
@@ -83,7 +83,7 @@ def get_shogun_classes(tags):
         base = attrs[-1][len(inherits_str):] if attrs[-1].startswith(inherits_str) else None
 
         # parse mixings from declaration, using declarations of the like of
-        # /^class CNewtonSVM : public CIterativeMachine<CLinearMachine>$/;"
+        # /^class CNewtonSVM : public IterativeMachine<LinearMachine>$/;"
         mixin = None
         if base is not None and base in MIXINS:
             mixin = base
@@ -116,8 +116,8 @@ def generate_tests(input_file, config_file):
     guards = read_defined_guards(config_file)
 
     bases = [
-        'CLinearMachine', 'CKernelMachine', 'CLinearMulticlassMachine',
-        'CKernelMulticlassMachine', 'CNativeMulticlassMachine'
+        'LinearMachine', 'KernelMachine', 'LinearMulticlassMachine',
+        'KernelMulticlassMachine', 'CNativeMulticlassMachine'
     ]
 
     # Gather all the machines that inherit from the classes in bases
@@ -139,11 +139,11 @@ def generate_tests(input_file, config_file):
     typelist_template = 'typedef ::testing::Types<{0}> {1}Types;\n'
 
     base_test_map = {
-        'CLinearMachine': 'Machine',
+        'LinearMachine': 'Machine',
         'CNativeMulticlassMachine': 'Machine',
-        'CLinearMulticlassMachine': 'Machine',
-        'CKernelMachine': 'KernelMachine',
-        'CKernelMulticlassMachine': 'KernelMachine',
+        'LinearMulticlassMachine': 'Machine',
+        'KernelMachine': 'KernelMachine',
+        'KernelMulticlassMachine': 'KernelMachine',
     }
 
     test_machines_map = {

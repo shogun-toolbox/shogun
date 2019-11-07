@@ -33,7 +33,6 @@
 
 #include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 #include <shogun/neuralnets/NeuralLayer.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
@@ -76,7 +75,7 @@ CConvolutionalFeatureMap::CConvolutionalFeatureMap(
 
 void CConvolutionalFeatureMap::compute_activations(
 	SGVector< float64_t > parameters,
-	CDynamicObjectArray* layers,
+	const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 	SGVector< int32_t > input_indices,
 	SGMatrix<float64_t> activations)
 {
@@ -94,8 +93,7 @@ void CConvolutionalFeatureMap::compute_activations(
 	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->get_element(input_indices[l]);
+		auto& layer = layers[input_indices[l]];
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 
@@ -109,7 +107,7 @@ void CConvolutionalFeatureMap::compute_activations(
 				false, false, m*m_input_num_neurons, m_row_offset);
 		}
 
-		SG_UNREF(layer);
+
 	}
 
 	if (m_activation_function==CMAF_LOGISTIC)
@@ -125,15 +123,16 @@ void CConvolutionalFeatureMap::compute_activations(
 		for (int32_t i=0; i<m_output_num_neurons; i++)
 			for (int32_t j=0; j<batch_size; j++)
 				activations(i+m_row_offset,j) =
-					CMath::max<float64_t>(0, activations(i+m_row_offset,j));
+					Math::max<float64_t>(0, activations(i+m_row_offset,j));
 	}
 }
+
 
 void CConvolutionalFeatureMap::compute_gradients(
 	SGVector< float64_t > parameters,
 	SGMatrix<float64_t> activations,
 	SGMatrix< float64_t > activation_gradients,
-	CDynamicObjectArray* layers,
+	const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 	SGVector< int32_t > input_indices,
 	SGVector< float64_t > parameter_gradients)
 {
@@ -169,8 +168,7 @@ void CConvolutionalFeatureMap::compute_gradients(
 	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->get_element(input_indices[l]);
+		auto layer = layers[input_indices[l]];
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 
@@ -191,7 +189,7 @@ void CConvolutionalFeatureMap::compute_gradients(
 					m_row_offset, m*m_input_num_neurons);
 		}
 
-		SG_UNREF(layer);
+
 	}
 }
 

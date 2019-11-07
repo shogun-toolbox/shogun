@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief Rational Quadratic kernel
  *
@@ -28,18 +28,18 @@ class CDistance;
  *
  */
 
-class CRationalQuadraticKernel: public CKernel
+class RationalQuadraticKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CRationalQuadraticKernel();
+	RationalQuadraticKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param coef kernel parameter coefficient
 	 * @param dist distance to be used
 	 */
-	CRationalQuadraticKernel(int32_t cache, float64_t coef, CDistance* dist);
+	RationalQuadraticKernel(int32_t cache, float64_t coef, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param c kernel parameter coefficient
 	 * @param dist distance to be used
 	 */
-	CRationalQuadraticKernel(CFeatures *l, CFeatures *r, float64_t c, CDistance* dist);
+	RationalQuadraticKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t c, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -86,7 +86,7 @@ public:
 	 */
 	inline void set_coef(float64_t coef) { m_coef=coef; }
 
-	virtual ~CRationalQuadraticKernel();
+	virtual ~RationalQuadraticKernel();
 protected:
 	/**
 	 * compute kernel for specific feature vectors
@@ -103,7 +103,7 @@ private:
 
 protected:
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 	/// coefficient parameter of kernel
 	float64_t m_coef;

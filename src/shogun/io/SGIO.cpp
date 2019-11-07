@@ -95,12 +95,12 @@ public:
 		stderr_sink = stdout_sink;
 	}
 
-	void redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink_)
+	void redirect_stdout(const std::shared_ptr<spdlog::sinks::sink>& sink_)
 	{
 		set_sink_(stdout_sink, sink_);
 	}
 
-	void redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink_)
+	void redirect_stderr(const std::shared_ptr<spdlog::sinks::sink>& sink_)
 	{
 		set_sink_(stderr_sink, sink_);
 	}
@@ -243,13 +243,13 @@ SGIO::~SGIO()
 	io_logger->flush();
 }
 
-void SGIO::redirect_stdout(std::shared_ptr<spdlog::sinks::sink> sink)
+void SGIO::redirect_stdout(const std::shared_ptr<spdlog::sinks::sink>& sink)
 {
 	io_sink->redirect_stdout(sink);
 	sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));
 }
 
-void SGIO::redirect_stderr(std::shared_ptr<spdlog::sinks::sink> sink)
+void SGIO::redirect_stderr(const std::shared_ptr<spdlog::sinks::sink>& sink)
 {
 	io_sink->redirect_stderr(sink);
 	sink->set_formatter(std::make_unique<Formatter>(syntax_highlight));

@@ -7,12 +7,9 @@
  *          Leon Kuchenbecker, Sanuj Sharma, Wu Lin
  */
 
-#include <shogun/lib/RefCount.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
-#include <shogun/base/DynArray.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
@@ -20,8 +17,6 @@
 #include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/serialization/Deserializer.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/observers/ParameterObserver.h>
@@ -46,9 +41,12 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
+#include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/optimization/FirstOrderCostFunction.h>
 
 #include <shogun/lib/observers/ObservedValue.h>
 #include <shogun/util/visitors/FilterVisitor.h>
@@ -61,7 +59,7 @@ namespace shogun
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 	typedef std::unordered_map<std::string_view, std::string_view> ObsParamsList;
 
-	class CSGObject::Self
+	class SGObject::Self
 	{
 	public:
 		void create(const BaseTag& tag, const AnyParameter& parameter)
@@ -126,81 +124,81 @@ namespace shogun
 
 	class Parallel;
 
-	template<> void CSGObject::set_generic<bool>()
+	template<> void SGObject::set_generic<bool>()
 	{
 		m_generic = PT_BOOL;
 	}
 
-	template<> void CSGObject::set_generic<char>()
+	template<> void SGObject::set_generic<char>()
 	{
 		m_generic = PT_CHAR;
 	}
 
-	template<> void CSGObject::set_generic<int8_t>()
+	template<> void SGObject::set_generic<int8_t>()
 	{
 		m_generic = PT_INT8;
 	}
 
-	template<> void CSGObject::set_generic<uint8_t>()
+	template<> void SGObject::set_generic<uint8_t>()
 	{
 		m_generic = PT_UINT8;
 	}
 
-	template<> void CSGObject::set_generic<int16_t>()
+	template<> void SGObject::set_generic<int16_t>()
 	{
 		m_generic = PT_INT16;
 	}
 
-	template<> void CSGObject::set_generic<uint16_t>()
+	template<> void SGObject::set_generic<uint16_t>()
 	{
 		m_generic = PT_UINT16;
 	}
 
-	template<> void CSGObject::set_generic<int32_t>()
+	template<> void SGObject::set_generic<int32_t>()
 	{
 		m_generic = PT_INT32;
 	}
 
-	template<> void CSGObject::set_generic<uint32_t>()
+	template<> void SGObject::set_generic<uint32_t>()
 	{
 		m_generic = PT_UINT32;
 	}
 
-	template<> void CSGObject::set_generic<int64_t>()
+	template<> void SGObject::set_generic<int64_t>()
 	{
 		m_generic = PT_INT64;
 	}
 
-	template<> void CSGObject::set_generic<uint64_t>()
+	template<> void SGObject::set_generic<uint64_t>()
 	{
 		m_generic = PT_UINT64;
 	}
 
-	template<> void CSGObject::set_generic<float32_t>()
+	template<> void SGObject::set_generic<float32_t>()
 	{
 		m_generic = PT_FLOAT32;
 	}
 
-	template<> void CSGObject::set_generic<float64_t>()
+	template<> void SGObject::set_generic<float64_t>()
 	{
 		m_generic = PT_FLOAT64;
 	}
 
-	template<> void CSGObject::set_generic<floatmax_t>()
+	template<> void SGObject::set_generic<floatmax_t>()
 	{
 		m_generic = PT_FLOATMAX;
 	}
 
-	template<> void CSGObject::set_generic<CSGObject*>()
+	template<> void SGObject::set_generic<SGObject*>()
 	{
 		m_generic = PT_SGOBJECT;
 	}
 
-	template<> void CSGObject::set_generic<complex128_t>()
+	template<> void SGObject::set_generic<complex128_t>()
 	{
 		m_generic = PT_COMPLEX128;
 	}
-	class CSGObject::ParameterObserverList
+	class SGObject::ParameterObserverList
 	{
 	public:
 		void register_param(std::string_view name, std::string_view description)
@@ -220,79 +218,39 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject() : self(), param_obs_list()
+SGObject::SGObject() : self(), param_obs_list()
 {
 	init();
-	m_refcount = new RefCount(0);
 
 	SG_TRACE("SGObject created ({})", fmt::ptr(this));
 }
 
-CSGObject::CSGObject(const CSGObject& orig)
+SGObject::SGObject(const SGObject& orig)
     : self(), param_obs_list()
 {
 	init();
-	m_refcount = new RefCount(0);
 
 	SG_TRACE("SGObject copied ({})", fmt::ptr(this));
 }
 
-CSGObject::~CSGObject()
+SGObject::~SGObject()
 {
 	SG_TRACE("SGObject destroyed ({})", fmt::ptr(this));
-
-	delete m_parameters;
-	delete m_model_selection_parameters;
-	delete m_gradient_parameters;
-	delete m_refcount;
-	delete m_subject_params;
-	delete m_observable_params;
-	delete m_subscriber_params;
 }
 
-int32_t CSGObject::ref()
-{
-	int32_t count = m_refcount->ref();
-	SG_TRACE("ref() refcount {} obj {} ({}) increased", count, this->get_name(), fmt::ptr(this));
-	return m_refcount->ref_count();
-}
-
-int32_t CSGObject::ref_count()
-{
-	int32_t count = m_refcount->ref_count();
-	SG_TRACE("ref_count(): refcount {}, obj {} ({})", count, this->get_name(), fmt::ptr(this));
-	return m_refcount->ref_count();
-}
-
-int32_t CSGObject::unref()
-{
-	int32_t count = m_refcount->unref();
-	if (count<=0)
-	{
-		SG_TRACE("unref() refcount {}, obj {} ({}) destroying", count, this->get_name(), fmt::ptr(this));
-		delete this;
-		return 0;
-	}
-	else
-	{
-		SG_TRACE("unref() refcount {} obj {} ({}) decreased", count, this->get_name(), fmt::ptr(this));
-		return m_refcount->ref_count();
-	}
-}
-
-CSGObject * CSGObject::shallow_copy() const
+std::shared_ptr<SGObject> SGObject::shallow_copy() const
 {
 	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
-CSGObject * CSGObject::deep_copy() const
+std::shared_ptr<SGObject> SGObject::deep_copy() const
 {
 	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
-void CSGObject::update_parameter_hash() const
+void SGObject::update_parameter_hash() const
 {
 	SG_TRACE("entering");
 
@@ -301,67 +259,64 @@ void CSGObject::update_parameter_hash() const
 	SG_TRACE("leaving");
 }
 
-bool CSGObject::parameter_hash_changed() const
+bool SGObject::parameter_hash_changed() const
 {
 	return (m_hash!=hash());
 }
 
-Parallel* CSGObject::get_global_parallel()
+Parallel* SGObject::get_global_parallel()
 {
 	return env();
 }
 
-bool CSGObject::is_generic(EPrimitiveType* generic) const
+bool SGObject::is_generic(EPrimitiveType* generic) const
 {
 	*generic = m_generic;
 
 	return m_generic != PT_NOT_GENERIC;
 }
 
-void CSGObject::unset_generic()
+void SGObject::unset_generic()
 {
 	m_generic = PT_NOT_GENERIC;
 }
 
-bool CSGObject::serialize(io::CSerializer* ser)
+bool SGObject::serialize(std::shared_ptr<io::Serializer> ser)
 {
 	require(ser != nullptr, "Serializer format object should be non-null");
-	ser->write(wrap(this));
+	ser->write(shared_from_this());
 	return true;
 }
 
-bool CSGObject::deserialize(io::CDeserializer* deser)
+bool SGObject::deserialize(std::shared_ptr<io::Deserializer> deser)
 {
 	require(deser != nullptr, "Deserializer format object should be non-null");
-	deser->read(this);
+	deser->read(shared_from_this());
 	return true;
 }
 
-void CSGObject::load_serializable_pre() noexcept(false)
+void SGObject::load_serializable_pre() noexcept(false)
 {
 	m_load_pre_called = true;
 }
 
-void CSGObject::load_serializable_post() noexcept(false)
+void SGObject::load_serializable_post() noexcept(false)
 {
 	m_load_post_called = true;
 }
 
-void CSGObject::save_serializable_pre() noexcept(false)
+void SGObject::save_serializable_pre() noexcept(false)
 {
 	m_save_pre_called = true;
 }
 
-void CSGObject::save_serializable_post() noexcept(false)
+void SGObject::save_serializable_post() noexcept(false)
 {
 	m_save_post_called = true;
 }
 
-void CSGObject::init()
+void SGObject::init()
 {
-	m_parameters = new Parameter();
-	m_model_selection_parameters = new Parameter();
-	m_gradient_parameters=new Parameter();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
@@ -369,19 +324,15 @@ void CSGObject::init()
 	m_save_post_called = false;
 	m_hash = 0;
 
-	m_subject_params = new SGSubject();
-	m_observable_params = new SGObservable(m_subject_params->get_observable());
-	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
+	m_subject_params = std::make_shared<SGSubject>();
+	m_observable_params = std::make_shared<SGObservable>(m_subject_params->get_observable());
+	m_subscriber_params = std::make_shared<SGSubscriber>(m_subject_params->get_subscriber());
 	m_next_subscription_index = 0;
 
-	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
+	watch_method("num_subscriptions", &SGObject::get_num_subscriptions);
 }
 
-#ifdef SWIG
-std::string CSGObject::get_description(const std::string& name) const
-#else
-std::string CSGObject::get_description(std::string_view name) const
-#endif
+std::string SGObject::get_description(std::string_view name) const
 {
 	auto it = self->map.find(BaseTag(name));
 	if (it != self->map.end())
@@ -397,64 +348,35 @@ std::string CSGObject::get_description(std::string_view name) const
 	}
 }
 
-void CSGObject::print_modsel_params()
+void SGObject::build_gradient_parameter_dictionary(std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict)
 {
-	io::print("parameters available for model selection for {}:\n", get_name());
+	for (auto& param: self->filter(ParameterProperties::GRADIENT)) 
+		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this(); 
 
-	index_t num_param=m_model_selection_parameters->get_num_parameters();
-
-	if (!num_param)
-		io::print("\tnone\n");
-
-	for (index_t i=0; i<num_param; i++)
+	for (const auto& param: self->filter(ParameterProperties::HYPER)) 
 	{
-		TParameter* current=m_model_selection_parameters->get_parameter(i);
-		index_t  l=200;
-		char* type=SG_MALLOC(char, l);
-		if (type)
-		{
-			current->m_datatype.to_string(type, l);
-			io::print("\t{} ({}): {}\n", current->m_name, current->m_description,
-					type);
-			SG_FREE(type);
-		}
-	}
-}
-
-void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict)
-{
-	for (index_t i=0; i<m_gradient_parameters->get_num_parameters(); i++)
-	{
-		TParameter* p=m_gradient_parameters->get_parameter(i);
-		dict->add(p, this);
-	}
-
-	for (index_t i=0; i<m_model_selection_parameters->get_num_parameters(); i++)
-	{
-		TParameter* p=m_model_selection_parameters->get_parameter(i);
-		CSGObject* child=*(CSGObject**)(p->m_parameter);
-
-		if ((p->m_datatype.m_ptype == PT_SGOBJECT) &&
-				(p->m_datatype.m_ctype == CT_SCALAR) &&	child)
-		{
+		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName())) 
+			child->build_gradient_parameter_dictionary(dict); 
+		else if (auto child = get(param.first.name(), std::nothrow))
 			child->build_gradient_parameter_dictionary(dict);
-		}
+		else
+			SG_DEBUG("Parameter {} is not a SGObject. Skipping...", param.first.name().c_str())
 	}
 }
 
-CSGObject* CSGObject::clone(ParameterProperties pp) const
+std::shared_ptr<SGObject> SGObject::clone(ParameterProperties pp) const
 {
 	SG_DEBUG("Starting to clone {} at {}.", get_name(), fmt::ptr(this));
 	SG_DEBUG("Constructing an empty instance of {}.", get_name());
-	CSGObject* clone = create_empty();
-	SG_DEBUG("Empty instance of {} created at {}.", get_name(), fmt::ptr(clone));
+	auto clone = create_empty();
+	SG_DEBUG("Empty instance of {} created at {}.", get_name(), fmt::ptr(clone.get()));
 
 	require(
 	    clone, "Could not create empty instance of {}. The reason for "
 	          "this usually is that get_name() of the class returns something "
 	          "wrong, that a class has a wrongly set generic type, or that it "
 	          "lies outside the main source tree and does not have "
-	          "CSGObject::create_empty() overridden.\n",
+	          "SGObject::create_empty() overridden.\n",
 	    get_name());
 
 	for (const auto &it : self->filter(pp))
@@ -477,33 +399,33 @@ CSGObject* CSGObject::clone(ParameterProperties pp) const
 		clone->get_parameter(tag).get_value().clone_from(own);
 	}
 
-	SG_DEBUG("Done cloning {} at {}, new object at {}.", get_name(), fmt::ptr(this), fmt::ptr(clone));
+	SG_DEBUG("Done cloning {} at {}, new object at {}.", get_name(), fmt::ptr(this), fmt::ptr(clone.get()));
 	return clone;
 }
 
-void CSGObject::create_parameter(
+void SGObject::create_parameter(
     const BaseTag& _tag, const AnyParameter& parameter)
 {
 	self->create(_tag, parameter);
 }
 
-void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
+void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_checks)
 {
 	auto& param = self->at(_tag);
 	auto& pprop = param.get_properties();
 	if (pprop.has_property(ParameterProperties::READONLY))
-		error(
-		    "{}::{} is marked as read-only and cannot be modified!",
-		    get_name(), _tag.name().c_str());
+	        require(!do_checks,
+			"{}::{} is marked as read-only and cannot be modified!",
+	          	get_name(), _tag.name().c_str());
 
 	if (pprop.has_property(ParameterProperties::CONSTRAIN))
 	{
 		auto msg = self->map[_tag].get_constrain_function()(value);
 		if (!msg.empty())
 		{
-			error(
-					"{}::{} cannot be updated because it must be: {}!",
-					get_name(), _tag.name().c_str(), msg.c_str());
+			require(!do_checks,
+				"{}::{} cannot be updated because it must be: {}!",
+				get_name(), _tag.name().c_str(), msg.c_str());
 		}
 	}
 	self->update(_tag, value);
@@ -513,7 +435,7 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 	pprop.remove_property(ParameterProperties::AUTO);
 }
 
-AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
+AnyParameter SGObject::get_parameter(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
 	if (parameter.get_properties().has_property(
@@ -533,7 +455,7 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	return parameter;
 }
 
-AnyParameter CSGObject::get_function(const BaseTag& _tag) const
+AnyParameter SGObject::get_function(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
 	if (!parameter.get_properties().has_property(
@@ -553,12 +475,12 @@ AnyParameter CSGObject::get_function(const BaseTag& _tag) const
 	return parameter;
 }
 
-bool CSGObject::has_parameter(const BaseTag& _tag) const
+bool SGObject::has_parameter(const BaseTag& _tag) const
 {
 	return self->has(_tag);
 }
 
-void CSGObject::add_callback_function(
+void SGObject::add_callback_function(
     std::string_view name, std::function<void()> function)
 {
 	require(function, "Function object is not callable");
@@ -571,7 +493,7 @@ void CSGObject::add_callback_function(
 	param.add_callback_function(std::move(function));
 }
 
-void CSGObject::subscribe(ParameterObserver* obs)
+void SGObject::subscribe(const std::shared_ptr<ParameterObserver>& obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -582,7 +504,7 @@ void CSGObject::subscribe(ParameterObserver* obs)
 	// parameters selected by the observable.
 	rxcpp::subscription subscription =
 	    m_observable_params
-	        ->filter([obs](Some<ObservedValue> v) {
+	        ->filter([obs](std::shared_ptr<ObservedValue> v) {
 		        return obs->filter(v->get<std::string>("name"));
 		    })
 	        .timestamp()
@@ -598,7 +520,7 @@ void CSGObject::subscribe(ParameterObserver* obs)
 	m_next_subscription_index++;
 }
 
-void CSGObject::unsubscribe(ParameterObserver* obs)
+void SGObject::unsubscribe(const std::shared_ptr<ParameterObserver>& obs)
 {
 
 	int64_t index = obs->get<int64_t>("subscription_id");
@@ -617,24 +539,18 @@ void CSGObject::unsubscribe(ParameterObserver* obs)
 	obs->put("subscription_id", static_cast<int64_t>(-1));
 }
 
-void CSGObject::observe(const Some<ObservedValue> value) const
+void SGObject::observe(std::shared_ptr<ObservedValue> value) const
 {
 	m_subscriber_params->on_next(value);
 }
 
-void CSGObject::observe(ObservedValue* value) const
-{
-	auto somed_value = Some<ObservedValue>::from_raw(value);
-	m_subscriber_params->on_next(somed_value);
-}
-
-void CSGObject::register_observable(
+void SGObject::register_observable(
     std::string_view name, std::string_view description)
 {
 	param_obs_list->register_param(name, description);
 }
 
-std::vector<std::string> CSGObject::observable_names()
+std::vector<std::string> SGObject::observable_names()
 {
 	std::vector<std::string> list;
 	std::transform(
@@ -643,16 +559,12 @@ std::vector<std::string> CSGObject::observable_names()
 	return list;
 }
 
-#ifdef SWIG
-bool CSGObject::has(const std::string& name) const
-#else
-bool CSGObject::has(std::string_view name) const
-#endif
+bool SGObject::has(std::string_view name) const
 {
 	return has_parameter(BaseTag(name));
 }
 
-std::string CSGObject::to_string() const
+std::string SGObject::to_string() const
 {
 	std::stringstream ss;
 	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
@@ -684,7 +596,7 @@ std::string CSGObject::to_string() const
 }
 
 #ifndef SWIG // SWIG should skip this part
-std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_params() const
+std::map<std::string, std::shared_ptr<const AnyParameter>> SGObject::get_params() const
 {
 	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
 	for (auto const& each: self->map) {
@@ -694,7 +606,7 @@ std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_params
 }
 #endif
 
-bool CSGObject::equals(const CSGObject* other) const
+bool SGObject::equals(const SGObject* other) const
 {
 	if (other == this)
 		return true;
@@ -761,7 +673,7 @@ bool CSGObject::equals(const CSGObject* other) const
 }
 
 template <typename T>
-void CSGObject::for_each_param_of_type(
+void SGObject::for_each_param_of_type(
     std::function<void(const std::string&, T*)> operation)
 {
 	auto visitor = std::make_unique<FilterVisitor<T>>(operation);
@@ -778,17 +690,20 @@ void CSGObject::for_each_param_of_type(
 	});
 }
 
-template void shogun::CSGObject::for_each_param_of_type<CSGObject*>(
-    std::function<void(const std::string&, CSGObject**)>);
+template void shogun::SGObject::for_each_param_of_type<SGObject*>(
+    std::function<void(const std::string&, SGObject**)>);
 
-CSGObject* CSGObject::create_empty() const
+bool SGObject::equals(const std::shared_ptr<const SGObject>& other) const
 {
-	CSGObject* object = create(this->get_name(), this->m_generic);
-	SG_REF(object);
-	return object;
+	return this->equals(other.get());
 }
 
-void CSGObject::init_auto_params()
+std::shared_ptr<SGObject> SGObject::create_empty() const
+{
+	return create(this->get_name(), this->m_generic);
+}
+
+void SGObject::init_auto_params()
 {
 	auto params = self->filter(ParameterProperties::AUTO);
 	for (const auto& param : params)
@@ -797,13 +712,9 @@ void CSGObject::init_auto_params()
 	}
 }
 
-#ifdef SWIG
-CSGObject* CSGObject::get(const std::string& name, index_t index) const
-#else
-CSGObject* CSGObject::get(std::string_view name, index_t index) const
-#endif
+std::shared_ptr<SGObject> SGObject::get(std::string_view name, index_t index) const
 {
-	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
+	auto result = sgo_details::get_by_tag(shared_from_this(), name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
 	{
 		error(
@@ -814,25 +725,19 @@ CSGObject* CSGObject::get(std::string_view name, index_t index) const
 	return result;
 }
 
-#ifndef SWIG
-CSGObject* CSGObject::get(std::string_view name, std::nothrow_t) const
+std::shared_ptr<SGObject> SGObject::get(std::string_view name, std::nothrow_t) const
     noexcept
 {
-	return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
+	return sgo_details::get_by_tag(shared_from_this(), name, sgo_details::GetByName());
 }
-#endif
 
-#ifdef SWIG
-CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
-#else
-CSGObject* CSGObject::get(std::string_view name) const noexcept(false)
-#endif
+std::shared_ptr<SGObject> SGObject::get(std::string_view name) const noexcept(false)
 {
 	if (!has(name))
 	{
 		error("Parameter {}::{} does not exist.", get_name(), name.data());
 	}
-	if (auto* result = get(name, std::nothrow))
+	if (auto result = get(name, std::nothrow))
 	{
 		return result;
 	}
@@ -843,7 +748,7 @@ CSGObject* CSGObject::get(std::string_view name) const noexcept(false)
 	return nullptr;
 }
 
-std::string CSGObject::string_enum_reverse_lookup(
+std::string SGObject::string_enum_reverse_lookup(
     std::string_view param, machine_int_t value) const
 {
 	auto param_enum_map = m_string_to_enum_map.at(param);
@@ -856,13 +761,13 @@ std::string CSGObject::string_enum_reverse_lookup(
 	return std::string(enum_map_it->first);
 }
 
-void CSGObject::visit_parameter(const BaseTag& _tag, AnyVisitor* v) const
+void SGObject::visit_parameter(const BaseTag& _tag, AnyVisitor* v) const
 {
 	auto p = get_parameter(_tag);
 	p.get_value().visit(v);
 }
 
-size_t CSGObject::hash() const
+size_t SGObject::hash() const
 {
-	return std::hash<CSGObject>{}(*this);
+	return std::hash<SGObject>{}(*this);
 }

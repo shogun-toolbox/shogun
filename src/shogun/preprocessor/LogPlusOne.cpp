@@ -12,23 +12,23 @@
 
 using namespace shogun;
 
-CLogPlusOne::CLogPlusOne()
-: CDensePreprocessor<float64_t>()
+LogPlusOne::LogPlusOne()
+: DensePreprocessor<float64_t>()
 {
 }
 
 
-CLogPlusOne::~CLogPlusOne()
+LogPlusOne::~LogPlusOne()
 {
 }
 
 /// clean up allocated memory
-void CLogPlusOne::cleanup()
+void LogPlusOne::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CLogPlusOne::load(FILE* f)
+bool LogPlusOne::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -36,14 +36,14 @@ bool CLogPlusOne::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CLogPlusOne::save(FILE* f)
+bool LogPlusOne::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-SGMatrix<float64_t> CLogPlusOne::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> LogPlusOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	for (auto& v : matrix)
 	{
@@ -55,7 +55,7 @@ SGMatrix<float64_t> CLogPlusOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CLogPlusOne::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> LogPlusOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* log_vec = SG_MALLOC(float64_t, vector.vlen);
 

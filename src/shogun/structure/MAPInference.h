@@ -29,31 +29,31 @@ enum EMAPInferType
 	LP_RELAXATION = 2,
 	TRWS_MAX_PROD = 3,
 	GRAPH_CUT = 4,
-	GEMPLP = 5
+	GEMP_LP = 5
 };
 
-class CMAPInferImpl;
+class MAPInferImpl;
 
-/** @brief Class CMAPInference performs MAP inference on a factor graph.
+/** @brief Class MAPInference performs MAP inference on a factor graph.
  * Briefly, given a factor graph model, with features \f$\bold{x}\f$,
  * the prediction is obtained by \f$ {\arg\max} _{\bold{y}} P(\bold{Y}
  * = \bold{y} | \bold{x}; \bold{w}) \f$.
  */
-class CMAPInference : public CSGObject
+class MAPInference : public SGObject
 {
 public:
 	/** default constructor */
-	CMAPInference();
+	MAPInference();
 
 	/** constructor
 	 *
 	 * @param fg pointer of factor graph, i.e. structured inputs
 	 * @param inference_method name of MAP inference method
 	 */
-	CMAPInference(CFactorGraph* fg, EMAPInferType inference_method);
+	MAPInference(std::shared_ptr<FactorGraph> fg, EMAPInferType inference_method);
 
 	/** destructor */
-	virtual ~CMAPInference();
+	virtual ~MAPInference();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "MAPInference"; }
@@ -63,9 +63,9 @@ public:
 
 	/** get structured outputs
 	 *
-	 * @return CFactorGraphObservation pointer
+	 * @return FactorGraphObservation pointer
 	 */
-	CFactorGraphObservation* get_structured_outputs() const;
+	std::shared_ptr<FactorGraphObservation> get_structured_outputs() const;
 
 	/** @return minimized energy */
 	float64_t get_energy() const;
@@ -76,35 +76,35 @@ private:
 
 protected:
 	/** pointer of factor graph */
-	CFactorGraph* m_fg;
+	std::shared_ptr<FactorGraph> m_fg;
 
 	/** structured outputs */
-	CFactorGraphObservation* m_outputs;
+	std::shared_ptr<FactorGraphObservation> m_outputs;
 
 	/** minimized energy */
 	float64_t m_energy;
 
 	/** opaque pointer to hide implementation */
-	CMAPInferImpl* m_infer_impl;
+	std::shared_ptr<MAPInferImpl> m_infer_impl;
 };
 
 /** @brief Class CMAPInferImpl abstract class
  * of MAP inference implementation
  */
-class CMAPInferImpl : public CSGObject
+class MAPInferImpl : public SGObject
 {
 public:
 	/** default constructor */
-	CMAPInferImpl();
+	MAPInferImpl();
 
 	/** constructor
 	 *
 	 * @param fg pointer of factor graph, i.e. structured inputs
 	 */
-	CMAPInferImpl(CFactorGraph* fg);
+	MAPInferImpl(std::shared_ptr<FactorGraph> fg);
 
 	/** destructor */
-	virtual ~CMAPInferImpl();
+	virtual ~MAPInferImpl();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "MAPInferImpl"; }
@@ -121,7 +121,7 @@ private:
 
 protected:
 	/** pointer of factor graph */
-	CFactorGraph* m_fg;
+	std::shared_ptr<FactorGraph> m_fg;
 };
 
 }

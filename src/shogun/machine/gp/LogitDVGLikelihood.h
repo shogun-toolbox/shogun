@@ -71,13 +71,13 @@ namespace shogun
  * \f], where t is a local variable and the inequality holds for every t>0.
  * See Bernoulli-logit in Table 2 of the paper for detailed information
  */
-class CLogitDVGLikelihood : public CDualVariationalGaussianLikelihood
+class LogitDVGLikelihood : public DualVariationalGaussianLikelihood
 {
 public:
 	/** default constructor */
-	CLogitDVGLikelihood();
+	LogitDVGLikelihood();
 
-	virtual ~CLogitDVGLikelihood();
+	virtual ~LogitDVGLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -91,13 +91,15 @@ public:
 	 */
 	virtual SGVector<float64_t> get_dual_objective_value();
 
+#ifndef SWIG
 	/** get the derivative of the dual objective function with respect to param
 	 *
 	 * @param param parameter
 	 * @return the value of of the derivative
 	 *
 	 */
-	virtual SGVector<float64_t> get_dual_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_dual_first_derivative(Parameters::const_reference param) const;
+#endif
 
 	/** get the upper bound for dual parameter (lambda)
 	 *

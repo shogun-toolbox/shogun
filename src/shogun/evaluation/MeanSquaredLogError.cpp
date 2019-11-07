@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t MeanSquaredLogError::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())
@@ -20,10 +20,12 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 
 	int32_t length=predicted->get_num_labels();
 	float64_t msle=0.0;
+	auto predicted_regression = regression_labels(predicted);
+	auto ground_truth_regression = regression_labels(ground_truth);
 	for (int32_t i=0; i<length; i++)
 	{
-		float64_t prediction=((CRegressionLabels*) predicted)->get_label(i);
-		float64_t truth=((CRegressionLabels*) ground_truth)->get_label(i);
+		float64_t prediction=predicted_regression->get_label(i);
+		float64_t truth=ground_truth_regression->get_label(i);
 
 		if (prediction<=-1.0 || truth<=-1.0)
 		{
@@ -34,7 +36,7 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 
 		float64_t a = std::log(prediction + 1);
 		float64_t b = std::log(truth + 1);
-		msle+=CMath::sq(a-b);
+		msle+=Math::sq(a-b);
 	}
 	msle /= length;
 	return std::sqrt(msle);

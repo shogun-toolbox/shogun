@@ -6,7 +6,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <gtest/gtest.h>
@@ -39,10 +38,10 @@ TEST(StudentsTLikelihood,get_predictive_log_probabilities)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
 	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2, labels);
 
@@ -54,8 +53,8 @@ TEST(StudentsTLikelihood,get_predictive_log_probabilities)
 	EXPECT_NEAR(lp[4], -0.406520554213667, 1E-10);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 #endif //USE_GPL_SHOGUN
 
@@ -84,10 +83,10 @@ TEST(StudentsTLikelihood,get_predictive_means)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
 	mu=likelihood->get_predictive_means(mu, s2, labels);
 
@@ -99,8 +98,8 @@ TEST(StudentsTLikelihood,get_predictive_means)
 	EXPECT_NEAR(mu[4], 0.00388000000000000, 1E-15);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(StudentsTLikelihood,get_predictive_variances)
@@ -128,10 +127,10 @@ TEST(StudentsTLikelihood,get_predictive_variances)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
 	s2=likelihood->get_predictive_variances(mu, s2, labels);
 
@@ -143,8 +142,8 @@ TEST(StudentsTLikelihood,get_predictive_variances)
 	EXPECT_NEAR(s2[4], 0.386700000000000, 1E-15);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(StudentsTLikelihood,get_log_probability_f)
@@ -169,10 +168,10 @@ TEST(StudentsTLikelihood,get_log_probability_f)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
 	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
@@ -184,8 +183,8 @@ TEST(StudentsTLikelihood,get_log_probability_f)
 	EXPECT_NEAR(lp[4], 0.452472466723325, 1E-15);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(StudentsTLikelihood,get_log_probability_derivative_f)
@@ -210,10 +209,10 @@ TEST(StudentsTLikelihood,get_log_probability_derivative_f)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
 	SGVector<float64_t> dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
 	SGVector<float64_t> d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);
@@ -239,8 +238,8 @@ TEST(StudentsTLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[4], -228.307, 1E-3);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(StudentsTLikelihood,get_first_derivative)
@@ -265,18 +264,19 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
+	auto params = likelihood->get_params();
+	auto param1 = params.find("log_sigma");
+	auto param2 = params.find("log_df");
 
 	SGVector<float64_t> lp_dhyp1=likelihood->get_first_derivative(labels, func,
-			param1);
+			*param1);
 	SGVector<float64_t> lp_dhyp2=likelihood->get_first_derivative(labels, func,
-			param2);
+			*param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -291,10 +291,6 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	EXPECT_NEAR(lp_dhyp2[2], 0.084673, 1E-6);
 	EXPECT_NEAR(lp_dhyp2[3], 0.067721, 1E-6);
 	EXPECT_NEAR(lp_dhyp2[4], 0.090007, 1E-6);
-
-	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
 }
 
 TEST(StudentsTLikelihood,get_second_derivative)
@@ -319,18 +315,19 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
+	auto params = likelihood->get_params();
+	auto param1 = params.find("log_sigma");
+	auto param2 = params.find("log_df");
 
 	SGVector<float64_t> dlp_dhyp1=likelihood->get_second_derivative(labels,
-			func, param1);
+			func, *param1);
 	SGVector<float64_t> dlp_dhyp2=likelihood->get_second_derivative(labels,
-			func, param2);
+			func, *param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -345,10 +342,6 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	EXPECT_NEAR(dlp_dhyp2[2], 0.38610, 1E-5);
 	EXPECT_NEAR(dlp_dhyp2[3], -0.39073, 1E-5);
 	EXPECT_NEAR(dlp_dhyp2[4], -0.32973, 1E-5);
-
-	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
 }
 
 TEST(StudentsTLikelihood,get_third_derivative)
@@ -373,18 +366,19 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
+	auto params = likelihood->get_params();
+	auto param1 = params.find("log_sigma");
+	auto param2 = params.find("log_df");
 
 	SGVector<float64_t> d2lp_dhyp1=likelihood->get_third_derivative(labels,
-			func, param1);
+			func, *param1);
 	SGVector<float64_t> d2lp_dhyp2=likelihood->get_third_derivative(labels,
-			func, param2);
+			func, *param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -400,9 +394,6 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	EXPECT_NEAR(d2lp_dhyp2[3], 2.6874, 1E-4);
 	EXPECT_NEAR(d2lp_dhyp2[4], -4.6860, 1E-4);
 
-	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -431,10 +422,10 @@ TEST(StudentsTLikelihood,get_first_moments)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.13, df = 4
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.13, 4);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.13, 4);
 
 	mu=likelihood->get_first_moments(mu, s2, labels);
 
@@ -446,8 +437,8 @@ TEST(StudentsTLikelihood,get_first_moments)
 	EXPECT_NEAR(mu[4], 3.26984704842959e-04, 1E-10);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(StudentsTLikelihood,get_second_moments)
@@ -475,10 +466,10 @@ TEST(StudentsTLikelihood,get_second_moments)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Stundent's-t likelihood with sigma = 0.13, df = 4
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.13, 4);
+	auto likelihood=std::make_shared<StudentsTLikelihood>(0.13, 4);
 
 	s2=likelihood->get_second_moments(mu, s2, labels);
 
@@ -490,7 +481,7 @@ TEST(StudentsTLikelihood,get_second_moments)
 	EXPECT_NEAR(s2[4], 0.0252824052815258, 1E-10);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 #endif //USE_GPL_SHOGUN

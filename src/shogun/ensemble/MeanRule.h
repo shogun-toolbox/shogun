@@ -14,14 +14,14 @@
 namespace shogun
 {
 	/**
-	 * @brief CMeanRule simply averages the outputs of the Machines in the ensemble.
+	 * @brief MeanRule simply averages the outputs of the Machines in the ensemble.
 	 */
-	class CMeanRule : public CCombinationRule
+	class MeanRule : public CombinationRule
 	{
 		public:
-			CMeanRule();
+			MeanRule();
 
-			virtual ~CMeanRule();
+			virtual ~MeanRule();
 
 			/**
 			 * Combines a matrix of an ensemble of Machines output, where each

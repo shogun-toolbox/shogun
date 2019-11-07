@@ -26,7 +26,7 @@ namespace shogun
  * This class provides methods to set up optimization problems that are
  * used in shogun, e.g. from PrimalMosekSOSVM.
  */
-class CMosek : public CSGObject
+class CMosek : public SGObject
 {
 
 	public:

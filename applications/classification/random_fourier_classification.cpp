@@ -108,10 +108,10 @@ int main(int argv, char** argc)
 
 
 	/** Creating features */
-	CBinaryLabels* labels = new CBinaryLabels(label);
+	BinaryLabels* labels = new BinaryLabels(label);
 	SG_REF(labels);
 
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(sparse_data);
+	SparseFeatures<float64_t>* s_feats = new SparseFeatures<float64_t>(sparse_data);
 	SGVector<float64_t> params(1);
 	params[0] = width;
 	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
@@ -119,11 +119,11 @@ int main(int argv, char** argc)
 
 
 	/** Training */
-	CLibLinear* svm = new CLibLinear(C, r_feats, labels);
-	//CSVMOcas* svm = new CSVMOcas(C, r_feats, labels);
+	LibLinear* svm = new LibLinear(C, r_feats, labels);
+	//SVMOcas* svm = new SVMOcas(C, r_feats, labels);
 	svm->set_epsilon(epsilon);
 	SG_SPRINT("Starting training\n");
-	CTime* timer = new CTime();
+	Time* timer = new Time();
 	svm->train();
 	float64_t secs = timer->cur_runtime_diff_sec();
 	timer->stop();
@@ -132,7 +132,7 @@ int main(int argv, char** argc)
 	/** Training completed */
 
 	/** Evaluating */
-	CBinaryLabels* predicted = svm->apply()->as<CBinaryLabels>();
+	BinaryLabels* predicted = svm->apply()->as<BinaryLabels>();
 	CPRCEvaluation* prc_evaluator = new CPRCEvaluation();
 	CROCEvaluation* roc_evaluator = new CROCEvaluation();
 	CAccuracyMeasure* accuracy_evaluator = new CAccuracyMeasure();
@@ -152,11 +152,11 @@ int main(int argv, char** argc)
 		sparse_data = load_data(testpath, label_vec);
 		label = SGVector<float64_t>(label_vec, sparse_data.num_vectors);
 
-		s_feats = new CSparseFeatures<float64_t>(sparse_data);
+		s_feats = new SparseFeatures<float64_t>(sparse_data);
 		r_feats = new CRandomFourierDotFeatures(s_feats, D, KernelName::GAUSSIAN, width, w);
-		CBinaryLabels* test_labels = new CBinaryLabels(label);
+		BinaryLabels* test_labels = new BinaryLabels(label);
 
-		predicted = svm->apply(r_feats)->as<CBinaryLabels>();
+		predicted = svm->apply(r_feats)->as<BinaryLabels>();
 		auROC = roc_evaluator->evaluate(predicted, test_labels);
 		auPRC = prc_evaluator->evaluate(predicted, test_labels);
 		accuracy = accuracy_evaluator->evaluate(predicted, test_labels);

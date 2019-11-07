@@ -18,30 +18,30 @@ namespace shogun
 /** @brief The class DummyFeatures implements features that only know the
  * number of feature objects (but don't actually contain any).
  *
- * This is used in the CCustomKernel.*/
-class CDummyFeatures : public CFeatures
+ * This is used in the CustomKernel.*/
+class DummyFeatures : public Features
 {
 	public:
 		/** default constructor  */
-		CDummyFeatures();
+		DummyFeatures();
 
 		/** constructor
 		 *
 		 * @param num number of feature vectors
 		 */
-		CDummyFeatures(int32_t num);
+		DummyFeatures(int32_t num);
 
 		/** copy constructor */
-		CDummyFeatures(const CDummyFeatures &orig);
+		DummyFeatures(const DummyFeatures &orig);
 
 		/** destructor */
-		virtual ~CDummyFeatures();
+		virtual ~DummyFeatures();
 
 		/** get number of feature vectors */
 		virtual int32_t get_num_vectors() const;
 
 		/** duplicate features */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** get feature type (ANY) */
 		inline EFeatureType get_feature_type() const;

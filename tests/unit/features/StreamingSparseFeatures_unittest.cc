@@ -51,13 +51,12 @@ TEST(StreamingSparseFeaturesTest, parse_file)
       data[i].features[j].entry=uniform_real_dist(prng, {0.0, max_entry_value});
     }
   }
-  CLibSVMFile* fout = new CLibSVMFile(fname, 'w', NULL);
+  auto fout = std::make_shared<LibSVMFile>(fname, 'w');
   fout->set_sparse_matrix(data, num_feat, num_vec, labels);
-  SG_UNREF(fout);
 
-  CStreamingAsciiFile *file = new CStreamingAsciiFile(fname);
-  CStreamingSparseFeatures<float64_t> *stream_features =
-    new CStreamingSparseFeatures<float64_t>(file, true, 8);
+  auto file = std::make_shared<StreamingAsciiFile>(fname);
+  auto stream_features =
+    std::make_shared<StreamingSparseFeatures<float64_t>>(file, true, 8);
 
   stream_features->start_parser();
   index_t i = 0;
@@ -77,7 +76,7 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   }
   stream_features->end_parser();
 
-  SG_UNREF(stream_features);
+
   SG_FREE(data);
   SG_FREE(labels);
 

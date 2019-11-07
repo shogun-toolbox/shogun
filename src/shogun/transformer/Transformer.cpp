@@ -1,11 +1,10 @@
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/exception/NotFittedException.h>
 #include <shogun/transformer/Transformer.h>
 
 namespace shogun
 {
 
-	CTransformer::CTransformer() : CSGObject()
+	Transformer::Transformer() : SGObject()
 	{
 		m_fitted = false;
 
@@ -13,7 +12,7 @@ namespace shogun
 		    &m_fitted, "is_fitted", "Whether the transformer has been fitted.");
 	}
 
-	void CTransformer::assert_fitted() const
+	void Transformer::assert_fitted() const
 	{
 		require<NotFittedException>(
 		    m_fitted, "Transformer has not been fitted.");

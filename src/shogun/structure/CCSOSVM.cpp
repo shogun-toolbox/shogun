@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Soeren Sonnenburg, Abinash Panda, Shell Hu, 
+ * Authors: Viktor Gal, Soeren Sonnenburg, Abinash Panda, Shell Hu,
  *          Thoralf Klein, Bjoern Esser, Sanuj Sharma
  */
 
@@ -13,14 +13,14 @@
 
 using namespace shogun;
 
-CCCSOSVM::CCCSOSVM()
-	: CLinearStructuredOutputMachine()
+CCSOSVM::CCSOSVM()
+	: LinearStructuredOutputMachine()
 {
 	init();
 }
 
-CCCSOSVM::CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w)
-	: CLinearStructuredOutputMachine(model, model->get_labels())
+CCSOSVM::CCSOSVM(const std::shared_ptr<StructuredModel>& model, SGVector<float64_t> w)
+	: LinearStructuredOutputMachine(model, model->get_labels())
 {
 	init();
 
@@ -35,14 +35,14 @@ CCCSOSVM::CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w)
 	}
 }
 
-CCCSOSVM::~CCCSOSVM()
+CCSOSVM::~CCSOSVM()
 {
 #ifdef USE_MOSEK
 	MSK_deleteenv(&m_msk_env);
 #endif
 }
 
-int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* alpha, int32_t k, float64_t* dual_obj, float64_t rho)
+int32_t CCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* alpha, int32_t k, float64_t* dual_obj, float64_t rho)
 {
 #ifdef USE_MOSEK
 	int32_t t;
@@ -187,14 +187,14 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 #endif
 }
 
-bool CCCSOSVM::train_machine(CFeatures* data)
+bool CCSOSVM::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
 		set_features(data);
 
 	SGVector<float64_t> alpha;
 	float64_t** G; /* Gram matrix */
-	DynArray<SGSparseVector<float64_t> > dXc; /* constraint matrix */
+	std::vector<SGSparseVector<float64_t> > dXc; /* constraint matrix */
 	//	DOC **dXc; /* constraint matrix */
 	SGVector<float64_t> delta; /* rhs of constraints */
 	SGSparseVector<float64_t> new_constraint;
@@ -258,7 +258,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		io::print(".");
 
 		/* add constraint */
-		dXc.resize_array(size_active);
+		dXc.resize(size_active);
 		dXc[size_active - 1] = new_constraint;
 		//		dXc[size_active - 1].add(new_constraint);
 		/*
@@ -430,7 +430,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 		v_k = (reg_master_obj - proximal_term*rho/2) - primal_obj_b;
 
-		primal_lower_bound = CMath::max(primal_lower_bound, reg_master_obj - 0.5*rho*(1+rho)*proximal_term);
+		primal_lower_bound = Math::max(primal_lower_bound, reg_master_obj - 0.5*rho*(1+rho)*proximal_term);
 
 		SG_DEBUG("ITER REG_MASTER_OBJ: {:.4f}", reg_master_obj)
 		SG_DEBUG("ITER EXPECTED_DESCENT: {:.4f}", expected_descent)
@@ -474,17 +474,17 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				SG_DEBUG("NULL STEP: SS(ii) FAILS.")
 
 				serious_counter--;
-				rho = CMath::max(rho/10,min_rho);
+				rho = Math::max(rho/10,min_rho);
 			}
 		}
 		else
 		{ /* no sufficient decrease */
 			serious_counter--;
 
-			if ((cut_error[size_active-1]>m3*last_sigma_k)&&(CMath::abs(obj_difference)>last_z_k_norm+last_sigma_k))
+			if ((cut_error[size_active-1]>m3*last_sigma_k)&&(Math::abs(obj_difference)>last_z_k_norm+last_sigma_k))
 			{
 				SG_DEBUG("NULL STEP: NS(ii) FAILS.")
-				rho = CMath::min(10*rho,m_max_rho);
+				rho = Math::min(10*rho,m_max_rho);
 			}
 			else
 				SG_DEBUG("NULL STEP")
@@ -521,7 +521,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	return true;
 }
 
-SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
+SGSparseVector<float64_t> CCSOSVM::find_cutting_plane(float64_t* margin)
 {
 	SGVector<float64_t> new_constraint(m_model->get_dim());
 	int32_t psi_size = m_model->get_dim();
@@ -532,7 +532,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	new_constraint.zero();
 	for (index_t i = 0; i < num_samples; i++)
 	{
-		CResultSet* result = m_model->argmax(m_w, i);
+		auto result = m_model->argmax(m_w, i);
 		if (result->psi_computed)
 		{
 			new_constraint.add(result->psi_truth);
@@ -553,11 +553,11 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		}
 		/*
 		printf("%.16lf %.16lf\n",
-				CMath::dot(result->psi_truth.vector, result->psi_truth.vector, result->psi_truth.vlen),
-				CMath::dot(result->psi_pred.vector, result->psi_pred.vector, result->psi_pred.vlen));
+				Math::dot(result->psi_truth.vector, result->psi_truth.vector, result->psi_truth.vlen),
+				Math::dot(result->psi_pred.vector, result->psi_pred.vector, result->psi_pred.vlen));
 		*/
 		*margin += result->delta;
-		SG_UNREF(result);
+
 	}
 	/* scaling */
 	float64_t scale = 1/(float64_t)num_samples;
@@ -568,18 +568,18 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	index_t l = 0;
 	for (index_t i=0; i < psi_size; i++)
 	{
-		if (CMath::abs(new_constraint[i])>1E-10)
+		if (Math::abs(new_constraint[i])>1E-10)
 			l++; // non-zero
 	}
 	/* TODO: does this really work good?
-		 l = CMath::get_num_nonzero(new_constraint.vector, new_constraint.vlen);
+		 l = Math::get_num_nonzero(new_constraint.vector, new_constraint.vlen);
 		 */
 	/* create a sparse vector of the nnz of new_constraint */
 	SGSparseVector<float64_t> cut_plane(l);
 	index_t k = 0;
 	for (index_t i = 0; i < psi_size; i++)
 	{
-		if (CMath::abs(new_constraint[i])>1E-10)
+		if (Math::abs(new_constraint[i])>1E-10)
 		{
 			cut_plane.features[k].feat_index = i;
 			cut_plane.features[k].entry = new_constraint[i];
@@ -590,10 +590,10 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	return cut_plane;
 }
 
-int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, SGVector<float64_t>&alpha,
+int32_t CCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, SGVector<float64_t>&alpha,
 		SGVector<float64_t>& delta, SGVector<float64_t>& gammaG0,
 		SGVector<float64_t>& proximal_rhs, float64_t ***ptr_G,
-		DynArray<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error)
+		std::vector<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error)
 {
 	int32_t i, j, new_size_active;
 	index_t k;
@@ -639,7 +639,7 @@ int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, S
 	gammaG0.resize_vector(new_size_active);
 	proximal_rhs.resize_vector(new_size_active);
 	G = SG_REALLOC(float64_t*, G, size_active, new_size_active);
-	dXc.resize_array(new_size_active);
+	dXc.resize(new_size_active);
 	cut_error.resize_vector(new_size_active);
 
 	/* resize G and idle */
@@ -671,7 +671,7 @@ int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, S
 	return new_size_active;
 }
 
-void CCCSOSVM::init()
+void CCSOSVM::init()
 {
 	m_C = 1.0;
 	m_eps = 1E-3;
@@ -680,7 +680,7 @@ void CCCSOSVM::init()
 	m_idle_iter = 20;
 	m_max_iter = 1000;
 	m_max_rho = m_C;
-	m_primal_obj = CMath::INFTY;
+	m_primal_obj = Math::INFTY;
 	m_qp_type = MOSEK;
 
 #ifdef USE_MOSEK
@@ -720,7 +720,7 @@ void CCCSOSVM::init()
 	    ParameterProperties::NONE, SG_OPTIONS(MOSEK, SVMLIGHT));
 }
 
-EMachineType CCCSOSVM::get_classifier_type()
+EMachineType CCSOSVM::get_classifier_type()
 {
 	return CT_CCSOSVM;
 }

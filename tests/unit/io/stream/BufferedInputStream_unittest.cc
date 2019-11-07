@@ -44,8 +44,8 @@ TEST(BufferedInputStream, read)
 
 	for (auto buf_size : kBufferSizes)
 	{
-		auto fis = some<io::CFileInputStream>(file.get());
-		auto in = some<io::CBufferedInputStream>(fis.get(), buf_size);
+		auto fis = std::make_unique<io::FileInputStream>(file.get());
+		auto in = std::make_unique<io::BufferedInputStream>(fis.get(), buf_size);
 		string read;
 		EXPECT_EQ(0, in->tell());
 		ASSERT_FALSE(in->read(&read, 3));
@@ -83,8 +83,8 @@ TEST(BufferedInputStream, skip)
 
 	for (auto buf_size : kBufferSizes)
 	{
-		auto fis = some<io::CFileInputStream>(file.get());
-		auto in = some<io::CBufferedInputStream>(fis.get(), buf_size);
+		auto fis = std::make_unique<io::FileInputStream>(file.get());
+		auto in = std::make_unique<io::BufferedInputStream>(fis.get(), buf_size);
 		string read;
 		EXPECT_EQ(0, in->tell());
 		ASSERT_FALSE(in->skip(3));

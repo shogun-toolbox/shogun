@@ -44,7 +44,7 @@ namespace shogun
  * ) 
  *
  */
-class Penalty:public CSGObject
+class Penalty:public SGObject
 {
 public:
 	virtual ~Penalty() {};

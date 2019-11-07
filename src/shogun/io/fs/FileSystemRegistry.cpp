@@ -10,7 +10,7 @@ using namespace std;
 
 void FileSystemRegistry::register_fs(
 	const string& scheme,
-	FileSystemRegistry::Factory factory)
+	const FileSystemRegistry::Factory& factory)
 {
 	lock_guard<mutex> lock(m_mutex);
 	if (!m_fs_registry.emplace(

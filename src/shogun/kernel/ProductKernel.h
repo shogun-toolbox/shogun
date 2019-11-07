@@ -10,7 +10,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -19,9 +18,8 @@
 
 namespace shogun
 {
-class CFeatures;
-class CCombinedFeatures;
-class CDynamicObjectArray;
+class Features;
+class CombinedFeatures;
 
 /** @brief The Product kernel is used to combine a number of kernels into a
  * single ProductKernel object by element multiplication.
@@ -34,16 +32,16 @@ class CDynamicObjectArray;
  * k_{product}({\bf x}, {\bf x'}) = \prod_{m=1}^M k_m({\bf x}, {\bf x'})
  * \f]
  */
-class CProductKernel : public CKernel
+class ProductKernel : public Kernel
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CProductKernel(int32_t size=10);
+		ProductKernel(int32_t size=10);
 
-		virtual ~CProductKernel();
+		virtual ~ProductKernel();
 
 		/** initialize kernel
 		 *
@@ -51,7 +49,7 @@ class CProductKernel : public CKernel
 		 * @param rhs features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -88,9 +86,9 @@ class CProductKernel : public CKernel
 		 * @param idx index of kernel
 		 * @return kernel at index idx
 		 */
-		inline CKernel* get_kernel(int32_t idx)
+		inline std::shared_ptr<Kernel> get_kernel(int32_t idx)
 		{
-			return (CKernel*) kernel_array->get_element(idx);
+			return kernel_array[idx];
 		}
 
 		/** insert kernel at position idx
@@ -100,15 +98,21 @@ class CProductKernel : public CKernel
 		 * @param idx the position where to add the kernel
 		 * @return if inserting was successful
 		 */
-		inline bool insert_kernel(CKernel* k, int32_t idx)
+		inline bool insert_kernel(std::shared_ptr<Kernel> k, int32_t idx)
 		{
 			ASSERT(k)
+			require(
+			    idx >= 0 && idx < get_num_subkernels(),
+			    "Index idx ({}) is out of range (0-{})", idx,
+			    get_num_subkernels());
+
 			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_array->insert_element(k, idx);
+			kernel_array.insert(kernel_array.begin() + idx, k);
+			return true;
 		}
 
 		/** append kernel
@@ -116,7 +120,7 @@ class CProductKernel : public CKernel
 		 * @param k kernel
 		 * @return if appending was successful
 		 */
-		inline bool append_kernel(CKernel* k)
+		inline bool append_kernel(std::shared_ptr<Kernel> k)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -125,7 +129,7 @@ class CProductKernel : public CKernel
 				unset_property(KP_LINADD);
 
 			int32_t n = get_num_subkernels();
-			kernel_array->push_back(k);
+			kernel_array.push_back(k);
 			return n+1==get_num_subkernels();
 		}
 
@@ -136,7 +140,13 @@ class CProductKernel : public CKernel
 		 */
 		inline bool delete_kernel(int32_t idx)
 		{
-			return kernel_array->delete_element(idx);
+			require(
+			    idx >= 0 && idx < kernel_array.size(),
+			    "Index idx ({}) is out of range (0-{})", idx,
+			    kernel_array.size());
+
+			kernel_array.erase(kernel_array.begin() + idx);
+			return true;
 		}
 
 		/** get number of subkernels
@@ -145,7 +155,7 @@ class CProductKernel : public CKernel
 		 */
 		inline int32_t get_num_subkernels()
 		{
-		    return kernel_array->get_num_elements();
+			return kernel_array.size();
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -172,9 +182,9 @@ class CProductKernel : public CKernel
 		/** casts kernel to combined kernel
 		 * @param n kernel to cast
 		 */
-		CProductKernel* KernelToProductKernel(CKernel* n)
+		std::shared_ptr<ProductKernel> KernelToProductKernel(std::shared_ptr<Kernel> n)
 		{
-			return dynamic_cast<CProductKernel*>(n);
+			return std::dynamic_pointer_cast<ProductKernel>(n);
 		}
 
 		/** return derivative with respect to specified parameter
@@ -184,16 +194,16 @@ class CProductKernel : public CKernel
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+		SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
 				index_t index=-1);
 
 		/** Get the Kernel array
 		 *
 		 * @return kernel array
 		 */
-		inline CDynamicObjectArray* get_array()
+		inline std::vector<std::shared_ptr<Kernel>> get_array()
 		{
-			SG_REF(kernel_array);
+			
 			return kernel_array;
 		}
 
@@ -211,7 +221,7 @@ class CProductKernel : public CKernel
 		 *
 		 * @param k kernel
 		 */
-		inline void adjust_num_lhs_rhs_initialized(CKernel* k)
+		inline void adjust_num_lhs_rhs_initialized(std::shared_ptr<Kernel> k)
 		{
 			ASSERT(k)
 
@@ -255,7 +265,7 @@ class CProductKernel : public CKernel
 
 	protected:
 		/** array of kernels */
-		CDynamicObjectArray* kernel_array;
+		std::vector<std::shared_ptr<Kernel>> kernel_array;
 		/** whether kernel is ready to be used */
 		bool initialized;
 };

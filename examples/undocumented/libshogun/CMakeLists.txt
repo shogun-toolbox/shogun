@@ -6,10 +6,6 @@ ENDIF ()
 
 IF (NOT USE_GPL_SHOGUN)
 	LIST(REMOVE_ITEM EXAMPLES_CPP
-	"modelselection_model_selection_parameters_test.cpp"
-	"modelselection_parameter_tree.cpp"
-	"modelselection_grid_search_string_kernel.cpp"
-	"parameter_modsel_parameters.cpp"
 	"classifier_svmlight_string_features_precomputed_kernel.cpp"
 	"classifier_larank.cpp"
 	)
@@ -29,7 +25,6 @@ LIST(REMOVE_ITEM EXAMPLES_CPP
 	"library_dynarray.cpp"
 	"metric_lmnnn.cpp"
 	"minibatchKMeans.cpp"
-	"modelselection_grid_search_krr.cpp"
 	"optimization_lbfgs.cpp"
 	"preprocessor_fisherlda.cpp"
 	"preprocessor_randomfouriergauss.cpp"

@@ -7,45 +7,45 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
-#include <shogun/base/Parameter.h>
-
 #include <shogun/kernel/ConstKernel.h>
 #include <shogun/features/Features.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CConstKernel::CConstKernel()
-: CKernel()
+ConstKernel::ConstKernel()
+: Kernel()
 {
 	init();
 }
 
-CConstKernel::CConstKernel(float64_t c)
-: CKernel()
-{
-	init();
-	const_value=c;
-}
-
-CConstKernel::CConstKernel(CFeatures* l, CFeatures* r, float64_t c)
-: CKernel()
+ConstKernel::ConstKernel(float64_t c)
+: Kernel()
 {
 	init();
 	const_value=c;
-	init(l, r);
 }
 
-CConstKernel::~CConstKernel()
+ConstKernel::ConstKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t c)
+: Kernel()
+{
+	init();
+	const_value=c;
+	init(std::move(l), std::move(r));
+}
+
+ConstKernel::~ConstKernel()
 {
 }
 
-bool CConstKernel::init(CFeatures* l, CFeatures* r)
+bool ConstKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CKernel::init(l, r);
+	Kernel::init(l, r);
 	return init_normalizer();
 }
 
-void CConstKernel::init()
+void ConstKernel::init()
 {
 	const_value=1.0;
 	SG_ADD(&const_value, "const_value", "Value for kernel elements.",

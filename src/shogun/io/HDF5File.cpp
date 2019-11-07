@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CHDF5File::CHDF5File()
+HDF5File::HDF5File()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -26,7 +26,7 @@ CHDF5File::CHDF5File()
 	h5file = -1;
 }
 
-CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
+HDF5File::HDF5File(char* fname, char rw, const char* name) : File()
 {
 	get_boolean_type();
 	H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
@@ -55,13 +55,13 @@ CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 		error("Could not open file '{}'", fname);
 }
 
-CHDF5File::~CHDF5File()
+HDF5File::~HDF5File()
 {
 	H5Fclose(h5file);
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
+void HDF5File::fname(sg_type*& vec, int32_t& len)									\
 {																					\
 	if (!h5file)																	\
 		error("File invalid.");												\
@@ -115,7 +115,7 @@ GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
-void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
+void HDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 {																					\
 	if (!h5file)																	\
 		error("File invalid.");												\
@@ -167,7 +167,7 @@ GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void HDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		error("File invalid.");													\
@@ -189,7 +189,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CHDF5File::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void HDF5File::fname(SGVector<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 
@@ -211,7 +211,7 @@ GET_STRING_LIST(get_string_list, floatmax_t, DT_STRING_LONGREAL)
 /** set functions - to pass data from shogun to the target interface */
 
 #define SET_VECTOR(fname, sg_type, dtype, h5type)							\
-void CHDF5File::fname(const sg_type* vec, int32_t len)						\
+void HDF5File::fname(const sg_type* vec, int32_t len)						\
 {																			\
 	if (h5file<0 || !vec)													\
 		error("File or vector invalid.");								\
@@ -252,7 +252,7 @@ SET_VECTOR(set_vector, uint64_t, DT_VECTOR_ULONG, H5T_NATIVE_ULLONG)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype, h5type)								\
-void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+void HDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 {																				\
 	if (h5file<0 || !matrix)													\
 		error("File or matrix invalid.");									\
@@ -293,7 +293,7 @@ SET_MATRIX(set_matrix, floatmax_t, DT_DENSE_LONGREAL, H5T_NATIVE_LDOUBLE)
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
-void CHDF5File::fname(const SGSparseVector<sg_type>* matrix,	\
+void HDF5File::fname(const SGSparseVector<sg_type>* matrix,	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
@@ -316,7 +316,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CHDF5File::fname(const SGVector<sg_type>* strings, int32_t num_str)	\
+void HDF5File::fname(const SGVector<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		error("File or strings invalid.");											\
@@ -337,7 +337,7 @@ SET_STRING_LIST(set_string_list, float64_t, DT_STRING_REAL)
 SET_STRING_LIST(set_string_list, floatmax_t, DT_STRING_LONGREAL)
 #undef SET_STRING_LIST
 
-void CHDF5File::get_boolean_type()
+void HDF5File::get_boolean_type()
 {
 	boolean_type=H5T_NATIVE_UCHAR;
 	switch (sizeof(bool))
@@ -359,7 +359,7 @@ void CHDF5File::get_boolean_type()
 	}
 }
 
-hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
+hid_t HDF5File::get_compatible_type(H5T_class_t t_class,
 									 const TSGDataType* datatype)
 {
 	switch (t_class)
@@ -405,7 +405,7 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 	}
 }
 
-void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
+void HDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
 {
 	hid_t dataspace = H5Dget_space(dataset);
 	if (dataspace<0)
@@ -422,7 +422,7 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 	H5Sclose(dataspace);
 }
 
-void CHDF5File::create_group_hierarchy()
+void HDF5File::create_group_hierarchy()
 {
 	char* vname=get_strdup(variable_name);
 	int32_t vlen=strlen(vname);

@@ -30,28 +30,30 @@
  */
 
 #include <limits>
-#include <shogun/regression/KRRNystrom.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/regression/KRRNystrom.h>
+#include <utility>
 
 using namespace shogun;
 using namespace Eigen;
 
-CKRRNystrom::CKRRNystrom() : RandomMixin<CKernelRidgeRegression>()
+KRRNystrom::KRRNystrom() : RandomMixin<KernelRidgeRegression>()
 {
 	init();
 }
 
-CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab)
-: RandomMixin<CKernelRidgeRegression>(tau, k, lab)
+KRRNystrom::KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: RandomMixin<KernelRidgeRegression>(tau, std::move(k), std::move(lab))
 {
 	init();
 
 	m_num_rkhs_basis=m;
 }
 
-void CKRRNystrom::init()
+void KRRNystrom::init()
 {
 	m_num_rkhs_basis=0;
 	SG_ADD(
@@ -59,7 +61,7 @@ void CKRRNystrom::init()
 	    ParameterProperties::HYPER);
 }
 
-SGVector<int32_t> CKRRNystrom::subsample_indices()
+SGVector<int32_t> KRRNystrom::subsample_indices()
 {
 	int32_t n=kernel->get_num_vec_lhs();
 	SGVector<int32_t> temp(n);
@@ -68,12 +70,12 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 	SGVector<int32_t> col(m_num_rkhs_basis);
 	for (index_t i=0; i<m_num_rkhs_basis; ++i)
 		col[i]=temp[i];
-	CMath::qsort(col.vector, m_num_rkhs_basis);
+	Math::qsort(col.vector, m_num_rkhs_basis);
 
 	return col;
 }
 
-bool CKRRNystrom::train_machine(CFeatures* data)
+bool KRRNystrom::train_machine(std::shared_ptr<Features> data)
 {
 	require(data, "No features provided.");
 
@@ -81,10 +83,10 @@ bool CKRRNystrom::train_machine(CFeatures* data)
 
 	require(m_num_rkhs_basis <= n, "Number of sampled rows ({}) must be "
 			"less than number of data points ({}).", m_num_rkhs_basis, n);
-	return CKernelRidgeRegression::train_machine(data);
+	return KernelRidgeRegression::train_machine(data);
 }
 
-bool CKRRNystrom::solve_krr_system()
+bool KRRNystrom::solve_krr_system()
 {
 	int32_t n=kernel->get_num_vec_lhs();
 

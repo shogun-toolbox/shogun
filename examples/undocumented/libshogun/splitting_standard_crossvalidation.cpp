@@ -17,9 +17,9 @@ int main(int argc, char **argv)
 
 	while (runs-->0)
 	{
-		num_labels=CMath::random(10, 150);
-		num_subsets=CMath::random(1, 5);
-		index_t desired_size=CMath::round(
+		num_labels=Math::random(10, 150);
+		num_subsets=Math::random(1, 5);
+		index_t desired_size=Math::round(
 				(float64_t)num_labels/(float64_t)num_subsets);
 
 		/* this will throw an error */
@@ -29,17 +29,17 @@ int main(int argc, char **argv)
 		SG_SPRINT("num_labels=%d\nnum_subsets=%d\n\n", num_labels, num_subsets);
 
 		/* build labels */
-		CRegressionLabels* labels=new CRegressionLabels(num_labels);
+		RegressionLabels* labels=new RegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			labels->set_label(i, CMath::random(-10.0, 10.0));
+			labels->set_label(i, Math::random(-10.0, 10.0));
 			SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
 		}
 		SG_SPRINT("\n");
 
 		/* build splitting strategy */
-		CCrossValidationSplitting* splitting=
-				new CCrossValidationSplitting(labels, num_subsets);
+		CrossValidationSplitting* splitting=
+				new CrossValidationSplitting(labels, num_subsets);
 
 		/* build index sets (twice to ensure memory is not leaking) */
 		splitting->build_subsets();
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 			SG_SPRINT("checking subset size: %d vs subset desired size %d\n",
 					subset.vlen, desired_size);
 
-			ASSERT(CMath::abs(subset.vlen-desired_size)<=1);
+			ASSERT(Math::abs(subset.vlen-desired_size)<=1);
 			ASSERT(subset.vlen+inverse.vlen==num_labels);
 
 			for (index_t j=0; j<subset.vlen; ++j)
@@ -73,7 +73,6 @@ int main(int argc, char **argv)
 		}
 
 		/* clean up */
-		SG_UNREF(splitting);
 	}
 
 	return 0;

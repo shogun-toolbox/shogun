@@ -17,7 +17,7 @@ In this example, we showed how to apply CART algorithm to multi-class dataset an
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: cartree.sg:create_features
 
@@ -25,16 +25,16 @@ We set the type of each predictive attribute (true for nominal, false for ordina
 
 .. sgexample:: cartree.sg:set_attribute_types
 
-We create an instance of the :sgclass:`CCARTree` classifier by passting it the attribute types and the tree type.
+We create an instance of the :sgclass:`CARTree` classifier by passting it the attribute types and the tree type.
 We can also set the number of subsets used in cross-valiation and whether to use cross-validation pruning.
 
 .. sgexample:: cartree.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: cartree.sg:train_and_apply
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: cartree.sg:evaluate_accuracy
 

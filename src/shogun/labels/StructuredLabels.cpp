@@ -9,64 +9,65 @@
 
 using namespace shogun;
 
-CStructuredLabels::CStructuredLabels()
-: CLabels()
+StructuredLabels::StructuredLabels()
+: Labels()
 {
 	init();
 }
 
-CStructuredLabels::CStructuredLabels(int32_t num_labels)
-: CLabels()
+StructuredLabels::StructuredLabels(int32_t num_labels)
+: Labels()
 {
 	init();
-	m_labels = new CDynamicObjectArray(num_labels);
-	SG_REF(m_labels);
+	m_labels.reserve(num_labels);
+	
 }
 
-CStructuredLabels::~CStructuredLabels()
+StructuredLabels::~StructuredLabels()
 {
-	SG_UNREF(m_labels);
+	
 }
 
-bool CStructuredLabels::is_valid() const
+bool StructuredLabels::is_valid() const
 {
-	return m_labels != nullptr;
+	return true;
 }
 
-void CStructuredLabels::ensure_valid(const char* context)
+void StructuredLabels::ensure_valid(const char* context)
 {
 	require(is_valid(), "Non-valid StructuredLabels in {}", context);
 }
 
-CDynamicObjectArray* CStructuredLabels::get_labels() const
+std::vector<std::shared_ptr<StructuredData>> StructuredLabels::get_labels() const
 {
-	SG_REF(m_labels);
+	
 	return m_labels;
 }
 
-CStructuredData* CStructuredLabels::get_label(int32_t idx)
+std::shared_ptr<StructuredData> StructuredLabels::get_label(int32_t idx)
 {
-	ensure_valid("CStructuredLabels::get_label(int32_t)");
+	ensure_valid("StructuredLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		error("Index must be inside [0, num_labels-1]");
 
-	return (CStructuredData*) m_labels->get_element(idx);
+	return m_labels[idx];
 }
 
-void CStructuredLabels::add_label(CStructuredData* label)
+void StructuredLabels::add_label(std::shared_ptr<StructuredData> label)
 {
 	ensure_valid_sdt(label);
-	m_labels->push_back(label);
+	m_labels.push_back(label);
 }
 
-bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
+bool StructuredLabels::set_label(int32_t idx, std::shared_ptr<StructuredData> label)
 {
 	ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
 
 	if ( real_idx < get_num_labels() )
 	{
-		return m_labels->set_element(label, real_idx);
+		m_labels[real_idx] = label;
+		return true;
 	}
 	else
 	{
@@ -74,23 +75,20 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 	}
 }
 
-int32_t CStructuredLabels::get_num_labels() const
+int32_t StructuredLabels::get_num_labels() const
 {
-	if ( m_labels == NULL )
-		return 0;
-	else
-		return m_labels->get_num_elements();
+	return m_labels.size();
 }
 
-void CStructuredLabels::init()
+void StructuredLabels::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
+	SG_ADD(&m_labels, "m_labels", "The labels");
 
-	m_labels = NULL;
+	m_labels.clear();
 	m_sdt = SDT_UNKNOWN;
 }
 
-void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
+void StructuredLabels::ensure_valid_sdt(const std::shared_ptr<StructuredData>& label)
 {
 	if ( m_sdt == SDT_UNKNOWN )
 	{
@@ -99,6 +97,6 @@ void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
 	else
 	{
 		require(label->get_structured_data_type() == m_sdt, "All the labels must "
-				"belong to the same CStructuredData child class");
+				"belong to the same StructuredData child class");
 	}
 }

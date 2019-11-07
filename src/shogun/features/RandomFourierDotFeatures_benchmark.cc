@@ -31,7 +31,7 @@ static std::shared_ptr<CRandomFourierDotFeatures> createRandomData(const benchma
 			mat(j,i) = uniform_int_dist(prng) + 0.5;
 		}
 	}
-	auto dense_feats = new CDenseFeatures<float64_t>(mat);
+	auto dense_feats = new DenseFeatures<float64_t>(mat);
 	SGVector<float64_t> params(1);
 	params[0] = num_dim - 20;
 	return std::make_shared<CRandomFourierDotFeatures>(dense_feats, state.range(1), KernelName::GAUSSIAN, params);

@@ -25,17 +25,17 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 57(3), 878-891.
  *
  */
-class CUWedge : public CApproxJointDiagonalizer
+class UWedge : public ApproxJointDiagonalizer
 {
 	public:
 
 		/** constructor */
-		CUWedge()
+		UWedge()
 		{
 		}
 
 		/** destructor */
-		virtual ~CUWedge()
+		virtual ~UWedge()
 		{
 		}
 

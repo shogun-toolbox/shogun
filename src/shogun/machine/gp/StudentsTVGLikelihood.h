@@ -53,19 +53,19 @@ template<class C> class SGMatrix;
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
  * \f]
  */
-class CStudentsTVGLikelihood : public CNumericalVGLikelihood
+class StudentsTVGLikelihood : public NumericalVGLikelihood
 {
 public:
-	CStudentsTVGLikelihood();
+	StudentsTVGLikelihood();
 
         /** constructor
          *
          * @param sigma noise variance
          * @param df degrees of freedom
          */
-	CStudentsTVGLikelihood(float64_t sigma, float64_t df);
+	StudentsTVGLikelihood(float64_t sigma, float64_t df);
 
-	virtual ~CStudentsTVGLikelihood();
+	virtual ~StudentsTVGLikelihood();
 
 	/** returns the name of the likelihood model
 	 *

@@ -23,7 +23,7 @@ enum EARDKernelType
 };
 
 /** @brief Exponential Kernel with Automatic Relevance Detection computed
- * on CDotFeatures.
+ * on DotFeatures.
  *
  * It is computed as
  *
@@ -60,13 +60,13 @@ enum EARDKernelType
  * When \f$\Lambda=\textbf{diag}(\lambda) \f$ is, the last case becomes the second case.
  *
  */
-class CExponentialARDKernel: public CDotKernel
+class ExponentialARDKernel: public DotKernel
 {
 public:
 	/** default constructor */
-	CExponentialARDKernel();
+	ExponentialARDKernel();
 
-	virtual ~CExponentialARDKernel();
+	virtual ~ExponentialARDKernel();
 
 	/** return what type of kernel we are
 	 *
@@ -113,11 +113,11 @@ protected:
 
 	/** get features vector given idx
 	 *
-	 * @param idx index of CFeatures
+	 * @param idx index of Features
 	 * @param hs features
 	 * @return the features vector
 	 */
-	virtual SGVector<float64_t> get_feature_vector(int32_t idx, CFeatures* hs);
+	virtual SGVector<float64_t> get_feature_vector(int32_t idx, std::shared_ptr<Features> hs);
 
 	/** compute the distance between features a and b
 	 * idx_{a,b} denote the index of the feature vectors
@@ -149,7 +149,7 @@ public:
 	 *
 	 * @param size cache size
 	 */
-	CExponentialARDKernel(int32_t size);
+	ExponentialARDKernel(int32_t size);
 
 	/** constructor
 	 *
@@ -157,7 +157,7 @@ public:
 	 * @param r features of right-hand side
 	 * @param size cache size
 	 */
-	CExponentialARDKernel(CDotFeatures* l, CDotFeatures* r,
+	ExponentialARDKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 			int32_t size=10);
 
 
@@ -167,7 +167,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 
 	/** return current feature/dimension weights in matrix form
@@ -187,7 +187,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
 			index_t index=-1)=0;
 
 	/** setter for feature/dimension weight (scalar kernel)

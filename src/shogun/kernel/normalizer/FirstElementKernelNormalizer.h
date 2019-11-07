@@ -23,28 +23,28 @@ namespace shogun
  * useful if the kernel returns constant elements along the diagonal anyway and
  * all one wants is to scale the kernel down to 1 on the diagonal.
  */
-class CFirstElementKernelNormalizer : public CKernelNormalizer
+class FirstElementKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** constructor
 		 */
-		CFirstElementKernelNormalizer() : CKernelNormalizer(), scale(1.0)
+		FirstElementKernelNormalizer() : KernelNormalizer(), scale(1.0)
 		{
-			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER);
+			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    ParameterProperties::HYPER)*/;
 		}
 
 		/** default destructor */
-		virtual ~CFirstElementKernelNormalizer()
+		virtual ~FirstElementKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
 

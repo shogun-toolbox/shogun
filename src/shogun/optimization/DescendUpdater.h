@@ -45,7 +45,7 @@ namespace shogun
  * Note that an example of \f$g\f$ is to simply use the gradient wrt \f$w\f$. 
  *
  */
-class DescendUpdater: public CSGObject
+class DescendUpdater: public SGObject
 {
 public:
 	virtual ~DescendUpdater() {};

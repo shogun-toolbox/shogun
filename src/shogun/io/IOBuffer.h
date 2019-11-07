@@ -30,7 +30,7 @@ namespace shogun
  *
  */
 
- class CIOBuffer : public CSGObject
+ class IOBuffer : public SGObject
  {
 
  public:
@@ -38,19 +38,19 @@ namespace shogun
 	/**
 	 * Constructor.
 	 */
-	CIOBuffer();
+	IOBuffer();
 
 	/**
 	 * Constructor taking file descriptor as parameter
 	 *
 	 * @param fd file descriptor to use
 	 */
-	CIOBuffer(int fd);
+	IOBuffer(int fd);
 
 	/**
 	 * Destructor.
 	 */
-	~CIOBuffer();
+	~IOBuffer();
 
 	/**
 	 * Initialize the buffer, reserve 64K memory by default.

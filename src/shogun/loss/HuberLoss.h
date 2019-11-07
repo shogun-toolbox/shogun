@@ -41,20 +41,20 @@ namespace shogun
  * SquaredLoss function at values below Huber delta and like absolute deviation
  * at values greater than the delta.
  */
-class CHuberLoss: public CLossFunction
+class HuberLoss: public LossFunction
 {
 public:
 	/** default constructor */
-	CHuberLoss() { init(); }
+	HuberLoss() { init(); }
 
 	/** constructor
 	 *
 	 * @param delta Huber delta
 	 */
-	CHuberLoss(float64_t delta);
+	HuberLoss(float64_t delta);
 
 	/** Destructor */
-	~CHuberLoss() {};
+	~HuberLoss() {};
 
 	/** set delta
 	 *

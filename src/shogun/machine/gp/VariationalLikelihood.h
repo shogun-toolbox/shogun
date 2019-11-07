@@ -51,13 +51,13 @@ template<class T> class SGVector;
  * where \f$y\f$ are the labels, \f$f\f$ is the prediction function,
  * q is a variational distribution and p is a modeling distribution.
  */
-class CVariationalLikelihood : public CLikelihoodModel
+class VariationalLikelihood : public LikelihoodModel
 {
 public:
 	/** default constructor */
-	CVariationalLikelihood();
+	VariationalLikelihood();
 
-	virtual ~CVariationalLikelihood();
+	virtual ~VariationalLikelihood();
 
 	/** returns the expection of the logarithm of a given probability distribution
 	 * wrt the variational distribution.
@@ -66,6 +66,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_expection()=0;
 
+#ifndef SWIG
 	/** get derivative of the variational expection of log likelihood
 	 * with respect to given parameter
 	 *
@@ -73,7 +74,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const=0;
+	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const=0;
+#endif
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
 	 *
@@ -90,7 +92,7 @@ public:
 	 * @return final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const;
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$
 	 *
@@ -107,7 +109,7 @@ public:
 	 * @return final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const;
 
 	/** get model type
 	  *
@@ -126,7 +128,7 @@ public:
 	 *
 	 * @return logarithm of the point-wise likelihood
 	 */
-	virtual SGVector<float64_t> get_log_probability_f(const CLabels* lab,
+	virtual SGVector<float64_t> get_log_probability_f(std::shared_ptr<const Labels> lab,
 			SGVector<float64_t> func) const;
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to
@@ -140,7 +142,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
-			const CLabels* lab, SGVector<float64_t> func, index_t i) const;
+			std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const;
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:
@@ -159,7 +161,7 @@ public:
 	 * @return log zeroth moment \f$log(Z_i)\f$
 	 */
 	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const;
 
 	/** returns the first moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
@@ -176,7 +178,7 @@ public:
 	 * @return first moment of \f$q(f_i)\f$
 	 */
 	virtual float64_t get_first_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const;
 
 	/** returns the second moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
@@ -193,7 +195,7 @@ public:
 	 * @return the second moment of \f$q(f_i)\f$
 	 */
 	virtual float64_t get_second_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const;
 
 	/** return whether likelihood function supports regression
 	 *
@@ -213,6 +215,7 @@ public:
 	 */
 	virtual bool supports_multiclass() const;
 
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * parameter
 	 *
@@ -222,8 +225,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative(const CLabels* lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the first derivative of log likelihood with respect to
 	 * function location, i.e. \f$\frac{\partial log(p(y|f))}{\partial f}\f$
@@ -235,8 +238,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_second_derivative(const CLabels* lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+	virtual SGVector<float64_t> get_second_derivative(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the second derivative of log likelihood with respect
 	 * to function location, i.e. \f$\frac{\partial^{2} log(p(y|f))}{\partial
@@ -248,8 +251,9 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_third_derivative(const CLabels* lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+	virtual SGVector<float64_t> get_third_derivative(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func, Parameters::const_reference param) const;
+#endif
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -259,6 +263,7 @@ public:
 	 */
 	virtual bool supports_derivative_wrt_hyperparameter() const=0;
 
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
 	 * Note that variational parameters are NOT considered as hyperparameters
@@ -267,7 +272,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const=0;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const=0;
+#endif
 
 protected:
 	/** this method is called to initialize m_likelihood in init()*/
@@ -277,10 +283,10 @@ protected:
 	SGVector<float64_t> m_lab;
 
 	/** the distribution used to model data */
-	CLikelihoodModel* m_likelihood;
+	std::shared_ptr<LikelihoodModel> m_likelihood;
 
 	/** this method used to set m_likelihood*/
-	virtual void set_likelihood(CLikelihoodModel * lik);
+	virtual void set_likelihood(std::shared_ptr<LikelihoodModel > lik);
 private:
 	void init();
 };

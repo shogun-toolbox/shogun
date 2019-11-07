@@ -15,8 +15,8 @@
 
 namespace shogun
 {
-class CDotFeatures;
-class CStreamingFile;
+class DotFeatures;
+class StreamingFile;
 
 /** @brief Streaming features that support dot products among other operations.
  *
@@ -40,12 +40,12 @@ class CStreamingFile;
  *
  */
 
-class CStreamingDotFeatures : public CStreamingFeatures
+class StreamingDotFeatures : public StreamingFeatures
 {
 
 public:
 	/** Constructor */
-	CStreamingDotFeatures();
+	StreamingDotFeatures();
 
 	/**
 	 * Constructor with input information passed.
@@ -54,13 +54,13 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+	StreamingDotFeatures(std::shared_ptr<StreamingFile> file, bool is_labelled, int32_t size)
 	{
 		not_implemented(SOURCE_LOCATION);;
 	}
 
 	/**
-	 * Constructor taking a CDotFeatures object and optionally,
+	 * Constructor taking a DotFeatures object and optionally,
 	 * labels, as args.
 	 *
 	 * The derived class should implement it so that the
@@ -68,12 +68,12 @@ public:
 	 * input, getting examples one by one from the DotFeatures
 	 * object (and labels, if applicable).
 	 *
-	 * @param dot_features CDotFeatures object
+	 * @param dot_features DotFeatures object
 	 * @param lab labels (optional)
 	 */
-	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL);
+	StreamingDotFeatures(DotFeatures* dot_features, float64_t* lab=NULL);
 
-	virtual ~CStreamingDotFeatures();
+	virtual ~StreamingDotFeatures();
 
 	/** compute dot product between vectors of two
 	 * StreamingDotFeatures objects.
@@ -81,7 +81,7 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(CStreamingDotFeatures* df)=0;
+	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures> df)=0;
 
 	/** compute dot product between current vector and a dense vector
 	 *

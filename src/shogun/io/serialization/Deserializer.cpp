@@ -9,29 +9,31 @@
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/stream/FileInputStream.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace shogun::io;
 
-CDeserializer::CDeserializer() : CSGObject(), m_stream(empty<CInputStream>())
+Deserializer::Deserializer() : SGObject()
 {
 }
 
-CDeserializer::~CDeserializer()
+Deserializer::~Deserializer()
 {
 }
 
-void CDeserializer::attach(Some<CInputStream> stream)
+void Deserializer::attach(std::shared_ptr<InputStream> stream)
 {
-	m_stream = stream;
+	m_stream = std::move(stream);
 }
 
-Some<CInputStream> CDeserializer::stream() const
+std::shared_ptr<InputStream> Deserializer::stream() const
 {
 	require(m_stream, "Deserializer has no stream, attach() it to a stream");
 	return m_stream;
 }
 
-void shogun::io::pre_deserialize(CSGObject* obj) noexcept(false)
+void shogun::io::pre_deserialize(const std::shared_ptr<SGObject>& obj) noexcept(false)
 {
 	obj->load_serializable_pre();
 
@@ -43,7 +45,7 @@ void shogun::io::pre_deserialize(CSGObject* obj) noexcept(false)
 	}
 }
 
-void shogun::io::post_deserialize(CSGObject* obj) noexcept(false)
+void shogun::io::post_deserialize(const std::shared_ptr<SGObject>& obj) noexcept(false)
 {
 	obj->load_serializable_post();
 
@@ -55,7 +57,7 @@ void shogun::io::post_deserialize(CSGObject* obj) noexcept(false)
 	}
 }
 
-CSGObject* shogun::io::deserialize(const std::string& _path, CDeserializer* _deser)
+std::shared_ptr<SGObject> shogun::io::deserialize(const std::string& _path, const std::shared_ptr<Deserializer>& _deser)
 {
 	auto fs = env();
 	std::error_condition ec;
@@ -66,7 +68,7 @@ CSGObject* shogun::io::deserialize(const std::string& _path, CDeserializer* _des
 	if ((ec = fs->new_random_access_file(_path, &raf)))
 		throw to_system_error(ec);
 
-	auto fis = some<io::CFileInputStream>(raf.get());
+	auto fis = std::make_shared<io::FileInputStream>(raf.get());
 	_deser->attach(fis);
-	return _deser->read_object().get();
+	return _deser->read_object();
 }

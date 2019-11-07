@@ -5,13 +5,13 @@
  */
 
 /* Remove C Prefix */
-%rename(CombinationRule) CCombinationRule;
+%shared_ptr(shogun::CombinationRule)
 
-%rename(WeightedMajorityVote) CWeightedMajorityVote;
+%shared_ptr(shogun::WeightedMajorityVote)
 
-%rename(MajorityVote) CMajorityVote;
+%shared_ptr(shogun::MajorityVote)
 
-%rename(MeanRule) CMeanRule;
+%shared_ptr(shogun::MeanRule)
 
 
 /* Include Class Headers to make them visible from within the target language */

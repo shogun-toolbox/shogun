@@ -36,26 +36,26 @@ namespace shogun
  * K_{c}^t  =  (K - 1'_M K - K^{t} 1_M + 1'_M K 1_M)
  * \f]
  */
-class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
+class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** default constructor
 		*/
-		CZeroMeanCenterKernelNormalizer()
-			: CKernelNormalizer(), ktrain_row_means(NULL), num_ktrain(0),
+		ZeroMeanCenterKernelNormalizer()
+			: KernelNormalizer(), ktrain_row_means(NULL), num_ktrain(0),
 			ktest_row_means(NULL),	num_ktest(0)
 		{
-			m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
-					"num_ktrain", "Train row means.");
-			watch_param("num_ktrain", &ktrain_row_means, &num_ktrain);
+			/*m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
+					"num_ktrain", "Train row means.")*/;
+			/*watch_param("num_ktrain", &ktrain_row_means, &num_ktrain)*/;
 
-			m_parameters->add_vector(&ktest_row_means, &num_ktest,
-					"num_ktest","Test row means.");
-			watch_param("num_ktest", &ktest_row_means, &num_ktest);
+			/*m_parameters->add_vector(&ktest_row_means, &num_ktest,
+					"num_ktest","Test row means.")*/;
+			/*watch_param("num_ktest", &ktest_row_means, &num_ktest)*/;
 		}
 
 		/** default destructor */
-		virtual ~CZeroMeanCenterKernelNormalizer()
+		virtual ~ZeroMeanCenterKernelNormalizer()
 		{
 			SG_FREE(ktrain_row_means);
 			SG_FREE(ktest_row_means);
@@ -63,7 +63,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 
 		/** initialization of the normalizer
 		 * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			ASSERT(k)
 			int32_t num_lhs=k->get_num_vec_lhs();
@@ -71,8 +71,8 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 			ASSERT(num_lhs>0)
 			ASSERT(num_rhs>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 
 			/* compute mean for each row of the train matrix*/
 			k->lhs=old_lhs;
@@ -133,7 +133,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the row margins of all rows
 		 * for a kernel matrix.
 		 */
-		bool alloc_and_compute_row_means(CKernel* k, float64_t* &v, int32_t num_lhs, int32_t num_rhs) const
+		bool alloc_and_compute_row_means(Kernel* k, float64_t* &v, int32_t num_lhs, int32_t num_rhs) const
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num_rhs);

@@ -12,8 +12,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class LocalityPreservingProjections used to compute
  * embeddings of data using Locality Preserving Projections method
@@ -30,21 +30,21 @@ class CDistance;
  * sg('create_converter','lpp',k,width);
  *
  */
-class CLocalityPreservingProjections: public CLaplacianEigenmaps
+class LocalityPreservingProjections: public LaplacianEigenmaps
 {
 public:
 
 	/** constructor */
-	CLocalityPreservingProjections();
+	LocalityPreservingProjections();
 
 	/** destructor */
-	virtual ~CLocalityPreservingProjections();
+	virtual ~LocalityPreservingProjections();
 
 	/** get name */
 	virtual const char* get_name() const;
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 };
 }
 

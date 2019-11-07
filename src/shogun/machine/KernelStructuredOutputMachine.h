@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Yuyu Zhang, Shell Hu, Thoralf Klein, 
+ * Authors: Fernando Iglesias, Yuyu Zhang, Shell Hu, Thoralf Klein,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -15,14 +15,14 @@
 namespace shogun
 {
 
-class CKernel;
+class Kernel;
 
 /** TODO doc */
-class CKernelStructuredOutputMachine : public CStructuredOutputMachine
+class KernelStructuredOutputMachine : public StructuredOutputMachine
 {
 	public:
 		/** default constructor  */
-		CKernelStructuredOutputMachine();
+		KernelStructuredOutputMachine();
 
 		/** standard constructor
 		 *
@@ -30,22 +30,22 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 		 * @param labs structured labels
 		 * @param kernel kernel
 		 */
-		CKernelStructuredOutputMachine(CStructuredModel* model, CStructuredLabels* labs, CKernel* kernel);
+		KernelStructuredOutputMachine(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs, std::shared_ptr<Kernel> kernel);
 
 		/** destructor */
-		virtual ~CKernelStructuredOutputMachine();
+		virtual ~KernelStructuredOutputMachine();
 
 		/** set kernel
 		 *
 		 * @param f kernel
 		 */
-		void set_kernel(CKernel* f);
+		void set_kernel(std::shared_ptr<Kernel> f);
 
 		/** get kernel
 		 *
 		 * @return kernel
 		 */
-		CKernel* get_kernel() const;
+		std::shared_ptr<Kernel> get_kernel() const;
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -59,9 +59,9 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 
 	protected:
 		/** kernel */
-		CKernel* m_kernel;
+		std::shared_ptr<Kernel> m_kernel;
 
-}; /* class CKernelStructuredOutputMachine */
+}; /* class KernelStructuredOutputMachine */
 
 } /* namespace shogun */
 

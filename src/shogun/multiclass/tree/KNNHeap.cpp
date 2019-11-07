@@ -34,7 +34,7 @@
 
 using namespace shogun;
 
-CKNNHeap::CKNNHeap(int32_t k)
+KNNHeap::KNNHeap(int32_t k)
 {
 	m_capacity=k;
 	m_dists=SGVector<float64_t>(m_capacity);
@@ -43,12 +43,12 @@ CKNNHeap::CKNNHeap(int32_t k)
 
 	for (int32_t i=0;i<m_capacity;i++)
 	{
-		m_dists[i]=CMath::MAX_REAL_NUMBER;
+		m_dists[i]=Math::MAX_REAL_NUMBER;
 		m_inds[i]=0;
 	}
 }
 
-void CKNNHeap::push(index_t index, float64_t dist)
+void KNNHeap::push(index_t index, float64_t dist)
 {
 	if (dist>m_dists[0])
 		return;
@@ -97,7 +97,7 @@ void CKNNHeap::push(index_t index, float64_t dist)
 	}
 }
 
-SGVector<float64_t> CKNNHeap::get_dists()
+SGVector<float64_t> KNNHeap::get_dists()
 {
 	if (m_sorted)
 		return m_dists;
@@ -120,7 +120,7 @@ SGVector<float64_t> CKNNHeap::get_dists()
 	return m_dists;
 }
 
-SGVector<index_t> CKNNHeap::get_indices()
+SGVector<index_t> KNNHeap::get_indices()
 {
 	if (m_sorted)
 		return m_inds;

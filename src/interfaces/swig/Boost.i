@@ -1,16 +1,16 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2015 Wu Lin
+ * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ * list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,53 +26,10 @@
  * The views and conclusions contained in the software and documentation are those
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
- *
  */
-#include <gtest/gtest.h>
-#include <shogun/lib/StringMap.h>
-#include <shogun/lib/config.h>
 
-using namespace shogun;
+/* Remove C Prefix */
+%shared_ptr(shogun::StochasticGBMachine)
 
-TEST(StringMap, test1)
-{
-	CStringMap<SGVector<float64_t> > smap;
-
-	const char* name="stringmapunittests";
-	std::string k1=std::string(name);
-
-	SGVector<float64_t> v(2);
-	v.set_const(0);
-	smap.add(k1,v);
-	EXPECT_TRUE(smap.contains(k1));
-
-	std::string k2=k1;
-	EXPECT_FALSE(&k1 == &k2);
-
-	EXPECT_TRUE(smap.contains(k2));
-}
-
-TEST(StringMap, test2)
-{
-	CStringMap<SGVector<float64_t> > smap;
-
-	const char* name1="stringmapunittests1";
-	std::string k1=std::string(name1);
-
-	SGVector<float64_t> v(2);
-	v.set_const(0);
-	smap.add(k1,v);
-	EXPECT_TRUE(smap.contains(k1));
-
-	const char* name2="stringmapunittests2";
-	std::string k2=std::string(name2);
-	EXPECT_FALSE(smap.contains(k2));
-
-	const char* name3="stringmapunittests";
-	std::string k3=std::string(name3);
-	EXPECT_FALSE(smap.contains(k3));
-
-	const char* name4="stringmapunittests11";
-	std::string k4=std::string(name4);
-	EXPECT_FALSE(smap.contains(k4));
-}
+/* Include Class Headers to make them visible from within the target language */
+%include <shogun/machine/StochasticGBMachine.h>

@@ -30,19 +30,20 @@
  */
 
 #include <algorithm>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
+#include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
+#include <utility>
 
 using namespace shogun;
 using namespace internal;
 
-MaxMeasure::MaxMeasure(KernelManager& km, CMMD* est) : KernelSelection(km, est)
+MaxMeasure::MaxMeasure(KernelManager& km, std::shared_ptr<MMD> est) : KernelSelection(km, std::move(est))
 {
 }
 
@@ -73,7 +74,7 @@ void MaxMeasure::init_measures()
 void MaxMeasure::compute_measures()
 {
 	require(estimator!=nullptr, "Estimator is not set!");
-	CQuadraticTimeMMD* mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
+	auto mmd=std::dynamic_pointer_cast<QuadraticTimeMMD>(estimator);
 	if (mmd!=nullptr && kernel_mgr.same_distance_type())
 		measures=mmd->multikernel()->statistic(kernel_mgr);
 	else
@@ -93,7 +94,7 @@ void MaxMeasure::compute_measures()
 	}
 }
 
-CKernel* MaxMeasure::select_kernel()
+std::shared_ptr<shogun::Kernel> MaxMeasure::select_kernel()
 {
 	compute_measures();
 	ASSERT(measures.size()==kernel_mgr.num_kernels());

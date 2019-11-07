@@ -40,25 +40,25 @@ namespace shogun
  * @brief Class OneDistributionTest is the base class for the statistical
  * hypothesis testing with samples from one distributions, \f$mathbf{P}\f$.
  */
-class COneDistributionTest : public CHypothesisTest
+class OneDistributionTest : public HypothesisTest
 {
 public:
 	/** Default constructor */
-	COneDistributionTest();
+	OneDistributionTest();
 
 	/** Destrutor */
-	virtual ~COneDistributionTest();
+	virtual ~OneDistributionTest();
 
 	/**
 	 * Method that initializes the samples from \f$\mathbf{P}\f$.
 	 *
-	 * @param samples The CFeatures instance representing the samples
+	 * @param samples The Features instance representing the samples
 	 * from \f$\mathbf{P}\f$.
 	 */
-	void set_samples(CFeatures* samples);
+	void set_samples(std::shared_ptr<Features> samples);
 
 	/** @return The samples from \f$\mathbf{P}\f$. */
-	CFeatures* get_samples() const;
+	std::shared_ptr<Features> get_samples() const;
 
 	/**
 	 * Method that initializes the number of samples to be drawn from distribution
@@ -67,7 +67,7 @@ public:
 	 * other types of features, the number of samples is set internally from the
 	 * features object itself, therefore this method should not be used.
 	 *
-	 * @param num_samples The CFeatures instance representing the samples
+	 * @param num_samples The Features instance representing the samples
 	 * from \f$\mathbf{P}\f$.
 	 */
 	void set_num_samples(index_t num_samples);

@@ -10,25 +10,25 @@
 
 using namespace shogun;
 
-CGaussianBlobsDataGenerator::CGaussianBlobsDataGenerator() :
-		RandomMixin<CStreamingDenseFeatures<float64_t>>()
+GaussianBlobsDataGenerator::GaussianBlobsDataGenerator() :
+		RandomMixin<StreamingDenseFeatures<float64_t>>()
 {
 	init();
 }
 
-CGaussianBlobsDataGenerator::CGaussianBlobsDataGenerator(index_t sqrt_num_blobs,
+GaussianBlobsDataGenerator::GaussianBlobsDataGenerator(index_t sqrt_num_blobs,
 		float64_t distance, float64_t stretch, float64_t angle) :
-		RandomMixin<CStreamingDenseFeatures<float64_t>>()
+		RandomMixin<StreamingDenseFeatures<float64_t>>()
 {
 	init();
 	set_blobs_model(sqrt_num_blobs, distance, stretch, angle);
 }
 
-CGaussianBlobsDataGenerator::~CGaussianBlobsDataGenerator()
+GaussianBlobsDataGenerator::~GaussianBlobsDataGenerator()
 {
 }
 
-void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
+void GaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 		float64_t distance, float64_t stretch, float64_t angle)
 {
 	m_sqrt_num_blobs=sqrt_num_blobs;
@@ -54,7 +54,7 @@ void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 	m_cholesky=SGMatrix<float64_t>::matrix_multiply(R, L);
 }
 
-void CGaussianBlobsDataGenerator::init()
+void GaussianBlobsDataGenerator::init()
 {
 	SG_ADD(&m_sqrt_num_blobs, "sqrt_num_blobs", "Number of Blobs per row");
 	SG_ADD(&m_distance, "distance", "Distance between blobs");
@@ -75,9 +75,9 @@ void CGaussianBlobsDataGenerator::init()
 	unset_generic();
 }
 
-bool CGaussianBlobsDataGenerator::get_next_example()
+bool GaussianBlobsDataGenerator::get_next_example()
 {
-	SG_TRACE("entering CGaussianBlobsDataGenerator::get_next_example()");
+	SG_TRACE("entering GaussianBlobsDataGenerator::get_next_example()");
 
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(2);
@@ -97,15 +97,15 @@ bool CGaussianBlobsDataGenerator::get_next_example()
 	result[1]=m_cholesky(1, 0)*x+m_cholesky(1, 1)*y+y_offset;
 
 	/* save example back to superclass */
-	CGaussianBlobsDataGenerator::current_vector=result;
+	GaussianBlobsDataGenerator::current_vector=result;
 
-	SG_TRACE("leaving CGaussianBlobsDataGenerator::get_next_example()");
+	SG_TRACE("leaving GaussianBlobsDataGenerator::get_next_example()");
 	return true;
 }
 
-void CGaussianBlobsDataGenerator::release_example()
+void GaussianBlobsDataGenerator::release_example()
 {
 	SGVector<float64_t> temp=SGVector<float64_t>();
-	CGaussianBlobsDataGenerator::current_vector=temp;
+	GaussianBlobsDataGenerator::current_vector=temp;
 }
 

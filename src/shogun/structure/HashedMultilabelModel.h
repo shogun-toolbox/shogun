@@ -13,7 +13,7 @@
 
 namespace shogun
 {
-/** @brief Class CHashedMultilabelModel represents application specific model
+/** @brief Class HashedMultilabelModel represents application specific model
  * and contains application dependent logic for solving multilabel
  * classification with feature hashing within a generic SO framework. We hash
  * the feature of *each* class with a separate seed and put them in the *same*
@@ -25,11 +25,11 @@ namespace shogun
  *     Feature Hashing for Large Scale Multitask Learning
  *     http://alex.smola.org/papers/2009/Weinbergeretal09.pdf
  */
-class CHashedMultilabelModel : public CStructuredModel
+class HashedMultilabelModel : public StructuredModel
 {
 public:
 	/** default constructor */
-	CHashedMultilabelModel();
+	HashedMultilabelModel();
 
 	/** constructor
 	 *
@@ -37,14 +37,14 @@ public:
 	 * @param labels structured labels
 	 * @param dim new joint feature space dimension
 	 */
-	CHashedMultilabelModel(CFeatures * features, CStructuredLabels * labels,
+	HashedMultilabelModel(std::shared_ptr<Features > features, std::shared_ptr<StructuredLabels > labels,
 	                       int32_t dim);
 
 	/** destructor */
-	virtual ~CHashedMultilabelModel();
+	virtual ~HashedMultilabelModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(int32_t num_examples = 0);
+	virtual std::shared_ptr<StructuredLabels > structured_labels_factory(int32_t num_examples = 0);
 
 	/** @return the dimensionality of the joint features space, i.e, the
 	 *          dimension of the weight vector \f$w\f$.
@@ -63,7 +63,7 @@ public:
 	 * @return the joint feature vector
 	 */
 	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	                std::shared_ptr<StructuredData > y);
 
 	/** get joint feature vector
 	 *
@@ -77,7 +77,7 @@ public:
 	 * @return the joint feature vector
 	 */
 	virtual SGSparseVector<float64_t> get_sparse_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	                std::shared_ptr<StructuredData > y);
 
 	/** obtain the argmax of
 	 *
@@ -93,7 +93,7 @@ public:
 	 *
 	 * @return structure with the predicted results
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, int32_t feat_idx,
+	virtual std::shared_ptr<ResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
 	                            bool const training = true);
 
 	/** compute
@@ -107,7 +107,7 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(CStructuredData * y1, CStructuredData * y2);
+	virtual float64_t delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2);
 
 	/** set misclassification cost for false positive and false negative
 	 *
@@ -184,7 +184,7 @@ private:
 	SGVector<int32_t> to_sparse(SGVector<float64_t> dense_vector,
 	                            float64_t d_true, float64_t d_false);
 
-}; /** class CHashedMultilabelModel */
+}; /** class HashedMultilabelModel */
 
 } /** namespace shogun */
 

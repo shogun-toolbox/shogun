@@ -35,15 +35,15 @@ namespace shogun
 {
 /** @brief Class Time that implements a stopwatch based on either cpu time or wall
  * clock time. */
-class CTime : public CSGObject
+class Time : public SGObject
 {
 	public:
 		/** constructor
 		 *
 		 * @param start if time measurement shall be started
 		 */
-		CTime(bool start=true);
-		virtual ~CTime();
+		Time(bool start=true);
+		virtual ~Time();
 
 		/** get current cpu runtime
 		 *

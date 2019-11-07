@@ -35,42 +35,41 @@
 
 using namespace shogun;
 
-CConstMean::CConstMean() : CMeanFunction()
+ConstMean::ConstMean() : MeanFunction()
 {
 	init();
 }
 
-CConstMean::~CConstMean()
+ConstMean::~ConstMean()
 {
 }
 
-CConstMean::CConstMean(float64_t mean)
- : CMeanFunction()
+ConstMean::ConstMean(float64_t mean)
+ : MeanFunction()
 {
 	init();
 	m_mean=mean;
 }
 
-void CConstMean::init()
+void ConstMean::init()
 {
 	m_mean=0.0;
 	SG_ADD(&m_mean, "mean", "const value of mean function", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
-SGVector<float64_t> CConstMean::get_mean_vector(const CFeatures* features) const
+SGVector<float64_t> ConstMean::get_mean_vector(std::shared_ptr<const Features> features) const
 {
 	SGVector<float64_t> result(features->get_num_vectors());
 	result.set_const(m_mean);
 	return result;
 }
 
-SGVector<float64_t> CConstMean::get_parameter_derivative(const CFeatures* features,
-	const TParameter* param, index_t index)
+SGVector<float64_t> ConstMean::get_parameter_derivative(std::shared_ptr<const Features> features,
+	Parameters::const_reference param, index_t index)
 {
 	require(features,"The features should NOT be NULL");
-	require(param,"The param should NOT be NULL");
 
-	if (!strcmp(param->m_name, "mean"))
+	if (param.first == "mean")
 	{
 		SGVector<float64_t> derivative(features->get_num_vectors());
 		derivative.set_const(1.0);
@@ -78,7 +77,7 @@ SGVector<float64_t> CConstMean::get_parameter_derivative(const CFeatures* featur
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param->m_name);
+		error("Can't compute derivative wrt {} parameter", param.first.c_str());
 		return SGVector<float64_t>();
 	}
 }

@@ -99,9 +99,9 @@ int main()
 	//	 [ Img1[L]   Img2[L]   Img3[L]   Img4[L] ......   ImgS[L];]here L = length  and S = size.
 	//	 ]
 
-	// convert the Stacked_mats into the CDenseFeatures of Shogun.
+	// convert the Stacked_mats into the DenseFeatures of Shogun.
 	// From here on we will be performing our PCA algo in Shogun.
-	CDenseFeatures<float64_t>* Face_features=new CDenseFeatures<float64_t>(Stacked_mats);
+	DenseFeatures<float64_t>* Face_features=new DenseFeatures<float64_t>(Stacked_mats);
 	SG_REF(Face_features)
 
 	// We initialise the Preprocessor CPCA of Shogun which performs principal
@@ -140,15 +140,15 @@ int main()
 	// So in effect we just reduced the dimensions of each of our
 	// training images. We will further reduce it using LDA.
 
-	// Convert the Labels in the form of CMulticlassLabels
+	// Convert the Labels in the form of MulticlassLabels
 	SGVector<float64_t> labels_vector(size);
 	for (int i=0;i<size;i++)
 		labels_vector[i]=labels[i];
-	CMulticlassLabels* actual_labels=new CMulticlassLabels(labels_vector);
+	MulticlassLabels* actual_labels=new MulticlassLabels(labels_vector);
 	SG_REF(actual_labels);
 
-	CDenseFeatures<float64_t>* pca_dense_feat=
-		new CDenseFeatures<float64_t>(pca_projection);
+	DenseFeatures<float64_t>* pca_dense_feat=
+		new DenseFeatures<float64_t>(pca_projection);
 	SG_REF(pca_dense_feat);
 
 	// Applying the classical Fisher LDA algorithm.
@@ -216,17 +216,17 @@ int main()
 
 	// we need to have the Densefeature pointer of the lda_projection.
 	// It is the lhs.
-	CDenseFeatures<float64_t>* lhs=
-		new CDenseFeatures<float64_t>(lda_projection);
+	DenseFeatures<float64_t>* lhs=
+		new DenseFeatures<float64_t>(lda_projection);
 
 	// and similarly we just need to convert the testimage_sgvec into the
 	// DenseFeature pointer for the rhs.
 	SGMatrix<float64_t>data_matrix(testimage_projected_vec.vlen, 1);
-	CDenseFeatures<float64_t>* rhs=
-		new CDenseFeatures<float64_t>(data_matrix);
+	DenseFeatures<float64_t>* rhs=
+		new DenseFeatures<float64_t>(data_matrix);
 	rhs->set_feature_vector(testimage_projected_vec,0);
 
-	CEuclideanDistance* euclid=new CEuclideanDistance(lhs, rhs);
+	EuclideanDistance* euclid=new EuclideanDistance(lhs, rhs);
 	SG_REF(euclid);
 	float64_t distance_array[size];
 	int min_index=0;

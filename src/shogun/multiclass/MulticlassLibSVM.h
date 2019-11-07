@@ -18,11 +18,11 @@ namespace shogun
 {
 /** @brief class LibSVMMultiClass. Does one vs one
  * classification. */
-class CMulticlassLibSVM : public CMulticlassSVM
+class MulticlassLibSVM : public MulticlassSVM
 {
 	public:
 		/** default constructor */
-		CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
+		MulticlassLibSVM(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
 		/** constructor
 		 *
@@ -30,10 +30,10 @@ class CMulticlassLibSVM : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab);
+		MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** destructor */
-		virtual ~CMulticlassLibSVM();
+		virtual ~MulticlassLibSVM();
 
 		/** get classifier type
 		 *
@@ -53,7 +53,7 @@ class CMulticlassLibSVM : public CMulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		void register_params();

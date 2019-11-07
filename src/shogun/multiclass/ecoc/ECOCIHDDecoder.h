@@ -29,14 +29,14 @@ namespace shogun
  * D_i = HD(q, b_i)
  * \f]
  */
-class CECOCIHDDecoder: public CECOCDecoder
+class ECOCIHDDecoder: public ECOCDecoder
 {
 public:
     /** constructor */
-    CECOCIHDDecoder() {}
+    ECOCIHDDecoder() {}
 
     /** destructor */
-    virtual ~CECOCIHDDecoder() {}
+    virtual ~ECOCIHDDecoder() {}
 
     /** get name */
     virtual const char* get_name() const { return "ECOCIHDDecoder"; }

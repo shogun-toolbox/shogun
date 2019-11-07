@@ -25,11 +25,11 @@ namespace shogun
  * elements).
  *
  * */
-IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
+IGNORE_IN_CLASSLIST template <class T> class CGCArray : public SGObject
 {
 	public:
 		/** default constructor  */
-		CGCArray() : CSGObject()
+		CGCArray() : SGObject()
 		{
 			unstable(SOURCE_LOCATION);
 
@@ -41,7 +41,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		  *
 		  * @param sz length of array
 		  */
-		CGCArray(int32_t sz) : CSGObject()
+		CGCArray(int32_t sz) : SGObject()
 		{
 			ASSERT(sz>0)
 			array = SG_CALLOC(T, sz);

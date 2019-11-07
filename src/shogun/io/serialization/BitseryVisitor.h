@@ -27,6 +27,11 @@ namespace shogun
 				{
 					m_s.boolValue(*v);
 				}
+				void on(std::vector<bool>::reference* v) override
+				{
+					bool tmp = *v;
+					m_s.boolValue(tmp);
+				}
 				void on(char* v) override
 				{
 					m_s.value1b(*v);
@@ -100,7 +105,7 @@ namespace shogun
 				{
 				}
 
-				void on(CSGObject** v) override
+				void on(std::shared_ptr<SGObject>* v) override
 				{
 					static_cast<T*>(this)->on_object(m_s, v);
 				}

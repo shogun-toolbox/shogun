@@ -17,14 +17,14 @@ namespace shogun
 
 /** @brief The base class used to evaluate clustering
  */
-class CClusteringEvaluation: public CEvaluation
+class ClusteringEvaluation: public Evaluation
 {
 public:
 	/** constructor */
-	CClusteringEvaluation();
+	ClusteringEvaluation();
 
 	/** destructor */
-	virtual ~CClusteringEvaluation() {}
+	virtual ~ClusteringEvaluation() {}
 
 	/** permute the order of the predicted labels to match the ground_truth as good as possible.
 	 *
@@ -33,21 +33,21 @@ public:
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 */
-	CLabels* best_map(CLabels* predicted, CLabels* ground_truth);
+	std::shared_ptr<Labels> best_map(const std::shared_ptr<Labels>& predicted, const std::shared_ptr<Labels>& ground_truth);
 
 	/** evaluate labels
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 protected:
 	/** implementation of label evaluation
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate_impl(CLabels* predicted, CLabels* ground_truth) = 0;
+	virtual float64_t evaluate_impl(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) = 0;
 
 	/** find number of matches in the two labels sequence.
 	 *
@@ -63,7 +63,7 @@ protected:
 	/** find number of mismatches in the two labels sequence.
 	 * @see find_match_count
 	 */
-	int32_t find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2);
+	int32_t find_mismatch_count(SGVector<int32_t> l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2);
 
 private:
 	// A flag to find best match between predicted labels and the ground truth

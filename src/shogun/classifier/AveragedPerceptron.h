@@ -25,18 +25,18 @@ namespace shogun
 	 * algorithm is not guaranteed to converge) and a fixed learning rate,
 	 * the result is a linear classifier.
 	 *
-	 * \sa CLinearMachine
+	 * \sa LinearMachine
 	 */
-	class CAveragedPerceptron : public CIterativeMachine<CLinearMachine>
+	class AveragedPerceptron : public IterativeMachine<LinearMachine>
 	{
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor */
-		CAveragedPerceptron();
+		AveragedPerceptron();
 
-		virtual ~CAveragedPerceptron();
+		virtual ~AveragedPerceptron();
 
 		/** get classifier type
 		 *
@@ -69,7 +69,7 @@ namespace shogun
 		/** registers and initializes parameters */
 		void init();
 
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(std::shared_ptr<Features> data);
 		virtual void iteration();
 
 	protected:

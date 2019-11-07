@@ -45,25 +45,20 @@ REPLACE template_definitions THIS
 
 REPLACE complex_template_definitions THIS
 
-typedef CSGObject* (*CreateFunction)(EPrimitiveType generic);
+typedef SGObject* (*CreateFunction)(EPrimitiveType generic);
 
 static const std::map<std::string, CreateFunction> classes = {
 REPLACE struct THIS
 };
 
-CSGObject* shogun::create(const char* classname, EPrimitiveType generic)
+std::shared_ptr<SGObject> shogun::create(const char* classname, EPrimitiveType generic)
 {
 	auto entry = classes.find(classname);
 	if (entry != classes.end())
 	{
-		return entry->second(generic);
+		return std::shared_ptr<SGObject>(entry->second(generic));
 	}
 	return nullptr;
-}
-
-void shogun::delete_object(CSGObject* object)
-{
-	delete object;
 }
 
 std::set<std::string> shogun::available_objects()

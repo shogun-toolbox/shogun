@@ -21,12 +21,12 @@ namespace shogun
 /** @brief Class that is able to generate various data samples, which may be
  * used for examples in SHOGUN.
  */
-class CDataGenerator: public CSGObject
+class DataGenerator: public SGObject
 {
 public:
-	CDataGenerator();
+	DataGenerator();
 
-	virtual ~CDataGenerator();
+	virtual ~DataGenerator();
 
 	/** Generate points for classification tasks. Every dimension is in the range [0,1]. You can
 	 * scale or translate the features afterwards. It works be creating a grid in the n-dimensional space
@@ -59,7 +59,7 @@ public:
 	template <typename PRNG>
 	static SGMatrix<float64_t> generate_mean_data(index_t m, index_t dim,
 			float64_t mean_shift, PRNG& prng,
-			SGMatrix<float64_t> target=SGMatrix<float64_t>());
+			const SGMatrix<float64_t>& target=SGMatrix<float64_t>());
 
 	/** Produces samples as in source (g) from Table 3 in [1].
 	 * Namely, produces an equal mixture of two independent Gaussians per --
@@ -85,7 +85,7 @@ public:
 	template <typename PRNG>
 	static SGMatrix<float64_t> generate_sym_mix_gauss(index_t m,
 			float64_t d, float64_t angle, PRNG& prng,
-			SGMatrix<float64_t> target=SGMatrix<float64_t>());
+			const SGMatrix<float64_t>& target=SGMatrix<float64_t>());
 
 	/** Produces samples of gaussians
 	 * The functions produces m number of samples of each gaussians (n number) with

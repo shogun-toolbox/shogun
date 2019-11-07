@@ -57,12 +57,12 @@ template<class C> class SGMatrix;
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
  * \f]
  */
-class CNumericalVGLikelihood : public CVariationalGaussianLikelihood
+class NumericalVGLikelihood : public VariationalGaussianLikelihood
 {
 public:
-	CNumericalVGLikelihood();
+	NumericalVGLikelihood();
 
-	virtual ~CNumericalVGLikelihood();
+	virtual ~NumericalVGLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -79,7 +79,7 @@ public:
 	 *
 	 */
 	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab);
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using numerical integration
@@ -93,6 +93,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_expection();
 
+#ifndef SWIG
 	/** get derivative of the variational expection of log LogitLikelihood
 	 * using numerical integration with respect to given parameter
 	 *
@@ -104,7 +105,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
@@ -114,7 +115,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+#endif
 
 	/** set the number of Gaussian Hermite point used to compute variational expection
 	 *
@@ -126,7 +128,7 @@ public:
 
 protected:
 
-	/** The function used to initialize m_likelihood defined in CVariationalLikelihood
+	/** The function used to initialize m_likelihood defined in VariationalLikelihood
 	 * Note that for some compiler removing this line will issue an error
 	 * */
 	virtual void init_likelihood()=0;

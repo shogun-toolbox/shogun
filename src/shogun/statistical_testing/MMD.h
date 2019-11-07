@@ -42,8 +42,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CKernelSelectionStrategy;
+class Kernel;
+class KernelSelectionStrategy;
 template <typename> class SGVector;
 
 /** @brief Abstract base class that provides an interface for performing kernel
@@ -74,7 +74,7 @@ template <typename> class SGVector;
  * 	\hat{\eta}_{k,V}=\frac{1}{n_x^2}\sum_{i=1}^{n_x}\sum_{j=1}^{n_x}
  * 	k(x_i,x_j)+\frac{1}{n_y^2}\sum_{i=1}^{n_y}\sum_{j=1}^{n_y}k(y_i,y_j)
  * 	-\frac{2}{n_xn_y}\sum_{i=1}^{n_x}\sum_{j=1}^{n_y}k(x_i,y_j)
- * \f]CKernelSelectionStrategy
+ * \f]KernelSelectionStrategy
  *
  * When \f$n_x=n_y=\frac{n}{2}\f$, an incomplete version can also be computed
  * as the following
@@ -102,11 +102,11 @@ template <typename> class SGVector;
  *
  * NAM_MMD2_SPECTRUM: For a fast, consistent test based on the spectrum of
  * the kernel matrix, as described in [2]. Only supported if Eigen3 is installed.
- * Only applicable for CQuadraticTimeMMD.
+ * Only applicable for QuadraticTimeMMD.
  *
  * NAM_MMD2_GAMMA: for a very fast, but not consistent test based on moment matching
  * of a Gamma distribution, as described in [2].
- * Only applicable for CQuadraticTimeMMD.
+ * Only applicable for QuadraticTimeMMD.
  *
  * NAM_PERMUTATION: For permuting available samples to sample null-distribution
  *
@@ -118,14 +118,14 @@ template <typename> class SGVector;
  * Sivaraman Balakrishnan, Massimiliano Pontil, Kenji Fukumizu: Optimal kernel choice
  * for large-scale two-sample tests. NIPS 2012: 1214-1222.
  */
-class CMMD : public RandomMixin<CTwoSampleTest>
+class MMD : public RandomMixin<TwoSampleTest>
 {
 public:
 	/** Default constructor */
-	CMMD();
+	MMD();
 
 	/** Destructor */
-	virtual ~CMMD();
+	virtual ~MMD();
 
 	/**
 	 * Method that sets the specific kernel selection strategy based on the
@@ -160,7 +160,7 @@ public:
 	 *
 	 * @param kernel One of the kernel instances with which learning algorithm will work.
 	 */
-	void add_kernel(CKernel *kernel);
+	void add_kernel(std::shared_ptr<Kernel> kernel);
 
 	/**
 	 * Method that selects/learns the kernel based on the defined kernel selection strategy.
@@ -174,7 +174,7 @@ public:
 	 * The learned/selected kernel can be obtained from a subsequent get_kernel() call.
 	 *
 	 * This method expects train-test mode to be turned on at the time of invocation. Please
-	 * see the class documentation of CHypothesisTest.
+	 * see the class documentation of HypothesisTest.
 	 */
 	virtual void select_kernel();
 
@@ -183,10 +183,10 @@ public:
 	 * was used in the last kernel learning algorithm. Use this method when results of
 	 * intermediate steps taken by the kernel selection algorithms are of interest.
 	 *
-	 * @return The internal instance of CKernelSelectionStrategy that holds intermediate
+	 * @return The internal instance of KernelSelectionStrategy that holds intermediate
 	 * measures computed at the time of the last kernel selection algorithm invocation.
 	 */
-	CKernelSelectionStrategy const * get_kernel_selection_strategy() const;
+	KernelSelectionStrategy const* get_kernel_selection_strategy() const;
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

@@ -15,11 +15,11 @@
 namespace shogun
 {
 /** @brief template class SparseDistance */
-template <class ST> class CSparseDistance : public CDistance
+template <class ST> class SparseDistance : public Distance
 {
 	public:
 		/** default constructor */
-		CSparseDistance() : CDistance() {}
+		SparseDistance() : Distance() {}
 
 		/** init distance
 		 *
@@ -27,19 +27,20 @@ template <class ST> class CSparseDistance : public CDistance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
-			CDistance::init(l,r);
+			Distance::init(l,r);
 
 			ASSERT(l->get_feature_class()==C_SPARSE)
 			ASSERT(r->get_feature_class()==C_SPARSE)
 			ASSERT(l->get_feature_type()==this->get_feature_type())
 			ASSERT(r->get_feature_type()==this->get_feature_type())
 
-			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features() )
+			if ((std::static_pointer_cast<SparseFeatures<ST>>(lhs))->get_num_features() != (std::static_pointer_cast<SparseFeatures<ST>>(rhs))->get_num_features() )
 			{
 				error("train or test features #dimension mismatch (l:{} vs. r:{})",
-						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
+						(std::static_pointer_cast<SparseFeatures<ST>>(lhs))->get_num_features(),
+						(std::static_pointer_cast<SparseFeatures<ST>>(rhs))->get_num_features());
 			}
 			return true;
 		}
@@ -83,42 +84,42 @@ template <class ST> class CSparseDistance : public CDistance
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CSparseDistance<float64_t>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType SparseDistance<float64_t>::get_feature_type() { return F_DREAL; }
 
 /** get feature type the ULONG distance can deal with
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CSparseDistance<uint64_t>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType SparseDistance<uint64_t>::get_feature_type() { return F_ULONG; }
 
 /** get feature type the INT distance can deal with
  *
  * @return feature type INT
  */
-template<> inline EFeatureType CSparseDistance<int32_t>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType SparseDistance<int32_t>::get_feature_type() { return F_INT; }
 
 /** get feature type the WORD distance can deal with
  *
  * @return feature type WORD
  */
-template<> inline EFeatureType CSparseDistance<uint16_t>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType SparseDistance<uint16_t>::get_feature_type() { return F_WORD; }
 
 /** get feature type the SHORT distance can deal with
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CSparseDistance<int16_t>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType SparseDistance<int16_t>::get_feature_type() { return F_SHORT; }
 
 /** get feature type the BYTE distance can deal with
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CSparseDistance<uint8_t>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType SparseDistance<uint8_t>::get_feature_type() { return F_BYTE; }
 
 /** get feature type the CHAR distance can deal with
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CSparseDistance<char>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType SparseDistance<char>::get_feature_type() { return F_CHAR; }
 } // namespace shogun
 #endif

@@ -16,10 +16,10 @@
 using namespace shogun;
 using namespace Eigen;
 
-CPCA::CPCA(
+PCA::PCA(
     bool do_whitening, EPCAMode mode, float64_t thresh, EPCAMethod method,
     EPCAMemoryMode mem_mode)
-    : CDensePreprocessor<float64_t>()
+    : DensePreprocessor<float64_t>()
 {
 	init();
 	m_whitening = do_whitening;
@@ -29,8 +29,8 @@ CPCA::CPCA(
 	m_method = method;
 }
 
-CPCA::CPCA(EPCAMethod method, bool do_whitening, EPCAMemoryMode mem_mode)
-    : CDensePreprocessor<float64_t>()
+PCA::PCA(EPCAMethod method, bool do_whitening, EPCAMemoryMode mem_mode)
+    : DensePreprocessor<float64_t>()
 {
 	init();
 	m_whitening = do_whitening;
@@ -38,7 +38,7 @@ CPCA::CPCA(EPCAMethod method, bool do_whitening, EPCAMemoryMode mem_mode)
 	m_method = method;
 }
 
-void CPCA::init()
+void PCA::init()
 {
 	m_transformation_matrix = SGMatrix<float64_t>();
 	m_mean_vector = SGVector<float64_t>();
@@ -86,17 +86,17 @@ void CPCA::init()
 	    SG_OPTIONS(AUTO, SVD, EVD));
 }
 
-CPCA::~CPCA()
+PCA::~PCA()
 {
 }
 
-void CPCA::fit(CFeatures* features)
+void PCA::fit(std::shared_ptr<Features> features)
 {
 	if (m_fitted)
 		cleanup();
 
 	auto feature_matrix =
-	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	    features->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	auto num_vectors = feature_matrix.num_cols;
 	auto num_features = feature_matrix.num_rows;
 	io::info("num_examples: {} num_features: {}", num_vectors, num_features);
@@ -132,7 +132,7 @@ void CPCA::fit(CFeatures* features)
 	m_fitted = true;
 }
 
-void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed)
+void PCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed)
 {
 	int32_t num_vectors = feature_matrix.num_cols;
 	int32_t num_features = feature_matrix.num_rows;
@@ -196,7 +196,7 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 	{
 		for (int32_t i=0; i<num_dim; i++)
 		{
-			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
+			if (Math::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
 									m_eigenvalue_zero_tolerance))
 			{
 				io::warn(
@@ -216,7 +216,7 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 	}
 }
 
-void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_dim_allowed)
+void PCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_dim_allowed)
 {
 	int32_t num_vectors = feature_matrix.num_cols;
 	int32_t num_features = feature_matrix.num_rows;
@@ -271,7 +271,7 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 	{
 		for (int32_t i = 0; i < num_dim; i++)
 		{
-			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance))
+			if (Math::fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance))
 			{
 
 				io::warn("Covariance matrix has almost zero Eigenvalue (ie "
@@ -289,7 +289,7 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 	}
 }
 
-void CPCA::cleanup()
+void PCA::cleanup()
 {
 	m_transformation_matrix=SGMatrix<float64_t>();
         m_mean_vector = SGVector<float64_t>();
@@ -297,7 +297,7 @@ void CPCA::cleanup()
 	    m_fitted = false;
 }
 
-SGMatrix<float64_t> CPCA::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> PCA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	assert_fitted();
 
@@ -347,7 +347,7 @@ SGMatrix<float64_t> CPCA::apply_to_matrix(SGMatrix<float64_t> matrix)
 	}
 }
 
-SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> PCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SGVector<float64_t> result = SGVector<float64_t>(num_dim);
 	Map<VectorXd> resultVec(result.vector, num_dim);
@@ -364,48 +364,48 @@ SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 	return result;
 }
 
-SGMatrix<float64_t> CPCA::get_transformation_matrix()
+SGMatrix<float64_t> PCA::get_transformation_matrix()
 {
 	return m_transformation_matrix;
 }
 
-SGVector<float64_t> CPCA::get_eigenvalues()
+SGVector<float64_t> PCA::get_eigenvalues()
 {
 	return m_eigenvalues_vector;
 }
 
-SGVector<float64_t> CPCA::get_mean()
+SGVector<float64_t> PCA::get_mean()
 {
 	return m_mean_vector;
 }
 
-EPCAMemoryMode CPCA::get_memory_mode() const
+EPCAMemoryMode PCA::get_memory_mode() const
 {
 	return m_mem_mode;
 }
 
-void CPCA::set_memory_mode(EPCAMemoryMode e)
+void PCA::set_memory_mode(EPCAMemoryMode e)
 {
 	m_mem_mode = e;
 }
 
-void CPCA::set_eigenvalue_zero_tolerance(float64_t eigenvalue_zero_tolerance)
+void PCA::set_eigenvalue_zero_tolerance(float64_t eigenvalue_zero_tolerance)
 {
 	m_eigenvalue_zero_tolerance = eigenvalue_zero_tolerance;
 }
 
-float64_t CPCA::get_eigenvalue_zero_tolerance() const
+float64_t PCA::get_eigenvalue_zero_tolerance() const
 {
 	return m_eigenvalue_zero_tolerance;
 }
 
-void CPCA::set_target_dim(int32_t dim)
+void PCA::set_target_dim(int32_t dim)
 {
 	ASSERT(dim > 0)
 	m_target_dim = dim;
 }
 
-int32_t CPCA::get_target_dim() const
+int32_t PCA::get_target_dim() const
 {
 	return m_target_dim;
 }

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Evan Shelhamer, Chiyuan Zhang, Bjoern Esser
  */
 
@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
+MultidimensionalScaling::MultidimensionalScaling() : EmbeddingConverter()
 {
 	m_eigenvalues = SGVector<float64_t>();
 	m_landmark_number = 3;
@@ -27,7 +27,7 @@ CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
 	init();
 }
 
-void CMultidimensionalScaling::init()
+void MultidimensionalScaling::init()
 {
 	SG_ADD(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding");
 	SG_ADD(&m_landmark, "landmark",
@@ -36,16 +36,16 @@ void CMultidimensionalScaling::init()
 	    "the number of landmarks for approximation", ParameterProperties::HYPER);
 }
 
-CMultidimensionalScaling::~CMultidimensionalScaling()
+MultidimensionalScaling::~MultidimensionalScaling()
 {
 }
 
-SGVector<float64_t> CMultidimensionalScaling::get_eigenvalues() const
+SGVector<float64_t> MultidimensionalScaling::get_eigenvalues() const
 {
 	return m_eigenvalues;
 }
 
-void CMultidimensionalScaling::set_landmark_number(int32_t num)
+void MultidimensionalScaling::set_landmark_number(int32_t num)
 {
 	if (num<3)
 		error("Number of landmarks should be greater than 3 to make triangulation possible while {} given.",
@@ -53,27 +53,27 @@ void CMultidimensionalScaling::set_landmark_number(int32_t num)
 	m_landmark_number = num;
 }
 
-int32_t CMultidimensionalScaling::get_landmark_number() const
+int32_t MultidimensionalScaling::get_landmark_number() const
 {
 	return m_landmark_number;
 }
 
-void CMultidimensionalScaling::set_landmark(bool landmark)
+void MultidimensionalScaling::set_landmark(bool landmark)
 {
 	m_landmark = landmark;
 }
 
-bool CMultidimensionalScaling::get_landmark() const
+bool MultidimensionalScaling::get_landmark() const
 {
 	return m_landmark;
 }
 
-const char* CMultidimensionalScaling::get_name() const
+const char* MultidimensionalScaling::get_name() const
 {
 	return "MultidimensionalScaling";
 };
 
-CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* distance)
+std::shared_ptr<DenseFeatures<float64_t>> MultidimensionalScaling::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	if (m_landmark)
@@ -90,22 +90,21 @@ CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* d
 		parameters.method = SHOGUN_MULTIDIMENSIONAL_SCALING;
 	}
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	parameters.distance = distance.get();
+	return tapkee_embed(parameters);
 }
 
-CFeatures*
-CMultidimensionalScaling::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features>
+MultidimensionalScaling::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	SG_REF(features);
+
 	ASSERT(m_distance)
 
 	m_distance->init(features,features);
-	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return embedding;
 }
 

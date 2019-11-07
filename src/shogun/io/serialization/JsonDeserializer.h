@@ -11,13 +11,13 @@ namespace shogun
 {
 	namespace io
 	{
-		class CJsonDeserializer : public CDeserializer
+		class JsonDeserializer : public Deserializer
 		{
 		public:
-			CJsonDeserializer();
-			~CJsonDeserializer() override;
-			Some<CSGObject> read_object() override;
-			void read(CSGObject* _this) override;
+			JsonDeserializer();
+			~JsonDeserializer() override;
+			std::shared_ptr<SGObject> read_object() override;
+			void read(std::shared_ptr<SGObject> _this) override;
 			virtual const char* get_name() const
 			{
 				return "JsonDeserializer";

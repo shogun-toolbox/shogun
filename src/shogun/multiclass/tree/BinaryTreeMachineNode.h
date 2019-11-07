@@ -34,7 +34,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
 
 namespace shogun
@@ -47,18 +46,18 @@ namespace shogun
  * specified using template specifier.
  */
 template <typename T>
-class CBinaryTreeMachineNode
-	: public CTreeMachineNode<T>
+class BinaryTreeMachineNode
+	: public TreeMachineNode<T>
 {
 public:
 	/** constructor */
-	CBinaryTreeMachineNode() : CTreeMachineNode<T>()
+	BinaryTreeMachineNode() : TreeMachineNode<T>()
 	{
 	}
 
 
 	/** destructor */
-	virtual ~CBinaryTreeMachineNode()
+	virtual ~BinaryTreeMachineNode()
 	{
 	}
 
@@ -71,28 +70,27 @@ public:
 	 *
 	 * @param l left subtree
 	 */
-	void left(CBinaryTreeMachineNode* l)
+	void left(std::shared_ptr<BinaryTreeMachineNode> l)
 	{
-		if (this->m_children->get_num_elements()==0)
+		if (this->m_children.empty())
 		{
-			this->m_children->push_back(l);
-			l->parent(this);
+			this->m_children.push_back(l);
 		}
 		else
 		{
-			this->m_children->set_element(l,0);
-			l->parent(this);
+			this->m_children[0] = l;
 		}
+		l->parent(this->shared_from_this()->template as<TreeMachineNode<T>>());
 	}
 
 	/** get left subtree
 	 *
 	 * @return left subtree of node
 	 */
-	CBinaryTreeMachineNode* left()
+	std::shared_ptr<BinaryTreeMachineNode<T>> left()
 	{
-		if (this->m_children->get_num_elements())
-			return (CBinaryTreeMachineNode*) this->m_children->get_element(0);
+		if (!this->m_children.empty())
+			return this->m_children[0]->template as<BinaryTreeMachineNode<T>>();
 
 		return NULL;
 	}
@@ -101,34 +99,32 @@ public:
 	 *
 	 * @param r right subtree
 	 */
-	void right(CBinaryTreeMachineNode* r)
+	void right(std::shared_ptr<BinaryTreeMachineNode> r)
 	{
-		if (this->m_children->get_num_elements()==0)
+		if (this->m_children.empty())
 		{
-			this->m_children->push_back(NULL);
-			this->m_children->push_back(r);
-			r->parent(this);
+			this->m_children.push_back(NULL);
+			this->m_children.push_back(r);
 		}
-		else if (this->m_children->get_num_elements()==1)
+		else if (this->m_children.size()==1)
 		{
-			this->m_children->push_back(r);
-			r->parent(this);
+			this->m_children.push_back(r);
 		}
 		else
 		{
-			this->m_children->set_element(r,1);
-			r->parent(this);
+			this->m_children[1] = r;
 		}
+		r->parent(this->shared_from_this()->template as<TreeMachineNode<T>>());
 	}
 
 	/** get right subtree
 	 *
 	 * @return right subtree of node
 	 */
-	CBinaryTreeMachineNode* right()
+	std::shared_ptr<BinaryTreeMachineNode<T>> right()
 	{
-		if (this->m_children->get_num_elements()==2)
-			return (CBinaryTreeMachineNode*) this->m_children->get_element(1);
+		if (this->m_children.size()==2)
+			return this->m_children[1]->template as<BinaryTreeMachineNode<T>>();
 
 		return NULL;
 	}

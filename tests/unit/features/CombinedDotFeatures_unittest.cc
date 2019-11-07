@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Soeren Sonnenburg, 
+ * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Soeren Sonnenburg,
  *          Bjoern Esser, Viktor Gal
  */
 
@@ -25,10 +25,10 @@ TEST(CombinedDotFeaturesTest, test_array_operations)
 		data_3[i] = 2*i;
 	}
 
-	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
-	CDenseFeatures<float64_t>* feat_1 = new CDenseFeatures<float64_t>(data_1);
-	CDenseFeatures<float64_t>* feat_2 = new CDenseFeatures<float64_t>(data_2);
-	CDenseFeatures<float64_t>* feat_3 = new CDenseFeatures<float64_t>(data_3);
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
+	auto feat_1 = std::make_shared<DenseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<DenseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<DenseFeatures<float64_t>>(data_3);
 
 	if (comb_feat->append_feature_obj(feat_1))
 	{
@@ -48,19 +48,19 @@ TEST(CombinedDotFeaturesTest, test_array_operations)
 	comb_feat->delete_feature_obj(0);
 	EXPECT_EQ(comb_feat->get_num_feature_obj(),2);
 
-	CDenseFeatures<float64_t>* f_1 = (CDenseFeatures<float64_t>*) comb_feat->get_feature_obj(0);
+	auto f_1 = comb_feat->get_feature_obj(0)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> m_1 = f_1->get_feature_matrix();
-	CDenseFeatures<float64_t>* f_2 = (CDenseFeatures<float64_t>*) comb_feat->get_feature_obj(1);
+	auto f_2 = comb_feat->get_feature_obj(1)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> m_2 = f_2->get_feature_matrix();
 	for (index_t i=0; i < 6; i++)
 	{
 		EXPECT_EQ(m_1[i], data_3[i]);
 		EXPECT_EQ(m_2[i], data_2[i]);
 	}
-	SG_UNREF(f_1);
-	SG_UNREF(f_2);
 
-	SG_UNREF(comb_feat);
+
+
+
 }
 
 TEST(CombinedDotFeaturesTest, dot_products)
@@ -75,11 +75,11 @@ TEST(CombinedDotFeaturesTest, dot_products)
 		data_3[i] = 2*i;
 	}
 
-	CCombinedDotFeatures* comb_feat_1 = new CCombinedDotFeatures();
-	CCombinedDotFeatures* comb_feat_2 = new CCombinedDotFeatures();
-	CDenseFeatures<float64_t>* feat_1 = new CDenseFeatures<float64_t>(data_1);
-	CDenseFeatures<float64_t>* feat_2 = new CDenseFeatures<float64_t>(data_2);
-	CDenseFeatures<float64_t>* feat_3 = new CDenseFeatures<float64_t>(data_3);
+	auto comb_feat_1 = std::make_shared<CombinedDotFeatures>();
+	auto comb_feat_2 = std::make_shared<CombinedDotFeatures>();
+	auto feat_1 = std::make_shared<DenseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<DenseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<DenseFeatures<float64_t>>(data_3);
 
 	comb_feat_1->append_feature_obj(feat_1);
 	comb_feat_1->set_subfeature_weight(0, 1);
@@ -119,8 +119,6 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	EXPECT_EQ(result, 1 * 134 - 2 * 170 + 3 * 412);
 	io::info("Completed dense_dot() testing");
 
-	SG_UNREF(comb_feat_1);
-	SG_UNREF(comb_feat_2);
 }
 
 TEST(CombinedDotFeaturesTest, nnz_features)
@@ -146,10 +144,10 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 	nnz[4] = 2;
 	nnz[5] = 4;
 
-	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
-	CSparseFeatures<float64_t>* feat_1 = new CSparseFeatures<float64_t>(data_1);
-	CSparseFeatures<float64_t>* feat_2 = new CSparseFeatures<float64_t>(data_2);
-	CSparseFeatures<float64_t>* feat_3 = new CSparseFeatures<float64_t>(data_3);
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
+	auto feat_1 = std::make_shared<SparseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<SparseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<SparseFeatures<float64_t>>(data_3);
 	comb_feat->append_feature_obj(feat_1);
 	comb_feat->append_feature_obj(feat_2);
 	comb_feat->append_feature_obj(feat_3);
@@ -166,7 +164,7 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 	}
 
 	comb_feat->free_feature_iterator(itcomb);
-	SG_UNREF(comb_feat);
+
 }
 
 TEST(CombinedDotFeaturesTest, feature_weights)
@@ -174,11 +172,11 @@ TEST(CombinedDotFeaturesTest, feature_weights)
 	index_t num_subfeats = 20;
 	index_t insert_pos = 10;
 
-	std::vector<CDenseFeatures<float64_t>*> feats(num_subfeats);
+	std::vector<std::shared_ptr<DenseFeatures<float64_t>>> feats(num_subfeats);
 	for (index_t i = 0; i < num_subfeats; i++)
-		feats[i] = new CDenseFeatures<float64_t>();
+		feats[i] = std::make_shared<DenseFeatures<float64_t>>();
 
-	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
 	// test get_subfeature_weight & set_subfeature_weight
 	for (index_t i = 0; i < num_subfeats; i++)
 	{
@@ -193,7 +191,7 @@ TEST(CombinedDotFeaturesTest, feature_weights)
 	}
 
 	// test insert_feature_obj
-	auto* inserted_feat = new CDenseFeatures<float64_t>();
+	auto inserted_feat = std::make_shared<DenseFeatures<float64_t>>();
 	comb_feat->insert_feature_obj(inserted_feat, insert_pos);
 	comb_feat->set_subfeature_weight(10, -1);
 	for (index_t i = 0; i < insert_pos; i++)
@@ -205,8 +203,6 @@ TEST(CombinedDotFeaturesTest, feature_weights)
 	{
 		EXPECT_EQ(comb_feat->get_subfeature_weight(i), i - 1);
 	}
-
-	SG_UNREF(comb_feat);
 }
 
 TEST(CombinedDotFeaturesTest, dense_dot_range)
@@ -216,7 +212,7 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 	index_t dim = 10;
 	float64_t b = 23;
 
-	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
 
 	// first vector is [0, 1, ..., dim-1]
 	// second vector is [0, 2,..., 2*dim-2], and so on
@@ -229,7 +225,7 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 	// repeated num_subfeats times
 	for (index_t i = 0; i < num_subfeats; i++)
 	{
-		comb_feat->append_feature_obj(new CDenseFeatures<float64_t>(data));
+		comb_feat->append_feature_obj(std::make_shared<DenseFeatures<float64_t>>(data));
 		comb_feat->set_subfeature_weight(i, i);
 	}
 
@@ -253,7 +249,6 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 		EXPECT_EQ(output[i], alphas[i] * (i + 1) * weights_sum * sum + b);
 	}
 
-	SG_UNREF(comb_feat);
 	delete[] output;
 	delete[] alphas;
 	delete[] vec;
@@ -271,10 +266,10 @@ TEST(CombinedDotFeaturesTest, add_to_dense_vec)
 	for (int j = 0; j < num_vectors * dim; j++)
 		data[j] = (j % 2 == 0) ? j : -j;
 
-	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
 	for (index_t i = 0; i < num_subfeats; i++)
 	{
-		comb_feat->append_feature_obj(new CDenseFeatures<float64_t>(data));
+		comb_feat->append_feature_obj(std::make_shared<DenseFeatures<float64_t>>(data));
 		comb_feat->set_subfeature_weight(i, i);
 	}
 
@@ -295,7 +290,6 @@ TEST(CombinedDotFeaturesTest, add_to_dense_vec)
 		EXPECT_EQ(vec2[i], i + alpha * subfeat_weight * std::abs(feat_val));
 	}
 
-	SG_UNREF(comb_feat);
 	delete[] vec;
 	delete[] vec2;
 }

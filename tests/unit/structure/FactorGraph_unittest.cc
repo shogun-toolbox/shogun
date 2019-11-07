@@ -1,6 +1,5 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/Factor.h>
@@ -33,55 +32,54 @@ TEST(FactorGraph, compute_energies_data_indep)
 	w[2] = -0.2;
 	w[3] = 1.0;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	// Create a factor graph from the model: 3 binary variables
 	SGVector<int32_t> vc(3);
 	vc[0] = 2;
 	vc[1] = 2;
 	vc[2] = 2;
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	SGVector<float64_t> data;
 	SGVector<int32_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
-	CFactor* fac1 = new CFactor(factortype, var_index, data);
-	SG_REF(fac1);
+	auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
+
 	fg.add_factor(fac1);
 
 	var_index[0] = 1;
 	var_index[1] = 2;
-	CFactor* fac2 = new CFactor(factortype, var_index, data);
-	SG_REF(fac2);
+	auto fac2 = std::make_shared<Factor>(factortype, var_index, data);
+
 	fg.add_factor(fac2);
 
 	var_index[0] = 0;
 	var_index[1] = 2;
-	CFactor* fac3 = new CFactor(factortype, var_index, data);
-	SG_REF(fac3);
+	auto fac3 = std::make_shared<Factor>(factortype, var_index, data);
+
 	fg.add_factor(fac3);
 
 	fg.compute_energies();
 
-	CDynamicObjectArray* allfac = fg.get_factors();
+	auto allfac = fg.get_factors();
 	for (int32_t fi = 0; fi < 3; fi++)
 	{
-		CFactor* ft = dynamic_cast<CFactor*>(allfac->get_element(fi));
+		auto ft = allfac[fi];
 		SGVector<float64_t> energies = ft->get_energies();
-		SG_UNREF(ft);
+
 
 		for (int32_t ei = 0; ei < energies.size(); ei++)
 			EXPECT_NEAR(w[ei], energies[ei], 1E-10);
 	}
 
-	SG_UNREF(allfac);
-	SG_UNREF(factortype);
-	SG_UNREF(fac1);
-	SG_UNREF(fac2);
-	SG_UNREF(fac3);
+
+
+
+
 }
 
 TEST(FactorGraph, evaluate_energy_data_indep)
@@ -96,8 +94,8 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	w[2] = 0.2;
 	w[3] = 0.0;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	SGVector<int32_t> card1(1);
 	card1[0] = 2;
@@ -105,41 +103,41 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	w1[0] = 0.1;
 	w1[1] = 0.7;
 	int32_t tid1 = 1;
-	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1, w1);
-	SG_REF(factortype1a);
+	auto factortype1a = std::make_shared<TableFactorType>(tid1, card1, w1);
+
 
 	SGVector<float64_t> w2(2);
 	w2[0] = 0.3;
 	w2[1] = 0.6;
 	int32_t tid2 = 2;
-	CTableFactorType* factortype1b = new CTableFactorType(tid2, card1, w2);
-	SG_REF(factortype1b);
+	auto factortype1b = std::make_shared<TableFactorType>(tid2, card1, w2);
+
 
 	// Create a factor graph from the model: 2 binary variables
 	SGVector<int32_t> vc(2);
 	vc[0] = 2;
 	vc[1] = 2;
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	SGVector<float64_t> data;
 	SGVector<int32_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
-	CFactor* fac1 = new CFactor(factortype, var_index, data);
-	SG_REF(fac1);
+	auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
+
 	fg.add_factor(fac1);
 
 	SGVector<int32_t> var_index1(1);
 	var_index1[0] = 0;
-	CFactor* fac1a = new CFactor(factortype1a, var_index1, data);
-	SG_REF(fac1a);
+	auto fac1a =std::make_shared< Factor>(factortype1a, var_index1, data);
+
 	fg.add_factor(fac1a);
 
 	SGVector<int32_t> var_index2(1);
 	var_index2[0] = 1;
-	CFactor* fac1b = new CFactor(factortype1b, var_index2, data);
-	SG_REF(fac1b);
+	auto fac1b =std::make_shared< Factor>(factortype1b, var_index2, data);
+
 	fg.add_factor(fac1b);
 
 	fg.compute_energies();
@@ -161,12 +159,12 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	state[1] = 1;
 	EXPECT_NEAR(1.3, fg.evaluate_energy(state), 1E-10);
 
-	SG_UNREF(factortype);
-	SG_UNREF(factortype1a);
-	SG_UNREF(factortype1b);
-	SG_UNREF(fac1);
-	SG_UNREF(fac1a);
-	SG_UNREF(fac1b);
+
+
+
+
+
+
 }
 
 TEST(FactorGraph, evaluate_energy_data_dep)
@@ -177,20 +175,20 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	card[0] = 2;
 	card[1] = 2;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	SGVector<int32_t> card1(1);
 	card1[0] = 2;
 	int32_t tid1 = 1;
-	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1, w);
-	SG_REF(factortype1a);
+	auto factortype1a = std::make_shared<TableFactorType>(tid1, card1, w);
+
 
 	// Create a factor graph from the model: 2 binary variables
 	SGVector<int32_t> vc(2);
 	vc[0] = 2;
 	vc[1] = 2;
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	SGVector<float64_t> data1(4);
@@ -201,8 +199,8 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	SGVector<int32_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
-	CFactor* fac1 = new CFactor(factortype, var_index, data1);
-	SG_REF(fac1);
+	auto fac1 = std::make_shared<Factor>(factortype, var_index, data1);
+
 	fg.add_factor(fac1);
 
 	SGVector<float64_t> data2(2);
@@ -210,8 +208,8 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	data2[1] = 0.7;
 	SGVector<int32_t> var_index1(1);
 	var_index1[0] = 0;
-	CFactor* fac1a = new CFactor(factortype1a, var_index1, data2);
-	SG_REF(fac1a);
+	auto fac1a =std::make_shared< Factor>(factortype1a, var_index1, data2);
+
 	fg.add_factor(fac1a);
 
 	SGVector<float64_t> data3(2);
@@ -219,8 +217,8 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	data3[1] = 0.6;
 	SGVector<int32_t> var_index2(1);
 	var_index2[0] = 1;
-	CFactor* fac1b = new CFactor(factortype1a, var_index2, data3);
-	SG_REF(fac1b);
+	auto fac1b =std::make_shared< Factor>(factortype1a, var_index2, data3);
+
 	fg.add_factor(fac1b);
 
 	fg.compute_energies();
@@ -243,11 +241,11 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	state[1] = 1;
 	EXPECT_NEAR(1.3, fg.evaluate_energy(state), 1E-10);
 
-	SG_UNREF(factortype);
-	SG_UNREF(factortype1a);
-	SG_UNREF(fac1);
-	SG_UNREF(fac1a);
-	SG_UNREF(fac1b);
+
+
+
+
+
 }
 
 TEST(FactorGraph, evaluate_energy_param_data)
@@ -266,15 +264,15 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	w[6] = -0.2; // 1,1
 	w[7] = 0.75;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	// Create a factor graph from the model: 3 binary variables
 	SGVector<int32_t> vc(3);
 	vc[0] = 2;
 	vc[1] = 2;
 	vc[2] = 2;
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	SGVector<float64_t> data(2);
@@ -283,8 +281,8 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<int32_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
-	CFactor* fac1 = new CFactor(factortype, var_index, data);
-	SG_REF(fac1);
+	auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
+
 	fg.add_factor(fac1);
 
 	SGVector<float64_t> data1(2);
@@ -293,8 +291,8 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<int32_t> var_index1(2);
 	var_index1[0] = 1;
 	var_index1[1] = 2;
-	CFactor* fac1a = new CFactor(factortype, var_index1, data1);
-	SG_REF(fac1a);
+	auto fac1a =std::make_shared< Factor>(factortype, var_index1, data1);
+
 	fg.add_factor(fac1a);
 
 	SGVector<float64_t> data2(2);
@@ -303,8 +301,8 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<int32_t> var_index2(2);
 	var_index2[0] = 0;
 	var_index2[1] = 2;
-	CFactor* fac1b = new CFactor(factortype, var_index2, data2);
-	SG_REF(fac1b);
+	auto fac1b =std::make_shared< Factor>(factortype, var_index2, data2);
+
 	fg.add_factor(fac1b);
 
 	fg.compute_energies();
@@ -317,15 +315,14 @@ TEST(FactorGraph, evaluate_energy_param_data)
 
 	SGVector<float64_t> gradients(8);
 	gradients.zero();
-	CDynamicObjectArray* allfac = fg.get_factors();
-	//for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
+	auto allfac = fg.get_factors();
+	//for (int32_t fi = 0; fi < allfac.size(); fi++)
 	int32_t fi = 0;
 	{
-		CFactor* ft = dynamic_cast<CFactor*>(allfac->get_element(fi));
+		auto ft = allfac[fi];
 		ft->compute_gradients(marginals, gradients);
-		SG_UNREF(ft);
+
 	}
-	SG_UNREF(allfac);
 
 	EXPECT_NEAR(0.025, gradients[0], 1E-10);
 	EXPECT_NEAR(0.05, gradients[1], 1E-10);
@@ -336,10 +333,10 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	EXPECT_NEAR(0.025, gradients[6], 1E-10);
 	EXPECT_NEAR(0.05, gradients[7], 1E-10);
 
-	SG_UNREF(factortype);
-	SG_UNREF(fac1);
-	SG_UNREF(fac1a);
-	SG_UNREF(fac1b);
+
+
+
+
 }
 
 TEST(FactorGraph, evaluate_energy_param_data_sparse)
@@ -358,15 +355,15 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	w[6] = -0.2; // 1,1
 	w[7] = 0.75;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	// Create a factor graph from the model: 3 binary variables
 	SGVector<int32_t> vc(3);
 	vc[0] = 2;
 	vc[1] = 2;
 	vc[2] = 2;
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	SGSparseVectorEntry<float64_t>* sdata = SG_MALLOC(SGSparseVectorEntry<float64_t>, 2);
 	sdata[0].feat_index = 0;
@@ -379,8 +376,8 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SGVector<int32_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
-	CFactor* fac1 = new CFactor(factortype, var_index, data);
-	SG_REF(fac1);
+	auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
+
 	fg.add_factor(fac1);
 
 	SGSparseVectorEntry<float64_t>* sdata1 = SG_MALLOC(SGSparseVectorEntry<float64_t>, 2);
@@ -393,8 +390,8 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SGVector<int32_t> var_index1(2);
 	var_index1[0] = 1;
 	var_index1[1] = 2;
-	CFactor* fac1a = new CFactor(factortype, var_index1, data1);
-	SG_REF(fac1a);
+	auto fac1a =std::make_shared<Factor>(factortype, var_index1, data1);
+
 	fg.add_factor(fac1a);
 
 	SGSparseVectorEntry<float64_t>* sdata2 = SG_MALLOC(SGSparseVectorEntry<float64_t>, 2);
@@ -407,8 +404,8 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SGVector<int32_t> var_index2(2);
 	var_index2[0] = 0;
 	var_index2[1] = 2;
-	CFactor* fac1b = new CFactor(factortype, var_index2, data2);
-	SG_REF(fac1b);
+	auto fac1b =std::make_shared<Factor>(factortype, var_index2, data2);
+
 	fg.add_factor(fac1b);
 
 	fg.compute_energies();
@@ -421,14 +418,12 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 
 	SGVector<float64_t> gradients(8);
 	gradients.zero();
-	CDynamicObjectArray* allfac = fg.get_factors();
-	for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
+	auto allfac = fg.get_factors();
+	for (int32_t fi = 0; fi < allfac.size(); fi++)
 	{
-		CFactor* ft = dynamic_cast<CFactor*>(allfac->get_element(fi));
+		auto ft = allfac[fi];
 		ft->compute_gradients(marginals, gradients);
-		SG_UNREF(ft);
 	}
-	SG_UNREF(allfac);
 
 	// factor 3
 	EXPECT_NEAR(0.225, gradients[0], 1E-10);
@@ -440,10 +435,10 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	EXPECT_NEAR(0.225, gradients[6], 1E-10);
 	EXPECT_NEAR(0.3, gradients[7], 1E-10);
 
-	SG_UNREF(factortype);
-	SG_UNREF(fac1);
-	SG_UNREF(fac1a);
-	SG_UNREF(fac1b);
+
+
+
+
 }
 
 TEST(FactorGraph, structure_analysis)
@@ -460,12 +455,12 @@ TEST(FactorGraph, structure_analysis)
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	SGVector<int32_t> vc(hh*ww);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	for (int32_t x = 0; x < ww; x++)
@@ -478,7 +473,7 @@ TEST(FactorGraph, structure_analysis)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg.add_factor(fac1);
 			}
 
@@ -488,12 +483,12 @@ TEST(FactorGraph, structure_analysis)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y-1,ww);
 				var_index[1] = grid_to_index(x,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg.add_factor(fac1);
 			}
 		}
 	}
-	SG_UNREF(factortype);
+
 
 	fg.connect_components();
 
@@ -517,12 +512,12 @@ TEST(FactorGraph, structure_analysis_loopy)
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	SGVector<int32_t> vc(hh*ww);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	for (int32_t x = 0; x < ww; x++)
@@ -535,7 +530,7 @@ TEST(FactorGraph, structure_analysis_loopy)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg.add_factor(fac1);
 			}
 
@@ -545,12 +540,12 @@ TEST(FactorGraph, structure_analysis_loopy)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y-1,ww);
 				var_index[1] = grid_to_index(x,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg.add_factor(fac1);
 			}
 		}
 	}
-	SG_UNREF(factortype);
+
 
 	fg.connect_components();
 
@@ -574,12 +569,12 @@ TEST(FactorGraph, structure_analysis_disconnected)
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	SGVector<int32_t> vc(hh*ww);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	CFactorGraph fg(vc);
+	FactorGraph fg(vc);
 
 	// Add factors
 	for (int32_t x = 0; x < ww; x++)
@@ -592,12 +587,12 @@ TEST(FactorGraph, structure_analysis_disconnected)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg.add_factor(fac1);
 			}
 		}
 	}
-	SG_UNREF(factortype);
+
 
 	fg.connect_components();
 

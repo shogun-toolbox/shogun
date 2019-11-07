@@ -5,7 +5,7 @@ namespace shogun
 
 
 template <class T>
-CStreamingStringFeatures<T>::CStreamingStringFeatures() : CStreamingFeatures()
+StreamingStringFeatures<T>::StreamingStringFeatures() : StreamingFeatures()
 {
 	init();
 	set_read_functions();
@@ -13,10 +13,10 @@ CStreamingStringFeatures<T>::CStreamingStringFeatures() : CStreamingFeatures()
 }
 
 template <class T>
-CStreamingStringFeatures<T>::CStreamingStringFeatures(CStreamingFile* file,
+StreamingStringFeatures<T>::StreamingStringFeatures(std::shared_ptr<StreamingFile> file,
 			 bool is_labelled,
 			 int32_t size)
-	: CStreamingFeatures()
+	: StreamingFeatures()
 {
 	init(file, is_labelled, size);
 	set_read_functions();
@@ -24,64 +24,64 @@ CStreamingStringFeatures<T>::CStreamingStringFeatures(CStreamingFile* file,
 }
 
 template <class T>
-CStreamingStringFeatures<T>::~CStreamingStringFeatures()
+StreamingStringFeatures<T>::~StreamingStringFeatures()
 {
 	if (parser.is_running())
 		parser.end_parser();
-	SG_UNREF(alphabet);
+
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::use_alphabet(EAlphabet alpha)
+void StreamingStringFeatures<T>::use_alphabet(EAlphabet alpha)
 {
-	SG_UNREF(alphabet);
 
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
+
+	alphabet=std::make_shared<Alphabet>(alpha);
+
 	num_symbols=alphabet->get_num_symbols();
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::use_alphabet(CAlphabet* alpha)
+void StreamingStringFeatures<T>::use_alphabet(std::shared_ptr<Alphabet> alpha)
 {
-	SG_UNREF(alphabet);
 
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
+
+	alphabet=std::make_shared<Alphabet>(alpha);
+
 	num_symbols=alphabet->get_num_symbols();
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::set_remap(CAlphabet* ascii_alphabet, CAlphabet* binary_alphabet)
+void StreamingStringFeatures<T>::set_remap(std::shared_ptr<Alphabet> ascii_alphabet, std::shared_ptr<Alphabet> binary_alphabet)
 {
 	remap_to_bin=true;
-	alpha_ascii=new CAlphabet(ascii_alphabet);
-	alpha_bin=new CAlphabet(binary_alphabet);
+	alpha_ascii=std::make_shared<Alphabet>(ascii_alphabet);
+	alpha_bin=std::make_shared<Alphabet>(binary_alphabet);
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::set_remap(EAlphabet ascii_alphabet, EAlphabet binary_alphabet)
+void StreamingStringFeatures<T>::set_remap(EAlphabet ascii_alphabet, EAlphabet binary_alphabet)
 {
 	remap_to_bin=true;
-	alpha_ascii=new CAlphabet(ascii_alphabet);
-	alpha_bin=new CAlphabet(binary_alphabet);
+	alpha_ascii=std::make_shared<Alphabet>(ascii_alphabet);
+	alpha_bin=std::make_shared<Alphabet>(binary_alphabet);
 }
 
 template <class T>
-CAlphabet* CStreamingStringFeatures<T>::get_alphabet()
+std::shared_ptr<Alphabet> StreamingStringFeatures<T>::get_alphabet()
 {
-	SG_REF(alphabet);
+
 	return alphabet;
 }
 
 template <class T>
-floatmax_t CStreamingStringFeatures<T>::get_num_symbols()
+floatmax_t StreamingStringFeatures<T>::get_num_symbols()
 {
 	return num_symbols;
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_num_vectors() const
+int32_t StreamingStringFeatures<T>::get_num_vectors() const
 {
 	if (current_string.vector)
 		return 1;
@@ -89,24 +89,24 @@ int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_num_features()
+int32_t StreamingStringFeatures<T>::get_num_features()
 {
 	return current_string.size();
 }
 
-template <class T> void CStreamingStringFeatures<T>::set_vector_reader()
+template <class T> void StreamingStringFeatures<T>::set_vector_reader()
 {
-	parser.set_read_vector(&CStreamingFile::get_string);
+	parser.set_read_vector(&StreamingFile::get_string);
 }
 
-template <class T> void CStreamingStringFeatures<T>::set_vector_and_label_reader()
+template <class T> void StreamingStringFeatures<T>::set_vector_and_label_reader()
 {
 	parser.set_read_vector_and_label
-		(&CStreamingFile::get_string_and_label);
+		(&StreamingFile::get_string_and_label);
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
-template<> EFeatureType CStreamingStringFeatures<sg_type>::get_feature_type() const \
+template<> EFeatureType StreamingStringFeatures<sg_type>::get_feature_type() const \
 {									\
 	return f_type;							\
 }
@@ -128,17 +128,17 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 
 
 template <class T>
-void CStreamingStringFeatures<T>::init()
+void StreamingStringFeatures<T>::init()
 {
 	working_file=NULL;
-	alphabet=new CAlphabet();
+	alphabet=std::make_shared<Alphabet>();
 
 	current_string=SGVector<T>(nullptr, -1, false);
 	set_generic<T>();
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::init(CStreamingFile* file,
+void StreamingStringFeatures<T>::init(std::shared_ptr<StreamingFile> file,
 				       bool is_labelled,
 				       int32_t size)
 {
@@ -151,7 +151,7 @@ void CStreamingStringFeatures<T>::init(CStreamingFile* file,
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::start_parser()
+void StreamingStringFeatures<T>::start_parser()
 {
 	if (!remap_to_bin)
 		alpha_ascii=alphabet;
@@ -161,13 +161,13 @@ void CStreamingStringFeatures<T>::start_parser()
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::end_parser()
+void StreamingStringFeatures<T>::end_parser()
 {
 	parser.end_parser();
 }
 
 template <class T>
-bool CStreamingStringFeatures<T>::get_next_example()
+bool StreamingStringFeatures<T>::get_next_example()
 {
 	bool ret_value;
 
@@ -213,13 +213,13 @@ bool CStreamingStringFeatures<T>::get_next_example()
 }
 
 template <class T>
-SGVector<T> CStreamingStringFeatures<T>::get_vector()
+SGVector<T> StreamingStringFeatures<T>::get_vector()
 {
 	return current_string;
 }
 
 template <class T>
-float64_t CStreamingStringFeatures<T>::get_label()
+float64_t StreamingStringFeatures<T>::get_label()
 {
 	ASSERT(has_labels)
 
@@ -227,35 +227,35 @@ float64_t CStreamingStringFeatures<T>::get_label()
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::release_example()
+void StreamingStringFeatures<T>::release_example()
 {
 	parser.finalize_example();
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_vector_length()
+int32_t StreamingStringFeatures<T>::get_vector_length()
 {
 	return current_string.size();
 }
 
 template <class T>
-EFeatureClass CStreamingStringFeatures<T>::get_feature_class() const
+EFeatureClass StreamingStringFeatures<T>::get_feature_class() const
 {
 	return C_STREAMING_STRING;
 }
 
-template class CStreamingStringFeatures<bool>;
-template class CStreamingStringFeatures<char>;
-template class CStreamingStringFeatures<int8_t>;
-template class CStreamingStringFeatures<uint8_t>;
-template class CStreamingStringFeatures<int16_t>;
-template class CStreamingStringFeatures<uint16_t>;
-template class CStreamingStringFeatures<int32_t>;
-template class CStreamingStringFeatures<uint32_t>;
-template class CStreamingStringFeatures<int64_t>;
-template class CStreamingStringFeatures<uint64_t>;
-template class CStreamingStringFeatures<float32_t>;
-template class CStreamingStringFeatures<float64_t>;
-template class CStreamingStringFeatures<floatmax_t>;
+template class StreamingStringFeatures<bool>;
+template class StreamingStringFeatures<char>;
+template class StreamingStringFeatures<int8_t>;
+template class StreamingStringFeatures<uint8_t>;
+template class StreamingStringFeatures<int16_t>;
+template class StreamingStringFeatures<uint16_t>;
+template class StreamingStringFeatures<int32_t>;
+template class StreamingStringFeatures<uint32_t>;
+template class StreamingStringFeatures<int64_t>;
+template class StreamingStringFeatures<uint64_t>;
+template class StreamingStringFeatures<float32_t>;
+template class StreamingStringFeatures<float64_t>;
+template class StreamingStringFeatures<floatmax_t>;
 
 }

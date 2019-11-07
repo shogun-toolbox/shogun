@@ -11,26 +11,28 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/regression/LinearRidgeRegression.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CLinearRidgeRegression::CLinearRidgeRegression()
-    : CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>()
+LinearRidgeRegression::LinearRidgeRegression()
+    : DenseRealDispatch<LinearRidgeRegression, LinearMachine>()
 {
 	init();
 }
 
-CLinearRidgeRegression::CLinearRidgeRegression(
-    float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab)
-    : CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>()
+LinearRidgeRegression::LinearRidgeRegression(
+    float64_t tau, const std::shared_ptr<DenseFeatures<float64_t>>& data, std::shared_ptr<Labels> lab)
+    : DenseRealDispatch<LinearRidgeRegression, LinearMachine>()
 {
 	init();
 
 	set_tau(tau);
-	set_labels(lab);
+	set_labels(std::move(lab));
 	set_features(data);
 }
 
-void CLinearRidgeRegression::init()
+void LinearRidgeRegression::init()
 {
 	set_tau(1e-6);
 	m_use_bias = true;
@@ -41,8 +43,8 @@ void CLinearRidgeRegression::init()
 }
 
 template <typename T>
-bool CLinearRidgeRegression::train_machine_templated(
-    const CDenseFeatures<T>* feats)
+bool LinearRidgeRegression::train_machine_templated(
+    std::shared_ptr<const DenseFeatures<T>> feats)
 {
 	auto N = feats->get_num_vectors();
 	auto D = feats->get_num_features();
@@ -95,14 +97,14 @@ bool CLinearRidgeRegression::train_machine_templated(
 	return true;
 }
 
-bool CLinearRidgeRegression::load(FILE* srcfile)
+bool LinearRidgeRegression::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool CLinearRidgeRegression::save(FILE* dstfile)
+bool LinearRidgeRegression::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;

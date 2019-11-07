@@ -21,18 +21,14 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
-	CKernelLocallyLinearEmbedding* klle = new CKernelLocallyLinearEmbedding();
-	CKernel* kernel = new CLinearKernel();
+	DenseFeatures<double>* features = new DenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	KernelLocallyLinearEmbedding* klle = new KernelLocallyLinearEmbedding();
+	Kernel* kernel = new LinearKernel();
 	klle->set_target_dim(2);
 	klle->set_k(4);
 	klle->set_kernel(kernel);
 	klle->get_global_parallel()->set_num_threads(4);
 	auto embedding = klle->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(klle);
-	SG_UNREF(features);
 	return 0;
 }
 #else //USE_GPL_SHOGUN

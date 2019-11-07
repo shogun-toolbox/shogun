@@ -80,7 +80,7 @@ index_t DataManager::get_min_blocksize() const
 	{
 		index_t divisor=0;
 		for (size_t i=0; i<fetchers.size(); ++i)
-			divisor=CMath::gcd(divisor, fetchers[i]->m_num_samples);
+			divisor=Math::gcd(divisor, fetchers[i]->m_num_samples);
 		min_blocksize=get_num_samples()/divisor;
 	}
 	SG_DEBUG("min blocksize is {}!", min_blocksize);
@@ -153,7 +153,7 @@ InitPerFeature DataManager::samples_at(index_t i)
 	return InitPerFeature(fetchers[i]);
 }
 
-CFeatures* DataManager::samples_at(index_t i) const
+std::shared_ptr<Features> DataManager::samples_at(index_t i) const
 {
 	SG_TRACE("Entering!");
 	require(i<(int64_t)fetchers.size(),
@@ -421,7 +421,7 @@ NextSamples DataManager::next()
 				ASSERT(next_samples.m_num_blocks==num_blocks_curr_burst);
 
 			next_samples[i]=Block::create_blocks(feats, num_blocks_curr_burst, blocksize);
-			SG_UNREF(feats);
+			
 		}
 	}
 	SG_TRACE("Leaving!");

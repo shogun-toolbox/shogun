@@ -32,14 +32,14 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 			lab[i]=-1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat(j, i)=CMath::random(0.0, 1.0)+dist;
+				feat(j, i)=Math::random(0.0, 1.0)+dist;
 		}
 		else
 		{
 			lab[i]=1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat(j, i)=CMath::random(0.0, 1.0)-dist;
+				feat(j, i)=Math::random(0.0, 1.0)-dist;
 		}
 	}
 	lab.display_vector("lab");
@@ -47,7 +47,7 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 }
 
 SGMatrix<float64_t> calculate_weights(
-    CParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
+    ParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
 {
 	int32_t column = 0;
 	SGMatrix<float64_t> weights(len, folds * run);
@@ -57,10 +57,9 @@ SGMatrix<float64_t> calculate_weights(
 		for (auto i : range(obs_storage->get<index_t>("num_folds")))
 		{
 			auto fold = obs_storage->get("folds", i);
-			CMKLClassification* machine =
-			    (CMKLClassification*)fold->get("trained_machine");
-			SG_REF(machine)
-			CCombinedKernel* k = (CCombinedKernel*)machine->get_kernel();
+			auto machine =
+			    fold->get("trained_machine")->as<MKLClassification>();
+			auto k = machine->get_kernel()->as<CombinedKernel>();
 			auto w = k->get_subkernel_weights();
 
 			/* Copy the weights inside the matrix */
@@ -70,12 +69,8 @@ SGMatrix<float64_t> calculate_weights(
 				weights.set_element(w[j], j, column);
 			}
 
-			SG_UNREF(k)
-			SG_UNREF(machine)
-			SG_UNREF(fold)
 			column++;
 		}
-		SG_UNREF(obs_storage)
 	}
 	return weights;
 }
@@ -91,85 +86,74 @@ void test_mkl_cross_validation()
 	gen_rand_data(lab, feat, dist);
 
 	/*create train labels */
-	CLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	/* create train features */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
-	SG_REF(features);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat);
 
 	/* create combined features */
-	CCombinedFeatures* comb_features=new CCombinedFeatures();
+	auto comb_features=std::make_shared<CombinedFeatures>();
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
-	SG_REF(comb_features);
 
 	/* create multiple gaussian kernels */
-	CCombinedKernel* kernel=new CCombinedKernel();
-	kernel->append_kernel(new CGaussianKernel(10, 0.1));
-	kernel->append_kernel(new CGaussianKernel(10, 1));
-	kernel->append_kernel(new CGaussianKernel(10, 2));
+	auto kernel=std::make_shared<CombinedKernel>();
+	kernel->append_kernel(std::make_shared<GaussianKernel>(10, 0.1));
+	kernel->append_kernel(std::make_shared<GaussianKernel>(10, 1));
+	kernel->append_kernel(std::make_shared<GaussianKernel>(10, 2));
 	kernel->init(comb_features, comb_features);
-	SG_REF(kernel);
 
 	/* create mkl using libsvm, due to a mem-bug, interleaved is not possible */
-	CMKLClassification* svm=new CMKLClassification(new CLibSVM());
+	auto svm=std::make_shared<MKLClassification>(std::make_shared<LibSVM>());
 	svm->set_interleaved_optimization_enabled(false);
 	svm->set_kernel(kernel);
-	SG_REF(svm);
 
 	/* create cross-validation instance */
 	index_t num_folds=3;
-	CSplittingStrategy* split=new CStratifiedCrossValidationSplitting(labels,
+	auto split=std::make_shared<StratifiedCrossValidationSplitting>(labels,
 			num_folds);
-	CEvaluation* eval=new CContingencyTableEvaluation(ACCURACY);
-	CCrossValidation* cross=new CCrossValidation(svm, comb_features, labels, split, eval, false);
+	auto eval=std::make_shared<ContingencyTableEvaluation>(ACCURACY);
+	auto cross=std::make_shared<CrossValidation>(svm, comb_features, labels, split, eval, false);
 
 	/* add print output listener and mkl storage listener */
-	CParameterObserverCV mkl_obs{true};
+	auto mkl_obs = std::make_shared<ParameterObserverCV>(true);
 	cross->subscribe(&mkl_obs);
 
 	/* perform cross-validation, this will print loads of information */
-	CEvaluationResult* result=cross->evaluate();
+	auto result=cross->evaluate();
 
 	/* print mkl weights */
-	auto weights = calculate_weights(mkl_obs, num_folds, 1, 3);
+	auto weights = calculate_weights(*mkl_obs, num_folds, 1, 3);
 	weights.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
 	 * been used to compute confidence intervals */
-	CStatistics::matrix_mean(weights, false).display_vector("mean per kernel");
-	CStatistics::matrix_variance(weights, false).display_vector("variance per kernel");
-	CStatistics::matrix_std_deviation(weights, false).display_vector("std-dev per kernel");
+	Statistics::matrix_mean(weights, false).display_vector("mean per kernel");
+	Statistics::matrix_variance(weights, false).display_vector("variance per kernel");
+	Statistics::matrix_std_deviation(weights, false).display_vector("std-dev per kernel");
 
 	/* Clear */
-	mkl_obs.clear();
-	SG_UNREF(result);
+	mkl_obs->clear();
 
 	/* again for two runs */
 	cross->set_num_runs(2);
 	result=cross->evaluate();
 
 	/* print mkl weights */
-	SGMatrix<float64_t> weights_2 = calculate_weights(mkl_obs, num_folds, 2, 3);
+	SGMatrix<float64_t> weights_2 = calculate_weights(*mkl_obs, num_folds, 2, 3);
 	weights_2.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
 	 * been used to compute confidence intervals */
-	CStatistics::matrix_mean(weights_2, false)
+	Statistics::matrix_mean(weights_2, false)
 	    .display_vector("mean per kernel");
-	CStatistics::matrix_variance(weights_2, false)
+	Statistics::matrix_variance(weights_2, false)
 	    .display_vector("variance per kernel");
-	CStatistics::matrix_std_deviation(weights_2, false)
+	Statistics::matrix_std_deviation(weights_2, false)
 	    .display_vector("std-dev per kernel");
 
 	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(cross);
-	SG_UNREF(kernel);
-	SG_UNREF(features);
-	SG_UNREF(comb_features);
-	SG_UNREF(svm);
 }
 
 int main()

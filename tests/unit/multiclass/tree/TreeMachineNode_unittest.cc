@@ -31,36 +31,34 @@
 #include <gtest/gtest.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace std;
 using namespace shogun;
 
 TEST(TreeMachineNode, build_tree)
 {
-	CTreeMachineNode<id3TreeNodeData>* root=
-			new CTreeMachineNode<id3TreeNodeData>();
+	auto root=
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 
-	CTreeMachineNode<id3TreeNodeData>* child1=
-			new CTreeMachineNode<id3TreeNodeData>();
+	auto child1=
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 	child1->machine(1);
 	child1->data.attribute_id=1;
 	child1->data.transit_if_feature_value=1.0;
 	child1->data.class_label=11.0;
 
-	CTreeMachineNode<id3TreeNodeData>* child2=
-			new CTreeMachineNode<id3TreeNodeData>();
+	auto child2=
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 
 	root->add_child(child1);
 
-	CDynamicObjectArray* insert_children=new CDynamicObjectArray();
-	insert_children->push_back(child1);
-	insert_children->push_back(child2);
+	std::vector<std::shared_ptr<TreeMachineNode<id3TreeNodeData>>> insert_children;
+	insert_children.push_back(child1);
+	insert_children.push_back(child2);
 	root->set_children(insert_children);
 
-	CDynamicObjectArray* get_children=root->get_children();
-	CTreeMachineNode<id3TreeNodeData>* get_child1=((CTreeMachineNode<id3TreeNodeData>*)
-							 get_children->get_element(0));
+	auto get_children=root->get_children();
+	auto get_child1=get_children[0];
 
 	EXPECT_EQ(get_child1->data.attribute_id,1);
 	EXPECT_EQ(get_child1->data.transit_if_feature_value,1.0);
@@ -68,8 +66,4 @@ TEST(TreeMachineNode, build_tree)
 	EXPECT_EQ(get_child1->machine(),1);
 	EXPECT_EQ(get_child1->parent()->machine(),-1);
 
-	SG_UNREF(root);
-	SG_UNREF(insert_children);
-	SG_UNREF(get_children);
-	SG_UNREF(get_child1);
 }

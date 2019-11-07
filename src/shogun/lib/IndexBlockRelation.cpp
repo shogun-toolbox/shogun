@@ -6,29 +6,28 @@
 
 #include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/lib/IndexBlock.h>
-#include <shogun/lib/List.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
-bool CIndexBlockRelation::check_blocks_list(CList* blocks)
+bool IndexBlockRelation::check_blocks_list(std::vector<std::shared_ptr<IndexBlock>> blocks)
 {
-	int32_t n_sub_blocks = blocks->get_num_elements();
+	int32_t n_sub_blocks = blocks.size();
 	index_t* min_idxs = SG_MALLOC(index_t, n_sub_blocks);
 	index_t* max_idxs = SG_MALLOC(index_t, n_sub_blocks);
 	index_t* block_idxs_min = SG_MALLOC(index_t, n_sub_blocks);
 	index_t* block_idxs_max = SG_MALLOC(index_t, n_sub_blocks);
-	CIndexBlock* iter_block = (CIndexBlock*)(blocks->get_first_element());
+	auto iter_block = blocks.begin();
 	for (int32_t i=0; i<n_sub_blocks; i++)
 	{
-		min_idxs[i] = iter_block->get_min_index();
-		max_idxs[i] = iter_block->get_max_index();
+		min_idxs[i] = (*iter_block)->get_min_index();
+		max_idxs[i] = (*iter_block)->get_max_index();
 		block_idxs_min[i] = i;
 		block_idxs_max[i] = i;
-		SG_UNREF(iter_block);
-		iter_block = (CIndexBlock*)(blocks->get_next_element());
+		++iter_block;
 	}
-	CMath::qsort_index(min_idxs, block_idxs_min, n_sub_blocks);
-	CMath::qsort_index(max_idxs, block_idxs_max, n_sub_blocks);
+	Math::qsort_index(min_idxs, block_idxs_min, n_sub_blocks);
+	Math::qsort_index(max_idxs, block_idxs_max, n_sub_blocks);
 
 	for (int32_t i=0; i<n_sub_blocks; i++)
 	{

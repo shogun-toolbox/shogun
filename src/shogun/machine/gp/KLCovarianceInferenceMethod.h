@@ -69,11 +69,11 @@ namespace shogun
  * https://gist.github.com/yorkerlin/b64a015491833562d11a
  *
  */
-class CKLCovarianceInferenceMethod: public CKLInference
+class KLCovarianceInferenceMethod: public KLInference
 {
 public:
 	/** default constructor */
-	CKLCovarianceInferenceMethod();
+	KLCovarianceInferenceMethod();
 
 	/** constructor
 	 *
@@ -83,10 +83,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLCovarianceInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	KLCovarianceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLCovarianceInferenceMethod();
+	virtual ~KLCovarianceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -103,9 +103,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CKLCovarianceInferenceMethod object
+	 * @return casted KLCovarianceInferenceMethod object
 	 */
-	static CKLCovarianceInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<KLCovarianceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get alpha vector
 	 *
@@ -174,9 +174,9 @@ protected:
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
 	 * Note that
-	 * get_derivative_wrt_inference_method(const TParameter* param)
+	 * get_derivative_wrt_inference_method(Parameters::const_reference param)
 	 * and
-	 * get_derivative_wrt_kernel(const TParameter* param)
+	 * get_derivative_wrt_kernel(Parameters::const_reference param)
 	 * will call this function
 	 *
 	 * @param dK the gradient wrt hyperparameter related to cov

@@ -8,33 +8,32 @@
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/base/DynArray.h>
 
 #include <ctype.h>
 
 using namespace shogun;
 
-CStreamingAsciiFile::CStreamingAsciiFile()
-		: CStreamingFile()
+StreamingAsciiFile::StreamingAsciiFile()
+		: StreamingFile()
 {
 	unstable(SOURCE_LOCATION);
 	m_delimiter = ' ';
 }
 
-CStreamingAsciiFile::CStreamingAsciiFile(const char* fname, char rw)
-		: CStreamingFile(fname, rw)
+StreamingAsciiFile::StreamingAsciiFile(const char* fname, char rw)
+		: StreamingFile(fname, rw)
 {
 	m_delimiter = ' ';
 }
 
-CStreamingAsciiFile::~CStreamingAsciiFile()
+StreamingAsciiFile::~StreamingAsciiFile()
 {
 }
 
 /* Methods for reading dense vectors from an ascii file */
 
 #define GET_VECTOR(fname, conv, sg_type)									\
-void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
+void StreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 {																			\
 		char* buffer = NULL;												\
 		ssize_t bytes_read;													\
@@ -57,7 +56,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 																			\
 		char* ptr_item=NULL;												\
 		char* ptr_data=buffer;												\
-		DynArray<char*>* items=new DynArray<char*>();						\
+		std::vector<char*> items;											\
 																			\
 		while (*ptr_data)													\
 		{																	\
@@ -96,11 +95,10 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 																			\
 		for (int32_t i=0; i<num_feat; i++)									\
 		{																	\
-				char* item=items->get_element(i);							\
+				char* item=items[i];										\
 				vector[i]=conv(item);										\
 				SG_FREE(item);												\
 		}																	\
-		delete items;														\
 		SG_RESET_LOCALE;													\
 }
 
@@ -118,7 +116,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 #undef GET_VECTOR
 
 #define GET_FLOAT_VECTOR(sg_type)											\
-		void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& len)\
+		void StreamingAsciiFile::get_vector(sg_type*& vector, int32_t& len)\
 		{																	\
 				char *line=NULL;											\
 				SG_SET_LOCALE_C;											\
@@ -157,7 +155,7 @@ GET_FLOAT_VECTOR(float64_t)
 /* Methods for reading a dense vector and a label from an ascii file */
 
 #define GET_VECTOR_AND_LABEL(fname, conv, sg_type)						\
-		void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& num_feat, float64_t& label) \
+		void StreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& num_feat, float64_t& label) \
 		{																\
 				char* buffer = NULL;									\
 				ssize_t bytes_read;										\
@@ -180,7 +178,7 @@ GET_FLOAT_VECTOR(float64_t)
 																		\
 				char* ptr_item=NULL;									\
 				char* ptr_data=buffer;									\
-				DynArray<char*>* items=new DynArray<char*>();			\
+				std::vector<char*> items;								\
 																		\
 				while (*ptr_data)										\
 				{														\
@@ -213,18 +211,17 @@ GET_FLOAT_VECTOR(float64_t)
 																		\
 				SG_DEBUG("num_feat {}", num_feat)					\
 				/* The first element is the label */					\
-				label=atof(items->get_element(0));						\
+				label=atof(items[0]);									\
 				/* now copy rest of the data into vector */				\
 				if (old_len < num_feat - 1)								\
 						vector=SG_REALLOC(sg_type, vector, old_len, num_feat-1);	\
 																		\
 				for (int32_t i=1; i<num_feat; i++)						\
 				{														\
-						char* item=items->get_element(i);				\
+						char* item=items[i];							\
 						vector[i-1]=conv(item);							\
 						SG_FREE(item);									\
 				}														\
-				delete items;											\
 				num_feat--;												\
 				SG_RESET_LOCALE;										\
 		}
@@ -243,7 +240,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 #undef GET_VECTOR_AND_LABEL
 
 #define GET_FLOAT_VECTOR_AND_LABEL(sg_type)								\
-		void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
+		void StreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
 		{																\
 				char *line=NULL;										\
 				SG_SET_LOCALE_C;										\
@@ -284,7 +281,7 @@ GET_FLOAT_VECTOR_AND_LABEL(float64_t)
 /* Methods for reading a string vector from an ascii file (see StringFeatures) */
 
 #define GET_STRING(fname, conv, sg_type)								\
-void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
+void StreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
 {																		\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
@@ -331,7 +328,7 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 /* Methods for reading a string vector and a label from an ascii file */
 
 #define GET_STRING_AND_LABEL(fname, conv, sg_type)						\
-void CStreamingAsciiFile::get_string_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
+void StreamingAsciiFile::get_string_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
 {																		\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
@@ -398,7 +395,7 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 /* Methods for reading a sparse vector from an ascii file */
 
 #define GET_SPARSE_VECTOR(fname, conv, sg_type)							\
-void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
+void StreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
 {																		\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
@@ -492,7 +489,7 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 /* Methods for reading a sparse vector and a label from an ascii file */
 
 #define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)				\
-void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
+void StreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
 {																		\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
@@ -606,8 +603,8 @@ GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax
 #undef GET_SPARSE_VECTOR_AND_LABEL
 
 template <class T>
-void CStreamingAsciiFile::append_item(
-		DynArray<T>* items, char* ptr_data, char* ptr_item)
+void StreamingAsciiFile::append_item(
+		std::vector<T>& items, char* ptr_data, char* ptr_item)
 {
 		require(ptr_data && ptr_item, "Data and Item to append should not be NULL");
 
@@ -617,14 +614,14 @@ void CStreamingAsciiFile::append_item(
 		item=strncpy(item, ptr_item, len);
 
 		SG_DEBUG("current {}, len {}, item {}", *ptr_data, len, item)
-		items->append_element(item);
+		items.push_back(item);
 }
 
-void CStreamingAsciiFile::set_delimiter(char delimiter)
+void StreamingAsciiFile::set_delimiter(char delimiter)
 {
 	m_delimiter = delimiter;
 }
-void CStreamingAsciiFile::tokenize(char delim, substring s, v_array<substring>& ret)
+void StreamingAsciiFile::tokenize(char delim, substring s, v_array<substring>& ret)
 {
 	ret.erase();
 	char *last = s.start;

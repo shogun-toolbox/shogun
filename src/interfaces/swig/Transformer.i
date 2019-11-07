@@ -4,12 +4,8 @@
  * Authors: Wuwei Lin
  */
 
-/* These functions return new Objects */
-%newobject shogun::CTransformer::transform(CFeatures*, bool inplace=true);
-%newobject shogun::CTransformer::inverse_transform(CFeatures*, bool inplace=true);
-
 /* Remove C Prefix */
-%rename(Transformer) CTransformer;
+%shared_ptr(shogun::Transformer)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/transformer/Transformer.h>

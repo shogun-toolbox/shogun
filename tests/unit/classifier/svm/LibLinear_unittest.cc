@@ -16,12 +16,12 @@
 using namespace shogun;
 
 
-class LibLinear : public ::testing::Test
+class LibLinearFixture : public ::testing::Test
 {
 public:
-	CDenseFeatures<float64_t>* train_feats;
-	CDenseFeatures<float64_t>* test_feats;
-	CBinaryLabels* ground_truth;
+	std::shared_ptr<DenseFeatures<float64_t>> train_feats;
+	std::shared_ptr<DenseFeatures<float64_t>> test_feats;
+	std::shared_ptr<BinaryLabels> ground_truth;
 	std::mt19937_64 prng;
 
 	virtual void SetUp()
@@ -31,9 +31,9 @@ public:
 
 	virtual void TearDown()
 	{
-		SG_UNREF(train_feats);
-		SG_UNREF(test_feats);
-		SG_UNREF(ground_truth);
+
+
+
 	}
 
 	void train_with_solver
@@ -46,11 +46,11 @@ public:
 		else
 				generate_data_l2();
 
-		auto ll = new CLibLinear();
-		SG_REF(ll);
+		auto ll = std::make_shared<LibLinear>();
 
-		auto eval = new CContingencyTableEvaluation();
-		SG_REF(eval);
+
+		auto eval = std::make_shared<ContingencyTableEvaluation>();
+
 
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
@@ -59,15 +59,10 @@ public:
 		ll->set_liblinear_solver_type(liblinear_solver_type);
 		ll->train();
 		auto pred = ll->apply_binary(test_feats);
-		SG_REF(pred);
 
 		auto liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 		EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
-
-		SG_UNREF(eval);
-		SG_UNREF(ll);
-		SG_UNREF(pred);
 	}
 	void train_with_solver_simple(
 		LIBLINEAR_SOLVER_TYPE llst, bool biasEnable, bool l1, SGVector<float64_t> t_w, bool C_value=false) //C_value only for L2R_L1LOSS_SVC_DUAL
@@ -80,11 +75,11 @@ public:
 		else
 				generate_data_l2_simple();
 
-		auto ll = new CLibLinear();
-		SG_REF(ll);
+		auto ll = std::make_shared<LibLinear>();
 
-		auto eval = new  CContingencyTableEvaluation();
-		SG_REF(eval);
+
+		auto eval = std::make_shared<ContingencyTableEvaluation>();
+
 
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
@@ -96,7 +91,6 @@ public:
 		ll->train();
 
 		auto pred = ll->apply_binary(test_feats);
-		SG_REF(pred);
 
 		auto liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -112,10 +106,6 @@ public:
 			EXPECT_NEAR(ll->get_bias(), t_w[2], 4e-5);
 		}
 		EXPECT_NEAR(liblin_accuracy, 1.0, 1e-5);
-
-		SG_UNREF(ll);
-		SG_UNREF(eval);
-		SG_UNREF(pred);
 	}
 
 protected:
@@ -124,9 +114,9 @@ protected:
 		index_t num_samples = 50;
 
 		SGMatrix<float64_t> data =
-			CDataGenerator::generate_gaussians(num_samples, 2, 2, prng);
+			DataGenerator::generate_gaussians(num_samples, 2, 2, prng);
 
-		CDenseFeatures<float64_t> features(data);
+		DenseFeatures<float64_t> features(data);
 
 		/*
 			Generate the random data
@@ -146,19 +136,19 @@ protected:
 		/*
 			Now fill in train_feats and test_feats, and ground_truth
 		*/
-		train_feats = (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
-		test_feats =  (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
-		ground_truth = new CBinaryLabels(labels);
+		train_feats = features.copy_subset(train_idx)->as<DenseFeatures<float64_t>>();
+		test_feats =  features.copy_subset(test_idx)->as<DenseFeatures<float64_t>>();
+		ground_truth = std::make_shared<BinaryLabels>(labels);
 
-		SG_REF(ground_truth);
+
 	}
 	void generate_data_l1()
 	{
 		generate_data_l2();
 		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
-		SG_UNREF(old_train_feats);
-		SG_REF(train_feats);
+
+
 	}
 	void generate_data_l2_simple()
 	{
@@ -175,19 +165,19 @@ protected:
 			test_data(y[i], x[i])=z[i];
 		}
 
-		train_feats = new CDenseFeatures<float64_t>(train_data);
-		test_feats = new  CDenseFeatures<float64_t>(test_data);
+		train_feats = std::make_shared<DenseFeatures<float64_t>>(train_data);
+		test_feats = std::make_shared<DenseFeatures<float64_t>>(test_data);
 
 		SGVector<float64_t> labels(num_samples);
 		for (index_t i = 0; i < num_samples; ++i)
 		{
 			labels[i] = (i < num_samples/2) ? 1.0 : -1.0;
 		}
-		ground_truth = new CBinaryLabels(labels);
+		ground_truth = std::make_shared<BinaryLabels>(labels);
 
-		SG_REF(train_feats);
-		SG_REF(test_feats);
-		SG_REF(ground_truth);
+
+
+
 
 	}
 	void generate_data_l1_simple()
@@ -195,33 +185,33 @@ protected:
 		generate_data_l2_simple();
 		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
-		SG_UNREF(old_train_feats);
-		SG_REF(train_feats);
+
+
 	}
 };
 
-TEST_F(LibLinear, train_L2R_LR)
+TEST_F(LibLinearFixture, train_L2R_LR)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR;
 	//No bias, and not l1
 	train_with_solver(liblinear_solver_type, false, false);
 }
 
-TEST_F(LibLinear, train_L2R_L2LOSS_SVC_DUAL)
+TEST_F(LibLinearFixture, train_L2R_L2LOSS_SVC_DUAL)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 		//No bias, and not l1
 		train_with_solver(liblinear_solver_type, false, false);
 }
 
-TEST_F(LibLinear, train_L2R_L2LOSS_SVC)
+TEST_F(LibLinearFixture, train_L2R_L2LOSS_SVC)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC;
 		//No bias, and not l1
 		train_with_solver(liblinear_solver_type, false, false);
 }
 
-TEST_F(LibLinear, train_L2R_L1LOSS_SVC_DUAL)
+TEST_F(LibLinearFixture, train_L2R_L1LOSS_SVC_DUAL)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 		//No bias, and not l1
@@ -229,49 +219,49 @@ TEST_F(LibLinear, train_L2R_L1LOSS_SVC_DUAL)
 
 }
 
-TEST_F(LibLinear, train_L1R_L2LOSS_SVC)
+TEST_F(LibLinearFixture, train_L1R_L2LOSS_SVC)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_L2LOSS_SVC;
 		//No bias, and l1
 		train_with_solver(liblinear_solver_type, false, true);
 }
 
-TEST_F(LibLinear, train_L1R_LR)
+TEST_F(LibLinearFixture, train_L1R_LR)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_LR;
 	//No bias, and l1
 	train_with_solver(liblinear_solver_type, false, true);
 }
 
-TEST_F(LibLinear, train_L2R_LR_DUAL)
+TEST_F(LibLinearFixture, train_L2R_LR_DUAL)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR_DUAL;
 	//No bias, and not l1
 	train_with_solver(liblinear_solver_type, false, false);
 }
 
-TEST_F(LibLinear, train_L2R_LR_BIAS)
+TEST_F(LibLinearFixture, train_L2R_LR_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR;
 	// bias, and not l1
 	train_with_solver(liblinear_solver_type, true, false);
 }
 
-TEST_F(LibLinear, train_L2R_L2LOSS_SVC_DUAL_BIAS)
+TEST_F(LibLinearFixture, train_L2R_L2LOSS_SVC_DUAL_BIAS)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 		// bias, and not l1
 		train_with_solver(liblinear_solver_type, true, false);
 }
 
-TEST_F(LibLinear, train_L2R_L2LOSS_SVC_BIAS)
+TEST_F(LibLinearFixture, train_L2R_L2LOSS_SVC_BIAS)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC;
 		// bias, and not l1
 		train_with_solver(liblinear_solver_type, true, false);
 }
 
-TEST_F(LibLinear, train_L2R_L1LOSS_SVC_DUAL_BIAS)
+TEST_F(LibLinearFixture, train_L2R_L1LOSS_SVC_DUAL_BIAS)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 		// bias, and not l1
@@ -279,28 +269,28 @@ TEST_F(LibLinear, train_L2R_L1LOSS_SVC_DUAL_BIAS)
 
 }
 
-TEST_F(LibLinear, train_L1R_L2LOSS_SVC_BIAS)
+TEST_F(LibLinearFixture, train_L1R_L2LOSS_SVC_BIAS)
 {
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_L2LOSS_SVC;
 		// bias, and l1
 		train_with_solver(liblinear_solver_type, true, true);
 }
 
-TEST_F(LibLinear, train_L1R_LR_BIAS)
+TEST_F(LibLinearFixture, train_L1R_LR_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_LR;
 	// bias, and l1
 	train_with_solver(liblinear_solver_type, true, true);
 }
 
-TEST_F(LibLinear, train_L2R_LR_DUAL_BIAS)
+TEST_F(LibLinearFixture, train_L2R_LR_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR_DUAL;
 	// bias, and not l1
 	train_with_solver(liblinear_solver_type, true, false);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_LR)
+TEST_F(LibLinearFixture, simple_set_train_L2R_LR)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR;
 	SGVector<float64_t> t_w(2);
@@ -310,7 +300,7 @@ TEST_F(LibLinear, simple_set_train_L2R_LR)
 	train_with_solver_simple(liblinear_solver_type, false, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC_DUAL)
+TEST_F(LibLinearFixture, simple_set_train_L2R_L2LOSS_SVC_DUAL)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 	SGVector<float64_t> t_w(2);
@@ -320,7 +310,7 @@ TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC_DUAL)
 	train_with_solver_simple(liblinear_solver_type, false, false,t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC)
+TEST_F(LibLinearFixture, simple_set_train_L2R_L2LOSS_SVC)
 {
 	SGVector<float64_t> t_w(2);
 	t_w[0] = -0.9523799021273924;
@@ -331,7 +321,7 @@ TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC)
 	train_with_solver_simple(liblinear_solver_type, false, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_L1LOSS_SVC_DUAL)
+TEST_F(LibLinearFixture, simple_set_train_L2R_L1LOSS_SVC_DUAL)
 {
 	SGVector<float64_t> t_w(2);
 	t_w[0] = -0.5;
@@ -341,7 +331,7 @@ TEST_F(LibLinear, simple_set_train_L2R_L1LOSS_SVC_DUAL)
 	train_with_solver_simple(liblinear_solver_type, false, false, t_w, true);
 }
 
-TEST_F(LibLinear, simple_set_train_L1R_L2LOSS_SVC)
+TEST_F(LibLinearFixture, simple_set_train_L1R_L2LOSS_SVC)
 {
 	SGVector<float64_t> t_w(2);
 	t_w[0] = -0.8333333333333333;
@@ -352,7 +342,7 @@ TEST_F(LibLinear, simple_set_train_L1R_L2LOSS_SVC)
 	train_with_solver_simple(liblinear_solver_type, false, true, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L1R_LR)
+TEST_F(LibLinearFixture, simple_set_train_L1R_LR)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_LR;
 	SGVector<float64_t> t_w(2);
@@ -362,7 +352,7 @@ TEST_F(LibLinear, simple_set_train_L1R_LR)
 	train_with_solver_simple(liblinear_solver_type, false, true, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_LR_DUAL)
+TEST_F(LibLinearFixture, simple_set_train_L2R_LR_DUAL)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR_DUAL;
 	SGVector<float64_t> t_w(2);
@@ -372,7 +362,7 @@ TEST_F(LibLinear, simple_set_train_L2R_LR_DUAL)
 	train_with_solver_simple(liblinear_solver_type, false, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_LR_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L2R_LR_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR;
 	SGVector<float64_t> t_w(3);
@@ -383,7 +373,7 @@ TEST_F(LibLinear, simple_set_train_L2R_LR_BIAS)
 	train_with_solver_simple(liblinear_solver_type, true, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC_DUAL_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L2R_L2LOSS_SVC_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 	SGVector<float64_t> t_w(3);
@@ -394,7 +384,7 @@ TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC_DUAL_BIAS)
 	train_with_solver_simple(liblinear_solver_type, true, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L2R_L2LOSS_SVC_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC;
 	SGVector<float64_t> t_w(3);
@@ -405,7 +395,7 @@ TEST_F(LibLinear, simple_set_train_L2R_L2LOSS_SVC_BIAS)
 	train_with_solver_simple(liblinear_solver_type, true, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L2R_L1LOSS_SVC_DUAL_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L2R_L1LOSS_SVC_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 	SGVector<float64_t> t_w(3);
@@ -416,7 +406,7 @@ TEST_F(LibLinear, simple_set_train_L2R_L1LOSS_SVC_DUAL_BIAS)
 	train_with_solver_simple(liblinear_solver_type, true, false, t_w);
 }
 
-TEST_F(LibLinear, simple_set_train_L1R_L2LOSS_SVC_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L1R_L2LOSS_SVC_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_L2LOSS_SVC;
 	SGVector<float64_t> t_w(3);
@@ -426,7 +416,7 @@ TEST_F(LibLinear, simple_set_train_L1R_L2LOSS_SVC_BIAS)
 	// bias, l1
 	train_with_solver_simple(liblinear_solver_type, true, true, t_w);
 }
-TEST_F(LibLinear, simple_set_train_L1R_LR_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L1R_LR_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_LR;
 	SGVector<float64_t> t_w(3);
@@ -436,7 +426,7 @@ TEST_F(LibLinear, simple_set_train_L1R_LR_BIAS)
 	// bias, l1
 	train_with_solver_simple(liblinear_solver_type, true, true, t_w);
 }
-TEST_F(LibLinear, simple_set_train_L2R_LR_DUAL_BIAS)
+TEST_F(LibLinearFixture, simple_set_train_L2R_LR_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR_DUAL;
 	SGVector<float64_t> t_w(3);

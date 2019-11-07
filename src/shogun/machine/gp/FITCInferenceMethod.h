@@ -31,19 +31,19 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * CSingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
+ * SingleFITCInference::get_derivative_wrt_kernel(Parameters::const_reference param),
  * depends on the implementation of virtual kernel method,
- * CKernel::get_parameter_gradient_diagonal(param, i).
+ * Kernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
  * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
- * CFITCInferenceMethod::get_posterior_covariance() is called
+ * FITCInferenceMethod::get_posterior_covariance() is called
  */
-class CFITCInferenceMethod: public CSingleFITCInference
+class FITCInferenceMethod: public SingleFITCInference
 {
 public:
 	/** default constructor */
-	CFITCInferenceMethod();
+	FITCInferenceMethod();
 
 	/** constructor
 	 *
@@ -54,11 +54,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	FITCInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CFITCInferenceMethod();
+	virtual ~FITCInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -75,9 +75,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CFITCInferenceMethod object
+	 * @return casted FITCInferenceMethod object
 	 */
-	static CFITCInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<FITCInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -158,7 +158,7 @@ public:
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -182,7 +182,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** update gradients */
 	virtual void compute_gradient();

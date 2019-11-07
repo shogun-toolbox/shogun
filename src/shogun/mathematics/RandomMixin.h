@@ -17,17 +17,27 @@ namespace shogun
 		 */
 		template <
 		    typename T, typename PRNG,
-		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		    std::enable_if_t<std::is_base_of_v<
+		        SGObject, typename std::remove_pointer_t<T>>>* =
 		        nullptr>
 		static inline void seed(T* object, PRNG&& prng)
 		{
-			if (object->has("seed"))
-				object->put("seed", (int32_t)prng());
+			if (object->has(kSeed))
+				object->put(kSeed, (int32_t)prng());
+		}
+
+		template <
+		    typename T, typename PRNG,
+		    std::enable_if_t<std::is_base_of_v<
+		        SGObject, typename std::remove_pointer_t<T>>>* =
+		        nullptr>
+		static inline void seed(std::shared_ptr<T> object, PRNG&& prng)
+		{
+			seed(object.get(), prng);
 		}
 	} // namespace random
 
-	static inline void random_seed_callback(CSGObject*);
+	static inline void random_seed_callback(SGObject*);
 
 	template <typename Parent, typename PRNG = std::mt19937_64>
 	class RandomMixin : public Seedable<Parent>
@@ -44,9 +54,9 @@ namespace shogun
 			init();
 		}
 
-		virtual CSGObject* clone(ParameterProperties pp = ParameterProperties::ALL) const override
+		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
 		{
-			auto clone = dynamic_cast<this_t*>(Parent::clone(pp));
+			auto clone = std::dynamic_pointer_cast<this_t>(Parent::clone());
 			clone->m_prng = m_prng;
 			return clone;
 		}
@@ -74,12 +84,12 @@ namespace shogun
 		{
 			init_random_seed();
 
-			Parent::add_callback_function(kSeed, [&]() {
+			Parent::add_callback_function(random::kSeed, [&]() {
 				m_prng = PRNG(Seedable<Parent>::m_seed);
 			});
 
 			Parent::watch_method(
-			    kSetRandomSeed, &this_t::set_random_seed);
+			    random::kSetRandomSeed, &this_t::set_random_seed);
 		}
 
 	protected:
@@ -88,29 +98,23 @@ namespace shogun
 		 */
 		template <
 		    typename T,
-		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		    std::enable_if_t<std::is_base_of_v<
+		        SGObject, typename std::remove_pointer<T>::type>>* =
 		        nullptr>
-		inline void seed(T* object) const
+		inline void seed(std::shared_ptr<T> object) const
 		{
 			random::seed(object, m_prng);
 		}
 
 		mutable PRNG m_prng;
-
-#ifndef SWIG
-	public:
-		static constexpr std::string_view kSetRandomSeed = "set_random_seed";
-		static constexpr std::string_view kSeed = "seed";
-#endif // SWIG
 	};
 
-	static inline void random_seed_callback(CSGObject* obj)
+	static inline void random_seed_callback(SGObject* obj)
 	{
-		obj->for_each_param_of_type<CSGObject*>(
-		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has("seed"))
-				    (*param)->run("set_random_seed");
+		obj->for_each_param_of_type<SGObject*>(
+		    [&](const std::string& name, SGObject** param) {
+			    if ((*param)->has(random::kSeed))
+				    (*param)->run(random::kSetRandomSeed);
 			    else
 				    random_seed_callback(*param);
 		    });

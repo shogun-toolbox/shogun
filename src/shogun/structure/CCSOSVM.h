@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/base/DynArray.h>
 
 #ifdef USE_MOSEK
 #include <mosek.h>
@@ -36,20 +35,20 @@ namespace shogun
 	 *     Cutting-Plane Training of Structural SVMs,
 	 *     Machine Learning Journal, 77(1):27-59
 	 */
-	class CCCSOSVM : public CLinearStructuredOutputMachine
+	class CCSOSVM : public LinearStructuredOutputMachine
 	{
 		public:
 			/** default constructor*/
-			CCCSOSVM();
+			CCSOSVM();
 
 			/** constructor
 			 * @param model structured output model
 			 * @param w initial w (optional)
 			 */
-			CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w = SGVector<float64_t>());
+			CCSOSVM(const std::shared_ptr<StructuredModel>& model, SGVector<float64_t> w = SGVector<float64_t>());
 
 			/** destructor */
-			virtual ~CCCSOSVM();
+			virtual ~CCSOSVM();
 
 			/** @return object name */
 			inline virtual const char* get_name() const { return "CCSOSVM"; }
@@ -171,7 +170,7 @@ namespace shogun
 			virtual EMachineType get_classifier_type();
 
 		protected:
-			bool train_machine(CFeatures* data=NULL);
+			bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		private:
 			/** find new cutting plane
@@ -184,7 +183,7 @@ namespace shogun
 			int32_t resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, SGVector<float64_t>&alpha,
 					SGVector<float64_t>& delta, SGVector<float64_t>& gammaG0,
 					SGVector<float64_t>& proximal_rhs, float64_t ***ptr_G,
-					DynArray<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error);
+					std::vector<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error);
 
 			int32_t mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* alpha, int32_t k, float64_t* dual_obj, float64_t rho);
 

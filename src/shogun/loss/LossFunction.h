@@ -45,19 +45,19 @@ namespace shogun
  * Nikos Karampatziakis, John Langford
  * http://arxiv.org/abs/1011.1576
  */
-class CLossFunction: public CSGObject
+class LossFunction: public SGObject
 {
 public:
 
 	/**
 	 * Constructor
 	 */
-	CLossFunction(): CSGObject() {}
+	LossFunction(): SGObject() {}
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CLossFunction() {};
+	virtual ~LossFunction() {};
 
 	/**
 	 * Get loss for an example

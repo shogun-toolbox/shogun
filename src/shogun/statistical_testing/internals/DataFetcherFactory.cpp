@@ -37,13 +37,13 @@
 using namespace shogun;
 using namespace internal;
 
-DataFetcher* DataFetcherFactory::get_instance(CFeatures* feats)
+std::unique_ptr<DataFetcher> DataFetcherFactory::get_instance(std::shared_ptr<Features> feats)
 {
 	EFeatureClass fclass = feats->get_feature_class();
 	if (fclass == C_STREAMING_DENSE || fclass == C_STREAMING_SPARSE || fclass == C_STREAMING_STRING)
 	{
-		return new StreamingDataFetcher(static_cast<CStreamingFeatures*>(feats));
+		return std::make_unique<StreamingDataFetcher>(feats->as<StreamingFeatures>());
 	}
-	return new DataFetcher(feats);
+	return std::make_unique<DataFetcher>(feats);
 }
 

@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-class CLabels;
+class Labels;
 
 /** enum which used to define whether an evaluation measure has to be minimized
  * or maximized
@@ -34,14 +34,14 @@ enum EEvaluationDirection
  *
  * This class provides only interface for evaluation measures.
  */
-class CEvaluation : public CSGObject
+class Evaluation : public SGObject
 {
 public:
 	/** default constructor */
-	CEvaluation() : CSGObject() { };
+	Evaluation() : SGObject() { };
 
 	/** destructor */
-	virtual ~CEvaluation() { };
+	virtual ~Evaluation() { };
 
 	/** evaluate labels
 	 *
@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)=0;
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)=0;
 
 	/** set absolute indices of labels to be evaluated next used by multitask
 	 * evaluations

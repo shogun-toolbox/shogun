@@ -19,13 +19,13 @@ namespace shogun
  *
  * It uses CGMNPLib for training (in true multiclass-SVM fashion).
  */
-class CGMNPSVM : public CMulticlassSVM
+class GMNPSVM : public MulticlassSVM
 {
 	void init();
 
 	public:
 		/** default constructor */
-		CGMNPSVM();
+		GMNPSVM();
 
 		/** constructor
 		 *
@@ -33,10 +33,10 @@ class CGMNPSVM : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGMNPSVM(float64_t C, CKernel* k, CLabels* lab);
+		GMNPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~CGMNPSVM();
+		virtual ~GMNPSVM();
 
 		/** get classifier type
 		 *
@@ -44,14 +44,14 @@ class CGMNPSVM : public CMulticlassSVM
 		 */
 		virtual EMachineType get_classifier_type() { return CT_GMNPSVM; }
 
-		/** required for CMKLMulticlass constraint computation
+		/** required for MKLMulticlass constraint computation
 		 *
 		 *  @param y height of basealphas
 		 *  @param x width of basealphas
 		 *
 		 *  @return basealphas basealphas[k][j] is the alpha for class
 		 *	        k and sample j which is untransformed compared to
-		 *	        the alphas stored in CSVM* members
+		 *	        the alphas stored in SVM* members
 		 */
 		float64_t* get_basealphas_ptr(index_t* y, index_t* x);
 
@@ -67,12 +67,12 @@ class CGMNPSVM : public CMulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	protected:
-		/** required for CMKLMulticlass
+		/** required for MKLMulticlass
 		 * stores the untransformed alphas of this algorithm
-		 * whereas CSVM* members stores a transformed version of it
+		 * whereas SVM* members stores a transformed version of it
 		 * m_basealphas[k][j] is the alpha for class k and sample j
 		 */
 		// is the basic untransformed alpha, needed for MKL

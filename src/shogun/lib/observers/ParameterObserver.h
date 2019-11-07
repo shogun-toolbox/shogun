@@ -49,7 +49,7 @@ namespace shogun
 	/**
 	 * Interface for the parameter observer classes
 	 */
-	class ParameterObserver : public CSGObject
+	class ParameterObserver : public SGObject
 	{
 
 	public:
@@ -159,7 +159,7 @@ namespace shogun
 		/**
 		 * Observations recorded each time we compute on_next()
 		 */
-		std::vector<Some<ObservedValue>> m_observations;
+		std::vector<std::shared_ptr<ObservedValue>> m_observations;
 
 		/**
 		 * Subscription id set when I subscribe to a machine

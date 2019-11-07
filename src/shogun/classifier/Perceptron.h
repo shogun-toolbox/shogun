@@ -22,10 +22,10 @@ namespace shogun
  * not guaranteed to converge) and a fixed lerning rate, the result is a linear
  * classifier.
  *
- * \sa CLinearMachine
+ * \sa LinearMachine
  * \sa http://en.wikipedia.org/wiki/Perceptron
  */
-class CPerceptron : public CIterativeMachine<CLinearMachine>
+class Perceptron : public IterativeMachine<LinearMachine>
 {
 	public:
 
@@ -33,9 +33,9 @@ class CPerceptron : public CIterativeMachine<CLinearMachine>
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor */
-		CPerceptron();
+		Perceptron();
 
-		virtual ~CPerceptron();
+		virtual ~Perceptron();
 
 		/** get classifier type
 		 *
@@ -59,7 +59,7 @@ class CPerceptron : public CIterativeMachine<CLinearMachine>
 		virtual const char* get_name() const { return "Perceptron"; }
 
 	protected:
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(std::shared_ptr<Features> data);
 		virtual void iteration();
 
 	protected:

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Yingrui Chang, Soumyajit De, Fernando Iglesias, Soeren Sonnenburg, 
- *          Evgeniy Andreev, Viktor Gal, Thoralf Klein, Wuwei Lin, Bjoern Esser, 
+ * Authors: Yingrui Chang, Soumyajit De, Fernando Iglesias, Soeren Sonnenburg,
+ *          Evgeniy Andreev, Viktor Gal, Thoralf Klein, Wuwei Lin, Bjoern Esser,
  *          Pan Deng
  */
 
@@ -155,14 +155,14 @@ TEST(SGSparseMatrix, io_libsvm)
 		}
 	}
 
-	CLibSVMFile* fout=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'w', NULL);
+	auto fout=std::make_shared<LibSVMFile>("SGSparseMatrix_io_libsvm_output.txt",'w');
 	m.save_with_labels(fout, labels);
-	SG_UNREF(fout);
+	fout.reset();
 
-	CLibSVMFile* fin=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'r', NULL);
+	auto fin=std::make_shared<LibSVMFile>("SGSparseMatrix_io_libsvm_output.txt",'r');
 	SGSparseMatrix<float64_t> m_from_file;
 	SGVector<float64_t> labels_from_file=m_from_file.load_with_labels(fin, false);
-	SG_UNREF(fin);
+
 
 	for (int32_t i=0; i<size; i++)
 	{

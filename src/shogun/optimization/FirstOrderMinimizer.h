@@ -61,7 +61,7 @@ public:
 	/** Constructor
 	 * @param fun cost function (user have to manully delete the pointer)
 	 */
-	FirstOrderMinimizer(FirstOrderCostFunction *fun)
+	FirstOrderMinimizer(std::shared_ptr<FirstOrderCostFunction >fun)
 	{
 		init();
 		set_cost_function(fun);
@@ -86,7 +86,7 @@ public:
 	 *
 	 * @param fun the cost function
 	 */
-	virtual void set_cost_function(FirstOrderCostFunction *fun);
+	virtual void set_cost_function(std::shared_ptr<FirstOrderCostFunction >fun);
 
 	/** Unset cost function used in the minimizer
 	 *
@@ -95,7 +95,7 @@ public:
 	{
 		if(is_unref)
 		{
-			SG_UNREF(m_fun);
+			
 		}
 		m_fun=NULL;
 	}
@@ -111,7 +111,7 @@ public:
 	 *
 	 * @param penalty_type the type of penalty. If NULL is given, regularization is not enabled.
 	 */
-	virtual void set_penalty_type(Penalty* penalty_type);
+	virtual void set_penalty_type(std::shared_ptr<Penalty> penalty_type);
 
 protected:
 	/** Get the penalty given target variables
@@ -143,10 +143,10 @@ protected:
 	virtual void update_gradient(SGVector<float64_t> gradient, SGVector<float64_t> var);
 
 	/** Cost function */
-	FirstOrderCostFunction *m_fun;
+	std::shared_ptr<FirstOrderCostFunction >m_fun;
 
 	/** the type of penalty*/
-	Penalty* m_penalty_type;
+	std::shared_ptr<Penalty> m_penalty_type;
 
 	/** the weight of penalty*/
 	float64_t m_penalty_weight;

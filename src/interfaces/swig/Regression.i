@@ -5,9 +5,9 @@
  */
 
 /* Remove C Prefix */
-%rename(Regression) CRegression;
-%rename(MKL) CMKL;
-%rename(MKLRegression) CMKLRegression;
+%shared_ptr(shogun::Regression)
+%shared_ptr(shogun::MKL)
+%shared_ptr(shogun::MKLRegression)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>

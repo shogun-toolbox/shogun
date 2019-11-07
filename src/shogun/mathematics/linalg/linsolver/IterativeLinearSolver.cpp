@@ -5,22 +5,21 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
 
 namespace shogun
 {
 
 template <class T, class ST>
-CIterativeLinearSolver<T, ST>::CIterativeLinearSolver()
-	: CLinearSolver<T, ST>()
+IterativeLinearSolver<T, ST>::IterativeLinearSolver()
+	: LinearSolver<T, ST>()
 	{
 		init();
 	}
 
 template <class T, class ST>
-CIterativeLinearSolver<T, ST>::CIterativeLinearSolver(bool store_residuals)
-	: CLinearSolver<T, ST>()
+IterativeLinearSolver<T, ST>::IterativeLinearSolver(bool store_residuals)
+	: LinearSolver<T, ST>()
 	{
 		init();
 		m_store_residuals=store_residuals;
@@ -32,7 +31,7 @@ CIterativeLinearSolver<T, ST>::CIterativeLinearSolver(bool store_residuals)
 	}
 
 template <class T, class ST>
-void CIterativeLinearSolver<T, ST>::init()
+void IterativeLinearSolver<T, ST>::init()
 	{
 		m_max_iteration_limit=1000;
 		m_relative_tolerence=1E-5;
@@ -41,10 +40,10 @@ void CIterativeLinearSolver<T, ST>::init()
 	}
 
 template <class T, class ST>
-CIterativeLinearSolver<T, ST>::~CIterativeLinearSolver()
+IterativeLinearSolver<T, ST>::~IterativeLinearSolver()
 	{
 	}
 
-template class CIterativeLinearSolver<float64_t>;
-template class CIterativeLinearSolver<complex128_t, float64_t>;
+template class IterativeLinearSolver<float64_t>;
+template class IterativeLinearSolver<complex128_t, float64_t>;
 }

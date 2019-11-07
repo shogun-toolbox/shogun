@@ -15,11 +15,13 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 //#define DEBUG_NEWTON
 //#define V_NEWTON
 using namespace shogun;
 
-CNewtonSVM::CNewtonSVM() : CIterativeMachine<CLinearMachine>()
+NewtonSVM::NewtonSVM() : IterativeMachine<LinearMachine>()
 {
 	lambda = 1;
 	m_max_iterations = 20;
@@ -28,31 +30,31 @@ CNewtonSVM::CNewtonSVM() : CIterativeMachine<CLinearMachine>()
 	t = 0;
 }
 
-CNewtonSVM::CNewtonSVM(
-    float64_t c, CDotFeatures* traindat, CLabels* trainlab, int32_t itr)
-    : CIterativeMachine<CLinearMachine>()
+NewtonSVM::NewtonSVM(
+    float64_t c, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab, int32_t itr)
+    : IterativeMachine<LinearMachine>()
 {
 	lambda=1/c;
 	num_iter=itr;
 	prec=1e-6;
 	C=c;
 	t = 0;
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 }
 
 
-CNewtonSVM::~CNewtonSVM()
+NewtonSVM::~NewtonSVM()
 {
 }
 
-void CNewtonSVM::init_model(CFeatures* data)
+void NewtonSVM::init_model(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 
 	ASSERT(features)
@@ -79,7 +81,7 @@ void CNewtonSVM::init_model(CFeatures* data)
 	grad.set_const(0.0);
 }
 
-void CNewtonSVM::iteration()
+void NewtonSVM::iteration()
 {
 	obj_fun_linear();
 	SGVector<float64_t> weights = get_w();
@@ -141,7 +143,7 @@ void CNewtonSVM::iteration()
 		m_complete = true;
 }
 
-void CNewtonSVM::line_search_linear(const SGVector<float64_t> d)
+void NewtonSVM::line_search_linear(const SGVector<float64_t>& d)
 {
 	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
 	SGVector<float64_t> outz(x_n);
@@ -211,7 +213,7 @@ void CNewtonSVM::line_search_linear(const SGVector<float64_t> d)
 	out = outz.clone();
 }
 
-void CNewtonSVM::obj_fun_linear()
+void NewtonSVM::obj_fun_linear()
 {
 	SGVector<float64_t> weights = get_w();
 	SGVector<float64_t> v = binary_labels(m_labels)->get_labels();

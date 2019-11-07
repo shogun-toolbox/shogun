@@ -31,21 +31,21 @@ namespace shogun
  *	set_max_num_mkliters(int32_t maxnum); It passes the regularization
  *	constants C1 and C2 to GMNPSVM.
  */
-class CMKLMulticlass : public CMulticlassSVM
+class MKLMulticlass : public MulticlassSVM
 {
 public:
    /** Class default Constructor */
-   CMKLMulticlass();
+   MKLMulticlass();
 
    /** Class Constructor commonly used in Shogun Toolbox
     * @param C constant C
     * @param k kernel
     * @param lab labels
     */
-   CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab);
+   MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
    /** Class default Destructor */
-   virtual ~CMKLMulticlass();
+   virtual ~MKLMulticlass();
 
    /** get classifier type
     *
@@ -92,13 +92,13 @@ protected:
     * protected to avoid its usage
     *
     */
-   CMKLMulticlass( const CMKLMulticlass & cm);
+   MKLMulticlass( const MKLMulticlass & cm);
 
    /** Class Assignment operator
     * protected to avoid its usage
     *
     */
-   CMKLMulticlass operator=( const CMKLMulticlass & cm);
+   MKLMulticlass operator=( const MKLMulticlass & cm);
 
    /** performs some sanity checks (on the provided kernel), inits the
     * GLPK-based LP solver
@@ -155,7 +155,7 @@ protected:
     *
     * @return whether training was successful
     */
-   virtual bool train_machine(CFeatures* data=NULL);
+   virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
    /** @return object name */
     virtual const char* get_name() const { return "MKLMulticlass"; }
@@ -165,10 +165,10 @@ protected:
    *
    *
    */
-   CGMNPSVM* svm;
+   std::shared_ptr<GMNPSVM> svm;
 
    /** the solver wrapper */
-   MKLMulticlassOptimizationBase* lpw;
+   std::shared_ptr<MKLMulticlassOptimizationBase> lpw;
 
    /** stores the last two mkl iteration weights */
    ::std::vector< std::vector< float64_t> > weightshistory;

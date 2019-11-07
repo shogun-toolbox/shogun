@@ -38,7 +38,6 @@
 #include <shogun/lib/Signal.h>
 
 #include "environments/LinearTestEnvironment.h"
-#include <shogun/base/some.h>
 #include <shogun/classifier/Perceptron.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/features/DenseFeatures.h>
@@ -51,35 +50,35 @@ extern LinearTestEnvironment* linear_test_env;
 TEST(Perceptron, train)
 {
 	auto env = linear_test_env->getBinaryLabelData();
-	auto features = wrap(env->get_features_train());
-	auto labels = wrap(env->get_labels_train());
-	auto test_features = wrap(env->get_features_test());
-	auto test_labels = wrap(env->get_labels_test());
+	auto features = env->get_features_train();
+	auto labels = env->get_labels_train();
+	auto test_features = env->get_features_test();
+	auto test_labels = env->get_labels_test();
 
-	auto perceptron = some<CPerceptron>();
+	auto perceptron = std::make_shared<Perceptron>();
 	perceptron->set_labels(labels);
 	EXPECT_TRUE(perceptron->train(features));
 
-	auto results = wrap(perceptron->apply(test_features));
-	auto acc = some<CAccuracyMeasure>();
+	auto results = perceptron->apply(test_features);
+	auto acc = std::make_shared<AccuracyMeasure>();
 	EXPECT_EQ(acc->evaluate(results, test_labels), 1.0);
 }
 
 TEST(Perceptron, custom_hyperplane_initialization)
 {
 	auto env = linear_test_env->getBinaryLabelData();
-	auto features = wrap(env->get_features_train());
-	auto labels = wrap(env->get_labels_train());
-	auto test_features = wrap(env->get_features_test());
-	auto test_labels = wrap(env->get_labels_test());
+	auto features = env->get_features_train();
+	auto labels = env->get_labels_train();
+	auto test_features = env->get_features_test();
+	auto test_labels = env->get_labels_test();
 
-	auto perceptron = some<CPerceptron>();
+	auto perceptron = std::make_shared<Perceptron>();
 	perceptron->set_labels(labels);
 	perceptron->train(features);
 
 	auto weights = perceptron->get_w();
 
-	auto perceptron_initialized = some<CPerceptron>();
+	auto perceptron_initialized = std::make_shared<Perceptron>();
 	perceptron_initialized->set_initialize_hyperplane(false);
 	perceptron_initialized->set_w(weights);
 	perceptron_initialized->put<int32_t>("max_iterations", 1);

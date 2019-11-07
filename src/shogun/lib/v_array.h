@@ -177,7 +177,7 @@ inline void v_array<T>::push_many(const T* new_elem, size_t num)
 	if(end+num >= end_array)
 	{
 		size_t length = end - begin;
-		size_t new_length = CMath::max(2 * (size_t)(end_array - begin) + 3,
+		size_t new_length = Math::max(2 * (size_t)(end_array - begin) + 3,
 					       end - begin + num);
 		begin = SG_REALLOC(T, begin, length, new_length);
 		end = begin + length;

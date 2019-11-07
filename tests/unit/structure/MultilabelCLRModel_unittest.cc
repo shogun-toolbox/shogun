@@ -33,12 +33,12 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 		feats[i] = uniform_int_dist(prng);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
+
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
-	SG_REF(labels);
+
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
 	SGVector<int32_t> lab_012(3);
@@ -48,11 +48,11 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 	labels->set_sparse_label(0, lab_1);
 	labels->set_sparse_label(1, lab_012);
 
-	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
-	SG_REF(model);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
 
-	CSparseMultilabel * slabel_1 = new CSparseMultilabel(lab_1);
-	SG_REF(slabel_1);
+
+	auto slabel_1 = std::make_shared<SparseMultilabel>(lab_1);
+
 	SGVector<float64_t> psi_1 = model->get_joint_feature_vector(0,
 	                            slabel_1);
 
@@ -67,10 +67,10 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 		EXPECT_EQ(psi_1[i], label_coeffs_1[i / DIMS] * feats[i % DIMS]);
 	}
 
-	SG_UNREF(slabel_1);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
 }
 
 TEST(MultilabelCLRModel, get_joint_feature_vector_2)
@@ -85,12 +85,12 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 		feats[i] = uniform_int_dist(prng);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
+
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
-	SG_REF(labels);
+
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
 	SGVector<int32_t> lab_012(3);
@@ -100,11 +100,11 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 	labels->set_sparse_label(0, lab_1);
 	labels->set_sparse_label(1, lab_012);
 
-	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
-	SG_REF(model);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
 
-	CSparseMultilabel * slabel_012 = new CSparseMultilabel(lab_012);
-	SG_REF(slabel_012);
+
+	auto slabel_012 = std::make_shared<SparseMultilabel>(lab_012);
+
 
 	SGVector<float64_t> psi_2 = model->get_joint_feature_vector(1,
 	                            slabel_012);
@@ -120,10 +120,10 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 		EXPECT_EQ(psi_2[i], label_coeffs_2[i / DIMS] * feats[i % DIMS + DIMS]);
 	}
 
-	SG_UNREF(slabel_012);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
 }
 
 TEST(MultilabelCLRModel, delta_loss)
@@ -131,15 +131,15 @@ TEST(MultilabelCLRModel, delta_loss)
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
 	feats.zero();
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
+
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
-	SG_REF(labels);
 
-	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
-	SG_REF(model);
+
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
+
 
 	SGVector<int32_t> lab_012(3);
 	lab_012[0] = 0;
@@ -152,14 +152,14 @@ TEST(MultilabelCLRModel, delta_loss)
 	lab_0[0] = 0;
 	SGVector<int32_t> lab_nill(0);
 
-	CSparseMultilabel * slabel_012 = new CSparseMultilabel(lab_012);
-	SG_REF(slabel_012);
-	CSparseMultilabel * slabel_01 = new CSparseMultilabel(lab_01);
-	SG_REF(slabel_01);
-	CSparseMultilabel * slabel_0 = new CSparseMultilabel(lab_0);
-	SG_REF(slabel_0);
-	CSparseMultilabel * slabel_nill = new CSparseMultilabel(lab_nill);
-	SG_REF(slabel_nill);
+	auto slabel_012 = std::make_shared<SparseMultilabel>(lab_012);
+
+	auto slabel_01 = std::make_shared<SparseMultilabel>(lab_01);
+
+	auto slabel_0 = std::make_shared<SparseMultilabel>(lab_0);
+
+	auto slabel_nill = std::make_shared<SparseMultilabel>(lab_nill);
+
 
 	float64_t delta_loss_1 = model->delta_loss(slabel_012, slabel_012);
 	EXPECT_EQ(delta_loss_1, 0);
@@ -173,13 +173,13 @@ TEST(MultilabelCLRModel, delta_loss)
 	float64_t delta_loss_4 = model->delta_loss(slabel_012, slabel_nill);
 	EXPECT_EQ(delta_loss_4, 3);
 
-	SG_UNREF(slabel_012);
-	SG_UNREF(slabel_01);
-	SG_UNREF(slabel_0);
-	SG_UNREF(slabel_nill);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
+
+
+
 }
 
 TEST(MultilabelCLRModel, argmax)
@@ -194,12 +194,12 @@ TEST(MultilabelCLRModel, argmax)
 		feats[i] = uniform_int_dist(prng);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
+
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
-	SG_REF(labels);
+
 	SGVector<int32_t> lab_2(1);
 	lab_2[0] = 2;
 	SGVector<int32_t> lab_01(2);
@@ -208,8 +208,8 @@ TEST(MultilabelCLRModel, argmax)
 	labels->set_sparse_label(0, lab_2);
 	labels->set_sparse_label(1, lab_01);
 
-	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
-	SG_REF(model);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
+
 
 	SGVector<float64_t> w(model->get_dim());
 	uniform_int_dist.param({-1, 1});
@@ -218,9 +218,9 @@ TEST(MultilabelCLRModel, argmax)
 		w[i] = uniform_int_dist(prng);
 	}
 
-	CResultSet * ret_1 = model->argmax(w, 0, true);
+	auto ret_1 = model->argmax(w, 0, true);
 
-	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
+	auto y_1 = ret_1->argmax->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	// calibrated/virtual label is considered to be last label
@@ -249,9 +249,9 @@ TEST(MultilabelCLRModel, argmax)
 		EXPECT_GE(score, 0);
 	}
 
-	CResultSet * ret_2 = model->argmax(w, 0, false);
+	auto ret_2 = model->argmax(w, 0, false);
 
-	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
+	auto y_2 = ret_2->argmax->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < labels->get_num_classes(); i++)
@@ -279,11 +279,5 @@ TEST(MultilabelCLRModel, argmax)
 		}
 	}
 
-	SG_UNREF(ret_1);
-	SG_UNREF(ret_2);
-
-	SG_UNREF(features);
-	SG_UNREF(labels);
-	SG_UNREF(model);
 }
 

@@ -1,25 +1,18 @@
-%newobject apply(CFeatures* data);
-%newobject apply_multiclass(CFeatures* data);
-%newobject visible_state_features();
-%newobject sample_group(int32_t V, int32_t num_gibbs_steps, int32_t batch_size);
-%newobject sample_group_with_evidence(int32_t V, int32_t E, CDenseFeatures<float64_t>* evidence,int32_t num_gibbs_steps);
-%newobject reconstruct(CDenseFeatures<float64_t>* data);
-%newobject transform(CDenseFeatures<float64_t>* data);
-%newobject done();
-%newobject input(int32_t size);
-%newobject logistic(int32_t size);
-%newobject linear(int32_t size);
-%newobject rectified_linear(int32_t size);
-%newobject leaky_rectified_linear(int32_t size);
-%newobject softmax(int32_t size);
-
 /* Remove C Prefix */
-%rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
-%rename(NeuralLayer) CNeuralLayer;
-%rename(RBM) CRBM;
-%rename(DeepBeliefNetwork) CDeepBeliefNetwork;
-%rename(Autoencoder) CAutoencoder;
-%rename(DeepAutoencoder) CDeepAutoencoder;
+%shared_ptr(shogun::NeuralNetwork)
+%shared_ptr(shogun::NeuralLayer)
+%shared_ptr(shogun::NeuralInputLayer)
+%shared_ptr(shogun::NeuralLinearLayer)
+%shared_ptr(shogun::NeuralLogisticLayer)
+%shared_ptr(shogun::NeuralSoftmaxLayer)
+%shared_ptr(shogun::NeuralRectifiedLinearLayer)
+%shared_ptr(shogun::ConvolutionalFeatureMap)
+%shared_ptr(shogun::NeuralConvolutionalLayer)
+%shared_ptr(shogun::RBM)
+%shared_ptr(shogun::DeepBeliefNetwork)
+%shared_ptr(shogun::Autoencoder)
+%shared_ptr(shogun::DeepAutoencoder)
+%shared_ptr(shogun::NeuralLayers)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralLayer.h>

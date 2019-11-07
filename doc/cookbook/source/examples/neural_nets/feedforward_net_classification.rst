@@ -18,16 +18,16 @@ See chapter 6 in :cite:`Goodfellow-et-al-2016-Book` for a detailed introduction.
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`BinaryLabels` as
 
 .. sgexample:: feedforward_net_classification.sg:create_features
 
-We create a :sgclass:`CNeuralNetwork` instance by using the above layers and randomly initialize the network parameters by sampling from a gaussian distribution.We set appropriate parameters like regularization coefficient, dropout probabilities, learning rate, etc. as shown below. More parameters can be found in the documentation of :sgclass:`CNeuralNetwork`.
+We create a :sgclass:`NeuralNetwork` instance by using the above layers and randomly initialize the network parameters by sampling from a gaussian distribution.We set appropriate parameters like regularization coefficient, dropout probabilities, learning rate, etc. as shown below. More parameters can be found in the documentation of :sgclass:`NeuralNetwork`.
 
 
 .. sgexample:: feedforward_net_classification.sg:create_instance
 
-We create instances of :sgclass:`CNeuralInputLayer`, :sgclass:`CNeuralLinearLayer` and :sgclass:`NeuralSoftmaxLayer` which are building blocks of :sgclass:`CNeuralNetwork`
+We create instances of :sgclass:`NeuralInputLayer`, :sgclass:`NeuralLinearLayer` and :sgclass:`NeuralSoftmaxLayer` which are building blocks of :sgclass:`NeuralNetwork`
 
 .. sgexample:: feedforward_net_classification.sg:add_layers
 

@@ -15,20 +15,20 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief Class PRCEvaluation used to evaluate PRC
  * (Precision Recall Curve) and an area under PRC curve (auPRC).
  *
  */
-class CPRCEvaluation: public CBinaryClassEvaluation
+class PRCEvaluation: public BinaryClassEvaluation
 {
 public:
 	/** constructor */
-	CPRCEvaluation();
+	PRCEvaluation();
 
 	/** destructor */
-	virtual ~CPRCEvaluation();
+	virtual ~PRCEvaluation();
 
 	/** get name */
 	virtual const char* get_name() const { return "PRCEvaluation"; };
@@ -38,7 +38,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auPRC
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

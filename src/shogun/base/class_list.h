@@ -19,18 +19,13 @@
 #include <string>
 
 namespace shogun {
-	class CSGObject;
+	class SGObject;
 
 	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	CSGObject* create(const char* sgserializable_name, EPrimitiveType generic);
-
-	/** deletes object
-	 * @param object pointer to object to be deleted
-	 */
-	void delete_object(CSGObject* object);
+	std::shared_ptr<SGObject> create(const char* sgserializable_name, EPrimitiveType generic);
 
 	/** Creates new shogun instance, typed.
 	 *
@@ -39,26 +34,21 @@ namespace shogun {
 	 *
 	 */
 	template <class T>
-	T* create_object(
+	std::shared_ptr<T> create_object(
 	    const char* name,
 	    EPrimitiveType pt = PT_NOT_GENERIC) noexcept(false)
 	{
-		auto* object = create(name, pt);
+		auto object = create(name, pt);
 		if (!object)
 		{
 			error(
 			    "Class {} with primitive type {} does not exist.", name,
 			    ptype_name(pt).c_str());
 		}
-		T* cast = nullptr;
-		try
+		auto cast = std::dynamic_pointer_cast<T>(object);
+		if (cast == nullptr)
 		{
-			cast = object->as<T>();
-		}
-		catch (const ShogunException& e)
-		{
-			delete_object(object);
-			throw e;
+			error("could not cst");
 		}
 		return cast;
 	}

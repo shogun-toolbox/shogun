@@ -18,29 +18,29 @@
 namespace shogun
 {
 /** @brief class OnlineSVMSGD */
-class COnlineSVMSGD : public COnlineLinearMachine
+class OnlineSVMSGD : public OnlineLinearMachine
 {
 	public:
 		/** returns type of problem machine solves */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */
-		COnlineSVMSGD();
+		OnlineSVMSGD();
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 */
-		COnlineSVMSGD(float64_t C);
+		OnlineSVMSGD(float64_t C);
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 * @param traindat training features
 		 */
-		COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat);
+		OnlineSVMSGD(float64_t C, std::shared_ptr<StreamingDotFeatures> traindat);
 
-		virtual ~COnlineSVMSGD();
+		virtual ~OnlineSVMSGD();
 
 		/** get classifier type
 		 *
@@ -56,7 +56,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** set C
 		 *
@@ -130,13 +130,13 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @param loss_func object derived from CLossFunction
 		 */
-		void set_loss_function(CLossFunction* loss_func);
+		void set_loss_function(std::shared_ptr<LossFunction> loss_func);
 
 		/** Return the loss function
 		 *
 		 * @return loss function as CLossFunction*
 		 */
-		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
+		inline std::shared_ptr<LossFunction> get_loss_function() {  return loss; }
 
 		/** @return object name */
 		inline const char* get_name() const { return "OnlineSVMSGD"; }
@@ -166,7 +166,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		bool use_bias;
 		bool use_regularized_bias;
 
-		CLossFunction* loss;
+		std::shared_ptr<LossFunction> loss;
 };
 }
 #endif

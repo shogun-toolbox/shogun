@@ -44,8 +44,7 @@ Shogun is implemented in C++ and offers automatically generated, unified interfa
 |java/scala        | *stable* (no known problems)                              |
 |ruby              | *stable* (no known problems)                              |
 |csharp            | *stable* (no known problems)                              |
-|r                 | *beta*   (most examples work, static calls unavailable)   |
-|lua               | *alpha*  (many examples work, string typemaps are unstable, overloaded methods unavailable)                   |
+|r                 | Currently disabled due to a [swig bug](https://github.com/swig/swig/issues/1660) |
 |perl              | *pre-alpha* (work in progress quality)                    |
 |js                | *pre-alpha* (work in progress quality)                    |
 

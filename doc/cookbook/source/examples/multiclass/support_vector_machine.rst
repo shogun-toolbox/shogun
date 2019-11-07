@@ -8,11 +8,11 @@ The multi-class support vector machine is a multi-class classifier which uses :s
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: support_vector_machine.sg:create_features
 
-In order to run :sgclass:`CMulticlassLibSVM`, we need to initialize a kernel like :sgclass:`CGaussianKernel` with training features and some parameters like :math:`C` and epsilon i.e. residual convergence parameter which is optional.
+In order to run :sgclass:`CMulticlassLibSVM`, we need to initialize a kernel like :sgclass:`GaussianKernel` with training features and some parameters like :math:`C` and epsilon i.e. residual convergence parameter which is optional.
 
 .. sgexample:: support_vector_machine.sg:set_parameters
 
@@ -20,11 +20,11 @@ We create an instance of the :sgclass:`CMulticlassLibSVM` classifier by passing 
 
 .. sgexample:: support_vector_machine.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: support_vector_machine.sg:train_and_apply
 
-Finally, we can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+Finally, we can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: support_vector_machine.sg:evaluate_error
 

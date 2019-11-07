@@ -13,44 +13,44 @@ using namespace shogun;
 
 TEST(MultilabelSOLabels, constructor_zero_args)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels();
-	SG_REF(ml);
+	auto ml = std::make_shared<MultilabelSOLabels>();
+
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 0);
 	EXPECT_EQ(ml->get_num_classes(), 0);
 
-	SG_UNREF(ml);
+
 }
 
 TEST(MultilabelSOLabels, constructor_one_arg)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels(2);
-	SG_REF(ml);
+	auto ml = std::make_shared<MultilabelSOLabels>(2);
+
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 0);
 	EXPECT_EQ(ml->get_num_classes(), 2);
 
-	SG_UNREF(ml);
+
 }
 
 TEST(MultilabelSOLabels, constructor_two_args)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels(5, 6);
-	SG_REF(ml);
+	auto ml = std::make_shared<MultilabelSOLabels>(5, 6);
+
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 5);
 	EXPECT_EQ(ml->get_num_classes(), 6);
 
-	SG_UNREF(ml);
+
 }
 
 TEST(MultilabelSOLabels, set_sparse_label)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels(1, 2);
-	SG_REF(ml);
+	auto ml = std::make_shared<MultilabelSOLabels>(1, 2);
+
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 1);
@@ -61,7 +61,7 @@ TEST(MultilabelSOLabels, set_sparse_label)
 	lab[1] = 1;
 	ml->set_sparse_label(0, lab);
 
-	CSparseMultilabel * slabel = ml->get_label(0)->as<CSparseMultilabel>();
+	auto  slabel = ml->get_label(0)->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
 	for (int i = 0; i < slabel_data.vlen; i++)
@@ -69,14 +69,12 @@ TEST(MultilabelSOLabels, set_sparse_label)
 		EXPECT_EQ(lab[i], slabel_data[i]);
 	}
 
-	SG_UNREF(slabel);
-	SG_UNREF(ml);
 }
 
 TEST(MultilabelSOLabels, set_label)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels(1, 2);
-	SG_REF(ml);
+	auto ml = std::make_shared<MultilabelSOLabels>(1, 2);
+
 	ASSERT(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 1);
@@ -85,11 +83,11 @@ TEST(MultilabelSOLabels, set_label)
 	SGVector<int32_t> lab(2);
 	lab[0] = 0;
 	lab[1] = 1;
-	CSparseMultilabel * slabel = new CSparseMultilabel(lab);
-	SG_REF(slabel);
+	auto  slabel = std::make_shared<SparseMultilabel>(lab);
+
 	ml->set_label(0, slabel);
 
-	CSparseMultilabel * slabel_out = ml->get_label(0)->as<CSparseMultilabel>();
+	auto  slabel_out = ml->get_label(0)->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_data = slabel_out->get_data();
 
 	for (index_t i = 0; i < slabel_data.vlen; i++)
@@ -97,14 +95,13 @@ TEST(MultilabelSOLabels, set_label)
 		EXPECT_EQ(lab[i], slabel_data[i]);
 	}
 
-	SG_UNREF(slabel);
-	SG_UNREF(slabel_out);
-	SG_UNREF(ml);
+
+
 }
 
 TEST(MultilabelSOLabels, set_sparse_labels)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels(2, 3);
+	auto ml = std::make_shared<MultilabelSOLabels>(2, 3);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 2);
@@ -125,7 +122,7 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 
 	for (int i = 0; i < ml->get_num_labels(); i++)
 	{
-		CSparseMultilabel * slabel = ml->get_label(i)->as<CSparseMultilabel>();
+		auto  slabel = ml->get_label(i)->as<SparseMultilabel>();
 		SGVector<int32_t> slabel_data = slabel->get_data();
 		SGVector<int32_t> lab = labels[i];
 		EXPECT_EQ(slabel_data.vlen, lab.vlen);
@@ -135,16 +132,15 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 			EXPECT_EQ(lab[j], slabel_data[j]);
 		}
 
-		SG_UNREF(slabel);
 	}
 
 	delete [] labels;
-	SG_UNREF(ml);
+
 }
 
 TEST(MultilabelSOLabels, to_dense)
 {
-	CMultilabelSOLabels * ml = new CMultilabelSOLabels(2, 3);
+	auto ml = std::make_shared<MultilabelSOLabels>(2, 3);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 2);
@@ -165,13 +161,12 @@ TEST(MultilabelSOLabels, to_dense)
 
 	for (int i = 0; i < ml->get_num_labels(); i++)
 	{
-		CSparseMultilabel * slabel = ml->get_label(0)->as<CSparseMultilabel>();
-		SGVector<float64_t> slabel_dense_data = CMultilabelSOLabels::to_dense(slabel, ml->get_num_classes(), 1, 0);
-		SG_UNREF(slabel);
+		auto  slabel = ml->get_label(0)->as<SparseMultilabel>();
+		SGVector<float64_t> slabel_dense_data = MultilabelSOLabels::to_dense(slabel, ml->get_num_classes(), 1, 0);
 		EXPECT_EQ(slabel_dense_data.vlen, ml->get_num_classes());
 	}
 
 	delete[] labels;
-	SG_UNREF(ml);
+
 }
 

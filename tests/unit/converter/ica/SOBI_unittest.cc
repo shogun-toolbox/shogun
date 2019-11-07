@@ -43,12 +43,12 @@ TEST(CSOBI, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	auto mixed_signals = some<CDenseFeatures<float64_t>>(X);
+	auto mixed_signals = std::make_shared<DenseFeatures<float64_t>>(X);
 
 	// Separate
-	auto sobi = some<CSOBI>();
+	auto sobi = std::make_shared<SOBI>();
 	sobi->fit(mixed_signals);
-	auto signals = wrap(sobi->transform(mixed_signals));
+	auto signals = sobi->transform(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(sobi->get_mixing_matrix().matrix,2,2);

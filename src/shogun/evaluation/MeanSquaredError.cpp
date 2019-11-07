@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t MeanSquaredError::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	require(predicted, "Predicted labels must be not null.");
 	require(ground_truth, "Ground truth labels must be not null.");
@@ -22,7 +22,7 @@ float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
 	auto ground_truth_regression = regression_labels(ground_truth);
 
 	for (int32_t i=0; i<length; i++)
-		mse += CMath::sq(
+		mse += Math::sq(
 		    predicted_regression->get_label(i) -
 		    ground_truth_regression->get_label(i));
 	mse /= length;

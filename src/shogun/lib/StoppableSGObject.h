@@ -22,14 +22,14 @@ namespace shogun
 	/**
 	 * Class that abstracts all premature stopping code
 	 */
-	class CStoppableSGObject : public CSGObject
+	class StoppableSGObject : public SGObject
 	{
 	public:
 		/** constructor */
-		CStoppableSGObject();
+		StoppableSGObject();
 
 		/** destructor */
-		virtual ~CStoppableSGObject();
+		virtual ~StoppableSGObject();
 
 #ifndef SWIG
 		/** @return whether the algorithm needs to be stopped */
@@ -87,14 +87,14 @@ namespace shogun
 		void on_next();
 
 		/** The action which will be done when the user decides to
-		* premature stop the CMachine execution */
+		* premature stop the Machine execution */
 		virtual void on_next_impl();
 
 		/** sets pause computation flag and resumes after action is complete */
 		void on_pause();
 
 		/** The action which will be done when the user decides to
-		* pause the CMachine execution */
+		* pause the Machine execution */
 		virtual void on_pause_impl();
 
 		/** These actions which will be done when the user decides to

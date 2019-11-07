@@ -4,13 +4,12 @@
  * Authors: Giovanni De Toni
  */
 
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/observers/ObservedValue.h>
 
 using namespace shogun;
 
 ObservedValue::ObservedValue(const int64_t step, std::string_view name)
-    : CSGObject(), m_step(step), m_name(name), m_any_value(Any())
+    : SGObject(), m_step(step), m_name(name), m_any_value(Any())
 {
 	SG_ADD(&m_step, "step", "Step", ParameterProperties::READONLY);
 	this->watch_param(

@@ -8,18 +8,18 @@
 
 namespace shogun
 {
-template class COperatorFunction<bool>;
-template class COperatorFunction<char>;
-template class COperatorFunction<int8_t>;
-template class COperatorFunction<uint8_t>;
-template class COperatorFunction<int16_t>;
-template class COperatorFunction<uint16_t>;
-template class COperatorFunction<int32_t>;
-template class COperatorFunction<uint32_t>;
-template class COperatorFunction<int64_t>;
-template class COperatorFunction<uint64_t>;
-template class COperatorFunction<float32_t>;
-template class COperatorFunction<float64_t>;
-template class COperatorFunction<floatmax_t>;
-template class COperatorFunction<complex128_t>;
+template class OperatorFunction<bool>;
+template class OperatorFunction<char>;
+template class OperatorFunction<int8_t>;
+template class OperatorFunction<uint8_t>;
+template class OperatorFunction<int16_t>;
+template class OperatorFunction<uint16_t>;
+template class OperatorFunction<int32_t>;
+template class OperatorFunction<uint32_t>;
+template class OperatorFunction<int64_t>;
+template class OperatorFunction<uint64_t>;
+template class OperatorFunction<float32_t>;
+template class OperatorFunction<float64_t>;
+template class OperatorFunction<floatmax_t>;
+template class OperatorFunction<complex128_t>;
 }

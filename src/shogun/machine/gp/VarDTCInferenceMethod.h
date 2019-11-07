@@ -49,11 +49,11 @@ namespace shogun
  * method.
  *
  */
-class CVarDTCInferenceMethod: public CSingleSparseInference
+class VarDTCInferenceMethod: public SingleSparseInference
 {
 public:
 	/** default constructor */
-	CVarDTCInferenceMethod();
+	VarDTCInferenceMethod();
 
 	/** constructor
 	 *
@@ -64,11 +64,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CVarDTCInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	VarDTCInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CVarDTCInferenceMethod();
+	virtual ~VarDTCInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -87,7 +87,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CVarDTCInferenceMethod object
 	 */
-	static CVarDTCInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<VarDTCInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -167,7 +167,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 
 protected:
 	/** check if members of object are valid for inference */
@@ -192,7 +192,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt inducing features (input)
 	 * Note that in order to call this method, kernel must support Sparse inference,
@@ -204,7 +204,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(
-		const TParameter* param);
+		Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt inducing noise
 	 *
@@ -213,7 +213,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-		const TParameter* param);
+		Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -223,7 +223,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** compute variables which are required to compute negative log marginal
 	 * likelihood full derivatives wrt  cov-like hyperparameter \f$\theta\f$

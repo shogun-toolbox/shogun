@@ -228,6 +228,13 @@ namespace shogun
 			return !(*this == other);
 		}
 
+		inline bool operator<(const AnyParameter& other) const
+		{
+			// let's assume this assumption is sufficient
+			// distinguish AnyParameter objects
+			return m_value.hash() < other.m_value.hash();
+		}
+
 	private:
 		Any m_value;
 		AnyParameterProperties m_properties;

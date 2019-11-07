@@ -51,19 +51,19 @@ namespace shogun
  * The hyperparameter of the Gaussian likelihood model is standard deviation:
  * \f$\sigma\f$.
  */
-class CGaussianLikelihood: public CLikelihoodModel
+class GaussianLikelihood: public LikelihoodModel
 {
 public:
 	/** default constructor */
-	CGaussianLikelihood();
+	GaussianLikelihood();
 
 	/** constructor
 	 *
 	 * @param sigma observation noise
 	 */
-	CGaussianLikelihood(float64_t sigma);
+	GaussianLikelihood(float64_t sigma);
 
-	virtual ~CGaussianLikelihood();
+	virtual ~GaussianLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -94,9 +94,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param lik likelihood model
-	 * @return casted CGaussianLikelihood object
+	 * @return casted GaussianLikelihood object
 	 */
-	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* lik);
+	static std::shared_ptr<GaussianLikelihood> obtain_from_generic(const std::shared_ptr<LikelihoodModel>& lik);
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
@@ -114,7 +114,7 @@ public:
 	 * @return final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const;
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
@@ -131,7 +131,7 @@ public:
 	 * @return final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const;
 
 	/** get model type
 	 *
@@ -150,7 +150,7 @@ public:
 	 *
 	 * @return logarithm of the point-wise likelihood
 	 */
-	virtual SGVector<float64_t> get_log_probability_f(const CLabels* lab,
+	virtual SGVector<float64_t> get_log_probability_f(std::shared_ptr<const Labels> lab,
 			SGVector<float64_t> func) const;
 
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with respect to
@@ -164,8 +164,9 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
-			const CLabels* lab, SGVector<float64_t> func, index_t i) const;
+			std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const;
 
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with respect to given
 	 * parameter
 	 *
@@ -175,8 +176,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative(const CLabels* lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the first derivative of log likelihood with respect to
 	 * function location, i.e. \f$\frac{\partial log(P(y|f))}{\partial f}\f$
@@ -188,8 +189,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_second_derivative(const CLabels* lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+	virtual SGVector<float64_t> get_second_derivative(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func, Parameters::const_reference param) const;
 
 	/** get derivative of the second derivative of log likelihood with respect
 	 * to function location, i.e. \f$\frac{\partial^{2} log(P(y|f))}{\partial
@@ -201,8 +202,9 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_third_derivative(const CLabels* lab,
-			SGVector<float64_t> func, const TParameter* param) const;
+	virtual SGVector<float64_t> get_third_derivative(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func, Parameters::const_reference param) const;
+#endif
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:
@@ -221,7 +223,7 @@ public:
 	 * @return log zeroth moments \f$log(Z_i)\f$
 	 */
 	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const;
 
 	/** returns the first moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
@@ -238,7 +240,7 @@ public:
 	 * @return first moment of \f$q(f_i)\f$
 	 */
 	virtual float64_t get_first_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const;
 
 	/** returns the second central moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
@@ -255,7 +257,7 @@ public:
 	 * @return the second moment of \f$q(f_i)\f$
 	 */
 	virtual float64_t get_second_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const;
 
 	/** return whether Gaussian likelihood function supports regression
 	 *

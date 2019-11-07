@@ -21,32 +21,32 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{2k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'}}
  * \f]
  */
-class CDiceKernelNormalizer : public CKernelNormalizer
+class DiceKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** default constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CDiceKernelNormalizer(bool use_opt_diag=false) : CKernelNormalizer(),
+		DiceKernelNormalizer(bool use_opt_diag=false) : KernelNormalizer(),
 			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
-			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
-							  "K(x,x) for left hand side examples.");
-			watch_param("diag_lhs", &diag_lhs, &num_diag_lhs);
+			/*m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
+							  "K(x,x) for left hand side examples.")*/;
+			/*watch_param("diag_lhs", &diag_lhs, &num_diag_lhs)*/;
 
-			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
-							  "K(x,x) for right hand side examples.");
-			watch_param("diag_rhs", &diag_rhs, &num_diag_rhs);
+			/*m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
+							  "K(x,x) for right hand side examples.")*/;
+			/*watch_param("diag_rhs", &diag_rhs, &num_diag_rhs)*/;
 
-			SG_ADD(&use_optimized_diagonal_computation,
+			/*SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used");
+					"flat if optimized diagonal computation is used");*/
 		}
 
 		/** default destructor */
-		virtual ~CDiceKernelNormalizer()
+		virtual ~DiceKernelNormalizer()
 		{
 			SG_FREE(diag_lhs);
 			SG_FREE(diag_rhs);
@@ -54,7 +54,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			ASSERT(k)
 			num_diag_lhs=k->get_num_vec_lhs();
@@ -62,8 +62,8 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			ASSERT(num_diag_lhs>0)
 			ASSERT(num_diag_rhs>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
@@ -124,7 +124,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num) const
+		bool alloc_and_compute_diag(Kernel* k, float64_t* &v, int32_t num) const
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
@@ -133,10 +133,11 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
+					auto cwsk = k->as<CommWordStringKernel>();
 					if (use_optimized_diagonal_computation)
-						v[i]=((CCommWordStringKernel*) k)->compute_diag(i);
+						v[i]=cwsk->compute_diag(i);
 					else
-						v[i]=((CCommWordStringKernel*) k)->compute_helper(i,i, true);
+						v[i]=cwsk->compute_helper(i,i, true);
 				}
 				else
 					v[i]=k->compute(i,i);

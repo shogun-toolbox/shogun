@@ -15,11 +15,11 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDotFeatures;
+class Features;
+class DotFeatures;
 
 /** @brief The well known Gaussian kernel (swiss army knife for SVMs) computed
- * on CDotFeatures.
+ * on DotFeatures.
  *
  * It is computed as
  *
@@ -30,24 +30,24 @@ class CDotFeatures;
  * where \f$\tau\f$ is the kernel width.
  *
  */
-class CGaussianKernel: public CShiftInvariantKernel
+class GaussianKernel: public ShiftInvariantKernel
 {
 public:
 	/** default constructor */
-	CGaussianKernel();
+	GaussianKernel();
 
 	/** constructor
 	 *
 	 * @param width width
 	 */
-	CGaussianKernel(float64_t width);
+	GaussianKernel(float64_t width);
 
 	/** constructor
 	 *
 	 * @param size cache size
 	 * @param width width
 	 */
-	CGaussianKernel(int32_t size, float64_t width);
+	GaussianKernel(int32_t size, float64_t width);
 
 	/** constructor
 	 *
@@ -56,19 +56,19 @@ public:
 	 * @param width width
 	 * @param size cache size
 	 */
-	CGaussianKernel(CDotFeatures* l, CDotFeatures* r, float64_t width, int32_t size=10);
+	GaussianKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t width, int32_t size=10);
 
 	/** destructor */
-	virtual ~CGaussianKernel();
+	virtual ~GaussianKernel();
 
-	/** @param kernel is casted to CGaussianKernel, error if not possible
+	/** @param kernel is casted to GaussianKernel, error if not possible
 	 * is SG_REF'ed
-	 * @return casted CGaussianKernel object
+	 * @return casted GaussianKernel object
 	 */
-	static CGaussianKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<GaussianKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 	/** Make a shallow copy of the kernel */
-	virtual CSGObject* shallow_copy() const;
+	virtual std::shared_ptr<SGObject> shallow_copy() const;
 
 	/** initialize kernel
 	 *
@@ -76,7 +76,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/** clean up kernel */
 	virtual void cleanup();
@@ -130,7 +130,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param, index_t index=-1);
+	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param, index_t index=-1);
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 * variables which are not PARAMETER::ADD'ed. Make sure that at first

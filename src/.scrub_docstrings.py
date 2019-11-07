@@ -17,7 +17,7 @@ REPLACEMENTS=[
 	[' int16_t', ' int'],
 	[' uint16_t', ' int'],
 	[' char', ' str'],
-	['-> CFeatures', '-> Features'],
+	['-> Features', '-> Features'],
 ]
 
 class Scrub:

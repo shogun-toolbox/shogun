@@ -65,11 +65,11 @@ namespace shogun
  * Note that "lowerTriangular" means lowerTriangular represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLLowerTriangularInference: public CKLInference
+class KLLowerTriangularInference: public KLInference
 {
 public:
 	/** default constructor */
-	CKLLowerTriangularInference();
+	KLLowerTriangularInference();
 
 	/** constructor
 	 *
@@ -79,10 +79,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLLowerTriangularInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	KLLowerTriangularInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLLowerTriangularInference();
+	virtual ~KLLowerTriangularInference();
 
 	/** returns the name of the inference method
 	 *
@@ -110,9 +110,9 @@ protected:
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
 	 * Note that
-	 * get_derivative_wrt_inference_method(const TParameter* param)
+	 * get_derivative_wrt_inference_method(Parameters::const_reference param)
 	 * and
-	 * get_derivative_wrt_kernel(const TParameter* param)
+	 * get_derivative_wrt_kernel(Parameters::const_reference param)
 	 * will call this function
 	 *
 	 * @param dK the gradient wrt hyperparameter related to cov
@@ -144,7 +144,7 @@ protected:
 	 *
 	 * @return inv(corrected_Kernel*sq(m_scale))*A:
 	 */
-	Eigen::MatrixXd solve_inverse(Eigen::MatrixXd A);
+	Eigen::MatrixXd solve_inverse(const Eigen::MatrixXd& A);
 
 	/** correct the kernel matrix and factorizated the corrected Kernel matrix
 	 * for update

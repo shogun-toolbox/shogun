@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Tejas Jogi, Evgeniy Andreev, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Tejas Jogi, Evgeniy Andreev, Soeren Sonnenburg, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -20,12 +20,12 @@ namespace shogun
 {
 
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
+IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 {
 	public:
 		/* default constructor */
-		CDirectorKernelMachine()
-		: CKernelMachine()
+		DirectorKernelMachine()
+		: KernelMachine()
 		{
 
 		}
@@ -38,13 +38,13 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CDirectorKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b)
-		: CKernelMachine(k, alphas, svs, b)
+		DirectorKernelMachine(std::shared_ptr<Kernel> k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b)
+		: KernelMachine(k, alphas, svs, b)
 		{
 		}
 
 		/* destructor */
-		virtual ~CDirectorKernelMachine()
+		virtual ~DirectorKernelMachine()
 		{
 
 		}
@@ -57,12 +57,12 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)
+		virtual bool train(std::shared_ptr<Features> data=NULL)
 		{
-			return CKernelMachine::train(data);
+			return KernelMachine::train(data);
 		}
 
-		virtual bool train_function(CFeatures* data=NULL)
+		virtual bool train_function(std::shared_ptr<Features> data=NULL)
 		{
 			error("Train function of Director Kernel Machine needs to be overridden.");
 			return false;
@@ -74,25 +74,25 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL)
+		virtual ::std::shared_ptr<Labels> apply(std::shared_ptr<Features> data=NULL)
 		{
-			return CKernelMachine::apply(data);
+			return KernelMachine::apply(data);
 		}
 
 		/** apply machine to data in means of binary classification problem */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL)
+		virtual ::std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL)
 		{
-			return CKernelMachine::apply_binary(data);
+			return KernelMachine::apply_binary(data);
 		}
 
 		/** apply machine to data in means of regression problem */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL)
+		virtual ::std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL)
 		{
-			return CKernelMachine::apply_regression(data);
+			return KernelMachine::apply_regression(data);
 		}
 
 		/** apply machine to data in means of multiclass classification problem */
-		using CKernelMachine::apply_multiclass;
+		using KernelMachine::apply_multiclass;
 
 		/** apply kernel machine to one example
 		 *
@@ -101,25 +101,25 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 */
 		virtual float64_t apply_one(int32_t num)
 		{
-			return CKernelMachine::apply_one(num);
+			return KernelMachine::apply_one(num);
 		}
 
 		/** set labels
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(CLabels* lab)
+		virtual void set_labels(std::shared_ptr<Labels> lab)
 		{
-			CKernelMachine::set_labels(lab);
+			KernelMachine::set_labels(lab);
 		}
 
 		/** get labels
 		 *
 		 * @return labels
 		 */
-		virtual CLabels* get_labels()
+		virtual std::shared_ptr<Labels> get_labels()
 		{
-			return CKernelMachine::get_labels();
+			return KernelMachine::get_labels();
 		}
 
 		/** get classifier type
@@ -131,7 +131,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		//TODO change to pure virtual
 		virtual EProblemType get_machine_problem_type() const
 		{
-			return CKernelMachine::get_machine_problem_type();
+			return KernelMachine::get_machine_problem_type();
 		}
 
 		virtual const char* get_name() const { return "DirectorKernelMachine"; }
@@ -147,7 +147,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL)
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL)
 		{
 			return train_function(data);
 		}

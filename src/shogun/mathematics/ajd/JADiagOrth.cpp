@@ -11,7 +11,7 @@ void left_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c
 void right_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c, float64_t s);
 void left_rot_simple(float64_t *A, int m, int n, int p, int q, float64_t c, float64_t s);
 
-SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> JADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int m = C.dims[0];

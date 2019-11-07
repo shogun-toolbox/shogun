@@ -1,25 +1,24 @@
 #include <shogun/lib/Tokenizer.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
 
-CTokenizer::CTokenizer() : CSGObject()
+Tokenizer::Tokenizer() : SGObject()
 {
 	init();
 }
 
-CTokenizer::CTokenizer(const CTokenizer& orig) : CSGObject(orig)
+Tokenizer::Tokenizer(const Tokenizer& orig) : SGObject(orig)
 {
 	text = orig.text;
 }
 
-void CTokenizer::set_text(SGVector<char> txt)
+void Tokenizer::set_text(SGVector<char> txt)
 {
 	text = txt;
 }
 
-void CTokenizer::init()
+void Tokenizer::init()
 {
 	SG_ADD(&text, "text", "The text");
 }

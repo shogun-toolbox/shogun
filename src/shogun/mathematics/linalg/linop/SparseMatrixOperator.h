@@ -92,31 +92,31 @@ struct SparsityStructure
  * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
  * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
  */
-template<class T> class CSparseMatrixOperator : public CMatrixOperator<T>
+template<class T> class SparseMatrixOperator : public MatrixOperator<T>
 {
 /** this class has support for complex128_t */
 typedef bool supports_complex128_t;
 
 public:
 	/** default constructor */
-	CSparseMatrixOperator();
+	SparseMatrixOperator();
 
 	/**
 	 * constructor
 	 *
 	 * @param op the sparse matrix to be used as the linear operator
 	 */
-	explicit CSparseMatrixOperator(SGSparseMatrix<T> op);
+	explicit SparseMatrixOperator(SGSparseMatrix<T> op);
 
 	/**
 	 * copy constructor that creates a deep copy
 	 *
 	 * @param orig the original sparse matrix operator
 	 */
-	CSparseMatrixOperator(const CSparseMatrixOperator<T>& orig);
+	SparseMatrixOperator(const SparseMatrixOperator<T>& orig);
 
 	/** destructor */
-	~CSparseMatrixOperator();
+	~SparseMatrixOperator();
 
 	/**
 	 * method that applies the sparse-matrix linear operator to a vector
@@ -150,7 +150,7 @@ public:
 	 * create a new sparse matrix operator of Scalar type
 	 */
 	template<class Scalar>
-	inline operator CSparseMatrixOperator<Scalar>*() const
+	inline operator SparseMatrixOperator<Scalar>*() const
 	{
 		require(m_operator.sparse_matrix, "Matrix is not initialized!");
 		typedef SGSparseVector<Scalar> vector;
@@ -175,7 +175,7 @@ public:
 		casted_m.num_vectors=m_operator.num_vectors;
 		casted_m.num_features= m_operator.num_features;
 
-		return new CSparseMatrixOperator<Scalar>(casted_m);
+		return new SparseMatrixOperator<Scalar>(casted_m);
 	}
 
 	/** @return object name */

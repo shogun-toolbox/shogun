@@ -60,7 +60,7 @@ TEST(LossFunction, squared_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	CLossFunction* lossf=new CSquaredLoss();
+	auto lossf=std::make_shared<SquaredLoss>();
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -92,7 +92,7 @@ TEST(LossFunction, squared_loss_test)
 	EXPECT_NEAR(secondd[3],2,epsilon);
 	EXPECT_NEAR(secondd[4],2,epsilon);
 
-	SG_UNREF(lossf);
+
 }
 
 TEST(LossFunction, exponential_loss_test)
@@ -101,7 +101,7 @@ TEST(LossFunction, exponential_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	CLossFunction* lossf=new CExponentialLoss();
+	auto lossf=std::make_shared<ExponentialLoss>();
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -133,7 +133,7 @@ TEST(LossFunction, exponential_loss_test)
 	EXPECT_NEAR(secondd[3],12639231.822633834,epsilon);
 	EXPECT_NEAR(secondd[4],10302.576631839,epsilon);
 
-	SG_UNREF(lossf);
+
 }
 
 TEST(LossFunction, abs_deviation_loss_test)
@@ -142,7 +142,7 @@ TEST(LossFunction, abs_deviation_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	CLossFunction* lossf=new CAbsoluteDeviationLoss();
+	auto lossf=std::make_shared<AbsoluteDeviationLoss>();
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -174,7 +174,7 @@ TEST(LossFunction, abs_deviation_loss_test)
 	EXPECT_NEAR(secondd[3],0,epsilon);
 	EXPECT_NEAR(secondd[4],0,epsilon);
 
-	SG_UNREF(lossf);
+
 }
 
 TEST(LossFunction, huber_loss_test)
@@ -183,7 +183,7 @@ TEST(LossFunction, huber_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	CLossFunction* lossf=new CHuberLoss(4);
+	auto lossf=std::make_shared<HuberLoss>(4);
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -215,5 +215,5 @@ TEST(LossFunction, huber_loss_test)
 	EXPECT_NEAR(secondd[3],0,epsilon);
 	EXPECT_NEAR(secondd[4],0,epsilon);
 
-	SG_UNREF(lossf);
+
 }

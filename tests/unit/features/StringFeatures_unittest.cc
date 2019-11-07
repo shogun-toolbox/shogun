@@ -19,7 +19,7 @@ TEST(StringFeaturesTest,copy_subset)
 	std::vector<SGVector<char>> strings = generateRandomStringData(prng);
 
 	/* create num_feautres 2-dimensional vectors */
-	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
+	auto f=std::make_shared<StringFeatures<char>>(strings, ALPHANUM);
 
 	index_t offset_subset=1;
 	SGVector<index_t> feature_subset(8);
@@ -46,8 +46,8 @@ TEST(StringFeaturesTest,copy_subset)
 	feature_copy_subset.range_fill(offset_copy);
 	//feature_copy_subset.display_vector("indices that are to be copied");
 
-	CStringFeatures<char>* subset_copy=(CStringFeatures<char>*)f->copy_subset(
-			feature_copy_subset);
+	auto subset_copy=f->copy_subset(
+			feature_copy_subset)->as<StringFeatures<char>>();
 
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
 	{
@@ -75,8 +75,8 @@ TEST(StringFeaturesTest,copy_subset)
 		subset_copy->free_feature_vector(vec, i);
 	}
 
-	SG_UNREF(f);
-	SG_UNREF(subset_copy);
+
+
 }
 
 TEST(StringFeaturesTest,equals)
@@ -84,10 +84,10 @@ TEST(StringFeaturesTest,equals)
 	std::mt19937_64 prng(25);
 	std::vector<SGVector<char>> strings = generateRandomStringData(prng);
 
-	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
-	CStringFeatures<char>* f_clone = (CStringFeatures<char>*)f->clone();
+	auto f=std::make_shared<StringFeatures<char>>(strings, ALPHANUM);
+	auto f_clone = f->clone()->as<StringFeatures<char>>();
 	EXPECT_EQ(f->equals(f_clone), true);
 
-	SG_UNREF(f);
-	SG_UNREF(f_clone);
+
+
 }

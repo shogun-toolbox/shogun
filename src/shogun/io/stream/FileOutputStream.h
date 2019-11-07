@@ -16,12 +16,12 @@ namespace shogun
 	{
 #define IGNORE_IN_CLASSLIST
 
-		IGNORE_IN_CLASSLIST class CFileOutputStream : public COutputStream
+		IGNORE_IN_CLASSLIST class FileOutputStream : public OutputStream
 		{
 		public:
-			CFileOutputStream(WritableFile* dest, bool free = false):
-				COutputStream(), m_dst(dest), m_free(free) {}
-			~CFileOutputStream() override
+			FileOutputStream(WritableFile* dest, bool free = false):
+				OutputStream(), m_dst(dest), m_free(free) {}
+			~FileOutputStream() override
 			{
 				if (m_free)
 					delete m_dst;
@@ -48,7 +48,7 @@ namespace shogun
 			WritableFile* m_dst;
 			bool m_free;
 
-			SG_DELETE_COPY_AND_ASSIGN(CFileOutputStream);
+			SG_DELETE_COPY_AND_ASSIGN(FileOutputStream);
 		};
 	}
 }

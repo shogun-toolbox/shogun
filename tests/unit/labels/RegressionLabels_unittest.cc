@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-class RegressionLabels : public ::testing::Test
+class RegressionLabelsTest : public ::testing::Test
 {
 public:
 	SGVector<float64_t> labels_regression;
@@ -29,9 +29,9 @@ public:
 	}
 };
 
-TEST_F(RegressionLabels, regression_labels_from_regression)
+TEST_F(RegressionLabelsTest, regression_labels_from_regression)
 {
-	auto labels = some<CRegressionLabels>(labels_regression);
+	auto labels = std::make_shared<RegressionLabels>(labels_regression);
 	auto labels2 = regression_labels(labels);
 	EXPECT_EQ(labels, labels2);
 }

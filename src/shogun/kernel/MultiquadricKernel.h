@@ -16,25 +16,25 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 /** @brief MultiquadricKernel
 *
 * \f[
 *             K(x,x') = \sqrt{\| x - x' \|^2 +c^2}
 * \f]
 */
-class CMultiquadricKernel: public CKernel
+class MultiquadricKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CMultiquadricKernel();
+	MultiquadricKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CMultiquadricKernel(int32_t cache, float64_t coef, CDistance* dist);
+	MultiquadricKernel(int32_t cache, float64_t coef, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -42,14 +42,14 @@ public:
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CMultiquadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist);
+	MultiquadricKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t coef, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -81,7 +81,7 @@ public:
 	 */
 	inline void set_coef(float64_t value) { m_coef = value; }
 
-	virtual ~CMultiquadricKernel();
+	virtual ~MultiquadricKernel();
 
 protected:
 	/**
@@ -99,7 +99,7 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 	/// theta parameter of kernel - coefficient
 	float64_t m_coef;

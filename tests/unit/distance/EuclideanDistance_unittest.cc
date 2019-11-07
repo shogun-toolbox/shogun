@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Soeren Sonnenburg, Fernando Iglesias, 
+ * Authors: Saurabh Mahindre, Soeren Sonnenburg, Fernando Iglesias,
  *          Soumyajit De, Bjoern Esser
  */
 
@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CDenseFeatures<float64_t>* create_lhs()
+std::shared_ptr<DenseFeatures<float64_t>> create_lhs()
 {
 	// create object with two feature vectors,
 	// each column represents a feature vector
@@ -25,10 +25,10 @@ CDenseFeatures<float64_t>* create_lhs()
 	// 2nd feature vector
 	feat_mat_lhs(0,1)=0;
 	feat_mat_lhs(1,1)=-1;
-	return new CDenseFeatures<float64_t>(feat_mat_lhs);
+	return std::make_shared<DenseFeatures<float64_t>>(feat_mat_lhs);
 }
 
-CDenseFeatures<float64_t>* create_rhs()
+std::shared_ptr<DenseFeatures<float64_t>> create_rhs()
 {
 	// create object with two feature vectors,
 	// each column represents a feature vector
@@ -40,16 +40,16 @@ CDenseFeatures<float64_t>* create_rhs()
 	feat_mat_rhs(0,1)=-1;
 	feat_mat_rhs(1,1)=1;
 
-	return new CDenseFeatures<float64_t>(feat_mat_rhs);
+	return std::make_shared<DenseFeatures<float64_t>>(feat_mat_rhs);
 }
 
 TEST(EuclideanDistance,distance)
 {
-	CDenseFeatures<float64_t>* features_lhs=create_lhs();
-	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+	auto features_lhs=create_lhs();
+	auto features_rhs=create_rhs();
 
 	// put features into distance object to compute squared Euclidean distances
-	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
+	auto euclidean=std::make_shared<EuclideanDistance>(features_lhs,features_rhs);
 	euclidean->set_disable_sqrt(true);
 
 	// check distances computed one by one
@@ -58,15 +58,15 @@ TEST(EuclideanDistance,distance)
 	EXPECT_EQ(euclidean->distance(1,0), 5);
 	EXPECT_EQ(euclidean->distance(1,1), 5);
 
-	SG_UNREF(euclidean);
+
 }
 
 TEST(EuclideanDistance, distance_precomputed_norms)
 {
-	CDenseFeatures<float64_t>* features_lhs=create_lhs();
-	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+	auto features_lhs=create_lhs();
+	auto features_rhs=create_rhs();
 
-	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
+	auto euclidean=std::make_shared<EuclideanDistance>(features_lhs,features_rhs);
 	euclidean->set_disable_sqrt(true);
 	euclidean->precompute_lhs();
 	euclidean->precompute_rhs();
@@ -79,16 +79,16 @@ TEST(EuclideanDistance, distance_precomputed_norms)
 
 	euclidean->reset_precompute();
 
-	SG_UNREF(euclidean);
+
 }
 
 TEST(EuclideanDistance,get_distance_matrix)
 {
-	CDenseFeatures<float64_t>* features_lhs=create_lhs();
-	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+	auto features_lhs=create_lhs();
+	auto features_rhs=create_rhs();
 
 	// put features into distance object to compute squared Euclidean distances
-	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
+	auto euclidean=std::make_shared<EuclideanDistance>(features_lhs,features_rhs);
 	euclidean->set_disable_sqrt(true);
 	env()->set_num_threads(1);
 
@@ -100,26 +100,26 @@ TEST(EuclideanDistance,get_distance_matrix)
 	EXPECT_EQ(distance_matrix(1,0), euclidean->distance(1,0));
 	EXPECT_EQ(distance_matrix(1,1), euclidean->distance(1,1));
 
-	SG_UNREF(euclidean);
+
 }
 
 TEST(EuclideanDistance, heterogenous_features)
 {
-	CDenseFeatures<float64_t>* features_lhs=create_lhs();
-	CDenseFeatures<float64_t>* features_rhs=create_rhs();
-	SG_REF(features_lhs);
-	SG_REF(features_rhs);
+	auto features_lhs=create_lhs();
+	auto features_rhs=create_rhs();
+
+
 
 	SGVector<int32_t> idx(2);
 	idx[0]=0;
 	idx[1]=1;
 
-	CDenseSubSamplesFeatures<float64_t>* subsample_lhs=new CDenseSubSamplesFeatures<float64_t>(features_lhs, idx);
-	CDenseSubSamplesFeatures<float64_t>* subsample_rhs=new CDenseSubSamplesFeatures<float64_t>(features_rhs, idx);
-	SG_REF(subsample_lhs);
-	SG_REF(subsample_rhs);
+	auto subsample_lhs=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_lhs, idx);
+	auto subsample_rhs=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_rhs, idx);
 
-	CEuclideanDistance* euclidean=new CEuclideanDistance();
+
+
+	auto euclidean=std::make_shared<EuclideanDistance>();
 	euclidean->set_disable_sqrt(true);
 	env()->set_num_threads(1);
 
@@ -139,9 +139,9 @@ TEST(EuclideanDistance, heterogenous_features)
 	EXPECT_NEAR(euclidean->distance(1, 0), 5, accuracy);
 	EXPECT_NEAR(euclidean->distance(1, 1), 5, accuracy);
 
-	SG_UNREF(euclidean);
-	SG_UNREF(subsample_lhs);
-	SG_UNREF(subsample_rhs);
-	SG_UNREF(features_lhs);
-	SG_UNREF(features_rhs);
+
+
+
+
+
 }

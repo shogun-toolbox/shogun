@@ -19,26 +19,21 @@ const char fname_labels[]="../data/label_train_multiclass.dat";
 void test()
 {
 	/* dense features from matrix */
-	CCSVFile* feature_file = new CCSVFile(fname_feats);
+	auto feature_file = std::make_shared<CSVFile>(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
-	SG_UNREF(feature_file);
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
-	SG_REF(features);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(mat);
 
 	/* labels from vector */
-	CCSVFile* label_file = new CCSVFile(fname_labels);
+	auto label_file = std::make_shared<CSVFile>(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
-	SG_UNREF(label_file);
 
-	CMulticlassLabels* labels=new CMulticlassLabels(label_vec);
-	SG_REF(labels);
+	auto labels=std::make_shared<MulticlassLabels>(label_vec);
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
-	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
-	SG_REF(svm);
+	auto svm = std::make_shared<LibLinear>(L2R_L2LOSS_SVC);
 
 	// Add some configuration to the svm
 	svm->set_epsilon(EPSILON);
@@ -48,15 +43,14 @@ void test()
 	// There are several heuristics are implemented:
 	// OVA_NORM, OVA_SOFTMAX
 	// OVO_PRICE, OVO_HASTIE, OVO_HAMAMURA
-	CLinearMulticlassMachine* mc_svm = new CLinearMulticlassMachine(
-			new CMulticlassOneVsOneStrategy(OVO_HASTIE), (CDotFeatures*) features, svm, labels);
-	SG_REF(mc_svm);
+	auto mc_svm = std::make_shared<LinearMulticlassMachine>(
+			std::make_shared<MulticlassOneVsOneStrategy>(OVO_HASTIE), features->as<DotFeatures>(), svm, labels);
 
 	// Train the multiclass machine using the data passed in the constructor
 	mc_svm->train();
 
 	// Classify the training examples and show the results
-	CMulticlassLabels* output = mc_svm->apply()->as<CMulticlassLabels>();
+	auto output = mc_svm->apply()->as<MulticlassLabels>();
 
 	SGVector< int32_t > out_labels = output->get_int_labels();
 	SGVector<int32_t>::display_vector(out_labels.vector, out_labels.vlen);
@@ -70,11 +64,6 @@ void test()
 	}
 
 	//Free resources
-	SG_UNREF(mc_svm);
-	SG_UNREF(svm);
-	SG_UNREF(output);
-	SG_UNREF(features);
-	SG_UNREF(labels);
 }
 
 int main(int argc, char** argv)

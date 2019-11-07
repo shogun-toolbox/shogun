@@ -21,14 +21,14 @@ namespace shogun
  * ED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2}
  * \f]
  */
-class CECOCEDDecoder: public CECOCSimpleDecoder
+class ECOCEDDecoder: public ECOCSimpleDecoder
 {
 public:
     /** constructor */
-    CECOCEDDecoder() {}
+    ECOCEDDecoder() {}
 
     /** destructor */
-    virtual ~CECOCEDDecoder() {}
+    virtual ~ECOCEDDecoder() {}
 
     /** get name */
     virtual const char* get_name() const { return "ECOCEDDecoder"; }

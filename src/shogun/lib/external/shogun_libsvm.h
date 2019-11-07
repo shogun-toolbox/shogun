@@ -91,7 +91,7 @@ struct svm_parameter
 	/** kernel type */
 	int32_t kernel_type;
 	/** kernel */
-	shogun::CKernel* kernel;
+	shogun::Kernel* kernel;
 	/** for poly */
 	int32_t degree;
 	/** for poly/rbf/sigmoid */

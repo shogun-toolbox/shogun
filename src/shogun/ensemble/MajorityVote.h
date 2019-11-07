@@ -14,15 +14,15 @@
 namespace shogun
 {
 	/**
-	 * @brief CMajorityVote is a CWeightedMajorityVote combiner, where each
+	 * @brief MajorityVote is a CWeightedMajorityVote combiner, where each
 	 * Machine's weight in the ensemble is 1.0
 	 */
-	class CMajorityVote : public CWeightedMajorityVote
+	class MajorityVote : public WeightedMajorityVote
 	{
 		public:
-			CMajorityVote();
+			MajorityVote();
 
-			virtual ~CMajorityVote();
+			virtual ~MajorityVote();
 
 			/**
 			 * Combines a matrix of an ensemble of Machines output, where each

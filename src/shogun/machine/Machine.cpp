@@ -12,8 +12,8 @@
 
 using namespace shogun;
 
-CMachine::CMachine()
-    : CStoppableSGObject(), m_max_train_time(0), m_labels(NULL),
+Machine::Machine()
+    : StoppableSGObject(), m_max_train_time(0), m_labels(NULL),
       m_solver_type(ST_AUTO)
 {
 	SG_ADD(&m_max_train_time, "max_train_time", "Maximum training time.");
@@ -26,12 +26,12 @@ CMachine::CMachine()
 	        ST_BLOCK_NORM));
 }
 
-CMachine::~CMachine()
+Machine::~Machine()
 {
-	SG_UNREF(m_labels);
+
 }
 
-bool CMachine::train(CFeatures* data)
+bool Machine::train(std::shared_ptr<Features> data)
 {
 	if (train_require_labels())
 	{
@@ -71,54 +71,53 @@ bool CMachine::train(CFeatures* data)
 	return result;
 }
 
-void CMachine::set_labels(CLabels* lab)
+void Machine::set_labels(std::shared_ptr<Labels> lab)
 {
     if (lab != NULL)
+    {
         if (!is_label_valid(lab))
             error("Invalid label for {}", get_name());
 
-	SG_REF(lab);
-	SG_UNREF(m_labels);
 	m_labels = lab;
+    }
 }
 
-CLabels* CMachine::get_labels()
+std::shared_ptr<Labels> Machine::get_labels()
 {
-	SG_REF(m_labels);
 	return m_labels;
 }
 
-void CMachine::set_max_train_time(float64_t t)
+void Machine::set_max_train_time(float64_t t)
 {
 	m_max_train_time = t;
 }
 
-float64_t CMachine::get_max_train_time()
+float64_t Machine::get_max_train_time()
 {
 	return m_max_train_time;
 }
 
-EMachineType CMachine::get_classifier_type()
+EMachineType Machine::get_classifier_type()
 {
 	return CT_NONE;
 }
 
-void CMachine::set_solver_type(ESolverType st)
+void Machine::set_solver_type(ESolverType st)
 {
 	m_solver_type = st;
 }
 
-ESolverType CMachine::get_solver_type()
+ESolverType Machine::get_solver_type()
 {
 	return m_solver_type;
 }
 
-CLabels* CMachine::apply(CFeatures* data)
+std::shared_ptr<Labels> Machine::apply(std::shared_ptr<Features> data)
 {
 	SG_TRACE("entering {}::apply({} at {})",
-			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));
 
-	CLabels* result=NULL;
+	std::shared_ptr<Labels> result=NULL;
 
 	switch (get_machine_problem_type())
 	{
@@ -143,36 +142,36 @@ CLabels* CMachine::apply(CFeatures* data)
 	}
 
 	SG_TRACE("leaving {}::apply({} at {})",
-			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data));
+			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));
 
 	return result;
 }
 
-CBinaryLabels* CMachine::apply_binary(CFeatures* data)
+std::shared_ptr<BinaryLabels> Machine::apply_binary(std::shared_ptr<Features> data)
 {
 	error("This machine does not support apply_binary()");
 	return NULL;
 }
 
-CRegressionLabels* CMachine::apply_regression(CFeatures* data)
+std::shared_ptr<RegressionLabels> Machine::apply_regression(std::shared_ptr<Features> data)
 {
 	error("This machine does not support apply_regression()");
 	return NULL;
 }
 
-CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
+std::shared_ptr<MulticlassLabels> Machine::apply_multiclass(std::shared_ptr<Features> data)
 {
 	error("This machine does not support apply_multiclass()");
 	return NULL;
 }
 
-CStructuredLabels* CMachine::apply_structured(CFeatures* data)
+std::shared_ptr<StructuredLabels> Machine::apply_structured(std::shared_ptr<Features> data)
 {
 	error("This machine does not support apply_structured()");
 	return NULL;
 }
 
-CLatentLabels* CMachine::apply_latent(CFeatures* data)
+std::shared_ptr<LatentLabels> Machine::apply_latent(std::shared_ptr<Features> data)
 {
 	error("This machine does not support apply_latent()");
 	return NULL;

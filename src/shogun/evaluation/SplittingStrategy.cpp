@@ -9,12 +9,12 @@
 
 using namespace shogun;
 
-CSplittingStrategy::CSplittingStrategy()
+SplittingStrategy::SplittingStrategy()
 {
 	init();
 }
 
-CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
+SplittingStrategy::SplittingStrategy(const std::shared_ptr<Labels>& labels, int32_t num_subsets)
 {
 	init();
 
@@ -28,31 +28,25 @@ CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
 	}
 
 	m_labels=labels;
-	SG_REF(m_labels);
+
 
 	reset_subsets();
 }
 
-void CSplittingStrategy::reset_subsets()
+void SplittingStrategy::reset_subsets()
 {
-	if (m_subset_indices)
-		SG_UNREF(m_subset_indices);
-
-	m_subset_indices=new CDynamicObjectArray();
-	SG_REF(m_subset_indices);
-
 	/* construct all arrays */
-	for (index_t i=0; i<m_num_subsets; ++i)
-		m_subset_indices->append_element(new CDynamicArray<index_t> ());
+	m_subset_indices.clear();
+	m_subset_indices.resize(m_num_subsets);
 
 	m_is_filled=false;
 }
 
-void CSplittingStrategy::init()
+void SplittingStrategy::init()
 {
 	m_labels=NULL;
-	m_subset_indices=NULL;
-	SG_REF(m_subset_indices);
+	m_subset_indices.clear();
+
 	m_is_filled=false;
 	m_num_subsets=0;
 
@@ -65,13 +59,13 @@ void CSplittingStrategy::init()
 	    &m_num_subsets, "num_subsets", "Number of index sets");
 }
 
-CSplittingStrategy::~CSplittingStrategy()
+SplittingStrategy::~SplittingStrategy()
 {
-	SG_UNREF(m_labels);
-	SG_UNREF(m_subset_indices);
+
+
 }
 
-SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx) const
+SGVector<index_t> SplittingStrategy::generate_subset_indices(index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{
@@ -81,21 +75,20 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 	}
 
 	/* construct SGVector copy from index vector */
-	CDynamicArray<index_t>* to_copy=(CDynamicArray<index_t>*)
-			m_subset_indices->get_element_safe(subset_idx);
+	auto& to_copy = m_subset_indices.at(subset_idx);
 
-	index_t num_elements=to_copy->get_num_elements();
+	index_t num_elements=to_copy.size();
 	SGVector<index_t> result(num_elements, true);
 
 	/* copy data */
-	sg_memcpy(result.vector, to_copy->get_array(), sizeof(index_t)*num_elements);
+	sg_memcpy(result.vector, to_copy.data(), sizeof(index_t)*num_elements);
 
-	SG_UNREF(to_copy);
+
 
 	return result;
 }
 
-SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx) const
+SGVector<index_t> SplittingStrategy::generate_subset_inverse(index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{
@@ -104,26 +97,25 @@ SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx
 				get_name(), get_name());
 	}
 
-	CDynamicArray<index_t>* to_invert=(CDynamicArray<index_t>*)
-			m_subset_indices->get_element_safe(subset_idx);
+	auto& to_invert = m_subset_indices.at(subset_idx);
 
 	SGVector<index_t> result(
-			m_labels->get_num_labels()-to_invert->get_num_elements(), true);
+			m_labels->get_num_labels()-to_invert.size(), true);
 
 	index_t index=0;
 	for (index_t i=0; i<m_labels->get_num_labels(); ++i)
 	{
 		/* add i to inverse indices if it is not in the to be inverted set */
-		if (to_invert->find_element(i)==-1)
+		if (std::find(to_invert.begin(), to_invert.end(), i)==to_invert.end())
 			result.vector[index++]=i;
 	}
 
-	SG_UNREF(to_invert);
+
 
 	return result;
 }
 
-index_t CSplittingStrategy::get_num_subsets() const
+index_t SplittingStrategy::get_num_subsets() const
 {
 	return m_num_subsets;
 }

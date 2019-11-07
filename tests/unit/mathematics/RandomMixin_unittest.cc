@@ -10,11 +10,11 @@
 
 using namespace shogun;
 
-class MockNonRandom : public CMockObject
+class MockNonRandom : public MockObject
 {
 };
 
-class MockRandom : public RandomMixin<CMockObject>
+class MockRandom : public RandomMixin<MockObject>
 {
 public:
 	auto sample() -> decltype(m_prng())
@@ -28,10 +28,10 @@ class OneLevelNested : public MockRandom
 public:
 	OneLevelNested()
 	{
-		obj1 = new MockRandom();
+		obj1 = std::make_shared<MockRandom>();
 		obj2 = nullptr;
-		obj3 = new MockRandom();
-		obj4 = new MockNonRandom();
+		obj3 = std::make_shared<MockRandom>();
+		obj4 = std::make_shared<MockNonRandom>();
 
 		watch_param("obj1", &obj1);
 		watch_param("obj2", &obj2);
@@ -41,16 +41,12 @@ public:
 
 	~OneLevelNested()
 	{
-		delete obj1;
-		delete obj2;
-		delete obj3;
-		delete obj4;
 	}
 
-	MockRandom* obj1;
-	MockRandom* obj2;
-	MockRandom* obj3;
-	MockNonRandom* obj4;
+	std::shared_ptr<MockRandom> obj1;
+	std::shared_ptr<MockRandom> obj2;
+	std::shared_ptr<MockRandom> obj3;
+	std::shared_ptr<MockNonRandom> obj4;
 };
 
 class OneLevelNestedNonRandom : public MockNonRandom
@@ -58,10 +54,10 @@ class OneLevelNestedNonRandom : public MockNonRandom
 public:
 	OneLevelNestedNonRandom()
 	{
-		obj1 = new MockRandom();
+		obj1 = std::make_shared<MockRandom>();
 		obj2 = nullptr;
-		obj3 = new MockRandom();
-		obj4 = new MockNonRandom();
+		obj3 = std::make_shared<MockRandom>();
+		obj4 = std::make_shared<MockNonRandom>();
 
 		watch_param("obj1", &obj1);
 		watch_param("obj2", &obj2);
@@ -71,16 +67,12 @@ public:
 
 	~OneLevelNestedNonRandom()
 	{
-		delete obj1;
-		delete obj2;
-		delete obj3;
-		delete obj4;
 	}
 
-	MockRandom* obj1;
-	MockRandom* obj2;
-	MockRandom* obj3;
-	MockNonRandom* obj4;
+	std::shared_ptr<MockRandom> obj1;
+	std::shared_ptr<MockRandom> obj2;
+	std::shared_ptr<MockRandom> obj3;
+	std::shared_ptr<MockNonRandom> obj4;
 };
 
 class TwoLevelNested : public MockRandom
@@ -88,10 +80,10 @@ class TwoLevelNested : public MockRandom
 public:
 	TwoLevelNested()
 	{
-		obj1 = new OneLevelNested();
-		obj2 = new OneLevelNestedNonRandom();
-		obj3 = new MockRandom();
-		obj4 = new MockNonRandom();
+		obj1 = std::make_shared<OneLevelNested>();
+		obj2 = std::make_shared<OneLevelNestedNonRandom>();
+		obj3 = std::make_shared<MockRandom>();
+		obj4 = std::make_shared<MockNonRandom>();
 
 		watch_param("obj1", &obj1);
 		watch_param("obj2", &obj2);
@@ -101,40 +93,36 @@ public:
 
 	~TwoLevelNested()
 	{
-		delete obj1;
-		delete obj2;
-		delete obj3;
-		delete obj4;
 	}
 
-	OneLevelNested* obj1;
-	OneLevelNestedNonRandom* obj2;
-	MockRandom* obj3;
-	MockNonRandom* obj4;
+	std::shared_ptr<OneLevelNested> obj1;
+	std::shared_ptr<OneLevelNestedNonRandom> obj2;
+	std::shared_ptr<MockRandom> obj3;
+	std::shared_ptr<MockNonRandom> obj4;
 };
 
 TEST(RandomMixin, reproducibility_test)
 {
 	auto mock_random = std::make_unique<MockRandom>();
-	mock_random->put("seed", 123);
-	EXPECT_EQ(mock_random->get<int32_t>("seed"), 123);
+	mock_random->put(random::kSeed, 123);
+	EXPECT_EQ(123, mock_random->get<int32_t>(random::kSeed));
 
 	std::array<decltype(mock_random->sample()), 100> values1;
 	for(auto& val : values1)
 		val = mock_random->sample();
 
-	mock_random->put("seed", 345);
-	EXPECT_EQ(mock_random->get<int32_t>("seed"), 345);
+	mock_random->put(random::kSeed, 345);
+	EXPECT_EQ(345, mock_random->get<int32_t>(random::kSeed));
 
 	std::array<decltype(mock_random->sample()), 100> values2;
 	for(auto& val : values2)
 		val = mock_random->sample();
 
-	mock_random->put("seed", 123);
+	mock_random->put(random::kSeed, 123);
 	for(auto& val : values1)
 		EXPECT_EQ(mock_random->sample(), val);
 
-	mock_random->put("seed", 345);
+	mock_random->put(random::kSeed, 345);
 	for(auto& val : values2)
 		EXPECT_EQ(mock_random->sample(), val);
 }
@@ -142,11 +130,11 @@ TEST(RandomMixin, reproducibility_test)
 TEST(RandomMixin, one_level_nesting_test)
 {
 	auto obj = std::make_unique<OneLevelNested>();
-	obj->put("seed", 123);
+	obj->put(random::kSeed, 123);
 	
-	EXPECT_EQ(obj->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj3->get<int32_t>(random::kSeed));
 	
 	auto random_value = obj->sample();
 	EXPECT_EQ(random_value, obj->obj1->sample());
@@ -156,16 +144,16 @@ TEST(RandomMixin, one_level_nesting_test)
 TEST(RandomMixin, two_level_nesting_test)
 {
 	auto obj = std::make_unique<TwoLevelNested>();
-	obj->put("seed", 123);
+	obj->put(random::kSeed, 123);
 
-	EXPECT_EQ(obj->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj3->get<int32_t>(random::kSeed));
 
-	EXPECT_EQ(obj->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj1->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->obj3->get<int32_t>(random::kSeed));
 	
-	EXPECT_EQ(obj->obj2->obj1->get<int32_t>("seed"), 123);
-	EXPECT_EQ(obj->obj2->obj3->get<int32_t>("seed"), 123);
+	EXPECT_EQ(123, obj->obj2->obj1->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj2->obj3->get<int32_t>(random::kSeed));
 }

@@ -40,22 +40,22 @@ namespace shogun
 	 * Note that besides lzo compression, this library is thread safe.
 	 *
 	 */
-	class CCompressor : public CSGObject
+	class Compressor : public SGObject
 	{
 	public:
 		/** default constructor  */
-		CCompressor();
+		Compressor();
 
 		/** default constructor
 		 *
 		 * @param ct compression to use: one of UNCOMPRESSED, LZO, GZIP, BZIP2 or LZMA
 		 */
-		CCompressor(E_COMPRESSION_TYPE ct) : CSGObject(), compression_type(ct)
+		Compressor(E_COMPRESSION_TYPE ct) : SGObject(), compression_type(ct)
 		{
 		}
 
 		/** default destructor */
-		virtual ~CCompressor()
+		virtual ~Compressor()
 		{
 		}
 

@@ -105,8 +105,8 @@ TEST(NeuralNetworkFileReader, read)
 	"	}"
 	"}";
 
-	CNeuralNetworkFileReader reader;
-	CNeuralNetwork* net = reader.read_string(net_string);
+	NeuralNetworkFileReader reader;
+	auto net = reader.read_string(net_string);
 
 	EXPECT_EQ(NNOM_GRADIENT_DESCENT, net->get_optimization_method());
 	EXPECT_EQ(0.001, net->get_l2_coefficient());
@@ -122,53 +122,50 @@ TEST(NeuralNetworkFileReader, read)
 	EXPECT_EQ(0.95, net->get_gd_momentum());
 	EXPECT_EQ(0.9, net->get_gd_error_damping_coeff());
 
-	CDynamicObjectArray* layers = net->get_layers();
+	auto layers = net->get_layers();
 
-	CNeuralLayer* input1 = (CNeuralLayer*)layers->element(0);
+	auto input1 = layers->get_element<NeuralLayer>(0);
 	EXPECT_EQ(0, strcmp(input1->get_name(), "NeuralInputLayer"));
 	EXPECT_EQ(6, input1->get_num_neurons());
-	EXPECT_EQ(0, ((CNeuralInputLayer*)input1)->get_start_index());
-	SG_UNREF(input1);
+	EXPECT_EQ(0, input1->as<NeuralInputLayer>()->get_start_index());
 
-	CNeuralLayer* input2 = (CNeuralLayer*)layers->element(1);
+
+	auto input2 = layers->get_element<NeuralLayer>(1);
 	EXPECT_EQ(0, strcmp(input1->get_name(), "NeuralInputLayer"));
 	EXPECT_EQ(10, input2->get_num_neurons());
-	EXPECT_EQ(6, ((CNeuralInputLayer*)input2)->get_start_index());
-	SG_UNREF(input2);
+	EXPECT_EQ(6, input2->as<NeuralInputLayer>()->get_start_index());
 
-	CNeuralLayer* logistic1 = (CNeuralLayer*)layers->element(2);
+
+	auto logistic1 = layers->get_element<NeuralLayer>(2);
 	EXPECT_EQ(0, strcmp(logistic1->get_name(), "NeuralLogisticLayer"));
 	EXPECT_EQ(32, logistic1->get_num_neurons());
 	EXPECT_EQ(2, logistic1->get_input_indices().vlen);
 	EXPECT_EQ(0, logistic1->get_input_indices()[0]);
 	EXPECT_EQ(1, logistic1->get_input_indices()[1]);
-	SG_UNREF(logistic1);
 
-	CNeuralLayer* linear1 = (CNeuralLayer*)layers->element(3);
+
+	auto linear1 = layers->get_element<NeuralLayer>(3);
 	EXPECT_EQ(0, strcmp(linear1->get_name(), "NeuralLinearLayer"));
 	EXPECT_EQ(8, linear1->get_num_neurons());
 	EXPECT_EQ(1, linear1->get_input_indices().vlen);
 	EXPECT_EQ(2, linear1->get_input_indices()[0]);
-	SG_UNREF(linear1);
 
-	CNeuralLayer* rectified1 = (CNeuralLayer*)layers->element(4);
+
+	auto rectified1 = layers->get_element<NeuralLayer>(4);
 	EXPECT_EQ(0, strcmp(rectified1->get_name(), "NeuralRectifiedLinearLayer"));
 	EXPECT_EQ(8, rectified1->get_num_neurons());
 	EXPECT_EQ(2, rectified1->get_input_indices().vlen);
 	EXPECT_EQ(1, rectified1->get_input_indices()[0]);
 	EXPECT_EQ(2, rectified1->get_input_indices()[1]);
-	SG_UNREF(rectified1);
 
-	CNeuralLayer* softmax = (CNeuralLayer*)layers->element(5);
+
+	auto softmax = layers->get_element<NeuralLayer>(5);
 	EXPECT_EQ(0, strcmp(softmax->get_name(), "NeuralSoftmaxLayer"));
 	EXPECT_EQ(4, softmax->get_num_neurons());
 	EXPECT_EQ(2, softmax->get_input_indices().vlen);
 	EXPECT_EQ(3, softmax->get_input_indices()[0]);
 	EXPECT_EQ(4, softmax->get_input_indices()[1]);
-	SG_UNREF(softmax);
 
-	SG_UNREF(layers);
-	SG_UNREF(net);
 }
 
 #endif

@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <stack>
+#include <utility>
 
 #include <shogun/base/class_list.h>
 #include <shogun/base/macros.h>
@@ -25,7 +26,7 @@ template<class ValueType>
 class JSONReaderVisitor;
 
 template<typename V>
-CSGObject* object_reader(V& v, JSONReaderVisitor<V>* visitor);
+std::shared_ptr<SGObject> object_reader(V& v, JSONReaderVisitor<V>* visitor);
 
 extern const char* const kNameKey;
 extern const char* const kGenericKey;
@@ -41,6 +42,11 @@ public:
 	~JSONReaderVisitor() override {}
 
 	void on(bool* v) override
+	{
+		*v = next_element<bool>(&ValueType::GetBool);
+		SG_DEBUG("read bool with value {}", *v);
+	}
+	void on(std::vector<bool>::reference* v) override
 	{
 		*v = next_element<bool>(&ValueType::GetBool);
 		SG_DEBUG("read bool with value {}", *v);
@@ -130,14 +136,10 @@ public:
 		*v = next_element<std::string>(&ValueType::GetString);
 		SG_DEBUG("reading std::string: {}", v->c_str());
 	}
-	void on(CSGObject** v) override
+	void on(std::shared_ptr<SGObject>* v) override
 	{
 		SG_DEBUG("reading SGObject: ");
-		if (*v != nullptr)
-			SG_UNREF(*v);
 		*v = object_reader(m_value_stack.top(), this);
-		if (*v != nullptr)
-			SG_REF(*v);
 		m_value_stack.pop();
 	}
 	void enter_matrix(index_t* rows, index_t* cols) override
@@ -238,13 +240,13 @@ private:
 	SG_DELETE_COPY_AND_ASSIGN(JSONReaderVisitor);
 };
 
-class CIStreamAdapter
+class IStreamAdapter
 {
 public:
 	typedef char Ch;
 
-	CIStreamAdapter(Some<CInputStream> is, size_t buffer_size = 65536):
-		m_stream(is),
+	IStreamAdapter(std::shared_ptr<InputStream> is, size_t buffer_size = 65536):
+		m_stream(std::move(is)),
 		m_buffer_size(buffer_size)
 	{
 		m_buffer.reserve(m_buffer_size);
@@ -252,7 +254,7 @@ public:
 	}
 
 
-	~CIStreamAdapter()
+	~IStreamAdapter()
 	{
 		m_buffer.clear();
 	}
@@ -303,17 +305,17 @@ private:
 	}
 
 private:
-	Some<CInputStream> m_stream;
+	std::shared_ptr<InputStream> m_stream;
 	string m_buffer;
 	size_t m_buffer_size;
 	size_t m_pos = 0;
 	size_t m_limit = 0;
 	bool m_eof = false;
-	SG_DELETE_COPY_AND_ASSIGN(CIStreamAdapter);
+	SG_DELETE_COPY_AND_ASSIGN(IStreamAdapter);
 };
 
 template<typename V>
-CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _this = nullptr)
+std::shared_ptr<SGObject> object_reader(const V* v, JSONReaderVisitor<V>* visitor, const std::shared_ptr<SGObject>& _this = nullptr)
 {
 	const V& value = *v;
 	require(v != nullptr, "Value should be set!");
@@ -325,7 +327,7 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _
 	string obj_name(value[kNameKey].GetString());
 	require(value.HasMember(kGenericKey), "Not a valid serialized SGObject, it does not have a 'generic'!");
 	EPrimitiveType primitive_type((EPrimitiveType) value[kGenericKey].GetInt());
-	CSGObject* obj = nullptr;
+	std::shared_ptr<SGObject> obj = nullptr;
 	if (_this)
 	{
 		require(_this->get_name() == obj_name, "");
@@ -357,38 +359,37 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _
 	{
 		io::warn("Error while deserializeing {}: ShogunException: "
 			"{}", obj_name.c_str(), e.what());
-		SG_UNREF(obj);
 		return nullptr;
 	}
 
 	return obj;
 }
 
-CJsonDeserializer::CJsonDeserializer() : CDeserializer()
+JsonDeserializer::JsonDeserializer() : Deserializer()
 {
 }
 
-CJsonDeserializer::~CJsonDeserializer()
+JsonDeserializer::~JsonDeserializer()
 {
 }
 
-Some<CSGObject> CJsonDeserializer::read_object()
+std::shared_ptr<SGObject> JsonDeserializer::read_object()
 {
-	CIStreamAdapter is(stream());
+	IStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
 	Document reader;
 	reader.ParseStream<kParseNanAndInfFlag>(is);
 	auto reader_visitor =
 		make_unique<JSONReaderVisitor<Document::ValueType>>();
-	return wrap<CSGObject>(object_reader(
+	return object_reader(
 		dynamic_cast<Document::ValueType*>(&reader),
-		reader_visitor.get())
+		reader_visitor.get()
 	);
 }
 
-void CJsonDeserializer::read(CSGObject* _this)
+void JsonDeserializer::read(std::shared_ptr<SGObject> _this)
 {
-	CIStreamAdapter is(stream());
+	IStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
 	Document reader;
 	reader.ParseStream<kParseNanAndInfFlag>(is);

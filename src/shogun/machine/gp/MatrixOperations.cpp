@@ -70,7 +70,7 @@ SGMatrix<float64_t> CMatrixOperations::get_choleksy(SGVector<float64_t> W,
 		VectorXd eigen_iW=(VectorXd::Ones(eigen_W.rows())).cwiseQuotient(eigen_W);
 
 		FullPivLU<MatrixXd> lu(
-			eigen_kernel*CMath::sq(scale)+MatrixXd(eigen_iW.asDiagonal()));
+			eigen_kernel*Math::sq(scale)+MatrixXd(eigen_iW.asDiagonal()));
 
 		// compute cholesky: L = -(K + iW)^-1
 		eigen_L=-lu.inverse();
@@ -79,7 +79,7 @@ SGMatrix<float64_t> CMatrixOperations::get_choleksy(SGVector<float64_t> W,
 	{
 		// compute cholesky: L = chol(sW * sW' .* K + I)
 		LLT<MatrixXd> llt(
-			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_kernel*CMath::sq(scale))+
+			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_kernel*Math::sq(scale))+
 			MatrixXd::Identity(eigen_kernel.rows(), eigen_kernel.cols()));
 
 		eigen_L=llt.matrixU();
@@ -99,7 +99,7 @@ SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L, SGMatr
 
 	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
 	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-		eigen_sW.asDiagonal()*eigen_kernel*CMath::sq(scale));
+		eigen_sW.asDiagonal()*eigen_kernel*Math::sq(scale));
 
 	return get_inverse(L, kernel, sW, V, scale);
 }
@@ -134,7 +134,7 @@ SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L,
 	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
 	// K - (K * W^(1/2)) * (L^T)^(-1) * L^(-1) * W^(1/2) * K =
 	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
-	eigen_tmp=eigen_kernel*CMath::sq(scale)-eigen_V.adjoint()*eigen_V;
+	eigen_tmp=eigen_kernel*Math::sq(scale)-eigen_V.adjoint()*eigen_V;
 	return tmp;
 }
 

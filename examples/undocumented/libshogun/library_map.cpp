@@ -26,6 +26,5 @@ int main(int argc, char** argv)
 			//	i, map->index_of(i), map->get_element(i));
 	}
 
-	SG_UNREF(map);
 	return 0;
 }

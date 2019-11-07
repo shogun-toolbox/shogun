@@ -30,7 +30,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
@@ -64,15 +63,15 @@ TEST(LinearTimeMMD, biased_same_num_samples)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -109,15 +108,15 @@ TEST(LinearTimeMMD, unbiased_same_num_samples)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -154,15 +153,15 @@ TEST(LinearTimeMMD, incomplete_same_num_samples)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
@@ -199,15 +198,15 @@ TEST(LinearTimeMMD, biased_different_null_samples)
 	for (index_t i=0; i<d*n; ++i)
 		data_q.matrix[i]/=max_q;
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -244,15 +243,15 @@ TEST(LinearTimeMMD, unbiased_different_null_samples)
 	for (index_t i=0; i<d*n; ++i)
 		data_q.matrix[i]/=max_q;
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -289,15 +288,15 @@ TEST(LinearTimeMMD, compute_variance_null)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_num_blocks_per_burst(1000);
@@ -327,17 +326,17 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
-	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
@@ -369,17 +368,17 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
-	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
@@ -411,17 +410,17 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
-	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);

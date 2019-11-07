@@ -15,19 +15,19 @@ See :cite:`scholkopf2002learning` for a more detailed introduction. :sgclass:`Li
 Example
 -------
 
-Imagine we have files with training and test data. We create `CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CRegressionLabels` as
+Imagine we have files with training and test data. We create `DenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`RegressionLabels` as
 
 .. sgexample:: support_vector_regression.sg:create_features
 
-Choose an appropriate :sgclass:`CKernel` and instantiate it. Here we use a :sgclass:`CGaussianKernel`.
+Choose an appropriate :sgclass:`Kernel` and instantiate it. Here we use a :sgclass:`GaussianKernel`.
 
 .. sgexample:: support_vector_regression.sg:create_appropriate_kernel
 
-We create an instance of :sgclass:`CLibSVR` classifier by passing it the kernel, labels, solver type and some more parameters. More solver types are available in :sgclass:`CLibSVR`. See :cite:`chang2002training` for more details.
+We create an instance of :sgclass:`LibSVR` classifier by passing it the kernel, labels, solver type and some more parameters. More solver types are available in :sgclass:`LibSVR`. See :cite:`chang2002training` for more details.
 
 .. sgexample:: support_vector_regression.sg:create_instance
 
-Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels`.
+Then we train the regression model and apply it to test data to get the predicted :sgclass:`RegressionLabels`.
 
 .. sgexample:: support_vector_regression.sg:train_and_apply
 
@@ -35,7 +35,7 @@ After training, we can extract :math:`\alpha`.
 
 .. sgexample:: support_vector_regression.sg:extract_alpha
 
-Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
+Finally, we can evaluate the :sgclass:`MeanSquaredError`.
 
 .. sgexample:: support_vector_regression.sg:evaluate_error
 

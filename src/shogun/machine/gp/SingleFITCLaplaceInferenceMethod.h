@@ -44,25 +44,25 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * CSingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
+ * SingleFITCInference::get_derivative_wrt_kernel(Parameters::const_reference param),
  * depends on the implementation of virtual kernel method,
- * CKernel::get_parameter_gradient_diagonal(param, i).
+ * Kernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
  * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
- * CSingleFITCLaplaceInferenceMethod::get_posterior_covariance() is called
+ * SingleFITCLaplaceInferenceMethod::get_posterior_covariance() is called
  *
  * This specific implementation was adapted from the infFITC_Laplace.m file in the
  * GPML toolbox.
  */
-class CSingleFITCLaplaceInferenceMethod: public CSingleFITCInference
+class SingleFITCLaplaceInferenceMethod: public SingleFITCInference
 {
 friend class CFITCPsiLine;
-friend class CSingleFITCLaplaceNewtonOptimizer; 
+friend class SingleFITCLaplaceNewtonOptimizer; 
 friend class SingleFITCLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
-	CSingleFITCLaplaceInferenceMethod();
+	SingleFITCLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -73,11 +73,11 @@ public:
 	 * @param model Likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleFITCLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	SingleFITCLaplaceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CSingleFITCLaplaceInferenceMethod();
+	virtual ~SingleFITCLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -95,9 +95,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CSingleFITCLaplaceInferenceMethod object
+	 * @return casted SingleFITCLaplaceInferenceMethod object
 	 */
-	static CSingleFITCLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<SingleFITCLaplaceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/**
 	 * @return whether combination of Laplace approximation inference method and
@@ -175,7 +175,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 
 protected:
 	/** update gradients */
@@ -206,7 +206,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -216,7 +216,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -226,7 +226,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -236,7 +236,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** efficiently compute the Cholesky decomposition of inverse of the input matrix
 	 * chol(inv(mtx))
@@ -276,7 +276,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param);
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt inducing noise
 	 *
@@ -284,7 +284,7 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(const TParameter* param);
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt param
 	 * when W has at least one negative element
@@ -294,7 +294,7 @@ protected:
 	 *
 	 * @return derivative when W has negative element(s)
 	 */
-	virtual SGVector<float64_t> derivative_helper_when_Wneg(SGVector<float64_t> res, const TParameter* param);
+	virtual SGVector<float64_t> derivative_helper_when_Wneg(SGVector<float64_t> res, Parameters::const_reference param);
 
 	/** compute variables which are required to compute negative log marginal
 	 * likelihood full derivatives wrt  cov-like hyperparameter \f$\theta\f$
@@ -389,19 +389,19 @@ protected:
 };
 
 /** @brief The build-in minimizer for SingleFITCLaplaceInference */
-class CSingleFITCLaplaceNewtonOptimizer: public Minimizer
+class SingleFITCLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	CSingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
 	virtual const char* get_name() const { return "SingleFITCLaplaceNewtonOptimizer"; }
 
-	virtual ~CSingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	virtual ~SingleFITCLaplaceNewtonOptimizer() {  }
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(CSingleFITCLaplaceInferenceMethod *obj);
+	void set_target(const std::shared_ptr<SingleFITCLaplaceInferenceMethod >&obj);
 
 	/** Unset the inference method
 	 * @param is_unref do we SG_UNREF the method
@@ -441,7 +441,7 @@ private:
 	void init();
 
 	/** the inference method */
-	CSingleFITCLaplaceInferenceMethod *m_obj;
+	std::shared_ptr<SingleFITCLaplaceInferenceMethod >m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;

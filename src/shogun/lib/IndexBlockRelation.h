@@ -10,11 +10,11 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/IndexBlock.h>
 
 namespace shogun
 {
 
-class CList;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EIndexBlockRelationType
@@ -27,17 +27,17 @@ enum EIndexBlockRelationType
 /** @brief class IndexBlockRelation
  *
  */
-class CIndexBlockRelation : public CSGObject
+class IndexBlockRelation : public SGObject
 {
 public:
 
 	/** default constructor */
-	CIndexBlockRelation()
+	IndexBlockRelation()
 	{
 	}
 
 	/** destructor */
-	virtual ~CIndexBlockRelation()
+	virtual ~IndexBlockRelation()
 	{
 	}
 
@@ -50,7 +50,7 @@ public:
 protected:
 
 	/** check list of blocks */
-	bool check_blocks_list(CList* blocks);
+	bool check_blocks_list(std::vector<std::shared_ptr<IndexBlock>> blocks);
 
 };
 

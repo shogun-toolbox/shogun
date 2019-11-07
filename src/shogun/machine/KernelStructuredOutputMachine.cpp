@@ -7,43 +7,45 @@
 #include <shogun/machine/KernelStructuredOutputMachine.h>
 #include <shogun/kernel/Kernel.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CKernelStructuredOutputMachine::CKernelStructuredOutputMachine()
-: CStructuredOutputMachine(), m_kernel(NULL)
+KernelStructuredOutputMachine::KernelStructuredOutputMachine()
+: StructuredOutputMachine(), m_kernel(NULL)
 {
 	register_parameters();
 }
 
-CKernelStructuredOutputMachine::CKernelStructuredOutputMachine(
-		CStructuredModel*  model,
-		CStructuredLabels* labs,
-		CKernel*           kernel)
-: CStructuredOutputMachine(model, labs), m_kernel(NULL)
+KernelStructuredOutputMachine::KernelStructuredOutputMachine(
+		std::shared_ptr<StructuredModel>  model,
+		std::shared_ptr<StructuredLabels> labs,
+		std::shared_ptr<Kernel>           kernel)
+: StructuredOutputMachine(std::move(model), std::move(labs)), m_kernel(NULL)
 {
-	set_kernel(kernel);
+	set_kernel(std::move(kernel));
 	register_parameters();
 }
 
-CKernelStructuredOutputMachine::~CKernelStructuredOutputMachine()
+KernelStructuredOutputMachine::~KernelStructuredOutputMachine()
 {
-	SG_UNREF(m_kernel)
+	
 }
 
-void CKernelStructuredOutputMachine::set_kernel(CKernel* k)
+void KernelStructuredOutputMachine::set_kernel(std::shared_ptr<Kernel> k)
 {
-	SG_REF(k);
-	SG_UNREF(m_kernel);
-	m_kernel = k;
+	
+	
+	m_kernel = std::move(k);
 }
 
-CKernel* CKernelStructuredOutputMachine::get_kernel() const
+std::shared_ptr<Kernel> KernelStructuredOutputMachine::get_kernel() const
 {
-	SG_REF(m_kernel);
+	
 	return m_kernel;
 }
 
-void CKernelStructuredOutputMachine::register_parameters()
+void KernelStructuredOutputMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_kernel, "m_kernel", "The kernel", ParameterProperties::HYPER);
+	SG_ADD((std::shared_ptr<SGObject>*)&m_kernel, "m_kernel", "The kernel", ParameterProperties::HYPER);
 }

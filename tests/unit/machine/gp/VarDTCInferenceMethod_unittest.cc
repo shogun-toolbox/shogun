@@ -85,21 +85,21 @@ TEST(VarDTCInferenceMethod,get_negative_log_marginal_likelihood)
 	lab_train[5]=-5.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=log(2.0);
-	CKernel* kernel=new CGaussianKernel(10,2.0*exp(ell*2.0));
+	auto kernel=std::make_shared<GaussianKernel>(10,2.0*exp(ell*2.0));
 
 	float64_t mean_weight=0.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<ConstMean>(mean_weight);
 
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<GaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<VarDTCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -119,8 +119,8 @@ TEST(VarDTCInferenceMethod,get_negative_log_marginal_likelihood)
 	//58.616164107936129
 	EXPECT_NEAR(nlz, 58.616164107936129, 1E-6);
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
@@ -163,21 +163,21 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	lab_train[5]=-5.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=log(2.0);
-	CKernel* kernel=new CGaussianKernel(10,2.0*exp(ell*2.0));
+	auto kernel=std::make_shared<GaussianKernel>(10,2.0*exp(ell*2.0));
 
 	float64_t mean_weight=0.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<ConstMean>(mean_weight);
 
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<GaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<VarDTCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -189,21 +189,17 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	inf->enable_optimizing_inducing_features(false);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-
-	float64_t dnlZ_sf2=gradient->get_element(scale_param)[0];
-	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_width=(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
+	float64_t dnlZ_lik=gradient["log_sigma"][0];
+	float64_t dnlZ_width=gradient["log_width"][0];
 
 	// comparison of partial derivatives of negative log marginal likelihood
 	// result from varsgp package:
@@ -213,16 +209,10 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	//17.692318958964869
 	//lik=
 	//-91.123579890090099
-	// 
+	//
 	EXPECT_NEAR(dnlZ_lik, -91.123579890090099, 1E-5);
 	EXPECT_NEAR(dnlZ_width, 11.103836410254763, 1E-5);
 	EXPECT_NEAR(dnlZ_sf2, 17.692318958964869, 1E-5);
-
-	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
 }
 
 TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_features)
@@ -267,21 +257,21 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	lab_train[5]=-5.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<GaussianARDSparseKernel>(10);
 	kernel->set_scalar_weights(1.0/2.0);
 
 	float64_t mean_weight=0.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<ConstMean>(mean_weight);
 
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<GaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<VarDTCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -293,16 +283,15 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	inf->enable_optimizing_inducing_features(false);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> dnlZ_lat=gradient->get_element(lat_param);
+	SGVector<float64_t> dnlZ_lat=gradient["inducing_features"];
 	SGMatrix<float64_t> deriv_lat(dnlZ_lat.vector, dim, m, false);
 	// get parameters to compute derivatives
 	// comparison of partial derivatives of negative log marginal likelihood
@@ -312,23 +301,17 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	//-3.026588124830805 -10.984866584498826   0.000007222318628
 	//7.574618915520174  -7.260614222976087  -0.000050353461401
 
-	abs_tolerance = CMath::get_abs_tolerance(-3.026588124830805, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-3.026588124830805, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(0,0),  -3.026588124830805,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-10.984866584498826, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-10.984866584498826, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(0,1),  -10.984866584498826,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000007222318628, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000007222318628, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(0,2),  0.000007222318628,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(7.574618915520174, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(7.574618915520174, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(1,0),  7.574618915520174,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-7.260614222976087, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-7.260614222976087, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(1,1),  -7.260614222976087,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000050353461401, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000050353461401, rel_tolerance);
 	EXPECT_NEAR(deriv_lat(1,2),  -0.000050353461401,  abs_tolerance);
-	
-	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
 }

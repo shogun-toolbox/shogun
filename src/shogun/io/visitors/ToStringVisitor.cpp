@@ -12,7 +12,9 @@ using namespace shogun;
 void ToStringVisitor::on(bool *v) {
 	stream() << (*v ? "true" : "false") << m_buffer;
 }
-
+void ToStringVisitor::on(std::vector<bool>::reference *v) {
+	stream() << (*v ? "true" : "false") << " ";
+}
 void ToStringVisitor::on(int32_t *v) {
 	stream() << *v << m_buffer;
 }
@@ -33,7 +35,7 @@ void ToStringVisitor::on(std::string *v) {
 	stream() << *v << m_buffer;
 }
 
-void ToStringVisitor::on(CSGObject **v) {
+void ToStringVisitor::on(std::shared_ptr<SGObject>* v) {
 	if (*v) {
 		stream() << (*v)->get_name() << "(...)" << m_buffer;
 	} else {

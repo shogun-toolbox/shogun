@@ -37,12 +37,12 @@
 namespace shogun
 {
 
-class CBTestMMD : public CStreamingMMD
+class BTestMMD : public StreamingMMD
 {
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
-	CBTestMMD();
-	virtual ~CBTestMMD();
+	BTestMMD();
+	virtual ~BTestMMD();
 
 	void set_blocksize(index_t blocksize);
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);

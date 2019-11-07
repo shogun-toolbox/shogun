@@ -14,22 +14,22 @@
 namespace shogun
 {
 /** @brief Identity Kernel Normalization, i.e. no normalization is applied. */
-class CIdentityKernelNormalizer : public CKernelNormalizer
+class IdentityKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** default constructor */
-		CIdentityKernelNormalizer() : CKernelNormalizer()
+		IdentityKernelNormalizer() : KernelNormalizer()
 		{
 		}
 
 		/** default destructor */
-		virtual ~CIdentityKernelNormalizer()
+		virtual ~IdentityKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
 		 * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			return true;
 		}

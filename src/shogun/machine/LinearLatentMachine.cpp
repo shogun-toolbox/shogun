@@ -9,20 +9,22 @@
 #include <shogun/latent/LatentModel.h>
 #include <shogun/machine/LinearLatentMachine.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CLinearLatentMachine::CLinearLatentMachine()
-	: CLinearMachine()
+LinearLatentMachine::LinearLatentMachine()
+	: LinearMachine()
 {
 	init();
 }
 
-CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
-	: CLinearMachine()
+LinearLatentMachine::LinearLatentMachine(std::shared_ptr<LatentModel> model, float64_t C)
+	: LinearMachine()
 {
 	init();
 	m_C= C;
-	set_model(model);
+	set_model(std::move(model));
 
 	index_t feat_dim = m_model->get_dim();
 	SGVector<float64_t> w;
@@ -31,31 +33,31 @@ CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
 	set_w(w);
 }
 
-CLinearLatentMachine::~CLinearLatentMachine()
+LinearLatentMachine::~LinearLatentMachine()
 {
-	SG_UNREF(m_model);
+
 }
 
-CLatentLabels* CLinearLatentMachine::apply_latent(CFeatures* data)
+std::shared_ptr<LatentLabels> LinearLatentMachine::apply_latent(std::shared_ptr<Features> data)
 {
 	if (m_model == NULL)
 		error("LatentModel is not set!");
 
-	CLatentFeatures* lf = data->as<CLatentFeatures>();
+	auto lf = std::dynamic_pointer_cast<LatentFeatures>(data);
 	m_model->set_features(lf);
 
 	return apply_latent();
 }
 
-void CLinearLatentMachine::set_model(CLatentModel* latent_model)
+void LinearLatentMachine::set_model(const std::shared_ptr<LatentModel>& latent_model)
 {
 	ASSERT(latent_model != NULL)
-	SG_REF(latent_model);
-	SG_UNREF(m_model);
+
+
 	m_model = latent_model;
 }
 
-bool CLinearLatentMachine::train_machine(CFeatures* data)
+bool LinearLatentMachine::train_machine(std::shared_ptr<Features> data)
 {
 	if (m_model == NULL)
 		error("LatentModel is not set!");
@@ -93,7 +95,7 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 		stop = (inner_eps < (0.5*m_C*m_epsilon+1E-8)) && (decrement < m_C*m_epsilon);
 
 		inner_eps = -decrement*0.01;
-		inner_eps = CMath::max(inner_eps, 0.5*m_C*m_epsilon);
+		inner_eps = Math::max(inner_eps, 0.5*m_C*m_epsilon);
 		SG_DEBUG("inner epsilon: {}", inner_eps)
 
 		/* find argmaxH */
@@ -111,7 +113,7 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 	return true;
 }
 
-void CLinearLatentMachine::init()
+void LinearLatentMachine::init()
 {
 	m_C = 10.0;
 	m_epsilon = 1E-3;

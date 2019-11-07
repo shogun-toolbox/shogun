@@ -17,14 +17,14 @@ namespace shogun
 /** @brief Class that provides a solve method for real sparse-matrix
  * linear systems using LLT
  */
-class CDirectSparseLinearSolver : public CLinearSolver<float64_t, float64_t>
+class DirectSparseLinearSolver : public LinearSolver<float64_t, float64_t>
 {
 public:
 	/** default constructor */
-	CDirectSparseLinearSolver();
+	DirectSparseLinearSolver();
 
 	/** destructor */
-	virtual ~CDirectSparseLinearSolver();
+	virtual ~DirectSparseLinearSolver();
 
 	/**
 	 * solve method for solving real-valued sparse linear systems
@@ -33,7 +33,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(CLinearOperator<float64_t>* A,
+	virtual SGVector<float64_t> solve(std::shared_ptr<LinearOperator<float64_t>> A,
 		SGVector<float64_t> b);
 
 	/** @return object name */

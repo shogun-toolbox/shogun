@@ -17,29 +17,29 @@
 namespace shogun
 {
 
-/** @brief The class CDelimiterTokenizer is used to tokenize
+/** @brief The class DelimiterTokenizer is used to tokenize
  *  a SGVector<char> into tokens using custom chars as delimiters.
  *  One can set the delimiters to use by setting to 1 the appropriate
  *  index of the public field delimiters. Eg. to set as delimiter the
  *  character ':', one should do: tokenizer->delimiters[':'] = 1;
  */
-class CDelimiterTokenizer: public CTokenizer
+class DelimiterTokenizer: public Tokenizer
 {
 public:
 	/** default constructor
 	 *
 	 * @param skip_delimiters whether to skip consecutive delimiters or not
 	 */
-	CDelimiterTokenizer(bool skip_delimiters = false);
+	DelimiterTokenizer(bool skip_delimiters = false);
 
 	/** copy constructor
 	 *
 	 * @param orig the original DelimiterTokenizer
 	 */
-	CDelimiterTokenizer(const CDelimiterTokenizer& orig);
+	DelimiterTokenizer(const DelimiterTokenizer& orig);
 
 	/** destructor */
-	virtual ~CDelimiterTokenizer() {}
+	virtual ~DelimiterTokenizer() {}
 
 	/** Set the char array that requires tokenization
 	 *
@@ -76,7 +76,7 @@ public:
 	 */
 	void init_for_whitespace();
 
-	CDelimiterTokenizer* get_copy();
+	DelimiterTokenizer* get_copy();
 
 	/** Resets the delimiters */
 	void clear_delimiters();

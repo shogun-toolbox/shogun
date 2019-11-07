@@ -24,14 +24,14 @@ TEST(SOSVM, sgd_check_w_helper)
 	w[0] = -1;
 	w[1] = 1;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	// create features and labels
-	CFactorGraphFeatures* instances = new CFactorGraphFeatures(num_samples);
-	SG_REF(instances);
-	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
-	SG_REF(labels);
+	auto instances = std::make_shared<FactorGraphFeatures>(num_samples);
+
+	auto labels = std::make_shared<FactorGraphLabels>(num_samples);
+
 
 	for (int32_t n = 0; n < num_samples; ++n)
 	{
@@ -39,14 +39,14 @@ TEST(SOSVM, sgd_check_w_helper)
 		SGVector<int32_t> vc(1);
 		vc[0] = 2;
 
-		CFactorGraph* fg = new CFactorGraph(vc);
+		auto fg = std::make_shared<FactorGraph>(vc);
 
 		// add factors
 		SGVector<float64_t> data1(1);
 		data1[0] = -1.0;
 		SGVector<int32_t> var_index1(1);
 		var_index1[0] = 0;
-		CFactor* fac1 = new CFactor(factortype, var_index1, data1);
+		auto fac1 = std::make_shared<Factor>(factortype, var_index1, data1);
 		fg->add_factor(fac1);
 
 		// add factor graph instance
@@ -55,18 +55,18 @@ TEST(SOSVM, sgd_check_w_helper)
 		fg->connect_components();
 		fg->compute_energies();
 
-		CMAPInference infer_met(fg, TREE_MAX_PROD);
+		MAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
-		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+		auto fg_observ = infer_met.get_structured_outputs();
 
 		// add ground truth states
 		labels->add_label(fg_observ);
-		SG_UNREF(fg_observ);
+
 	}
 
-	CFactorGraphModel* model = new CFactorGraphModel(instances, labels, TREE_MAX_PROD, false);
-	SG_REF(model);
+	auto model = std::make_shared<FactorGraphModel>(instances, labels, TREE_MAX_PROD, false);
+
 
 	// initialize model parameters
 	SGVector<float64_t> w_truth = w.clone();
@@ -75,7 +75,7 @@ TEST(SOSVM, sgd_check_w_helper)
 	model->add_factor_type(factortype);
 
 	// SGD solver
-	CStochasticSOSVM* sgd = new CStochasticSOSVM(model, labels, false, false);
+	auto sgd = std::make_shared<StochasticSOSVM>(model, labels, false, false);
 	sgd->set_num_iter(1);
 	sgd->set_lambda(1.0);
 	sgd->train();
@@ -84,14 +84,14 @@ TEST(SOSVM, sgd_check_w_helper)
 	for (int32_t i = 0; i < w.vlen; i++)
 		EXPECT_NEAR(w_truth[i], w[i], 1E-10);
 
-	EXPECT_NEAR(1.0, CSOSVMHelper::primal_objective(w, model, 1.0), 1E-10);
-	EXPECT_NEAR(0.0, CSOSVMHelper::average_loss(w, model), 1E-10);
+	EXPECT_NEAR(1.0, SOSVMHelper::primal_objective(w, model, 1.0), 1E-10);
+	EXPECT_NEAR(0.0, SOSVMHelper::average_loss(w, model), 1E-10);
 
-	SG_UNREF(sgd);
-	SG_UNREF(model);
-	SG_UNREF(labels);
-	SG_UNREF(instances);
-	SG_UNREF(factortype);
+
+
+
+
+
 }
 
 TEST(SOSVM, fw_check_w_helper)
@@ -105,14 +105,14 @@ TEST(SOSVM, fw_check_w_helper)
 	w[0] = -sqrt(0.5);
 	w[1] = sqrt(0.5);
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
+
 
 	// create features and labels
-	CFactorGraphFeatures* instances = new CFactorGraphFeatures(num_samples);
-	SG_REF(instances);
-	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
-	SG_REF(labels);
+	auto instances = std::make_shared<FactorGraphFeatures>(num_samples);
+
+	auto labels = std::make_shared<FactorGraphLabels>(num_samples);
+
 
 	for (int32_t n = 0; n < num_samples; ++n)
 	{
@@ -120,14 +120,14 @@ TEST(SOSVM, fw_check_w_helper)
 		SGVector<int32_t> vc(1);
 		vc[0] = 2;
 
-		CFactorGraph* fg = new CFactorGraph(vc);
+		auto fg = std::make_shared<FactorGraph>(vc);
 
 		// add factors
 		SGVector<float64_t> data1(1);
 		data1[0] = -sqrt(0.5);
 		SGVector<int32_t> var_index1(1);
 		var_index1[0] = 0;
-		CFactor* fac1 = new CFactor(factortype, var_index1, data1);
+		auto fac1 = std::make_shared<Factor>(factortype, var_index1, data1);
 		fg->add_factor(fac1);
 
 		// add factor graph instance
@@ -136,18 +136,18 @@ TEST(SOSVM, fw_check_w_helper)
 		fg->connect_components();
 		fg->compute_energies();
 
-		CMAPInference infer_met(fg, TREE_MAX_PROD);
+		MAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
-		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+		auto fg_observ = infer_met.get_structured_outputs();
 
 		// add ground truth states
 		labels->add_label(fg_observ);
-		SG_UNREF(fg_observ);
+
 	}
 
-	CFactorGraphModel* model = new CFactorGraphModel(instances, labels, TREE_MAX_PROD, false);
-	SG_REF(model);
+	auto model = std::make_shared<FactorGraphModel>(instances, labels, TREE_MAX_PROD, false);
+
 
 	// initialize model parameters
 	SGVector<float64_t> w_truth = w.clone();
@@ -156,8 +156,8 @@ TEST(SOSVM, fw_check_w_helper)
 	model->add_factor_type(factortype);
 
 	// FW solver
-	float64_t aloss_fw = CSOSVMHelper::average_loss(w, model, true);
-	CFWSOSVM* fw = new CFWSOSVM(model, labels, false, false);
+	float64_t aloss_fw = SOSVMHelper::average_loss(w, model, true);
+	auto fw = std::make_shared<FWSOSVM>(model, labels, false, false);
 	fw->set_num_iter(1);
 	fw->set_lambda(1.0);
 	fw->set_gap_threshold(0.0);
@@ -167,13 +167,13 @@ TEST(SOSVM, fw_check_w_helper)
 	for (int32_t i = 0; i < w.vlen; i++)
 		EXPECT_NEAR(w_truth[i], w[i], 1E-10);
 
-	EXPECT_NEAR(0.5, CSOSVMHelper::primal_objective(w, model, 1.0), 1E-10);
+	EXPECT_NEAR(0.5, SOSVMHelper::primal_objective(w, model, 1.0), 1E-10);
 	EXPECT_NEAR(1.0, aloss_fw, 1E-10);
-	EXPECT_NEAR(0.5, CSOSVMHelper::dual_objective(w, aloss_fw, 1.0), 1E-10);
+	EXPECT_NEAR(0.5, SOSVMHelper::dual_objective(w, aloss_fw, 1.0), 1E-10);
 
-	SG_UNREF(fw);
-	SG_UNREF(model);
-	SG_UNREF(labels);
-	SG_UNREF(instances);
-	SG_UNREF(factortype);
+
+
+
+
+
 }

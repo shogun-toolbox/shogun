@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni,
  *          Michele Mazzoni, Heiko Strathmann, Fernando Iglesias
  */
 
@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CPerceptron::CPerceptron() : CIterativeMachine<CLinearMachine>()
+Perceptron::Perceptron() : IterativeMachine<LinearMachine>()
 {
 	m_max_iterations = 1000;
 	learn_rate = 0.1;
@@ -29,17 +29,17 @@ CPerceptron::CPerceptron() : CIterativeMachine<CLinearMachine>()
 	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", ParameterProperties::HYPER)
 }
 
-CPerceptron::~CPerceptron()
+Perceptron::~Perceptron()
 {
 }
 
-void CPerceptron::init_model(CFeatures* data)
+void Perceptron::init_model(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 
 	int32_t num_feat = features->get_dim_feature_space();
@@ -56,7 +56,7 @@ void CPerceptron::init_model(CFeatures* data)
 	}
 }
 
-void CPerceptron::iteration()
+void Perceptron::iteration()
 {
 	bool converged = true;
 	SGVector<float64_t> w = get_w();
@@ -70,7 +70,7 @@ void CPerceptron::iteration()
 
 		auto predicted_label = v.dot(w) + bias;
 
-		if (CMath::sign<float64_t>(predicted_label) != true_label)
+		if (Math::sign<float64_t>(predicted_label) != true_label)
 		{
 			converged = false;
 			const auto gradient = learn_rate * true_label;
@@ -84,12 +84,12 @@ void CPerceptron::iteration()
 	m_complete = converged;
 }
 
-void CPerceptron::set_initialize_hyperplane(bool initialize_hyperplane)
+void Perceptron::set_initialize_hyperplane(bool initialize_hyperplane)
 {
 	m_initialize_hyperplane = initialize_hyperplane;
 }
 
-bool CPerceptron::get_initialize_hyperplane()
+bool Perceptron::get_initialize_hyperplane()
 {
 	return m_initialize_hyperplane;
 }

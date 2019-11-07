@@ -31,10 +31,12 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/internals/InitPerKernel.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
-InitPerKernel::InitPerKernel(std::shared_ptr<CKernel>& kernel) : m_kernel(kernel)
+InitPerKernel::InitPerKernel(std::shared_ptr<Kernel>& kernel) : m_kernel(kernel)
 {
 }
 
@@ -42,14 +44,14 @@ InitPerKernel::~InitPerKernel()
 {
 }
 
-InitPerKernel& InitPerKernel::operator=(CKernel* kernel)
+InitPerKernel& InitPerKernel::operator=(std::shared_ptr<Kernel> kernel)
 {
-	SG_REF(kernel);
-	m_kernel = std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); });
+
+	m_kernel = std::move(kernel);
 	return *this;
 }
 
-InitPerKernel::operator CKernel*() const
+InitPerKernel::operator std::shared_ptr<shogun::Kernel>() const
 {
-	return m_kernel.get();
+	return m_kernel;
 }

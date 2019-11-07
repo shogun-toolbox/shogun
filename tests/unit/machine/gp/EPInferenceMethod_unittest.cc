@@ -43,18 +43,18 @@ TEST(EPInferenceMethod,get_cholesky_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -90,9 +90,6 @@ TEST(EPInferenceMethod,get_cholesky_probit_likelihood)
 	EXPECT_NEAR(L(4,2), 0.000000000000000, 1E-3);
 	EXPECT_NEAR(L(4,3), 0.000000000000000, 1E-3);
 	EXPECT_NEAR(L(4,4), 1.332317592760179, 1E-3);
-
-	// clean up
-	SG_UNREF(inf);
 }
 
 TEST(EPInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
@@ -122,18 +119,18 @@ TEST(EPInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -141,9 +138,6 @@ TEST(EPInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nlZ, 3.38359489001561, 1E-3);
-
-	// clean up
-	SG_UNREF(inf);
 }
 
 TEST(EPInferenceMethod,get_alpha_probit_likelihood)
@@ -173,18 +167,18 @@ TEST(EPInferenceMethod,get_alpha_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -195,9 +189,6 @@ TEST(EPInferenceMethod,get_alpha_probit_likelihood)
 	EXPECT_NEAR(alpha[2], 0.435105219728697, 1E-3);
 	EXPECT_NEAR(alpha[3], 0.407811602073545, 1E-3);
 	EXPECT_NEAR(alpha[4], -0.435104577247077, 1E-3);
-
-	// clean up
-	SG_UNREF(inf);
 }
 
 TEST(EPInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -227,47 +218,39 @@ TEST(EPInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=2.0;
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*CMath::sq(ell));
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*Math::sq(ell));
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, features_train, mean,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel, features_train, mean,
 			labels_train, likelihood);
 	inf->set_scale(1.5);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameter_dictionary;
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-
-	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
 	EXPECT_NEAR(dnlZ_ell, -0.0551896689012401, 1E-3);
 	EXPECT_NEAR(dnlZ_sf2, -0.0535698533526804, 1E-3);
-
-	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
 }
 
 TEST(EPInferenceMethod, get_posterior_mean_probit_likelihood)
@@ -297,18 +280,18 @@ TEST(EPInferenceMethod, get_posterior_mean_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -320,9 +303,6 @@ TEST(EPInferenceMethod, get_posterior_mean_probit_likelihood)
 	EXPECT_NEAR(mu[2], 1.016031341665029, 1E-3);
 	EXPECT_NEAR(mu[3], 1.079152436021026, 1E-3);
 	EXPECT_NEAR(mu[4], -1.016378075891627, 1E-3);
-
-	// clean up
-	SG_UNREF(inf);
 }
 
 TEST(EPInferenceMethod, get_posterior_covariance_probit_likelihood)
@@ -352,18 +332,18 @@ TEST(EPInferenceMethod, get_posterior_covariance_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -400,7 +380,4 @@ TEST(EPInferenceMethod, get_posterior_covariance_probit_likelihood)
 	EXPECT_NEAR(Sigma(4,2), -0.00165339284404121, 1E-3);
 	EXPECT_NEAR(Sigma(4,3), 0.00151934275843193, 1E-3);
 	EXPECT_NEAR(Sigma(4,4), 1.26206797645117108, 1E-3);
-
-	// clean up
-	SG_UNREF(inf);
 }

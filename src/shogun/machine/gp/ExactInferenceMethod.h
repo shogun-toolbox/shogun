@@ -63,11 +63,11 @@ namespace shogun
  * NOTE: The Gaussian Likelihood Function must be used for this inference
  * method.
  */
-class CExactInferenceMethod: public CInference
+class ExactInferenceMethod: public Inference
 {
 public:
 	/** default constructor */
-	CExactInferenceMethod();
+	ExactInferenceMethod();
 
 	/** constructor
 	 *
@@ -77,10 +77,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CExactInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	ExactInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CExactInferenceMethod();
+	virtual ~ExactInferenceMethod();
 
 	/** return what type of inference we are
 	 *
@@ -97,9 +97,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CExactInferenceMethod object
+	 * @return casted ExactInferenceMethod object
 	 */
-	static CExactInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<ExactInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -191,7 +191,7 @@ public:
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -221,7 +221,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -231,7 +231,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -241,7 +241,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -251,7 +251,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			Parameters::const_reference param);
 
 	/** update gradients */
 	virtual void compute_gradient();

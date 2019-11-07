@@ -46,13 +46,13 @@ namespace shogun
  * The variational distribution is Gaussian
  *
  */
-class CVariationalGaussianLikelihood : public CVariationalLikelihood
+class VariationalGaussianLikelihood : public VariationalLikelihood
 {
 public:
 	/** default constructor */
-	CVariationalGaussianLikelihood();
+	VariationalGaussianLikelihood();
 
-	virtual ~CVariationalGaussianLikelihood() {};
+	virtual ~VariationalGaussianLikelihood() {};
 
 	/** set the variational distribution given data and parameters
 	 *
@@ -64,7 +64,7 @@ public:
 	 * Note that the variational distribution is Gaussian
 	 */
 	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab);
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
 
 	/** set a non-negative noise factor in order to correct the variance if variance is close to zero or negative
 	 * setting 0 means correction is not applied

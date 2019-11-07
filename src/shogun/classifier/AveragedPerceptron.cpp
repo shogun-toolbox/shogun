@@ -13,16 +13,16 @@
 
 using namespace shogun;
 
-CAveragedPerceptron::CAveragedPerceptron() : CIterativeMachine<CLinearMachine>()
+AveragedPerceptron::AveragedPerceptron() : IterativeMachine<LinearMachine>()
 {
 	init();
 }
 
-CAveragedPerceptron::~CAveragedPerceptron()
+AveragedPerceptron::~AveragedPerceptron()
 {
 }
 
-void CAveragedPerceptron::init()
+void AveragedPerceptron::init()
 {
 	set_max_iter(1000);
 	set_learn_rate(0.1);
@@ -39,14 +39,14 @@ void CAveragedPerceptron::init()
 	    ParameterProperties::MODEL)
 }
 
-void CAveragedPerceptron::init_model(CFeatures* data)
+void AveragedPerceptron::init_model(std::shared_ptr<Features> data)
 {
 	ASSERT(m_labels)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 	ASSERT(features)
 
@@ -65,7 +65,7 @@ void CAveragedPerceptron::init_model(CFeatures* data)
 	set_w(w);
 }
 
-void CAveragedPerceptron::iteration()
+void AveragedPerceptron::iteration()
 {
 	bool converged = true;
 
@@ -82,7 +82,7 @@ void CAveragedPerceptron::iteration()
 		const auto true_label = *(iter_train_labels++);
 		auto predicted_label = feature.dot(cached_w) + cached_bias;
 
-		if (CMath::sign<float64_t>(predicted_label) != true_label)
+		if (Math::sign<float64_t>(predicted_label) != true_label)
 		{
 			converged = false;
 			const auto gradient = learn_rate * true_label;

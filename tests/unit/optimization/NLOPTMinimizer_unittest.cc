@@ -32,11 +32,10 @@
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <gtest/gtest.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/Map.h>
 #include <shogun/optimization/NLOPTMinimizer.h>
 CPiecewiseQuadraticObject2::CPiecewiseQuadraticObject2()
-	:CSGObject()
+	:SGObject()
 {
 	init();
 }
@@ -56,12 +55,12 @@ void CPiecewiseQuadraticObject2::init()
 	SG_ADD(&m_truth_x, "truth_x", "truth_x");
 }
 
-void CPiecewiseQuadraticObject2::set_init_x(SGVector<float64_t> init_x)
+void CPiecewiseQuadraticObject2::set_init_x(const SGVector<float64_t>& init_x)
 {
 	m_init_x=init_x;
 }
 
-void CPiecewiseQuadraticObject2::set_truth_x(SGVector<float64_t> truth_x)
+void CPiecewiseQuadraticObject2::set_truth_x(const SGVector<float64_t>& truth_x)
 {
 	m_truth_x=truth_x;
 }
@@ -78,14 +77,13 @@ float64_t CPiecewiseQuadraticObject2::get_value()
 	return res;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(Parameters::const_reference param)
 {
-	require(param, "param not set");
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> res;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		res=SGVector<float64_t>(m_init_x.vlen);
 		require(m_init_x.vlen==m_truth_x.vlen, "the length must be the same");
@@ -97,27 +95,23 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_gradient(TParameter * param)
 	}
 	return res;
 }
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_variable(Parameters::const_reference param)
 {
-	require(param, "param not set");
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
-
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 		return m_init_x;
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(Parameters::const_reference param)
 {
-	require(param, "param not set");
-
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> bound;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		bound=SGVector<float64_t>(m_init_x.vlen);
 		bound.set_const(m_x_upper_bound);
@@ -125,15 +119,13 @@ SGVector<float64_t> CPiecewiseQuadraticObject2::get_upper_bound(TParameter * par
 	return bound;
 }
 
-SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(TParameter * param)
+SGVector<float64_t> CPiecewiseQuadraticObject2::get_lower_bound(Parameters::const_reference param)
 {
-	require(param, "param not set");
-
-	require(!strcmp(param->m_name, "init_x"), "Can't compute derivative wrt {}.{} parameter",
-		get_name(), param->m_name);
+	require(param.first == "init_x", "Can't compute derivative wrt {}.{} parameter",
+		get_name(), param.first);
 
 	SGVector<float64_t> bound;
-	if (!strcmp(param->m_name, "init_x"))
+	if (param.first == "init_x")
 	{
 		bound=SGVector<float64_t>(m_init_x.vlen);
 		bound.set_const(m_x_lower_bound);
@@ -154,15 +146,13 @@ void NLOPTTestCostFunction::init()
 
 NLOPTTestCostFunction::~NLOPTTestCostFunction()
 {
-	SG_UNREF(m_obj);
+	
 }
 
-void NLOPTTestCostFunction::set_target(CPiecewiseQuadraticObject2 *obj)
+void NLOPTTestCostFunction::set_target(const std::shared_ptr<CPiecewiseQuadraticObject2 >&obj)
 {
 	if(obj!=m_obj)
 	{
-		SG_REF(obj);
-		SG_UNREF(m_obj);
 		m_obj=obj;
 	}
 }
@@ -176,80 +166,64 @@ float64_t NLOPTTestCostFunction::get_cost()
 SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
-	for(index_t i=0; i<num_variables; i++)
-	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
-			bound=m_obj->get_lower_bound(node->key);
-	}
-	SG_UNREF(parameters);
+	for (const auto& p: parameters)
+		bound=m_obj->get_lower_bound(p.first);
+	
 	return bound;
 }
 
 SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
-	for(index_t i=0; i<num_variables; i++)
+	for (const auto& p: parameters)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
-			bound=m_obj->get_upper_bound(node->key);
+		bound=m_obj->get_upper_bound(p.first);
 	}
-	SG_UNREF(parameters);
+	
 	return bound;
 }
 
 SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
-	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
 
-	for(index_t i=0; i<num_variables; i++)
+	for (const auto& p: parameters)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
-			variable=m_obj->get_variable(node->key);
-	
+		variable=m_obj->get_variable(p.first);
 	}
-	SG_UNREF(parameters);
+	
 	return variable;
 }
 
 SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 {
 	require(m_obj,"object not set");
-	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
+	std::map<SGObject::Parameters::value_type, std::shared_ptr<SGObject>> parameters;
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
-	index_t num_gradients=parameters->get_num_elements();
 	SGVector<float64_t> gradient;
-
-	for(index_t i=0; i<num_gradients; i++)
+	for (const auto& p: parameters)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
-			gradient=m_obj->get_gradient(node->key);
+		gradient=m_obj->get_gradient(p.first);
 	}
-	SG_UNREF(parameters);
+	
 	return gradient;
 }
 
 TEST(CNLOPTMinimizer,test1)
 {
-	CPiecewiseQuadraticObject2 *obj=new CPiecewiseQuadraticObject2();
+	auto obj=std::make_shared<CPiecewiseQuadraticObject2>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -267,21 +241,18 @@ TEST(CNLOPTMinimizer,test1)
 	obj->set_x_lower_bound(0.0);
 	obj->set_x_upper_bound(4.0);
 
-	NLOPTTestCostFunction *b=new NLOPTTestCostFunction();
-	SG_REF(obj);
+	auto b=std::make_shared<NLOPTTestCostFunction>();
+	
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=new CNLOPTMinimizer(b);
+	auto opt=std::make_shared<NLOPTMinimizer>(b);
 	float64_t cost=opt->minimize();
 	EXPECT_NEAR(cost, 2.0, 1e-6);
-
-	SG_UNREF(obj);
-	delete opt;
 }
 
 TEST(CNLOPTMinimizer,test2)
 {
-	CPiecewiseQuadraticObject2 *obj=new CPiecewiseQuadraticObject2();
+	auto obj=std::make_shared<CPiecewiseQuadraticObject2>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -299,11 +270,11 @@ TEST(CNLOPTMinimizer,test2)
 	obj->set_x_lower_bound(0.0);
 	obj->set_x_upper_bound(4.0);
 
-	NLOPTTestCostFunction *b=new NLOPTTestCostFunction();
-	SG_REF(obj);
+	auto b=std::make_shared<NLOPTTestCostFunction>();
+	
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=new CNLOPTMinimizer(b);
+	auto opt=std::make_shared<NLOPTMinimizer>(b);
 	opt->minimize();
 
 	for(index_t i=0; i<init_x.vlen; i++)
@@ -317,8 +288,6 @@ TEST(CNLOPTMinimizer,test2)
 			EXPECT_NEAR(init_x[i], 3.0, 1e-6);
 		}
 	}
-	SG_UNREF(obj);
-	delete opt;
 }
 #endif /* HAVE_NLOPT */
 #endif //USE_GPL_SHOGUN

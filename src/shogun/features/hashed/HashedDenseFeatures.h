@@ -14,13 +14,13 @@
 
 namespace shogun
 {
-template <class ST> class CDenseFeatures;
-class CDotFeatures;
+template <class ST> class DenseFeatures;
+class DotFeatures;
 
-/** @brief This class is identical to the CDenseFeatures class
+/** @brief This class is identical to the DenseFeatures class
  * except that it hashes each dimension to a new feature space.
  */
-template <class ST> class CHashedDenseFeatures : public CDotFeatures
+template <class ST> class HashedDenseFeatures : public DotFeatures
 {
 public:
 
@@ -30,7 +30,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(int32_t size=0, bool use_quadr = false, bool keep_lin_terms = true);
+	HashedDenseFeatures(int32_t size=0, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/** constructor
 	 *
@@ -39,7 +39,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(CDenseFeatures<ST>* feats, int32_t d, bool use_quadr = false,
+	HashedDenseFeatures(std::shared_ptr<DenseFeatures<ST>> feats, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** constructor
@@ -49,7 +49,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(SGMatrix<ST> matrix, int32_t dm, bool use_quadr = false,
+	HashedDenseFeatures(SGMatrix<ST> matrix, int32_t dm, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** constructor
@@ -61,7 +61,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec, int32_t d,
+	HashedDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec, int32_t d,
 			bool use_quadr = false, bool keep_lin_terms = true);
 
 	/** constructor loading features from file
@@ -71,17 +71,17 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
+	HashedDenseFeatures(std::shared_ptr<File> loader, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = false);
 
 	/** copy constructor */
-	CHashedDenseFeatures(const CHashedDenseFeatures& orig);
+	HashedDenseFeatures(const HashedDenseFeatures& orig);
 
 	/** duplicate */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
 	/** destructor */
-	virtual ~CHashedDenseFeatures();
+	virtual ~HashedDenseFeatures();
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -101,7 +101,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 			int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
@@ -209,12 +209,12 @@ public:
 			bool keep_linear_terms = true);
 
 private:
-	void init(CDenseFeatures<ST>* feats, int32_t d, bool use_quadr, bool keep_lin_terms);
+	void init(std::shared_ptr<DenseFeatures<ST>> feats, int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
 
 	/** dense features */
-	CDenseFeatures<ST>* dense_feats;
+	std::shared_ptr<DenseFeatures<ST>> dense_feats;
 
 	/** new feature space dimension */
 	int32_t dim;

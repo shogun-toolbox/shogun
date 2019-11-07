@@ -5,7 +5,7 @@
 
 namespace shogun
 {
-class CDotFeatures;
+class DotFeatures;
 /** @brief The compact version as given in Bart Hamers' thesis
  * <i>Kernel Models for Large Scale Applications</i>
  * (Eq. 4.10) is computed as
@@ -19,18 +19,18 @@ class CDotFeatures;
  *
  */
 
-class CGaussianCompactKernel: public CGaussianKernel
+class GaussianCompactKernel: public GaussianKernel
 {
     public:
         /** default constructor */
-        CGaussianCompactKernel();
+        GaussianCompactKernel();
 
         /** constructor
          *
          * @param size cache size
          * @param width width
          */
-        CGaussianCompactKernel(int32_t size, float64_t width);
+        GaussianCompactKernel(int32_t size, float64_t width);
 
         /** constructor
          *
@@ -39,11 +39,11 @@ class CGaussianCompactKernel: public CGaussianKernel
          * @param width width
          * @param size cache size
          */
-        CGaussianCompactKernel(CDotFeatures* l, CDotFeatures* r,
+        GaussianCompactKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
                                float64_t width, int32_t size=10);
 
         /* destructor */
-        virtual ~CGaussianCompactKernel();
+        virtual ~GaussianCompactKernel();
 
         /** return what type of kernel we are
          *

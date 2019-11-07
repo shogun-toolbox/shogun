@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Soeren Sonnenburg, Sanuj Sharma, Fernando Iglesias, 
+ * Authors: Shell Hu, Soeren Sonnenburg, Sanuj Sharma, Fernando Iglesias,
  *          Bjoern Esser
  */
 
@@ -10,8 +10,8 @@
 
 using namespace shogun;
 
-CFactorGraph::CFactorGraph()
-	: CSGObject()
+FactorGraph::FactorGraph()
+	: SGObject()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -19,16 +19,16 @@ CFactorGraph::CFactorGraph()
 	init();
 }
 
-CFactorGraph::CFactorGraph(SGVector<int32_t> card)
-	: CSGObject()
+FactorGraph::FactorGraph(SGVector<int32_t> card)
+	: SGObject()
 {
 	m_cardinalities = card;
 	register_parameters();
 	init();
 }
 
-CFactorGraph::CFactorGraph(const CFactorGraph &fg)
-	: CSGObject()
+FactorGraph::FactorGraph(const FactorGraph &fg)
+	: SGObject()
 {
 	register_parameters();
 	m_cardinalities = fg.get_cardinalities();
@@ -40,54 +40,34 @@ CFactorGraph::CFactorGraph(const CFactorGraph &fg)
 	m_num_edges = fg.get_num_edges();
 }
 
-CFactorGraph::~CFactorGraph()
+FactorGraph::~FactorGraph()
 {
-	SG_UNREF(m_factors);
-	SG_UNREF(m_datasources);
-	SG_UNREF(m_dset);
-
-	if (m_factors != NULL)
-		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = {}.", m_factors->ref_count());
-
-	if (m_datasources != NULL)
-		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = {}.", m_datasources->ref_count());
-
-	SG_DEBUG("CFactorGraph::~CFactorGraph(): this->ref_count() = {}.", this->ref_count());
 }
 
-void CFactorGraph::register_parameters()
+void FactorGraph::register_parameters()
 {
 	SG_ADD(&m_cardinalities, "cardinalities", "Cardinalities");
-	SG_ADD((CSGObject**)&m_factors, "factors", "Factors");
-	SG_ADD((CSGObject**)&m_datasources, "datasources", "Factor data sources");
-	SG_ADD((CSGObject**)&m_dset, "dset", "Disjoint set");
+	SG_ADD(&m_factors, "factors", "Factors");
+	SG_ADD(&m_datasources, "datasources", "Factor data sources");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_dset, "dset", "Disjoint set");
 	SG_ADD(&m_has_cycle, "has_cycle", "Whether has circle in graph");
 	SG_ADD(&m_num_edges, "num_edges", "Number of edges");
 }
 
-void CFactorGraph::init()
+void FactorGraph::init()
 {
 	m_has_cycle = false;
 	m_num_edges = 0;
-	m_factors = NULL;
-	m_datasources = NULL;
-	m_factors = new CDynamicObjectArray();
-	m_datasources = new CDynamicObjectArray();
-
-	if (m_factors != NULL)
-		SG_DEBUG("CFactorGraph::init(): m_factors->ref_count() = {}.", m_factors->ref_count());
+	m_factors.clear();
+	m_datasources.clear();
 
 	// NOTE m_cards cannot be empty
-	m_dset = new CDisjointSet(m_cardinalities.size());
-
-	SG_REF(m_factors);
-	SG_REF(m_datasources);
-	SG_REF(m_dset);
+	m_dset = std::make_shared<DisjointSet>(m_cardinalities.size());
 }
 
-void CFactorGraph::add_factor(CFactor* factor)
+void FactorGraph::add_factor(const std::shared_ptr<Factor>& factor)
 {
-	m_factors->push_back(factor);
+	m_factors.push_back(factor);
 	m_num_edges += factor->get_variables().size();
 
 	// graph structure changed after adding factors
@@ -95,84 +75,81 @@ void CFactorGraph::add_factor(CFactor* factor)
 		m_dset->set_connected(false);
 }
 
-void CFactorGraph::add_data_source(CFactorDataSource* datasource)
+void FactorGraph::add_data_source(const std::shared_ptr<FactorDataSource>& datasource)
 {
-	m_datasources->push_back(datasource);
+	m_datasources.push_back(datasource);
 }
 
-CDynamicObjectArray* CFactorGraph::get_factors() const
+std::vector<std::shared_ptr<Factor>> FactorGraph::get_factors() const
 {
-	SG_REF(m_factors);
+
 	return m_factors;
 }
 
-CDynamicObjectArray* CFactorGraph::get_factor_data_sources() const
+std::vector<std::shared_ptr<FactorDataSource>>
+FactorGraph::get_factor_data_sources() const
 {
-	SG_REF(m_datasources);
+
 	return m_datasources;
 }
 
-int32_t CFactorGraph::get_num_factors() const
+int32_t FactorGraph::get_num_factors() const
 {
-	return m_factors->get_num_elements();
+	return m_factors.size();
 }
 
-SGVector<int32_t> CFactorGraph::get_cardinalities() const
+SGVector<int32_t> FactorGraph::get_cardinalities() const
 {
 	return m_cardinalities;
 }
 
-void CFactorGraph::set_cardinalities(SGVector<int32_t> cards)
+void FactorGraph::set_cardinalities(SGVector<int32_t> cards)
 {
 	m_cardinalities = cards.clone();
 }
 
-CDisjointSet* CFactorGraph::get_disjoint_set() const
+std::shared_ptr<DisjointSet> FactorGraph::get_disjoint_set() const
 {
-	SG_REF(m_dset);
+
 	return m_dset;
 }
 
-int32_t CFactorGraph::get_num_edges() const
+int32_t FactorGraph::get_num_edges() const
 {
 	return m_num_edges;
 }
 
-int32_t CFactorGraph::get_num_vars() const
+int32_t FactorGraph::get_num_vars() const
 {
 	return m_cardinalities.size();
 }
 
-void CFactorGraph::compute_energies()
+void FactorGraph::compute_energies()
 {
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
 		fac->compute_energies();
-		SG_UNREF(fac);
 	}
 }
 
-float64_t CFactorGraph::evaluate_energy(const SGVector<int32_t> state) const
+float64_t FactorGraph::evaluate_energy(const SGVector<int32_t> state) const
 {
 	ASSERT(state.size() == m_cardinalities.size());
 
 	float64_t energy = 0.0;
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
 		energy += fac->evaluate_energy(state);
-		SG_UNREF(fac);
 	}
 	return energy;
 }
 
-float64_t CFactorGraph::evaluate_energy(const CFactorGraphObservation* obs) const
+float64_t FactorGraph::evaluate_energy(const std::shared_ptr<const FactorGraphObservation>& obs) const
 {
 	return evaluate_energy(obs->get_data());
 }
 
-SGVector<float64_t> CFactorGraph::evaluate_energies() const
+SGVector<float64_t> FactorGraph::evaluate_energies() const
 {
 	int num_assig = 1;
 	SGVector<int32_t> cumprod_cards(m_cardinalities.size());
@@ -200,7 +177,7 @@ SGVector<float64_t> CFactorGraph::evaluate_energies() const
 	return etable;
 }
 
-void CFactorGraph::connect_components()
+void FactorGraph::connect_components()
 {
 	if (m_dset->get_connected())
 		return;
@@ -209,9 +186,8 @@ void CFactorGraph::connect_components()
 	m_dset->make_sets();
 	bool flag = false;
 
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
 		SGVector<int32_t> vars = fac->get_variables();
 
 		int32_t r0 = m_dset->find_set(vars[0]);
@@ -231,33 +207,33 @@ void CFactorGraph::connect_components()
 			r0 = m_dset->link_set(r0, ri);
 		}
 
-		SG_UNREF(fac);
+
 	}
 	m_has_cycle = flag;
 	m_dset->set_connected(true);
 }
 
-bool CFactorGraph::is_acyclic_graph() const
+bool FactorGraph::is_acyclic_graph() const
 {
 	return !m_has_cycle;
 }
 
-bool CFactorGraph::is_connected_graph() const
+bool FactorGraph::is_connected_graph() const
 {
 	return (m_dset->get_num_sets() == 1);
 }
 
-bool CFactorGraph::is_tree_graph() const
+bool FactorGraph::is_tree_graph() const
 {
 	return (m_has_cycle == false && m_dset->get_num_sets() == 1);
 }
 
-void CFactorGraph::loss_augmentation(CFactorGraphObservation* gt)
+void FactorGraph::loss_augmentation(std::shared_ptr<FactorGraphObservation> gt)
 {
 	loss_augmentation(gt->get_data(), gt->get_loss_weights());
 }
 
-void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float64_t> loss)
+void FactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float64_t> loss)
 {
 	if (loss.size() == 0)
 	{
@@ -274,9 +250,8 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 	// augment loss to incorrect states in the first factor containing the variable
 	// since += L_i for each variable if it takes wrong state ever
 	// TODO: augment unary factors
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (auto& fac : m_factors)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
 		SGVector<int32_t> vars = fac->get_variables();
 		for (int32_t vi = 0; vi < vars.size(); vi++)
 		{
@@ -288,9 +263,9 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 			SGVector<float64_t> energies = fac->get_energies();
 			for (int32_t ei = 0; ei < energies.size(); ei++)
 			{
-				CTableFactorType* ftype = fac->get_factor_type();
+				auto ftype = fac->get_factor_type();
 				int32_t vstate = ftype->state_from_index(ei, vi);
-				SG_UNREF(ftype);
+
 
 				if (states_gt[vv] == vstate)
 					continue;
@@ -302,11 +277,11 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 			var_flags[vv] = 1;
 		}
 
-		SG_UNREF(fac);
+
 	}
 
 	// make sure all variables have been checked
-	int32_t min_var = CMath::min(var_flags.vector, var_flags.vlen);
+	int32_t min_var = Math::min(var_flags.vector, var_flags.vlen);
 	ASSERT(min_var == 1);
 }
 

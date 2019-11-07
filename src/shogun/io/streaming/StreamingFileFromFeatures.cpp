@@ -6,30 +6,32 @@
 
 #include <shogun/io/streaming/StreamingFileFromFeatures.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures()
-	: CStreamingFile()
+StreamingFileFromFeatures::StreamingFileFromFeatures()
+	: StreamingFile()
 {
 	features=NULL;
 	labels=NULL;
 }
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat)
-	: CStreamingFile()
+StreamingFileFromFeatures::StreamingFileFromFeatures(std::shared_ptr<Features> feat)
+	: StreamingFile()
 {
-	features=feat;
+	features=std::move(feat);
 	labels=NULL;
 }
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab)
-	: CStreamingFile()
+StreamingFileFromFeatures::StreamingFileFromFeatures(std::shared_ptr<Features> feat, float64_t* lab)
+	: StreamingFile()
 {
-	features=feat;
+	features=std::move(feat);
 	labels=lab;
 }
 
-CStreamingFileFromFeatures::~CStreamingFileFromFeatures()
+StreamingFileFromFeatures::~StreamingFileFromFeatures()
 {
 	features=NULL;
 	labels=NULL;

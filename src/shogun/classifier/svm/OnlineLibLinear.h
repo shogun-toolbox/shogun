@@ -13,25 +13,24 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/machine/OnlineLinearMachine.h>
 
 namespace shogun
 {
-/** @brief Class implementing a purely online version of CLibLinear,
+/** @brief Class implementing a purely online version of LibLinear,
  * using the L2R_L1LOSS_SVC_DUAL solver only. */
 
 /** @brief This class provides an interface to the LibLinear library for large-
  * scale linear learning [1] focusing on SVM. This is the online-classification interface. For
- * batch classification, see CLibLinear, for batch regression, see
- * CLibLinearRegression.
+ * batch classification, see LibLinear, for batch regression, see
+ * LibLinearRegression.
  *
  * This class offers ::L2R_L1LOSS_SVC_DUAL only.
  * See the ::LIBLINEAR_SOLVER_TYPE enum for types of solvers for batch SVM.
  *
  * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
  * */
-class COnlineLibLinear : public COnlineLinearMachine
+class OnlineLibLinear : public OnlineLinearMachine
 {
 public:
 
@@ -39,14 +38,14 @@ public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** Default constructor */
-		COnlineLibLinear();
+		OnlineLibLinear();
 
 		/**
 		 * Constructor
 		 *
 		 * @param C Cost constant C
 		 */
-		COnlineLibLinear(float64_t C);
+		OnlineLibLinear(float64_t C);
 
 		/**
 		 * Constructor
@@ -54,16 +53,16 @@ public:
 		 * @param C Cost constant C
 		 * @param traindat Training examples
 		 */
-		COnlineLibLinear(float64_t C, CStreamingDotFeatures* traindat);
+		OnlineLibLinear(float64_t C, std::shared_ptr<StreamingDotFeatures> traindat);
 
 		/**
 		 * Copy Constructor
-		 * @param mch another COnlineLibLinear machine
+		 * @param mch another OnlineLibLinear machine
 		 */
-		COnlineLibLinear(COnlineLibLinear *mch);
+		OnlineLibLinear(const std::shared_ptr<OnlineLibLinear >&mch);
 
 		/** Destructor */
-		virtual ~COnlineLibLinear();
+		virtual ~OnlineLibLinear();
 
 		/**
 		 * Set C1 and C2 constants
@@ -119,7 +118,7 @@ public:
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example
 		 */
-		virtual void train_example(CStreamingDotFeatures *feature, float64_t label);
+		virtual void train_example(std::shared_ptr<StreamingDotFeatures >feature, float64_t label);
 
 private:
 		/** Set up parameters */
@@ -129,7 +128,7 @@ private:
 		 * @param ex the example being trained
 		 * @param label label of this example
 		 */
-		void train_one(SGVector<float32_t> ex, float64_t label);
+		void train_one(const SGVector<float32_t>& ex, float64_t label);
 
 		/** train on one *sparse* vector
 		 * @param ex the example being trained

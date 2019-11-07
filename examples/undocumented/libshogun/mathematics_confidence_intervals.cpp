@@ -18,7 +18,7 @@ void test()
 
 	float64_t low, up, mean;
 	float64_t error_prob=0.05;
-	mean=CStatistics::confidence_intervals_mean(data, error_prob, low, up);
+	mean=Statistics::confidence_intervals_mean(data, error_prob, low, up);
 
 	SG_SPRINT("sample mean: %f. True mean lies in [%f,%f] with %f%%\n",
 			mean, low, up, 100*(1-error_prob));

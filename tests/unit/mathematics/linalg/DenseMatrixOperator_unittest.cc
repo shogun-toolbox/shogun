@@ -26,7 +26,7 @@ TEST(DenseMatrixOperator, apply)
 	SGMatrix<float64_t> m1(size, size);
 	m1.set_const(0.5);
 
-	CDenseMatrixOperator<float64_t> op11(m1);
+	DenseMatrixOperator<float64_t> op11(m1);
 	SGVector<float64_t> r1=op11.apply(b1);
 
 	for (index_t i=0; i<r1.vlen; ++i)
@@ -38,7 +38,7 @@ TEST(DenseMatrixOperator, apply)
 	typedef Matrix<float64_t, size, size> MatrixSd;
 	Map<MatrixSd> mapped1(m1.matrix, m1.num_rows, m1.num_cols);
 	mapped1=MatrixSd::Identity();
-	CDenseMatrixOperator<float64_t> op12(m1);
+	DenseMatrixOperator<float64_t> op12(m1);
 	r1=op12.apply(b1);
 
 	for (index_t i=0; i<r1.vlen; ++i)
@@ -53,7 +53,7 @@ TEST(DenseMatrixOperator, apply)
 	SGMatrix<complex128_t> m2(size, size);
 	m2.set_const(complex128_t(0.5, 0.25));
 
-	CDenseMatrixOperator<complex128_t> op21(m2);
+	DenseMatrixOperator<complex128_t> op21(m2);
 	SGVector<complex128_t> r2=op21.apply(b2);
 
 	for (index_t i=0; i<r2.vlen; ++i)
@@ -66,7 +66,7 @@ TEST(DenseMatrixOperator, apply)
 	typedef Matrix<complex128_t, size, size> MatrixScd;
 	Map<MatrixScd> mapped2(m2.matrix, m2.num_rows, m2.num_cols);
 	mapped2=MatrixScd::Identity();
-	CDenseMatrixOperator<complex128_t> op22(m2);
+	DenseMatrixOperator<complex128_t> op22(m2);
 	r2=op22.apply(b2);
 
 	for (index_t i=0; i<r2.vlen; ++i)
@@ -87,7 +87,7 @@ TEST(DenseMatrixOperator, shift_apply)
 	m.set_const(complex128_t(0.5, 0.0));
 
 	// shifting the diagonal via interface
-	CDenseMatrixOperator<complex128_t> op(m);
+	DenseMatrixOperator<complex128_t> op(m);
 	SGVector<complex128_t> diag=op.get_diagonal();
 	for (index_t i=0; i<diag.vlen; ++i)
 	{
@@ -116,10 +116,10 @@ TEST(DenseMatrixOperator, asymmetric_clone)
 	const index_t length_x=2;
 	const index_t length_y=10;
 	SGMatrix<float64_t> m(length_x, length_y);
-	CDenseMatrixOperator<float64_t> *op
-			=new CDenseMatrixOperator<float64_t>(m);
-	CDenseMatrixOperator<float64_t> *op_cloned
-			=dynamic_cast<CDenseMatrixOperator<float64_t>*>(op->clone());
-	SG_UNREF(op);
-	SG_UNREF(op_cloned);
+	auto op
+			=std::make_shared<DenseMatrixOperator<float64_t>>(m);
+	auto op_cloned
+			=op->clone()->as<DenseMatrixOperator<float64_t>>();
+
+
 }

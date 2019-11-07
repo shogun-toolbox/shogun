@@ -37,29 +37,29 @@ using namespace shogun;
 
 TEST(BinaryTreeMachineNode, build_tree)
 {
-	CBinaryTreeMachineNode<id3TreeNodeData>* root=
-			new CBinaryTreeMachineNode<id3TreeNodeData>();
+	auto root=
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 
-	CBinaryTreeMachineNode<id3TreeNodeData>* child1=
-			new CBinaryTreeMachineNode<id3TreeNodeData>();
+	auto child1=
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 
-	CBinaryTreeMachineNode<id3TreeNodeData>* child2=
-			new CBinaryTreeMachineNode<id3TreeNodeData>();
+	auto child2=
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 	child2->machine(2);
 	child2->data.attribute_id=2;
 	child2->data.transit_if_feature_value=2.0;
 	child2->data.class_label=22.0;
 
-	CBinaryTreeMachineNode<id3TreeNodeData>* child3=
-			new CBinaryTreeMachineNode<id3TreeNodeData>();
+	auto child3=
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 
 	root->left(child1);
 	root->right(child2);
 	root->left(child2);
 	root->right(child3);
 
-	CBinaryTreeMachineNode<id3TreeNodeData>* get_left=root->left();
-	CBinaryTreeMachineNode<id3TreeNodeData>* get_right=root->right();
+	auto get_left=root->left();
+	auto get_right=root->right();
 
 	EXPECT_EQ(get_left->data.attribute_id,2);
 	EXPECT_EQ(get_left->data.transit_if_feature_value,2.0);
@@ -67,7 +67,4 @@ TEST(BinaryTreeMachineNode, build_tree)
 	EXPECT_EQ(get_left->machine(),2);
 	EXPECT_EQ(get_left->parent()->machine(),-1);
 
-	SG_UNREF(root);
-	SG_UNREF(get_left);
-	SG_UNREF(get_right);
 }

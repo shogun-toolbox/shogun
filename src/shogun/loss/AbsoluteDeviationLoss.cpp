@@ -33,43 +33,43 @@
 
 using namespace shogun;
 
-float64_t CAbsoluteDeviationLoss::loss(float64_t prediction, float64_t label)
+float64_t AbsoluteDeviationLoss::loss(float64_t prediction, float64_t label)
 {
 	return loss(prediction-label);
 }
 
-float64_t CAbsoluteDeviationLoss::loss(float64_t z)
+float64_t AbsoluteDeviationLoss::loss(float64_t z)
 {
-	return CMath::abs(z);
+	return Math::abs(z);
 }
 
-float64_t CAbsoluteDeviationLoss::first_derivative(float64_t prediction, float64_t label)
+float64_t AbsoluteDeviationLoss::first_derivative(float64_t prediction, float64_t label)
 {
 	return first_derivative(prediction-label);
 }
 
-float64_t CAbsoluteDeviationLoss::first_derivative(float64_t z)
+float64_t AbsoluteDeviationLoss::first_derivative(float64_t z)
 {
 	return (z>0)?1:-1;
 }
 
-float64_t CAbsoluteDeviationLoss::second_derivative(float64_t prediction, float64_t label)
+float64_t AbsoluteDeviationLoss::second_derivative(float64_t prediction, float64_t label)
 {
 	return 0;
 }
 
-float64_t CAbsoluteDeviationLoss::second_derivative(float64_t z)
+float64_t AbsoluteDeviationLoss::second_derivative(float64_t z)
 {
 	return 0;
 }
 
-float64_t CAbsoluteDeviationLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+float64_t AbsoluteDeviationLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return 0;
 }
 
-float64_t CAbsoluteDeviationLoss::get_square_grad(float64_t prediction, float64_t label)
+float64_t AbsoluteDeviationLoss::get_square_grad(float64_t prediction, float64_t label)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return 0;

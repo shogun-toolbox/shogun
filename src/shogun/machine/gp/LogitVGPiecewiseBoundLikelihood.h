@@ -60,12 +60,12 @@ namespace shogun
  * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
  * (In the reference Matlab code, m is 20)
  */
-class CLogitVGPiecewiseBoundLikelihood : public CVariationalGaussianLikelihood
+class LogitVGPiecewiseBoundLikelihood : public VariationalGaussianLikelihood
 {
 public:
-	CLogitVGPiecewiseBoundLikelihood();
+	LogitVGPiecewiseBoundLikelihood();
 
-	virtual ~CLogitVGPiecewiseBoundLikelihood();
+	virtual ~LogitVGPiecewiseBoundLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -87,7 +87,7 @@ public:
 	 * @return true if variational parameters are valid
 	 *
 	 */
-	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab);
+	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using piecewise bound
@@ -101,6 +101,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_expection();
 
+#ifndef SWIG
 	/** get derivative of the variational expection of log LogitLikelihood
 	 * using the piecewise bound with respect to given parameter
 	 *
@@ -112,7 +113,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
+	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
+#endif
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -122,7 +124,7 @@ public:
 	 */
 	virtual bool supports_derivative_wrt_hyperparameter() const { return false; }
 
-
+#ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
 	 * Note that variational parameters are NOT considered as hyperparameters
@@ -131,7 +133,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+#endif
 
 	/** initialize the default bound for this class */
 	void set_default_variational_bound();

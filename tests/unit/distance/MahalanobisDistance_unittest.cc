@@ -5,7 +5,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/distance/MahalanobisDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/common.h>
@@ -25,8 +24,8 @@ TEST(MahalanobisDistance, compute_distance)
 	rect(0, 3) = 5;
 	rect(1, 3) = 5;
 
-	auto feature = some<CDenseFeatures<float64_t>>(rect);
-	auto distance = some<CMahalanobisDistance>(feature, feature);
+	auto feature = std::make_shared<DenseFeatures<float64_t>>(rect);
+	auto distance = std::make_shared<MahalanobisDistance>(feature, feature);
 	EXPECT_NEAR(distance->distance(1, 1), 0.0, 1e-10);
 	EXPECT_NEAR(distance->distance(1, 3), 2.63447126986, 1e-10);
 	EXPECT_NEAR(distance->distance(2, 3), 2.22834405812, 1e-10);

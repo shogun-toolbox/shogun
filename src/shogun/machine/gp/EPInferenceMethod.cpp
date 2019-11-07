@@ -33,15 +33,16 @@
  */
 #include <shogun/machine/gp/EPInferenceMethod.h>
 
-
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/lib/DynamicArray.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/machine/visitors/ShapeVisitor.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/RandomNamespace.h>
+
+#include <utility>
 
 using namespace shogun;
 using namespace Eigen;
@@ -60,28 +61,28 @@ using namespace Eigen;
 			mat=SGMatrix<sg_type>(rows, cols); \
 	}
 
-CEPInferenceMethod::CEPInferenceMethod()
+EPInferenceMethod::EPInferenceMethod()
 {
 	init();
 }
 
-CEPInferenceMethod::CEPInferenceMethod(CKernel* kernel, CFeatures* features,
-		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
-		: RandomMixin<CInference>(kernel, features, mean, labels, model)
+EPInferenceMethod::EPInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+		std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model)
+		: RandomMixin<Inference>(std::move(kernel), std::move(features), std::move(mean), std::move(labels), std::move(model))
 {
 	init();
 }
 
-CEPInferenceMethod::~CEPInferenceMethod()
+EPInferenceMethod::~EPInferenceMethod()
 {
 }
 
-void CEPInferenceMethod::register_minimizer(Minimizer* minimizer)
+void EPInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
         io::warn("The method does not require a minimizer. The provided minimizer will not be used.");
 }
 
-void CEPInferenceMethod::init()
+void EPInferenceMethod::init()
 {
 	m_max_sweep=15;
 	m_min_sweep=2;
@@ -89,20 +90,19 @@ void CEPInferenceMethod::init()
 	m_fail_on_non_convergence=true;
 }
 
-CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<EPInferenceMethod> EPInferenceMethod::obtain_from_generic(
+		const std::shared_ptr<Inference>& inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_EP)
-		error("Provided inference is not of type CEPInferenceMethod!");
+		error("Provided inference is not of type EPInferenceMethod!");
 
-	SG_REF(inference);
-	return (CEPInferenceMethod*)inference;
+	return inference->as<EPInferenceMethod>();
 }
 
-float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t EPInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -110,7 +110,7 @@ float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 	return m_nlZ;
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_alpha()
+SGVector<float64_t> EPInferenceMethod::get_alpha()
 {
 	if (parameter_hash_changed())
 		update();
@@ -118,7 +118,7 @@ SGVector<float64_t> CEPInferenceMethod::get_alpha()
 	return SGVector<float64_t>(m_alpha);
 }
 
-SGMatrix<float64_t> CEPInferenceMethod::get_cholesky()
+SGMatrix<float64_t> EPInferenceMethod::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();
@@ -126,7 +126,7 @@ SGMatrix<float64_t> CEPInferenceMethod::get_cholesky()
 	return SGMatrix<float64_t>(m_L);
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> EPInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -134,23 +134,23 @@ SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sttau);
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_posterior_mean()
+SGVector<float64_t> EPInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 
 	return SGVector<float64_t>(m_mu);
 }
 
-SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
+SGMatrix<float64_t> EPInferenceMethod::get_posterior_covariance()
 {
 	compute_gradient();
 
 	return SGMatrix<float64_t>(m_Sigma);
 }
 
-void CEPInferenceMethod::compute_gradient()
+void EPInferenceMethod::compute_gradient()
 {
-	CInference::compute_gradient();
+	Inference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -161,12 +161,12 @@ void CEPInferenceMethod::compute_gradient()
 	}
 }
 
-void CEPInferenceMethod::update()
+void EPInferenceMethod::update()
 {
 	SG_TRACE("entering");
 
 	// update kernel and feature matrix
-	CInference::update();
+	Inference::update();
 
 	// get number of labels (trainig examples)
 	index_t n=m_labels->get_num_labels();
@@ -229,10 +229,10 @@ void CEPInferenceMethod::update()
 	SGVector<float64_t> mu_n(n);
 	SGVector<float64_t> s2_n(n);
 
-	float64_t nlZ_old=CMath::INFTY;
+	float64_t nlZ_old=Math::INFTY;
 	uint32_t sweep=0;
 
-	while ((CMath::abs(m_nlZ-nlZ_old)>m_tol && sweep<m_max_sweep) ||
+	while ((Math::abs(m_nlZ-nlZ_old)>m_tol && sweep<m_max_sweep) ||
 			sweep<m_min_sweep)
 	{
 		nlZ_old=m_nlZ;
@@ -261,7 +261,7 @@ void CEPInferenceMethod::update()
 			float64_t ttau_old=m_ttau[i];
 
 			// compute ttau and sqrt(ttau)
-			m_ttau[i]=CMath::max(1.0/s2-tau_n[i], 0.0);
+			m_ttau[i]=Math::max(1.0/s2-tau_n[i], 0.0);
 			m_sttau[i] = std::sqrt(m_ttau[i]);
 
 			// compute tnu
@@ -295,7 +295,7 @@ void CEPInferenceMethod::update()
 		update_negative_ml();
 	}
 
-	if (sweep==m_max_sweep && CMath::abs(m_nlZ-nlZ_old)>m_tol)
+	if (sweep==m_max_sweep && Math::abs(m_nlZ-nlZ_old)>m_tol)
 	{
 		io::warn("Maximum number ({}) of sweeps reached, but tolerance ({}) was "
 				"not yet reached. You can increase or decrease both.",
@@ -316,7 +316,7 @@ void CEPInferenceMethod::update()
 	SG_TRACE("leaving");
 }
 
-void CEPInferenceMethod::update_alpha()
+void EPInferenceMethod::update_alpha()
 {
 	// create eigen representations kernel matrix, L^T, sqrt(ttau) and tnu
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -340,7 +340,7 @@ void CEPInferenceMethod::update_alpha()
 	eigen_alpha=eigen_tnu-eigen_sttau.cwiseProduct(eigen_v);
 }
 
-void CEPInferenceMethod::update_chol()
+void EPInferenceMethod::update_chol()
 {
 	// create eigen representations of kernel matrix and sqrt(ttau)
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -361,7 +361,7 @@ void CEPInferenceMethod::update_chol()
 	eigen_L=eigen_chol.matrixU();
 }
 
-void CEPInferenceMethod::update_approx_cov()
+void EPInferenceMethod::update_approx_cov()
 {
 	// create eigen representations of kernel matrix, L^T matrix and sqrt(ttau)
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
@@ -385,7 +385,7 @@ void CEPInferenceMethod::update_approx_cov()
 	    eigen_K * std::exp(m_log_scale * 2.0) - eigen_V.adjoint() * eigen_V;
 }
 
-void CEPInferenceMethod::update_approx_mean()
+void EPInferenceMethod::update_approx_mean()
 {
 	// create eigen representation of posterior covariance matrix and tnu
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
@@ -399,7 +399,7 @@ void CEPInferenceMethod::update_approx_mean()
 	eigen_mu=eigen_Sigma*eigen_tnu;
 }
 
-void CEPInferenceMethod::update_negative_ml()
+void EPInferenceMethod::update_negative_ml()
 {
 	// create eigen representation of Sigma, L, mu, tnu, ttau
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
@@ -455,7 +455,7 @@ void CEPInferenceMethod::update_negative_ml()
 	m_nlZ=nlZ_part1+nlZ_part2+nlZ_part3;
 }
 
-void CEPInferenceMethod::update_deriv()
+void EPInferenceMethod::update_deriv()
 {
 	// create eigen representation of L, sstau, alpha
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
@@ -475,12 +475,12 @@ void CEPInferenceMethod::update_deriv()
 	eigen_F=eigen_alpha*eigen_alpha.adjoint()-eigen_sttau.asDiagonal()*V;
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_inference_method(
+		Parameters::const_reference param)
 {
-	require(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	require(param.first == "log_scale", "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt {}.{} parameter",
-			get_name(), param->m_name);
+			get_name(), param.first);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
@@ -494,22 +494,23 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 	return result;
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_likelihood_model(
+		Parameters::const_reference param)
 {
 	not_implemented(SOURCE_LOCATION);
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_kernel(
+		Parameters::const_reference param)
 {
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
 
-	require(param, "Param not set");
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto visitor = std::make_unique<ShapeVisitor>();
+	param.second->get_value().visit(visitor.get());
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -531,8 +532,8 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 	return result;
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_mean(
+		Parameters::const_reference param)
 {
 	not_implemented(SOURCE_LOCATION);
 	return SGVector<float64_t>();

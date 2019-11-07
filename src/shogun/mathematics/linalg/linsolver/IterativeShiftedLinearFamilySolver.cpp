@@ -13,25 +13,25 @@ namespace shogun
 {
 
 template <class T, class ST>
-CIterativeShiftedLinearFamilySolver<T, ST>::CIterativeShiftedLinearFamilySolver()
-	: CIterativeLinearSolver<T, T>()
+IterativeShiftedLinearFamilySolver<T, ST>::IterativeShiftedLinearFamilySolver()
+	: IterativeLinearSolver<T, T>()
 	{
 	}
 
 template <class T, class ST>
-CIterativeShiftedLinearFamilySolver<T, ST>
-	::CIterativeShiftedLinearFamilySolver(bool store_residuals)
-	: CIterativeLinearSolver<T, T>(store_residuals)
+IterativeShiftedLinearFamilySolver<T, ST>
+	::IterativeShiftedLinearFamilySolver(bool store_residuals)
+	: IterativeLinearSolver<T, T>(store_residuals)
 	{
 	}
 
 template <class T, class ST>
-CIterativeShiftedLinearFamilySolver<T, ST>::~CIterativeShiftedLinearFamilySolver()
+IterativeShiftedLinearFamilySolver<T, ST>::~IterativeShiftedLinearFamilySolver()
 	{
 	}
 
 	template <class T, class ST>
-	void CIterativeShiftedLinearFamilySolver<T, ST>::compute_zeta_sh_new(
+	void IterativeShiftedLinearFamilySolver<T, ST>::compute_zeta_sh_new(
 	    const SGVector<ST>& zeta_sh_old, const SGVector<ST>& zeta_sh_cur,
 	    const SGVector<ST>& shifts, const T& beta_old, const T& beta_cur,
 	    const T& alpha, SGVector<ST>& zeta_sh_new, bool negate)
@@ -51,14 +51,14 @@ CIterativeShiftedLinearFamilySolver<T, ST>::~CIterativeShiftedLinearFamilySolver
 
 			// handle division by zero
 			if (denom==static_cast<ST>(0.0))
-				denom=static_cast<ST>(CMath::MACHINE_EPSILON);
+				denom=static_cast<ST>(Math::MACHINE_EPSILON);
 
 			zeta_sh_new[i]=numer/denom;
 	  }
 	}
 
 template <class T, class ST>
-void CIterativeShiftedLinearFamilySolver<T, ST>::compute_beta_sh(
+void IterativeShiftedLinearFamilySolver<T, ST>::compute_beta_sh(
 		const SGVector<ST>& zeta_sh_new, const SGVector<ST>& zeta_sh_cur, const T& beta_cur,
 		SGVector<ST>& beta_sh_cur)
 	{
@@ -71,14 +71,14 @@ void CIterativeShiftedLinearFamilySolver<T, ST>::compute_beta_sh(
 
 			// handle division by zero
 			if (denom==static_cast<ST>(0.0))
-				denom=static_cast<ST>(CMath::MACHINE_EPSILON);
+				denom=static_cast<ST>(Math::MACHINE_EPSILON);
 
 			beta_sh_cur[i]=numer/denom;
 		}
 	}
 
 template <class T, class ST>
-void CIterativeShiftedLinearFamilySolver<T, ST>::compute_alpha_sh(
+void IterativeShiftedLinearFamilySolver<T, ST>::compute_alpha_sh(
 		const SGVector<ST>& zeta_sh_cur, const SGVector<ST>& zeta_sh_old,
 		const SGVector<ST>& beta_sh_old, const T& beta_old, const T& alpha, SGVector<ST>& alpha_sh)
 	{
@@ -91,12 +91,12 @@ void CIterativeShiftedLinearFamilySolver<T, ST>::compute_alpha_sh(
 
 			// handle division by zero
 			if (denom==static_cast<ST>(0.0))
-				denom=static_cast<ST>(CMath::MACHINE_EPSILON);
+				denom=static_cast<ST>(Math::MACHINE_EPSILON);
 
 			alpha_sh[i]=numer/denom;
 	  }
 	}
 
-template class CIterativeShiftedLinearFamilySolver<float64_t>;
-template class CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>;
+template class IterativeShiftedLinearFamilySolver<float64_t>;
+template class IterativeShiftedLinearFamilySolver<float64_t, complex128_t>;
 }

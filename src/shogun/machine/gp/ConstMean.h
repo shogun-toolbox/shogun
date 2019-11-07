@@ -45,20 +45,20 @@ namespace shogun
  *
  * Simple mean function that assumes a mean of Const value.
  */
-class CConstMean : public CMeanFunction
+class ConstMean : public MeanFunction
 {
 public:
 	/** default constructor
 	 * the default value of mean is 0
 	 */
-	CConstMean();
+	ConstMean();
 
 	/** constructor
 	 * @param mean const value for mean function
 	 */
-	CConstMean(float64_t mean);
+	ConstMean(float64_t mean);
 
-	virtual ~CConstMean();
+	virtual ~ConstMean();
 
 	/** set the const_value of mean function
 	 *
@@ -79,8 +79,9 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const;
+	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const;
 
+#ifndef SWIG
 	/** returns the derivative of the mean function
 	 *
 	 * @param features features to compute mean function
@@ -89,8 +90,9 @@ public:
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_derivative(const CFeatures* features,
-			const TParameter* param, index_t index=-1);
+	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
+			Parameters::const_reference param, index_t index=-1);
+#endif
 private:
 
 	void init();

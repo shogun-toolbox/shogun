@@ -11,22 +11,22 @@
 
 using namespace shogun;
 
-CRescaleFeatures::CRescaleFeatures() : CDensePreprocessor<float64_t>()
+RescaleFeatures::RescaleFeatures() : DensePreprocessor<float64_t>()
 {
 	register_parameters();
 }
 
-CRescaleFeatures::~CRescaleFeatures()
+RescaleFeatures::~RescaleFeatures()
 {
 	cleanup();
 }
 
-void CRescaleFeatures::fit(CFeatures* features)
+void RescaleFeatures::fit(std::shared_ptr<Features> features)
 {
 	if (m_fitted)
 		cleanup();
 
-	auto simple_features = features->as<CDenseFeatures<float64_t>>();
+	auto simple_features = features->as<DenseFeatures<float64_t>>();
 	int32_t num_examples = simple_features->get_num_vectors();
 	int32_t num_features = simple_features->get_num_features();
 	require(
@@ -66,13 +66,13 @@ void CRescaleFeatures::fit(CFeatures* features)
 	m_fitted = true;
 }
 
-void CRescaleFeatures::cleanup()
+void RescaleFeatures::cleanup()
 {
 	m_fitted = false;
 }
 
 SGMatrix<float64_t>
-CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
+RescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	assert_fitted();
 
@@ -88,7 +88,7 @@ CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 	return matrix;
 }
 
-SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> RescaleFeatures::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	assert_fitted();
 	ASSERT(m_min.vlen == vector.vlen);
@@ -102,7 +102,7 @@ SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t
 	return SGVector<float64_t>(ret,vector.vlen);
 }
 
-void CRescaleFeatures::register_parameters()
+void RescaleFeatures::register_parameters()
 {
 	SG_ADD(&m_min, "min", "minimum values of each feature");
 	SG_ADD(&m_range, "range", "Reciprocal of the range of each feature");

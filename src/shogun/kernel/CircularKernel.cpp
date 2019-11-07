@@ -7,61 +7,63 @@
 #include <shogun/kernel/CircularKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CCircularKernel::CCircularKernel(): CKernel(0), distance(NULL)
+CircularKernel::CircularKernel(): Kernel(0), distance(NULL)
 {
 	init();
 	set_sigma(1.0);
 }
 
-CCircularKernel::CCircularKernel(int32_t size, float64_t sig, CDistance* dist)
-: CKernel(size), distance(dist)
+CircularKernel::CircularKernel(int32_t size, float64_t sig, std::shared_ptr<Distance> dist)
+: Kernel(size), distance(std::move(dist))
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 
 	set_sigma(sig);
 	init();
 }
 
-CCircularKernel::CCircularKernel(
-	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
-: CKernel(10), distance(dist)
+CircularKernel::CircularKernel(
+	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sig, std::shared_ptr<Distance> dist)
+: Kernel(10), distance(std::move(dist))
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	set_sigma(sig);
 	init();
-	init(l, r);
+	init(std::move(l), std::move(r));
 }
 
-CCircularKernel::~CCircularKernel()
+CircularKernel::~CircularKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CCircularKernel::init(CFeatures* l, CFeatures* r)
+bool CircularKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(distance)
-	CKernel::init(l,r);
+	Kernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();
 }
 
-void CCircularKernel::load_serializable_post() noexcept(false)
+void CircularKernel::load_serializable_post() noexcept(false)
 {
-	CKernel::load_serializable_post();
+	Kernel::load_serializable_post();
 }
 
-void CCircularKernel::init()
+void CircularKernel::init()
 {
 	SG_ADD(&distance, "distance", "Distance to be used.", ParameterProperties::HYPER);
 	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
 }
 
-float64_t CCircularKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CircularKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist=distance->distance(idx_a, idx_b);
 	float64_t ds_ratio=dist/sigma;

@@ -29,29 +29,29 @@
  */
 
 #include <shogun/base/progress.h>
-#include <shogun/base/some.h>
 #include <shogun/lib/View.h>
 #include <shogun/machine/StochasticGBMachine.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 
 using namespace shogun;
 
-CStochasticGBMachine::CStochasticGBMachine(CMachine* machine, CLossFunction* loss, int32_t num_iterations,
+StochasticGBMachine::StochasticGBMachine(const std::shared_ptr<Machine>& machine, const std::shared_ptr<LossFunction>& loss, int32_t num_iterations,
 						float64_t learning_rate, float64_t subset_fraction)
-: RandomMixin<CMachine>()
+: RandomMixin<Machine>()
 {
 	init();
 
 	if (machine!=NULL)
 	{
-		SG_REF(machine);
+
 		m_machine=machine;
 	}
 
 	if (loss!=NULL)
 	{
-		SG_REF(loss);
+
 		m_loss=loss;
 	}
 
@@ -60,131 +60,122 @@ CStochasticGBMachine::CStochasticGBMachine(CMachine* machine, CLossFunction* los
 	m_learning_rate=learning_rate;
 }
 
-CStochasticGBMachine::~CStochasticGBMachine()
+StochasticGBMachine::~StochasticGBMachine()
 {
-	SG_UNREF(m_machine);
-	SG_UNREF(m_loss);
-	SG_UNREF(m_weak_learners);
-	SG_UNREF(m_gamma);
+
+
+
+
 }
 
-void CStochasticGBMachine::set_machine(CMachine* machine)
+void StochasticGBMachine::set_machine(const std::shared_ptr<Machine>& machine)
 {
 	require(machine,"Supplied machine is NULL");
 
-	if (m_machine!=NULL)
-		SG_UNREF(m_machine);
-
-	SG_REF(machine);
 	m_machine=machine;
 }
 
-CMachine* CStochasticGBMachine::get_machine() const
+std::shared_ptr<Machine> StochasticGBMachine::get_machine() const
 {
 	if (m_machine==NULL)
 		error("machine not set yet!");
 
-	SG_REF(m_machine);
+
 	return m_machine;
 }
 
-void CStochasticGBMachine::set_loss_function(CLossFunction* f)
+void StochasticGBMachine::set_loss_function(std::shared_ptr<LossFunction> f)
 {
 	require(f,"Supplied loss function is NULL");
-	if (m_loss!=NULL)
-		SG_UNREF(m_loss);
-
-	SG_REF(f);
 	m_loss=f;
 }
 
-CLossFunction* CStochasticGBMachine::get_loss_function() const
+std::shared_ptr<LossFunction> StochasticGBMachine::get_loss_function() const
 {
 	if (m_loss==NULL)
 		error("Loss function not set yet!");
 
-	SG_REF(m_loss)
+
 	return m_loss;
 }
 
-void CStochasticGBMachine::set_num_iterations(int32_t iter)
+void StochasticGBMachine::set_num_iterations(int32_t iter)
 {
 	require(iter,"Number of iterations");
 	m_num_iter=iter;
 }
 
-int32_t CStochasticGBMachine::get_num_iterations() const
+int32_t StochasticGBMachine::get_num_iterations() const
 {
 	return m_num_iter;
 }
 
-void CStochasticGBMachine::set_subset_fraction(float64_t frac)
+void StochasticGBMachine::set_subset_fraction(float64_t frac)
 {
 	require((frac>0)&&(frac<=1),"subset fraction should lie between 0 and 1. Supplied value is {}",frac);
 
 	m_subset_frac=frac;
 }
 
-float64_t CStochasticGBMachine::get_subset_fraction() const
+float64_t StochasticGBMachine::get_subset_fraction() const
 {
 	return m_subset_frac;
 }
 
-void CStochasticGBMachine::set_learning_rate(float64_t lr)
+void StochasticGBMachine::set_learning_rate(float64_t lr)
 {
 	require((lr>0)&&(lr<=1),"learning rate should lie between 0 and 1. Supplied value is {}",lr);
 
 	m_learning_rate=lr;
 }
 
-float64_t CStochasticGBMachine::get_learning_rate() const
+float64_t StochasticGBMachine::get_learning_rate() const
 {
 	return m_learning_rate;
 }
 
-CRegressionLabels* CStochasticGBMachine::apply_regression(CFeatures* data)
+std::shared_ptr<RegressionLabels> StochasticGBMachine::apply_regression(std::shared_ptr<Features> data)
 {
 	require(data,"test data supplied is NULL");
-	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
+	auto feats=data->as<DenseFeatures<float64_t>>();
 
 	SGVector<float64_t> retlabs(feats->get_num_vectors());
 	retlabs.fill_vector(retlabs.vector,retlabs.vlen,0);
 	for (int32_t i=0;i<m_num_iter;i++)
 	{
-		float64_t gamma=m_gamma->get_element(i);
+		float64_t gamma=m_gamma[i];
 
-		CSGObject* element=m_weak_learners->get_element(i);
-		require(element,"{} element of the array of weak learners is NULL. This is not expected",i);
-		CMachine* machine=dynamic_cast<CMachine*>(element);
+		auto machine=m_weak_learners[i];
+		require(machine, "{} element of the array of weak learners is NULL. This is not expected",i);
 
-		CRegressionLabels* dlabels=machine->apply_regression(feats);
+		auto dlabels=machine->apply_regression(feats);
 		SGVector<float64_t> delta=dlabels->get_labels();
 
 		for (int32_t j=0;j<retlabs.vlen;j++)
 			retlabs[j]+=delta[j]*gamma*m_learning_rate;
 
-		SG_UNREF(dlabels);
-		SG_UNREF(element);
+
+
 	}
 
-	return new CRegressionLabels(retlabs);
+	return std::make_shared<RegressionLabels>(retlabs);
 }
 
-bool CStochasticGBMachine::train_machine(CFeatures* data)
+bool StochasticGBMachine::train_machine(std::shared_ptr<Features> data)
 {
 	require(data,"training data not supplied!");
 	require(m_machine,"machine not set!");
 	require(m_loss,"loss function not specified");
 	require(m_labels, "labels not specified");
 
-	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
+	auto feats=data->as<DenseFeatures<float64_t>>();
 
 	// initialize weak learners array and gamma array
 	initialize_learners();
 
 	// cache predicted labels for intermediate models
-	CRegressionLabels* interf=new CRegressionLabels(feats->get_num_vectors());
-	SG_REF(interf);
+	auto interf=std::make_shared<RegressionLabels>(feats->get_num_vectors());
+
 	for (int32_t i=0;i<interf->get_num_labels();i++)
 		interf->set_label(i,0);
 
@@ -196,61 +187,55 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 		const auto& labels_iter = std::get<2>(result);
 
 		// compute pseudo-residuals
-		CRegressionLabels* pres =
+		auto pres =
 		    compute_pseudo_residuals(interf_iter, labels_iter);
 
 		// fit learner
-		CMachine* wlearner = fit_model(feats_iter, pres);
-		m_weak_learners->push_back(wlearner);
+		auto wlearner = fit_model(feats_iter, pres);
+		m_weak_learners.push_back(wlearner);
 
 		// compute multiplier
-		CRegressionLabels* hm = wlearner->apply_regression(feats_iter);
-		SG_REF(hm);
+		auto hm = wlearner->apply_regression(feats_iter);
+
 		float64_t gamma = compute_multiplier(interf_iter, hm, labels_iter);
-		m_gamma->push_back(gamma);
+		m_gamma.push_back(gamma);
 
 		// update intermediate function value
-		CRegressionLabels* dlabels=wlearner->apply_regression(feats);
+		auto dlabels=wlearner->apply_regression(feats);
 		SGVector<float64_t> delta=dlabels->get_labels();
 		for (int32_t j=0;j<interf->get_num_labels();j++)
 			interf->set_label(j,interf->get_label(j)+delta[j]*gamma*m_learning_rate);
 
-		SG_UNREF(dlabels);
-		SG_UNREF(hm);
-		SG_UNREF(wlearner);
+
+
+
 	}
 
-	SG_UNREF(interf);
+
 	return true;
 }
 
-float64_t CStochasticGBMachine::compute_multiplier(
-    CRegressionLabels* f, CRegressionLabels* hm, CLabels* labs)
+float64_t StochasticGBMachine::compute_multiplier(
+    const std::shared_ptr<RegressionLabels>& f, const std::shared_ptr<RegressionLabels>& hm, const std::shared_ptr<Labels>& labs)
 {
 	require(f->get_num_labels()==hm->get_num_labels(),"The number of labels in both input parameters should be equal");
 
-	CDynamicObjectArray* instance=new CDynamicObjectArray();
-	instance->push_back(labs);
-	instance->push_back(f);
-	instance->push_back(hm);
-	instance->push_back(m_loss);
+	auto instance=std::vector<std::shared_ptr<SGObject>>();
+	instance.push_back(labs);
+	instance.push_back(f);
+	instance.push_back(hm);
+	instance.push_back(m_loss);
 
-	float64_t ret=get_gamma(instance);
+	float64_t ret=get_gamma(&instance);
 
-	SG_UNREF(instance);
+
 	return ret;
 }
 
-CMachine* CStochasticGBMachine::fit_model(CDenseFeatures<float64_t>* feats, CRegressionLabels* labels)
+std::shared_ptr<Machine> StochasticGBMachine::fit_model(const std::shared_ptr<DenseFeatures<float64_t>>& feats, const std::shared_ptr<RegressionLabels>& labels)
 {
 	// clone base machine
-	CSGObject* obj=m_machine->clone();
-	CMachine* c=NULL;
-	if (obj)
-		c=dynamic_cast<CMachine*>(obj);
-	else
-		error("Machine could not be cloned!");
-
+	auto c=m_machine->clone()->as<Machine>();
 	// train cloned machine
 	c->set_labels(labels);
 	c->train(feats);
@@ -258,26 +243,26 @@ CMachine* CStochasticGBMachine::fit_model(CDenseFeatures<float64_t>* feats, CReg
 	return c;
 }
 
-CRegressionLabels* CStochasticGBMachine::compute_pseudo_residuals(
-    CRegressionLabels* inter_f, CLabels* labs)
+std::shared_ptr<RegressionLabels> StochasticGBMachine::compute_pseudo_residuals(
+    const std::shared_ptr<RegressionLabels>& inter_f, const std::shared_ptr<Labels>& labs)
 {
-	auto labels = labs->as<CDenseLabels>()->get_labels();
+	auto labels = labs->as<DenseLabels>()->get_labels();
 	SGVector<float64_t> f=inter_f->get_labels();
 
 	SGVector<float64_t> residuals(f.vlen);
 	for (int32_t i=0;i<residuals.vlen;i++)
 		residuals[i]=-m_loss->first_derivative(f[i],labels[i]);
 
-	return new CRegressionLabels(residuals);
+	return std::make_shared<RegressionLabels>(residuals);
 }
 
-std::tuple<Some<CDenseFeatures<float64_t>>, Some<CRegressionLabels>,
-           Some<CLabels>>
-CStochasticGBMachine::get_subset(
-    CDenseFeatures<float64_t>* f, CRegressionLabels* interf)
+std::tuple<std::shared_ptr<DenseFeatures<float64_t>>, std::shared_ptr<RegressionLabels>,
+           std::shared_ptr<Labels>>
+StochasticGBMachine::get_subset(
+    std::shared_ptr<DenseFeatures<float64_t>> f, std::shared_ptr<RegressionLabels> interf)
 {
 	if (m_subset_frac == 1.0)
-		return std::make_tuple(wrap(f), wrap(interf), wrap(m_labels));
+		return std::make_tuple(f, interf, m_labels);
 
 	int32_t subset_size=m_subset_frac*(f->get_num_vectors());
 	SGVector<index_t> idx(f->get_num_vectors());
@@ -288,53 +273,51 @@ CStochasticGBMachine::get_subset(
 	sg_memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));
 
 	return std::make_tuple(
-	    wrap(view(f, subset)), wrap(view(interf, subset)),
-	    wrap(view(m_labels, subset)));
+	    view(f, subset), view(interf, subset),
+	    view(m_labels, subset));
 }
 
-void CStochasticGBMachine::initialize_learners()
+void StochasticGBMachine::initialize_learners()
 {
-	SG_UNREF(m_weak_learners);
-	m_weak_learners=new CDynamicObjectArray();
-	SG_REF(m_weak_learners);
 
-	SG_UNREF(m_gamma);
-	m_gamma=new CDynamicArray<float64_t>();
-	SG_REF(m_gamma);
+	m_weak_learners.clear();
+
+
+
+	m_gamma.clear();
+
 }
 
-float64_t CStochasticGBMachine::get_gamma(void* instance)
+float64_t StochasticGBMachine::get_gamma(void* instance)
 {
 	lbfgs_parameter_t lbfgs_param;
 	lbfgs_parameter_init(&lbfgs_param);
 	lbfgs_param.linesearch=2;
 
 	float64_t gamma=0;
-	lbfgs(1,&gamma,NULL,CStochasticGBMachine::lbfgs_evaluate,NULL,instance,&lbfgs_param);
+	lbfgs(1,&gamma,NULL,StochasticGBMachine::lbfgs_evaluate,NULL,instance,&lbfgs_param);
 
 	return gamma;
 }
 
-float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim,
+float64_t StochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim,
 												const float64_t step)
 {
 	require(obj,"object cannot be NULL");
-	CDynamicObjectArray* objects=static_cast<CDynamicObjectArray*>(obj);
-	require((objects->get_num_elements()==2) || (objects->get_num_elements()==4),"Number of elements in obj array"
-	" ({}) does not match expectations(2 or 4)",objects->get_num_elements());
+	auto& objects = *(std::vector<std::shared_ptr<SGObject>>*)(obj);
+	require((objects.size()==2) || (objects.size()==4),"Number of elements in obj array"
+	" ({}) does not match expectations(2 or 4)",objects.size());
 
-	if (objects->get_num_elements()==2)
+	if (objects.size()==2)
 	{
 		// extract labels
-		CSGObject* element=objects->get_element(0);
-		require(element,"0 index element of objects is NULL");
-		CDenseLabels* lab=dynamic_cast<CDenseLabels*>(element);
+		auto lab=objects[0]->as<DenseLabels>();
+		require(lab,"0 index element of objects is NULL");
 		SGVector<float64_t> labels=lab->get_labels();
 
 		// extract loss function
-		element=objects->get_element(1);
-		require(element,"1 index element of objects is NULL");
-		CLossFunction* lossf=dynamic_cast<CLossFunction*>(element);
+		auto lossf =objects[1]->as<LossFunction>();
+		require(lossf,"1 index element of objects is NULL");
 
 		*gradient=0;
 		float64_t ret=0;
@@ -344,33 +327,29 @@ float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *param
 			ret+=lossf->loss((*parameters),labels[i]);
 		}
 
-		SG_UNREF(lab);
-		SG_UNREF(lossf);
+
+
 		return ret;
 	}
 
 	// extract labels
-	CSGObject* element=objects->get_element(0);
-	require(element,"0 index element of objects is NULL");
-	CDenseLabels* lab=dynamic_cast<CDenseLabels*>(element);
+	auto lab=objects[0]->as<DenseLabels>();
+	require(lab,"0 index element of objects is NULL");
 	SGVector<float64_t> labels=lab->get_labels();
 
 	// extract f
-	element=objects->get_element(1);
-	require(element,"1 index element of objects is NULL");
-	CDenseLabels* func=dynamic_cast<CDenseLabels*>(element);
+	auto func=objects[1]->as<DenseLabels>();
+	require(func,"1 index element of objects is NULL");
 	SGVector<float64_t> f=func->get_labels();
 
 	// extract hm
-	element=objects->get_element(2);
-	require(element,"2 index element of objects is NULL");
-	CDenseLabels* delta=dynamic_cast<CDenseLabels*>(element);
+	auto delta=objects[2]->as<DenseLabels>();
+	require(delta,"2 index element of objects is null");
 	SGVector<float64_t> hm=delta->get_labels();
 
 	// extract loss function
-	element=objects->get_element(3);
-	require(element,"3 index element of objects is NULL");
-	CLossFunction* lossf=dynamic_cast<CLossFunction*>(element);
+	auto lossf=objects[3]->as<LossFunction>();
+	require(lossf,"3 index element of objects is NULL");
 
 	*gradient=0;
 	float64_t ret=0;
@@ -380,14 +359,14 @@ float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *param
 		ret+=lossf->loss((*parameters)*hm[i]+f[i],labels[i]);
 	}
 
-	SG_UNREF(lab);
-	SG_UNREF(delta);
-	SG_UNREF(func);
-	SG_UNREF(lossf)
+
+
+
+
 	return ret;
 }
 
-void CStochasticGBMachine::init()
+void StochasticGBMachine::init()
 {
 	m_machine=nullptr;
 	m_loss=nullptr;
@@ -395,11 +374,8 @@ void CStochasticGBMachine::init()
 	m_subset_frac=0;
 	m_learning_rate=0;
 
-	m_weak_learners=new CDynamicObjectArray();
-	SG_REF(m_weak_learners);
-
-	m_gamma=new CDynamicArray<float64_t>();
-	SG_REF(m_gamma); 
+	m_weak_learners.clear();
+	m_gamma.clear();
 
 	SG_ADD(&m_machine, kMachine, "machine");
 	SG_ADD(&m_loss, kLoss, "loss function");
@@ -407,5 +383,5 @@ void CStochasticGBMachine::init()
 	SG_ADD(&m_subset_frac, kSubsetFrac, "subset fraction");
 	SG_ADD(&m_learning_rate, kLearningRate, "learning rate");
 	SG_ADD(&m_weak_learners, kWeakLearners, "array of weak learners");
-	SG_ADD((CSGObject**)&m_gamma, kGamma, "array of learner weights");
+	SG_ADD(&m_gamma, kGamma, "array of learner weights");
 }

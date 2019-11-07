@@ -24,15 +24,15 @@ namespace shogun
  *
  *	Normalization is based on a mask that is defined by a number of pair of tasks.
  */
-class CMultitaskKernelMaskPairNormalizer: public CKernelNormalizer
+class MultitaskKernelMaskPairNormalizer: public KernelNormalizer
 {
 
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelMaskPairNormalizer() :
-		CKernelNormalizer(), scale(1.0), normalization_constant(1.0)
+	MultitaskKernelMaskPairNormalizer() :
+		KernelNormalizer(), scale(1.0), normalization_constant(1.0)
 	{
 	}
 
@@ -40,7 +40,7 @@ public:
 	 * @param task_vector_
 	 * @param active_pairs_
 	 */
-	CMultitaskKernelMaskPairNormalizer(std::vector<int32_t> task_vector_,
+	MultitaskKernelMaskPairNormalizer(std::vector<int32_t> task_vector_,
 									   std::vector<std::pair<int32_t, int32_t> > active_pairs_) :
 									   scale(1.0), normalization_constant(1.0)
 	{
@@ -52,13 +52,13 @@ public:
 
 
 	/** default destructor */
-	virtual ~CMultitaskKernelMaskPairNormalizer()
+	virtual ~MultitaskKernelMaskPairNormalizer()
 	{
 	}
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(CKernel* k)
+	virtual bool init(Kernel* k)
 	{
 		ASSERT(k)
 		int32_t num_lhs = k->get_num_vec_lhs();
@@ -68,8 +68,8 @@ public:
 
 
 		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
+		auto old_lhs=k->lhs;
+		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
@@ -242,9 +242,9 @@ public:
 	/** casts kernel normalizer to multitask kernel mask normalizer
 	 * @param n kernel normalizer to cast
 	 */
-	CMultitaskKernelMaskPairNormalizer* KernelNormalizerToMultitaskKernelMaskPairNormalizer(CKernelNormalizer* n)
+	std::shared_ptr<MultitaskKernelMaskPairNormalizer> KernelNormalizerToMultitaskKernelMaskPairNormalizer(std::shared_ptr<KernelNormalizer> n)
 	{
-		   return dynamic_cast<shogun::CMultitaskKernelMaskPairNormalizer*>(n);
+		   return std::dynamic_pointer_cast<MultitaskKernelMaskPairNormalizer>(n);
 	}
 
 protected:

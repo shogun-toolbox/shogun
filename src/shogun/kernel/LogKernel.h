@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief Log kernel
  *
@@ -28,18 +28,18 @@ class CDistance;
  *
  */
 
-class CLogKernel: public CKernel
+class LogKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CLogKernel();
+	LogKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param degree kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CLogKernel(int32_t cache, float64_t degree, CDistance* dist);
+	LogKernel(int32_t cache, float64_t degree, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param degree kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CLogKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist);
+	LogKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t degree, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -76,7 +76,7 @@ public:
 	 */
 	virtual const char* get_name() const { return "LogKernel"; }
 
-	virtual ~CLogKernel();
+	virtual ~LogKernel();
 
 protected:
 	/**
@@ -93,7 +93,7 @@ private:
 
 protected:
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 	/// degree parameter of kernel
 	float64_t m_degree;

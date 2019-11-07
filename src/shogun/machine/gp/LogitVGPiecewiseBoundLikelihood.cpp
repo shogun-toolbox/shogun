@@ -51,22 +51,22 @@ using namespace Eigen;
 namespace shogun
 {
 
-CLogitVGPiecewiseBoundLikelihood::CLogitVGPiecewiseBoundLikelihood()
-	: CVariationalGaussianLikelihood()
+LogitVGPiecewiseBoundLikelihood::LogitVGPiecewiseBoundLikelihood()
+	: VariationalGaussianLikelihood()
 {
 	init();
 }
 
-CLogitVGPiecewiseBoundLikelihood::~CLogitVGPiecewiseBoundLikelihood()
+LogitVGPiecewiseBoundLikelihood::~LogitVGPiecewiseBoundLikelihood()
 {
 }
 
-void CLogitVGPiecewiseBoundLikelihood::set_variational_bound(SGMatrix<float64_t> bound)
+void LogitVGPiecewiseBoundLikelihood::set_variational_bound(SGMatrix<float64_t> bound)
 {
 	m_bound = bound;
 }
 
-void CLogitVGPiecewiseBoundLikelihood::set_default_variational_bound()
+void LogitVGPiecewiseBoundLikelihood::set_default_variational_bound()
 {
 	index_t row = 20;
 	index_t col = 5;
@@ -135,7 +135,7 @@ void CLogitVGPiecewiseBoundLikelihood::set_default_variational_bound()
 	m_bound(18,2)=0.000397791059000;
 	m_bound(19,2)=0;
 
-	m_bound(0,3)=-CMath::INFTY;
+	m_bound(0,3)=-Math::INFTY;
 	m_bound(1,3)=-8.575194939999999;
 	m_bound(2,3)=-5.933689180000000;
 	m_bound(3,3)=-4.525933600000000;
@@ -175,10 +175,10 @@ void CLogitVGPiecewiseBoundLikelihood::set_default_variational_bound()
 	m_bound(16,4)=4.525933600000000;
 	m_bound(17,4)=5.933689180000000;
 	m_bound(18,4)=8.575194939999999;
-	m_bound(19,4)= CMath::INFTY;
+	m_bound(19,4)= Math::INFTY;
 }
 
-SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection()
+SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_variational_expection()
 {
 	//This function is based on the Matlab code,
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute f
@@ -245,20 +245,18 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 }
 
 
-SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_derivative(
-		const TParameter* param) const
+SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_variational_first_derivative(
+		Parameters::const_reference param) const
 {
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute gm and gv
 	//and the formula of the appendix
-	require(param, "Param is required (param should not be NULL)");
-	require(param->m_name, "Param name is required (param->m_name should not be NULL)");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
-	require(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
+	require(param.first == "mu" || param.first == "sigma2",
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using the piecewise bound ",
 		"wrt {}.{} parameter. The function only accepts mu and sigma2 as parameter",
-		get_name(), param->m_name);
+		get_name(), param.first);
 
 	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
 	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
@@ -288,7 +286,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 
 	SGVector<float64_t> result(m_mu.vlen);
 
-	if (strcmp(param->m_name, "mu") == 0)
+	if (param.first == "mu")
 	{
 		//Compute the derivative wrt mu
 
@@ -355,23 +353,23 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	return result;
 }
 
-bool CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels* lab)
+bool LogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+	SGVector<float64_t> s2, std::shared_ptr<const Labels> lab)
 {
 	bool status = true;
-	status=CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
+	status=VariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 	if (status)
 	{
 		require(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels");
+			"Labels must be type of BinaryLabels");
 
-		m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
+		m_lab = lab->as<BinaryLabels>()->get_labels().clone();
 
 		//Convert the input label to standard label used in the class
 		//Note that Shogun uses  -1 and 1 as labels and this class internally uses
 		//0 and 1 repectively.
 		for(index_t i = 0; i < m_lab.size(); ++i)
-			m_lab[i] = CMath::max(m_lab[i], 0.0);
+			m_lab[i] = std::max(m_lab[i], 0.0);
 
 		precompute();
 
@@ -379,12 +377,12 @@ bool CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<flo
 	return status;
 }
 
-void CLogitVGPiecewiseBoundLikelihood::init_likelihood()
+void LogitVGPiecewiseBoundLikelihood::init_likelihood()
 {
-	set_likelihood(new CLogitLikelihood());
+	set_likelihood(std::make_shared<LogitLikelihood>());
 }
 
-void CLogitVGPiecewiseBoundLikelihood::init()
+void LogitVGPiecewiseBoundLikelihood::init()
 {
 	SG_ADD(&m_bound, "bound",
 		"Variational piecewise bound for logit likelihood");
@@ -404,7 +402,7 @@ void CLogitVGPiecewiseBoundLikelihood::init()
 	init_likelihood();
 }
 
-void CLogitVGPiecewiseBoundLikelihood::precompute()
+void LogitVGPiecewiseBoundLikelihood::precompute()
 {
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute common variables later
@@ -459,17 +457,17 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 	{
 		for (index_t c = 0; c < zl.num_cols; c++)
 		{
-			if (CMath::abs(zl(r, c)) == CMath::INFTY)
+			if (Math::abs(zl(r, c)) == Math::INFTY)
 				m_pl(r, c) = 0;
 			else
 				m_pl(r, c) = std::exp(
-					CGaussianDistribution::univariate_log_pdf(zl(r, c)));
+					GaussianDistribution::univariate_log_pdf(zl(r, c)));
 
-			if (CMath::abs(zh(r, c)) == CMath::INFTY)
+			if (Math::abs(zh(r, c)) == Math::INFTY)
 				m_ph(r, c) = 0;
 			else
 				m_ph(r, c) = std::exp(
-					CGaussianDistribution::univariate_log_pdf(zh(r, c)));
+					GaussianDistribution::univariate_log_pdf(zh(r, c)));
 		}
 	}
 
@@ -486,9 +484,9 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 		for (index_t c = 0; c < zl.num_cols; c++)
 		{
 			//cl = 0.5*erf(zl/sqrt(2)); %normal cdf -const
-			cl(r, c) = CStatistics::normal_cdf(zl(r, c)) - 0.5;
+			cl(r, c) = Statistics::normal_cdf(zl(r, c)) - 0.5;
 			//ch = 0.5*erf(zl/sqrt(2)); %normal cdf -const
-			ch(r, c) = CStatistics::normal_cdf(zh(r, c)) - 0.5;
+			ch(r, c) = Statistics::normal_cdf(zh(r, c)) - 0.5;
 		}
 	}
 
@@ -515,8 +513,8 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 	eigen_h(eigen_h.size()-1) = h_bak;
 }
 
-SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_first_derivative_wrt_hyperparameter(
-	const TParameter* param) const
+SGVector<float64_t> LogitVGPiecewiseBoundLikelihood::get_first_derivative_wrt_hyperparameter(
+	Parameters::const_reference param) const
 {
 	return SGVector<float64_t>();
 }

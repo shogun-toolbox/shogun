@@ -71,30 +71,30 @@ TEST(DenseSubSamplesFeatures, test1)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=5.00000;
 
-	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train0=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train0=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=0.5;
-	CKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
-	
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*ell*ell);
+
 
 	SGVector<int32_t> idx1(n);
 	for(int i=0; i<idx1.vlen; i++)
 		idx1[i]=i;
-	SG_REF(features_train0);
-	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	auto features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_train0, idx1);
 
 	SGVector<int32_t> idx2(m);
 	for(int i=0; i<idx2.vlen; i++)
 		idx2[i]=i;
-	SG_REF(latent_features_train0);
-	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+	auto latent_features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(latent_features_train0, idx2);
 
 	kernel->init(latent_features_train0, features_train0);
 	SGMatrix<float64_t> res0=kernel->get_kernel_matrix();
 
-	SG_REF(features_train1);
-	SG_REF(latent_features_train1);
+
+
 	kernel->init(latent_features_train1, features_train1);
 	SGMatrix<float64_t> res1=kernel->get_kernel_matrix();
 
@@ -102,16 +102,16 @@ TEST(DenseSubSamplesFeatures, test1)
 	{
 		for(index_t j=0; j<res0.num_cols; j++)
 		{
-			abs_tolorance = CMath::get_abs_tolerance(res0(i,j), rel_tolorance);
+			abs_tolorance = Math::get_abs_tolerance(res0(i,j), rel_tolorance);
 			EXPECT_NEAR(res1(i,j), res0(i,j), abs_tolorance);
 		}
 	}
 
-	SG_UNREF(kernel);
-	SG_UNREF(features_train1);
-	SG_UNREF(latent_features_train1);
-	SG_UNREF(features_train0);
-	SG_UNREF(latent_features_train0);
+
+
+
+
+
 }
 
 TEST(DenseSubSamplesFeatures, test2)
@@ -147,20 +147,20 @@ TEST(DenseSubSamplesFeatures, test2)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=5.00000;
 
-	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train0=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train0=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	SGVector<int32_t> idx1(n);
 	for(int i=0; i<idx1.vlen; i++)
 		idx1[i]=i;
-	SG_REF(features_train0);
-	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	auto features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_train0, idx1);
 
 	SGVector<int32_t> idx2(m);
 	for(int i=0; i<idx2.vlen; i++)
 		idx2[i]=i;
-	SG_REF(latent_features_train0);
-	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+	auto latent_features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(latent_features_train0, idx2);
 
 	for(int i=0; i<n; i++)
 	{
@@ -168,7 +168,7 @@ TEST(DenseSubSamplesFeatures, test2)
 		{
 			float64_t res=latent_features_train0->dot(j,features_train0,i);
 
-			abs_tolorance = CMath::get_abs_tolerance(res, rel_tolorance);
+			abs_tolorance = Math::get_abs_tolerance(res, rel_tolorance);
 			float64_t res1=latent_features_train1->dot(j,features_train0,i);
 			EXPECT_NEAR(res1, res, abs_tolorance);
 			float64_t res2=latent_features_train1->dot(j,features_train1,i);
@@ -176,10 +176,10 @@ TEST(DenseSubSamplesFeatures, test2)
 		}
 	}
 
-	SG_UNREF(features_train1);
-	SG_UNREF(latent_features_train1);
-	SG_UNREF(features_train0);
-	SG_UNREF(latent_features_train0);
+
+
+
+
 }
 
 
@@ -216,27 +216,27 @@ TEST(DenseSubSamplesFeatures, test3)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=5.00000;
 
-	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train0=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train0=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	SGVector<int32_t> idx1(n);
 	for(int i=0; i<idx1.vlen; i++)
 		idx1[i]=n-i-1;
-	SG_REF(features_train0);
-	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	auto features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_train0, idx1);
 
 	SGVector<int32_t> idx2(m);
 	for(int i=0; i<idx2.vlen; i++)
 		idx2[i]=m-i-1;
-	SG_REF(latent_features_train0);
-	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+	auto latent_features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(latent_features_train0, idx2);
 
 	for(int i=0; i<n; i++)
 	{
 		for(int j=0; j<m; j++)
 		{
 			float64_t res=latent_features_train0->dot(j,features_train0,i);
-			abs_tolorance = CMath::get_abs_tolerance(res, rel_tolorance);
+			abs_tolorance = Math::get_abs_tolerance(res, rel_tolorance);
 
 			float64_t res1=latent_features_train1->dot(m-j-1,features_train0,i);
 			EXPECT_NEAR(res1, res, abs_tolorance);
@@ -246,10 +246,10 @@ TEST(DenseSubSamplesFeatures, test3)
 		}
 	}
 
-	SG_UNREF(features_train1);
-	SG_UNREF(latent_features_train1);
-	SG_UNREF(features_train0);
-	SG_UNREF(latent_features_train0);
+
+
+
+
 }
 
 TEST(DenseSubSamplesFeatures, test5)
@@ -287,8 +287,8 @@ TEST(DenseSubSamplesFeatures, test5)
 	lat_feat_train(1,2)=5.00000;
 	lat_feat_train(1,3)=-7.00000;
 
-	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train0=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train0=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	SGVector<int32_t> idx1(n/2);
 	for(int i=0; i<n; i++)
@@ -296,8 +296,8 @@ TEST(DenseSubSamplesFeatures, test5)
 		if (i%2==0)
 			idx1[i/2]=i;
 	}
-	SG_REF(features_train0);
-	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	auto features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_train0, idx1);
 
 	SGVector<int32_t> idx2(m/2);
 	for(int i=0; i<m; i++)
@@ -305,8 +305,8 @@ TEST(DenseSubSamplesFeatures, test5)
 		if (i%2==0)
 			idx2[i/2]=i;
 	}
-	SG_REF(latent_features_train0);
-	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+	auto latent_features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(latent_features_train0, idx2);
 
 	for(int i=0; i<n; i++)
 	{
@@ -315,7 +315,7 @@ TEST(DenseSubSamplesFeatures, test5)
 			if (i%2==0 && j%2==0)
 			{
 				float64_t res=latent_features_train0->dot(j,features_train0,i);
-				abs_tolorance = CMath::get_abs_tolerance(res, rel_tolorance);
+				abs_tolorance = Math::get_abs_tolerance(res, rel_tolorance);
 
 				float64_t res1=latent_features_train1->dot(j/2,features_train0,i);
 				EXPECT_NEAR(res1, res, abs_tolorance);
@@ -327,10 +327,10 @@ TEST(DenseSubSamplesFeatures, test5)
 		}
 	}
 
-	SG_UNREF(features_train1);
-	SG_UNREF(latent_features_train1);
-	SG_UNREF(features_train0);
-	SG_UNREF(latent_features_train0);
+
+
+
+
 }
 
 TEST(DenseSubSamplesFeatures, test6)
@@ -368,8 +368,8 @@ TEST(DenseSubSamplesFeatures, test6)
 	lat_feat_train(1,2)=5.00000;
 	lat_feat_train(1,3)=-7.00000;
 
-	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train0=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train0=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	SGVector<int32_t> idx1(n/2);
 	for(int i=0; i<n; i++)
@@ -377,8 +377,8 @@ TEST(DenseSubSamplesFeatures, test6)
 		if (i%2==0)
 			idx1[i/2]=i;
 	}
-	SG_REF(features_train0);
-	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	auto features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_train0, idx1);
 
 	SGVector<int32_t> idx2(m/2);
 	for(int i=0; i<m; i++)
@@ -386,8 +386,8 @@ TEST(DenseSubSamplesFeatures, test6)
 		if (i%2==0)
 			idx2[i/2]=i;
 	}
-	SG_REF(latent_features_train0);
-	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+	auto latent_features_train1=std::make_shared<DenseSubSamplesFeatures<float64_t>>(latent_features_train0, idx2);
 
 
 	SGMatrix<float64_t> feat_train2(dim, n/2);
@@ -407,19 +407,19 @@ TEST(DenseSubSamplesFeatures, test6)
 	lat_feat_train2(1,0)=3.00000;
 	lat_feat_train2(1,1)=5.00000;
 
-	CDenseFeatures<float64_t>* features_train2=new CDenseFeatures<float64_t>(feat_train2);
-	CDenseFeatures<float64_t>* latent_features_train2=new CDenseFeatures<float64_t>(lat_feat_train2);
+	auto features_train2=std::make_shared<DenseFeatures<float64_t>>(feat_train2);
+	auto latent_features_train2=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train2);
 
 	float64_t ell=0.5;
-	CKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*ell*ell);
 
-	SG_REF(features_train2);
-	SG_REF(latent_features_train2);
+
+
 	kernel->init(latent_features_train2, features_train2);
 	SGMatrix<float64_t> res2=kernel->get_kernel_matrix();
 
-	SG_REF(features_train1);
-	SG_REF(latent_features_train1);
+
+
 	kernel->init(latent_features_train1, features_train1);
 	SGMatrix<float64_t> res1=kernel->get_kernel_matrix();
 
@@ -427,18 +427,18 @@ TEST(DenseSubSamplesFeatures, test6)
 	{
 		for(index_t j=0; j<res1.num_cols; j++)
 		{
-			abs_tolorance = CMath::get_abs_tolerance(res2(i,j), rel_tolorance);
+			abs_tolorance = Math::get_abs_tolerance(res2(i,j), rel_tolorance);
 			EXPECT_NEAR(res1(i,j), res2(i,j), abs_tolorance);
 		}
 	}
 
-	SG_UNREF(kernel);
-	SG_UNREF(features_train1);
-	SG_UNREF(latent_features_train1);
-	SG_UNREF(features_train0);
-	SG_UNREF(latent_features_train0);
-	SG_UNREF(features_train2);
-	SG_UNREF(latent_features_train2);
+
+
+
+
+
+
+
 }
 
 TEST(DenseSubSamplesFeatures, test7)
@@ -485,8 +485,8 @@ TEST(DenseSubSamplesFeatures, test7)
 	feat_train2(1,1)=5.17637;
 	feat_train2(1,2)=4.57765;
 
-	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train2);
-	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train0=std::make_shared<DenseFeatures<float64_t>>(feat_train2);
+	auto latent_features_train0=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	SGVector<int32_t> idx1(n/2);
 	for(int i=0; i<n; i++)
@@ -494,21 +494,21 @@ TEST(DenseSubSamplesFeatures, test7)
 		if (i%2==0)
 			idx1[i/2]=i;
 	}
-	CDenseFeatures<float64_t>* features_train1=new CDenseFeatures<float64_t>(feat_train);
-	SG_REF(features_train1);
-	CDenseSubSamplesFeatures<float64_t>* features_train2=new CDenseSubSamplesFeatures<float64_t>(features_train1, idx1);
+	auto features_train1=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+
+	auto features_train2=std::make_shared<DenseSubSamplesFeatures<float64_t>>(features_train1, idx1);
 
 
 	float64_t ell=0.5;
-	CKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*ell*ell);
 
-	SG_REF(features_train0);
-	SG_REF(latent_features_train0);
+
+
 	kernel->init(features_train0, latent_features_train0);
 	SGMatrix<float64_t> res0=kernel->get_kernel_matrix();
 
-	SG_REF(features_train2);
-	SG_REF(latent_features_train0);
+
+
 	kernel->init(features_train2, latent_features_train0);
 	SGMatrix<float64_t> res1=kernel->get_kernel_matrix();
 
@@ -516,15 +516,15 @@ TEST(DenseSubSamplesFeatures, test7)
 	{
 		for(index_t j=0; j<res1.num_cols; j++)
 		{
-			abs_tolorance = CMath::get_abs_tolerance(res0(i,j), rel_tolorance);
+			abs_tolorance = Math::get_abs_tolerance(res0(i,j), rel_tolorance);
 			EXPECT_NEAR(res1(i,j), res0(i,j), abs_tolorance);
 		}
 	}
 
-	SG_UNREF(kernel);
-	SG_UNREF(features_train0);
-	SG_UNREF(latent_features_train0);
-	SG_UNREF(latent_features_train0);
-	SG_UNREF(features_train2);
-	SG_UNREF(features_train1);
+
+
+
+
+
+
 }

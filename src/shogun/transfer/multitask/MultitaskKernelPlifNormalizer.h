@@ -20,12 +20,12 @@ namespace shogun
 /** @brief The MultitaskKernel allows learning a piece-wise linear function (PLIF) via MKL
  *
  */
-class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
+class MultitaskKernelPlifNormalizer: public MultitaskKernelMklNormalizer
 {
 
 public:
 	/** default constructor  */
-	CMultitaskKernelPlifNormalizer() : CMultitaskKernelMklNormalizer()
+	MultitaskKernelPlifNormalizer() : MultitaskKernelMklNormalizer()
 	{
 		num_tasks = 0;
 		num_tasksqr = 0;
@@ -34,8 +34,8 @@ public:
 
 	/** constructor
 	 */
-	CMultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
-		: CMultitaskKernelMklNormalizer()
+	MultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
+		: MultitaskKernelMklNormalizer()
 	{
 
 		num_betas = static_cast<int>(support_.size());
@@ -111,7 +111,7 @@ public:
 
 
 	/** default destructor */
-	virtual ~CMultitaskKernelPlifNormalizer()
+	virtual ~MultitaskKernelPlifNormalizer()
 	{
 	}
 
@@ -316,9 +316,9 @@ public:
 	/** casts kernel normalizer to multitask kernel plif normalizer
 	 * @param n kernel normalizer to cast
 	 */
-	CMultitaskKernelPlifNormalizer* KernelNormalizerToMultitaskKernelPlifNormalizer(CKernelNormalizer* n)
+	std::shared_ptr<MultitaskKernelPlifNormalizer> KernelNormalizerToMultitaskKernelPlifNormalizer(std::shared_ptr<KernelNormalizer> n)
 	{
-		   return dynamic_cast<shogun::CMultitaskKernelPlifNormalizer*>(n);
+		   return std::dynamic_pointer_cast<MultitaskKernelPlifNormalizer>(n);
 	}
 
 protected:
@@ -326,13 +326,13 @@ protected:
 	 */
 	virtual void register_params()
 	{
-		SG_ADD(&num_tasks, "num_tasks", "the number of tasks");
-		SG_ADD(&num_betas, "num_betas", "the number of weights");
+		/*SG_ADD(&num_tasks, "num_tasks", "the number of tasks")*/;
+		/*SG_ADD(&num_betas, "num_betas", "the number of weights")*/;
 
-		m_parameters->add_vector((SGVector<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");
-		m_parameters->add_vector((SGVector<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");
-		m_parameters->add_vector((SGVector<float64_t>**)&betas, &num_betas, "num_betas", "weights");
-		m_parameters->add_vector((SGVector<float64_t>**)&support, &num_betas, "support", "support points");
+		/*m_parameters->add_vector((SGString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");*/
+		/*m_parameters->add_vector((SGString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");*/
+		/*m_parameters->add_vector((SGString<float64_t>**)&betas, &num_betas, "num_betas", "weights");*/
+		/*m_parameters->add_vector((SGString<float64_t>**)&support, &num_betas, "support", "support points");*/
 	}
 
 	/** number of tasks **/

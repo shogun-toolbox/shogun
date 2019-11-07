@@ -29,21 +29,22 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <vector>
 #include <algorithm>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
+#include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
+#include <utility>
+#include <vector>
 
 using namespace shogun;
 using namespace internal;
 
-MedianHeuristic::MedianHeuristic(KernelManager& km, CMMD* est) : KernelSelection(km, est), distance(nullptr)
+MedianHeuristic::MedianHeuristic(KernelManager& km, std::shared_ptr<MMD> est) : KernelSelection(km, std::move(est)), distance(nullptr)
 {
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
@@ -64,11 +65,11 @@ void MedianHeuristic::init_measures()
 
 void MedianHeuristic::compute_measures()
 {
-	auto tmp=new CEuclideanDistance();
+	auto tmp=std::make_shared<EuclideanDistance>();
 	tmp->set_disable_sqrt(false);
-	SG_REF(tmp);
-	distance=std::shared_ptr<CCustomDistance>(estimator->compute_joint_distance(tmp));
-	SG_UNREF(tmp);
+
+	distance=std::shared_ptr<CustomDistance>(estimator->compute_joint_distance(tmp));
+
 
 	n=distance->get_num_vec_lhs();
 	require(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
@@ -95,7 +96,7 @@ SGMatrix<float64_t> MedianHeuristic::get_measure_matrix()
 	return distance->get_distance_matrix();
 }
 
-CKernel* MedianHeuristic::select_kernel()
+std::shared_ptr<shogun::Kernel> MedianHeuristic::select_kernel()
 {
 	compute_measures();
 	auto median_distance=measures[measures.size()/2];
@@ -105,8 +106,8 @@ CKernel* MedianHeuristic::select_kernel()
 	measures=SGVector<float64_t>(num_kernels);
 	for (auto i=0; i<num_kernels; ++i)
 	{
-		CGaussianKernel *kernel=static_cast<CGaussianKernel*>(kernel_mgr.kernel_at(i));
-		measures[i]=CMath::abs(kernel->get_width()-median_distance);
+		auto kernel=kernel_mgr.kernel_at(i)->as<GaussianKernel>();
+		measures[i]=Math::abs(kernel->get_width()-median_distance);
 	}
 
 	auto kernel_idx=(int64_t)std::distance(measures.data(), std::min_element(measures.data(), measures.data()+measures.size()));

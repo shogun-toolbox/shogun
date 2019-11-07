@@ -77,10 +77,10 @@ TEST(SoftMaxLikelihood,get_log_probabilities_f)
 	lab[5]=0;
 	lab[6]=0;
 
-	CMulticlassLabels* labels=new CMulticlassLabels();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	CSoftMaxLikelihood* sml=new CSoftMaxLikelihood();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_f(labels,data_vector);
 
@@ -93,8 +93,8 @@ TEST(SoftMaxLikelihood,get_log_probabilities_f)
 	EXPECT_NEAR(v[5],-0.2791,ep);
 	EXPECT_NEAR(v[6],-2.0168,ep);
 
-	SG_UNREF(sml);
-	SG_UNREF(labels);
+	
+	
 }
 
 TEST(SoftMaxLikelihood,get_log_probability_derivative_first)
@@ -134,10 +134,10 @@ TEST(SoftMaxLikelihood,get_log_probability_derivative_first)
 	lab[5]=0;
 	lab[6]=0;
 
-	CMulticlassLabels* labels=new CMulticlassLabels();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	CSoftMaxLikelihood* sml=new CSoftMaxLikelihood();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_derivative_f(labels,data_vector,1);
 
@@ -164,8 +164,8 @@ TEST(SoftMaxLikelihood,get_log_probability_derivative_first)
 	EXPECT_NEAR(v[19],-0.0571,ep);
 	EXPECT_NEAR(v[20],-0.2420,ep);
 
-	SG_UNREF(sml);
-	SG_UNREF(labels);
+	
+	
 }
 
 TEST(SoftMaxLikelihood,get_log_derivatives_second)
@@ -205,10 +205,10 @@ TEST(SoftMaxLikelihood,get_log_derivatives_second)
 	lab[5]=0;
 	lab[6]=0;
 
-	CMulticlassLabels* labels=new CMulticlassLabels();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	CSoftMaxLikelihood* sml=new CSoftMaxLikelihood();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_derivative_f(labels,data_vector,2);
 
@@ -277,8 +277,8 @@ TEST(SoftMaxLikelihood,get_log_derivatives_second)
 	EXPECT_NEAR(v[61],0.1512,ep);
 	EXPECT_NEAR(v[62],-0.1834,ep);
 
-	SG_UNREF(sml);
-	SG_UNREF(labels);
+	
+	
 }
 
 TEST(SoftMaxLikelihood,get_log_derivatives_third)
@@ -318,10 +318,10 @@ TEST(SoftMaxLikelihood,get_log_derivatives_third)
 	lab[5]=0;
 	lab[6]=0;
 
-	CMulticlassLabels* labels=new CMulticlassLabels();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	CSoftMaxLikelihood* sml=new CSoftMaxLikelihood();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_derivative_f(labels,data_vector,3);
 
@@ -516,6 +516,6 @@ TEST(SoftMaxLikelihood,get_log_derivatives_third)
 	EXPECT_NEAR(v[187],-0.0780,ep);
 	EXPECT_NEAR(v[188],0.0947,ep);
 
-	SG_UNREF(sml);
-	SG_UNREF(labels);
+	
+	
 }

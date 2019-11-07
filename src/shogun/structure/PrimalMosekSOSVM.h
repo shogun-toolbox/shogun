@@ -28,7 +28,7 @@ namespace shogun
  *     Spaces.
  *     http://www.cs.cornell.edu/People/tj/publications/tsochantaridis_etal_04a.pdf
  */
-class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
+class CPrimalMosekSOSVM : public LinearStructuredOutputMachine
 {
 	public:
 		/** default constructor */
@@ -39,7 +39,7 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param model structured model with application specific functions
 		 * @param labs structured labels
 		 */
-		CPrimalMosekSOSVM(CStructuredModel* model, CStructuredLabels* labs);
+		CPrimalMosekSOSVM(StructuredModel* model, StructuredLabels* labs);
 
 		/** destructor */
 		~CPrimalMosekSOSVM();
@@ -93,24 +93,24 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param data training data
 		 * @return whether the training was successful
 		 */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(Features* data = NULL);
 
 	private:
 		void init();
 
 		/** computes the result of TODO equation
 		 *
-		 * @param result CResultSet structure with any argmax output
+		 * @param result ResultSet structure with any argmax output
 		 * @return result of the operation
 		 */
-		float64_t compute_loss_arg(CResultSet* result) const;
+		float64_t compute_loss_arg(ResultSet* result) const;
 
 		/** insert element in the list of argmax results
 		 *
-		 * @param result_list list of CResultSet
+		 * @param result_list list of ResultSet
 		 * @param result element to insert in the list
 		 */
-		bool insert_result(CList* result_list, CResultSet* result) const;
+		bool insert_result(List* result_list, ResultSet* result) const;
 
 		/** introduces a new constraint of type Ax <= b in the
 		 * optimization problem. Remember that each row i in A takes the
@@ -135,7 +135,7 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 *
 		 * @return whether the new constraint has been succesfully added
 		 */
-		bool add_constraint(CMosek* mosek, CResultSet* result, index_t con_idx, index_t train_idx) const;
+		bool add_constraint(CMosek* mosek, ResultSet* result, index_t con_idx, index_t train_idx) const;
 
 	private:
 		/** slack variables associated to each training example */

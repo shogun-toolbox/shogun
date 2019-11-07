@@ -16,14 +16,12 @@ int main()
 {
 	// Create a StreamingAsciiFile from the training data
 	char* train_file_name = "../data/train_sparsereal.light";
-	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
-	SG_REF(train_file);
+	StreamingAsciiFile* train_file = new StreamingAsciiFile(train_file_name);
 
 	// Create a StreamingSparseFeatures from the StreamingAsciiFile.
 	// The bool value is true if examples are labelled.
 	// 1024 is a good standard value for the number of examples for the parser to hold at a time.
-	CStreamingSparseFeatures<float64_t>* train_features = new CStreamingSparseFeatures<float64_t>(train_file, true, 1024);
-	SG_REF(train_features);
+	StreamingSparseFeatures<float64_t>* train_features = new StreamingSparseFeatures<float64_t>(train_file, true, 1024);
 
 	// Create an OnlineSVMSGD object from the features. The first parameter is 'C'.
 	COnlineSVMSGD* sgd = new COnlineSVMSGD(1, train_features);
@@ -36,24 +34,17 @@ int main()
 
 	// Now we want to test on other data
 	char* test_file_name = "../data/fm_test_sparsereal.dat";
-	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
-	SG_REF(test_file);
+	StreamingAsciiFile* test_file = new StreamingAsciiFile(test_file_name);
 
 	// Similar, but 'false' since the file contains unlabelled examples
-	CStreamingSparseFeatures<float64_t>* test_features = new CStreamingSparseFeatures<float64_t>(test_file, false, 1024);
-	SG_REF(test_features);
+	StreamingSparseFeatures<float64_t>* test_features = new StreamingSparseFeatures<float64_t>(test_file, false, 1024);
 
-	// Apply on all examples and return a CLabels*
-	CLabels* test_labels = sgd->apply(test_features);
+	// Apply on all examples and return a Labels*
+	Labels* test_labels = sgd->apply(test_features);
 
 	for (int32_t i=0; i<test_labels->get_num_labels(); i++)
 		SG_SPRINT("For example %d, predicted label is %f.\n", i, test_labels->get_label(i));
 
-	SG_UNREF(test_features);
-	SG_UNREF(test_file);
-	SG_UNREF(train_features);
-	SG_UNREF(train_file);
-	SG_UNREF(sgd);
 
 	return 0;
 }

@@ -47,10 +47,10 @@ namespace shogun
 		public:
 			/** constructor
 			 *
-			 * @param features pointer to CDotFeatures
+			 * @param features pointer to DotFeatures
 			 * @param idx position of the iterator
 			 */
-			feature_vector(CDotFeatures* features, index_t idx)
+			feature_vector(std::shared_ptr<DotFeatures> features, index_t idx)
 			    : m_features(features), m_idx(idx)
 			{
 			}
@@ -78,7 +78,7 @@ namespace shogun
 			void add(float64_t alpha, SGVector<float64_t>& v) const;
 
 		protected:
-			CDotFeatures* m_features;
+			std::shared_ptr<DotFeatures> m_features;
 			index_t m_idx;
 
 			friend class iterator;
@@ -100,10 +100,10 @@ namespace shogun
 
 			/** constructor
 			 *
-			 * @param features pointer to CDotFeatures
+			 * @param features pointer to DotFeatures
 			 * @param idx position of the iterator
 			 */
-			iterator(CDotFeatures* features, index_t idx = 0)
+			iterator(std::shared_ptr<DotFeatures> features, index_t idx = 0)
 			    : m_feature_vector(features, idx)
 			{
 			}
@@ -130,9 +130,9 @@ namespace shogun
 	public:
 		/** constructor
 		 *
-		 * @param features pointer to CDotFeatures
+		 * @param features pointer to DotFeatures
 		 */
-		DotIterator(CDotFeatures* features) : m_features(features)
+		DotIterator(std::shared_ptr<DotFeatures> features) : m_features(features)
 		{
 		}
 
@@ -149,7 +149,7 @@ namespace shogun
 		iterator end() const;
 
 	protected:
-		CDotFeatures* m_features;
+		std::shared_ptr<DotFeatures> m_features;
 	};
 }
 

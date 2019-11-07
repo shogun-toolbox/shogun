@@ -16,17 +16,17 @@ namespace shogun
 {
 
 /* Standard KNN solver. Test points are compared to all training data for each prediction. */
-class CBruteKNNSolver : public CKNNSolver
+class BruteKNNSolver : public KNNSolver
 {
 	public:
 		/** default constructor */
-		CBruteKNNSolver() : CKNNSolver()
+		BruteKNNSolver() : KNNSolver()
 		{
 			init(); 
 		}
 
 		/** deconstructor */
-		virtual ~CBruteKNNSolver() { /* nothing to do */ }
+		virtual ~BruteKNNSolver() { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -37,11 +37,11 @@ class CBruteKNNSolver : public CKNNSolver
 		 * @param train_labels m_train_labels
 		 * @param NN nn
 		 */
-		CBruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN);
+		BruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN);
 
-		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 
-		virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
 
 		/** @return object name */
 		const char* get_name() const { return "BruteKNNSolver"; }

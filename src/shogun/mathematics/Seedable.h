@@ -10,21 +10,25 @@ namespace shogun
 {
 	namespace random
 	{
+#ifndef SWIG
+		static constexpr std::string_view kSetRandomSeed = "set_random_seed";
+		static constexpr std::string_view kSeed = "seed";
+#endif // SWIG		
 		/** Seeds an SGObject using a specific seed
 		 */
 		template <
 		    typename T, typename PRNG,
 		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        SGObject, typename std::remove_pointer<T>::type>::value>* =
 		        nullptr>
 		static inline void seed(T* object, int32_t seed)
 		{
-			if (object->has("seed"))
-				object->put("seed", seed);
+			if (object->has(kSeed))
+				object->put(kSeed, seed);
 		}
 	} // namespace random
 
-	static inline void seed_callback(CSGObject*, int32_t);
+	static inline void seed_callback(SGObject*, int32_t);
 
 	template <typename Parent>
 	class Seedable : public Parent
@@ -44,9 +48,9 @@ namespace shogun
 	private:
 		void init()
 		{
-			Parent::watch_param("seed", &m_seed);
+			Parent::watch_param(random::kSeed, &m_seed);
 			Parent::add_callback_function(
-			    "seed", std::bind(seed_callback, this, std::ref(m_seed)));
+			    random::kSeed, std::bind(seed_callback, this, std::ref(m_seed)));
 		}
 
 	protected:
@@ -57,7 +61,7 @@ namespace shogun
 		template <
 		    typename T,
 		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        SGObject, typename std::remove_pointer<T>::type>::value>* =
 		        nullptr>
 		inline void seed(T* object) const
 		{
@@ -67,12 +71,12 @@ namespace shogun
 		int32_t m_seed;
 	};
 
-	static inline void seed_callback(CSGObject* obj, int32_t seed)
+	static inline void seed_callback(SGObject* obj, int32_t seed)
 	{
-		obj->for_each_param_of_type<CSGObject*>(
-		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has("seed"))
-				    (*param)->put("seed", seed);
+		obj->for_each_param_of_type<SGObject*>(
+		    [&](const std::string& name, SGObject** param) {
+			    if ((*param)->has(random::kSeed))
+				    (*param)->put(random::kSeed, seed);
 			    else
 				    seed_callback(*param, seed);
 		    });

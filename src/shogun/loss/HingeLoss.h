@@ -13,21 +13,21 @@
 
 namespace shogun
 {
-/** @brief CHingeLoss implements the hinge
+/** @brief HingeLoss implements the hinge
  * loss function.
  */
-class CHingeLoss: public CLossFunction
+class HingeLoss: public LossFunction
 {
 public:
 	/**
 	 * Constructor
 	 */
-	CHingeLoss(): CLossFunction() {};
+	HingeLoss(): LossFunction() {};
 
 	/**
 	 * Destructor
 	 */
-	~CHingeLoss() {};
+	~HingeLoss() {};
 
 	/**
 	 * Get loss for an example

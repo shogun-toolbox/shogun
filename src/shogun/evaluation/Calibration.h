@@ -17,15 +17,15 @@ namespace shogun
 	fit_multiclass() to
 	fit the parameters on the predictions and the true labels. Call calibrate to
 	calibrate predictions. **/
-	class CCalibration : public CSGObject
+	class Calibration : public SGObject
 	{
 	public:
 		/** Constructor. */
-		CCalibration()
+		Calibration()
 		{
 		}
 		/** Destructor. */
-		virtual ~CCalibration()
+		virtual ~Calibration()
 		{
 		}
 
@@ -40,14 +40,14 @@ namespace shogun
 		* @return Indicates whether the calibration was succesful
 		**/
 		virtual bool
-		fit_binary(CBinaryLabels* predictions, CBinaryLabels* targets) = 0;
+		fit_binary(std::shared_ptr<BinaryLabels> predictions, std::shared_ptr<BinaryLabels> targets) = 0;
 
 		/** Calibrate binary predictions based on parameters learned by calling
 		*fit.
 		* @param predictions The predictions outputted by the machine
 		* @return Calibrated binary labels
 		**/
-		virtual CBinaryLabels* calibrate_binary(CBinaryLabels* predictions) = 0;
+		virtual std::shared_ptr<BinaryLabels> calibrate_binary(std::shared_ptr<BinaryLabels> predictions) = 0;
 
 		/** Fit calibration parameters for multiclass labels.
 		* @param predictions The predictions outputted by the machine
@@ -55,15 +55,15 @@ namespace shogun
 		* @return Indicates whether the calibration was succesful
 		**/
 		virtual bool fit_multiclass(
-		    CMulticlassLabels* predictions, CMulticlassLabels* targets) = 0;
+		    std::shared_ptr<MulticlassLabels> predictions, std::shared_ptr<MulticlassLabels> targets) = 0;
 
 		/** Calibrate multiclass predictions based on parameters learned by
 		*calling fit.
 		* @param predictions The predictions outputted by the machine
 		* @return Calibrated binary labels
 		**/
-		virtual CMulticlassLabels*
-		calibrate_multiclass(CMulticlassLabels* predictions) = 0;
+		virtual std::shared_ptr<MulticlassLabels>
+		calibrate_multiclass(std::shared_ptr<MulticlassLabels> predictions) = 0;
 	};
 }
 #endif

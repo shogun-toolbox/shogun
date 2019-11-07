@@ -15,14 +15,14 @@
 
 namespace shogun
 {
-template <class ST> class CSparseFeatures;
+template <class ST> class SparseFeatures;
 template <class ST> class SGSparseVector;
-class CDotFeatures;
+class DotFeatures;
 
-/** @brief This class is identical to the CDenseFeatures class
+/** @brief This class is identical to the DenseFeatures class
  * except that it hashes each dimension to a new feature space.
  */
-template <class ST> class CHashedSparseFeatures  : public CDotFeatures
+template <class ST> class HashedSparseFeatures  : public DotFeatures
 {
 public:
 
@@ -32,7 +32,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(int32_t size=0, bool use_quadr = false, bool keep_lin_terms = true);
+	HashedSparseFeatures(int32_t size=0, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/** constructor
 	 *
@@ -41,7 +41,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr = false,
+	HashedSparseFeatures(std::shared_ptr<SparseFeatures<ST>> feats, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** constructor
@@ -51,7 +51,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d, bool use_quadr = false,
+	HashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** constructor loading features from file
@@ -61,17 +61,17 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
+	HashedSparseFeatures(std::shared_ptr<File> loader, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** copy constructor */
-	CHashedSparseFeatures(const CHashedSparseFeatures & orig);
+	HashedSparseFeatures(const HashedSparseFeatures & orig);
 
 	/** duplicate */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
 	/** destructor */
-	virtual ~CHashedSparseFeatures();
+	virtual ~HashedSparseFeatures();
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -91,7 +91,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 			int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
@@ -210,12 +210,12 @@ public:
 		bool use_quadratic = false, bool keep_linear_terms = true);
 
 private:
-	void init(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr, bool keep_lin_terms);
+	void init(std::shared_ptr<SparseFeatures<ST>> feats, int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
 
 	/** sparse features */
-	CSparseFeatures<ST>* sparse_feats;
+	std::shared_ptr<SparseFeatures<ST>> sparse_feats;
 
 	/** new feature space dimension */
 	int32_t dim;

@@ -62,7 +62,7 @@ struct VarianceH0
 		VectorXt diag=map.diagonal();
 		map.diagonal().setZero();
 
-		auto term_1=CMath::sq(map.array().sum()/B/(B-1));
+		auto term_1=Math::sq(map.array().sum()/B/(B-1));
 		auto term_2=map.array().square().sum()/B/(B-1);
 		auto term_3=(map.colwise().sum()/(B-1)).array().square().sum()/B;
 

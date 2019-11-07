@@ -38,16 +38,16 @@
 using namespace shogun;
 
 CDependenceMaximization::CDependenceMaximization()
-	: CFeatureSelection<float64_t>()
+	: FeatureSelection<float64_t>()
 {
 	init();
 }
 
 void CDependenceMaximization::init()
 {
-	SG_ADD((CSGObject**)&m_estimator, "estimator",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_estimator, "estimator",
 			"the estimator for computing measures");
-	SG_ADD((CSGObject**)&m_labels_feats, "labels_feats",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_labels_feats, "labels_feats",
 			"the features based on labels");
 
 	m_estimator=NULL;
@@ -56,17 +56,17 @@ void CDependenceMaximization::init()
 
 CDependenceMaximization::~CDependenceMaximization()
 {
-	SG_UNREF(m_estimator);
-	SG_UNREF(m_labels_feats);
+
+
 }
 
-CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
+std::shared_ptr<Features> CDependenceMaximization::create_transformed_copy(std::shared_ptr<Features> features,
 		index_t idx)
 {
 	SG_TRACE("Entering!");
 
 	// remove the dimension specified by the index, i.e. get X\X_i
-	// NULL check is handled in CFeatureSelection::get_num_features call
+	// NULL check is handled in FeatureSelection::get_num_features call
 	index_t num_features=get_num_features(features);
 	require(num_features>idx, "Specified dimension to remove ({}) is greater "
 			"than the total number of current features ({})!",
@@ -88,31 +88,31 @@ CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 	return features->copy_dimension_subset(dims);
 }
 
-float64_t CDependenceMaximization::compute_measures(CFeatures* features,
+float64_t CDependenceMaximization::compute_measures(std::shared_ptr<Features> features,
 		index_t idx)
 {
 	SG_TRACE("Entering!");
 
 	// remove the dimension (feat) specified by the index idx
-	CFeatures* reduced_feats=create_transformed_copy(features, idx);
+	auto reduced_feats=create_transformed_copy(features, idx);
 	ASSERT(reduced_feats);
 
 	// perform an independence test for X\X_i ~ p and Y ~ q with
 	// H_0: P(X\X_i, Y) = P(X\X_i) * P(Y)
 	// the test statistic can then be used as a measure of dependence
-	// See CIndependenceTest class documentation for details
+	// See IndependenceTest class documentation for details
 	m_estimator->set_p(reduced_feats);
 	float64_t statistic=m_estimator->compute_statistic();
 
 	SG_DEBUG("statistic = {}!", statistic);
 
-	SG_UNREF(reduced_feats);
+
 
 	SG_TRACE("Leaving!");
 	return statistic;
 }
 
-CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
+std::shared_ptr<Features> CDependenceMaximization::remove_feats(std::shared_ptr<Features> features,
 		SGVector<index_t> argsorted)
 {
 	SG_TRACE("Entering!");
@@ -144,18 +144,18 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 	sg_memcpy(inds.vector, argsorted.vector, sizeof(index_t)*inds.vlen);
 
 	// sorting the indices to get the original order
-	CMath::qsort(inds);
+	Math::qsort(inds);
 	if (env()->io()->get_loglevel()<=io::MSG_DEBUG)
 		inds.display_vector("selected feats");
 
 	// copy rest of the features and SG_UNREF the original feat obj
-	CFeatures* reduced_feats=features->copy_dimension_subset(inds);
+	auto reduced_feats=features->copy_dimension_subset(inds);
 
 	// add the selected features to the subset
 	ASSERT(m_subset)
 	m_subset->add_subset(inds);
 
-	SG_UNREF(features);
+
 
 	SG_TRACE("Leaving!");
 	return reduced_feats;
@@ -169,20 +169,20 @@ void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 	m_policy=policy;
 }
 
-void CDependenceMaximization::set_labels(CLabels* labels)
+void CDependenceMaximization::set_labels(std::shared_ptr<Labels> labels)
 {
-	// NULL check is handled in base class CFeatureSelection
-	CFeatureSelection<float64_t>::set_labels(labels);
+	// NULL check is handled in base class FeatureSelection
+	FeatureSelection<float64_t>::set_labels(labels);
 
-	// convert the CLabels object to CDenseFeatures
-	SG_UNREF(m_labels_feats);
+	// convert the Labels object to DenseFeatures
+
 
 	SGMatrix<float64_t> labels_matrix(1, m_labels->get_num_labels());
 	for (index_t i=0; i<labels_matrix.num_cols; ++i)
 		labels_matrix.matrix[i]=m_labels->get_value(i);
 
-	m_labels_feats=new CDenseFeatures<float64_t>(labels_matrix);
-	SG_REF(m_labels_feats);
+	m_labels_feats=std::make_shared<DenseFeatures<float64_t>>(labels_matrix);
+
 
 	// we need to set this to the estimator which is set internally
 	ASSERT(m_estimator);

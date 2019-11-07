@@ -25,17 +25,17 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  *
  */
-class CJediDiag : public CApproxJointDiagonalizer
+class JediDiag : public ApproxJointDiagonalizer
 {
 	public:
 
 		/** constructor */
-		CJediDiag()
+		JediDiag()
 		{
 		}
 
 		/** destructor */
-		virtual ~CJediDiag()
+		virtual ~JediDiag()
 		{
 		}
 
@@ -48,7 +48,7 @@ class CJediDiag : public CApproxJointDiagonalizer
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
 							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-								double eps=CMath::MACHINE_EPSILON,
+								double eps=Math::MACHINE_EPSILON,
 								int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C
@@ -60,7 +60,7 @@ class CJediDiag : public CApproxJointDiagonalizer
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-						   double eps=CMath::MACHINE_EPSILON,
+						   double eps=Math::MACHINE_EPSILON,
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);

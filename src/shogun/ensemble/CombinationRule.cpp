@@ -8,13 +8,13 @@
 
 using namespace shogun;
 
-CCombinationRule::CCombinationRule()
-	: CSGObject()
+CombinationRule::CombinationRule()
+	: SGObject()
 {
 
 }
 
-CCombinationRule::~CCombinationRule()
+CombinationRule::~CombinationRule()
 {
 
 }

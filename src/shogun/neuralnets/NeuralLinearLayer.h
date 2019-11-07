@@ -60,19 +60,19 @@ namespace shogun
  * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is
  * used
  */
-class CNeuralLinearLayer : public CNeuralLayer
+class NeuralLinearLayer : public NeuralLayer
 {
 public:
 	/** default constructor */
-	CNeuralLinearLayer();
+	NeuralLinearLayer();
 
 	/** Constuctor
 	 *
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralLinearLayer(int32_t num_neurons);
+	NeuralLinearLayer(int32_t num_neurons);
 
-	virtual ~CNeuralLinearLayer() {}
+	virtual ~NeuralLinearLayer() {}
 
 	/** Initializes the layer, computes the number of parameters needed for
 	 * the layer
@@ -83,8 +83,9 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize_neural_layer(CDynamicObjectArray* layers,
-			SGVector<int32_t> input_indices);
+	virtual void initialize_neural_layer(
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers,
+		SGVector<int32_t> input_indices);
 
 	/** Initializes the layer's parameters. The layer should fill the given
 	 * arrays with the initial value for its parameters
@@ -114,7 +115,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers);
 
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
@@ -143,7 +144,7 @@ public:
 	 */
 	virtual void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> targets,
-			CDynamicObjectArray* layers,
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 			SGVector<float64_t> parameter_gradients);
 
 	/** Computes the error between the layer's current activations and the given

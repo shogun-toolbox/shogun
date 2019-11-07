@@ -41,28 +41,28 @@
 
 using namespace shogun;
 
-CParameterObserverHistogram::CParameterObserverHistogram()
+ParameterObserverHistogram::ParameterObserverHistogram()
     : ParameterObserverTensorBoard()
 {
 }
 
-CParameterObserverHistogram::CParameterObserverHistogram(
+ParameterObserverHistogram::ParameterObserverHistogram(
     std::vector<std::string>& parameters)
     : ParameterObserverTensorBoard(parameters)
 {
 }
 
-CParameterObserverHistogram::CParameterObserverHistogram(
+ParameterObserverHistogram::ParameterObserverHistogram(
     const std::string& filename, std::vector<std::string>& parameters)
     : ParameterObserverTensorBoard(filename, parameters)
 {
 }
 
-CParameterObserverHistogram::~CParameterObserverHistogram()
+ParameterObserverHistogram::~ParameterObserverHistogram()
 {
 }
 
-void CParameterObserverHistogram::on_next_impl(const TimedObservedValue& value)
+void ParameterObserverHistogram::on_next_impl(const TimedObservedValue& value)
 {
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();
@@ -70,11 +70,11 @@ void CParameterObserverHistogram::on_next_impl(const TimedObservedValue& value)
 	m_writer.writeEvent(event_value);
 }
 
-void CParameterObserverHistogram::on_error(std::exception_ptr)
+void ParameterObserverHistogram::on_error(std::exception_ptr)
 {
 }
 
-void CParameterObserverHistogram::on_complete()
+void ParameterObserverHistogram::on_complete()
 {
 }
 

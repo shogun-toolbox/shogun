@@ -195,17 +195,17 @@ struct CrossValidationMMD : PermutationMMD
 		SGVector<int64_t> dummy_labels_x(m_n_x);
 		SGVector<int64_t> dummy_labels_y(m_n_y);
 
-		auto instance_x=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_x), m_num_folds);
-		auto instance_y=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_y), m_num_folds);
+		auto instance_x=new CrossValidationSplitting(std::make_shared<BinaryLabels>(dummy_labels_x), m_num_folds);
+		auto instance_y=new CrossValidationSplitting(std::make_shared<BinaryLabels>(dummy_labels_y), m_num_folds);
 		random::seed(instance_x, prng);
 		random::seed(instance_y, prng);
 
-		m_kfold_x=unique_ptr<CCrossValidationSplitting>(instance_x);
-		m_kfold_y=unique_ptr<CCrossValidationSplitting>(instance_y);
+		m_kfold_x=unique_ptr<CrossValidationSplitting>(instance_x);
+		m_kfold_y=unique_ptr<CrossValidationSplitting>(instance_y);
 		random::seed(m_kfold_x.get(), prng);
 		random::seed(m_kfold_y.get(), prng);
-	
-		m_stack=unique_ptr<CSubsetStack>(new CSubsetStack());
+
+		m_stack=std::make_unique<SubsetStack>();
 
 		const index_t size=m_n_x+m_n_y;
 		m_inverted_inds=SGVector<index_t>(size);
@@ -235,9 +235,9 @@ struct CrossValidationMMD : PermutationMMD
 	float64_t m_alpha;
 	static constexpr float64_t DEFAULT_ALPHA=0.05;
 
-	unique_ptr<CCrossValidationSplitting> m_kfold_x;
-	unique_ptr<CCrossValidationSplitting> m_kfold_y;
-	unique_ptr<CSubsetStack> m_stack;
+	unique_ptr<CrossValidationSplitting> m_kfold_x;
+	unique_ptr<CrossValidationSplitting> m_kfold_y;
+	unique_ptr<SubsetStack> m_stack;
 
 	SGVector<index_t> m_xy_inds;
 	SGVector<index_t> m_inverted_inds;
