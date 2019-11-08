@@ -8,7 +8,8 @@
 #define _MANIFEST_H_
 
 #include <shogun/base/metaclass.h>
-#include <shogun/base/unique.h>
+
+#include <unordered_set>
 
 namespace shogun
 {
@@ -63,12 +64,15 @@ namespace shogun
         template <typename T>
         MetaClass<T> class_by_name(const std::string& name) const
         {
-            Any clazz = find_class(name);
+            auto clazz = find_class(name);
             return any_cast<MetaClass<T>>(clazz);
         }
 
         /** @return description stored in the manifest. */
         std::string description() const;
+
+        /** @return list of classes in this manifest. */
+        std::unordered_set<std::string> class_list() const;
 
     protected:
         /** Adds mapping from class name to MetaClass object of
@@ -88,7 +92,7 @@ namespace shogun
 
     private:
         class Self;
-        Unique<Self> self;
+        std::unique_ptr<Self> self;
     };
 
 /** Starts manifest declaration with its description.
@@ -104,15 +108,14 @@ extern "C" Manifest shogunManifest()                            \
  * Always use this macro between @ref BEGIN_MANIFEST and
  * @ref END_MANIFEST
  */
-#define EXPORT(CLASSNAME, BASE_CLASSNAME, IDENTIFIER)                       \
-    std::make_pair(IDENTIFIER, erase_type(                                  \
-        MetaClass<BASE_CLASSNAME>(erase_type(                               \
-            std::function<std::shared_ptr<BASE_CLASSNAME>()>(               \
-                []() -> std::shared_ptr<BASE_CLASSNAME>                     \
-                {                                                           \
-                    return std::shared_ptr<BASE_CLASSNAME>(new CLASSNAME);  \
-                }                                                           \
-                ))))),                                                      \
+#define EXPORT(CLASSNAME, BASE_CLASSNAME, IDENTIFIER)                           \
+    std::make_pair(IDENTIFIER, make_any(                                        \
+        MetaClass<BASE_CLASSNAME>(make_any<std::shared_ptr<BASE_CLASSNAME>>(    \
+                []() -> std::shared_ptr<BASE_CLASSNAME>                         \
+                {                                                               \
+                    return std::shared_ptr<BASE_CLASSNAME>(new CLASSNAME);      \
+                }                                                               \
+                )))),                                                           \
 
 /** Ends manifest declaration.
  * Always use this macro after @ref BEGIN_MANIFEST

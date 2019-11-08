@@ -27,7 +27,10 @@ SET(SHOGUN_CORE_HEADERS
   base/base_types.h
   base/class_list.h
   base/constraint.h
+  base/library.h
   base/macros.h
+  base/manifest.h
+  base/metaclass.h
   base/Parallel.h
   base/progress.h
   base/range.h
@@ -108,6 +111,7 @@ SET(SHOGUN_CORE_HEADERS
   mathematics/Seedable.h
   multiclass/MulticlassStrategy.h
   transformer/Transformer.h
+  util/visitors/FilterVisitor.h
   util/clone.h
   util/converters.h
   util/factory.h
@@ -118,6 +122,9 @@ SET(SHOGUN_CORE_HEADERS
 )
 
 SET(SHOGUN_CORE_SOURCES
+  base/class_list.cpp
+  base/library.cpp
+  base/manifest.cpp
   base/Parallel.cpp
   base/SGObject.cpp
   base/ShogunEnv.cpp
@@ -737,6 +744,18 @@ IF (ENABLE_TESTING)
   set(SHOGUN_TEST_LINK_LIBS shogun_test_main)
 
   ADD_SHOGUN_TEST(lib/any_test)
+
+  ADD_SHOGUN_TEST(base/Plugin_test)
+  add_library(plugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibrary.cpp)
+  target_link_libraries(plugin shogun-core)
+  add_library(pluginwomanifest SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibraryWOManifest.cpp)
+  target_link_libraries(pluginwomanifest shogun-core)
+  set_property(TARGET plugin PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+  add_dependencies(Plugin_test plugin pluginwomanifest)
+  target_compile_definitions(Plugin_test PRIVATE
+    SHARED_LIB_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    SHARED_LIB_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}")
+
 ENDIF()
 
 ################# benchmarking

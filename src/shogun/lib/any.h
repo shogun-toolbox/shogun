@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <shogun/shogun_export.h>
 #include <shogun/base/base_types.h>
 #include <shogun/util/converters.h>
 #include <shogun/util/traits.h>
@@ -1238,12 +1239,12 @@ namespace shogun
 		typedef std::function<void(void*, void*)> CastingFunction;
 		typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction>
 		    CastingRegistry;
-		static CastingRegistry casting_registry;
+		SHOGUN_NO_EXPORT inline static CastingRegistry casting_registry;
 
 		typedef std::function<void(void*, void*)> VisitorFunction;
 		typedef std::map<std::pair<TypeIndex, TypeIndex>, VisitorFunction>
 		    VisitorRegistry;
-		static VisitorRegistry visitor_registry;
+		SHOGUN_NO_EXPORT inline static VisitorRegistry visitor_registry;
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);

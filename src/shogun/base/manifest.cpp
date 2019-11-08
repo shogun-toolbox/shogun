@@ -21,7 +21,7 @@ namespace shogun
 
     Manifest::Manifest(const std::string& description,
             const std::initializer_list<std::pair<std::string,Any>> classes) :
-        self()
+        self(std::make_unique<Self>())
     {
         self->description = description;
         for (const auto& m : classes)
@@ -29,7 +29,7 @@ namespace shogun
     }
 
     Manifest::Manifest(const Manifest& other) :
-        self()
+        self(std::make_unique<Self>())
     {
         self->description = other.self->description;
         self->classes = other.self->classes;
@@ -74,4 +74,12 @@ namespace shogun
         return self->classes.at(name);
     }
 
+    std::unordered_set<std::string> Manifest::class_list() const
+    {
+        std::unordered_set<std::string> class_list;
+        for (const auto& m : self->classes)
+            class_list.emplace(m.first);
+
+        return class_list;
+    }
 }

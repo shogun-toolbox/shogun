@@ -8,12 +8,9 @@
 #define __SG_CLASS_LIST_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/config.h>
-
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/exception/ShogunException.h>
-
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/DataType.h>
 
 #include <set>
 #include <string>
@@ -25,7 +22,7 @@ namespace shogun {
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	std::shared_ptr<SGObject> create(const char* sgserializable_name, EPrimitiveType generic);
+	std::shared_ptr<SGObject> create(const std::string& sgserializable_name, EPrimitiveType generic);
 
 	/** Creates new shogun instance, typed.
 	 *
@@ -35,7 +32,7 @@ namespace shogun {
 	 */
 	template <class T>
 	std::shared_ptr<T> create_object(
-	    const char* name,
+	    const std::string& name,
 	    EPrimitiveType pt = PT_NOT_GENERIC) noexcept(false)
 	{
 		auto object = create(name, pt);
@@ -48,7 +45,7 @@ namespace shogun {
 		auto cast = std::dynamic_pointer_cast<T>(object);
 		if (cast == nullptr)
 		{
-			error("could not cst");
+			error("could not cast");
 		}
 		return cast;
 	}

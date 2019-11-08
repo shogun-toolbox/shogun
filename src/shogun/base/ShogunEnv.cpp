@@ -8,6 +8,7 @@
 #include <shogun/base/ShogunEnv.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/fs/FileSystemRegistry.h>
+#include <shogun/io/fs/Path.h>
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
@@ -18,6 +19,7 @@
 #include <csignal>
 #include <functional>
 #include <string>
+#include <sstream>
 
 #ifdef HAVE_PROTOBUF
 #include <google/protobuf/stubs/common.h>
@@ -134,4 +136,74 @@ Signal* ShogunEnv::signal()
 SGLinalg* ShogunEnv::linalg()
 {
 	return sg_linalg.get();
+}
+
+static bool is_shared_lib_name(std::string_view filename)
+{
+#if defined(__APPLE__)
+	static constexpr std::string_view kSharedLibSuffix = ".dylib";
+#elif defined(_WIN32)
+	static constexpr std::string_view kSharedLibSuffix = ".dll";
+#else
+	static constexpr std::string_view kSharedLibSuffix = ".so";
+#endif
+
+	if (filename.length() > kSharedLibSuffix.size())
+	{
+#if defined(__APPLE__) || defined(_WIN32)
+		auto suffix = filename.substr(filename.length()-kSharedLibSuffix.size(), kSharedLibSuffix.size());
+		if (suffix == kSharedLibSuffix)
+			return true;
+#else
+		// UNIX shared lib names
+		// libname.so or libname.so.1.1.1
+		if (filename.find(kSharedLibSuffix) != std::string::npos)
+			return true;
+#endif
+	}
+	return false;
+}
+
+
+std::vector<std::string> ShogunEnv::plugins() const
+{
+	std::vector<std::string> plugins;
+
+	char* env_plugins_path = NULL;
+	env_plugins_path = getenv("SHOGUN_PLUGINS_PATH");
+	if (env_plugins_path)
+	{
+		sg_io->message(io::MSG_TRACE, {},
+			"SHOGUN_PLUGINS_PATH environment variable is set to {}",
+			env_plugins_path);
+
+		std::istringstream plugins_path(env_plugins_path);
+		std::string path;
+		while (getline(plugins_path, path, ':'))
+		{
+			auto r = is_directory(path);
+			if (r)
+			{
+				io::warn("{} is not a directory: {}",
+					path, r.message());
+				continue;
+			}
+
+			sg_io->message(io::MSG_DEBUG, {},
+				"Using {} path as plugin directory", path.c_str());
+			std::vector<std::string> libraries;
+			r = get_children(path, &libraries);
+			if (r)
+			{
+				io::warn("Could not list files in {}", path);
+				continue;
+			}
+
+			for (const auto& v: libraries) {
+				if (is_shared_lib_name(v))
+					plugins.push_back(io::join_path(path, v));
+			}
+		}
+	}
+	return plugins;
 }

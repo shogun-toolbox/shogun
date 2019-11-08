@@ -8,17 +8,18 @@
 #define _LIBRARY_H_
 
 #include <shogun/base/manifest.h>
-#include <shogun/base/SGObject.h>
-#include <string>
-#include <dlfcn.h>
+#include <string_view>
 
 namespace shogun
 {
 
-    /** @brief
-     * Handles loading, calling and closing of plugins from shared object files.
-     */
-    class LibraryHandle;
+    namespace internal
+    {
+        /** @brief
+         * Handles loading, calling and closing of plugins from shared object files.
+         */
+        class LibraryHandle;
+    }
 
     /** @brief
      * Provides an API for loading plugins as objects of this class
@@ -31,7 +32,7 @@ namespace shogun
         /** Constructor to initialize library
          * @param filename name of shared object file
          */
-        Library(const std::string& filename);
+        Library(std::string_view filename);
 
         /** Copy constructor
          * @param other library object to be copied
@@ -64,23 +65,31 @@ namespace shogun
         /** @return name of function that accesses Manifest
          * of loaded library.
          */
-        static const char* get_manifest_accessor_name()
+        static std::string_view get_manifest_accessor_name()
         {
-            return manifest_accessor_name;
+            return kManifestAccessorName;
         }
 
-    private:
-        static const char* manifest_accessor_name;
-        std::shared_ptr<LibraryHandle> m_handle;
+        friend void unload_library(Library&& lib);
 
+    protected:
+        void close();
+
+    private:
+        std::shared_ptr<internal::LibraryHandle> m_handle;
+        static constexpr std::string_view kManifestAccessorName = "shogunManifest";
     };
 
     /** Loads a plugin into a library object.
      * @param filename name of shared object file
      * @return library object of loaded plugin
      */
-    Library load_library(const std::string& filename);
+    Library load_library(std::string_view filename);
 
+    /** Unload a plugin from the process mem space.
+     * @param lib library
+     */
+    void unload_library(Library&& lib);
 }
 
 #endif //_LIBRARY_H_

@@ -9,6 +9,7 @@
 #define __SHOGUNENV_H__
 
 #include <shogun/lib/common.h>
+#include <shogun/base/library.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 #include <shogun/io/fs/FileSystem.h>
@@ -20,7 +21,7 @@ namespace shogun
 {
 	namespace io
 	{
-		class SGIO;	
+		class SGIO;
 	}
 	class SGLinalg;
 	class Signal;
@@ -80,7 +81,11 @@ namespace shogun
 		 */
 		Signal* signal();
 #endif
-
+		/** Get the list of plugins available in the
+		 * directories specified by SHOGUN_PLUGINS_PATH
+		 * @return vector of paths to the plugins
+		 */
+		std::vector<std::string> plugins() const;
 	private:
 		/** Default constructor
 		 */

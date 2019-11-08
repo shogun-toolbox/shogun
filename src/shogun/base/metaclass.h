@@ -8,7 +8,6 @@
 #define _META_CLASS_H_
 
 #include <shogun/lib/any.h>
-#include <shogun/base/unique.h>
 
 #include <memory>
 
@@ -21,14 +20,12 @@ namespace shogun
     template <typename T>
     class MetaClass
     {
-        typedef std::function<std::shared_ptr<T>()> SpawnFunction;
-
     public:
         /** Constructor
         * @param sf Any object of SpawnFunction
         */
         MetaClass(Any sf) :
-        spawn_function(any_cast<SpawnFunction>(sf))
+        spawn_function(sf)
         {
         }
 
@@ -75,11 +72,11 @@ namespace shogun
         /** @return instance of typename of MetaClass object */
         std::shared_ptr<T> instance() const
         {
-            return spawn_function();
+            return spawn_function.as<std::shared_ptr<T>>();
         }
 
     private:
-        const SpawnFunction spawn_function;
+        Any spawn_function;
     };
 }
 

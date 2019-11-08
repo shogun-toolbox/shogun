@@ -32,31 +32,75 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/class_list.h>
-#include <string.h>
+#include <shogun/base/library.h>
+#include <shogun/base/SGObject.h>
 
-REPLACE includes THIS
+#include <mutex>
 
 using namespace shogun;
 using namespace shogun::io;
 
-REPLACE definitions THIS
+using CreateFunction = std::function<std::shared_ptr<SGObject>(EPrimitiveType generic)>;
+using ClassList = std::unordered_map<std::string, CreateFunction>;
 
-REPLACE template_definitions THIS
+static const ClassList create_class_list() {
+	std::mutex mu;
+	ClassList class_list;
 
-REPLACE complex_template_definitions THIS
-
-typedef SGObject* (*CreateFunction)(EPrimitiveType generic);
-
-static const std::map<std::string, CreateFunction> classes = {
-REPLACE struct THIS
-};
-
-std::shared_ptr<SGObject> shogun::create(const char* classname, EPrimitiveType generic)
-{
-	auto entry = classes.find(classname);
-	if (entry != classes.end())
+	std::lock_guard<std::mutex> lock(mu);
+	for (const auto& plugin: env()->plugins())
 	{
-		return std::shared_ptr<SGObject>(entry->second(generic));
+		try
+		{
+			auto library = load_library(plugin);
+			try
+			{
+				for (const auto& class_name: library.manifest().class_list())
+				{
+					if (class_list.find(class_name) != class_list.end())
+					{
+						io::warn("Not registering {} class of {} as it has been already registered!",
+							class_name, plugin);
+						continue;
+					}
+
+					SG_TRACE("adding {} class of {} to class list", class_name, plugin);
+					class_list.emplace(class_name, [plugin, class_name](EPrimitiveType generic) {
+						// TODO: add library handle caching
+						auto lib = load_library(plugin);
+						auto metaclass = lib.manifest().class_by_name<SGObject>(class_name);
+						return metaclass.instance();
+					});
+				}
+			}
+			catch (std::invalid_argument& e)
+			{
+				io::warn("Cannot use {} as a plugin: {}", plugin, e.what());
+			}
+			SG_TRACE("Unloading {} plugin", plugin);
+			unload_library(std::move(library));
+		}
+		catch (std::invalid_argument& e)
+		{
+			io::warn("Cannot use {} as a plugin: {}", plugin, e.what());
+		}
+	}
+	return class_list;
+}
+
+ClassList class_list()
+{
+	static const ClassList kClassList = create_class_list();
+	return kClassList;
+}
+
+std::shared_ptr<SGObject> shogun::create(const std::string& classname, EPrimitiveType generic)
+{
+	auto clazzes = class_list();
+	auto entry = clazzes.find(classname);
+	if (entry != clazzes.end())
+	{
+		return entry->second(generic);
 	}
 	return nullptr;
 }
@@ -64,7 +108,7 @@ std::shared_ptr<SGObject> shogun::create(const char* classname, EPrimitiveType g
 std::set<std::string> shogun::available_objects()
 {
 	std::set<std::string> result;
-	for (const auto& each : classes)
+	for (const auto& each : class_list())
 	{
 		result.insert(each.first);
 	}

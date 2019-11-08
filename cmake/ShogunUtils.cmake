@@ -351,7 +351,7 @@ function(ADD_SHOGUN_TEST REL_TEST_NAME)
 	endif()
 
 	add_test(${TEST_NAME} ${CMAKE_BINARY_DIR}/bin/${TEST_NAME} ${NO_COLOR})
-	set_tests_properties(${TEST_NAME} PROPERTIES LABELS "test")
+	set_tests_properties(${TEST_NAME} PROPERTIES LABELS "unit")
 	if(ARGN)
 		set_tests_properties(${TEST_NAME} PROPERTIES ${ARGN})
 	endif()

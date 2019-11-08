@@ -700,7 +700,7 @@ bool SGObject::equals(const std::shared_ptr<const SGObject>& other) const
 
 std::shared_ptr<SGObject> SGObject::create_empty() const
 {
-//	return create(this->get_name(), this->m_generic);
+	return create(this->get_name(), this->m_generic);
 }
 
 void SGObject::init_auto_params()
