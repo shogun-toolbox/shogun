@@ -35,33 +35,15 @@ namespace shogun
 	class Tokenizer;
 	class CombinationRule;
 
-	// type trait to enable certain methods only for shogun base types
-	// FIXME: use sg_interface to populate this trait
-	template <class T>
-	struct is_sg_base
-	    : std::integral_constant<
-	          bool, std::is_same<Machine, T>::value ||
-	                    std::is_same<Kernel, T>::value ||
-	                    std::is_same<Distance, T>::value ||
-	                    std::is_same<Features, T>::value ||
-	                    std::is_same<Labels, T>::value ||
-	                    std::is_same<ECOCEncoder, T>::value ||
-	                    std::is_same<ECOCDecoder, T>::value ||
-	                    std::is_same<Evaluation, T>::value ||
-	                    std::is_same<MulticlassStrategy, T>::value ||
-	                    std::is_same<NeuralLayer, T>::value ||
-	                    std::is_same<SplittingStrategy, T>::value ||
-	                    std::is_same<SVM, T>::value ||
-	                    std::is_same<DifferentiableFunction, T>::value ||
-	                    std::is_same<Inference, T>::value ||
-	                    std::is_same<LikelihoodModel, T>::value ||
-	                    std::is_same<MeanFunction, T>::value ||
-	                    std::is_same<LossFunction, T>::value ||
-	                    std::is_same<Tokenizer, T>::value ||
-	                    std::is_same<EvaluationResult, T>::value ||
-	                    std::is_same<CombinationRule, T>::value>
-	{
-	};
+	template <typename...>
+	struct type_list{};
+
+	using sg_inferface = type_list<Machine, Kernel, Distance,
+		Features, Labels, ECOCEncoder, ECOCDecoder, Evaluation,
+		EvaluationResult, MulticlassStrategy, NeuralLayer,
+		SplittingStrategy, SVM, LikelihoodModel, MeanFunction,
+		DifferentiableFunction, Inference, LossFunction,
+		Tokenizer, CombinationRule>;
 
 	template <class T>
 	struct is_string
@@ -100,21 +82,11 @@ namespace shogun
 	{
 	};
 
-	template <typename...>
-	struct type_list{};
-
 	template <typename T>
 	struct type_holder
 	{
 		typedef T type;
 	};
-
-	using sg_inferface = type_list<Machine, Kernel, Distance,
-		Features, Labels, ECOCEncoder, ECOCDecoder, Evaluation,
-		EvaluationResult, MulticlassStrategy, NeuralLayer,
-		SplittingStrategy, LikelihoodModel, MeanFunction,
-		DifferentiableFunction, Inference, LossFunction,
-		Tokenizer>;
 
 	template <typename Derived>
 	constexpr auto find_base(type_list<>)
@@ -124,29 +96,46 @@ namespace shogun
 
 	template <typename Derived, typename T, typename... Ts>
 	constexpr auto find_base(type_list<T, Ts...>) {
-	    if constexpr (std::is_base_of_v<T, Derived>)
-	        return type_holder<T>{};
-	    else
-	        return find_base<Derived>(type_list<Ts...>{});
+		if constexpr (std::is_base_of_v<T, Derived>)
+			return type_holder<T>{};
+		else
+			return find_base<Derived>(type_list<Ts...>{});
 	}
 
 	template <typename Derived>
 	using base_type = typename decltype(find_base<Derived>(sg_inferface{}))::type;
 
 	template <class T>
-   	struct remove_shared_ptr
+	struct remove_shared_ptr
 	{
 		using type = T;
 	};
 
 	template <class T>
 	struct remove_shared_ptr<std::shared_ptr<T>>
-    	{
-        	using type = T;
+	{
+		using type = T;
 	};
 
 	template <class T>
 	using remove_shared_ptr_t = typename remove_shared_ptr<T>::type;
+
+	template <typename Derived>
+	constexpr auto is_sg_base(type_list<>)
+	{
+		return std::false_type{};
+	}
+
+	template <typename Derived, typename T, typename... Ts>
+	constexpr auto is_sg_base(type_list<T, Ts...>) {
+		if constexpr (std::is_same_v<T, Derived>)
+			return std::true_type{};
+		else
+			return is_sg_base<Derived>(type_list<Ts...>{});
+	}
+
+	template <typename Derived>
+	inline constexpr bool is_sg_base_v = is_sg_base<remove_shared_ptr_t<Derived>>(sg_inferface{});
 
 } // namespace shogun
 
