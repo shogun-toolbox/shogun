@@ -475,14 +475,14 @@ public:
 	 */
 	std::shared_ptr<SGObject> get(std::string_view name, std::nothrow_t) const noexcept;
 #endif
-	
+
 	/** Untyped getter for an object array class parameter, identified by a name
 	 * and an index.
 	 * Will attempt to get specified object of appropriate internal type.
 	 * If this is not possible it will raise a ShogunException.
 	 *
 	 * @param name name of the parameter
-	 * @index index of the parameter
+	 * @param index of the parameter
 	 * @return object parameter
 	 */
 #ifdef SWIG
@@ -706,13 +706,14 @@ public:
 	};
 #endif
 
-	/** Subscribe a parameter observer to watch over params */
+	/** Subscribe a parameter observer to watch over params
+	 * @param obs a parameter observer implementation
+	 */
 	void subscribe(const std::shared_ptr<ParameterObserver>& obs);
 
 	/**
 	 * Detach an observer from the current SGObject.
-	 * @param subscription_index the index obtained by calling the subscribe
-	 * procedure
+	 * @param obs a parameter observer implementation
 	 */
 	void unsubscribe(const std::shared_ptr<ParameterObserver>& obs);
 
@@ -1167,7 +1168,6 @@ protected:
 	/**
 	 * Register which params this object can emit.
 	 * @param name the param name
-	 * @param type the param type
 	 * @param description a user oriented description
 	 */
 	void register_observable(
