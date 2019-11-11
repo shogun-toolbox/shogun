@@ -39,10 +39,10 @@ struct OutputStreamAdapter
 		m_stream->flush();
 	}
 
-	std::shared_ptr<OutputStream> m_stream;
+	shared_ptr<OutputStream> m_stream;
 };
 
-template<typename Writer> void write_object(Writer& writer, std::shared_ptr<SGObject> object);
+template<typename Writer> void write_object(Writer& writer, const shared_ptr<SGObject>& object);
 
 template<class Writer>
 class JSONWriterVisitor : public AnyVisitor
@@ -168,12 +168,12 @@ public:
 		m_json_writer.EndArray();
 		close_container();
 	}
-	void on(std::string* v) override
+	void on(string* v) override
 	{
 		SG_DEBUG("writing std::string with value {}", v->c_str());
 		m_json_writer.String(v->c_str());
 	}
-	void on(std::shared_ptr<SGObject>* v) override
+	void on(shared_ptr<SGObject>* v) override
 	{
 		if (*v)
 		{
@@ -290,7 +290,7 @@ private:
 };
 
 template<typename Writer>
-void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, const std::shared_ptr<SGObject>& object) noexcept(false)
+void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, const shared_ptr<SGObject>& object) noexcept(false)
 {
 	pre_serialize(object);
 
@@ -329,7 +329,7 @@ JsonSerializer::~JsonSerializer()
 {
 }
 
-void JsonSerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
+void JsonSerializer::write(const shared_ptr<SGObject>& object) noexcept(false)
 {
 	OutputStreamAdapter adapter { stream() };
 	JsonWriter writer(adapter);

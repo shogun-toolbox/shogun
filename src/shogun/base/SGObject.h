@@ -206,7 +206,7 @@ public:
 	 * @param ser where to save the object;
 	 * @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool serialize(std::shared_ptr<io::Serializer> ser);
+	virtual bool serialize(const std::shared_ptr<io::Serializer>& ser);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -216,7 +216,7 @@ public:
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool deserialize(std::shared_ptr<io::Deserializer> deser);
+	virtual bool deserialize(const std::shared_ptr<io::Deserializer>& deser);
 
 	/** get the parallel object
 	 *

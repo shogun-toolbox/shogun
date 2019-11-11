@@ -48,14 +48,14 @@ public:
 		}
 		else
 		{
-			std::overflow_error("Could not represent floatmax_t with with 2 uint64_t!");
+			overflow_error("Could not represent floatmax_t with with 2 uint64_t!");
 		}
 		// write in little endian format
 		writer.value8b(msb);
 		writer.value8b(lsb);
 	}
 
-	void on_object(Writer& writer, std::shared_ptr<SGObject>* v)
+	void on_object(Writer& writer, shared_ptr<SGObject>* v)
 	{
 		if (*v)
 		{
@@ -92,13 +92,13 @@ struct OutputStreamAdapter
 		return written_bytes;
 	}
 
-	std::shared_ptr<OutputStream> m_stream;
+	shared_ptr<OutputStream> m_stream;
 	size_t written_bytes = 0;
 };
 
 // cannot use context because of circular dependency :(
 template<typename Writer>
-void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, const std::shared_ptr<SGObject>& o) noexcept(false)
+void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, const shared_ptr<SGObject>& o) noexcept(false)
 {
 	pre_serialize(o);
 	writer.value8b(sizeof(o.get()));
@@ -133,7 +133,7 @@ BitserySerializer::~BitserySerializer()
 {
 }
 
-void BitserySerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
+void BitserySerializer::write(const shared_ptr<SGObject>& object) noexcept(false)
 {
 	OutputStreamAdapter adapter { stream() };
  	BitserySer serializer {std::move(adapter)};

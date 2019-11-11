@@ -57,7 +57,7 @@ void shogun::io::post_serialize(const std::shared_ptr<SGObject>& obj) noexcept(f
 	}
 }
 
-void shogun::io::serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, const std::shared_ptr<Serializer>& _serializer)
+void shogun::io::serialize(const std::string& _path, const std::shared_ptr<SGObject>& _obj, const std::shared_ptr<Serializer>& _serializer)
 {
 	auto fs = env();
 	std::error_condition ec;
@@ -67,5 +67,5 @@ void shogun::io::serialize(const std::string& _path, std::shared_ptr<SGObject> _
 
 	auto fos = std::make_shared<io::FileOutputStream>(file.get());
 	_serializer->attach(fos);
-	_serializer->write(std::move(_obj));
+	_serializer->write(_obj);
 }

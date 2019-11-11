@@ -281,14 +281,14 @@ void SGObject::unset_generic()
 	m_generic = PT_NOT_GENERIC;
 }
 
-bool SGObject::serialize(std::shared_ptr<io::Serializer> ser)
+bool SGObject::serialize(const std::shared_ptr<io::Serializer>& ser)
 {
 	require(ser != nullptr, "Serializer format object should be non-null");
 	ser->write(shared_from_this());
 	return true;
 }
 
-bool SGObject::deserialize(std::shared_ptr<io::Deserializer> deser)
+bool SGObject::deserialize(const std::shared_ptr<io::Deserializer>& deser)
 {
 	require(deser != nullptr, "Deserializer format object should be non-null");
 	deser->read(shared_from_this());
