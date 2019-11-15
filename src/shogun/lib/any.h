@@ -1221,7 +1221,7 @@ namespace shogun
 		}
 
 		template <class From, class To>
-		static void register_caster(std::function<To(From)> caster);
+		static void register_caster(std::function<To(const From&)> caster);
 
 		template <class Type, class State>
 		static void register_visitor(std::function<void(Type, State*)> visitor);
@@ -1239,12 +1239,13 @@ namespace shogun
 		typedef std::function<void(void*, void*)> CastingFunction;
 		typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction>
 		    CastingRegistry;
-		SHOGUN_NO_EXPORT inline static CastingRegistry casting_registry;
+		SHOGUN_NO_EXPORT static inline std::mutex registry_mutex;
+		SHOGUN_NO_EXPORT static inline CastingRegistry casting_registry;
 
 		typedef std::function<void(void*, void*)> VisitorFunction;
 		typedef std::map<std::pair<TypeIndex, TypeIndex>, VisitorFunction>
 		    VisitorRegistry;
-		SHOGUN_NO_EXPORT inline static VisitorRegistry visitor_registry;
+		SHOGUN_NO_EXPORT static inline VisitorRegistry visitor_registry;
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);
@@ -1252,11 +1253,12 @@ namespace shogun
 	bool operator!=(const Any& lhs, const Any& rhs);
 
 	template <class From, class To>
-	void Any::register_caster(std::function<To(From)> caster)
+	void Any::register_caster(std::function<To(const From&)> caster)
 	{
 		const auto key = std::make_pair(
 		    std::type_index{typeid(From)}, std::type_index{typeid(To)});
 
+		std::lock_guard<std::mutex> lock(registry_mutex);
 		if (casting_registry.count(key))
 		{
 			return;
@@ -1294,11 +1296,11 @@ namespace shogun
 		if constexpr (std::is_base_of_v<SGObject, Derived>)
 		{
 			Any::register_caster<T, SGObject*>(
-			    [](T value) { return dynamic_cast<SGObject*>(value); });
+			    [](T value) { return static_cast<SGObject*>(value); });
 			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>
 					&& !std::is_same_v<Derived, base_type<Derived>>)
 				Any::register_caster<T, base_type<Derived>*>([](T value) {
-					return dynamic_cast<base_type<Derived>*>(value);
+					return static_cast<base_type<Derived>*>(value);
 				});
 		}
 		if constexpr (traits::is_shared_ptr<T>::value)
@@ -1307,11 +1309,11 @@ namespace shogun
 			if constexpr (std::is_base_of_v<SGObject, SharedType>)
 			{
 				Any::register_caster<T, std::shared_ptr<SGObject>>(
-						[](T value) { return std::dynamic_pointer_cast<SGObject>(value); });
+						[](const T& value) { return std::static_pointer_cast<SGObject>(value); });
 				if constexpr (!std::is_same_v<std::nullptr_t, base_type<SharedType>>
 						&& !std::is_same_v<SharedType, base_type<SharedType>>)
-					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](T value) {
-						return std::dynamic_pointer_cast<base_type<SharedType>>(value);
+					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](const T& value) {
+						return std::static_pointer_cast<base_type<SharedType>>(value);
 					});
 			}
 		}

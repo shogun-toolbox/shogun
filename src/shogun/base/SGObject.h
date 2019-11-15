@@ -940,7 +940,7 @@ protected:
 			ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
-		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
+		create_parameter(tag, AnyParameter(make_any(std::move(bind_method)), properties));
 	}
 
 	/** Puts a pointer to a (lazily evaluated) function into the parameter map.

@@ -350,7 +350,7 @@ std::string SGObject::get_description(std::string_view name) const
 
 void SGObject::build_gradient_parameter_dictionary(std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict)
 {
-	for (auto& param: self->filter(ParameterProperties::GRADIENT))
+	for (auto const& param: self->filter(ParameterProperties::GRADIENT))
 		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this();
 
 	for (const auto& param: self->filter(ParameterProperties::HYPER))

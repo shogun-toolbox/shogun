@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Sanuj Sharma
+ * Authors: Sergey Lisitsyn, Sanuj Sharma, Viktor Gal
  */
 
 #ifndef _LIBRARY_H_
@@ -13,83 +13,83 @@
 namespace shogun
 {
 
-    namespace internal
-    {
-        /** @brief
-         * Handles loading, calling and closing of plugins from shared object files.
-         */
-        class LibraryHandle;
-    }
+	namespace internal
+	{
+		/** @brief
+		 * Handles loading, calling and closing of plugins from shared object files.
+		 */
+		class LibraryHandle;
+	}
 
-    /** @brief
-     * Provides an API for loading plugins as objects of this class
-     * and accessing Manifest of the loaded plugins.
-     * Uses LibraryHandle under the hood.
-     */
-    class Library
-    {
-    public:
-        /** Constructor to initialize library
-         * @param filename name of shared object file
-         */
-        Library(std::string_view filename);
+	/** @brief
+	 * Provides an API for loading plugins as objects of this class
+	 * and accessing Manifest of the loaded plugins.
+	 * Uses LibraryHandle under the hood.
+	 */
+	class Library
+	{
+	public:
+		/** Constructor to initialize library
+		 * @param filename name of shared object file
+		 */
+		Library(std::string_view filename);
 
-        /** Copy constructor
-         * @param other library object to be copied
-         */
-        Library(const Library& other);
+		/** Copy constructor
+		 * @param other library object to be copied
+		 */
+		Library(const Library& other);
 
-        /** Class Assignment operator
-         * @param other library object to be assigned
-         */
-        Library& operator=(const Library& other);
+		/** Class Assignment operator
+		 * @param other library object to be assigned
+		 */
+		Library& operator=(const Library& other);
 
-        /** Equality operator
-         * @param first first Library
-         * @param second second Library
-         */
-        friend bool operator==(const Library& first, const Library& second);
+		/** Equality operator
+		 * @param first first Library
+		 * @param second second Library
+		 */
+		friend bool operator==(const Library& first, const Library& second);
 
-        /** Inequality operator
-         * @param first first Library
-         * @param second second Library
-         */
-        friend bool operator!=(const Library& first, const Library& second);
+		/** Inequality operator
+		 * @param first first Library
+		 * @param second second Library
+		 */
+		friend bool operator!=(const Library& first, const Library& second);
 
-        /** Destructor */
-        ~Library();
+		/** Destructor */
+		~Library();
 
-        /** @return manifest of loaded library */
-        Manifest manifest();
+		/** @return manifest of loaded library */
+		Manifest manifest();
 
-        /** @return name of function that accesses Manifest
-         * of loaded library.
-         */
-        static std::string_view get_manifest_accessor_name()
-        {
-            return kManifestAccessorName;
-        }
+		/** @return name of function that accesses Manifest
+		 * of loaded library.
+		 */
+		static std::string_view get_manifest_accessor_name()
+		{
+			return kManifestAccessorName;
+		}
 
-        friend void unload_library(Library&& lib);
+		friend void unload_library(Library&& lib);
 
-    protected:
-        void close();
+	protected:
+		void close();
 
-    private:
-        std::shared_ptr<internal::LibraryHandle> m_handle;
-        static constexpr std::string_view kManifestAccessorName = "shogunManifest";
-    };
+	private:
+		std::shared_ptr<internal::LibraryHandle> m_handle;
+		static constexpr std::string_view kManifestAccessorName = "shogunManifest";
+	};
 
-    /** Loads a plugin into a library object.
-     * @param filename name of shared object file
-     * @return library object of loaded plugin
-     */
-    Library load_library(std::string_view filename);
+	/** Loads a plugin into a library object.
+	 * @param filename name of shared object file
+	 * @return library object of loaded plugin
+	 */
+	Library load_library(std::string_view filename);
 
-    /** Unload a plugin from the process mem space.
-     * @param lib library
-     */
-    void unload_library(Library&& lib);
+	/** Unload a plugin from the process mem space.
+	 * @param lib library
+	 */
+	void unload_library(Library&& lib);
 }
 
 #endif //_LIBRARY_H_

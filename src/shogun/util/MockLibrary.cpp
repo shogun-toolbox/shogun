@@ -22,8 +22,18 @@ namespace shogun
         }
     };
 
+    template<typename T>
+    class TemplatedClass : public MockBaseClass
+    {
+        const char* get_name() const override
+        {
+            return "TemplatedClass";
+        }
+    };
+
     BEGIN_MANIFEST("Mock library")
     EXPORT(MockClass, MockBaseClass, "mock_class")
     EXPORT(AnotherMockClass, MockBaseClass, "another_mock_class")
+    //EXPORT(TemplatedClass, MockBaseClass, "templated_mock_class")
     END_MANIFEST()
 }

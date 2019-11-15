@@ -8,15 +8,22 @@
 #define __SG_CLASS_LIST_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/base/manifest.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
+
 
 #include <set>
 #include <string>
 
 namespace shogun {
 	class SGObject;
+
+	using CreateFunction = std::function<Manifest()>;
+	using PluginFactory = std::unordered_map<std::string, CreateFunction>;
+
+	static inline const PluginFactory& class_list();
 
 	/** new shogun instance
 	 * @param sgserializable_name
@@ -35,19 +42,20 @@ namespace shogun {
 	    const std::string& name,
 	    EPrimitiveType pt = PT_NOT_GENERIC) noexcept(false)
 	{
-		auto object = create(name, pt);
-		if (!object)
+		auto clazzes = class_list();
+		auto entry = clazzes.find(name);
+		if (entry != clazzes.end())
+		{
+			auto class_factory = entry->second().class_by_name<T>(name);
+			return class_factory.instance();
+		}
+		else
 		{
 			error(
 			    "Class {} with primitive type {} does not exist.", name,
 			    ptype_name(pt).c_str());
 		}
-		auto cast = std::dynamic_pointer_cast<T>(object);
-		if (cast == nullptr)
-		{
-			error("could not cast");
-		}
-		return cast;
+		return nullptr;
 	}
 
 	/** Returns all available object names

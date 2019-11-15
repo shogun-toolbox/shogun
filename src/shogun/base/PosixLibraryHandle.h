@@ -26,7 +26,7 @@ namespace shogun
                 m_handle = dlopen(m_filename.data(), RTLD_NOW | RTLD_LOCAL);
                 if (m_handle)
                 {
-                    SG_DEBUG("Loaded {} plugin.", m_filename);
+                    SG_DEBUG("Loaded {} plugin (at {}).", m_filename, fmt::ptr(m_handle));
                 }
                 else
                 {

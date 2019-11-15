@@ -4,12 +4,11 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2016 Sanuj Sharma
+ * Written (W) 2016 Sanuj Sharma, Viktor Gal
  */
 #include <gtest/gtest.h>
 
 #include "shogun/util/MockBaseClass.h"
-#include <shogun/kernel/GaussianKernel.h>
 
 #include <sstream>
 
@@ -25,7 +24,7 @@ static string library_name(string_view library_name)
 
 TEST(Plugin, load_close)
 {
-	Library library = load_library(library_name("plugin"));
+	Library library = load_library(library_name("testplugin"));
 	{
 		auto manifest = library.manifest();
 		auto mock_class = manifest.class_by_name<MockBaseClass>("mock_class");
@@ -46,12 +45,12 @@ TEST(Plugin, load_close)
 
 TEST(Plugin, load_non_existent_lib)
 {
-	EXPECT_THROW(load_library(library_name("randomplugin")), ShogunException);
+	EXPECT_THROW(load_library(library_name("randomplugin")), std::invalid_argument);
 }
 
 TEST(Plugin, load_non_existent_class)
 {
-	auto library = load_library(library_name("plugin"));
+	auto library = load_library(library_name("testplugin"));
 	{
 		auto manifest = library.manifest();
 		EXPECT_THROW(manifest.class_by_name<MockBaseClass>("arbitrary_class"), ShogunException);
@@ -137,16 +136,16 @@ TEST(Plugin, manifest_assignment_operator)
 
 TEST(Plugin, load_lib_wo_manifest)
 {
-	auto library = load_library(library_name("pluginwomanifest"));
+	auto library = load_library(library_name("testpluginwomanifest"));
 	{
-		EXPECT_THROW(library.manifest(), ShogunException);
+		EXPECT_THROW(library.manifest(), std::invalid_argument);
 	}
 	unload_library(std::move(library));
 }
 
 TEST(Plugin, library_copy_constructor)
 {
-	Library library(library_name("plugin"));
+	Library library(library_name("testplugin"));
 	{
 		Library copy_library(library);
 		EXPECT_EQ(library, copy_library);
@@ -156,7 +155,7 @@ TEST(Plugin, library_copy_constructor)
 
 TEST(Plugin, library_assignment_operator)
 {
-	Library library(library_name("plugin"));
+	Library library(library_name("testplugin"));
 	{
 		Library assigned_library = library;
 		EXPECT_EQ(library, assigned_library);

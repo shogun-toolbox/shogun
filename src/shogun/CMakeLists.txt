@@ -746,16 +746,22 @@ IF (ENABLE_TESTING)
   ADD_SHOGUN_TEST(lib/any_test)
 
   ADD_SHOGUN_TEST(base/Plugin_test)
-  add_library(plugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibrary.cpp)
-  target_link_libraries(plugin shogun-core)
-  add_library(pluginwomanifest SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibraryWOManifest.cpp)
-  target_link_libraries(pluginwomanifest shogun-core)
-  set_property(TARGET plugin PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-  add_dependencies(Plugin_test plugin pluginwomanifest)
+  add_library(testplugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibrary.cpp)
+  target_link_libraries(testplugin shogun-core)
+  add_library(testpluginwomanifest SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibraryWOManifest.cpp)
+  target_link_libraries(testpluginwomanifest shogun-core)
+  set_property(TARGET testplugin PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+  add_dependencies(Plugin_test testplugin testpluginwomanifest)
   target_compile_definitions(Plugin_test PRIVATE
     SHARED_LIB_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}"
     SHARED_LIB_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}")
+  if (UNIX AND NOT APPLE)
+    set_property(TEST Plugin_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}")
+  endif()
 
+  ADD_SHOGUN_TEST(base/class_list_test)
+  add_dependencies(class_list_test testplugin testpluginwomanifest)
+  set_property(TEST class_list_test PROPERTY ENVIRONMENT "SHOGUN_PLUGINS_PATH=${CMAKE_CURRENT_BINARY_DIR}")
 ENDIF()
 
 ################# benchmarking
