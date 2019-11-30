@@ -28,10 +28,10 @@ function check_shogun_style {
         echo "-----"
         echo "Shogun Style Checker"
         echo "-----"
-        echo "Running clang-format-3.8 against branch ${2:-}, with hash $BASE_COMMIT"
+        echo "Running clang-format against branch ${2:-}, with hash $BASE_COMMIT"
 
         COMMIT_FILES=$(git diff --name-only $BASE_COMMIT)
-		
+
         # Use clang-format only on existent files
         LIST=("")
         for file in $COMMIT_FILES
@@ -40,13 +40,13 @@ function check_shogun_style {
         	    LIST=("${LIST[@]}" "$file")
             fi
         done
-
-        RESULT_OUTPUT="$(git clang-format-3.8 --commit $BASE_COMMIT --diff --binary `which clang-format-3.8` $LIST)"
+        GIT_CLANG_FORMAT_BINARY=$(find /usr/bin -name "git-clang-format*" -print0 | xargs -r -0 ls -1 -r | head -1 | xargs -i basename {})
+        RESULT_OUTPUT="$(${GIT_CLANG_FORMAT_BINARY} --commit $BASE_COMMIT --diff --binary `which clang-format` $LIST)"
 
         if [ "$RESULT_OUTPUT" == "no modified files to format" ] \
-            || [ "$RESULT_OUTPUT" == "clang-format-3.8 did not modify any files" ] \
+            || [ "$RESULT_OUTPUT" == "clang-format did not modify any files" ] \
             || [ "$RESULT_OUTPUT" == "clang-format did not modify any files" ]; then
-              echo "clang-format-3.8 passed. \o/"
+              echo "clang-format passed. \o/"
               echo "-----"
               exit 0
         else
@@ -54,10 +54,10 @@ function check_shogun_style {
             echo "clang-format failed."
             echo "To reproduce it locally please run: "
             echo -e "\t1) git checkout ${1:-}"
-            echo -e "\t2) git clang-format-3.8 --commit $BASE_COMMIT --diff --binary $(which clang-format-3.8)"
+            echo -e "\t2) $GIT_CLANG_FORMAT_BINARY --commit $BASE_COMMIT --diff --binary $(which clang-format)"
             echo "To fix the errors automatically please run: "
             echo -e "\t1) git checkout ${1:-}"
-            echo -e "\t2) git clang-format-3.8 --commit $BASE_COMMIT --binary $(which clang-format-3.8)"
+            echo -e "\t2) $GIT_CLANG_FORMAT_BINARY --commit $BASE_COMMIT --binary $(which clang-format)"
             echo "-----"
             echo "Style errors found:"
             echo "$RESULT_OUTPUT"
