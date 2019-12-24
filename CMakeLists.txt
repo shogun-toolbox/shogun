@@ -401,11 +401,6 @@ SET(SVMLightWarning "${SVMLightWarning}\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ######################### LIBRARIES #########################
 
-FIND_PACKAGE(GDB)
-IF (GDB_FOUND)
-	SET(GDB_DEFAULT_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/src/.gdb)
-ENDIF()
-
 OPTION(ENABLE_DOXYGEN "Enable using doxygen" ON)
 IF (ENABLE_DOXYGEN)
 	FIND_PACKAGE(Doxygen 1.8.6)
