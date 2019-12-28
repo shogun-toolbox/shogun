@@ -16,7 +16,7 @@ LevensteinDistance::LevensteinDistance()
 
 LevensteinDistance::LevensteinDistance(
     const std::string& lhs, const std::string& rhs)
-    : lhs_name(lhs), rhs_name(rhs)
+    : m_lhs_name(lhs), m_rhs_name(rhs)
 {
 }
 
@@ -58,7 +58,7 @@ LevensteinDistance::compute(const std::string& word1, const std::string& word2)
 
 size_t LevensteinDistance::distance()
 {
-	return compute(lhs_name, rhs_name);
+	return compute(m_lhs_name, m_rhs_name);
 }
 
 size_t
