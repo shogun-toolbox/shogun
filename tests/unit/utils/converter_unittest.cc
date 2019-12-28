@@ -109,7 +109,10 @@ TYPED_TEST(Converters, canConvertFloatInfinityToReal)
 		ASSERT_NO_THROW(
 		    result = utils::safe_convert<TypeParam>(
 		        std::numeric_limits<float>::infinity()));
-		EXPECT_TRUE(std::isinf(result));
+		// would be better to use
+		// EXPECT_TRUE(std::isinf(result));
+		// but microsoft compiler does not compile it
+		EXPECT_FALSE(IS_FINITE(result));
 	}
 }
 
@@ -121,6 +124,9 @@ TYPED_TEST(Converters, canConvertFloatNaNToReal)
 		ASSERT_NO_THROW(
 		    result = utils::safe_convert<TypeParam>(
 		        std::numeric_limits<float>::quiet_NaN()));
-		EXPECT_TRUE(std::isnan(result));
+		// would be better to use
+		// EXPECT_TRUE(std::isnan(result));
+		// but microsoft compiler does not compile it
+		EXPECT_FALSE(IS_FINITE(result));
 	}
 }
