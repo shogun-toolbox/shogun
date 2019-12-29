@@ -51,9 +51,10 @@ namespace shogun
 		    std::is_signed<I>::value && std::is_signed<J>::value, I>
 		safe_convert(J value)
 		{
-			if (IS_FINITE(value) &&
-			    (value < std::numeric_limits<I>::lowest() ||
-			     value > std::numeric_limits<I>::max()))
+			if ((IS_FINITE(value) &&
+			     (value < std::numeric_limits<I>::lowest() ||
+			      value > std::numeric_limits<I>::max())) ||
+			    (!IS_FINITE(value) && std::is_integral<I>::value))
 				throw std::overflow_error(
 				    "value cannot be stored in a variable of type requested");
 			return static_cast<I>(value);
@@ -76,9 +77,10 @@ namespace shogun
 		    std::is_unsigned<I>::value && std::is_signed<J>::value, I>
 		safe_convert(J value)
 		{
-			if (value < 0 ||
-			    static_cast<typename try_make_unsigned<J>::type>(value) >
-			        std::numeric_limits<I>::max())
+			if ((IS_FINITE(value) &&
+			     (value < 0 || static_cast<typename try_make_unsigned<J>::type>(
+			                       value) > std::numeric_limits<I>::max())) ||
+			    (!IS_FINITE(value) && std::is_integral<I>::value))
 				throw std::overflow_error(
 				    "value cannot be stored in a variable of type requested");
 			return static_cast<I>(value);
