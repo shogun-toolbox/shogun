@@ -111,20 +111,18 @@ std::shared_ptr<MulticlassLabels> CARTree::apply_multiclass(std::shared_ptr<Feat
 	auto current=get_root()->as<bnode_t>();
 
 	require(current, "Tree machine not yet trained.");
-	if (auto tmp =
+	if (auto subfeat_data =
 	        std::dynamic_pointer_cast<DenseSubSamplesFeatures<float64_t>>(data))
 	{
-		auto num_feat = tmp->get_dim_feature_space();
-		auto num_vec = tmp->get_num_vectors();
-		shogun::SGMatrix<float64_t> feature_matrix;
-		for (auto i = 0; i < num_vec; i++)
+		auto num_feat = subfeat_data->get_dim_feature_space();
+		auto num_vec = subfeat_data->get_num_vectors();
+		SGMatrix<float64_t> feature_matrix(num_feat, num_vec);
+		for (size_t i = 0; i < num_vec; i++)
 		{
-			SGVector<float64_t> v = tmp->get_computed_dot_feature_vector(i);
+			SGVector<float64_t> v = subfeat_data->get_computed_dot_feature_vector(i);
 			ASSERT(num_feat == v.vlen)
-
-			for (auto j = 0; j < num_feat; j++)
-				feature_matrix.matrix[i * int64_t(num_feat) + j] =
-				    (float64_t)v.vector[j];
+			for (size_t j = 0; j < num_feat; j++)
+				feature_matrix.matrix[i * num_feat + j] = v.vector[j];
 		}
 		return apply_from_current_node(
 		           std::make_shared<DenseFeatures<float64_t>>(feature_matrix),
