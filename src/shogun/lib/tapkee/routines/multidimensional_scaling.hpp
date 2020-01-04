@@ -37,7 +37,11 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 	const IndexType n_landmarks = landmarks.size();
 	DenseSymmetricMatrix distance_matrix(n_landmarks,n_landmarks);
 
-#pragma omp parallel shared(begin,landmarks,distance_matrix,callback,n_landmarks) default(none)
+#ifdef TAPKEE_NO_OMP_SHARED_CONSTANTS_
+# pragma omp parallel shared(begin,landmarks,distance_matrix,callback) default(none)
+#else
+# pragma omp parallel shared(begin,landmarks,distance_matrix,callback,n_landmarks) default(none)
+#endif
 	{
 		IndexType i_index_iter,j_index_iter;
 #pragma omp for nowait
@@ -79,8 +83,13 @@ DenseMatrix triangulate(RandomAccessIterator begin, RandomAccessIterator end, Pa
 	for (IndexType i=0; i<target_dimension; ++i)
 		landmarks_embedding.first.col(i).array() /= landmarks_embedding.second(i);
 
-#pragma omp parallel shared(begin,end,to_process,distance_callback,landmarks, \
+#ifdef TAPKEE_NO_OMP_SHARED_CONSTANTS_
+# pragma omp parallel shared(begin,end,to_process,distance_callback,landmarks, \
+		landmarks_embedding,landmark_distances_squared,embedding) default(none)
+#else
+# pragma omp parallel shared(begin,end,to_process,distance_callback,landmarks, \
 		landmarks_embedding,landmark_distances_squared,embedding,n_landmarks,n_vectors) default(none)
+#endif
 	{
 		DenseVector distances_to_landmarks(n_landmarks);
 		IndexType index_iter;
@@ -116,7 +125,11 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 	const IndexType n_vectors = end-begin;
 	DenseSymmetricMatrix distance_matrix(n_vectors,n_vectors);
 
-#pragma omp parallel shared(begin,distance_matrix,callback,n_vectors) default(none)
+#ifdef TAPKEE_NO_OMP_SHARED_CONSTANTS_
+# pragma omp parallel shared(begin,distance_matrix,callback) default(none)
+#else
+# pragma omp parallel shared(begin,distance_matrix,callback,n_vectors) default(none)
+#endif
 	{
 		IndexType i_index_iter,j_index_iter;
 #pragma omp for nowait
