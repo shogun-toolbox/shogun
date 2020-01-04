@@ -37,6 +37,12 @@
 	#define COVERTREE_BASE 1.3
 #endif
 
+/* Compiler behavior workaround */
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 9
+# define TAPKEE_NO_OMP_SHARED_CONSTANTS_
+#endif // defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 9
+/* End of compiler behavior workaround */
+
 namespace tapkee
 {
 	//! Return result of the library - a pair of @ref DenseMatrix (embedding) and @ref ProjectingFunction
