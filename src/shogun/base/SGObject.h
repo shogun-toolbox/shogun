@@ -50,18 +50,6 @@ class ObservedValueTemplated;
 		class Serializer;
 	}
 
-#ifndef SWIG
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	namespace sgo_details
-	{
-		template <typename T1, typename T2>
-		bool dispatch_array_type(
-		    const std::shared_ptr<const SGObject>& obj, std::string_view name,
-		    T2&& lambda);
-	}  // namespace sgo_details
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-#endif // SWIG
-
 using stringToEnumMapType = std::unordered_map<std::string_view, std::unordered_map<std::string_view, machine_int_t>>;
 
 /*******************************************************************************
@@ -130,6 +118,12 @@ SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
  */
 class SGObject: public std::enable_shared_from_this<SGObject>
 {
+	struct InterfaceVisitor
+	{
+		index_t index;
+		std::shared_ptr<SGObject> value;
+	};
+
 public:
 	/** Definition of observed subject */
 	typedef rxcpp::subjects::subject<std::shared_ptr<ObservedValue>> SGSubject;
@@ -270,7 +264,7 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name and type
 	 */
-	template <typename T, typename std::enable_if_t<!is_sg_base<T>::value>* = nullptr>
+	template <typename T, typename std::enable_if_t<!is_sg_base_v<T>>* = nullptr>
 	bool has(std::string_view name) const noexcept(true)
 	{
 		BaseTag tag(name);
@@ -280,7 +274,7 @@ public:
 		return value.has_type<T>();
 	}
 
-	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
+	template <typename T, typename std::enable_if_t<is_sg_base_v<T>>* = nullptr>
 	bool has(std::string_view name) const noexcept(true)
 	{
 		BaseTag tag(name);
@@ -373,7 +367,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <class T,
-		      class X = typename std::enable_if_t<is_sg_base<T>::value>,
+		      class X = typename std::enable_if_t<is_sg_base_v<T>>,
 		      class Z = void>
 #ifdef SWIG
 	void put(const std::string& name, std::shared_ptr<T> value)
@@ -391,7 +385,7 @@ public:
 	* @param value value of the parameter
 	*/
 	template <class T,
-		      class X = typename std::enable_if_t<is_sg_base<T>::value>>
+		      class X = typename std::enable_if_t<is_sg_base_v<T>>>
 #ifdef SWIG
 	void add(const std::string& name, std::shared_ptr<T> value)
 #else
@@ -419,26 +413,22 @@ public:
 	* @return desired element
 	*/
 	template <class T,
-		      class X = typename std::enable_if_t<is_sg_base<T>::value>>
+		      class X = typename std::enable_if_t<is_sg_base_v<T>>>
 	std::shared_ptr<T> get(std::string_view name, index_t index, std::nothrow_t) const
 	{
-		std::shared_ptr<SGObject> result;
-
-		auto get_lambda = [&index, &result](auto& array) {
-			result = array.at(index);
-		};
-		if (sgo_details::dispatch_array_type<T>(shared_from_this(), name, get_lambda))
+		Tag<std::vector<std::shared_ptr<T>>> tag(name);
+		if (has<T>(tag))
 		{
-			ASSERT(result);
-			// guard against mixed types in the array
-			return result->as<T>();
+			InterfaceVisitor iv;
+			iv.index = index;
+			get<T>(tag).get_value().visit_with(&iv);
+			return std::move(iv.value->as<T>());
 		}
-
 		return nullptr;
 	}
 
 	template <class T,
-		      class X = typename std::enable_if_t<is_sg_base<T>::value>>
+		      class X = typename std::enable_if_t<is_sg_base_v<T>>>
 	std::shared_ptr<T> get(std::string_view name, index_t index) const
 	{
 		auto result = this->get<T>(name, index, std::nothrow);
@@ -519,7 +509,7 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	template <typename T, typename std::enable_if_t<!is_string<T>::value && !is_sg_base<T>::value>* = nullptr>
+	template <typename T, typename std::enable_if_t<!is_string<T>::value && !is_sg_base_v<T>>* = nullptr>
 	T get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
@@ -539,7 +529,7 @@ public:
 		return any_cast<T>(value);
 	}
 
-	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
+	template <typename T, typename std::enable_if_t<is_sg_base_v<T>>* = nullptr>
 	std::shared_ptr<T> get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
@@ -590,7 +580,7 @@ public:
 	 * @param name name of the parameter
 	 * @return value of the parameter corresponding to the input name and type
 	 */
-	template <typename T, class X = typename std::enable_if_t<!is_sg_base<T>::value>>
+	template <typename T, class X = typename std::enable_if_t<!is_sg_base_v<T>>>
 #ifdef SWIG
 	T get(const std::string& name) const noexcept(false)
 #else
@@ -621,7 +611,7 @@ public:
 	}
 
 #ifndef SWIG
-	template <typename T,  typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
+	template <typename T,  typename std::enable_if_t<is_sg_base_v<T>>* = nullptr>
 	std::shared_ptr<T> get(std::string_view name) const noexcept(false)
 	{
 		Tag<T> tag(name);
@@ -784,6 +774,29 @@ public:
 	}
 
 protected:
+	template<typename T>
+	void register_interface_visitor() const
+	{
+		// only register a visitor with interface visitor if T
+		// is not a type that we are interested in, i.e.
+		// dont just register empty lambdas for numbers types etc
+		if constexpr(is_sg_base_v<T> || traits::is_vector_v<T>)
+		{
+			Any::register_visitor<T, InterfaceVisitor>(
+				[] (auto value, auto visitor) {
+					if constexpr (is_sg_base_v<T>)
+					{
+						visitor->value = value;
+					}
+					else if constexpr (traits::is_vector_v<T>)
+					{
+						if constexpr (is_sg_base_v<typename T::value_type>)
+							visitor->value = value.at(visitor->index);
+					}
+				});
+		}
+	}
+
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by put() and retrieved by
 	 * get().
@@ -826,6 +839,7 @@ protected:
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+		register_interface_visitor<T>();
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.
@@ -851,6 +865,7 @@ protected:
 				tag,
 				AnyParameter(
 						make_any_ref(value), properties, std::move(auto_init)));
+		register_interface_visitor<T>();
 	}
 
 #ifndef SWIG
@@ -884,6 +899,7 @@ protected:
 							constrain_function.run(casted_val, result);
 							return result;
 						}));
+		register_interface_visitor<T1>();
 	}
 #endif
 
@@ -903,6 +919,7 @@ protected:
 		BaseTag tag(name);
 		create_parameter(
 			tag, AnyParameter(make_any_ref(value, len), properties));
+		register_interface_visitor<T>();
 	}
 
 	/** Puts a pointer to some 2d parameter array (i.e. a matrix) into the
@@ -923,6 +940,7 @@ protected:
 		BaseTag tag(name);
 		create_parameter(
 			tag, AnyParameter(make_any_ref(value, rows, cols), properties));
+		register_interface_visitor<T>();
 	}
 
 #ifndef SWIG
@@ -1234,82 +1252,5 @@ std::shared_ptr<const T> make_clone(std::shared_ptr<const T> orig, ParameterProp
 	ASSERT(clone);
 	return std::static_pointer_cast<const T>(clone);
 }
-
-#ifndef SWIG
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-namespace sgo_details
-{
-		template <typename T1, typename T2>
-		bool dispatch_array_type(
-		    const std::shared_ptr<const SGObject>& obj, std::string_view name,
-		    T2&& lambda)
-		{
-			Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
-			if (obj->has(tag_vector))
-			{
-				auto dispatched = obj->get(tag_vector);
-				lambda(dispatched);
-				return true;
-			}
-			return false;
-		}
-
-		struct GetByName
-		{
-		};
-
-		struct GetByNameIndex
-		{
-			GetByNameIndex(index_t index) : m_index(index) {}
-			index_t m_index;
-		};
-
-		template <typename T>
-		std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, std::string_view name, GetByName)
-		{
-			return obj->has<T>(name) ? obj->get<T>(name) : nullptr;
-		}
-
-		template <typename T>
-		std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, std::string_view name, GetByNameIndex how)
-		{
-			std::shared_ptr<SGObject> result = nullptr;
-			result = obj->get<T>(name, how.m_index, std::nothrow);
-			return result;
-		}
-
-		template<typename T>
-		std::shared_ptr<SGObject> get_dispatch_all_base_types(const std::shared_ptr<const SGObject>& obj, std::string_view name,
-			T&& how)
-		{
-			if (auto result = get_if_possible<Kernel>(obj, name, how))
-				return result;
-			if (auto result = get_if_possible<Features>(obj, name, how))
-				return result;
-			if (auto result = get_if_possible<Machine>(obj, name, how))
-				return result;
-			if (auto result = get_if_possible<Labels>(obj, name, how))
-				return result;
-			if (auto result = get_if_possible<EvaluationResult>(obj, name, how))
-				return result;
-			if (auto result = get_if_possible<LikelihoodModel>(obj, name, how))
-				return result;
-			if (auto result = get_if_possible<MeanFunction>(obj, name, how))
-				return result;
-
-			return nullptr;
-		}
-
-		template<class T>
-		std::shared_ptr<SGObject> get_by_tag(const std::shared_ptr<const SGObject>& obj, std::string_view name,
-			T&& how)
-		{
-			return get_dispatch_all_base_types(obj, name, how);
-		}
-} // namespace sgo_details
-
-#endif //DOXYGEN_SHOULD_SKIP_THIS
-#endif //SWIG
-
 }
 #endif // __SGOBJECT_H__

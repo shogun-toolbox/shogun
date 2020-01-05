@@ -159,7 +159,22 @@ namespace shogun
 		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
 		{
 		};
-		
+
+		template<class T>
+		struct is_vector : std::false_type
+		{
+		      using type = T;
+		};
+
+		template<class T>
+		struct is_vector<std::vector<T>> : std::true_type
+		{
+		      using type = std::vector<T> ;
+		};
+
+		template<typename T>
+		inline constexpr bool is_vector_v = is_vector<T>::value;
+
 		#endif // DOXYGEN_SHOULD_SKIP_THIS
 	} // namespace traits
 } // namespace shogun
