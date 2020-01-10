@@ -23,7 +23,6 @@ void NeuralMishLayer::compute_activations(SGVector<float64_t> parameters,
 {
 	NeuralLinearLayer::compute_activations(parameters, layers);
 
-	int32_t len = m_num_neurons*m_batch_size;
 	for(auto& activation: m_activations)
 	{
 		activation *= std::tanh(std::log(1 + std::exp(activation)));

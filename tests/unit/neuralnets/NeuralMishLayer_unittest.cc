@@ -23,9 +23,6 @@ using NeuralMishLayerTest = NeuralLayerTestFixture;
 TEST_F(NeuralMishLayerTest, compute_activations)
 {
 	int32_t seed = 100;
-	// initialize some random inputs
-	SGMatrix<float64_t> x;
-	std::shared_ptr<NeuralInputLayer> input;
 	std::mt19937_64 prng(seed);
 	auto [x, input] = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
