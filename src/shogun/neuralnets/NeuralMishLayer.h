@@ -45,6 +45,8 @@ public:
 		SGVector<float64_t> parameters,
 		const std::vector<std::shared_ptr<NeuralLayer>>& layers);
 
+	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
+
 	virtual const char* get_name() const { return "NeuralMishLayer"; }
 };
 
