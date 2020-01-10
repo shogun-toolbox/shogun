@@ -34,7 +34,7 @@
 #ifndef __NEURALMISHLAYER_H__
 #define __NEURALMISHLAYER_H__
 
-#include <shogun/neuralnets/NeuralMishLayer.h>
+#include <shogun/neuralnets/NeuralLinearLayer.h>
 
 namespace shogun
 {
@@ -45,7 +45,7 @@ namespace shogun
  *
  * When used as an output layer, a squared error measure is used
  */
-class NeuralMishLayer : public NeuralRectifiedLinearLayer
+class NeuralMishLayer : public NeuralLinearLayer
 {
 public:
 	/** default constructor */

@@ -78,7 +78,7 @@ TEST_F(NeuralMishLayerTest, compute_activations)
 
 	for (int32_t idx = 0; idx < A_ref.num_rows * A_ref.num_cols; idx++)
 	{
-		A_ref[idx] = A_ref[idx] * std::tanh(std::log(1 + std::exp(x)));
+		A_ref[idx] = A_ref[idx] * std::tanh(std::log(1 + std::exp(A_ref[idx])));
 	}
 
 	// compare
