@@ -198,6 +198,17 @@ message ActivationSigmoid {
 }
 
 /**
+* A Mish activation function.
+*
+* This function has the following formula:
+*
+* ..math::
+*    f(x) = x \tanh(\text{log}(1 + e^x))
+*/
+message ActivationMish {
+}
+
+/**
  * A linear activation function.
  *
  * This function has the following formula:
