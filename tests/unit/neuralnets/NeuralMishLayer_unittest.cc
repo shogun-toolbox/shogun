@@ -54,7 +54,7 @@ TEST_F(NeuralMishLayerTest, compute_activations)
 	SGMatrix<float64_t> x;
 	std::shared_ptr<NeuralInputLayer> input;
 	std::mt19937_64 prng(seed);
-	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
+	auto [x, input] = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize mish layer
 	auto layer = std::make_shared<NeuralMishLayer>(9);
@@ -66,13 +66,16 @@ TEST_F(NeuralMishLayerTest, compute_activations)
 	// get the layer's activations
 	SGMatrix<float64_t> A = layer->get_activations();
 
+	auto num_neurons = layer->get_num_neurons();
+	auto num_rows = x.num_rows;
+	auto num_cols = x.num_cols;
 	// manually compute the layer's activations
 	auto biases =
-	    SGVector<float64_t>(params.vector, layer->get_num_neurons(), 0);
+	    SGVector<float64_t>(params.vector, num_neurons, 0);
 	auto weights = SGMatrix<float64_t>(
-	    params.vector, layer->get_num_neurons(), x.num_rows,
-	    layer->get_num_neurons());
-	SGMatrix<float64_t> A_ref(layer->get_num_neurons(), x.num_cols);
+	    params.vector, num_neurons, num_rows,
+	    num_neurons);
+	SGMatrix<float64_t> A_ref(num_neurons, num_cols);
 	shogun::linalg::add_vector(
 	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
 
@@ -86,6 +89,6 @@ TEST_F(NeuralMishLayerTest, compute_activations)
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
 	for (int32_t i = 0; i < A.num_rows * A.num_cols; i++)
 	{
-		EXPECT_NEAR(A_ref[i], A[i], 1e-12);
+		EXPECT_NEAR(A_ref[i], A[i], std::numeric_limits<float64_t>::epsilon);
 	}
 }
