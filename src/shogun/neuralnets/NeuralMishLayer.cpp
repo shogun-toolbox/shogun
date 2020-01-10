@@ -29,7 +29,7 @@ void NeuralMishLayer::compute_activations(SGVector<float64_t> parameters,
 	}
 }
 
-void NeuralRectifiedLinearLayer::compute_local_gradients(
+void NeuralMishLayer::compute_local_gradients(
 		SGMatrix<float64_t> targets)
 {
 	if (targets.num_rows != 0)
