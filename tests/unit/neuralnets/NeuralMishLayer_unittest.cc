@@ -59,6 +59,6 @@ TEST_F(NeuralMishLayerTest, compute_activations)
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
 	for (int32_t i = 0; i < A.num_rows * A.num_cols; i++)
 	{
-		EXPECT_NEAR(A_ref[i], A[i], std::numeric_limits<float64_t>::epsilon);
+		EXPECT_NEAR(A_ref[i], A[i], std::numeric_limits<float64_t>::epsilon());
 	}
 }
