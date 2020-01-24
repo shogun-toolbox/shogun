@@ -62,13 +62,13 @@ namespace shogun
 	class SGObject::Self
 	{
 	public:
-		void create(const BaseTag& tag, const AnyParameter& parameter)
+		void create(BaseTag&& tag, AnyParameter&& parameter)
 		{
 			if (has(tag))
 			{
 				error("Can not register {} twice", tag.name().c_str());
 			}
-			map[tag] = parameter;
+			map.emplace(std::move(tag), std::move(parameter));
 		}
 
 		void update(const BaseTag& tag, const Any& value)
@@ -404,9 +404,9 @@ std::shared_ptr<SGObject> SGObject::clone(ParameterProperties pp) const
 }
 
 void SGObject::create_parameter(
-    const BaseTag& _tag, const AnyParameter& parameter)
+    BaseTag&& _tag, AnyParameter&& parameter)
 {
-	self->create(_tag, parameter);
+	self->create(std::forward<BaseTag>(_tag), std::forward<AnyParameter>(parameter));
 }
 
 void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_checks)
