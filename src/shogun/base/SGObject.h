@@ -809,8 +809,7 @@ protected:
 	template <typename T>
 	void register_param(std::string_view name, const T& value)
 	{
-		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any(value)));
+		create_parameter(BaseTag(name), AnyParameter(make_any(value)));
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.
@@ -824,8 +823,7 @@ protected:
 		std::string_view name, T* value,
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
-		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+		create_parameter(BaseTag(name), AnyParameter(make_any_ref(value), properties));
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.
@@ -846,9 +844,8 @@ protected:
 		require(
 				properties.has_property(ParameterProperties::AUTO),
 				"Expected param to have ParameterProperty::AUTO");
-		BaseTag tag(name);
 		create_parameter(
-				tag,
+				BaseTag(name),
 				AnyParameter(
 						make_any_ref(value), properties, std::move(auto_init)));
 	}
@@ -874,9 +871,8 @@ protected:
 		require(
 				properties.has_property(ParameterProperties::CONSTRAIN),
 				"Expected param to have ParameterProperty::CONSTRAIN");
-		BaseTag tag(name);
 		create_parameter(
-				tag, AnyParameter(
+				BaseTag(name), AnyParameter(
 						make_any_ref(value), properties,
 						[constrain_function](const auto& val) {
 							std::string result;
@@ -900,9 +896,8 @@ protected:
 		std::string_view name, T** value, S* len,
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
-		BaseTag tag(name);
 		create_parameter(
-			tag, AnyParameter(make_any_ref(value, len), properties));
+			BaseTag(name), AnyParameter(make_any_ref(value, len), properties));
 	}
 
 	/** Puts a pointer to some 2d parameter array (i.e. a matrix) into the
@@ -920,9 +915,8 @@ protected:
 		std::string_view name, T** value, S* rows, S* cols,
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
-		BaseTag tag(name);
 		create_parameter(
-			tag, AnyParameter(make_any_ref(value, rows, cols), properties));
+			BaseTag(name), AnyParameter(make_any_ref(value, rows, cols), properties));
 	}
 
 #ifndef SWIG
@@ -934,13 +928,12 @@ protected:
 	template <typename T, typename S>
 	void watch_method(std::string_view name, T (S::*method)() const)
 	{
-		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Dynamic parameter",
 			ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
-		create_parameter(tag, AnyParameter(make_any(std::move(bind_method)), properties));
+		create_parameter(BaseTag(name), AnyParameter(make_any(bind_method), properties));
 	}
 
 	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
@@ -953,13 +946,12 @@ protected:
 	template <typename T, typename S>
 	void watch_method(std::string_view name, T (S::*method)())
 	{
-		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Non-const function",
 			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<S*>(this));
-		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
+		create_parameter(BaseTag(name), AnyParameter(make_any(bind_method), properties));
 	}
 
 	/** Adds a callback function to a parameter identified by its name
@@ -1058,7 +1050,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @param parameter parameter to be created
 	 */
-	void create_parameter(const BaseTag& _tag, const AnyParameter& parameter);
+	void create_parameter(BaseTag&& _tag, AnyParameter&& parameter);
 
 	/** Updates a parameter identified by a BaseTag.
 	 *
