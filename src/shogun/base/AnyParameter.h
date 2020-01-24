@@ -170,9 +170,19 @@ namespace shogun
 		AnyParameter(const AnyParameter& other)
 		    : m_value(other.m_value), m_properties(other.m_properties),
 		      m_init_function(other.m_init_function),
-		      m_constrain_function(other.m_constrain_function)
+		      m_constrain_function(other.m_constrain_function),
+		      m_callback_functions(other.m_callback_functions)
 		{
 		}
+
+		AnyParameter(AnyParameter&& other) noexcept
+		    : m_value(std::move(other.m_value)), m_properties(other.m_properties),
+		      m_init_function(std::move(other.m_init_function)),
+		      m_constrain_function(std::move(other.m_constrain_function)),
+		      m_callback_functions(std::move(other.m_callback_functions))
+		{
+		}
+
 
 		Any get_value() const
 		{
