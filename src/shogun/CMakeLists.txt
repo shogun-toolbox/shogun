@@ -810,6 +810,7 @@ IF (BUILD_BENCHMARKS)
   ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/BasicOps_benchmark)
   ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/Misc_benchmark)
   ADD_SHOGUN_BENCHMARK(lib/SGMatrix_benchmark)
+  ADD_SHOGUN_BENCHMARK(util/PutPerceptron_benchmark)
 ENDIF()
 
 #############################################
