@@ -749,6 +749,11 @@ namespace shogun
 		void
 		rectified_linear_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
+		/** Applies the elementwise mish function f(x) = x*tanh(log(1 +exp(x))) */
+		template <typename T>
+		void
+		mish_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+
 		/** Eigen3 vector inplace scale method: result = alpha * A */
 		template <typename T>
 		void
