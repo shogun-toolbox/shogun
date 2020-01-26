@@ -141,6 +141,30 @@ namespace shogun
 			infer_backend(a, result)->rectified_linear(a, result);
 		}
 
+		/** Applies the elementwise mish function f(x) = x*tanh(ln(1 + exp(x))) to
+		 * a
+		 * matrix
+		 *
+		 * @param a The input matrix
+		 * @param result The output matrix
+		 */
+		template <typename T>
+		void mish(const SGMatrix<T>& a, SGMatrix<T>& result)
+		{
+			require(
+			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
+			                                     "({}) must match matrix "
+			                                     "result ({}).",
+			    a.num_rows, result.num_rows);
+			require(
+			    (a.num_cols == result.num_cols), "Number of columns of matrix "
+			                                     "a ({}) must match matrix "
+			                                     "result ({}).",
+			    a.num_cols, result.num_cols);
+
+			infer_backend(a, result)->mish(a, result);
+		}
+
 		/** Applies the softmax function inplace to a matrix. The softmax
 		 * function is
 		 * defined as \f$ f(A[i,j]) = \frac{exp(A[i,j])}{\sum_i exp(A[i,j])} \f$
