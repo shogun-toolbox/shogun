@@ -157,6 +157,18 @@ void LinalgBackendEigen::rectified_linear_impl(
 		result_eig(i) = Math::max((T)0, a_eig(i));
 }
 
+template <typename T>
+void LinalgBackendEigen::mish_impl(
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+	for (index_t i = 0; i < a_eig.rows() * a_eig.cols(); ++i)
+		result_eig(i) = a_eig(i) * std::tanh(std::log(1 + std::exp(a_eig(i))));
+}
+
+
 /** Eigen3 softmax method */
 template <typename T, template <typename> class Container>
 void LinalgBackendEigen::softmax_impl(Container<T>& a) const
