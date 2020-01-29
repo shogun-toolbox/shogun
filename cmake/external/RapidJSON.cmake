@@ -1,5 +1,5 @@
 set(RAPIDJSON_PREFIX ${CMAKE_BINARY_DIR}/RapidJSON)
-set(RAPIDJSON_INCLUDE_DIR "${RAPIDJSON_PREFIX}/src/RapidJSON/include")
+set(RAPIDJSON_INCLUDE_DIRS "${RAPIDJSON_PREFIX}/src/RapidJSON/include")
 include(ExternalProject)
 ExternalProject_Add(
 	RapidJSON
