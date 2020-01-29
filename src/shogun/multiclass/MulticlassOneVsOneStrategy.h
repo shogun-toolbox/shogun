@@ -1,3 +1,6 @@
+#ifndef _MULTICLASS_ONE_VS_ONE_STRATEGY_H_
+#define _MULTICLASS_ONE_VS_ONE_STRATEGY_H_
+
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
@@ -117,3 +120,4 @@ protected:
 };
 
 } // namespace shogun
+#endif /* _MULTICLASS_ONE_VS_ONE_STRATEGY_H_ */

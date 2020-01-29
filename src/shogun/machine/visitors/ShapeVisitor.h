@@ -1,3 +1,5 @@
+#ifndef __SHAPE_VISITOR_H__
+#define __SHAPE_VISITOR_H__
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
@@ -151,3 +153,4 @@ namespace shogun
 			size_t m_size;
 	};
 }
+#endif /* __SHAPE_VISITOR_H__ */
