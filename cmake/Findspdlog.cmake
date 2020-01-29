@@ -1,7 +1,7 @@
 find_package(PkgConfig)
 
 if(NOT EXISTS "${spdlog_INCLUDE_DIR}")
-    find_path(rxcpp_INCLUDE_DIR
+    find_path(spdlog_INCLUDE_DIR
             NAMES spdlog/spdlog.h
             DOC "spdlog library header files"
             )
