@@ -378,7 +378,7 @@ void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_c
 				get_name(), _tag.name().c_str(), msg.c_str());
 		}
 	}
-	self->update(_tag, value);
+	param.set_value(value);
 	for (auto& method : param.get_callbacks())
 		method();
 
