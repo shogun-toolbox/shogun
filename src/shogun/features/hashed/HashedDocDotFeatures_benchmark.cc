@@ -23,7 +23,7 @@ public:
 	void SetUp(const ::benchmark::State& st)
 	{
 		std::random_device rd;
-		std::mt19937_64 prng(rd);
+		std::mt19937_64 prng(rd());
 		UniformIntDistribution<char> uniform_int_dist('A', 'Z');
 		string_list.reserve(num_strings);
 		for (index_t i=0; i<num_strings; i++)
@@ -32,8 +32,8 @@ public:
 			for (index_t j=0; j<max_str_length; j++)
 				string_list[i].vector[j] = (char) uniform_int_dist(prng);
 		}
-		auto string_feats = new CStringFeatures<char>(string_list, RAWBYTE);
-		auto tzer = new NGramTokenizer(3);
+		auto string_feats = std::make_shared<StringFeatures<char>>(string_list, RAWBYTE);
+		auto tzer = std::make_shared<NGramTokenizer>(3);
 		f = std::make_shared<HashedDocDotFeatures>(st.range(0), string_feats, tzer);
 
 		w = SGVector<float64_t>(f->get_dim_feature_space());
