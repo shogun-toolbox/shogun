@@ -889,7 +889,7 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	if (m_Wneg)
 		return derivative_helper_when_Wneg(result, param);
 
-	m_lock->lock();
+	m_lock.lock();
 	auto inducing_features=get_inducing_features();
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -918,7 +918,7 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		result[i] *= std::exp(m_log_scale * 2.0);
 	}
 
-	m_lock->unlock();
+	m_lock.unlock();
 
 	return result;
 }

@@ -465,7 +465,7 @@ protected:
 	std::vector<CMapNode<K, T>*>* array;
 
 	/** concurrency lock */
-	CLock lock;
+	Lock lock;
 };
 
 }
