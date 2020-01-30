@@ -69,11 +69,11 @@ HashedWDFeaturesTransposed::HashedWDFeaturesTransposed(const std::shared_ptr<Str
 
 
 	strings=str;
-	transposed_strings=std::move(str->get_transposed_matrix());
+	transposed_strings=str->get_transposed_matrix();
 	int32_t transposed_num_feat = transposed_strings.size();
-	int32_t transposed_num_vec = 
+	int32_t transposed_num_vec =
 		transposed_strings.empty()? 0 : transposed_strings.back().size();
-	
+
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
 	ASSERT(transposed_num_feat==num_strings)
