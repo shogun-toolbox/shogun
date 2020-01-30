@@ -111,7 +111,7 @@ public:
 
 	/** set the tolearance used in optimization of inducing features
 	 *
-	 * @param tol tolearance 
+	 * @param tol tolearance
 	 */
 	virtual void set_tolearance_for_inducing_features(float64_t tol);
 
@@ -180,7 +180,7 @@ protected:
 	/** check the bound constraint is vailid or not
 	 *
 	 * @param bound bound constrains of inducing features
-	 * @param name the name of the bound 
+	 * @param name the name of the bound
 	 */
 	virtual void check_bound(SGVector<float64_t> bound, const char* name);
 
@@ -224,7 +224,7 @@ protected:
 	bool m_fully_sparse;
 
 	/** a lock used to parallelly compute derivatives wrt hyperparameters */
-	CLock* m_lock;
+	Lock m_lock;
 
 	/** minimizer used in finding optimal inducing features*/
 	std::shared_ptr<FirstOrderMinimizer> m_inducing_minimizer;

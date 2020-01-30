@@ -226,7 +226,7 @@ SGVector<float64_t> SingleFITCInference::get_derivative_related_inducing_feature
 	SGVector<float64_t>deriv_lat(dim*num_samples);
 	deriv_lat.zero();
 
-	m_lock->lock();
+	m_lock.lock();
 	auto inducing_features=get_inducing_features();
 	//asymtric part (related to xu and x)
 	m_kernel->init(inducing_features, m_features);
@@ -255,7 +255,7 @@ SGVector<float64_t> SingleFITCInference::get_derivative_related_inducing_feature
 		deriv_lat_col_vec+=eigen_deriv_mat*(C.row(lat_lidx).transpose());
 	}
 
-	m_lock->unlock();
+	m_lock.unlock();
 	return deriv_lat;
 }
 

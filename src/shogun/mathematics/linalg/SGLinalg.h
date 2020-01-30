@@ -52,7 +52,7 @@ namespace shogun
 	{
 	public:
 		/** Mutex of GPU transfer methods */
-		CLock m_gpu_transfer;
+		Lock m_gpu_transfer;
 
 		/** Default constructor */
 		SGLinalg()
