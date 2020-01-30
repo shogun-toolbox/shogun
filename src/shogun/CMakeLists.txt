@@ -520,7 +520,7 @@ IF (NOT HAVE_STD_VARIANT)
 ENDIF()
 
 # spdlog
-FIND_PACKAGE(spdlog)
+FIND_PACKAGE(spdlog CONFIG)
 IF (NOT spdlog_FOUND)
     include(external/spdlog)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
@@ -529,7 +529,10 @@ IF (NOT spdlog_FOUND)
     )
 ELSE()
     SET(USE_EXTERNAL_SPDLOG 1)
-    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${spdlog_INCLUDE_DIR})
+    target_link_libraries(shogun PUBLIC SYSTEM spdlog::spdlog)
+    if (EXISTS shogun-static)
+      target_link_libraries(shogun-static PUBLIC SYSTEM spdlog::spdlog)
+    endif()
 ENDIF()
 
 SHOGUN_DEPENDENCIES(
