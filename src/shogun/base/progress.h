@@ -245,14 +245,14 @@ namespace shogun
 			{
 				snprintf(
 				    str, sizeof(str),
-				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
+				    "   {:1.1f} minutes remaining  {:1.1f} minutes total\r");
 				io::print(str, estimate / 60, total_estimate / 60);
 			}
 			else
 			{
 				snprintf(
 				    str, sizeof(str),
-				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
+				    "   {:1.1f} seconds remaining  {:1.1f} seconds total\r");
 				io::print(str, estimate, total_estimate);
 			}
 		}
@@ -340,14 +340,14 @@ namespace shogun
 			{
 				snprintf(
 				    str, sizeof(str),
-				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
+				    "   {:1.1f} minutes remaining  {:1.1f} minutes total\r");
 				io::print(str, estimate / 60, total_estimate / 60);
 			}
 			else
 			{
 				snprintf(
 				    str, sizeof(str),
-				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
+				    "   {:1.1f} seconds remaining  {:1.1f} seconds total\r");
 				io::print(str, estimate, total_estimate);
 			}
 		}
