@@ -430,7 +430,7 @@ namespace shogun
 		/** Current value */
 		mutable std::atomic<int64_t> m_current_value;
 		/** Lock for multithreaded operations **/
-		mutable CLock lock;
+		mutable Lock lock;
 	};
 
 	/** @class Helper class to show a progress bar given a range.

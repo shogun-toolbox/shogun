@@ -131,7 +131,6 @@ void SingleSparseInference::init()
 	m_inducing_minimizer=NULL;
 	SG_ADD(&m_fully_sparse, "fully_Sparse",
 		"whether the kernel support sparse inference");
-	m_lock=new CLock();
 
 	SG_ADD(&m_upper_bound, "upper_bound",
 		"upper bound of inducing features");
@@ -162,8 +161,6 @@ void SingleSparseInference::set_kernel(std::shared_ptr<Kernel> kern)
 
 SingleSparseInference::~SingleSparseInference()
 {
-
-	delete m_lock;
 }
 
 void SingleSparseInference::check_fully_sparse()
@@ -235,7 +232,7 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_kernel(
 	SGVector<float64_t> result;
 	auto visitor = std::make_unique<ShapeVisitor>();
 	param.second->get_value().visit(visitor.get());
-	int64_t len= visitor->get_size();	
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	auto inducing_features=get_inducing_features();
@@ -245,7 +242,7 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_kernel(
 		SGMatrix<float64_t> deriv_uu;
 		SGMatrix<float64_t> deriv_tru;
 
-		m_lock->lock();
+		m_lock.lock();
 		m_kernel->init(m_features, m_features);
 		//to reduce the time complexity
 		//the kernel object only computes diagonal elements of gradients wrt hyper-parameter
@@ -256,7 +253,7 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_kernel(
 
 		m_kernel->init(inducing_features, m_features);
 		deriv_tru=m_kernel->get_parameter_gradient(param, i);
-		m_lock->unlock();
+		m_lock.unlock();
 
 		// create eigen representation of derivatives
 		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
@@ -279,7 +276,7 @@ void SingleSparseInference::check_bound(SGVector<float64_t> bound, const char* n
 		require(m_inducing_features.num_rows>0, "Inducing features must set before this method is called");
 		require(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
 			"The length of inducing features ({}x{})",
-			" and the length of bound constraints ({}) are different", 
+			" and the length of bound constraints ({}) are different",
 			m_inducing_features.num_rows,m_inducing_features.num_cols,bound.vlen);
 	}
 	else if(bound.vlen==1)

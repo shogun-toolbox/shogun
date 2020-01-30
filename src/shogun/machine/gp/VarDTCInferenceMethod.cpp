@@ -350,7 +350,7 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_inducing_features(
 	SGVector<float64_t>deriv_lat(dim*num_samples);
 	deriv_lat.zero();
 
-	m_lock->lock();
+	m_lock.lock();
 	auto inducing_features=get_inducing_features();
 	//asymtric part (related to xu and x)
 	m_kernel->init(inducing_features, m_features);
@@ -379,7 +379,7 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_inducing_features(
 		                                        eigen_Tmm.col(lat_lidx));
 	}
 
-	m_lock->unlock();
+	m_lock.unlock();
 	return deriv_lat;
 }
 
@@ -421,7 +421,7 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_mean(
 	SGVector<float64_t> result;
 	auto visitor = std::make_unique<ShapeVisitor>();
 	param.second->get_value().visit(visitor.get());
-	int64_t len= visitor->get_size();	
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	SGVector<float64_t> y=m_labels->as<RegressionLabels>()->get_labels();
