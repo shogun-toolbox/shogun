@@ -14,7 +14,7 @@ BENCHMARK_DEFINE_F(FIXTURE, NAME)(benchmark::State& state)	\
 	{														\
 		index_t dim = f->get_dim_feature_space();			\
 		for (index_t i = 0; i < f->get_num_vectors(); ++i)	\
-			f->dense_dot(i, w.vector, dim);					\
+			f->dot(i, w);					\
 	}														\
 }															\
 BENCHMARK_REGISTER_F(FIXTURE, NAME)

@@ -14,7 +14,7 @@
 namespace shogun
 {
 
-static std::shared_ptr<CRandomFourierDotFeatures> createRandomData(const benchmark::State& state)
+static std::shared_ptr<RandomFourierDotFeatures> createRandomData(const benchmark::State& state)
 {
 	std::random_device rd;
 	std::mt19937_64 prng(rd());
@@ -31,10 +31,10 @@ static std::shared_ptr<CRandomFourierDotFeatures> createRandomData(const benchma
 			mat(j,i) = uniform_int_dist(prng) + 0.5;
 		}
 	}
-	auto dense_feats = new DenseFeatures<float64_t>(mat);
+	auto dense_feats = std::make_shared<DenseFeatures<float64_t>>(mat);
 	SGVector<float64_t> params(1);
 	params[0] = num_dim - 20;
-	return std::make_shared<CRandomFourierDotFeatures>(dense_feats, state.range(1), KernelName::GAUSSIAN, params);
+	return std::make_shared<RandomFourierDotFeatures>(dense_feats, state.range(1), KernelName::GAUSSIAN, params);
 }
 
 class RFFixture : public benchmark::Fixture
@@ -49,7 +49,7 @@ public:
 
 	void TearDown(const ::benchmark::State&) { f.reset(); }
 
-	std::shared_ptr<CRandomFourierDotFeatures> f;
+	std::shared_ptr<RandomFourierDotFeatures> f;
 	SGVector<float64_t> w;
 };
 
