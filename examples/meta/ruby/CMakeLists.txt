@@ -1,4 +1,4 @@
-STRING(REGEX REPLACE "(.*)/narray.*$" "\\1" NARRAY_PATH ${NARRAY_LIB})
+STRING(REGEX REPLACE "(.*)/nmatrix.*$" "\\1" NMATRIX_PATH ${NMATRIX_LIB})
 
 # add test case for each generated example
 # (not generated yet so have to fake filenames from META_EXAMPLES list)

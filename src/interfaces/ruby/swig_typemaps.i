@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Elias Saalmann
+ * Authors: Viktor Gal, Heiko Strathmann, Sergey Lisitsyn, Elias Saalmann
  */
 
 /* One dimensional input/output arrays */
@@ -10,66 +10,60 @@
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
 	$1 = (
 					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) ||
-					($input && NA_IsNArray($input) && NA_RANK($input) == 1 && NA_SHAPE0($input) > 0)
+					($input && NM_IsNMatrix($input) && NM_DIM($input) == 1 && NM_SHAPE0($input) > 0)
 			)? 1 : 0;
 }
 
 %typemap(in) shogun::SGVector<SGTYPE> {
-	int32_t i, len;
-	SGTYPE *array;
-	VALUE *ptr;
+        int32_t i, len;
+        SGTYPE *array;
+        VALUE *ptr;
 
-	if (rb_obj_is_kind_of($input,rb_cArray)) {
-		len = RARRAY_LEN($input);
-		array = SG_MALLOC(SGTYPE, len);
+        if (rb_obj_is_kind_of($input,rb_cArray)) {
+                len = RARRAY_LEN($input);
+                array = SG_MALLOC(SGTYPE, len);
 
-		ptr = RARRAY_PTR($input);
-		for (i = 0; i < len; i++, ptr++) {
-			array[i] = R2SG(*ptr);
-		}
-	}
-	else {
-		if (NA_IsNArray($input) && NA_RANK($input) == 1) {
+                ptr = RARRAY_PTR($input);
+                for (i = 0; i < len; i++, ptr++) {
+                        array[i] = R2SG(*ptr);
+                }
+        }
+        else {
+                if (NM_IsNMatrix($input) && NM_DIM($input) == 1) {
+                        len = NM_SHAPE0($input);
+                        array = SG_MALLOC(SGTYPE, len);
 
-			VALUE v = (*na_to_array_dl)($input);
-			len = RARRAY_LEN(v);
-			array = SG_MALLOC(SGTYPE, len);
+                        // FIXME: there will be dragons
+                        // NM_SIZEOF_DTYPE has no ref... hence the hack
+                        void* p = NM_DENSE_ELEMENTS($input);
+                        memcpy(array, p, len*sizeof(SGTYPE));
+                }
+                else {
+                        rb_raise(rb_eArgError, "Expected Array");
+                }
+        }
 
-			ptr = RARRAY_PTR(v);
-			for (i = 0; i < len; i++, ptr++) {
-				array[i] = R2SG(*ptr);
-			}
-		}
-		else {
-			rb_raise(rb_eArgError, "Expected Array");
-		}
-	}
-
-	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, len);
+        $1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, len);
 }
 
 %typemap(out) shogun::SGVector<SGTYPE> {
 	int32_t i;
-	VALUE arr = rb_ary_new2($1.vlen);
-
-	for (i = 0; i < $1.vlen; i++)
-		rb_ary_push(arr, SG2R($1.vector[i]));
-
-	$result = (*na_to_narray_dl)(arr);
+        $result = rb_nvector_dense_create(SG2R, static_cast<void*>($1.vector), $1.vlen);
 }
 
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SGVECTOR macros */
-TYPEMAP_SGVECTOR(char, NUM2CHR, CHR2FIX)
-TYPEMAP_SGVECTOR(uint16_t, NUM2INT, INT2NUM)
-TYPEMAP_SGVECTOR(int32_t, NUM2INT, INT2NUM)
-TYPEMAP_SGVECTOR(uint32_t, NUM2UINT, UINT2NUM)
-TYPEMAP_SGVECTOR(int64_t, NUM2LONG,  LONG2NUM)
-TYPEMAP_SGVECTOR(uint64_t, NUM2ULONG, ULONG2NUM)
-TYPEMAP_SGVECTOR(long long, NUM2LL, LL2NUM)
-TYPEMAP_SGVECTOR(float32_t, NUM2DBL, rb_float_new)
-TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
+/* FIXME: the dtype_t are not really correct in unsigned cases  */
+TYPEMAP_SGVECTOR(char, NUM2CHR, nm::INT8)
+TYPEMAP_SGVECTOR(uint16_t, NUM2INT, nm::INT16)
+TYPEMAP_SGVECTOR(int32_t, NUM2INT, nm::INT32)
+TYPEMAP_SGVECTOR(uint32_t, NUM2UINT, nm::INT32)
+TYPEMAP_SGVECTOR(int64_t, NUM2LONG,  nm::INT64)
+TYPEMAP_SGVECTOR(uint64_t, NUM2ULONG, nm::INT64)
+TYPEMAP_SGVECTOR(long long, NUM2LL, nm::INT64)
+TYPEMAP_SGVECTOR(float32_t, NUM2DBL, nm::FLOAT32)
+TYPEMAP_SGVECTOR(float64_t, NUM2DBL, nm::FLOAT64)
 
 #undef TYPEMAP_SGVECTOR
 
@@ -80,78 +74,82 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 {
 	$1 = (
 					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ||
-					($input &&  NA_IsNArray($input) && NA_RANK($input) == 2 && NA_SHAPE1($input) > 0 && NA_SHAPE0($input) > 0)
+					($input &&  NM_IsNMatrix($input) && NM_DIM($input) == 2 && NM_SHAPE1($input) > 0 && NM_SHAPE0($input) > 0)
 				) ? 1 : 0;
 }
 
 %typemap(in) shogun::SGMatrix<SGTYPE> {
-	int32_t i, j, rows, cols;
-	SGTYPE *array;
-	VALUE vec;
-	VALUE v;
+        int32_t i, j, rows, cols;
+        SGTYPE *array;
+        VALUE vec;
+        VALUE v;
 
-	if (rb_obj_is_kind_of($input,rb_cArray) || (NA_IsNArray($input) && NA_RANK($input) == 2)) {
-		if (NA_IsNArray($input))	{
-			v = (*na_to_array_dl)($input);
-		}
-		else {
-			v = $input;
-		}
-		rows = RARRAY_LEN(v);
-		cols = 0;
+        if (rb_obj_is_kind_of($input,rb_cArray) || (NM_IsNMatrix($input) && NM_DIM($input) == 2)) {
+                if (NM_IsNMatrix($input)) {
+                        if (NM_STYPE($input) == nm::DENSE_STORE) {
+                                rows = NM_SHAPE0($input);
+                                cols = NM_SHAPE1($input);
+                                array = SG_MALLOC(SGTYPE, rows * cols);
 
-		for (i = 0; i < rows; i++) {
-			vec = rb_ary_entry(v, i);
-			if (!rb_obj_is_kind_of(vec,rb_cArray)) {
-				rb_raise(rb_eArgError, "Expected Arrays");
-			}
-			if (cols == 0) {
-				cols = RARRAY_LEN(vec);
-				array = SG_MALLOC(SGTYPE, rows * cols);
-			}
-			for (j = 0; j < cols; j++) {
-				array[j * rows + i] = R2SG(rb_ary_entry(vec, j));
-			}
-		}
-	}
-	else {
-		rb_raise(rb_eArgError, "Expected Arrays");
-	}
-	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols, true);
+                                // FIXME: this cast is not correct in case of unsigned types...
+                                auto *ptr = static_cast<SGTYPE*>(NM_DENSE_ELEMENTS($input));
+                                for (i = 0; i < rows; ++i) {
+                                        for (j = 0; j < cols; ++j) {
+                                                array[j * rows + i] = ptr[i * cols + j];
+                                        }
+                                }
+                        } else {
+                                //TODO: handle other storage types
+                                rb_raise(rb_eArgError, "Expected nm::DENSE NMatrix");
+                        }
+                } else {
+                        v = $input;
+                        rows = RARRAY_LEN(v);
+                        cols = 0;
+
+                        for (i = 0; i < rows; i++) {
+                                vec = rb_ary_entry(v, i);
+                                if (!rb_obj_is_kind_of(vec,rb_cArray)) {
+                                        rb_raise(rb_eArgError, "Expected Arrays");
+                                }
+                                if (cols == 0) {
+                                        cols = RARRAY_LEN(vec);
+                                        array = SG_MALLOC(SGTYPE, rows * cols);
+                                }
+                                for (j = 0; j < cols; j++) {
+                                        array[j * rows + i] = R2SG(rb_ary_entry(vec, j));
+                                }
+                        }
+                }
+        }
+        else {
+                rb_raise(rb_eArgError, "Expected Arrays");
+        }
+        $1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE> {
-	int32_t rows = $1.num_rows;
-	int32_t cols = $1.num_cols;
-	int32_t len = rows * cols;
-	VALUE arr;
-	int32_t i, j;
+        size_t shape[2];
+        shape[0] = $1.num_rows;
+        shape[1] = $1.num_cols;
+        size_t len = shape[0] * shape[1];
 
-	arr = rb_ary_new2(rows);
-
-	for (i = 0; i < rows; i++) {
-		VALUE vec = rb_ary_new2(cols);
-		for (j = 0; j < cols; j++) {
-			rb_ary_push(vec, SG2R($1.matrix[j * rows + i]));
-		}
-		rb_ary_push(arr, vec);
-	}
-
-	$result = (*na_to_narray_dl)(arr);
+        // FIMXE: this needs to be transposed!!
+        $result = rb_nmatrix_dense_create(SG2R, shape, 2, static_cast<void*>($1.matrix), len);
 }
 
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SGMATRIX macros */
-TYPEMAP_SGMATRIX(char, NUM2CHR, CHR2FIX)
-TYPEMAP_SGMATRIX(uint16_t, NUM2INT, INT2NUM)
-TYPEMAP_SGMATRIX(int32_t, NUM2INT, INT2NUM)
-TYPEMAP_SGMATRIX(uint32_t, NUM2UINT, UINT2NUM)
-TYPEMAP_SGMATRIX(int64_t, NUM2LONG,  LONG2NUM)
-TYPEMAP_SGMATRIX(uint64_t, NUM2ULONG, ULONG2NUM)
-TYPEMAP_SGMATRIX(long long, NUM2LL, LL2NUM)
-TYPEMAP_SGMATRIX(float32_t, NUM2DBL, rb_float_new)
-TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
+TYPEMAP_SGMATRIX(char, NUM2CHR, nm::INT8)
+TYPEMAP_SGMATRIX(uint16_t, NUM2INT, nm::INT16)
+TYPEMAP_SGMATRIX(int32_t, NUM2INT, nm::INT32)
+TYPEMAP_SGMATRIX(uint32_t, NUM2UINT, nm::INT32)
+TYPEMAP_SGMATRIX(int64_t, NUM2LONG,  nm::INT64)
+TYPEMAP_SGMATRIX(uint64_t, NUM2ULONG, nm::INT64)
+TYPEMAP_SGMATRIX(long long, NUM2LL, nm::INT64)
+TYPEMAP_SGMATRIX(float32_t, NUM2DBL, nm::FLOAT32)
+TYPEMAP_SGMATRIX(float64_t, NUM2DBL, nm::FLOAT64)
 
 #undef TYPEMAP_SGMATRIX
 
@@ -159,10 +157,10 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 %define TYPEMAP_STRINGFEATURES(SGTYPE, R2SG, SG2R, TYPECODE)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::vector<shogun::SGVector<SGTYPE>> {
-	$1 = 0;
-	if (TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) {
-		$1 = 1;
-	}
+        $1 = 0;
+        if (TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) {
+                $1 = 1;
+        }
 }
 %typemap(in) std::vector<shogun::SGVector<SGTYPE>> {
 	std::vector<shogun::SGVector<SGTYPE>>& strings = $1;
