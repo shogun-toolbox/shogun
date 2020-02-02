@@ -2,6 +2,7 @@
 #include <shogun/features/ArrowFactory.h>
 #include <shogun/features/DenseFeatures.h>
 #include <arrow/memory_pool.h>
+#include <arrow/table.h>
 #include <random>
 
 using namespace shogun;

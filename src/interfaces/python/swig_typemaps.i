@@ -20,8 +20,8 @@
 extern "C" {
 #include <Python.h>
 #include <numpy/arrayobject.h>
-#include <arrow/python/pyarrow.h>
 }
+#include <arrow/python/pyarrow.h>
 
 /* Functions to extract array attributes.
  */

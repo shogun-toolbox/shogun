@@ -1,6 +1,8 @@
 #include <shogun/features/ArrowFactory.h>
 #include <shogun/features/DenseFeatures.h>
 
+#include <arrow/table.h>
+
 #include <algorithm>
 #include <vector>
 
