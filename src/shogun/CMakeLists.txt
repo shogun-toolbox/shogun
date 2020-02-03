@@ -442,9 +442,6 @@ SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE ${RAPIDJSON_INCLUDE_DIRS})
 include(external/bitsery)
 SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE ${BITSERY_INCLUDE_DIR})
 
-include(external/bitsery)
-SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE ${BITSERY_INCLUDE_DIR})
-
 if (NOT WIN32)
   # FIXME: HDF5 linking on WIN32 is broken.
   # at least with the hdf5 supplied in anaconda
