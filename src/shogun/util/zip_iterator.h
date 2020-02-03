@@ -16,7 +16,7 @@ namespace shogun
 	{
 		template <typename... Args1, typename... Args2, size_t... Idx>
 		SG_FORCED_INLINE bool iterators_equal(
-		    std::tuple<Args1...>& iterators1,
+		    const std::tuple<Args1...>& iterators1,
 		    const std::tuple<Args2...>& iterators2, std::index_sequence<Idx...>)
 		{
 			return (
@@ -39,27 +39,27 @@ namespace shogun
 		}
 
 		template <typename T>
-		SG_FORCED_INLINE auto get_begin(T& container)
+		SG_FORCED_INLINE auto get_begin(const T& container)
 		    -> decltype(container.begin())
 		{
 			return container.begin();
 		}
 
 		template <typename T>
-		SG_FORCED_INLINE auto get_begin(T& container)
+		SG_FORCED_INLINE auto get_begin(const T& container)
 		    -> decltype(container->begin())
 		{
 			return container->begin();
 		}
 
 		template <typename T>
-		SG_FORCED_INLINE auto get_end(T& container) -> decltype(container.end())
+		SG_FORCED_INLINE auto get_end(const T& container) -> decltype(container.end())
 		{
 			return container.end();
 		}
 
 		template <typename T>
-		SG_FORCED_INLINE auto get_end(T& container)
+		SG_FORCED_INLINE auto get_end(const T& container)
 		    -> decltype(container->end())
 		{
 			return container->end();
@@ -67,14 +67,14 @@ namespace shogun
 
 		template <typename... Args, size_t... Idx>
 		SG_FORCED_INLINE auto containers_begin(
-		    std::tuple<Args...>& container, std::index_sequence<Idx...>)
+		    const std::tuple<Args...>& container, std::index_sequence<Idx...>)
 		{
 			return std::make_tuple((get_begin(std::get<Idx>(container)))...);
 		}
 
 		template <typename... Args, size_t... Idx>
 		SG_FORCED_INLINE auto containers_end(
-		    std::tuple<Args...>& container, std::index_sequence<Idx...>)
+		    const std::tuple<Args...>& container, std::index_sequence<Idx...>)
 		{
 			return std::make_tuple((get_end(std::get<Idx>(container)))...);
 		}
@@ -121,14 +121,14 @@ namespace shogun
 				    std::index_sequence_for<IteratorTypes...>{});
 			}
 
-			bool operator==(const ZipIterator& other)
+			bool operator==(const ZipIterator& other) const
 			{
 				return zip_iterator_detail::iterators_equal(
 				    m_iterators_tuple, other.m_iterators_tuple,
 				    std::index_sequence_for<IteratorTypes...>{});
 			}
 
-			bool operator!=(const ZipIterator& other)
+			bool operator!=(const ZipIterator& other) const
 			{
 				return !(*this == other);
 			}
@@ -146,13 +146,13 @@ namespace shogun
 		    ->ZipIterator<IteratorTypes...>;
 #endif
 
-		auto begin()
+		auto begin() const
 		{
 			return ZipIterator(zip_iterator_detail::containers_begin(
 			    m_container_tuples, std::index_sequence_for<Args...>{}));
 		}
 
-		auto end()
+		auto end() const
 		{
 			return ZipIterator(zip_iterator_detail::containers_end(
 			    m_container_tuples, std::index_sequence_for<Args...>{}));
