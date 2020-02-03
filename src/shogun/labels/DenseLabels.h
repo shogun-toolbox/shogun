@@ -32,7 +32,7 @@ namespace shogun
 	 * label
 	 * (vectors).
 	 */
-	class DenseLabels : public Labels, public SubsetIteratorBase<DenseLabels, float64_t>
+	class DenseLabels : public Labels, public SGContainerIteratorBase<DenseLabels, float64_t>
 	{
 	public:
 		/** default constructor */
