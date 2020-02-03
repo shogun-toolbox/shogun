@@ -119,12 +119,12 @@ namespace shogun
 				return retval;
 			}
 
-			bool operator==(const container_iterator<T, is_const>& other)
+			bool operator==(const container_iterator<T, is_const>& other) const
 			{
 				return m_ptr == other.m_ptr && m_idx == other.m_idx;
 			}
 
-			bool operator!=(const container_iterator<T, is_const>& other)
+			bool operator!=(const container_iterator<T, is_const>& other) const
 			{
 				return !(*this == other);
 			}
@@ -145,6 +145,46 @@ namespace shogun
 			internal_pointer m_ptr;
 			index_t m_idx;
 		};
+
+
+		/**
+		 * Returns a const iterator to the first vector of features/labels.
+		 */
+		auto begin()
+		{
+			auto* this_casted =
+			    static_cast<IterableContainer*>(this);
+			return container_iterator<decltype(this_casted), false>(this_casted);
+		}
+
+		/**
+		 * Returns a const iterator to the "vector" following the end of
+		 * features/labels.
+		 */
+		auto end()
+		{
+			auto* this_casted =
+			    static_cast<IterableContainer*>(this);
+			if (auto stack = this_casted->get_subset_stack()->get_last_subset();
+			    stack == nullptr)
+			{
+				if constexpr (std::is_base_of<
+				                  Features,
+				                  sg_container_iterator_detail::remove_cvptr_t<
+				                      IterableContainer>>::value)
+					return container_iterator<decltype(this_casted), false>(
+					    this_casted, this_casted->get_num_vectors());
+				if constexpr (std::is_base_of<
+				                  Labels,
+				                  sg_container_iterator_detail::remove_cvptr_t<
+				                      IterableContainer>>::value)
+					return container_iterator<decltype(this_casted), false>(
+					    this_casted, this_casted->get_num_labels());
+			}
+			else
+				return container_iterator<decltype(this_casted), false>(
+				    this_casted, stack->get_subset_idx().size());
+		}
 
 		/**
 		 * Returns a const iterator to the first vector of features/labels.
