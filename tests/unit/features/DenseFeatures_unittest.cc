@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <numeric>
-#include <shogun/base/zip_iterator.h>
+#include <shogun/util/zip_iterator.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	void copy_feature_matrix_public(const SGMatrix<float64_t>& target, index_t column_offset)
+	void copy_feature_matrix_public(SGMatrix<float64_t>& target, index_t column_offset)
 	{
 		copy_feature_matrix(target, column_offset);
 	}
@@ -308,7 +308,7 @@ TEST(DenseFeaturesTest, iterator)
     vals.range_fill();
     auto mat = SGMatrix(vals, 5, 4);
     auto subset = SGVector{1,0,2,3,1,3,1,1,2};
-    auto feat = some<CDenseFeatures<float64_t>>(mat);
+    auto feat = std::make_shared<DenseFeatures<float64_t>>(mat);
     int counter = 0;
     feat->add_subset(subset);
     for (auto iter: *feat)
@@ -325,7 +325,7 @@ TEST(DenseFeaturesTest, const_iterator)
     SGVector<float64_t> vals(20);
     vals.range_fill();
     auto mat = SGMatrix(vals, 5, 4);
-    const auto feat = some<CDenseFeatures<float64_t>>(mat);
+    const auto feat = std::make_shared<DenseFeatures<float64_t>>(mat);
     int counter = 0;
     for (const auto& iter: *feat)
     {

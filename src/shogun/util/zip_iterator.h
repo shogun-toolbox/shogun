@@ -83,7 +83,7 @@ namespace shogun
 	class zip_iterator
 	{
 	public:
-		zip_iterator(const Args&... args) : m_iterator_tuples(args...)
+		zip_iterator(Args&... args) : m_container_tuples(args...)
 		{
 		}
 
@@ -149,17 +149,17 @@ namespace shogun
 		auto begin()
 		{
 			return ZipIterator(zip_iterator_detail::containers_begin(
-			    m_iterator_tuples, std::index_sequence_for<Args...>{}));
+			    m_container_tuples, std::index_sequence_for<Args...>{}));
 		}
 
 		auto end()
 		{
 			return ZipIterator(zip_iterator_detail::containers_end(
-			    m_iterator_tuples, std::index_sequence_for<Args...>{}));
+			    m_container_tuples, std::index_sequence_for<Args...>{}));
 		}
 
 	private:
-		std::tuple<const Args&...> m_iterator_tuples;
+		std::tuple<Args&...> m_container_tuples;
 	};
 } // namespace shogun
 
