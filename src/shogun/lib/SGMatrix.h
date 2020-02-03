@@ -40,6 +40,7 @@ template<class T> class SGMatrix : public SGReferencedData
 
 	public:
 		typedef RandomIterator<T> iterator;
+		typedef ConstRandomIterator<T> const_iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
@@ -246,6 +247,12 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** Returns an iterator to the element following the last element of the container. */
 		iterator end() noexcept { return iterator(matrix + (num_rows * num_cols)); }
+
+		/** Returns a const iterator to the first element of the container. */
+		const_iterator begin() const noexcept { return const_iterator(matrix); }
+
+		/** Returns a const iterator to the element following the last element of the container. */
+		const_iterator end() const noexcept { return const_iterator(matrix + (num_rows * num_cols)); }
 
 #endif // SWIG should skip this part
 
