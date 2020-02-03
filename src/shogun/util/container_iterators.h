@@ -7,17 +7,17 @@
 #ifndef SHOGUN_CONTAINER_ITERATORS_H
 #define SHOGUN_CONTAINER_ITERATORS_H
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
-
 namespace shogun
 {
 	template <typename T>
-	class CDenseFeatures;
-	class CDenseLabels;
+	class DenseFeatures;
+	class DenseLabels;
 
-	class CFeatures;
-	class CLabels;
+	class Features;
+	class Labels;
+
+	template<typename T>
+	class SGVector;
 
 	namespace sg_container_iterator_detail
 	{
@@ -36,13 +36,13 @@ namespace shogun
 		};
 
 		template <typename T1, typename T2>
-		struct return_type_iterator<CDenseFeatures<T1>, T2>
+		struct return_type_iterator<DenseFeatures<T1>, T2>
 		{
 			using type = SGVector<T1>;
 		};
 
 		template <typename T>
-		struct return_type_iterator<CDenseLabels, T>
+		struct return_type_iterator<DenseLabels, T>
 		{
 			using type = float64_t;
 		};
@@ -95,12 +95,12 @@ namespace shogun
 			}
 
 			container_iterator(const container_iterator<T, is_const>& other)
-			    : m_idx(other.m_idx), m_ptr(other.m_ptr)
+			    : m_ptr(other.m_ptr), m_idx(other.m_idx)
 			{
 			}
 
 			container_iterator(container_iterator<T, is_const>&& other) noexcept
-			    : m_idx(other.m_idx), m_ptr(other.m_ptr)
+			    : m_ptr(other.m_ptr), m_idx(other.m_idx)
 			{
 				other.m_idx = -1;
 				other.m_ptr = nullptr;
@@ -132,18 +132,18 @@ namespace shogun
 			reference operator*()
 			{
 				if constexpr (std::is_base_of<
-				                  CFeatures, sg_container_iterator_detail::
-				                                 remove_cvptr_t<T>>::value)
+				                  Features, sg_container_iterator_detail::
+				                                remove_cvptr_t<T>>::value)
 					return m_ptr->get_feature_vector(m_idx);
 				if constexpr (std::is_base_of<
-				                  CLabels, sg_container_iterator_detail::
-				                               remove_cvptr_t<T>>::value)
+				                  Labels, sg_container_iterator_detail::
+				                              remove_cvptr_t<T>>::value)
 					return m_ptr->get_label(m_idx);
 			}
 
 		private:
-			index_t m_idx;
 			internal_pointer m_ptr;
+			index_t m_idx;
 		};
 
 		/**
@@ -168,13 +168,13 @@ namespace shogun
 			    stack == nullptr)
 			{
 				if constexpr (std::is_base_of<
-				                  CFeatures,
+				                  Features,
 				                  sg_container_iterator_detail::remove_cvptr_t<
 				                      IterableContainer>>::value)
 					return container_iterator<decltype(this_casted), true>(
 					    this_casted, this_casted->get_num_vectors());
 				if constexpr (std::is_base_of<
-				                  CLabels,
+				                  Labels,
 				                  sg_container_iterator_detail::remove_cvptr_t<
 				                      IterableContainer>>::value)
 					return container_iterator<decltype(this_casted), true>(
