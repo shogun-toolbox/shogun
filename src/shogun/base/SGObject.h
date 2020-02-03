@@ -16,6 +16,7 @@
 #include <shogun/base/base_types.h>
 #include <shogun/base/constraint.h>
 #include <shogun/base/macros.h>
+#include <shogun/base/sg_type_traits.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
@@ -82,32 +83,18 @@ SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
 
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
-		auto pprop =                                                           \
-		    AnyParameterProperties(description, this->m_default_mask);         \
-		this->watch_param(name, param, pprop);                                 \
+		this->template declare<ParameterProperties::NONE>(param, name, description);                                 \
 }
 
 #define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
-		static_assert(                                                         \
-		    !static_cast<bool>((param_properties)&ParameterProperties::AUTO),  \
-		    "Expected a lambda when passing param with "                       \
-		    "ParameterProperty::AUTO");                                        \
-		auto mask = param_properties;                                          \
-		mask |= this->m_default_mask;                                          \
-		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, mask);                         \
-		this->watch_param(name, param, pprop);                                 \
+		this->template declare<param_properties>(param, name, description);\
 	}
 
 #define SG_ADD5(                                                               \
     param, name, description, param_properties, auto_or_constraint)            \
 	{                                                                          \
-		auto mask = param_properties;                                          \
-		mask |= this->m_default_mask;                                          \
-		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, mask);                         \
-		this->watch_param(name, param, auto_or_constraint, pprop);             \
+		this->template declare<param_properties>(param, name, description, auto_or_constraint);\
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
@@ -788,6 +775,14 @@ protected:
 	template <
 			ParameterProperties PPVal, typename... Args,
 			std::enable_if_t<
+					!static_cast<bool>(PPVal& ParameterProperties::AUTO)>* = nullptr>
+	void declare_auto_func(AnyParameter& any_pprop, Args&&... args)
+	{
+	}
+
+	template <
+			ParameterProperties PPVal, typename... Args,
+			std::enable_if_t<
 					static_cast<bool>(PPVal& ParameterProperties::AUTO)>* = nullptr>
 	void declare_auto_func(AnyParameter& any_pprop, Args&&... args)
 	{
@@ -801,6 +796,13 @@ protected:
 				std::move(std::get<idx>(std::forward_as_tuple(args...))));
 	}
 
+	template <
+			ParameterProperties PPVal, typename ValueType, typename... Args,
+			std::enable_if_t<!static_cast<bool>(
+					PPVal& ParameterProperties::CONSTRAIN)>* = nullptr>
+	void declare_constraint_func(AnyParameter& any_pprop, Args&&... args)
+	{
+	}
 	template <
 			ParameterProperties PPVal, typename ValueType, typename... Args,
 			std::enable_if_t<static_cast<bool>(
@@ -826,21 +828,19 @@ protected:
 
 	template <ParameterProperties pprop = ParameterProperties::NONE, typename T, typename... Args>
 	void declare(
-			T* value, const std::string& name, const std::string& description,
+			T* value, std::string_view name, std::string_view description,
 			Args&&... args)
 	{
 	    auto mask = pprop | m_default_mask;
 		auto any_pprop = AnyParameterProperties(description, mask);
 		auto anyp = AnyParameter(make_any_ref(value), any_pprop);
-		if constexpr (static_cast<bool>(pprop & ParameterProperties::AUTO))
-			declare_auto_func<pprop>(anyp, std::forward<Args&&>(args)...);
-		if constexpr (static_cast<bool>(
-				pprop & ParameterProperties::CONSTRAIN))
+		if (any_pprop.has_property(ParameterProperties::AUTO))
+			declare_auto_func<pprop>(anyp, std::forward<Args>(args)...);
+		if (any_pprop.has_property(ParameterProperties::CONSTRAIN))
 			declare_constraint_func<pprop, T>(
-					anyp, std::forward<Args&&>(args)...);
+					anyp, std::forward<Args>(args)...);
 
-		BaseTag tag(name);
-		create_parameter(tag, anyp);
+		create_parameter(BaseTag(name), std::move(anyp));
 	}
 
 	/** Registers a class parameter which is identified by a tag.
