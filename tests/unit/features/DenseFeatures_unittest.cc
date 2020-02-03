@@ -309,14 +309,13 @@ TEST(DenseFeaturesTest, iterator)
     auto mat = SGMatrix(vals, 5, 4);
     auto subset = SGVector{1,0,2,3,1,3,1,1,2};
     auto feat = std::make_shared<DenseFeatures<float64_t>>(mat);
-    int counter = 0;
     feat->add_subset(subset);
-    for (auto iter: *feat)
+    const auto range_iterator = range(feat->get_num_vectors());
+    for (auto [idx, iter]: zip_iterator(range_iterator, *feat))
     {
-        auto tmp = mat.get_column(subset[counter]);
-        for (auto [test, truth]: zip_iterator(iter, tmp))
+        const auto tmp = mat.get_column(subset[idx]);
+        for (const auto& [test, truth]: zip_iterator(iter, tmp))
             EXPECT_EQ(test, truth);
-        ++counter;
     }
 }
 
@@ -326,12 +325,11 @@ TEST(DenseFeaturesTest, const_iterator)
     vals.range_fill();
     auto mat = SGMatrix(vals, 5, 4);
     const auto feat = std::make_shared<DenseFeatures<float64_t>>(mat);
-    int counter = 0;
-    for (const auto& iter: *feat)
+    const auto range_iterator = range(feat->get_num_vectors());
+    for (const auto& [idx, iter]: zip_iterator(range_iterator, *feat))
     {
-        auto tmp =  mat.get_column(counter);
-        for (auto [test, truth]: zip_iterator(iter, tmp))
+        const auto tmp =  mat.get_column(idx);
+        for (const auto& [test, truth]: zip_iterator(iter, tmp))
             EXPECT_EQ(test, truth);
-        ++counter;
     }
 }
