@@ -7,8 +7,6 @@
 #ifndef SHOGUN_ARFFFILE_H
 #define SHOGUN_ARFFFILE_H
 
-#include <shogun/base/init.h>
-#include <shogun/base/variant.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGMatrix.h>
@@ -20,6 +18,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <variant>
 
 namespace shogun
 {
@@ -131,9 +130,9 @@ namespace shogun
 						++it;
 					}
 					if (it == s.end())
-						SG_SERROR(
-						    "Encountered unbalanced parenthesis in \"%s\"\n",
-						    std::string(std::prev(begin), it).c_str())
+						error(
+						    "Encountered unbalanced parenthesis in \"{}\"\n",
+						    std::string(std::prev(begin), it));
 					*(result++) = {begin, it};
 				}
 				else
@@ -231,8 +230,8 @@ namespace shogun
 			if (java_token == "Z")
 				return "%z";
 			if (java_token == "z")
-				SG_SERROR(
-				    "Timezone abbreviations are currently not supported.\n")
+				error(
+				    "Timezone abbreviations are currently not supported.\n");
 			if (java_token.empty())
 				return "";
 			if (java_token == "SSS")
@@ -264,10 +263,10 @@ namespace shogun
 			if (auto cpp_token = process_javatoken(java_time_token))
 				return cpp_token;
 			else
-				SG_SERROR(
-				    "Could not convert Java time token \"%s\" to C++ time "
+				error(
+				    "Could not convert Java time token \"{}\" to C++ time "
 				    "token.\n",
-				    java_time_token.c_str())
+				    java_time_token);
 			return nullptr;
 		}
 
@@ -277,10 +276,10 @@ namespace shogun
 			if (auto cpp_token = process_javatoken(java_time_token))
 				return cpp_token;
 			else
-				SG_SERROR(
-				    "Could not convert Java time token \"%c\" to C++ time "
+				error(
+				    "Could not convert Java time token \"{}\" to C++ time "
 				    "token.\n",
-				    java_time_token)
+				    java_time_token);
 			return nullptr;
 		}
 
@@ -329,10 +328,10 @@ namespace shogun
 						cpp_time.append(cpp_token);
 					}
 					else
-						SG_SERROR(
-						    "Could not convert Java time token %s to C++ time "
+						error(
+						    "Could not convert Java time token {} to C++ time "
 						    "token.\n",
-						    token.c_str())
+						    token);
 				}
 				++it;
 			}
@@ -385,10 +384,10 @@ namespace shogun
 			auto* file_stream = new std::ifstream(filename);
 			if (file_stream->fail())
 			{
-				SG_SERROR(
-				    "Cannot open %s. Please check if file exists and if you "
+				error(
+				    "Cannot open {}. Please check if file exists and if you "
 				    "have the right permissions to open it.\n",
-				    filename.c_str())
+				    filename);
 			}
 			m_stream = std::unique_ptr<std::istream>(file_stream);
 		}
@@ -439,17 +438,16 @@ namespace shogun
 		 * column to be excluded, i.e. it's a label and not a feature.
 		 * @return a list of features
 		 */
-		CList* get_features(const std::string& label_name) const
+		std::vector<std::shared_ptr<Features>> get_features(const std::string& label_name) const
 		{
 			auto find_label = std::find(
 			    m_attribute_names.begin(), m_attribute_names.end(), label_name);
 			if (find_label == m_attribute_names.end())
-				SG_SERROR(
-				    "The provided label \"%s\" was not found!\n",
-				    label_name.c_str())
+				error(
+				    "The provided label \"{}\" was not found!\n",
+				    label_name);
 
-			auto result = new CList(true);
-			SG_REF(result)
+			std::vector<std::shared_ptr<Features>> result;
 
 			int idx = 0;
 			int label_idx =
@@ -457,10 +455,7 @@ namespace shogun
 			for (const auto& feat : m_features)
 			{
 				if (idx != label_idx)
-				{
-					auto* feat_i = feat.get();
-					result->append_element(feat_i);
-				}
+					result.push_back(feat);
 				++idx;
 			}
 
@@ -471,37 +466,27 @@ namespace shogun
 		 * Get list of features from parsed data.
 		 * @return a list of features
 		 */
-		CList* get_features() const
+		std::vector<std::shared_ptr<Features>> get_features() const
 		{
-			auto result = new CList(true);
-			SG_REF(result)
-
-			for (const auto& feat : m_features)
-			{
-				auto* feat_i = feat.get();
-				result->append_element(feat_i);
-			}
-
-			return result;
+			return m_features;
 		}
 
 		/**
 		 * Get feature by name.
 		 * @return the requested feature if it exists.
 		 */
-		CFeatures* get_feature(const std::string& feature_name) const
+		std::shared_ptr<Features> get_feature(const std::string& feature_name) const
 		{
 			auto find_feature = std::find(
 			    m_attribute_names.begin(), m_attribute_names.end(),
 			    feature_name);
 			if (find_feature == m_attribute_names.end())
-				SG_SERROR(
-				    "The provided label \"%s\" was not found!\n",
-				    feature_name.c_str())
+				error(
+				    "The provided label \"{}\" was not found!\n",
+				    feature_name);
 			int feature_idx =
 			    std::distance(m_attribute_names.begin(), find_feature);
-			auto* result = m_features[feature_idx].get();
-			SG_REF(result)
+			auto result = m_features[feature_idx];
 			return result;
 		}
 
@@ -530,23 +515,23 @@ namespace shogun
 				if (nom_att.first == feature_name)
 					return nom_att.second;
 			}
-			SG_SERROR("The provided feature name is not a nominal feature!\n")
+			error("The provided feature name is not a nominal feature!\n");
 			return std::vector<std::string>{};
 		}
 
 	protected:
 		/** character used in file to comment out a line */
-		static const char* m_comment_string;
+		static constexpr std::string_view m_comment_string = "%";
 		/** characters to declare relations, i.e. @relation */
-		static const char* m_relation_string;
+		static constexpr std::string_view m_relation_string = "@relation";
 		/** characters to declare attributes, i.e. @attribute */
-		static const char* m_attribute_string;
+		static constexpr std::string_view m_attribute_string = "@attribute";
 		/** characters to declare data fields, i.e. @data */
-		static const char* m_data_string;
+		static constexpr std::string_view m_data_string = "@data";
 		/** the default C++ date format specified by the ARFF standard */
-		static const char* m_default_date_format;
+		static constexpr std::string_view m_default_date_format = "%Y-%M-%DT%H:%M:%S";
 		/** missing data */
-		static const char* m_missing_value_string;
+		static constexpr std::string_view m_missing_value_string = "?";
 
 	private:
 		/**
@@ -590,9 +575,9 @@ namespace shogun
 			}
 			if (!check_func())
 			{
-				SG_SERROR(
-				    "Parsing error on line %d: %s\n", m_line_number,
-				    m_current_line.c_str());
+				error(
+				    "Parsing error on line {}: {}\n", m_line_number,
+				    m_current_line);
 			}
 		}
 
@@ -635,7 +620,7 @@ namespace shogun
 		template <typename ScalarType, typename CharType>
 		void reserve_vector_memory(
 		    size_t line_count,
-		    std::vector<variant<
+		    std::vector<std::variant<
 		        std::vector<ScalarType>,
 		        std::vector<std::basic_string<CharType>>>>& v);
 
@@ -672,7 +657,7 @@ namespace shogun
 		    m_nominal_attributes;
 
 		/** the parsed features */
-		std::vector<std::shared_ptr<CFeatures>> m_features;
+		std::vector<std::shared_ptr<Features>> m_features;
 	};
 
 	/**
@@ -694,15 +679,14 @@ namespace shogun
 		 * strings whose index will be used to infer the nominal value
 		 */
 		ARFFSerializer(
-		    const std::string& name, CList* feature_list,
+		    const std::string& name, std::vector<std::shared_ptr<Features>> feature_list,
 		    const std::vector<std::pair<std::string, Attribute>>& attributes,
 		    const std::unordered_map<std::string, std::vector<std::string>>&
 		        nominal_mapping)
 		    : m_name(name), m_attributes(attributes),
 		      m_nominal_mapping(nominal_mapping)
 		{
-			SG_REF(feature_list)
-			m_feature_list = feature_list;
+			m_feature_list = std::move(feature_list);
 		}
 
 #ifndef SWIG
@@ -725,7 +709,7 @@ namespace shogun
 		/** the name of the dataset */
 		std::string m_name;
 		/** the list of features to write out */
-		CList* m_feature_list;
+		std::vector<std::shared_ptr<Features>> m_feature_list;
 		/** the attributes */
 		std::vector<std::pair<std::string, Attribute>> m_attributes;
 		/** the nominal attributes, if any */

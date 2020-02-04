@@ -96,12 +96,12 @@ TYPED_TEST(ARFF_typed_tests, Parse_numeric)
 	auto parser = std::make_unique<ARFFDeserializer>(s, type);
 	parser->read();
 	auto result = parser->get_features();
-	ASSERT_EQ(result->get_num_elements(), 2);
+	ASSERT_EQ(result.size(), 2);
 
 	auto col1 =
-	    result->get_first_element()->template as<CDenseFeatures<TypeParam>>();
+	    result[0]->template as<DenseFeatures<TypeParam>>();
 	auto col2 =
-	    result->get_next_element()->template as<CDenseFeatures<TypeParam>>();
+	    result[1]->template as<DenseFeatures<TypeParam>>();
 
 	SGVector<TypeParam> solution1{50, 45};
 	SGVector<TypeParam> solution2{static_cast<TypeParam>(5.1),
@@ -145,11 +145,11 @@ TEST(ARFFFileTest, Parse_datetime)
 	auto parser = std::make_unique<ARFFDeserializer>(s);
 	parser->read();
 	auto result = parser->get_features();
-	ASSERT_EQ(result->get_num_elements(), 2);
+	ASSERT_EQ(result.size(), 2);
 
-	auto col1 = result->get_first_element()->as<CDenseFeatures<float64_t>>();
+	auto col1 = result[0]->as<DenseFeatures<float64_t>>();
 	auto mat1 = col1->get_feature_matrix();
-	auto col2 = result->get_next_element()->as<CDenseFeatures<float64_t>>();
+	auto col2 = result[1]->as<DenseFeatures<float64_t>>();
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(mat1.size(), 6);
 	for (int i = 0; i < 6; ++i)
@@ -183,9 +183,9 @@ TEST(ARFFFileTest, Parse_string)
 	auto parser = std::make_unique<ARFFDeserializer>(s);
 	parser->read();
 	auto result = parser->get_features();
-	ASSERT_EQ(result->get_num_elements(), 2);
-	auto col1 = result->get_first_element()->as<CStringFeatures<char>>();
-	auto col2 = result->get_next_element()->as<CDenseFeatures<float64_t>>();
+	ASSERT_EQ(result.size(), 2);
+	auto col1 = result[0]->as<StringFeatures<char>>();
+	auto col2 = result[1]->as<DenseFeatures<float64_t>>();
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(col1->get_num_vectors(), 6);
 	for (int i = 0; i < col1->get_num_vectors(); ++i)
@@ -227,11 +227,11 @@ TEST(ARFFFileTest, Parse_nominal)
 	auto parser = std::make_unique<ARFFDeserializer>(s);
 	parser->read();
 	auto result = parser->get_features();
-	ASSERT_EQ(result->get_num_elements(), 2);
+	ASSERT_EQ(result.size(), 2);
 
-	auto col1 = result->get_first_element()->as<CDenseFeatures<float64_t>>();
+	auto col1 = result[0]->as<DenseFeatures<float64_t>>();
 	auto mat1 = col1->get_feature_matrix();
-	auto col2 = result->get_next_element()->as<CDenseFeatures<float64_t>>();
+	auto col2 = result[1]->as<DenseFeatures<float64_t>>();
 	auto mat2 = col2->get_feature_matrix();
 	ASSERT_EQ(mat1.size(), 6);
 	for (int i = 0; i < 6; ++i)
