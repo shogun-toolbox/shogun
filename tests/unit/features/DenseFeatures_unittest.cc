@@ -8,11 +8,13 @@
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <numeric>
+#include <shogun/util/zip_iterator.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/lib/View.h>
+#include <shogun/util/zip_iterator.h>
 
 #include <random>
 
@@ -26,7 +28,7 @@ public:
 	{
 	}
 
-	void copy_feature_matrix_public(const SGMatrix<float64_t>& target, index_t column_offset)
+	void copy_feature_matrix_public(SGMatrix<float64_t>& target, index_t column_offset)
 	{
 		copy_feature_matrix(target, column_offset);
 	}
@@ -298,4 +300,36 @@ TEST(DenseFeaturesTest, view)
 			EXPECT_EQ(
 			    feature_matrix_subset2(i, j), data(i, subset1[subset2[j]]));
 	}
+}
+
+TEST(DenseFeaturesTest, iterator)
+{
+    SGVector<float64_t> vals(20);
+    vals.range_fill();
+    auto mat = SGMatrix(vals, 5, 4);
+    auto subset = SGVector{1,0,2,3,1,3,1,1,2};
+    auto feat = std::make_shared<DenseFeatures<float64_t>>(mat);
+    feat->add_subset(subset);
+    const auto range_iterator = range(feat->get_num_vectors());
+    for (auto [idx, iter]: zip_iterator(range_iterator, *feat))
+    {
+        const auto tmp = mat.get_column(subset[idx]);
+        for (const auto& [test, truth]: zip_iterator(iter, tmp))
+            EXPECT_EQ(test, truth);
+    }
+}
+
+TEST(DenseFeaturesTest, const_iterator)
+{
+    SGVector<float64_t> vals(20);
+    vals.range_fill();
+    auto mat = SGMatrix(vals, 5, 4);
+    const auto feat = std::make_shared<DenseFeatures<float64_t>>(mat);
+    const auto range_iterator = range(feat->get_num_vectors());
+    for (const auto& [idx, iter]: zip_iterator(range_iterator, *feat))
+    {
+        const auto tmp =  mat.get_column(idx);
+        for (const auto& [test, truth]: zip_iterator(iter, tmp))
+            EXPECT_EQ(test, truth);
+    }
 }

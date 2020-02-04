@@ -40,6 +40,7 @@ template<class T> class SGMatrix : public SGReferencedData
 
 	public:
 		typedef RandomIterator<T> iterator;
+		typedef ConstRandomIterator<T> const_iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
@@ -142,6 +143,9 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Copy constructor */
 		SGMatrix(const SGMatrix &orig);
 
+		/** Move constructor */
+		SGMatrix(SGMatrix&& orig) noexcept;
+
 		/** Empty destructor */
 		virtual ~SGMatrix();
 
@@ -173,11 +177,17 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		SGVector<T> get_column(index_t col) const;
 
-		/** Copy the content of a vector into a column
+		/** Copy the content of a vector lvalue reference into a column
 		 * @param col column index
 		 * @param vec vector
 		 */
-		void set_column(index_t col, const SGVector<T> vec);
+		void set_column(index_t col, const SGVector<T>& vec);
+
+		/** Copy the content of a vector rvalue reference into a column
+		 * @param col column index
+		 * @param vec vector
+		 */
+		void set_column(index_t col, SGVector<T>&& vec);
 
 		/** Get a row vector
 		 *
@@ -237,6 +247,12 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** Returns an iterator to the element following the last element of the container. */
 		iterator end() noexcept { return iterator(matrix + (num_rows * num_cols)); }
+
+		/** Returns a const iterator to the first element of the container. */
+		const_iterator begin() const noexcept { return const_iterator(matrix); }
+
+		/** Returns a const iterator to the element following the last element of the container. */
+		const_iterator end() const noexcept { return const_iterator(matrix + (num_rows * num_cols)); }
 
 #endif // SWIG should skip this part
 

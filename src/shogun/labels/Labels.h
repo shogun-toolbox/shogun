@@ -109,7 +109,7 @@ namespace shogun
 		/**
 		 * @return subset stack
 		 */
-		virtual std::shared_ptr<SubsetStack> get_subset_stack();
+		virtual std::shared_ptr<SubsetStack> get_subset_stack() const;
 
 		/** set the confidence value for a particular label
 		 *

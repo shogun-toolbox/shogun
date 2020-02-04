@@ -103,6 +103,18 @@ SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 }
 
 template <class T>
+SGMatrix<T>::SGMatrix(SGMatrix&& orig) noexcept
+	: SGReferencedData(std::move(orig)),
+	  matrix{std::exchange(orig.matrix ,nullptr)},
+	  num_rows{std::exchange(orig.num_rows, 0)},
+	  num_cols{std::exchange(orig.num_cols, 0)},
+	  gpu_ptr(std::move(orig.gpu_ptr))
+{
+	m_on_gpu.store(orig.m_on_gpu.load(
+			std::memory_order_acquire), std::memory_order_release);
+}
+
+template <class T>
 SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 : SGReferencedData(false), matrix(mat.data()),
 	num_rows(mat.rows()), num_cols(mat.cols()), gpu_ptr(nullptr)
@@ -409,12 +421,21 @@ SGVector<T> SGMatrix<T>::get_column(index_t col) const
 }
 
 template <class T>
-void SGMatrix<T>::set_column(index_t col, const SGVector<T> vec)
+void SGMatrix<T>::set_column(index_t col, const SGVector<T>& vec)
 {
 	assert_on_cpu();
 	ASSERT(!vec.on_gpu())
 	ASSERT(vec.vlen == num_rows)
 	sg_memcpy(&matrix[num_rows * col], vec.vector, sizeof(T) * num_rows);
+}
+
+template <class T>
+void SGMatrix<T>::set_column(index_t col, SGVector<T>&& vec)
+{
+    assert_on_cpu();
+    ASSERT(!vec.on_gpu())
+    ASSERT(vec.vlen == num_rows)
+    sg_memcpy(&matrix[num_rows * col], vec.vector, sizeof(T) * num_rows);
 }
 
 template <class T>

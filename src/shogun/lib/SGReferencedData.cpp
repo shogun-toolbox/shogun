@@ -2,6 +2,8 @@
 #include <shogun/lib/RefCount.h>
 #include <shogun/io/SGIO.h>
 
+#include <utility>
+
 using namespace shogun;
 
 namespace shogun {
@@ -20,6 +22,10 @@ SGReferencedData::SGReferencedData(const SGReferencedData &orig)
 {
 	copy_refcount(orig);
 	ref();
+}
+
+SGReferencedData::SGReferencedData(SGReferencedData&& orig) noexcept: m_refcount{std::exchange(orig.m_refcount, nullptr)}
+{
 }
 
 SGReferencedData& SGReferencedData::operator= (const SGReferencedData &orig)

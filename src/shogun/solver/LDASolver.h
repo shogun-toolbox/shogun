@@ -38,6 +38,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/util/zip_iterator.h>
 #include <vector>
 
 namespace shogun
@@ -106,49 +107,52 @@ namespace shogun
 	void LDASolver<T>::compute_means()
 	{
 		index_t num_class = m_labels->get_num_classes();
-		auto data = m_features->get_feature_matrix();
 
 		m_class_mean = std::vector<SGVector<T>>(num_class);
 		m_class_count = std::vector<index_t>(num_class);
 		for (index_t i = 0; i < num_class; ++i)
 		{
-			m_class_mean[i] = SGVector<T>(data.num_rows);
+			m_class_mean[i] = SGVector<T>(m_features->get_num_features());
 			linalg::zero(m_class_mean[i]);
 		}
-		m_mean = SGVector<T>(data.num_rows);
+		m_mean = SGVector<T>(m_features->get_num_features());
 		linalg::zero(m_mean);
 
-		// calculate the total mean and the classes' mean.
-		for (index_t i = 0; i < data.num_cols; ++i)
+		for (const auto& [data_i, label_i] : zip_iterator(m_features, m_labels))
 		{
-			index_t c = (index_t)m_labels->get_label(i);
+			auto c = static_cast<index_t>(label_i);
 			++m_class_count[c];
-			linalg::add_col_vec(data, i, m_class_mean[c], m_class_mean[c]);
+			linalg::add(data_i, m_class_mean[c], m_class_mean[c]);
 		}
+
 		for (index_t i = 0; i < num_class; ++i)
 		{
 			linalg::add(m_mean, m_class_mean[i], m_mean);
 			linalg::scale(
 			    m_class_mean[i], m_class_mean[i], 1 / (T)m_class_count[i]);
 		}
-		linalg::scale(m_mean, m_mean, 1 / (T)data.num_cols);
+		linalg::scale(m_mean, m_mean, 1 / (T)m_features->get_num_vectors());
 	}
 
 	template <typename T>
 	void LDASolver<T>::compute_within_cov()
 	{
 		index_t num_features = m_features->get_num_features();
-		index_t num_vectors = m_features->get_num_vectors();
 		index_t num_class = m_labels->get_num_classes();
 
-		auto data = m_features->get_feature_matrix().clone();
+		auto mean_matrix =
+		    SGMatrix<T>(num_features, m_features->get_num_vectors());
 
 		// Center data with respect to each data point's class
-		for (index_t i = 0; i < data.num_cols; ++i)
-			linalg::add_col_vec(
-			    data, i, m_class_mean[m_labels->get_label(i)], data, (T)1.0,
-			    (T)-1.0);
-
+		size_t counter = 0;
+		for (const auto& [data_i, label_i] : zip_iterator(m_features, m_labels))
+		{
+			mean_matrix.set_column(
+			    counter, linalg::add(
+			                 m_class_mean.at(label_i), data_i,
+			                 static_cast<T>(1), static_cast<T>(-1)));
+			++counter;
+		}
 		// holds the feature matrix for each class
 		std::vector<SGMatrix<T>> centered_class(num_class);
 		std::vector<index_t> centered_class_col(num_class);
@@ -160,12 +164,14 @@ namespace shogun
 			centered_class[i] = SGMatrix<T>(num_features, m_class_count[i]);
 			linalg::zero(centered_class[i]);
 		}
-		for (index_t i = 0; i < num_vectors; ++i)
+		counter = 0;
+		for (const auto& label_i : *m_labels)
 		{
-			index_t c = (index_t)m_labels->get_label(i);
+			auto c = static_cast<index_t>(label_i);
 			centered_class[c].set_column(
-			    centered_class_col[c], data.get_column(i));
+			    centered_class_col[c], mean_matrix.get_column(counter));
 			++centered_class_col[c];
+			++counter;
 		}
 		for (index_t i = 0; i < num_class; ++i)
 		{
@@ -210,6 +216,6 @@ namespace shogun
 	{
 		return m_within_cov;
 	}
-}
+} // namespace shogun
 
 #endif // LDA_SOLVER_H_

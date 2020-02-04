@@ -64,9 +64,16 @@ namespace shogun
 		}
 
 		/** @class Iterator spawned by @ref Range. */
-		class Iterator : public std::iterator<std::input_iterator_tag, T>
+		class Iterator
 		{
 		public:
+			
+			using difference_type = std::ptrdiff_t;
+			using value_type = T;
+			using pointer = T*;
+			using reference = T&;
+			using iterator_category = std::input_iterator_tag;
+
 			Iterator(T value) : m_value(value)
 			{
 			}
@@ -92,9 +99,13 @@ namespace shogun
 			{
 				return m_value;
 			}
-			bool operator!=(const Iterator& other)
+			bool operator==(const Iterator& other) const
 			{
-				return this->m_value != other.m_value;
+				return this->m_value == other.m_value;
+			}
+			bool operator!=(const Iterator& other) const
+			{
+				return !(*this == other);
 			}
 
 		private:

@@ -15,6 +15,7 @@
 #include <shogun/io/File.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/features/SubsetStack.h>
+#include <shogun/util/container_iterators.h>
 
 namespace shogun
 {
@@ -31,7 +32,7 @@ namespace shogun
 	 * label
 	 * (vectors).
 	 */
-	class DenseLabels : public Labels
+	class DenseLabels : public Labels, public SGContainerIteratorBase<DenseLabels, float64_t>
 	{
 	public:
 		/** default constructor */

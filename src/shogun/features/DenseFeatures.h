@@ -18,6 +18,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/common.h>
+#include <shogun/util/container_iterators.h>
 
 namespace shogun {
 template<class ST> class StringFeatures;
@@ -60,7 +61,7 @@ class DotFeatures;
  * See comments to find out whether it is supported for that method.
  * See also Features class documentation
  */
-template<class ST> class DenseFeatures: public DotFeatures
+template<class ST> class DenseFeatures: public DotFeatures, public SGContainerIteratorBase<DenseFeatures<ST>, ST>
 {
 public:
 	/** constructor
@@ -540,7 +541,7 @@ protected:
 	 * offset, it throws an error. It then copies into the target matrix, starting
 	 * from base + (colum_offset * num_features) location.
 	 */
-	void copy_feature_matrix(SGMatrix<ST> target, index_t column_offset=0) const;
+	void copy_feature_matrix(SGMatrix<ST>& target, index_t column_offset=0) const;
 
 	/// number of vectors in cache
 	int32_t num_vectors;

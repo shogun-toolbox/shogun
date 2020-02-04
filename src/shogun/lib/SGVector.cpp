@@ -123,6 +123,18 @@ SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 	copy_data(orig);
 }
 
+template <class T>
+SGVector<T>::SGVector(SGVector&& orig) noexcept
+	: SGReferencedData(std::move(orig)),
+	  vector{std::exchange(orig.vector, nullptr)},
+	  vlen{std::exchange(orig.vlen, 0)},
+	  gpu_ptr(std::move(orig.gpu_ptr))
+{
+	m_on_gpu.store(
+			orig.m_on_gpu.load(std::memory_order_acquire),
+			std::memory_order_release);
+}
+
 template<class T>
 SGVector<T>& SGVector<T>::operator=(const SGVector<T>& other)
 {
