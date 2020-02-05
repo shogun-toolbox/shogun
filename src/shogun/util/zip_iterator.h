@@ -22,7 +22,7 @@ namespace shogun
 		    const std::tuple<Args2...>& iterators2, std::index_sequence<Idx...>)
 		{
 			return (
-			    (std::get<Idx>(iterators1) == std::get<Idx>(iterators2)) &&
+			    (std::get<Idx>(iterators1) == std::get<Idx>(iterators2)) ||
 			    ...);
 		}
 
@@ -87,6 +87,7 @@ namespace shogun
 		public:
 			using iterator_category = std::forward_iterator_tag;
 
+			virtual ~ZipIteratorBase() {}
 
 			ZipIteratorBase(std::tuple<IteratorTypes...>&& iterators)
 			    : m_iterators_tuple(std::move(iterators))
@@ -142,8 +143,6 @@ namespace shogun
 			    : zip_iterator_detail::ZipIteratorBase<ZipIterator<IteratorTypes...>, IteratorTypes...>(std::move(iterators))
 			{
 			}
-
-			virtual ~ZipIterator() {}
 
 			auto operator*()
 			{
