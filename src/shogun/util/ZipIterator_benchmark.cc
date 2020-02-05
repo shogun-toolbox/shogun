@@ -6,8 +6,7 @@
 
 #include <benchmark/benchmark.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/util/zip_iterator.h>
-#include <shogun/base/range.h>
+#include <shogun/util/enumerate.h>
 
 #include <random>
 #include <iostream>
@@ -57,8 +56,7 @@ void BM_with_zip_iterator(benchmark::State& state)
         const SGMatrix<float64_t> mat2 = createRandomData(state);
 
         auto result = SGMatrix<float64_t>(state.range(0), state.range(0));
-        const auto range_iterator = range(mat1.size());
-        for (const auto& [idx, el1, el2]: zip_iterator(range_iterator, mat1, mat2))
+        for (const auto& [idx, el1, el2]: enumerate(mat1, mat2))
     		result[idx] = el1 * el2;
 	}
 }
