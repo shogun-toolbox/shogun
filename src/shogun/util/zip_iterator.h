@@ -10,6 +10,8 @@
 #include <shogun/base/macros.h>
 #include <tuple>
 
+#define IGNORE_IN_CLASSLIST
+
 namespace shogun
 {
 	namespace zip_iterator_detail
@@ -20,7 +22,7 @@ namespace shogun
 		    const std::tuple<Args2...>& iterators2, std::index_sequence<Idx...>)
 		{
 			return (
-			    (std::get<Idx>(iterators1) == std::get<Idx>(iterators2)) &&
+			    (std::get<Idx>(iterators1) == std::get<Idx>(iterators2)) ||
 			    ...);
 		}
 
@@ -78,9 +80,55 @@ namespace shogun
 		{
 			return std::make_tuple((get_end(std::get<Idx>(container)))...);
 		}
+
+		template <typename Derived, typename... IteratorTypes>
+		IGNORE_IN_CLASSLIST class ZipIteratorBase
+		{
+		public:
+			using iterator_category = std::forward_iterator_tag;
+
+			virtual ~ZipIteratorBase() {}
+
+			ZipIteratorBase(std::tuple<IteratorTypes...>&& iterators)
+			    : m_iterators_tuple(std::move(iterators))
+			{
+			}
+
+			Derived& operator++()
+			{
+				return static_cast<Derived*>(this)->operator++();
+			}
+
+			const Derived operator++(int)
+			{
+				return static_cast<Derived*>(this)->operator++(int{});
+			}
+
+			auto operator*()
+			{
+				return static_cast<Derived*>(this)->operator*();
+			}
+
+			bool operator==(const ZipIteratorBase& other) const
+			{
+				return iterators_equal(
+				    m_iterators_tuple, other.m_iterators_tuple,
+				    std::index_sequence_for<IteratorTypes...>{});
+			}
+
+			bool operator!=(const ZipIteratorBase& other) const
+			{
+				return !(*this == other);
+			}
+
+		protected:
+			std::tuple<IteratorTypes...> m_iterators_tuple;
+		};	
+
 	} // namespace zip_iterator_detail
+
 	template <typename... Args>
-	class zip_iterator
+	IGNORE_IN_CLASSLIST class zip_iterator
 	{
 	public:
 		zip_iterator(Args&... args) : m_container_tuples(args...)
@@ -88,54 +136,37 @@ namespace shogun
 		}
 
 		template <typename... IteratorTypes>
-		class ZipIterator
+		IGNORE_IN_CLASSLIST class ZipIterator: public zip_iterator_detail::ZipIteratorBase<ZipIterator<IteratorTypes...>, IteratorTypes...>
 		{
 		public:
-			using iterator_category = std::forward_iterator_tag;
-
-
 			ZipIterator(std::tuple<IteratorTypes...>&& iterators)
-			    : m_iterators_tuple(std::move(iterators))
+			    : zip_iterator_detail::ZipIteratorBase<ZipIterator<IteratorTypes...>, IteratorTypes...>(std::move(iterators))
 			{
-			}
-
-			ZipIterator<IteratorTypes...>& operator++()
-			{
-				zip_iterator_detail::increment_iterators(
-				    m_iterators_tuple,
-				    std::index_sequence_for<IteratorTypes...>{});
-				return *this;
-			}
-
-			const ZipIterator<IteratorTypes...> operator++(int)
-			{
-				ZipIterator<IteratorTypes...> retval(this);
-				++(this);
-				return retval;
 			}
 
 			auto operator*()
 			{
 				return zip_iterator_detail::dereference_iterators(
-				    m_iterators_tuple,
+				    this->m_iterators_tuple,
 				    std::index_sequence_for<IteratorTypes...>{});
 			}
 
-			bool operator==(const ZipIterator& other) const
+			ZipIterator& operator++()
 			{
-				return zip_iterator_detail::iterators_equal(
-				    m_iterators_tuple, other.m_iterators_tuple,
+				zip_iterator_detail::increment_iterators(
+				    this->m_iterators_tuple,
 				    std::index_sequence_for<IteratorTypes...>{});
+				return *this;
 			}
 
-			bool operator!=(const ZipIterator& other) const
+			const ZipIterator operator++(int)
 			{
-				return !(*this == other);
+				ZipIterator retval(this);
+				++(this);
+				return retval;
 			}
-
-		private:
-			std::tuple<IteratorTypes...> m_iterators_tuple;
 		};
+
 
 		// conveniently gcc doesn't need a deduction guide
 		// however there is a bug where "subobjects" cannot have a deduction

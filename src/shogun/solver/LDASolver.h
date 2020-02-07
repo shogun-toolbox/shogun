@@ -38,7 +38,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/util/zip_iterator.h>
+#include <shogun/util/enumerate.h>
 #include <vector>
 
 namespace shogun
@@ -144,14 +144,12 @@ namespace shogun
 		    SGMatrix<T>(num_features, m_features->get_num_vectors());
 
 		// Center data with respect to each data point's class
-		size_t counter = 0;
-		for (const auto& [data_i, label_i] : zip_iterator(m_features, m_labels))
+		for (const auto& [idx, data_i, label_i] : enumerate(m_features, m_labels))
 		{
 			mean_matrix.set_column(
-			    counter, linalg::add(
+			    idx, linalg::add(
 			                 m_class_mean.at(label_i), data_i,
 			                 static_cast<T>(1), static_cast<T>(-1)));
-			++counter;
 		}
 		// holds the feature matrix for each class
 		std::vector<SGMatrix<T>> centered_class(num_class);
@@ -164,14 +162,12 @@ namespace shogun
 			centered_class[i] = SGMatrix<T>(num_features, m_class_count[i]);
 			linalg::zero(centered_class[i]);
 		}
-		counter = 0;
-		for (const auto& label_i : *m_labels)
+		for (const auto& [idx, label_i] : enumerate(*m_labels))
 		{
 			auto c = static_cast<index_t>(label_i);
 			centered_class[c].set_column(
-			    centered_class_col[c], mean_matrix.get_column(counter));
+			    centered_class_col[c], mean_matrix.get_column(idx));
 			++centered_class_col[c];
-			++counter;
 		}
 		for (index_t i = 0; i < num_class; ++i)
 		{
