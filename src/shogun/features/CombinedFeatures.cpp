@@ -161,7 +161,7 @@ int32_t CombinedFeatures::get_num_feature_obj() const
 void CombinedFeatures::init()
 {
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
-	SG_ADD(&feature_array, "feature_array", "Feature array.");
+	watch_param("feature_array", &feature_array);
 }
 
 std::shared_ptr<Features> CombinedFeatures::create_merged_copy(std::shared_ptr<Features> other) const

@@ -1,6 +1,6 @@
 INCLUDE_DIRECTORIES(
-  ${CMAKE_SOURCE_DIR}/src
-  ${CMAKE_BINARY_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_BINARY_DIR}/src
 )
 
 include(GenerateExportHeader)
@@ -46,23 +46,23 @@ set(SHOGUN_CLING_LIBRARY_DIR "\"${CMAKE_INSTALL_PREFIX}/${SHOGUN_LIB_INSTALL}\""
 
 if (MSVC OR BUILD_BENCHMARKS)
   SET(LIBSHOGUN_BUILD_STATIC ON
-    CACHE BOOL "Build libshogun static library" FORCE)
+          CACHE BOOL "Build libshogun static library" FORCE)
 endif()
 
 # Allow to hide non-bsd compatible codes
 OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
 SET(USE_GPL_SHOGUN 0)
 IF (LICENSE_GPL_SHOGUN)
-        SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
-        IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}/shogun")
-            SET(USE_GPL_SHOGUN 1)
+  SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
+  IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}/shogun")
+    SET(USE_GPL_SHOGUN 1)
 
-            FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_CPP} ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_C})
-            FILE(GLOB_RECURSE GPL_LIBSHOGUN_HEADERS ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_HEADER})
+    FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_CPP} ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_C})
+    FILE(GLOB_RECURSE GPL_LIBSHOGUN_HEADERS ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_HEADER})
 
-            LIST(APPEND LIBSHOGUN_SRC ${GPL_LIBSHOGUN_SRC})
-            LIST(APPEND LIBSHOGUN_HEADERS ${GPL_LIBSHOGUN_HEADERS})
-            INCLUDE_DIRECTORIES(${SHOGUN_GPL_INCLUDE_DIR})
+    LIST(APPEND LIBSHOGUN_SRC ${GPL_LIBSHOGUN_SRC})
+    LIST(APPEND LIBSHOGUN_HEADERS ${GPL_LIBSHOGUN_HEADERS})
+    INCLUDE_DIRECTORIES(${SHOGUN_GPL_INCLUDE_DIR})
 
             SET(USE_GPL_SHOGUN 1)
         ELSE()
@@ -72,7 +72,7 @@ ENDIF()
 
 OPTION(USE_SVMLIGHT "SVMLight" ON)
 IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
-    MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included. Disable by USE_SVMLIGHT=OFF")
+  MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included. Disable by USE_SVMLIGHT=OFF")
 ENDIF()
 
 # add target to compile the libshogun sources
@@ -84,13 +84,13 @@ ENDIF()
 
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(
-    version
-    ${CMAKE_COMMAND}
-      -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h.in
-      -D DST=${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h
-      -D ROOT_DIR=${CMAKE_SOURCE_DIR}
-      -P ${CMAKE_SOURCE_DIR}/cmake/version.cmake
-    COMMENT "Generating version header"
+        version
+        ${CMAKE_COMMAND}
+        -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h.in
+        -D DST=${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h
+        -D ROOT_DIR=${CMAKE_SOURCE_DIR}
+        -P ${CMAKE_SOURCE_DIR}/cmake/version.cmake
+        COMMENT "Generating version header"
 )
 add_dependencies(libshogun version)
 
@@ -109,12 +109,12 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   ENDFOREACH()
 
   ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-      COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-      DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${generated_cpp}"
-  )
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
+          COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+          DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          COMMENT "Generating ${generated_cpp}"
+          )
 
   ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
   add_dependencies(libshogun ${generated_target})
@@ -125,18 +125,18 @@ ENDFOREACH()
 add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 generate_export_header(shogun)
 set_target_properties(
-  shogun PROPERTIES
-  VERSION ${LIBSHOGUNVER}
-  SOVERSION ${LIBSHOGUNSO}
-  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR})
+        shogun PROPERTIES
+        VERSION ${LIBSHOGUNVER}
+        SOVERSION ${LIBSHOGUNSO}
+        INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR})
 set_property(TARGET shogun APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
 target_include_directories(shogun PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-  $<INSTALL_INTERFACE:include/shogun>
-)
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        $<INSTALL_INTERFACE:include/shogun>
+        )
 IF (${USE_GPL_SHOGUN})
-    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+  target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
 ENDIF()
 
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
@@ -149,11 +149,11 @@ endforeach()
 add_library(shogun_deps INTERFACE)
 target_link_libraries(shogun_deps INTERFACE shogun)
 target_include_directories(shogun_deps INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-)
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        )
 IF (${USE_GPL_SHOGUN})
-    target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+  target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
 ENDIF()
 
 # add target for static library if enabled
@@ -161,10 +161,10 @@ if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
   set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
   target_include_directories(shogun-static PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-    $<INSTALL_INTERFACE:include/shogun>
-  )
+          $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+          $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+          $<INSTALL_INTERFACE:include/shogun>
+          )
   IF (${USE_GPL_SHOGUN})
     target_include_directories(shogun-static PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
   ENDIF()
@@ -181,9 +181,9 @@ IF(MSVC)
   IF(MSVC_VERSION VERSION_LESS "1700")
     include(external/MSIntTypes)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
-      $<BUILD_INTERFACE:${MSINTTYPES_INCLUDE_DIR}>
-      $<INSTALL_INTERFACE:include/shogun/third_party/MSIntTypes>
-    )
+            $<BUILD_INTERFACE:${MSINTTYPES_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include/shogun/third_party/MSIntTypes>
+            )
   ENDIF()
 
   target_link_libraries(shogun PUBLIC winmm Shlwapi)
@@ -301,49 +301,49 @@ endif()
 include(external/StanMath)
 
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/stan>
-)
+        $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
+        $<INSTALL_INTERFACE:include/shogun/third_party/stan>
+        )
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_BOOST}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/stan_boost>
-)
+        $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_BOOST}>
+        $<INSTALL_INTERFACE:include/shogun/third_party/stan_boost>
+        )
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_SUNDIALS}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/stan_sundials>
-)
+        $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_SUNDIALS}>
+        $<INSTALL_INTERFACE:include/shogun/third_party/stan_sundials>
+        )
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_EIGEN}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
-)
+        $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_EIGEN}>
+        $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
+        )
 
 ####### LINALG
 # ViennaCL detection
 SHOGUN_DEPENDENCIES(
-  LIBRARY ViennaCL
-  SCOPE PRIVATE
-  VERSION ${VIENNACL_VERSION_MINIMUM}
-  CONFIG_FLAG HAVE_VIENNACL)
+        LIBRARY ViennaCL
+        SCOPE PRIVATE
+        VERSION ${VIENNACL_VERSION_MINIMUM}
+        CONFIG_FLAG HAVE_VIENNACL)
 
 ####### /LINALG
 
 FIND_PACKAGE(rxcpp)
 IF(NOT rxcpp_FOUND)
-    include(external/rxcpp)
-    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-            $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
-            $<INSTALL_INTERFACE:include/shogun/third_party/rxcpp>
-            )
+  include(external/rxcpp)
+  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+          $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
+          $<INSTALL_INTERFACE:include/shogun/third_party/rxcpp>
+          )
 ELSE()
-    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
+  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
 ENDIF()
 
 # TFLogger package
 FIND_PACKAGE(TFLogger 0.1.0 CONFIG)
 IF (TFLogger_FOUND)
-    SET(HAVE_TFLOGGER 1)
-    SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM ${TFLogger_INCLUDE_DIR})
-    target_link_libraries(shogun PRIVATE tflogger::tflogger)
+  SET(HAVE_TFLOGGER 1)
+  SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM ${TFLogger_INCLUDE_DIR})
+  target_link_libraries(shogun PRIVATE tflogger::tflogger)
 ENDIF()
 
 #### LAPACK
@@ -354,9 +354,9 @@ CHECK_CXX_SOURCE_COMPILES("#include <variant>\n int main(int argc, char** argv) 
 IF (NOT HAVE_STD_VARIANT)
   include(external/variant)
   SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-	$<BUILD_INTERFACE:${VARIANT_INCLUDE_DIR}>
-	$<INSTALL_INTERFACE:include/shogun/third_party/variant>
-  )
+          $<BUILD_INTERFACE:${VARIANT_INCLUDE_DIR}>
+          $<INSTALL_INTERFACE:include/shogun/third_party/variant>
+          )
 ENDIF()
 
 # spdlog
@@ -376,9 +376,9 @@ ELSE()
 ENDIF()
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY GLPK
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_GLPK)
+        LIBRARY GLPK
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_GLPK)
 
 SHOGUN_DEPENDENCIES(
   LIBRARY LibArchive
@@ -391,19 +391,24 @@ SHOGUN_DEPENDENCIES(
   CONFIG_FLAG USE_CPLEX)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY ARPACK
-  SCOPE PRIVATE
-  CONFIG_FLAG HAVE_ARPACK)
+        LIBRARY CPLEX
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_CPLEX)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY Mosek
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_MOSEK)
+        LIBRARY ARPACK
+        SCOPE PRIVATE
+        CONFIG_FLAG HAVE_ARPACK)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY Protobuf
-  SCOPE PUBLIC
-  CONFIG_FLAG HAVE_PROTOBUF)
+        LIBRARY Mosek
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_MOSEK)
+
+SHOGUN_DEPENDENCIES(
+        LIBRARY Protobuf
+        SCOPE PUBLIC
+        CONFIG_FLAG HAVE_PROTOBUF)
 
 IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/io/protobuf)
@@ -414,12 +419,12 @@ IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
     SET(name "${CMAKE_CURRENT_BINARY_DIR}/io/protobuf/${FIL_WE}")
 
     ADD_CUSTOM_COMMAND(
-       OUTPUT "${name}.pb.cc" "${name}.pb.h"
-       COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} ${FIL}
-         --cpp_out ${CMAKE_CURRENT_BINARY_DIR}/io/protobuf
-         --proto_path ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf
-       COMMENT "Running C++ protocol buffer compiler on ${FIL_WE}.proto"
-      )
+            OUTPUT "${name}.pb.cc" "${name}.pb.h"
+            COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} ${FIL}
+            --cpp_out ${CMAKE_CURRENT_BINARY_DIR}/io/protobuf
+            --proto_path ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf
+            COMMENT "Running C++ protocol buffer compiler on ${FIL_WE}.proto"
+    )
     ADD_CUSTOM_TARGET("${FIL_WE}Protobuf" DEPENDS "${name}.pb.cc")
     add_dependencies(libshogun "${FIL_WE}Protobuf")
     set_source_files_properties(${name}.pb.cc PROPERTIES GENERATED ON)
@@ -441,40 +446,40 @@ if (NOT WIN32)
   # FIXME: HDF5 linking on WIN32 is broken.
   # at least with the hdf5 supplied in anaconda
   SHOGUN_DEPENDENCIES(
-    LIBRARY HDF5
-    SCOPE PUBLIC
-    CONFIG_FLAG HAVE_HDF5)
+          LIBRARY HDF5
+          SCOPE PUBLIC
+          CONFIG_FLAG HAVE_HDF5)
 endif ()
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY CURL
-  SCOPE PRIVATE
-  CONFIG_FLAG HAVE_CURL)
+        LIBRARY CURL
+        SCOPE PRIVATE
+        CONFIG_FLAG HAVE_CURL)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY ZLIB
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_GZIP)
+        LIBRARY ZLIB
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_GZIP)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY BZip2
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_BZIP2)
+        LIBRARY BZip2
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_BZIP2)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY LibLZMA
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_LZMA)
+        LIBRARY LibLZMA
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_LZMA)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY SNAPPY
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_SNAPPY)
+        LIBRARY SNAPPY
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_SNAPPY)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY LZO
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_LZO)
+        LIBRARY LZO
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_LZO)
 
 #integration
 OPTION(OpenCV "OpenCV Integration" OFF)
@@ -502,25 +507,25 @@ IF(BUNDLE_NLOPT)
   SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${NLOPT_LIBRARIES})
 ELSE()
   SHOGUN_DEPENDENCIES(
-    LIBRARY NLopt
-    SCOPE PRIVATE
-    CONFIG_FLAG HAVE_NLOPT)
+          LIBRARY NLopt
+          SCOPE PRIVATE
+          CONFIG_FLAG HAVE_NLOPT)
 ENDIF()
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY LpSolve
-  SCOPE PRIVATE
-  CONFIG_FLAG USE_LPSOLVE)
+        LIBRARY LpSolve
+        SCOPE PRIVATE
+        CONFIG_FLAG USE_LPSOLVE)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY ColPack
-  SCOPE PRIVATE
-  CONFIG_FLAG HAVE_COLPACK)
+        LIBRARY ColPack
+        SCOPE PRIVATE
+        CONFIG_FLAG HAVE_COLPACK)
 
 SHOGUN_DEPENDENCIES(
-  LIBRARY ARPREC
-  SCOPE PRIVATE
-  CONFIG_FLAG HAVE_ARPREC)
+        LIBRARY ARPREC
+        SCOPE PRIVATE
+        CONFIG_FLAG HAVE_ARPREC)
 
 ############################ HMM
 OPTION(USE_HMMDEBUG "HMM debug mode" OFF)
@@ -547,7 +552,7 @@ OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)
 ################## linker optimisations
 OPTION(INCREMENTAL_LINKING "Enable incremantal linking")
 SET(INCREMENTAL_LINKING_DIR ${CMAKE_BINARY_DIR}/linker_cache
-  CACHE PATH "Incremental linking cache directory")
+        CACHE PATH "Incremental linking cache directory")
 OPTION(ENABLE_LTO "Enable link-time optimisation")
 
 include(LDGOLD)
@@ -569,7 +574,7 @@ target_link_libraries(shogun PUBLIC ${POSTLINKFLAGS})
 IF (BUILD_BENCHMARKS)
   IF (NOT BUILD_TYPE_UC STREQUAL "RELEASE")
     MESSAGE(WARNING "You are building benchmark against non-Release mode!"
-      "The results might not reflect the actual runtimes...")
+            "The results might not reflect the actual runtimes...")
   ENDIF()
   find_package(benchmark CONFIG REQUIRED)
 
@@ -579,16 +584,16 @@ IF (BUILD_BENCHMARKS)
     target_link_libraries(shogun_benchmark_main benchmark::benchmark shogun-static)
   elseif(MSVC)
     target_link_libraries(shogun_benchmark_main
-      benchmark::benchmark
-      Shlwapi.lib
-      shogun-static
-    )
+            benchmark::benchmark
+            Shlwapi.lib
+            shogun-static
+            )
   else()
     target_link_libraries(shogun_benchmark_main
-      benchmark::benchmark
-      pthread
-      shogun-static
-    )
+            benchmark::benchmark
+            pthread
+            shogun-static
+            )
   endif()
 
   set(SHOGUN_BENCHMARK_LINK_LIBS shogun_benchmark_main)
@@ -612,15 +617,15 @@ IF (LICENSE_GPL_SHOGUN)
 ENDIF()
 
 INSTALL(
-  DIRECTORY ${INCLUDE_HEADERS_DIR_LIST}
-  DESTINATION ${INCLUDE_INSTALL_DIR}
-  COMPONENT headers
-  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
-  PATTERN "CMakeFiles*" EXCLUDE
-  PATTERN "*.dir" EXCLUDE
-  PATTERN "*Debug*" EXCLUDE
-  PATTERN "*Release*" EXCLUDE
-  PATTERN ".settings" EXCLUDE)
+        DIRECTORY ${INCLUDE_HEADERS_DIR_LIST}
+        DESTINATION ${INCLUDE_INSTALL_DIR}
+        COMPONENT headers
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+        PATTERN "CMakeFiles*" EXCLUDE
+        PATTERN "*.dir" EXCLUDE
+        PATTERN "*Debug*" EXCLUDE
+        PATTERN "*Release*" EXCLUDE
+        PATTERN ".settings" EXCLUDE)
 
 # set the desidered targets to be installed
 set(INSTALL_TARGETS shogun)
@@ -629,41 +634,41 @@ if (LIBSHOGUN_BUILD_STATIC)
 endif()
 
 INSTALL(
-  TARGETS ${INSTALL_TARGETS}
-  EXPORT ShogunTargets
-  ARCHIVE DESTINATION ${SHOGUN_LIB_INSTALL}
-  RUNTIME DESTINATION ${SHOGUN_LIB_INSTALL}
-  LIBRARY DESTINATION ${SHOGUN_LIB_INSTALL}
-  INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
+        TARGETS ${INSTALL_TARGETS}
+        EXPORT ShogunTargets
+        ARCHIVE DESTINATION ${SHOGUN_LIB_INSTALL}
+        RUNTIME DESTINATION ${SHOGUN_LIB_INSTALL}
+        LIBRARY DESTINATION ${SHOGUN_LIB_INSTALL}
+        INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 
 file(TO_CMAKE_PATH ${SHOGUN_LIB_INSTALL}/cmake/shogun CONFIG_PACKAGE_DIR)
 configure_package_config_file(
-  ${CMAKE_SOURCE_DIR}/cmake/ShogunConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake
-  INSTALL_DESTINATION ${SHOGUN_LIB_INSTALL}/cmake/shogun
-  PATH_VARS INCLUDE_INSTALL_DIR CONFIG_PACKAGE_DIR)
+        ${CMAKE_SOURCE_DIR}/cmake/ShogunConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake
+        INSTALL_DESTINATION ${SHOGUN_LIB_INSTALL}/cmake/shogun
+        PATH_VARS INCLUDE_INSTALL_DIR CONFIG_PACKAGE_DIR)
 
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfigVersion.cmake"
-  VERSION ${VERSION}
-  COMPATIBILITY SameMajorVersion
+        "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfigVersion.cmake"
+        VERSION ${VERSION}
+        COMPATIBILITY SameMajorVersion
 )
 
 export(EXPORT ShogunTargets
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/ShogunTargets.cmake"
-  NAMESPACE shogun::
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/ShogunTargets.cmake"
+        NAMESPACE shogun::
+        )
+
+install(
+        EXPORT ShogunTargets
+        FILE ShogunTargets.cmake
+        NAMESPACE shogun::
+        DESTINATION ${CONFIG_PACKAGE_DIR}
 )
 
 install(
-  EXPORT ShogunTargets
-  FILE ShogunTargets.cmake
-  NAMESPACE shogun::
-  DESTINATION ${CONFIG_PACKAGE_DIR}
-)
-
-install(
-  FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfigVersion.cmake"
-  DESTINATION ${CONFIG_PACKAGE_DIR}
+        FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfigVersion.cmake"
+        DESTINATION ${CONFIG_PACKAGE_DIR}
 )
