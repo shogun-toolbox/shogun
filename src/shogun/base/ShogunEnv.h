@@ -17,6 +17,16 @@
 
 #include <memory>
 
+
+enum class GRAPH
+{
+	SHOGUN = 0,
+	NGRAPH = 1,
+	XLA = 2,
+	TVM = 3 // the wishlist goes on...
+};
+
+
 namespace shogun
 {
 	namespace io
@@ -75,17 +85,22 @@ namespace shogun
 		 */
 		SGLinalg* linalg();
 
-		/** get the global singnal handler object
+		/** get the global signal handler object
 		 *
 		 * @return linalg object
 		 */
 		Signal* signal();
 #endif
-		/** Get the list of plugins available in the
-		 * directories specified by SHOGUN_PLUGINS_PATH
-		 * @return vector of paths to the plugins
+		/** get the global graph backend
+		 *
+		 * @return the backend enum
 		 */
-		std::vector<std::string> plugins() const;
+		GRAPH graph_backend()
+		{
+			return sg_graph_backend;
+		}
+
+
 	private:
 		/** Default constructor
 		 */
@@ -98,6 +113,7 @@ namespace shogun
 		std::unique_ptr<io::SGIO> sg_io;
 		std::unique_ptr<Signal> sg_signal;
 		std::unique_ptr<SGLinalg> sg_linalg;
+		GRAPH sg_graph_backend;
 		float64_t sg_fequals_epsilon;
 		bool sg_fequals_tolerant;
 	};
