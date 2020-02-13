@@ -10,18 +10,23 @@
 #include <cstddef>
 #include <limits>
 #include <vector>
+#include <string>
+#include <sstream>
 
 namespace shogun
 {
 	class Shape
 	{
 	public:
-		static constexpr size_t DYNAMIC = std::numeric_limits<size_t>::max();
+		static constexpr size_t Dynamic = std::numeric_limits<size_t>::max();
+
+		Shape(const std::initializer_list<size_t>& shape) : m_shape(shape)
+		{
+		}
 
 		Shape(const std::vector<size_t>& shape) : m_shape(shape)
 		{
 		}
-		~Shape();
 
 		const std::vector<size_t>& get() const
 		{
@@ -45,11 +50,15 @@ namespace shogun
 
 		std::string to_string() const
 		{
-			std::stringstream result {"Shape("};
+			std::stringstream result;
+			result << "Shape(";
 			auto shape_it = m_shape.begin();
 			while(shape_it != m_shape.end())
 			{
-				result << *shape_it;
+				if (*shape_it == Dynamic)
+					result << "Dynamic";
+				else
+					result << *shape_it;
 				if (std::next(shape_it) != m_shape.end())
 					result << ", ";
 				shape_it++;
@@ -58,16 +67,15 @@ namespace shogun
 			return result.str();
 		}
 
-		friend std::ostream & operator<<(std::ostream&, const Shape&);
+		friend std::ostream& operator<<(std::ostream& os, const Shape& shape)
+		{
+	    	return os << shape.to_string();
+		}
 
 	private:
 		std::vector<size_t> m_shape;
 	};
 
-	std::ostream & operator<<(std::ostream& os, const Shape& shape)
-	{
-	    return os << shape.to_string();
-	}
 } // namespace shogun
 
 #endif

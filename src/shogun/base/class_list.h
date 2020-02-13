@@ -46,7 +46,7 @@ namespace shogun {
 		auto entry = clazzes.find(name);
 		if (entry != clazzes.end())
 		{
-			auto class_factory = entry->second().class_by_name<T>(name);
+			auto class_factory = entry->second().template class_by_name<T>(name);
 			return class_factory.instance();
 		}
 		else

@@ -21,6 +21,7 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
 
 #include <shogun/shogun_export.h>
 #include <shogun/base/base_types.h>
