@@ -20,6 +20,7 @@
 #define IGNORE_IN_CLASSLIST
 
 namespace shogun {
+
     // The node classes
     IGNORE_IN_CLASSLIST class Node {
     public:
@@ -74,11 +75,9 @@ namespace shogun {
 		}
 
     protected:
+
         std::vector<std::shared_ptr<Node>> m_input_nodes;
         std::vector<std::shared_ptr<Tensor>> m_output_tensors;
-
-    private:
-        // virtual void allocate_tensor(const Shape &shape, element_type type) = 0;
 
 #ifdef USE_NGRAPH
         std::shared_ptr<ngraph::Node> m_ngraph_node;
