@@ -91,6 +91,13 @@ namespace shogun
 		 */
 		Signal* signal();
 #endif
+
+		/** Get the list of plugins available in the
+		 * directories specified by SHOGUN_PLUGINS_PATH
+		 * @return vector of paths to the plugins
+		 */
+		std::vector<std::string> plugins() const;
+		
 		/** get the global graph backend
 		 *
 		 * @return the backend enum

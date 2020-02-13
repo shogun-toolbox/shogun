@@ -11,117 +11,78 @@
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/Types.h>
 
+#include <shogun/util/zip_iterator.h>
+
 #ifdef USE_NGRAPH
 #include <ngraph/ngraph.hpp>
 #endif
 
-namespace shogun
-{
-	// The node classes
-	class Node
-	{
-	public:
-		Node(const Shape& shape, element_type type): m_tensor(std::make_shared<Tensor>(shape, type)) {}
+#define IGNORE_IN_CLASSLIST
 
-		Node(const std::shared_ptr<Tensor>& tensor): m_tensor(tensor) {}
+namespace shogun {
+    // The node classes
+    IGNORE_IN_CLASSLIST class Node {
+    public:
+        Node(const Shape& shape, element_type type): m_output_tensors({std::make_shared<Tensor>(shape, type)}) {}
 
-		virtual void evaluate() = 0;
+        Node(const std::vector<Shape>& shapes, const std::vector<element_type>& types)
+        {
+        	for (const auto& [shape, type]: zip_iterator(shapes, types))
+        	{
+        		m_output_tensors.push_back(std::make_shared<Tensor>(shape, type));
+        	}
+        }
 
-		virtual ~Node()
-		{
-		}
+        Node(const std::initializer_list<std::shared_ptr<Node>>& nodes, 
+        	const Shape& shape, element_type type): Node(shape, type) {
+        	 m_input_nodes = nodes;
+        }
+
+        Node(const std::initializer_list<std::shared_ptr<Node>>& nodes, 
+        	const std::vector<Shape>& shapes, const std::vector<element_type>& types): Node(shapes, types) {
+        	m_input_nodes = nodes;
+        }
+
+        virtual ~Node() {
+        }
 
 #ifdef USE_NGRAPH
-		void set_ngraph(std::shared_ptr<ngraph::Node> node)
-		{
-			m_ngraph_node = std::move(node);
-		}
+        void set_ngraph(std::shared_ptr<ngraph::Node> node)
+        {
+            m_ngraph_node = std::move(node);
+        }
 
-		const std::shared_ptr<ngraph::Node>& get_ngraph() const
-		{
-			return m_ngraph_node;
-		}
+        const std::shared_ptr<ngraph::Node>& get_ngraph() const
+        {
+            return m_ngraph_node;
+        }
 #endif
-		const std::shared_ptr<Tensor>& get_tensor() const
+
+        const std::vector<std::shared_ptr<Node>>& get_input_nodes() const {
+            return m_input_nodes;
+        }
+
+        const std::vector<std::shared_ptr<Tensor>>& get_tensors() const {
+        	return m_output_tensors;
+        }
+
+        virtual std::string to_string() const = 0;
+
+        friend std::ostream& operator<<(std::ostream& os, const Node& node)
 		{
-			return m_tensor;
+	    	return os << node.to_string();
 		}
 
-	protected:
-		std::shared_ptr<Tensor> m_tensor;
+    protected:
+        std::vector<std::shared_ptr<Node>> m_input_nodes;
+        std::vector<std::shared_ptr<Tensor>> m_output_tensors;
 
-	private:
-		virtual void allocate_tensor(const Shape& shape, element_type type) = 0;
+    private:
+        // virtual void allocate_tensor(const Shape &shape, element_type type) = 0;
+
 #ifdef USE_NGRAPH
-		std::shared_ptr<ngraph::Node> m_ngraph_node;
+        std::shared_ptr<ngraph::Node> m_ngraph_node;
 #endif
-	};
-
-	// TODO
-	class Graph
-	{
-	public:
-		Graph();
-		~Graph();
-		std::vector<Tensor> execute_shogun(
-		    const std::vector<Tensor>& input_tensors,
-		    const std::vector<Tensor>& output_tensors);
-#ifdef USE_NGRAPH
-		std::shared_ptr<ngraph::Function> get_ngraph_function();
-#endif
-	};
-
-	// most of this could live in the graph class
-	std::vector<Tensor> evaluate(
-	    const std::vector<Tensor>& input_tensors,
-	    const std::vector<Tensor>& output_tensors,
-	    const std::shared_ptr<Graph>& graph)
-	{
-		auto* env = ShogunEnv::instance();
-		switch (env->graph_backend())
-		{
-		case GRAPH::SHOGUN:
-		{
-			return graph->execute_shogun(input_tensors, output_tensors);
-		}
-		break;
-#ifdef USE_NGRAPH
-		case GRAPH::NGRAPH:
-		{
-			auto backend = ngraph::runtime::Backend::create("CPU", true);
-
-			std::vector<std::shared_ptr<ngraph::runtime::Tensor>>
-			    ngraph_input_tensors;
-			std::vector<std::shared_ptr<ngraph::runtime::Tensor>>
-			    ngraph_output_tensors;
-
-			for (const auto& tensor : input_tensors)
-				ngraph_input_tensors.push_back(backend->create_tensor(
-				    ngraph::element::f32, tensor.get_shape()));
-			for (const auto& tensor : output_tensors)
-				ngraph_output_tensors.push_back(backend->create_tensor(
-				    ngraph::element::f32, tensor.get_shape()));
-
-			auto handle = backend->compile(graph->get_ngraph_function());
-			handle->call_with_validate(
-			    ngraph_input_tensors, ngraph_output_tensors);
-
-			std::vector<Tensor> results;
-			for (const auto& ngraph_tensor : ngraph_output_tensors)
-			{
-				results.push_back(Tensor::create_empty(
-				    ngraph_tensor->get_shape(),
-				    get_enum_from_ngraph(ngraph_tensor->get_element_type())));
-				ngraph_tensor->read(
-				    results.back().data(),
-				    results.back().get_size() * sizeof(float));
-			}
-
-			return results;
-		}
-#endif
-		}
-	}
-} // namespace shogun
-
+    };
+}
 #endif

@@ -66,7 +66,7 @@ namespace shogun
 	}
 #endif
 
-	std::ostream & operator<<(std::ostream& os, element_type type)
+	inline std::ostream& operator<<(std::ostream& os, element_type type)
 	{
 	    switch(type)
 	    {

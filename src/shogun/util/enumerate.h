@@ -1,6 +1,8 @@
 #include <shogun/util/zip_iterator.h>
 #include <shogun/base/range.h>
 
+#ifndef ENUMERATE_H_
+#define ENUMERATE_H_
 
 namespace shogun {
 
@@ -74,3 +76,5 @@ namespace shogun {
 		std::tuple<Args&...> m_container_tuples;
 	};
 }
+
+#endif // ENUMERATE_H_

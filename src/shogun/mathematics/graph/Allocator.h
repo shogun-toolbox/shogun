@@ -11,7 +11,7 @@
 
 
 namespace shogun {
-	void* allocator_dispatch(size_t size, element_type type)
+	inline void* allocator_dispatch(size_t size, element_type type)
 	{
 		switch (type)
 		{
