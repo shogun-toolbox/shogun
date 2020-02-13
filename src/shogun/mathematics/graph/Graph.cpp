@@ -2,7 +2,6 @@
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/ops/Input.h>
 
-#include <deque>
 #include <unordered_set>
 
 using namespace shogun;
@@ -17,11 +16,11 @@ Graph::Graph(
 
 void Graph::build()
 {
-	check_fully_connected(m_inputs, m_outputs);
-	build_backend_graph(m_inputs, m_outputs);
+	auto unordered_nodes = check_fully_connected(m_inputs, m_outputs);
+	build_backend_graph(unordered_nodes);
 }
 
-void Graph::check_fully_connected(
+std::map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_connected(
     const std::vector<std::shared_ptr<Input>>& inputs,
     const std::vector<std::shared_ptr<Node>>& outputs)
 {
@@ -31,6 +30,7 @@ void Graph::check_fully_connected(
 		nodes_to_check.push_back(node);
 	}
 	std::unordered_set<std::shared_ptr<Node>> inputs_found;
+	std::map<std::shared_ptr<Node>, STATUS> unordered_nodes;
 
 	while (!nodes_to_check.empty())
 	{
@@ -55,12 +55,15 @@ void Graph::check_fully_connected(
 			// has no children and is not an expected input
 			error("Graph is disconnected in node {}.", *top_node);
 		}
+		unordered_nodes.emplace(top_node, STATUS::UNMARKED);
 	}
 
 	if (inputs_found.size() != inputs.size())
 	{
 		error("Graph found more input tensors than provided.");
 	}
+
+	return unordered_nodes;
 }
 
 void Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
@@ -86,33 +89,43 @@ void Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
 
 
 void Graph::build_backend_graph(
-    const std::vector<std::shared_ptr<Input>>& inputs,
-    const std::vector<std::shared_ptr<Node>>& outputs)
+	std::map<std::shared_ptr<Node>, Graph::STATUS>& unordered_nodes)
 {
-	auto* env = ShogunEnv::instance();
-	switch (env->graph_backend())
+	std::deque<std::shared_ptr<Node>> ordered_nodes;
+
+	for (const auto& node: unordered_nodes)
 	{
-	case GRAPH::SHOGUN:
-	{
-		build_shogun_graph();
+		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
 	}
-	break;
-	case GRAPH::NGRAPH:
+
+	for (const auto& node: ordered_nodes)
 	{
-#ifdef USE_NGRAPH
-		build_ngraph_graph();
-#else
-		error("NGraph execution is not available.");
-#endif
+		add_operator_node(node);
 	}
-	}	
 }
 
-void Graph::build_shogun_graph() {}
-void Graph::build_ngraph_graph() {}
+void Graph::order_graph_visit_(const std::shared_ptr<Node>& node, 
+	std::map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
+	std::deque<std::shared_ptr<Node>>& result)
+{
+	auto& node_status = all_nodes[node];
+	if (node_status == STATUS::MARKED)
+		return;
+	if (node_status == STATUS::TEMPORARY)
+		error("Not a DAG!");
 
+	node_status = STATUS::TEMPORARY;
 
-void Graph::get_backend_operator(const std::shared_ptr<Node>& node)
+	for (auto& child_node: node->get_input_nodes())
+	{
+		order_graph_visit_(child_node, all_nodes, result);
+	}
+
+	node_status = STATUS::MARKED;
+	result.push_back(node);
+}
+
+void Graph::add_operator_node(const std::shared_ptr<Node>& node)
 {
 	auto* env = ShogunEnv::instance();
 
