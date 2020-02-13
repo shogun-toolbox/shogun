@@ -35,6 +35,10 @@ namespace shogun
 		void execute_shogun();
 		void execute_ngraph();
 
+		void build_shogun_graph();
+		void build_ngraph_graph();
+
+
 		std::vector<std::shared_ptr<Input>> m_inputs;
 		std::vector<std::shared_ptr<Node>> m_outputs;
 	};

@@ -108,6 +108,10 @@ void Graph::build_backend_graph(
 	}	
 }
 
+void Graph::build_shogun_graph() {}
+void Graph::build_ngraph_graph() {}
+
+
 void Graph::get_backend_operator(const std::shared_ptr<Node>& node)
 {
 	auto* env = ShogunEnv::instance();
@@ -117,7 +121,7 @@ void Graph::get_backend_operator(const std::shared_ptr<Node>& node)
 	case GRAPH::NGRAPH:
 	{
 #ifdef USE_NGRAPH
-		node->s
+		// node->s
 #endif
 	}
 	break;
