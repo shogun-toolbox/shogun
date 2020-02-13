@@ -7,7 +7,6 @@
 #ifndef LINALGNODES_H_
 #define LINALGNODES_H_
 
-#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/Types.h>
@@ -22,10 +21,9 @@ namespace shogun
 	class Node
 	{
 	public:
-		Node(const std::vector<size_t>& shape, element_type type)
-		    : m_shape(shape), m_type(type)
-		{
-		}
+		Node(const Shape& shape, element_type type): m_tensor(std::make_shared<Tensor>(shape, type)) {}
+
+		Node(const std::shared_ptr<Tensor>& tensor): m_tensor(tensor) {}
 
 		virtual void evaluate() = 0;
 
@@ -44,160 +42,19 @@ namespace shogun
 			return m_ngraph_node;
 		}
 #endif
-		void* get_data() const
+		const std::shared_ptr<Tensor>& get_tensor() const
 		{
-			return m_data;
-		}
-
-		const std::vector<size_t>& get_shape() const
-		{
-			return m_shape;
-		}
-
-		element_type get_type() const
-		{
-			return m_type;
-		}
-
-		size_t get_size_from_shape(const std::vector<size_t>& size)
-		{
-			return std::accumulate(
-			    size.begin(), size.end(), 1, std::multiplies{});
+			return m_tensor;
 		}
 
 	protected:
-		void* m_data;
-		const std::vector<size_t> m_shape;
-		const element_type m_type;
+		std::shared_ptr<Tensor> m_tensor;
 
 	private:
-		virtual void allocate_data() = 0;
+		virtual void allocate_tensor(const Shape& shape, element_type type) = 0;
 #ifdef USE_NGRAPH
 		std::shared_ptr<ngraph::Node> m_ngraph_node;
 #endif
-	};
-
-	// simple add node, could be have option for inplace?
-	class Add : public Node
-	{
-	public:
-		Add(const std::shared_ptr<Node>& node1,
-		    const std::shared_ptr<Node>& node2)
-		    : m_node1(node1), m_node2(node2),
-		      Node(
-		          check_shape_compatible(node1, node2),
-		          check_type_compatible(node1, node2))
-		{
-			auto* env = ShogunEnv::instance();
-
-			switch (env->graph_backend())
-			{
-			case GRAPH::NGRAPH:
-			{
-#ifdef USE_NGRAPH
-				set_ngraph(std::make_shared<ngraph::op::Add>(
-				    node1->get_ngraph(), node2->get_ngraph()));
-#endif
-			}
-			break;
-			case GRAPH::XLA:
-			case GRAPH::TVM:
-			case GRAPH::SHOGUN:
-				break;
-			}
-		}
-
-		void evaluate()
-		{
-			auto* env = ShogunEnv::instance();
-
-			// node evaluation happens in each engine's implementation
-			// here we just need the shogun version
-			switch (env->graph_backend())
-			{
-			case GRAPH::SHOGUN:
-			{
-				add(m_node1, m_node2);
-			}
-			break;
-			case GRAPH::NGRAPH:
-			case GRAPH::XLA:
-			case GRAPH::TVM:
-				break;
-			}
-		}
-
-	protected:
-		std::shared_ptr<Node> m_node1;
-		std::shared_ptr<Node> m_node2;
-
-	private:
-		void
-		add(const std::shared_ptr<Node>& node1,
-		    const std::shared_ptr<Node>& node2)
-		{
-			allocate_data();
-			// the actual call
-			add_kernel(
-			    node1->get_data(), node2->get_data(), m_data,
-			    get_size_from_shape(get_shape()), m_type);
-		}
-
-		element_type check_type_compatible(
-		    const std::shared_ptr<Node>& node1,
-		    const std::shared_ptr<Node>& node2)
-		{
-			if (m_node1->get_type() != m_node2->get_type())
-				error("Expected types to be the same");
-			return m_node1->get_type();
-		}
-
-		std::vector<size_t> check_shape_compatible(
-		    const std::shared_ptr<Node>& node1,
-		    const std::shared_ptr<Node>& node2)
-		{
-			if (m_node1->get_shape() != m_node2->get_shape())
-				error("Incompatible shapes");
-			return m_node1->get_shape();
-		}
-
-		void allocate_data()
-		{
-			m_data =
-			    allocator_dispatch(get_size_from_shape(get_shape()), m_type);
-		}
-
-		template <typename T>
-		void
-		add_kernel_helper(void* input1, void* input2, void* output, size_t size)
-		{
-			// if we have SYCL or MSVC we could add parallel execution
-			// or just use Eigen here
-			std::transform(
-			    static_cast<const T*>(input1),
-			    static_cast<const T*>(input1) + size,
-			    static_cast<const T*>(input2), static_cast<T*>(output),
-			    std::plus<T>());
-		}
-
-		void add_kernel(
-		    void* input1, void* input2, void* output, size_t size,
-		    element_type type)
-		{
-			switch (type)
-			{
-			case element_type::FLOAT32:
-				add_kernel_helper<
-				    get_type_from_enum<element_type::FLOAT32>::type>(
-				    input1, input2, output, size);
-				break;
-			case element_type::FLOAT64:
-				add_kernel_helper<
-				    get_type_from_enum<element_type::FLOAT64>::type>(
-				    input1, input2, output, size);
-				break;
-			}
-		}
 	};
 
 	// TODO
@@ -209,7 +66,9 @@ namespace shogun
 		std::vector<Tensor> execute_shogun(
 		    const std::vector<Tensor>& input_tensors,
 		    const std::vector<Tensor>& output_tensors);
+#ifdef USE_NGRAPH
 		std::shared_ptr<ngraph::Function> get_ngraph_function();
+#endif
 	};
 
 	// most of this could live in the graph class

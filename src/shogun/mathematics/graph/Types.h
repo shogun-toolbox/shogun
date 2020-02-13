@@ -44,13 +44,13 @@ namespace shogun
 	template <>
 	struct get_enum_from_type<float32_t>
 	{
-		element_type type = element_type::FLOAT32;
+		static constexpr element_type type = element_type::FLOAT32;
 	};
 
 	template <>
 	struct get_enum_from_type<float64_t>
 	{
-		element_type type = element_type::FLOAT64;
+		static constexpr element_type type = element_type::FLOAT64;
 	};
 
 #ifdef USE_NGRAPH
@@ -65,6 +65,17 @@ namespace shogun
 		}
 	}
 #endif
+
+	std::ostream & operator<<(std::ostream& os, element_type type)
+	{
+	    switch(type)
+	    {
+	    	case element_type::FLOAT32:
+	    		return os << "float32";
+	    	case element_type::FLOAT64:
+	    		return os << "float64";
+	    }
+	}
 } // namespace shogun
 
 #endif
