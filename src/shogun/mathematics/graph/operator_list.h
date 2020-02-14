@@ -32,17 +32,18 @@ namespace shogun {
 	template <class BackendType>
 	std::shared_ptr<OperatorImpl<BackendType>> create_operator(const std::string& name) noexcept(false)
 	{
+		using BackendImplementation = OperatorImpl<BackendType>;
 		auto clazzes = operator_list();
 		auto entry = clazzes.find(name);
 		if (entry != clazzes.end())
 		{
-			auto class_factory = entry->second().template class_by_name<OperatorImpl<BackendType>>(name+BackendType::kBackendName);
+			auto class_factory = entry->second().template class_by_name<BackendImplementation>(name+std::string(BackendImplementation::kBackendName));
 			return class_factory.instance();
 		}
 		else
 		{
 			error(
-			    "Operator {} with backend {} does not exist", name, BackendType::kBackendName);
+			    "Operator {} with backend {} does not exist", name, BackendImplementation::kBackendName);
 		}
 		return nullptr;
 	}

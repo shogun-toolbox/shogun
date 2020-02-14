@@ -1,6 +1,7 @@
 #include <shogun/mathematics/graph/Graph.h>
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/ops/Input.h>
+#include <shogun/mathematics/graph/operator_list.h>
 
 #include <unordered_set>
 
@@ -138,7 +139,7 @@ void Graph::add_operator_node(const std::shared_ptr<Node>& node)
 	case GRAPH::XLA:
 	case GRAPH::TVM:
 	case GRAPH::SHOGUN:
-		break;
+		create_operator<OperatorShogunBackend>(std::string(node->get_operator_name()));
 	}
 }
 
