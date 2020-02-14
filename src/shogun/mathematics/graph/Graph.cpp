@@ -126,6 +126,7 @@ void Graph::order_graph_visit_(const std::shared_ptr<Node>& node,
 void Graph::add_operator_node(const std::shared_ptr<Node>& node)
 {
 	auto* env = ShogunEnv::instance();
+	std::shared_ptr<Operator> op;
 
 	switch (env->graph_backend())
 	{
@@ -139,8 +140,9 @@ void Graph::add_operator_node(const std::shared_ptr<Node>& node)
 	case GRAPH::XLA:
 	case GRAPH::TVM:
 	case GRAPH::SHOGUN:
-		create_operator<OperatorShogunBackend>(std::string(node->get_operator_name()));
+		op = create_operator<OperatorShogunBackend>(std::string(node->get_operator_name()));
 	}
+	op->build(node);
 }
 
 

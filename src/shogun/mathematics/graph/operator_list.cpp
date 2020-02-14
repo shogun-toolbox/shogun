@@ -5,13 +5,15 @@
 using namespace shogun;
 using namespace shogun::io;
 
-static const PluginFactory& shogun::operator_list()
+#include <iostream>
+
+const PluginFactory& shogun::operator_list()
 {
 	static std::mutex kMu;
 	static PluginFactory kOperatorList;
 
 	std::lock_guard<std::mutex> lock(kMu);
-	if (kOperatorList.size() > 0)
+	if (!kOperatorList.empty())
 		return kOperatorList;
 
 	for (const auto& plugin: env()->plugins())

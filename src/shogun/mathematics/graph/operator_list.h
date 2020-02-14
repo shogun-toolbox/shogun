@@ -14,7 +14,7 @@ namespace shogun {
 	using CreateFunction = std::function<Manifest()>;
 	using PluginFactory = std::unordered_map<std::string, CreateFunction>;
 
-	static inline const PluginFactory& operator_list();
+	const PluginFactory& operator_list();
 
 	/** new operator implementation instance
 	 * @param sgserializable_name
@@ -30,7 +30,7 @@ namespace shogun {
 	 *
 	 */
 	template <class BackendType>
-	std::shared_ptr<OperatorImpl<BackendType>> create_operator(const std::string& name) noexcept(false)
+	std::shared_ptr<Operator> create_operator(const std::string& name) noexcept(false)
 	{
 		using BackendImplementation = OperatorImpl<BackendType>;
 		auto clazzes = operator_list();
