@@ -59,6 +59,7 @@ const PluginFactory& shogun::operator_list()
 	return kOperatorList;
 }
 
+
 template <class BackendType>
 std::shared_ptr<OperatorImpl<BackendType>> shogun::create(const std::string& operator_name)
 {
@@ -71,6 +72,7 @@ std::shared_ptr<OperatorImpl<BackendType>> shogun::create(const std::string& ope
 	}
 	return nullptr;
 }
+
 
 std::set<std::string> shogun::available_operators()
 {

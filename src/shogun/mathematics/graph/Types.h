@@ -36,6 +36,17 @@ namespace shogun
 		using type = float64_t;
 	};
 
+	inline size_t get_size_from_enum(element_type type)
+	{
+		switch(type)
+		{
+			case element_type::FLOAT32:
+				return sizeof(get_type_from_enum<element_type::FLOAT32>::type);
+			case element_type::FLOAT64:
+				return sizeof(get_type_from_enum<element_type::FLOAT64>::type);
+		}
+	}
+
 	template <typename T>
 	struct get_enum_from_type
 	{

@@ -139,29 +139,11 @@ namespace shogun
 
 		void allocate_tensor(const Shape& shape, element_type type)
 		{
+			m_output_tensors[0]->set_shape(shape);
 			m_output_tensors[0]->data() = allocator_dispatch(
 			    m_output_tensors[0]->get_size_from_shape(shape), type);
 		}
 	};
-
-#ifdef USE_NGRAPH
-	IGNORE_IN_CLASSLIST class AddNGraph : public AddImpl<AddNGraph, OperatorNGraphBackend>
-	{
-	public:
-		AddNGraph(const std::shared_ptr<Node>& node) : AddImpl(node)
-		{
-		}
-
-		void build()
-		{
-			m_ngraph_node = std::make_shared<ngraph::op::Add>();
-		}
-
-		void evaluate()
-		{
-		}
-	};
-#endif
 } // namespace shogun
 
 #endif
