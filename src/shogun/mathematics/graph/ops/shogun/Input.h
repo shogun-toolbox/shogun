@@ -16,14 +16,19 @@ namespace shogun {
 			return "Input";
 		}
 
+		void evaluate() override
+		{
+			error("Input nodes cannot be run with evaluate. Use evaluate_input(SGContainer) instead");
+		}
+
 		template<typename T>
-		void evaluate(const SGVector<T>& vec)
+		void evaluate_input(const SGVector<T>& vec)
 		{
 			this->evaluate_implementation(vec);
 		}
 
 		template<typename T>
-		void evaluate(const SGMatrix<T>& vec)
+		void evaluate_input(const SGMatrix<T>& vec)
 		{
 			this->evaluate_implementation(vec);
 		}
@@ -33,8 +38,6 @@ namespace shogun {
 	{
 	public:
 		InputShogun(): InputImpl() {}
-
-		// InputShogun(const std::shared_ptr<Input>& node): InputImpl(node) {}
 
 		void evaluate(const std::shared_ptr<Tensor>& tensor)
 		{		

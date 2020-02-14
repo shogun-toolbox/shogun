@@ -12,11 +12,20 @@ public:
 	virtual ~Operator() {};
 
 	virtual std::string_view get_operator_name() const = 0;
+
+	void operator()()
+	{
+		if (!m_abstract_node)
+			error("Call Operator::build(node), before running Operator.");
+		evaluate();
+	}
 	
 	void build(const std::shared_ptr<Node>& node)
 	{
 		m_abstract_node = node;
 	}
+
+	virtual void evaluate() = 0;
 	
 	protected:
 	std::shared_ptr<Node> m_abstract_node;
@@ -28,11 +37,8 @@ IGNORE_IN_CLASSLIST class OperatorImpl: public Operator
 
 public:	
 	static constexpr std::string_view kBackendName = BackendType::backend_name;
-	// static constexpr std::string_view kBackendName = BackendType::backend_name;
 
 	OperatorImpl() = default;
-
-	// OperatorImpl(const std::shared_ptr<Node>& abstract_node): m_abstract_node(abstract_node) {}
 
 	virtual ~OperatorImpl() {}
 };
