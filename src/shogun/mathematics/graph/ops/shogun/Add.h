@@ -16,12 +16,7 @@ namespace shogun {
 		{
 			return "Add";
 		}
-		
-		template<typename T>
-		void evaluate()
-		{
-			this->evaluate_implementation();
-		}
+
 	};
 
 
@@ -31,11 +26,7 @@ namespace shogun {
 
 		AddShogun(): AddImpl() {};
 
-		// AddShogun(const std::shared_ptr<Node>& node) : AddImpl(node)
-		// {
-		// }
-		
-		void evaluate()
+		void evaluate() override
 		{
 			auto add_node = std::static_pointer_cast<Add>(m_abstract_node);
 
