@@ -346,7 +346,6 @@ function(ADD_SHOGUN_TEST REL_TEST_NAME)
 			RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
 		)
 		target_link_libraries(${TEST_NAME} ${SHOGUN_TEST_LINK_LIBS})
-		target_include_directories(${TEST_NAME} PRIVATE ${source_dir}/googlemock/include ${source_dir}/googletest/include)
 		set(NO_COLOR "--color_print=false")
 	endif()
 

@@ -498,6 +498,8 @@ IF(NOT rxcpp_FOUND)
             $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
             $<INSTALL_INTERFACE:include/shogun/third_party/rxcpp>
             )
+    # TODO: the dependencies should be refactored
+    add_dependencies(shogun-core rxcpp)
 ELSE()
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
 ENDIF()
@@ -535,8 +537,10 @@ ELSE()
     SET(USE_EXTERNAL_SPDLOG 1)
     target_link_libraries(shogun PRIVATE spdlog::spdlog)
     if (EXISTS shogun-static)
-	target_link_libraries(shogun-static PRIVATE spdlog::spdlog)
+	    target_link_libraries(shogun-static PRIVATE spdlog::spdlog)
     endif()
+    # TODO: the dependencies should be refactored
+    target_link_libraries(shogun-core PRIVATE spdlog::spdlog)
 ENDIF()
 
 SHOGUN_DEPENDENCIES(
@@ -738,25 +742,22 @@ IF (ENABLE_TESTING)
 
   # Find GTEST and GMOCK frameworks
   include(external/GoogleTestNMock)
-  ExternalProject_Get_Property(GoogleMock source_dir)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-  LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
   add_library(shogun_test_main ${CMAKE_CURRENT_SOURCE_DIR}/util/unittest_main.cc)
   if (APPLE)
-    target_link_libraries(shogun_test_main
+    target_link_libraries(shogun_test_main PUBLIC
       gmock
       gtest
       shogun-core
     )
   elseif(MSVC)
-    target_link_libraries(shogun_test_main
+    target_link_libraries(shogun_test_main PUBLIC
       gmock
       gtest
       shogun-core
     )
   else()
-    target_link_libraries(shogun_test_main
+    target_link_libraries(shogun_test_main PUBLIC
       gmock
       gtest
       shogun-core
