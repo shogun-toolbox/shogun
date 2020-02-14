@@ -1,6 +1,6 @@
 #include <shogun/mathematics/graph/Graph.h>
 #include <shogun/mathematics/graph/Tensor.h>
-#include <shogun/mathematics/graph/ops/Input.h>
+#include <shogun/mathematics/graph/ops/shogun/Input.h>
 #include <shogun/mathematics/graph/operator_list.h>
 
 #include <unordered_set>
@@ -60,28 +60,50 @@ std::unordered_map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_conn
 		error("Graph found more input tensors than provided.");
 	}
 
+	m_cached_input_nodes = inputs;
+	m_cached_output_nodes = outputs;
+
 	return unordered_nodes;
 }
 
-void Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
+std::vector<std::shared_ptr<Tensor>> Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
 {
+	if (m_cached_operators.empty())
+	{
+		error("Did you call Graph::build()?");
+	}
+
+	if (m_cached_input_operators.empty())
+	{
+		error("No input nodes found in graph!");
+	}
+
 	auto* env = ShogunEnv::instance();
 	switch (env->graph_backend())
 	{
 	case GRAPH::SHOGUN:
 	{
-		execute_shogun();
+		execute_shogun(tensors);
 	}
 	break;
 	case GRAPH::NGRAPH:
 	{
 #ifdef USE_NGRAPH
-		execute_ngraph();
+		execute_ngraph(tensors);
 #else
 		error("NGraph execution is not available.");
 #endif
 	}
 	}
+
+	std::vector<std::shared_ptr<Tensor>> result;
+
+	for (const auto& node: m_cached_output_nodes)
+	{
+		result.push_back(node->get_tensors()[0]);
+	}
+
+	return result;
 }
 
 
@@ -96,9 +118,17 @@ void Graph::build_backend_graph(
 		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
 	}
 
+	// get input operatos
+	for (const auto& node: m_cached_input_nodes)
+	{
+		m_cached_input_operators.push_back(add_operator_node(node));
+	}
+
 	for (const auto& node: ordered_nodes)
 	{
-		add_operator_node(node);
+		// node not an input so safe to assume it's an operator
+		if (std::find(m_cached_input_nodes.begin(), m_cached_input_nodes.end(), node) == m_cached_input_nodes.end())
+			m_cached_operators.push_back(add_operator_node(node));
 	}
 }
 
@@ -123,7 +153,7 @@ void Graph::order_graph_visit_(const std::shared_ptr<Node>& node,
 	result.push_back(node);
 }
 
-void Graph::add_operator_node(const std::shared_ptr<Node>& node)
+std::shared_ptr<Operator> Graph::add_operator_node(const std::shared_ptr<Node>& node)
 {
 	auto* env = ShogunEnv::instance();
 	std::shared_ptr<Operator> op;
@@ -143,14 +173,28 @@ void Graph::add_operator_node(const std::shared_ptr<Node>& node)
 		op = create_operator<OperatorShogunBackend>(std::string(node->get_operator_name()));
 	}
 	op->build(node);
+
+	return op;
 }
 
 
-void Graph::execute_shogun()
+void Graph::execute_shogun(const std::vector<std::shared_ptr<Tensor>>& tensors)
 {
+	if (tensors.size() != m_cached_input_operators.size())
+		error("Number of input tensors ({}) different from number of input nodes ({}).", 
+			tensors.size(), m_cached_input_nodes.size());
+	for (const auto& [tensor, node]: zip_iterator(tensors, m_cached_input_operators))
+	{
+		std::static_pointer_cast<InputShogun>(node)->evaluate_input(tensor);
+	}
+
+	for (auto& op: m_cached_operators)
+	{
+		(*op)();
+	}
 }
 
-void Graph::execute_ngraph()
+void Graph::execute_ngraph(const std::vector<std::shared_ptr<Tensor>>& tensors)
 {
 	// auto backend = ngraph::runtime::Backend::create("CPU", true);
 

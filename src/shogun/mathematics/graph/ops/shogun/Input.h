@@ -1,60 +1,38 @@
-#include <shogun/mathematics/graph/ops/Input.h>
-#include <shogun/mathematics/graph/OperatorImplementation.h>
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
+#ifndef SHOGUNINPUTSHOGUN_H_
+#define SHOGUNINPUTSHOGUN_H_
+
+#include <shogun/mathematics/graph/ops/abstract/InputImpl.h>
+#include <shogun/mathematics/graph/nodes/Input.h>
 
 namespace shogun {
-	template <typename DerivedOperator, typename EngineImplementation>
-    IGNORE_IN_CLASSLIST class InputImpl: public OperatorImpl<EngineImplementation>
-	{
-	public:
-		InputImpl(): OperatorImpl<EngineImplementation>() {}
-		// InputImpl(const std::shared_ptr<Input>& node): OperatorImpl<EngineImplementation>(node) {}
-
-		virtual ~InputImpl() {}
-
-		std::string_view get_operator_name() const override
-		{
-			return "Input";
-		}
-
-		void evaluate() override
-		{
-			error("Input nodes cannot be run with evaluate. Use evaluate_input(SGContainer) instead");
-		}
-
-		template<typename T>
-		void evaluate_input(const SGVector<T>& vec)
-		{
-			this->evaluate_implementation(vec);
-		}
-
-		template<typename T>
-		void evaluate_input(const SGMatrix<T>& vec)
-		{
-			this->evaluate_implementation(vec);
-		}
-	};
 
     IGNORE_IN_CLASSLIST class InputShogun: public InputImpl<InputShogun, OperatorShogunBackend>
 	{
 	public:
 		InputShogun(): InputImpl() {}
 
-		void evaluate(const std::shared_ptr<Tensor>& tensor)
+		void evaluate_implementation(const std::shared_ptr<Tensor>& tensor)
 		{		
 			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
 
 			runtime_type_check(tensor->get_type());
 			runtime_shape_check(tensor->get_shape());
 
-			// allocate_output(tensor->get_shape(), tensor->get_type());
+			allocate_output(tensor->get_shape(), tensor->get_type());
 
+			// the input node is just a handle to the input tensor
 			input_node->get_tensor()->data() = tensor->data();
 		}
 		
 	private:
 		void allocate_output(const Shape& shape, element_type type) {
 			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
-
 			input_node->get_tensor() = std::make_shared<Tensor>(shape, type);
 		}
 
@@ -69,7 +47,7 @@ namespace shogun {
 				error("Input node got wrong input type!");
 		}
 
-		void runtime_shape_check(const Shape& shape)
+		void runtime_shape_check(Shape shape)
 		{
 			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
 
@@ -84,6 +62,7 @@ namespace shogun {
 
 			for (const auto& [idx, input_shape_i, expected_shape_i]: enumerate(shape, expected_shape))
 			{
+				// if it is dynamic we will use this to infer the name shape
 				if (expected_shape_i == Shape::Dynamic)
 					continue;
 				else if (expected_shape_i != input_shape_i)
@@ -96,3 +75,5 @@ namespace shogun {
 		}
 	};
 }
+
+#endif

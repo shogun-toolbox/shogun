@@ -1,5 +1,5 @@
 #include <shogun/mathematics/graph/LinalgNodes.h>
-#include <shogun/mathematics/graph/ops/Input.h>
+#include <shogun/mathematics/graph/nodes/Input.h>
 #include <vector>
 #include <deque>
 
@@ -22,7 +22,7 @@ namespace shogun
 		    const std::vector<std::shared_ptr<Node>>& outputs);
 
 
-		void evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors);
+		std::vector<std::shared_ptr<Tensor>> evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors);
 		
 		void build();
 
@@ -40,10 +40,10 @@ namespace shogun
 			std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
 			std::deque<std::shared_ptr<Node>>& result);
 
-		void add_operator_node(const std::shared_ptr<Node>&);
+		std::shared_ptr<Operator> add_operator_node(const std::shared_ptr<Node>&);
 
-		void execute_shogun();
-		void execute_ngraph();
+		void execute_shogun(const std::vector<std::shared_ptr<Tensor>>& tensors);
+		void execute_ngraph(const std::vector<std::shared_ptr<Tensor>>& tensors);
 
 		void build_shogun_graph();
 		void build_ngraph_graph();
@@ -52,8 +52,12 @@ namespace shogun
 		std::vector<std::shared_ptr<Input>> m_inputs;
 		std::vector<std::shared_ptr<Node>> m_outputs;
 
-    private:
-        // std::vector<std::pair<std::shared_ptr<Node>>, STATUS> m_status;
+		std::deque<std::shared_ptr<Node>> m_cached_nodes;
+		std::vector<std::shared_ptr<Input>> m_cached_input_nodes;
+		std::vector<std::shared_ptr<Node>> m_cached_output_nodes;
+
+		std::vector<std::shared_ptr<Operator>> m_cached_input_operators;
+		std::vector<std::shared_ptr<Operator>> m_cached_operators;
     };
 
 } // namespace shogun

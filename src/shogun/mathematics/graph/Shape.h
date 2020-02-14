@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <limits>
+#include <utility>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -20,35 +21,35 @@ namespace shogun
 	public:
 		static constexpr size_t Dynamic = std::numeric_limits<size_t>::max();
 
-		Shape(const std::initializer_list<size_t>& shape) : m_shape(shape)
+		Shape(std::initializer_list<size_t> shape) : m_shape(shape)
 		{
 		}
 
-		Shape(const std::vector<size_t>& shape) : m_shape(shape)
+		Shape(std::vector<size_t> shape) : m_shape(std::move(shape))
 		{
 		}
 
-		const std::vector<size_t>& get() const
-		{
-			return m_shape;
-		}
-
-		const size_t size() const
+		[[nodiscard]] size_t size() const
 		{
 			return m_shape.size();
 		}
 
-		auto begin() const
+		size_t& operator[](size_t idx)
+		{
+			return m_shape[idx];
+		}
+
+		[[nodiscard]] auto begin() const
 		{
 			return m_shape.begin();
 		}
 
-		auto end() const
+		[[nodiscard]] auto end() const
 		{
 			return m_shape.end();
 		}
 
-		std::string to_string() const
+		[[nodiscard]] std::string to_string() const
 		{
 			std::stringstream result;
 			result << "Shape(";

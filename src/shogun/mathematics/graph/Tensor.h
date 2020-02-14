@@ -10,6 +10,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
+#include <shogun/util/enumerate.h>
+
 #include <shogun/mathematics/graph/Allocator.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Types.h>
@@ -20,31 +22,50 @@
 
 namespace shogun
 {
-	// potential entry point to unify backend memory representations?
-	// might have to use void*& and store datatype
 	class Tensor
 	{
-	friend class Node;
 
+	friend class Node;
+	
 	public:
 
 		template <typename T>
-		Tensor(const SGVector<T>& vec) : m_data(vec.vector)
+		Tensor(const SGVector<T>& vec) : m_free(false)
+		    , m_data(vec.vector)
 			, m_shape(Shape{vec.size()})
 			, m_type(get_enum_from_type<T>::type)
 		{
 		}
 
 		template <typename T>
-		Tensor(const SGMatrix<T>& matrix) : m_data(matrix.matrix)
+		Tensor(const SGMatrix<T>& matrix) : m_free(false)
+		    , m_data(matrix.matrix)
 			, m_shape(Shape{matrix.num_rows, matrix.num_cols})
 			, m_type(get_enum_from_type<T>::type)
 		{
 		}
 
-		Tensor(const Shape& shape, element_type type): m_shape(shape), m_type(type)
+		~Tensor()
 		{
-			m_data = allocator_dispatch(get_size_from_shape(m_shape), m_type);
+			if (m_data != nullptr && m_free)
+			{
+				switch(m_type)
+				{
+					case element_type::FLOAT32:
+						delete (float32_t*)m_data;
+						break;
+					case element_type::FLOAT64:
+						delete (float32_t*)m_data;
+						break;
+				}
+			}
+		}
+
+		Tensor(const Shape& shape, element_type type): m_free(false) 
+			, m_shape(shape)
+			, m_type(type)
+			, m_data(nullptr)
+		{
 		}
 
 		[[nodiscard]] const Shape& get_shape() const
@@ -69,10 +90,50 @@ namespace shogun
 	    	return os << tensor->to_string();
 		}
 
+		void set_shape(const Shape& shape)
+		{
+			for (auto [idx, original_shape_dim_i, new_shape_dim_i]: enumerate(m_shape, shape))
+			{
+				if (original_shape_dim_i == Shape::Dynamic)
+				{
+					m_shape[idx] = new_shape_dim_i;
+				}
+				else if (original_shape_dim_i != new_shape_dim_i)
+				{
+					error("Cannot set tensor shape. Shapes {} and {} are incompatible.", m_shape, shape);
+				}
+			}
+		}
+
 		void*& data()
 		{
 			return m_data;
 		}
+
+#ifndef SWIG
+
+		template <typename Container>
+		Container as() const
+		{
+			if constexpr(std::is_same_v<SGVector<typename Container::Scalar>, Container>)
+			{
+				if (m_shape.size() > 1)
+					error("Tried to cast a multidimensional Tensor to a SGVector.");
+				if (get_enum_from_type<typename Container::Scalar>::type != m_type)
+					error("Type mismatch when casting from Tensor.");
+				return SGVector<typename Container::Scalar>((typename Container::Scalar*)m_data, size());
+			}
+			if constexpr(std::is_same_v<SGMatrix<typename Container::Scalar>, Container>)
+			{
+				if (get_enum_from_type<typename Container::Scalar>::type != m_type)
+					error("Type mismatch when casting from Tensor");
+				if (m_shape.size() != 2)
+					error("SGMatrix does not support {} dimensions.", m_shape.size());
+				return SGMatrix<typename Container::Scalar>((typename Container::Scalar*)m_data, size());
+			}
+		}
+
+#endif
 
 		[[nodiscard]] size_t get_size_from_shape(const Shape& size) const
 		{
@@ -81,11 +142,10 @@ namespace shogun
 		}
 
 	private:
-		// m_data is temporary, only the execution engine can assume
-		// that it is valid. A user should only have access to data
-		// through the Result class, obtained from Graph::evaluate(...);
+		// whether the memory is owned by the tensor, i.e. should it be deleted by the destructor
+		bool m_free;
 		void* m_data;
-		const Shape m_shape;
+		Shape m_shape;
 		const element_type m_type;
 	};
 

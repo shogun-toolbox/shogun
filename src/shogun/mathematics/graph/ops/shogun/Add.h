@@ -1,24 +1,16 @@
-#include <shogun/mathematics/graph/ops/Add.h>
-#include <shogun/mathematics/graph/OperatorImplementation.h>
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
+#ifndef SHOGUNADDSHOGUN_H_
+#define SHOGUNADDSHOGUN_H_
+
+#include <shogun/mathematics/graph/ops/abstract/AddImpl.h>
+#include <shogun/mathematics/graph/nodes/Add.h>
 
 namespace shogun {
-	
-	template <typename DerivedOperator, typename EngineImplementation>
-	IGNORE_IN_CLASSLIST class AddImpl: public OperatorImpl<EngineImplementation>
-	{
-	public:
-		AddImpl(): OperatorImpl<EngineImplementation>() {}
-		// AddImpl(const std::shared_ptr<Node>& node): OperatorImpl<EngineImplementation>(node) {}
-
-		virtual ~AddImpl() {}
-		
-		std::string_view get_operator_name() const override
-		{
-			return "Add";
-		}
-
-	};
-
 
 	IGNORE_IN_CLASSLIST class AddShogun : public AddImpl<AddShogun, OperatorShogunBackend>
 	{
@@ -70,6 +62,10 @@ namespace shogun {
 					error("Runtime shape mismatch in dimension {}. Got {} and {}.",
 						idx, shape1, shape2);
 				}
+				if (shape1 == Shape::Dynamic)
+				{
+					error("Could not infer runtime shape.");
+				}
 			}
 
 			return node1_tensor->get_shape();
@@ -108,3 +104,5 @@ namespace shogun {
 		}
 	};
 }
+
+#endif
