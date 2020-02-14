@@ -21,7 +21,7 @@ Donate to Shogun via NumFocus:
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
 
 
-Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
+Buildbot: https://buildbot.shogun.ml.
 
  * See [doc/readme/ABOUT.md](doc/readme/ABOUT.md) for a project description.
  * See [doc/readme/INSTALL.md](doc/readme/INSTALL.md) for installation instructions.
