@@ -34,12 +34,7 @@ namespace shogun {
 		// AddShogun(const std::shared_ptr<Node>& node) : AddImpl(node)
 		// {
 		// }
-
-		void build(const std::shared_ptr<Node>& node)
-		{
-			m_abstract_node = node;
-		}
-
+		
 		void evaluate()
 		{
 			auto add_node = std::static_pointer_cast<Add>(m_abstract_node);

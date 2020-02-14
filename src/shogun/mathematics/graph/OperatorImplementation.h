@@ -5,8 +5,25 @@
 
 namespace shogun {
 
+IGNORE_IN_CLASSLIST class Operator
+{
+public:
+	Operator() = default;
+	virtual ~Operator() {};
+
+	virtual std::string_view get_operator_name() const = 0;
+	
+	void build(const std::shared_ptr<Node>& node)
+	{
+		m_abstract_node = node;
+	}
+	
+	protected:
+	std::shared_ptr<Node> m_abstract_node;
+};
+
 template <typename BackendType>
-IGNORE_IN_CLASSLIST class OperatorImpl
+IGNORE_IN_CLASSLIST class OperatorImpl: public Operator
 {
 
 public:	
@@ -18,12 +35,6 @@ public:
 	// OperatorImpl(const std::shared_ptr<Node>& abstract_node): m_abstract_node(abstract_node) {}
 
 	virtual ~OperatorImpl() {}
-
-	virtual std::string_view get_operator_name() const = 0;
-
-
-protected:
-	std::shared_ptr<Node> m_abstract_node;
 };
 
 class OperatorShogunBackend

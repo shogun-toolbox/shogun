@@ -36,11 +36,6 @@ namespace shogun {
 
 		// InputShogun(const std::shared_ptr<Input>& node): InputImpl(node) {}
 
-		void build(const std::shared_ptr<Node>& node)
-		{
-			m_abstract_node = node;
-		}
-
 		void evaluate(const std::shared_ptr<Tensor>& tensor)
 		{		
 			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
