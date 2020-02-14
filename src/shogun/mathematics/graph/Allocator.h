@@ -16,7 +16,7 @@ namespace shogun {
 		switch (type)
 		{
 		case element_type::FLOAT32:
-			return new get_type_from_enum<element_type::FLOAT32>::type(size);
+		 	return new get_type_from_enum<element_type::FLOAT32>::type(size);
 		case element_type::FLOAT64:
 			return new get_type_from_enum<element_type::FLOAT64>::type(size);
 		}
