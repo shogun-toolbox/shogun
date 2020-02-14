@@ -19,3 +19,4 @@ ExternalProject_Add(
 	LOG_DOWNLOAD ON
 	)
 add_dependencies(libshogun StanMath)
+add_dependencies(shogun-core StanMath)
