@@ -32,12 +32,12 @@ namespace shogun
 		}
 #endif
 	private:
-		std::map<std::shared_ptr<Node>, STATUS> check_fully_connected(
+		std::unordered_map<std::shared_ptr<Node>, STATUS> check_fully_connected(
 		    const std::vector<std::shared_ptr<Input>>& inputs,
 		    const std::vector<std::shared_ptr<Node>>& outputs);
-		void build_backend_graph(std::map<std::shared_ptr<Node>, STATUS>& unordered_nodes);
+		void build_backend_graph(std::unordered_map<std::shared_ptr<Node>, STATUS>& unordered_nodes);
 		void order_graph_visit_(const std::shared_ptr<Node>& node, 
-			std::map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
+			std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
 			std::deque<std::shared_ptr<Node>>& result);
 
 		void add_operator_node(const std::shared_ptr<Node>&);

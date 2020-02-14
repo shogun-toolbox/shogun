@@ -20,17 +20,13 @@ void Graph::build()
 	build_backend_graph(unordered_nodes);
 }
 
-std::map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_connected(
+std::unordered_map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_connected(
     const std::vector<std::shared_ptr<Input>>& inputs,
     const std::vector<std::shared_ptr<Node>>& outputs)
 {
-	std::deque<std::shared_ptr<Node>> nodes_to_check;
-	for (const auto& node : outputs)
-	{
-		nodes_to_check.push_back(node);
-	}
+	std::deque<std::shared_ptr<Node>> nodes_to_check(outputs.begin(), outputs.end());
 	std::unordered_set<std::shared_ptr<Node>> inputs_found;
-	std::map<std::shared_ptr<Node>, STATUS> unordered_nodes;
+	std::unordered_map<std::shared_ptr<Node>, STATUS> unordered_nodes;
 
 	while (!nodes_to_check.empty())
 	{
@@ -89,10 +85,11 @@ void Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
 
 
 void Graph::build_backend_graph(
-	std::map<std::shared_ptr<Node>, Graph::STATUS>& unordered_nodes)
+	std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& unordered_nodes)
 {
 	std::deque<std::shared_ptr<Node>> ordered_nodes;
 
+	// DAG topological sorting algorithm with DFS
 	for (const auto& node: unordered_nodes)
 	{
 		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
@@ -105,7 +102,7 @@ void Graph::build_backend_graph(
 }
 
 void Graph::order_graph_visit_(const std::shared_ptr<Node>& node, 
-	std::map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
+	std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
 	std::deque<std::shared_ptr<Node>>& result)
 {
 	auto& node_status = all_nodes[node];
@@ -134,7 +131,7 @@ void Graph::add_operator_node(const std::shared_ptr<Node>& node)
 	case GRAPH::NGRAPH:
 	{
 #ifdef USE_NGRAPH
-		// node->s
+		
 #endif
 	}
 	break;

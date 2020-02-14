@@ -67,6 +67,8 @@ namespace shogun {
         	return m_output_tensors;
         }
 
+        virtual std::string_view get_operator_name() const = 0;
+
         virtual std::string to_string() const = 0;
 
         friend std::ostream& operator<<(std::ostream& os, const Node& node)
