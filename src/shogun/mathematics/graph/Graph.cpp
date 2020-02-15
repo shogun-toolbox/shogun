@@ -3,15 +3,12 @@
 
 #include <memory>
 
-#ifdef USE_NGRAPH
-#include <ngraph/ngraph.h>
-#endif
-
 using namespace shogun;
+using namespace std;
 
 Graph::Graph(
-    const std::vector<std::shared_ptr<Input>>& inputs,
-    const std::vector<std::shared_ptr<Node>>& outputs)
+    const vector<shared_ptr<Input>>& inputs,
+    const vector<shared_ptr<Node>>& outputs)
 {
 	m_inputs = inputs;
 	m_outputs = outputs;
@@ -35,13 +32,13 @@ void Graph::build(GRAPH_BACKEND backend)
 	build_backend_graph(unordered_nodes);
 }
 
-std::unordered_map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_connected(
-    const std::vector<std::shared_ptr<Input>>& inputs,
-    const std::vector<std::shared_ptr<Node>>& outputs)
+unordered_map<shared_ptr<Node>, Graph::STATUS> Graph::check_fully_connected(
+    const vector<shared_ptr<Input>>& inputs,
+    const vector<shared_ptr<Node>>& outputs)
 {
-	std::deque<std::shared_ptr<Node>> nodes_to_check(outputs.begin(), outputs.end());
-	std::unordered_set<std::shared_ptr<Node>> inputs_found;
-	std::unordered_map<std::shared_ptr<Node>, STATUS> unordered_nodes;
+	deque<shared_ptr<Node>> nodes_to_check(outputs.begin(), outputs.end());
+	unordered_set<shared_ptr<Node>> inputs_found;
+	unordered_map<shared_ptr<Node>, STATUS> unordered_nodes;
 
 	while (!nodes_to_check.empty())
 	{
@@ -56,7 +53,7 @@ std::unordered_map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_conn
 				nodes_to_check.push_back(node);
 		}
 		else if (
-		    std::find(inputs.begin(), inputs.end(), top_node) != inputs.end())
+		    find(inputs.begin(), inputs.end(), top_node) != inputs.end())
 		{
 			// valid input node
 			inputs_found.insert(top_node);
@@ -80,7 +77,7 @@ std::unordered_map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_conn
 	return unordered_nodes;
 }
 
-std::vector<std::shared_ptr<Tensor>> Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
+vector<shared_ptr<Tensor>> Graph::evaluate(const vector<shared_ptr<Tensor>>& tensors)
 {
 	if (!m_executor)
 	{
@@ -89,7 +86,7 @@ std::vector<std::shared_ptr<Tensor>> Graph::evaluate(const std::vector<std::shar
 
 	m_executor->execute(tensors);
 
-	std::vector<std::shared_ptr<Tensor>> result;
+	vector<shared_ptr<Tensor>> result;
 
 	for (const auto& node: m_cached_output_nodes)
 	{
@@ -100,9 +97,9 @@ std::vector<std::shared_ptr<Tensor>> Graph::evaluate(const std::vector<std::shar
 }
 
 void Graph::build_backend_graph(
-	std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& unordered_nodes)
+	unordered_map<shared_ptr<Node>, Graph::STATUS>& unordered_nodes)
 {
-	std::deque<std::shared_ptr<Node>> ordered_nodes;
+	deque<shared_ptr<Node>> ordered_nodes;
 
 	// DAG topological sorting algorithm with DFS
 	for (const auto& node: unordered_nodes)
@@ -119,14 +116,14 @@ void Graph::build_backend_graph(
 	for (const auto& node: ordered_nodes)
 	{
 		// node not an input so safe to assume it's an operator
-		if (std::find(m_cached_input_nodes.begin(), m_cached_input_nodes.end(), node) == m_cached_input_nodes.end())
+		if (find(m_cached_input_nodes.begin(), m_cached_input_nodes.end(), node) == m_cached_input_nodes.end())
 			m_executor->add_operator_node(node);
 	}
 }
 
-void Graph::order_graph_visit_(const std::shared_ptr<Node>& node,
-	std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
-	std::deque<std::shared_ptr<Node>>& result)
+void Graph::order_graph_visit_(const shared_ptr<Node>& node,
+	unordered_map<shared_ptr<Node>, Graph::STATUS>& all_nodes,
+	deque<shared_ptr<Node>>& result)
 {
 	auto& node_status = all_nodes[node];
 	if (node_status == STATUS::MARKED)

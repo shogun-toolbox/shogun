@@ -31,30 +31,16 @@ public:
 	std::shared_ptr<Node> m_abstract_node;
 };
 
-template <typename BackendType, typename OperatorType>
+template <typename OperatorType>
 IGNORE_IN_CLASSLIST class OperatorImpl: public Operator
 {
 
 public:
 	using operator_type = OperatorType;
 
-	static constexpr std::string_view kBackendName = BackendType::backend_name;
-
 	OperatorImpl() = default;
 
 	virtual ~OperatorImpl() {}
-};
-
-class OperatorShogunBackend
-{
-public:
-	static constexpr std::string_view backend_name = "Shogun";
-};
-
-class OperatorNGraphBackend
-{
-public:
-	static constexpr std::string_view backend_name = "NGraph";
 };
 
 #define REGISTER_OP_FACTORY(opr, OP) \

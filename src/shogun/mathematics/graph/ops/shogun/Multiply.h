@@ -11,7 +11,7 @@
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class MultiplyShogun : public BinaryOperator<MultiplyShogun, OperatorShogunBackend>
+	IGNORE_IN_CLASSLIST class MultiplyShogun : public BinaryOperator<MultiplyShogun>
 	{
 	public:
 

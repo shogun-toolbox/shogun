@@ -12,11 +12,11 @@
 
 namespace shogun {
 
-	template <typename DerivedOperator, typename EngineImplementation>
-    IGNORE_IN_CLASSLIST class InputImpl: public OperatorImpl<EngineImplementation, Input>
+	template <typename DerivedOperator>
+    IGNORE_IN_CLASSLIST class InputImpl: public OperatorImpl<Input>
 	{
 	public:
-		InputImpl(): OperatorImpl<EngineImplementation, Input>() {}
+		InputImpl(): OperatorImpl<Input>() {}
 
 		virtual ~InputImpl() {}
 

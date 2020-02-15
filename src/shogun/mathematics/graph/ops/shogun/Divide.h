@@ -11,7 +11,7 @@
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class DivideShogun : public BinaryOperator<DivideShogun, OperatorShogunBackend>
+	IGNORE_IN_CLASSLIST class DivideShogun : public BinaryOperator<DivideShogun>
 	{
 	public:
 

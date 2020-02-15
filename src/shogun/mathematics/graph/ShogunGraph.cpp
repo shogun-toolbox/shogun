@@ -2,6 +2,7 @@
 #include <shogun/mathematics/graph/LinalgNodes.h>
 #include <shogun/mathematics/graph/ops/shogun/Add.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
+#include <shogun/mathematics/graph/ops/shogun/Subtract.h>
 
 using namespace shogun;
 
@@ -61,8 +62,11 @@ void ShogunGraph::add_operator_node(const std::shared_ptr<Node>& node)
     m_cached_operators.push_back(op);
 }
 
+// move this to implementations....
 REGISTER_OP(AddShogun);
 REGISTER_OP(InputShogun);
+REGISTER_OP(SubtractShogun);
+
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

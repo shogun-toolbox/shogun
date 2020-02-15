@@ -11,12 +11,12 @@
 
 namespace shogun {
 
-	template <typename DerivedOperator, typename EngineImplementation>
-	class BinaryOperator : public OperatorImpl<EngineImplementation, BinaryOperator<DerivedOperator, DerivedOperator>>
+	template <typename DerivedOperator, typename InterfaceOperator>
+	class BinaryOperator : public OperatorImpl<InterfaceOperator>
 	{
 	public:
-		BinaryOperator(): OperatorImpl<EngineImplementation, BinaryOperator<DerivedOperator, DerivedOperator>>() {}
-		
+		BinaryOperator(): OperatorImpl<InterfaceOperator>() {}
+
 		virtual ~BinaryOperator() {}
 
 		void evaluate() override
@@ -43,7 +43,7 @@ namespace shogun {
 			this->m_abstract_node->get_tensors()[0]->allocate_tensor(shape);
 		}
 
-		const Shape& runtime_shape_check(const std::shared_ptr<Node>& node1, 
+		const Shape& runtime_shape_check(const std::shared_ptr<Node>& node1,
 			const std::shared_ptr<Node>& node2)
 		{
 			// we don't need to check how many tensors there are

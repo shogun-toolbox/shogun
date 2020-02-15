@@ -12,7 +12,7 @@
 
 namespace shogun {
 
-    IGNORE_IN_CLASSLIST class InputShogun: public InputImpl<InputShogun, OperatorShogunBackend>
+    IGNORE_IN_CLASSLIST class InputShogun: public InputImpl<InputShogun>
 	{
 	public:
 		InputShogun(): InputImpl() {}

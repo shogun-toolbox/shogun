@@ -7,11 +7,12 @@
 #ifndef SHOGUNADDSHOGUN_H_
 #define SHOGUNADDSHOGUN_H_
 
+#include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class AddShogun : public BinaryOperator<AddShogun, OperatorShogunBackend>
+	IGNORE_IN_CLASSLIST class AddShogun : public BinaryOperator<AddShogun, Add>
 	{
 	public:
 

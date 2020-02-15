@@ -7,11 +7,12 @@
 #ifndef SHOGUNSUBTRACTSHOGUN_H_
 #define SHOGUNSUBTRACTSHOGUN_H_
 
+#include <shogun/mathematics/graph/nodes/Subtract.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class SubtractShogun : public BinaryOperator<SubtractShogun, OperatorShogunBackend>
+	IGNORE_IN_CLASSLIST class SubtractShogun : public BinaryOperator<SubtractShogun, Subtract>
 	{
 	public:
 
