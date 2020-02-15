@@ -3,6 +3,10 @@
 
 #include <memory>
 
+#ifdef USE_NGRAPH
+#include <ngraph/ngraph.h>
+#endif
+
 using namespace shogun;
 
 Graph::Graph(
