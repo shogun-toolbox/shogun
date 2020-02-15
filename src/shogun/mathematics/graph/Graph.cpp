@@ -15,7 +15,19 @@ Graph::Graph(
 
 void Graph::build()
 {
+	auto* env = ShogunEnv::instance();
+	build(env->graph_backend());
+}
+
+void Graph::build(GRAPH_BACKEND backend)
+{
 	auto unordered_nodes = check_fully_connected(m_inputs, m_outputs);
+
+	m_executor = create(backend);
+	if (!m_executor)
+		error("Specified graph executor '{}' is not available!",
+			kGraphNames.at(backend));
+
 	build_backend_graph(unordered_nodes);
 }
 
@@ -93,12 +105,6 @@ void Graph::build_backend_graph(
 	{
 		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
 	}
-
-	auto* env = ShogunEnv::instance();
-	m_executor = create(env->graph_backend());
-	if (!m_executor)
-		error("Specified graph executor {} backend is not available!",
-			kGraphNames.at(env->graph_backend()));
 
 	// get input operatos
 	for (const auto& node: m_cached_input_nodes)

@@ -27,10 +27,10 @@ namespace shogun
 		    const std::vector<std::shared_ptr<Input>>& inputs,
 		    const std::vector<std::shared_ptr<Node>>& outputs);
 
-
 		std::vector<std::shared_ptr<Tensor>> evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors);
 
 		void build();
+		void build(GRAPH_BACKEND backend);
 
 	private:
 		std::unordered_map<std::shared_ptr<Node>, STATUS> check_fully_connected(

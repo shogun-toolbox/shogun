@@ -66,6 +66,7 @@ set_target_properties(
   INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
 set_property(TARGET shogun-vanilla-executor APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+LIST(APPEND EXCUTORS shogun-vanilla-executor)
 
 find_package(NGraph)
 if (NGraph_FOUND)
@@ -83,14 +84,15 @@ if (NGraph_FOUND)
 		INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
 		LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
 	set_property(TARGET shogun-ngraph-executor APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+	LIST(APPEND EXCUTORS shogun-ngraph-executor)
 endif()
 
 IF (ENABLE_TESTING)
 	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-engine)
 
-	ADD_SHOGUN_TEST(Graph_test)
+	ADD_SHOGUN_TEST(nodes/Add_test)
 	if (UNIX AND NOT APPLE)
-		set_property(TEST Graph_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+		set_property(TEST Add_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
 	endif()
-	add_dependencies(Graph_test shogun-vanilla-executor)
+	add_dependencies(Add_test ${EXCUTORS})
 ENDIF()
