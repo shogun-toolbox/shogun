@@ -17,8 +17,7 @@
 
 #include <memory>
 
-
-enum class GRAPH
+enum class GRAPH_BACKEND
 {
 	SHOGUN = 0,
 	NGRAPH = 1,
@@ -97,12 +96,12 @@ namespace shogun
 		 * @return vector of paths to the plugins
 		 */
 		std::vector<std::string> plugins() const;
-		
+
 		/** get the global graph backend
 		 *
 		 * @return the backend enum
 		 */
-		GRAPH graph_backend()
+		GRAPH_BACKEND graph_backend()
 		{
 			return sg_graph_backend;
 		}
@@ -120,7 +119,7 @@ namespace shogun
 		std::unique_ptr<io::SGIO> sg_io;
 		std::unique_ptr<Signal> sg_signal;
 		std::unique_ptr<SGLinalg> sg_linalg;
-		GRAPH sg_graph_backend;
+		GRAPH_BACKEND sg_graph_backend;
 		float64_t sg_fequals_epsilon;
 		bool sg_fequals_tolerant;
 	};

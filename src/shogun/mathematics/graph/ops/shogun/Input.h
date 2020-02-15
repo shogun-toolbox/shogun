@@ -18,8 +18,8 @@ namespace shogun {
 		InputShogun(): InputImpl() {}
 
 		void evaluate_implementation(const std::shared_ptr<Tensor>& tensor)
-		{		
-			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
+		{
+			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
 
 			runtime_type_check(tensor->get_type());
 			runtime_shape_check(tensor->get_shape());
@@ -29,10 +29,10 @@ namespace shogun {
 			// the input node is just a handle to the input tensor
 			input_node->get_tensor()->data() = tensor->data();
 		}
-		
+
 	private:
 		void allocate_output(const Shape& shape, element_type type) {
-			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
+			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
 			input_node->get_tensor() = std::make_shared<Tensor>(shape, type);
 		}
 
@@ -40,7 +40,7 @@ namespace shogun {
 		{
 			// we trust the implementation to only use this implementation
 			// when the abstract node is an input
-			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
+			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
 
 			const auto& input_tensor = input_node->get_tensor();
 			if (type != input_tensor->get_type())
@@ -49,14 +49,14 @@ namespace shogun {
 
 		void runtime_shape_check(Shape shape)
 		{
-			auto input_node = std::static_pointer_cast<Input>(m_abstract_node);
+			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
 
 			const auto& input_tensor = input_node->get_tensor();
 			const auto expected_shape = input_tensor->get_shape();
 
 			if (shape.size() != expected_shape.size())
 			{
-				error("Mismatch in the number of dimensions, expected {}, but got {}", 
+				error("Mismatch in the number of dimensions, expected {}, but got {}",
 					expected_shape.size(), shape.size());
 			}
 

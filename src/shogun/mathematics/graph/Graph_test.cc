@@ -4,8 +4,6 @@
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
 
-#include <shogun/mathematics/graph/operator_list.h>
-
 using namespace shogun;
 using namespace std;
 
@@ -25,7 +23,6 @@ TYPED_TEST(GraphTest, add)
 
 	auto expected_result1 = X1 + X2;
 	auto expected_result2 = expected_result1 + X2;
-
 
 	auto input = make_shared<Input>(Shape{Shape::Dynamic}, get_enum_from_type<TypeParam>::type);
 	auto input1 = make_shared<Input>(Shape{10}, get_enum_from_type<TypeParam>::type);

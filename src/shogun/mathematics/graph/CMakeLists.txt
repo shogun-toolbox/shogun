@@ -1,12 +1,12 @@
 set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/Allocator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Graph.h
+	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/LinalgNodes.h
 	${CMAKE_CURRENT_SOURCE_DIR}/OperatorImplementation.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Shape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.h
-	${CMAKE_CURRENT_SOURCE_DIR}/operator_list.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Add.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/AddImpl.h
@@ -15,16 +15,17 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 
 set(SHOGUN_CORE_GRAPH_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/Graph.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/operator_list.cpp
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/Add.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/Input.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 	)
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/Operators.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
 	)
 
 # set(NGRAPH_GRAPH_IMPLEMENTATION_HEADERS
@@ -34,23 +35,28 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 # 	ops/ngraph/Add.cpp
 # 	)
 
-add_library(shogun-graph SHARED ${SHOGUN_GRAPH_HEADERS}
+add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}
 	${SHOGUN_GRAPH_SOURCES}
 	${SHOGUN_CORE_GRAPH_SOURCES}
 	${SHOGUN_CORE_GRAPH_HEADERS}
+)
+
+target_link_libraries(shogun-engine shogun-core)
+set_property(TARGET shogun-engine PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+set_target_properties(
+  shogun-engine PROPERTIES
+  VERSION ${LIBSHOGUNVER}
+  SOVERSION ${LIBSHOGUNSO}
+  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
+  LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
+set_property(TARGET shogun-engine APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+
+add_library(shogun-graph SHARED
 	${SHOGUN_GRAPH_IMPLEMENTATION_HEADERS}
 	${SHOGUN_GRAPH_IMPLEMENTATION_SOURCES}
-	)
-
-# add_library(shogun-graph-ngraph SHARED ${SHOGUN_GRAPH_HEADERS}
-# 	${SHOGUN_GRAPH_SOURCES}
-#   ${SHOGUN_CORE_GRAPH_SOURCES}
-#   ${SHOGUN_CORE_GRAPH_HEADERS}
-# 	${NGRAPH_GRAPH_IMPLEMENTATION_HEADERS}
-# 	${NGRAPH_GRAPH_IMPLEMENTATION_SOURCES})
-
-
-target_link_libraries(shogun-graph shogun-core)
+)
+target_link_libraries(shogun-graph shogun-engine)
+# todo create a macro/function for this
 set_property(TARGET shogun-graph PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 set_target_properties(
   shogun-graph PROPERTIES
@@ -61,7 +67,11 @@ set_target_properties(
 set_property(TARGET shogun-graph APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
 
 IF (ENABLE_TESTING)
-	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-graph)
+	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-engine)
 
 	ADD_SHOGUN_TEST(Graph_test)
+	if (UNIX AND NOT APPLE)
+		set_property(TEST Graph_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+	endif()
+	add_dependencies(Graph_test shogun-graph)
 ENDIF()

@@ -20,7 +20,7 @@ namespace shogun {
 
 		void evaluate() override
 		{
-			auto add_node = std::static_pointer_cast<Add>(m_abstract_node);
+			auto add_node = std::static_pointer_cast<operator_type>(m_abstract_node);
 
 			const auto& node1 = m_abstract_node->get_input_nodes()[0];
 			const auto& node2 = m_abstract_node->get_input_nodes()[1];
@@ -44,7 +44,7 @@ namespace shogun {
 
 	private:
 
-		const Shape& rutime_shape_check(const std::shared_ptr<Node>& node1, 
+		const Shape& rutime_shape_check(const std::shared_ptr<Node>& node1,
 			const std::shared_ptr<Node>& node2)
 		{
 			// we don't need to check how many tensors there are

@@ -19,23 +19,25 @@ public:
 			error("Call Operator::build(node), before running Operator.");
 		evaluate();
 	}
-	
+
 	void build(const std::shared_ptr<Node>& node)
 	{
 		m_abstract_node = node;
 	}
 
 	virtual void evaluate() = 0;
-	
+
 	protected:
 	std::shared_ptr<Node> m_abstract_node;
 };
 
-template <typename BackendType>
+template <typename BackendType, typename OperatorType>
 IGNORE_IN_CLASSLIST class OperatorImpl: public Operator
 {
 
-public:	
+public:
+	using operator_type = OperatorType;
+
 	static constexpr std::string_view kBackendName = BackendType::backend_name;
 
 	OperatorImpl() = default;
@@ -55,39 +57,18 @@ public:
 	static constexpr std::string_view backend_name = "NGraph";
 };
 
+#define REGISTER_OP_FACTORY(opr, OP) \
+  REGISTER_OP_UNIQ_HELPER(__COUNTER__, opr, OP)
+#define REGISTER_OP_UNIQ_HELPER(ctr, opr, OP) \
+  REGISTER_OP_UNIQ(ctr, opr, OP)
+#define REGISTER_OP_UNIQ(ctr, opr, OP)   \
+  static auto register_opf##ctr SG_ATTRIBUTE_UNUSED =    \
+		  opr.emplace(								\
+			std::type_index(typeid(OP::operator_type)), []() { return std::make_shared<OP>(); })
+#define REGISTER_OP(OP) 						\
+	REGISTER_OP_FACTORY(OperatorRegistry(), OP)
+
 }
 
-#define BEGIN_OPERATOR_MANIFEST(DESCRIPTION)                             \
-extern "C" Manifest shogunManifest()                            \
-{                                                               \
-	static Manifest manifest(DESCRIPTION,{                      \
-
-/** Declares class to be exported.
- * Always use this macro between @ref BEGIN_MANIFEST and
- * @ref END_MANIFEST
- */
-#define EXPORT_OPERATOR(CLASSNAME, ENGINE_TYPE, IDENTIFIER)                           \
-	std::make_pair(std::string(IDENTIFIER).append(CLASSNAME::kBackendName), make_any(                                        \
-		MetaClass<OperatorImpl<ENGINE_TYPE>>(make_any<std::shared_ptr<OperatorImpl<ENGINE_TYPE>>>(    \
-				[]() -> std::shared_ptr<OperatorImpl<ENGINE_TYPE>>                         \
-				{                                                               \
-					return std::make_shared<CLASSNAME>();                       \
-				}                                                               \
-				)))),                                                           \
-	std::make_pair(IDENTIFIER, make_any(                                        \
-		MetaClass<OperatorImpl<ENGINE_TYPE>>(make_any<std::shared_ptr<OperatorImpl<ENGINE_TYPE>>>(    \
-				[]() -> std::shared_ptr<OperatorImpl<ENGINE_TYPE>>                         \
-				{                                                               \
-					return std::make_shared<CLASSNAME>();                       \
-				}                                                               \
-				)))),                                                           \
-
-/** Ends manifest declaration.
- * Always use this macro after @ref BEGIN_MANIFEST
- */
-#define END_OPERATOR_MANIFEST()                                          \
-		});                                                     \
-	return manifest;                                            \
-}
 
 #endif
