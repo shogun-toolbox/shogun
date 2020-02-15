@@ -9,7 +9,6 @@
 
 #include <shogun/mathematics/graph/LinalgNodes.h>
 #include <shogun/mathematics/graph/Tensor.h>
-#include <shogun/mathematics/graph/OperatorImplementation.h>
 
 #include <shogun/util/enumerate.h>
 

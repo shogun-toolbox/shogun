@@ -7,22 +7,27 @@
 #ifndef SHOGUNADDNGRAPH_H_
 #define SHOGUNADDNGRAPH_H_
 
-#include <shogun/mathematics/graph/OperatorImplementation.h>
-#include <shogun/mathematics/graph/ops/abstract/AddImpl.h>
+#include <shogun/mathematics/graph/nodes/Add.h>
+#include <shogun/mathematics/graph/ops/abstract/OperatorImplementation.h>
 
 #include <ngraph/op/add.hpp>
 
 namespace shogun {
-	IGNORE_IN_CLASSLIST class AddNGraph : public AddImpl<AddNGraph, OperatorNGraphBackend>
+	IGNORE_IN_CLASSLIST class AddNGraph : public OperatorImpl<Add>
 	{
 	public:
-		AddNGraph() : AddImpl()
+		AddNGraph() : OperatorImpl()
 		{
 		}
 
-		void evaluate() override
+		std::string_view get_operator_name() const final
 		{
+			return "Add";
 		}
+
+		void evaluate() final
+		{
+		}	
 	};
 }
 

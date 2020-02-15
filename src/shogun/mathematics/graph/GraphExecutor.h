@@ -1,7 +1,7 @@
 #ifndef GRAPH_EXECUTOR_
 #define GRAPH_EXECUTOR_
 
-#include <shogun/mathematics/graph/OperatorImplementation.h>
+#include <shogun/mathematics/graph/ops/abstract/OperatorImplementation.h>
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/base/manifest.h>
 

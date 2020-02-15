@@ -8,7 +8,7 @@
 #define SHOGUNINPUTOPERATORIMPL_H_
 
 #include <shogun/mathematics/graph/nodes/Input.h>
-#include <shogun/mathematics/graph/OperatorImplementation.h>
+#include <shogun/mathematics/graph/ops/abstract/OperatorImplementation.h>
 
 namespace shogun {
 

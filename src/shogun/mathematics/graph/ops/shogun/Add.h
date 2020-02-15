@@ -16,7 +16,7 @@ namespace shogun {
 	{
 	public:
 
-		AddShogun(): BinaryOperator() {};
+		AddShogun(): BinaryOperator() {}
 
 		std::string_view get_operator_name() const override
 		{
