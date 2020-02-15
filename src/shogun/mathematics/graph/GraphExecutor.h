@@ -37,7 +37,7 @@ namespace shogun
 
     };
 
-	static constexpr std::string_view kShogunExecutorName = "shogun-graph";
+	static constexpr std::string_view kShogunExecutorName = ".+shogun-[a-z]+-executor\..+";
 
 	using CreateExecutor = std::function<MetaClass<GraphExecutor>()>;
 	using ExecutorFactory = std::unordered_map<GRAPH_BACKEND, CreateExecutor>;

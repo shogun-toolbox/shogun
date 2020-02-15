@@ -1,6 +1,7 @@
 #include <shogun/mathematics/graph/GraphExecutor.h>
 
 #include <mutex>
+#include <regex>
 
 using namespace shogun;
 using namespace shogun::io;
@@ -14,9 +15,10 @@ const ExecutorFactory& shogun::backend_list()
 	if (!kBackendList.empty())
 		return kBackendList;
 
+	const std::regex executor_regex (kShogunExecutorName.data());
 	for (const auto& plugin: env()->plugins())
 	{
-		if (plugin.find(kShogunExecutorName) == std::string::npos)
+		if (!std::regex_match(plugin, executor_regex))
 			continue;
 		try
 		{

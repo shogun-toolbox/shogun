@@ -8,22 +8,19 @@
 #define SHOGUNADDNGRAPH_H_
 
 #include <shogun/mathematics/graph/OperatorImplementation.h>
-#include <shogun/mathematics/graph/nodes/Add.h>
+#include <shogun/mathematics/graph/ops/abstract/AddImpl.h>
+
+#include <ngraph/op/add.hpp>
 
 namespace shogun {
 	IGNORE_IN_CLASSLIST class AddNGraph : public AddImpl<AddNGraph, OperatorNGraphBackend>
 	{
 	public:
-		AddNGraph(const std::shared_ptr<Node>& node) : AddImpl(node)
+		AddNGraph() : AddImpl()
 		{
 		}
 
-		void build()
-		{
-			m_ngraph_node = std::make_shared<ngraph::op::Add>();
-		}
-
-		void evaluate()
+		void evaluate() override
 		{
 		}
 	};

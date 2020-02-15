@@ -28,12 +28,13 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
 	)
 
-# set(NGRAPH_GRAPH_IMPLEMENTATION_HEADERS
-# 	ops/ngraph/Add.h
-# 	)
-# set(NGRAPH_GRAPH_IMPLEMENTATION_SOURCES
-# 	ops/ngraph/Add.cpp
-# 	)
+set(NGRAPH_IMPLEMENTATION_HEADERS
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/ngraph/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/NGraph.h
+ 	)
+set(NGRAPH_IMPLEMENTATION_SOURCES
+	${CMAKE_CURRENT_SOURCE_DIR}/NGraph.cpp
+ 	)
 
 add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}
 	${SHOGUN_GRAPH_SOURCES}
@@ -51,20 +52,38 @@ set_target_properties(
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
 set_property(TARGET shogun-engine APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
 
-add_library(shogun-graph SHARED
+add_library(shogun-vanilla-executor SHARED
 	${SHOGUN_GRAPH_IMPLEMENTATION_HEADERS}
 	${SHOGUN_GRAPH_IMPLEMENTATION_SOURCES}
 )
-target_link_libraries(shogun-graph shogun-engine)
+target_link_libraries(shogun-vanilla-executor shogun-engine)
 # todo create a macro/function for this
-set_property(TARGET shogun-graph PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+set_property(TARGET shogun-vanilla-executor PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 set_target_properties(
-  shogun-graph PROPERTIES
+  shogun-vanilla-executor PROPERTIES
   VERSION ${LIBSHOGUNVER}
   SOVERSION ${LIBSHOGUNSO}
   INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
-set_property(TARGET shogun-graph APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+set_property(TARGET shogun-vanilla-executor APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+
+find_package(NGraph)
+if (NGraph_FOUND)
+	add_library(shogun-ngraph-executor SHARED
+		${NGRAPH_IMPLEMENTATION_HEADERS}
+		${NGRAPH_IMPLEMENTATION_SOURCES}
+		)
+	target_include_directories(shogun-ngraph-executor PRIVATE ${NGraph_INCLUDE_DIRS})
+	target_link_libraries(shogun-ngraph-executor shogun-engine ${NGraph_LIBRARIES})
+	set_property(TARGET shogun-ngraph-executor PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(
+		shogun-ngraph-executor PROPERTIES
+		VERSION ${LIBSHOGUNVER}
+		SOVERSION ${LIBSHOGUNSO}
+		INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
+		LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
+	set_property(TARGET shogun-ngraph-executor APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+endif()
 
 IF (ENABLE_TESTING)
 	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-engine)
@@ -73,5 +92,5 @@ IF (ENABLE_TESTING)
 	if (UNIX AND NOT APPLE)
 		set_property(TEST Graph_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
 	endif()
-	add_dependencies(Graph_test shogun-graph)
+	add_dependencies(Graph_test shogun-vanilla-executor)
 ENDIF()
