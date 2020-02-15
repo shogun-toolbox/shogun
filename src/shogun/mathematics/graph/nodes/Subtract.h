@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUNTENSORADD_H_
-#define SHOGUNTENSORADD_H_
+#ifndef SHOGUNTENSORSUBTRACT_H_
+#define SHOGUNTENSORSUBTRACT_H_
 
 #include <shogun/mathematics/graph/nodes/BinaryNode.h>
 
@@ -13,22 +13,22 @@
 
 namespace shogun
 {
-	IGNORE_IN_CLASSLIST class Add : public BinaryNode
+	IGNORE_IN_CLASSLIST class Subtract : public BinaryNode
 	{
 	public:
-		Add(const std::shared_ptr<Node>& node1,
+		Subtract(const std::shared_ptr<Node>& node1,
 		    const std::shared_ptr<Node>& node2): BinaryNode(node1, node2)
 		{
 		}
 
 		std::string to_string() const override
 		{
-			return fmt::format("Add(shape={}, type={})", get_tensors()[0]->get_shape(), get_tensors()[0]->get_type());
+			return fmt::format("Subtract(shape={}, type={})", get_tensors()[0]->get_shape(), get_tensors()[0]->get_type());
 		}
 
 		std::string_view get_operator_name() const override
 		{
-			return "Add";
+			return "Subtract";
 		}
 	};
 } // namespace shogun

@@ -27,7 +27,7 @@ namespace shogun {
 
 		void evaluate() override
 		{
-			error("Input nodes cannot be run with evaluate. Use evaluate_input(SGContainer) instead");
+			error("Input nodes cannot be run with evaluate. Use evaluate_input(Tensor) instead");
 		}
 
 		void evaluate_input(const std::shared_ptr<Tensor>& tensor)

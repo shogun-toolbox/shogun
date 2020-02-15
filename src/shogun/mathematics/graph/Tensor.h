@@ -49,15 +49,8 @@ namespace shogun
 		{
 			if (m_data != nullptr && m_free)
 			{
-				switch(m_type)
-				{
-					case element_type::FLOAT32:
-						delete (float32_t*)m_data;
-						break;
-					case element_type::FLOAT64:
-						delete (float32_t*)m_data;
-						break;
-				}
+				deallocator_dispatch(m_data, m_type);
+				m_data = nullptr;
 			}
 		}
 
@@ -66,6 +59,15 @@ namespace shogun
 			, m_shape(shape)
 			, m_type(type)
 		{
+		}
+
+		void allocate_tensor(const Shape& shape)
+		{
+			if (m_free)
+				error("Tensor already owns data!");
+			set_shape(shape);
+			m_data = allocator_dispatch(size(), m_type);
+			m_free = true;
 		}
 
 		[[nodiscard]] const Shape& get_shape() const
@@ -96,7 +98,7 @@ namespace shogun
 			{
 				if (original_shape_dim_i == Shape::Dynamic)
 				{
-					m_shape[idx] = new_shape_dim_i;
+					m_shape.set_dimension(new_shape_dim_i, idx);
 				}
 				else if (original_shape_dim_i != new_shape_dim_i)
 				{
@@ -121,7 +123,7 @@ namespace shogun
 					error("Tried to cast a multidimensional Tensor to a SGVector.");
 				if (get_enum_from_type<typename Container::Scalar>::type != m_type)
 					error("Type mismatch when casting from Tensor.");
-				return SGVector<typename Container::Scalar>((typename Container::Scalar*)m_data, size());
+				return Container((typename Container::Scalar*)m_data, size(), false);
 			}
 			if constexpr(std::is_same_v<SGMatrix<typename Container::Scalar>, Container>)
 			{
@@ -129,7 +131,7 @@ namespace shogun
 					error("Type mismatch when casting from Tensor");
 				if (m_shape.size() != 2)
 					error("SGMatrix does not support {} dimensions.", m_shape.size());
-				return SGMatrix<typename Container::Scalar>((typename Container::Scalar*)m_data, size());
+				return Container((typename Container::Scalar*)m_data, m_shape[0], m_shape[1], false);
 			}
 		}
 

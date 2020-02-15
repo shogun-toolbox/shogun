@@ -16,9 +16,14 @@
 
 namespace shogun
 {
+	class Tensor;
+
 	class Shape
 	{
 	public:
+
+		friend class Tensor;
+
 		using shape_type = int64_t;
 
 		static constexpr shape_type Dynamic = -1;
@@ -36,7 +41,7 @@ namespace shogun
 			return m_shape.size();
 		}
 
-		shape_type& operator[](shape_type idx)
+		[[nodiscard]] shape_type operator[](size_t idx) const
 		{
 			return m_shape[idx];
 		}
@@ -73,6 +78,13 @@ namespace shogun
 		friend std::ostream& operator<<(std::ostream& os, const Shape& shape)
 		{
 	    	return os << shape.to_string();
+		}
+
+	protected:
+
+		void set_dimension(shape_type new_value, shape_type dim)
+		{
+			m_shape[dim] = new_value;
 		}
 
 	private:

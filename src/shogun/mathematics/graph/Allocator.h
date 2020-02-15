@@ -21,6 +21,19 @@ namespace shogun {
 			return new get_type_from_enum<element_type::FLOAT64>::type[size]();
 		}
 	}
+
+	inline void deallocator_dispatch(void* data, element_type type)
+	{
+		switch(type)
+			{
+				case element_type::FLOAT32:
+					delete (float32_t*)data;
+					break;
+				case element_type::FLOAT64:
+					delete (float64_t*)data;
+					break;
+			}
+	}
 }
 
 #endif
