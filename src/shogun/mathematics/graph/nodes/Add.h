@@ -94,7 +94,7 @@ namespace shogun
 				    node2);
 			}
 
-			std::vector<size_t> output_shape_vector;
+			std::vector<Shape::shape_type> output_shape_vector;
 
 			for (const auto& [idx, shape1, shape2] : enumerate(
 			         node1_tensors[0]->get_shape(),

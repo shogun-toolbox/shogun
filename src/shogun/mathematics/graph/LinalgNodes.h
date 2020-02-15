@@ -13,10 +13,6 @@
 
 #include <shogun/util/zip_iterator.h>
 
-#ifdef USE_NGRAPH
-#include <ngraph/ngraph.hpp>
-#endif
-
 #define IGNORE_IN_CLASSLIST
 
 namespace shogun {
@@ -34,30 +30,18 @@ namespace shogun {
         	}
         }
 
-        Node(const std::initializer_list<std::shared_ptr<Node>>& nodes, 
+        Node(const std::initializer_list<std::shared_ptr<Node>>& nodes,
         	const Shape& shape, element_type type): Node(shape, type) {
         	 m_input_nodes = nodes;
         }
 
-        Node(const std::initializer_list<std::shared_ptr<Node>>& nodes, 
+        Node(const std::initializer_list<std::shared_ptr<Node>>& nodes,
         	const std::vector<Shape>& shapes, const std::vector<element_type>& types): Node(shapes, types) {
         	m_input_nodes = nodes;
         }
 
         virtual ~Node() {
         }
-
-#ifdef USE_NGRAPH
-        void set_ngraph(std::shared_ptr<ngraph::Node> node)
-        {
-            m_ngraph_node = std::move(node);
-        }
-
-        const std::shared_ptr<ngraph::Node>& get_ngraph() const
-        {
-            return m_ngraph_node;
-        }
-#endif
 
         const std::vector<std::shared_ptr<Node>>& get_input_nodes() const {
             return m_input_nodes;
@@ -77,13 +61,8 @@ namespace shogun {
 		}
 
     protected:
-
         std::vector<std::shared_ptr<Node>> m_input_nodes;
         std::vector<std::shared_ptr<Tensor>> m_output_tensors;
-
-#ifdef USE_NGRAPH
-        std::shared_ptr<ngraph::Node> m_ngraph_node;
-#endif
     };
 }
 #endif

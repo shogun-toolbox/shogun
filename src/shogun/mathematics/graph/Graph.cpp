@@ -1,9 +1,7 @@
 #include <shogun/mathematics/graph/Graph.h>
 #include <shogun/mathematics/graph/Tensor.h>
-#include <shogun/mathematics/graph/ops/shogun/Input.h>
-#include <shogun/mathematics/graph/operator_list.h>
 
-#include <unordered_set>
+#include <memory>
 
 using namespace shogun;
 
@@ -68,33 +66,12 @@ std::unordered_map<std::shared_ptr<Node>, Graph::STATUS> Graph::check_fully_conn
 
 std::vector<std::shared_ptr<Tensor>> Graph::evaluate(const std::vector<std::shared_ptr<Tensor>>& tensors)
 {
-	if (m_cached_operators.empty())
+	if (!m_executor)
 	{
-		error("Did you call Graph::build()?");
+		error("Graph has not been built!");
 	}
 
-	if (m_cached_input_operators.empty())
-	{
-		error("No input nodes found in graph!");
-	}
-
-	auto* env = ShogunEnv::instance();
-	switch (env->graph_backend())
-	{
-	case GRAPH::SHOGUN:
-	{
-		execute_shogun(tensors);
-	}
-	break;
-	case GRAPH::NGRAPH:
-	{
-#ifdef USE_NGRAPH
-		execute_ngraph(tensors);
-#else
-		error("NGraph execution is not available.");
-#endif
-	}
-	}
+	m_executor->execute(tensors);
 
 	std::vector<std::shared_ptr<Tensor>> result;
 
@@ -105,7 +82,6 @@ std::vector<std::shared_ptr<Tensor>> Graph::evaluate(const std::vector<std::shar
 
 	return result;
 }
-
 
 void Graph::build_backend_graph(
 	std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& unordered_nodes)
@@ -118,21 +94,27 @@ void Graph::build_backend_graph(
 		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
 	}
 
+	auto* env = ShogunEnv::instance();
+	m_executor = create(env->graph_backend());
+	if (!m_executor)
+		error("Specified graph executor {} backend is not available!",
+			kGraphNames.at(env->graph_backend()));
+
 	// get input operatos
 	for (const auto& node: m_cached_input_nodes)
 	{
-		m_cached_input_operators.push_back(add_operator_node(node));
+		m_executor->add_input_operator(node);
 	}
 
 	for (const auto& node: ordered_nodes)
 	{
 		// node not an input so safe to assume it's an operator
 		if (std::find(m_cached_input_nodes.begin(), m_cached_input_nodes.end(), node) == m_cached_input_nodes.end())
-			m_cached_operators.push_back(add_operator_node(node));
+			m_executor->add_operator_node(node);
 	}
 }
 
-void Graph::order_graph_visit_(const std::shared_ptr<Node>& node, 
+void Graph::order_graph_visit_(const std::shared_ptr<Node>& node,
 	std::unordered_map<std::shared_ptr<Node>, Graph::STATUS>& all_nodes,
 	std::deque<std::shared_ptr<Node>>& result)
 {
@@ -151,79 +133,4 @@ void Graph::order_graph_visit_(const std::shared_ptr<Node>& node,
 
 	node_status = STATUS::MARKED;
 	result.push_back(node);
-}
-
-std::shared_ptr<Operator> Graph::add_operator_node(const std::shared_ptr<Node>& node)
-{
-	auto* env = ShogunEnv::instance();
-	std::shared_ptr<Operator> op;
-
-	switch (env->graph_backend())
-	{
-	case GRAPH::NGRAPH:
-	{
-#ifdef USE_NGRAPH
-		
-#endif
-	}
-	break;
-	case GRAPH::XLA:
-	case GRAPH::TVM:
-	case GRAPH::SHOGUN:
-		op = create_operator<OperatorShogunBackend>(std::string(node->get_operator_name()));
-	}
-	op->build(node);
-
-	return op;
-}
-
-
-void Graph::execute_shogun(const std::vector<std::shared_ptr<Tensor>>& tensors)
-{
-	if (tensors.size() != m_cached_input_operators.size())
-		error("Number of input tensors ({}) different from number of input nodes ({}).", 
-			tensors.size(), m_cached_input_nodes.size());
-	for (const auto& [tensor, node]: zip_iterator(tensors, m_cached_input_operators))
-	{
-		std::static_pointer_cast<InputShogun>(node)->evaluate_input(tensor);
-	}
-
-	for (auto& op: m_cached_operators)
-	{
-		(*op)();
-	}
-}
-
-void Graph::execute_ngraph(const std::vector<std::shared_ptr<Tensor>>& tensors)
-{
-	// auto backend = ngraph::runtime::Backend::create("CPU", true);
-
-	// std::vector<std::shared_ptr<ngraph::runtime::Tensor>>
-	//     ngraph_input_tensors;
-	// std::vector<std::shared_ptr<ngraph::runtime::Tensor>>
-	//     ngraph_output_tensors;
-
-	// for (const auto& tensor : input_tensors)
-	// 	ngraph_input_tensors.push_back(backend->create_tensor(
-	// 	    ngraph::element::f32, tensor.get_shape()));
-	// for (const auto& tensor : output_tensors)
-	// 	ngraph_output_tensors.push_back(backend->create_tensor(
-	// 	    ngraph::element::f32, tensor.get_shape()));
-
-	// auto handle = backend->compile(graph->get_ngraph_function());
-	// handle->call_with_validate(
-	//     ngraph_input_tensors, ngraph_output_tensors);
-
-	// std::vector<Tensor> results;
-	// for (const auto& ngraph_tensor : ngraph_output_tensors)
-	// {
-	// 	results.push_back(Tensor::create_empty(
-	// 	    ngraph_tensor->get_shape(),
-	// 	    get_enum_from_ngraph(ngraph_tensor->get_element_type())));
-	// 	ngraph_tensor->read(
-	// 	    results.back().data(),
-	// 	    results.back().get_size() * sizeof(float));
-	// }
-
-	// return results;
 }

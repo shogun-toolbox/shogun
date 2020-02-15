@@ -19,22 +19,24 @@ namespace shogun
 	class Shape
 	{
 	public:
-		static constexpr size_t Dynamic = std::numeric_limits<size_t>::max();
+		using shape_type = int64_t;
 
-		Shape(std::initializer_list<size_t> shape) : m_shape(shape)
+		static constexpr shape_type Dynamic = -1;
+
+		Shape(std::initializer_list<shape_type> shape) : m_shape(shape)
 		{
 		}
 
-		Shape(std::vector<size_t> shape) : m_shape(std::move(shape))
+		Shape(std::vector<shape_type> shape) : m_shape(std::move(shape))
 		{
 		}
 
-		[[nodiscard]] size_t size() const
+		[[nodiscard]] shape_type size() const
 		{
 			return m_shape.size();
 		}
 
-		size_t& operator[](size_t idx)
+		shape_type& operator[](shape_type idx)
 		{
 			return m_shape[idx];
 		}
@@ -74,7 +76,7 @@ namespace shogun
 		}
 
 	private:
-		std::vector<size_t> m_shape;
+		std::vector<shape_type> m_shape;
 	};
 
 } // namespace shogun

@@ -41,7 +41,7 @@ ShogunEnv::ShogunEnv()
 
 	sg_fequals_epsilon = 0.0;
 	sg_fequals_tolerant = false;
-	sg_graph_backend = GRAPH::SHOGUN;
+	sg_graph_backend = GRAPH_BACKEND::SHOGUN;
 
 	// Set up signal handler
 	std::signal(SIGINT, sg_signal->handler);
@@ -168,6 +168,12 @@ static bool is_shared_lib_name(std::string_view filename)
 
 std::vector<std::string> ShogunEnv::plugins() const
 {
+#if defined(_WIN32)
+	static constexpr char kPathSeparator= ';';
+#else
+	static constexpr char kPathSeparator = ':';
+#endif
+
 	std::vector<std::string> plugins;
 
 	char* env_plugins_path = NULL;
@@ -180,7 +186,7 @@ std::vector<std::string> ShogunEnv::plugins() const
 
 		std::istringstream plugins_path(env_plugins_path);
 		std::string path;
-		while (getline(plugins_path, path, ':'))
+		while (getline(plugins_path, path, kPathSeparator))
 		{
 			auto r = is_directory(path);
 			if (r)

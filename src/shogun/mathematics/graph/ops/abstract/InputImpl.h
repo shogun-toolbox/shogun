@@ -7,15 +7,16 @@
 #ifndef SHOGUNINPUTOPERATORIMPL_H_
 #define SHOGUNINPUTOPERATORIMPL_H_
 
+#include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/OperatorImplementation.h>
 
 namespace shogun {
 
 	template <typename DerivedOperator, typename EngineImplementation>
-    IGNORE_IN_CLASSLIST class InputImpl: public OperatorImpl<EngineImplementation>
+    IGNORE_IN_CLASSLIST class InputImpl: public OperatorImpl<EngineImplementation, Input>
 	{
 	public:
-		InputImpl(): OperatorImpl<EngineImplementation>() {}
+		InputImpl(): OperatorImpl<EngineImplementation, Input>() {}
 
 		virtual ~InputImpl() {}
 

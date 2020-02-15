@@ -26,7 +26,7 @@ namespace shogun
 	{
 
 	friend class Node;
-	
+
 	public:
 
 		template <typename T>
@@ -61,10 +61,10 @@ namespace shogun
 			}
 		}
 
-		Tensor(const Shape& shape, element_type type): m_free(false) 
+		Tensor(const Shape& shape, element_type type): m_free(false)
+			, m_data(nullptr)
 			, m_shape(shape)
 			, m_type(type)
-			, m_data(nullptr)
 		{
 		}
 
