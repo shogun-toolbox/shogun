@@ -72,6 +72,18 @@ Note that some folders are submodules that can be checked out with
 - *benchmarks* - speed benchmarks
 - *cmake* - cmake build scripts
 
+## Building shogun - Using vcpkg
+
+You can download and install shogun using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
+
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install shogun
+
+The shogun port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
 ## License
 ----------
 Shogun is distributed under [BSD 3-clause license](doc/license/LICENSE.md), with
