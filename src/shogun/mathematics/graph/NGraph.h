@@ -34,9 +34,6 @@ namespace shogun
 			    std::shared_ptr<node::Node>, std::shared_ptr<ngraph::Node>>
 			    m_lookup;
 
-			// ngraph::ParameterVector inputs;
-			// ngraph::OutputVector outputs;
-
             std::vector<std::shared_ptr<ngraph::Node>> m_input_output_nodes;
             std::vector<std::shared_ptr<ngraph::Node>> m_operator_output_nodes;
 		};

@@ -100,7 +100,7 @@ void ShogunGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 // move this to implementations....
 REGISTER_OP(detail::shogun::AddShogun);
 REGISTER_OP(detail::shogun::InputShogun);
-// REGISTER_OP(SubtractShogun);
+REGISTER_OP(detail::shogun::SubtractShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

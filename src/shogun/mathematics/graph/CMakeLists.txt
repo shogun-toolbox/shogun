@@ -6,6 +6,7 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/Operator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
@@ -21,6 +22,7 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Add.h
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Input.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 	)
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
@@ -29,6 +31,9 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 
 set(NGRAPH_IMPLEMENTATION_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Input.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Subtract.h
+
 	${CMAKE_CURRENT_SOURCE_DIR}/NGraph.h
  	)
 set(NGRAPH_IMPLEMENTATION_SOURCES
@@ -90,8 +95,13 @@ IF (ENABLE_TESTING)
 	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-engine)
 
 	ADD_SHOGUN_TEST(nodes/Add_test)
+	ADD_SHOGUN_TEST(nodes/Subtract_test)
+
 	if (UNIX AND NOT APPLE)
 		set_property(TEST Add_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+		set_property(TEST Subtract_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
 	endif()
 	add_dependencies(Add_test ${EXCUTORS})
+	add_dependencies(Subtract_test ${EXCUTORS})
+
 ENDIF()

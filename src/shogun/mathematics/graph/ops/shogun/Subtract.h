@@ -4,51 +4,48 @@
 //  * Authors: Gil Hoben
 //  */
 
-// #ifndef SHOGUNSUBTRACTSHOGUN_H_
-// #define SHOGUNSUBTRACTSHOGUN_H_
+#ifndef SHOGUN_SUBTRACT_SHOGUN_H_
+#define SHOGUN_SUBTRACT_SHOGUN_H_
 
 // #include <shogun/mathematics/graph/nodes/Subtract.h>
 // #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
-// namespace shogun
-// {
-// 	namespace graph
-// 	{
-// 		namespace op
-// 		{
+namespace shogun
+{
+	namespace graph 
+	{
+		namespace op
+		{
+			IGNORE_IN_CLASSLIST class SubtractShogun : public ShogunBinaryOperator<SubtractShogun>
+			{
+			public:
+				friend class ShogunBinaryOperator<SubtractShogun>;
+				
+				SubtractShogun(const std::shared_ptr<node::Node>& node) : ShogunBinaryOperator(node)
+				{
+				}
 
-// 			IGNORE_IN_CLASSLIST class SubtractShogun
-// 			    : public ShogunBinaryOperator<SubtractShogun>
-// 			{
-// 			public:
-// 				friend class ShogunBinaryOperator<SubtractShogun>;
+				std::string_view get_operator_name() const final
+				{
+					return "Subtract";
+				}
 
-// 				SubtractShogun(const std::shared_ptr<Tensor>& tensor1,
-// 				    const std::shared_ptr<Tensor>& tensor2,
-// 				    const std::vector<Shape>& output_shapes,
-// 					const std::vector<element_type>& output_types) : ShogunBinaryOperator(tensor1, tensor2, output_shapes, output_types)
-// 					{
-// 					}
+			protected:
+				template <typename T>
+				void kernel_implementation(
+				    void* input1, void* input2, void* output, size_t size)
+				{
+					// if we have SYCL or MSVC we could add parallel execution
+					// or just use Eigen here
+					std::transform(
+					    static_cast<const T*>(input1),
+					    static_cast<const T*>(input1) + size,
+					    static_cast<const T*>(input2), static_cast<T*>(output),
+					    std::minus<T>());
+				}
+			};
+		}
+	}
+} // namespace shogun
 
-// 				std::string_view get_operator_name() const final
-// 				{
-// 					return "Subtract";
-// 				}
-
-// 			protected:
-// 				template <typename T>
-// 				void kernel_implementation(
-// 				    void* input1, void* input2, void* output, size_t size)
-// 				{
-// 					std::transform(
-// 					    static_cast<const T*>(input1),
-// 					    static_cast<const T*>(input1) + size,
-// 					    static_cast<const T*>(input2), static_cast<T*>(output),
-// 					    std::minus<T>());
-// 				}
-// 			};
-// 		}
-// 	}
-// } // namespace shogun
-
-// #endif
+#endif
