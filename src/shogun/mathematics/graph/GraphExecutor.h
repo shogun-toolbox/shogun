@@ -6,6 +6,7 @@
 #include <shogun/base/manifest.h>
 
 #include <memory>
+#include <regex>
 #include <set>
 #include <unordered_map>
 #include <vector>
@@ -37,7 +38,7 @@ namespace shogun
 
     };
 
-	static constexpr std::string_view kShogunExecutorName = ".+shogun-[a-z]+-executor\..+";
+	static constexpr std::string_view kShogunExecutorName = R"###(.+shogun-[a-z]+-executor\..+)###";
 
 	using CreateExecutor = std::function<MetaClass<GraphExecutor>()>;
 	using ExecutorFactory = std::unordered_map<GRAPH_BACKEND, CreateExecutor>;
