@@ -9,88 +9,85 @@
 
 #include <cstddef>
 #include <limits>
+#include <sstream>
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
-#include <sstream>
 
 namespace shogun
 {
-	class Tensor;
+	namespace graph {
+		class Tensor;
 
-	class Shape
-	{
-	public:
-
-		friend class Tensor;
-
-		using shape_type = int64_t;
-
-		static constexpr shape_type Dynamic = -1;
-
-		Shape(std::initializer_list<shape_type> shape) : m_shape(shape)
+		class Shape
 		{
-		}
+		public:
+			friend class Tensor;
 
-		Shape(std::vector<shape_type> shape) : m_shape(std::move(shape))
-		{
-		}
+			using shape_type = int64_t;
 
-		[[nodiscard]] shape_type size() const
-		{
-			return m_shape.size();
-		}
+			static constexpr shape_type Dynamic = -1;
 
-		[[nodiscard]] shape_type operator[](size_t idx) const
-		{
-			return m_shape[idx];
-		}
-
-		[[nodiscard]] auto begin() const
-		{
-			return m_shape.begin();
-		}
-
-		[[nodiscard]] auto end() const
-		{
-			return m_shape.end();
-		}
-
-		[[nodiscard]] std::string to_string() const
-		{
-			std::stringstream result;
-			result << "Shape(";
-			auto shape_it = m_shape.begin();
-			while(shape_it != m_shape.end())
+			Shape(std::initializer_list<shape_type> shape) : m_shape(shape)
 			{
-				if (*shape_it == Dynamic)
-					result << "Dynamic";
-				else
-					result << *shape_it;
-				if (std::next(shape_it) != m_shape.end())
-					result << ", ";
-				shape_it++;
 			}
-			result << ')';
-			return result.str();
-		}
 
-		friend std::ostream& operator<<(std::ostream& os, const Shape& shape)
-		{
-	    	return os << shape.to_string();
-		}
+			Shape(std::vector<shape_type> shape)
+			    : m_shape(std::move(shape)){}
 
-	protected:
+			          [[nodiscard]] shape_type size() const
+			{
+				return m_shape.size();
+			}
 
-		void set_dimension(shape_type new_value, shape_type dim)
-		{
-			m_shape[dim] = new_value;
-		}
+			const shape_type& operator[](size_t idx) const 
+			{
+				return m_shape[idx];
+			}
 
-	private:
-		std::vector<shape_type> m_shape;
-	};
+			shape_type& operator[](size_t idx)
+			{
+				return m_shape[idx];
+			}
 
+			[[nodiscard]] auto begin() const
+			{
+				return m_shape.begin();
+			}
+
+			[[nodiscard]] auto end() const
+			{
+				return m_shape.end();
+			}
+
+			[[nodiscard]] std::string to_string() const {
+				std::stringstream result;
+				result << "Shape(";
+				auto shape_it = m_shape.begin();
+				while (shape_it != m_shape.end())
+				{
+					if (*shape_it == Dynamic)
+						result << "Dynamic";
+					else
+						result << *shape_it;
+					if (std::next(shape_it) != m_shape.end())
+						result << ", ";
+					shape_it++;
+				}
+				result << ')';
+				return result.str();
+			}
+
+			friend std::ostream&
+			operator<<(std::ostream& os, const Shape& shape)
+			{
+				return os << shape.to_string();
+			}
+
+		private:
+			std::vector<shape_type> m_shape;
+		};
+	}
 } // namespace shogun
 
 #endif

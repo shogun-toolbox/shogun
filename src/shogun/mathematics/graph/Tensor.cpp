@@ -2,7 +2,7 @@
 
 #include <shogun/io/fmt/fmt.h>
 
-using namespace shogun;
+using namespace shogun::graph;
 
 std::string Tensor::to_string() const
 {

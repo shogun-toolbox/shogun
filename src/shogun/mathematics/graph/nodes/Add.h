@@ -13,24 +13,33 @@
 
 namespace shogun
 {
-	IGNORE_IN_CLASSLIST class Add : public BinaryNode
+	namespace graph
 	{
-	public:
-		Add(const std::shared_ptr<Node>& node1,
-		    const std::shared_ptr<Node>& node2): BinaryNode(node1, node2)
+		namespace node
 		{
-		}
+			IGNORE_IN_CLASSLIST class Add : public BinaryNode
+			{
+			public:
+				Add(const std::shared_ptr<Node>& node1,
+				    const std::shared_ptr<Node>& node2)
+				    : BinaryNode(node1, node2)
+				{
+				}
 
-		std::string to_string() const override
-		{
-			return fmt::format("Add(shape={}, type={})", get_tensors()[0]->get_shape(), get_tensors()[0]->get_type());
-		}
+				std::string to_string() const override
+				{
+					return fmt::format(
+					    "Add(shape={}, type={})", get_shapes()[0],
+					    get_types()[0]);
+				}
 
-		std::string_view get_operator_name() const override
-		{
-			return "Add";
-		}
-	};
+				std::string_view get_node_name() const override
+				{
+					return "Add";
+				}
+			};
+		} // namespace node
+	}     // namespace graph
 } // namespace shogun
 
 #endif
