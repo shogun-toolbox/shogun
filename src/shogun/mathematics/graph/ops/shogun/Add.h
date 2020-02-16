@@ -10,39 +10,42 @@
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
-namespace shogun {
-
-	IGNORE_IN_CLASSLIST class AddShogun : public ShogunBinaryOperator<AddShogun, Add>
+namespace shogun
+{
+	namespace graph 
 	{
-	public:
-
-		friend class ShogunBinaryOperator<AddShogun, Add>;
-
-		AddShogun(): ShogunBinaryOperator() {}
-
-		std::string_view get_operator_name() const final
+		namespace op
 		{
-			return "Add";
-		}
+			IGNORE_IN_CLASSLIST class AddShogun : public ShogunBinaryOperator<AddShogun>
+			{
+			public:
+				friend class ShogunBinaryOperator<AddShogun>;
+				
+				AddShogun(const std::shared_ptr<node::Node>& node) : ShogunBinaryOperator(node)
+				{
+				}
 
-		void build_implementation() final
-		{
-		}
+				std::string_view get_operator_name() const final
+				{
+					return "Add";
+				}
 
-	protected:
-		template <typename T>
-		void kernel_implementation(
-		    void* input1, void* input2, void* output, size_t size)
-		{
-			// if we have SYCL or MSVC we could add parallel execution
-			// or just use Eigen here
-			std::transform(
-			    static_cast<const T*>(input1),
-			    static_cast<const T*>(input1) + size,
-			    static_cast<const T*>(input2), static_cast<T*>(output),
-			    std::plus<T>());
+			protected:
+				template <typename T>
+				void kernel_implementation(
+				    void* input1, void* input2, void* output, size_t size)
+				{
+					// if we have SYCL or MSVC we could add parallel execution
+					// or just use Eigen here
+					std::transform(
+					    static_cast<const T*>(input1),
+					    static_cast<const T*>(input1) + size,
+					    static_cast<const T*>(input2), static_cast<T*>(output),
+					    std::plus<T>());
+				}
+			};
 		}
-	};
-}
+	}
+} // namespace shogun
 
 #endif

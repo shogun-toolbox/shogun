@@ -7,77 +7,65 @@
 #ifndef SHOGUNINPUTSHOGUN_H_
 #define SHOGUNINPUTSHOGUN_H_
 
-#include <shogun/mathematics/graph/ops/abstract/InputImpl.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/ops/abstract/InputImpl.h>
 
-namespace shogun {
-
-    IGNORE_IN_CLASSLIST class InputShogun: public InputImpl<InputShogun>
+namespace shogun
+{
+	namespace graph
 	{
-	public:
-		InputShogun(): InputImpl() {}
-
-		void evaluate_implementation(const std::shared_ptr<Tensor>& tensor)
+		namespace op
 		{
-			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
 
-			runtime_type_check(tensor->get_type());
-			runtime_shape_check(tensor->get_shape());
-
-			allocate_output(tensor->get_shape(), tensor->get_type());
-
-			// the input node is just a handle to the input tensor
-			input_node->get_tensor()->data() = tensor->data();
-		}
-
-		void build_implementation() final
-		{
-		}
-
-	private:
-		void allocate_output(const Shape& shape, element_type type) {
-			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
-			input_node->get_tensor() = std::make_shared<Tensor>(shape, type);
-		}
-
-		void runtime_type_check(element_type type)
-		{
-			// we trust the implementation to only use this implementation
-			// when the abstract node is an input
-			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
-
-			const auto& input_tensor = input_node->get_tensor();
-			if (type != input_tensor->get_type())
-				error("Input node got wrong input type!");
-		}
-
-		void runtime_shape_check(Shape shape)
-		{
-			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);
-
-			const auto& input_tensor = input_node->get_tensor();
-			const auto expected_shape = input_tensor->get_shape();
-
-			if (shape.size() != expected_shape.size())
+			IGNORE_IN_CLASSLIST class InputShogun : public InputImpl<InputShogun>
 			{
-				error("Mismatch in the number of dimensions, expected {}, but got {}",
-					expected_shape.size(), shape.size());
-			}
-
-			for (const auto& [idx, input_shape_i, expected_shape_i]: enumerate(shape, expected_shape))
-			{
-				// if it is dynamic we will use this to infer the name shape
-				if (expected_shape_i == Shape::Dynamic)
-					continue;
-				else if (expected_shape_i != input_shape_i)
+			public:
+				InputShogun(const std::shared_ptr<node::Node>& node) : InputImpl(node)
 				{
-					error("Runtime shape mismatch in dimension {}. Got {} but expected {}.",
-						idx, shape, expected_shape
-						);
 				}
-			}
+
+				std::vector<std::shared_ptr<Tensor>> evaluate_input(const std::shared_ptr<Tensor>& tensor)
+				{
+					runtime_checks_and_allocation(std::vector{tensor});
+					// to copy or not to copy?
+					// m_output_tensor->allocate_tensor(tensor->get_shape());
+					// m_output_tensor->data() = memcpy(...);
+					m_output_tensors[0]->data() = tensor->data();
+					return m_output_tensors;
+				}
+
+			protected:
+				void runtime_checks_and_allocation(const std::vector<std::shared_ptr<Tensor>>& tensors) final
+				{
+					if (tensors.size() != 1)
+						error("Input operation expected one input.");
+					if (m_output_tensors.size() != 1)
+						error("Input operation expected one output.");
+
+					const auto& input_tensor = tensors[0];
+					auto& output_tensor = m_output_tensors[0];
+						
+					runtime_type_check(input_tensor, output_tensor);
+					runtime_shape_check(input_tensor, output_tensor);
+				}
+
+			private:
+				void runtime_type_check(const std::shared_ptr<Tensor>& input_tensor,
+					const std::shared_ptr<Tensor>& output_tensor)
+				{
+					if (input_tensor->get_type() != output_tensor->get_type())
+						error("Input node got wrong input type!");
+				}
+
+				void runtime_shape_check(const std::shared_ptr<Tensor>& input_tensor,
+					std::shared_ptr<Tensor>& output_tensor)
+				{
+					const auto& shape = input_tensor->get_shape();
+					output_tensor->set_shape(shape);
+				}
+			};
 		}
-	};
-}
+	}
+} // namespace shogun
 
 #endif
