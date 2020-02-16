@@ -30,6 +30,10 @@ namespace shogun {
 			input_node->get_tensor()->data() = tensor->data();
 		}
 
+		void build_implementation() final
+		{
+		}
+
 	private:
 		void allocate_output(const Shape& shape, element_type type) {
 			auto input_node = std::static_pointer_cast<operator_type>(m_abstract_node);

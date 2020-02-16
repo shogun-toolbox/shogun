@@ -11,17 +11,23 @@
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class MultiplyShogun : public BinaryOperator<MultiplyShogun>
+	IGNORE_IN_CLASSLIST class MultiplyShogun : public ShogunBinaryOperator<MultiplyShogun>
 	{
 	public:
+		friend class ShogunBinaryOperator<MultiplyShogun>;
 
-		MultiplyShogun(): BinaryOperator() {};
+		MultiplyShogun(): ShogunBinaryOperator() {};
 
-		std::string_view get_operator_name() const override
+		std::string_view get_operator_name() const final
 		{
 			return "Multiply";
 		}
 
+		void build_implementation() final
+		{
+		}
+
+	protected:
 		template <typename T>
 		void kernel_implementation(
 		    void* input1, void* input2, void* output, size_t size)

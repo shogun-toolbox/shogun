@@ -12,17 +12,23 @@
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class SubtractShogun : public BinaryOperator<SubtractShogun, Subtract>
+	IGNORE_IN_CLASSLIST class SubtractShogun : public ShogunBinaryOperator<SubtractShogun, Subtract>
 	{
 	public:
+		friend class ShogunBinaryOperator<SubtractShogun, Subtract>;
 
-		SubtractShogun(): BinaryOperator() {};
+		SubtractShogun(): ShogunBinaryOperator() {};
 
-		std::string_view get_operator_name() const override
+		std::string_view get_operator_name() const final
 		{
 			return "Subtract";
 		}
 
+		void build_implementation() final
+		{
+		}
+
+	protected:
 		template <typename T>
 		void kernel_implementation(
 		    void* input1, void* input2, void* output, size_t size)

@@ -25,6 +25,10 @@ namespace shogun {
 			return "Add";
 		}
 
+		void build_implementation() final
+		{
+		}
+
 		void evaluate() final
 		{
 		}	

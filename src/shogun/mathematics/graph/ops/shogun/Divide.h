@@ -11,17 +11,23 @@
 
 namespace shogun {
 
-	IGNORE_IN_CLASSLIST class DivideShogun : public BinaryOperator<DivideShogun>
+	IGNORE_IN_CLASSLIST class DivideShogun : public ShogunBinaryOperator<DivideShogun>
 	{
 	public:
+		friend class ShogunBinaryOperator<DivideShogun>;
 
-		DivideShogun(): BinaryOperator() {};
+		DivideShogun(): ShogunBinaryOperator() {};
 
-		std::string_view get_operator_name() const override
+		std::string_view get_operator_name() const final
 		{
 			return "Divide";
 		}
 
+		void build_implementation() final
+		{
+		}
+
+	protected:
 		template <typename T>
 		void kernel_implementation(
 		    void* input1, void* input2, void* output, size_t size)

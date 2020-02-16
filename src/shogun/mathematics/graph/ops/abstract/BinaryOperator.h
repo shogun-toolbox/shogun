@@ -12,12 +12,12 @@
 namespace shogun {
 
 	template <typename DerivedOperator, typename InterfaceOperator>
-	class BinaryOperator : public OperatorImpl<InterfaceOperator>
+	class ShogunBinaryOperator : public OperatorImpl<InterfaceOperator>
 	{
 	public:
-		BinaryOperator(): OperatorImpl<InterfaceOperator>() {}
+		ShogunBinaryOperator(): OperatorImpl<InterfaceOperator>() {}
 
-		virtual ~BinaryOperator() {}
+		virtual ~ShogunBinaryOperator() {}
 
 		void evaluate() override
 		{

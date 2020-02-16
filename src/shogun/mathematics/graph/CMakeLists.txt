@@ -3,14 +3,14 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/Graph.h
 	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/LinalgNodes.h
-	${CMAKE_CURRENT_SOURCE_DIR}/OperatorImplementation.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Shape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Add.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/AddImpl.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/InputImpl.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/OperatorImplementation.h
 	)
 
 set(SHOGUN_CORE_GRAPH_SOURCES

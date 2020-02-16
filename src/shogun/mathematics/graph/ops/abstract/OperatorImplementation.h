@@ -23,9 +23,11 @@ public:
 	void build(const std::shared_ptr<Node>& node)
 	{
 		m_abstract_node = node;
+		build_implementation();
 	}
 
 	virtual void evaluate() = 0;
+	virtual void build_implementation() = 0;
 
 	protected:
 	std::shared_ptr<Node> m_abstract_node;
