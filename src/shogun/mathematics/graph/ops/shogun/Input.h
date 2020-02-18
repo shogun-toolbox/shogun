@@ -8,7 +8,7 @@
 #define SHOGUNINPUTSHOGUN_H_
 
 #include <shogun/mathematics/graph/nodes/Input.h>
-#include <shogun/mathematics/graph/ops/Operator.h>
+#include <shogun/mathematics/graph/ops/abstract/Operator.h>
 
 namespace shogun
 {

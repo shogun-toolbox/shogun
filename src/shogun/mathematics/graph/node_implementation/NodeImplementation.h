@@ -1,5 +1,11 @@
-#ifndef OPERATIONIMPLEMENTATION_H_
-#define OPERATIONIMPLEMENTATION_H_
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
+#ifndef NODE_RUNTIME_IMPLEMENTATION_H_
+#define NODE_RUNTIME_IMPLEMENTATION_H_
 
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/graph/nodes/Node.h>

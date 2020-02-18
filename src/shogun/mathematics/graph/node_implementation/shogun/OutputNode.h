@@ -1,4 +1,4 @@
-#include <shogun/mathematics/graph/ops/Operator.h>
+#include <shogun/mathematics/graph/ops/abstract/Operator.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
 
 #ifndef SHOGUN_OUTPUT_NODE_H_

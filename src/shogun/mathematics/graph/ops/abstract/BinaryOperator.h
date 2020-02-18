@@ -7,8 +7,7 @@
 #ifndef SHOGUNBINARYOPERATOR_H_
 #define SHOGUNBINARYOPERATOR_H_
 
-#include <iostream>
-#include <shogun/mathematics/graph/ops/Operator.h>
+#include <shogun/mathematics/graph/ops/abstract/Operator.h>
 
 namespace shogun
 {

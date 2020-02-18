@@ -3,7 +3,6 @@
 
 #include <shogun/mathematics/graph/GraphExecutor.h>
 #include <shogun/mathematics/graph/node_implementation/shogun/OutputNode.h>
-#include <shogun/mathematics/graph/ops/Operator.h>
 
 #include <memory>
 #include <vector>

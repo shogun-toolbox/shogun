@@ -10,7 +10,7 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Divide.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/Operator.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
 	)
 
