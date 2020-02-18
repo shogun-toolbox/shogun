@@ -31,6 +31,28 @@ namespace shogun
 						return element_type::FLOAT64;
 					case ::ngraph::element::Type_t::boolean:
 						return element_type::BOOLEAN;
+					case ::ngraph::element::Type_t::i8:
+						return element_type::INT8;
+					case ::ngraph::element::Type_t::i16:
+						return element_type::INT16;
+					case ::ngraph::element::Type_t::i32:
+						return element_type::INT32;
+					case ::ngraph::element::Type_t::i64:
+						return element_type::INT64;
+					case ::ngraph::element::Type_t::u8:
+						return element_type::UINT8;
+					case ::ngraph::element::Type_t::u16:
+						return element_type::UINT16;
+					case ::ngraph::element::Type_t::u32:
+						return element_type::UINT32;
+					case ::ngraph::element::Type_t::u64:
+						return element_type::UINT64;
+					case ::ngraph::element::Type_t::undefined:
+					case ::ngraph::element::Type_t::dynamic:
+					case ::ngraph::element::Type_t::bf16:
+					case ::ngraph::element::Type_t::f16:
+					case ::ngraph::element::Type_t::u1:
+						error("Cannot handle type {)", type);
 					}
 				}
 
@@ -45,6 +67,22 @@ namespace shogun
 						return ::ngraph::element::Type_t::f64;
 					case element_type::BOOLEAN:
 						return ::ngraph::element::Type_t::boolean;
+					case element_type::INT8:
+						return ::ngraph::element::Type_t::i8;
+					case element_type::INT16:
+						return ::ngraph::element::Type_t::i16;
+					case element_type::INT32:
+						return ::ngraph::element::Type_t::i32;
+					case element_type::INT64:
+						return ::ngraph::element::Type_t::i64;
+					case element_type::UINT8:
+						return ::ngraph::element::Type_t::u8;
+					case element_type::UINT16:
+						return ::ngraph::element::Type_t::u16;
+					case element_type::UINT32:
+						return ::ngraph::element::Type_t::u32;
+					case element_type::UINT64:
+						return ::ngraph::element::Type_t::u64;
 					}
 				}
 
