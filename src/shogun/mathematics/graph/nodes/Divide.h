@@ -4,10 +4,12 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUNTENSORSUBTRACT_H_
-#define SHOGUNTENSORSUBTRACT_H_
+#ifndef SHOGUN_TENSOR_DIVIDE_H_
+#define SHOGUN_TENSOR_DIVIDE_H_
 
 #include <shogun/mathematics/graph/nodes/BinaryNode.h>
+
+#define IGNORE_IN_CLASSLIST
 
 namespace shogun
 {
@@ -15,10 +17,10 @@ namespace shogun
 	{
 		namespace node
 		{
-			IGNORE_IN_CLASSLIST class Subtract : public BinaryNode
+			IGNORE_IN_CLASSLIST class Divide : public BinaryNode
 			{
 			public:
-				Subtract(
+				Divide(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				    : BinaryNode(node1, node2)
@@ -28,13 +30,13 @@ namespace shogun
 				std::string to_string() const override
 				{
 					return fmt::format(
-					    "Subtract(shape={}, type={})", get_shapes()[0],
+					    "Divide(shape={}, type={})", get_shapes()[0],
 					    get_types()[0]);
 				}
 
 				std::string_view get_node_name() const override
 				{
-					return "Subtract";
+					return "Divide";
 				}
 			};
 		} // namespace node

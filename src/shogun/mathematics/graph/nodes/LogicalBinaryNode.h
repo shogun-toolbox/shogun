@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_NODES_BINARY_NODE_H_
-#define SHOGUN_NODES_BINARY_NODE_H_
+#ifndef SHOGUN_NODES_BINARY_LOGICAL_NODE_H_
+#define SHOGUN_NODES_BINARY_LOGICAL_NODE_H_
 
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/util/enumerate.h>
@@ -18,10 +18,10 @@ namespace shogun
 	{
 		namespace node
 		{
-			IGNORE_IN_CLASSLIST class BinaryNode : public Node
+			IGNORE_IN_CLASSLIST class LogicalBinaryNode : public Node
 			{
 			public:
-				BinaryNode(
+				LogicalBinaryNode(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				    : Node(
@@ -50,10 +50,12 @@ namespace shogun
 						    "tensor, but got {}",
 						    node2_types.size());
 
-					if (node1_types[0] != node2_types[0])
-						error("Expected types to be the same");
+					if (node1_types[0] != element_type::BOOLEAN)
+						error("Expected type of first node to be bool");
+					if (node2_types[0] != element_type::BOOLEAN)
+						error("Expected type of second node to be bool");
 
-					return node1_types[0];
+					return element_type::BOOLEAN;
 				}
 
 				Shape check_shape_compatible(

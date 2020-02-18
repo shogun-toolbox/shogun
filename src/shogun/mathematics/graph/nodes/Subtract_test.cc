@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/graph/Graph.h>
-#include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/nodes/Subtract.h>
 
 #include "../test/GraphTest.h"
 
@@ -10,7 +10,7 @@ using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
 
-TYPED_TEST(GraphTest, add)
+TYPED_TEST(GraphTest, subtract)
 {
 	using NumericType = TypeParam;
 
@@ -20,17 +20,24 @@ TYPED_TEST(GraphTest, add)
 	X1.range_fill();
 	X2.range_fill();
 
-	auto expected_result1 = X1 + X2;
-	auto expected_result2 = expected_result1 + X2;
+	auto expected_result1 = SGVector<NumericType>(10);
+	std::transform(
+	    X1.data(), X1.data() + X1.size(), X2.data(), expected_result1.data(),
+	    std::minus<NumericType>{});
+	auto expected_result2 = SGVector<NumericType>(10);
+	std::transform(
+	    expected_result1.data(),
+	    expected_result1.data() + expected_result1.size(), X2.data(),
+	    expected_result2.data(), std::minus<NumericType>{});
 
 	auto input = make_shared<node::Input>(
 	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
 	auto input1 = make_shared<node::Input>(
 	    Shape{10}, get_enum_from_type<NumericType>::type);
 
-	auto intermediate = make_shared<node::Add>(input, input);
+	auto intermediate = make_shared<node::Subtract>(input, input);
 
-	auto output = make_shared<node::Add>(intermediate, input1);
+	auto output = make_shared<node::Subtract>(intermediate, input1);
 
 	auto graph = make_shared<Graph>(
 	    vector{input, input1},

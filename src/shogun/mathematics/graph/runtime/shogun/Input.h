@@ -4,13 +4,12 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_DETAIL_INPUTNGRAPH_H_
-#define SHOGUN_DETAIL_INPUTSHOGUN_H_
+#ifndef SHOGUN_DETAIL_INPUT_SHOGUN_H_
+#define SHOGUN_DETAIL_INPUT_SHOGUN_H_
 
-#include <shogun/mathematics/graph/node_implementation/NodeImplementation.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
-
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 namespace shogun
 {
@@ -33,14 +32,19 @@ namespace shogun
 						return "Input";
 					}
 
-					[[nodiscard]] std::shared_ptr<OutputNode> build_input(const std::shared_ptr<node::Node>& node) const
-					{
-						return std::make_shared<OutputNode>(std::make_shared<op::InputShogun>(node));
+					[[nodiscard]] std::shared_ptr<OutputNode>
+					build_input(const std::shared_ptr<node::Node>& node) const {
+						return std::make_shared<OutputNode>(
+						    std::make_shared<op::InputShogun>(node));
 					}
 
-					[[nodiscard]] std::shared_ptr<OutputNode> build_implementation(const std::shared_ptr<node::Node>& node) const final
+					    [[nodiscard]] std::
+					        shared_ptr<OutputNode> build_implementation(
+					            const std::shared_ptr<node::Node>& node)
+					            const final
 					{
-						error("Input nodes use Input::build_input(node) instead.");
+						error("Input nodes use Input::build_input(node) "
+						      "instead.");
 						return nullptr;
 					}
 				};

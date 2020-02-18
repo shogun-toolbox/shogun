@@ -15,5 +15,6 @@ protected:
 	std::set<GRAPH_BACKEND> m_backends;
 };
 
-using GraphTypes = ::testing::Types<float32_t, float64_t>;
+using GraphTypes = ::testing::Types<float32_t, float64_t, bool>;
+
 TYPED_TEST_CASE(GraphTest, GraphTypes);

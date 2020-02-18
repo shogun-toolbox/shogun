@@ -1,10 +1,14 @@
 #include <shogun/mathematics/graph/ShogunGraph.h>
-#include <shogun/mathematics/graph/node_implementation/shogun/Add.h>
-#include <shogun/mathematics/graph/node_implementation/shogun/Input.h>
-#include <shogun/mathematics/graph/node_implementation/shogun/Subtract.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
-
-#include <iostream>
+#include <shogun/mathematics/graph/runtime/shogun/Add.h>
+#include <shogun/mathematics/graph/runtime/shogun/Divide.h>
+#include <shogun/mathematics/graph/runtime/shogun/Equal.h>
+#include <shogun/mathematics/graph/runtime/shogun/Input.h>
+#include <shogun/mathematics/graph/runtime/shogun/LogicalAnd.h>
+#include <shogun/mathematics/graph/runtime/shogun/LogicalOr.h>
+#include <shogun/mathematics/graph/runtime/shogun/LogicalXor.h>
+#include <shogun/mathematics/graph/runtime/shogun/Multiply.h>
+#include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
 
 using namespace shogun::graph;
 
@@ -34,18 +38,17 @@ std::vector<std::shared_ptr<Tensor>> ShogunGraph::execute(
 		    "({}).",
 		    tensors.size(), m_input_output_nodes.size());
 
-	for (auto [tensor, node]: zip_iterator(tensors, m_input_output_nodes))
+	for (auto [tensor, node] : zip_iterator(tensors, m_input_output_nodes))
 	{
 		node->evaluate_tensor(tensor);
 	}
 
 	std::for_each(
-	    m_operator_output_nodes.begin(), m_operator_output_nodes.end(), [](auto& op) {
-			op->operator()();
-	    });
+	    m_operator_output_nodes.begin(), m_operator_output_nodes.end(),
+	    [](auto& op) { op->operator()(); });
 
 	std::vector<std::shared_ptr<Tensor>> results;
-	for (const auto& node: output_nodes)
+	for (const auto& node : output_nodes)
 	{
 		results.push_back(extract_result(node));
 	}
@@ -65,7 +68,8 @@ ShogunGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 	return op_it->second();
 }
 
-std::shared_ptr<Tensor> ShogunGraph::extract_result(const std::shared_ptr<node::Node>& node) const
+std::shared_ptr<Tensor>
+ShogunGraph::extract_result(const std::shared_ptr<node::Node>& node) const
 {
 	const auto& result = m_lookup.at(node)->get_output_tensors();
 	if (result.size() > 1)
@@ -76,11 +80,12 @@ std::shared_ptr<Tensor> ShogunGraph::extract_result(const std::shared_ptr<node::
 	return result[0];
 }
 
-
 void ShogunGraph::add_input_operator(const std::shared_ptr<node::Node>& node)
 {
 	auto input = get_operator(node);
-	m_lookup[node] = std::static_pointer_cast<detail::shogun::InputShogun>(input)->build_input(node);
+	m_lookup[node] =
+	    std::static_pointer_cast<detail::shogun::InputShogun>(input)
+	        ->build_input(node);
 	m_input_output_nodes.push_back(m_lookup.at(node));
 }
 
@@ -88,19 +93,25 @@ void ShogunGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 {
 	auto op = get_operator(node);
 	std::vector<std::shared_ptr<detail::shogun::OutputNode>> inputs;
-	for (const auto& input: node->get_input_nodes())
+	for (const auto& input : node->get_input_nodes())
 		inputs.push_back(m_lookup.at(input));
 
-	m_lookup[node] =
-	    std::static_pointer_cast<
-	    detail::RuntimeNodeTemplate<node::Node, detail::shogun::OutputNode>>(op)->build(inputs, node);
+	m_lookup[node] = std::static_pointer_cast<detail::RuntimeNodeTemplate<
+	    node::Node, detail::shogun::OutputNode>>(op)
+	                     ->build(inputs, node);
 	m_operator_output_nodes.push_back(m_lookup.at(node));
 }
 
 // move this to implementations....
 REGISTER_OP(detail::shogun::AddShogun);
+REGISTER_OP(detail::shogun::EqualShogun);
 REGISTER_OP(detail::shogun::InputShogun);
-// REGISTER_OP(SubtractShogun);
+REGISTER_OP(detail::shogun::SubtractShogun);
+REGISTER_OP(detail::shogun::MultiplyShogun);
+REGISTER_OP(detail::shogun::DivideShogun);
+REGISTER_OP(detail::shogun::LogicalAndShogun);
+REGISTER_OP(detail::shogun::LogicalOrShogun);
+REGISTER_OP(detail::shogun::LogicalXorShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

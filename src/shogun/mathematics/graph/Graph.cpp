@@ -107,9 +107,7 @@ void Graph::build_backend_graph(
 	for (const auto& node : ordered_nodes)
 	{
 		// node not an input so safe to assume it's an operator
-		if (find(
-		        m_inputs.begin(), m_inputs.end(),
-		        node) == m_inputs.end())
+		if (find(m_inputs.begin(), m_inputs.end(), node) == m_inputs.end())
 			m_executor->add_operator_node(node);
 	}
 }

@@ -4,10 +4,10 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_MULTIPLY_SHOGUN_H_
-#define SHOGUN_MULTIPLY_SHOGUN_H_
+#ifndef SHOGUN_LOGICAL_OR_SHOGUN_H_
+#define SHOGUN_LOGICAL_OR_SHOGUN_H_
 
-#include <shogun/mathematics/graph/nodes/Multiply.h>
+#include <shogun/mathematics/graph/nodes/LogicalOr.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
 namespace shogun
@@ -16,20 +16,20 @@ namespace shogun
 	{
 		namespace op
 		{
-			IGNORE_IN_CLASSLIST class MultiplyShogun
-			    : public ShogunBinaryOperator<MultiplyShogun>
+			IGNORE_IN_CLASSLIST class LogicalOrShogun
+			    : public ShogunBinaryOperator<LogicalOrShogun>
 			{
 			public:
-				friend class ShogunBinaryOperator<MultiplyShogun>;
+				friend class ShogunBinaryOperator<LogicalOrShogun>;
 
-				MultiplyShogun(const std::shared_ptr<node::Node>& node)
+				LogicalOrShogun(const std::shared_ptr<node::Node>& node)
 				    : ShogunBinaryOperator(node)
 				{
 				}
 
 				std::string_view get_operator_name() const final
 				{
-					return "Multiply";
+					return "LogicalOr";
 				}
 
 			protected:
@@ -37,13 +37,11 @@ namespace shogun
 				void kernel_implementation(
 				    void* input1, void* input2, void* output, size_t size)
 				{
-					// if we have SYCL or MSVC we could add parallel execution
-					// or just use Eigen here
 					std::transform(
 					    static_cast<const T*>(input1),
 					    static_cast<const T*>(input1) + size,
 					    static_cast<const T*>(input2), static_cast<T*>(output),
-					    std::multiplies<T>());
+					    std::logical_or<T>());
 				}
 			};
 		} // namespace op

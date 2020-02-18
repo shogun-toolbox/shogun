@@ -11,16 +11,22 @@
 
 namespace shogun
 {
-	namespace graph {
+	namespace graph
+	{
 
 		inline void* allocator_dispatch(size_t size, element_type type)
 		{
 			switch (type)
 			{
 			case element_type::FLOAT32:
-				return new get_type_from_enum<element_type::FLOAT32>::type[size]();
+				return new get_type_from_enum<
+				    element_type::FLOAT32>::type[size]();
 			case element_type::FLOAT64:
-				return new get_type_from_enum<element_type::FLOAT64>::type[size]();
+				return new get_type_from_enum<
+				    element_type::FLOAT64>::type[size]();
+			case element_type::BOOLEAN:
+				return new get_type_from_enum<
+				    element_type::BOOLEAN>::type[size]();
 			}
 		}
 
@@ -34,9 +40,12 @@ namespace shogun
 			case element_type::FLOAT64:
 				delete (float64_t*)data;
 				break;
+			case element_type::BOOLEAN:
+				delete (bool*)data;
+				break;
 			}
 		}
-	}
+	} // namespace graph
 } // namespace shogun
 
 #endif
