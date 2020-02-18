@@ -8,7 +8,7 @@
 #define SHOGUNINPUTSHOGUN_H_
 
 #include <shogun/mathematics/graph/nodes/Input.h>
-#include <shogun/mathematics/graph/ops/abstract/InputImpl.h>
+#include <shogun/mathematics/graph/ops/Operator.h>
 
 namespace shogun
 {
@@ -18,11 +18,11 @@ namespace shogun
 		{
 
 			IGNORE_IN_CLASSLIST class InputShogun
-			    : public InputImpl<InputShogun>
+			    : public Operator
 			{
 			public:
 				InputShogun(const std::shared_ptr<node::Node>& node)
-				    : InputImpl(node)
+				    : Operator(node)
 				{
 				}
 
@@ -35,6 +35,18 @@ namespace shogun
 					// m_output_tensor->data() = memcpy(...);
 					m_output_tensors[0]->data() = tensor->data();
 					return m_output_tensors;
+				}
+
+				std::string_view get_operator_name() const override
+				{
+					return "Input";
+				}
+
+				void call(const std::vector<
+				          std::shared_ptr<detail::shogun::OutputNode>>&) final
+				{
+					error("Input nodes cannot be run with evaluate. Use "
+					      "evaluate_input(Tensor) instead");
 				}
 
 			protected:
