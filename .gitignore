@@ -185,9 +185,6 @@ Session.vim
 *~
 tags
 
-# VS Code
-.vscode
-
 # Eclipse
 .metadata
 bin/
