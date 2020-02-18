@@ -1,12 +1,12 @@
 #include <shogun/mathematics/graph/NGraph.h>
 #include <shogun/mathematics/graph/Shape.h>
-#include <shogun/mathematics/graph/Types.h>
+#include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Add.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Equal.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
-#include <shogun/mathematics/graph/nodes/Node.h>
 
 #include <ngraph/ngraph.hpp>
 
@@ -98,9 +98,6 @@ NGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 {
 	auto type = std::type_index(typeid(*node));
 	auto op_it = OperatorRegistry().find(type);
-	// std::cout << type.name() << '\n';
-	// for(const auto& el: OperatorRegistry())
-	// 	std::cout << el.first.name() << '\n';
 	if (op_it == OperatorRegistry().end())
 	{
 		error("Could not find operator for node {}", node->to_string());
@@ -133,6 +130,7 @@ void NGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 }
 
 REGISTER_OP(detail::ngraph::AddNGraph);
+REGISTER_OP(detail::ngraph::EqualNGraph);
 REGISTER_OP(detail::ngraph::DivideNGraph);
 REGISTER_OP(detail::ngraph::InputNGraph);
 REGISTER_OP(detail::ngraph::MultiplyNGraph);

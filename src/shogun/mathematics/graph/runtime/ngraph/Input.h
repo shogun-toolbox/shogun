@@ -29,6 +29,8 @@ namespace shogun
 						return element_type::FLOAT32;
 					case ::ngraph::element::Type_t::f64:
 						return element_type::FLOAT64;
+					case ::ngraph::element::Type_t::boolean:
+						return element_type::BOOLEAN;
 					}
 				}
 
@@ -41,6 +43,8 @@ namespace shogun
 						return ::ngraph::element::Type_t::f32;
 					case element_type::FLOAT64:
 						return ::ngraph::element::Type_t::f64;
+					case element_type::BOOLEAN:
+						return ::ngraph::element::Type_t::boolean;
 					}
 				}
 

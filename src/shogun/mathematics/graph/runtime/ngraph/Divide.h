@@ -7,8 +7,8 @@
 #ifndef SHOGUN_DIVIDE_NGRAPH_H_
 #define SHOGUN_DIVIDE_NGRAPH_H_
 
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Divide.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 #include <ngraph/op/divide.hpp>
 
@@ -34,9 +34,9 @@ namespace shogun
 						return "Divide";
 					}
 
-					[[nodiscard]] std::shared_ptr<::ngraph::Node> build_implementation(
-					    const std::shared_ptr<node::Node>& node) const final
-					{
+					[[nodiscard]] std::shared_ptr<::ngraph::Node>
+					build_implementation(
+					    const std::shared_ptr<node::Node>& node) const final {
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
 							      "DivideNGraph.");

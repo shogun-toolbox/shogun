@@ -7,9 +7,9 @@
 #ifndef SHOGUN_DETAIL_DIVIDE_SHOGUN_H_
 #define SHOGUN_DETAIL_DIVIDE_SHOGUN_H_
 
-#include <shogun/mathematics/graph/runtime/shogun/ShogunBinaryNode.h>
 #include <shogun/mathematics/graph/nodes/Divide.h>
 #include <shogun/mathematics/graph/ops/shogun/Divide.h>
+#include <shogun/mathematics/graph/runtime/shogun/ShogunBinaryNode.h>
 
 namespace shogun
 {

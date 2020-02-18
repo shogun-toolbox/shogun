@@ -7,9 +7,9 @@
 #ifndef SHOGUN_DETAIL_INPUT_SHOGUN_H_
 #define SHOGUN_DETAIL_INPUT_SHOGUN_H_
 
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 namespace shogun
 {

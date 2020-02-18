@@ -4,8 +4,8 @@
 #include <deque>
 #include <memory>
 #include <shogun/mathematics/graph/GraphExecutor.h>
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 #include <unordered_set>
 #include <vector>

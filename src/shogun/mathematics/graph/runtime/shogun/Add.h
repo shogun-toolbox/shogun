@@ -7,9 +7,9 @@
 #ifndef SHOGUN_DETAIL_ADDSHOGUN_H_
 #define SHOGUN_DETAIL_ADDSHOGUN_H_
 
-#include <shogun/mathematics/graph/runtime/shogun/ShogunBinaryNode.h>
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/ops/shogun/Add.h>
+#include <shogun/mathematics/graph/runtime/shogun/ShogunBinaryNode.h>
 
 namespace shogun
 {

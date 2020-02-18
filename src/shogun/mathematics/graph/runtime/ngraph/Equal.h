@@ -4,13 +4,13 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_MULTIPLY_NGRAPH_H_
-#define SHOGUN_MULTIPLY_NGRAPH_H_
+#ifndef SHOGUN_AND_NGRAPH_H_
+#define SHOGUN_AND_NGRAPH_H_
 
-#include <shogun/mathematics/graph/nodes/Multiply.h>
+#include <shogun/mathematics/graph/nodes/Equal.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
-#include <ngraph/op/multiply.hpp>
+#include <ngraph/op/equal.hpp>
 
 namespace shogun
 {
@@ -20,27 +20,27 @@ namespace shogun
 		{
 			namespace ngraph
 			{
-				IGNORE_IN_CLASSLIST class MultiplyNGraph
+				IGNORE_IN_CLASSLIST class EqualNGraph
 
-				    : public RuntimeNodeTemplate<node::Multiply, ::ngraph::Node>
+				    : public RuntimeNodeTemplate<node::Equal, ::ngraph::Node>
 				{
 				public:
-					MultiplyNGraph() : RuntimeNodeTemplate()
+					EqualNGraph() : RuntimeNodeTemplate()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
-						return "Multiply";
+						return "Equal";
 					}
 
 					[[nodiscard]] std::shared_ptr<::ngraph::Node>
 					build_implementation(
 					    const std::shared_ptr<node::Node>& node) const final {
 						if (m_input_nodes.size() != 2)
-							error(
-							    "Expected two input nodes in MultiplyNGraph.");
-						return std::make_shared<::ngraph::op::Multiply>(
+							error("Expected two input nodes in "
+							      "EqualNGraph.");
+						return std::make_shared<::ngraph::op::Equal>(
 						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};

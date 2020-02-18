@@ -113,6 +113,12 @@ namespace shogun
 						        element_type::FLOAT64>::type>(
 						        input1, input2, output, size);
 						break;
+					case element_type::BOOLEAN:
+						static_cast<DerivedOperator*>(this)
+						    ->template kernel_implementation<get_type_from_enum<
+						        element_type::BOOLEAN>::type>(
+						        input1, input2, output, size);
+						break;
 					}
 				}
 			};

@@ -17,8 +17,7 @@ namespace shogun
 		namespace op
 		{
 
-			IGNORE_IN_CLASSLIST class InputShogun
-			    : public Operator
+			IGNORE_IN_CLASSLIST class InputShogun : public Operator
 			{
 			public:
 				InputShogun(const std::shared_ptr<node::Node>& node)

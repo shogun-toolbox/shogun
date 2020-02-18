@@ -1,10 +1,11 @@
 #include <shogun/mathematics/graph/ShogunGraph.h>
+#include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/shogun/Add.h>
 #include <shogun/mathematics/graph/runtime/shogun/Divide.h>
+#include <shogun/mathematics/graph/runtime/shogun/Equal.h>
 #include <shogun/mathematics/graph/runtime/shogun/Input.h>
 #include <shogun/mathematics/graph/runtime/shogun/Multiply.h>
 #include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
-#include <shogun/mathematics/graph/nodes/Node.h>
 
 using namespace shogun::graph;
 
@@ -100,6 +101,7 @@ void ShogunGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 
 // move this to implementations....
 REGISTER_OP(detail::shogun::AddShogun);
+REGISTER_OP(detail::shogun::EqualShogun);
 REGISTER_OP(detail::shogun::InputShogun);
 REGISTER_OP(detail::shogun::SubtractShogun);
 REGISTER_OP(detail::shogun::MultiplyShogun);

@@ -7,8 +7,8 @@
 #ifndef SHOGUN_SUBTRACT_NGRAPH_H_
 #define SHOGUN_SUBTRACT_NGRAPH_H_
 
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Subtract.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 #include <ngraph/op/subtract.hpp>
 
@@ -34,9 +34,9 @@ namespace shogun
 						return "Subtract";
 					}
 
-					[[nodiscard]] std::shared_ptr<::ngraph::Node> build_implementation(
-					    const std::shared_ptr<node::Node>& node) const final
-					{
+					[[nodiscard]] std::shared_ptr<::ngraph::Node>
+					build_implementation(
+					    const std::shared_ptr<node::Node>& node) const final {
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
 							      "SubtractNGraph.");
