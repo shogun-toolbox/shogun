@@ -42,7 +42,7 @@ namespace shogun
 					    static_cast<const T*>(input1) + size,
 					    static_cast<const T*>(input2), static_cast<T*>(output),
 					    [](const T& lhs, const T& rhs) {
-						    return !lhs != !rhs;
+						    return (!lhs != !rhs);
 					    });
 				}
 			};

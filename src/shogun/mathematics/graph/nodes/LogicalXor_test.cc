@@ -10,7 +10,7 @@ using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
 
-TYPED_TEST(GraphTest, or)
+TYPED_TEST(GraphTest, xor)
 {
 	using NumericType = TypeParam;
 

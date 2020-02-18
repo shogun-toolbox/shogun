@@ -14,6 +14,9 @@ TYPED_TEST(GraphTest, subtract)
 {
 	using NumericType = TypeParam;
 
+	if constexpr (std::is_same_v<NumericType, bool>)
+		return;
+
 	auto X1 = SGVector<NumericType>(10);
 	auto X2 = SGVector<NumericType>(10);
 

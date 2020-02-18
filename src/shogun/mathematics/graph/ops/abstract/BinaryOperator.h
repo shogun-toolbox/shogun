@@ -99,27 +99,40 @@ namespace shogun
 				    void* input1, void* input2, void* output, size_t size,
 				    element_type type)
 				{
+
+#define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
+	static_cast<DerivedOperator*>(this)                                        \
+	    ->template kernel_implementation<                                      \
+	        get_type_from_enum<SHOGUN_TYPE>::type>(                            \
+	        input1, input2, output, size);                                     \
+	break;
+
 					switch (type)
 					{
-					case element_type::FLOAT32:
-						static_cast<DerivedOperator*>(this)
-						    ->template kernel_implementation<get_type_from_enum<
-						        element_type::FLOAT32>::type>(
-						        input1, input2, output, size);
-						break;
-					case element_type::FLOAT64:
-						static_cast<DerivedOperator*>(this)
-						    ->template kernel_implementation<get_type_from_enum<
-						        element_type::FLOAT64>::type>(
-						        input1, input2, output, size);
-						break;
 					case element_type::BOOLEAN:
-						static_cast<DerivedOperator*>(this)
-						    ->template kernel_implementation<get_type_from_enum<
-						        element_type::BOOLEAN>::type>(
-						        input1, input2, output, size);
-						break;
+						CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
+					case element_type::INT8:
+						CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
+					case element_type::INT16:
+						CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
+					case element_type::INT32:
+						CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
+					case element_type::INT64:
+						CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
+					case element_type::UINT8:
+						CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
+					case element_type::UINT16:
+						CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
+					case element_type::UINT32:
+						CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
+					case element_type::UINT64:
+						CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
+					case element_type::FLOAT32:
+						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
+					case element_type::FLOAT64:
+						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
 					}
+#undef CALL_KERNEL_IMPLEMENTATION
 				}
 			};
 		} // namespace op
