@@ -4,11 +4,11 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_DETAIL_EQUAL_SHOGUN_H_
-#define SHOGUN_DETAIL_EQUAL_SHOGUN_H_
+#ifndef SHOGUN_DETAIL_LOGICAL_AND_SHOGUN_H_
+#define SHOGUN_DETAIL_LOGICAL_AND_SHOGUN_H_
 
-#include <shogun/mathematics/graph/nodes/Equal.h>
-#include <shogun/mathematics/graph/ops/shogun/Equal.h>
+#include <shogun/mathematics/graph/nodes/LogicalAnd.h>
+#include <shogun/mathematics/graph/ops/shogun/LogicalAnd.h>
 #include <shogun/mathematics/graph/runtime/shogun/ShogunBinaryNode.h>
 
 namespace shogun
@@ -19,18 +19,18 @@ namespace shogun
 		{
 			namespace shogun
 			{
-				IGNORE_IN_CLASSLIST class EqualShogun
+				IGNORE_IN_CLASSLIST class LogicalAndShogun
 				    : public ShogunBinaryRuntimeNode<
-				          EqualShogun, node::Equal, OutputNode>
+				          LogicalAndShogun, node::LogicalAnd, OutputNode>
 				{
 				public:
-					EqualShogun() : ShogunBinaryRuntimeNode()
+					LogicalAndShogun() : ShogunBinaryRuntimeNode()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
-						return "Equal";
+						return "LogicalAnd";
 					}
 
 					[[nodiscard]] std::shared_ptr<OutputNode>
@@ -39,7 +39,7 @@ namespace shogun
 					    const std::shared_ptr<OutputNode>& node2,
 					    const std::shared_ptr<node::Node>& graph_node) const {
 						return std::make_shared<OutputNode>(
-						    std::make_shared<op::EqualShogun>(graph_node),
+						    std::make_shared<op::LogicalAndShogun>(graph_node),
 						    node1, node2);
 					}
 				};

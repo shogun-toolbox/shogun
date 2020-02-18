@@ -4,13 +4,13 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_EQUAL_NGRAPH_H_
-#define SHOGUN_EQUAL_NGRAPH_H_
+#ifndef SHOGUN_LOGICAL_AND_NGRAPH_H_
+#define SHOGUN_LOGICAL_AND_NGRAPH_H_
 
-#include <shogun/mathematics/graph/nodes/Equal.h>
+#include <shogun/mathematics/graph/nodes/LogicalAnd.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
-#include <ngraph/op/equal.hpp>
+#include <ngraph/op/and.hpp>
 
 namespace shogun
 {
@@ -20,18 +20,18 @@ namespace shogun
 		{
 			namespace ngraph
 			{
-				IGNORE_IN_CLASSLIST class EqualNGraph
+				IGNORE_IN_CLASSLIST class LogicalAndNGraph
 
-				    : public RuntimeNodeTemplate<node::Equal, ::ngraph::Node>
+				    : public RuntimeNodeTemplate<node::LogicalAnd, ::ngraph::Node>
 				{
 				public:
-					EqualNGraph() : RuntimeNodeTemplate()
+					LogicalAndNGraph() : RuntimeNodeTemplate()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
-						return "Equal";
+						return "LogicalAnd";
 					}
 
 					[[nodiscard]] std::shared_ptr<::ngraph::Node>
@@ -39,8 +39,8 @@ namespace shogun
 					    const std::shared_ptr<node::Node>& node) const final {
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
-							      "EqualNGraph.");
-						return std::make_shared<::ngraph::op::Equal>(
+							      "LogicalAndNGraph.");
+						return std::make_shared<::ngraph::op::And>(
 						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};

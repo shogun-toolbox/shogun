@@ -7,6 +7,7 @@
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
+#include <shogun/mathematics/graph/runtime/ngraph/LogicalAnd.h>
 
 #include <ngraph/ngraph.hpp>
 
@@ -135,6 +136,8 @@ REGISTER_OP(detail::ngraph::DivideNGraph);
 REGISTER_OP(detail::ngraph::InputNGraph);
 REGISTER_OP(detail::ngraph::MultiplyNGraph);
 REGISTER_OP(detail::ngraph::SubtractNGraph);
+REGISTER_OP(detail::ngraph::LogicalAndNGraph);
+
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

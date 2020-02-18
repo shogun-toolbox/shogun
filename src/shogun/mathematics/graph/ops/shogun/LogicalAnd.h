@@ -4,10 +4,10 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_EQUAL_SHOGUN_H_
-#define SHOGUN_EQUAL_SHOGUN_H_
+#ifndef SHOGUN_LOGICAL_AND_SHOGUN_H_
+#define SHOGUN_LOGICAL_AND_SHOGUN_H_
 
-#include <shogun/mathematics/graph/nodes/Equal.h>
+#include <shogun/mathematics/graph/nodes/LogicalAnd.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
 namespace shogun
@@ -16,20 +16,20 @@ namespace shogun
 	{
 		namespace op
 		{
-			IGNORE_IN_CLASSLIST class EqualShogun
-			    : public ShogunBinaryOperator<EqualShogun>
+			IGNORE_IN_CLASSLIST class LogicalAndShogun
+			    : public ShogunBinaryOperator<LogicalAndShogun>
 			{
 			public:
-				friend class ShogunBinaryOperator<EqualShogun>;
+				friend class ShogunBinaryOperator<LogicalAndShogun>;
 
-				EqualShogun(const std::shared_ptr<node::Node>& node)
+				LogicalAndShogun(const std::shared_ptr<node::Node>& node)
 				    : ShogunBinaryOperator(node)
 				{
 				}
 
 				std::string_view get_operator_name() const final
 				{
-					return "Equal";
+					return "LogicalAnd";
 				}
 
 			protected:
@@ -41,7 +41,7 @@ namespace shogun
 					    static_cast<const T*>(input1),
 					    static_cast<const T*>(input1) + size,
 					    static_cast<const T*>(input2), static_cast<T*>(output),
-					    std::equal_to<T>());
+					    std::logical_and<T>());
 				}
 			};
 		} // namespace op

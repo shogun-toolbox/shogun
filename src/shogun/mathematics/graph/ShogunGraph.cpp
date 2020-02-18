@@ -6,6 +6,7 @@
 #include <shogun/mathematics/graph/runtime/shogun/Input.h>
 #include <shogun/mathematics/graph/runtime/shogun/Multiply.h>
 #include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
+#include <shogun/mathematics/graph/runtime/shogun/LogicalAnd.h>
 
 using namespace shogun::graph;
 
@@ -106,6 +107,7 @@ REGISTER_OP(detail::shogun::InputShogun);
 REGISTER_OP(detail::shogun::SubtractShogun);
 REGISTER_OP(detail::shogun::MultiplyShogun);
 REGISTER_OP(detail::shogun::DivideShogun);
+REGISTER_OP(detail::shogun::LogicalAndShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)
