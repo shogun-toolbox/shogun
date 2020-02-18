@@ -2,6 +2,8 @@
 #include <shogun/mathematics/graph/node_implementation/ngraph/Add.h>
 #include <shogun/mathematics/graph/node_implementation/ngraph/Input.h>
 #include <shogun/mathematics/graph/node_implementation/ngraph/Subtract.h>
+#include <shogun/mathematics/graph/node_implementation/ngraph/Multiply.h>
+#include <shogun/mathematics/graph/node_implementation/ngraph/Divide.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/Types.h>
 #include <shogun/mathematics/graph/Shape.h>
@@ -130,8 +132,11 @@ void NGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 }
 
 REGISTER_OP(detail::ngraph::AddNGraph);
+REGISTER_OP(detail::ngraph::DivideNGraph);
 REGISTER_OP(detail::ngraph::InputNGraph);
+REGISTER_OP(detail::ngraph::MultiplyNGraph);
 REGISTER_OP(detail::ngraph::SubtractNGraph);
+
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

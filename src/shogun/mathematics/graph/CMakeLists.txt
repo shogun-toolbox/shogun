@@ -6,6 +6,8 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Multiply.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Divide.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/Operator.h
@@ -21,6 +23,8 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Divide.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Multiply.h
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
@@ -31,6 +35,8 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 
 set(NGRAPH_IMPLEMENTATION_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Divide.h
+	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Multiply.h
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Subtract.h
 
@@ -96,12 +102,17 @@ IF (ENABLE_TESTING)
 
 	ADD_SHOGUN_TEST(nodes/Add_test)
 	ADD_SHOGUN_TEST(nodes/Subtract_test)
+	ADD_SHOGUN_TEST(nodes/Multiply_test)
+	ADD_SHOGUN_TEST(nodes/Divide_test)
 
 	if (UNIX AND NOT APPLE)
 		set_property(TEST Add_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
 		set_property(TEST Subtract_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+		set_property(TEST Multiply_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+		set_property(TEST Divide_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
 	endif()
 	add_dependencies(Add_test ${EXCUTORS})
 	add_dependencies(Subtract_test ${EXCUTORS})
-
+	add_dependencies(Multiply_test ${EXCUTORS})
+	add_dependencies(Divide_test ${EXCUTORS})
 ENDIF()
