@@ -71,70 +71,71 @@ set_target_properties(
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
 set_property(TARGET shogun-engine APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
 
-add_library(shogun-vanilla-executor SHARED
-	${SHOGUN_GRAPH_IMPLEMENTATION_HEADERS}
-	${SHOGUN_GRAPH_IMPLEMENTATION_SOURCES}
-)
-target_link_libraries(shogun-vanilla-executor shogun-engine)
-# todo create a macro/function for this
-set_property(TARGET shogun-vanilla-executor PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-set_target_properties(
-  shogun-vanilla-executor PROPERTIES
-  VERSION ${LIBSHOGUNVER}
-  SOVERSION ${LIBSHOGUNSO}
-  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
-  LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
-set_property(TARGET shogun-vanilla-executor APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
-LIST(APPEND EXCUTORS shogun-vanilla-executor)
+function(add_executor EXECUTOR_NAME)
+
+    cmake_parse_arguments(
+        EXECUTOR
+        ""
+        "ADDITIONAL_SHARED_LIBRARIES;ADDITIONAL_INCLUDE_DIRS"
+        "IMPLEMENTATION_HEADERS;IMPLEMENTATION_SOURCES"
+        ${ARGN}
+    )
+    
+    add_library(${EXECUTOR_NAME} SHARED
+		${EXECUTOR_IMPLEMENTATION_HEADERS}
+		${EXECUTOR_IMPLEMENTATION_SOURCES}
+	)
+
+	target_include_directories(${EXECUTOR_NAME} PRIVATE ${EXECUTOR_ADDITIONAL_INCLUDE_DIRS})
+	target_link_libraries(${EXECUTOR_NAME} shogun-engine ${EXECUTOR_ADDITIONAL_SHARED_LIBRARIES})
+
+	set_property(TARGET ${EXECUTOR_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(
+	  ${EXECUTOR_NAME} PROPERTIES
+	  VERSION ${LIBSHOGUNVER}
+	  SOVERSION ${LIBSHOGUNSO}
+	  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
+	  LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
+	set_property(TARGET ${EXECUTOR_NAME} 
+		APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+	set(EXECUTORS ${EXECUTORS} ${EXECUTOR_NAME} PARENT_SCOPE)
+endfunction()
+
+function (add_graph_test TEST_FILE)
+	get_filename_component(FILENAME ${TEST_FILE} NAME)
+	ADD_SHOGUN_TEST(${TEST_FILE})
+	if (UNIX AND NOT APPLE)
+		set_property(TEST ${FILENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+	endif()
+	add_dependencies(${FILENAME} ${EXECUTORS})
+endfunction()
+
+# add executors
+add_executor(shogun-vanilla-executor 
+	IMPLEMENTATION_HEADERS ${SHOGUN_GRAPH_IMPLEMENTATION_HEADERS}
+	IMPLEMENTATION_SOURCES ${SHOGUN_GRAPH_IMPLEMENTATION_SOURCES}
+	)
 
 find_package(NGraph)
 if (NGraph_FOUND)
-	add_library(shogun-ngraph-executor SHARED
-		${NGRAPH_IMPLEMENTATION_HEADERS}
-		${NGRAPH_IMPLEMENTATION_SOURCES}
+	add_executor(shogun-ngraph-executor
+		IMPLEMENTATION_HEADERS ${NGRAPH_IMPLEMENTATION_HEADERS}
+		IMPLEMENTATION_SOURCES ${NGRAPH_IMPLEMENTATION_SOURCES}
+		ADDITIONAL_SHARED_LIBRARIES ${NGraph_LIBRARIES}
+		ADDITIONAL_INCLUDE_DIRS ${NGraph_INCLUDE_DIRS}
 		)
-	target_include_directories(shogun-ngraph-executor PRIVATE ${NGraph_INCLUDE_DIRS})
-	target_link_libraries(shogun-ngraph-executor shogun-engine ${NGraph_LIBRARIES})
-	set_property(TARGET shogun-ngraph-executor PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-	set_target_properties(
-		shogun-ngraph-executor PROPERTIES
-		VERSION ${LIBSHOGUNVER}
-		SOVERSION ${LIBSHOGUNSO}
-		INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
-		LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
-	set_property(TARGET shogun-ngraph-executor APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
-	LIST(APPEND EXCUTORS shogun-ngraph-executor)
 endif()
 
+# add graph tests for available executors
 IF (ENABLE_TESTING)
 	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-engine)
 
-	ADD_SHOGUN_TEST(nodes/Add_test)
-	ADD_SHOGUN_TEST(nodes/Equal_test)
-	ADD_SHOGUN_TEST(nodes/Subtract_test)
-	ADD_SHOGUN_TEST(nodes/Multiply_test)
-	ADD_SHOGUN_TEST(nodes/Divide_test)
-	ADD_SHOGUN_TEST(nodes/LogicalAnd_test)
-	ADD_SHOGUN_TEST(nodes/LogicalOr_test)
-	ADD_SHOGUN_TEST(nodes/LogicalXor_test)
-
-	if (UNIX AND NOT APPLE)
-		set_property(TEST Add_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST Equal_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST Subtract_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST Multiply_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST Divide_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST LogicalAnd_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST LogicalOr_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-		set_property(TEST LogicalXor_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")	
-	endif()
-	add_dependencies(Add_test ${EXCUTORS})
-	add_dependencies(Equal_test ${EXCUTORS})
-	add_dependencies(Subtract_test ${EXCUTORS})
-	add_dependencies(Multiply_test ${EXCUTORS})
-	add_dependencies(Divide_test ${EXCUTORS})
-	add_dependencies(LogicalAnd_test ${EXCUTORS})
-	add_dependencies(LogicalOr_test ${EXCUTORS})
-	add_dependencies(LogicalXor_test ${EXCUTORS})
-
+	add_graph_test(nodes/Add_test)
+	add_graph_test(nodes/Equal_test)
+	add_graph_test(nodes/Subtract_test)
+	add_graph_test(nodes/Multiply_test)
+	add_graph_test(nodes/Divide_test)
+	add_graph_test(nodes/LogicalAnd_test)
+	add_graph_test(nodes/LogicalOr_test)
+	add_graph_test(nodes/LogicalXor_test)
 ENDIF()
