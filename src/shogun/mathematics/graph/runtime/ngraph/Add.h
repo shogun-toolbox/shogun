@@ -4,13 +4,13 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_DIVIDE_NGRAPH_H_
-#define SHOGUN_DIVIDE_NGRAPH_H_
+#ifndef SHOGUN_ADD_NGRAPH_H_
+#define SHOGUN_ADD_NGRAPH_H_
 
-#include <shogun/mathematics/graph/node_implementation/NodeImplementation.h>
-#include <shogun/mathematics/graph/nodes/Divide.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
+#include <shogun/mathematics/graph/nodes/Add.h>
 
-#include <ngraph/op/divide.hpp>
+#include <ngraph/op/add.hpp>
 
 namespace shogun
 {
@@ -20,27 +20,27 @@ namespace shogun
 		{
 			namespace ngraph
 			{
-				IGNORE_IN_CLASSLIST class DivideNGraph
+				IGNORE_IN_CLASSLIST class AddNGraph
 
-				    : public RuntimeNodeTemplate<node::Divide, ::ngraph::Node>
+				    : public RuntimeNodeTemplate<node::Add, ::ngraph::Node>
 				{
 				public:
-					DivideNGraph() : RuntimeNodeTemplate()
+					AddNGraph() : RuntimeNodeTemplate()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
-						return "Divide";
+						return "Add";
 					}
 
-					std::shared_ptr<::ngraph::Node> build_implementation(
+					[[nodiscard]] std::shared_ptr<::ngraph::Node> build_implementation(
 					    const std::shared_ptr<node::Node>& node) const final
 					{
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
-							      "DivideNGraph.");
-						return std::make_shared<::ngraph::op::Divide>(
+							      "AddNGraph.");
+						return std::make_shared<::ngraph::op::Add>(
 						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};

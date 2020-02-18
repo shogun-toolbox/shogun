@@ -7,7 +7,7 @@
 #ifndef SHOGUN_MULTIPLY_NGRAPH_H_
 #define SHOGUN_MULTIPLY_NGRAPH_H_
 
-#include <shogun/mathematics/graph/node_implementation/NodeImplementation.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Multiply.h>
 
 #include <ngraph/op/multiply.hpp>
@@ -34,7 +34,7 @@ namespace shogun
 						return "Multiply";
 					}
 
-					std::shared_ptr<::ngraph::Node> build_implementation(
+					[[nodiscard]] std::shared_ptr<::ngraph::Node> build_implementation(
 					    const std::shared_ptr<node::Node>& node) const final
 					{
 						if (m_input_nodes.size() != 2)

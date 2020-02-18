@@ -1,11 +1,11 @@
 #include <shogun/mathematics/graph/NGraph.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Types.h>
-#include <shogun/mathematics/graph/node_implementation/ngraph/Add.h>
-#include <shogun/mathematics/graph/node_implementation/ngraph/Divide.h>
-#include <shogun/mathematics/graph/node_implementation/ngraph/Input.h>
-#include <shogun/mathematics/graph/node_implementation/ngraph/Multiply.h>
-#include <shogun/mathematics/graph/node_implementation/ngraph/Subtract.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Add.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Input.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 
 #include <ngraph/ngraph.hpp>

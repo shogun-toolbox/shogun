@@ -4,10 +4,10 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_DETAIL_INPUTNGRAPH_H_
-#define SHOGUN_DETAIL_INPUTSHOGUN_H_
+#ifndef SHOGUN_DETAIL_INPUT_SHOGUN_H_
+#define SHOGUN_DETAIL_INPUT_SHOGUN_H_
 
-#include <shogun/mathematics/graph/node_implementation/NodeImplementation.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
 

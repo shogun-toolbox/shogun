@@ -4,12 +4,12 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_DETAIL_MULTIPLY_SHOGUN_H_
-#define SHOGUN_DETAIL_MULTIPLY_SHOGUN_H_
+#ifndef SHOGUN_DETAIL_SUBTRACT_SHOGUN_H_
+#define SHOGUN_DETAIL_SUBTRACT_SHOGUN_H_
 
-#include <shogun/mathematics/graph/node_implementation/shogun/ShogunBinaryNode.h>
-#include <shogun/mathematics/graph/nodes/Multiply.h>
-#include <shogun/mathematics/graph/ops/shogun/Multiply.h>
+#include <shogun/mathematics/graph/runtime/shogun/ShogunBinaryNode.h>
+#include <shogun/mathematics/graph/nodes/Subtract.h>
+#include <shogun/mathematics/graph/ops/shogun/Subtract.h>
 
 namespace shogun
 {
@@ -19,18 +19,18 @@ namespace shogun
 		{
 			namespace shogun
 			{
-				IGNORE_IN_CLASSLIST class MultiplyShogun
+				IGNORE_IN_CLASSLIST class SubtractShogun
 				    : public ShogunBinaryRuntimeNode<
-				          MultiplyShogun, node::Multiply, OutputNode>
+				          SubtractShogun, node::Subtract, OutputNode>
 				{
 				public:
-					MultiplyShogun() : ShogunBinaryRuntimeNode()
+					SubtractShogun() : ShogunBinaryRuntimeNode()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
-						return "Multiply";
+						return "Subtract";
 					}
 
 					[[nodiscard]] std::shared_ptr<OutputNode>
@@ -39,7 +39,7 @@ namespace shogun
 					    const std::shared_ptr<OutputNode>& node2,
 					    const std::shared_ptr<node::Node>& graph_node) const {
 						return std::make_shared<OutputNode>(
-						    std::make_shared<op::MultiplyShogun>(graph_node),
+						    std::make_shared<op::SubtractShogun>(graph_node),
 						    node1, node2);
 					}
 				};

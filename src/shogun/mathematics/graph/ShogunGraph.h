@@ -2,7 +2,7 @@
 #define SHOGUN_GRAPH_
 
 #include <shogun/mathematics/graph/GraphExecutor.h>
-#include <shogun/mathematics/graph/node_implementation/shogun/OutputNode.h>
+#include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
 
 #include <memory>
 #include <vector>

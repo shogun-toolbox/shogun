@@ -21,11 +21,11 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Add.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Divide.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Multiply.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Input.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/shogun/Subtract.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Multiply.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Input.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 	)
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
@@ -33,11 +33,11 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	)
 
 set(NGRAPH_IMPLEMENTATION_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Add.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Divide.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Multiply.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Input.h
-	${CMAKE_CURRENT_SOURCE_DIR}/node_implementation/ngraph/Subtract.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Add.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Divide.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Multiply.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Input.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Subtract.h
 
 	${CMAKE_CURRENT_SOURCE_DIR}/NGraph.h
  	)

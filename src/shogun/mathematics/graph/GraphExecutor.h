@@ -3,7 +3,7 @@
 
 #include <shogun/base/manifest.h>
 #include <shogun/mathematics/graph/Tensor.h>
-#include <shogun/mathematics/graph/node_implementation/NodeImplementation.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 
 #include <memory>

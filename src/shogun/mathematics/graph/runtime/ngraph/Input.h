@@ -7,8 +7,8 @@
 #ifndef SHOGUN_INPUT_NGRAPH_H_
 #define SHOGUN_INPUT_NGRAPH_H_
 
-#include <shogun/mathematics/graph/node_implementation/NodeImplementation.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 #include <ngraph/op/parameter.hpp>
 

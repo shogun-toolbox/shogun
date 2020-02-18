@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
 

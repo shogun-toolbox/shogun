@@ -1,7 +1,13 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
 #ifndef SHOGUN_BINARY_NODE_IMPL_H_
 #define SHOGUN_BINARY_NODE_IMPL_H_
 
-#include <shogun/mathematics/graph/node_implementation/shogun/OutputNode.h>
+#include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
 
 namespace shogun
 {
