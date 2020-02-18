@@ -21,11 +21,14 @@ TYPED_TEST(GraphTest, divide)
 	X2.range_fill(1);
 
 	auto expected_result1 = SGVector<NumericType>(10);
-	std::transform(X1.data(), X1.data() + X1.size(), X2.data(), expected_result1.data(),
-		std::divides<NumericType>{});
+	std::transform(
+	    X1.data(), X1.data() + X1.size(), X2.data(), expected_result1.data(),
+	    std::divides<NumericType>{});
 	auto expected_result2 = SGVector<NumericType>(10);
-	std::transform(expected_result1.data(), expected_result1.data() + expected_result1.size(),
-		X2.data(), expected_result2.data(), std::divides<NumericType>{});
+	std::transform(
+	    expected_result1.data(),
+	    expected_result1.data() + expected_result1.size(), X2.data(),
+	    expected_result2.data(), std::divides<NumericType>{});
 
 	auto input = make_shared<node::Input>(
 	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);

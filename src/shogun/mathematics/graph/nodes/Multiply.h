@@ -20,7 +20,8 @@ namespace shogun
 			IGNORE_IN_CLASSLIST class Multiply : public BinaryNode
 			{
 			public:
-				Multiply(const std::shared_ptr<Node>& node1,
+				Multiply(
+				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				    : BinaryNode(node1, node2)
 				{

@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/graph/Graph.h>
-#include <shogun/mathematics/graph/nodes/Subtract.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/nodes/Subtract.h>
 
 #include "../test/GraphTest.h"
 
@@ -21,11 +21,14 @@ TYPED_TEST(GraphTest, subtract)
 	X2.range_fill();
 
 	auto expected_result1 = SGVector<NumericType>(10);
-	std::transform(X1.data(), X1.data() + X1.size(), X2.data(), expected_result1.data(),
-		std::minus<NumericType>{});
+	std::transform(
+	    X1.data(), X1.data() + X1.size(), X2.data(), expected_result1.data(),
+	    std::minus<NumericType>{});
 	auto expected_result2 = SGVector<NumericType>(10);
-	std::transform(expected_result1.data(), expected_result1.data() + expected_result1.size(),
-		X2.data(), expected_result2.data(), std::minus<NumericType>{});
+	std::transform(
+	    expected_result1.data(),
+	    expected_result1.data() + expected_result1.size(), X2.data(),
+	    expected_result2.data(), std::minus<NumericType>{});
 
 	auto input = make_shared<node::Input>(
 	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);

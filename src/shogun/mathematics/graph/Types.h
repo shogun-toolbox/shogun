@@ -13,7 +13,8 @@
 
 namespace shogun
 {
-	namespace graph {
+	namespace graph
+	{
 		enum class element_type
 		{
 			FLOAT32 = 0,
@@ -78,15 +79,15 @@ namespace shogun
 
 		inline size_t get_byte_size(element_type type)
 		{
-			switch(type)
+			switch (type)
 			{
-				case element_type::FLOAT32:
-					return sizeof(float32_t);
-				case element_type::FLOAT64:
-					return sizeof(float64_t);
+			case element_type::FLOAT32:
+				return sizeof(float32_t);
+			case element_type::FLOAT64:
+				return sizeof(float64_t);
 			}
 		}
-	}
+	} // namespace graph
 } // namespace shogun
 
 #endif

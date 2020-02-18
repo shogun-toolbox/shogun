@@ -16,7 +16,8 @@
 
 namespace shogun
 {
-	namespace graph {
+	namespace graph
+	{
 		class Tensor;
 
 		class Shape
@@ -40,7 +41,7 @@ namespace shogun
 				return m_shape.size();
 			}
 
-			const shape_type& operator[](size_t idx) const 
+			const shape_type& operator[](size_t idx) const
 			{
 				return m_shape[idx];
 			}
@@ -87,7 +88,7 @@ namespace shogun
 		private:
 			std::vector<shape_type> m_shape;
 		};
-	}
+	} // namespace graph
 } // namespace shogun
 
 #endif

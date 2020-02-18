@@ -22,7 +22,7 @@ namespace shogun
 			{
 				IGNORE_IN_CLASSLIST class SubtractNGraph
 
-			: public RuntimeNodeTemplate<node::Subtract, ::ngraph::Node>
+				    : public RuntimeNodeTemplate<node::Subtract, ::ngraph::Node>
 				{
 				public:
 					SubtractNGraph() : RuntimeNodeTemplate()
@@ -34,14 +34,14 @@ namespace shogun
 						return "Subtract";
 					}
 
-					std::shared_ptr<::ngraph::Node>
-					build_implementation(const std::shared_ptr<node::Node>& node) const final
+					std::shared_ptr<::ngraph::Node> build_implementation(
+					    const std::shared_ptr<node::Node>& node) const final
 					{
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
 							      "SubtractNGraph.");
 						return std::make_shared<::ngraph::op::Subtract>(
-							    m_input_nodes[0], m_input_nodes[1]);
+						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};
 			} // namespace ngraph

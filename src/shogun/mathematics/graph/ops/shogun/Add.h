@@ -12,16 +12,18 @@
 
 namespace shogun
 {
-	namespace graph 
+	namespace graph
 	{
 		namespace op
 		{
-			IGNORE_IN_CLASSLIST class AddShogun : public ShogunBinaryOperator<AddShogun>
+			IGNORE_IN_CLASSLIST class AddShogun
+			    : public ShogunBinaryOperator<AddShogun>
 			{
 			public:
 				friend class ShogunBinaryOperator<AddShogun>;
-				
-				AddShogun(const std::shared_ptr<node::Node>& node) : ShogunBinaryOperator(node)
+
+				AddShogun(const std::shared_ptr<node::Node>& node)
+				    : ShogunBinaryOperator(node)
 				{
 				}
 
@@ -44,8 +46,8 @@ namespace shogun
 					    std::plus<T>());
 				}
 			};
-		}
-	}
+		} // namespace op
+	}     // namespace graph
 } // namespace shogun
 
 #endif

@@ -20,7 +20,8 @@ namespace shogun
 			IGNORE_IN_CLASSLIST class InputImpl : public Operator
 			{
 			public:
-				InputImpl(const std::shared_ptr<node::Node>& node) : Operator(node)
+				InputImpl(const std::shared_ptr<node::Node>& node)
+				    : Operator(node)
 				{
 				}
 
@@ -33,7 +34,8 @@ namespace shogun
 					return "Input";
 				}
 
-				void call(const std::vector<std::shared_ptr<detail::shogun::OutputNode>>&) final
+				void call(const std::vector<
+				          std::shared_ptr<detail::shogun::OutputNode>>&) final
 				{
 					error("Input nodes cannot be run with evaluate. Use "
 					      "evaluate_input(Tensor) instead");
@@ -41,12 +43,12 @@ namespace shogun
 
 				void evaluate_input(const std::shared_ptr<Tensor>& tensor)
 				{
-					static_cast<DerivedOperator*>(this)->evaluate_implementation(
-					    tensor);
+					static_cast<DerivedOperator*>(this)
+					    ->evaluate_implementation(tensor);
 				}
 			};
-		}
-	}
+		} // namespace op
+	}     // namespace graph
 } // namespace shogun
 
 #endif

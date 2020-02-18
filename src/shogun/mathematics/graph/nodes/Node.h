@@ -65,13 +65,13 @@ namespace shogun
 					return m_input_nodes;
 				}
 
-                // shape of tensor created by this node
+				// shape of tensor created by this node
 				const std::vector<Shape>& get_shapes() const
 				{
 					return m_shapes;
 				}
 
-                // type of tensor created by this node
+				// type of tensor created by this node
 				const std::vector<element_type>& get_types() const
 				{
 					return m_types;

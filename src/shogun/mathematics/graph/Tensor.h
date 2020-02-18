@@ -22,7 +22,8 @@
 
 namespace shogun
 {
-	namespace graph {
+	namespace graph
+	{
 		class Tensor
 		{
 
@@ -69,21 +70,23 @@ namespace shogun
 
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
 
-			[[nodiscard]] Shape& get_shape() { return m_shape; }
-
-			[[nodiscard]] size_t size_in_bytes() const
+			    [[nodiscard]] Shape& get_shape()
 			{
+				return m_shape;
+			}
+
+			[[nodiscard]] size_t size_in_bytes() const {
 				return size() * get_byte_size(m_type);
 			}
 
-			[[nodiscard]] size_t size() const
+			    [[nodiscard]] size_t size() const
 			{
 				return get_size_from_shape(m_shape);
 			}
 
 			[[nodiscard]] element_type get_type() const { return m_type; }
 
-			[[nodiscard]] std::string to_string() const;
+			    [[nodiscard]] std::string to_string() const;
 
 			friend std::ostream&
 			operator<<(std::ostream& os, const std::shared_ptr<Tensor>& tensor)
@@ -97,7 +100,8 @@ namespace shogun
 				if (m_shape.size() != shape.size())
 				{
 					error(
-					    "Mismatch in the number of dimensions, expected {}, but "
+					    "Mismatch in the number of dimensions, expected {}, "
+					    "but "
 					    "got {}",
 					    m_shape.size(), shape.size());
 				}
@@ -124,13 +128,14 @@ namespace shogun
 				return m_data;
 			}
 
-	#ifndef SWIG
+#ifndef SWIG
 
 			template <typename Container>
 			Container as() const
 			{
 				if constexpr (std::is_same_v<
-				                  SGVector<typename Container::Scalar>, Container>)
+				                  SGVector<typename Container::Scalar>,
+				                  Container>)
 				{
 					if (m_shape.size() > 1)
 						error("Tried to cast a multidimensional Tensor to a "
@@ -142,7 +147,8 @@ namespace shogun
 					    (typename Container::Scalar*)m_data, size(), false);
 				}
 				if constexpr (std::is_same_v<
-				                  SGMatrix<typename Container::Scalar>, Container>)
+				                  SGMatrix<typename Container::Scalar>,
+				                  Container>)
 				{
 					if (get_enum_from_type<typename Container::Scalar>::type !=
 					    m_type)
@@ -152,12 +158,12 @@ namespace shogun
 						    "SGMatrix does not support {} dimensions.",
 						    m_shape.size());
 					return Container(
-					    (typename Container::Scalar*)m_data, m_shape[0], m_shape[1],
-					    false);
+					    (typename Container::Scalar*)m_data, m_shape[0],
+					    m_shape[1], false);
 				}
 			}
 
-	#endif
+#endif
 
 			[[nodiscard]] size_t get_size_from_shape(const Shape& size) const {
 				return std::accumulate(
@@ -172,7 +178,7 @@ namespace shogun
 			Shape m_shape;
 			const element_type m_type;
 		};
-	}
+	} // namespace graph
 } // namespace shogun
 
 #endif

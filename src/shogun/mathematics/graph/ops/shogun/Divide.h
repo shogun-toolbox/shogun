@@ -12,16 +12,18 @@
 
 namespace shogun
 {
-	namespace graph 
+	namespace graph
 	{
 		namespace op
 		{
-			IGNORE_IN_CLASSLIST class DivideShogun : public ShogunBinaryOperator<DivideShogun>
+			IGNORE_IN_CLASSLIST class DivideShogun
+			    : public ShogunBinaryOperator<DivideShogun>
 			{
 			public:
 				friend class ShogunBinaryOperator<DivideShogun>;
-				
-				DivideShogun(const std::shared_ptr<node::Node>& node) : ShogunBinaryOperator(node)
+
+				DivideShogun(const std::shared_ptr<node::Node>& node)
+				    : ShogunBinaryOperator(node)
 				{
 				}
 
@@ -44,8 +46,8 @@ namespace shogun
 					    std::divides<T>());
 				}
 			};
-		}
-	}
+		} // namespace op
+	}     // namespace graph
 } // namespace shogun
 
 #endif

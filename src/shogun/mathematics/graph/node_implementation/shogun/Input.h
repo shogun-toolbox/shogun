@@ -11,7 +11,6 @@
 #include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
 
-
 namespace shogun
 {
 	namespace graph
@@ -33,14 +32,19 @@ namespace shogun
 						return "Input";
 					}
 
-					[[nodiscard]] std::shared_ptr<OutputNode> build_input(const std::shared_ptr<node::Node>& node) const
-					{
-						return std::make_shared<OutputNode>(std::make_shared<op::InputShogun>(node));
+					[[nodiscard]] std::shared_ptr<OutputNode>
+					build_input(const std::shared_ptr<node::Node>& node) const {
+						return std::make_shared<OutputNode>(
+						    std::make_shared<op::InputShogun>(node));
 					}
 
-					[[nodiscard]] std::shared_ptr<OutputNode> build_implementation(const std::shared_ptr<node::Node>& node) const final
+					    [[nodiscard]] std::
+					        shared_ptr<OutputNode> build_implementation(
+					            const std::shared_ptr<node::Node>& node)
+					            const final
 					{
-						error("Input nodes use Input::build_input(node) instead.");
+						error("Input nodes use Input::build_input(node) "
+						      "instead.");
 						return nullptr;
 					}
 				};

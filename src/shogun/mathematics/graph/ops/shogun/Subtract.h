@@ -1,5 +1,6 @@
 // /*
-//  * This software is distributed under BSD 3-clause license (see LICENSE file).
+//  * This software is distributed under BSD 3-clause license (see LICENSE
+//  file).
 //  *
 //  * Authors: Gil Hoben
 //  */
@@ -12,16 +13,18 @@
 
 namespace shogun
 {
-	namespace graph 
+	namespace graph
 	{
 		namespace op
 		{
-			IGNORE_IN_CLASSLIST class SubtractShogun : public ShogunBinaryOperator<SubtractShogun>
+			IGNORE_IN_CLASSLIST class SubtractShogun
+			    : public ShogunBinaryOperator<SubtractShogun>
 			{
 			public:
 				friend class ShogunBinaryOperator<SubtractShogun>;
-				
-				SubtractShogun(const std::shared_ptr<node::Node>& node) : ShogunBinaryOperator(node)
+
+				SubtractShogun(const std::shared_ptr<node::Node>& node)
+				    : ShogunBinaryOperator(node)
 				{
 				}
 
@@ -44,8 +47,8 @@ namespace shogun
 					    std::minus<T>());
 				}
 			};
-		}
-	}
+		} // namespace op
+	}     // namespace graph
 } // namespace shogun
 
 #endif

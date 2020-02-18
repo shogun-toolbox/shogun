@@ -22,7 +22,7 @@ namespace shogun
 			{
 				IGNORE_IN_CLASSLIST class MultiplyNGraph
 
-			: public RuntimeNodeTemplate<node::Multiply, ::ngraph::Node>
+				    : public RuntimeNodeTemplate<node::Multiply, ::ngraph::Node>
 				{
 				public:
 					MultiplyNGraph() : RuntimeNodeTemplate()
@@ -34,13 +34,14 @@ namespace shogun
 						return "Multiply";
 					}
 
-					std::shared_ptr<::ngraph::Node>
-					build_implementation(const std::shared_ptr<node::Node>& node) const final
+					std::shared_ptr<::ngraph::Node> build_implementation(
+					    const std::shared_ptr<node::Node>& node) const final
 					{
 						if (m_input_nodes.size() != 2)
-							error("Expected two input nodes in MultiplyNGraph.");
+							error(
+							    "Expected two input nodes in MultiplyNGraph.");
 						return std::make_shared<::ngraph::op::Multiply>(
-							    m_input_nodes[0], m_input_nodes[1]);
+						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};
 			} // namespace ngraph

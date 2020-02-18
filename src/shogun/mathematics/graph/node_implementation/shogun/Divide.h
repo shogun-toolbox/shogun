@@ -11,7 +11,6 @@
 #include <shogun/mathematics/graph/nodes/Divide.h>
 #include <shogun/mathematics/graph/ops/shogun/Divide.h>
 
-
 namespace shogun
 {
 	namespace graph
@@ -21,7 +20,8 @@ namespace shogun
 			namespace shogun
 			{
 				IGNORE_IN_CLASSLIST class DivideShogun
-				    : public ShogunBinaryRuntimeNode<DivideShogun, node::Divide, OutputNode>
+				    : public ShogunBinaryRuntimeNode<
+				          DivideShogun, node::Divide, OutputNode>
 				{
 				public:
 					DivideShogun() : ShogunBinaryRuntimeNode()
@@ -33,13 +33,14 @@ namespace shogun
 						return "Divide";
 					}
 
-					[[nodiscard]] std::shared_ptr<OutputNode> build_implementation_(
-						const std::shared_ptr<OutputNode>& node1,
-						const std::shared_ptr<OutputNode>& node2,
-						const std::shared_ptr<node::Node>& graph_node) const
-					{
-					    return std::make_shared<OutputNode>(
-					    	std::make_shared<op::DivideShogun>(graph_node), node1, node2);
+					[[nodiscard]] std::shared_ptr<OutputNode>
+					build_implementation_(
+					    const std::shared_ptr<OutputNode>& node1,
+					    const std::shared_ptr<OutputNode>& node2,
+					    const std::shared_ptr<node::Node>& graph_node) const {
+						return std::make_shared<OutputNode>(
+						    std::make_shared<op::DivideShogun>(graph_node),
+						    node1, node2);
 					}
 				};
 			} // namespace shogun
