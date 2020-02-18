@@ -5,9 +5,11 @@
 #include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Equal.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
+#include <shogun/mathematics/graph/runtime/ngraph/LogicalAnd.h>
+#include <shogun/mathematics/graph/runtime/ngraph/LogicalOr.h>
+#include <shogun/mathematics/graph/runtime/ngraph/LogicalXor.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalAnd.h>
 
 #include <ngraph/ngraph.hpp>
 
@@ -137,7 +139,8 @@ REGISTER_OP(detail::ngraph::InputNGraph);
 REGISTER_OP(detail::ngraph::MultiplyNGraph);
 REGISTER_OP(detail::ngraph::SubtractNGraph);
 REGISTER_OP(detail::ngraph::LogicalAndNGraph);
-
+REGISTER_OP(detail::ngraph::LogicalOrNGraph);
+REGISTER_OP(detail::ngraph::LogicalXorNGraph);
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

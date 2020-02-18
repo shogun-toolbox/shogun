@@ -41,12 +41,14 @@ namespace shogun
 					if (node1_types.size() > 1)
 						error(
 						    "Expected first node to have only one output "
-						    "tensor, but got {}", node1_types.size());
+						    "tensor, but got {}",
+						    node1_types.size());
 
 					if (node2_types.size() > 1)
 						error(
 						    "Expected second node to have only one output "
-						    "tensor, but got {}", node2_types.size());
+						    "tensor, but got {}",
+						    node2_types.size());
 
 					if (node1_types[0] != node2_types[0])
 						error("Expected types to be the same");
@@ -64,12 +66,14 @@ namespace shogun
 					if (node1_shapes.size() > 1)
 						error(
 						    "Expected first node to have only one output "
-						    "tensor, but got {}", node1_shapes.size());
+						    "tensor, but got {}",
+						    node1_shapes.size());
 
 					if (node2_shapes.size() > 1)
 						error(
 						    "Expected second node to have only one output "
-						    "tensor, but got {}", node2_shapes.size());
+						    "tensor, but got {}",
+						    node2_shapes.size());
 
 					if (node1_shapes[0].size() != node2_shapes[0].size())
 					{
@@ -101,7 +105,8 @@ namespace shogun
 							// runtime
 							error(
 							    "Shape mismatch in dimension {} when comparing "
-							    "{} and {}", idx, shape1, shape2);
+							    "{} and {}",
+							    idx, shape1, shape2);
 						}
 						else if (shape1 == Shape::Dynamic)
 						{

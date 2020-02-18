@@ -2,7 +2,7 @@
 
 #include <shogun/mathematics/graph/Graph.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
-#include <shogun/mathematics/graph/nodes/LogicalAnd.h>
+#include <shogun/mathematics/graph/nodes/LogicalXor.h>
 
 #include "../test/GraphTest.h"
 
@@ -10,7 +10,7 @@ using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
 
-TYPED_TEST(GraphTest, and)
+TYPED_TEST(GraphTest, or)
 {
 	using NumericType = TypeParam;
 
@@ -24,7 +24,7 @@ TYPED_TEST(GraphTest, and)
 
 	if constexpr (std::is_same_v<NumericType, bool>)
 	{
-		auto output = make_shared<node::LogicalAnd>(input, input1);
+		auto output = make_shared<node::LogicalXor>(input, input1);
 
 		auto graph = make_shared<Graph>(
 		    vector{input, input1}, vector<shared_ptr<node::Node>>{output});
@@ -44,7 +44,7 @@ TYPED_TEST(GraphTest, and)
 			for (const auto& [result_i, el1, el2] :
 			     zip_iterator(result1, X1, X2))
 			{
-				EXPECT_EQ(result_i, static_cast<bool>(el1 && el2));
+				EXPECT_EQ(result_i, static_cast<bool>(!el1 != !el2));
 			}
 
 			EXPECT_THROW(result[0]->as<SGVector<float32_t>>(), ShogunException);
@@ -52,8 +52,7 @@ TYPED_TEST(GraphTest, and)
 	}
 	else
 	{
-		// LogicalAnd only works when both inputs are bool
 		EXPECT_THROW(
-		    make_shared<node::LogicalAnd>(input, input1), ShogunException);
+		    make_shared<node::LogicalXor>(input, input1), ShogunException);
 	}
 }
