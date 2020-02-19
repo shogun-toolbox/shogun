@@ -37,7 +37,7 @@ enum EDistanceType
 	D_GEODESIC = 50,
 	D_JENSEN = 60,
 	D_MANHATTANWORD = 70,
-	D_HAMMINGWORD = 80 ,
+	D_HAMMINGWORD = 80,
 	D_CANBERRAWORD = 90,
 	D_SPARSEEUCLIDEAN = 100,
 	D_EUCLIDEAN = 110,
@@ -49,9 +49,9 @@ enum EDistanceType
 	D_ATTENUATEDEUCLIDEAN = 170,
 	D_MAHALANOBIS = 180,
 	D_DIRECTOR = 190,
-	D_CUSTOMMAHALANOBIS = 200
+	D_CUSTOMMAHALANOBIS = 200,
+	D_LEVENSHTEIN = 210
 };
-
 
 /** @brief Class Distance, a base class for all the distances used in
  * the Shogun toolbox.
