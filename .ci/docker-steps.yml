@@ -40,7 +40,6 @@ steps:
     detached: false
 
 - ${{ if ne(parameters.swig, 'true') }}:
-  # some of the cpps are just requiring way too much memory
   - task: docker@0
     displayName: Build
     inputs:
@@ -52,22 +51,8 @@ steps:
       envVars: |
         CCACHE_DIR=/build/ccache
       workDir: '/build'
-      containerCommand: 'ninja -j3 shogun'
+      containerCommand: 'ninja -j3 all'
       detached: false
-
-- task: docker@0
-  displayName: Build
-  inputs:
-    action: 'Run an image'
-    imageName: $(imageName)
-    volumes: |
-      $(build.sourcesDirectory):/src
-      $(build.binariesDirectory):/build
-    envVars: |
-      CCACHE_DIR=/build/ccache
-    workDir: '/build'
-    containerCommand: 'ninja -j3 all'
-    detached: false
 
 - task: docker@0
   displayName: Install

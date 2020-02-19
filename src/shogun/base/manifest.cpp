@@ -51,7 +51,7 @@ namespace shogun
 	bool operator==(const Manifest& first, const Manifest& second)
 	{
 		return (first.self->description == second.self->description)
-			and (first.self->classes == second.self->classes);
+			&& (first.self->classes == second.self->classes);
 	}
 
 	bool operator!=(const Manifest& first, const Manifest& second)

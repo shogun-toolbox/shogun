@@ -16,7 +16,7 @@ IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/generated_results)
 ENDIF()
 
 # compile tester c++ binary
-ADD_EXECUTABLE(meta_example_integration_tester ${CMAKE_CURRENT_SOURCE_DIR}/tester.cpp)
+ADD_EXECUTABLE(meta_example_integration_tester EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/tester.cpp)
 ADD_DEPENDENCIES(meta_example_integration_tester shogun::shogun)
 TARGET_LINK_LIBRARIES(meta_example_integration_tester shogun::shogun ${SANITIZER_LIBRARY})
 IF(SANITIZER_FLAGS)

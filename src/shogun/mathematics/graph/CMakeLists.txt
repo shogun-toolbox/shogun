@@ -62,14 +62,7 @@ add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}
 )
 
 target_link_libraries(shogun-engine shogun-core)
-set_property(TARGET shogun-engine PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-set_target_properties(
-  shogun-engine PROPERTIES
-  VERSION ${LIBSHOGUNVER}
-  SOVERSION ${LIBSHOGUNSO}
-  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
-  LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
-set_property(TARGET shogun-engine APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+PLUGIN_COMPATIBILITY(shogun-engine)
 
 function(add_executor EXECUTOR_NAME)
 
@@ -80,7 +73,7 @@ function(add_executor EXECUTOR_NAME)
         "IMPLEMENTATION_HEADERS;IMPLEMENTATION_SOURCES"
         ${ARGN}
     )
-    
+
     add_library(${EXECUTOR_NAME} SHARED
 		${EXECUTOR_IMPLEMENTATION_HEADERS}
 		${EXECUTOR_IMPLEMENTATION_SOURCES}
@@ -88,30 +81,25 @@ function(add_executor EXECUTOR_NAME)
 
 	target_include_directories(${EXECUTOR_NAME} PRIVATE ${EXECUTOR_ADDITIONAL_INCLUDE_DIRS})
 	target_link_libraries(${EXECUTOR_NAME} shogun-engine ${EXECUTOR_ADDITIONAL_SHARED_LIBRARIES})
-
-	set_property(TARGET ${EXECUTOR_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-	set_target_properties(
-	  ${EXECUTOR_NAME} PROPERTIES
-	  VERSION ${LIBSHOGUNVER}
-	  SOVERSION ${LIBSHOGUNSO}
-	  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
-	  LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/src/shogun)
-	set_property(TARGET ${EXECUTOR_NAME} 
-		APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+	PLUGIN_COMPATIBILITY(${EXECUTOR_NAME})
 	set(EXECUTORS ${EXECUTORS} ${EXECUTOR_NAME} PARENT_SCOPE)
 endfunction()
 
 function (add_graph_test TEST_FILE)
-	get_filename_component(FILENAME ${TEST_FILE} NAME)
+	get_filename_component(TARGET_NAME ${TEST_FILE} NAME)
 	ADD_SHOGUN_TEST(${TEST_FILE})
+	set_property(TEST ${TARGET_NAME} PROPERTY
+		ENVIRONMENT "SHOGUN_PLUGINS_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+
 	if (UNIX AND NOT APPLE)
-		set_property(TEST ${FILENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
+		set_property(TEST ${TARGET_NAME} APPEND PROPERTY
+			ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
 	endif()
-	add_dependencies(${FILENAME} ${EXECUTORS})
+	add_dependencies(${TARGET_NAME} ${EXECUTORS})
 endfunction()
 
 # add executors
-add_executor(shogun-vanilla-executor 
+add_executor(shogun-vanilla-executor
 	IMPLEMENTATION_HEADERS ${SHOGUN_GRAPH_IMPLEMENTATION_HEADERS}
 	IMPLEMENTATION_SOURCES ${SHOGUN_GRAPH_IMPLEMENTATION_SOURCES}
 	)
@@ -128,6 +116,7 @@ endif()
 
 # add graph tests for available executors
 IF (ENABLE_TESTING)
+	enable_testing()
 	set(SHOGUN_TEST_LINK_LIBS shogun_test_main shogun-engine)
 
 	add_graph_test(nodes/Add_test)

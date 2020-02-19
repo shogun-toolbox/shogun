@@ -19,6 +19,8 @@ IF(ENABLE_TESTING AND BUILD_META_EXAMPLES)
   SET(USE_META_INTEGRATION_TESTS 1)
 ENDIF()
 
+# TODO: use explicit export instead of this
+SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 OPTION(LIBSHOGUN_BUILD_STATIC "Build libshogun static library")
 OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
 OPTION(BUILD_BENCHMARKS "Build benchmarks" OFF)
@@ -33,7 +35,6 @@ ELSEIF(PARAMETER_BACKEND STREQUAL "SORTED_VECTOR")
 ELSE()
   MESSAGE(FATAL_ERROR "Unknown parameter backend type!")
 ENDIF()
-
 
 SET(SHOGUN_CORE_HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/base/base_types.h
@@ -135,6 +136,10 @@ SET(SHOGUN_CORE_HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/util/zip_iterator.h
 )
 
+IF(WIN32)
+  LIST(APPEND SHOGUN_CORE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/util/windows_wchar.h)
+ENDIF()
+
 SET(SHOGUN_CORE_SOURCES
   base/class_list.cpp
   base/library.cpp
@@ -203,7 +208,7 @@ if (MSVC OR BUILD_BENCHMARKS)
 endif()
 
 # Allow to hide non-bsd compatible codes
-OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
+OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" OFF)
 SET(USE_GPL_SHOGUN 0)
 IF (LICENSE_GPL_SHOGUN)
         SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
@@ -223,7 +228,7 @@ IF (LICENSE_GPL_SHOGUN)
         ENDIF()
 ENDIF()
 
-OPTION(USE_SVMLIGHT "SVMLight" ON)
+OPTION(USE_SVMLIGHT "SVMLight" OFF)
 IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
     MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included. Disable by USE_SVMLIGHT=OFF")
 ENDIF()
@@ -240,7 +245,7 @@ set_property(TARGET shogun-core APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SH
 add_subdirectory(mathematics/graph)
 
 # add target to compile the libshogun sources
-add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+add_library(libshogun OBJECT EXCLUDE_FROM_ALL ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 IF (SANITIZER_FLAGS)
   set_property(TARGET libshogun PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})
@@ -257,6 +262,7 @@ ADD_CUSTOM_TARGET(
     COMMENT "Generating version header"
 )
 add_dependencies(libshogun version)
+add_dependencies(shogun-core version)
 
 # generate source files from templates
 FOREACH(template ${LIBSHOGUN_SRC_TMP})
@@ -286,7 +292,7 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   target_sources(libshogun PRIVATE ${generated_cpp})
 ENDFOREACH()
 
-add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+add_library(shogun SHARED EXCLUDE_FROM_ALL $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 generate_export_header(shogun)
 set_target_properties(
   shogun PROPERTIES
@@ -322,7 +328,7 @@ ENDIF()
 
 # add target for static library if enabled
 if (LIBSHOGUN_BUILD_STATIC)
-  add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+  add_library(shogun-static STATIC EXCLUDE_FROM_ALL $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
   set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
   target_include_directories(shogun-static PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
@@ -351,6 +357,7 @@ IF(MSVC)
   ENDIF()
 
   target_link_libraries(shogun PUBLIC winmm Shlwapi)
+  target_link_libraries(shogun-core PUBLIC winmm Shlwapi)
   target_link_libraries(shogun_deps INTERFACE winmm Shlwapi)
 ENDIF()
 
@@ -540,7 +547,7 @@ ELSE()
 	    target_link_libraries(shogun-static PRIVATE spdlog::spdlog)
     endif()
     # TODO: the dependencies should be refactored
-    target_link_libraries(shogun-core PRIVATE spdlog::spdlog)
+    target_link_libraries(shogun-core PUBLIC spdlog::spdlog)
 ENDIF()
 
 SHOGUN_DEPENDENCIES(
@@ -721,7 +728,7 @@ OPTION(ENABLE_LTO "Enable link-time optimisation")
 
 include(LDGOLD)
 if (LDGOLD_FOUND)
-  SET_LDGOLD(shogun shogun-static libshogun shogun_deps)
+  SET_LDGOLD(shogun shogun-static libshogun shogun_deps shogun-core)
 endif()
 
 include(LTO)
@@ -845,7 +852,7 @@ INSTALL(
   PATTERN ".settings" EXCLUDE)
 
 # set the desidered targets to be installed
-set(INSTALL_TARGETS shogun)
+set(INSTALL_TARGETS shogun-core)
 if (LIBSHOGUN_BUILD_STATIC)
   LIST(APPEND INSTALL_TARGETS shogun-static)
 endif()

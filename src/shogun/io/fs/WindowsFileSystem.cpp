@@ -20,35 +20,14 @@
 #include <shogun/io/fs/WindowsFileSystem.h>
 #include <shogun/io/ShogunErrc.h>
 
+#include <shogun/util/windows_wchar.h>
+
 using namespace shogun;
 using namespace shogun::io;
 using namespace std;
 
 const auto CloseHandleFunc = [](HANDLE h) { ::CloseHandle(h); };
 typedef unique_ptr<void, decltype(CloseHandleFunc)> UniqueCloseHandlePtr;
-
-SG_FORCED_INLINE wstring utf8_to_wchar(const string& utf8str)
-{
-	int size_required = MultiByteToWideChar(
-		CP_UTF8, 0, utf8str.c_str(),
-		(int)utf8str.size(), NULL, 0);
-	wstring ws_translated_str(size_required, 0);
-	MultiByteToWideChar(CP_UTF8, 0, utf8str.c_str(), (int)utf8str.size(),
-		&ws_translated_str[0], size_required);
-	return ws_translated_str;
-}
-
-inline string wchar_to_utf8(const wstring& wstr)
-{
-	if (wstr.empty())
-		return string();
-	int size_required = WideCharToMultiByte(
-		CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), NULL, 0, NULL, NULL);
-	string utf8_translated_str(size_required, 0);
-	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(),
-		&utf8_translated_str[0], size_required, NULL, NULL);
-	return utf8_translated_str;
-}
 
 SSIZE_T pread(HANDLE hfile, char* src, size_t num_bytes, uint64_t offset)
 {

@@ -39,11 +39,11 @@ jobs:
       clang:
         CC: "clang"
         CXX: "clang++"
-        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DDISABLE_META_INTEGRATION_TESTS=ON'
       gcc:
         CC: "gcc"
         CXX: "g++"
-        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
+        cmakeOptions: '-G "Ninja" -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DDISABLE_META_INTEGRATION_TESTS=ON'
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-debian'
@@ -59,65 +59,6 @@ jobs:
   steps:
   - template: ./docker-steps.yml
 
-- job: swig
-  displayName: Linux SWIG Interface
-  dependsOn: libshogun
-
-  pool:
-    vmImage: ubuntu-16.04
-
-  strategy:
-    maxParallel: 7
-    matrix:
-      python:
-        CC: "clang"
-        CXX: "clang++"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON'
-        interfaceName: 'python'
-      java:
-        CC: "clang"
-        CXX: "clang++"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_JAVA=ON'
-        interfaceName: 'java'
-      csharp:
-        CC: "clang"
-        CXX: "clang++"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_CSHARP=ON'
-        interfaceName: 'csharp'
-      # disable R tests
-      #r:
-        #CC: "clang"
-        #CXX: "clang++"
-        #cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
-        #interfaceName: 'r'
-      octave:
-        CC: "gcc"
-        CXX: "g++"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_OCTAVE=ON'
-        interfaceName: 'octave'
-      ruby:
-        CC: "clang"
-        CXX: "clang++"
-        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_RUBY=ON'
-        interfaceName: 'ruby'
-
-  variables:
-    testRunTitle: '$(build.sourceBranchName)-debian'
-    testRunPlatform: debian
-    imageName: 'shogun/shogun-dev'
-    targetPrefix: '$(build.binariesDirectory)/opt'
-    libshogunArtifactName: 'libshogun-$(CC)'
-    libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar'
-    commonSWIGCMakeFlags: '-G "Ninja" -DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3'
-    ccacheDir: '$(build.binariesDirectory)/ccache'
-    ccacheArtifactName: 'ccache-$(interfaceName)'
-    ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
-
-  steps:
-  - template: ./docker-steps.yml
-    parameters:
-      swig: true
-
 - job: macOS
   displayName: MacOS
   timeoutInMinutes: 90
@@ -128,7 +69,7 @@ jobs:
     ccacheDir: '$(build.binariesDirectory)/ccache'
     ccacheArtifactName: 'ccache-macos'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
-    commonMacOSCMakeFlags: '-DBUILD_EXAMPLES=OFF -DBUNDLE_JSON=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF'
+    commonMacOSCMakeFlags: '-DBUILD_EXAMPLES=OFF -DBUNDLE_NLOPT=OFF -DDISABLE_META_INTEGRATION_TESTS=ON -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF'
     openMPMacOSCMakeFlags:
       '-DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp"
       -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp"
@@ -163,7 +104,7 @@ jobs:
       py36:
         CONDA_PY: "36"
         CONDA_ENV: shogun
-        cmakeOptions: '-DBUILD_META_EXAMPLES=OFF'
+        cmakeOptions: '-DBUILD_META_EXAMPLES=OFF -DDISABLE_META_INTEGRATION_TESTS=ON'
 
   variables:
     clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'

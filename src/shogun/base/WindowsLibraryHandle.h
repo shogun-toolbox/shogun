@@ -20,6 +20,8 @@
 #include <time.h>
 #include <windows.h>
 
+#include <shogun/util/windows_wchar.h>
+
 namespace shogun
 {
     namespace internal
@@ -97,14 +99,14 @@ namespace shogun
                 if (m_handle)
                 {
                     SG_DEBUG("Closing {} plugin.", m_filename);
-                    FreeLibrary(m_handle);
+                    FreeLibrary((HMODULE)m_handle);
                 }
                 m_handle = nullptr;
             }
 
         private:
             void* m_handle;
-            std::string_view m_filename;
+            std::string m_filename;
         };
     }
 }
