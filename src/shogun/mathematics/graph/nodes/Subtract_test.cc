@@ -46,26 +46,6 @@ TYPED_TEST(GraphTest, subtract)
 	    vector{input, input1},
 	    vector<shared_ptr<node::Node>>{intermediate, output});
 
-	for (auto&& backend : this->m_backends)
-	{
-		graph->build(backend);
-
-		vector<shared_ptr<Tensor>> result = graph->evaluate(
-		    vector{make_shared<Tensor>(X1), make_shared<Tensor>(X2)});
-
-		auto result1 = result[0]->as<SGVector<NumericType>>();
-		auto result2 = result[1]->as<SGVector<NumericType>>();
-
-		for (const auto& [expected_i, result_i] :
-		     zip_iterator(expected_result1, result1))
-		{
-			EXPECT_EQ(expected_i, result_i);
-		}
-
-		for (const auto& [expected_i, result_i] :
-		     zip_iterator(expected_result2, result2))
-		{
-			EXPECT_EQ(expected_i, result_i);
-		}
-	}
+	this->test_binary_op_results(
+		graph, X1, X2, expected_result1, expected_result2);
 }
