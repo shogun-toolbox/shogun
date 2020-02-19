@@ -58,7 +58,7 @@ namespace shogun
 
 			void allocate_tensor(const Shape& shape)
 			{
-				if (m_free)
+				if (m_data != nullptr)
 					error("Tensor already owns data!");
 				set_shape(shape);
 				m_data = allocator_dispatch(size(), m_type);
@@ -98,8 +98,7 @@ namespace shogun
 				{
 					error(
 					    "Mismatch in the number of dimensions, expected {}, "
-					    "but "
-					    "got {}",
+					    "but got {}",
 					    m_shape.size(), shape.size());
 				}
 

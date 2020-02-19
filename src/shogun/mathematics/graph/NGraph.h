@@ -38,6 +38,8 @@ namespace shogun
 
 			std::vector<std::shared_ptr<ngraph::Node>> m_input_output_nodes;
 			std::vector<std::shared_ptr<ngraph::Node>> m_operator_output_nodes;
+
+			static inline constexpr int64_t kTranspose[2] = {1, 0};
 		};
 	} // namespace graph
 } // namespace shogun

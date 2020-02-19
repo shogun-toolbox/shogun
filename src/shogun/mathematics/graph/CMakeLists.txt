@@ -14,6 +14,7 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Divide.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Dot.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
 	)
@@ -33,6 +34,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Input.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Multiply.h
+		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Dot.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 		)
@@ -42,6 +44,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 
 set(NGRAPH_IMPLEMENTATION_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Add.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Dot.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Equal.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalAnd.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalOr.h
@@ -122,4 +125,5 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/LogicalAnd_test)
 	add_graph_test(nodes/LogicalOr_test)
 	add_graph_test(nodes/LogicalXor_test)
+	add_graph_test(nodes/Dot_test)
 ENDIF()

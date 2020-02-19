@@ -6,11 +6,13 @@
 
 #include "../test/GraphTest.h"
 
+#include <random>
+
 using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
 
-TYPED_TEST(GraphTest, add)
+TYPED_TEST(GraphTest, vector_add)
 {
 	using NumericType = TypeParam;
 
@@ -39,5 +41,83 @@ TYPED_TEST(GraphTest, add)
 	    vector{input, input1},
 	    vector<shared_ptr<node::Node>>{intermediate, output});
 	this->test_binary_op_results(
-		graph, X1, X2, expected_result1, expected_result2);
+	    graph, X1, X2, expected_result1, expected_result2);
+}
+
+TYPED_TEST(GraphTest, matrix_add)
+{
+	using NumericType = TypeParam;
+
+	random_device rng_device;
+	mt19937 mersenne_engine{rng_device()};
+
+	auto X1 = SGMatrix<NumericType>(10, 5);
+	auto X2 = SGMatrix<NumericType>(10, 5);
+	auto expected_result1 = SGMatrix<NumericType>(10, 5);
+	auto expected_result2 = SGMatrix<NumericType>(10, 5);
+
+	if constexpr (std::is_same_v<TypeParam, bool>)
+		return;
+	else if constexpr (std::is_floating_point_v<TypeParam>)
+	{
+		uniform_real_distribution<TypeParam> dist{};
+		auto gen = [&dist, &mersenne_engine]() {
+			return dist(mersenne_engine);
+		};
+		generate(X1.begin(), X1.end(), gen);
+		generate(X2.begin(), X2.end(), gen);
+	}
+	else
+	{
+		uniform_int_distribution<TypeParam> dist{};
+		auto gen = [&dist, &mersenne_engine]() {
+			return dist(mersenne_engine);
+		};
+		generate(X1.begin(), X1.end(), gen);
+		generate(X2.begin(), X2.end(), gen);
+	}
+
+	std::transform(
+	    X1.data(), X1.data() + X1.size(), X1.data(), expected_result1.data(),
+	    std::plus<NumericType>{});
+	std::transform(
+	    expected_result1.data(),
+	    expected_result1.data() + expected_result1.size(), X2.data(),
+	    expected_result2.data(), std::plus<NumericType>{});
+
+	auto input = make_shared<node::Input>(
+	    Shape{Shape::Dynamic, 5}, get_enum_from_type<NumericType>::type);
+	auto input1 = make_shared<node::Input>(
+	    Shape{10, Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+
+	auto intermediate = make_shared<node::Add>(input, input);
+
+	auto output = make_shared<node::Add>(intermediate, input1);
+
+	auto graph = make_shared<Graph>(
+	    vector{input, input1},
+	    vector<shared_ptr<node::Node>>{intermediate, output});
+
+	for (auto&& backend : this->m_backends)
+	{
+		graph->build(backend);
+
+		vector<shared_ptr<Tensor>> result = graph->evaluate(
+		    vector{make_shared<Tensor>(X1), make_shared<Tensor>(X2)});
+
+		auto result1 = result[0]->as<SGMatrix<NumericType>>();
+		auto result2 = result[1]->as<SGMatrix<NumericType>>();
+
+		for (const auto& [expected_i, result_i] :
+		     zip_iterator(expected_result1, result1))
+		{
+			EXPECT_EQ(expected_i, result_i);
+		}
+
+		for (const auto& [expected_i, result_i] :
+		     zip_iterator(expected_result2, result2))
+		{
+			EXPECT_EQ(expected_i, result_i);
+		}
+	}
 }
