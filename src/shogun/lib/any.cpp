@@ -221,4 +221,18 @@ namespace shogun
 		policy = owning_policy<Empty>();
 		storage = nullptr;
 	}
+
+	Any::RegistrySingleton::RegistrySingleton()
+	{
+	}
+
+	Any::RegistrySingleton::~RegistrySingleton()
+	{
+	}
+
+	Any::RegistrySingleton* Any::RegistrySingleton::instance()
+	{
+		static RegistrySingleton registry_instance{};
+		return &registry_instance;
+	}
 }
