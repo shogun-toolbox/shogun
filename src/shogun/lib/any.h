@@ -13,6 +13,7 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include <mutex>
 #include <stdexcept>
 #include <string.h>
 #include <string>
@@ -1132,10 +1133,10 @@ namespace shogun
 				    "Casting not supported for functional Any"};
 			}
 			const auto key = std::make_pair(source_type, destination_type);
-			if (Any::casting_registry.count(key))
+			if (RegistrySingleton::instance()->casting_registry.count(key))
 			{
 				T result{};
-				casting_registry[key](storage, &result);
+				RegistrySingleton::instance()->casting_registry[key](storage, &result);
 				return result;
 			}
 			else
@@ -1216,9 +1217,9 @@ namespace shogun
 				    "Visit is not supported for functional Any"};
 			}
 			const auto key = std::make_pair(state_type, value_type);
-			if (Any::visitor_registry.count(key))
+			if (RegistrySingleton::instance()->visitor_registry.count(key))
 			{
-				visitor_registry[key](storage, state);
+				RegistrySingleton::instance()->visitor_registry[key](storage, state);
 			}
 			else
 			{
@@ -1242,15 +1243,27 @@ namespace shogun
 	private:
 		typedef std::type_index TypeIndex;
 
-		typedef std::function<void(void*, void*)> CastingFunction;
-		typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction>
-		    CastingRegistry;
-		static CastingRegistry casting_registry;
+		class RegistrySingleton
+		{
+			public:
+				SHOGUN_EXPORT static RegistrySingleton* instance();
+				~RegistrySingleton();
 
-		typedef std::function<void(void*, void*)> VisitorFunction;
-		typedef std::map<std::pair<TypeIndex, TypeIndex>, VisitorFunction>
-		    VisitorRegistry;
-		static VisitorRegistry visitor_registry;
+			private:
+				RegistrySingleton();
+
+				typedef std::function<void(void*, void*)> CastingFunction;
+				typedef std::map<std::pair<TypeIndex, TypeIndex>, CastingFunction>
+					CastingRegistry;
+				typedef std::function<void(void*, void*)> VisitorFunction;
+				typedef std::map<std::pair<TypeIndex, TypeIndex>, VisitorFunction>
+					VisitorRegistry;
+
+			public:
+				SHOGUN_NO_EXPORT static inline std::mutex registry_mutex;
+				SHOGUN_NO_EXPORT static inline CastingRegistry casting_registry;
+				SHOGUN_NO_EXPORT static inline VisitorRegistry visitor_registry;
+		};
 	};
 
 	bool operator==(const Any& lhs, const Any& rhs);
@@ -1263,12 +1276,13 @@ namespace shogun
 		const auto key = std::make_pair(
 		    std::type_index{typeid(From)}, std::type_index{typeid(To)});
 
-		if (casting_registry.count(key))
+		std::lock_guard<std::mutex> lock(RegistrySingleton::instance()->registry_mutex);
+		if (RegistrySingleton::instance()->casting_registry.count(key))
 		{
 			return;
 		}
 
-		casting_registry[key] = [caster](void* src, void* dst) {
+		RegistrySingleton::instance()->casting_registry[key] = [caster](void* src, void* dst) {
 			auto typed_src = static_cast<From*>(src);
 			auto typed_dst = static_cast<To*>(dst);
 			(*typed_dst) = caster(*typed_src);
@@ -1281,12 +1295,12 @@ namespace shogun
 		const auto key = std::make_pair(
 		    std::type_index{typeid(State)}, std::type_index{typeid(Type)});
 
-		if (visitor_registry.count(key))
+		if (RegistrySingleton::instance()->visitor_registry.count(key))
 		{
 			return;
 		}
 
-		visitor_registry[key] = [visitor](void* value, void* state) {
+		RegistrySingleton::instance()->visitor_registry[key] = [visitor](void* value, void* state) {
 			auto typed_state = static_cast<State*>(state);
 			auto typed_value = static_cast<Type*>(value);
 			visitor(*typed_value, typed_state);
