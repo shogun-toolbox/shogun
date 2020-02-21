@@ -128,7 +128,7 @@ SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class SGObject: public std::enable_shared_from_this<SGObject>
+class SHOGUN_EXPORT SGObject: public std::enable_shared_from_this<SGObject>
 {
 public:
 	/** Definition of observed subject */

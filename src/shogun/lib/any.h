@@ -13,6 +13,7 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include <mutex>
 #include <stdexcept>
 #include <string.h>
 #include <string>
@@ -21,10 +22,9 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
-#include <mutex>
 
-#include <shogun/shogun_export.h>
 #include <shogun/base/base_types.h>
+#include <shogun/shogun_export.h>
 #include <shogun/util/converters.h>
 #include <shogun/util/traits.h>
 namespace shogun
@@ -32,7 +32,7 @@ namespace shogun
 
 	namespace any_detail
 	{
-		std::string demangled_type_helper(const char* name);
+		SHOGUN_EXPORT std::string demangled_type_helper(const char* name);
 	}
 
 	/** Converts compiler-dependent name of class to
@@ -358,8 +358,7 @@ namespace shogun
 		}
 
 		template <
-		    typename T,
-		    std::enable_if_t<!std::is_same_v<T, void>>* = nullptr>
+		    typename T, std::enable_if_t<!std::is_same_v<T, void>>* = nullptr>
 		void on(std::function<T()>* v)
 		{
 			T value = (*v)();
@@ -550,7 +549,7 @@ namespace shogun
 					return nullptr;
 
 				auto cloned = value->clone();
-				if constexpr(std::is_same_v<T, decltype(cloned)>)
+				if constexpr (std::is_same_v<T, decltype(cloned)>)
 					return cloned;
 				else
 					return cast<T>(cloned);
@@ -1057,7 +1056,7 @@ namespace shogun
 	 * and SGObject::has().
 	 * .
 	 */
-	class Any
+	class SHOGUN_EXPORT Any
 	{
 	public:
 		/** Empty value constructor */
@@ -1089,14 +1088,14 @@ namespace shogun
 		 * @param rhs Any object on right hand side
 		 * @return true if both are equal
 		 */
-		friend bool operator==(const Any& lhs, const Any& rhs);
+		SHOGUN_EXPORT friend bool operator==(const Any& lhs, const Any& rhs);
 
 		/** Inequality operator
 		 * @param lhs Any object on left hand side
 		 * @param rhs Any object on right hand side
 		 * @return false if both are equal
 		 */
-		friend bool operator!=(const Any& lhs, const Any& rhs);
+		SHOGUN_EXPORT friend bool operator!=(const Any& lhs, const Any& rhs);
 
 		/** Retrieves value using the provided type. Fails if type do not match.
 		 * @return type-casted value
@@ -1174,8 +1173,8 @@ namespace shogun
 		bool visitable() const;
 
 		/** @return true if Any object is safely visitable, i.e.
-		  * does not throw an exception
-		  */
+		 * does not throw an exception
+		 */
 		bool safe_visitable() const;
 
 		/** @return true if Any object is comparable. */
@@ -1233,6 +1232,11 @@ namespace shogun
 		template <class Type, class State>
 		static void register_visitor(std::function<void(Type, State*)> visitor);
 
+		static size_t num_visitors()
+		{
+			return visitor_registry.size();
+		}
+
 	private:
 		void set_or_inherit(const Any& other);
 
@@ -1263,7 +1267,7 @@ namespace shogun
 	void Any::register_caster(std::function<To(const From&)> caster)
 	{
 		const auto key = std::make_pair(
-		    std::type_index{typeid(From)}, std::type_index{typeid(To)});
+			std::type_index{typeid(From)}, std::type_index{typeid(To)});
 
 		std::lock_guard<std::mutex> lock(registry_mutex);
 		if (casting_registry.count(key))
@@ -1282,7 +1286,7 @@ namespace shogun
 	void Any::register_visitor(std::function<void(Type, State*)> visitor)
 	{
 		const auto key = std::make_pair(
-		    std::type_index{typeid(State)}, std::type_index{typeid(Type)});
+			std::type_index{typeid(State)}, std::type_index{typeid(Type)});
 
 		if (visitor_registry.count(key))
 		{
@@ -1304,8 +1308,9 @@ namespace shogun
 		{
 			Any::register_caster<T, SGObject*>(
 			    [](T value) { return static_cast<SGObject*>(value); });
-			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>
-					&& !std::is_same_v<Derived, base_type<Derived>>)
+			if constexpr (
+			    !std::is_same_v<std::nullptr_t, base_type<Derived>> &&
+			    !std::is_same_v<Derived, base_type<Derived>>)
 				Any::register_caster<T, base_type<Derived>*>([](T value) {
 					return static_cast<base_type<Derived>*>(value);
 				});
@@ -1316,12 +1321,18 @@ namespace shogun
 			if constexpr (std::is_base_of_v<SGObject, SharedType>)
 			{
 				Any::register_caster<T, std::shared_ptr<SGObject>>(
-						[](const T& value) { return std::static_pointer_cast<SGObject>(value); });
-				if constexpr (!std::is_same_v<std::nullptr_t, base_type<SharedType>>
-						&& !std::is_same_v<SharedType, base_type<SharedType>>)
-					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](const T& value) {
-						return std::static_pointer_cast<base_type<SharedType>>(value);
-					});
+				    [](const T& value) {
+					    return std::static_pointer_cast<SGObject>(value);
+				    });
+				if constexpr (
+				    !std::is_same_v<std::nullptr_t, base_type<SharedType>> &&
+				    !std::is_same_v<SharedType, base_type<SharedType>>)
+					Any::register_caster<
+					    T, std::shared_ptr<base_type<SharedType>>>(
+					    [](const T& value) {
+						    return std::static_pointer_cast<
+						        base_type<SharedType>>(value);
+					    });
 			}
 		}
 		if constexpr (std::is_arithmetic_v<T>)

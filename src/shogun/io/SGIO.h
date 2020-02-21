@@ -143,7 +143,7 @@ namespace shogun
 		 * that messages don't have to be written to stdout or stderr, but can
 		 * be redirected to a file.
 		 */
-		class SGIO
+		class SHOGUN_EXPORT SGIO
 		{
 		public:
 			/** default constructor */

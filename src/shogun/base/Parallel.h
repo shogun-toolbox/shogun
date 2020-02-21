@@ -20,7 +20,7 @@ namespace shogun
  * computer and is the place where you define the number of CPUs that shall be
  * used in computations.
  */
-class Parallel
+class SHOGUN_EXPORT Parallel
 {
 public:
 	/** constructor */

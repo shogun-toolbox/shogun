@@ -243,6 +243,7 @@ uint32_t SGIO::ss_length(substring s)
 SGIO::~SGIO()
 {
 	io_logger->flush();
+	spdlog::shutdown();
 }
 
 void SGIO::redirect_stdout(const std::shared_ptr<spdlog::sinks::sink>& sink)

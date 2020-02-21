@@ -26,7 +26,7 @@ namespace shogun
 	 * and accessing Manifest of the loaded plugins.
 	 * Uses LibraryHandle under the hood.
 	 */
-	class Library
+	class SHOGUN_EXPORT Library
 	{
 	public:
 		/** Constructor to initialize library
@@ -48,13 +48,13 @@ namespace shogun
 		 * @param first first Library
 		 * @param second second Library
 		 */
-		friend bool operator==(const Library& first, const Library& second);
+		SHOGUN_EXPORT friend bool operator==(const Library& first, const Library& second);
 
 		/** Inequality operator
 		 * @param first first Library
 		 * @param second second Library
 		 */
-		friend bool operator!=(const Library& first, const Library& second);
+		SHOGUN_EXPORT friend bool operator!=(const Library& first, const Library& second);
 
 		/** Destructor */
 		~Library();
@@ -70,7 +70,7 @@ namespace shogun
 			return kManifestAccessorName;
 		}
 
-		friend void unload_library(Library&& lib);
+		SHOGUN_EXPORT friend void unload_library(Library&& lib);
 
 	protected:
 		void close();
@@ -84,12 +84,12 @@ namespace shogun
 	 * @param filename name of shared object file
 	 * @return library object of loaded plugin
 	 */
-	Library load_library(std::string_view filename);
+	SHOGUN_EXPORT Library load_library(std::string_view filename);
 
 	/** Unload a plugin from the process mem space.
 	 * @param lib library
 	 */
-	void unload_library(Library&& lib);
+	SHOGUN_EXPORT void unload_library(Library&& lib);
 }
 
 #endif //_LIBRARY_H_

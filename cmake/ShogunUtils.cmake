@@ -307,6 +307,49 @@ function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
 	endif()
 endfunction()
 
+function(CommonOutputDir TARGET_NAME)
+        SET(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+	if(CMAKE_GENERATOR MATCHES "Visual Studio.*" OR CMAKE_GENERATOR STREQUAL Xcode)
+        	SET(OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIRECTORY}/Debug)
+        	SET(OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY}/Release)
+	else()
+        	SET(OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIRECTORY})
+        	SET(OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY})
+	endif()
+
+	get_target_property(TARGET_TYPE ${TARGET_NAME} TYPE)
+	if (TARGET_TYPE STREQUAL "EXECUTABLE")
+		set_target_properties (${TARGET_NAME} PROPERTIES
+			RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY} 
+			RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIRECTORY_DEBUG}
+			RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY_RELEASE}
+			)
+	else()
+		set_target_properties (${TARGET_NAME} PROPERTIES
+			LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY} 
+			LIBRARY_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIRECTORY_DEBUG}
+			LIBRARY_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY_RELEASE}
+			)
+	endif()
+endfunction()
+
+function(GetCommonOutputDir)
+        SET(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+	if(CMAKE_GENERATOR MATCHES "Visual Studio.*" OR CMAKE_GENERATOR STREQUAL Xcode)
+		if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+			SET(COMMON_WORKING_DIR "${OUTPUT_DIRECTORY}/Debug" PARENT_SCOPE)
+		elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+			SET(COMMON_WORKING_DIR "${OUTPUT_DIRECTORY}/Release")
+		else ()
+			SET(COMMON_WORKING_DIR "${OUTPUT_DIRECTORY}")
+		endif ()
+	else()
+		set(COMMON_WORKING_DIR "${OUTPUT_DIRECTORY}" PARENT_SCOPE)
+	endif()
+endfunction()
+
 # inspired by arrow's benchmarking:
 # https://github.com/apache/arrow/blob/apache-arrow-0.9.0/cpp/cmake_modules/BuildUtils.cmake#L223
 function(ADD_SHOGUN_BENCHMARK REL_BENCHMARK_NAME)
@@ -318,9 +361,7 @@ function(ADD_SHOGUN_BENCHMARK REL_BENCHMARK_NAME)
 	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${REL_BENCHMARK_NAME}.cc)
 		# This benchmark has a corresponding .cc file, set it up as an executable.
 		add_executable(${BENCHMARK_NAME} "${REL_BENCHMARK_NAME}.cc")
-		set_target_properties (${BENCHMARK_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-		set_target_properties (${BENCHMARK_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-		set_target_properties (${BENCHMARK_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+		CommonOutputDir(${BENCHMARK_NAME})
 		target_link_libraries(${BENCHMARK_NAME} ${SHOGUN_BENCHMARK_LINK_LIBS})
 		set(NO_COLOR "--color_print=false")
 	endif()
@@ -338,18 +379,18 @@ function(ADD_SHOGUN_TEST REL_TEST_NAME)
 	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${REL_TEST_NAME}.cc)
 		# This benchmark has a corresponding .cc file, set it up as an executable.
 		add_executable(${TEST_NAME} "${REL_TEST_NAME}.cc")
-		set_target_properties (${TEST_NAME}
-			PROPERTIES
-			RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-			RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin
-			RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
-		)
+                CommonOutputDir(${TEST_NAME})
 		target_link_libraries(${TEST_NAME} ${SHOGUN_TEST_LINK_LIBS})
 		set(NO_COLOR "--color_print=false")
 	endif()
 
 	add_test(${TEST_NAME} ${CMAKE_BINARY_DIR}/bin/${TEST_NAME} ${NO_COLOR})
-	set_tests_properties(${TEST_NAME} PROPERTIES LABELS "unit")
+	SET(WORKING_DIR)
+	GetCommonOutputDir()
+	set_tests_properties(${TEST_NAME} PROPERTIES 
+		LABELS "unit"
+		WORKING_DIRECTORY ${COMMON_WORKING_DIR}
+		ENVIRONMENT "SHOGUN_PLUGINS_PATH=${COMMON_WORKING_DIR}")
 	if(ARGN)
 		set_tests_properties(${TEST_NAME} PROPERTIES ${ARGN})
 	endif()

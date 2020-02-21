@@ -4,7 +4,6 @@
  * Authors: Soeren Sonnenburg, Giovanni De Toni
  */
 
-#include <shogun/lib/Signal.h>
 #include <shogun/lib/exception/ShogunException.h>
 
 #include <stdio.h>

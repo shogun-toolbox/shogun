@@ -21,7 +21,7 @@ namespace shogun
 	 * (see @ref MetaClass) which are responsible for
 	 * creating instances of exported classes.
 	 */
-	class Manifest
+	class SHOGUN_EXPORT Manifest
 	{
 	public:
 		/** Constructor to initialize hash from name
@@ -50,13 +50,13 @@ namespace shogun
 		 * @param first first Manifest
 		 * @param second second Manifest
 		 */
-		friend bool operator==(const Manifest& first, const Manifest& second);
+		SHOGUN_EXPORT friend bool operator==(const Manifest& first, const Manifest& second);
 
 		/** Inequality operator
 		 * @param first first Manifest
 		 * @param second second Manifest
 		 */
-		friend bool operator!=(const Manifest& first, const Manifest& second);
+		SHOGUN_EXPORT friend bool operator!=(const Manifest& first, const Manifest& second);
 
 		/** Destructor */
 		~Manifest();

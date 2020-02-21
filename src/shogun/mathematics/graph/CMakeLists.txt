@@ -63,6 +63,7 @@ add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}
 
 target_link_libraries(shogun-engine shogun-core)
 PLUGIN_COMPATIBILITY(shogun-engine)
+CommonOutputDir(shogun-engine)
 
 function(add_executor EXECUTOR_NAME)
 
@@ -83,18 +84,12 @@ function(add_executor EXECUTOR_NAME)
 	target_link_libraries(${EXECUTOR_NAME} shogun-engine ${EXECUTOR_ADDITIONAL_SHARED_LIBRARIES})
 	PLUGIN_COMPATIBILITY(${EXECUTOR_NAME})
 	set(EXECUTORS ${EXECUTORS} ${EXECUTOR_NAME} PARENT_SCOPE)
+	CommonOutputDir(${EXECUTOR_NAME})
 endfunction()
 
 function (add_graph_test TEST_FILE)
 	get_filename_component(TARGET_NAME ${TEST_FILE} NAME)
 	ADD_SHOGUN_TEST(${TEST_FILE})
-	set_property(TEST ${TARGET_NAME} PROPERTY
-		ENVIRONMENT "SHOGUN_PLUGINS_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-
-	if (UNIX AND NOT APPLE)
-		set_property(TEST ${TARGET_NAME} APPEND PROPERTY
-			ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src/shogun")
-	endif()
 	add_dependencies(${TARGET_NAME} ${EXECUTORS})
 endfunction()
 

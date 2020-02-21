@@ -35,7 +35,7 @@ namespace shogun
 	class SGLinalg;
 	class Signal;
 
-	class ShogunEnv : public io::FileSystemRegistry, public Parallel, public Version
+	class SHOGUN_EXPORT ShogunEnv : public io::FileSystemRegistry, public Parallel, public Version
 	{
 	public:
 		SG_DELETE_COPY_AND_ASSIGN(ShogunEnv);

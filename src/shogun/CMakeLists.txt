@@ -20,7 +20,6 @@ IF(ENABLE_TESTING AND BUILD_META_EXAMPLES)
 ENDIF()
 
 # TODO: use explicit export instead of this
-SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 OPTION(LIBSHOGUN_BUILD_STATIC "Build libshogun static library")
 OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
 OPTION(BUILD_BENCHMARKS "Build benchmarks" OFF)
@@ -242,6 +241,7 @@ set_target_properties(
   SOVERSION ${LIBSHOGUNSO}
   INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR})
 set_property(TARGET shogun-core APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+CommonOutputDir(shogun-core)
 
 add_subdirectory(mathematics/graph)
 
@@ -536,10 +536,7 @@ ENDIF()
 FIND_PACKAGE(spdlog CONFIG)
 IF (NOT spdlog_FOUND)
     include(external/spdlog)
-    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-      $<BUILD_INTERFACE:${spdlog_INCLUDE_DIR}>
-      $<INSTALL_INTERFACE:include/shogun/third_party>
-    )
+    target_link_libraries(shogun-core PUBLIC spdlog)
 ELSE()
     SET(USE_EXTERNAL_SPDLOG 1)
     target_link_libraries(shogun PRIVATE spdlog::spdlog)
@@ -778,20 +775,20 @@ IF (ENABLE_TESTING)
   ADD_SHOGUN_TEST(base/Plugin_test)
   add_library(testplugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibrary.cpp)
   target_link_libraries(testplugin shogun-core)
+  CommonOutputDir(testplugin)
+
   add_library(testpluginwomanifest SHARED ${CMAKE_CURRENT_SOURCE_DIR}/util/MockLibraryWOManifest.cpp)
   target_link_libraries(testpluginwomanifest shogun-core)
   set_property(TARGET testplugin PROPERTY POSITION_INDEPENDENT_CODE TRUE)
   add_dependencies(Plugin_test testplugin testpluginwomanifest)
+  CommonOutputDir(testpluginwomanifest)
+
   target_compile_definitions(Plugin_test PRIVATE
     SHARED_LIB_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}"
     SHARED_LIB_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}")
-  if (UNIX AND NOT APPLE)
-    set_property(TEST Plugin_test PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}")
-  endif()
 
   ADD_SHOGUN_TEST(base/class_list_test)
   add_dependencies(class_list_test testplugin testpluginwomanifest)
-  set_property(TEST class_list_test PROPERTY ENVIRONMENT "SHOGUN_PLUGINS_PATH=${CMAKE_CURRENT_BINARY_DIR}")
 ENDIF()
 
 ################# benchmarking
