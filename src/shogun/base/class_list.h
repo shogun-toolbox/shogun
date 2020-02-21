@@ -29,7 +29,7 @@ namespace shogun {
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	std::shared_ptr<SGObject> create(const std::string& sgserializable_name, EPrimitiveType generic);
+	SHOGUN_EXPORT std::shared_ptr<SGObject> create(const std::string& sgserializable_name, EPrimitiveType generic);
 
 	/** Creates new shogun instance, typed.
 	 *
@@ -61,7 +61,7 @@ namespace shogun {
 	/** Returns all available object names
 	 *
 	 */
-	std::set<std::string> available_objects();
+	SHOGUN_EXPORT std::set<std::string> available_objects();
 }
 
 #endif /* __SG_CLASS_LIST_H__  */

@@ -8,6 +8,7 @@
 #define _SHOGUN_EXCEPTION_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/shogun_export.h>
 
 #include <stdexcept>
 #include <string>
@@ -17,7 +18,7 @@ namespace shogun
 	/** @brief Class ShogunException defines an exception which is thrown
 	 * whenever an error inside of shogun occurs.
 	 */
-	class ShogunException : public std::runtime_error
+	class SHOGUN_EXPORT ShogunException : public std::runtime_error
 	{
 	public:
 		/** constructor
