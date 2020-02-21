@@ -234,6 +234,7 @@ IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
 ENDIF()
 
 add_library(shogun-core SHARED ${SHOGUN_CORE_HEADERS} ${SHOGUN_CORE_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+generate_export_header(shogun-core BASE_NAME SHOGUN)
 set_property(TARGET shogun-core PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 set_target_properties(
   shogun-core PROPERTIES
@@ -293,7 +294,6 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
 ENDFOREACH()
 
 add_library(shogun SHARED EXCLUDE_FROM_ALL $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-generate_export_header(shogun)
 set_target_properties(
   shogun PROPERTIES
   VERSION ${LIBSHOGUNVER}
