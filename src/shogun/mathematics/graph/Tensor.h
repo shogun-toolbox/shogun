@@ -26,9 +26,6 @@ namespace shogun
 	{
 		class Tensor
 		{
-
-			friend class Node;
-
 		public:
 			template <typename T>
 			Tensor(const SGVector<T>& vec)
