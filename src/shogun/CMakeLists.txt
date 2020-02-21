@@ -853,9 +853,10 @@ INSTALL(
 
 # set the desidered targets to be installed
 set(INSTALL_TARGETS shogun-core)
-if (LIBSHOGUN_BUILD_STATIC)
-  LIST(APPEND INSTALL_TARGETS shogun-static)
-endif()
+# TODO: shogun-core should have a static target
+# if (LIBSHOGUN_BUILD_STATIC)
+#  LIST(APPEND INSTALL_TARGETS shogun-static)
+# endif()
 
 INSTALL(
   TARGETS ${INSTALL_TARGETS}
