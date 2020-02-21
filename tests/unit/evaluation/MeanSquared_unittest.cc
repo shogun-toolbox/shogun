@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Yuhui Liu
+ *
+ */
 #include "sg_gtest_utilities.h"
 #include <cmath>
 #include <memory>
