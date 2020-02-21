@@ -61,9 +61,19 @@ namespace shogun
                 FARPROC found_symbol = GetProcAddress((HMODULE)m_handle, name.data());
                 if (found_symbol == nullptr)
                 {
+			LPVOID lpMsgBuf;
+			DWORD dw = GetLastError();
+			FormatMessage(
+					FORMAT_MESSAGE_ALLOCATE_BUFFER |
+					FORMAT_MESSAGE_FROM_SYSTEM |
+					FORMAT_MESSAGE_IGNORE_INSERTS,
+					NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+					(LPTSTR)&lpMsgBuf, 0, NULL);
+
                     fmt::memory_buffer msg;
                     fmt::format_to(msg, "Failed finding {} symbol: {}",
-                        name, GetLastError());
+                        name, (LPCTSTR)lpMsgBuf);
+		    LocalFree(lpMsgBuf);
                     throw std::invalid_argument(fmt::string_view(msg.data(), msg.size()).data());
                 }
 

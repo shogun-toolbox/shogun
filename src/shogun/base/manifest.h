@@ -102,13 +102,22 @@ namespace shogun
 		std::unique_ptr<Self> self;
 	};
 
+
+#ifdef _MSC_VER
+#define MANIFEST_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
+#define MANIFEST_EXPORT __attribute__((visibility("default")))
+#else
+#error "please fix me for your compiler!"
+#endif
+
 /** Starts manifest declaration with its description.
  * Always immediately follow this macro with
  * @ref EXPORT or @ref END_MANIFEST.
  */
 #define BEGIN_MANIFEST(DESCRIPTION)                             \
-extern "C" Manifest shogunManifest()                            \
-{                                                               \
+extern "C" MANIFEST_EXPORT Manifest shogunManifest()              \
+	{                                                           \
 	static Manifest manifest(DESCRIPTION,{                      \
 
 /** Declares class to be exported.
