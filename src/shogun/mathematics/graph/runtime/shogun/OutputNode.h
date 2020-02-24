@@ -66,6 +66,7 @@ namespace shogun
 
 				private:
 					std::shared_ptr<op::Operator> m_op;
+					// bool m_;
 					std::vector<std::shared_ptr<OutputNode>> m_input_nodes;
 					std::vector<std::shared_ptr<Tensor>> m_output_tensors;
 				};

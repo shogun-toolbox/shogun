@@ -2,6 +2,7 @@
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/shogun/Add.h>
 #include <shogun/mathematics/graph/runtime/shogun/Divide.h>
+#include <shogun/mathematics/graph/runtime/shogun/Dot.h>
 #include <shogun/mathematics/graph/runtime/shogun/Equal.h>
 #include <shogun/mathematics/graph/runtime/shogun/Input.h>
 #include <shogun/mathematics/graph/runtime/shogun/LogicalAnd.h>
@@ -112,6 +113,7 @@ REGISTER_OP(detail::shogun::DivideShogun);
 REGISTER_OP(detail::shogun::LogicalAndShogun);
 REGISTER_OP(detail::shogun::LogicalOrShogun);
 REGISTER_OP(detail::shogun::LogicalXorShogun);
+REGISTER_OP(detail::shogun::DotShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

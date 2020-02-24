@@ -31,9 +31,6 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					// if (input_nodes.size() != 2)
-					// 	error("Expected 2 input nodes in binary operation");
-
 					const auto& input_tensor1 =
 					    input_nodes[0]->get_output_tensors()[0];
 					const auto& input_tensor2 =
@@ -81,8 +78,7 @@ namespace shogun
 						{
 							error(
 							    "Runtime shape mismatch in dimension {}. Got "
-							    "{} and "
-							    "{}.",
+							    "{} and {}.",
 							    idx, shape1, shape2);
 						}
 						if (shape1 == Shape::Dynamic)

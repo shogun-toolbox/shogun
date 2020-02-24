@@ -47,5 +47,5 @@ TYPED_TEST(GraphTest, multiply)
 	    vector<shared_ptr<node::Node>>{intermediate, output});
 
 	this->test_binary_op_results(
-		graph, X1, X2, expected_result1, expected_result2);
+	    graph, X1, X2, expected_result1, expected_result2);
 }

@@ -3,11 +3,13 @@
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Add.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Dot.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Equal.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
 #include <shogun/mathematics/graph/runtime/ngraph/LogicalAnd.h>
 #include <shogun/mathematics/graph/runtime/ngraph/LogicalOr.h>
 #include <shogun/mathematics/graph/runtime/ngraph/LogicalXor.h>
+#include <shogun/mathematics/graph/runtime/ngraph/MatMul.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
 
@@ -34,24 +36,67 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 	for (const auto& tensor : tensors)
 	{
 		const auto& shape = tensor->get_shape();
-		ngraph_input_tensors.push_back(backend->create_tensor(
-		    get_ngraph_type_from_enum(tensor->get_type()),
-		    to_ngraph_shape(shape)));
-		ngraph_input_tensors.back()->write(
-		    tensor->data(), tensor->size_in_bytes());
+		if (tensor->get_shape().size() < 2 || !m_requires_major_conversion)
+		{
+			auto& input =
+			    ngraph_input_tensors.emplace_back(backend->create_tensor(
+			        get_ngraph_type_from_enum(tensor->get_type()),
+			        to_ngraph_shape(shape)));
+			input->write(tensor->data(), tensor->size_in_bytes());
+		}
+		else if (tensor->get_shape().size() == 2 && m_requires_major_conversion)
+		{
+			const auto ngraph_shape = to_ngraph_shape(shape);
+			auto& input =
+			    ngraph_input_tensors.emplace_back(backend->create_tensor(
+			        get_ngraph_type_from_enum(tensor->get_type()),
+			        ngraph::Shape{ngraph_shape[1], ngraph_shape[0]}));
+			input->write(tensor->data(), tensor->size_in_bytes());
+			auto& transpose_param = ngraph_input_tensors.emplace_back(
+			    backend->create_tensor(ngraph::element::i64, ngraph::Shape{2}));
+			transpose_param->write(&kTranspose, 2 * sizeof(int64_t));
+		}
+		else
+		{
+			error("NGraph interface cannot handle tensors with more than 2 "
+			      "dimensions.");
+		}
 	}
 
 	ngraph::ParameterVector inputs;
 	ngraph::OutputVector outputs;
 
-	for (const auto& el : m_input_output_nodes)
+	for (const auto& node : m_input_output_nodes)
 	{
-		inputs.push_back(std::static_pointer_cast<ngraph::op::Parameter>(el));
+		auto input_node = std::static_pointer_cast<ngraph::op::Parameter>(node);
+		inputs.push_back(input_node);
 	}
 
 	for (const auto& el : output_nodes)
 	{
-		outputs.push_back(m_lookup.at(el));
+		const auto& shape = el->get_shapes()[0];
+		const auto& ngraph_shape = to_ngraph_shape(shape);
+
+		if (shape.size() < 2 || !m_requires_major_conversion)
+		{
+			outputs.push_back(m_lookup.at(el));
+		}
+		else if (shape.size() == 2 && m_requires_major_conversion)
+		{
+			auto perm = std::make_shared<ngraph::op::Parameter>(
+			    ngraph::element::i64, ngraph::Shape{2});
+			outputs.push_back(
+			    std::make_shared<ngraph::op::Transpose>(m_lookup.at(el), perm));
+			inputs.push_back(perm);
+			auto& transpose_param = ngraph_input_tensors.emplace_back(
+			    backend->create_tensor(ngraph::element::i64, ngraph::Shape{2}));
+			transpose_param->write(&kTranspose, 2 * sizeof(int64_t));
+		}
+		else
+		{
+			error("NGraph interface cannot handle tensors with more than 2 "
+			      "dimensions.");
+		}
 	}
 
 	auto f = std::make_shared<ngraph::Function>(outputs, inputs);
@@ -60,7 +105,9 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 
 	for (const auto& node : output_nodes)
 	{
-		const auto& shape = node->get_shapes()[0];
+		const auto shape = m_requires_major_conversion
+		                       ? node->get_shapes()[0].switch_major()
+		                       : node->get_shapes()[0];
 		const auto& type = node->get_types()[0];
 
 		if (std::find(shape.begin(), shape.end(), Shape::Dynamic) !=
@@ -77,7 +124,7 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		}
 	}
 
-	handle->call_with_validate(ngraph_output_tensors, ngraph_input_tensors);
+	handle->call(ngraph_output_tensors, ngraph_input_tensors);
 
 	std::vector<std::shared_ptr<Tensor>> results;
 	for (const auto& ngraph_tensor : ngraph_output_tensors)
@@ -110,12 +157,33 @@ NGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 
 void NGraph::add_input_operator(const std::shared_ptr<node::Node>& node)
 {
-
 	auto input = get_operator(node);
-	m_lookup[node] =
-	    std::static_pointer_cast<detail::ngraph::InputNGraph>(input)
-	        ->build_input(node);
-	m_input_output_nodes.push_back(m_lookup.at(node));
+	const auto shape = node->get_shapes()[0];
+
+	if (shape.size() < 2 || !m_requires_major_conversion)
+	{
+		m_lookup[node] =
+		    std::static_pointer_cast<detail::ngraph::InputNGraph>(input)
+		        ->build_input(node);
+		m_input_output_nodes.push_back(m_lookup.at(node));
+	}
+	else if (shape.size() == 2 && m_requires_major_conversion)
+	{
+		auto input_node = std::make_shared<::ngraph::op::Parameter>(
+		    get_ngraph_type_from_enum(node->get_types()[0]),
+		    to_ngraph_partial_shape(Shape{shape[1], shape[0]}));
+		auto perm = std::make_shared<ngraph::op::Parameter>(
+		    ngraph::element::i64, ngraph::Shape{2});
+		m_lookup[node] =
+		    std::make_shared<ngraph::op::Transpose>(input_node, perm);
+		m_input_output_nodes.push_back(input_node);
+		m_input_output_nodes.push_back(perm);
+	}
+	else
+	{
+		error("NGraph interface cannot handle tensors with more than 2 "
+		      "dimensions.");
+	}
 }
 
 void NGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
@@ -141,6 +209,8 @@ REGISTER_OP(detail::ngraph::SubtractNGraph);
 REGISTER_OP(detail::ngraph::LogicalAndNGraph);
 REGISTER_OP(detail::ngraph::LogicalOrNGraph);
 REGISTER_OP(detail::ngraph::LogicalXorNGraph);
+// REGISTER_OP(detail::ngraph::MatMulNGraph);
+REGISTER_OP(detail::ngraph::DotNGraph);
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

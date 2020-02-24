@@ -38,6 +38,11 @@ namespace shogun
 					    "Input(shape={}, type={})", get_shapes()[0],
 					    get_types()[0]);
 				}
+
+				bool requires_column_major_conversion() const final
+				{
+					return false;
+				}
 			};
 		} // namespace node
 	}     // namespace graph

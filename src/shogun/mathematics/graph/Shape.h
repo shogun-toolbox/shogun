@@ -29,11 +29,16 @@ namespace shogun
 
 			static constexpr shape_type Dynamic = -1;
 
-			Shape(std::initializer_list<shape_type> shape) : m_shape(shape)
+			Shape(const std::initializer_list<shape_type>& shape)
+			    : m_shape(shape)
 			{
 			}
 
-			Shape(std::vector<shape_type> shape)
+			Shape(const std::vector<shape_type>& shape) : m_shape(shape)
+			{
+			}
+
+			Shape(std::vector<shape_type>&& shape)
 			    : m_shape(std::move(shape)){}
 
 			          [[nodiscard]] shape_type size() const
@@ -49,6 +54,43 @@ namespace shogun
 			shape_type& operator[](size_t idx)
 			{
 				return m_shape[idx];
+			}
+
+			bool partial_compare(size_t idx, shape_type other) const
+			{
+				if (is_scalar())
+					error("Cannot do Shape::partial_compare with scalar shape "
+					      "representations");
+				if (m_shape[idx] == Shape::Dynamic || other == Shape::Dynamic)
+					return true;
+				return m_shape[idx] == other;
+			}
+
+			bool is_static() const
+			{
+				for (const auto& dim : m_shape)
+				{
+					if (dim == Shape::Dynamic)
+						return false;
+				}
+				return true;
+			}
+
+			bool is_scalar() const
+			{
+				return m_shape.size() == 0;
+			}
+
+			Shape switch_major() const
+			{
+				if (m_shape.size() < 2)
+					return *this;
+				else
+				{
+					auto result = m_shape;
+					std::swap(result[0], result[1]);
+					return Shape{result};
+				}
 			}
 
 			[[nodiscard]] auto begin() const

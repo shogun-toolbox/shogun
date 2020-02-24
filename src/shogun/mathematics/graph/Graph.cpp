@@ -98,7 +98,7 @@ void Graph::build_backend_graph(
 		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
 	}
 
-	// get input operatos
+	// get input operators
 	for (const auto& node : m_inputs)
 	{
 		m_executor->add_input_operator(node);
@@ -131,5 +131,7 @@ void Graph::order_graph_visit_(
 	}
 
 	node_status = STATUS::MARKED;
+	if (node->requires_column_major_conversion())
+		m_executor->set_requires_major_conversion(true);
 	result.push_back(node);
 }
