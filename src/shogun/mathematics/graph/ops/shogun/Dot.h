@@ -84,8 +84,7 @@ namespace shogun
 							error(
 							    "Runtime Dot shape mismatch. "
 							    "shapes {} and {} not aligned: {} (dim {}) != "
-							    "{} "
-							    "(dim {})",
+							    "{} (dim {})",
 							    shape_a.to_string(), shape_b.to_string(),
 							    shape_a[reduction_axis_a], reduction_axis_a,
 							    shape_b[reduction_axis_b], reduction_axis_b);

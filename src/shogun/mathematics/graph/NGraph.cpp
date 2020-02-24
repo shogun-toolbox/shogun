@@ -210,7 +210,7 @@ REGISTER_OP(detail::ngraph::SubtractNGraph);
 REGISTER_OP(detail::ngraph::LogicalAndNGraph);
 REGISTER_OP(detail::ngraph::LogicalOrNGraph);
 REGISTER_OP(detail::ngraph::LogicalXorNGraph);
-// REGISTER_OP(detail::ngraph::MatMulNGraph);
+REGISTER_OP(detail::ngraph::MatMulNGraph);
 REGISTER_OP(detail::ngraph::DotNGraph);
 REGISTER_OP(detail::ngraph::ReshapeNGraph);
 

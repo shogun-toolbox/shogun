@@ -22,7 +22,6 @@ namespace shogun
 			namespace ngraph
 			{
 				IGNORE_IN_CLASSLIST class DotNGraph
-
 				    : public RuntimeNodeTemplate<node::Dot, ::ngraph::Node>
 				{
 				public:
