@@ -36,7 +36,7 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 	for (const auto& tensor : tensors)
 	{
 		const auto& shape = tensor->get_shape();
-		if (tensor->get_shape().size() < 2)
+		if (tensor->get_shape().size() < 2 || !m_requires_major_conversion)
 		{
 			auto& input =
 			    ngraph_input_tensors.emplace_back(backend->create_tensor(
@@ -44,7 +44,7 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 			        to_ngraph_shape(shape)));
 			input->write(tensor->data(), tensor->size_in_bytes());
 		}
-		else if (tensor->get_shape().size() == 2)
+		else if (tensor->get_shape().size() == 2 && m_requires_major_conversion)
 		{
 			const auto ngraph_shape = to_ngraph_shape(shape);
 			auto& input =
@@ -77,11 +77,11 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		const auto& shape = el->get_shapes()[0];
 		const auto& ngraph_shape = to_ngraph_shape(shape);
 
-		if (shape.size() < 2)
+		if (shape.size() < 2 || !m_requires_major_conversion)
 		{
 			outputs.push_back(m_lookup.at(el));
 		}
-		else if (shape.size() == 2)
+		else if (shape.size() == 2 && m_requires_major_conversion)
 		{
 			auto perm = std::make_shared<ngraph::op::Parameter>(
 			    ngraph::element::i64, ngraph::Shape{2});
@@ -105,7 +105,9 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 
 	for (const auto& node : output_nodes)
 	{
-		const auto& shape = node->get_shapes()[0];
+		const auto shape = m_requires_major_conversion
+		                       ? node->get_shapes()[0].switch_major()
+		                       : node->get_shapes()[0];
 		const auto& type = node->get_types()[0];
 
 		if (std::find(shape.begin(), shape.end(), Shape::Dynamic) !=
@@ -113,13 +115,12 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		{
 			ngraph_output_tensors.push_back(backend->create_dynamic_tensor(
 			    get_ngraph_type_from_enum(type),
-			    to_ngraph_partial_shape(shape.inverse())));
+			    to_ngraph_partial_shape(shape)));
 		}
 		else
 		{
 			ngraph_output_tensors.push_back(backend->create_tensor(
-			    get_ngraph_type_from_enum(type),
-			    to_ngraph_shape(shape.inverse())));
+			    get_ngraph_type_from_enum(type), to_ngraph_shape(shape)));
 		}
 	}
 
@@ -159,14 +160,14 @@ void NGraph::add_input_operator(const std::shared_ptr<node::Node>& node)
 	auto input = get_operator(node);
 	const auto shape = node->get_shapes()[0];
 
-	if (shape.size() < 2)
+	if (shape.size() < 2 || !m_requires_major_conversion)
 	{
 		m_lookup[node] =
 		    std::static_pointer_cast<detail::ngraph::InputNGraph>(input)
 		        ->build_input(node);
 		m_input_output_nodes.push_back(m_lookup.at(node));
 	}
-	else if (shape.size() == 2)
+	else if (shape.size() == 2 && m_requires_major_conversion)
 	{
 		auto input_node = std::make_shared<::ngraph::op::Parameter>(
 		    get_ngraph_type_from_enum(node->get_types()[0]),

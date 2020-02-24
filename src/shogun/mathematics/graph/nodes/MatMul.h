@@ -101,12 +101,16 @@
 // 					const auto& shape_b = node_b_shapes[0];
 
 // 					if (shape_a.size() <= 2)
-// 						error("Currently MatMul cannot handle tensors with more than two
-// dimensions. " 							"Node A output tensor has {} dimensions.", shape_a.size());
+// 						error("Currently MatMul cannot handle tensors with more than
+// two
+// dimensions. " 							"Node A output tensor has {} dimensions.",
+// shape_a.size());
 
 // 					if (shape_b.size() <= 2)
-// 						error("Currently MatMul cannot handle tensors with more than two
-// dimensions. " 							"Node B output tensor has {} dimensions.", shape_b.size());
+// 						error("Currently MatMul cannot handle tensors with more than
+// two
+// dimensions. " 							"Node B output tensor has {} dimensions.",
+// shape_b.size());
 
 // 					std::vector<Shape::shape_type> output_shape_vector;
 // 					if (shape_a.size() == 1 && shape_b.size() == 1)
@@ -117,29 +121,37 @@
 // 					if (m_transpose_a && !m_transpose_b)
 // 					{
 // 						if (shape_a[1] == Shape::Dynamic && shape_b[1] ==
-// Shape::Dynamic) 							output_shape_vector[0] = Shape::Dynamic; 						else if (shape_a[1]
-// == Shape::Dynamic && shape_b[1] != Shape::Dynamic) 							output_shape_vector[0] =
-// shape_b[1]; 						else if (shape_a[1] != Shape::Dynamic && shape_b[1] ==
-// Shape::Dynamic) 							output_shape_vector[0] = shape_a[1]; 						else if (shape_a[1] !=
-// shape_b[1]) 							error("MatMul A transpose tensor dimension mismatch. {} vs {}",
-// shape_a, shape_b); 						else 							error("Undefined state...");
+// Shape::Dynamic) 							output_shape_vector[0] = Shape::Dynamic; 						else if
+// (shape_a[1]
+// == Shape::Dynamic && shape_b[1] != Shape::Dynamic)
+// output_shape_vector[0] = shape_b[1]; 						else if
+// (shape_a[1] != Shape::Dynamic && shape_b[1] == Shape::Dynamic)
+// output_shape_vector[0] = shape_a[1]; 						else if (shape_a[1]
+// !=
+// shape_b[1]) 							error("MatMul A transpose tensor dimension mismatch. {} vs
+// {}", shape_a, shape_b); 						else
+// error("Undefined state...");
 // 					}
 // 					else if (m_transpose_b && !m_transpose_a)
 // 					{
 // 						if (shape_a[0] == Shape::Dynamic && shape_b[0] ==
-// Shape::Dynamic) 							output_shape_vector[1] = Shape::Dynamic; 						else if (shape_a[0]
-// == Shape::Dynamic && shape_b[0] != Shape::Dynamic) 							output_shape_vector[1] =
-// shape_b[0]; 						else if (shape_a[0] != Shape::Dynamic && shape_b[0] ==
-// Shape::Dynamic) 							output_shape_vector[1] = shape_a[0]; 						else if (shape_a[1] !=
-// shape_b[1]) 							error("MatMul A transpose tensor dimension mismatch. {} vs {}",
-// shape_a, shape_b); 						else 							error("Undefined state...");
+// Shape::Dynamic) 							output_shape_vector[1] = Shape::Dynamic; 						else if
+// (shape_a[0]
+// == Shape::Dynamic && shape_b[0] != Shape::Dynamic)
+// output_shape_vector[1] = shape_b[0]; 						else if
+// (shape_a[0] != Shape::Dynamic && shape_b[0] == Shape::Dynamic)
+// output_shape_vector[1] = shape_a[0]; 						else if (shape_a[1]
+// !=
+// shape_b[1]) 							error("MatMul A transpose tensor dimension mismatch. {} vs
+// {}", shape_a, shape_b); 						else
+// error("Undefined state...");
 // 					}
 // 					else if (m_transpose_a && m_transpose_b)
 // 					{
 // 						if (shape_a[1] != shape_b[0])
-// 							error("MatMul B transpose tensor dimension mismatch. {} vs {}",
-// shape_a, shape_b) 						output_shape_vector[0] = shape_a[1]; 						output_shape_vector[1]
-// = shape_a[0];
+// 							error("MatMul B transpose tensor dimension mismatch. {} vs
+// {}", shape_a, shape_b) 						output_shape_vector[0] =
+// shape_a[1]; 						output_shape_vector[1] = shape_a[0];
 // 					}
 // 					else
 // 					{

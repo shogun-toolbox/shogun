@@ -39,12 +39,17 @@ namespace shogun
 			add_input_operator(const std::shared_ptr<node::Node>& node) = 0;
 			virtual void
 			add_operator_node(const std::shared_ptr<node::Node>& node) = 0;
+			void set_requires_major_conversion(bool requires_major_conversion)
+			{
+				m_requires_major_conversion = requires_major_conversion;
+			}
 
 		protected:
 			std::vector<std::shared_ptr<detail::RuntimeNode>>
 			    m_cached_input_operators;
 			std::vector<std::shared_ptr<detail::RuntimeNode>>
 			    m_cached_operators;
+			bool m_requires_major_conversion = false;
 		};
 
 		static constexpr std::string_view kShogunExecutorName =

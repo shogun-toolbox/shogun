@@ -30,6 +30,11 @@ namespace shogun
 				{
 				}
 
+				bool requires_column_major_conversion() const override
+				{
+					return false;
+				}
+
 			protected:
 				element_type check_type_compatible(
 				    const std::shared_ptr<Node>& node1,

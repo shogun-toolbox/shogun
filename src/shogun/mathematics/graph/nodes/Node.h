@@ -87,6 +87,8 @@ namespace shogun
 					return os << node.to_string();
 				}
 
+				virtual bool requires_column_major_conversion() const = 0;
+
 			protected:
 				std::vector<std::shared_ptr<Node>> m_input_nodes;
 				std::vector<Shape> m_shapes;

@@ -73,10 +73,16 @@ namespace shogun
 				return true;
 			}
 
-			Shape inverse() const
+			Shape switch_major() const
 			{
-				return Shape(
-				    std::vector<shape_type>{m_shape.rbegin(), m_shape.rend()});
+				if (m_shape.size() < 2)
+					return *this;
+				else
+				{
+					auto result = m_shape;
+					std::swap(result[0], result[1]);
+					return Shape{result};
+				}
 			}
 
 			[[nodiscard]] auto begin() const

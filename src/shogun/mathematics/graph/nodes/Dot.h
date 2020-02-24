@@ -51,6 +51,11 @@ namespace shogun
 					return "Dot";
 				}
 
+				bool requires_column_major_conversion() const final
+				{
+					return true;
+				}
+
 			protected:
 				element_type check_type_compatible(
 				    const std::shared_ptr<Node>& A,
