@@ -58,6 +58,9 @@ namespace shogun
 
 			bool partial_compare(size_t idx, shape_type other) const
 			{
+				if (is_scalar())
+					error("Cannot do Shape::partial_compare with scalar shape "
+					      "representations");
 				if (m_shape[idx] == Shape::Dynamic || other == Shape::Dynamic)
 					return true;
 				return m_shape[idx] == other;
@@ -71,6 +74,11 @@ namespace shogun
 						return false;
 				}
 				return true;
+			}
+
+			bool is_scalar() const
+			{
+				return m_shape.size() == 0;
 			}
 
 			Shape switch_major() const

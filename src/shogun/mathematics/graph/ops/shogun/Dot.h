@@ -68,33 +68,46 @@ namespace shogun
 					    std::static_pointer_cast<node::Dot>(m_node)
 					        ->get_reduction_axis_b();
 
-					if (shape_a[reduction_axis_a] != shape_b[reduction_axis_b])
+					if (shape_a.is_scalar())
 					{
-						error(
-						    "Runtime Dot shape mismatch. "
-						    "shapes {} and {} not aligned: {} (dim {}) != {} "
-						    "(dim {})",
-						    shape_a.to_string(), shape_b.to_string(),
-						    shape_a[reduction_axis_a], reduction_axis_a,
-						    shape_b[reduction_axis_b], reduction_axis_b);
+						m_output_tensors[0]->allocate_tensor(shape_b);
 					}
-
-					std::vector<Shape::shape_type> output_shape_vector;
-
-					for (const auto& [idx, el] : enumerate(shape_a))
+					else if (shape_b.is_scalar())
 					{
-						if (idx != reduction_axis_a)
-							output_shape_vector.push_back(el);
+						m_output_tensors[0]->allocate_tensor(shape_a);
 					}
-
-					for (const auto& [idx, el] : enumerate(shape_b))
+					else
 					{
-						if (idx != reduction_axis_b)
-							output_shape_vector.push_back(el);
-					}
+						if (shape_a[reduction_axis_a] !=
+						    shape_b[reduction_axis_b])
+						{
+							error(
+							    "Runtime Dot shape mismatch. "
+							    "shapes {} and {} not aligned: {} (dim {}) != "
+							    "{} "
+							    "(dim {})",
+							    shape_a.to_string(), shape_b.to_string(),
+							    shape_a[reduction_axis_a], reduction_axis_a,
+							    shape_b[reduction_axis_b], reduction_axis_b);
+						}
 
-					m_output_tensors[0]->allocate_tensor(
-					    Shape{output_shape_vector});
+						std::vector<Shape::shape_type> output_shape_vector;
+
+						for (const auto& [idx, el] : enumerate(shape_a))
+						{
+							if (idx != reduction_axis_a)
+								output_shape_vector.push_back(el);
+						}
+
+						for (const auto& [idx, el] : enumerate(shape_b))
+						{
+							if (idx != reduction_axis_b)
+								output_shape_vector.push_back(el);
+						}
+
+						m_output_tensors[0]->allocate_tensor(
+						    Shape{output_shape_vector});
+					}
 				}
 
 				template <typename T>
@@ -103,7 +116,17 @@ namespace shogun
 				    const std::shared_ptr<Tensor>& input_tensor2,
 				    const std::shared_ptr<Tensor>& output_tensor)
 				{
-					if (input_tensor1->get_shape().size() == 1 &&
+					if (input_tensor1->get_shape().is_scalar() &&
+					    !input_tensor2->get_shape().is_scalar())
+						dot_product_scalar_container_implementation<T>(
+						    input_tensor1, input_tensor2, output_tensor);
+					else if (
+					    !input_tensor1->get_shape().is_scalar() &&
+					    input_tensor2->get_shape().is_scalar())
+						dot_product_container_scalar_implementation<T>(
+						    input_tensor1, input_tensor2, output_tensor);
+					else if (
+					    input_tensor1->get_shape().size() == 1 &&
 					    input_tensor2->get_shape().size() == 1)
 						dot_product_vector_vector_implementation<T>(
 						    input_tensor1, input_tensor2, output_tensor);
@@ -126,8 +149,10 @@ namespace shogun
 					{
 						// this would require using Eigen::Tensor, like in
 						// ngraph
-						error("Dot cannot handle tensors with more than 2 "
-						      "dimensions yet");
+						error(
+						    "Dot cannot handle the provided shapes: {} and {}",
+						    input_tensor1->get_shape().to_string(),
+						    input_tensor2->get_shape().to_string());
 					}
 				}
 
@@ -166,6 +191,32 @@ namespace shogun
 						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
 					}
 #undef CALL_KERNEL_IMPLEMENTATION
+				}
+
+				template <typename T>
+				void dot_product_scalar_container_implementation(
+				    const std::shared_ptr<Tensor>& A,
+				    const std::shared_ptr<Tensor>& B,
+				    const std::shared_ptr<Tensor>& Out)
+				{
+					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> B_eig(
+					    static_cast<T*>(B->data()), B->size());
+					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> Out_eig(
+					    static_cast<T*>(Out->data()), Out->size());
+					Out_eig = B_eig * *static_cast<T*>(A->data());
+				}
+
+				template <typename T>
+				void dot_product_container_scalar_implementation(
+				    const std::shared_ptr<Tensor>& A,
+				    const std::shared_ptr<Tensor>& B,
+				    const std::shared_ptr<Tensor>& Out)
+				{
+					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
+					    static_cast<T*>(A->data()), A->size());
+					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> Out_eig(
+					    static_cast<T*>(Out->data()), Out->size());
+					Out_eig = A_eig * *static_cast<T*>(B->data());
 				}
 
 				template <typename T>

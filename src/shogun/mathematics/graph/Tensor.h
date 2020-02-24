@@ -28,10 +28,20 @@ namespace shogun
 		{
 		public:
 			template <typename T>
+			Tensor(const T& scalar)
+			    : m_free(true), m_data(new T(scalar)), m_shape({}),
+			      m_type(get_enum_from_type<T>::type)
+			{
+			}
+
+			template <typename T>
 			Tensor(const SGVector<T>& vec)
 			    : m_free(false), m_data(vec.vector), m_shape(Shape{vec.size()}),
 			      m_type(get_enum_from_type<T>::type)
 			{
+				// this represents a scalar
+				if (vec.size() == 1)
+					m_shape = Shape{};
 			}
 
 			template <typename T>

@@ -10,6 +10,58 @@ using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
 
+TYPED_TEST(GraphTest, vector_scalar_dot)
+{
+	using NumericType = TypeParam;
+
+	if constexpr (std::is_same_v<TypeParam, bool>)
+		return;
+	else
+	{
+		SGVector<NumericType> X1{1, 2, 3};
+		NumericType X2 = 2;
+		SGMatrix<NumericType> X3{{1, 2, 3}, {4, 5, 6}};
+		SGVector<NumericType> expected_result1 = {2, 4, 6};
+		SGMatrix<NumericType> expected_result2{{2, 4, 6}, {8, 10, 12}};
+
+		auto A = make_shared<node::Input>(
+		    Shape{3}, get_enum_from_type<NumericType>::type);
+		auto B = make_shared<node::Input>(
+		    Shape{}, get_enum_from_type<NumericType>::type);
+		auto C = make_shared<node::Input>(
+		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+
+		auto output1 = make_shared<node::Dot>(A, B);
+		auto output2 = make_shared<node::Dot>(B, C);
+
+		auto graph = make_shared<Graph>(
+		    vector{A, B, C}, vector<shared_ptr<node::Node>>{output1, output2});
+
+		for (auto&& backend : this->m_backends)
+		{
+			graph->build(backend);
+
+			vector<shared_ptr<Tensor>> result = graph->evaluate(
+			    vector{make_shared<Tensor>(X1), make_shared<Tensor>(X2),
+			           make_shared<Tensor>(X3)});
+
+			auto result1 = result[0]->as<SGVector<NumericType>>();
+			auto result2 = result[1]->as<SGMatrix<NumericType>>();
+
+			for (const auto& [expected_i, result_i] :
+			     zip_iterator(expected_result1, result1))
+			{
+				EXPECT_EQ(expected_i, result_i);
+			}
+			for (const auto& [expected_i, result_i] :
+			     zip_iterator(expected_result2, result2))
+			{
+				EXPECT_EQ(expected_i, result_i);
+			}
+		}
+	}
+}
+
 TYPED_TEST(GraphTest, vector_vector_dot)
 {
 	using NumericType = TypeParam;

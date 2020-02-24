@@ -108,6 +108,16 @@ namespace shogun
 					m_reduction_axis_b =
 					    shape_b.size() <= 1 ? 0 : shape_b.size() - 2;
 
+					// one of the values is a scalar
+					if (shape_a.is_scalar())
+					{
+						return shape_b;
+					}
+					else if (shape_b.is_scalar())
+					{
+						return shape_a;
+					}
+
 					if (!shape_a.partial_compare(
 					        m_reduction_axis_a, shape_b[m_reduction_axis_b]))
 						error(
