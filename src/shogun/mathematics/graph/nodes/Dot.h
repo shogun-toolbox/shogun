@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_NODES_MATMUL_NODE_H_
-#define SHOGUN_NODES_MATMUL_NODE_H_
+#ifndef SHOGUN_NODES_DOT_NODE_H_
+#define SHOGUN_NODES_DOT_NODE_H_
 
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/util/enumerate.h>
@@ -18,13 +18,16 @@ namespace shogun
 	{
 		namespace node
 		{
+
 			IGNORE_IN_CLASSLIST class Dot : public Node
 			{
+				friend class MatMul;
+			
 			public:
 				Dot(const std::shared_ptr<Node>& A,
 				    const std::shared_ptr<Node>& B)
 				    : Node(
-				          {A, B}, check_shape_compatible(A, B),
+				          {A, B}, check_shape_compatible_helper(A, B),
 				          check_type_compatible(A, B))
 				{
 				}
@@ -82,12 +85,23 @@ namespace shogun
 					return node1_types[0];
 				}
 
-				Shape check_shape_compatible(
+				Shape check_shape_compatible_helper(
+				    const std::shared_ptr<Node>& A,
+				    const std::shared_ptr<Node>& B)
+				{
+					auto [result, reduction_axis_a, reduction_axis_b] = check_shape_compatible_(A, B);
+					m_reduction_axis_a = reduction_axis_a;
+					m_reduction_axis_b = reduction_axis_b;
+
+					return result;
+				}
+
+				std::tuple<Shape, size_t, size_t> check_shape_compatible_(
 				    const std::shared_ptr<Node>& A,
 				    const std::shared_ptr<Node>& B)
 				{
 					const auto& node_a_shapes = A->get_shapes();
-					const auto& node_b_shapes = B->get_shapes();
+					const auto& node_b_shapes = B->get_shapes();	
 
 					if (node_a_shapes.size() > 1)
 						error(
@@ -101,52 +115,59 @@ namespace shogun
 						    "tensor, but got {}",
 						    node_b_shapes.size());
 
-					const auto& shape_a = node_a_shapes[0];
+					const auto& shape_a = node_a_shapes[0];		
 					const auto& shape_b = node_b_shapes[0];
 
-					m_reduction_axis_a = shape_a.size() - 1;
-					m_reduction_axis_b =
+					return check_shape_compatible(shape_a, shape_b);
+				}
+
+				static std::tuple<Shape, size_t, size_t> check_shape_compatible(
+				    const Shape& shape_a,
+				    const Shape& shape_b)
+				{
+					size_t reduction_axis_a = shape_a.size() < 1 ? 0 : shape_a.size() - 1;
+					size_t reduction_axis_b =
 					    shape_b.size() <= 1 ? 0 : shape_b.size() - 2;
 
 					// one of the values is a scalar
 					if (shape_a.is_scalar())
 					{
-						return shape_b;
+						return std::make_tuple(shape_b, reduction_axis_a, reduction_axis_b);
 					}
 					else if (shape_b.is_scalar())
 					{
-						return shape_a;
+						return std::make_tuple(shape_b, reduction_axis_a, reduction_axis_b);
 					}
 
 					if (!shape_a.partial_compare(
-					        m_reduction_axis_a, shape_b[m_reduction_axis_b]))
+					        reduction_axis_a, shape_b[reduction_axis_b]))
 						error(
 						    "shapes {} and {} not aligned: {} (dim {}) != {} "
 						    "(dim {})",
 						    shape_a.to_string(), shape_b.to_string(),
-						    shape_a[m_reduction_axis_a], m_reduction_axis_a,
-						    shape_b[m_reduction_axis_b], m_reduction_axis_b);
+						    shape_a[reduction_axis_a], reduction_axis_a,
+						    shape_b[reduction_axis_b], reduction_axis_b);
 
 					std::vector<Shape::shape_type> output_shape_vector;
 
 					for (const auto& [idx, el] : enumerate(shape_a))
 					{
-						if (idx != m_reduction_axis_a)
+						if (idx != reduction_axis_a)
 							output_shape_vector.push_back(el);
 					}
 
 					for (const auto& [idx, el] : enumerate(shape_b))
 					{
-						if (idx != m_reduction_axis_b)
+						if (idx != reduction_axis_b)
 							output_shape_vector.push_back(el);
 					}
 
-					return Shape{output_shape_vector};
+					return std::make_tuple(Shape{output_shape_vector}, reduction_axis_a, reduction_axis_b);
 				}
 
 			private:
-				index_t m_reduction_axis_a;
-				index_t m_reduction_axis_b;
+				size_t m_reduction_axis_a;
+				size_t m_reduction_axis_b;
 			};
 
 		} // namespace node
