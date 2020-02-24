@@ -22,47 +22,45 @@ template <class ST> bool DenseDistance<ST>::init(std::shared_ptr<Features> l, st
 	return true;
 }
 
-/** get feature type the DREAL distance can deal with
+/** get feature type the  distance can deal with
  *
- * @return feature type DREAL
  */
-template<> EFeatureType DenseDistance<float64_t>::get_feature_type() { return F_DREAL; }
-
-/** get feature type the ULONG distance can deal with
- *
- * @return feature type ULONG
- */
-template<> EFeatureType DenseDistance<uint64_t>::get_feature_type() { return F_ULONG; }
-
-/** get feature type the INT distance can deal with
- *
- * @return feature type INT
- */
-template<> EFeatureType DenseDistance<int32_t>::get_feature_type() { return F_INT; }
-
-/** get feature type the WORD distance can deal with
- *
- * @return feature type WORD
- */
-template<> EFeatureType DenseDistance<uint16_t>::get_feature_type() { return F_WORD; }
-
-/** get feature type the SHORT distance can deal with
- *
- * @return feature type SHORT
- */
-template<> EFeatureType DenseDistance<int16_t>::get_feature_type() { return F_SHORT; }
-
-/** get feature type the BYTE distance can deal with
- *
- * @return feature type BYTE
- */
-template<> EFeatureType DenseDistance<uint8_t>::get_feature_type() { return F_BYTE; }
-
-/** get feature type the CHAR distance can deal with
- *
- * @return feature type CHAR
- */
-template<> EFeatureType DenseDistance<char>::get_feature_type() { return F_CHAR; }
+template <class ST>
+EFeatureType DenseDistance<ST>::get_feature_type()
+{
+	if constexpr (std::is_same_v<ST, char>)
+	{
+		return F_CHAR;
+	}
+	else if constexpr (std::is_same_v<ST, float64_t>)
+	{
+		return F_DREAL;
+	}
+	else if constexpr (std::is_same_v<uint8_t, ST>)
+	{
+		return F_BYTE;
+	}
+	else if constexpr (std::is_same_v<int16_t, ST>)
+	{
+		return F_SHORT;
+	}
+	else if constexpr (std::is_same_v<uint16_t, ST>)
+	{
+		return F_WORD;
+	}
+	else if constexpr (std::is_same_v<int32_t, ST>)
+	{
+		return F_INT;
+	}
+	else if constexpr (std::is_same_v<uint64_t, ST>)
+	{
+		return F_ULONG;
+	}
+	else
+	{
+		return F_DREAL;
+	}
+}
 
 template class DenseDistance<char>;
 template class DenseDistance<uint8_t>;
