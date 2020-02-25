@@ -12,6 +12,7 @@
 #include <shogun/mathematics/graph/runtime/ngraph/MatMul.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Reshape.h>
 
 #include <ngraph/ngraph.hpp>
 
@@ -211,6 +212,7 @@ REGISTER_OP(detail::ngraph::LogicalOrNGraph);
 REGISTER_OP(detail::ngraph::LogicalXorNGraph);
 // REGISTER_OP(detail::ngraph::MatMulNGraph);
 REGISTER_OP(detail::ngraph::DotNGraph);
+REGISTER_OP(detail::ngraph::ReshapeNGraph);
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

@@ -39,9 +39,6 @@ namespace shogun
 			    : m_free(false), m_data(vec.vector), m_shape(Shape{vec.size()}),
 			      m_type(get_enum_from_type<T>::type)
 			{
-				// this represents a scalar
-				if (vec.size() == 1)
-					m_shape = Shape{};
 			}
 
 			template <typename T>
@@ -103,7 +100,6 @@ namespace shogun
 
 			void set_shape(const Shape& shape)
 			{
-
 				if (m_shape.size() != shape.size())
 				{
 					error(
@@ -180,9 +176,11 @@ namespace shogun
 			    // whether the memory is owned by the tensor, i.e. should it be
 			    // deleted by the destructor
 			    bool m_free;
-			void* m_data;
-			Shape m_shape;
-			const element_type m_type;
+			    // the actual data in memory
+				void* m_data;
+				// tensor shape
+				Shape m_shape;
+				const element_type m_type;
 		};
 	} // namespace graph
 } // namespace shogun
