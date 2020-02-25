@@ -8,7 +8,7 @@
 #define SHOGUN_DOT_SHOGUN_H_
 
 #include <shogun/mathematics/graph/nodes/Dot.h>
-#include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
+#include <shogun/mathematics/graph/ops/abstract/Operator.h>
 
 #include <shogun/mathematics/eigen3.h>
 
@@ -118,8 +118,8 @@ namespace shogun
 				{
 					if (input_tensor1->get_shape().is_scalar() &&
 					    !input_tensor2->get_shape().is_scalar())
-						dot_product_scalar_container_implementation<T>(
-						    input_tensor1, input_tensor2, output_tensor);
+						dot_product_container_scalar_implementation<T>(
+						    input_tensor2, input_tensor1, output_tensor);
 					else if (
 					    !input_tensor1->get_shape().is_scalar() &&
 					    input_tensor2->get_shape().is_scalar())
@@ -162,48 +162,26 @@ namespace shogun
 				    const std::shared_ptr<Tensor>& Out)
 				{
 #define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
-	dot_product_dispatch<get_type_from_enum<SHOGUN_TYPE>::type>(A, B, Out);    \
-	break;
+	case SHOGUN_TYPE:                                                          \
+		dot_product_dispatch<get_type_from_enum<SHOGUN_TYPE>::type>(           \
+		    A, B, Out);                                                        \
+		break;
 
 					switch (A->get_type())
 					{
-					case element_type::BOOLEAN:
 						CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
-					case element_type::INT8:
 						CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
-					case element_type::INT16:
 						CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
-					case element_type::INT32:
 						CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
-					case element_type::INT64:
 						CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
-					case element_type::UINT8:
 						CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
-					case element_type::UINT16:
 						CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
-					case element_type::UINT32:
 						CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
-					case element_type::UINT64:
 						CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
-					case element_type::FLOAT32:
 						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
-					case element_type::FLOAT64:
 						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
 					}
 #undef CALL_KERNEL_IMPLEMENTATION
-				}
-
-				template <typename T>
-				void dot_product_scalar_container_implementation(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
-				{
-					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> B_eig(
-					    static_cast<T*>(B->data()), B->size());
-					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> Out_eig(
-					    static_cast<T*>(Out->data()), Out->size());
-					Out_eig = B_eig * *static_cast<T*>(A->data());
 				}
 
 				template <typename T>

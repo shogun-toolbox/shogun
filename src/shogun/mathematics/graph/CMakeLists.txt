@@ -15,6 +15,7 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Subtract.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Dot.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Reshape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
 	)
@@ -35,6 +36,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Input.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Multiply.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Dot.h
+		# ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Reshape.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 		)
@@ -53,6 +55,7 @@ set(NGRAPH_IMPLEMENTATION_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Multiply.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Input.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Subtract.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Reshape.h
 		)
 set(NGRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/NGraph.cpp
@@ -126,4 +129,6 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/LogicalOr_test)
 	add_graph_test(nodes/LogicalXor_test)
 	add_graph_test(nodes/Dot_test)
+	add_graph_test(nodes/Reshape_test)
+
 ENDIF()
