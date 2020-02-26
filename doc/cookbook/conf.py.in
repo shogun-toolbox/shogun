@@ -315,6 +315,7 @@ texinfo_documents = [
 extlinks = {
 'sgissue': ('https://github.com/shogun-toolbox/shogun/issues/%s',        'issue '),
 'sgclass': ('http://www.shogun-toolbox.org/%s',        ''),
-'wiki': ('https://en.wikipedia.org/wiki/%s',        'Wikipedia: ')
+'wiki': ('https://en.wikipedia.org/wiki/%s',        'Wikipedia: '),
+'BrayCurtis_Distance':('https://people.revoledu.com/kardi/tutorial/Similarity/%s.html','BrayCurtis_Distance')
 
 }

@@ -33,7 +33,7 @@ We can use the same instance with new :sgclass:`DenseFeatures` to compute asymme
 ----------
 References
 ----------
-'BrayCurtis Distance <http://people.revoledu.com/kardi/tutorial/Similarity/BrayCurtisDistance.html>'
+:BrayCurtis_Distance:`BrayCurtisDistance`
 
 .. bibliography:: ../../references.bib
     :filter: docname in docnames
