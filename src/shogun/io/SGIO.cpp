@@ -20,6 +20,8 @@
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/version.h>
+#include <spdlog/details/pattern_formatter.h>
+#include <spdlog/details/fmt_helper.h>
 
 using namespace shogun;
 using namespace shogun::io;

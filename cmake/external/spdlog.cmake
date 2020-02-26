@@ -17,4 +17,4 @@ ExternalProject_Add(
 	INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${spdlog_SOURCE_DIR}/include ${spdlog_INCLUDE_DIR}
 )
 
-add_dependencies(libshogun spdlog)
+ADD_SHOGUN_DEPENDENCY(spdlog)
