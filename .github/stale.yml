@@ -6,32 +6,32 @@ daysUntilClose: 7
 # added all tags, I don't know how to just add everything
 # because the bot compares tag names rather than regex :(
 exemptLabels:
-  - good first issue
-  - Tag: ARM64
-  - Tag: Cleanup
-  - Tag: cmake
-  - Tag: Development Task
-  - Tag: Discussion
-  - Tag: Documentation
-  - Tag: Gaussian Process
-  - Tag: GSoC
-  - Tag: Hackathon
-  - Tag: Infrastructure
-  - Tag: Installation
-  - Tag: Memory Problems
-  - Tag: Meta Examples
-  - Tag: Performance Improvement
-  - Tag: Publicity
-  - Tag: SWIG
-  - Tag: Testing
-  - Tag: UX
-  - Tag: Website
-  - Type: Bug
-  - Type: Bugfixing
-  - ML: Deep Learning
-  - ML: Kernel Methods
-  - ML: New Algorithms
-  - ML: Numerical Optimization
+  - "good first issue"
+  - "Tag: ARM64"
+  - "Tag: Cleanup"
+  - "Tag: cmake"
+  - "Tag: Development Task"
+  - "Tag: Discussion"
+  - "Tag: Documentation"
+  - "Tag: Gaussian Process"
+  - "Tag: GSoC"
+  - "Tag: Hackathon"
+  - "Tag: Infrastructure"
+  - "Tag: Installation"
+  - "Tag: Memory Problems"
+  - "Tag: Meta Examples"
+  - "Tag: Performance Improvement"
+  - "Tag: Publicity"
+  - "Tag: SWIG"
+  - "Tag: Testing"
+  - "Tag: UX"
+  - "Tag: Website"
+  - "Type: Bug"
+  - "Type: Bugfixing"
+  - "ML: Deep Learning"
+  - "ML: Kernel Methods"
+  - "ML: New Algorithms"
+  - "ML: Numerical Optimization"
 
 # Label to use when marking an issue as stale
 staleLabel: stale
