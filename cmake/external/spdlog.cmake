@@ -40,5 +40,4 @@ else()
                 IMPORTED_LOCATION ${spdlog_LIBRARY_NAME})
 endif()
 
-add_dependencies(spdlog SpdLog)
-add_dependencies(libshogun spdlog)
+ADD_SHOGUN_DEPENDENCY(spdlog)

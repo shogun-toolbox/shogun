@@ -370,7 +370,7 @@ ELSE()
     SET(USE_EXTERNAL_SPDLOG 1)
     target_link_libraries(shogun PRIVATE spdlog::spdlog)
     if (EXISTS shogun-static)
-	target_link_libraries(shogun-static PRIVATE spdlog::spdlog)
+      target_link_libraries(shogun-static PRIVATE spdlog::spdlog)
     endif()
 ENDIF()
 
