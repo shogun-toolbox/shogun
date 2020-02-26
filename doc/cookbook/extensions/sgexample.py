@@ -122,6 +122,8 @@ class ShogunExample(LiteralInclude):
             self.options['end-before'] = section
         elif section == 'end':
             self.options['start-after'] = section
+        elif section == 'entire':
+            pass
         else:
             self.options['start-after'] = section
             self.options['end-before'] = section
