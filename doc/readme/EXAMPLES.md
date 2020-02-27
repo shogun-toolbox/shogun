@@ -100,7 +100,7 @@ If the following error is still visible
 
 Find out if value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. If it's not set then not all requirements in `doc/cookbook/requirements.txt` have been satisfied. 
 
-If it is set then try to compile by giving a explicit path to `sphinx-build` file. The file can be located by the command `locate sphinx-build` and then use the following cmake statement to build shogun again and then try to render the cookbooks.
+If it is set then try to compile by giving an explicit path to `sphinx-build` file. The file can be located by using the command `locate sphinx-build`. Then use the following cmake statement to build shogun again and then try to render the cookbooks.
 
     cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=On [other cmake options] ..
 
