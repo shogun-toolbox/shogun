@@ -98,7 +98,7 @@ Even if all the requirements are satisfied and the following error is visible
 
     make: *** No rule to make target 'cookbook'. Stop.
 
-Try to compile by giving a explicit path to `sphinx-build` file. The  file can be located by the command `locate sphinx-build` and then use the following cmake statement to build shogun again.
+Try to compile by giving a explicit path to `sphinx-build` file. The  file can be located by the command `locate sphinx-build` and then use the following cmake statement to build shogun again and then try to render the cookbook again.
 
     cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=On [options] ..
 
