@@ -93,6 +93,7 @@ You can render it with
 
 which is also part of `make doc`.
 The target might not be available if the requirements in `doc/cookbook/requirements.txt` are not satisfied (in particular Sphinx), or if the meta examples are disabled.
+
 Even if all the requirements are satisfied and the following error is visible
 
     make: *** No rule to make target 'cookbook'. Stop.
