@@ -93,6 +93,13 @@ You can render it with
 
 which is also part of `make doc`.
 The target might not be available if the requirements in `doc/cookbook/requirements.txt` are not satisfied (in particular Sphinx), or if the meta examples are disabled.
+Even if all the requirements are satisfied and the following error is visible
+
+    make: *** No rule to make target 'cookbook'. Stop.
+
+Try to compile by giving a explicit path to `sphinx-build` file. The  file can be located by the command `locate sphinx-build` and then use the following cmake statement to build shogun again.
+
+    cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=On [options] ..
 
 After the cookbook has been rendered, you can view it for example running
 
