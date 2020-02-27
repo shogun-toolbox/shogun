@@ -109,7 +109,7 @@ You can do this via passing an additional option
 -v /your/local/folder:/same/folder/in/docker
 ```
 
-See the Docker documentation for further details.
+See the [Docker documentation](https://docs.docker.com/storage/volumes/) for further details.
 
 ## Building shogun - Using vcpkg
 
