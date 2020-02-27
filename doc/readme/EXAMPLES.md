@@ -35,7 +35,7 @@ Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manuall
 For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py` and `translate.py` in `examples/meta/generator/`.
 
 ## Adding new examples
-It is extremely simple to add a new example: simple create another `*.sg` file.
+It is extremely simple to add a new example. Just create another `*.sg` file.
 We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).
 
 If you porting an example is great, even better is when it comes with integration testing data of the numerical output, as described in [DEVELOPING.md](DEVELOPING.md#testing).
