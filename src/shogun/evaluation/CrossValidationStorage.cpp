@@ -43,12 +43,6 @@ using namespace shogun;
 
 CrossValidationFoldStorage::CrossValidationFoldStorage() : EvaluationResult()
 {
-	m_current_run_index = 0;
-	m_current_fold_index = 0;
-	m_trained_machine = NULL;
-	m_test_result = NULL;
-	m_test_true_result = NULL;
-
 	SG_ADD(
 	    &m_current_run_index, "run_index", "The current run index of this fold",
 	    ParameterProperties::HYPER);
@@ -75,9 +69,7 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : EvaluationResult()
 	    ParameterProperties::HYPER);
 }
 
-CrossValidationFoldStorage::~CrossValidationFoldStorage()
-{
-}
+CrossValidationFoldStorage::~CrossValidationFoldStorage() = default;
 
 void CrossValidationFoldStorage::post_update_results()
 {
@@ -98,7 +90,6 @@ CrossValidationStorage::CrossValidationStorage() : EvaluationResult()
 {
 	m_num_runs = 0;
 	m_num_folds = 0;
-	m_original_labels = NULL;
 
 	SG_ADD(
 	    &m_num_runs, "num_runs", "The total number of cross-validation runs",
@@ -114,9 +105,7 @@ CrossValidationStorage::CrossValidationStorage() : EvaluationResult()
 	    "folds", &m_folds_results, AnyParameterProperties("Fold results"));
 }
 
-CrossValidationStorage::~CrossValidationStorage()
-{
-}
+CrossValidationStorage::~CrossValidationStorage() = default;
 
 void CrossValidationStorage::post_init()
 {

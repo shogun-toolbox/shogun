@@ -81,10 +81,10 @@ namespace shogun
 		virtual std::shared_ptr<SGObject> create_empty() const;
 
 		/** Current run index is written here */
-		index_t m_current_run_index;
+		index_t m_current_run_index{};
 
 		/** Current fold index is written here */
-		index_t m_current_fold_index;
+		index_t m_current_fold_index{};
 
 		/** Train indices */
 		SGVector<index_t> m_train_indices;
@@ -102,7 +102,7 @@ namespace shogun
 		std::shared_ptr<Labels> m_test_true_result;
 
 		/** Evaluation result for this fold */
-		float64_t m_evaluation_result;
+		float64_t m_evaluation_result{};
 	};
 
 	/**
