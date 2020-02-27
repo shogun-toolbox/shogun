@@ -98,7 +98,7 @@ If the following error is still visible
 
     make: *** No rule to make target 'cookbook'. Stop.
 
-Find out if value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. It not being set is a indication that all requirements in `doc/cookbook/requirements.txt` have not been fullfilled. 
+Find out if value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. It not being set is a indication that all requirements in `doc/cookbook/requirements.txt` have not been satisfied. 
 
 If it is set then try to compile by giving a explicit path to `sphinx-build` file. The file can be located by the command `locate sphinx-build` and then use the following cmake statement to build shogun again and then try to render the cookbooks.
 
