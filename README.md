@@ -54,7 +54,6 @@ See [our website](http://shogun.ml/examples) for examples in all languages.
 ------------
 
 Shogun is supported under GNU/Linux, MacOSX, FreeBSD, and Windows.
-See our [buildfarm](http://buildbot.shogun-toolbox.org/waterfall).
 
 ## Directory Contents
 ---------------------
