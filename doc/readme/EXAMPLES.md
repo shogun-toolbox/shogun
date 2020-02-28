@@ -38,7 +38,7 @@ For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py`
 It is extremely simple to add a new example: simple create another `*.sg` file.
 We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).
 
-If you porting an example is great, even better is when it comes with integration testing data of the numerical output, as described in [DEVELOPING.md](DEVELOPING.md#testing).
+If you are porting a new example, great! Better yet, add the [data](https://github.com/shogun-toolbox/shogun-data) so that we can do integration tests automatically as described in [DEVELOPING.md](DEVELOPING.md#testing).
 
 Please take inspiration from the existing examples, especially those that were written as part of the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016.
 
