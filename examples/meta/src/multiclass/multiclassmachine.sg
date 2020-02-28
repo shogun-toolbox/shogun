@@ -1,0 +1,33 @@
+File fm_train_real = csv_file("../../data/fm_train_real.dat")
+File fm_test_real = csv_file("../../data/fm_test_real.dat")
+File label_train_multiclass = csv_file("../../data/label_train_multiclass.dat")
+
+#![create_features]
+Features feats_train = features(fm_train_real)
+Features feats_test = features(fm_test_real)
+Labels labels_train = labels(label_train_multiclass)
+#![create_features]
+
+#![create_kernel]
+Kernel k = kernel("GaussianKernel", log_width=2.1)
+#![create_kernel]
+
+#![create_machine]
+Machine classifier = machine("LibSVM",epsilon=0.00005)
+#![create_machine]
+
+#![create_strategy]
+MulticlassStrategy multiclass_one_vs_rest_strategy = multiclass_strategy("KernelMulticlassMachine")
+#![create_strategy]
+
+#![create_classifier]
+MulticlassMachine mc_classifier = multiclass_machine("LibSVMOneClass", kernel=k,classifier,labels_train)
+#![create_classifier]
+
+#![train_and_apply]
+mc_classifier.train(feats_train)
+kernel.init(feats_train,feats_test)
+#![train_and_apply]
+
+# additional integration testing variables
+RealVector output = mc_classifier.get_labels()
