@@ -278,7 +278,7 @@ You will see a list of checks in your PR.
 This is to do basic sanity checks on every PR. All interfaces have a different build, see `.travis.yml` in the repository.
 The Docker image that runs the travis tests is based on `configs/shogun/Dockerfile` and can be found [here](https://hub.docker.com/r/shogun/shogun-dev/).
 
-If you obbey the [dev cycle](#devcycle), in particular if you run tests before sending a PR, travis should never fail.
+If you obey the [dev cycle](#devcycle), in particular if you run tests before sending a PR, travis should never fail.
 
 **If** travis fails
 
