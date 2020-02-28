@@ -102,7 +102,7 @@ Find out if value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCach
 
 If it is set then try to compile by giving an explicit path to `sphinx-build` file. The file can be located by using the command `locate sphinx-build`. Then use the following cmake statement to build shogun again and then try to render the cookbooks.
 
-    cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=On [other cmake options] ..
+    cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=ON [other cmake options] ..
 
 After the cookbook has been rendered, you can view it for example running
 
