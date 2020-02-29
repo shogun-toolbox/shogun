@@ -13,7 +13,7 @@ Kernel k = kernel("GaussianKernel", log_width=2.1)
 #![create_kernel]
 
 #![create_machine]
-Machine classifier = machine("LibSVM",epsilon=0.00005)
+Machine c = machine("LibSVM",epsilon=0.00005)
 #![create_machine]
 
 #![create_strategy]
@@ -21,7 +21,7 @@ MulticlassStrategy multiclass_one_vs_rest_strategy = multiclass_strategy("Kernel
 #![create_strategy]
 
 #![create_classifier]
-MulticlassMachine mc_classifier = multiclass_machine("LibSVMOneClass", kernel=k,classifier,labels_train)
+MulticlassMachine mc_classifier = multiclass_machine("LibSVMOneClass", kernel=k,classifier=c,labels_train)
 #![create_classifier]
 
 #![train_and_apply]
