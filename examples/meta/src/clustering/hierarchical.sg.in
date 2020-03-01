@@ -1,0 +1,17 @@
+File f_features_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+
+#![create_features]
+Features features_train = features(f_features_train)
+#![create_features]
+
+#![choose_distance]
+Distance d = distance("EuclideanDistance", lhs=features_train, rhs=features_train)
+#![choose_distance]
+
+#![create_instance]
+Machine hierarchical = machine("Hierarchical", merges=3, distance=d)
+#![create_instance]
+
+#![train_model]
+hierarchical.train(features_train)
+#![train_model]

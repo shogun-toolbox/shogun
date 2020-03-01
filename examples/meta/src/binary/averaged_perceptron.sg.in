@@ -1,0 +1,30 @@
+File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![set_parameters]
+Machine perceptron = machine("AveragedPerceptron", labels=labels_train, learn_rate=1.0, max_iterations=1000)
+#![set_parameters]
+
+#![train_and_apply]
+perceptron.train(features_train)
+Labels labels_predict = perceptron.apply(features_test)
+#![train_and_apply]
+
+#![extract_weights]
+RealVector weights = perceptron.get_real_vector("w")
+real bias = perceptron.get_real("bias")
+#![extract_weights]
+
+#![evaluate_accuracy]
+Evaluation eval = evaluation("AccuracyMeasure")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]

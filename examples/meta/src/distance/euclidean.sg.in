@@ -1,0 +1,24 @@
+File f_features_a = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
+File f_features_b = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+
+#![create_features]
+Features features_a = features(f_features_a)
+Features features_b = features(f_features_b)
+#![create_features]
+
+#![create_instance]
+Distance d = distance("EuclideanDistance", lhs=features_a, rhs=features_a)
+#![create_instance]
+
+#![extract_distance]
+RealMatrix distance_matrix_aa = d.get_distance_matrix()
+#![extract_distance]
+
+#![refresh_distance]
+d.init(features_a, features_b)
+#![refresh_distance]
+
+#![extract_sq_distance]
+d.put("disable_sqrt", True)
+RealMatrix sq_distance_matrix_ab = d.get_distance_matrix()
+#![extract_sq_distance]

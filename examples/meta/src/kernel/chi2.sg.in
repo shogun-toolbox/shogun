@@ -1,0 +1,18 @@
+File traindat = csv_file("@SHOGUN_DATA@/fm_train_hist.dat")
+File testdat = csv_file("@SHOGUN_DATA@/fm_test_hist.dat")
+
+#![create_features]
+Features feats_train = features(traindat)
+Features feats_test = features(testdat)
+#![create_features]
+
+#![create_kernel]
+Kernel chi2_kernel = kernel("Chi2Kernel", width=1.4)
+chi2_kernel.init(feats_train, feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix K_train_train = chi2_kernel.get_kernel_matrix()
+chi2_kernel.init(feats_train, feats_test)
+RealMatrix K_train_test = chi2_kernel.get_kernel_matrix()
+#![get_kernel_features]

@@ -62,7 +62,7 @@ endfunction()
 # Remove meta example that cannot be built because of missing dependencies
 function(find_meta_examples)
 
-	FILE(GLOB_RECURSE META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/*.sg)
+	FILE(GLOB_RECURSE META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/*.sg.in)
     get_excluded_meta_examples()
 
     FOREACH(META_EXAMPLE ${EXCLUDED_META_EXAMPLES})

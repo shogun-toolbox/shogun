@@ -1,0 +1,40 @@
+CSVFile f_feats_train("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("@SHOGUN_DATA@/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+MulticlassLabels labels_train(f_labels_train)
+MulticlassLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_appropriate_kernel_and_mean_function]
+Kernel k = kernel("GaussianKernel", log_width=2.0)
+ConstMean mean_function()
+#![create_appropriate_kernel_and_mean_function]
+
+#![create_instance]
+LikelihoodModel gauss_likelihood = gp_likelihood("SoftMaxLikelihood")
+gauss_likelihood.put("seed", 1)
+MultiLaplaceInferenceMethod inference_method(k, features_train, mean_function, labels_train, gauss_likelihood)
+GaussianProcessClassification gp_classifier(inference_method)
+#![create_instance]
+
+#![train_and_apply]
+gp_classifier.train()
+MulticlassLabels labels_predict = gp_classifier.apply_multiclass(features_test)
+#![train_and_apply]
+
+#![extract_the_probabilities]
+RealVector prob = gp_classifier.get_probabilities(features_train)
+#![extract_the_probabilities]
+
+#![evaluate_accuracy]
+Evaluation eval = evaluation("MulticlassAccuracy")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()

@@ -1,0 +1,16 @@
+File f_feats = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
+File f_labels = csv_file("@SHOGUN_DATA@/label_train_twoclass.dat")
+
+Features feats = features(f_feats)
+Labels labs = labels(f_labels)
+
+Machine svm = machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC")
+
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labs, num_subsets=5)
+Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
+MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+
+EvaluationResult result = cross.evaluate()
+
+real mean = result.get_real("mean")
+real stddev = result.get_real("std_dev")
