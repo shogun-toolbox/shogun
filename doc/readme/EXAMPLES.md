@@ -36,9 +36,9 @@ For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py`
 
 ## Adding new examples
 It is extremely simple to add a new example: simply create another `*.sg` file.
-We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).  
+We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new parameter framework -- a copy paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).  
 
-The following are the steps required to port all existing examples to meta examples:  
+The following steps are required to port all existing examples under this:  
 
 1. Just select any of the existing python examples ```examples/uncodcumented/python_modular```   
 2. Create a corresponding meta example i.e (```.sg```) file which does the same task.  
