@@ -94,9 +94,9 @@ You can render it with
 which is also part of `make doc`.
 The target might not be available if the requirements in `doc/cookbook/requirements.txt` are not satisfied (in particular Sphinx), or if the meta examples are disabled.
 
-In case the cookbook target is still missing then inspect the following. 
+In case the `cookbook` target is still missing then inspect the following. 
 
-Find out if value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. If it's not set then it is the sphinx-build that has not been found. In this case re-run the cmake script with a explicit path to `sphinx-build` file. The file can be located by using the command `locate sphinx-build`. Then use the following cmake statement to build shogun again and then try to render the cookbooks.
+Find out if value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. If it's not set, then it is the `sphinx-build` that has not been found by the cmake. In this case re-run the cmake script with a explicit path to `sphinx-build` file. The file can be located by using the command `locate sphinx-build`. Once `sphinx-build` has been located, use the `-DSPHINX_EXECUTABLE="<path/to/sphinx-build>"` cmake flag to specify the `sphinx-build` location. In other words re-run cmake with the following options:
 
     cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=ON [other cmake options] ..
 
