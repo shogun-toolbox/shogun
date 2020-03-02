@@ -235,6 +235,9 @@ public:
 
 	void set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
+	/**return feature importance **/
+	SGVector<float64_t> get_feature_importance();
+
 protected:
 	/** train machine - build CART from training data
 	 * @param data training data
@@ -271,12 +274,16 @@ protected:
 	 * @param num_missing number of missing attributes
 	 * @param count_left stores number of feature values for left transition
 	 * @param count_right stores number of feature values for right transition
+	 * @param impurity impurity of current node
 	 * @return index to the best attribute
 	 */
-	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels,
-		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
-		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
-
+	virtual index_t compute_best_attribute(
+		const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights,
+		std::shared_ptr<DenseLabels> labels, SGVector<float64_t>& left,
+		SGVector<float64_t>& right, SGVector<bool>& is_left_final,
+		index_t& num_missing, index_t& count_left, index_t& count_right,
+		float64_t& impurity, index_t subset_size = 0,
+		const SGVector<index_t>& active_indices = SGVector<index_t>());
 
 	/** handles missing values through surrogate splits
 	 *
@@ -414,6 +421,8 @@ protected:
 	/** initializes members of class */
 	void init();
 
+	/**compute feature importances**/
+	void compute_feature_importance(std::shared_ptr<bnode_t>);
 
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
@@ -469,6 +478,12 @@ protected:
 
 	/** minimum number of feature vectors required in a node **/
 	int32_t m_min_node_size;
+
+	/**shores feature importances**/
+	SGVector<float64_t> m_feature_importances;
+
+	/**nums of features**/
+	int32_t m_num_feat;
 };
 } /* namespace shogun */
 
