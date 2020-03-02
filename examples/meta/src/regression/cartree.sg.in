@@ -1,0 +1,29 @@
+File f_feats_train    = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
+File f_feats_test     = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
+File f_labels_train   = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
+
+#![create_features]
+Features feats_train = features(f_feats_train)
+Features feats_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+#![create_features]
+
+#![set_attribute_types]
+BoolVector ft(1)
+ft[0] = False
+#![set_attribute_types]
+
+#![create_machine]
+Machine cartree = machine("CARTree", nominal=ft, mode=enum EProblemType.PT_REGRESSION, folds=5, apply_cv_pruning=True, seed=1)
+cartree.set_labels(labels_train)
+#![create_machine]
+
+#![train_and_apply]
+cartree.train(feats_train)
+Labels labels_predict = cartree.apply(feats_test)
+#![train_and_apply]
+
+#![extract_weights_labels]
+RealVector labels_vector = labels_predict.get_real_vector("labels")
+RealVector weights = cartree.get_real_vector("weights")
+#![extract_weights_labels]

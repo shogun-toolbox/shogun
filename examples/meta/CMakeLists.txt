@@ -60,12 +60,24 @@ add_custom_target(parse_lex_files ALL DEPENDS ${GENERATED_PARSER_FILES})
 # list of interfaces for which we dont generate meta examples
 SET(DISABLED_INTERFACES INTERFACE_PERL)
 
-FOREACH(META_EXAMPLE ${META_EXAMPLES})
-    # assume a structure <target_language>/<category>/listing.sg
-    GET_META_EXAMPLE_VARS(${META_EXAMPLE} EXAMPLE_NAME EXAMPLE_REL_DIR EXAMPLE_NAME_WITH_DIR)
+# handle the data path
+IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
+    # copy data symlink to cmake binary dir so that we can execute meta examples in there
+    CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
+ENDIF()
+SET(SHOGUN_DATA ${CMAKE_CURRENT_BINARY_DIR}/data)
 
-    SET(EXAMPLE_LISTINGS)
+# translate the meta examples to the target languages using the .sg.in files
+# first cmake will do variable substitution on @SHOGUN_DATA@ and generate .sg files
+FOREACH(META_EXAMPLE_IN ${META_EXAMPLES})
+    GET_META_EXAMPLE_VARS(${META_EXAMPLE_IN} EXAMPLE_NAME EXAMPLE_REL_DIR EXAMPLE_NAME_WITH_DIR)
     SET(BASENAME ${EXAMPLE_REL_DIR}/${EXAMPLE_NAME})
+
+    SET(META_EXAMPLE ${CMAKE_CURRENT_BINARY_DIR}/src/${BASENAME}.sg)
+    configure_file(${META_EXAMPLE_IN} ${META_EXAMPLE} @ONLY)
+
+    # assume a structure <target_language>/<category>/listing.sg
+    SET(EXAMPLE_LISTINGS)
     LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/cpp/${BASENAME}.cpp)
 
     # FIXME
@@ -100,7 +112,7 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
         COMMAND ${PYTHON_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py ${GENERATOR_FLAGS}
 		COMMENT "Generating example ${EXAMPLE_NAME_WITH_DIR}"
-        DEPENDS ctags ${META_EXAMPLE} ${GENERATOR_DEPENDENCIES}
+        DEPENDS ctags ${META_EXAMPLE_IN} ${GENERATOR_DEPENDENCIES}
             parse_lex_files)
 
     LIST(APPEND TRANSLATED_META_EXAMPLES ${EXAMPLE_LISTINGS})
@@ -116,11 +128,6 @@ INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cpp
     FILES_MATCHING PATTERN "*.cpp"
     PATTERN "CMakeFiles*" EXCLUDE
     )
-
-IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-    # copy data symlink to cmake binary dir so that we can execute meta examples in there
-    CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
-ENDIF()
 
 # c++
 IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp AND NOT ${DISABLE_META_CPP})
