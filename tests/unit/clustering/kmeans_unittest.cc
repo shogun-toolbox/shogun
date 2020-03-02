@@ -174,12 +174,7 @@ TEST(KMeans, minibatch_fixed_centers)
 	SGMatrix<float64_t> X{{2, 1}, {4, 1}, {0, 1}, {2, 4}, {0, 4}, {4, 4},
 	                      {5, 4}, {1, 0}, {2, 2}, {2, 3}, {5, 5}, {-1, 1}};
 
-	SGMatrix<float64_t> initial_centers(2, 2);
-	initial_centers(0, 0) = 0;
-	initial_centers(1, 0) = 0;
-
-	initial_centers(0, 1) = 1;
-	initial_centers(1, 1) = 1;
+	SGMatrix<float64_t> initial_centers{{0, 0}, {1, 1}};
 
 	auto features = std::make_shared<DenseFeatures<float64_t>>(X);
 	auto distance = std::make_shared<EuclideanDistance>(features, features);
