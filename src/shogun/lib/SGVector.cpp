@@ -399,7 +399,7 @@ void SGVector<T>::init_data()
 template<class T>
 void SGVector<T>::free_data()
 {
-	SG_FREE(vector);
+	SG_ALIGNED_FREE(vector);
 	vector=NULL;
 	vlen=0;
 	gpu_ptr=NULL;
@@ -885,7 +885,7 @@ void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, co
 		error("SGVector::convert_to_matrix():: Dimensions mismatch");
 
 	if (matrix!=NULL)
-		SG_FREE(matrix);
+		SG_ALIGNED_FREE(matrix);
 	matrix=SG_ALIGNED_MALLOC(T, nrows*ncols, alignment::container_alignment);
 
 	if (fortran_order)
