@@ -14,28 +14,26 @@
 
 using namespace shogun;
 
-LineReader::LineReader()
+LineReader::LineReader(): SGObject()
 {
 	init();
 
 	m_buffer=std::make_shared<CircularBuffer>();
 }
 
-LineReader::LineReader(FILE* stream, std::shared_ptr<Tokenizer> tokenizer)
+LineReader::LineReader(FILE* stream, const std::shared_ptr<Tokenizer>& tokenizer):
+	SGObject()
 {
 	init();
 
 	m_stream=stream;
 	m_max_token_length=10*1024*1024;
-
-	
-	m_tokenizer=std::move(tokenizer);
-
+	m_tokenizer=tokenizer;
 	m_buffer=std::make_shared<CircularBuffer>(m_max_token_length);
 	m_buffer->set_tokenizer(m_tokenizer);
 }
 
-LineReader::LineReader(int32_t max_token_length, FILE* stream, std::shared_ptr<Tokenizer> tokenizer)
+LineReader::LineReader(int32_t max_token_length, FILE* stream, const std::shared_ptr<Tokenizer>& tokenizer)
 {
 	init();
 
@@ -43,7 +41,7 @@ LineReader::LineReader(int32_t max_token_length, FILE* stream, std::shared_ptr<T
 	m_max_token_length=max_token_length;
 
 	
-	m_tokenizer=std::move(tokenizer);
+	m_tokenizer=tokenizer;
 
 	m_buffer=std::make_shared<CircularBuffer>(m_max_token_length);
 	m_buffer->set_tokenizer(m_tokenizer);
@@ -51,8 +49,6 @@ LineReader::LineReader(int32_t max_token_length, FILE* stream, std::shared_ptr<T
 
 LineReader::~LineReader()
 {
-	
-	
 }
 
 bool LineReader::has_next()
@@ -91,9 +87,7 @@ SGVector<char> LineReader::read_line()
 
 	int32_t bytes_to_skip=0;
 	m_next_token_length=read(bytes_to_skip);
-	if (m_next_token_length==-1)
-		line=SGVector<char>();
-	else
+	if (m_next_token_length > 0)
 	{
 		m_buffer->skip_characters(bytes_to_skip);
 		line=read_token(m_next_token_length-bytes_to_skip);
@@ -110,8 +104,6 @@ void LineReader::reset()
 
 void LineReader::set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer)
 {
-	
-	
 	m_tokenizer=tokenizer;
 
 	m_buffer->set_tokenizer(tokenizer);
@@ -170,9 +162,7 @@ SGVector<char> LineReader::read_token(int32_t line_len)
 {
 	SGVector<char> line;
 
-	if (line_len==0)
-		line=SGVector<char>();
-	else
+	if (line_len > 0)
 		line=m_buffer->pop(line_len);
 
 	return line;

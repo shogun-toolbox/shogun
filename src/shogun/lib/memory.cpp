@@ -169,7 +169,23 @@ void sg_aligned_free(void* ptr)
 	_aligned_free(ptr);
 #endif
 }
+
+void* sg_aligned_realloc(void* ptr, size_t len, size_t al)
+{
+#if defined(USE_JEMALLOC)
+	void* p=je_realloc(ptr, len);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_realloc(ptr, len);
+#else
+	void* p=_aligned_realloc(ptr, len, al);
 #endif
+
+	if (!p && (len || !ptr))
+		allocation_error(p, len, "aligned_realloc");
+
+	return p;
+}
+#endif // _MSC_VER
 #endif // HAVE_ALIGNED_MALLOC
 
 void* sg_calloc(size_t num, size_t size)

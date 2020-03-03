@@ -62,7 +62,6 @@ TEST_F(FileSystem, file_operations)
 	buffer.resize(4);
 	string_view result;
 	r = file_read->read(0, 4, &result, &(buffer[0]));
-	file->close();
 	ASSERT_EQ(content, result);
 
 	// delete file
