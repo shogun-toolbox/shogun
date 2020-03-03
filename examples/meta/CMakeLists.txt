@@ -38,12 +38,7 @@ add_custom_target(parse_lex_files ALL DEPENDS ${GENERATED_PARSER_FILES})
 # list of interfaces for which we dont generate meta examples
 SET(DISABLED_INTERFACES INTERFACE_PERL)
 
-# handle the data path
-IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-    # copy data symlink to cmake binary dir so that we can execute meta examples in there
-    CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
-ENDIF()
-SET(SHOGUN_DATA ${CMAKE_CURRENT_BINARY_DIR}/data)
+SET(SHOGUN_DATA ${CMAKE_SOURCE_DIR}/data/toy)
 
 # translate the meta examples to the target languages using the .sg.in files
 # first cmake will do variable substitution on @SHOGUN_DATA@ and generate .sg files
