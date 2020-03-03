@@ -300,7 +300,7 @@ You need to specify a different generator in cmake (to match your IDE), e.g.
     cmake -G"Visual Studio 16 2019 Win64" -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..  
 The above ```cmake``` has the following arguments:    
 1. ```Visual Studio 16 2019 Win64``` specifies the target platform to be x64.   
-2. ```DCMAKE_BUILD_TYPE=Release``` specifies a build type and asks compiler to perform optimization and omit debug information.     
+2. ```-DCMAKE_BUILD_TYPE=Release``` specifies a build type and asks compiler to perform optimization and omit debug information.     
 3. ```-DBUILD_META_EXAMPLES=OFF``` specifies to not generate meta examples.   
 4. ```-DENABLE_TESTING=ON``` Enable testing while cmake.   
 
