@@ -166,7 +166,7 @@ class Kernel : public SGObject
 	friend class DiceKernelNormalizer;
 	friend class ZeroMeanCenterKernelNormalizer;
 
-	friend class CStreamingKernel;
+	
 
 	public:
 
