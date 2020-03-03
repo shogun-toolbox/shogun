@@ -306,7 +306,7 @@ template<class T>
 void SGVector<T>::resize_vector(int32_t n)
 {
 	assert_on_cpu();
-	vector=SG_REALLOC(T, vector, vlen, n);
+	vector=SG_ALIGNED_REALLOC(T, vector, vlen, n, alignment::container_alignment);
 
 	if (n > vlen)
 		memset(&vector[vlen], 0, (n-vlen)*sizeof(T));
