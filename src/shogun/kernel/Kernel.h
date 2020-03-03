@@ -165,9 +165,7 @@ class Kernel : public SGObject
 	friend class TanimotoKernelNormalizer;
 	friend class DiceKernelNormalizer;
 	friend class ZeroMeanCenterKernelNormalizer;
-
 	
-
 	public:
 
 		/** default constructor
