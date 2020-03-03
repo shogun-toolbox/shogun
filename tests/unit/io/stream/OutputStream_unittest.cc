@@ -26,6 +26,7 @@ TEST(FileOutputStream, write)
 	ifstream is(fname);
 	char str_in[5];
 	is.get(&str_in[0], 5);
+	is.close();
 	EXPECT_EQ(test_str, string(str_in));
 	r = fs_registry->delete_file(fname);
 	ASSERT_FALSE(r);
