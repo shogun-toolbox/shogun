@@ -1306,8 +1306,6 @@ template <class T> void* Kernel::get_kernel_matrix_helper(void* p)
 template <class T>
 SGMatrix<T> Kernel::get_kernel_matrix()
 {
-	T* result = NULL;
-
 	require(has_features(), "no features assigned to kernel");
 
 	int32_t m=get_num_vec_lhs();
@@ -1320,7 +1318,7 @@ SGMatrix<T> Kernel::get_kernel_matrix()
 
 	SG_DEBUG("returning kernel matrix of size {}x{}", m, n)
 
-	result=SG_MALLOC(T, total_num);
+	SGMatrix<T> result(m,n);
 
 	int32_t num_threads=env()->get_num_threads();
 	K_THREAD_PARAM<T> params;
@@ -1331,7 +1329,7 @@ SGMatrix<T> Kernel::get_kernel_matrix()
 	for (t = 0; t < num_threads; ++t)
 	{
 		params.kernel = this;
-		params.result = result;
+		params.result = result.matrix;
 		params.start = compute_row_start(t*step, n, symmetric);
 		params.end = compute_row_start((t+1)*step, n, symmetric);
 		params.total_start=t*step;
@@ -1346,7 +1344,7 @@ SGMatrix<T> Kernel::get_kernel_matrix()
 	if (total_num % num_threads != 0)
 	{
 		params.kernel = this;
-		params.result = result;
+		params.result = result.matrix;
 		params.start = compute_row_start(t*step, n, symmetric);
 		params.end = m;
 		params.total_start=t*step;
@@ -1360,7 +1358,7 @@ SGMatrix<T> Kernel::get_kernel_matrix()
 
 	pb.complete();
 
-	return SGMatrix<T>(result,m,n,true);
+	return result;
 }
 
 
