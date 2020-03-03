@@ -30,7 +30,7 @@ public:
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	LineReader(FILE* stream, std::shared_ptr<Tokenizer> tokenizer);
+	LineReader(FILE* stream, const std::shared_ptr<Tokenizer>& tokenizer);
 
 	/** create object associated with the stream to read
 	 * and specify maximum length of a string that can be read
@@ -39,7 +39,7 @@ public:
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	LineReader(int32_t max_string_length, FILE* stream, std::shared_ptr<Tokenizer> tokenizer);
+	LineReader(int32_t max_string_length, FILE* stream, const std::shared_ptr<Tokenizer>& tokenizer);
 
 	/** deconstructor */
 	~LineReader() override;

@@ -17,17 +17,15 @@ StreamingFileFromFeatures::StreamingFileFromFeatures()
 	labels=NULL;
 }
 
-StreamingFileFromFeatures::StreamingFileFromFeatures(std::shared_ptr<Features> feat)
-	: StreamingFile()
+StreamingFileFromFeatures::StreamingFileFromFeatures(const std::shared_ptr<Features>& feat)
+	: StreamingFile(), features(feat)
 {
-	features=std::move(feat);
 	labels=NULL;
 }
 
-StreamingFileFromFeatures::StreamingFileFromFeatures(std::shared_ptr<Features> feat, float64_t* lab)
-	: StreamingFile()
+StreamingFileFromFeatures::StreamingFileFromFeatures(const std::shared_ptr<Features>& feat, float64_t* lab)
+    : StreamingFileFromFeatures(feat)
 {
-	features=std::move(feat);
 	labels=lab;
 }
 

@@ -17,7 +17,7 @@ namespace shogun
 		public:
 			Serializer();
 			~Serializer() override;
-			virtual void attach(std::shared_ptr<io::OutputStream> stream);
+			virtual void attach(const std::shared_ptr<io::OutputStream>& stream);
 			virtual void write(const std::shared_ptr<SGObject>& object) noexcept(false) = 0;
 			std::shared_ptr<io::OutputStream> stream() const;
 

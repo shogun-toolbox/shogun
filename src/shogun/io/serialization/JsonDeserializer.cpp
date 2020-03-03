@@ -254,8 +254,8 @@ class IStreamAdapter
 public:
 	typedef char Ch;
 
-	IStreamAdapter(std::shared_ptr<InputStream> is, size_t buffer_size = 65536):
-		m_stream(std::move(is)),
+	IStreamAdapter(const std::shared_ptr<InputStream>& is, size_t buffer_size = 65536):
+		m_stream(is),
 		m_buffer_size(buffer_size)
 	{
 		m_buffer.reserve(m_buffer_size);

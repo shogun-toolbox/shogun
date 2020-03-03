@@ -22,9 +22,9 @@ Deserializer::~Deserializer()
 {
 }
 
-void Deserializer::attach(std::shared_ptr<InputStream> stream)
+void Deserializer::attach(const std::shared_ptr<InputStream>& stream)
 {
-	m_stream = std::move(stream);
+	m_stream = stream;
 }
 
 std::shared_ptr<InputStream> Deserializer::stream() const

@@ -46,7 +46,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(std::shared_ptr<Tokenizer> tokenizer);
+	void set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer);
 
 	/** push data into buffer from memory block
 	 *

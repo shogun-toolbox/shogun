@@ -12,20 +12,16 @@
 
 using namespace shogun;
 
-Parser::Parser()
+Parser::Parser(): SGObject()
 {
 	init();
 }
 
-Parser::Parser(const SGVector<char>& text, std::shared_ptr<Tokenizer> tokenizer)
+Parser::Parser(const SGVector<char>& text, const std::shared_ptr<Tokenizer>& tokenizer):
+	SGObject(),
+	m_tokenizer(tokenizer),
+	m_text(text)
 {
-	init();
-
-	m_text=text;
-
-	
-	m_tokenizer=std::move(tokenizer);
-
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
 }
@@ -56,7 +52,7 @@ SGVector<char> Parser::read_string()
 
 	end=m_tokenizer->next_token_idx(start);
 
-	SGVector<char> result=SGVector<char>(end-start);
+	SGVector<char> result(end-start);
 	for (index_t i=start; i<end; i++)
 	{
 		result[i-start]=m_text[i];
@@ -72,7 +68,7 @@ SGVector<char> Parser::read_cstring()
 
 	end=m_tokenizer->next_token_idx(start);
 
-	SGVector<char> result=SGVector<char>(end-start+1);
+	SGVector<char> result(end-start+1);
 	for (index_t i=start; i<end; i++)
 	{
 		result[i-start]=m_text[i];
@@ -134,7 +130,7 @@ READ_REAL_METHOD(read_long_real, strtod, floatmax_t)
 #endif
 #undef READ_REAL_METHOD
 
-void Parser::set_text(const SGVector<char>& text)
+void Parser::set_text(SGVector<char> text)
 {
 	m_text=text;
 
@@ -142,11 +138,9 @@ void Parser::set_text(const SGVector<char>& text)
 		m_tokenizer->set_text(m_text);
 }
 
-void Parser::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
+void Parser::set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer)
 {
-	
-	
-	m_tokenizer=std::move(tokenizer);
+	m_tokenizer = tokenizer;
 
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
@@ -155,5 +149,4 @@ void Parser::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
 void Parser::init()
 {
 	m_text=SGVector<char>();
-	m_tokenizer=NULL;
 }
