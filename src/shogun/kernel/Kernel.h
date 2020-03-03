@@ -21,7 +21,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/Features.h>
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
 
 namespace shogun
 {
@@ -199,14 +198,7 @@ class Kernel : public SGObject
 		 * @param idx_b index of feature vector b
 		 * @return computed kernel function
 		 */
-		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
-		{
-			require(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
-				"{}::kernel(): index out of Range: idx_a={}/{} idx_b={}/{}",
-				get_name(), idx_a,num_lhs, idx_b,num_rhs);
-
-			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
-		}
+		float64_t kernel(int32_t idx_a, int32_t idx_b);
 
 		/** get kernel matrix
 		 *

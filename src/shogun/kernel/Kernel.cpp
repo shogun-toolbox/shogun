@@ -1363,6 +1363,14 @@ SGMatrix<T> Kernel::get_kernel_matrix()
 	return SGMatrix<T>(result,m,n,true);
 }
 
+float64_t Kernel::kernel(int32_t idx_a, int32_t idx_b)
+{
+	require(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
+		"{}::kernel(): index out of Range: idx_a={}/{} idx_b={}/{}",
+		get_name(), idx_a,num_lhs, idx_b,num_rhs);
+
+	return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
+}
 
 template SGMatrix<float64_t> Kernel::get_kernel_matrix<float64_t>();
 template SGMatrix<float32_t> Kernel::get_kernel_matrix<float32_t>();
