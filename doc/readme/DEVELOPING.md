@@ -268,7 +268,7 @@ Read on [test driven development](https://en.wikipedia.org/wiki/Test-driven_deve
 # Build farm <a name="devcycle"></a>
 We run two types of buildfarms that are automatically triggered
 
-1. [Travis](https://travis-ci.org/shogun-toolbox/shogun), and [AppVeyor](https://ci.appveyor.com/project/vigsterkr/shogun) executed in a third-party cloud when **opening** a PR
+1. [Travis](https://travis-ci.org/shogun-toolbox/shogun), and [Azure Pipeline](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) executed in a third-party cloud when **opening** a PR
 2. [Buildbot](http://buildbot.shogun-toolbox.org/waterfall), executed in our own cloud **after** every merged PR or commit
 
 In addition, we have a few hooks on PRs that are executed along with travis, such as a preview of API examples.
