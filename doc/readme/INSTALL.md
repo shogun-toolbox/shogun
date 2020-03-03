@@ -286,7 +286,7 @@ On a Linux cluster without root access, using [Anaconda](https://www.continuum.i
 
 ## Windows build <a name="manual-windows"></a>
 
-Please see our [AppVeyor](https://ci.appveyor.com/project/vigsterkr/shogun) build.
+Please see our [Azzure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build.
 It is recommended to use "Visual Studio 14 2015" or "MSBuild".
 You will need to adjust all path names to the Windows style, e.g.
 
@@ -297,7 +297,13 @@ You will need to adjust all path names to the Windows style, e.g.
 
 You need to specify a different generator in cmake (to match your IDE), e.g.
 
-    cmake -G"Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..
+    cmake -G"Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..  
+The above ```cmake``` has the following arguments:    
+1. ```Visual Studio 14 2015 Win64``` specifies the target platform to be x64.   
+2. ```DCMAKE_BUILD_TYPE=Release``` specifies a build type and asks compiler to perform optimization and omit debug information.     
+3. ```-DBUILD_META_EXAMPLES=OFF``` specifies to not generate meta examples.   
+4. ```-DENABLE_TESTING=ON``` Enable testing while cmake.   
+
 
 Compiling works as
 
