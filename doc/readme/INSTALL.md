@@ -286,7 +286,7 @@ On a Linux cluster without root access, using [Anaconda](https://www.continuum.i
 
 ## Windows build <a name="manual-windows"></a>
 
-Please see our [Azzure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build.
+Please see our [Azure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build.
 It is recommended to use "Visual Studio 14 2015" or "MSBuild".
 You will need to adjust all path names to the Windows style, e.g.
 
