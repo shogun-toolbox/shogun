@@ -415,12 +415,12 @@ SGMatrix<float64_t> SNPFeatures::get_2x3_table(const std::shared_ptr<SNPFeatures
 
 	SGMatrix<float64_t> p_hist=pos->get_histogram(false);
 	SGMatrix<float64_t> n_hist=neg->get_histogram(false);
-	SGMatrix<float64_t>table(2,3*len/2);
+	SGMatrix<float64_t>table(2, 3*len/2);
 
 	for (int32_t i=0; i<3*len/2; i++)
 	{
-		table.set_element(p_hist.matrix[i],0,2*i);
-		table.set_element(n_hist.matrix[i],1,2*i);
+		table.matrix[2*i]=p_hist.matrix[i];
+		table.matrix[2*i+1]=n_hist.matrix[i];
 	}
 	return table;
 }
