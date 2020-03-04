@@ -76,6 +76,16 @@ namespace shogun
 					return m_transpose_b;
 				}
 
+				const auto& get_reduction_axis_a()
+				{
+					return m_reduction_axis_a;
+				}
+
+				const auto& get_reduction_axis_b()
+				{
+					return m_reduction_axis_b;
+				}
+
 				std::string to_string() const final
 				{
 					return fmt::format(
@@ -166,6 +176,7 @@ namespace shogun
 					// promote vector to matrix
 					bool promoted_a = false;
 					bool promoted_b = false;
+					bool swap_a = false;
 
 					if (shape_a.size() == 1)
 					{
@@ -189,11 +200,14 @@ namespace shogun
 					//  - (n,1) x (n,1) -> (1,n) x (n,1)
 					if ((!transpose_a && !transpose_b) && shape_a[1] == 1 &&
 					    shape_a[0] != shape_b[1] && shape_a[0] == shape_b[0])
+					{
 						std::swap(shape_a[0], shape_a[1]);
+						swap_a = true;
+					}
 
 					auto [result, reduction_axis_a, reduction_axis_b] =
 					    Dot::check_shape_compatible(shape_a, shape_b);
-					m_reduction_axis_a = reduction_axis_a;
+					m_reduction_axis_a = swap_a ? 0 : reduction_axis_a;
 					m_reduction_axis_b = reduction_axis_b;
 					// this was a vector vector multiplication
 					if (promoted_a && promoted_b)

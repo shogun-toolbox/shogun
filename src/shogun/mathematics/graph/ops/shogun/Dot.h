@@ -21,6 +21,9 @@ namespace shogun
 			IGNORE_IN_CLASSLIST class DotShogun : public Operator
 			{
 			public:
+
+				friend class MatMulShogun;
+
 				DotShogun(const std::shared_ptr<node::Node>& node)
 				    : Operator(node)
 				{
@@ -49,7 +52,7 @@ namespace shogun
 
 			private:
 				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors) final
+				    const std::vector<std::shared_ptr<Tensor>>& tensors)
 				{
 					if (tensors.size() != 2)
 						error("Binary operation expected two inputs.");
@@ -109,8 +112,9 @@ namespace shogun
 					}
 				}
 
+			protected:
 				template <typename T>
-				void dot_product_dispatch(
+				static void dot_product_dispatch(
 				    const std::shared_ptr<Tensor>& input_tensor1,
 				    const std::shared_ptr<Tensor>& input_tensor2,
 				    const std::shared_ptr<Tensor>& output_tensor)
@@ -155,7 +159,7 @@ namespace shogun
 					}
 				}
 
-				void dot_product_type_dispatch(
+				static void dot_product_type_dispatch(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)
@@ -184,7 +188,7 @@ namespace shogun
 				}
 
 				template <typename T>
-				void dot_product_container_scalar_implementation(
+				static void dot_product_container_scalar_implementation(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)
@@ -197,7 +201,7 @@ namespace shogun
 				}
 
 				template <typename T>
-				void dot_product_vector_vector_implementation(
+				static void dot_product_vector_vector_implementation(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)
@@ -211,7 +215,7 @@ namespace shogun
 				}
 
 				template <typename T>
-				void dot_product_vector_matrix_implementation(
+				static void dot_product_vector_matrix_implementation(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)
@@ -229,7 +233,7 @@ namespace shogun
 				}
 
 				template <typename T>
-				void dot_product_matrix_vector_implementation(
+				static void dot_product_matrix_vector_implementation(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)
@@ -247,7 +251,7 @@ namespace shogun
 				}
 
 				template <typename T>
-				void dot_product_matrix_matrix_implementation(
+				static void dot_product_matrix_matrix_implementation(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)

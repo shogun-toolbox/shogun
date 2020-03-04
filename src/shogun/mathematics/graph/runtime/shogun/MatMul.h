@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_MATMUL_SHOGUN_H_
-#define SHOGUN_MATMUL_SHOGUN_H_
+#ifndef SHOGUN_DETAIL_MATMUL_SHOGUN_H_
+#define SHOGUN_DETAIL_MATMUL_SHOGUN_H_
 
 #include <shogun/mathematics/graph/nodes/MatMul.h>
 #include <shogun/mathematics/graph/ops/shogun/MatMul.h>
@@ -17,7 +17,7 @@ namespace shogun
 	{
 		namespace detail
 		{
-			namespace ngraph
+			namespace shogun
 			{
 				IGNORE_IN_CLASSLIST class MatMulShogun
 				    : public RuntimeNodeTemplate<node::MatMul, OutputNode>
@@ -32,23 +32,21 @@ namespace shogun
 						return "MatMul";
 					}
 
-					[[nodiscard]] std::shared_ptr<::ngraph::Node>
-					build_implementation(
-					    const std::shared_ptr<node::Node>& node) const final {
+					[[nodiscard]] std::shared_ptr<OutputNode>
+					build_implementation(const std::shared_ptr<node::Node>&
+					                         graph_node) const final {
 						const auto input_node =
-						    std::static_pointer_cast<node::MatMul>(node);
-						if (input_node.size() != 2)
+						    std::static_pointer_cast<node::MatMul>(graph_node);
+						if (this->m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
 							      "MatMulShogun.");
-						const bool transpose_a = input_node->get_transpose_a();
-						const bool transpose_b = input_node->get_transpose_b();
 
-						return std::make_shared<op::MatMul>(
-						    input_node[0], input_node[1], transpose_a,
-						    transpose_b);
+						return std::make_shared<OutputNode>(
+							std::make_shared<op::MatMulShogun>(input_node),
+						    this->m_input_nodes[0], this->m_input_nodes[1]);
 					}
 				};
-			} // namespace ngraph
+			} // namespace shogun
 		}     // namespace detail
 	}         // namespace graph
 } // namespace shogun

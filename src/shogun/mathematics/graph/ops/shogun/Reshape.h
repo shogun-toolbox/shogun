@@ -41,7 +41,7 @@ namespace shogun
 
 			private:
 				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors) final
+				    const std::vector<std::shared_ptr<Tensor>>& tensors)
 				{
 					m_output_tensors[0]->data() = tensors[0]->data();
 				}
