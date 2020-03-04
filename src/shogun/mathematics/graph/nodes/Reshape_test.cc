@@ -1,15 +1,14 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/graph/Graph.h>
-#include <shogun/mathematics/graph/nodes/Reshape.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/nodes/Reshape.h>
 
 #include "../test/GraphTest.h"
 
 using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
-
 
 TYPED_TEST(GraphTest, vector_reshape)
 {
@@ -28,7 +27,8 @@ TYPED_TEST(GraphTest, vector_reshape)
 	auto output1 = make_shared<node::Reshape>(input1, Shape{10, 1});
 	auto output2 = make_shared<node::Reshape>(input2, Shape{1, 10});
 
-	EXPECT_THROW(make_shared<node::Reshape>(input2, Shape{10, 2}), ShogunException);
+	EXPECT_THROW(
+	    make_shared<node::Reshape>(input2, Shape{10, 2}), ShogunException);
 
 	auto graph = make_shared<Graph>(
 	    vector{input1, input2},
@@ -62,14 +62,16 @@ TYPED_TEST(GraphTest, matrix_reshape)
 	auto expected_result2 = SGVector<NumericType>(10);
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic, Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic, Shape::Dynamic},
+	    get_enum_from_type<NumericType>::type);
 	auto input2 = make_shared<node::Input>(
 	    Shape{10, 1}, get_enum_from_type<NumericType>::type);
 
 	auto output1 = make_shared<node::Reshape>(input1, Shape{5, 2});
 	auto output2 = make_shared<node::Reshape>(input2, Shape{10});
 
-	EXPECT_THROW(make_shared<node::Reshape>(input2, Shape{10, 2}), ShogunException);
+	EXPECT_THROW(
+	    make_shared<node::Reshape>(input2, Shape{10, 2}), ShogunException);
 
 	auto graph = make_shared<Graph>(
 	    vector{input1, input2},

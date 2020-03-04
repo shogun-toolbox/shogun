@@ -8,8 +8,8 @@
 #ifndef SHOGUN_NODES_MATMUL_NODE_H_
 #define SHOGUN_NODES_MATMUL_NODE_H_
 
-#include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/nodes/Dot.h>
+#include <shogun/mathematics/graph/nodes/Node.h>
 
 #define IGNORE_IN_CLASSLIST
 
@@ -27,11 +27,11 @@ namespace shogun
 			// 		of matrices residing in the last two indexes and broadcast
 			// 		accordingly.
 			// -    If the first argument is 1-D, it is promoted to a matrix by
-			// 		prepending a 1 to its dimensions. After matrix multiplication 
-			// 		the	prepended 1 is removed.
+			// 		prepending a 1 to its dimensions. After matrix
+			// multiplication 		the	prepended 1 is removed.
 			// -    If the second argument is 1-D, it is promoted to a matrix by
 			// 		appending a 1 to its dimensions. After matrix multiplication
-			//      the	appended 1 is removed. 
+			//      the	appended 1 is removed.
 			// Matmul differs from dot in two important ways:
 			//  -	Multiplication by scalars is not allowed, use Dot instead.
 			//  -	Stacks of matrices are broadcast together as if the matrices
@@ -44,7 +44,9 @@ namespace shogun
 				    const std::shared_ptr<Node>& B, bool transpose_a,
 				    bool transpose_b)
 				    : Node(
-				          {A, B}, check_shape_compatible(A, B),
+				          {A, B},
+				          check_shape_compatible(
+				              A, B, transpose_a, transpose_b),
 				          check_type_compatible(A, B)),
 				      m_transpose_a(transpose_a), m_transpose_b(transpose_b)
 				{
@@ -52,7 +54,15 @@ namespace shogun
 
 				MatMul(
 				    const std::shared_ptr<Node>& A,
-				    const std::shared_ptr<Node>& B): MatMul(A, B, false, false)
+				    const std::shared_ptr<Node>& B)
+				    : MatMul(A, B, false, false)
+				{
+				}
+
+				MatMul(
+				    const std::shared_ptr<Node>& A,
+				    const std::shared_ptr<Node>& B, bool transpose_a)
+				    : MatMul(A, B, transpose_a, false)
 				{
 				}
 
@@ -111,7 +121,8 @@ namespace shogun
 
 				Shape check_shape_compatible(
 				    const std::shared_ptr<Node>& A,
-				    const std::shared_ptr<Node>& B)
+				    const std::shared_ptr<Node>& B, bool transpose_a,
+				    bool transpose_b)
 				{
 
 					const auto& node_a_shapes = A->get_shapes();
@@ -129,25 +140,14 @@ namespace shogun
 						    "tensor, but got {}",
 						    node_b_shapes.size());
 
-					if (node_a_shapes[0].is_scalar())
-						error(
-						    "Node A is a scalar: {}",
-						    node_a_shapes[0].to_string());
-
-					if (node_b_shapes[0].is_scalar())
-						error(
-						    "Node A is a scalar: {}",
-						    node_b_shapes[0].to_string());
-
-					if (node_a_shapes[0].size() != node_b_shapes[0].size())
-					{
-						error(
-						    "Number of dimension mismatch between {} and {}.",
-						    A, B);
-					}
-
 					auto shape_a = node_a_shapes[0];
 					auto shape_b = node_b_shapes[0];
+
+					if (shape_a.is_scalar())
+						error("Node A is a scalar: {}", shape_a.to_string());
+
+					if (shape_b.is_scalar())
+						error("Node A is a scalar: {}", shape_b.to_string());
 
 					if (shape_a.size() > 2)
 						error(
@@ -163,77 +163,51 @@ namespace shogun
 						    "Node B output tensor has {} dimensions.",
 						    shape_b.size());
 
-					if (m_transpose_a)
+					// promote vector to matrix
+					bool promoted_a = false;
+					bool promoted_b = false;
+
+					if (shape_a.size() == 1)
+					{
+						promoted_a = true;
+						shape_a = Shape{shape_a[0], 1};
+					}
+
+					if (shape_b.size() == 1)
+					{
+						promoted_b = true;
+						shape_b = Shape{shape_b[0], 1};
+					}
+
+					if (transpose_a)
 						shape_a = shape_a.switch_major();
-					if (m_transpose_b)
+					if (transpose_b)
 						shape_b = shape_b.switch_major();
 
-					auto [result, reduction_axis_a, reduction_axis_b] = Dot::check_shape_compatible(shape_a, shape_b);
+					// automatic broadcasting for vectors when nothing is
+					// transposed:
+					//  - (n,1) x (n,1) -> (1,n) x (n,1)
+					if ((!transpose_a && !transpose_b) && shape_a[1] == 1 &&
+					    shape_a[0] != shape_b[1] && shape_a[0] == shape_b[0])
+						std::swap(shape_a[0], shape_a[1]);
+
+					auto [result, reduction_axis_a, reduction_axis_b] =
+					    Dot::check_shape_compatible(shape_a, shape_b);
 					m_reduction_axis_a = reduction_axis_a;
 					m_reduction_axis_b = reduction_axis_b;
+					// this was a vector vector multiplication
+					if (promoted_a && promoted_b)
+						return Shape{};
+					// vector matrix
+					else if (promoted_a)
+					{
+						return Shape{result[1]};
+					}
+					else if (promoted_b)
+					{
+						return Shape{result[0]};
+					}
 					return result;
-
-					// std::vector<Shape::shape_type> output_shape_vector;
-					// if (m_transpose_a && !m_transpose_b)
-					// {
-					// 	if (shape_a[1] == Shape::Dynamic &&
-					// 	    shape_b[1] == Shape::Dynamic)
-					// 		output_shape_vector[0] = Shape::Dynamic;
-					// 	else if (
-					// 	    shape_a[1] == Shape::Dynamic &&
-					// 	    shape_b[1] != Shape::Dynamic)
-					// 		output_shape_vector[0] = shape_b[1];
-					// 	else if (
-					// 	    shape_a[1] != Shape::Dynamic &&
-					// 	    shape_b[1] == Shape::Dynamic)
-					// 		output_shape_vector[0] = shape_a[1];
-					// 	else if (shape_a[1] != shape_b[1])
-					// 		error("MatMul A transpose tensor dimension mismatch. "
-					// 			  "{} vs {}", shape_a, shape_b); 						
-					// 	else
-					// 		error("Undefined state...");
-					// }
-					// else if (m_transpose_b && !m_transpose_a)
-					// {
-					// 	if (shape_a[0] == Shape::Dynamic &&
-					// 	    shape_b[0] == Shape::Dynamic)
-					// 		output_shape_vector[1] = Shape::Dynamic;
-					// 	else if (
-					// 	    shape_a[0] == Shape::Dynamic &&
-					// 	    shape_b[0] != Shape::Dynamic)
-					// 		output_shape_vector[1] = shape_b[0];
-					// 	else if (
-					// 	    shape_a[0] != Shape::Dynamic &&
-					// 	    shape_b[0] == Shape::Dynamic)
-					// 		output_shape_vector[1] = shape_a[0];
-					// 	else if (shape_a[1] != shape_b[1])
-					// 		error(
-					// 		    "MatMul A transpose tensor dimension "
-					// 		    "mismatch. {} vs {}",
-					// 		    shape_a, shape_b);
-					// 	else
-					// 		error("Undefined state...");
-					// }
-					// else if (m_transpose_a && m_transpose_b)
-					// {
-					// 	if (shape_a[1] != shape_b[0])
-					// 		error(
-					// 		    "MatMul B transpose tensor dimension "
-					// 		    "mismatch. {} vs {}",
-					// 		    shape_a, shape_b);
-					// 	output_shape_vector[0] = shape_a[1];
-					// 	output_shape_vector[1] = shape_a[0];
-					// }
-					// else if (shape_a[0] == Shape::Dynamic &&
-					// 	    shape_b[1] != Shape::Dynamic)
-					// {
-					// }
-					// else
-					// {
-					// 	error("TODO");
-					// }
-
-					// return Shape{output_shape_vector};
 				}
 
 			private:

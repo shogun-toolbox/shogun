@@ -40,7 +40,8 @@ namespace shogun
 						if (m_input_nodes.size() != 1)
 							error("Expected two input nodes in "
 							      "AddNGraph.");
-						const auto& input_shape = node->get_input_nodes()[0]->get_shapes()[0];
+						const auto& input_shape =
+						    node->get_input_nodes()[0]->get_shapes()[0];
 						const auto& output_shape = node->get_shapes()[0];
 						std::vector<size_t> axis_vector(input_shape.size());
 						std::iota(axis_vector.begin(), axis_vector.end(), 0);

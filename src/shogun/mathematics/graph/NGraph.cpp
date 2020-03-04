@@ -11,8 +11,8 @@
 #include <shogun/mathematics/graph/runtime/ngraph/LogicalXor.h>
 #include <shogun/mathematics/graph/runtime/ngraph/MatMul.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Reshape.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
 
 #include <ngraph/ngraph.hpp>
 

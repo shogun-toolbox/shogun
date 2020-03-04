@@ -18,8 +18,6 @@
                 framework [Heiko Strathmann, Sergey Lisitsyn]
                 - Removal of computation engine framework and parallelisation of
                 log-determinant estimators [Shubham Shukla]
-                - Add StanMath as a bundled third-party library and use Eigen
-                shipped with StanMath [Elfarouk Yasser, Viktor Gal]
                 - Efficiency improvements for MahalanobisDistance, LMNN, ridge
                 regression, GMM, and the linalg framework [Wuwei Lin]
                 - Add LDLT decomposition to linalg [Wuwei Lin]

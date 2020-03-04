@@ -21,7 +21,6 @@ ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
     --exclude=third_party
     --exclude=GoogleMock
     --exclude=rxcpp
-    --exclude=StanMath
     --exclude=interfaces
     --exclude=Eigen3
     --exclude=external

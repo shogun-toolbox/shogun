@@ -468,27 +468,22 @@ endif()
 
 ############################ external dependencies
 
-#Stan math
-include(external/StanMath)
-
-SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/stan>
-)
-SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_BOOST}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/stan_boost>
-)
-SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_SUNDIALS}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/stan_sundials>
-)
-SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_EIGEN}>
-  $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
-)
-
 ####### LINALG
+FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
+IF(NOT EIGEN3_FOUND)
+  include(external/Eigen3)
+  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+    $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
+  )
+ELSE()
+  # eigen3 bug related to aliasing operators and self-storing.
+  IF(${EIGEN_VERSION} VERSION_GREATER 3.2.90 AND ${EIGEN_VERSION} VERSION_LESS 3.3.0)
+      MESSAGE(WARNING "The system Eigen3 version ${EIGEN_VERSION} contains a lot of bugs, which could cause some models failing!")
+  ENDIF()
+  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${EIGEN_INCLUDE_DIR})
+ENDIF()
+
 # ViennaCL detection
 SHOGUN_DEPENDENCIES(
   LIBRARY ViennaCL
