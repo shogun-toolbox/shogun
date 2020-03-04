@@ -50,7 +50,7 @@ namespace shogun
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors) final
+				    const std::vector<std::shared_ptr<Tensor>>& tensors)
 				{
 					if (tensors.size() != 1)
 						error("Input operation expected one input.");

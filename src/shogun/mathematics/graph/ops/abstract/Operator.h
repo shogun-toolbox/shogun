@@ -52,9 +52,6 @@ namespace shogun
 				    const std::vector<
 				        std::shared_ptr<detail::shogun::OutputNode>>&) = 0;
 
-				virtual void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>&) = 0;
-
 			protected:
 				std::shared_ptr<node::Node> m_node;
 				std::vector<std::shared_ptr<Tensor>> m_output_tensors;

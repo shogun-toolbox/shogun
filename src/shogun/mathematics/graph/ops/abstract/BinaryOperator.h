@@ -48,7 +48,7 @@ namespace shogun
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors) final
+				    const std::vector<std::shared_ptr<Tensor>>& tensors)
 				{
 					if (tensors.size() != 2)
 						error("Binary operation expected two inputs.");

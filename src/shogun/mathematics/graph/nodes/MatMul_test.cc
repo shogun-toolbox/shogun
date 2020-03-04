@@ -52,8 +52,6 @@ TYPED_TEST(GraphTest, vector_vector_matmul)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result = graph->evaluate(
@@ -90,8 +88,6 @@ TYPED_TEST(GraphTest, matrix_vector_matmul)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result = graph->evaluate(
@@ -132,8 +128,6 @@ TYPED_TEST(GraphTest, vector_matrix_matmul)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result = graph->evaluate(
@@ -176,8 +170,6 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul1)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result = graph->evaluate(
@@ -226,8 +218,6 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul2)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result = graph->evaluate(
@@ -281,9 +271,6 @@ TYPED_TEST(GraphTest, matrix_matrixT_matmul)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
-
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result =
@@ -336,9 +323,6 @@ TYPED_TEST(GraphTest, matrixT_matrix_matmul)
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
-
 			graph->build(backend);
 
 			vector<shared_ptr<Tensor>> result =
