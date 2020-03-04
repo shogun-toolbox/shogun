@@ -401,8 +401,9 @@ SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 		}
 	}
 	SG_FREE(h_normalizer);
-
-	return SGMatrix<float64_t>(h, nsym, string_length/2);
+	SGMatrix<float64_t>hMatrix(h, nsym, string_length/2,false);
+	SG_FREE(h);
+	return hMatrix;
 }
 
 SGMatrix<float64_t> SNPFeatures::get_2x3_table(const std::shared_ptr<SNPFeatures>& pos, const std::shared_ptr<SNPFeatures>& neg)
