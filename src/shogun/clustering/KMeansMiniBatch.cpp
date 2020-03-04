@@ -54,7 +54,7 @@ void KMeansMiniBatch::minibatch_KMeans()
 
 	auto lhs=
 		distance->get_lhs()->as<DenseFeatures<float64_t>>();
-	auto rhs_mus=std::make_shared<DenseFeatures<float64_t>>(mus);
+	auto rhs_mus=std::make_shared<DenseFeatures<float64_t>>(cluster_centers);
 	auto rhs_cache=distance->replace_rhs(rhs_mus);
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dims=lhs->get_num_features();
@@ -96,8 +96,8 @@ void KMeansMiniBatch::minibatch_KMeans()
 				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
 			}
 		}
-		mus = rhs_mus->get_feature_matrix();
-		observe<SGMatrix<float64_t>>(i, "mus");
+		cluster_centers = rhs_mus->get_feature_matrix();
+		observe<SGMatrix<float64_t>>(i, "cluster_centers");
 	}
 
 	distance->replace_rhs(rhs_cache);
