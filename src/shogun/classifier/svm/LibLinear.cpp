@@ -117,6 +117,7 @@ bool LibLinear::train_machine(std::shared_ptr<Features> data)
 		}
 	}
 	SGVector<float64_t> w;
+	index_t len =num_feat + 1;
 	if (get_bias_enabled())
 		w = SGVector<float64_t>(SG_ALIGNED_MALLOC(float64_t, index_t(num_feat + 1), alignment::container_alignment), num_feat);
 	else
