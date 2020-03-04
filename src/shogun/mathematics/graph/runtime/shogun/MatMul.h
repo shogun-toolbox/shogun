@@ -8,8 +8,8 @@
 #define SHOGUN_MATMUL_SHOGUN_H_
 
 #include <shogun/mathematics/graph/nodes/MatMul.h>
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/ops/shogun/MatMul.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
 namespace shogun
 {

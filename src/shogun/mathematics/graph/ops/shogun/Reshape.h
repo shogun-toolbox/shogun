@@ -10,7 +10,6 @@
 #include <shogun/mathematics/graph/nodes/Reshape.h>
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
 
-
 namespace shogun
 {
 	namespace graph
@@ -37,8 +36,7 @@ namespace shogun
 					    input_nodes[0]->get_output_tensors()[0];
 					const auto& output_tensor = m_output_tensors[0];
 
-					runtime_checks_and_allocation(
-					    std::vector{input_tensor1});
+					runtime_checks_and_allocation(std::vector{input_tensor1});
 				}
 
 			private:
@@ -48,8 +46,8 @@ namespace shogun
 					m_output_tensors[0]->data() = tensors[0]->data();
 				}
 			};
-		}
-	}
-}
+		} // namespace op
+	}     // namespace graph
+} // namespace shogun
 
 #endif

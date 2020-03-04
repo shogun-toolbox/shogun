@@ -9,10 +9,9 @@
 #include <shogun/mathematics/graph/runtime/shogun/LogicalOr.h>
 #include <shogun/mathematics/graph/runtime/shogun/LogicalXor.h>
 #include <shogun/mathematics/graph/runtime/shogun/Multiply.h>
-#include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
 #include <shogun/mathematics/graph/runtime/shogun/Reshape.h>
+#include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
 // #include <shogun/mathematics/graph/runtime/shogun/MatMul.h>
-
 
 using namespace shogun::graph;
 
@@ -119,7 +118,6 @@ REGISTER_OP(detail::shogun::LogicalXorShogun);
 REGISTER_OP(detail::shogun::DotShogun);
 REGISTER_OP(detail::shogun::ReshapeShogun);
 // REGISTER_OP(detail::shogun::MatMulShogun);
-
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

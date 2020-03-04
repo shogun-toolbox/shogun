@@ -176,11 +176,11 @@ namespace shogun
 			    // whether the memory is owned by the tensor, i.e. should it be
 			    // deleted by the destructor
 			    bool m_free;
-			    // the actual data in memory
-				void* m_data;
-				// tensor shape
-				Shape m_shape;
-				const element_type m_type;
+			// the actual data in memory
+			void* m_data;
+			// tensor shape
+			Shape m_shape;
+			const element_type m_type;
 		};
 	} // namespace graph
 } // namespace shogun

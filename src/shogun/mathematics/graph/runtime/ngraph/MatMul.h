@@ -44,9 +44,12 @@ namespace shogun
 						const bool transpose_a = input_node->get_transpose_a();
 						const bool transpose_b = input_node->get_transpose_b();
 
+						std::shared_ptr<::ngraph::Node> input1 =
+						    m_input_nodes[0];
+						std::shared_ptr<::ngraph::Node> input2 =
+						    m_input_nodes[1];
 						return std::make_shared<::ngraph::op::MatMul>(
-						    m_input_nodes[0], m_input_nodes[1], transpose_a,
-						    transpose_b);
+						    input1, input2, transpose_a, transpose_b);
 					}
 				};
 			} // namespace ngraph

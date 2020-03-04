@@ -22,7 +22,7 @@ namespace shogun
 			IGNORE_IN_CLASSLIST class Dot : public Node
 			{
 				friend class MatMul;
-			
+
 			public:
 				Dot(const std::shared_ptr<Node>& A,
 				    const std::shared_ptr<Node>& B)
@@ -89,7 +89,8 @@ namespace shogun
 				    const std::shared_ptr<Node>& A,
 				    const std::shared_ptr<Node>& B)
 				{
-					auto [result, reduction_axis_a, reduction_axis_b] = check_shape_compatible_(A, B);
+					auto [result, reduction_axis_a, reduction_axis_b] =
+					    check_shape_compatible_(A, B);
 					m_reduction_axis_a = reduction_axis_a;
 					m_reduction_axis_b = reduction_axis_b;
 
@@ -101,7 +102,7 @@ namespace shogun
 				    const std::shared_ptr<Node>& B)
 				{
 					const auto& node_a_shapes = A->get_shapes();
-					const auto& node_b_shapes = B->get_shapes();	
+					const auto& node_b_shapes = B->get_shapes();
 
 					if (node_a_shapes.size() > 1)
 						error(
@@ -115,28 +116,30 @@ namespace shogun
 						    "tensor, but got {}",
 						    node_b_shapes.size());
 
-					const auto& shape_a = node_a_shapes[0];		
+					const auto& shape_a = node_a_shapes[0];
 					const auto& shape_b = node_b_shapes[0];
 
 					return check_shape_compatible(shape_a, shape_b);
 				}
 
 				static std::tuple<Shape, size_t, size_t> check_shape_compatible(
-				    const Shape& shape_a,
-				    const Shape& shape_b)
+				    const Shape& shape_a, const Shape& shape_b)
 				{
-					size_t reduction_axis_a = shape_a.size() < 1 ? 0 : shape_a.size() - 1;
+					size_t reduction_axis_a =
+					    shape_a.size() < 1 ? 0 : shape_a.size() - 1;
 					size_t reduction_axis_b =
 					    shape_b.size() <= 1 ? 0 : shape_b.size() - 2;
 
 					// one of the values is a scalar
 					if (shape_a.is_scalar())
 					{
-						return std::make_tuple(shape_b, reduction_axis_a, reduction_axis_b);
+						return std::make_tuple(
+						    shape_b, reduction_axis_a, reduction_axis_b);
 					}
 					else if (shape_b.is_scalar())
 					{
-						return std::make_tuple(shape_b, reduction_axis_a, reduction_axis_b);
+						return std::make_tuple(
+						    shape_a, reduction_axis_a, reduction_axis_b);
 					}
 
 					if (!shape_a.partial_compare(
@@ -162,7 +165,9 @@ namespace shogun
 							output_shape_vector.push_back(el);
 					}
 
-					return std::make_tuple(Shape{output_shape_vector}, reduction_axis_a, reduction_axis_b);
+					return std::make_tuple(
+					    Shape{output_shape_vector}, reduction_axis_a,
+					    reduction_axis_b);
 				}
 
 			private:
