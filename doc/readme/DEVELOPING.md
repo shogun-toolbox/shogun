@@ -111,7 +111,7 @@ All activated tests can be executed with
 
 The first `make` is necessary as some tests need to be generated and/or compiled first.
 
-Sometimes, it is useful to run a single test, which can be done via [ctest](https://cmake.org/Wiki/CMake/Testing_With_CTest), for example
+Sometimes, it is useful to run a single test, which can be done via [ctest](https://gitlab.kitware.com/cmake/community/-/wikis/doc/ctest/Testing-With-CTest), for example
 
     ctest -R unit-LibSVR
     ctest -R generated_cpp-binary_classifier-kernel_svm
