@@ -38,7 +38,7 @@ SGVector<float64_t> Distribution::get_log_likelihood()
 	int32_t num=features->get_num_vectors();
 	SGVector<float64_t> vec=SGVector<float64_t>(num);
 	for (int32_t i=0; i<num; i++)
-		vec[i].vector=get_log_likelihood_example(i);
+		vec[i]=get_log_likelihood_example(i);
 
 	return vec;
 }
