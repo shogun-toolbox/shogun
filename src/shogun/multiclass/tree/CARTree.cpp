@@ -244,7 +244,6 @@ bool CARTree::train_machine(std::shared_ptr<Features> data)
 	auto dense_features = data->as<DenseFeatures<float64_t>>();
 	auto num_features = dense_features->get_num_features();
 	auto num_vectors = dense_features->get_num_vectors();
-	m_num_feat = num_features;
 	if (weights_set())
 	{
 		require(m_weights.vlen==num_vectors,"Length of weights vector (currently {}) should be same as"
@@ -281,28 +280,49 @@ bool CARTree::train_machine(std::shared_ptr<Features> data)
 	{
 		prune_by_cross_validation(dense_features,m_folds);
 	}
+	// compute feature importances and normalize it
+	if (m_root)
+	{
+		m_feature_importances = SGVector<float64_t>(num_features);
+		compute_feature_importance(m_root->as<bnode_t>());
+		float64_t total_num_sample = m_root->data.total_weight;
+		linalg::scale(
+		    m_feature_importances, m_feature_importances, 1 / total_num_sample);
+		auto normalizer = linalg::sum(m_feature_importances);
+		if (normalizer > 0)
+			linalg::scale(
+			    m_feature_importances, m_feature_importances, 1 / normalizer);
+	}
 	return true;
 }
 
-void CARTree::compute_feature_importance(std::shared_ptr<bnode_t> node)
+void CARTree::compute_feature_importance(const std::shared_ptr<bnode_t>& node)
 {
-	auto left = node->left();
-	auto right = node->right();
+	const auto& left = node->left();
+	const auto& right = node->right();
 	if (left && right)
 	{
 		m_feature_importances[node->data.attribute_id] +=
 		    (node->data.impurity * node->data.total_weight -
 		     left->data.impurity * left->data.total_weight -
 		     right->data.impurity * right->data.total_weight);
+		if (left->data.num_leaves > 1)
+		{
+			compute_feature_importance(left);
+		}
+		if (right->data.num_leaves > 1)
+		{
+			compute_feature_importance(right);
+		}
 	}
-	if (left->data.num_leaves > 1)
-	{
-		compute_feature_importance(left);
-	}
-	if (right->data.num_leaves > 1)
-	{
-		compute_feature_importance(right);
-	}
+}
+
+SGVector<float64_t> CARTree::get_feature_importance()
+{
+	require(
+	    m_feature_importances.size(),
+	    "get_feature_importance should be called after train");
+	return m_feature_importances;
 }
 
 void CARTree::set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices)
@@ -521,20 +541,7 @@ std::shared_ptr<BinaryTreeMachineNode<CARTreeNodeData>> CARTree::CARTtrain(std::
 	node->data.impurity = node_impurity;
 	return node;
 }
-SGVector<float64_t> CARTree::get_feature_importance()
-{
-	require(m_num_feat, "numbers of features should be larger than 0");
-	m_feature_importances = SGVector<float64_t>(m_num_feat);
-	compute_feature_importance(m_root->as<bnode_t>());
-	float64_t total_num_sample = m_root->data.total_weight;
-	linalg::scale(
-	    m_feature_importances, m_feature_importances, 1 / total_num_sample);
-	auto normalizer = linalg::sum(m_feature_importances);
-	if (normalizer > 0)
-		linalg::scale(
-		    m_feature_importances, m_feature_importances, 1 / normalizer);
-	return m_feature_importances;
-}
+
 SGVector<float64_t> CARTree::get_unique_labels(const SGVector<float64_t>& labels_vec, index_t &n_ulabels) const
 {
 	float64_t delta=0;
@@ -608,6 +615,7 @@ index_t CARTree::compute_best_attribute(
 	}
 
 	float64_t max_gain=MIN_SPLIT_GAIN;
+	float64_t max_impurity = MIN_SPLIT_GAIN;
 	index_t best_attribute=-1;
 	float64_t best_threshold=0;
 
@@ -747,20 +755,23 @@ index_t CARTree::compute_best_attribute(
 				switch(m_mode)
 				{
 					case PT_MULTICLASS:
-						g=gain(wleft,wright,total_wclasses);
-						break;
-					case PT_REGRESSION:
-						g=gain(wleft,wright,total_wclasses,ulabels);
-						break;
-					default:
-						error("Undefined problem statement");
+					    g = gain(wleft, wright, total_wclasses, max_impurity);
+					    impurity = std::max(max_impurity, impurity);
+					    break;
+				    case PT_REGRESSION:
+					    g = gain(
+					        wleft, wright, total_wclasses, ulabels,
+					        max_impurity);
+					    impurity = std::max(max_impurity, impurity);
+					    break;
+				    default:
+					    error("Undefined problem statement");
 				}
 
 				if (g>max_gain)
 				{
 					best_attribute=idx[i];
 					max_gain=g;
-					impurity = max_gain;
 					sg_memcpy(is_left_final.vector,is_left.vector,is_left.vlen*sizeof(bool));
 					num_missing_final=num_vecs-n_nm_vecs;
 
@@ -803,17 +814,26 @@ index_t CARTree::compute_best_attribute(
 				}
 				// O(F)
 				float64_t g=0;
-				if (m_mode==PT_MULTICLASS)
-					g=gain(left_wclasses,right_wclasses,total_wclasses);
-				else if (m_mode==PT_REGRESSION)
-					g=gain(left_wclasses,right_wclasses,total_wclasses,ulabels);
+				if (m_mode == PT_MULTICLASS)
+				{
+					g = gain(
+					    left_wclasses, right_wclasses, total_wclasses,
+					    max_impurity);
+					impurity = std::max(max_impurity, impurity);
+				}
+				else if (m_mode == PT_REGRESSION)
+				{
+					g = gain(
+					    left_wclasses, right_wclasses, total_wclasses, ulabels,
+					    max_impurity);
+					impurity = std::max(max_impurity, impurity);
+				}
 				else
 					error("Undefined problem statement");
 
 				if (g>max_gain)
 				{
 					max_gain=g;
-					impurity = max_gain;
 					best_attribute=idx[i];
 					best_threshold=z;
 					num_missing_final=num_vecs-n_nm_vecs;
@@ -1078,8 +1098,10 @@ void CARTree::handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, c
 	}
 }
 
-float64_t CARTree::gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright, const SGVector<float64_t>& wtotal,
-						const SGVector<float64_t>& feats) const
+float64_t CARTree::gain(
+    const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright,
+    const SGVector<float64_t>& wtotal, const SGVector<float64_t>& feats,
+    float64_t& impurity) const
 {
 	float64_t total_lweight=0;
 	float64_t total_rweight=0;
@@ -1088,11 +1110,13 @@ float64_t CARTree::gain(const SGVector<float64_t>& wleft, const SGVector<float64
 	float64_t lsd_n=least_squares_deviation(feats,wtotal,total_weight);
 	float64_t lsd_l=least_squares_deviation(feats,wleft,total_lweight);
 	float64_t lsd_r=least_squares_deviation(feats,wright,total_rweight);
-
+	impurity = lsd_n;
 	return lsd_n-(lsd_l*(total_lweight/total_weight))-(lsd_r*(total_rweight/total_weight));
 }
 
-float64_t CARTree::gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright, const SGVector<float64_t>& wtotal) const
+float64_t CARTree::gain(
+    const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright,
+    const SGVector<float64_t>& wtotal, float64_t& impurity) const
 {
 	float64_t total_lweight=0;
 	float64_t total_rweight=0;
@@ -1101,6 +1125,7 @@ float64_t CARTree::gain(const SGVector<float64_t>& wleft, const SGVector<float64
 	float64_t gini_n=gini_impurity_index(wtotal,total_weight);
 	float64_t gini_l=gini_impurity_index(wleft,total_lweight);
 	float64_t gini_r=gini_impurity_index(wright,total_rweight);
+	impurity = gini_n;
 	return gini_n-(gini_l*(total_lweight/total_weight))-(gini_r*(total_rweight/total_weight));
 }
 
@@ -1486,7 +1511,6 @@ void CARTree::form_t1(const std::shared_ptr<bnode_t>& node)
 void CARTree::init()
 {
 	m_feature_importances = SGVector<float64_t>();
-	m_num_feat = 0;
 	m_nominal=SGVector<bool>();
 	m_weights=SGVector<float64_t>();
 	m_mode=PT_MULTICLASS;
@@ -1499,6 +1523,9 @@ void CARTree::init()
 	m_label_epsilon=1e-7;
 	m_sorted_features=SGMatrix<float64_t>();
 	m_sorted_indices=SGMatrix<index_t>();
+
+	SG_ADD(
+	    &m_feature_importances, "feature_importances", "feature importances");
 
 	SG_ADD(&m_pre_sort, "pre_sort", "presort");
 	SG_ADD(&m_sorted_features, "sorted_features", "sorted feats");
