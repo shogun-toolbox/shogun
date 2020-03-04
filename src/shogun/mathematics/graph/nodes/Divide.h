@@ -39,6 +39,12 @@ namespace shogun
 					return "Divide";
 				}
 			};
+
+			std::shared_ptr<Node> operator/(
+			    const std::shared_ptr<Node>& A, const std::shared_ptr<Node>& B)
+			{
+				return std::make_shared<Divide>(A, B);
+			}
 		} // namespace node
 	}     // namespace graph
 } // namespace shogun

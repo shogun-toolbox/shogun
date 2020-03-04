@@ -38,6 +38,12 @@ namespace shogun
 					return "Add";
 				}
 			};
+
+			std::shared_ptr<Node> operator+(
+			    const std::shared_ptr<Node>& A, const std::shared_ptr<Node>& B)
+			{
+				return std::make_shared<Add>(A, B);
+			}
 		} // namespace node
 	}     // namespace graph
 } // namespace shogun

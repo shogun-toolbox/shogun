@@ -35,8 +35,12 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					const bool transpose_a = std::static_pointer_cast<node::MatMul>(m_node)->get_transpose_a();
-					const bool transpose_b = std::static_pointer_cast<node::MatMul>(m_node)->get_transpose_b();
+					const bool transpose_a =
+					    std::static_pointer_cast<node::MatMul>(m_node)
+					        ->get_transpose_a();
+					const bool transpose_b =
+					    std::static_pointer_cast<node::MatMul>(m_node)
+					        ->get_transpose_b();
 
 					const auto& input_tensor1 =
 					    input_nodes[0]->get_output_tensors()[0];
@@ -45,9 +49,12 @@ namespace shogun
 					const auto& output_tensor = m_output_tensors[0];
 
 					runtime_checks_and_allocation(
-					    std::vector{input_tensor1, input_tensor2}, transpose_a, transpose_b);
+					    std::vector{input_tensor1, input_tensor2}, transpose_a,
+					    transpose_b);
 
-					matmul_type_dispatch(input_tensor1, input_tensor2, output_tensor, transpose_a, transpose_b);
+					matmul_type_dispatch(
+					    input_tensor1, input_tensor2, output_tensor,
+					    transpose_a, transpose_b);
 				}
 
 			private:
@@ -73,13 +80,14 @@ namespace shogun
 					        ->get_reduction_axis_b();
 
 					if (transpose_a)
-						reduction_axis_a = std::abs(static_cast<int64_t>(reduction_axis_a)-1);
+						reduction_axis_a = std::abs(
+						    static_cast<int64_t>(reduction_axis_a) - 1);
 
 					if (transpose_b)
-						reduction_axis_b = std::abs(static_cast<int64_t>(reduction_axis_b)-1);
-					
-					if (shape_a[reduction_axis_a] !=
-					    shape_b[reduction_axis_b])
+						reduction_axis_b = std::abs(
+						    static_cast<int64_t>(reduction_axis_b) - 1);
+
+					if (shape_a[reduction_axis_a] != shape_b[reduction_axis_b])
 					{
 						error(
 						    "Runtime MatMul shape mismatch. "
@@ -111,8 +119,7 @@ namespace shogun
 				void matmul_type_dispatch(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out,
-				    const bool transpose_a,
+				    const std::shared_ptr<Tensor>& Out, const bool transpose_a,
 				    const bool transpose_b)
 				{
 					if (!transpose_a && !transpose_b)
@@ -121,24 +128,24 @@ namespace shogun
 					{
 #define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
 	case SHOGUN_TYPE:                                                          \
-		matmul_dispatch<get_type_from_enum<SHOGUN_TYPE>::type>(           \
-		    A, B, Out, transpose_a, transpose_b);                                                        \
+		matmul_dispatch<get_type_from_enum<SHOGUN_TYPE>::type>(                \
+		    A, B, Out, transpose_a, transpose_b);                              \
 		break;
 
-					switch (A->get_type())
-					{
-						CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
-					}
+						switch (A->get_type())
+						{
+							CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
+							CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
+							CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
+							CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
+							CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
+							CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
+							CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
+							CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
+							CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
+							CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
+							CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
+						}
 #undef CALL_KERNEL_IMPLEMENTATION
 					}
 				}
@@ -147,8 +154,7 @@ namespace shogun
 				void matmul_dispatch(
 				    const std::shared_ptr<Tensor>& A,
 				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out,
-					const bool transpose_a,
+				    const std::shared_ptr<Tensor>& Out, const bool transpose_a,
 				    const bool transpose_b)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>

@@ -33,9 +33,9 @@ TYPED_TEST(GraphTest, vector_add)
 	auto input1 = make_shared<node::Input>(
 	    Shape{10}, get_enum_from_type<NumericType>::type);
 
-	auto intermediate = make_shared<node::Add>(input, input);
+	auto intermediate = input + input;
 
-	auto output = make_shared<node::Add>(intermediate, input1);
+	auto output = intermediate + input1;
 
 	auto graph = make_shared<Graph>(
 	    vector{input, input1},
@@ -90,9 +90,9 @@ TYPED_TEST(GraphTest, matrix_add)
 	auto input1 = make_shared<node::Input>(
 	    Shape{10, Shape::Dynamic}, get_enum_from_type<NumericType>::type);
 
-	auto intermediate = make_shared<node::Add>(input, input);
+	auto intermediate = input + input;
 
-	auto output = make_shared<node::Add>(intermediate, input1);
+	auto output = intermediate + input1;
 
 	auto graph = make_shared<Graph>(
 	    vector{input, input1},

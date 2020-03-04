@@ -39,6 +39,12 @@ namespace shogun
 					return "Multiply";
 				}
 			};
+
+			std::shared_ptr<Node> operator*(
+			    const std::shared_ptr<Node>& A, const std::shared_ptr<Node>& B)
+			{
+				return std::make_shared<Multiply>(A, B);
+			}
 		} // namespace node
 	}     // namespace graph
 } // namespace shogun
