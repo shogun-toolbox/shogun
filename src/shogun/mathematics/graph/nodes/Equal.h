@@ -41,6 +41,7 @@ namespace shogun
 					return "Equal";
 				}
 			};
+
 		} // namespace node
 	}     // namespace graph
 } // namespace shogun

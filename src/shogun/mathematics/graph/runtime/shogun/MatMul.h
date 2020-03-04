@@ -42,7 +42,7 @@ namespace shogun
 							      "MatMulShogun.");
 
 						return std::make_shared<OutputNode>(
-							std::make_shared<op::MatMulShogun>(input_node),
+						    std::make_shared<op::MatMulShogun>(input_node),
 						    this->m_input_nodes[0], this->m_input_nodes[1]);
 					}
 				};

@@ -37,6 +37,12 @@ namespace shogun
 					return "Subtract";
 				}
 			};
+
+			std::shared_ptr<Node> operator-(
+			    const std::shared_ptr<Node>& A, const std::shared_ptr<Node>& B)
+			{
+				return std::make_shared<Subtract>(A, B);
+			}
 		} // namespace node
 	}     // namespace graph
 } // namespace shogun

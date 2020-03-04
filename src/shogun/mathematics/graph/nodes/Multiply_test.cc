@@ -38,9 +38,9 @@ TYPED_TEST(GraphTest, multiply)
 	auto input1 = make_shared<node::Input>(
 	    Shape{10}, get_enum_from_type<NumericType>::type);
 
-	auto intermediate = make_shared<node::Multiply>(input, input);
+	auto intermediate = input * input;
 
-	auto output = make_shared<node::Multiply>(intermediate, input1);
+	auto output = intermediate * input1;
 
 	auto graph = make_shared<Graph>(
 	    vector{input, input1},

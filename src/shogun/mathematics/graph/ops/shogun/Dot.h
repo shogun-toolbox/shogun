@@ -21,7 +21,6 @@ namespace shogun
 			IGNORE_IN_CLASSLIST class DotShogun : public Operator
 			{
 			public:
-
 				friend class MatMulShogun;
 
 				DotShogun(const std::shared_ptr<node::Node>& node)
