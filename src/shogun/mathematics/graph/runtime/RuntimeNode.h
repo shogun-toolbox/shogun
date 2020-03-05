@@ -9,6 +9,7 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 #include <memory>
 #include <string_view>
@@ -23,7 +24,7 @@ namespace shogun
 		namespace detail
 		{
 
-			IGNORE_IN_CLASSLIST class RuntimeNode
+			IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT RuntimeNode
 			{
 			public:
 				RuntimeNode() = default;

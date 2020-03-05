@@ -38,7 +38,7 @@ namespace shogun
 	class File;
 
 /** @brief shogun vector */
-template<class T> class SGVector : public SGReferencedData
+template<class T> class SHOGUN_EXPORT SGVector : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
 

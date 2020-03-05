@@ -2,6 +2,7 @@
 #define GRAPH_EXECUTOR_
 
 #include <shogun/base/manifest.h>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
@@ -28,7 +29,7 @@ namespace shogun
 		                   {GRAPH_BACKEND::XLA, "XLA"},
 		                   {GRAPH_BACKEND::TVM, "TVM"}};
 
-		IGNORE_IN_CLASSLIST class GraphExecutor
+		IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT GraphExecutor
 		{
 		public:
 			virtual ~GraphExecutor() = default;
@@ -59,18 +60,18 @@ namespace shogun
 		using ExecutorFactory =
 		    std::unordered_map<GRAPH_BACKEND, CreateExecutor>;
 
-		const ExecutorFactory& backend_list();
+		SHOGUN_ENGINE_EXPORT const ExecutorFactory& backend_list();
 
 		/** new operator implementation instance
 		 * @param backend_name
 		 * @param generic
 		 */
-		std::shared_ptr<GraphExecutor> create(GRAPH_BACKEND backend_type);
+		SHOGUN_ENGINE_EXPORT std::shared_ptr<GraphExecutor> create(GRAPH_BACKEND backend_type);
 
 		/** Returns all available object names
 		 *
 		 */
-		std::set<GRAPH_BACKEND> available_backends();
+		SHOGUN_ENGINE_EXPORT std::set<GRAPH_BACKEND> available_backends();
 
 #define BEGIN_EXECUTOR_MANIFEST(DESCRIPTION)                                   \
 	extern "C" shogun::Manifest shogunManifest()                               \

@@ -17,7 +17,7 @@ namespace shogun
 	namespace graph
 	{
 
-		IGNORE_IN_CLASSLIST class Graph
+		IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT Graph
 		{
 			enum class STATUS
 			{

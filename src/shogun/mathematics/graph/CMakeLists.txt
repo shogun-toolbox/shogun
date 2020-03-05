@@ -71,6 +71,7 @@ add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}
 	${SHOGUN_CORE_GRAPH_SOURCES}
 	${SHOGUN_CORE_GRAPH_HEADERS}
 )
+generate_export_header(shogun-engine)
 
 target_link_libraries(shogun-engine shogun-core)
 PLUGIN_COMPATIBILITY(shogun-engine)

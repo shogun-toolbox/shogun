@@ -34,7 +34,7 @@ namespace shogun
 	class File;
 
 /** @brief shogun matrix */
-template<class T> class SGMatrix : public SGReferencedData
+template<class T> class SHOGUN_EXPORT SGMatrix : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
 
