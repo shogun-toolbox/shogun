@@ -217,7 +217,7 @@ SGMatrix<float64_t> PositionalPWM::get_scoring(int32_t d)
 		offs+=Math::pow((int32_t) m_w.num_rows,i+1);
 	int32_t rows=Math::pow((int32_t) m_w.num_rows,d);
 	int32_t cols=m_w.num_cols;
-	float64_t* scoring_matrix = SG_MALLOC(float64_t, rows*cols);
-	sg_memcpy(scoring_matrix,m_poim.vector+offs,rows*cols*sizeof(float64_t));
-	return SGMatrix<float64_t>(scoring_matrix,rows,cols);
+	SGMatrix<float64_t> scoring_matrix(rows,cols);
+	sg_memcpy(scoring_matrix.matrix,m_poim.vector+offs,rows*cols*sizeof(float64_t));
+	return scoring_matrix;
 }
