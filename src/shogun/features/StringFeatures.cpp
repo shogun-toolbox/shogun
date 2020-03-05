@@ -160,7 +160,7 @@ template<class ST> SGVector<ST> StringFeatures<ST>::get_feature_vector(int32_t n
 	int32_t l;
 	bool free_vec;
 	ST* vec=get_feature_vector(num, l, free_vec);
-	SGVector<ST>dst(vec,l);
+	SGVector<ST> dst(vec, l);
 	free_feature_vector(vec, num, free_vec);
 	return dst;
 }
