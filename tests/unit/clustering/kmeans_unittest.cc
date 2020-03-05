@@ -168,6 +168,30 @@ TEST(KMeans, minibatch_training_test)
 	}
 }
 
+TEST(KMeans, minibatch_fixed_centers)
+{
+
+	SGMatrix<float64_t> X{{2, 1}, {4, 1}, {0, 1}, {2, 4}, {0, 4}, {4, 4},
+	                      {5, 4}, {1, 0}, {2, 2}, {2, 3}, {5, 5}, {-1, 1}};
+
+	SGMatrix<float64_t> initial_centers{{0, 0}, {1, 1}};
+
+	auto features = std::make_shared<DenseFeatures<float64_t>>(X);
+	auto distance = std::make_shared<EuclideanDistance>(features, features);
+	auto clustering =
+	    std::make_shared<KMeansMiniBatch>(2, distance, initial_centers);
+
+	clustering->put<int32_t>("max_iter", 100000);
+	clustering->put<int32_t>("batch_size", 12);
+	clustering->train(features);
+	auto learnt_centers_matrix = clustering->get_cluster_centers();
+
+	EXPECT_NEAR(2.1666612499593461, learnt_centers_matrix(0, 0), 0.0001);
+	EXPECT_NEAR(2.8888888888888888, learnt_centers_matrix(0, 1), 0.0001);
+	EXPECT_NEAR(2.4999954166322538, learnt_centers_matrix(1, 0), 0.0001);
+	EXPECT_NEAR(3.1111111111111116, learnt_centers_matrix(1, 1), 0.0001);
+}
+
 TEST(KMeans, fixed_centers)
 {
 	/*create a rectangle with four points as (0,0) (0,10) (20,0) (20,10)*/

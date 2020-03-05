@@ -12,6 +12,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <utility>
 
@@ -71,18 +72,7 @@ void KMeansMiniBatch::minibatch_KMeans()
 			SGVector<float64_t> dists=SGVector<float64_t>(k);
 			for (int32_t p=0; p<k; p++)
 				dists[p]=distance->distance(M[j],p);
-
-			int32_t imin=0;
-			float64_t min=dists[0];
-			for (int32_t p=1; p<k; p++)
-			{
-				if (dists[p]<min)
-				{
-					imin=p;
-					min=dists[p];
-				}
-			}
-			ncent[j]=imin;
+			ncent[j] = Math::arg_min(dists.vector, 1, dists.vlen);
 		}
 		for (int32_t j=0; j<batch_size; j++)
 		{
@@ -91,10 +81,7 @@ void KMeansMiniBatch::minibatch_KMeans()
 			SGVector<float64_t> x=lhs->get_feature_vector(M[j]);
 			v[near]+=1.0;
 			float64_t eta=1.0/v[near];
-			for (int32_t c=0; c<dims; c++)
-			{
-				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
-			}
+			linalg::add(c_alive, x, c_alive, 1.0 - eta, eta);
 		}
 		mus = rhs_mus->get_feature_matrix();
 		observe<SGMatrix<float64_t>>(i, "mus");
