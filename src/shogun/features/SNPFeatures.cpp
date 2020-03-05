@@ -402,7 +402,6 @@ SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 	}
 	SG_FREE(h_normalizer);
 	SGMatrix<float64_t>hMatrix(h, nsym, string_length/2,false);
-	SG_FREE(h);
 	return hMatrix;
 }
 
