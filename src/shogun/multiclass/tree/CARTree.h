@@ -235,6 +235,11 @@ public:
 
 	void set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
+	/**return feature importance
+	 * this way is the same as sklearn
+	 */
+	SGVector<float64_t> get_feature_importance();
+
 protected:
 	/** train machine - build CART from training data
 	 * @param data training data
@@ -271,12 +276,16 @@ protected:
 	 * @param num_missing number of missing attributes
 	 * @param count_left stores number of feature values for left transition
 	 * @param count_right stores number of feature values for right transition
+	 * @param impurity impurity of current node
 	 * @return index to the best attribute
 	 */
-	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels,
-		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
-		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
-
+	virtual index_t compute_best_attribute(
+		const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights,
+		std::shared_ptr<DenseLabels> labels, SGVector<float64_t>& left,
+		SGVector<float64_t>& right, SGVector<bool>& is_left_final,
+		index_t& num_missing, index_t& count_left, index_t& count_right,
+		float64_t& impurity, index_t subset_size = 0,
+		const SGVector<index_t>& active_indices = SGVector<index_t>());
 
 	/** handles missing values through surrogate splits
 	 *
@@ -329,8 +338,10 @@ protected:
 	 * @param labels regression labels
 	 * @return least squared deviation gain achieved after spliting the node
 	 */
-	float64_t gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright,
-		const SGVector<float64_t>& wtotal, const SGVector<float64_t>& feats) const;
+	float64_t gain(
+		const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright,
+		const SGVector<float64_t>& wtotal, const SGVector<float64_t>& feats,
+		float64_t& impurity) const;
 
 	/** returns gain in Gini impurity measure
 	 *
@@ -339,7 +350,9 @@ protected:
 	 * @param wtotal label distribution in current node
 	 * @return Gini gain achieved after spliting the node
 	 */
-	float64_t gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright, const SGVector<float64_t>& wtotal) const;
+	float64_t gain(
+		const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright,
+		const SGVector<float64_t>& wtotal, float64_t& impurity) const;
 
 	/** returns Gini impurity of a node
 	 *
@@ -414,6 +427,12 @@ protected:
 	/** initializes members of class */
 	void init();
 
+	/** compute feature importances
+	 * 	this is the implementation from scikit learn
+	 *  cf.
+	 * https://github.com/scikit-learn/scikit-learn/blob/0abd95f742efea826df82458458fcbc0f9dafcb2/sklearn/tree/_tree.pyx#L1056
+	 */
+	void compute_feature_importance(const std::shared_ptr<bnode_t>& node);
 
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
@@ -469,6 +488,9 @@ protected:
 
 	/** minimum number of feature vectors required in a node **/
 	int32_t m_min_node_size;
+
+	/**stores feature importances**/
+	SGVector<float64_t> m_feature_importances;
 };
 } /* namespace shogun */
 

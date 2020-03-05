@@ -64,6 +64,9 @@ struct CARTreeNodeData
 	/** number of leaves in the subtree beginning at this node **/
 	int32_t num_leaves;
 
+	/**impurity of this node**/
+	float64_t impurity;
+
 	/** constructor */
 	CARTreeNodeData()
 	{
@@ -74,6 +77,7 @@ struct CARTreeNodeData
 		weight_minus_node=0.;
 		weight_minus_branch=0.;
 		num_leaves=0;
+		impurity = 0;
 	}
 };
 

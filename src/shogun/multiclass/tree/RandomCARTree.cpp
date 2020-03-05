@@ -49,9 +49,13 @@ void RandomCARTree::set_feature_subset_size(index_t size)
 	m_randsubset_size=size;
 }
 
-index_t RandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels,
-	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing_final, index_t &count_left,
-	index_t &count_right, index_t subset_size, const SGVector<index_t>& active_indices)
+index_t RandomCARTree::compute_best_attribute(
+    const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights,
+    std::shared_ptr<DenseLabels> labels, SGVector<float64_t>& left,
+    SGVector<float64_t>& right, SGVector<bool>& is_left_final,
+    index_t& num_missing_final, index_t& count_left, index_t& count_right,
+    float64_t& impurity, index_t subset_size,
+    const SGVector<index_t>& active_indices)
 
 {
 	auto num_feats = (m_pre_sort) ? mat.num_cols : mat.num_rows;
@@ -63,9 +67,9 @@ index_t RandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, co
 
 	require(subset_size<=num_feats, "The Feature subset size(set {}) should be less than"
 	" or equal to the total number of features({} here).",subset_size,num_feats);
-
-	return CARTree::compute_best_attribute(mat,weights,labels,left,right,is_left_final,num_missing_final,count_left,count_right,subset_size, active_indices);
-
+	return CARTree::compute_best_attribute(
+	    mat, weights, labels, left, right, is_left_final, num_missing_final,
+	    count_left, count_right, impurity, subset_size, active_indices);
 }
 
 void RandomCARTree::init()

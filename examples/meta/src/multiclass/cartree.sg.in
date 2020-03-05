@@ -27,6 +27,10 @@ classifier.train(features_train)
 MulticlassLabels labels_predict = classifier.apply_multiclass(features_test)
 #![train_and_apply]
 
+#![feature_importance]
+RealVector feat_importance = classifier.get_real_vector("feature_importances")
+#![feature_importance]
+
 #![evaluate_accuracy]
 Evaluation eval = evaluation("MulticlassAccuracy")
 real accuracy = eval.evaluate(labels_predict, labels_test)
