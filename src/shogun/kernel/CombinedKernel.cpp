@@ -648,12 +648,12 @@ SGVector<float64_t> CombinedKernel::get_subkernel_weights()
 	int32_t num=0;
 	const float64_t* w=get_subkernel_weights(num);
 
-	float64_t* weights = SG_MALLOC(float64_t, num);
+	SGVector<float64_t> weights(num);
 	for (int32_t i=0; i<num; i++)
-		weights[i] = w[i];
+		weights.vector[i] = w[i];
 
 
-	return SGVector<float64_t>(weights, num);
+	return weights;
 }
 
 void CombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
