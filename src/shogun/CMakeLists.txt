@@ -121,6 +121,9 @@ SET(SHOGUN_CORE_HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/mathematics/RandomMixin.h
   ${CMAKE_CURRENT_SOURCE_DIR}/mathematics/RandomNamespace.h
   ${CMAKE_CURRENT_SOURCE_DIR}/mathematics/Seedable.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/mathematics/UniformIntDistribution.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/mathematics/UniformRealDistribution.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/mathematics/NormalDistribution.h
   ${CMAKE_CURRENT_SOURCE_DIR}/multiclass/MulticlassStrategy.h
   ${CMAKE_CURRENT_SOURCE_DIR}/transformer/Transformer.h
   ${CMAKE_CURRENT_SOURCE_DIR}/util/visitors/FilterVisitor.h
@@ -188,6 +191,7 @@ SET(SHOGUN_CORE_SOURCES
   machine/gp/LikelihoodModel.cpp
   machine/Pipeline.cpp
   mathematics/Math.cpp
+  mathematics/NormalDistribution.cpp
   multiclass/MulticlassStrategy.cpp
   transformer/Transformer.cpp
 )

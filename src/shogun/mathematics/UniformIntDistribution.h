@@ -9,6 +9,7 @@
 
 namespace shogun
 {
+	// FIXME: this could be implemented way more efficiently
 	template <typename T = int32_t>
 	class UniformIntDistribution
 	{
@@ -26,20 +27,27 @@ namespace shogun
 		};
 
 	public:
-		UniformIntDistribution(T min = 0, T max = std::numeric_limits<T>::max())
-		    : m_min(min), m_max(max)
+		UniformIntDistribution(T min = 0, T max = std::numeric_limits<T>::max() - 1):
+		      m_min(min),
+		      m_max(max),
+		      m_range(static_cast<std::make_unsigned_t<T>>(max) - static_cast<std::make_unsigned_t<T>>(min) + 1)
 		{
+			require(min < max, "The minimum value ({}) should be always less than the maximum value ({})", min, max);
 		}
 
 		template <typename PRNG>
 		T operator()(PRNG& prng) const
 		{
-			return generate(prng, m_min, m_max);
+			static_assert(PRNG::max() >= std::numeric_limits<T>::max(),
+					"Provide a PRNG::result_type is too small!");
+			return generate(prng);
 		}
 
 		template <typename PRNG>
 		T operator()(PRNG& prng, param_type param) const
 		{
+			static_assert(PRNG::max() >= std::numeric_limits<T>::max(),
+					"Provide a PRNG::result_type is too small!");
 			return generate(prng, param.min, param.max);
 		}
 
@@ -52,6 +60,7 @@ namespace shogun
 		{
 			m_min = param.min;
 			m_max = param.max;
+			m_range = static_cast<std::make_unsigned_t<T>>(m_max) - static_cast<std::make_unsigned_t<T>>(m_min) + 1;
 		}
 
 		T min() const
@@ -73,7 +82,7 @@ namespace shogun
 		T generate(PRNG& prng, const T& min, const T& max) const
 		{
 			constexpr auto prng_range = PRNG::max() - PRNG::min();
-			const uint64_t required_range = max - min + 1;
+			const auto required_range = static_cast<decltype(m_range)>(max) - static_cast<decltype(m_range)>(min) + 1;
 			const auto max_val = prng_range - (prng_range % required_range);
 
 			typename PRNG::result_type result;
@@ -85,8 +94,25 @@ namespace shogun
 			return (result % required_range) + min;
 		}
 
+		template <typename PRNG>
+		T generate(PRNG& prng) const
+		{
+			constexpr auto prng_range = PRNG::max() - PRNG::min();
+			const auto max_val = prng_range - (prng_range % m_range);
+
+			typename PRNG::result_type result;
+			do
+			{
+				result = prng() - PRNG::min();
+			} while (result >= max_val);
+
+			return (result % m_range) + m_min;
+		}
+
 		T m_min;
 		T m_max;
+		std::make_unsigned_t<T> m_range;
+
 	};
 } // namespace shogun
 

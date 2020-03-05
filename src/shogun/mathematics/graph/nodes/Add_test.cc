@@ -52,7 +52,7 @@ TYPED_TEST(GraphTest, matrix_add)
 	using NumericType = TypeParam;
 
 	random_device rng_device;
-	mt19937 mersenne_engine{rng_device()};
+	mt19937_64 mersenne_engine{rng_device()};
 
 	auto X1 = SGMatrix<NumericType>(10, 5);
 	auto X2 = SGMatrix<NumericType>(10, 5);
