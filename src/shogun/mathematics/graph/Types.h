@@ -30,6 +30,14 @@ namespace shogun
 			FLOAT64 = 10,
 		};
 
+		inline bool is_unsigned(const element_type& type)
+		{
+			return type == element_type::BOOLEAN ||
+			       type == element_type::UINT8 ||
+			       type == element_type::UINT16 ||
+			       type == element_type::UINT32 || type == element_type::UINT64;
+		}
+
 		template <element_type EnumVal>
 		struct get_type_from_enum
 		{

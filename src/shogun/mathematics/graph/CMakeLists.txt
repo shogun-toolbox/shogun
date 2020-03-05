@@ -18,7 +18,6 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Reshape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/MatMul.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Cast.h
-	#${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 	)
 
 set(SHOGUN_CORE_GRAPH_SOURCES
@@ -28,6 +27,7 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
+		# ${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
@@ -42,6 +42,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Reshape.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/MatMul.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.h
+		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Sign.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/ShogunBinaryNode.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 		${PROJECT_SOURCE_DIR}/src/shogun/io/SGIO.h
@@ -59,6 +60,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/MatMul.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Multiply.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Reshape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Sign.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.cpp
 	)
 
@@ -74,6 +76,7 @@ set(NGRAPH_IMPLEMENTATION_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Input.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Subtract.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Reshape.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Sign.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/MatMul.h
 		)
 
@@ -90,6 +93,7 @@ set(NGRAPH_IMPLEMENTATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/MatMul.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Multiply.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Reshape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Sign.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Subtract.cpp
  	)
 
@@ -165,5 +169,6 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/Reshape_test)
 	add_graph_test(nodes/MatMul_test)
 	add_graph_test(nodes/Cast_test)
+	add_graph_test(nodes/Sign_test)
 
 ENDIF()

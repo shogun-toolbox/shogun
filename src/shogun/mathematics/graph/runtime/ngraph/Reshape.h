@@ -38,8 +38,8 @@ namespace shogun
 					build_implementation(
 					    const std::shared_ptr<node::Node>& node) const final {
 						if (m_input_nodes.size() != 1)
-							error("Expected two input nodes in "
-							      "AddNGraph.");
+							error("Expected one input node in "
+							      "ReshapeNGraph.");
 						const auto& input_shape =
 						    node->get_input_nodes()[0]->get_shapes()[0];
 						const auto& output_shape = node->get_shapes()[0];

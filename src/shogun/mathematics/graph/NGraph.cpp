@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Viktor Gal, Gil Hoben
+ */
+
 #include <shogun/mathematics/graph/NGraph.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
