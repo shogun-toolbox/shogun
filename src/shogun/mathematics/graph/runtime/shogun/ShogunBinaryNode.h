@@ -7,6 +7,7 @@
 #ifndef SHOGUN_BINARY_NODE_IMPL_H_
 #define SHOGUN_BINARY_NODE_IMPL_H_
 
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
 
 namespace shogun

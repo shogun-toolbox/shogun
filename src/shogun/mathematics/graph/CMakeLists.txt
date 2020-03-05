@@ -18,8 +18,6 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Reshape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/MatMul.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Cast.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
 	#${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 	)
 
@@ -30,6 +28,8 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
+		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
+		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Equal.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalAnd.h
@@ -42,10 +42,13 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Reshape.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/MatMul.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.h
+		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/ShogunBinaryNode.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
+		${PROJECT_SOURCE_DIR}/src/shogun/io/SGIO.h
 		)
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.cpp
 	)
 
 set(NGRAPH_IMPLEMENTATION_HEADERS

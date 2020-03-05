@@ -1,6 +1,6 @@
 #include <shogun/mathematics/graph/ShogunGraph.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/mathematics/graph/runtime/shogun/Add.h>
+#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/runtime/shogun/Cast.h>
 #include <shogun/mathematics/graph/runtime/shogun/Divide.h>
 #include <shogun/mathematics/graph/runtime/shogun/Dot.h>
@@ -15,12 +15,7 @@
 #include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
 
 using namespace shogun::graph;
-
-OpMapFactory& OperatorRegistry()
-{
-	static OpMapFactory operator_registry;
-	return operator_registry;
-}
+using namespace shogun::graph::detail;
 
 std::vector<std::shared_ptr<Tensor>> ShogunGraph::execute(
     const std::vector<std::shared_ptr<Tensor>>& tensors,
@@ -64,8 +59,8 @@ std::shared_ptr<detail::RuntimeNode>
 ShogunGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 {
 	auto type = std::type_index(typeid(*node));
-	auto op_it = OperatorRegistry().find(type);
-	if (op_it == OperatorRegistry().end())
+	auto op_it = ShogunOperatorRegistry().find(type);
+	if (op_it == ShogunOperatorRegistry().end())
 	{
 		error("Could not find operator for node {}", node->to_string());
 	}
@@ -107,19 +102,18 @@ void ShogunGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 }
 
 // move this to implementations....
-REGISTER_OP(detail::shogun::AddShogun);
-REGISTER_OP(detail::shogun::EqualShogun);
-REGISTER_OP(detail::shogun::InputShogun);
-REGISTER_OP(detail::shogun::SubtractShogun);
-REGISTER_OP(detail::shogun::MultiplyShogun);
-REGISTER_OP(detail::shogun::DivideShogun);
-REGISTER_OP(detail::shogun::LogicalAndShogun);
-REGISTER_OP(detail::shogun::LogicalOrShogun);
-REGISTER_OP(detail::shogun::LogicalXorShogun);
-REGISTER_OP(detail::shogun::DotShogun);
-REGISTER_OP(detail::shogun::ReshapeShogun);
-REGISTER_OP(detail::shogun::MatMulShogun);
-REGISTER_OP(detail::shogun::CastShogun);
+REGISTER_OP_SHOGUN(detail::shogun::EqualShogun);
+REGISTER_OP_SHOGUN(detail::shogun::InputShogun);
+REGISTER_OP_SHOGUN(detail::shogun::SubtractShogun);
+REGISTER_OP_SHOGUN(detail::shogun::MultiplyShogun);
+REGISTER_OP_SHOGUN(detail::shogun::DivideShogun);
+REGISTER_OP_SHOGUN(detail::shogun::LogicalAndShogun);
+REGISTER_OP_SHOGUN(detail::shogun::LogicalOrShogun);
+REGISTER_OP_SHOGUN(detail::shogun::LogicalXorShogun);
+REGISTER_OP_SHOGUN(detail::shogun::DotShogun);
+REGISTER_OP_SHOGUN(detail::shogun::ReshapeShogun);
+REGISTER_OP_SHOGUN(detail::shogun::MatMulShogun);
+REGISTER_OP_SHOGUN(detail::shogun::CastShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

@@ -1,4 +1,5 @@
 #include <shogun/mathematics/graph/Tensor.h>
+#include <shogun/mathematics/graph/nodes/Node.h>
 
 #ifndef SHOGUN_GRAPH_OPERATOR_H_
 #define SHOGUN_GRAPH_OPERATOR_H_
