@@ -3,6 +3,9 @@
 #include <shogun/mathematics/graph/Graph.h>
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
+
 
 #include "../test/GraphTest.h"
 
@@ -60,7 +63,7 @@ TYPED_TEST(GraphTest, matrix_add)
 		return;
 	else if constexpr (std::is_floating_point_v<TypeParam>)
 	{
-		uniform_real_distribution<TypeParam> dist{};
+		UniformRealDistribution<TypeParam> dist;
 		auto gen = [&dist, &mersenne_engine]() {
 			return dist(mersenne_engine);
 		};
@@ -69,7 +72,7 @@ TYPED_TEST(GraphTest, matrix_add)
 	}
 	else
 	{
-		uniform_int_distribution<TypeParam> dist{};
+		UniformIntDistribution<TypeParam> dist;
 		auto gen = [&dist, &mersenne_engine]() {
 			return dist(mersenne_engine);
 		};
