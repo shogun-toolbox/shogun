@@ -3,6 +3,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/io/SGIO.h>
 
 #include <limits>
 #include <type_traits>
