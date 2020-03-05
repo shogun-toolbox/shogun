@@ -60,24 +60,24 @@ TYPED_TEST(GraphTest, matrix_add)
 
 	if constexpr (std::is_same_v<TypeParam, bool>)
 		return;
-	// else if constexpr (std::is_floating_point_v<TypeParam>)
-	// {
-	// 	UniformRealDistribution<TypeParam> dist;
-	// 	auto gen = [&dist, &mersenne_engine]() {
-	// 		return dist(mersenne_engine);
-	// 	};
-	// 	generate(X1.begin(), X1.end(), gen);
-	// 	generate(X2.begin(), X2.end(), gen);
-	// }
-	// else
-	// {
-	// 	UniformIntDistribution<TypeParam> dist;
-	// 	auto gen = [&dist, &mersenne_engine]() {
-	// 		return dist(mersenne_engine);
-	// 	};
-	// 	generate(X1.begin(), X1.end(), gen);
-	// 	generate(X2.begin(), X2.end(), gen);
-	// }
+	else if constexpr (std::is_floating_point_v<TypeParam>)
+	{
+		UniformRealDistribution<TypeParam> dist;
+		auto gen = [&dist, &mersenne_engine]() {
+			return dist(mersenne_engine);
+		};
+		generate(X1.begin(), X1.end(), gen);
+		generate(X2.begin(), X2.end(), gen);
+	}
+	else
+	{
+		UniformIntDistribution<TypeParam> dist;
+		auto gen = [&dist, &mersenne_engine]() {
+			return dist(mersenne_engine);
+		};
+		generate(X1.begin(), X1.end(), gen);
+		generate(X2.begin(), X2.end(), gen);
+	}
 
 	std::transform(
 	    X1.data(), X1.data() + X1.size(), X1.data(), expected_result1.data(),
