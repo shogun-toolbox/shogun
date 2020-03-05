@@ -95,8 +95,8 @@ bool DomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 	int32_t num_training_points = get_labels()->get_num_labels();
 	auto labels = binary_labels(get_labels());
 
-	float64_t* lin_term = SG_MALLOC(float64_t, num_training_points);
 
+	SGVector<float64_t>lin_term(num_training_points);
 	// grab current training features
 	auto train_data = get_kernel()->get_lhs();
 
@@ -110,7 +110,7 @@ bool DomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 	}
 
 	//set linear term for QP
-	this->set_linear_term(SGVector<float64_t>(lin_term, num_training_points));
+	this->set_linear_term(lin_term);
 
 	//train SVM
 	bool success = SVMLight::train_machine();
