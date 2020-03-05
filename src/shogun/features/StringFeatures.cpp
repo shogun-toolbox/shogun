@@ -160,10 +160,10 @@ template<class ST> SGVector<ST> StringFeatures<ST>::get_feature_vector(int32_t n
 	int32_t l;
 	bool free_vec;
 	ST* vec=get_feature_vector(num, l, free_vec);
-	ST* dst=SG_MALLOC(ST, l);
-	sg_memcpy(dst, vec, l*sizeof(ST));
+	SGVector<ST> dst(l);
+	sg_memcpy(dst.vector, vec, l*sizeof(ST));
 	free_feature_vector(vec, num, free_vec);
-	return SGVector<ST>(dst, l, true);
+	return dst;
 }
 
 template<class ST> void StringFeatures<ST>::set_feature_vector(SGVector<ST> vector, int32_t num)

@@ -36,12 +36,12 @@ SGVector<float64_t> Distribution::get_log_likelihood()
 	ASSERT(features)
 
 	int32_t num=features->get_num_vectors();
-	float64_t* vec=SG_MALLOC(float64_t, num);
+	SGVector<float64_t> vec(num);
 
 	for (int32_t i=0; i<num; i++)
 		vec[i]=get_log_likelihood_example(i);
 
-	return SGVector<float64_t>(vec,num);
+	return vec;
 }
 
 int32_t Distribution::get_num_relevant_model_parameters()
