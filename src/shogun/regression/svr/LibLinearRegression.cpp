@@ -96,7 +96,7 @@ bool LibLinearRegression::train_machine(std::shared_ptr<Features> data)
 	prob.use_bias = get_use_bias();
 
 	if (prob.use_bias)
-		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
+		w=SGVector<float64_t>(SG_ALIGNED_MALLOC(float64_t, num_feat+1,alignment::container_alignment), num_feat);
 	else
 		w=SGVector<float64_t>(num_feat);
 
