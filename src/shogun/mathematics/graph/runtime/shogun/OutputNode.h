@@ -4,11 +4,11 @@
  * Authors: Gil Hoben
  */
 
-#include <shogun/mathematics/graph/ops/abstract/Operator.h>
-#include <shogun/mathematics/graph/ops/shogun/Input.h>
-
 #ifndef SHOGUN_OUTPUT_NODE_H_
 #define SHOGUN_OUTPUT_NODE_H_
+
+#include <shogun/mathematics/graph/ops/abstract/Operator.h>
+#include <shogun/mathematics/graph/ops/shogun/Input.h>
 
 namespace shogun
 {

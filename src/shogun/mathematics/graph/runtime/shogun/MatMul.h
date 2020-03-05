@@ -7,6 +7,7 @@
 #ifndef SHOGUN_DETAIL_MATMUL_SHOGUN_H_
 #define SHOGUN_DETAIL_MATMUL_SHOGUN_H_
 
+#include "OutputNode.h"
 #include <shogun/mathematics/graph/nodes/MatMul.h>
 #include <shogun/mathematics/graph/ops/shogun/MatMul.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>

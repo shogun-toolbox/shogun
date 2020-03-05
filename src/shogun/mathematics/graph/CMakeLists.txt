@@ -18,8 +18,6 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Reshape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/MatMul.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Cast.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
 	#${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 	)
 
@@ -30,6 +28,8 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
+		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
+		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Equal.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalAnd.h
@@ -42,10 +42,24 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Reshape.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/MatMul.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.h
+		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/ShogunBinaryNode.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
+		${PROJECT_SOURCE_DIR}/src/shogun/io/SGIO.h
 		)
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Cast.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Dot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalAnd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalOr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalXor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/MatMul.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Multiply.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Reshape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Subtract.cpp
 	)
 
 set(NGRAPH_IMPLEMENTATION_HEADERS
@@ -62,8 +76,21 @@ set(NGRAPH_IMPLEMENTATION_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Reshape.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/MatMul.h
 		)
+
 set(NGRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/NGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Add.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Cast.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Divide.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Dot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalAnd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalOr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalXor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/MatMul.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Multiply.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Reshape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Subtract.cpp
  	)
 
 add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}

@@ -9,7 +9,6 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 #include <memory>
 #include <string_view>
@@ -24,7 +23,7 @@ namespace shogun
 		namespace detail
 		{
 
-			IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT RuntimeNode
+			IGNORE_IN_CLASSLIST class RuntimeNode
 			{
 			public:
 				RuntimeNode() = default;
@@ -62,15 +61,45 @@ namespace shogun
 				std::vector<std::shared_ptr<SpecialisedNode>> m_input_nodes;
 			};
 
-#define REGISTER_OP_FACTORY(opr, NODE)                                         \
-	REGISTER_OP_UNIQ_HELPER(__COUNTER__, opr, NODE)
-#define REGISTER_OP_UNIQ_HELPER(ctr, opr, NODE) REGISTER_OP_UNIQ(ctr, opr, NODE)
-#define REGISTER_OP_UNIQ(ctr, opr, NODE)                                       \
+			using OpMapFactory = std::unordered_map<
+			    std::type_index,
+			    std::function<std::shared_ptr<detail::RuntimeNode>()>>;
+
+			inline OpMapFactory& ShogunOperatorRegistry()
+			{
+				static OpMapFactory operator_registry;
+				return operator_registry;
+			}
+
+			inline OpMapFactory& NGraphOperatorRegistry()
+			{
+				static OpMapFactory operator_registry;
+				return operator_registry;
+			}
+
+#define REGISTER_OP_FACTORY_SHOGUN(opr, NODE)                                  \
+	REGISTER_OP_UNIQ_HELPER_SHOGUN(__COUNTER__, opr, NODE)
+#define REGISTER_OP_UNIQ_HELPER_SHOGUN(ctr, opr, NODE)                         \
+	REGISTER_OP_UNIQ_SHOGUN(ctr, opr, NODE)
+#define REGISTER_OP_UNIQ_SHOGUN(ctr, opr, NODE)                                \
 	static auto register_opf##ctr SG_ATTRIBUTE_UNUSED =                        \
 	    opr.emplace(std::type_index(typeid(NODE::abstract_node_type)), []() {  \
 		    return std::make_shared<NODE>();                                   \
 	    })
-#define REGISTER_OP(NODE) REGISTER_OP_FACTORY(OperatorRegistry(), NODE)
+#define REGISTER_OP_SHOGUN(NODE)                                               \
+	REGISTER_OP_FACTORY_SHOGUN(ShogunOperatorRegistry(), NODE)
+
+#define REGISTER_OP_FACTORY_NGRAPH(opr, NODE)                                  \
+	REGISTER_OP_UNIQ_HELPER_NGRAPH(__COUNTER__, opr, NODE)
+#define REGISTER_OP_UNIQ_HELPER_NGRAPH(ctr, opr, NODE)                         \
+	REGISTER_OP_UNIQ_NGRAPH(ctr, opr, NODE)
+#define REGISTER_OP_UNIQ_NGRAPH(ctr, opr, NODE)                                \
+	static auto register_opf##ctr SG_ATTRIBUTE_UNUSED =                        \
+	    opr.emplace(std::type_index(typeid(NODE::abstract_node_type)), []() {  \
+		    return std::make_shared<NODE>();                                   \
+	    })
+#define REGISTER_OP_NGRAPH(NODE)                                               \
+	REGISTER_OP_FACTORY_NGRAPH(NGraphOperatorRegistry(), NODE)
 		} // namespace detail
 	}     // namespace graph
 } // namespace shogun

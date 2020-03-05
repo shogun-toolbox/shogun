@@ -1,39 +1,24 @@
 #include <shogun/mathematics/graph/NGraph.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Add.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Cast.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Dot.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Equal.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalAnd.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalOr.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalXor.h>
-#include <shogun/mathematics/graph/runtime/ngraph/MatMul.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Reshape.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
 
 #include <ngraph/ngraph.hpp>
 
 using namespace shogun::graph;
+using namespace shogun::graph::detail;
 using namespace shogun::graph::detail::ngraph;
-
-OpMapFactory& OperatorRegistry()
-{
-	static OpMapFactory operator_registry;
-	return operator_registry;
-}
 
 std::vector<std::shared_ptr<Tensor>> NGraph::execute(
     const std::vector<std::shared_ptr<Tensor>>& tensors,
     const std::vector<std::shared_ptr<node::Node>>& output_nodes) const
 {
-	auto backend = ngraph::runtime::Backend::create("CPU", true);
+	auto backend = ::ngraph::runtime::Backend::create("CPU", true);
 
-	std::vector<std::shared_ptr<ngraph::runtime::Tensor>> ngraph_input_tensors;
-	std::vector<std::shared_ptr<ngraph::runtime::Tensor>> ngraph_output_tensors;
+	std::vector<std::shared_ptr<::ngraph::runtime::Tensor>>
+	    ngraph_input_tensors;
+	std::vector<std::shared_ptr<::ngraph::runtime::Tensor>>
+	    ngraph_output_tensors;
 
 	for (const auto& tensor : tensors)
 	{
@@ -52,10 +37,11 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 			auto& input =
 			    ngraph_input_tensors.emplace_back(backend->create_tensor(
 			        get_ngraph_type_from_enum(tensor->get_type()),
-			        ngraph::Shape{ngraph_shape[1], ngraph_shape[0]}));
+			        ::ngraph::Shape{ngraph_shape[1], ngraph_shape[0]}));
 			input->write(tensor->data(), tensor->size_in_bytes());
-			auto& transpose_param = ngraph_input_tensors.emplace_back(
-			    backend->create_tensor(ngraph::element::i64, ngraph::Shape{2}));
+			auto& transpose_param =
+			    ngraph_input_tensors.emplace_back(backend->create_tensor(
+			        ::ngraph::element::i64, ::ngraph::Shape{2}));
 			transpose_param->write(&kTranspose, 2 * sizeof(int64_t));
 		}
 		else
@@ -65,12 +51,13 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		}
 	}
 
-	ngraph::ParameterVector inputs;
-	ngraph::OutputVector outputs;
+	::ngraph::ParameterVector inputs;
+	::ngraph::OutputVector outputs;
 
 	for (const auto& node : m_input_output_nodes)
 	{
-		auto input_node = std::static_pointer_cast<ngraph::op::Parameter>(node);
+		auto input_node =
+		    std::static_pointer_cast<::ngraph::op::Parameter>(node);
 		inputs.push_back(input_node);
 	}
 
@@ -85,13 +72,14 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		}
 		else if (shape.size() == 2 && m_requires_major_conversion)
 		{
-			auto perm = std::make_shared<ngraph::op::Parameter>(
-			    ngraph::element::i64, ngraph::Shape{2});
-			outputs.push_back(
-			    std::make_shared<ngraph::op::Transpose>(m_lookup.at(el), perm));
+			auto perm = std::make_shared<::ngraph::op::Parameter>(
+			    ::ngraph::element::i64, ::ngraph::Shape{2});
+			outputs.push_back(std::make_shared<::ngraph::op::Transpose>(
+			    m_lookup.at(el), perm));
 			inputs.push_back(perm);
-			auto& transpose_param = ngraph_input_tensors.emplace_back(
-			    backend->create_tensor(ngraph::element::i64, ngraph::Shape{2}));
+			auto& transpose_param =
+			    ngraph_input_tensors.emplace_back(backend->create_tensor(
+			        ::ngraph::element::i64, ::ngraph::Shape{2}));
 			transpose_param->write(&kTranspose, 2 * sizeof(int64_t));
 		}
 		else
@@ -101,7 +89,7 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		}
 	}
 
-	auto f = std::make_shared<ngraph::Function>(outputs, inputs);
+	auto f = std::make_shared<::ngraph::Function>(outputs, inputs);
 
 	auto handle = backend->compile(f);
 
@@ -149,8 +137,8 @@ std::shared_ptr<detail::RuntimeNode>
 NGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 {
 	auto type = std::type_index(typeid(*node));
-	auto op_it = OperatorRegistry().find(type);
-	if (op_it == OperatorRegistry().end())
+	auto op_it = NGraphOperatorRegistry().find(type);
+	if (op_it == NGraphOperatorRegistry().end())
 	{
 		error("Could not find operator for node {}", node->to_string());
 	}
@@ -174,10 +162,10 @@ void NGraph::add_input_operator(const std::shared_ptr<node::Node>& node)
 		auto input_node = std::make_shared<::ngraph::op::Parameter>(
 		    get_ngraph_type_from_enum(node->get_types()[0]),
 		    to_ngraph_partial_shape(Shape{shape[1], shape[0]}));
-		auto perm = std::make_shared<ngraph::op::Parameter>(
-		    ngraph::element::i64, ngraph::Shape{2});
+		auto perm = std::make_shared<::ngraph::op::Parameter>(
+		    ::ngraph::element::i64, ::ngraph::Shape{2});
 		m_lookup[node] =
-		    std::make_shared<ngraph::op::Transpose>(input_node, perm);
+		    std::make_shared<::ngraph::op::Transpose>(input_node, perm);
 		m_input_output_nodes.push_back(input_node);
 		m_input_output_nodes.push_back(perm);
 	}
@@ -191,30 +179,18 @@ void NGraph::add_input_operator(const std::shared_ptr<node::Node>& node)
 void NGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 {
 	auto op = get_operator(node);
-	std::vector<std::shared_ptr<ngraph::Node>> inputs;
+	std::vector<std::shared_ptr<::ngraph::Node>> inputs;
 	for (const auto& input : node->get_input_nodes())
 		inputs.push_back(m_lookup.at(input));
 
 	m_lookup[node] =
 	    std::static_pointer_cast<
-	        detail::RuntimeNodeTemplate<node::Node, ngraph::Node>>(op)
+	        detail::RuntimeNodeTemplate<node::Node, ::ngraph::Node>>(op)
 	        ->build(inputs, node);
 	m_operator_output_nodes.push_back(m_lookup.at(node));
 }
 
-REGISTER_OP(detail::ngraph::AddNGraph);
-REGISTER_OP(detail::ngraph::EqualNGraph);
-REGISTER_OP(detail::ngraph::DivideNGraph);
-REGISTER_OP(detail::ngraph::InputNGraph);
-REGISTER_OP(detail::ngraph::MultiplyNGraph);
-REGISTER_OP(detail::ngraph::SubtractNGraph);
-REGISTER_OP(detail::ngraph::LogicalAndNGraph);
-REGISTER_OP(detail::ngraph::LogicalOrNGraph);
-REGISTER_OP(detail::ngraph::LogicalXorNGraph);
-REGISTER_OP(detail::ngraph::MatMulNGraph);
-REGISTER_OP(detail::ngraph::DotNGraph);
-REGISTER_OP(detail::ngraph::ReshapeNGraph);
-REGISTER_OP(detail::ngraph::CastNGraph);
+REGISTER_OP_NGRAPH(detail::ngraph::InputNGraph);
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

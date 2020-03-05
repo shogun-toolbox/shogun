@@ -10,7 +10,7 @@
 #include <shogun/mathematics/graph/nodes/LogicalXor.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 
-#include <ngraph/op/or.hpp>
+#include <ngraph/op/xor.hpp>
 
 namespace shogun
 {

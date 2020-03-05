@@ -7,8 +7,8 @@
 #ifndef SHOGUN_NODES_RESHAPE_NODE_H_
 #define SHOGUN_NODES_RESHAPE_NODE_H_
 
+#include "Input.h"
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/util/enumerate.h>
 
 #define IGNORE_IN_CLASSLIST
 

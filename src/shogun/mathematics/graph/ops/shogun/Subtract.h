@@ -8,8 +8,8 @@
 #ifndef SHOGUN_SUBTRACT_SHOGUN_H_
 #define SHOGUN_SUBTRACT_SHOGUN_H_
 
-// #include <shogun/mathematics/graph/nodes/Subtract.h>
-// #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
+#include <shogun/mathematics/graph/nodes/Subtract.h>
+#include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 
 namespace shogun
 {

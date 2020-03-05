@@ -7,7 +7,7 @@
 #ifndef SHOGUN_DETAIL_CAST_SHOGUN_H_
 #define SHOGUN_DETAIL_CAST_SHOGUN_H_
 
-#include <shogun/mathematics/graph/nodes/Cast.h>
+#include "OutputNode.h"
 #include <shogun/mathematics/graph/ops/shogun/Cast.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 

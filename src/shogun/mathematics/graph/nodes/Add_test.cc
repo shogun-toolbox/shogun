@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/mathematics/graph/Graph.h>
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
-#include <shogun/mathematics/UniformIntDistribution.h>
-#include <shogun/mathematics/UniformRealDistribution.h>
-
 
 #include "../test/GraphTest.h"
 

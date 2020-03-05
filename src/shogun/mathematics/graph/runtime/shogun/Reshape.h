@@ -7,6 +7,7 @@
 #ifndef SHOGUN_DETAIL_RESHAPE_SHOGUN_H_
 #define SHOGUN_DETAIL_RESHAPE_SHOGUN_H_
 
+#include "OutputNode.h"
 #include <shogun/mathematics/graph/nodes/Reshape.h>
 #include <shogun/mathematics/graph/ops/shogun/Reshape.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>

@@ -2,10 +2,10 @@
 #define GRAPH_EXECUTOR_
 
 #include <shogun/base/manifest.h>
-#include <shogun/mathematics/graph/shogun-engine_export.h>
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 #include <memory>
 #include <regex>
@@ -19,9 +19,6 @@ namespace shogun
 {
 	namespace graph
 	{
-		using OpMapFactory = std::unordered_map<
-		    std::type_index,
-		    std::function<std::shared_ptr<detail::RuntimeNode>()>>;
 
 		static const std::unordered_map<GRAPH_BACKEND, std::string_view>
 		    kGraphNames = {{GRAPH_BACKEND::SHOGUN, "SHOGUN"},
@@ -66,7 +63,8 @@ namespace shogun
 		 * @param backend_name
 		 * @param generic
 		 */
-		SHOGUN_ENGINE_EXPORT std::shared_ptr<GraphExecutor> create(GRAPH_BACKEND backend_type);
+		SHOGUN_ENGINE_EXPORT std::shared_ptr<GraphExecutor>
+		create(GRAPH_BACKEND backend_type);
 
 		/** Returns all available object names
 		 *
@@ -74,9 +72,9 @@ namespace shogun
 		SHOGUN_ENGINE_EXPORT std::set<GRAPH_BACKEND> available_backends();
 
 #define BEGIN_EXECUTOR_MANIFEST(DESCRIPTION)                                   \
-	extern "C" shogun::Manifest shogunManifest()                               \
+	extern "C" ::shogun::Manifest shogunManifest()                             \
 	{                                                                          \
-		    static shogun::Manifest manifest(DESCRIPTION,{
+		    static ::shogun::Manifest manifest(DESCRIPTION,{
 
 /** Declares class to be exported.
  * Always use this macro between @ref BEGIN_MANIFEST and
@@ -85,8 +83,8 @@ namespace shogun
 #define EXPORT_EXECUTOR(CLASSNAME)                                             \
 	std::make_pair(                                                            \
 	    std::string(kGraphNames.at(CLASSNAME::kBackendType)),                  \
-	    shogun::make_any(shogun::MetaClass<GraphExecutor>(                     \
-	        shogun::make_any<std::shared_ptr<GraphExecutor>>(                  \
+	    ::shogun::make_any(::shogun::MetaClass<GraphExecutor>(                 \
+	        ::shogun::make_any<std::shared_ptr<GraphExecutor>>(                \
 	            []() -> std::shared_ptr<GraphExecutor> {                       \
 		            return std::make_shared<CLASSNAME>();                      \
 	            })))),

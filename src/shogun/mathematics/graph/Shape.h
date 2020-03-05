@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include <shogun/io/SGIO.h>
+
 namespace shogun
 {
 	namespace graph
