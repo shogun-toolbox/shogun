@@ -84,7 +84,7 @@ SGVector<float64_t> LinearMachine::apply_get_outputs(std::shared_ptr<Features> d
 
 	float64_t* out=SG_MALLOC(float64_t, num);
 	features->dense_dot_range(out, 0, num, NULL, m_w.vector, m_w.vlen, bias);
-	return SGVector<float64_t>(out,num);
+	return SGVector<float64_t>(out,num,false);
 }
 
 SGVector<float64_t> LinearMachine::get_w() const
