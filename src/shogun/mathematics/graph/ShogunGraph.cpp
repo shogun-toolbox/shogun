@@ -1,6 +1,7 @@
 #include <shogun/mathematics/graph/ShogunGraph.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/shogun/Add.h>
+#include <shogun/mathematics/graph/runtime/shogun/Cast.h>
 #include <shogun/mathematics/graph/runtime/shogun/Divide.h>
 #include <shogun/mathematics/graph/runtime/shogun/Dot.h>
 #include <shogun/mathematics/graph/runtime/shogun/Equal.h>
@@ -118,6 +119,7 @@ REGISTER_OP(detail::shogun::LogicalXorShogun);
 REGISTER_OP(detail::shogun::DotShogun);
 REGISTER_OP(detail::shogun::ReshapeShogun);
 REGISTER_OP(detail::shogun::MatMulShogun);
+REGISTER_OP(detail::shogun::CastShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

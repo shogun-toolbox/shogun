@@ -2,6 +2,7 @@
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Add.h>
+#include <shogun/mathematics/graph/runtime/ngraph/Cast.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Dot.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Equal.h>
@@ -213,6 +214,7 @@ REGISTER_OP(detail::ngraph::LogicalXorNGraph);
 REGISTER_OP(detail::ngraph::MatMulNGraph);
 REGISTER_OP(detail::ngraph::DotNGraph);
 REGISTER_OP(detail::ngraph::ReshapeNGraph);
+REGISTER_OP(detail::ngraph::CastNGraph);
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)

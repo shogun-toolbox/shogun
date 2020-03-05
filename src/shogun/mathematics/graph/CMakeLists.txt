@@ -16,8 +16,11 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Input.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Dot.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Reshape.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/MatMul.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Cast.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
+	#${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 	)
 
 set(SHOGUN_CORE_GRAPH_SOURCES
@@ -133,5 +136,6 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/Dot_test)
 	add_graph_test(nodes/Reshape_test)
 	add_graph_test(nodes/MatMul_test)
+	add_graph_test(nodes/Cast_test)
 
 ENDIF()
