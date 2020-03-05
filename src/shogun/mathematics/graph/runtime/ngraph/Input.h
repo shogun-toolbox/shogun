@@ -20,7 +20,7 @@ namespace shogun
 		{
 			namespace ngraph
 			{
-				element_type
+				inline element_type
 				get_enum_from_ngraph(::ngraph::element::Type_t type)
 				{
 					switch (type)
@@ -56,7 +56,7 @@ namespace shogun
 					}
 				}
 
-				::ngraph::element::Type_t
+				inline ::ngraph::element::Type_t
 				get_ngraph_type_from_enum(element_type type)
 				{
 					switch (type)
@@ -86,12 +86,12 @@ namespace shogun
 					}
 				}
 
-				::ngraph::Shape to_ngraph_shape(const Shape& shape)
+				inline ::ngraph::Shape to_ngraph_shape(const Shape& shape)
 				{
 					return ::ngraph::Shape(shape.begin(), shape.end());
 				}
 
-				::ngraph::PartialShape
+				inline ::ngraph::PartialShape
 				to_ngraph_partial_shape(const Shape& shape)
 				{
 					std::vector<::ngraph::Dimension> result;
@@ -105,7 +105,7 @@ namespace shogun
 					return ::ngraph::PartialShape(result);
 				}
 
-				Shape from_ngraph_shape(const ::ngraph::Shape& shape)
+				inline Shape from_ngraph_shape(const ::ngraph::Shape& shape)
 				{
 					std::vector<Shape::shape_type> out;
 					for (const auto& el : shape)

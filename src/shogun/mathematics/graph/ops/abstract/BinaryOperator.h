@@ -8,6 +8,7 @@
 #define SHOGUNBINARYOPERATOR_H_
 
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
+#include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
 
 namespace shogun
 {

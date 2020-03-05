@@ -11,6 +11,8 @@
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
 
+#include <ngraph/op/convert.hpp>
+
 namespace shogun
 {
 	namespace graph

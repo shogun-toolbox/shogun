@@ -7,6 +7,7 @@
 #ifndef SHOGUN_DETAIL_DOT_SHOGUN_H_
 #define SHOGUN_DETAIL_DOT_SHOGUN_H_
 
+#include "OutputNode.h"
 #include <shogun/mathematics/graph/nodes/Dot.h>
 #include <shogun/mathematics/graph/ops/shogun/Dot.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>

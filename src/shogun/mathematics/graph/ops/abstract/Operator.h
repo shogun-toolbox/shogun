@@ -1,8 +1,14 @@
-#include <shogun/mathematics/graph/Tensor.h>
-#include <shogun/mathematics/graph/nodes/Node.h>
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
 
 #ifndef SHOGUN_GRAPH_OPERATOR_H_
 #define SHOGUN_GRAPH_OPERATOR_H_
+
+#include <shogun/mathematics/graph/Tensor.h>
+#include <shogun/mathematics/graph/nodes/Node.h>
 
 namespace shogun
 {

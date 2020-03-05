@@ -1,18 +1,7 @@
 #include <shogun/mathematics/graph/ShogunGraph.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
-#include <shogun/mathematics/graph/runtime/shogun/Cast.h>
-#include <shogun/mathematics/graph/runtime/shogun/Divide.h>
-#include <shogun/mathematics/graph/runtime/shogun/Dot.h>
-#include <shogun/mathematics/graph/runtime/shogun/Equal.h>
 #include <shogun/mathematics/graph/runtime/shogun/Input.h>
-#include <shogun/mathematics/graph/runtime/shogun/LogicalAnd.h>
-#include <shogun/mathematics/graph/runtime/shogun/LogicalOr.h>
-#include <shogun/mathematics/graph/runtime/shogun/LogicalXor.h>
-#include <shogun/mathematics/graph/runtime/shogun/MatMul.h>
-#include <shogun/mathematics/graph/runtime/shogun/Multiply.h>
-#include <shogun/mathematics/graph/runtime/shogun/Reshape.h>
-#include <shogun/mathematics/graph/runtime/shogun/Subtract.h>
 
 using namespace shogun::graph;
 using namespace shogun::graph::detail;
@@ -102,18 +91,7 @@ void ShogunGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 }
 
 // move this to implementations....
-REGISTER_OP_SHOGUN(detail::shogun::EqualShogun);
 REGISTER_OP_SHOGUN(detail::shogun::InputShogun);
-REGISTER_OP_SHOGUN(detail::shogun::SubtractShogun);
-REGISTER_OP_SHOGUN(detail::shogun::MultiplyShogun);
-REGISTER_OP_SHOGUN(detail::shogun::DivideShogun);
-REGISTER_OP_SHOGUN(detail::shogun::LogicalAndShogun);
-REGISTER_OP_SHOGUN(detail::shogun::LogicalOrShogun);
-REGISTER_OP_SHOGUN(detail::shogun::LogicalXorShogun);
-REGISTER_OP_SHOGUN(detail::shogun::DotShogun);
-REGISTER_OP_SHOGUN(detail::shogun::ReshapeShogun);
-REGISTER_OP_SHOGUN(detail::shogun::MatMulShogun);
-REGISTER_OP_SHOGUN(detail::shogun::CastShogun);
 
 BEGIN_EXECUTOR_MANIFEST("Shogun default graph executor")
 EXPORT_EXECUTOR(ShogunGraph)

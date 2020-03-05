@@ -7,10 +7,10 @@
 #ifndef SHOGUN_RESHAPE_NGRAPH_H_
 #define SHOGUN_RESHAPE_NGRAPH_H_
 
+#include "Input.h"
+#include <ngraph/op/reshape.hpp>
 #include <shogun/mathematics/graph/nodes/Reshape.h>
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
-
-#include <ngraph/op/reshape.hpp>
 
 namespace shogun
 {

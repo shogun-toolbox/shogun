@@ -1,19 +1,7 @@
 #include <shogun/mathematics/graph/NGraph.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Add.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Cast.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Divide.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Dot.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Equal.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalAnd.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalOr.h>
-#include <shogun/mathematics/graph/runtime/ngraph/LogicalXor.h>
-#include <shogun/mathematics/graph/runtime/ngraph/MatMul.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Multiply.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Reshape.h>
-#include <shogun/mathematics/graph/runtime/ngraph/Subtract.h>
 
 #include <ngraph/ngraph.hpp>
 
@@ -202,19 +190,7 @@ void NGraph::add_operator_node(const std::shared_ptr<node::Node>& node)
 	m_operator_output_nodes.push_back(m_lookup.at(node));
 }
 
-REGISTER_OP_NGRAPH(detail::ngraph::AddNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::EqualNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::DivideNGraph);
 REGISTER_OP_NGRAPH(detail::ngraph::InputNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::MultiplyNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::SubtractNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::LogicalAndNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::LogicalOrNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::LogicalXorNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::MatMulNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::DotNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::ReshapeNGraph);
-REGISTER_OP_NGRAPH(detail::ngraph::CastNGraph);
 
 BEGIN_EXECUTOR_MANIFEST("NGraph based graph executor")
 EXPORT_EXECUTOR(NGraph)
