@@ -351,7 +351,7 @@ std::shared_ptr<Features> SNPFeatures::duplicate() const
 SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 {
 	int32_t nsym=3;
-	SGMatrix<float64_t> h(nsym, string_length/2,false);
+	SGMatrix<float64_t> h(nsym, string_length/2);
 
 	float64_t* h_normalizer=SG_MALLOC(float64_t, string_length/2);
 	memset(h_normalizer, 0, string_length/2*sizeof(float64_t));
