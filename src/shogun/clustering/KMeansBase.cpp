@@ -82,7 +82,7 @@ void KMeansBase::set_random_centers()
 		lhs->free_feature_vector(vec, cluster_center_i);
 	}
 
-	observe<SGMatrix<float64_t>>(0, "cluster_centers");
+	observe<SGMatrix<float64_t>>(0, "mus");
 }
 
 void KMeansBase::compute_cluster_variances()
@@ -173,8 +173,8 @@ void KMeansBase::initialize_training(const std::shared_ptr<Features>& data)
 
 	if (initial_centers.matrix)
 	{
-		cluster_centers = initial_centers;
-		observe<SGMatrix<float64_t>>(0, "cluster_centers");
+		mus = mus_initial;
+		observe<SGMatrix<float64_t>>(0, "mus");
 	}
 	else
 	{
