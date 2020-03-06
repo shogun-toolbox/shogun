@@ -330,13 +330,14 @@ SGVector<int32_t> Statistics::sample_indices(int32_t sample_size, int32_t N, PRN
 			"sample size should be less than number of indices");
 	int32_t* idxs=SG_MALLOC(int32_t,N);
 	int32_t i, rnd;
-	SGVector<int32_t>result(sample_size);
+	SGVector<int32_t>permuted_idxs(sample_size);
+	
 	UniformIntDistribution<int32_t> uniform_int_dist;
 	// reservoir sampling
 	for (i=0; i<N; i++)
 		idxs[i]=i;
 	for (i=0; i<sample_size; i++)
-		result[i]=idxs[i];
+		permuted_idxs[i]=idxs[i];
 	for (i=sample_size; i<N; i++)
 	{
 		rnd=uniform_int_dist(prng, {1, i});
@@ -346,8 +347,8 @@ SGVector<int32_t> Statistics::sample_indices(int32_t sample_size, int32_t N, PRN
 	SG_FREE(idxs);
 
 	
-	Math::qsort(result);
-	return result;
+	Math::qsort(permuted_idxs);
+	return permuted_idxs;
 }
 
 template SGVector<int32_t> Statistics::sample_indices<std::mt19937_64>(int32_t sample_size, int32_t N, std::mt19937_64& prng);
