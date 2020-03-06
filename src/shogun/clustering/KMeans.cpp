@@ -171,7 +171,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 			}
 		}
 
-		observe<SGMatrix<float64_t>>(iter, "cluster_centers");
+		observe<SGMatrix<float64_t>>(iter, "mus");
 
 		if (iter%(max_iter/10) == 0)
 			io::info("Iteration[{}/{}]: Assignment of {} patterns changed.", iter, max_iter, changed);
