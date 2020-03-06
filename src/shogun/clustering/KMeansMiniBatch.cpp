@@ -96,8 +96,8 @@ void KMeansMiniBatch::minibatch_KMeans()
 				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
 			}
 		}
-		cluster_centers = rhs_mus->get_feature_matrix();
-		observe<SGMatrix<float64_t>>(i, "cluster_centers");
+		mus = rhs_mus->get_feature_matrix();
+		observe<SGMatrix<float64_t>>(i, "mus");
 	}
 
 	distance->replace_rhs(rhs_cache);
