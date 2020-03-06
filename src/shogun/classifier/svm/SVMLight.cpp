@@ -1589,7 +1589,6 @@ void SVMLight::update_linear_component_mkl(
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
 			w_backup[i] = old_beta[i] ;
-		
 		for (int32_t n=0; n<num_kernels; n++)
 		{
 			w1[n] = 1.0;
