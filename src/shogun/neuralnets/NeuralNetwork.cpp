@@ -391,7 +391,7 @@ bool NeuralNetwork::train_lbfgs(SGMatrix<float64_t> inputs,
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 
-	if (result==LBFGS_SUCCESS || 1)
+	if (result==LBFGS_SUCCESS)
 	{
 		io::info("L-BFGS Optimization Converged");
 	}
