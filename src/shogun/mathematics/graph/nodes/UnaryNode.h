@@ -54,7 +54,7 @@ namespace shogun
 						    "tensor, but got {}",
 						    node_shapes.size());
 
-					return node_shapes;
+					return node_shapes[0];
 				}
 			};
 		} // namespace node

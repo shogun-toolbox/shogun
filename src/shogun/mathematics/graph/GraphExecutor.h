@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Viktor Gal
+ */
+
 #ifndef GRAPH_EXECUTOR_
 #define GRAPH_EXECUTOR_
 

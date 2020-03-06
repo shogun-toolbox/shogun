@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
+
 #include <shogun/mathematics/graph/Tensor.h>
 
 #include <shogun/io/fmt/fmt.h>
