@@ -1584,7 +1584,7 @@ void SVMLight::update_linear_component_mkl(
 	else // hope the kernel is fast ...
 	{
 		float64_t* w_backup = SG_MALLOC(float64_t, num_kernels);
-		SGVector<float64_t> weight_vector(num_weights);
+		SGVector<float64_t> w1(num_weights);
 
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
@@ -1593,9 +1593,9 @@ void SVMLight::update_linear_component_mkl(
 		for (int32_t n=0; n<num_kernels; n++)
 		{
 			
-			memset(weight_vector,0,num_kernels);
-			weight_vector[n] = 1.0;
-			kernel->set_subkernel_weights(weight_vector);
+			memset(w1,0,num_kernels);
+			w1[n] = 1.0;
+			kernel->set_subkernel_weights(w1);
 
 			for (int32_t i=0;i<num;i++)
 			{
@@ -1612,7 +1612,6 @@ void SVMLight::update_linear_component_mkl(
 		kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
 
 		SG_FREE(w_backup);
-		
 	}
 
 	call_mkl_callback(a, label, lin);
