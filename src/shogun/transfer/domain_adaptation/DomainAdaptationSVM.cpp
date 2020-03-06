@@ -96,7 +96,7 @@ bool DomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 	auto labels = binary_labels(get_labels());
 
 
-	SGVector<float64_t>lin_term(num_training_points);
+	SGVector<float64_t> lin_term(num_training_points);
 	// grab current training features
 	auto train_data = get_kernel()->get_lhs();
 

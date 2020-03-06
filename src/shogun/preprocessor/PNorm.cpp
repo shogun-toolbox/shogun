@@ -72,7 +72,7 @@ SGMatrix<float64_t> PNorm::apply_to_matrix(SGMatrix<float64_t> matrix)
 /// result in feature matrix
 SGVector<float64_t> PNorm::apply_to_feature_vector (SGVector<float64_t> vector)
 {
-	SGVector<float64_t>normed_vec(vector.vlen);
+	SGVector<float64_t> normed_vec(vector.vlen);
 	float64_t norm = get_pnorm (vector.vector, vector.vlen);
 
 	for (int32_t i=0; i<vector.vlen; i++)

@@ -93,7 +93,7 @@ SGVector<float64_t> RescaleFeatures::apply_to_feature_vector(SGVector<float64_t>
 	assert_fitted();
 	ASSERT(m_min.vlen == vector.vlen);
 
-	SGVector<float64_t>ret(vector.vlen);
+	SGVector<float64_t> ret(vector.vlen);
 	SGVector<float64_t>::add(ret, 1.0, vector.vector, -1.0, m_min.vector, vector.vlen);
 	for (index_t i = 0; i < vector.vlen; i++) {
 		ret[i] *= m_range[i];
