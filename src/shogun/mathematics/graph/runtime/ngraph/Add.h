@@ -40,17 +40,24 @@ namespace shogun
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in AddNGraph.");
 
-						auto add_node = std::static_pointer_cast<node::Add>(node);
-						if (add_node->get_binary_tensor_compatibility() == node::BinaryNode::BinaryShapeCompatibity::ArrayArray)
+						auto add_node =
+						    std::static_pointer_cast<node::Add>(node);
+						if (add_node->get_binary_tensor_compatibility() ==
+						    node::BinaryNode::BinaryShapeCompatibity::
+						        ArrayArray)
 						{
 							return std::make_shared<::ngraph::op::Add>(
 							    m_input_nodes[0], m_input_nodes[1]);
 						}
-						else if (add_node->get_binary_tensor_compatibility() == node::BinaryNode::BinaryShapeCompatibity::ArrayScalar)
+						else if (
+						    add_node->get_binary_tensor_compatibility() ==
+						    node::BinaryNode::BinaryShapeCompatibity::
+						        ArrayScalar)
 						{
 							return std::make_shared<::ngraph::op::Add>(
-								    m_input_nodes[0], m_input_nodes[1],
-									::ngraph::op::AutoBroadcastSpec(::ngraph::op::AutoBroadcastType::NUMPY));
+							    m_input_nodes[0], m_input_nodes[1],
+							    ::ngraph::op::AutoBroadcastSpec(
+							        ::ngraph::op::AutoBroadcastType::NUMPY));
 						}
 					}
 				};

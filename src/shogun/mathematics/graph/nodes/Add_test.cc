@@ -69,13 +69,10 @@ TYPED_TEST(GraphTest, vector_scalar_add)
 	auto output = input1 + input2;
 
 	auto graph = make_shared<Graph>(
-	    vector{input1, input2},
-	    vector<shared_ptr<node::Node>>{output});
+	    vector{input1, input2}, vector<shared_ptr<node::Node>>{output});
 
 	for (auto&& backend : this->m_backends)
 	{
-		if (backend == GRAPH_BACKEND::SHOGUN)
-			continue;
 		graph->build(backend);
 
 		std::vector<std::shared_ptr<shogun::graph::Tensor>> result =

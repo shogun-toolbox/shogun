@@ -18,8 +18,14 @@ namespace shogun
 	{
 		namespace node
 		{
-			IGNORE_IN_CLASSLIST class BinaryNode : public Node
+			class BinaryNode;
+			class LogicalBinaryNode;
+
+			IGNORE_IN_CLASSLIST class BaseBinaryNode : public Node
 			{
+
+				friend class BinaryNode;
+				friend class LogicalBinaryNode;
 
 			public:
 				enum class BinaryShapeCompatibity
@@ -29,12 +35,13 @@ namespace shogun
 					BroadcastAlongAxis = 2
 				};
 
-				BinaryNode(
+				BaseBinaryNode(
 				    const std::shared_ptr<Node>& node1,
-				    const std::shared_ptr<Node>& node2)
-				    : Node(
-				          {node1, node2}, check_shape_compatible(node1, node2),
-				          check_type_compatible(node1, node2))
+				    const std::shared_ptr<Node>& node2,
+				    const std::tuple<BinaryShapeCompatibity, Shape>& shape,
+				    const element_type& type)
+				    : Node({node1, node2}, std::get<Shape>(shape), type),
+				      m_shape_compatibility(std::get<BinaryShapeCompatibity>(shape))
 				{
 				}
 
@@ -49,38 +56,14 @@ namespace shogun
 				}
 
 			protected:
-				element_type check_type_compatible(
+
+				static std::tuple<BinaryShapeCompatibity, Shape> check_shape_compatible(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				{
-					const auto& node1_types = node1->get_types();
-					const auto& node2_types = node2->get_types();
-
-					if (node1_types.size() > 1)
-						error(
-						    "Expected first node to have only one output "
-						    "tensor, but got {}",
-						    node1_types.size());
-
-					if (node2_types.size() > 1)
-						error(
-						    "Expected second node to have only one output "
-						    "tensor, but got {}",
-						    node2_types.size());
-
-					if (node1_types[0] != node2_types[0])
-						error("Expected types to be the same");
-
-					return node1_types[0];
-				}
-
-				Shape check_shape_compatible(
-				    const std::shared_ptr<Node>& node1,
-				    const std::shared_ptr<Node>& node2)
-				{
-					// by default assume that this is going to be a binary operation 
-					// of two nodes with the same number of elements
-					m_shape_compatibility = BinaryShapeCompatibity::ArrayArray;
+					// by default assume that this is going to be a binary
+					// operation of two nodes with the same number of elements
+					auto shape_compatibility = BinaryShapeCompatibity::ArrayArray;
 
 					const auto& node1_shapes = node1->get_shapes();
 					const auto& node2_shapes = node2->get_shapes();
@@ -102,7 +85,9 @@ namespace shogun
 
 					if (node1_shape.is_scalar() || node2_shape.is_scalar())
 					{
-						return scalar_binary_op(node1_shape, node2_shape);
+						return std::make_tuple(
+							shape_compatibility,
+							scalar_binary_op(node1_shape, node2_shape, shape_compatibility));
 					}
 					else if (node1_shape.size() != node2_shape.size())
 					{
@@ -111,22 +96,28 @@ namespace shogun
 						    "Number of dimension mismatch between {} and {}.",
 						    node1->to_string(), node2->to_string());
 					}
-					return same_shape_binary_op(node1_shape, node2_shape);
+					return std::make_tuple(
+							shape_compatibility,
+							same_shape_binary_op(node1_shape, node2_shape));
 				}
 
 			private:
-				Shape scalar_binary_op(const Shape& node1_shape, const Shape& node2_shape)
+				static Shape scalar_binary_op(
+				    const Shape& node1_shape, const Shape& node2_shape,
+				    BinaryShapeCompatibity& shape_compatibility)
 				{
 					// xor shapes -> one is a scalar other is an array
 					if (!node1_shape.is_scalar() != !node2_shape.is_scalar())
-						m_shape_compatibility = BinaryShapeCompatibity::ArrayScalar;
+						shape_compatibility =
+						    BinaryShapeCompatibity::ArrayScalar;
 					if (node1_shape.is_scalar())
 						return node2_shape;
 					if (node2_shape.is_scalar())
 						return node1_shape;
 				}
 
-				Shape same_shape_binary_op(const Shape& node1_shape, const Shape& node2_shape)
+				static Shape same_shape_binary_op(
+				    const Shape& node1_shape, const Shape& node2_shape)
 				{
 					std::vector<Shape::shape_type> output_shape_vector;
 
@@ -166,7 +157,8 @@ namespace shogun
 						}
 						else
 						{
-							error("BinaryNode: Unexpected path, contact a dev or raise an "
+							error("BinaryNode: Unexpected path, contact a dev "
+							      "or raise an "
 							      "issue!");
 						}
 					}
@@ -175,6 +167,45 @@ namespace shogun
 				}
 
 				BinaryShapeCompatibity m_shape_compatibility;
+			};
+
+			class BinaryNode: public BaseBinaryNode
+			{
+			public:
+				BinaryNode(
+				    const std::shared_ptr<Node>& node1,
+				    const std::shared_ptr<Node>& node2)
+				    : BaseBinaryNode(
+				          node1, node2, BaseBinaryNode::check_shape_compatible(node1, node2),
+				          check_type_compatible(node1, node2))
+				{
+				}
+
+			private:
+				element_type check_type_compatible(
+				    const std::shared_ptr<Node>& node1,
+				    const std::shared_ptr<Node>& node2)
+				{
+					const auto& node1_types = node1->get_types();
+					const auto& node2_types = node2->get_types();
+
+					if (node1_types.size() > 1)
+						error(
+						    "Expected first node to have only one output "
+						    "tensor, but got {}",
+						    node1_types.size());
+
+					if (node2_types.size() > 1)
+						error(
+						    "Expected second node to have only one output "
+						    "tensor, but got {}",
+						    node2_types.size());
+
+					if (node1_types[0] != node2_types[0])
+						error("Expected types to be the same");
+
+					return node1_types[0];
+				}
 			};
 		} // namespace node
 	}     // namespace graph

@@ -40,17 +40,24 @@ namespace shogun
 						if (m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
 							      "SubtractNGraph.");
-						auto subtract_node = std::static_pointer_cast<node::Subtract>(node);
-						if (subtract_node->get_binary_tensor_compatibility() == node::BinaryNode::BinaryShapeCompatibity::ArrayArray)
+						auto subtract_node =
+						    std::static_pointer_cast<node::Subtract>(node);
+						if (subtract_node->get_binary_tensor_compatibility() ==
+						    node::BinaryNode::BinaryShapeCompatibity::
+						        ArrayArray)
 						{
 							return std::make_shared<::ngraph::op::Subtract>(
 							    m_input_nodes[0], m_input_nodes[1]);
 						}
-						else if (subtract_node->get_binary_tensor_compatibility() == node::BinaryNode::BinaryShapeCompatibity::ArrayScalar)
+						else if (
+						    subtract_node->get_binary_tensor_compatibility() ==
+						    node::BinaryNode::BinaryShapeCompatibity::
+						        ArrayScalar)
 						{
 							return std::make_shared<::ngraph::op::Subtract>(
-								    m_input_nodes[0], m_input_nodes[1],
-									::ngraph::op::AutoBroadcastSpec(::ngraph::op::AutoBroadcastType::NUMPY));
+							    m_input_nodes[0], m_input_nodes[1],
+							    ::ngraph::op::AutoBroadcastSpec(
+							        ::ngraph::op::AutoBroadcastType::NUMPY));
 						}
 					}
 				};

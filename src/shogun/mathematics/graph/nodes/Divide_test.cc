@@ -56,9 +56,9 @@ TYPED_TEST(GraphTest, vector_scalar_divide)
 
 	if constexpr (std::is_same_v<NumericType, bool>)
 		return;
-	else 
+	else
 	{
-		SGVector<NumericType> X1 {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
+		SGVector<NumericType> X1{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
 		NumericType X2{2};
 
 		auto expected_result1 = SGVector<NumericType>(10);
@@ -72,13 +72,10 @@ TYPED_TEST(GraphTest, vector_scalar_divide)
 		auto output = input1 / input2;
 
 		auto graph = make_shared<Graph>(
-		    vector{input1, input2},
-		    vector<shared_ptr<node::Node>>{output});
+		    vector{input1, input2}, vector<shared_ptr<node::Node>>{output});
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			std::vector<std::shared_ptr<shogun::graph::Tensor>> result =

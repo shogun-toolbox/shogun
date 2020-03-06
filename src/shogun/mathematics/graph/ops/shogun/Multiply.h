@@ -35,7 +35,7 @@ namespace shogun
 			protected:
 				template <typename T>
 				void kernel_implementation(
-				    void* input1, void* input2, void* output, size_t size)
+				    void* input1, void* input2, void* output, const size_t size)
 				{
 					// if we have SYCL or MSVC we could add parallel execution
 					// or just use Eigen here
@@ -44,6 +44,34 @@ namespace shogun
 					    static_cast<const T*>(input1) + size,
 					    static_cast<const T*>(input2), static_cast<T*>(output),
 					    std::multiplies<T>());
+				}
+
+				template <typename T>
+				void kernel_scalar_implementation(
+				    void* input1, void* input2, void* output, const size_t size, const bool scalar_first)
+				{
+					if (scalar_first)
+					{
+						std::transform(
+						    static_cast<const T*>(input2),
+						    static_cast<const T*>(input2) + size,
+						    static_cast<T*>(output),
+						    [&input1](const T& val)
+						    {
+						    	return val * *static_cast<const T*>(input1);
+						    });
+					}
+					else
+					{
+						std::transform(
+						    static_cast<const T*>(input1),
+						    static_cast<const T*>(input1) + size,
+						    static_cast<T*>(output),
+						    [&input2](const T& val)
+						    {
+						    	return val * *static_cast<const T*>(input2);
+						    });
+					}
 				}
 			};
 		} // namespace op

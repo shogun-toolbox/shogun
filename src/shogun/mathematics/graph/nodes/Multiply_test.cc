@@ -56,14 +56,15 @@ TYPED_TEST(GraphTest, vector_scalar_multiply)
 
 	if constexpr (std::is_same_v<NumericType, bool>)
 		return;
-	else 
+	else
 	{
 		auto X1 = SGVector<NumericType>(10);
 		X1.range_fill();
 
 		NumericType X2{2};
 
-		SGVector<NumericType> expected_result1{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
+		SGVector<NumericType> expected_result1{0,  2,  4,  6,  8, 10,
+		                                       12, 14, 16, 18, 20};
 
 		auto input1 = make_shared<node::Input>(
 		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
@@ -73,13 +74,10 @@ TYPED_TEST(GraphTest, vector_scalar_multiply)
 		auto output = input1 * input2;
 
 		auto graph = make_shared<Graph>(
-		    vector{input1, input2},
-		    vector<shared_ptr<node::Node>>{output});
+		    vector{input1, input2}, vector<shared_ptr<node::Node>>{output});
 
 		for (auto&& backend : this->m_backends)
 		{
-			if (backend == GRAPH_BACKEND::SHOGUN)
-				continue;
 			graph->build(backend);
 
 			std::vector<std::shared_ptr<shogun::graph::Tensor>> result =

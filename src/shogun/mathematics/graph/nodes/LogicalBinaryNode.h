@@ -7,8 +7,7 @@
 #ifndef SHOGUN_NODES_BINARY_LOGICAL_NODE_H_
 #define SHOGUN_NODES_BINARY_LOGICAL_NODE_H_
 
-#include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/util/enumerate.h>
+#include <shogun/mathematics/graph/nodes/BinaryNode.h>
 
 #define IGNORE_IN_CLASSLIST
 
@@ -18,24 +17,19 @@ namespace shogun
 	{
 		namespace node
 		{
-			IGNORE_IN_CLASSLIST class LogicalBinaryNode : public Node
+			IGNORE_IN_CLASSLIST class LogicalBinaryNode : public BaseBinaryNode
 			{
 			public:
 				LogicalBinaryNode(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
-				    : Node(
-				          {node1, node2}, check_shape_compatible(node1, node2),
+				    : BaseBinaryNode(
+				          node1, node2, BaseBinaryNode::check_shape_compatible(node1, node2),
 				          check_type_compatible(node1, node2))
 				{
 				}
 
-				bool requires_column_major_conversion() const override
-				{
-					return false;
-				}
-
-			protected:
+			private:
 				element_type check_type_compatible(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
@@ -61,78 +55,6 @@ namespace shogun
 						error("Expected type of second node to be bool");
 
 					return element_type::BOOLEAN;
-				}
-
-				Shape check_shape_compatible(
-				    const std::shared_ptr<Node>& node1,
-				    const std::shared_ptr<Node>& node2)
-				{
-					const auto& node1_shapes = node1->get_shapes();
-					const auto& node2_shapes = node2->get_shapes();
-
-					if (node1_shapes.size() > 1)
-						error(
-						    "Expected first node to have only one output "
-						    "tensor, but got {}",
-						    node1_shapes.size());
-
-					if (node2_shapes.size() > 1)
-						error(
-						    "Expected second node to have only one output "
-						    "tensor, but got {}",
-						    node2_shapes.size());
-
-					if (node1_shapes[0].size() != node2_shapes[0].size())
-					{
-						error(
-						    "Number of dimension mismatch between {} and {}.",
-						    node1, node2);
-					}
-
-					std::vector<Shape::shape_type> output_shape_vector;
-
-					for (const auto& [idx, shape1, shape2] :
-					     enumerate(node1_shapes[0], node2_shapes[0]))
-					{
-						if (shape1 == shape2)
-						{
-							output_shape_vector.push_back(shape1);
-						}
-						else if (
-						    shape1 == Shape::Dynamic &&
-						    shape2 == Shape::Dynamic)
-						{
-							output_shape_vector.push_back(Shape::Dynamic);
-						}
-						else if (
-						    shape1 != Shape::Dynamic &&
-						    shape2 != Shape::Dynamic && shape1 != shape2)
-						{
-							// this is a mismatch, it can't possible go well at
-							// runtime
-							error(
-							    "Shape mismatch in dimension {} when comparing "
-							    "{} and {}",
-							    idx, shape1, shape2);
-						}
-						else if (shape1 == Shape::Dynamic)
-						{
-							// shape2 is more restrictive so pick that one
-							output_shape_vector.push_back(shape2);
-						}
-						else if (shape2 == Shape::Dynamic)
-						{
-							// shape1 is more restrictive so pick that one
-							output_shape_vector.push_back(shape1);
-						}
-						else
-						{
-							error("Unexpected path: contact a dev or raise an "
-							      "issue!");
-						}
-					}
-
-					return Shape{output_shape_vector};
 				}
 			};
 		} // namespace node
