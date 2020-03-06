@@ -563,7 +563,7 @@ void SVRLight::update_linear_component_mkl(
 		}
 
 		// restore old weights
-		kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights, false));
+		kernel->set_subkernel_weights(SGVector<float64_t>(w_backup, num_weights, false));
 
 		SG_FREE(w_backup);
 		SG_FREE(w1);
@@ -611,7 +611,7 @@ void SVRLight::update_linear_component_mkl_linadd(
 		kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
 
 	// restore old weights
-	kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights, false));
+	kernel->set_subkernel_weights(SGVector<float64_t>(w_backup, num_weights, false));
 
 	call_mkl_callback(a, label, lin, c, totdoc);
 }
