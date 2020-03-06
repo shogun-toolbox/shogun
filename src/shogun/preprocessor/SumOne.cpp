@@ -57,7 +57,6 @@ SGMatrix<float64_t> SumOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 /// result in feature matrix
 SGVector<float64_t> SumOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	
 	SGVector<float64_t>normed_vec(vector.vlen);
 	float64_t sum = SGVector<float64_t>::sum(vector.vector, vector.vlen);
 
