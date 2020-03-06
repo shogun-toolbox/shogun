@@ -342,7 +342,7 @@ SGVector<int32_t> Statistics::sample_indices(int32_t sample_size, int32_t N, PRN
 	{
 		rnd=uniform_int_dist(prng, {1, i});
 		if (rnd<sample_size)
-			result[rnd]=idxs[i];
+			permuted_idxs[rnd]=idxs[i];
 	}
 	SG_FREE(idxs);
 
