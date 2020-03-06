@@ -20,7 +20,15 @@ namespace shogun
 		{
 			IGNORE_IN_CLASSLIST class BinaryNode : public Node
 			{
+
 			public:
+				enum class BinaryShapeCompatibity
+				{
+					ArrayArray = 0,
+					ArrayScalar = 1,
+					BroadcastAlongAxis = 2
+				};
+
 				BinaryNode(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
@@ -28,6 +36,11 @@ namespace shogun
 				          {node1, node2}, check_shape_compatible(node1, node2),
 				          check_type_compatible(node1, node2))
 				{
+				}
+
+				BinaryShapeCompatibity get_binary_tensor_compatibility() const
+				{
+					return m_shape_compatibility;
 				}
 
 				bool requires_column_major_conversion() const final
@@ -65,6 +78,10 @@ namespace shogun
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				{
+					// by default assume that this is going to be a binary operation 
+					// of two nodes with the same number of elements
+					m_shape_compatibility = BinaryShapeCompatibity::ArrayArray;
+
 					const auto& node1_shapes = node1->get_shapes();
 					const auto& node2_shapes = node2->get_shapes();
 
@@ -80,17 +97,41 @@ namespace shogun
 						    "tensor, but got {}",
 						    node2_shapes.size());
 
-					if (node1_shapes[0].size() != node2_shapes[0].size())
+					const auto& node1_shape = node1_shapes[0];
+					const auto& node2_shape = node2_shapes[0];
+
+					if (node1_shape.is_scalar() || node2_shape.is_scalar())
+					{
+						return scalar_binary_op(node1_shape, node2_shape);
+					}
+					else if (node1_shape.size() != node2_shape.size())
 					{
 						error(
+						    "BinaryNode error. "
 						    "Number of dimension mismatch between {} and {}.",
-						    node1, node2);
+						    node1->to_string(), node2->to_string());
 					}
+					return same_shape_binary_op(node1_shape, node2_shape);
+				}
 
+			private:
+				Shape scalar_binary_op(const Shape& node1_shape, const Shape& node2_shape)
+				{
+					// xor shapes -> one is a scalar other is an array
+					if (!node1_shape.is_scalar() != !node2_shape.is_scalar())
+						m_shape_compatibility = BinaryShapeCompatibity::ArrayScalar;
+					if (node1_shape.is_scalar())
+						return node2_shape;
+					if (node2_shape.is_scalar())
+						return node1_shape;
+				}
+
+				Shape same_shape_binary_op(const Shape& node1_shape, const Shape& node2_shape)
+				{
 					std::vector<Shape::shape_type> output_shape_vector;
 
 					for (const auto& [idx, shape1, shape2] :
-					     enumerate(node1_shapes[0], node2_shapes[0]))
+					     enumerate(node1_shape, node2_shape))
 					{
 						if (shape1 == shape2)
 						{
@@ -125,13 +166,15 @@ namespace shogun
 						}
 						else
 						{
-							error("Unexpected path: contact a dev or raise an "
+							error("BinaryNode: Unexpected path, contact a dev or raise an "
 							      "issue!");
 						}
 					}
 
 					return Shape{output_shape_vector};
 				}
+
+				BinaryShapeCompatibity m_shape_compatibility;
 			};
 		} // namespace node
 	}     // namespace graph
