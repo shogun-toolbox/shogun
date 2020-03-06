@@ -32,7 +32,7 @@ namespace shogun
 		      m_max(max),
 		      m_range(static_cast<std::make_unsigned_t<T>>(max) - static_cast<std::make_unsigned_t<T>>(min) + 1)
 		{
-			require(min < max, "The minimum value ({}) should be always less than the maximum value ({})", min, max);
+			require(min <= max, "The minimum value ({}) should be always less than or equal the maximum value ({})", min, max);
 		}
 
 		template <typename PRNG>
