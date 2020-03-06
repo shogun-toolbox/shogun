@@ -1583,20 +1583,16 @@ void SVMLight::update_linear_component_mkl(
 	}
 	else // hope the kernel is fast ...
 	{
-		float64_t* w_backup = SG_MALLOC(float64_t, num_kernels);
-		float64_t* w1 = SG_MALLOC(float64_t, num_kernels);
+		SGVector<float64_t> w_backup(num_weights);
+		SGVector<float64_t> w1(num_weights);
 
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
-		{
 			w_backup[i] = old_beta[i] ;
-			w1[i]=0.0 ;
-		}
 		for (int32_t n=0; n<num_kernels; n++)
 		{
-			w1[n]=1.0 ;
-			kernel->set_subkernel_weights(SGVector<float64_t>(w1, num_weights));
-
+			w1[n] = 1.0;
+			kernel->set_subkernel_weights(w1);
 			for (int32_t i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
@@ -1605,14 +1601,11 @@ void SVMLight::update_linear_component_mkl(
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*compute_kernel(i,j)*(float64_t)label[i];
 				}
 			}
-			w1[n]=0.0 ;
+			w1[n] = 0.0;
 		}
 
 		// restore old weights
-		kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
-
-		SG_FREE(w_backup);
-		SG_FREE(w1);
+		kernel->set_subkernel_weights(w_backup);
 	}
 
 	call_mkl_callback(a, label, lin);
@@ -1634,8 +1627,8 @@ void SVMLight::update_linear_component_mkl_linadd(
 	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);
 	ASSERT(num_weights==num_kernels)
 
-	float64_t* w_backup = SG_MALLOC(float64_t, num_kernels);
-	float64_t* w1 = SG_MALLOC(float64_t, num_kernels);
+	SGVector<float64_t> w_backup(num_kernels);
+	SGVector<float64_t> w1(num_weights);
 
 	// backup and set to one
 	for (int32_t i=0; i<num_kernels; i++)
@@ -1644,7 +1637,7 @@ void SVMLight::update_linear_component_mkl_linadd(
 		w1[i]=1.0 ;
 	}
 	// set the kernel weights
-	kernel->set_subkernel_weights(SGVector<float64_t>(w1, num_weights));
+	kernel->set_subkernel_weights(w1);
 
 	// create normal update (with changed alphas only)
 	kernel->clear_normal();
@@ -1694,7 +1687,7 @@ void SVMLight::update_linear_component_mkl_linadd(
 #endif
 
 	// restore old weights
-	kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
+	kernel->set_subkernel_weights(w_backup);
 
 	call_mkl_callback(a, label, lin);
 }
