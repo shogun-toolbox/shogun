@@ -67,7 +67,6 @@
  *-------------------------------------------------------------------- */
 
 #include <shogun/lib/config.h>
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -76,6 +75,8 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/external/libqp.h>
+#include <shogun/mathematics/Math.h>
+
 namespace shogun
 {
 

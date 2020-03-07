@@ -29,11 +29,12 @@
  *
  */
 
-#include <math.h>
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm>
+
+#include <shogun/mathematics/Math.h>
 
 #ifndef QUADTREE_H
 #define QUADTREE_H

@@ -11,11 +11,12 @@
 #include <shogun/lib/tapkee/utils/sparse.hpp>
 /* End of Tapkee includes */
 
-#include <math.h>
 #include <ctime>
 #include <cfloat>
 #include <deque>
 #include <set>
+
+#include <shogun/mathematics/Math.h>
 
 namespace tapkee
 {

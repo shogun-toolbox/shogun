@@ -5,7 +5,6 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
-#include <math.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
