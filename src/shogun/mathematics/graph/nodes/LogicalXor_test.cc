@@ -14,9 +14,6 @@ TYPED_TEST(GraphTest, xor)
 {
 	using NumericType = TypeParam;
 
-	SGVector<NumericType> X1{true, false, true, false};
-	SGVector<NumericType> X2{true, false, false, true};
-
 	auto input = make_shared<node::Input>(
 	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
 	auto input1 = make_shared<node::Input>(
@@ -24,6 +21,9 @@ TYPED_TEST(GraphTest, xor)
 
 	if constexpr (std::is_same_v<NumericType, bool>)
 	{
+		SGVector<NumericType> X1{true, false, true, false};
+		SGVector<NumericType> X2{true, false, false, true};
+
 		auto output = make_shared<node::LogicalXor>(input, input1);
 
 		auto graph = make_shared<Graph>(
@@ -54,5 +54,97 @@ TYPED_TEST(GraphTest, xor)
 	{
 		EXPECT_THROW(
 		    make_shared<node::LogicalXor>(input, input1), ShogunException);
+	}
+}
+
+TYPED_TEST(GraphTest, vector_scalar_xor)
+{
+	using NumericType = TypeParam;
+
+	auto input1 = make_shared<node::Input>(
+	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	auto input2 = make_shared<node::Input>(
+	    Shape{}, get_enum_from_type<NumericType>::type);
+
+	if constexpr (std::is_same_v<NumericType, bool>)
+	{
+		SGVector<NumericType> X1{true, false, true, false};
+		NumericType X2{true};
+
+		auto output = make_shared<node::LogicalXor>(input1, input2);
+
+		auto graph = make_shared<Graph>(
+		    vector{input1, input2}, vector<shared_ptr<node::Node>>{output});
+
+		for (auto&& backend : this->m_backends)
+		{
+			// need to figure out how to handle logical operators
+			graph->build(backend);
+
+			vector<shared_ptr<Tensor>> result = graph->evaluate(
+			    vector{make_shared<Tensor>(X1), make_shared<Tensor>(X2)});
+
+			EXPECT_EQ(result.size(), 1);
+
+			auto result1 = result[0]->as<SGVector<bool>>();
+
+			for (const auto& [result_i, el1] : zip_iterator(result1, X1))
+			{
+				EXPECT_EQ(result_i, static_cast<bool>(!el1 != !X2));
+			}
+
+			EXPECT_THROW(result[0]->as<SGVector<float32_t>>(), ShogunException);
+		}
+	}
+	else
+	{
+		EXPECT_THROW(
+		    make_shared<node::LogicalXor>(input1, input2), ShogunException);
+	}
+}
+
+TYPED_TEST(GraphTest, scalar_vector_xor)
+{
+	using NumericType = TypeParam;
+
+	auto input1 = make_shared<node::Input>(
+	    Shape{}, get_enum_from_type<NumericType>::type);
+	auto input2 = make_shared<node::Input>(
+	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+
+	if constexpr (std::is_same_v<NumericType, bool>)
+	{
+		NumericType X1{true};
+		SGVector<NumericType> X2{true, false, true, false};
+
+		auto output = make_shared<node::LogicalXor>(input1, input2);
+
+		auto graph = make_shared<Graph>(
+		    vector{input1, input2}, vector<shared_ptr<node::Node>>{output});
+
+		for (auto&& backend : this->m_backends)
+		{
+			// need to figure out how to handle logical operators
+			graph->build(backend);
+
+			vector<shared_ptr<Tensor>> result = graph->evaluate(
+			    vector{make_shared<Tensor>(X1), make_shared<Tensor>(X2)});
+
+			EXPECT_EQ(result.size(), 1);
+
+			auto result1 = result[0]->as<SGVector<bool>>();
+
+			for (const auto& [result_i, el1] : zip_iterator(result1, X2))
+			{
+				EXPECT_EQ(result_i, static_cast<bool>(!el1 != !X1));
+			}
+
+			EXPECT_THROW(result[0]->as<SGVector<float32_t>>(), ShogunException);
+		}
+	}
+	else
+	{
+		EXPECT_THROW(
+		    make_shared<node::LogicalXor>(input1, input2), ShogunException);
 	}
 }

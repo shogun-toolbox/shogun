@@ -8,7 +8,7 @@
 #define SHOGUN_ADD_NGRAPH_H_
 
 #include <shogun/mathematics/graph/nodes/Add.h>
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
+#include <shogun/mathematics/graph/runtime/ngraph/BinaryRuntimeNode.h>
 
 #include <ngraph/op/add.hpp>
 
@@ -21,27 +21,17 @@ namespace shogun
 			namespace ngraph
 			{
 				IGNORE_IN_CLASSLIST class AddNGraph
-
-				    : public RuntimeNodeTemplate<node::Add, ::ngraph::Node>
+				    : public BinaryRuntimeNodeNGraph<
+				          node::Add, ::ngraph::op::Add>
 				{
 				public:
-					AddNGraph() : RuntimeNodeTemplate()
+					AddNGraph() : BinaryRuntimeNodeNGraph()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
 						return "Add";
-					}
-
-					[[nodiscard]] std::shared_ptr<::ngraph::Node>
-					build_implementation(
-					    const std::shared_ptr<node::Node>& node) const final {
-						if (m_input_nodes.size() != 2)
-							error("Expected two input nodes in "
-							      "AddNGraph.");
-						return std::make_shared<::ngraph::op::Add>(
-						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};
 			} // namespace ngraph
