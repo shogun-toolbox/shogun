@@ -21,7 +21,8 @@ namespace shogun
 			namespace ngraph
 			{
 				IGNORE_IN_CLASSLIST class EqualNGraph
-				    : public BinaryRuntimeNodeNGraph<node::Equal, ::ngraph::op::Equal>
+				    : public BinaryRuntimeNodeNGraph<
+				          node::Equal, ::ngraph::op::Equal>
 				{
 				public:
 					EqualNGraph() : BinaryRuntimeNodeNGraph()

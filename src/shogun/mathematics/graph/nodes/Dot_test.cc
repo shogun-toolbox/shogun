@@ -276,7 +276,6 @@ TYPED_TEST(GraphTest, matrix_matrix_dot2)
 	}
 }
 
-
 TYPED_TEST(GraphTest, simple_perceptron_inference)
 {
 	using NumericType = TypeParam;
@@ -306,10 +305,9 @@ TYPED_TEST(GraphTest, simple_perceptron_inference)
 		{
 			graph->build(backend);
 
-			vector<shared_ptr<Tensor>> result = graph->evaluate(
-			    vector{make_shared<Tensor>(features), 
-			    	   make_shared<Tensor>(weights), 
-			    	   make_shared<Tensor>(bias)});
+			vector<shared_ptr<Tensor>> result = graph->evaluate(vector{
+			    make_shared<Tensor>(features), make_shared<Tensor>(weights),
+			    make_shared<Tensor>(bias)});
 
 			auto result1 = result[0]->as<SGVector<NumericType>>();
 

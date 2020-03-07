@@ -70,7 +70,7 @@ TYPED_TEST(GraphTest, vector_scalar_xor)
 	{
 		SGVector<NumericType> X1{true, false, true, false};
 		NumericType X2{true};
-		
+
 		auto output = make_shared<node::LogicalXor>(input1, input2);
 
 		auto graph = make_shared<Graph>(
@@ -88,8 +88,7 @@ TYPED_TEST(GraphTest, vector_scalar_xor)
 
 			auto result1 = result[0]->as<SGVector<bool>>();
 
-			for (const auto& [result_i, el1] :
-			     zip_iterator(result1, X1))
+			for (const auto& [result_i, el1] : zip_iterator(result1, X1))
 			{
 				EXPECT_EQ(result_i, static_cast<bool>(!el1 != !X2));
 			}
@@ -117,7 +116,7 @@ TYPED_TEST(GraphTest, scalar_vector_xor)
 	{
 		NumericType X1{true};
 		SGVector<NumericType> X2{true, false, true, false};
-		
+
 		auto output = make_shared<node::LogicalXor>(input1, input2);
 
 		auto graph = make_shared<Graph>(
@@ -135,8 +134,7 @@ TYPED_TEST(GraphTest, scalar_vector_xor)
 
 			auto result1 = result[0]->as<SGVector<bool>>();
 
-			for (const auto& [result_i, el1] :
-			     zip_iterator(result1, X2))
+			for (const auto& [result_i, el1] : zip_iterator(result1, X2))
 			{
 				EXPECT_EQ(result_i, static_cast<bool>(!el1 != !X1));
 			}

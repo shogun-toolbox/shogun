@@ -57,7 +57,6 @@ TYPED_TEST(GraphTest, or)
 	}
 }
 
-
 TYPED_TEST(GraphTest, vector_scalar_or)
 {
 	using NumericType = TypeParam;
@@ -89,8 +88,7 @@ TYPED_TEST(GraphTest, vector_scalar_or)
 
 			auto result1 = result[0]->as<SGVector<bool>>();
 
-			for (const auto& [result_i, el1] :
-			     zip_iterator(result1, X1))
+			for (const auto& [result_i, el1] : zip_iterator(result1, X1))
 			{
 				EXPECT_EQ(result_i, static_cast<bool>(el1 || X2));
 			}
@@ -104,7 +102,6 @@ TYPED_TEST(GraphTest, vector_scalar_or)
 		    make_shared<node::LogicalOr>(input1, input2), ShogunException);
 	}
 }
-
 
 TYPED_TEST(GraphTest, scalar_vector_or)
 {
@@ -137,8 +134,7 @@ TYPED_TEST(GraphTest, scalar_vector_or)
 
 			auto result1 = result[0]->as<SGVector<bool>>();
 
-			for (const auto& [result_i, el1] :
-			     zip_iterator(result1, X2))
+			for (const auto& [result_i, el1] : zip_iterator(result1, X2))
 			{
 				EXPECT_EQ(result_i, static_cast<bool>(el1 || X1));
 			}

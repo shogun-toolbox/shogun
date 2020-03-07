@@ -58,7 +58,6 @@ TYPED_TEST(GraphTest, and)
 	}
 }
 
-
 TYPED_TEST(GraphTest, vector_scalar_and)
 {
 	using NumericType = TypeParam;
@@ -72,7 +71,7 @@ TYPED_TEST(GraphTest, vector_scalar_and)
 	{
 		SGVector<NumericType> X1{true, false, true, false};
 		NumericType X2{true};
-		
+
 		auto output = make_shared<node::LogicalAnd>(input1, input2);
 
 		auto graph = make_shared<Graph>(
@@ -90,8 +89,7 @@ TYPED_TEST(GraphTest, vector_scalar_and)
 
 			auto result1 = result[0]->as<SGVector<bool>>();
 
-			for (const auto& [result_i, el1] :
-			     zip_iterator(result1, X1))
+			for (const auto& [result_i, el1] : zip_iterator(result1, X1))
 			{
 				EXPECT_EQ(result_i, static_cast<bool>(el1 && X2));
 			}
@@ -106,7 +104,6 @@ TYPED_TEST(GraphTest, vector_scalar_and)
 		    make_shared<node::LogicalAnd>(input1, input2), ShogunException);
 	}
 }
-
 
 TYPED_TEST(GraphTest, scalar_vector_and)
 {
@@ -139,8 +136,7 @@ TYPED_TEST(GraphTest, scalar_vector_and)
 
 			auto result1 = result[0]->as<SGVector<bool>>();
 
-			for (const auto& [result_i, el1] :
-			     zip_iterator(result1, X2))
+			for (const auto& [result_i, el1] : zip_iterator(result1, X2))
 			{
 				EXPECT_EQ(result_i, static_cast<bool>(el1 && X1));
 			}

@@ -90,7 +90,6 @@ TYPED_TEST(GraphTest, vector_scalar_add)
 	}
 }
 
-
 TYPED_TEST(GraphTest, scalar_vector_add)
 {
 	using NumericType = TypeParam;
@@ -133,7 +132,6 @@ TYPED_TEST(GraphTest, scalar_vector_add)
 		}
 	}
 }
-
 
 TYPED_TEST(GraphTest, matrix_add)
 {

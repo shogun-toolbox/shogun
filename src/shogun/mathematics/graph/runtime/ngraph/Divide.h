@@ -21,7 +21,8 @@ namespace shogun
 			namespace ngraph
 			{
 				IGNORE_IN_CLASSLIST class DivideNGraph
-				    : public BinaryRuntimeNodeNGraph<node::Divide, ::ngraph::op::Divide>
+				    : public BinaryRuntimeNodeNGraph<
+				          node::Divide, ::ngraph::op::Divide>
 				{
 				public:
 					DivideNGraph() : BinaryRuntimeNodeNGraph()

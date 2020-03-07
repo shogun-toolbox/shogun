@@ -46,17 +46,16 @@ namespace shogun
 
 				template <typename T>
 				void kernel_scalar_implementation(
-				    void* input1, void* input2, void* output, const size_t size, const bool scalar_first)
+				    void* input1, void* input2, void* output, const size_t size,
+				    const bool scalar_first)
 				{
 					if (scalar_first)
 					{
 						std::transform(
 						    static_cast<const T*>(input2),
 						    static_cast<const T*>(input2) + size,
-						    static_cast<T*>(output),
-						    [&input1](const T& val)
-						    {
-						    	return *static_cast<const T*>(input1) / val;
+						    static_cast<T*>(output), [&input1](const T& val) {
+							    return *static_cast<const T*>(input1) / val;
 						    });
 					}
 					else
@@ -64,10 +63,8 @@ namespace shogun
 						std::transform(
 						    static_cast<const T*>(input1),
 						    static_cast<const T*>(input1) + size,
-						    static_cast<T*>(output),
-						    [&input2](const T& val)
-						    {
-						    	return val / *static_cast<const T*>(input2);
+						    static_cast<T*>(output), [&input2](const T& val) {
+							    return val / *static_cast<const T*>(input2);
 						    });
 					}
 				}

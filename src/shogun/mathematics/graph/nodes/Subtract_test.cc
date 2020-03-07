@@ -105,11 +105,11 @@ TYPED_TEST(GraphTest, scalar_vector_subtract)
 	else
 	{
 		NumericType X1{10};
-	
+
 		auto X2 = SGVector<NumericType>(10);
 		X2.range_fill(0);
 
-		SGVector<NumericType> expected_result1 {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+		SGVector<NumericType> expected_result1{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
 		auto input1 = make_shared<node::Input>(
 		    Shape{}, get_enum_from_type<NumericType>::type);

@@ -7,9 +7,9 @@
 #ifndef SHOGUNBINARYOPERATOR_H_
 #define SHOGUNBINARYOPERATOR_H_
 
+#include <shogun/mathematics/graph/nodes/BinaryNode.h>
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
 #include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
-#include <shogun/mathematics/graph/nodes/BinaryNode.h>
 
 namespace shogun
 {
@@ -33,8 +33,10 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					auto binary_node = std::static_pointer_cast<node::BaseBinaryNode>(m_node);
-					const auto shape_compatibility = binary_node->get_binary_tensor_compatibility();
+					auto binary_node =
+					    std::static_pointer_cast<node::BaseBinaryNode>(m_node);
+					const auto shape_compatibility =
+					    binary_node->get_binary_tensor_compatibility();
 
 					if (input_nodes.size() != 2)
 						error("Binary operation expected two inputs.");
@@ -50,16 +52,22 @@ namespace shogun
 
 					runtime_checks_and_allocation(
 					    input_tensor1, input_tensor2, shape_compatibility);
-					if (shape_compatibility == node::BaseBinaryNode::BinaryShapeCompatibity::ArrayArray)
+					if (shape_compatibility ==
+					    node::BaseBinaryNode::BinaryShapeCompatibity::
+					        ArrayArray)
 					{
 						kernel(
 						    input_tensor1->data(), input_tensor2->data(),
 						    output_tensor->data(), output_tensor->size(),
 						    input_tensor1->get_type());
 					}
-					else if (shape_compatibility == node::BaseBinaryNode::BinaryShapeCompatibity::ArrayScalar)
+					else if (
+					    shape_compatibility ==
+					    node::BaseBinaryNode::BinaryShapeCompatibity::
+					        ArrayScalar)
 					{
-						const bool scalar_first = input_tensor1->get_shape().is_scalar();
+						const bool scalar_first =
+						    input_tensor1->get_shape().is_scalar();
 						kernel_scalar(
 						    input_tensor1->data(), input_tensor2->data(),
 						    output_tensor->data(), output_tensor->size(),
@@ -69,12 +77,13 @@ namespace shogun
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<Tensor>& input_tensor1, 
+				    const std::shared_ptr<Tensor>& input_tensor1,
 				    const std::shared_ptr<Tensor>& input_tensor2,
-				    const node::BaseBinaryNode::BinaryShapeCompatibity& shape_compatibility)
+				    const node::BaseBinaryNode::BinaryShapeCompatibity&
+				        shape_compatibility)
 				{
-					allocate_tensor(
-					    runtime_shape_check(input_tensor1, input_tensor2, shape_compatibility));
+					allocate_tensor(runtime_shape_check(
+					    input_tensor1, input_tensor2, shape_compatibility));
 				}
 
 				void allocate_tensor(const Shape& shape)
@@ -85,17 +94,21 @@ namespace shogun
 				const Shape& runtime_shape_check(
 				    const std::shared_ptr<Tensor>& tensor1,
 				    const std::shared_ptr<Tensor>& tensor2,
-				    const node::BaseBinaryNode::BinaryShapeCompatibity& shape_compatibility)
+				    const node::BaseBinaryNode::BinaryShapeCompatibity&
+				        shape_compatibility)
 				{
-					if (shape_compatibility == node::BaseBinaryNode::BinaryShapeCompatibity::ArrayArray)
+					if (shape_compatibility ==
+					    node::BaseBinaryNode::BinaryShapeCompatibity::
+					        ArrayArray)
 					{
-						for (auto [idx, shape1, shape2] :
-						     enumerate(tensor1->get_shape(), tensor2->get_shape()))
+						for (auto [idx, shape1, shape2] : enumerate(
+						         tensor1->get_shape(), tensor2->get_shape()))
 						{
 							if (shape1 != shape2)
 							{
 								error(
-								    "Runtime shape mismatch in dimension {}. Got "
+								    "Runtime shape mismatch in dimension {}. "
+								    "Got "
 								    "{} and {}.",
 								    idx, shape1, shape2);
 							}
@@ -107,7 +120,10 @@ namespace shogun
 						// shapes have to match exactly so can return either one
 						return tensor1->get_shape();
 					}
-					else if (shape_compatibility == node::BaseBinaryNode::BinaryShapeCompatibity::ArrayScalar)
+					else if (
+					    shape_compatibility ==
+					    node::BaseBinaryNode::BinaryShapeCompatibity::
+					        ArrayScalar)
 					{
 						if (tensor1->get_shape().is_scalar())
 							return tensor2->get_shape();

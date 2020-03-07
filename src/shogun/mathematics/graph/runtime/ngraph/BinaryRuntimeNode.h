@@ -25,15 +25,17 @@ namespace shogun
 				    : public RuntimeNodeTemplate<NodeType, ::ngraph::Node>
 				{
 				public:
-					BinaryRuntimeNodeNGraph() : RuntimeNodeTemplate<NodeType, ::ngraph::Node>()
-					{
-					}
+					BinaryRuntimeNodeNGraph()
+					    : RuntimeNodeTemplate<NodeType, ::ngraph::Node>(){}
 
-					[[nodiscard]] std::shared_ptr<::ngraph::Node>
-					build_implementation(
-					    const std::shared_ptr<node::Node>& node) const final {
+					          [[nodiscard]] std::
+					              shared_ptr<::ngraph::Node> build_implementation(
+					                  const std::shared_ptr<node::Node>& node)
+					                  const final
+					{
 						if (this->m_input_nodes.size() != 2)
-							error("Expected two input nodes in BinaryRuntimeNodeNGraph.");
+							error("Expected two input nodes in "
+							      "BinaryRuntimeNodeNGraph.");
 
 						auto binary_node =
 						    std::static_pointer_cast<NodeType>(node);

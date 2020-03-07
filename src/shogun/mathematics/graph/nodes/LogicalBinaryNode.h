@@ -24,7 +24,8 @@ namespace shogun
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				    : BaseBinaryNode(
-				          node1, node2, BaseBinaryNode::check_shape_compatible(node1, node2),
+				          node1, node2,
+				          BaseBinaryNode::check_shape_compatible(node1, node2),
 				          check_type_compatible(node1, node2))
 				{
 				}

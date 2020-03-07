@@ -41,7 +41,8 @@ namespace shogun
 				    const std::tuple<BinaryShapeCompatibity, Shape>& shape,
 				    const element_type& type)
 				    : Node({node1, node2}, std::get<Shape>(shape), type),
-				      m_shape_compatibility(std::get<BinaryShapeCompatibity>(shape))
+				      m_shape_compatibility(
+				          std::get<BinaryShapeCompatibity>(shape))
 				{
 				}
 
@@ -56,14 +57,15 @@ namespace shogun
 				}
 
 			protected:
-
-				static std::tuple<BinaryShapeCompatibity, Shape> check_shape_compatible(
+				static std::tuple<BinaryShapeCompatibity, Shape>
+				check_shape_compatible(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				{
 					// by default assume that this is going to be a binary
 					// operation of two nodes with the same number of elements
-					auto shape_compatibility = BinaryShapeCompatibity::ArrayArray;
+					auto shape_compatibility =
+					    BinaryShapeCompatibity::ArrayArray;
 
 					const auto& node1_shapes = node1->get_shapes();
 					const auto& node2_shapes = node2->get_shapes();
@@ -86,8 +88,9 @@ namespace shogun
 					if (node1_shape.is_scalar() || node2_shape.is_scalar())
 					{
 						return std::make_tuple(
-							shape_compatibility,
-							scalar_binary_op(node1_shape, node2_shape, shape_compatibility));
+						    shape_compatibility,
+						    scalar_binary_op(
+						        node1_shape, node2_shape, shape_compatibility));
 					}
 					else if (node1_shape.size() != node2_shape.size())
 					{
@@ -97,8 +100,8 @@ namespace shogun
 						    node1->to_string(), node2->to_string());
 					}
 					return std::make_tuple(
-							shape_compatibility,
-							same_shape_binary_op(node1_shape, node2_shape));
+					    shape_compatibility,
+					    same_shape_binary_op(node1_shape, node2_shape));
 				}
 
 			private:
@@ -169,14 +172,15 @@ namespace shogun
 				BinaryShapeCompatibity m_shape_compatibility;
 			};
 
-			class BinaryNode: public BaseBinaryNode
+			class BinaryNode : public BaseBinaryNode
 			{
 			public:
 				BinaryNode(
 				    const std::shared_ptr<Node>& node1,
 				    const std::shared_ptr<Node>& node2)
 				    : BaseBinaryNode(
-				          node1, node2, BaseBinaryNode::check_shape_compatible(node1, node2),
+				          node1, node2,
+				          BaseBinaryNode::check_shape_compatible(node1, node2),
 				          check_type_compatible(node1, node2))
 				{
 				}

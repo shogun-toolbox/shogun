@@ -21,7 +21,8 @@ namespace shogun
 			namespace ngraph
 			{
 				IGNORE_IN_CLASSLIST class AddNGraph
-				    : public BinaryRuntimeNodeNGraph<node::Add, ::ngraph::op::Add>
+				    : public BinaryRuntimeNodeNGraph<
+				          node::Add, ::ngraph::op::Add>
 				{
 				public:
 					AddNGraph() : BinaryRuntimeNodeNGraph()
