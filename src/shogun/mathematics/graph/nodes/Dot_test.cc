@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/graph/Graph.h>
+#include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/nodes/Dot.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
 
@@ -268,6 +269,52 @@ TYPED_TEST(GraphTest, matrix_matrix_dot2)
 
 			for (const auto& [expected_i, result_i] :
 			     zip_iterator(expected_result2, result2))
+			{
+				EXPECT_EQ(expected_i, result_i);
+			}
+		}
+	}
+}
+
+
+TYPED_TEST(GraphTest, simple_perceptron_inference)
+{
+	using NumericType = TypeParam;
+
+	if constexpr (std::is_same_v<TypeParam, bool>)
+		return;
+	else
+	{
+		SGMatrix<NumericType> features{{1, 3, 5}, {2, 4, 6}};
+		SGVector<NumericType> weights{1, 2};
+		NumericType bias = 1;
+		SGVector<NumericType> expected_result = {6, 12, 18};
+
+		auto X = make_shared<node::Input>(
+		    Shape{Shape::Dynamic, 2}, get_enum_from_type<NumericType>::type);
+		auto w = make_shared<node::Input>(
+		    Shape{2}, get_enum_from_type<NumericType>::type);
+		auto b = make_shared<node::Input>(
+		    Shape{}, get_enum_from_type<NumericType>::type);
+
+		auto prediction = make_shared<node::Dot>(X, w) + b;
+
+		auto graph = make_shared<Graph>(
+		    vector{X, w, b}, vector<shared_ptr<node::Node>>{prediction});
+
+		for (auto&& backend : this->m_backends)
+		{
+			graph->build(backend);
+
+			vector<shared_ptr<Tensor>> result = graph->evaluate(
+			    vector{make_shared<Tensor>(features), 
+			    	   make_shared<Tensor>(weights), 
+			    	   make_shared<Tensor>(bias)});
+
+			auto result1 = result[0]->as<SGVector<NumericType>>();
+
+			for (const auto& [expected_i, result_i] :
+			     zip_iterator(expected_result, result1))
 			{
 				EXPECT_EQ(expected_i, result_i);
 			}
