@@ -8,7 +8,7 @@
 #define SHOGUN_LOGICAL_OR_NGRAPH_H_
 
 #include <shogun/mathematics/graph/nodes/LogicalOr.h>
-#include <shogun/mathematics/graph/runtime/RuntimeNode.h>
+#include <shogun/mathematics/graph/runtime/ngraph/BinaryRuntimeNode.h>
 
 #include <ngraph/op/or.hpp>
 
@@ -21,28 +21,17 @@ namespace shogun
 			namespace ngraph
 			{
 				IGNORE_IN_CLASSLIST class LogicalOrNGraph
-
-				    : public RuntimeNodeTemplate<
-				          node::LogicalOr, ::ngraph::Node>
+				    : public BinaryRuntimeNodeNGraph<
+				          node::LogicalOr, ::ngraph::op::Or>
 				{
 				public:
-					LogicalOrNGraph() : RuntimeNodeTemplate()
+					LogicalOrNGraph() : BinaryRuntimeNodeNGraph()
 					{
 					}
 
 					std::string_view get_runtime_node_name() const final
 					{
 						return "LogicalOr";
-					}
-
-					[[nodiscard]] std::shared_ptr<::ngraph::Node>
-					build_implementation(
-					    const std::shared_ptr<node::Node>& node) const final {
-						if (m_input_nodes.size() != 2)
-							error("Expected two input nodes in "
-							      "LogicalOrNGraph.");
-						return std::make_shared<::ngraph::op::Or>(
-						    m_input_nodes[0], m_input_nodes[1]);
 					}
 				};
 			} // namespace ngraph
