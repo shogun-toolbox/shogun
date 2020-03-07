@@ -55,7 +55,7 @@ namespace shogun
 						kernel(
 						    input_tensor1->data(), input_tensor2->data(),
 						    output_tensor->data(), output_tensor->size(),
-						    output_tensor->get_type());
+						    input_tensor1->get_type());
 					}
 					else if (shape_compatibility == node::BaseBinaryNode::BinaryShapeCompatibity::ArrayScalar)
 					{
@@ -63,7 +63,7 @@ namespace shogun
 						kernel_scalar(
 						    input_tensor1->data(), input_tensor2->data(),
 						    output_tensor->data(), output_tensor->size(),
-						    output_tensor->get_type(), scalar_first);
+						    input_tensor1->get_type(), scalar_first);
 					}
 				}
 

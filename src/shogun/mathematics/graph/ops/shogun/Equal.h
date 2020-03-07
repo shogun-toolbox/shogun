@@ -40,7 +40,7 @@ namespace shogun
 					std::transform(
 					    static_cast<const T*>(input1),
 					    static_cast<const T*>(input1) + size,
-					    static_cast<const T*>(input2), static_cast<T*>(output),
+					    static_cast<const T*>(input2), static_cast<bool*>(output),
 					    std::equal_to<T>());
 				}
 
@@ -53,7 +53,7 @@ namespace shogun
 						std::transform(
 						    static_cast<const T*>(input2),
 						    static_cast<const T*>(input2) + size,
-						    static_cast<T*>(output),
+						    static_cast<bool*>(output),
 						    [&input1](const T& val)
 						    {
 						    	return val == *static_cast<const T*>(input1);
@@ -64,7 +64,7 @@ namespace shogun
 						std::transform(
 						    static_cast<const T*>(input1),
 						    static_cast<const T*>(input1) + size,
-						    static_cast<T*>(output),
+						    static_cast<bool*>(output),
 						    [&input2](const T& val)
 						    {
 						    	return val == *static_cast<const T*>(input2);

@@ -93,3 +93,46 @@ TYPED_TEST(GraphTest, vector_scalar_divide)
 		}
 	}
 }
+
+TYPED_TEST(GraphTest, scalar_vector_divide)
+{
+	using NumericType = TypeParam;
+
+	if constexpr (std::is_same_v<NumericType, bool>)
+		return;
+	else
+	{
+		NumericType X1{100};
+		SGVector<NumericType> X2{1, 2, 4, 5, 10, 20, 25, 50, 100};
+
+		SGVector<NumericType> expected_result1 {100, 50, 25, 20, 10, 5, 4, 2, 1};
+
+		auto input1 = make_shared<node::Input>(
+		    Shape{}, get_enum_from_type<NumericType>::type);
+		auto input2 = make_shared<node::Input>(
+		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+
+		auto output = input1 / input2;
+
+		auto graph = make_shared<Graph>(
+		    vector{input1, input2}, vector<shared_ptr<node::Node>>{output});
+
+		for (auto&& backend : this->m_backends)
+		{
+			graph->build(backend);
+
+			std::vector<std::shared_ptr<shogun::graph::Tensor>> result =
+			    graph->evaluate(
+			        std::vector{std::make_shared<shogun::graph::Tensor>(X1),
+			                    std::make_shared<shogun::graph::Tensor>(X2)});
+
+			auto result1 = result[0]->as<shogun::SGVector<NumericType>>();
+
+			for (const auto& [expected_i, result_i] :
+			     shogun::zip_iterator(expected_result1, result1))
+			{
+				EXPECT_EQ(expected_i, result_i);
+			}
+		}
+	}
+}
