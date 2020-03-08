@@ -1,7 +1,7 @@
 # Developing Shogun
 
-This is a very basic list of things how to get started hacking Shogun.
-Your first steps should be to
+This is a very basic checklist on how to get started in hacking Shogun,
+You should:
 
 1. Compile from source, see [INSTALL.md](INSTALL.md).
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
@@ -48,7 +48,7 @@ The steps are
 
     If something does not work, try to find out whether your change caused it, and why.
     Read error messages and use the internet to find solutions.
-    Compile errors are the easiest to fix!
+    Compilation errors are the easiest to fix!
     If all that does not help, ask us.
 7. Commit locally, using neat and informative commit messages, grouping commits, potentially iterate over more changes to the code,
 
