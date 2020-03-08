@@ -1,13 +1,12 @@
 # Developing Shogun
 
-This is a very basic checklist on how to get started with Shogun,
-You should:
+This is a very basic checklist on how to get started with Shogun :
 
 1. Compile from source, see [INSTALL.md](INSTALL.md).
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
 4. Run the [tests](#testing).
 
-As we would like to avoid spending a lot of our time on explaining the same basic things many times, please **excessively** use the internet for any questions on the commands and tools needed.
+To avoid spending a lot of our time on explaining the same basic things, please **excessively** use the internet for any questions on the commands and tools needed.
 If you feel that this readme is missing something, please send a patch! :)
 
 # Quicklinks
@@ -154,8 +153,8 @@ For example
     ctest -D ExperimentalMemCheck -R unit-GaussianProcessRegression
 
 #### Adding tests
-We aim to write clear, minimal, yet exhaustive tests of basic building blocks in Shogun.
-Whenever you send us C++ code, we will ask you for a unit test for it.
+We aim to write clear, minimal, yet exhaustive tests of the basic building blocks in Shogun.
+Whenever you send us C++ code, we will ask for a unit test of it.
 We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency etc.
 Read on [test driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
 
