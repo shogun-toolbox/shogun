@@ -20,33 +20,33 @@ namespace shogun
 		{
 			namespace ngraph
 			{
-				inline element_type
+				inline std::shared_ptr<shogun::graph::NumberType>
 				get_enum_from_ngraph(::ngraph::element::Type_t type)
 				{
 					switch (type)
 					{
 					case ::ngraph::element::Type_t::f32:
-						return element_type::FLOAT32;
+						return std::make_shared<Float32Type>();
 					case ::ngraph::element::Type_t::f64:
-						return element_type::FLOAT64;
+						return std::make_shared<Float64Type>();
 					case ::ngraph::element::Type_t::boolean:
-						return element_type::BOOLEAN;
+						return std::make_shared<BooleanType>();
 					case ::ngraph::element::Type_t::i8:
-						return element_type::INT8;
+						return std::make_shared<Int8Type>();
 					case ::ngraph::element::Type_t::i16:
-						return element_type::INT16;
+						return std::make_shared<Int16Type>();
 					case ::ngraph::element::Type_t::i32:
-						return element_type::INT32;
+						return std::make_shared<Int32Type>();
 					case ::ngraph::element::Type_t::i64:
-						return element_type::INT64;
+						return std::make_shared<Int64Type>();
 					case ::ngraph::element::Type_t::u8:
-						return element_type::UINT8;
+						return std::make_shared<UInt8Type>();
 					case ::ngraph::element::Type_t::u16:
-						return element_type::UINT16;
+						return std::make_shared<UInt16Type>();
 					case ::ngraph::element::Type_t::u32:
-						return element_type::UINT32;
+						return std::make_shared<UInt32Type>();
 					case ::ngraph::element::Type_t::u64:
-						return element_type::UINT64;
+						return std::make_shared<UInt64Type>();
 					case ::ngraph::element::Type_t::undefined:
 					case ::ngraph::element::Type_t::dynamic:
 					case ::ngraph::element::Type_t::bf16:
@@ -57,9 +57,9 @@ namespace shogun
 				}
 
 				inline ::ngraph::element::Type_t
-				get_ngraph_type_from_enum(element_type type)
+				get_ngraph_type_from_enum(const std::shared_ptr<shogun::graph::NumberType>& type)
 				{
-					switch (type)
+					switch (type->type())
 					{
 					case element_type::FLOAT32:
 						return ::ngraph::element::Type_t::f32;

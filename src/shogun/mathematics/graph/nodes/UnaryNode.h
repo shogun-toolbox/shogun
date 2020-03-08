@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUN_NODES_BINARY_NODE_H_
-#define SHOGUN_NODES_BINARY_NODE_H_
+#ifndef SHOGUN_NODES_UNARY_NODE_H_
+#define SHOGUN_NODES_UNARY_NODE_H_
 
 #include <shogun/mathematics/graph/nodes/Node.h>
 
