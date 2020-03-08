@@ -65,10 +65,35 @@ namespace shogun
 
 			void allocate_tensor(const Shape& shape)
 			{
-				if (m_data != nullptr)
-					error("Tensor already owns data!");
-				set_shape(shape);
+				if (!shape.is_static())
+					error("Cannot allocate tensor with shape {}, with unknown size requirements", shape.to_string());
+				// new allocation, call allocator_dispatch
+				if (m_data == nullptr)
+				{
+					set_shape(shape);
 				m_data = sg_aligned_malloc(size_in_bytes(), alignment::container_alignment);
+				}
+				else
+				{
+					// memory already allocated, and we have the right shape
+					// nothing to do
+					if (m_shape == shape)
+						return;
+					// memory has been allocated, but it isn't the same shape
+					else
+					{
+						auto old_shape = m_shape;
+						set_shape(shape);
+						// if the size requirement is larger, reallocate memory
+						if (get_size_from_shape(shape) > size())
+						{	
+							m_data = std::realloc(m_data, size_in_bytes());
+						// otherwise nothing happens, we just own a larger memory block
+						}
+						// but only use part of it
+					}
+
+				}
 				m_free = true;
 			}
 
@@ -135,7 +160,14 @@ namespace shogun
 			template <typename Container>
 			Container as() const
 			{
-				if constexpr (std::is_same_v<
+				if constexpr (std::is_arithmetic_v<Container>)
+				{
+					if (size() > 1)
+						error("Cannot cast a non scalar representation to a scalar type.");
+					return *static_cast<Container*>(m_data);	
+				}
+
+				else if constexpr (std::is_same_v<
 				                  SGVector<typename Container::Scalar>,
 				                  Container>)
 				{
@@ -147,7 +179,7 @@ namespace shogun
 					return Container(
 					    (typename Container::Scalar*)m_data, size(), false);
 				}
-				if constexpr (std::is_same_v<
+				else if constexpr (std::is_same_v<
 				                  SGMatrix<typename Container::Scalar>,
 				                  Container>)
 				{

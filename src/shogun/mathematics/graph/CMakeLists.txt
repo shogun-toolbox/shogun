@@ -24,6 +24,17 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/features/DataGenerator.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/distributions/Gaussian.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/distributions/Distribution.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/features/DotFeatures.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/BasicOps.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/Decompositions.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/EigenSolvers.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/Functions.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/Misc.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/Solvers.cpp
+	# ${CMAKE_SOURCE_DIR}/src/shogun/mathematics/linalg/backend/eigen/SpecialPurposes.cpp
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
@@ -170,5 +181,6 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/MatMul_test)
 	add_graph_test(nodes/Cast_test)
 	add_graph_test(nodes/Sign_test)
+	add_graph_test(Graph_test)
 
 ENDIF()

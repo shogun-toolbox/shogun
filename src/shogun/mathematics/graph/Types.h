@@ -198,6 +198,7 @@ namespace shogun
 		std::shared_ptr<NumberType> from()
 		{
 			static_assert(true, "from<T> is not implemented for the type!");
+			return nullptr;
 		}
 		template <>
 		SHOGUN_ENGINE_EXPORT std::shared_ptr<NumberType> from<bool>();

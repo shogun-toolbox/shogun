@@ -15,6 +15,8 @@
 #include <vector>
 
 #include <shogun/io/SGIO.h>
+#include <shogun/util/zip_iterator.h>
+
 
 namespace shogun
 {
@@ -58,6 +60,18 @@ namespace shogun
 				return m_shape[idx];
 			}
 
+			bool operator==(const Shape& other)
+			{
+				for (const auto& [el1, el2]: zip_iterator(*this, other))
+				{
+					if (el1 == Shape::Dynamic || el2 == Shape::Dynamic)
+						continue;
+					if (el1 != el2)
+						return false;
+				}
+				return true;
+			}
+
 			bool partial_compare(size_t idx, shape_type other) const
 			{
 				if (is_scalar())
@@ -95,12 +109,12 @@ namespace shogun
 				}
 			}
 
-			[[nodiscard]] auto begin() const
+			[[nodiscard]] std::vector<Shape::shape_type>::const_iterator begin() const
 			{
 				return m_shape.begin();
 			}
 
-			[[nodiscard]] auto end() const
+			[[nodiscard]] std::vector<Shape::shape_type>::const_iterator end() const
 			{
 				return m_shape.end();
 			}
