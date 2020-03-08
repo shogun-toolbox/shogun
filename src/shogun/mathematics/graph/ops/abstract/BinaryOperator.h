@@ -137,80 +137,79 @@ namespace shogun
 
 				void kernel(
 				    void* input1, void* input2, void* output, const size_t size,
-				    const element_type type)
+				    const node::Node::type_info& type)
 				{
 
-#define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
-	static_cast<DerivedOperator*>(this)                                        \
-	    ->template kernel_implementation<                                      \
-	        get_type_from_enum<SHOGUN_TYPE>::type>(                            \
-	        input1, input2, output, size);                                     \
+#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)					\
+	static_cast<DerivedOperator*>(this)							\
+	    ->template kernel_implementation<NUMBER_TYPE::c_type>(	\
+	        input1, input2, output, size);						\
 	break;
 
-					switch (type)
+					switch (*type)
 					{
 					case element_type::BOOLEAN:
-						CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
+						CALL_KERNEL_IMPLEMENTATION(BooleanType)
 					case element_type::INT8:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
+						CALL_KERNEL_IMPLEMENTATION(Int8Type)
 					case element_type::INT16:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
+						CALL_KERNEL_IMPLEMENTATION(Int16Type)
 					case element_type::INT32:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
+						CALL_KERNEL_IMPLEMENTATION(Int32Type)
 					case element_type::INT64:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
+						CALL_KERNEL_IMPLEMENTATION(Int64Type)
 					case element_type::UINT8:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
+						CALL_KERNEL_IMPLEMENTATION(UInt8Type)
 					case element_type::UINT16:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
+						CALL_KERNEL_IMPLEMENTATION(UInt16Type)
 					case element_type::UINT32:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
+						CALL_KERNEL_IMPLEMENTATION(UInt32Type)
 					case element_type::UINT64:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
+						CALL_KERNEL_IMPLEMENTATION(UInt64Type)
 					case element_type::FLOAT32:
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
+						CALL_KERNEL_IMPLEMENTATION(Float32Type)
 					case element_type::FLOAT64:
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
+						CALL_KERNEL_IMPLEMENTATION(Float64Type)
 					}
 #undef CALL_KERNEL_IMPLEMENTATION
 				}
 
 				void kernel_scalar(
 				    void* input1, void* input2, void* output, const size_t size,
-				    const element_type type, const bool scalar_first)
+				    const node::Node::type_info& type, const bool scalar_first)
 				{
 
 #define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
 	static_cast<DerivedOperator*>(this)                                        \
 	    ->template kernel_scalar_implementation<                               \
-	        get_type_from_enum<SHOGUN_TYPE>::type>(                            \
+	        SHOGUN_TYPE::c_type>(                                              \
 	        input1, input2, output, size, scalar_first);                       \
 	break;
 
-					switch (type)
+					switch (*type)
 					{
 					case element_type::BOOLEAN:
-						CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
+						CALL_KERNEL_IMPLEMENTATION(BooleanType)
 					case element_type::INT8:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
+						CALL_KERNEL_IMPLEMENTATION(Int8Type)
 					case element_type::INT16:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
+						CALL_KERNEL_IMPLEMENTATION(Int16Type)
 					case element_type::INT32:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
+						CALL_KERNEL_IMPLEMENTATION(Int32Type)
 					case element_type::INT64:
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
+						CALL_KERNEL_IMPLEMENTATION(Int64Type)
 					case element_type::UINT8:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
+						CALL_KERNEL_IMPLEMENTATION(UInt8Type)
 					case element_type::UINT16:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
+						CALL_KERNEL_IMPLEMENTATION(UInt16Type)
 					case element_type::UINT32:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
+						CALL_KERNEL_IMPLEMENTATION(UInt32Type)
 					case element_type::UINT64:
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
+						CALL_KERNEL_IMPLEMENTATION(UInt64Type)
 					case element_type::FLOAT32:
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
+						CALL_KERNEL_IMPLEMENTATION(Float32Type)
 					case element_type::FLOAT64:
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
+						CALL_KERNEL_IMPLEMENTATION(Float64Type)
 					}
 #undef CALL_KERNEL_IMPLEMENTATION
 				}

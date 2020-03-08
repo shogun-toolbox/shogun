@@ -16,9 +16,9 @@ using namespace std;
 
 TYPED_TEST(GraphTest, vector_add)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 
 	auto X1 = SGVector<NumericType>(10);
@@ -31,9 +31,9 @@ TYPED_TEST(GraphTest, vector_add)
 	auto expected_result2 = expected_result1 + X2;
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{10}, get_enum_from_type<NumericType>::type);
+	    Shape{10}, TypeParam::type_id);
 
 	auto intermediate = input + input;
 
@@ -48,9 +48,9 @@ TYPED_TEST(GraphTest, vector_add)
 
 TYPED_TEST(GraphTest, vector_scalar_add)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 
 	auto X1 = SGVector<NumericType>(10);
@@ -62,9 +62,9 @@ TYPED_TEST(GraphTest, vector_scalar_add)
 	expected_result1.add(X2);
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{}, get_enum_from_type<NumericType>::type);
+	    Shape{}, TypeParam::type_id);
 
 	auto output = input1 + input2;
 
@@ -92,9 +92,9 @@ TYPED_TEST(GraphTest, vector_scalar_add)
 
 TYPED_TEST(GraphTest, scalar_vector_add)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 
 	NumericType X1{1};
@@ -105,9 +105,9 @@ TYPED_TEST(GraphTest, scalar_vector_add)
 	expected_result1.add(X1);
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{}, get_enum_from_type<NumericType>::type);
+	    Shape{}, TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	auto output = input1 + input2;
 
@@ -135,7 +135,7 @@ TYPED_TEST(GraphTest, scalar_vector_add)
 
 TYPED_TEST(GraphTest, matrix_add)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	random_device rng_device;
 	mt19937_64 mersenne_engine{rng_device()};
@@ -145,11 +145,11 @@ TYPED_TEST(GraphTest, matrix_add)
 	auto expected_result1 = SGMatrix<NumericType>(10, 5);
 	auto expected_result2 = SGMatrix<NumericType>(10, 5);
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
-	else if constexpr (std::is_floating_point_v<TypeParam>)
+	else if constexpr (std::is_floating_point_v<NumericType>)
 	{
-		UniformRealDistribution<TypeParam> dist;
+		UniformRealDistribution<NumericType> dist;
 		auto gen = [&dist, &mersenne_engine]() {
 			return dist(mersenne_engine);
 		};
@@ -158,7 +158,7 @@ TYPED_TEST(GraphTest, matrix_add)
 	}
 	else
 	{
-		UniformIntDistribution<TypeParam> dist;
+		UniformIntDistribution<NumericType> dist;
 		auto gen = [&dist, &mersenne_engine]() {
 			return dist(mersenne_engine);
 		};
@@ -175,9 +175,9 @@ TYPED_TEST(GraphTest, matrix_add)
 	    expected_result2.data(), std::plus<NumericType>{});
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic, 5}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic, 5}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{10, Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{10, Shape::Dynamic}, TypeParam::type_id);
 
 	auto intermediate = input + input;
 

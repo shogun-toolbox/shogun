@@ -12,14 +12,14 @@ using namespace std;
 
 TYPED_TEST(GraphTest, cast)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto X1 = SGVector<NumericType>(10);
 
 	X1.range_fill();
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	auto output = make_shared<node::Cast>(input, element_type::FLOAT64);
 

@@ -12,14 +12,14 @@ using namespace std;
 
 TYPED_TEST(GraphTest, xor)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{4}, get_enum_from_type<NumericType>::type);
+	    Shape{4}, TypeParam::type_id);
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 	{
 		SGVector<NumericType> X1{true, false, true, false};
 		SGVector<NumericType> X2{true, false, false, true};
@@ -59,14 +59,14 @@ TYPED_TEST(GraphTest, xor)
 
 TYPED_TEST(GraphTest, vector_scalar_xor)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{}, get_enum_from_type<NumericType>::type);
+	    Shape{}, TypeParam::type_id);
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 	{
 		SGVector<NumericType> X1{true, false, true, false};
 		NumericType X2{true};
@@ -105,14 +105,14 @@ TYPED_TEST(GraphTest, vector_scalar_xor)
 
 TYPED_TEST(GraphTest, scalar_vector_xor)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{}, get_enum_from_type<NumericType>::type);
+	    Shape{}, TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 	{
 		NumericType X1{true};
 		SGVector<NumericType> X2{true, false, true, false};

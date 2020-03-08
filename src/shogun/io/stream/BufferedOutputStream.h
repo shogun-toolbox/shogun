@@ -20,8 +20,8 @@ namespace shogun
 		 * @param os
 		 * @param buffer_bytes
 		 */
-		BufferedOutputStream(std::shared_ptr<OutputStream> os, index_t buffer_bytes = 4096):
-			OutputStream(), m_os(std::move(os))
+		BufferedOutputStream(const std::shared_ptr<OutputStream>& os, index_t buffer_bytes = 4096):
+			OutputStream(), m_os(os)
 		{
 
 		}

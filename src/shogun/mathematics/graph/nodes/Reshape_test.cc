@@ -12,7 +12,7 @@ using namespace std;
 
 TYPED_TEST(GraphTest, vector_reshape)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto X1 = SGVector<NumericType>(10);
 
@@ -20,9 +20,9 @@ TYPED_TEST(GraphTest, vector_reshape)
 	auto expected_result2 = SGMatrix<NumericType>(1, 10);
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{10}, get_enum_from_type<NumericType>::type);
+	    Shape{10}, TypeParam::type_id);
 
 	auto output1 = make_shared<node::Reshape>(input1, Shape{10, 1});
 	auto output2 = make_shared<node::Reshape>(input2, Shape{1, 10});
@@ -54,7 +54,7 @@ TYPED_TEST(GraphTest, vector_reshape)
 
 TYPED_TEST(GraphTest, matrix_reshape)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto X1 = SGMatrix<NumericType>(10, 1);
 
@@ -63,9 +63,9 @@ TYPED_TEST(GraphTest, matrix_reshape)
 
 	auto input1 = make_shared<node::Input>(
 	    Shape{Shape::Dynamic, Shape::Dynamic},
-	    get_enum_from_type<NumericType>::type);
+	    TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{10, 1}, get_enum_from_type<NumericType>::type);
+	    Shape{10, 1}, TypeParam::type_id);
 
 	auto output1 = make_shared<node::Reshape>(input1, Shape{5, 2});
 	auto output2 = make_shared<node::Reshape>(input2, Shape{10});

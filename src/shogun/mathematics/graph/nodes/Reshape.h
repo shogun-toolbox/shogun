@@ -56,7 +56,7 @@ namespace shogun
 						    "Expected first node to have only one output "
 						    "tensor, but got {}",
 						    node1_types.size());
-					return node1_types[0];
+					return node1_types[0]->type();
 				}
 
 				Shape check_shape_compatible(

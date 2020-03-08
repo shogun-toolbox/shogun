@@ -41,7 +41,7 @@ namespace shogun
 						    "tensor, but got {}",
 						    node_types.size());
 
-					return node_types[0];
+					return node_types[0]->type();
 				}
 
 				Shape check_shape(const std::shared_ptr<Node>& node)

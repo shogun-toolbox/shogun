@@ -13,9 +13,9 @@ using namespace std;
 
 TYPED_TEST(GraphTest, vector_scalar_dot)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -26,11 +26,11 @@ TYPED_TEST(GraphTest, vector_scalar_dot)
 		SGMatrix<NumericType> expected_result2{{2, 4, 6}, {8, 10, 12}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 		auto C = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::Dot>(A, B);
 		auto output2 = make_shared<node::Dot>(B, C);
@@ -65,9 +65,9 @@ TYPED_TEST(GraphTest, vector_scalar_dot)
 
 TYPED_TEST(GraphTest, vector_vector_dot)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -76,9 +76,9 @@ TYPED_TEST(GraphTest, vector_vector_dot)
 		NumericType expected_result = 32;
 
 		auto A = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 
 		auto output = make_shared<node::Dot>(A, B);
 
@@ -101,9 +101,9 @@ TYPED_TEST(GraphTest, vector_vector_dot)
 
 TYPED_TEST(GraphTest, matrix_vector_dot)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -112,9 +112,9 @@ TYPED_TEST(GraphTest, matrix_vector_dot)
 		SGVector<NumericType> expected_result = {5, 11, 17};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{2}, get_enum_from_type<NumericType>::type);
+		    Shape{2}, TypeParam::type_id);
 
 		auto output = make_shared<node::Dot>(A, B);
 
@@ -141,9 +141,9 @@ TYPED_TEST(GraphTest, matrix_vector_dot)
 
 TYPED_TEST(GraphTest, vector_matrix_dot)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -152,9 +152,9 @@ TYPED_TEST(GraphTest, vector_matrix_dot)
 		SGVector<NumericType> expected_result{35, 44};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 
 		auto output = make_shared<node::Dot>(A, B);
 
@@ -181,9 +181,9 @@ TYPED_TEST(GraphTest, vector_matrix_dot)
 
 TYPED_TEST(GraphTest, matrix_matrix_dot1)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -194,9 +194,9 @@ TYPED_TEST(GraphTest, matrix_matrix_dot1)
 		    {5, 11, 17}, {11, 25, 39}, {17, 39, 61}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{2, 3}, get_enum_from_type<NumericType>::type);
+		    Shape{2, 3}, TypeParam::type_id);
 
 		auto output = make_shared<node::Dot>(A, B);
 
@@ -223,12 +223,12 @@ TYPED_TEST(GraphTest, matrix_matrix_dot1)
 
 TYPED_TEST(GraphTest, matrix_matrix_dot2)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	if constexpr (
-	    std::is_same_v<NumericType, bool> ||
-	    std::is_same_v<NumericType, uint8_t> ||
-	    std::is_same_v<NumericType, int8_t>)
+	    std::is_same_v<TypeParam, BooleanType> ||
+	    std::is_same_v<TypeParam, UInt8Type> ||
+	    std::is_same_v<TypeParam, Int8Type>)
 		return;
 	else
 	{
@@ -241,9 +241,9 @@ TYPED_TEST(GraphTest, matrix_matrix_dot2)
 		                                          {156, 356, 556}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{2, 3}, get_enum_from_type<NumericType>::type);
+		    Shape{2, 3}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::Dot>(A, B);
 		auto output2 = make_shared<node::Dot>(output1, A);
@@ -278,9 +278,9 @@ TYPED_TEST(GraphTest, matrix_matrix_dot2)
 
 TYPED_TEST(GraphTest, simple_perceptron_inference)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -290,11 +290,11 @@ TYPED_TEST(GraphTest, simple_perceptron_inference)
 		SGVector<NumericType> expected_result = {6, 12, 18};
 
 		auto X = make_shared<node::Input>(
-		    Shape{Shape::Dynamic, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic, 2}, TypeParam::type_id);
 		auto w = make_shared<node::Input>(
-		    Shape{2}, get_enum_from_type<NumericType>::type);
+		    Shape{2}, TypeParam::type_id);
 		auto b = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 
 		auto prediction = make_shared<node::Dot>(X, w) + b;
 

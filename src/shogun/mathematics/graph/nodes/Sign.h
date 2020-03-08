@@ -23,7 +23,7 @@ namespace shogun
 				Sign(const std::shared_ptr<Node>& node) : UnaryNode(node)
 				{
 					const auto& type = m_types[0];
-					if (is_unsigned(type))
+					if (!type->is_signed())
 						error(
 						    "Sign does not work with unsigned operators. "
 						    "Sign got input node: {}",

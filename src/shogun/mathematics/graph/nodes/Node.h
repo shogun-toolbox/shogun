@@ -26,14 +26,16 @@ namespace shogun
 			IGNORE_IN_CLASSLIST class Node
 			{
 			public:
+				using type_info = std::shared_ptr<NumberType>;
+
 				Node(const Shape& shape, element_type type)
-				    : m_shapes({shape}), m_types({type})
+				    : m_shapes({shape}), m_types({number_type(type)})
 				{
 				}
 
 				Node(
 				    const std::vector<Shape>& shapes,
-				    const std::vector<element_type>& types)
+				    const std::vector<type_info>& types)
 				    : m_shapes(shapes), m_types(types)
 				{
 				}
@@ -49,7 +51,7 @@ namespace shogun
 				Node(
 				    const std::initializer_list<std::shared_ptr<Node>>& nodes,
 				    const std::vector<Shape>& shapes,
-				    const std::vector<element_type>& types)
+				    const std::vector<type_info>& types)
 				    : Node(shapes, types)
 				{
 					m_input_nodes = nodes;
@@ -72,7 +74,7 @@ namespace shogun
 				}
 
 				// type of tensor created by this node
-				const std::vector<element_type>& get_types() const
+				const std::vector<type_info>& get_types() const
 				{
 					return m_types;
 				}
@@ -92,7 +94,7 @@ namespace shogun
 			protected:
 				std::vector<std::shared_ptr<Node>> m_input_nodes;
 				std::vector<Shape> m_shapes;
-				std::vector<element_type> m_types;
+				std::vector<type_info> m_types;
 			};
 		} // namespace node
 	}     // namespace graph

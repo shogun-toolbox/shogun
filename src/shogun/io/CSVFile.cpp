@@ -112,10 +112,8 @@ void CSVFile::init_with_defaults()
 	m_tokenizer->delimiters[m_delimiter]=1;
 	m_tokenizer->delimiters[' ']=1;
 
-
 	m_line_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_line_tokenizer->delimiters['\n']=1;
-
 
 	m_parser=std::make_shared<Parser>();
 	m_parser->set_tokenizer(m_tokenizer);
@@ -181,13 +179,12 @@ void CSVFile::get_matrix(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) 
 	\
 	SG_SET_LOCALE_C; \
 	\
-	matrix=SG_MALLOC(sg_type, num_lines*num_tokens); \
+	matrix=SG_ALIGNED_MALLOC(sg_type, num_lines*num_tokens, alignment::container_alignment); \
 	skip_lines(m_num_to_skip); \
 	while (m_line_reader->has_next()) \
 	{ \
 		line=m_line_reader->read_line(); \
 		m_parser->set_text(line); \
-		\
 		for (int32_t i=0; i<num_tokens; i++) \
 		{ \
 			if (!m_parser->has_next()) \
