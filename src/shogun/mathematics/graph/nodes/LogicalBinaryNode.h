@@ -50,9 +50,9 @@ namespace shogun
 						    "tensor, but got {}",
 						    node2_types.size());
 
-					if (node1_types[0] != element_type::BOOLEAN)
+					if (node1_types[0]->type() != element_type::BOOLEAN)
 						error("Expected type of first node to be bool");
-					if (node2_types[0] != element_type::BOOLEAN)
+					if (node2_types[0]->type() != element_type::BOOLEAN)
 						error("Expected type of second node to be bool");
 
 					return element_type::BOOLEAN;

@@ -12,12 +12,12 @@ using namespace std;
 
 TYPED_TEST(GraphTest, sign)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	if constexpr (std::is_unsigned_v<NumericType>)
 	{
 		auto input = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic}, TypeParam::type_id);
 		EXPECT_THROW(make_shared<node::Sign>(input), ShogunException);
 	}
 	else
@@ -27,7 +27,7 @@ TYPED_TEST(GraphTest, sign)
 		SGVector<NumericType> expected_result{-1, 0, 1, -1, 1};
 
 		auto input = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = make_shared<node::Sign>(input);
 

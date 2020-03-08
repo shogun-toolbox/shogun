@@ -12,16 +12,14 @@ using namespace std;
 
 TYPED_TEST(GraphTest, scalar_matmul)
 {
-	using NumericType = TypeParam;
-
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
 		auto A = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 
 		// MatMul doesn't work with scalar, unlike Dot. See MatMul docs.
 		EXPECT_THROW(make_shared<node::MatMul>(A, B), ShogunException);
@@ -30,9 +28,9 @@ TYPED_TEST(GraphTest, scalar_matmul)
 
 TYPED_TEST(GraphTest, vector_vector_matmul)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -41,9 +39,9 @@ TYPED_TEST(GraphTest, vector_vector_matmul)
 		NumericType expected_result = 32;
 
 		auto A = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -66,9 +64,9 @@ TYPED_TEST(GraphTest, vector_vector_matmul)
 
 TYPED_TEST(GraphTest, matrix_vector_matmul)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -77,9 +75,9 @@ TYPED_TEST(GraphTest, matrix_vector_matmul)
 		SGVector<NumericType> expected_result = {5, 11, 17};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{2}, get_enum_from_type<NumericType>::type);
+		    Shape{2}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -106,9 +104,9 @@ TYPED_TEST(GraphTest, matrix_vector_matmul)
 
 TYPED_TEST(GraphTest, vector_matrix_matmul)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -117,9 +115,9 @@ TYPED_TEST(GraphTest, vector_matrix_matmul)
 		SGVector<NumericType> expected_result{35, 44};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3}, get_enum_from_type<NumericType>::type);
+		    Shape{3}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -146,9 +144,9 @@ TYPED_TEST(GraphTest, vector_matrix_matmul)
 
 TYPED_TEST(GraphTest, matrix_matrix_matmul1)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<TypeParam, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -159,9 +157,9 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul1)
 		    {5, 11, 17}, {11, 25, 39}, {17, 39, 61}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{2, 3}, get_enum_from_type<NumericType>::type);
+		    Shape{2, 3}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -188,12 +186,12 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul1)
 
 TYPED_TEST(GraphTest, matrix_matrix_matmul2)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	if constexpr (
-	    std::is_same_v<NumericType, bool> ||
-	    std::is_same_v<NumericType, uint8_t> ||
-	    std::is_same_v<NumericType, int8_t>)
+	    std::is_same_v<TypeParam, BooleanType> ||
+	    std::is_same_v<TypeParam, UInt8Type> ||
+	    std::is_same_v<TypeParam, Int8Type>)
 		return;
 	else
 	{
@@ -206,9 +204,9 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul2)
 		                                          {156, 356, 556}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 		auto B = make_shared<node::Input>(
-		    Shape{2, 3}, get_enum_from_type<NumericType>::type);
+		    Shape{2, 3}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::MatMul>(A, B);
 		auto output2 = make_shared<node::MatMul>(output1, A);
@@ -243,12 +241,12 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul2)
 
 TYPED_TEST(GraphTest, matrix_matrixT_matmul)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	if constexpr (
-	    std::is_same_v<NumericType, bool> ||
-	    std::is_same_v<NumericType, uint8_t> ||
-	    std::is_same_v<NumericType, int8_t>)
+	    std::is_same_v<TypeParam, BooleanType> ||
+	    std::is_same_v<TypeParam, UInt8Type> ||
+	    std::is_same_v<TypeParam, Int8Type>)
 		return;
 	else
 	{
@@ -260,7 +258,7 @@ TYPED_TEST(GraphTest, matrix_matrixT_matmul)
 		                                          {156, 356, 556}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::MatMul>(A, A, false, true);
 		EXPECT_THROW(make_shared<node::MatMul>(A, A), ShogunException);
@@ -296,12 +294,12 @@ TYPED_TEST(GraphTest, matrix_matrixT_matmul)
 
 TYPED_TEST(GraphTest, matrixT_matrix_matmul)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	if constexpr (
-	    std::is_same_v<NumericType, bool> ||
-	    std::is_same_v<NumericType, uint8_t> ||
-	    std::is_same_v<NumericType, int8_t>)
+	    std::is_same_v<TypeParam, BooleanType> ||
+	    std::is_same_v<TypeParam, UInt8Type> ||
+	    std::is_same_v<TypeParam, Int8Type>)
 		return;
 	else
 	{
@@ -312,7 +310,7 @@ TYPED_TEST(GraphTest, matrixT_matrix_matmul)
 		    {123, 156}, {281, 356}, {439, 556}};
 
 		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, get_enum_from_type<NumericType>::type);
+		    Shape{3, 2}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::MatMul>(A, A, true, false);
 		EXPECT_THROW(make_shared<node::MatMul>(output1, A), ShogunException);

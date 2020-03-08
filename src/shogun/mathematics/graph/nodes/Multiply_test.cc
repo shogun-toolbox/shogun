@@ -12,13 +12,13 @@ using namespace std;
 
 TYPED_TEST(GraphTest, multiply)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 
-	auto X1 = SGVector<NumericType>(10);
-	auto X2 = SGVector<NumericType>(10);
+	SGVector<NumericType> X1(10);
+	SGVector<NumericType> X2(10);
 
 	X1.range_fill();
 	X2.range_fill();
@@ -34,9 +34,9 @@ TYPED_TEST(GraphTest, multiply)
 	    expected_result2.data(), std::multiplies<NumericType>{});
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{10}, get_enum_from_type<NumericType>::type);
+	    Shape{10}, TypeParam::type_id);
 
 	auto intermediate = input * input;
 
@@ -52,9 +52,9 @@ TYPED_TEST(GraphTest, multiply)
 
 TYPED_TEST(GraphTest, vector_scalar_multiply)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -67,9 +67,9 @@ TYPED_TEST(GraphTest, vector_scalar_multiply)
 		                                       12, 14, 16, 18, 20};
 
 		auto input1 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic}, TypeParam::type_id);
 		auto input2 = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 
 		auto output = input1 * input2;
 
@@ -98,9 +98,9 @@ TYPED_TEST(GraphTest, vector_scalar_multiply)
 
 TYPED_TEST(GraphTest, scalar_vector_multiply)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -112,9 +112,9 @@ TYPED_TEST(GraphTest, scalar_vector_multiply)
 		                                       12, 14, 16, 18, 20};
 
 		auto input1 = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 		auto input2 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = input1 * input2;
 

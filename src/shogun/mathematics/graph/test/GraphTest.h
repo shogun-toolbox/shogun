@@ -9,8 +9,6 @@
 #include <shogun/mathematics/graph/GraphExecutor.h>
 #include <shogun/util/zip_iterator.h>
 
-#include <tuple>
-
 template <typename T>
 class GraphTest : public ::testing::Test
 {
@@ -21,9 +19,10 @@ protected:
 
 	void test_binary_op_results(
 	    const std::shared_ptr<shogun::graph::Graph>& graph,
-	    const shogun::SGVector<T>& X1, const shogun::SGVector<T>& X2,
-	    const shogun::SGVector<T>& expected_result1,
-	    const shogun::SGVector<T>& expected_result2)
+	    const shogun::SGVector<typename T::c_type>& X1,
+		const shogun::SGVector<typename T::c_type>& X2,
+	    const shogun::SGVector<typename T::c_type>& expected_result1,
+	    const shogun::SGVector<typename T::c_type>& expected_result2)
 	{
 		for (auto&& backend : this->m_backends)
 		{
@@ -34,8 +33,8 @@ protected:
 			        std::vector{std::make_shared<shogun::graph::Tensor>(X1),
 			                    std::make_shared<shogun::graph::Tensor>(X2)});
 
-			auto result1 = result[0]->template as<shogun::SGVector<T>>();
-			auto result2 = result[1]->template as<shogun::SGVector<T>>();
+			auto result1 = result[0]->template as<shogun::SGVector<typename T::c_type>>();
+			auto result2 = result[1]->template as<shogun::SGVector<typename T::c_type>>();
 
 			for (const auto& [expected_i, result_i] :
 			     shogun::zip_iterator(expected_result1, result1))
@@ -54,8 +53,13 @@ protected:
 	std::set<GRAPH_BACKEND> m_backends;
 };
 
+
 using GraphTypes = ::testing::Types<
-    bool, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t,
-    uint64_t, float32_t, float64_t>;
+    shogun::graph::BooleanType, shogun::graph::UInt8Type,
+	shogun::graph::Int8Type, shogun::graph::UInt16Type,
+	shogun::graph::Int16Type, shogun::graph::UInt32Type,
+	shogun::graph::Int32Type, shogun::graph::Int64Type,
+	shogun::graph::UInt64Type, shogun::graph::Float32Type,
+	shogun::graph::Float64Type>;
 
 TYPED_TEST_CASE(GraphTest, GraphTypes);

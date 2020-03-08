@@ -26,7 +26,7 @@ namespace shogun
 				    : BinaryNode(node1, node2)
 				{
 					// output of equal is boolean
-					m_types[0] = element_type::BOOLEAN;
+					m_types[0] = from<bool>();
 				}
 
 				std::string to_string() const override

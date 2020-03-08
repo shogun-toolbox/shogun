@@ -7,12 +7,12 @@
 #ifndef SHOGUNTENSOR_H_
 #define SHOGUNTENSOR_H_
 
+#include <shogun/lib/memory.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
 #include <shogun/util/enumerate.h>
 
-#include <shogun/mathematics/graph/Allocator.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Types.h>
 
@@ -30,14 +30,14 @@ namespace shogun
 			template <typename T>
 			Tensor(const T& scalar)
 			    : m_free(true), m_data(new T(scalar)), m_shape({}),
-			      m_type(get_enum_from_type<T>::type)
+			      m_type(from<T>())
 			{
 			}
 
 			template <typename T>
 			Tensor(const SGVector<T>& vec)
 			    : m_free(false), m_data(vec.vector), m_shape(Shape{vec.size()}),
-			      m_type(get_enum_from_type<T>::type)
+			      m_type(from<T>())
 			{
 			}
 
@@ -45,7 +45,7 @@ namespace shogun
 			Tensor(const SGMatrix<T>& matrix)
 			    : m_free(false), m_data(matrix.matrix),
 			      m_shape(Shape{matrix.num_rows, matrix.num_cols}),
-			      m_type(get_enum_from_type<T>::type)
+			      m_type(from<T>())
 			{
 			}
 
@@ -53,12 +53,12 @@ namespace shogun
 			{
 				if (m_data != nullptr && m_free)
 				{
-					deallocator_dispatch(m_data, m_type);
+					SG_ALIGNED_FREE(m_data);
 					m_data = nullptr;
 				}
 			}
 
-			Tensor(const Shape& shape, element_type type)
+			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type)
 			    : m_free(false), m_data(nullptr), m_shape(shape), m_type(type)
 			{
 			}
@@ -68,29 +68,29 @@ namespace shogun
 				if (m_data != nullptr)
 					error("Tensor already owns data!");
 				set_shape(shape);
-				m_data = allocator_dispatch(size(), m_type);
+				m_data = sg_aligned_malloc(size_in_bytes(), alignment::container_alignment);
 				m_free = true;
 			}
 
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
 
-			    [[nodiscard]] Shape& get_shape()
+			[[nodiscard]] Shape& get_shape()
 			{
 				return m_shape;
 			}
 
 			[[nodiscard]] size_t size_in_bytes() const {
-				return size() * get_byte_size(m_type);
+				return size() * m_type->size();
 			}
 
-			    [[nodiscard]] size_t size() const
+			[[nodiscard]] size_t size() const
 			{
 				return get_size_from_shape(m_shape);
 			}
 
-			[[nodiscard]] element_type get_type() const { return m_type; }
+			[[nodiscard]] std::shared_ptr<NumberType> get_type() const { return m_type; }
 
-			    [[nodiscard]] std::string to_string() const;
+			[[nodiscard]] std::string to_string() const;
 
 			friend std::ostream&
 			operator<<(std::ostream& os, const std::shared_ptr<Tensor>& tensor)
@@ -142,8 +142,7 @@ namespace shogun
 					if (m_shape.size() > 1)
 						error("Tried to cast a multidimensional Tensor to a "
 						      "SGVector.");
-					if (get_enum_from_type<typename Container::Scalar>::type !=
-					    m_type)
+					if (from<typename Container::Scalar>() != m_type)
 						error("Type mismatch when casting from Tensor.");
 					return Container(
 					    (typename Container::Scalar*)m_data, size(), false);
@@ -152,8 +151,7 @@ namespace shogun
 				                  SGMatrix<typename Container::Scalar>,
 				                  Container>)
 				{
-					if (get_enum_from_type<typename Container::Scalar>::type !=
-					    m_type)
+					if (from<typename Container::Scalar>() != m_type)
 						error("Type mismatch when casting from Tensor");
 					if (m_shape.size() != 2)
 						error(
@@ -180,7 +178,7 @@ namespace shogun
 			void* m_data;
 			// tensor shape
 			Shape m_shape;
-			const element_type m_type;
+			std::shared_ptr<NumberType> m_type;
 		};
 	} // namespace graph
 } // namespace shogun

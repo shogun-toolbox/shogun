@@ -126,7 +126,7 @@ namespace shogun
 					if (node1_types[0] != node2_types[0])
 						error("Expected types to be the same");
 
-					return node1_types[0];
+					return node1_types[0]->type();
 				}
 
 				Shape check_shape_compatible(

@@ -163,25 +163,25 @@ namespace shogun
 				    const std::shared_ptr<Tensor>& B,
 				    const std::shared_ptr<Tensor>& Out)
 				{
-#define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
-	case SHOGUN_TYPE:                                                          \
-		dot_product_dispatch<get_type_from_enum<SHOGUN_TYPE>::type>(           \
-		    A, B, Out);                                                        \
+#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)              \
+	case NUMBER_TYPE::type_id:                               \
+		dot_product_dispatch<NUMBER_TYPE::c_type>(           \
+		    A, B, Out);                                      \
 		break;
 
-					switch (A->get_type())
+					switch (*A->get_type())
 					{
-						CALL_KERNEL_IMPLEMENTATION(element_type::BOOLEAN)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT8)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT16)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT32)
-						CALL_KERNEL_IMPLEMENTATION(element_type::INT64)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT8)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT16)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT32)
-						CALL_KERNEL_IMPLEMENTATION(element_type::UINT64)
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT32)
-						CALL_KERNEL_IMPLEMENTATION(element_type::FLOAT64)
+						CALL_KERNEL_IMPLEMENTATION(BooleanType)
+						CALL_KERNEL_IMPLEMENTATION(Int8Type)
+						CALL_KERNEL_IMPLEMENTATION(Int16Type)
+						CALL_KERNEL_IMPLEMENTATION(Int32Type)
+						CALL_KERNEL_IMPLEMENTATION(Int64Type)
+						CALL_KERNEL_IMPLEMENTATION(UInt8Type)
+						CALL_KERNEL_IMPLEMENTATION(UInt16Type)
+						CALL_KERNEL_IMPLEMENTATION(UInt32Type)
+						CALL_KERNEL_IMPLEMENTATION(UInt64Type)
+						CALL_KERNEL_IMPLEMENTATION(Float32Type)
+						CALL_KERNEL_IMPLEMENTATION(Float64Type)
 					}
 #undef CALL_KERNEL_IMPLEMENTATION
 				}

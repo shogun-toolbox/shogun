@@ -57,60 +57,60 @@ namespace shogun
 				{
 #define CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
     INPUT_SHOGUN_TYPE, OUTPUT_SHOGUN_TYPE)                                     \
-	case OUTPUT_SHOGUN_TYPE:                                                   \
+	case OUTPUT_SHOGUN_TYPE::type_id:                                          \
 		kernel_implementation<                                                 \
-		    get_type_from_enum<INPUT_SHOGUN_TYPE>::type,                       \
-		    get_type_from_enum<OUTPUT_SHOGUN_TYPE>::type>(                     \
+		    INPUT_SHOGUN_TYPE::c_type,                                         \
+		    OUTPUT_SHOGUN_TYPE::c_type>(                                       \
 		    input->data(), output->data(), input->size());                     \
 		break;
 
 #define CALL_KERNEL_INPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE)               \
-	switch (output->get_type())                                                \
+	switch (*output->get_type())                                               \
 	{                                                                          \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::BOOLEAN)                          \
+		    INPUT_SHOGUN_TYPE, BooleanType)                          \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::INT8)                             \
+		    INPUT_SHOGUN_TYPE, Int8Type)                             \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::INT16)                            \
+		    INPUT_SHOGUN_TYPE, Int16Type)                            \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::INT32)                            \
+		    INPUT_SHOGUN_TYPE, Int32Type)                            \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::INT64)                            \
+		    INPUT_SHOGUN_TYPE, Int64Type)                            \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::UINT8)                            \
+		    INPUT_SHOGUN_TYPE, UInt8Type)                            \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::UINT16)                           \
+		    INPUT_SHOGUN_TYPE, UInt16Type)                           \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::UINT32)                           \
+		    INPUT_SHOGUN_TYPE, UInt32Type)                           \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::UINT64)                           \
+		    INPUT_SHOGUN_TYPE, UInt64Type)                           \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::FLOAT32)                          \
+		    INPUT_SHOGUN_TYPE, Float32Type)                          \
 		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, element_type::FLOAT64)                          \
+		    INPUT_SHOGUN_TYPE, Float64Type)                          \
 	}
 
 #define CALL_KERNEL(INPUT_SHOGUN_TYPE)                                         \
-	case INPUT_SHOGUN_TYPE:                                                    \
+	case INPUT_SHOGUN_TYPE::type_id:                                           \
 	{                                                                          \
-		CALL_KERNEL_INPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE)               \
+		CALL_KERNEL_INPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE)		       \
 	}                                                                          \
 	break;
 
-					switch (input->get_type())
+					switch (*input->get_type())
 					{
-						CALL_KERNEL(element_type::BOOLEAN)
-						CALL_KERNEL(element_type::INT8)
-						CALL_KERNEL(element_type::INT16)
-						CALL_KERNEL(element_type::INT32)
-						CALL_KERNEL(element_type::INT64)
-						CALL_KERNEL(element_type::UINT8)
-						CALL_KERNEL(element_type::UINT16)
-						CALL_KERNEL(element_type::UINT32)
-						CALL_KERNEL(element_type::UINT64)
-						CALL_KERNEL(element_type::FLOAT32)
-						CALL_KERNEL(element_type::FLOAT64)
+						CALL_KERNEL(BooleanType)
+						CALL_KERNEL(Int8Type)
+						CALL_KERNEL(Int16Type)
+						CALL_KERNEL(Int32Type)
+						CALL_KERNEL(Int64Type)
+						CALL_KERNEL(UInt8Type)
+						CALL_KERNEL(UInt16Type)
+						CALL_KERNEL(UInt32Type)
+						CALL_KERNEL(UInt64Type)
+						CALL_KERNEL(Float32Type)
+						CALL_KERNEL(Float64Type)
 					}
 #undef CALL_KERNEL
 #undef CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION

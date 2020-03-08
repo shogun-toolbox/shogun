@@ -54,7 +54,11 @@ namespace shogun
 						    "tensor, but got {}",
 						    node_types.size());
 
-					// TODO: check if node_types[0] and type are convertible
+					auto cast_type = number_type(type);
+					if (!cast_type->compatible(*node_types[0]))
+						error(
+						    "There's no safe way to cast {} to {}",
+							node_types[0]->to_string(), cast_type->to_string());
 
 					return type;
 				}

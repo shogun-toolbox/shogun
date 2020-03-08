@@ -12,9 +12,9 @@ using namespace std;
 
 TYPED_TEST(GraphTest, subtract)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 
 	auto X1 = SGVector<NumericType>(10);
@@ -34,9 +34,9 @@ TYPED_TEST(GraphTest, subtract)
 	    expected_result2.data(), std::minus<NumericType>{});
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{10}, get_enum_from_type<NumericType>::type);
+	    Shape{10}, TypeParam::type_id);
 
 	auto intermediate = input - input;
 
@@ -52,9 +52,9 @@ TYPED_TEST(GraphTest, subtract)
 
 TYPED_TEST(GraphTest, vector_scalar_subtract)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -67,9 +67,9 @@ TYPED_TEST(GraphTest, vector_scalar_subtract)
 		expected_result1.range_fill();
 
 		auto input1 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic}, TypeParam::type_id);
 		auto input2 = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 
 		auto output = input1 - input2;
 
@@ -98,9 +98,9 @@ TYPED_TEST(GraphTest, vector_scalar_subtract)
 
 TYPED_TEST(GraphTest, scalar_vector_subtract)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (std::is_same_v<NumericType, bool>)
+	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 		return;
 	else
 	{
@@ -112,9 +112,9 @@ TYPED_TEST(GraphTest, scalar_vector_subtract)
 		SGVector<NumericType> expected_result1{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
 		auto input1 = make_shared<node::Input>(
-		    Shape{}, get_enum_from_type<NumericType>::type);
+		    Shape{}, TypeParam::type_id);
 		auto input2 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+		    Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = input1 - input2;
 

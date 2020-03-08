@@ -12,7 +12,7 @@ using namespace std;
 
 TYPED_TEST(GraphTest, equal)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto X1 = SGVector<NumericType>(10);
 	auto X2 = SGVector<NumericType>(10);
@@ -21,9 +21,9 @@ TYPED_TEST(GraphTest, equal)
 	X2.range_fill();
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{10}, get_enum_from_type<NumericType>::type);
+	    Shape{10}, TypeParam::type_id);
 
 	auto output = make_shared<node::Equal>(input, input1);
 
@@ -52,7 +52,7 @@ TYPED_TEST(GraphTest, equal)
 
 TYPED_TEST(GraphTest, vector_scalar_equal)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	auto X1 = SGVector<NumericType>(10);
 	NumericType X2 = 1;
@@ -60,9 +60,9 @@ TYPED_TEST(GraphTest, vector_scalar_equal)
 	X1.range_fill();
 
 	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 	auto input1 = make_shared<node::Input>(
-	    Shape{}, get_enum_from_type<NumericType>::type);
+	    Shape{}, TypeParam::type_id);
 
 	auto output = make_shared<node::Equal>(input, input1);
 
@@ -91,7 +91,7 @@ TYPED_TEST(GraphTest, vector_scalar_equal)
 
 TYPED_TEST(GraphTest, scalar_vector_equal)
 {
-	using NumericType = TypeParam;
+	using NumericType = typename TypeParam::c_type;
 
 	NumericType X1 = 1;
 	auto X2 = SGVector<NumericType>(10);
@@ -99,9 +99,9 @@ TYPED_TEST(GraphTest, scalar_vector_equal)
 	X2.range_fill();
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{}, get_enum_from_type<NumericType>::type);
+	    Shape{}, TypeParam::type_id);
 	auto input2 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, get_enum_from_type<NumericType>::type);
+	    Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	auto output = make_shared<node::Equal>(input1, input2);
 
