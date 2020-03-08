@@ -2,7 +2,7 @@
 #include <immintrin.h>
 #endif
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 int FHTFloatCombined(float *buffer, int len, int chunk);
 int FHTDoubleCombined(double *buffer, int len, int chunk);

@@ -8,9 +8,9 @@
 #define libqp_h
 
 #include <shogun/lib/config.h>
-#include <math.h>
-
 #include <shogun/lib/common.h>
+#include <shogun/mathematics/Math.h>
+
 namespace shogun
 {
 #define LIBQP_PLUS_INF (-log(0.0))
