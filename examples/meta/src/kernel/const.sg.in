@@ -7,7 +7,7 @@ Features feats_test = features(testdat)
 #![create_features]
 
 #![create_kernel]
-Kernel const_kernel = kernel("ConstKernel", const_value=23)
+Kernel const_kernel = kernel("ConstKernel", const_value=23.00)
 const_kernel.init(feats_train, feats_train)
 #![create_kernel]
 
