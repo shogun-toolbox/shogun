@@ -147,9 +147,9 @@ T* sg_aligned_malloc(size_t len, size_t al)
 }
 
 #ifdef _MSC_VER
-void sg_aligned_free(void* ptr);
+SHOGUN_EXPORT void sg_aligned_free(void* ptr);
 
-void* sg_aligned_realloc(void*, size_t len, size_t al);
+SHOGUN_EXPORT void* sg_aligned_realloc(void*, size_t len, size_t al);
 template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 T* sg_aligned_realloc(T* ptr, size_t old_len, size_t len, size_t al)
 {
