@@ -1,6 +1,6 @@
 # Developing Shogun
 
-This is a very basic checklist on how to get started in hacking Shogun,
+This is a very basic checklist on how to get started with Shogun,
 You should:
 
 1. Compile from source, see [INSTALL.md](INSTALL.md).
