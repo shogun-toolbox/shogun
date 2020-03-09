@@ -24,10 +24,17 @@ namespace shogun
 {
 	namespace graph
 	{
+		namespace op
+		{
+			class ShogunStorage;
+		}
+
 		class Tensor
 		{
 		public:
-			template <typename T>
+            friend class op::ShogunStorage;
+
+            template <typename T>
 			Tensor(const T& scalar)
 			    : m_free(true), m_data(new T(scalar)), m_shape({}),
 			      m_type(from<T>())
@@ -58,51 +65,7 @@ namespace shogun
 				}
 			}
 
-			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type)
-			    : m_free(false), m_data(nullptr), m_shape(shape), m_type(type)
-			{
-			}
-
-			void allocate_tensor(const Shape& shape)
-			{
-				if (!shape.is_static())
-					error("Cannot allocate tensor with shape {}, with unknown size requirements", shape.to_string());
-				// new allocation, call allocator_dispatch
-				if (m_data == nullptr)
-				{
-					set_shape(shape);
-				m_data = sg_aligned_malloc(size_in_bytes(), alignment::container_alignment);
-				}
-				else
-				{
-					// memory already allocated, and we have the right shape
-					// nothing to do
-					if (m_shape == shape)
-						return;
-					// memory has been allocated, but it isn't the same shape
-					else
-					{
-						auto old_shape = m_shape;
-						set_shape(shape);
-						// if the size requirement is larger, reallocate memory
-						if (get_size_from_shape(shape) > size())
-						{	
-							m_data = std::realloc(m_data, size_in_bytes());
-						// otherwise nothing happens, we just own a larger memory block
-						}
-						// but only use part of it
-					}
-
-				}
-				m_free = true;
-			}
-
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
-
-			[[nodiscard]] Shape& get_shape()
-			{
-				return m_shape;
-			}
 
 			[[nodiscard]] size_t size_in_bytes() const {
 				return size() * m_type->size();
@@ -121,33 +84,6 @@ namespace shogun
 			operator<<(std::ostream& os, const std::shared_ptr<Tensor>& tensor)
 			{
 				return os << tensor->to_string();
-			}
-
-			void set_shape(const Shape& shape)
-			{
-				if (m_shape.size() != shape.size())
-				{
-					error(
-					    "Mismatch in the number of dimensions, expected {}, "
-					    "but got {}",
-					    m_shape.size(), shape.size());
-				}
-
-				for (auto [idx, original_shape_dim_i, new_shape_dim_i] :
-				     enumerate(m_shape, shape))
-				{
-					if (original_shape_dim_i == Shape::Dynamic)
-					{
-						m_shape[idx] = new_shape_dim_i;
-					}
-					else if (original_shape_dim_i != new_shape_dim_i)
-					{
-						error(
-						    "Cannot set tensor shape. Shapes {} and {} are "
-						    "incompatible.",
-						    m_shape, shape);
-					}
-				}
 			}
 
 			void*& data()
@@ -171,10 +107,11 @@ namespace shogun
 				                  SGVector<typename Container::Scalar>,
 				                  Container>)
 				{
+					const auto cast_type = from<typename Container::Scalar>();
 					if (m_shape.size() > 1)
 						error("Tried to cast a multidimensional Tensor to a "
 						      "SGVector.");
-					if (from<typename Container::Scalar>() != m_type)
+					if (*cast_type != *m_type)
 						error("Type mismatch when casting from Tensor.");
 					return Container(
 					    (typename Container::Scalar*)m_data, size(), false);
@@ -183,7 +120,8 @@ namespace shogun
 				                  SGMatrix<typename Container::Scalar>,
 				                  Container>)
 				{
-					if (from<typename Container::Scalar>() != m_type)
+					const auto cast_type = from<typename Container::Scalar>();
+					if (*cast_type != *m_type)
 						error("Type mismatch when casting from Tensor");
 					if (m_shape.size() != 2)
 						error(
@@ -197,15 +135,23 @@ namespace shogun
 
 #endif
 
+		private:
 			[[nodiscard]] size_t get_size_from_shape(const Shape& size) const {
 				return std::accumulate(
 				    size.begin(), size.end(), size_t{1}, std::multiplies{});
 			}
 
-			private :
-			    // whether the memory is owned by the tensor, i.e. should it be
-			    // deleted by the destructor
-			    bool m_free;
+		public:
+
+			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type)
+			    : m_free(true), m_data(nullptr), m_shape(shape), m_type(type)
+			{
+				m_data = sg_aligned_malloc(size_in_bytes(), alignment::container_alignment);
+			}
+
+		    // whether the memory is owned by the tensor, i.e. should it be
+		    // deleted by the destructor
+		    bool m_free;
 			// the actual data in memory
 			void* m_data;
 			// tensor shape

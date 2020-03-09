@@ -35,6 +35,11 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
+					if (input_nodes.size() != 2)
+						error("Binary operation expected two inputs.");
+					if (m_outputs.size() != 1)
+						error("Binary operation expected one output.");
+
 					const bool transpose_a =
 					    std::static_pointer_cast<node::MatMul>(m_node)
 					        ->get_transpose_a();
@@ -42,35 +47,29 @@ namespace shogun
 					    std::static_pointer_cast<node::MatMul>(m_node)
 					        ->get_transpose_b();
 
-					const auto& input_tensor1 =
-					    input_nodes[0]->get_output_tensors()[0];
-					const auto& input_tensor2 =
-					    input_nodes[1]->get_output_tensors()[0];
-					const auto& output_tensor = m_output_tensors[0];
+					const auto& input1 =
+					    input_nodes[0]->get_outputs()[0];
+					const auto& input2 =
+					    input_nodes[1]->get_outputs()[0];
+					const auto& output = m_outputs[0];
 
 					runtime_checks_and_allocation(
-					    std::vector{input_tensor1, input_tensor2}, transpose_a,
+					    input1, input2, transpose_a,
 					    transpose_b);
 
 					matmul_type_dispatch(
-					    input_tensor1, input_tensor2, output_tensor,
+					    input1, input2, output,
 					    transpose_a, transpose_b);
 				}
 
 			private:
 				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors,
+				    const std::shared_ptr<ShogunStorage>& input1,
+				    const std::shared_ptr<ShogunStorage>& input2,
 				    const bool transpose_a, const bool transpose_b)
 				{
-					if (tensors.size() != 2)
-						error("Binary operation expected two inputs.");
-					if (m_output_tensors.size() != 1)
-						error("Binary operation expected one output.");
-
-					const auto& input_tensor1 = tensors[0];
-					const auto& input_tensor2 = tensors[1];
-					const auto& shape_a = input_tensor1->get_shape();
-					const auto& shape_b = input_tensor2->get_shape();
+					const auto& shape_a = input1->get_shape();
+					const auto& shape_b = input2->get_shape();
 
 					auto reduction_axis_a =
 					    std::static_pointer_cast<node::MatMul>(m_node)
@@ -112,14 +111,14 @@ namespace shogun
 							output_shape_vector.push_back(el);
 					}
 
-					m_output_tensors[0]->allocate_tensor(
+					m_outputs[0]->allocate_storage(
 					    Shape{output_shape_vector});
 				}
 
 				void matmul_type_dispatch(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out, const bool transpose_a,
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out, const bool transpose_a,
 				    const bool transpose_b)
 				{
 					if (!transpose_a && !transpose_b)
@@ -152,9 +151,9 @@ namespace shogun
 
 				template <typename T>
 				void matmul_dispatch(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out, const bool transpose_a,
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out, const bool transpose_a,
 				    const bool transpose_b)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>

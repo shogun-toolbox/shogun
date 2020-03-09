@@ -8,6 +8,7 @@
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
+#include <shogun/mathematics/graph/ops/abstract/ShogunStorage.h>
 
 #include <ngraph/ngraph.hpp>
 
@@ -129,9 +130,10 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		const auto type =
 		    get_enum_from_ngraph(ngraph_tensor->get_element_type());
 
-		auto& tensor =
-		    results.emplace_back(std::make_shared<Tensor>(shape, type));
-		tensor->allocate_tensor(shape);
+		auto storage =
+		    std::make_shared<op::ShogunStorage>(shape, type);
+		storage->allocate_storage(shape);
+		auto& tensor = results.emplace_back(storage->to_tensor());
 		ngraph_tensor->wait_for_read_ready();
 		ngraph_tensor->read(tensor->data(), ngraph_tensor->get_size_in_bytes());
 	}

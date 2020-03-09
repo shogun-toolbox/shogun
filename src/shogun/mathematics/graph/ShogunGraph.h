@@ -9,6 +9,7 @@
 
 #include <shogun/mathematics/graph/GraphExecutor.h>
 #include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
+#include <shogun/mathematics/graph/ops/abstract/ShogunStorage.h>
 
 #include <memory>
 #include <vector>
@@ -36,7 +37,7 @@ namespace shogun
 			add_operator_node(const std::shared_ptr<node::Node>& node) final;
 
 		private:
-			std::shared_ptr<Tensor>
+			std::shared_ptr<op::ShogunStorage>
 			extract_result(const std::shared_ptr<node::Node>& node) const;
 			std::shared_ptr<detail::RuntimeNode>
 			get_operator(const std::shared_ptr<node::Node>& node) const;

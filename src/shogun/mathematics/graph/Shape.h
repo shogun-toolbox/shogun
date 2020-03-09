@@ -27,11 +27,11 @@ namespace shogun
 		class Shape
 		{
 		public:
-			friend class Tensor;
-
 			using shape_type = int64_t;
 
 			static constexpr shape_type Dynamic = -1;
+
+			Shape() = default;
 
 			Shape(const std::initializer_list<shape_type>& shape)
 			    : m_shape(shape)
@@ -126,7 +126,7 @@ namespace shogun
 				while (shape_it != m_shape.end())
 				{
 					if (*shape_it == Dynamic)
-						result << "Dynamic";
+						result << "?";
 					else
 						result << *shape_it;
 					if (std::next(shape_it) != m_shape.end())
