@@ -28,14 +28,14 @@ namespace shogun
 					BinaryRuntimeNodeNGraph()
 					    : RuntimeNodeTemplate<NodeType, ::ngraph::Node>(){}
 
-					          [[nodiscard]] std::
-					              shared_ptr<::ngraph::Node> build_implementation(
-					                  const std::shared_ptr<node::Node>& node)
-					                  const final
+		          	[[nodiscard]] std::shared_ptr<::ngraph::Node> build_implementation(
+		                  const std::shared_ptr<node::Node>& node) const final
 					{
 						if (this->m_input_nodes.size() != 2)
 							error("Expected two input nodes in "
 							      "BinaryRuntimeNodeNGraph.");
+
+						std::shared_ptr<::ngraph::Node> result = nullptr;
 
 						auto binary_node =
 						    std::static_pointer_cast<NodeType>(node);
@@ -43,7 +43,7 @@ namespace shogun
 						    node::BinaryNode::BinaryShapeCompatibity::
 						        ArrayArray)
 						{
-							return std::make_shared<OperatorType>(
+							result = std::make_shared<OperatorType>(
 							    this->m_input_nodes[0], this->m_input_nodes[1]);
 						}
 						else if (
@@ -51,11 +51,12 @@ namespace shogun
 						    node::BinaryNode::BinaryShapeCompatibity::
 						        ArrayScalar)
 						{
-							return std::make_shared<OperatorType>(
+							result = std::make_shared<OperatorType>(
 							    this->m_input_nodes[0], this->m_input_nodes[1],
 							    ::ngraph::op::AutoBroadcastSpec(
 							        ::ngraph::op::AutoBroadcastType::NUMPY));
 						}
+						return result;
 					}
 				};
 			} // namespace ngraph

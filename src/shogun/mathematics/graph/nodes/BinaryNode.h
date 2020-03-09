@@ -117,6 +117,9 @@ namespace shogun
 						return node2_shape;
 					if (node2_shape.is_scalar())
 						return node1_shape;
+					else
+						error("Unhandled code path.");
+					return Shape{};
 				}
 
 				static Shape same_shape_binary_op(

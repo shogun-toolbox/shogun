@@ -32,28 +32,27 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					const auto& input_tensor =
-					    input_nodes[0]->get_output_tensors()[0];
+					const auto& input =
+					    input_nodes[0]->get_outputs()[0];
 
-					const auto& output_tensor = m_output_tensors[0];
+					const auto& output = m_outputs[0];
 
-					runtime_checks_and_allocation(input_tensor);
+					runtime_checks_and_allocation(input);
 
-					cast_implementation_type_dispatch(
-					    input_tensor, output_tensor);
+					cast_implementation_type_dispatch(input, output);
 				}
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<Tensor>& tensor)
+				    const std::shared_ptr<ShogunStorage>& input)
 				{
-					const auto& shape = tensor->get_shape();
-					m_output_tensors[0]->allocate_tensor(shape);
+					const auto& shape = input->get_shape();
+					m_outputs[0]->allocate_storage(shape);
 				}
 
 				void cast_implementation_type_dispatch(
-				    const std::shared_ptr<Tensor>& input,
-				    const std::shared_ptr<Tensor>& output)
+				    const std::shared_ptr<ShogunStorage>& input,
+				    const std::shared_ptr<ShogunStorage>& output)
 				{
 #define CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
     INPUT_SHOGUN_TYPE, OUTPUT_SHOGUN_TYPE)                                     \

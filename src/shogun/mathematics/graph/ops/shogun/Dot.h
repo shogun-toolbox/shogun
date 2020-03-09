@@ -36,32 +36,29 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					const auto& input_tensor1 =
-					    input_nodes[0]->get_output_tensors()[0];
-					const auto& input_tensor2 =
-					    input_nodes[1]->get_output_tensors()[0];
-					const auto& output_tensor = m_output_tensors[0];
+					if (input_nodes.size() != 2)
+						error("Binary operation expected two inputs.");
+					if (m_outputs.size() != 1)
+						error("Binary operation expected one output.");
 
-					runtime_checks_and_allocation(
-					    std::vector{input_tensor1, input_tensor2});
+					const auto& input1 =
+					    input_nodes[0]->get_outputs()[0];
+					const auto& input2 =
+					    input_nodes[1]->get_outputs()[0];
+					const auto& output = m_outputs[0];
 
-					dot_product_type_dispatch(
-					    input_tensor1, input_tensor2, output_tensor);
+					runtime_checks_and_allocation(input1, input2);
+
+					dot_product_type_dispatch(input1, input2, output);
 				}
 
 			private:
 				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors)
+				    const std::shared_ptr<ShogunStorage>& input1,
+				    const std::shared_ptr<ShogunStorage>& input2)
 				{
-					if (tensors.size() != 2)
-						error("Binary operation expected two inputs.");
-					if (m_output_tensors.size() != 1)
-						error("Binary operation expected one output.");
-
-					const auto& input_tensor1 = tensors[0];
-					const auto& input_tensor2 = tensors[1];
-					const auto& shape_a = input_tensor1->get_shape();
-					const auto& shape_b = input_tensor2->get_shape();
+					const auto& shape_a = input1->get_shape();
+					const auto& shape_b = input2->get_shape();
 
 					const auto& reduction_axis_a =
 					    std::static_pointer_cast<node::Dot>(m_node)
@@ -72,11 +69,11 @@ namespace shogun
 
 					if (shape_a.is_scalar())
 					{
-						m_output_tensors[0]->allocate_tensor(shape_b);
+						m_outputs[0]->allocate_storage(shape_b);
 					}
 					else if (shape_b.is_scalar())
 					{
-						m_output_tensors[0]->allocate_tensor(shape_a);
+						m_outputs[0]->allocate_storage(shape_a);
 					}
 					else
 					{
@@ -106,7 +103,7 @@ namespace shogun
 								output_shape_vector.push_back(el);
 						}
 
-						m_output_tensors[0]->allocate_tensor(
+						m_outputs[0]->allocate_storage(
 						    Shape{output_shape_vector});
 					}
 				}
@@ -114,54 +111,53 @@ namespace shogun
 			protected:
 				template <typename T>
 				static void dot_product_dispatch(
-				    const std::shared_ptr<Tensor>& input_tensor1,
-				    const std::shared_ptr<Tensor>& input_tensor2,
-				    const std::shared_ptr<Tensor>& output_tensor)
+				    const std::shared_ptr<ShogunStorage>& input1,
+				    const std::shared_ptr<ShogunStorage>& input2,
+				    const std::shared_ptr<ShogunStorage>& output)
 				{
-					if (input_tensor1->get_shape().is_scalar() &&
-					    !input_tensor2->get_shape().is_scalar())
+					if (input1->get_shape().is_scalar() &&
+					    !input2->get_shape().is_scalar())
 						dot_product_container_scalar_implementation<T>(
-						    input_tensor2, input_tensor1, output_tensor);
+						    input2, input1, output);
 					else if (
-					    !input_tensor1->get_shape().is_scalar() &&
-					    input_tensor2->get_shape().is_scalar())
+					    !input1->get_shape().is_scalar() &&
+					    input2->get_shape().is_scalar())
 						dot_product_container_scalar_implementation<T>(
-						    input_tensor1, input_tensor2, output_tensor);
+						    input1, input2, output);
 					else if (
-					    input_tensor1->get_shape().size() == 1 &&
-					    input_tensor2->get_shape().size() == 1)
+					    input1->get_shape().size() == 1 &&
+					    input2->get_shape().size() == 1)
 						dot_product_vector_vector_implementation<T>(
-						    input_tensor1, input_tensor2, output_tensor);
+						    input1, input2, output);
 					else if (
-					    input_tensor1->get_shape().size() == 1 &&
-					    input_tensor2->get_shape().size() == 2)
+					    input1->get_shape().size() == 1 &&
+					    input2->get_shape().size() == 2)
 						dot_product_vector_matrix_implementation<T>(
-						    input_tensor1, input_tensor2, output_tensor);
+						    input1, input2, output);
 					else if (
-					    input_tensor1->get_shape().size() == 2 &&
-					    input_tensor2->get_shape().size() == 1)
+					    input1->get_shape().size() == 2 &&
+					    input2->get_shape().size() == 1)
 						dot_product_matrix_vector_implementation<T>(
-						    input_tensor1, input_tensor2, output_tensor);
+						    input1, input2, output);
 					else if (
-					    input_tensor1->get_shape().size() == 2 &&
-					    input_tensor2->get_shape().size() == 2)
+					    input1->get_shape().size() == 2 &&
+					    input2->get_shape().size() == 2)
 						dot_product_matrix_matrix_implementation<T>(
-						    input_tensor1, input_tensor2, output_tensor);
+						    input1, input2, output);
 					else
 					{
-						// this would require using Eigen::Tensor, like in
-						// ngraph
+						// this will require using Eigen::Tensor
 						error(
 						    "Dot cannot handle the provided shapes: {} and {}",
-						    input_tensor1->get_shape().to_string(),
-						    input_tensor2->get_shape().to_string());
+						    input1->get_shape().to_string(),
+						    input2->get_shape().to_string());
 					}
 				}
 
 				static void dot_product_type_dispatch(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out)
 				{
 #define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)              \
 	case NUMBER_TYPE::type_id:                               \
@@ -188,9 +184,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_container_scalar_implementation(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
 					    static_cast<T*>(A->data()), A->size());
@@ -201,9 +197,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_vector_vector_implementation(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
 					    static_cast<T*>(A->data()), A->size());
@@ -215,9 +211,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_vector_matrix_implementation(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
 					    static_cast<T*>(A->data()), A->size());
@@ -233,9 +229,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_matrix_vector_implementation(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
 					A_eig(
@@ -251,9 +247,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_matrix_matrix_implementation(
-				    const std::shared_ptr<Tensor>& A,
-				    const std::shared_ptr<Tensor>& B,
-				    const std::shared_ptr<Tensor>& Out)
+				    const std::shared_ptr<ShogunStorage>& A,
+				    const std::shared_ptr<ShogunStorage>& B,
+				    const std::shared_ptr<ShogunStorage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
 					A_eig(

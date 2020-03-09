@@ -8,6 +8,7 @@
 #define SHOGUN_OUTPUT_NODE_H_
 
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
+#include <shogun/mathematics/graph/ops/abstract/ShogunStorage.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
 
 namespace shogun
@@ -18,6 +19,11 @@ namespace shogun
 		{
 			namespace shogun
 			{
+				/* A OutputNode stores and passes the input nodes required 
+				 * by an operation and holds a pointer to the resulting
+				 * allocated results. These can then passed on to the 
+				 * next OutputNode in the graph.
+				 */
 				class OutputNode
 				{
 				public:
@@ -42,20 +48,23 @@ namespace shogun
 							    "Use OutputNode::evaluate_tensor(Tensor) "
 							    "instead");
 						else
-							m_output_tensors = m_op->operator()(m_input_nodes);
+							m_outputs = m_op->operator()(m_input_nodes);
 					}
 
+					/* This member functions is only called by input nodes,
+					 * and is the entry point of the execution graph.
+					 */ 
 					void evaluate_tensor(const std::shared_ptr<Tensor>& tensor)
 					{
-						m_output_tensors =
+						m_outputs =
 						    std::static_pointer_cast<op::InputShogun>(m_op)
 						        ->evaluate_input(tensor);
 					}
 
-					const std::vector<std::shared_ptr<Tensor>>&
-					get_output_tensors() const
+					const std::vector<std::shared_ptr<op::ShogunStorage>>&
+					get_outputs() const
 					{
-						return m_output_tensors;
+						return m_outputs;
 					}
 
 					const std::vector<std::shared_ptr<OutputNode>>&
@@ -65,9 +74,12 @@ namespace shogun
 					}
 
 				private:
+					/* The actual implementation of the operation */
 					std::shared_ptr<op::Operator> m_op;
+					/* Reference to inputs */
 					std::vector<std::shared_ptr<OutputNode>> m_input_nodes;
-					std::vector<std::shared_ptr<Tensor>> m_output_tensors;
+					/* Reference to Operator allocated output storage */
+					std::vector<std::shared_ptr<op::ShogunStorage>> m_outputs;
 				};
 			} // namespace shogun
 		}     // namespace detail

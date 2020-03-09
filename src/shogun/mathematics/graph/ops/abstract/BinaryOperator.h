@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUNBINARYOPERATOR_H_
-#define SHOGUNBINARYOPERATOR_H_
+#ifndef SHOGUN_BINARY_OPERATOR_H_
+#define SHOGUN_BINARY_OPERATOR_H_
 
 #include <shogun/mathematics/graph/nodes/BinaryNode.h>
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
@@ -41,25 +41,25 @@ namespace shogun
 					if (input_nodes.size() != 2)
 						error("Binary operation expected two inputs.");
 
-					if (m_output_tensors.size() != 1)
+					if (m_outputs.size() != 1)
 						error("Binary operation expected one output.");
 
-					const auto& input_tensor1 =
-					    input_nodes[0]->get_output_tensors()[0];
-					const auto& input_tensor2 =
-					    input_nodes[1]->get_output_tensors()[0];
-					const auto& output_tensor = m_output_tensors[0];
+					const auto& input1 =
+					    input_nodes[0]->get_outputs()[0];
+					const auto& input2 =
+					    input_nodes[1]->get_outputs()[0];
+					const auto& output = m_outputs[0];
 
 					runtime_checks_and_allocation(
-					    input_tensor1, input_tensor2, shape_compatibility);
+					    input1, input2, shape_compatibility);
 					if (shape_compatibility ==
 					    node::BaseBinaryNode::BinaryShapeCompatibity::
 					        ArrayArray)
 					{
 						kernel(
-						    input_tensor1->data(), input_tensor2->data(),
-						    output_tensor->data(), output_tensor->size(),
-						    input_tensor1->get_type());
+						    input1->data(), input2->data(),
+						    output->data(), output->size(),
+						    input1->get_type());
 					}
 					else if (
 					    shape_compatibility ==
@@ -67,33 +67,33 @@ namespace shogun
 					        ArrayScalar)
 					{
 						const bool scalar_first =
-						    input_tensor1->get_shape().is_scalar();
+						    input1->get_shape().is_scalar();
 						kernel_scalar(
-						    input_tensor1->data(), input_tensor2->data(),
-						    output_tensor->data(), output_tensor->size(),
-						    input_tensor1->get_type(), scalar_first);
+						    input1->data(), input2->data(),
+						    output->data(), output->size(),
+						    input1->get_type(), scalar_first);
 					}
 				}
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<Tensor>& input_tensor1,
-				    const std::shared_ptr<Tensor>& input_tensor2,
+				    const std::shared_ptr<ShogunStorage>& input1,
+				    const std::shared_ptr<ShogunStorage>& input2,
 				    const node::BaseBinaryNode::BinaryShapeCompatibity&
 				        shape_compatibility)
 				{
-					allocate_tensor(runtime_shape_check(
-					    input_tensor1, input_tensor2, shape_compatibility));
+					allocate_storage(runtime_shape_check(
+					    input1, input2, shape_compatibility));
 				}
 
-				void allocate_tensor(const Shape& shape)
+				void allocate_storage(const Shape& shape)
 				{
-					m_output_tensors[0]->allocate_tensor(shape);
+					m_outputs[0]->allocate_storage(shape);
 				}
 
 				const Shape& runtime_shape_check(
-				    const std::shared_ptr<Tensor>& tensor1,
-				    const std::shared_ptr<Tensor>& tensor2,
+				    const std::shared_ptr<ShogunStorage>& input1,
+				    const std::shared_ptr<ShogunStorage>& input2,
 				    const node::BaseBinaryNode::BinaryShapeCompatibity&
 				        shape_compatibility)
 				{
@@ -102,7 +102,7 @@ namespace shogun
 					        ArrayArray)
 					{
 						for (auto [idx, shape1, shape2] : enumerate(
-						         tensor1->get_shape(), tensor2->get_shape()))
+						         input1->get_shape(), input2->get_shape()))
 						{
 							if (shape1 != shape2)
 							{
@@ -118,21 +118,22 @@ namespace shogun
 							}
 						}
 						// shapes have to match exactly so can return either one
-						return tensor1->get_shape();
+						return input1->get_shape();
 					}
 					else if (
 					    shape_compatibility ==
 					    node::BaseBinaryNode::BinaryShapeCompatibity::
 					        ArrayScalar)
 					{
-						if (tensor1->get_shape().is_scalar())
-							return tensor2->get_shape();
-						return tensor1->get_shape();
+						if (input1->get_shape().is_scalar())
+							return input2->get_shape();
+						return input1->get_shape();
 					}
 					else
 					{
 						error("NotImplemented");
 					}
+					return input1->get_shape();
 				}
 
 				void kernel(

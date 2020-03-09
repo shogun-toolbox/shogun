@@ -8,6 +8,7 @@
 #define SHOGUNINPUTSHOGUN_H_
 
 #include <shogun/mathematics/graph/nodes/Input.h>
+#include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
 
 namespace shogun
@@ -16,7 +17,10 @@ namespace shogun
 	{
 		namespace op
 		{
-
+			/* The InputShogun operation transfers the input memory to the 
+			 * entry point of the DAG.
+			 * Currently only CPU-CPU mapping is implemented
+			 */
 			IGNORE_IN_CLASSLIST class InputShogun : public Operator
 			{
 			public:
@@ -25,15 +29,14 @@ namespace shogun
 				{
 				}
 
-				std::vector<std::shared_ptr<Tensor>>
+				std::vector<std::shared_ptr<ShogunStorage>>
 				evaluate_input(const std::shared_ptr<Tensor>& tensor)
 				{
-					runtime_checks_and_allocation(std::vector{tensor});
-					// to copy or not to copy?
-					// m_output_tensor->allocate_tensor(tensor->get_shape());
-					// m_output_tensor->data() = memcpy(...);
-					m_output_tensors[0]->data() = tensor->data();
-					return m_output_tensors;
+					if (m_outputs.size() != 1)
+						error("Input operation expected one output.");
+
+					runtime_checks_and_allocation(tensor);
+					return m_outputs;
 				}
 
 				std::string_view get_operator_name() const override
@@ -49,36 +52,26 @@ namespace shogun
 				}
 
 			protected:
-				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors)
+				void runtime_checks_and_allocation(const std::shared_ptr<Tensor>& input_tensor)
 				{
-					if (tensors.size() != 1)
-						error("Input operation expected one input.");
-					if (m_output_tensors.size() != 1)
-						error("Input operation expected one output.");
-
-					const auto& input_tensor = tensors[0];
-					auto& output_tensor = m_output_tensors[0];
-
-					runtime_type_check(input_tensor, output_tensor);
-					runtime_shape_check(input_tensor, output_tensor);
+					runtime_type_check(input_tensor, m_outputs[0]);
+					runtime_shape_check(input_tensor, m_outputs[0]);
 				}
 
 			private:
 				void runtime_type_check(
 				    const std::shared_ptr<Tensor>& input_tensor,
-				    const std::shared_ptr<Tensor>& output_tensor)
+				    const std::shared_ptr<ShogunStorage>& output)
 				{
-					if (input_tensor->get_type() != output_tensor->get_type())
+					if (input_tensor->get_type() != output->get_type())
 						error("Input node got wrong input type!");
 				}
 
 				void runtime_shape_check(
 				    const std::shared_ptr<Tensor>& input_tensor,
-				    std::shared_ptr<Tensor>& output_tensor)
+				    std::shared_ptr<ShogunStorage>& output)
 				{
-					const auto& shape = input_tensor->get_shape();
-					output_tensor->set_shape(shape);
+					output = ShogunStorage::from_tensor(input_tensor);
 				}
 			};
 		} // namespace op

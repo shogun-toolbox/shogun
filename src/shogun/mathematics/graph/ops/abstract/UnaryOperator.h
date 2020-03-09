@@ -34,37 +34,37 @@ namespace shogun
 				{
 					if (input_nodes.size() != 1)
 						error("Unary operation expected one inputs.");
-					if (m_output_tensors.size() != 1)
+					if (m_outputs.size() != 1)
 						error("Unary operation expected one output.");
 
-					const auto& input_tensor =
-					    input_nodes[0]->get_output_tensors()[0];
-					const auto& output_tensor = m_output_tensors[0];
+					const auto& input =
+					    input_nodes[0]->get_outputs()[0];
+					const auto& output = m_outputs[0];
 
-					allocate_tensor(runtime_shape_check(input_tensor));
+					allocate_storage(runtime_shape_check(input));
 
 					kernel(
-					    input_tensor->data(), output_tensor->data(),
-					    output_tensor->size(), output_tensor->get_type());
+					    input->data(), output->data(),
+					    output->size(), output->get_type());
 				}
 
 			protected:
-				void allocate_tensor(const Shape& shape)
+				void allocate_storage(const Shape& shape)
 				{
-					m_output_tensors[0]->allocate_tensor(shape);
+					m_outputs[0]->allocate_storage(shape);
 				}
 
 				const Shape&
-				runtime_shape_check(const std::shared_ptr<Tensor>& tensor)
+				runtime_shape_check(const std::shared_ptr<ShogunStorage>& input)
 				{
-					for (const auto& shape : tensor->get_shape())
+					for (const auto& shape : input->get_shape())
 					{
 						if (shape == Shape::Dynamic)
 						{
 							error("Could not infer runtime shape.");
 						}
 					}
-					return tensor->get_shape();
+					return input->get_shape();
 				}
 
 				void kernel(

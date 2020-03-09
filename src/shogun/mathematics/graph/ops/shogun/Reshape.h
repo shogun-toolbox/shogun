@@ -32,18 +32,12 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					const auto& input_tensor1 =
-					    input_nodes[0]->get_output_tensors()[0];
-					const auto& output_tensor = m_output_tensors[0];
+					const auto& input =
+					    input_nodes[0]->get_outputs()[0];
+					const auto final_shape = m_outputs[0]->get_shape();
 
-					runtime_checks_and_allocation(std::vector{input_tensor1});
-				}
-
-			private:
-				void runtime_checks_and_allocation(
-				    const std::vector<std::shared_ptr<Tensor>>& tensors)
-				{
-					m_output_tensors[0]->data() = tensors[0]->data();
+					m_outputs[0] = std::move(input);
+					m_outputs[0]->reshape(final_shape);
 				}
 			};
 		} // namespace op
