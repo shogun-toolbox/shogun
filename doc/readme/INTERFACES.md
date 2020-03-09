@@ -12,7 +12,7 @@ On Linux, this is done with
 
     export LD_LIBRARY_PATH="path/to/directory-with-libshogun.so:$LD_LIBRARY_PATH"
 
-On MacOS
+On macOS
 
     export DYLD_LIBRARY_PATH="path/to/directory-with-libshogun.dylib:$DYLD_LIBRARY_PATH"
 
@@ -23,7 +23,7 @@ All subsequent settings can be set to the build dir or the installation dir.
 ## Interfaces
 
 We now describe how to run code that uses Shogun in all interfaces.
-For language specific defails on how to import and use Shogun in all interfaces, see the examples on our website.
+For language-specific details on how to import and use Shogun in all interfaces, see the examples on our website.
 
 ### Native C++
 Make sure you read up on how to compile C/C++ code.
@@ -101,18 +101,18 @@ This needs `shogun.jar` to be visible, which is either in `path/to/build/src/int
 In addition, the location of the external dependency `jblas.jar` is needed,
 usually in `/usr/share/java/`.
 
-Compiling code works with the java compiler and passing location of `shogun.jar`,
+Compiling code works with the java compiler and passing the location of `shogun.jar`,
 `jblas.jar`, and the example itself in the class path
 
     javac -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -d /path/to/output/ /path/to/java_example.java
 
-Running it again requires the above class path and some more options
+Running it again requires the above class' path and some more options
 
     java -Xmx1024m -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -Djava.library.path=/path/to/shogun.jar java_example
 
 ### Provided Examples
 Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, [see INSTALL.md](INSTALL.MD).
-As the examples load data files, they requires the `shogun-data` submodule to be checked out.
+As the examples load data files, they require the `shogun-data` submodule to be checked out.
 
 All examples should be run in the respective folder they are located in, for example (assuming that all described variables are set)
 

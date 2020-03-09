@@ -2,12 +2,12 @@ Shogun is an open-source machine learning library that offers a wide range of ef
 
 #### Shogun is accessible
 
-* Supports many languages (Python, Octave, R, Java/Scala, Lua, C#, Ruby, etc) and platforms (Linux/Unix, MacOS and Windows) and integrates with their scientific computing environments.
+* Supports many languages (Python, Octave, R, Java/Scala, Lua, C#, Ruby, etc) and platforms (Linux/Unix, macOS and Windows) and integrates with their scientific computing environments.
 
 #### Shogun is state-of-the-art
 
 * Efficient implementation (from standard to cutting edge algorithms), modern software architecture in C++.
-* Easy combination of multiple data representations, algorithm classes and general purpose tools for rapid prototyping of data pipelines.
+* Easy combination of multiple data representations, algorithm classes and general-purpose tools for rapid prototyping of data pipelines.
 
 #### Shogun is open source
 

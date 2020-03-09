@@ -2,7 +2,7 @@
 
 For certain systems, we offer pre-built packages of Shogun.
 This is the easiest way to start using it.
-For other cases, we describe how to build Shogun from source code.
+In other cases, we describe how to build Shogun from source code.
 
 
 # Quicklinks
@@ -11,7 +11,7 @@ For other cases, we describe how to build Shogun from source code.
    - [Ubuntu](#ubuntu)
    - [Debian](#debian)
    - [Fedora](#fedora)
-   - [MacOS](#mac)
+   - [macOS](#mac)
    - [Windows](#windows)
  * [Docker images](#docker)
  * [Integration with interface languages](#language)
@@ -60,7 +60,7 @@ The Python (2) bindings can be installed as
 In addition to the latest stable release, we offer [nightly builds](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/nightly) of our development branch.
 
 ### Debian <a name="debian"></a>
-Latest packages for Debian `jessie` and `stretch` are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
+The latest packages for Debian `jessie` and `stretch` are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
 We provide both the stable and nightly packages, currently only for amd64 architecture.
 In order to add the stable packages to your system, simply run the following commands
 
@@ -81,7 +81,7 @@ Install as
     sudo dnf install shogun
 
 
-### MacOS <a name="mac"></a>
+### macOS <a name="mac"></a>
 Shogun is part of [Homebrew](https://formulae.brew.sh/formula/shogun).
 Install the latest stable version as
 
@@ -98,7 +98,7 @@ You can set up Shogun using our
     sudo docker pull shogun/shogun:master
     sudo docker run -it shogun/shogun:master bash
 
-The docker image follows both the `master` and the `develop` branch of the repository, just specify the desired branch name as tag for the image. For example in order to use the develop version of shogun simply pull the `shogun/shogun:develop` docker image.
+The docker image follows both the `master` and the `develop` branch of the repository, just specify the desired branch name as a tag for the image. For example, to use the develop version of shogun simply pull the `shogun/shogun:develop` docker image.
 
 There's an [SDK docker image](https://hub.docker.com/r/shogun/shogun-dev/) for shogun development as well, which we use to run our [Travis CI](https://travis-ci.org/shogun-toolbox/shogun/) jobs.
 
@@ -124,10 +124,10 @@ You can download and install shogun using the [vcpkg](https://github.com/Microso
 The shogun port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
 
 ## Integration with interface language build systems <a name="language"></a>
-Shogun is can be automatically built from source from the following langauges.
+Shogun is can be automatically built from the following language's source.
 
-### Python pypi <a name="pypi"></a>
-You can install from [pypi](https://pypi.python.org/pypi/shogun-ml/).
+### Python PyPi <a name="pypi"></a>
+You can install it from [PyPi](https://pypi.python.org/pypi/shogun-ml/).
 There is limited control over options and it might take a long time as everything is done from scratch.
 
     pip install shogun-ml
@@ -137,28 +137,28 @@ We do not recommend this option and suggest to rather compile by hand as describ
 
 # Compiling manually <a name="manual"></a>
 
-In case none of the binary packages listed on our website work for your system, or you want to modify Shogun, you will need to build it from source.
+In case none of the binary packages listed on our website work for your system, or you want to modify Shogun, you will need to build it from the source.
 
 ## Requirements <a name="manual-requirements"></a>
 The standard GNU/Linux tools and Python are minimal requirements to compile Shogun.
 
 By default, building the meta examples is enabled, requiring `python-ply` and `ctags`. Disable using `-DBUILD_META_EXAMPLES=Off` if those requirements are a problem, also see [generating meta examples](#manual-examples).
 
-To compile the interfaces, in addition to [swig](http://www.swig.org/) itself, you will need language specific development packages installed, see [interfaces](#manual-interfaces) below.
+To compile the interfaces, in addition to [swig](http://www.swig.org/) itself, you will need language-specific development packages installed, see [interfaces](#manual-interfaces) below.
 
 There is a larger number of optional requirements.
 The output of cmake output lists optional dependencies that were found and not found.
 If a particular Shogun class is unavailable, this is likely due to an unmet dependency.
 See our [docker configuration file](https://github.com/shogun-toolbox/shogun/blob/develop/configs/shogun/Dockerfile) for an example configuration used in our test builds.
 
-You need at least 1GB free disk space. If you compile any interface, roughly 4 GB RAM are need (we are working on reducing this).
+You need at least 1GB free disk space. If you compile any interface, roughly 4 GB RAM needed (we are working on reducing this).
 [CCache](https://ccache.samba.org/) will massively speed up the compilation process and is enabled by default if installed.
 
 ## Basics <a name="manual-basics"></a>
 Shogun uses [CMake](https://cmake.org/) for its build. The general workflow is now explained.
 For further details on testing etc, see [DEVELOPING.md](docs/DEVELOPING.md).
 
-Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest develop code.
+Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest development code.
 Potentially update submodules
 
     git clone https://github.com/shogun-toolbox/shogun.git
@@ -169,8 +169,8 @@ Create the build directory in the source tree root
 
     mkdir build
 
-Configure cmake, from the build directory, passing the Shogun source root as argument.
-It is recommended to use any of CMake GUIs (e.g. replace `cmake ..` with `ccmake ..`), in particular if you feel unsure about possible parameters and configurations.
+Configure cmake, from the build directory, passing the Shogun source root as an argument.
+It is recommended to use any of CMake GUIs (e.g. replace `cmake ..` with `ccmake ..`), in particular, if you feel unsure about possible parameters and configurations.
 Note that all cmake options read as `-DOPTION=VALUE`.
 
     cd build
@@ -181,7 +181,7 @@ Compile
     make
 
 
-Install (prepend `sudo` if installing system wide), and your are done.
+Install (prepend `sudo` if installing system-wide), and you are done.
 
     make install
 
@@ -190,11 +190,11 @@ First, try
 
     make clean
 
-If that does not help, try removing the build directory and starting from scratch afterwards
+If that does not help, try removing the build directory and starting from scratch afterward
 
     rm -rf build
 
-If you prefer to not run the `sudo make install` command system wide, you can either install Shogun to a custom location (`-DCMAKE_INSTALL_PREFIX=/custom/path`, defaults to `/usr/local`), or even skip `make install` at all.
+If you prefer to not run the `sudo make install` command system-wide, you can either install Shogun to a custom location (`-DCMAKE_INSTALL_PREFIX=/custom/path`, defaults to `/usr/local`), or even skip `make install` at all.
 In both cases, it is necessary to set a number of system libraries for using Shogun, see [INTERFACES.md](INTERFACES.md).
 
 ## Interfaces <a name="manual-interfaces"></a>
@@ -224,7 +224,7 @@ The required packages (here debian/Ubuntu package names) for each interface are
  * C-Sharp
    - `mono-devel mono-gmcs cli-common-dev`
 
-To *use* the interfaces, in particular if not installing to the default system-wide location, see [INTERFACES.md](INTERFACES.md).
+To *use* the interfaces, in particular, if not installing to the default system-wide location, see [INTERFACES.md](INTERFACES.md).
 See [examples](#manual-examples) below for how to create the examples from the website locally.
 
 ## Generating examples <a name="manual-examples"></a>
@@ -241,7 +241,7 @@ See [DEVELOPING.md](DEVELOPING.md) for how the examples are used as tests.
 
 ## Problems? Got stuck? Found a bug? Help?  <a name="manual-problems"></a>
 
-In case you have a problem building Shogun, please open an [issue on github](https://github.com/shogun-toolbox/shogun/issues) with your system details, *exact* commands used, and logs posted as a [gist](https://gist.github.com/).
+In case you have a problem building Shogun, please open an [issue on GitHub](https://github.com/shogun-toolbox/shogun/issues) with your system details, *exact* commands used, and logs posted as a [gist](https://gist.github.com/).
 
 ## CMake tips <a name="manual-cmake"></a>
 CMake is a beast.
@@ -259,13 +259,13 @@ You might have to delete the build directory or clear the cmake cache otherwise 
     CC=/path/to/gcc CXX=/path/to/g++ cmake ..
 
 In case header files or libraries are not at standard locations one needs
-to manually adjust the libray and include paths, `-DCMAKE_INCLUDE_PATH=/my/include/path` and `-DCMAKE_LIBRARY_PATH=/my/library/path`.
+to manually adjust the library and include paths, `-DCMAKE_INCLUDE_PATH=/my/include/path` and `-DCMAKE_LIBRARY_PATH=/my/library/path`.
 
 
 ## Customized Python environments <a name="manual-python"></a>
 Often, there are multiple Python versions installed on the system.
 There are various reasons for this, i.e. Linux without root access, MacOS + homebrew, using [Anaconda](https://www.continuum.io/downloads) or [virtualenv](https://virtualenv.pypa.io).
-If Shogun is executed using a different Python version that the one it was built against, one will observe crashes when importing Shogun.
+If Shogun is executed using a version of Python different from which it was built, there will be import crashes.
 If this is your setup, you need to make sure that Shogun is both **built** and **executed** against the Python environment of **your** choice.
 For that, you need to do something similar to
 
