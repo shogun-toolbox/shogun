@@ -17,10 +17,9 @@ TYPED_TEST(GraphTest, and)
 	SGVector<NumericType> X1{true, false, true, false};
 	SGVector<NumericType> X2{true, false, false, true};
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{4}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{4}, TypeParam::type_id);
 
 	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 	{
@@ -62,10 +61,9 @@ TYPED_TEST(GraphTest, vector_scalar_and)
 {
 	using NumericType = typename TypeParam::c_type;
 
-	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{}, TypeParam::type_id);
+	auto input1 =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input2 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
 
 	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 	{
@@ -109,10 +107,9 @@ TYPED_TEST(GraphTest, scalar_vector_and)
 {
 	using NumericType = typename TypeParam::c_type;
 
-	auto input1 = make_shared<node::Input>(
-	    Shape{}, TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
+	auto input2 =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	if constexpr (std::is_same_v<TypeParam, BooleanType>)
 	{

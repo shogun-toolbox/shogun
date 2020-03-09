@@ -16,8 +16,8 @@ TYPED_TEST(GraphTest, sign)
 
 	if constexpr (std::is_unsigned_v<NumericType>)
 	{
-		auto input = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 		EXPECT_THROW(make_shared<node::Sign>(input), ShogunException);
 	}
 	else
@@ -26,8 +26,8 @@ TYPED_TEST(GraphTest, sign)
 
 		SGVector<NumericType> expected_result{-1, 0, 1, -1, 1};
 
-		auto input = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = make_shared<node::Sign>(input);
 

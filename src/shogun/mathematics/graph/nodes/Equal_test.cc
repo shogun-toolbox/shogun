@@ -20,10 +20,9 @@ TYPED_TEST(GraphTest, equal)
 	X1.range_fill();
 	X2.range_fill();
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{10}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{10}, TypeParam::type_id);
 
 	auto output = make_shared<node::Equal>(input, input1);
 
@@ -59,10 +58,9 @@ TYPED_TEST(GraphTest, vector_scalar_equal)
 
 	X1.range_fill();
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
 
 	auto output = make_shared<node::Equal>(input, input1);
 
@@ -98,10 +96,9 @@ TYPED_TEST(GraphTest, scalar_vector_equal)
 
 	X2.range_fill();
 
-	auto input1 = make_shared<node::Input>(
-	    Shape{}, TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
+	auto input2 =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	auto output = make_shared<node::Equal>(input1, input2);
 

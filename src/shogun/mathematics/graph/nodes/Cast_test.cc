@@ -18,8 +18,8 @@ TYPED_TEST(GraphTest, cast)
 
 	X1.range_fill();
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	auto output = make_shared<node::Cast>(input, element_type::FLOAT64);
 

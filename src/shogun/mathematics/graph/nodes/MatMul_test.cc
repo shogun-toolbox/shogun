@@ -16,10 +16,8 @@ TYPED_TEST(GraphTest, scalar_matmul)
 		return;
 	else
 	{
-		auto A = make_shared<node::Input>(
-		    Shape{3}, TypeParam::type_id);
-		auto B = make_shared<node::Input>(
-		    Shape{}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3}, TypeParam::type_id);
+		auto B = make_shared<node::Input>(Shape{}, TypeParam::type_id);
 
 		// MatMul doesn't work with scalar, unlike Dot. See MatMul docs.
 		EXPECT_THROW(make_shared<node::MatMul>(A, B), ShogunException);
@@ -38,10 +36,8 @@ TYPED_TEST(GraphTest, vector_vector_matmul)
 		SGVector<NumericType> X2{4, 5, 6};
 		NumericType expected_result = 32;
 
-		auto A = make_shared<node::Input>(
-		    Shape{3}, TypeParam::type_id);
-		auto B = make_shared<node::Input>(
-		    Shape{3}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3}, TypeParam::type_id);
+		auto B = make_shared<node::Input>(Shape{3}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -74,10 +70,8 @@ TYPED_TEST(GraphTest, matrix_vector_matmul)
 		SGVector<NumericType> X2{1, 2};
 		SGVector<NumericType> expected_result = {5, 11, 17};
 
-		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, TypeParam::type_id);
-		auto B = make_shared<node::Input>(
-		    Shape{2}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3, 2}, TypeParam::type_id);
+		auto B = make_shared<node::Input>(Shape{2}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -114,10 +108,8 @@ TYPED_TEST(GraphTest, vector_matrix_matmul)
 		SGMatrix<NumericType> X2{{1, 3, 5}, {2, 4, 6}};
 		SGVector<NumericType> expected_result{35, 44};
 
-		auto A = make_shared<node::Input>(
-		    Shape{3}, TypeParam::type_id);
-		auto B = make_shared<node::Input>(
-		    Shape{3, 2}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3}, TypeParam::type_id);
+		auto B = make_shared<node::Input>(Shape{3, 2}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -156,10 +148,8 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul1)
 		SGMatrix<NumericType> expected_result = {
 		    {5, 11, 17}, {11, 25, 39}, {17, 39, 61}};
 
-		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, TypeParam::type_id);
-		auto B = make_shared<node::Input>(
-		    Shape{2, 3}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3, 2}, TypeParam::type_id);
+		auto B = make_shared<node::Input>(Shape{2, 3}, TypeParam::type_id);
 
 		auto output = make_shared<node::MatMul>(A, B);
 
@@ -203,10 +193,8 @@ TYPED_TEST(GraphTest, matrix_matrix_matmul2)
 		SGMatrix<NumericType> expected_result2 = {{123, 281, 439},
 		                                          {156, 356, 556}};
 
-		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, TypeParam::type_id);
-		auto B = make_shared<node::Input>(
-		    Shape{2, 3}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3, 2}, TypeParam::type_id);
+		auto B = make_shared<node::Input>(Shape{2, 3}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::MatMul>(A, B);
 		auto output2 = make_shared<node::MatMul>(output1, A);
@@ -257,8 +245,7 @@ TYPED_TEST(GraphTest, matrix_matrixT_matmul)
 		SGMatrix<NumericType> expected_result2 = {{123, 281, 439},
 		                                          {156, 356, 556}};
 
-		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3, 2}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::MatMul>(A, A, false, true);
 		EXPECT_THROW(make_shared<node::MatMul>(A, A), ShogunException);
@@ -309,8 +296,7 @@ TYPED_TEST(GraphTest, matrixT_matrix_matmul)
 		SGMatrix<NumericType> expected_result2 = {
 		    {123, 156}, {281, 356}, {439, 556}};
 
-		auto A = make_shared<node::Input>(
-		    Shape{3, 2}, TypeParam::type_id);
+		auto A = make_shared<node::Input>(Shape{3, 2}, TypeParam::type_id);
 
 		auto output1 = make_shared<node::MatMul>(A, A, true, false);
 		EXPECT_THROW(make_shared<node::MatMul>(output1, A), ShogunException);

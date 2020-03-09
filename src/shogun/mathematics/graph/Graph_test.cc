@@ -2,12 +2,12 @@
 
 #include "Graph.h"
 #include "nodes/Add.h"
+#include "nodes/Cast.h"
 #include "nodes/Dot.h"
+#include "nodes/Equal.h"
 #include "nodes/Input.h"
 #include "nodes/Multiply.h"
 #include "nodes/Sign.h"
-#include "nodes/Cast.h"
-#include "nodes/Equal.h"
 
 #include "test/GraphTest.h"
 

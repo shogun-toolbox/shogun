@@ -58,7 +58,7 @@ namespace shogun
 					if (!cast_type->compatible(*node_types[0]))
 						error(
 						    "There's no safe way to cast {} to {}",
-							node_types[0]->to_string(), cast_type->to_string());
+						    node_types[0]->to_string(), cast_type->to_string());
 
 					return type;
 				}

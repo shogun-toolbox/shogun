@@ -20,7 +20,7 @@ protected:
 	void test_binary_op_results(
 	    const std::shared_ptr<shogun::graph::Graph>& graph,
 	    const shogun::SGVector<typename T::c_type>& X1,
-		const shogun::SGVector<typename T::c_type>& X2,
+	    const shogun::SGVector<typename T::c_type>& X2,
 	    const shogun::SGVector<typename T::c_type>& expected_result1,
 	    const shogun::SGVector<typename T::c_type>& expected_result2)
 	{
@@ -33,8 +33,10 @@ protected:
 			        std::vector{std::make_shared<shogun::graph::Tensor>(X1),
 			                    std::make_shared<shogun::graph::Tensor>(X2)});
 
-			auto result1 = result[0]->template as<shogun::SGVector<typename T::c_type>>();
-			auto result2 = result[1]->template as<shogun::SGVector<typename T::c_type>>();
+			auto result1 =
+			    result[0]->template as<shogun::SGVector<typename T::c_type>>();
+			auto result2 =
+			    result[1]->template as<shogun::SGVector<typename T::c_type>>();
 
 			for (const auto& [expected_i, result_i] :
 			     shogun::zip_iterator(expected_result1, result1))
@@ -53,13 +55,12 @@ protected:
 	std::set<GRAPH_BACKEND> m_backends;
 };
 
-
 using GraphTypes = ::testing::Types<
     shogun::graph::BooleanType, shogun::graph::UInt8Type,
-	shogun::graph::Int8Type, shogun::graph::UInt16Type,
-	shogun::graph::Int16Type, shogun::graph::UInt32Type,
-	shogun::graph::Int32Type, shogun::graph::Int64Type,
-	shogun::graph::UInt64Type, shogun::graph::Float32Type,
-	shogun::graph::Float64Type>;
+    shogun::graph::Int8Type, shogun::graph::UInt16Type,
+    shogun::graph::Int16Type, shogun::graph::UInt32Type,
+    shogun::graph::Int32Type, shogun::graph::Int64Type,
+    shogun::graph::UInt64Type, shogun::graph::Float32Type,
+    shogun::graph::Float64Type>;
 
 TYPED_TEST_CASE(GraphTest, GraphTypes);

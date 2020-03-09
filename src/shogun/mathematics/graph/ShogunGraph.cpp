@@ -44,7 +44,7 @@ std::vector<std::shared_ptr<Tensor>> ShogunGraph::execute(
 	std::vector<std::shared_ptr<Tensor>> results;
 	for (const auto& node : output_nodes)
 	{
-		results.push_back(extract_result(node)->to_tensor());
+		results.push_back(from_device(extract_result(node)));
 	}
 
 	return results;
@@ -62,7 +62,7 @@ ShogunGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 	return op_it->second();
 }
 
-std::shared_ptr<op::ShogunStorage>
+std::shared_ptr<ShogunStorage>
 ShogunGraph::extract_result(const std::shared_ptr<node::Node>& node) const
 {
 	const auto& result = m_lookup.at(node)->get_outputs();

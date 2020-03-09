@@ -33,10 +33,9 @@ TYPED_TEST(GraphTest, subtract)
 	    expected_result1.data() + expected_result1.size(), X2.data(),
 	    expected_result2.data(), std::minus<NumericType>{});
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{10}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{10}, TypeParam::type_id);
 
 	auto intermediate = input - input;
 
@@ -66,10 +65,9 @@ TYPED_TEST(GraphTest, vector_scalar_subtract)
 		auto expected_result1 = SGVector<NumericType>(10);
 		expected_result1.range_fill();
 
-		auto input1 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
-		auto input2 = make_shared<node::Input>(
-		    Shape{}, TypeParam::type_id);
+		auto input1 =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input2 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
 
 		auto output = input1 - input2;
 
@@ -111,10 +109,9 @@ TYPED_TEST(GraphTest, scalar_vector_subtract)
 
 		SGVector<NumericType> expected_result1{10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
-		auto input1 = make_shared<node::Input>(
-		    Shape{}, TypeParam::type_id);
-		auto input2 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input1 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
+		auto input2 =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = input1 - input2;
 

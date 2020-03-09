@@ -32,8 +32,7 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					const auto& input =
-					    input_nodes[0]->get_outputs()[0];
+					const auto& input = input_nodes[0]->get_outputs()[0];
 					const auto final_shape = m_outputs[0]->get_shape();
 
 					m_outputs[0] = std::move(input);

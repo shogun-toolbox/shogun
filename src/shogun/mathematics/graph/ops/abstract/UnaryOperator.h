@@ -37,15 +37,14 @@ namespace shogun
 					if (m_outputs.size() != 1)
 						error("Unary operation expected one output.");
 
-					const auto& input =
-					    input_nodes[0]->get_outputs()[0];
+					const auto& input = input_nodes[0]->get_outputs()[0];
 					const auto& output = m_outputs[0];
 
 					allocate_storage(runtime_shape_check(input));
 
 					kernel(
-					    input->data(), output->data(),
-					    output->size(), output->get_type());
+					    input->data(), output->data(), output->size(),
+					    output->get_type());
 				}
 
 			protected:
@@ -68,13 +67,14 @@ namespace shogun
 				}
 
 				void kernel(
-				    void* input, void* output, size_t size, const node::Node::type_info& type)
+				    void* input, void* output, size_t size,
+				    const node::Node::type_info& type)
 				{
 
-#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)					\
-	static_cast<DerivedOperator*>(this)							\
-	    ->template kernel_implementation<NUMBER_TYPE::c_type>(	\
-	        input, output, size);       						\
+#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)                                \
+	static_cast<DerivedOperator*>(this)                                        \
+	    ->template kernel_implementation<NUMBER_TYPE::c_type>(                 \
+	        input, output, size);                                              \
 	break;
 
 					switch (*type)

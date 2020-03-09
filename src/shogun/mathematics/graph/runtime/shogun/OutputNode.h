@@ -19,9 +19,9 @@ namespace shogun
 		{
 			namespace shogun
 			{
-				/* A OutputNode stores and passes the input nodes required 
+				/* A OutputNode stores and passes the input nodes required
 				 * by an operation and holds a pointer to the resulting
-				 * allocated results. These can then passed on to the 
+				 * allocated results. These can then passed on to the
 				 * next OutputNode in the graph.
 				 */
 				class OutputNode
@@ -53,7 +53,7 @@ namespace shogun
 
 					/* This member functions is only called by input nodes,
 					 * and is the entry point of the execution graph.
-					 */ 
+					 */
 					void evaluate_tensor(const std::shared_ptr<Tensor>& tensor)
 					{
 						m_outputs =
@@ -61,7 +61,7 @@ namespace shogun
 						        ->evaluate_input(tensor);
 					}
 
-					const std::vector<std::shared_ptr<op::ShogunStorage>>&
+					const std::vector<std::shared_ptr<ShogunStorage>>&
 					get_outputs() const
 					{
 						return m_outputs;
@@ -79,7 +79,7 @@ namespace shogun
 					/* Reference to inputs */
 					std::vector<std::shared_ptr<OutputNode>> m_input_nodes;
 					/* Reference to Operator allocated output storage */
-					std::vector<std::shared_ptr<op::ShogunStorage>> m_outputs;
+					std::vector<std::shared_ptr<ShogunStorage>> m_outputs;
 				};
 			} // namespace shogun
 		}     // namespace detail

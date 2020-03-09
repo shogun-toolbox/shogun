@@ -41,10 +41,8 @@ namespace shogun
 					if (m_outputs.size() != 1)
 						error("Binary operation expected one output.");
 
-					const auto& input1 =
-					    input_nodes[0]->get_outputs()[0];
-					const auto& input2 =
-					    input_nodes[1]->get_outputs()[0];
+					const auto& input1 = input_nodes[0]->get_outputs()[0];
+					const auto& input2 = input_nodes[1]->get_outputs()[0];
 					const auto& output = m_outputs[0];
 
 					runtime_checks_and_allocation(input1, input2);
@@ -159,10 +157,9 @@ namespace shogun
 				    const std::shared_ptr<ShogunStorage>& B,
 				    const std::shared_ptr<ShogunStorage>& Out)
 				{
-#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)              \
-	case NUMBER_TYPE::type_id:                               \
-		dot_product_dispatch<NUMBER_TYPE::c_type>(           \
-		    A, B, Out);                                      \
+#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)                                \
+	case NUMBER_TYPE::type_id:                                                 \
+		dot_product_dispatch<NUMBER_TYPE::c_type>(A, B, Out);                  \
 		break;
 
 					switch (*A->get_type())
