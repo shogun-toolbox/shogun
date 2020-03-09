@@ -7,8 +7,8 @@
 #ifndef SHOGUNINPUTSHOGUN_H_
 #define SHOGUNINPUTSHOGUN_H_
 
-#include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/Tensor.h>
+#include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
 
 namespace shogun
@@ -17,7 +17,7 @@ namespace shogun
 	{
 		namespace op
 		{
-			/* The InputShogun operation transfers the input memory to the 
+			/* The InputShogun operation transfers the input memory to the
 			 * entry point of the DAG.
 			 * Currently only CPU-CPU mapping is implemented
 			 */
@@ -52,7 +52,8 @@ namespace shogun
 				}
 
 			protected:
-				void runtime_checks_and_allocation(const std::shared_ptr<Tensor>& input_tensor)
+				void runtime_checks_and_allocation(
+				    const std::shared_ptr<Tensor>& input_tensor)
 				{
 					runtime_type_check(input_tensor, m_outputs[0]);
 					runtime_shape_check(input_tensor, m_outputs[0]);
@@ -71,7 +72,8 @@ namespace shogun
 				    const std::shared_ptr<Tensor>& input_tensor,
 				    std::shared_ptr<ShogunStorage>& output)
 				{
-					output = ShogunStorage::from_tensor(input_tensor);
+					// get copy of shared_ptr of Storage
+					output = input_tensor->data();
 				}
 			};
 		} // namespace op

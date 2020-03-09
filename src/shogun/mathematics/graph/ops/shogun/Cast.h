@@ -32,8 +32,7 @@ namespace shogun
 				void call(const std::vector<std::shared_ptr<
 				              detail::shogun::OutputNode>>& input_nodes) final
 				{
-					const auto& input =
-					    input_nodes[0]->get_outputs()[0];
+					const auto& input = input_nodes[0]->get_outputs()[0];
 
 					const auto& output = m_outputs[0];
 
@@ -58,42 +57,30 @@ namespace shogun
     INPUT_SHOGUN_TYPE, OUTPUT_SHOGUN_TYPE)                                     \
 	case OUTPUT_SHOGUN_TYPE::type_id:                                          \
 		kernel_implementation<                                                 \
-		    INPUT_SHOGUN_TYPE::c_type,                                         \
-		    OUTPUT_SHOGUN_TYPE::c_type>(                                       \
+		    INPUT_SHOGUN_TYPE::c_type, OUTPUT_SHOGUN_TYPE::c_type>(            \
 		    input->data(), output->data(), input->size());                     \
 		break;
 
 #define CALL_KERNEL_INPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE)               \
 	switch (*output->get_type())                                               \
 	{                                                                          \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, BooleanType)                          \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, Int8Type)                             \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, Int16Type)                            \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, Int32Type)                            \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, Int64Type)                            \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, UInt8Type)                            \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, UInt16Type)                           \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, UInt32Type)                           \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, UInt64Type)                           \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, Float32Type)                          \
-		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
-		    INPUT_SHOGUN_TYPE, Float64Type)                          \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, BooleanType) \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, Int8Type)    \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, Int16Type)   \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, Int32Type)   \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, Int64Type)   \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, UInt8Type)   \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, UInt16Type)  \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, UInt32Type)  \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, UInt64Type)  \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, Float32Type) \
+		CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE, Float64Type) \
 	}
 
 #define CALL_KERNEL(INPUT_SHOGUN_TYPE)                                         \
 	case INPUT_SHOGUN_TYPE::type_id:                                           \
 	{                                                                          \
-		CALL_KERNEL_INPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE)		       \
+		CALL_KERNEL_INPUT_TYPE_IMPLEMENTATION(INPUT_SHOGUN_TYPE)               \
 	}                                                                          \
 	break;
 

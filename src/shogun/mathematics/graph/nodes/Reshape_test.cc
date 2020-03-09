@@ -19,10 +19,9 @@ TYPED_TEST(GraphTest, vector_reshape)
 	auto expected_result1 = SGMatrix<NumericType>(10, 1);
 	auto expected_result2 = SGMatrix<NumericType>(1, 10);
 
-	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{10}, TypeParam::type_id);
+	auto input1 =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input2 = make_shared<node::Input>(Shape{10}, TypeParam::type_id);
 
 	auto output1 = make_shared<node::Reshape>(input1, Shape{10, 1});
 	auto output2 = make_shared<node::Reshape>(input2, Shape{1, 10});
@@ -62,10 +61,8 @@ TYPED_TEST(GraphTest, matrix_reshape)
 	auto expected_result2 = SGVector<NumericType>(10);
 
 	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic, Shape::Dynamic},
-	    TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{10, 1}, TypeParam::type_id);
+	    Shape{Shape::Dynamic, Shape::Dynamic}, TypeParam::type_id);
+	auto input2 = make_shared<node::Input>(Shape{10, 1}, TypeParam::type_id);
 
 	auto output1 = make_shared<node::Reshape>(input1, Shape{5, 2});
 	auto output2 = make_shared<node::Reshape>(input2, Shape{10});

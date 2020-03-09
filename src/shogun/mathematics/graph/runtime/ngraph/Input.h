@@ -26,27 +26,27 @@ namespace shogun
 					switch (type)
 					{
 					case ::ngraph::element::Type_t::f32:
-						return std::make_shared<Float32Type>();
+						return number_type(element_type::FLOAT32);
 					case ::ngraph::element::Type_t::f64:
-						return std::make_shared<Float64Type>();
+						return number_type(element_type::FLOAT64);
 					case ::ngraph::element::Type_t::boolean:
-						return std::make_shared<BooleanType>();
+						return number_type(element_type::BOOLEAN);
 					case ::ngraph::element::Type_t::i8:
-						return std::make_shared<Int8Type>();
+						return number_type(element_type::INT8);
 					case ::ngraph::element::Type_t::i16:
-						return std::make_shared<Int16Type>();
+						return number_type(element_type::INT16);
 					case ::ngraph::element::Type_t::i32:
-						return std::make_shared<Int32Type>();
+						return number_type(element_type::INT32);
 					case ::ngraph::element::Type_t::i64:
-						return std::make_shared<Int64Type>();
+						return number_type(element_type::INT64);
 					case ::ngraph::element::Type_t::u8:
-						return std::make_shared<UInt8Type>();
+						return number_type(element_type::UINT8);
 					case ::ngraph::element::Type_t::u16:
-						return std::make_shared<UInt16Type>();
+						return number_type(element_type::UINT16);
 					case ::ngraph::element::Type_t::u32:
-						return std::make_shared<UInt32Type>();
+						return number_type(element_type::UINT32);
 					case ::ngraph::element::Type_t::u64:
-						return std::make_shared<UInt64Type>();
+						return number_type(element_type::UINT64);
 					case ::ngraph::element::Type_t::undefined:
 					case ::ngraph::element::Type_t::dynamic:
 					case ::ngraph::element::Type_t::bf16:
@@ -56,8 +56,8 @@ namespace shogun
 					}
 				}
 
-				inline ::ngraph::element::Type_t
-				get_ngraph_type_from_enum(const std::shared_ptr<shogun::graph::NumberType>& type)
+				inline ::ngraph::element::Type_t get_ngraph_type_from_enum(
+				    const std::shared_ptr<shogun::graph::NumberType>& type)
 				{
 					switch (type->type())
 					{

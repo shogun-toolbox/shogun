@@ -44,10 +44,8 @@ namespace shogun
 					if (m_outputs.size() != 1)
 						error("Binary operation expected one output.");
 
-					const auto& input1 =
-					    input_nodes[0]->get_outputs()[0];
-					const auto& input2 =
-					    input_nodes[1]->get_outputs()[0];
+					const auto& input1 = input_nodes[0]->get_outputs()[0];
+					const auto& input2 = input_nodes[1]->get_outputs()[0];
 					const auto& output = m_outputs[0];
 
 					runtime_checks_and_allocation(
@@ -57,9 +55,8 @@ namespace shogun
 					        ArrayArray)
 					{
 						kernel(
-						    input1->data(), input2->data(),
-						    output->data(), output->size(),
-						    input1->get_type());
+						    input1->data(), input2->data(), output->data(),
+						    output->size(), input1->get_type());
 					}
 					else if (
 					    shape_compatibility ==
@@ -69,9 +66,8 @@ namespace shogun
 						const bool scalar_first =
 						    input1->get_shape().is_scalar();
 						kernel_scalar(
-						    input1->data(), input2->data(),
-						    output->data(), output->size(),
-						    input1->get_type(), scalar_first);
+						    input1->data(), input2->data(), output->data(),
+						    output->size(), input1->get_type(), scalar_first);
 					}
 				}
 
@@ -141,10 +137,10 @@ namespace shogun
 				    const node::Node::type_info& type)
 				{
 
-#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)					\
-	static_cast<DerivedOperator*>(this)							\
-	    ->template kernel_implementation<NUMBER_TYPE::c_type>(	\
-	        input1, input2, output, size);						\
+#define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)                                \
+	static_cast<DerivedOperator*>(this)                                        \
+	    ->template kernel_implementation<NUMBER_TYPE::c_type>(                 \
+	        input1, input2, output, size);                                     \
 	break;
 
 					switch (*type)
@@ -182,8 +178,7 @@ namespace shogun
 
 #define CALL_KERNEL_IMPLEMENTATION(SHOGUN_TYPE)                                \
 	static_cast<DerivedOperator*>(this)                                        \
-	    ->template kernel_scalar_implementation<                               \
-	        SHOGUN_TYPE::c_type>(                                              \
+	    ->template kernel_scalar_implementation<SHOGUN_TYPE::c_type>(          \
 	        input1, input2, output, size, scalar_first);                       \
 	break;
 

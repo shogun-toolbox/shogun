@@ -34,56 +34,81 @@ namespace shogun
 
 		class SHOGUN_ENGINE_EXPORT NumberType
 		{
-			public:
-				explicit NumberType(element_type et): m_et(et) {}
-				virtual ~NumberType() = default;
+		public:
+			explicit NumberType(element_type et) : m_et(et)
+			{
+			}
+			virtual ~NumberType() = default;
 
-				friend bool operator==(const NumberType& first, const NumberType& second);
-				friend bool operator!=(const NumberType& first, const NumberType& second);
+			friend bool
+			operator==(const NumberType& first, const NumberType& second);
+			friend bool
+			operator!=(const NumberType& first, const NumberType& second);
 
-				virtual bool is_signed() const = 0;
-				virtual bool is_real() const = 0;
-				bool is_integral() const;
+			virtual bool is_signed() const = 0;
+			virtual bool is_real() const = 0;
+			bool is_integral() const;
 
-				virtual bool compatible(const NumberType& other) const = 0;
-				virtual std::string to_string() const = 0;
-				virtual size_t size() const = 0;
-				element_type type() const { return m_et; }
-				operator element_type() const { return m_et; }
-			private:
-				const element_type m_et;
+			virtual bool compatible(const NumberType& other) const = 0;
+			virtual std::string to_string() const = 0;
+			virtual size_t size() const = 0;
+			element_type type() const
+			{
+				return m_et;
+			}
+			operator element_type() const
+			{
+				return m_et;
+			}
+
+		private:
+			const element_type m_et;
 		};
 
 		std::ostream& operator<<(std::ostream& os, const NumberType& type);
 
-		class SHOGUN_ENGINE_EXPORT IntegerType: public NumberType
+		class SHOGUN_ENGINE_EXPORT IntegerType : public NumberType
 		{
-			public:
-				using NumberType::NumberType;
-				bool is_real() const override { return false; };
+		public:
+			using NumberType::NumberType;
+			bool is_real() const override
+			{
+				return false;
+			};
 		};
 
-		class SHOGUN_ENGINE_EXPORT FloatingPointType: public NumberType
+		class SHOGUN_ENGINE_EXPORT FloatingPointType : public NumberType
 		{
-			public:
-				using NumberType::NumberType;
+		public:
+			using NumberType::NumberType;
 
-				bool is_real() const override { return true; };
+			bool is_real() const override
+			{
+				return true;
+			};
 
-				enum Precision { SINGLE, DOUBLE };
-				virtual Precision precision() const = 0;
+			enum Precision
+			{
+				SINGLE,
+				DOUBLE
+			};
+			virtual Precision precision() const = 0;
 		};
 
 		namespace detail
 		{
-			template <typename DERIVED, typename BASE, element_type ELEMENT_TYPE, typename C_TYPE>
-			class TypeImpl: public BASE
+			template <
+			    typename DERIVED, typename BASE, element_type ELEMENT_TYPE,
+			    typename C_TYPE>
+			class TypeImpl : public BASE
 			{
 			public:
 				static constexpr element_type type_id = ELEMENT_TYPE;
 				using c_type = C_TYPE;
 
-				TypeImpl(): BASE(ELEMENT_TYPE) {}
+				TypeImpl() : BASE(ELEMENT_TYPE)
+				{
+				}
 
 				bool compatible(const NumberType& other) const override
 				{
@@ -101,97 +126,157 @@ namespace shogun
 					return false;
 				}
 
-				bool is_signed() const override { return std::is_signed_v<C_TYPE>; }
+				bool is_signed() const override
+				{
+					return std::is_signed_v<C_TYPE>;
+				}
 
-				size_t size() const override { return sizeof(C_TYPE); }
+				size_t size() const override
+				{
+					return sizeof(C_TYPE);
+				}
 
-				std::string to_string() const override { return DERIVED::type_name(); }
+				std::string to_string() const override
+				{
+					return DERIVED::type_name();
+				}
 			};
 
-			template <typename DERIVED, element_type ELEMENT_TYPE, typename C_TYPE>
-			class IntegerTypeImpl : public detail::TypeImpl<DERIVED, IntegerType, ELEMENT_TYPE, C_TYPE>
+			template <
+			    typename DERIVED, element_type ELEMENT_TYPE, typename C_TYPE>
+			class IntegerTypeImpl
+			    : public detail::TypeImpl<
+			          DERIVED, IntegerType, ELEMENT_TYPE, C_TYPE>
 			{
 			};
-		}
+		} // namespace detail
 
-		class SHOGUN_ENGINE_EXPORT BooleanType:
-			public detail::TypeImpl<BooleanType, NumberType, element_type::BOOLEAN, bool>
+		class SHOGUN_ENGINE_EXPORT BooleanType
+		    : public detail::TypeImpl<
+		          BooleanType, NumberType, element_type::BOOLEAN, bool>
 		{
-			public:
-				static constexpr const char* type_name() { return "bool"; }
-
-				bool is_real() const override { return false; };
-		};
-
-		class SHOGUN_ENGINE_EXPORT UInt8Type:
-			public detail::IntegerTypeImpl<UInt8Type, element_type::UINT8, uint8_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "uint8"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT Int8Type:
-			public detail::IntegerTypeImpl<Int8Type, element_type::INT8, int8_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "int8"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT UInt16Type:
-			public detail::IntegerTypeImpl<UInt16Type, element_type::UINT16, uint16_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "uint16"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT Int16Type:
-			public detail::IntegerTypeImpl<Int16Type, element_type::INT16, int16_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "int16"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT UInt32Type:
-			public detail::IntegerTypeImpl<UInt32Type, element_type::UINT32, uint32_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "uint32"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT Int32Type:
-			public detail::IntegerTypeImpl<Int32Type, element_type::INT32, int32_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "int32"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT Int64Type:
-			public detail::IntegerTypeImpl<Int64Type, element_type::INT64, int64_t>
-		{
-			public:
-				static constexpr const char* type_name() { return "int64"; }
-		};
-
-		class SHOGUN_ENGINE_EXPORT UInt64Type:
-			public detail::IntegerTypeImpl<UInt64Type, element_type::UINT64, uint64_t> {
 		public:
-			static constexpr const char* type_name() { return "uint64"; }
+			static constexpr const char* type_name()
+			{
+				return "bool";
+			}
+
+			bool is_real() const override
+			{
+				return false;
+			};
+		};
+
+		class SHOGUN_ENGINE_EXPORT UInt8Type
+		    : public detail::IntegerTypeImpl<
+		          UInt8Type, element_type::UINT8, uint8_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "uint8";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT Int8Type
+		    : public detail::IntegerTypeImpl<
+		          Int8Type, element_type::INT8, int8_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "int8";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT UInt16Type
+		    : public detail::IntegerTypeImpl<
+		          UInt16Type, element_type::UINT16, uint16_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "uint16";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT Int16Type
+		    : public detail::IntegerTypeImpl<
+		          Int16Type, element_type::INT16, int16_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "int16";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT UInt32Type
+		    : public detail::IntegerTypeImpl<
+		          UInt32Type, element_type::UINT32, uint32_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "uint32";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT Int32Type
+		    : public detail::IntegerTypeImpl<
+		          Int32Type, element_type::INT32, int32_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "int32";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT Int64Type
+		    : public detail::IntegerTypeImpl<
+		          Int64Type, element_type::INT64, int64_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "int64";
+			}
+		};
+
+		class SHOGUN_ENGINE_EXPORT UInt64Type
+		    : public detail::IntegerTypeImpl<
+		          UInt64Type, element_type::UINT64, uint64_t>
+		{
+		public:
+			static constexpr const char* type_name()
+			{
+				return "uint64";
+			}
 		};
 
 		class SHOGUN_ENGINE_EXPORT Float32Type
-			: public detail::TypeImpl<Float32Type, FloatingPointType, element_type::FLOAT32, float>
+		    : public detail::TypeImpl<
+		          Float32Type, FloatingPointType, element_type::FLOAT32, float>
 		{
-			public:
-				Precision precision() const override;
-				static constexpr const char* type_name() { return "float32"; }
+		public:
+			Precision precision() const override;
+			static constexpr const char* type_name()
+			{
+				return "float32";
+			}
 		};
 
 		class SHOGUN_ENGINE_EXPORT Float64Type
-			: public detail::TypeImpl<Float64Type, FloatingPointType, element_type::FLOAT64, double>
+		    : public detail::TypeImpl<
+		          Float64Type, FloatingPointType, element_type::FLOAT64, double>
 		{
-			public:
-				Precision precision() const override;
-				static constexpr const char* type_name() { return "float64"; }
+		public:
+			Precision precision() const override;
+			static constexpr const char* type_name()
+			{
+				return "float64";
+			}
 		};
 
 		template <typename T>
@@ -223,7 +308,8 @@ namespace shogun
 		template <>
 		SHOGUN_ENGINE_EXPORT std::shared_ptr<NumberType> from<double>();
 
-		SHOGUN_ENGINE_EXPORT std::shared_ptr<NumberType> number_type(element_type et);
+		SHOGUN_ENGINE_EXPORT std::shared_ptr<NumberType>
+		number_type(element_type et);
 	} // namespace graph
 } // namespace shogun
 

@@ -33,10 +33,9 @@ TYPED_TEST(GraphTest, multiply)
 	    expected_result1.data() + expected_result1.size(), X2.data(),
 	    expected_result2.data(), std::multiplies<NumericType>{});
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{10}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{10}, TypeParam::type_id);
 
 	auto intermediate = input * input;
 
@@ -66,10 +65,9 @@ TYPED_TEST(GraphTest, vector_scalar_multiply)
 		SGVector<NumericType> expected_result1{0,  2,  4,  6,  8, 10,
 		                                       12, 14, 16, 18, 20};
 
-		auto input1 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
-		auto input2 = make_shared<node::Input>(
-		    Shape{}, TypeParam::type_id);
+		auto input1 =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input2 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
 
 		auto output = input1 * input2;
 
@@ -111,10 +109,9 @@ TYPED_TEST(GraphTest, scalar_vector_multiply)
 		SGVector<NumericType> expected_result1{0,  2,  4,  6,  8, 10,
 		                                       12, 14, 16, 18, 20};
 
-		auto input1 = make_shared<node::Input>(
-		    Shape{}, TypeParam::type_id);
-		auto input2 = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input1 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
+		auto input2 =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = input1 * input2;
 

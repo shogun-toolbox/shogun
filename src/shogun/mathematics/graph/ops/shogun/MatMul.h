@@ -47,19 +47,15 @@ namespace shogun
 					    std::static_pointer_cast<node::MatMul>(m_node)
 					        ->get_transpose_b();
 
-					const auto& input1 =
-					    input_nodes[0]->get_outputs()[0];
-					const auto& input2 =
-					    input_nodes[1]->get_outputs()[0];
+					const auto& input1 = input_nodes[0]->get_outputs()[0];
+					const auto& input2 = input_nodes[1]->get_outputs()[0];
 					const auto& output = m_outputs[0];
 
 					runtime_checks_and_allocation(
-					    input1, input2, transpose_a,
-					    transpose_b);
+					    input1, input2, transpose_a, transpose_b);
 
 					matmul_type_dispatch(
-					    input1, input2, output,
-					    transpose_a, transpose_b);
+					    input1, input2, output, transpose_a, transpose_b);
 				}
 
 			private:
@@ -111,23 +107,22 @@ namespace shogun
 							output_shape_vector.push_back(el);
 					}
 
-					m_outputs[0]->allocate_storage(
-					    Shape{output_shape_vector});
+					m_outputs[0]->allocate_storage(Shape{output_shape_vector});
 				}
 
 				void matmul_type_dispatch(
 				    const std::shared_ptr<ShogunStorage>& A,
 				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out, const bool transpose_a,
-				    const bool transpose_b)
+				    const std::shared_ptr<ShogunStorage>& Out,
+				    const bool transpose_a, const bool transpose_b)
 				{
 					if (!transpose_a && !transpose_b)
 						DotShogun::dot_product_type_dispatch(A, B, Out);
 					else
 					{
 #define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)                                \
-	case NUMBER_TYPE::type_id:                                                   \
-		matmul_dispatch<NUMBER_TYPE::c_type>(                \
+	case NUMBER_TYPE::type_id:                                                 \
+		matmul_dispatch<NUMBER_TYPE::c_type>(                                  \
 		    A, B, Out, transpose_a, transpose_b);                              \
 		break;
 
@@ -153,8 +148,8 @@ namespace shogun
 				void matmul_dispatch(
 				    const std::shared_ptr<ShogunStorage>& A,
 				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out, const bool transpose_a,
-				    const bool transpose_b)
+				    const std::shared_ptr<ShogunStorage>& Out,
+				    const bool transpose_a, const bool transpose_b)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
 					A_eig(

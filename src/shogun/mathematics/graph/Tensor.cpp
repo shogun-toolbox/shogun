@@ -13,7 +13,8 @@ using namespace shogun::graph;
 
 std::string Tensor::to_string() const
 {
-	return fmt::format("Tensor(shape={}, type={})", m_shape, m_type->to_string());
+	return fmt::format(
+	    "Tensor(shape={}, type={})", m_shape, m_type->to_string());
 }
 
 template Tensor::Tensor(const SGVector<float32_t>&);

@@ -30,10 +30,9 @@ TYPED_TEST(GraphTest, vector_add)
 	auto expected_result1 = X1 + X2;
 	auto expected_result2 = expected_result1 + X2;
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{10}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{10}, TypeParam::type_id);
 
 	auto intermediate = input + input;
 
@@ -61,10 +60,9 @@ TYPED_TEST(GraphTest, vector_scalar_add)
 	auto expected_result1 = X1.clone();
 	expected_result1.add(X2);
 
-	auto input1 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{}, TypeParam::type_id);
+	auto input1 =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input2 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
 
 	auto output = input1 + input2;
 
@@ -104,10 +102,9 @@ TYPED_TEST(GraphTest, scalar_vector_add)
 	auto expected_result1 = X2.clone();
 	expected_result1.add(X1);
 
-	auto input1 = make_shared<node::Input>(
-	    Shape{}, TypeParam::type_id);
-	auto input2 = make_shared<node::Input>(
-	    Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{}, TypeParam::type_id);
+	auto input2 =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 	auto output = input1 + input2;
 
@@ -174,10 +171,10 @@ TYPED_TEST(GraphTest, matrix_add)
 	    expected_result1.data() + expected_result1.size(), X2.data(),
 	    expected_result2.data(), std::plus<NumericType>{});
 
-	auto input = make_shared<node::Input>(
-	    Shape{Shape::Dynamic, 5}, TypeParam::type_id);
-	auto input1 = make_shared<node::Input>(
-	    Shape{10, Shape::Dynamic}, TypeParam::type_id);
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic, 5}, TypeParam::type_id);
+	auto input1 =
+	    make_shared<node::Input>(Shape{10, Shape::Dynamic}, TypeParam::type_id);
 
 	auto intermediate = input + input;
 
