@@ -29,7 +29,7 @@ Buildbot: https://buildbot.shogun.ml.
  * See [doc/readme/EXAMPLES.md](doc/readme/EXAMPLES.md) for details on creating API examples.
  * See [doc/readme/DEVELOPING.md](doc/readme/DEVELOPING.md) for how to hack Shogun.
  
- * See [API examples](http://shogun.ml/examples) for API examples for all interfaces.
+ * See [API examples](http://shogun.ml/examples) for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for extended developer information.
 
 ## Interfaces
