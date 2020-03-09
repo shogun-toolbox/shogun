@@ -22,26 +22,9 @@ namespace shogun
 	{
 		namespace op
 		{
-			/* The actual CPU memory owner.
-			 */
-			class InternalStorage
-			{
-				template <typename T>
-				InternalStorage(T* data, size_t size, const std::shared_ptr<NumberType>& type): m_internal_data(data, 
-					[](void* ptr){
-						SG_ALIGNED_FREE(ptr);
-					}, 
-					[&size, &type](void* ptr){
-						ptr = sg_aligned_malloc(InternalStorage::size_in_bytes(size, type), alignment::container_alignment);
-					}) {}
-			private:
-				[[nodiscard]] static size_t size_in_bytes(size_t size, const std::shared_ptr<NumberType>& type) {
-					return size * type->size();
-				}
-				std::shared_ptr<void> m_internal_data;
-			};
+
 			/* A storage abstraction
-			 * The user should never see this. This is purely for 
+			 * The user should never see this. This is purely for
 			 * the backend to allocate storage. The user should use
 			 * the tensor class exclusively, in order to not mess
 			 * up shapes and so on.
@@ -49,54 +32,117 @@ namespace shogun
 			 */
 			class ShogunStorage
 			{
-			public:
+				/* Managed storage. It's only job is to keep track of memory
+				 * and how to delete and allocate it.
+				 * It's unaware of what it actually owns. This is pretty much
+				 * a wrapper around std::shared_ptr for aligned memory.
+				 * Should this be thread safe?
+				 */
+				class InternalStorage
+				{
+				public:
 
+					InternalStorage(
+					    size_t size, const std::shared_ptr<NumberType>& type)
+					{
+						void* data = sg_aligned_malloc(
+						    size_in_bytes(size, type),
+						    alignment::container_alignment);
+						m_internal_data =
+						    std::shared_ptr<void>(data, [](void* ptr) {
+							    if (ptr)
+								    SG_ALIGNED_FREE(ptr);
+						    });
+					}
+
+					InternalStorage(void* data)
+					    : m_internal_data(data, [](void* ptr) {
+						      if (ptr)
+							      SG_ALIGNED_FREE(ptr);
+					      })
+					{
+					}
+
+					void realloc(
+					    size_t size, const std::shared_ptr<NumberType>& type)
+					{
+						void* new_mem = std::realloc(
+						    m_internal_data.get(), size_in_bytes(size, type));
+						if (new_mem)
+							m_internal_data.reset(new_mem, [](void* ptr) {
+								if (ptr)
+									SG_ALIGNED_FREE(ptr);
+							});
+						else
+							error("Failed to reallocate memory.");
+					}
+
+					void get_copy(
+					    void*& dst, size_t size,
+					    const std::shared_ptr<NumberType>& type) const
+					{
+						sg_memcpy(
+						    dst, m_internal_data.get(),
+						    size_in_bytes(size, type));
+					}
+
+					void copy_from(
+					    void* source, size_t size,
+					    const std::shared_ptr<NumberType>& type)
+					{
+						sg_memcpy(
+						    m_internal_data.get(), source,
+						    size_in_bytes(size, type));
+					}
+
+					[[nodiscard]] static size_t size_in_bytes(
+					    size_t size, const std::shared_ptr<NumberType>& type)
+					{
+						return size * type->size();
+					}
+
+					std::shared_ptr<void> m_internal_data;
+				};
+
+			public:
 				friend class ReshapeShogun;
 
-				ShogunStorage(const Shape& shape, const std::shared_ptr<NumberType>& type)
+				ShogunStorage(
+				    const Shape& shape, const std::shared_ptr<NumberType>& type)
 				    : m_data(nullptr), m_shape(shape), m_type(type)
 				{
 					// shape is known at build time, let's preallocate it
 					// we could inforce immutability at this level somehow?
 					if (shape.is_static())
-						m_data = sg_aligned_malloc(size_in_bytes(), alignment::container_alignment);
+						m_data = std::make_shared<InternalStorage>(
+						    get_size_from_shape(m_shape), type);
 				}
 
-				~ShogunStorage()
-				{
-					if (m_data)
-					{
-						SG_ALIGNED_FREE(m_data);
-						m_data = nullptr;
-					}
-				}
-
-				ShogunStorage(ShogunStorage&& other): 
-					  m_data(std::exchange(other.m_data, nullptr))
-					, m_shape(other.m_shape)
-					, m_type(other.m_type)
-				{
-				}
-
-
-				std::shared_ptr<Tensor> to_tensor()
+				[[nodiscard]] std::shared_ptr<Tensor> to_tensor() const
 				{
 					auto tensor = std::make_shared<Tensor>(m_shape, m_type);
 					// transfer data to tensor
-					sg_memcpy(tensor->data(), m_data, size_in_bytes());
+					m_data->get_copy(
+					    tensor->data(), get_size_from_shape(m_shape), m_type);
 					tensor->m_free = true;
 					return tensor;
 				}
 
-				/* Equivalent as device_put in JAX. Transfers data to internal storage.
+				/* Equivalent as device_put in JAX. Transfers data to internal
+				 * storage.
 				 */
-				static std::shared_ptr<ShogunStorage> from_tensor(const std::shared_ptr<Tensor>& tensor)
+				static std::shared_ptr<ShogunStorage>
+				from_tensor(const std::shared_ptr<Tensor>& tensor)
 				{
 					if (!tensor->get_shape().is_static())
 						error("Cannot copy a tensor of unknown shape.");
-					auto storage = std::make_shared<ShogunStorage>(tensor->get_shape(), tensor->get_type());
+					auto storage = std::make_shared<ShogunStorage>(
+					    tensor->get_shape(), tensor->get_type());
 					// transfer data from tensor
-					sg_memcpy(storage->data(), tensor->data(), storage->size_in_bytes());
+					storage->m_data->copy_from(
+					    tensor->data(),
+					    get_size_from_shape(tensor->get_shape()),
+					    tensor->get_type());
 					return storage;
 				}
 
@@ -108,12 +154,16 @@ namespace shogun
 				void allocate_storage(const Shape& shape)
 				{
 					if (!shape.is_static())
-						error("Cannot allocate tensor with shape {}, with unknown size requirements", shape.to_string());
+						error(
+						    "Cannot allocate tensor with shape {}, with "
+						    "unknown size requirements",
+						    shape.to_string());
 					// new allocation, call allocator_dispatch
-					if (m_data == nullptr)
+					if (!m_data)
 					{
 						set_shape(shape);
-						m_data = sg_aligned_malloc(size_in_bytes(), alignment::container_alignment);
+						m_data = std::make_shared<InternalStorage>(
+						    get_size_from_shape(shape), m_type);
 					}
 					else
 					{
@@ -121,20 +171,22 @@ namespace shogun
 						// nothing to do
 						if (m_shape == shape)
 							return;
-						// memory has been allocated, but it isn't the same shape
+						// memory has been allocated, but it isn't the same
+						// shape
 						else
 						{
 							auto old_shape = m_shape;
 							set_shape(shape);
-							// if the size requirement is larger, reallocate memory
+							// if the size requirement is larger, reallocate
+							// memory
 							if (get_size_from_shape(shape) > size())
-							{	
-								m_data = std::realloc(m_data, size_in_bytes());
+							{
+								m_data->realloc(
+								    get_size_from_shape(shape), m_type);
 							}
-							// otherwise nothing happens, we just own a larger memory block
-							// but only use part of it
+							// otherwise nothing happens, we just own a larger
+							// memory block but only use part of it
 						}
-
 					}
 				}
 
@@ -143,31 +195,20 @@ namespace shogun
 					return m_shape;
 				}
 
-				[[nodiscard]] const std::shared_ptr<NumberType>& get_type() const noexcept
+				[[nodiscard]] const std::shared_ptr<NumberType>&
+				get_type() const noexcept
 				{
 					return m_type;
 				}
 
-				[[nodiscard]] void*& data()
-				{
-					return m_data;
+				[[nodiscard]] void* data() {
+					return m_data->m_internal_data.get();
 				}
 
-				[[nodiscard]] size_t size_in_bytes() const {
-					return size() * m_type->size();
-				}
-
-				[[nodiscard]] size_t size() const
+			    [[nodiscard]] size_t size() const
 				{
 					return get_size_from_shape(m_shape);
 				}
-
-			private:
-
-				struct PrivateTag{};
-
-			public:
-				ShogunStorage(PrivateTag): m_data(nullptr), m_shape(), m_type(nullptr) {}
 
 			protected:
 				/* Sets the static Shape. There is a guarantee that
@@ -178,7 +219,8 @@ namespace shogun
 					if (m_shape.size() != shape.size())
 					{
 						error(
-						    "Mismatch in the number of dimensions, expected {}, "
+						    "Mismatch in the number of dimensions, expected "
+						    "{}, "
 						    "but got {}",
 						    m_shape.size(), shape.size());
 					}
@@ -209,7 +251,8 @@ namespace shogun
 					if (m_shape.size() != shape.size())
 					{
 						error(
-						    "Mismatch in the number of dimensions, expected {}, "
+						    "Mismatch in the number of dimensions, expected "
+						    "{}, "
 						    "but got {}",
 						    m_shape.size(), shape.size());
 					}
@@ -230,7 +273,6 @@ namespace shogun
 					m_shape = shape;
 				}
 
-
 				/* Sets the runtime Shape when static Shape allocation
 				 * was not possible, e.g. the user provided Dynamic
 				 * shapes in the Graph construction. If ShogunStorage already
@@ -249,20 +291,20 @@ namespace shogun
 					m_shape = shape;
 				}
 
-
 			private:
-
-				[[nodiscard]] size_t get_size_from_shape(const Shape& size) const {
+				[[nodiscard]] static size_t
+				get_size_from_shape(const Shape& size)
+				{
 					return std::accumulate(
 					    size.begin(), size.end(), size_t{1}, std::multiplies{});
 				}
 
-				void* m_data = nullptr;
+				std::shared_ptr<InternalStorage> m_data;
 				Shape m_shape;
 				std::shared_ptr<NumberType> m_type;
 			};
-		}
-	}
-}
+		} // namespace op
+	}     // namespace graph
+} // namespace shogun
 
 #endif
