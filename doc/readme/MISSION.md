@@ -2,25 +2,25 @@
 
 Machine learning is powerful. 
 Within the last two decades, machine learning (ML) has emerged from an eccentric academic field to transforming the way we live our everyday life. 
-Its methods influence society and its tools have a billion-dollar impact on global economy. 
+Its methods influence society and its tools have a billion-dollar impact on the global economy. 
 The Shogun developers want to make sure that the underlying algorithms are transparent and accessible. 
-Anyone - scientists, data enthusiasts, non-profit organisations, companies, hackers, citizens, journalists, students - should be able to use ML tools for free.
+Anyone - scientists, data enthusiasts, non-profit organizations, companies, hackers, citizens, journalists, students - should be able to use ML tools for free.
 
 The Shogun ML toolbox promotes this mission through its features (accessible, open-source and good) and a focus on ML education and developing its contributors.
 
 Shogun is one of the oldest and largest open source ML platforms. 
 Statistics on Shogun's development activity can be found at [ohloh](https://www.openhub.net/p/shogun).
 
-## Features - accessible, open source and good
+## Features - accessible, open-source and good
 
 ### Accessible
 
  * Shogun is not limited to a single language: 
  you can use the toolbox through a unified interface ([SWIG](http://www.swig.org/)) from C++, Python, Octave, R, Java, Lua, C#, Ruby, etc. see the [examples](http://shogun.ml/examples).
  Thus Shogun is independent of trends in computing languages and importantly, this allows you to use Shogun as a vehicle to expose your algorithm to multiple communities.
- * Shogun runs natively under Linux/Unix, MacOS, and Windows.
+ * Shogun runs natively under Linux/Unix, macOS, and Windows.
  * Shogun comes with binary installation packages for a growing number of systems.
- * Shogun does not re-invent the wheel, but offers bindings to other sophisticated libraries including, 
+ * Shogun does not re-invent the wheel but offers bindings to other sophisticated libraries including, 
  [LibSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/)/[LibLinear](http://www.csie.ntu.edu.tw/~cjlin/liblinear/), 
  [SVMLight](http://svmlight.joachims.org/), 
  [LibOCAS](http://cmp.felk.cvut.cz/~xfrancv/ocas/html/), 
@@ -29,7 +29,7 @@ Statistics on Shogun's development activity can be found at [ohloh](https://www.
  [Tapkee](http://tapkee.lisitsyn.me/), 
  [SLEP](http://www.public.asu.edu/~jye02/Software/SLEP/), 
  [GPML](http://www.gaussianprocess.org/gpml/code/matlab/doc/) and more. 
- Future plans include interfacing [TensorFlow](https://www.tensorflow.org/) and [Stan](http://mc-stan.org/).
+ Plans include interfacing with [TensorFlow](https://www.tensorflow.org/) and [Stan](http://mc-stan.org/).
 
 ### Free
 
@@ -40,10 +40,10 @@ Statistics on Shogun's development activity can be found at [ohloh](https://www.
 
 ### Good (it's what Shogun aims for)
 
- * Shogun provides efficient implementation of all standard ML algorithms, see the [API](http://shogun.ml/api).
- * Shogun's implementations are competitive as for example measured by the [MLPack](https://github.com/mlpack/benchmarks) benchmarking framework.
- * Shogun offers exclusive state-of-the art algorithms (among others: efficient SVM implementations, Multiple Kernel Learning, kernel hypothesis testing and Krylov methods). 
- All of these are supported by a collection of general purpose methods for evaluation, parameter tuning, preprocessing, serialisation and I/O.
+ * Shogun provides an efficient implementation of all standard ML algorithms, see the [API](http://shogun.ml/api).
+ * Shogun's implementations are competitive as measured by the [MLPack](https://github.com/mlpack/benchmarks) benchmarking framework.
+ * Shogun offers exclusive state-of-the-art algorithms (among others: efficient SVM implementations, Multiple Kernel Learning, kernel hypothesis testing, and Krylov methods). 
+ All of these are supported by a collection of general-purpose methods for evaluation, parameter tuning, preprocessing, serialization and I/O.
  * Shogun has an extensive testing infrastructure, making it reliable on dozens of OS setups.
 
 ## Using Shogun to Learn
@@ -52,7 +52,7 @@ Shogun is a community learning platform in every sense: anyone can use the toolb
 
  * Many scientists use Shogun as a tool for their research and it is [cited many hundred times on Google scholar](http://scholar.google.com/scholar?hl=en&q=shogun+toolbox&btnG=&as_sdt=1%2C33&as_sdtp=).
  * Shogun offers its [cloud](https://cloud.shogun.ml/hub/home) for educational purposes at universities and workshops (e.g. University College London *Introduction to Machine Learning*).
- * See the mini tutorials in Shogun's [showroom](http://shogun.ml/showroom). 
+ * See the mini-tutorials in Shogun's [showroom](http://shogun.ml/showroom). 
  
 Even more important, everyone can gain skills by helping to build Shogun. Shogun highly values its contributors and aims to foster and develop them.
 

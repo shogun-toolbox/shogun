@@ -1,13 +1,13 @@
 # Developing Shogun
 
-This is a very basic list of things how to get started hacking Shogun.
+This is a very basic list of things on how to get started hacking Shogun.
 Your first steps should be to
 
 1. Compile from source, see [INSTALL.md](INSTALL.md).
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
 4. Run the [tests](#testing).
 
-As we would like to avoid spending a lot of our time on explaining the same basic things many times, please **excessively** use the internet for any questions on the commands and tools needed.
+As we would like to avoid spending a lot of our time explaining the same basic things many times, please **excessively** use the internet for any questions on the commands and tools needed.
 If you feel that this readme is missing something, please send a patch! :)
 
 # Quicklinks
@@ -35,14 +35,14 @@ The steps are
         git pull --rebase upstream develop
 
    The steps until here only need to be executed once, with the exception being the last command: rebasing against the development branch.
-   You will need to rebase everytime when the develop branch is updated.
+   You will need to rebase every time the develop branch is updated.
 
 4. Create a feature branch (from develop)
 
         git branch feature/BRANCH_NAME
 
-5. Your code here: Fix bug or add feature. If you add something, or fix something, mention it in the `NEWS` file.
-6. **Make sure (!)** that locally, your code **compiles**, it is **[tested](#testing)**, it complies to the code style described on the wiki.
+5. Your code here: Fix a bug or add a feature. If you add something or fix something, mention it in the `NEWS` file.
+6. **Make sure (!)** that locally, your code **compiles**, it is **[tested](#testing)**, it complies with the code style described on the wiki.
 
         make && make test
 
@@ -83,7 +83,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
     If you squashed or amended commits after you had pushed already, you might be required to force push via using the `git push -f` option **with care**.
 
 11. Send a [pull request](https://help.github.com/articles/about-pull-requests/) (PR) via GitHub.
-    As described above, you can always **update** a pull request using the the `git push -f` option. Please **do not** close and send new ones instead, always update.
+    As described above, you can always **update** a pull request using the `git push -f` option. Please **do not** close and send new ones instead, always update.
 
 12. Once the PR is merged, keep an eye on the [buildfarm](#buildfarm) to see whether your patch broke something.
 
@@ -95,14 +95,14 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
  * The PR is small in terms of lines changes.
  * The PR is clean and addresses **one** issue.
  * The number of commits is minimal (i.e. one), the message is neat and clear.
- * If C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).
- * If API example: it has a clear scope, it is minimal, it looks polished, it has a passing [test](#testing)
+ * If a C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).
+ * If an API example: it has a clear scope, it is minimal, it looks polished, it has a passing [test](#testing)
  * If docs: clear, correct English language, spell-checked
- * If notebook: cell output is removed, template is respected, plots have axis labels.
+ * If a notebook: the cell output is removed, the template is respected, the plots have axis labels.
  * Formatting notebooks/docs: Please every sentence in a single line.
 
 # Testing <a name="testing"></a>
-There are three types of tests that can be executed locally, C++ unit tests, running the API examples, and integration testing the results of the API examples.
+Three types of tests can be executed locally, C++ unit tests, running the API examples, and integration testing the results of the API examples.
 To activate them locally, enable the `-DENABLE_TESTING=ON` cmake switch before running cmake. Which tests are activated depends on your configuration.
 Adding a test in most cases requires to re-run `cmake`.
 All activated tests can be executed with
@@ -119,7 +119,7 @@ Sometimes, it is useful to run a single test, which can be done via [ctest](http
 
 If a test name (or even the `make test` target) does not exist, this means that your configuration did not include it.
 
-If you are interested in details how the test is executed (command, variables, directory), add the `-V` option.
+If you are interested in details on how the test is executed (command, variables, directory), add the `-V` option.
 Further details can be extracted from the `CMakeLists.txt` configuration files in the tests folder.
 
 ## C++ Unit tests
@@ -138,7 +138,7 @@ Note that wildcards are allowed. Running single sub-tests is sometimes useful (i
 
 ### Debugging and Memory leaks
 **All your C++ code and unit tests must be checked to not leak memory!**
-You want to use a memory checker such as [valgrind](http://valgrind.org/) (or a debugger such as [gdb](https://www.gnu.org/software/gdb/)).
+You want to use a memory checker such as [valgrind](http://valgrind.org/) (or a debugger such as [GDB](https://www.gnu.org/software/gdb/)).
 If you do that, you might want to compile with debugging symbols and without compiler optimizations, by using `-DCMAKE_BUILD_TYPE=Debug`
 
 Then
@@ -148,16 +148,16 @@ Then
 
 The option `--leak-check=full` for valgrind might be useful.
 In addition to manually running valgrind on your tests, you can use `ctest` to check multiple tests.
-This requires to be enable in dashboard reports in via `-DBUILD_DASHBOARD_REPORTS=ON`.
+This requires to be enabled in dashboard reports in via `-DBUILD_DASHBOARD_REPORTS=ON`.
 For example
 
     ctest -D ExperimentalMemCheck -R unit-GaussianProcessRegression
 
 #### Adding tests
 We aim to write clear, minimal, yet exhaustive tests of basic building blocks in Shogun.
-Whenever you send us C++ code, we will ask you for a unit test for it.
+Whenever you send us a C++ code, we will ask you for a unit test for it.
 We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency etc.
-Read on [test driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
+Read on [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
 
 Take inspiration from existing tests when writing new ones.
 Please structure them well.
@@ -171,7 +171,7 @@ Note that code for all interface examples needs to be generated as part of `make
 
     make meta_examples
 
-This needs to be done everytime you add or modify an example.
+This needs to be done every time you add or modify an example.
 Examples for compiled interface languages (e.g. C++, Java) need to be compiled, either as part of `make`, or via more specific targets, e.g.
 
     make build_cpp_meta_examples
@@ -180,7 +180,7 @@ Examples for compiled interface languages (e.g. C++, Java) need to be compiled, 
 Check the `CMakeLists.txt` in `examples/meta/*` for all such make targets.
 
 ### Simple execution.
-These tests are to make sure the code is executable, and to generate results for integration testing.
+These tests are to make sure the code is executable and to generate results for integration testing.
 These can be executed with `ctest` as described above, e.g.
 
     ctest -R generated*
@@ -213,7 +213,7 @@ See the `CMakeLists.txt` in `tests/meta` for details on the mechanics.
 
 #### Adding tests
 CMake automatically creates a test for every reference result file that it finds.
-Therefore, if you want to add new test, for example after having added an example as described in [EXAMPLES.md](EXAMPLES.md), then you need to copy its generated output to the reference file folder, e.g.
+Therefore, if you want to add a new test, for example after having added an example as described in [EXAMPLES.md](EXAMPLES.md), then you need to copy its generated output to the reference file folder, e.g.
 
     cp build/tests/meta/generated_results/cpp/regression/kernel_ridge_regression.dat data/testsuite/meta/regression/
 
@@ -225,7 +225,7 @@ This is done via first sending a PR against the [shogun-data](https://github.com
     git commit testsuite/meta/regression/kernel_ridge_regression.dat -m "Integration testing data for kernel ridge regression"
     git push origin
 
-After this PR is merged, you need to send a second PR against the main repository, after commiting the updated version hash of the submodule (in the main shogun directory)
+After this PR is merged, you need to send a second PR against the main repository, after committing the updated version hash of the submodule (in the main shogun directory)
 
     git commit data -m "Updated to including kernel ridge regression test data"
     git push origin
@@ -234,10 +234,10 @@ If everything worked, then the [travis](#buildfarm) build in the second PR will 
 Please check the logs!
 
 # Benchmarking <a name="benchmark"></a>
-In Shogun we use [google-benchmark](https://github.com/google/benchmark) library to test the performance of the modules in the library.
-In order to compile and run the benchmarks set the `BUILD_BENCHMARKS` cmake flags to true, i.e. run the cmake command with `-DBUILD_BENCHMARKS=ON` flag.
+In Shogun we use the [google-benchmark](https://github.com/google/benchmark) library to test the performance of the modules in the library.
+To compile and run the benchmarks set the `BUILD_BENCHMARKS` cmake flags to true, i.e. run the cmake command with `-DBUILD_BENCHMARKS=ON` flag.
 
-To run all the benchmakrs simply run:
+To run all the benchmarks simply run:
 
     ctest -L benchmark
 
@@ -245,23 +245,23 @@ To run all the benchmakrs simply run:
 We aim to provide an easy way to benchmark modules in Shogun. Hence, whenever you send us new C++ implementation, please
 consider writing benchmarks for it.
 
-In order to add benchmark to a class, simply create a file next to the implementation, which name is suffixed with `_benchmark.cc`.
-For example for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
-On top of this you need to explicitly specify to cmake that you have added a new benchmarking file.
+To add benchmark to a class, simply create a file next to the implementation, which name is suffixed with `_benchmark.cc`.
+For example, for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
+On top of this, you need to explicitly specify to cmake that you have added a new benchmarking file.
 `ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` within the `benchmarking` to add a
-benchmark implementations to build.
+benchmark implementation to build.
 a new benchmarking file, add new benchmarks with the
 `ADD_SHOGUN_BENCHMARK` cmake function the following way. In the `src/shogun/CMakeLists.txt`
-file within the `benchmarking` section using th
+file within the `benchmarking` section using the
 
     ADD_SHOGUN_BENCHMARK(classifier/YOLOClassifier_benchmark)
 
 
 ## Adding benchmarks
 We aim to write clear, minimal, yet exhaustive tests of basic building blocks in Shogun.
-Whenever you send us C++ code, we will ask you for a unit test for it.
-We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency etc.
-Read on [test driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
+Whenever you send us a C++ code, we will ask you for a unit test for it.
+We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency, etc.
+Read on [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
 
 
 
@@ -271,14 +271,14 @@ We run two types of buildfarms that are automatically triggered
 1. [Travis](https://travis-ci.org/shogun-toolbox/shogun), and [Azure Pipeline](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) executed in a third-party cloud when **opening** a PR
 2. [Buildbot](http://buildbot.shogun-toolbox.org/waterfall), executed in our own cloud **after** every merged PR or commit
 
-In addition, we have a few hooks on PRs that are executed along with travis, such as a preview of API examples.
+Also, we have a few hooks on PRs that are executed along with travis, such as a preview of API examples.
 You will see a list of checks in your PR.
 
 ## Travis
 This is to do basic sanity checks on every PR. All interfaces have a different build, see `.travis.yml` in the repository.
 The Docker image that runs the travis tests is based on `configs/shogun/Dockerfile` and can be found [here](https://hub.docker.com/r/shogun/shogun-dev/).
 
-If you obey the [dev cycle](#devcycle), in particular if you run tests before sending a PR, travis should never fail.
+If you obey the [dev cycle](#devcycle), in particular, if you run tests before sending a PR, travis should never fail.
 
 **If** travis fails
 
@@ -324,4 +324,3 @@ If you have doxygen installed, you can generate the documentation locally via ru
 and then opening `build/doc/doxygen/html/index.html` with the browser.
 
 With the `DOXYGEN_HTML_OUTPUT` cmake flag one can turn off HTML generation of the API documentation (`-DDOXYGEN_GENERATE_HTML=NO`).
-

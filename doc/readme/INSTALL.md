@@ -38,11 +38,11 @@ or to get just the library:
 
     conda install -c conda-forge shogun-cpp
 
-These packages include most of the optional dependencies and are currently available for Linux, MacOS and Windows.
+These packages include most of the optional dependencies and are currently available for Linux, macOS, and Windows.
 
-### Ubuntu ppa <a name="ubuntu"></a>
+### Ubuntu PPA <a name="ubuntu"></a>
 We are working on integrating Shogun with Debian/Ubuntu.
-In the meantime, we offer a [prepackaged ppa](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/stable).
+In the meantime, we offer a [prepackaged PPA](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/stable).
 These currently do contain the C++ library and Python bindings.
 Add this to your system as
 
@@ -126,8 +126,8 @@ The shogun port in vcpkg is kept up to date by Microsoft team members and commun
 ## Integration with interface language build systems <a name="language"></a>
 Shogun is can be automatically built from the following language's source.
 
-### Python PyPi <a name="pypi"></a>
-You can install it from [PyPi](https://pypi.python.org/pypi/shogun-ml/).
+### Python PyPI <a name="pypi"></a>
+You can install it from [PyPI](https://pypi.python.org/pypi/shogun-ml/).
 There is limited control over options and it might take a long time as everything is done from scratch.
 
     pip install shogun-ml
@@ -265,7 +265,7 @@ to manually adjust the library and include paths, `-DCMAKE_INCLUDE_PATH=/my/incl
 ## Customized Python environments <a name="manual-python"></a>
 Often, there are multiple Python versions installed on the system.
 There are various reasons for this, i.e. Linux without root access, MacOS + homebrew, using [Anaconda](https://www.continuum.io/downloads) or [virtualenv](https://virtualenv.pypa.io).
-If Shogun is executed using a version of Python different from which it was built, there will be import crashes.
+If Shogun is executed using a version of Python different from the one it was built, there will be import crashes.
 If this is your setup, you need to make sure that Shogun is both **built** and **executed** against the Python environment of **your** choice.
 For that, you need to do something similar to
 

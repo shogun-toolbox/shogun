@@ -102,7 +102,7 @@ In addition, the location of the external dependency `jblas.jar` is needed,
 usually in `/usr/share/java/`.
 
 Compiling code works with the java compiler and passing the location of `shogun.jar`,
-`jblas.jar`, and the example itself in the class path
+`jblas.jar`, and the example itself in the classpath
 
     javac -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -d /path/to/output/ /path/to/java_example.java
 

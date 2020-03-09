@@ -39,14 +39,14 @@ Shogun is implemented in C++ and offers automatically generated, unified interfa
 
 |    Interface     |     Status                                                |
 |:----------------:|-----------------------------------------------------------|
-|python            | *mature* (no known problems)                              |
-|octave            | *mature* (no known problems)                              |
-|java/scala        | *stable* (no known problems)                              |
-|ruby              | *stable* (no known problems)                              |
-|csharp            | *stable* (no known problems)                              |
-|r                 | Currently disabled due to a [swig bug](https://github.com/swig/swig/issues/1660) |
-|perl              | *pre-alpha* (work in progress quality)                    |
-|js                | *pre-alpha* (work in progress quality)                    |
+|Python            | *mature* (no known problems)                              |
+|Octave            | *mature* (no known problems)                              |
+|Java/Scala        | *stable* (no known problems)                              |
+|Ruby              | *stable* (no known problems)                              |
+|C#                | *stable* (no known problems)                              |
+|R                 | Currently disabled due to a [swig bug](https://github.com/swig/swig/issues/1660) |
+|Perl              | *pre-alpha* (work in progress quality)                    |
+|JS                | *pre-alpha* (work in progress quality)                    |
 
 See [our website](http://shogun.ml/examples) for examples in all languages.
 
@@ -63,7 +63,7 @@ Note that some folders are submodules that can be checked out with
 `git submodule update --init`.
 
 - *src* - source code, separated into C++ source and interfaces
-- *doc* - readmes (doc/reamde, submodule), ipython notebooks, cookbook (api examples), licenses
+- *doc* - readmes (doc/reamdme, submodule), Jupyter notebooks, cookbook (API examples), licenses
 - *examples* - example files for all interfaces
 - *data* - data sets (submodule, required for examples)
 - *tests* - unit tests and continuous integration of interface examples
