@@ -137,6 +137,12 @@ public:
 	 * @return number of randomly chosen features during each node split
 	 */
 	int32_t get_num_random_features() const;
+	/** get feature importances of previous trained, use Mean Decrease
+	 * Impurity(MDI)
+	 *
+	 * @return arrays of feature importance
+	 */
+	SGVector<float64_t> get_feature_importances();
 
 protected:
 
