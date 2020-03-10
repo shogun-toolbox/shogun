@@ -40,13 +40,14 @@ namespace shogun
 			 */
 			class InternalStorage
 			{
-			private:
 				struct Transfer
 				{
 				};
 				struct NonOwning
 				{
 				};
+
+				using deleted_unique_ptr = std::unique_ptr<void,std::function<void(void*)>>;
 
 			public:
 				InternalStorage(
@@ -56,7 +57,7 @@ namespace shogun
 					    size_in_bytes(size, type),
 					    alignment::container_alignment);
 					m_internal_data =
-					    std::shared_ptr<void>(data, [](void* ptr) {
+					    deleted_unique_ptr(data, [](void* ptr) {
 						    if (ptr)
 							    SG_ALIGNED_FREE(ptr);
 					    });
@@ -109,10 +110,10 @@ namespace shogun
 					void* new_mem = std::realloc(
 					    m_internal_data.get(), size_in_bytes(size, type));
 					if (new_mem)
-						m_internal_data.reset(new_mem, [](void* ptr) {
-							if (ptr)
-								SG_ALIGNED_FREE(ptr);
-						});
+					{
+						// should keep old deleter
+						m_internal_data.reset(new_mem);
+					}
 					else
 						error("Failed to reallocate memory.");
 				}
@@ -142,7 +143,7 @@ namespace shogun
 					return size * type->size();
 				}
 
-				std::shared_ptr<void> m_internal_data;
+				deleted_unique_ptr m_internal_data;
 
 				/* Constructor called by transfer_from.
 				 * The memory manager acquires data.
@@ -152,7 +153,7 @@ namespace shogun
 				    const std::shared_ptr<NumberType>& type, Transfer)
 				{
 					m_internal_data =
-					    std::shared_ptr<void>(data, [](void* ptr) {
+					    deleted_unique_ptr(data, [](void* ptr) {
 						    if (ptr)
 							    SG_ALIGNED_FREE(ptr);
 					    });
@@ -167,7 +168,7 @@ namespace shogun
 				    const std::shared_ptr<NumberType>& type, NonOwning)
 				{
 					m_internal_data =
-					    std::shared_ptr<void>(data, [](void* ptr) { /*noop*/ });
+					    deleted_unique_ptr(data, [](void* ptr) { /*noop*/ });
 				}
 			};
 
@@ -387,7 +388,7 @@ namespace shogun
 			}
 
 		protected:
-			std::shared_ptr<InternalStorage> m_data;
+			std::unique_ptr<InternalStorage> m_data;
 			Shape m_shape;
 			std::shared_ptr<NumberType> m_type;
 		};
