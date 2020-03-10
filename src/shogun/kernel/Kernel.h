@@ -199,9 +199,9 @@ class Kernel : public SGObject
 		 */
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
-			require(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
+			require(idx_a>=0 && idx_b>=0 && idx_a<get_num_vec_lhs() && idx_b<get_num_vec_rhs(),
 				"{}::kernel(): index out of Range: idx_a={}/{} idx_b={}/{}",
-				get_name(), idx_a,num_lhs, idx_b,num_rhs);
+				get_name(), idx_a,get_num_vec_lhs(), idx_b,get_num_vec_rhs());
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}
@@ -256,9 +256,9 @@ class Kernel : public SGObject
 		virtual SGVector<float64_t> get_kernel_col(int32_t j)
 		{
 
-			SGVector<float64_t> col = SGVector<float64_t>(num_rhs);
+			SGVector<float64_t> col = SGVector<float64_t>(get_num_vec_rhs());
 
-			for (int32_t i=0; i!=num_rhs; i++)
+			for (int32_t i=0; i!=get_num_vec_rhs(); i++)
 				col[i] = kernel(i,j);
 
 			return col;
@@ -272,9 +272,9 @@ class Kernel : public SGObject
 		 */
 		virtual SGVector<float64_t> get_kernel_row(int32_t i)
 		{
-			SGVector<float64_t> row = SGVector<float64_t>(num_lhs);
+			SGVector<float64_t> row = SGVector<float64_t>(get_num_vec_lhs());
 
-			for (int32_t j=0; j!=num_lhs; j++)
+			for (int32_t j=0; j!=get_num_vec_lhs(); j++)
 				row[j] = kernel(i,j);
 
 			return row;
