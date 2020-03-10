@@ -41,11 +41,14 @@ namespace shogun
 			class InternalStorage
 			{
 			private:
-				struct Transfer{};
-				struct NonOwning{};
+				struct Transfer
+				{
+				};
+				struct NonOwning
+				{
+				};
 
 			public:
-
 				InternalStorage(
 				    size_t size, const std::shared_ptr<NumberType>& type)
 				{
@@ -86,7 +89,8 @@ namespace shogun
 				    void* ptr, size_t size,
 				    const std::shared_ptr<NumberType>& type)
 				{
-					return std::make_shared<InternalStorage>(ptr, size, type, Transfer{});
+					return std::make_shared<InternalStorage>(
+					    ptr, size, type, Transfer{});
 				}
 
 				/* Generates a non owning view of the pointer
@@ -95,7 +99,8 @@ namespace shogun
 				    void* ptr, size_t size,
 				    const std::shared_ptr<NumberType>& type)
 				{
-					return std::make_shared<InternalStorage>(ptr, size, type, Transfer{});
+					return std::make_shared<InternalStorage>(
+					    ptr, size, type, Transfer{});
 				}
 
 				void
@@ -131,8 +136,8 @@ namespace shogun
 					return dst;
 				}
 
-			    [[nodiscard]] static size_t size_in_bytes(
-			        size_t size, const std::shared_ptr<NumberType>& type)
+				    [[nodiscard]] static size_t size_in_bytes(
+				        size_t size, const std::shared_ptr<NumberType>& type)
 				{
 					return size * type->size();
 				}
@@ -140,11 +145,11 @@ namespace shogun
 				std::shared_ptr<void> m_internal_data;
 
 				/* Constructor called by transfer_from.
-				 * The memory manager acquires data. 
+				 * The memory manager acquires data.
 				 */
 				InternalStorage(
-					void* data,
-				    size_t size, const std::shared_ptr<NumberType>& type, Transfer)
+				    void* data, size_t size,
+				    const std::shared_ptr<NumberType>& type, Transfer)
 				{
 					m_internal_data =
 					    std::shared_ptr<void>(data, [](void* ptr) {
@@ -158,18 +163,28 @@ namespace shogun
 				 * only has a view into it.
 				 */
 				InternalStorage(
-					void* data,
-				    size_t size, const std::shared_ptr<NumberType>& type, NonOwning)
+				    void* data, size_t size,
+				    const std::shared_ptr<NumberType>& type, NonOwning)
 				{
 					m_internal_data =
-					    std::shared_ptr<void>(data, [](void* ptr) {/*noop*/});
+					    std::shared_ptr<void>(data, [](void* ptr) { /*noop*/ });
 				}
+			};
+
+		protected:
+			// tags that give access to public constructors to shared_ptr
+			// but callee needs to be a friend
+			struct View
+			{
+			};
+			struct Copy
+			{
 			};
 
 		public:
 			friend class op::ReshapeShogun;
-			friend std::shared_ptr<ShogunStorage>
-			device_put(void*, const Shape&, const std::shared_ptr<NumberType>&, bool);
+			friend std::shared_ptr<ShogunStorage> device_put(
+			    void*, const Shape&, const std::shared_ptr<NumberType>&, bool);
 			friend std::shared_ptr<Tensor>
 			from_device(const std::shared_ptr<ShogunStorage>& storage);
 			friend class NGraph;
@@ -183,6 +198,38 @@ namespace shogun
 				if (shape.is_static())
 					m_data = std::make_shared<InternalStorage>(
 					    get_size_from_shape(m_shape), type);
+			}
+
+			static std::shared_ptr<ShogunStorage> create_view(
+			    void* ptr, const Shape& shape,
+			    const std::shared_ptr<NumberType>& type)
+			{
+				return std::make_shared<ShogunStorage>(
+				    ptr, shape, type, View{});
+			}
+
+			/* Initialiser called by device_put.
+			 */
+			ShogunStorage(
+			    void* ptr, const Shape& shape,
+			    const std::shared_ptr<NumberType>& type, const bool copy, Copy)
+			    : m_shape(shape), m_type(type)
+			{
+				if (copy)
+					m_data = InternalStorage::copy_from(
+					    ptr, get_size_from_shape(shape), type);
+				else
+					m_data = InternalStorage::transfer_from(
+					    ptr, get_size_from_shape(shape), type);
+			}
+
+			ShogunStorage(
+			    void* ptr, const Shape& shape,
+			    const std::shared_ptr<NumberType>& type, View)
+			    : m_shape(shape), m_type(type)
+			{
+				m_data = InternalStorage::view(
+				    ptr, get_size_from_shape(shape), type);
 			}
 
 			void* get_copy() const
@@ -330,23 +377,6 @@ namespace shogun
 					    m_shape.to_string(), shape.to_string());
 				}
 				m_shape = shape;
-			}
-
-		protected:
-			/* Initialiser called by device_put.
-			 */
-			ShogunStorage(
-			    void* ptr, const Shape& shape,
-			    const std::shared_ptr<NumberType>& type,
-			    const bool copy)
-			    : m_shape(shape), m_type(type)
-			{
-				if (copy)
-					m_data = InternalStorage::copy_from(
-					    ptr, get_size_from_shape(shape), type);
-				else
-					m_data = InternalStorage::transfer_from(
-					    ptr, get_size_from_shape(shape), type);
 			}
 
 		private:
