@@ -39,11 +39,6 @@ if(EIGEN_INCLUDE_DIR)
   _eigen3_get_version()
 endif(EIGEN_INCLUDE_DIR)
 
-# https://github.com/shogun-toolbox/shogun/issues/4870
-IF(${EIGEN_VERSION} VERSION_GREATER 3.3.7)
-  MESSAGE(FATAL_ERROR "The system Eigen3 version ${EIGEN_VERSION} isn't supported!")
-ENDIF()
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args (Eigen3 REQUIRED_VARS EIGEN_INCLUDE_DIR VERSION_VAR EIGEN_VERSION)
 
