@@ -25,17 +25,31 @@ namespace shogun
 {
 	namespace graph
 	{
+		/* Creates a copy or moves the data to the device
+		 */
 		inline std::shared_ptr<ShogunStorage> device_put(
 		    void* ptr, const Shape& shape,
-		    const std::shared_ptr<NumberType>& type,
-		    const bool copy)
+		    const std::shared_ptr<NumberType>& type, const bool copy)
 		{
-			return std::shared_ptr<ShogunStorage>(
-			    new ShogunStorage(ptr, shape, type, copy));
+			return std::make_shared<ShogunStorage>(
+			    ptr, shape, type, copy, ShogunStorage::Copy{});
+		}
+
+		/* Creates a view to a pointer. The device
+		 * memory manager will not call the destructor.
+		 */
+		inline std::shared_ptr<ShogunStorage> device_view(
+		    void* ptr, const Shape& shape,
+		    const std::shared_ptr<NumberType>& type)
+		{
+			return ShogunStorage::create_view(ptr, shape, type);
 		}
 
 		class Tensor
 		{
+		protected:
+			struct Protected{};
+
 		public:
 			friend std::shared_ptr<Tensor>
 			from_device(const std::shared_ptr<ShogunStorage>& storage);
@@ -76,6 +90,30 @@ namespace shogun
 				m_data = device_put(matrix.matrix, m_shape, m_type, false);
 			}
 
+			template <typename T>
+			static std::shared_ptr<Tensor> create_view(const SGVector<T>& vec)
+			{
+				auto result =
+				    std::make_shared<Tensor>(Shape{vec.size()}, from<T>());
+				result->m_data = device_view(
+				    vec.vector, result->get_shape(), result->get_type());
+				return result;
+			}
+
+			template <typename T>
+			static std::shared_ptr<Tensor> create_view(const SGMatrix<T>& matrix)
+			{
+				auto result = std::make_shared<Tensor>(
+				    Shape{matrix.num_rows, matrix.num_cols}, from<T>());
+				result->m_data = device_view(
+				    matrix.matrix, result->get_shape(), result->get_type());
+				return result;
+			}
+
+			/* "Default" constructor for friend declarations only, e.g. 
+			 * for std::make_shared
+			 */
+			Tensor(Protected) {}
 
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
 
@@ -147,8 +185,11 @@ namespace shogun
 				}
 			}
 #endif
-		protected:
-			Tensor() = default;
+
+			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type)
+			    : m_data(nullptr), m_shape(shape), m_type(type)
+			{
+			}
 
 		private:
 			[[nodiscard]] size_t get_size_from_shape(const Shape& size) const {
@@ -168,7 +209,7 @@ namespace shogun
 		inline std::shared_ptr<Tensor>
 		from_device(const std::shared_ptr<ShogunStorage>& storage)
 		{
-			auto result = std::shared_ptr<Tensor>(new Tensor());
+			auto result = std::make_shared<Tensor>(Tensor::Protected{});
 			result->m_data = storage;
 			result->m_shape = storage->m_shape;
 			result->m_type = storage->m_type;
