@@ -509,7 +509,7 @@ class Kernel : public SGObject
 		 */
 		virtual int32_t get_num_vec_lhs()
 		{
-			return num_lhs;
+			return lhs->get_num_vectors();
 		}
 
 		/** get number of vectors of rhs features
@@ -518,7 +518,7 @@ class Kernel : public SGObject
 		 */
 		virtual int32_t get_num_vec_rhs()
 		{
-			return num_rhs;
+			return rhs->get_num_vectors();
 		}
 
 		/** test whether features have been assigned to lhs and rhs
