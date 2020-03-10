@@ -43,6 +43,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Equal.h
+		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Exp.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalAnd.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalOr.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalXor.h
@@ -65,6 +66,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Dot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Exp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalAnd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalOr.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/LogicalXor.cpp
@@ -79,6 +81,7 @@ set(NGRAPH_IMPLEMENTATION_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Add.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Dot.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Equal.h
+		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Exp.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalAnd.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalOr.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalXor.h
@@ -98,6 +101,7 @@ set(NGRAPH_IMPLEMENTATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Divide.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Dot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Exp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalAnd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalOr.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/LogicalXor.cpp
@@ -181,6 +185,7 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/MatMul_test)
 	add_graph_test(nodes/Cast_test)
 	add_graph_test(nodes/Sign_test)
+	add_graph_test(nodes/Exp_test)
 	add_graph_test(Graph_test)
 	add_graph_test(Tensor_test)
 
