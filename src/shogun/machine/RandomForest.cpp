@@ -209,6 +209,6 @@ void RandomForest::init()
 {
 	m_machine=std::make_shared<RandomCARTree>();
 	m_weights=SGVector<float64_t>();
-
+	watch_method("feature_importances", &RandomForest::get_feature_importances);
 	SG_ADD(&m_weights, kWeights, "weights");
 }
