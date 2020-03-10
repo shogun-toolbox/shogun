@@ -27,10 +27,11 @@ namespace shogun
 	{
 		inline std::shared_ptr<ShogunStorage> device_put(
 		    void* ptr, const Shape& shape,
-		    const std::shared_ptr<NumberType>& type)
+		    const std::shared_ptr<NumberType>& type,
+		    const bool copy)
 		{
 			return std::shared_ptr<ShogunStorage>(
-			    new ShogunStorage(ptr, shape, type));
+			    new ShogunStorage(ptr, shape, type, copy));
 		}
 
 		class Tensor
@@ -42,14 +43,14 @@ namespace shogun
 			template <typename T>
 			Tensor(const T& scalar) : m_shape({}), m_type(from<T>())
 			{
-				m_data = device_put(new T(scalar), m_shape, m_type);
+				m_data = device_put(new T(scalar), m_shape, m_type, true);
 			}
 
 			template <typename T>
 			Tensor(const SGVector<T>& vec)
 			    : m_shape(Shape{vec.size()}), m_type(from<T>())
 			{
-				m_data = device_put(vec.vector, m_shape, m_type);
+				m_data = device_put(vec.vector, m_shape, m_type, true);
 			}
 
 			template <typename T>
@@ -57,8 +58,24 @@ namespace shogun
 			    : m_shape(Shape{matrix.num_rows, matrix.num_cols}),
 			      m_type(from<T>())
 			{
-				m_data = device_put(matrix.matrix, m_shape, m_type);
+				m_data = device_put(matrix.matrix, m_shape, m_type, true);
 			}
+
+			template <typename T>
+			Tensor(SGVector<T>&& vec)
+			    : m_shape(Shape{vec.size()}), m_type(from<T>())
+			{
+				m_data = device_put(vec.vector, m_shape, m_type, false);
+			}
+
+			template <typename T>
+			Tensor(SGMatrix<T>&& matrix)
+			    : m_shape(Shape{matrix.num_rows, matrix.num_cols}),
+			      m_type(from<T>())
+			{
+				m_data = device_put(matrix.matrix, m_shape, m_type, false);
+			}
+
 
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
 

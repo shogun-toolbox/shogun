@@ -40,7 +40,12 @@ namespace shogun
 			 */
 			class InternalStorage
 			{
+			private:
+				struct Transfer{};
+				struct NonOwning{};
+
 			public:
+
 				InternalStorage(
 				    size_t size, const std::shared_ptr<NumberType>& type)
 				{
@@ -62,6 +67,8 @@ namespace shogun
 				{
 				}
 
+				/* Copies a pointer to InternalStorage
+				 */
 				static std::shared_ptr<InternalStorage> copy_from(
 				    void* ptr, size_t size,
 				    const std::shared_ptr<NumberType>& type)
@@ -71,6 +78,24 @@ namespace shogun
 					    result->m_internal_data.get(), ptr,
 					    size_in_bytes(size, type));
 					return result;
+				}
+
+				/* Moves ownership of the pointer to InternalStorage
+				 */
+				static std::shared_ptr<InternalStorage> transfer_from(
+				    void* ptr, size_t size,
+				    const std::shared_ptr<NumberType>& type)
+				{
+					return std::make_shared<InternalStorage>(ptr, size, type, Transfer{});
+				}
+
+				/* Generates a non owning view of the pointer
+				 */
+				static std::shared_ptr<InternalStorage> view(
+				    void* ptr, size_t size,
+				    const std::shared_ptr<NumberType>& type)
+				{
+					return std::make_shared<InternalStorage>(ptr, size, type, Transfer{});
 				}
 
 				void
@@ -106,19 +131,45 @@ namespace shogun
 					return dst;
 				}
 
-				    [[nodiscard]] static size_t size_in_bytes(
-				        size_t size, const std::shared_ptr<NumberType>& type)
+			    [[nodiscard]] static size_t size_in_bytes(
+			        size_t size, const std::shared_ptr<NumberType>& type)
 				{
 					return size * type->size();
 				}
 
 				std::shared_ptr<void> m_internal_data;
+
+				/* Constructor called by transfer_from.
+				 * The memory manager acquires data. 
+				 */
+				InternalStorage(
+					void* data,
+				    size_t size, const std::shared_ptr<NumberType>& type, Transfer)
+				{
+					m_internal_data =
+					    std::shared_ptr<void>(data, [](void* ptr) {
+						    if (ptr)
+							    SG_ALIGNED_FREE(ptr);
+					    });
+				}
+
+				/* Constructor called by view.
+				 * The memory manager does not own the data,
+				 * only has a view into it.
+				 */
+				InternalStorage(
+					void* data,
+				    size_t size, const std::shared_ptr<NumberType>& type, NonOwning)
+				{
+					m_internal_data =
+					    std::shared_ptr<void>(data, [](void* ptr) {/*noop*/});
+				}
 			};
 
 		public:
 			friend class op::ReshapeShogun;
 			friend std::shared_ptr<ShogunStorage>
-			device_put(void*, const Shape&, const std::shared_ptr<NumberType>&);
+			device_put(void*, const Shape&, const std::shared_ptr<NumberType>&, bool);
 			friend std::shared_ptr<Tensor>
 			from_device(const std::shared_ptr<ShogunStorage>& storage);
 			friend class NGraph;
@@ -282,13 +333,20 @@ namespace shogun
 			}
 
 		protected:
+			/* Initialiser called by device_put.
+			 */
 			ShogunStorage(
 			    void* ptr, const Shape& shape,
-			    const std::shared_ptr<NumberType>& type)
+			    const std::shared_ptr<NumberType>& type,
+			    const bool copy)
 			    : m_shape(shape), m_type(type)
 			{
-				m_data = InternalStorage::copy_from(
-				    ptr, get_size_from_shape(shape), type);
+				if (copy)
+					m_data = InternalStorage::copy_from(
+					    ptr, get_size_from_shape(shape), type);
+				else
+					m_data = InternalStorage::transfer_from(
+					    ptr, get_size_from_shape(shape), type);
 			}
 
 		private:
