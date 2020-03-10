@@ -142,7 +142,7 @@ public:
 	 *
 	 * @return arrays of feature importance
 	 */
-	SGVector<float64_t> get_feature_importances();
+	SGVector<float64_t> get_feature_importances() const;
 
 protected:
 
