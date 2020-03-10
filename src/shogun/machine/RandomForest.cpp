@@ -183,7 +183,7 @@ bool RandomForest::train_machine(std::shared_ptr<Features> data)
 	return BaggingMachine::train_machine();
 }
 
-SGVector<float64_t> RandomForest::get_feature_importances()
+SGVector<float64_t> RandomForest::get_feature_importances() const
 {
 	auto num_feats =
 	    m_features->as<DenseFeatures<float64_t>>()->get_num_features();
