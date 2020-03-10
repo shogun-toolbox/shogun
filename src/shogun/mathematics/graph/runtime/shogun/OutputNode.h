@@ -7,8 +7,8 @@
 #ifndef SHOGUN_OUTPUT_NODE_H_
 #define SHOGUN_OUTPUT_NODE_H_
 
+#include <shogun/mathematics/graph/Storage.h>
 #include <shogun/mathematics/graph/ops/abstract/Operator.h>
-#include <shogun/mathematics/graph/ops/abstract/ShogunStorage.h>
 #include <shogun/mathematics/graph/ops/shogun/Input.h>
 
 namespace shogun
@@ -61,7 +61,7 @@ namespace shogun
 						        ->evaluate_input(tensor);
 					}
 
-					const std::vector<std::shared_ptr<ShogunStorage>>&
+					const std::vector<std::shared_ptr<Storage>>&
 					get_outputs() const
 					{
 						return m_outputs;
@@ -79,7 +79,7 @@ namespace shogun
 					/* Reference to inputs */
 					std::vector<std::shared_ptr<OutputNode>> m_input_nodes;
 					/* Reference to Operator allocated output storage */
-					std::vector<std::shared_ptr<ShogunStorage>> m_outputs;
+					std::vector<std::shared_ptr<Storage>> m_outputs;
 				};
 			} // namespace shogun
 		}     // namespace detail

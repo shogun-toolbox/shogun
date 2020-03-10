@@ -14,8 +14,8 @@
 #include <shogun/util/enumerate.h>
 
 #include <shogun/mathematics/graph/Shape.h>
+#include <shogun/mathematics/graph/Storage.h>
 #include <shogun/mathematics/graph/Types.h>
-#include <shogun/mathematics/graph/ops/abstract/ShogunStorage.h>
 
 #include <numeric>
 
@@ -27,40 +27,43 @@ namespace shogun
 	{
 		/* Creates a copy or moves the data to the device
 		 */
-		inline std::shared_ptr<ShogunStorage> device_put(
+		inline std::shared_ptr<Storage> device_put(
 		    void* ptr, const Shape& shape,
 		    const std::shared_ptr<NumberType>& type, const bool copy)
 		{
-			return std::make_shared<ShogunStorage>(
-			    ptr, shape, type, copy, ShogunStorage::Copy{});
+			return std::make_shared<Storage>(
+			    ptr, shape, type, copy, Storage::Copy{});
 		}
 
 		/* Creates a view to a pointer. The device
 		 * memory manager will not call the destructor.
 		 */
-		inline std::shared_ptr<ShogunStorage> device_view(
+		inline std::shared_ptr<Storage> device_view(
 		    void* ptr, const Shape& shape,
 		    const std::shared_ptr<NumberType>& type)
 		{
-			return ShogunStorage::create_view(ptr, shape, type);
+			return Storage::create_view(ptr, shape, type);
 		}
 
 		class Tensor
 		{
 		protected:
-			struct Protected{};
+			struct Protected
+			{
+			};
 
 		public:
 			friend std::shared_ptr<Tensor>
-			from_device(const std::shared_ptr<ShogunStorage>& storage);
+			from_device(const std::shared_ptr<Storage>& storage);
 
 			/* Creates a copy of a scalar value.
 			 * Memory management of the copy is taken over by Tensor.
 			 */
-			template <typename T, std::enable_if_t<std::is_scalar_v<T>>* = nullptr>
+			template <
+			    typename T, std::enable_if_t<std::is_scalar_v<T>>* = nullptr>
 			Tensor(const T& scalar) : m_shape({}), m_type(from<T>())
 			{
-				m_data = device_put(new T(scalar), m_shape, m_type, true);
+				m_storage = device_put(new T(scalar), m_shape, m_type, true);
 			}
 
 			/* Creates a copy of a SGVector.
@@ -70,7 +73,7 @@ namespace shogun
 			Tensor(const SGVector<T>& vec)
 			    : m_shape(Shape{vec.size()}), m_type(from<T>())
 			{
-				m_data = device_put(vec.vector, m_shape, m_type, true);
+				m_storage = device_put(vec.vector, m_shape, m_type, true);
 			}
 
 			/* Creates a copy of a SGMatrix.
@@ -81,22 +84,25 @@ namespace shogun
 			    : m_shape(Shape{matrix.num_rows, matrix.num_cols}),
 			      m_type(from<T>())
 			{
-				m_data = device_put(matrix.matrix, m_shape, m_type, true);
+				m_storage = device_put(matrix.matrix, m_shape, m_type, true);
 			}
 
 			/* Moves a SGVector to Tensor. The SGVector::vector pointer
-			 * is moved to the Tensor.
+			 * is moved to the Tensor. This leaves SGMatrix in a valid,
+			 * yet undefined state.
 			 * Memory management of the copy is taken over by Tensor.
 			 */
 			template <typename T>
 			Tensor(SGVector<T>&& vec)
 			    : m_shape(Shape{vec.size()}), m_type(from<T>())
 			{
-				m_data = device_put(vec.vector, m_shape, m_type, false);
+				m_storage = device_put(
+				    std::exchange(vec.vector, nullptr), m_shape, m_type, false);
 			}
 
 			/* Moves a SGMatrix to Tensor. The SGMatrix::matrix pointer
-			 * is moved to the Tensor.
+			 * is moved to the Tensor. This leaves SGMatrix in a valid,
+			 * yet undefined state.
 			 * Memory management of the copy is taken over by Tensor.
 			 */
 			template <typename T>
@@ -104,35 +110,39 @@ namespace shogun
 			    : m_shape(Shape{matrix.num_rows, matrix.num_cols}),
 			      m_type(from<T>())
 			{
-				m_data = device_put(matrix.matrix, m_shape, m_type, false);
+				m_storage = device_put(
+				    std::exchange(matrix.matrix, nullptr), m_shape, m_type,
+				    false);
 			}
 
 			/* Creates a view to a SGVector. The caller is responsible
-			 * with the memory management of the underlying SGVector::vector pointer.
-			 * Note that destroying the original SGVector **will** break the evaluation 
-			 * of the DAG.
+			 * with the memory management of the underlying SGVector::vector
+			 * pointer. Note that destroying the original SGVector **will**
+			 * break the evaluation of the DAG.
 			 */
 			template <typename T>
 			static std::shared_ptr<Tensor> create_view(const SGVector<T>& vec)
 			{
-				auto result =
-				    std::make_shared<Tensor>(Shape{vec.size()}, from<T>(), Protected{});
-				result->m_data = device_view(
+				auto result = std::make_shared<Tensor>(
+				    Shape{vec.size()}, from<T>(), Protected{});
+				result->m_storage = device_view(
 				    vec.vector, result->get_shape(), result->get_type());
 				return result;
 			}
 
 			/* Creates a view to a SGMatrix. The caller is responsible
-			 * with the memory management of the underlying SGMatrix::matrix pointer.
-			 * Note that destroying the original SGMatrix **will** break the evaluation 
-			 * of the DAG.
+			 * with the memory management of the underlying SGMatrix::matrix
+			 * pointer. Note that destroying the original SGMatrix **will**
+			 * break the evaluation of the DAG.
 			 */
 			template <typename T>
-			static std::shared_ptr<Tensor> create_view(const SGMatrix<T>& matrix)
+			static std::shared_ptr<Tensor>
+			create_view(const SGMatrix<T>& matrix)
 			{
 				auto result = std::make_shared<Tensor>(
-				    Shape{matrix.num_rows, matrix.num_cols}, from<T>(), Protected{});
-				result->m_data = device_view(
+				    Shape{matrix.num_rows, matrix.num_cols}, from<T>(),
+				    Protected{});
+				result->m_storage = device_view(
 				    matrix.matrix, result->get_shape(), result->get_type());
 				return result;
 			}
@@ -161,8 +171,8 @@ namespace shogun
 				return os << tensor->to_string();
 			}
 
-			[[nodiscard]] const std::shared_ptr<ShogunStorage>& data() const {
-				return m_data;
+			[[nodiscard]] const std::shared_ptr<Storage>& storage() const {
+				return m_storage;
 			}
 
 #ifndef SWIG
@@ -175,7 +185,7 @@ namespace shogun
 					if (size() > 1)
 						error("Cannot cast a non scalar representation to a "
 						      "scalar type.");
-					return *static_cast<Container*>(m_data);
+					return *static_cast<Container*>(m_storage);
 				}
 
 				else if constexpr (std::is_same_v<
@@ -188,7 +198,7 @@ namespace shogun
 					if (from<typename Container::Scalar>() != m_type)
 						error("Type mismatch when casting from Tensor.");
 					return Container(
-					    (typename Container::Scalar*)m_data->get_copy(),
+					    (typename Container::Scalar*)m_storage->get_copy(),
 					    size());
 				}
 				else if constexpr (std::is_same_v<
@@ -202,14 +212,16 @@ namespace shogun
 						    "SGMatrix does not support {} dimensions.",
 						    m_shape.size());
 					return Container(
-					    (typename Container::Scalar*)m_data->get_copy(),
+					    (typename Container::Scalar*)m_storage->get_copy(),
 					    m_shape[0], m_shape[1]);
 				}
 			}
 #endif
 
-			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type, Protected)
-			    : m_data(nullptr), m_shape(shape), m_type(type)
+			Tensor(
+			    const Shape& shape, const std::shared_ptr<NumberType>& type,
+			    Protected)
+			    : m_storage(nullptr), m_shape(shape), m_type(type)
 			{
 			}
 
@@ -221,7 +233,7 @@ namespace shogun
 
 			protected :
 			    // the actual data in memory
-			    std::shared_ptr<ShogunStorage> m_data;
+			    std::shared_ptr<Storage> m_storage;
 			// tensor shape
 			Shape m_shape;
 			// the underlying data type
@@ -229,10 +241,11 @@ namespace shogun
 		};
 
 		inline std::shared_ptr<Tensor>
-		from_device(const std::shared_ptr<ShogunStorage>& storage)
+		from_device(const std::shared_ptr<Storage>& storage)
 		{
-			auto result = std::make_shared<Tensor>(storage->get_shape(), storage->get_type(), Tensor::Protected{});
-			result->m_data = storage;
+			auto result = std::make_shared<Tensor>(
+			    storage->get_shape(), storage->get_type(), Tensor::Protected{});
+			result->m_storage = storage;
 			return result;
 		}
 	} // namespace graph

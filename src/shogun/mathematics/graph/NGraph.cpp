@@ -6,8 +6,8 @@
 
 #include <shogun/mathematics/graph/NGraph.h>
 #include <shogun/mathematics/graph/Shape.h>
+#include <shogun/mathematics/graph/Storage.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/mathematics/graph/ops/abstract/ShogunStorage.h>
 #include <shogun/mathematics/graph/runtime/ngraph/Input.h>
 
 #include <ngraph/ngraph.hpp>
@@ -37,7 +37,7 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 			        get_ngraph_type_from_enum(tensor->get_type()),
 			        to_ngraph_shape(shape)));
 			input->write(
-			    tensor->data()->m_data->m_internal_data.get(),
+			    tensor->storage()->m_data->m_internal_data.get(),
 			    tensor->size_in_bytes());
 		}
 		else if (tensor->get_shape().size() == 2 && m_requires_major_conversion)
@@ -48,7 +48,7 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 			        get_ngraph_type_from_enum(tensor->get_type()),
 			        ::ngraph::Shape{ngraph_shape[1], ngraph_shape[0]}));
 			input->write(
-			    tensor->data()->m_data->m_internal_data.get(),
+			    tensor->storage()->m_data->m_internal_data.get(),
 			    tensor->size_in_bytes());
 			auto& transpose_param =
 			    ngraph_input_tensors.emplace_back(backend->create_tensor(
@@ -134,12 +134,12 @@ std::vector<std::shared_ptr<Tensor>> NGraph::execute(
 		const auto type =
 		    get_enum_from_ngraph(ngraph_tensor->get_element_type());
 
-		auto storage = std::make_shared<ShogunStorage>(shape, type);
+		auto storage = std::make_shared<Storage>(shape, type);
 		storage->allocate_storage(shape);
 		auto& tensor = results.emplace_back(from_device(storage));
 		ngraph_tensor->wait_for_read_ready();
 		ngraph_tensor->read(
-		    tensor->data()->m_data->m_internal_data.get(),
+		    tensor->storage()->m_data->m_internal_data.get(),
 		    ngraph_tensor->get_size_in_bytes());
 	}
 

@@ -43,15 +43,15 @@ namespace shogun
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<ShogunStorage>& input)
+				    const std::shared_ptr<Storage>& input)
 				{
 					const auto& shape = input->get_shape();
 					m_outputs[0]->allocate_storage(shape);
 				}
 
 				void cast_implementation_type_dispatch(
-				    const std::shared_ptr<ShogunStorage>& input,
-				    const std::shared_ptr<ShogunStorage>& output)
+				    const std::shared_ptr<Storage>& input,
+				    const std::shared_ptr<Storage>& output)
 				{
 #define CALL_KERNEL_OUTPUT_TYPE_IMPLEMENTATION(                                \
     INPUT_SHOGUN_TYPE, OUTPUT_SHOGUN_TYPE)                                     \

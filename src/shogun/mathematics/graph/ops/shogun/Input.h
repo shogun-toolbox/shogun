@@ -29,7 +29,7 @@ namespace shogun
 				{
 				}
 
-				std::vector<std::shared_ptr<ShogunStorage>>
+				std::vector<std::shared_ptr<Storage>>
 				evaluate_input(const std::shared_ptr<Tensor>& tensor)
 				{
 					if (m_outputs.size() != 1)
@@ -62,7 +62,7 @@ namespace shogun
 			private:
 				void runtime_type_check(
 				    const std::shared_ptr<Tensor>& input_tensor,
-				    const std::shared_ptr<ShogunStorage>& output)
+				    const std::shared_ptr<Storage>& output)
 				{
 					if (input_tensor->get_type() != output->get_type())
 						error("Input node got wrong input type!");
@@ -70,10 +70,10 @@ namespace shogun
 
 				void runtime_shape_check(
 				    const std::shared_ptr<Tensor>& input_tensor,
-				    std::shared_ptr<ShogunStorage>& output)
+				    std::shared_ptr<Storage>& output)
 				{
 					// get copy of shared_ptr of Storage
-					output = input_tensor->data();
+					output = input_tensor->storage();
 				}
 			};
 		} // namespace op
