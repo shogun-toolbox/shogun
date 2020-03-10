@@ -54,12 +54,18 @@ namespace shogun
 			friend std::shared_ptr<Tensor>
 			from_device(const std::shared_ptr<ShogunStorage>& storage);
 
-			template <typename T>
+			/* Creates a copy of a scalar value.
+			 * Memory management of the copy is taken over by Tensor.
+			 */
+			template <typename T, std::enable_if_t<std::is_scalar_v<T>>* = nullptr>
 			Tensor(const T& scalar) : m_shape({}), m_type(from<T>())
 			{
 				m_data = device_put(new T(scalar), m_shape, m_type, true);
 			}
 
+			/* Creates a copy of a SGVector.
+			 * Memory management of the copy is taken over by Tensor.
+			 */
 			template <typename T>
 			Tensor(const SGVector<T>& vec)
 			    : m_shape(Shape{vec.size()}), m_type(from<T>())
@@ -67,6 +73,9 @@ namespace shogun
 				m_data = device_put(vec.vector, m_shape, m_type, true);
 			}
 
+			/* Creates a copy of a SGMatrix.
+			 * Memory management of the copy is taken over by Tensor.
+			 */
 			template <typename T>
 			Tensor(const SGMatrix<T>& matrix)
 			    : m_shape(Shape{matrix.num_rows, matrix.num_cols}),
@@ -75,6 +84,10 @@ namespace shogun
 				m_data = device_put(matrix.matrix, m_shape, m_type, true);
 			}
 
+			/* Moves a SGVector to Tensor. The SGVector::vector pointer
+			 * is moved to the Tensor.
+			 * Memory management of the copy is taken over by Tensor.
+			 */
 			template <typename T>
 			Tensor(SGVector<T>&& vec)
 			    : m_shape(Shape{vec.size()}), m_type(from<T>())
@@ -82,6 +95,10 @@ namespace shogun
 				m_data = device_put(vec.vector, m_shape, m_type, false);
 			}
 
+			/* Moves a SGMatrix to Tensor. The SGMatrix::matrix pointer
+			 * is moved to the Tensor.
+			 * Memory management of the copy is taken over by Tensor.
+			 */
 			template <typename T>
 			Tensor(SGMatrix<T>&& matrix)
 			    : m_shape(Shape{matrix.num_rows, matrix.num_cols}),
@@ -90,30 +107,35 @@ namespace shogun
 				m_data = device_put(matrix.matrix, m_shape, m_type, false);
 			}
 
+			/* Creates a view to a SGVector. The caller is responsible
+			 * with the memory management of the underlying SGVector::vector pointer.
+			 * Note that destroying the original SGVector **will** break the evaluation 
+			 * of the DAG.
+			 */
 			template <typename T>
 			static std::shared_ptr<Tensor> create_view(const SGVector<T>& vec)
 			{
 				auto result =
-				    std::make_shared<Tensor>(Shape{vec.size()}, from<T>());
+				    std::make_shared<Tensor>(Shape{vec.size()}, from<T>(), Protected{});
 				result->m_data = device_view(
 				    vec.vector, result->get_shape(), result->get_type());
 				return result;
 			}
 
+			/* Creates a view to a SGMatrix. The caller is responsible
+			 * with the memory management of the underlying SGMatrix::matrix pointer.
+			 * Note that destroying the original SGMatrix **will** break the evaluation 
+			 * of the DAG.
+			 */
 			template <typename T>
 			static std::shared_ptr<Tensor> create_view(const SGMatrix<T>& matrix)
 			{
 				auto result = std::make_shared<Tensor>(
-				    Shape{matrix.num_rows, matrix.num_cols}, from<T>());
+				    Shape{matrix.num_rows, matrix.num_cols}, from<T>(), Protected{});
 				result->m_data = device_view(
 				    matrix.matrix, result->get_shape(), result->get_type());
 				return result;
 			}
-
-			/* "Default" constructor for friend declarations only, e.g. 
-			 * for std::make_shared
-			 */
-			Tensor(Protected) {}
 
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
 
@@ -186,7 +208,7 @@ namespace shogun
 			}
 #endif
 
-			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type)
+			Tensor(const Shape& shape, const std::shared_ptr<NumberType>& type, Protected)
 			    : m_data(nullptr), m_shape(shape), m_type(type)
 			{
 			}
@@ -209,10 +231,8 @@ namespace shogun
 		inline std::shared_ptr<Tensor>
 		from_device(const std::shared_ptr<ShogunStorage>& storage)
 		{
-			auto result = std::make_shared<Tensor>(Tensor::Protected{});
+			auto result = std::make_shared<Tensor>(storage->get_shape(), storage->get_type(), Tensor::Protected{});
 			result->m_data = storage;
-			result->m_shape = storage->m_shape;
-			result->m_type = storage->m_type;
 			return result;
 		}
 	} // namespace graph
