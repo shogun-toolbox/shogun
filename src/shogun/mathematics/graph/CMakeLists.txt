@@ -38,7 +38,7 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
-		# ${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
+		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
@@ -182,5 +182,6 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/Cast_test)
 	add_graph_test(nodes/Sign_test)
 	add_graph_test(Graph_test)
+	add_graph_test(Tensor_test)
 
 ENDIF()

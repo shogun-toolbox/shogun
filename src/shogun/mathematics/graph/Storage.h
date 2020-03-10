@@ -30,40 +30,40 @@ namespace shogun
 		 * up shapes and so on.
 		 *
 		 */
-		class ShogunStorage
+		class Storage
 		{
-			/* Managed storage. It's only job is to keep track of memory
+			/* Managed storage. Its only job is to keep track of memory
 			 * and how to delete and allocate it.
 			 * It's unaware of what it actually owns. This is pretty much
 			 * a wrapper around std::shared_ptr for aligned memory.
 			 * Should this be thread safe?
 			 */
-			class InternalStorage
+			class MemoryManager
 			{
-				struct Transfer
+				struct Move
 				{
 				};
 				struct NonOwning
 				{
 				};
 
-				using deleted_unique_ptr = std::unique_ptr<void,std::function<void(void*)>>;
+				using deleted_unique_ptr =
+				    std::unique_ptr<void, std::function<void(void*)>>;
 
 			public:
-				InternalStorage(
+				MemoryManager(
 				    size_t size, const std::shared_ptr<NumberType>& type)
 				{
 					void* data = sg_aligned_malloc(
 					    size_in_bytes(size, type),
 					    alignment::container_alignment);
-					m_internal_data =
-					    deleted_unique_ptr(data, [](void* ptr) {
-						    if (ptr)
-							    SG_ALIGNED_FREE(ptr);
-					    });
+					m_internal_data = deleted_unique_ptr(data, [](void* ptr) {
+						if (ptr)
+							SG_ALIGNED_FREE(ptr);
+					});
 				}
 
-				InternalStorage(void* data)
+				MemoryManager(void* data)
 				    : m_internal_data(data, [](void* ptr) {
 					      if (ptr)
 						      SG_ALIGNED_FREE(ptr);
@@ -71,37 +71,37 @@ namespace shogun
 				{
 				}
 
-				/* Copies a pointer to InternalStorage
+				/* Copies a pointer to MemoryManager
 				 */
-				static std::shared_ptr<InternalStorage> copy_from(
+				static std::unique_ptr<MemoryManager> copy_from(
 				    void* ptr, size_t size,
 				    const std::shared_ptr<NumberType>& type)
 				{
-					auto result = std::make_shared<InternalStorage>(size, type);
+					auto result = std::make_unique<MemoryManager>(size, type);
 					sg_memcpy(
 					    result->m_internal_data.get(), ptr,
 					    size_in_bytes(size, type));
 					return result;
 				}
 
-				/* Moves ownership of the pointer to InternalStorage
+				/* Moves ownership of the pointer to MemoryManager
 				 */
-				static std::shared_ptr<InternalStorage> transfer_from(
+				static std::unique_ptr<MemoryManager> move_from(
 				    void* ptr, size_t size,
 				    const std::shared_ptr<NumberType>& type)
 				{
-					return std::make_shared<InternalStorage>(
-					    ptr, size, type, Transfer{});
+					return std::make_unique<MemoryManager>(
+					    ptr, size, type, Move{});
 				}
 
 				/* Generates a non owning view of the pointer
 				 */
-				static std::shared_ptr<InternalStorage> view(
+				static std::unique_ptr<MemoryManager> view(
 				    void* ptr, size_t size,
 				    const std::shared_ptr<NumberType>& type)
 				{
-					return std::make_shared<InternalStorage>(
-					    ptr, size, type, Transfer{});
+					return std::make_unique<MemoryManager>(
+					    ptr, size, type, NonOwning{});
 				}
 
 				void
@@ -145,25 +145,24 @@ namespace shogun
 
 				deleted_unique_ptr m_internal_data;
 
-				/* Constructor called by transfer_from.
+				/* Constructor called by move_from.
 				 * The memory manager acquires data.
 				 */
-				InternalStorage(
+				MemoryManager(
 				    void* data, size_t size,
-				    const std::shared_ptr<NumberType>& type, Transfer)
+				    const std::shared_ptr<NumberType>& type, Move)
 				{
-					m_internal_data =
-					    deleted_unique_ptr(data, [](void* ptr) {
-						    if (ptr)
-							    SG_ALIGNED_FREE(ptr);
-					    });
+					m_internal_data = deleted_unique_ptr(data, [](void* ptr) {
+						if (ptr)
+							SG_ALIGNED_FREE(ptr);
+					});
 				}
 
 				/* Constructor called by view.
 				 * The memory manager does not own the data,
 				 * only has a view into it.
 				 */
-				InternalStorage(
+				MemoryManager(
 				    void* data, size_t size,
 				    const std::shared_ptr<NumberType>& type, NonOwning)
 				{
@@ -184,53 +183,51 @@ namespace shogun
 
 		public:
 			friend class op::ReshapeShogun;
-			friend std::shared_ptr<ShogunStorage> device_put(
+			friend std::shared_ptr<Storage> device_put(
 			    void*, const Shape&, const std::shared_ptr<NumberType>&, bool);
 			friend std::shared_ptr<Tensor>
-			from_device(const std::shared_ptr<ShogunStorage>& storage);
+			from_device(const std::shared_ptr<Storage>& storage);
 			friend class NGraph;
 
-			ShogunStorage(
-			    const Shape& shape, const std::shared_ptr<NumberType>& type)
+			Storage(const Shape& shape, const std::shared_ptr<NumberType>& type)
 			    : m_data(nullptr), m_shape(shape), m_type(type)
 			{
 				// shape is known at build time, let's preallocate it
 				// we could inforce immutability at this level somehow?
 				if (shape.is_static())
-					m_data = std::make_shared<InternalStorage>(
+					m_data = std::make_unique<MemoryManager>(
 					    get_size_from_shape(m_shape), type);
 			}
 
-			static std::shared_ptr<ShogunStorage> create_view(
+			static std::shared_ptr<Storage> create_view(
 			    void* ptr, const Shape& shape,
 			    const std::shared_ptr<NumberType>& type)
 			{
-				return std::make_shared<ShogunStorage>(
-				    ptr, shape, type, View{});
+				return std::make_shared<Storage>(ptr, shape, type, View{});
 			}
 
 			/* Initialiser called by device_put.
 			 */
-			ShogunStorage(
+			Storage(
 			    void* ptr, const Shape& shape,
 			    const std::shared_ptr<NumberType>& type, const bool copy, Copy)
 			    : m_shape(shape), m_type(type)
 			{
 				if (copy)
-					m_data = InternalStorage::copy_from(
+					m_data = MemoryManager::copy_from(
 					    ptr, get_size_from_shape(shape), type);
 				else
-					m_data = InternalStorage::transfer_from(
+					m_data = MemoryManager::move_from(
 					    ptr, get_size_from_shape(shape), type);
 			}
 
-			ShogunStorage(
+			Storage(
 			    void* ptr, const Shape& shape,
 			    const std::shared_ptr<NumberType>& type, View)
 			    : m_shape(shape), m_type(type)
 			{
-				m_data = InternalStorage::view(
-				    ptr, get_size_from_shape(shape), type);
+				m_data =
+				    MemoryManager::view(ptr, get_size_from_shape(shape), type);
 			}
 
 			void* get_copy() const
@@ -254,7 +251,7 @@ namespace shogun
 				if (!m_data)
 				{
 					set_shape(shape);
-					m_data = std::make_shared<InternalStorage>(
+					m_data = std::make_unique<MemoryManager>(
 					    get_size_from_shape(shape), m_type);
 				}
 				else
@@ -330,7 +327,7 @@ namespace shogun
 
 			/* Sets the runtime Shape when static Shape allocation
 			 * was not possible, e.g. the user provided Dynamic
-			 * shapes in the Graph construction. If ShogunStorage already
+			 * shapes in the Graph construction. If Storage already
 			 * owns data the checks are skipped.
 			 */
 			void set_shape(const Shape& shape)
@@ -364,7 +361,7 @@ namespace shogun
 
 			/* Sets the runtime Shape when static Shape allocation
 			 * was not possible, e.g. the user provided Dynamic
-			 * shapes in the Graph construction. If ShogunStorage already
+			 * shapes in the Graph construction. If Storage already
 			 * owns data the checks are skipped.
 			 */
 			void reshape(const Shape& shape)
@@ -388,7 +385,7 @@ namespace shogun
 			}
 
 		protected:
-			std::unique_ptr<InternalStorage> m_data;
+			std::unique_ptr<MemoryManager> m_data;
 			Shape m_shape;
 			std::shared_ptr<NumberType> m_type;
 		};

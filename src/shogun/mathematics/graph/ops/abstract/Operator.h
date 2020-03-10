@@ -7,7 +7,7 @@
 #ifndef SHOGUN_GRAPH_OPERATOR_H_
 #define SHOGUN_GRAPH_OPERATOR_H_
 
-#include "ShogunStorage.h"
+#include "shogun/mathematics/graph/Storage.h"
 #include <shogun/mathematics/graph/nodes/Node.h>
 
 namespace shogun
@@ -36,15 +36,13 @@ namespace shogun
 					     zip_iterator(shapes, types))
 					{
 						m_outputs.push_back(
-						    std::make_shared<ShogunStorage>(shape, type));
+						    std::make_shared<Storage>(shape, type));
 					}
 				}
 
-				virtual ~Operator()
-				{
-				}
+				virtual ~Operator() = default;
 
-				const std::vector<std::shared_ptr<ShogunStorage>>&
+				const std::vector<std::shared_ptr<Storage>>&
 				operator()(const std::vector<
 				           std::shared_ptr<detail::shogun::OutputNode>>& inputs)
 				{
@@ -55,13 +53,13 @@ namespace shogun
 				virtual std::string_view get_operator_name() const = 0;
 
 			protected:
-				void virtual call(
-				    const std::vector<
-				        std::shared_ptr<detail::shogun::OutputNode>>&) = 0;
+				virtual void
+				call(const std::vector<
+				     std::shared_ptr<detail::shogun::OutputNode>>&) = 0;
 
 			protected:
 				std::shared_ptr<node::Node> m_node;
-				std::vector<std::shared_ptr<ShogunStorage>> m_outputs;
+				std::vector<std::shared_ptr<Storage>> m_outputs;
 			};
 		} // namespace op
 	}     // namespace graph

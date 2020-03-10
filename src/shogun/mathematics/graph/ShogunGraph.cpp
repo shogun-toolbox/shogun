@@ -62,7 +62,7 @@ ShogunGraph::get_operator(const std::shared_ptr<node::Node>& node) const
 	return op_it->second();
 }
 
-std::shared_ptr<ShogunStorage>
+std::shared_ptr<Storage>
 ShogunGraph::extract_result(const std::shared_ptr<node::Node>& node) const
 {
 	const auto& result = m_lookup.at(node)->get_outputs();

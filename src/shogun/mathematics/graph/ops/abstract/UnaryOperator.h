@@ -54,7 +54,7 @@ namespace shogun
 				}
 
 				const Shape&
-				runtime_shape_check(const std::shared_ptr<ShogunStorage>& input)
+				runtime_shape_check(const std::shared_ptr<Storage>& input)
 				{
 					for (const auto& shape : input->get_shape())
 					{

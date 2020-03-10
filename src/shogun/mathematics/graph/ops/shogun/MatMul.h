@@ -60,8 +60,8 @@ namespace shogun
 
 			private:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<ShogunStorage>& input1,
-				    const std::shared_ptr<ShogunStorage>& input2,
+				    const std::shared_ptr<Storage>& input1,
+				    const std::shared_ptr<Storage>& input2,
 				    const bool transpose_a, const bool transpose_b)
 				{
 					const auto& shape_a = input1->get_shape();
@@ -111,10 +111,10 @@ namespace shogun
 				}
 
 				void matmul_type_dispatch(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out,
-				    const bool transpose_a, const bool transpose_b)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out, const bool transpose_a,
+				    const bool transpose_b)
 				{
 					if (!transpose_a && !transpose_b)
 						DotShogun::dot_product_type_dispatch(A, B, Out);
@@ -146,10 +146,10 @@ namespace shogun
 
 				template <typename T>
 				void matmul_dispatch(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out,
-				    const bool transpose_a, const bool transpose_b)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out, const bool transpose_a,
+				    const bool transpose_b)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
 					A_eig(

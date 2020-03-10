@@ -803,7 +803,7 @@ namespace shogun
 			return SGVector<T>(result_gpu, mat.num_rows);
 		}
 
-		/** Transfer data to GPU with ViennaCL method. */
+		/** Move data to GPU with ViennaCL method. */
 		template <typename T, template <typename> class Container>
 		GPUMemoryBase<T>* to_gpu_impl(const Container<T>& a) const
 		{

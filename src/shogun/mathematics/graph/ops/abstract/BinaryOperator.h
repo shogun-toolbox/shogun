@@ -73,8 +73,8 @@ namespace shogun
 
 			protected:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<ShogunStorage>& input1,
-				    const std::shared_ptr<ShogunStorage>& input2,
+				    const std::shared_ptr<Storage>& input1,
+				    const std::shared_ptr<Storage>& input2,
 				    const node::BaseBinaryNode::BinaryShapeCompatibity&
 				        shape_compatibility)
 				{
@@ -88,8 +88,8 @@ namespace shogun
 				}
 
 				const Shape& runtime_shape_check(
-				    const std::shared_ptr<ShogunStorage>& input1,
-				    const std::shared_ptr<ShogunStorage>& input2,
+				    const std::shared_ptr<Storage>& input1,
+				    const std::shared_ptr<Storage>& input2,
 				    const node::BaseBinaryNode::BinaryShapeCompatibity&
 				        shape_compatibility)
 				{

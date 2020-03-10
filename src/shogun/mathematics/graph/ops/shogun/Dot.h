@@ -52,8 +52,8 @@ namespace shogun
 
 			private:
 				void runtime_checks_and_allocation(
-				    const std::shared_ptr<ShogunStorage>& input1,
-				    const std::shared_ptr<ShogunStorage>& input2)
+				    const std::shared_ptr<Storage>& input1,
+				    const std::shared_ptr<Storage>& input2)
 				{
 					const auto& shape_a = input1->get_shape();
 					const auto& shape_b = input2->get_shape();
@@ -109,9 +109,9 @@ namespace shogun
 			protected:
 				template <typename T>
 				static void dot_product_dispatch(
-				    const std::shared_ptr<ShogunStorage>& input1,
-				    const std::shared_ptr<ShogunStorage>& input2,
-				    const std::shared_ptr<ShogunStorage>& output)
+				    const std::shared_ptr<Storage>& input1,
+				    const std::shared_ptr<Storage>& input2,
+				    const std::shared_ptr<Storage>& output)
 				{
 					if (input1->get_shape().is_scalar() &&
 					    !input2->get_shape().is_scalar())
@@ -153,9 +153,9 @@ namespace shogun
 				}
 
 				static void dot_product_type_dispatch(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out)
 				{
 #define CALL_KERNEL_IMPLEMENTATION(NUMBER_TYPE)                                \
 	case NUMBER_TYPE::type_id:                                                 \
@@ -181,9 +181,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_container_scalar_implementation(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
 					    static_cast<T*>(A->data()), A->size());
@@ -194,9 +194,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_vector_vector_implementation(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
 					    static_cast<T*>(A->data()), A->size());
@@ -208,9 +208,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_vector_matrix_implementation(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic>> A_eig(
 					    static_cast<T*>(A->data()), A->size());
@@ -226,9 +226,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_matrix_vector_implementation(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
 					A_eig(
@@ -244,9 +244,9 @@ namespace shogun
 
 				template <typename T>
 				static void dot_product_matrix_matrix_implementation(
-				    const std::shared_ptr<ShogunStorage>& A,
-				    const std::shared_ptr<ShogunStorage>& B,
-				    const std::shared_ptr<ShogunStorage>& Out)
+				    const std::shared_ptr<Storage>& A,
+				    const std::shared_ptr<Storage>& B,
+				    const std::shared_ptr<Storage>& Out)
 				{
 					Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
 					A_eig(
