@@ -111,7 +111,7 @@ Running it again requires the above class path and some more options
     java -Xmx1024m -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -Djava.library.path=/path/to/shogun.jar java_example
 
 ### Provided Examples
-Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, [see INSTALL.md](INSTALL.MD).
+Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, see [INSTALL.md](INSTALL.md).
 As the examples load data files, they requires the `shogun-data` submodule to be checked out.
 
 All examples should be run in the respective folder they are located in, for example (assuming that all described variables are set)
