@@ -66,7 +66,7 @@ If you are adding a new topic (like "kernels" or "regression") you will also nee
 
 ### Tips for cookbook pages
 
- * Orient yourself closely to reference examples, especially those written during the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016. 
+ * Orient yourself closely to reference examples, especially those written during the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016.
  * Write a proper English. Pay attention to grammar, spelling, and punctuation.
  * Keep the example **specific**. Talk only about the particular algorithm and its interface, avoid general concepts (such as 'supervised learning').
  * Keep the example **local**. Only show code snippets that illustrate API usage, avoid showing the full listing.
@@ -94,14 +94,18 @@ You can render it with
 which is also part of `make doc`.
 The target might not be available if the requirements in `doc/cookbook/requirements.txt` are not satisfied (in particular Sphinx), or if the meta examples are disabled.
 
-In case the `cookbook` target is still missing then inspect the following. 
+In case the `cookbook` target is still missing then inspect the following.
 
 Find out if the value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. If it's not set, then it is the `sphinx-build` that has not been found by the cmake. In this case re-run the cmake script with an explicit path to the `sphinx-build` file. The file can be located by using the command `locate sphinx-build`. Once `sphinx-build` has been located, use the `-DSPHINX_EXECUTABLE="<path/to/sphinx-build>"` cmake flag to specify the `sphinx-build` location. In other words re-run cmake with the following options:
 
     cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=ON [other cmake options] ..
 
-After the cookbook has been rendered, you can view it for example running
+After the cookbook has been rendered, you can view it for example with Python 2 running
 
     python -m SimpleHTTPServer
+
+or with Python 3 running
+
+    python -m http.server
 
 in the `build/doc/cookbook/html` directory, and then open your browser at `localhost:8000`.
