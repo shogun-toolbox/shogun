@@ -30,9 +30,9 @@ Make sure you read up on how to compile C/C++ code.
 Compilation requires the Shogun headers path, i.e. the path where for example `shogun/base/init.h` is located.
 This is either in `path/to/src/shogun/` or in `path/to/shogun-install/include/shogun/` and is specified  via the `-I` flag.
 Linking requires the `-lshogun` flag, which either needs the `LD_LIBRARY_PATH` or `DYLD_LIBRARY_PATH` set up as described above, or preferably passed via the `-L` flag.
-Compiling and linking code with `gcc` works as
+Compiling and linking code with `g++` works as
 
-    gcc path/to/native_example.cpp -o native_example -I/path/to/headers -lshogun -L/path/to/libshogun.*
+    g++ path/to/native_example.cpp -o native_example -std=c++17 -I/path/to/headers -lshogun -L/path/to/libshogun.*
 
 Running it:
 
