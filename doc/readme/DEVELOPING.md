@@ -245,7 +245,7 @@ To run all the benchmarks simply run:
 We aim to provide an easy way to benchmark modules in Shogun. Hence, whenever you send us new C++ implementation, please
 consider writing benchmarks for it.
 
-To add benchmark to a class, simply create a file next to the implementation, which name is suffixed with `_benchmark.cc`.
+To add a benchmark to a class, simply create a file next to the implementation, whose name is suffixed with `_benchmark.cc`.
 For example, for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
 On top of this, you need to explicitly specify to cmake that you have added a new benchmarking file.
 `ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` within the `benchmarking` to add a
