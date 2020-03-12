@@ -251,7 +251,7 @@ On top of this, you need to explicitly specify in CMakeLists.txt that you have a
 The `ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` to add a
 benchmark implementation to build.
 a new benchmarking file, add new benchmarks with the
-`ADD_SHOGUN_BENCHMARK` cmake function the following way. In the `src/shogun/CMakeLists.txt`
+For example, to add a benchmark with the path `src/classifier/YOLOClassifier_benchmark.cc`, use the `ADD_SHOGUN_BENCHMARK` cmake function in the following way in `src/shogun/CMakeLists.txt`
 file within the `benchmarking` section:
 
     ADD_SHOGUN_BENCHMARK(classifier/YOLOClassifier_benchmark)
