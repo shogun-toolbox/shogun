@@ -286,263 +286,62 @@ On a Linux cluster without root access, using [Anaconda](https://www.continuum.i
 
 ## Windows build <a name="manual-windows"></a>
 
-Please see our [Azure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build.
-It is recommended to use "Visual Studio 16 2019" or "MSBuild".
+Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build to get any other information on the build process.
+> It is recommended to use Visual Studio 16 2019" or "MSBuild".
 
-1. From the Start menu, open the *`[YOUR_ARCHITECTURE]`*`Native Tools Command Prompt for VS`*`[YOUR_VS_VERSION]`*, for example `x64 Native Tools Command Prompt for VS 2019`. It is in the `Visual Studio`*`[YOUR_VS_VERSION]`* folder
-2. Execute the following command with the path you need: `set DESTDIR="X:\path\to\install"`, for example:
-   ```
-   set DESTDIR="D:\Projects\shogun"
-   ```
-3. Execute line by line:
-   ```
-   git clone https://github.com/shogun-toolbox/shogun.git %DESTDIR%
-   chdir /d %DESTDIR%
-   git submodule -q update --init
-   ```
-4. Specify the generator in cmake to match your IDE (take a look at the *Platform Selection* CMake wiki [section](https://cmake.org/cmake/help/latest/generator/Visual%20Studio%2016%202019.html#platform-selection) or the *Generators* section of the `cmake /?` command output), for example:
-   ```
-   cmake -S %DESTDIR% -B %DESTDIR%\build -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON
-   ```
-   The above `cmake` has the following arguments:
-   1. `-S %DESTDIR%` specifies the source folder
-   2. `-B %DESTDIR%\build` specifies the build folder
-   3. `-G "Visual Studio 16 2019" -A x64` specifies the target platform to be x64.   
-   4. `-DCMAKE_BUILD_TYPE=Release` specifies a build type and asks compiler to perform optimization and omit debug information.     
-   5. `-DBUILD_META_EXAMPLES=OFF` specifies to not generate meta examples.   
-   6. `-DENABLE_TESTING=ON` Enable testing while cmake.   
-5. Compile:
-   ```
-   msbuild %DESTDIR%\build\shogun.sln /verbosity:minimal /t:Clean /p:Configuration=Release /p:Platform=x64
-   ```
-   > Note: If you use /m in msbuild command without specifying the number, it may occur out of memory errors.
+1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-<details>
-   <summary>Full listing with an output</summary>
-   <pre>
-      
-      **********************************************************************
-      ** Visual Studio 2019 Developer Command Prompt v16.4.2
-      ** Copyright (c) 2019 Microsoft Corporation
-      **********************************************************************
-      [vcvarsall.bat] Environment initialized for: 'x64'
+2. Open the start menu and run _Anaconda Prompt (Miniconda3)_
 
-      D:\Programs\Microsoft Visual Studio\2019\Community>set DESTDIR="D:\Projects\shogun"
+3. Find the path of the _Native Tools Command Prompt for VS_ relative to your system and Visual studio (x32/x64, 2017/2019). For example for _x64 Native Tools Command Prompt for VS 2019_ it looks so: `%comspec% /k "X:\Path\To\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"`
 
-      D:\Programs\Microsoft Visual Studio\2019\Community>git clone https://github.com/shogun-toolbox/shogun.git %DESTDIR%
-      Cloning into 'D:\Projects\shogun'...
-      remote: Enumerating objects: 160, done.
-      remote: Counting objects: 100% (160/160), done.
-      remote: Compressing objects: 100% (115/115), done.
-      
-      Receiving objects: 100% (185763/185763), 68.37 MiB | 10.55 MiB/s, done.
-      Resolving deltas: 100% (148537/148537), done.
+4. Execute this path in the _Anaconda Prompt_ to run _Native Tools_ there 
 
-      D:\Programs\Microsoft Visual Studio\2019\Community>chdir /d %DESTDIR%
+5. Put these lines into the _Anaconda Prompt_:
+> rem - Records comments (remarks); @rem - do not print command just it's result (the rem result is empty)
 
-      D:\Projects\shogun>git submodule -q update --init
+> Be carefull cmake can search out of the build directory to load libraries thus remove other directories that contain the shogun sources
 
-      D:\Projects\shogun>build -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON
-      'build' is not recognized as an internal or external command,
-      operable program or batch file.
+```Batchfile
+@rem [FILL THIS SECTION WITH THE VALUES YOU WANT
+@rem For example: SET MAIN_DIR=D:\Build
+SET MAIN_DIR=X:\Path\To\Build
+@rem Basically your number of cores
+SET MAX_CPU_COUNT=8
+@rem FILL THIS SECTION WITH THE VALUES YOU WANT]
 
-      D:\Projects\shogun>cmake -S %DESTDIR% -B %DESTDIR%\build -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON
-      -- Selecting Windows SDK version 10.0.18362.0 to target Windows 10.0.18363.
-      -- The C compiler identification is MSVC 19.24.28314.0
-      -- The CXX compiler identification is MSVC 19.24.28314.0
-      -- Check for working C compiler: D:/Programs/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx64/x64/cl.exe
-      -- Check for working C compiler: D:/Programs/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx64/x64/cl.exe -- works
-      -- Detecting C compiler ABI info
-      -- Detecting C compiler ABI info - done
-      -- Detecting C compile features
-      -- Detecting C compile features - done
-      -- Check for working CXX compiler: D:/Programs/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx64/x64/cl.exe
-      -- Check for working CXX compiler: D:/Programs/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx64/x64/cl.exe -- works
-      -- Detecting CXX compiler ABI info
-      -- Detecting CXX compiler ABI info - done
-      -- Detecting CXX compile features
-      -- Detecting CXX compile features - done
-      -- Performing Test _cpp_latest_flag_supported
-      -- Performing Test _cpp_latest_flag_supported - Success
-      -- Performing Test HAVE_FOLDING_EXPRESSIONS
-      -- Performing Test HAVE_FOLDING_EXPRESSIONS - Success
-      -- Performing Test HAVE_IF_CONSTEXPR
-      -- Performing Test HAVE_IF_CONSTEXPR - Success
-      -- Performing Test HAVE_IF_INIT
-      -- Performing Test HAVE_IF_INIT - Success
-      -- Performing Test HAVE_STD_STRING_VIEW
-      -- Performing Test HAVE_STD_STRING_VIEW - Success
-      -- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) (Required is at least version "1.8.6")
-      CMake Warning at CMakeLists.txt:411 (MESSAGE):
-        Doxygen based documentation generation is enabled, but couldn't find
-        doxygen.
+SET REPO_DIR=%MAIN_DIR%\shogun
+SET VENV_DIR=%MAIN_DIR%\envs\shogun
+SET CLCACHE_DIR=%MAIN_DIR%\clcache
+SET SourcesDirectory=%REPO_DIR%\build
+SET BinariesDirectory=%MAIN_DIR%\binaries
+SET targetPrefix=%BinariesDirectory%\opt
+SET clcacheArtifactName=clcache-vs17
+SET buildConfiguration=Release
+SET SourceBranchName=develop
 
-        In order to turn off this warning either disable doxygen documentation
-        generation with -DENABLE_DOXYGEN=OFF cmake option or install doxygen.
+git clone https://github.com/shogun-toolbox/shogun %REPO_DIR%
+CHDIR /d %REPO_DIR%
+git submodule update --init --force --depth=5
+conda create --quiet --prefix %VENV_DIR% --mkdir --yes python=3.6.* setuptools numpy scipy eigen snappy zlib ctags ply jinja2 gtest mkl-devel swig -c conda-forge
+activate %VENV_DIR%
 
+%REPO_DIR%\.ci\setup_clcache.cmd
 
-      -- Found PythonInterp: D:/Programs/Python37/python.exe (found version "3.7.4")
-      -- Performing Test COMPILER_HAS_DEPRECATED_ATTR
-      -- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Failed
-      -- Performing Test COMPILER_HAS_DEPRECATED
-      -- Performing Test COMPILER_HAS_DEPRECATED - Success
-      -- dir='D:/Projects/shogun/src'
-      -- dir='D:/Projects/shogun/build/src'
-      -- dir='D:/Projects/shogun/src/gpl'
-      -- Looking for pthread.h
-      -- Looking for pthread.h - not found
-      -- Found Threads: TRUE
-      -- Found OpenMP_C: -openmp (found version "2.0")
-      -- Found OpenMP_CXX: -openmp (found version "2.0")
-      -- Found OpenMP: TRUE (found version "2.0")
-      -- Performing Test HAVE_CXA_DEMANGLE
-      -- Performing Test HAVE_CXA_DEMANGLE - Failed
-      -- Could NOT find CxaDemangle (missing: HAVE_CXA_DEMANGLE)
-      -- Looking for xmmintrin.h
-      -- Looking for xmmintrin.h - found
-      -- Looking for emmintrin.h
-      -- Looking for emmintrin.h - found
-      -- Could NOT find CxaDemangle (missing: HAVE_CXA_DEMANGLE)
-      -- Looking for signgam
-      -- Looking for signgam - not found
-      -- Looking for fdopen
-      -- Looking for fdopen - found
-      -- Looking for lgammal
-      -- Looking for lgammal - found
-      -- Using system's malloc
-      -- Performing Test HAVE_STD_ALIGNED_ALLOC
-      -- Performing Test HAVE_STD_ALIGNED_ALLOC - Failed
-      -- Could NOT find Eigen3 (missing: EIGEN_INCLUDE_DIR) (Required is at least version "3.1.2")
-      -- Could NOT find OPENCL (missing: OPENCL_LIBRARY)
-      -- Could NOT find ViennaCL (missing: VIENNACL_INCLUDE_DIR VIENNACL_ENCODED_VERSION OpenCL_INCLUDE_DIRS OpenCL_LIBRARIES) (Required is at least version "1.5.0")
-      -- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE)
-      -- Could NOT find rxcpp (missing: rxcpp_INCLUDE_DIR)
-      -- Could NOT find TFLogger (missing: TFLogger_DIR)
-      -- Looking for sgemm_
-      -- Looking for sgemm_ - not found
-      -- Could NOT find BLAS (missing: BLAS_LIBRARIES)
-      -- LAPACK requires BLAS
-      -- Performing Test HAVE_STD_VARIANT
-      -- Performing Test HAVE_STD_VARIANT - Success
-      -- Could NOT find spdlog (missing: spdlog_DIR)
-      -- Could NOT find GLPK (missing: GLPK_LIBRARY GLPK_INCLUDE_DIR GLPK_PROPER_VERSION_FOUND)
-      -- Could NOT find LibArchive (missing: LibArchive_LIBRARY LibArchive_INCLUDE_DIR)
-      -- Could NOT find CPLEX (missing: CPLEX_LIBRARY CPLEX_INCLUDE_DIR)
-      -- Could NOT find MOSEK (missing: MOSEK_DIR MOSEK_INCLUDE_DIR MOSEK_LIBRARY MOSEK_LIBRARIES)
-      -- Could NOT find Protobuf (missing: Protobuf_LIBRARIES Protobuf_INCLUDE_DIR)
-      CMake Warning at src/shogun/CMakeLists.txt:426 (find_package):
-        By not providing "FindRapidJSON.cmake" in CMAKE_MODULE_PATH this project
-        has asked CMake to find a package configuration file provided by
-        "RapidJSON", but CMake did not find one.
+CHDIR /d %BinariesDirectory%
+%REPO_DIR%\.ci\get_latest_artifact.py %SourceBranchName% %clcacheArtifactName%
+@rem If there is no tar program in your Windows do:
+@rem conda install -c haasad eidl7zip --yes
+@rem FOR /F "delims=" %i IN ('where .\%clcacheArtifactName%:*.tar*') DO 7za x %i -so | 7za x -aoa -si -ttar -o%CLCACHE_DIR%
+@rem Or simply extract the file whose name is the output of the 'where .\%clcacheArtifactName%:*.tar*' command
+FOR /F "delims=" %i IN ('where .\%clcacheArtifactName%:*.tar*') DO tar --extract --file=%i --directory %CLCACHE_DIR% --gzip
 
-        Could not find a package configuration file provided by "RapidJSON" with
-        any of the following names:
+MKDIR %targetPrefix% %SourcesDirectory%
+CHDIR /d %SourcesDirectory%
+@rem It is necessary to have '/' not '\' in the DBLAS_LIBRARIES and DLAPACK_LIBRARIES attributes
+cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=%buildConfiguration% -DCMAKE_PREFIX_PATH=%VENV_DIR%\Library -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=%targetPrefix% -DBUILD_META_EXAMPLES=OFF -DBLAS_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib -DLAPACK_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib ..
 
-          RapidJSONConfig.cmake
-          rapidjson-config.cmake
+cmake --build . --config %buildConfiguration% --target INSTALL -- -p:TrackFileAccess=false -p:CLToolExe=clcache.exe -maxcpucount:%MAX_CPU_COUNT%
+```
 
-        Add the installation prefix of "RapidJSON" to CMAKE_PREFIX_PATH or set
-        "RapidJSON_DIR" to a directory containing one of the above files.  If
-        "RapidJSON" provides a separate development package or SDK, be sure it has
-        been installed.
-
-
-      -- Could NOT find CURL (missing: CURL_LIBRARY CURL_INCLUDE_DIR)
-      -- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
-      -- Could NOT find BZip2 (missing: BZIP2_LIBRARIES BZIP2_INCLUDE_DIR)
-      -- Could NOT find LibLZMA (missing: LIBLZMA_LIBRARY LIBLZMA_INCLUDE_DIR LIBLZMA_HAS_AUTO_DECODER LIBLZMA_HAS_EASY_ENCODER LIBLZMA_HAS_LZMA_PRESET)
-      -- Could NOT find SNAPPY (missing: SNAPPY_LIBRARIES SNAPPY_INCLUDE_DIR)
-      -- Lzo includes and libraries NOT found.
-      -- Could NOT find NLOPT (missing: NLOPT_LIBRARY NLOPT_INCLUDE_DIR)
-      -- Could NOT find LPSOLVE (missing: LPSOLVE_LIBRARIES LPSOLVE_INCLUDE_DIR)
-      -- Could NOT find ColPack (missing: COLPACK_LIBRARIES COLPACK_LIBRARY_DIR COLPACK_INCLUDE_DIR)
-      -- Could NOT find ARPREC (missing: ARPREC_LIBRARIES ARPREC_INCLUDE_DIR)
-      -- Linker: Default system linker
-      -- Checking to see if CXX compiler accepts flag -flto=thin
-      -- Checking to see if CXX compiler accepts flag -flto=thin - yes
-      -- Found Jinja2: 1
-      -- Could NOT find Ctags (missing: CTAGS_EXECUTABLE)
-      Please install Ctags for trained models serialization tests.
-      -- Found Sphinx: D:/Programs/Python37/Scripts/sphinx-build.exe
-      -- Failed to locate pandoc executable (missing: PANDOC_EXECUTABLE)
-      -- ===================================================================================================================
-      -- Summary of Configuration Variables
-      -- The following OPTIONAL packages have been found:
-
-       * OpenMP
-       * Threads
-       * Jinja2
-       * Sphinx
-
-      -- The following REQUIRED packages have been found:
-
-       * PythonInterp
-
-      -- The following OPTIONAL packages have not been found:
-
-       * Doxygen (required version >= 1.8.6)
-       * CxaDemangle
-       * Eigen3 (required version >= 3.1.2)
-       * ViennaCL (required version >= 1.5.0)
-       * rxcpp
-       * TFLogger (required version >= 0.1.0)
-       * BLAS
-       * spdlog
-       * GLPK
-       * LibArchive
-       * CPLEX
-       * ARPACK
-       * Mosek
-       * Protobuf
-       * RapidJSON
-       * CURL
-       * ZLIB
-       * BZip2
-       * LibLZMA
-       * SNAPPY
-       * LZO
-       * NLopt
-       * LpSolve
-       * ColPack
-       * ARPREC
-       * Ctags
-       * Pandoc
-
-      -- ===================================================================================================================
-      -- Integrations
-      --   OpenCV Integration is OFF   enable with -DOpenCV=ON
-      -- ===================================================================================================================
-      -- Interfaces
-      --   Python is OFF               enable with -DINTERFACE_PYTHON=ON
-      --   Octave is OFF               enable with -DINTERFACE_OCTAVE=ON
-      --   Java is OFF                 enable with -DINTERFACE_JAVA=ON
-      --   Perl is OFF                 enable with -DINTERFACE_PERL=ON
-      --   Ruby is OFF                 enable with -DINTERFACE_RUBY=ON
-      --   C# is OFF                   enable with -DINTERFACE_CSHARP=ON
-      --   R is OFF                    enable with -DINTERFACE_R=ON
-      --   Scala is OFF                enable with -DINTERFACE_SCALA=ON
-      --   CoreML is OFF               enable with -DINTERFACE_COREML=ON
-      -- ===================================================================================================================
-      -- To compile shogun type
-      --   make
-      --
-      -- To install shogun to C:/Program Files (x86)/shogun type
-      --   make install
-      --
-      -- or to install to a custom directory
-      --   make install DESTDIR=/my/special/path
-      --   (or rerun cmake with -DCMAKE_INSTALL_PREFIX=/my/special/path) to just change the prefix
-      -- ===================================================================================================================
-      -- Configuring done
-      -- Generating done
-      -- Build files have been written to: D:/Projects/shogun/build
-
-      D:\Projects\shogun>msbuild %DESTDIR%\build\shogun.sln /verbosity:minimal /t:Clean /p:Configuration=Release /p:Platform=x64
-      Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
-      Copyright (C) Microsoft Corporation. All rights reserved.
-
-
-      D:\Projects\shogun>
-      
-   </pre>
-</details>
+5. The result will be in the targetPrefix dir (MAIN_DIR\binaries\opt).
