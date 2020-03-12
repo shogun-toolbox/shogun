@@ -308,6 +308,8 @@ Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogu
 SET MAIN_DIR=X:\Path\To\Build
 @rem Basically your number of cores
 SET MAX_CPU_COUNT=8
+@rem Take a look at https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#visual-studio-generators
+SET PLATFORM=-G "Visual Studio 16 2019" -A x64
 @rem FILL THIS SECTION WITH THE VALUES YOU WANT]
 
 SET REPO_DIR=%MAIN_DIR%\shogun
@@ -339,7 +341,7 @@ FOR /F "delims=" %i IN ('where .\%clcacheArtifactName%:*.tar*') DO tar --extract
 MKDIR %targetPrefix% %SourcesDirectory%
 CHDIR /d %SourcesDirectory%
 @rem It is necessary to have '/' not '\' in the DBLAS_LIBRARIES and DLAPACK_LIBRARIES attributes
-cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=%buildConfiguration% -DCMAKE_PREFIX_PATH=%VENV_DIR%\Library -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=%targetPrefix% -DBUILD_META_EXAMPLES=OFF -DBLAS_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib -DLAPACK_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib ..
+cmake %PLATFORM% -DCMAKE_BUILD_TYPE=%buildConfiguration% -DCMAKE_PREFIX_PATH=%VENV_DIR%\Library -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=%targetPrefix% -DBUILD_META_EXAMPLES=OFF -DBLAS_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib -DLAPACK_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib ..
 
 cmake --build . --config %buildConfiguration% --target INSTALL -- -p:TrackFileAccess=false -p:CLToolExe=clcache.exe -maxcpucount:%MAX_CPU_COUNT%
 ```
