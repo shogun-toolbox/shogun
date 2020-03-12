@@ -96,9 +96,9 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
  * The PR is clean and addresses **one** issue.
  * The number of commits is minimal (i.e. one), the message is neat and clear.
  * For C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).
- * If an API example: it has a clear scope, it is minimal, it looks polished, it has a passing [test](#testing)
- * If docs: clear, correct English language, spell-checked
- * If a notebook: the cell output is removed, the template is respected, the plots have axis labels.
+ * For API examples: it has a clear scope, it is minimal, it looks polished, it has a passing [test](#testing)
+ * For docs: clear, correct English language, spell-checked
+ * For notebooks: the cell output is removed, the template is respected, the plots have axis labels.
  * Formatting notebooks/docs: Please every sentence in a single line.
 
 # Testing <a name="testing"></a>
@@ -157,7 +157,7 @@ For example
 We aim to write clear, minimal, yet exhaustive tests of basic building blocks in Shogun.
 Whenever you send us a C++ code, we will ask you for a unit test for it.
 We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency etc.
-Read on [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
+Read on [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
 
 Take inspiration from existing tests when writing new ones.
 Please structure them well.
@@ -245,7 +245,7 @@ To run all the benchmarks simply run:
 We aim to provide an easy way to benchmark modules in Shogun. Hence, whenever you send us new C++ implementation, please
 consider writing benchmarks for it.
 
-To add a benchmark to a class, simply create a file next to the implementation, whose name is suffixed with `_benchmark.cc`.
+To add a benchmark to a class, simply create a file with `_benchmark.cc` suffix, next to the implementation.
 For example, for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
 On top of this, you need to explicitly specify in CMakeLists.txt that you have added a new benchmarking file.
 The `ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` to add a
