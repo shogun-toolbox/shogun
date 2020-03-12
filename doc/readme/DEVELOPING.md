@@ -95,7 +95,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
  * The PR is small in terms of lines changes.
  * The PR is clean and addresses **one** issue.
  * The number of commits is minimal (i.e. one), the message is neat and clear.
- * If a C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).
+ * For C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).
  * If an API example: it has a clear scope, it is minimal, it looks polished, it has a passing [test](#testing)
  * If docs: clear, correct English language, spell-checked
  * If a notebook: the cell output is removed, the template is respected, the plots have axis labels.
