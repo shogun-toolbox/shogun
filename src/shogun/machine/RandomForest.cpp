@@ -29,6 +29,7 @@
  */
 
 #include <shogun/machine/RandomForest.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/RandomCARTree.h>
 
 #include <utility>
@@ -182,10 +183,32 @@ bool RandomForest::train_machine(std::shared_ptr<Features> data)
 	return BaggingMachine::train_machine();
 }
 
+SGVector<float64_t> RandomForest::get_feature_importances() const
+{
+	auto num_feats =
+	    m_features->as<DenseFeatures<float64_t>>()->get_num_features();
+	SGVector<float64_t> feat_importances(num_feats);
+	feat_importances.zero();
+	for (size_t i = 0; i < m_bags.size(); i++)
+	{
+		auto tree = m_bags[i]->as<RandomCARTree>();
+		linalg::add(
+		    tree->get_feature_importance(), feat_importances, feat_importances);
+	}
+	float64_t mean = 1.0 / m_num_bags;
+	linalg::scale(feat_importances, feat_importances, mean);
+	float64_t normalizer = linalg::sum(feat_importances);
+	if (normalizer)
+	{
+		linalg::scale(feat_importances, feat_importances, 1 / normalizer);
+	}
+	return feat_importances;
+}
+
 void RandomForest::init()
 {
 	m_machine=std::make_shared<RandomCARTree>();
 	m_weights=SGVector<float64_t>();
-
+	watch_method("feature_importances", &RandomForest::get_feature_importances);
 	SG_ADD(&m_weights, kWeights, "weights");
 }

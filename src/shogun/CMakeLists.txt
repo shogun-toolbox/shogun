@@ -310,6 +310,10 @@ ELSE()
   IF(${EIGEN_VERSION} VERSION_GREATER 3.2.90 AND ${EIGEN_VERSION} VERSION_LESS 3.3.0)
       MESSAGE(WARNING "The system Eigen3 version ${EIGEN_VERSION} contains a lot of bugs, which could cause some models failing!")
   ENDIF()
+  # https://github.com/shogun-toolbox/shogun/issues/4870
+  IF(${EIGEN_VERSION} VERSION_GREATER 3.3.7)
+    MESSAGE(FATAL_ERROR "The system Eigen3 version ${EIGEN_VERSION} isn't supported!")
+  ENDIF()
   SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${EIGEN_INCLUDE_DIR})
 ENDIF()
 

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
+#include <thread>
 
 #include <utility>
 
@@ -1293,29 +1294,31 @@ float64_t HMM::model_probability_comp()
 
 #else
 
-float64_t CHMM::model_probability_comp()
+float64_t HMM::model_probability_comp()
 {
-	pthread_t *threads=SG_MALLOC(pthread_t, env()->get_num_threads());
-	S_BW_THREAD_PARAM *params=SG_MALLOC(S_BW_THREAD_PARAM, env()->get_num_threads());
+	std::vector<S_BW_THREAD_PARAM> params(env()->get_num_threads());
 
 	io::info("computing full model probablity");
 	mod_prob=0;
 
+	std::vector<std::thread> threads;
+	threads.reserve(env()->get_num_threads());
+
 	for (int32_t cpu=0; cpu<env()->get_num_threads(); cpu++)
 	{
-		params[cpu].hmm=this ;
+		params[cpu].hmm=shared_from_base<HMM>();
 		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/env()->get_num_threads();
 		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/env()->get_num_threads();
 		params[cpu].p_buf=SG_MALLOC(float64_t, N);
 		params[cpu].q_buf=SG_MALLOC(float64_t, N);
 		params[cpu].a_buf=SG_MALLOC(float64_t, N*N);
 		params[cpu].b_buf=SG_MALLOC(float64_t, N*M);
-		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, (void*)&params[cpu]);
+		threads.emplace_back([&p=params[cpu], this](){bw_dim_prefetch(&p);});
 	}
 
 	for (int32_t cpu=0; cpu<env()->get_num_threads(); cpu++)
 	{
-		pthread_join(threads[cpu], NULL);
+		threads[cpu].join();	
 		mod_prob+=params[cpu].ret;
 	}
 
@@ -1327,23 +1330,20 @@ float64_t CHMM::model_probability_comp()
 		SG_FREE(params[i].b_buf);
 	}
 
-	SG_FREE(threads);
-	SG_FREE(params);
-
 	mod_prob_updated=true;
 	return mod_prob;
 }
 
-void* CHMM::bw_dim_prefetch(void* params)
+void HMM::bw_dim_prefetch(S_BW_THREAD_PARAM* params)
 {
-	CHMM* hmm=((S_BW_THREAD_PARAM*) params)->hmm;
-	int32_t start=((S_BW_THREAD_PARAM*) params)->dim_start;
-	int32_t stop=((S_BW_THREAD_PARAM*) params)->dim_stop;
-	float64_t* p_buf=((S_BW_THREAD_PARAM*) params)->p_buf;
-	float64_t* q_buf=((S_BW_THREAD_PARAM*) params)->q_buf;
-	float64_t* a_buf=((S_BW_THREAD_PARAM*) params)->a_buf;
-	float64_t* b_buf=((S_BW_THREAD_PARAM*) params)->b_buf;
-	((S_BW_THREAD_PARAM*)params)->ret=0;
+	auto hmm=params->hmm;
+	int32_t start=params->dim_start;
+	int32_t stop=params->dim_stop;
+	float64_t* p_buf=params->p_buf;
+	float64_t* q_buf=params->q_buf;
+	float64_t* a_buf=params->a_buf;
+	float64_t* b_buf=params->b_buf;
+	params->ret=0;
 
 	for (int32_t dim=start; dim<stop; dim++)
 	{
@@ -1351,25 +1351,22 @@ void* CHMM::bw_dim_prefetch(void* params)
 		hmm->backward_comp(hmm->p_observations->get_vector_length(dim), hmm->N-1, dim) ;
 		float64_t modprob=hmm->model_probability(dim) ;
 		hmm->ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
-		((S_BW_THREAD_PARAM*)params)->ret+= modprob;
+		params->ret+= modprob;
 	}
-	return NULL ;
 }
 
-void* CHMM::bw_single_dim_prefetch(void * params)
+void HMM::bw_single_dim_prefetch(S_DIM_THREAD_PARAM* params)
 {
-	CHMM* hmm=((S_BW_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_DIM_THREAD_PARAM*)params)->dim ;
-	((S_DIM_THREAD_PARAM*)params)->prob_sum = hmm->model_probability(dim);
-	return NULL ;
+	auto hmm=params->hmm ;
+	int32_t dim=params->dim ;
+	params->prob_sum = hmm->model_probability(dim);
 }
 
-void* CHMM::vit_dim_prefetch(void * params)
+void HMM::vit_dim_prefetch(S_DIM_THREAD_PARAM* params)
 {
-	CHMM* hmm=((S_DIM_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_DIM_THREAD_PARAM*)params)->dim ;
-	((S_DIM_THREAD_PARAM*)params)->prob_sum = hmm->best_path(dim);
-	return NULL ;
+	auto hmm=params->hmm ;
+	int32_t dim=params->dim ;
+	params->prob_sum = hmm->best_path(dim);
 }
 
 #endif //USE_HMMPARALLEL
@@ -1377,7 +1374,7 @@ void* CHMM::vit_dim_prefetch(void * params)
 
 #ifdef USE_HMMPARALLEL
 
-void CHMM::ab_buf_comp(
+void HMM::ab_buf_comp(
 	float64_t* p_buf, float64_t* q_buf, float64_t *a_buf, float64_t* b_buf,
 	int32_t dim)
 {
@@ -1423,7 +1420,7 @@ void CHMM::ab_buf_comp(
 }
 
 //estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
+void HMM::estimate_model_baum_welch(const std::shared_ptr<HMM>&	hmm)
 {
 	int32_t i,j,cpu;
 	float64_t fullmodprob=0;	//for all dims
@@ -1455,11 +1452,13 @@ void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 
 	int32_t num_threads = env()->get_num_threads();
 
-	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
-	S_BW_THREAD_PARAM *params=SG_MALLOC(S_BW_THREAD_PARAM, num_threads);
+	std::vector<S_BW_THREAD_PARAM> params(num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
+
+	std::vector<std::thread> threads;
+	threads.reserve(num_threads);
 
 	for (cpu=0; cpu<num_threads; cpu++)
 	{
@@ -1479,12 +1478,12 @@ void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 		params[cpu].dim_start=start;
 		params[cpu].dim_stop=stop;
 
-		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, &params[cpu]);
+		threads.emplace_back([&p=params[cpu], this](){bw_dim_prefetch(&p);});
 	}
 
 	for (cpu=0; cpu<num_threads; cpu++)
 	{
-		pthread_join(threads[cpu], NULL);
+		threads[cpu].join();
 
 		for (i=0; i<N; i++)
 		{
@@ -1512,9 +1511,6 @@ void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 		SG_FREE(params[cpu].a_buf);
 		SG_FREE(params[cpu].b_buf);
 	}
-
-	SG_FREE(threads);
-	SG_FREE(params);
 
 	//cache hmm model probability
 	hmm->mod_prob=fullmodprob;
@@ -1807,8 +1803,9 @@ void HMM::estimate_model_baum_welch_defined(const std::shared_ptr<HMM>& estimate
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = env()->get_num_threads();
-	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
-	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
+	std::vector<std::thread> threads;
+	threads.reserve(num_threads);
+	std::vector<S_DIM_THREAD_PARAM> params(num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
@@ -1826,14 +1823,14 @@ void HMM::estimate_model_baum_welch_defined(const std::shared_ptr<HMM>& estimate
 				{
 					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
-					pthread_create(&threads[i], NULL, bw_single_dim_prefetch, (void*)&params[i]) ;
+					threads.emplace_back([&p=params[i], this](){bw_single_dim_prefetch(&p);});
 				}
 			}
 			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					pthread_join(threads[i], NULL);
+					threads[i].join();
 					dimmodprob = params[i].prob_sum;
 				}
 			}
@@ -1910,11 +1907,6 @@ void HMM::estimate_model_baum_welch_defined(const std::shared_ptr<HMM>& estimate
 			set_b(i,j, Math::logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
 		}
 	}
-#ifdef USE_HMMPARALLEL
-	SG_FREE(threads);
-	SG_FREE(params);
-#endif
-
 
 	//calculate estimates
 	for (k=0; (i=model->get_learn_p(k))!=-1; k++)
@@ -1971,8 +1963,9 @@ void HMM::estimate_model_viterbi(const std::shared_ptr<HMM>& estimate)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = env()->get_num_threads();
-	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
-	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
+	std::vector<std::thread> threads;
+	threads.reserve(num_threads);
+	std::vector<S_DIM_THREAD_PARAM> params(num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
@@ -1990,14 +1983,14 @@ void HMM::estimate_model_viterbi(const std::shared_ptr<HMM>& estimate)
 				{
 					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
-					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
+					threads.emplace_back([this, &p=params[i]](){vit_dim_prefetch(&p);});
 				}
 			}
 			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					pthread_join(threads[i], NULL);
+					threads[i].join();
 					allpatprob += params[i].prob_sum;
 				}
 			}
@@ -2019,11 +2012,6 @@ void HMM::estimate_model_viterbi(const std::shared_ptr<HMM>& estimate)
 		P[estimate->PATH(dim)[0]]++;
 		Q[estimate->PATH(dim)[p_observations->get_vector_length(dim)-1]]++;
 	}
-
-#ifdef USE_HMMPARALLEL
-	SG_FREE(threads);
-	SG_FREE(params);
-#endif
 
 	allpatprob/=p_observations->get_num_vectors() ;
 	estimate->all_pat_prob=allpatprob ;
@@ -2096,8 +2084,9 @@ void HMM::estimate_model_viterbi_defined(const std::shared_ptr<HMM>& estimate)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = env()->get_num_threads();
-	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
-	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
+	std::vector<std::thread> threads;
+	threads.reserve(num_threads);
+	std::vector<S_DIM_THREAD_PARAM> params(num_threads);
 #endif
 
 	float64_t allpatprob=0.0 ;
@@ -2113,14 +2102,14 @@ void HMM::estimate_model_viterbi_defined(const std::shared_ptr<HMM>& estimate)
 				{
 					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
-					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
+					threads.emplace_back([this, &p=params[i]](){vit_dim_prefetch(&p);});
 				}
 			}
 			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					pthread_join(threads[i], NULL);
+					threads[i].join();
 					allpatprob += params[i].prob_sum;
 				}
 			}
@@ -2143,11 +2132,6 @@ void HMM::estimate_model_viterbi_defined(const std::shared_ptr<HMM>& estimate)
 		P[estimate->PATH(dim)[0]]++;
 		Q[estimate->PATH(dim)[p_observations->get_vector_length(dim)-1]]++;
 	}
-
-#ifdef USE_HMMPARALLEL
-	SG_FREE(threads);
-	SG_FREE(params);
-#endif
 
 	//estimate->invalidate_model() ;
 	//float64_t q=estimate->best_path(-1) ;
@@ -4394,8 +4378,9 @@ bool HMM::save_model_derivatives_bin(FILE* file)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = env()->get_num_threads();
-	pthread_t *threads=SG_MALLOC(pthread_t, num_threads);
-	S_DIM_THREAD_PARAM *params=SG_MALLOC(S_DIM_THREAD_PARAM, num_threads);
+	std::vector<std::thread> threads;
+	threads.reserve(num_threads);
+	std::vector<S_DIM_THREAD_PARAM> params(num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
@@ -4416,16 +4401,16 @@ bool HMM::save_model_derivatives_bin(FILE* file)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					params[i].hmm=this ;
+					params[i].hmm=shared_from_base<HMM>();
 					params[i].dim=dim+i ;
-					pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
+					threads.emplace_back([this, &p=params[i]](){bw_single_dim_prefetch(&p);});
 				}
 			}
 
 			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
-					pthread_join(threads[i], NULL);
+					threads[i].join();
 			}
 		}
 #endif
@@ -4491,11 +4476,6 @@ bool HMM::save_model_derivatives_bin(FILE* file)
 		} ;
 	}
 	save_model_bin(file) ;
-
-#ifdef USE_HMMPARALLEL
-	SG_FREE(threads);
-	SG_FREE(params);
-#endif
 
 	result=true;
 	io::print("\n");
@@ -4725,7 +4705,7 @@ bool HMM::check_model_derivatives()
 }
 
 #ifdef USE_HMMDEBUG
-bool CHMM::check_path_derivatives()
+bool HMM::check_path_derivatives()
 {
 	bool result=false;
 	const float64_t delta=1e-4 ;

@@ -42,7 +42,7 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	get_filename_component(REL_DIR ${FULL_DIR} NAME)
 	set(NAME_WITH_DIR "${REL_DIR}-${NAME}")
 
-	list(FIND META_EXAMPLES ${CMAKE_SOURCE_DIR}/examples/meta/src/${REL_DIR}/${NAME}.sg LISTING_INDEX)
+	list(FIND META_EXAMPLES ${CMAKE_SOURCE_DIR}/examples/meta/src/${REL_DIR}/${NAME}.sg.in LISTING_INDEX)
 	# continue keyword is not available in older cmake versions (not documented!!!)
 	# so use if-then-else
 	IF(${LISTING_INDEX} EQUAL -1)
