@@ -252,7 +252,7 @@ On top of this, you need to explicitly specify to cmake that you have added a ne
 benchmark implementation to build.
 a new benchmarking file, add new benchmarks with the
 `ADD_SHOGUN_BENCHMARK` cmake function the following way. In the `src/shogun/CMakeLists.txt`
-file within the `benchmarking` section using the
+file within the `benchmarking` section:
 
     ADD_SHOGUN_BENCHMARK(classifier/YOLOClassifier_benchmark)
 
