@@ -148,7 +148,7 @@ Then
 
 The option `--leak-check=full` for valgrind might be useful.
 In addition to manually running valgrind on your tests, you can use `ctest` to check multiple tests.
-This requires to be enabled in dashboard reports in via `-DBUILD_DASHBOARD_REPORTS=ON`.
+This requires to be enabled in dashboard reports with `-DBUILD_DASHBOARD_REPORTS=ON`.
 For example
 
     ctest -D ExperimentalMemCheck -R unit-GaussianProcessRegression
