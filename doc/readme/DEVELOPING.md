@@ -102,7 +102,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
  * Formatting notebooks/docs: Please every sentence in a single line.
 
 # Testing <a name="testing"></a>
-Three types of tests can be executed locally, C++ unit tests, running the API examples, and integration testing the results of the API examples.
+Three types of tests can be executed locally: C++ unit tests, running the API examples, and integration testing the results of the API examples.
 To activate them locally, enable the `-DENABLE_TESTING=ON` cmake switch before running cmake. Which tests are activated depends on your configuration.
 Adding a test in most cases requires to re-run `cmake`.
 All activated tests can be executed with
