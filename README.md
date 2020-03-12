@@ -63,7 +63,7 @@ Note that some folders are submodules that can be checked out with
 `git submodule update --init`.
 
 - *src* - source code, separated into C++ source and interfaces
-- *doc* - readmes (doc/reamdme, submodule), Jupyter notebooks, cookbook (API examples), licenses
+- *doc* - readmes (doc/readme, submodule), Jupyter notebooks, cookbook (API examples), licenses
 - *examples* - example files for all interfaces
 - *data* - data sets (submodule, required for examples)
 - *tests* - unit tests and continuous integration of interface examples
@@ -76,4 +76,3 @@ Note that some folders are submodules that can be checked out with
 Shogun is distributed under [BSD 3-clause license](doc/license/LICENSE.md), with
 optional GPL3 components.
 See [doc/licenses](doc/license) for details.
-
