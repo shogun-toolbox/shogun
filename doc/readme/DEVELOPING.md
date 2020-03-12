@@ -249,7 +249,7 @@ To add a benchmark to a class, simply create a file next to the implementation, 
 For example, for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
 On top of this, you need to explicitly specify in CMakeLists.txt that you have added a new benchmarking file.
 The `ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` to add a
-benchmark implementation to build.
+benchmark implementation.
 a new benchmarking file, add new benchmarks with the
 For example, to add a benchmark with the path `src/classifier/YOLOClassifier_benchmark.cc`, use the `ADD_SHOGUN_BENCHMARK` cmake function in the following way in `src/shogun/CMakeLists.txt`
 file within the `benchmarking` section:
