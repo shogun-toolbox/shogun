@@ -6,8 +6,8 @@ Shogun is an open-source machine learning library that offers a wide range of ef
 
 #### Shogun is state-of-the-art
 
-* Efficient implementation (from standard to cutting edge algorithms), modern software architecture in C++.
-* Easy combination of multiple data representations, algorithm classes, and general-purpose tools for rapid prototyping of data pipelines.
+* An efficient implementation (from standard to cutting edge algorithms), modern software architecture in C++.
+* An easy combination of multiple data representations, algorithm classes and general-purpose tools for rapid prototyping of data pipelines.
 
 #### Shogun is open source
 
