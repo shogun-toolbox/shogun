@@ -140,9 +140,11 @@ SGVector<T>::SGVector(SGVector&& orig) noexcept
 	  vlen{std::exchange(orig.vlen, 0)},
 	  gpu_ptr(std::move(orig.gpu_ptr))
 {
+#ifdef HAVE_VIENNACL
 	m_on_gpu.store(
 			orig.m_on_gpu.load(std::memory_order_acquire),
 			std::memory_order_release);
+#endif
 }
 
 template<class T>

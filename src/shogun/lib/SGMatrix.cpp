@@ -122,8 +122,10 @@ SGMatrix<T>::SGMatrix(SGMatrix&& orig) noexcept
 	  num_cols{std::exchange(orig.num_cols, 0)},
 	  gpu_ptr(std::move(orig.gpu_ptr))
 {
+#ifdef HAVE_VIENNACL
 	m_on_gpu.store(orig.m_on_gpu.load(
 			std::memory_order_acquire), std::memory_order_release);
+#endif
 }
 
 template <class T>
