@@ -1,7 +1,7 @@
 # API examples
 
 Shogun comes with automatically generated API examples in all interface languages, see [our website](http://shogun.ml/examples).
-This readme describes their mechanics and how they are used for documentation.
+This readme describes their mechanics and how they are used in documentation.
 See also [DEVELOPING.md](DEVELOPING.md) for their role in testing.
 
 # Quicklinks
@@ -24,12 +24,12 @@ The C++ examples are always available, you can compile them using `make` or more
 
     make build_cpp_meta_examples
 
-and run them as from their folder straight-away (you might have to set environmental variables, see [INTERFACES.md](INTERFACES.md))
+and run them from their folder straight-away (you might have to set environmental variables, see [INTERFACES.md](INTERFACES.md))
 
     cd examples/meta/cpp/multiclass
     ./cpp-multiclass-k_nearest_neighbours
 
-As the examples are part of the tests, you can easily run them as described in [DEVELOPING.md](DEVELOPING.md#testing).
+As the examples are a part of the tests, you can easily run them as described in [DEVELOPING.md](DEVELOPING.md#testing).
 Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manually.
 
 For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py` and `translate.py` in `examples/meta/generator/`.
