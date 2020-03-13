@@ -107,8 +107,8 @@ namespace shogun
 				void
 				realloc(size_t size, const std::shared_ptr<NumberType>& type)
 				{
-					void* new_mem = std::realloc(
-					    m_internal_data.get(), size_in_bytes(size, type));
+					void* new_mem = SG_ALIGNED_REALLOC(
+					    m_internal_data.get(), 0, size_in_bytes(size, type), alignment::container_alignment);
 					if (new_mem)
 					{
 						// should keep old deleter
