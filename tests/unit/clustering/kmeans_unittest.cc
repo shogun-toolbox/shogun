@@ -21,7 +21,7 @@ void check_consistency_observable(
 {
 	auto total_observations = observer->get<int32_t>("num_observations");
 	auto observation = observer->get_observation(total_observations - 1);
-	auto centers = observation->get<SGMatrix<float64_t>>("mus");
+	auto centers = observation->get<SGMatrix<float64_t>>("cluster_centers");
 
 	EXPECT_TRUE(
 	    centers.equals(kmeans->get<SGMatrix<float64_t>>("cluster_centers")));

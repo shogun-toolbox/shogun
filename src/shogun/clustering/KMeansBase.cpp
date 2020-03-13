@@ -56,13 +56,13 @@ void KMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 			"Expected {} initial cluster centers, got {}", k, centers.num_cols);
 	require(centers.num_rows == dimensions,
 			"Expected {} dimensionional cluster centers, got {}", dimensions, centers.num_rows);
-	mus_initial = centers;
+	cluster_centers_initial = centers;
 
 }
 
 void KMeansBase::set_random_centers()
 {
-	mus.zero();
+	cluster_centers.zero();
 	auto lhs=
 		distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	int32_t lhs_size=lhs->get_num_vectors();
@@ -77,12 +77,12 @@ void KMeansBase::set_random_centers()
 		SGVector<float64_t> vec=lhs->get_feature_vector(cluster_center_i);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus(j,i)=vec[j];
+			cluster_centers(j,i)=vec[j];
 
 		lhs->free_feature_vector(vec, cluster_center_i);
 	}
 
-	observe<SGMatrix<float64_t>>(0, "mus");
+	observe<SGMatrix<float64_t>>(0, "cluster_centers");
 }
 
 void KMeansBase::compute_cluster_variances()
@@ -105,8 +105,8 @@ void KMeansBase::compute_cluster_variances()
 				for (l=0; l<dimensions; l++)
 				{
 					dist+=Math::sq(
-							mus.matrix[i*dimensions+l]
-									-mus.matrix[j*dimensions+l]);
+							cluster_centers.matrix[i*dimensions+l]
+									-cluster_centers.matrix[j*dimensions+l]);
 				}
 
 				if (first_round)
@@ -163,18 +163,18 @@ void KMeansBase::initialize_training(const std::shared_ptr<Features>& data)
 
 	/* if kmeans++ to be used */
 	if (use_kmeanspp)
-		mus_initial=kmeanspp();
+		cluster_centers_initial=kmeanspp();
 
 	R=SGVector<float64_t>(k);
 
-	mus=SGMatrix<float64_t>(dimensions, k);
+	cluster_centers=SGMatrix<float64_t>(dimensions, k);
 	/* cluster_centers=zeros(dimensions, k) ; */
-	memset(mus.matrix, 0, sizeof(float64_t)*centers_size);
+	memset(cluster_centers.matrix, 0, sizeof(float64_t)*centers_size);
 
-	if (mus_initial.matrix)
+	if (cluster_centers_initial.matrix)
 	{
-		mus = mus_initial;
-		observe<SGMatrix<float64_t>>(0, "mus");
+		cluster_centers = cluster_centers_initial;
+		observe<SGMatrix<float64_t>>(0, "cluster_centers");
 	}
 	else
 	{
@@ -198,7 +198,7 @@ bool KMeansBase::save(FILE* dstfile)
 
 SGMatrix<float64_t> KMeansBase::get_cluster_centers() const
 {
-	return mus;
+	return cluster_centers;
 }
 
 SGMatrix<float64_t> KMeansBase::kmeanspp()
@@ -321,7 +321,7 @@ void KMeansBase::init()
 	SG_ADD(
 	    &use_kmeanspp, "kmeanspp", "Whether to use kmeans++",
 	    ParameterProperties::HYPER | ParameterProperties::SETTING);
-	SG_ADD(&mus, "mus", "Cluster centers", ParameterProperties::MODEL);
+	SG_ADD(&cluster_centers, "cluster_centers", "Cluster centers", ParameterProperties::MODEL);
 
 	watch_method("cluster_centers", &KMeansBase::get_cluster_centers);
 }
