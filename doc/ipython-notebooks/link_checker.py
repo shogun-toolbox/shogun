@@ -2,8 +2,6 @@ import json
 import re
 import subprocess
 import sys
-
-
 #requirement is python >= 3.5
 
 def Find(cell_contents):
@@ -12,7 +10,6 @@ def Find(cell_contents):
     return urls   
 
 def link_finder(file_name):
-    
     links = []
     f = open(file_name)
     s = f.read()
@@ -31,33 +28,14 @@ def link_checker(link_address):
     stdout, stderr = process.communicate()
     return (int(stdout))
 
-
-
-
-
 if __name__ == '__main__':
-
     # enter name of file
     file_name = sys.argv[1]
 
-
     links = link_finder(file_name)
-
-    
     number_of_links = len(links)
     
     for i in range(number_of_links):
         return_code = link_checker(links[i])
         if(return_code != 200):
-            print(links[i])
-
-
-    
-
-    
-
-   
-
-    
-          
-    
+            print(links[i]) 
