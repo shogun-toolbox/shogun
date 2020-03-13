@@ -4,13 +4,13 @@
 
         * First BSD 3-clause license release (see LICENSE file)
         [Heiko Strathmann, Viktor Gal, Esben Sørig]
-        * Introduced new API based on generic put/get calls, factory methods,
+        * Introduced a new API based on generic put/get calls, factory methods,
         and fewer types. Used in examples. Requires Swig>=3.0.12
         [Heiko Strathmann, Sergey Lisitsyn, Viktor Gal, Esben Sørig]
 
         * Features:
-                - Introduce automatic label conversion if inappropriate type is
-                passed [Heiko Strathmann]
+                - Introduce automatic label conversion if an inappropriate type is
+                passed [Heiko Strathmann].
                 - Replace many CMath calls with std [Akash Shivram, Yash Sharma,
                 Shubham Shukla, Albert Sun, Viktor Gal, Heiko Strathmann, Esben
                 Sørig]
