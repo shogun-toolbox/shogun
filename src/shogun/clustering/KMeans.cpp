@@ -70,8 +70,8 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 				   	Terminating. ", iter);
 
 		changed=0;
-		auto rhs_mus = std::make_shared<DenseFeatures<float64_t>>(centers.clone());
-		distance->replace_rhs(rhs_mus);
+		auto rhs_cluster_centers = std::make_shared<DenseFeatures<float64_t>>(centers.clone());
+		distance->replace_rhs(rhs_cluster_centers);
 
 #pragma omp parallel for firstprivate(lhs_size, dim, num_centers) \
 		shared(centers, cluster_assignments, weights_set) \
@@ -133,7 +133,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 					}
 					else
 					{
-						/*  mus(:,j)=zeros(dim,1) ; */
+						/*  cluster_centers(:,j)=zeros(dim,1) ; */
 						for (j=0; j<dim; j++)
 							centers(j, cluster_assignments_i)=0;
 					}
@@ -149,7 +149,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		/* Update Step : Calculate new means */
 		if (!fixed_centers)
 		{
-			/* mus=zeros(dim, num_centers) ; */
+			/* cluster_centers=zeros(dim, num_centers) ; */
 			centers.zero();
 
 			for (int32_t i=0; i<lhs_size; i++)
@@ -171,7 +171,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 			}
 		}
 
-		observe<SGMatrix<float64_t>>(iter, "mus");
+		observe<SGMatrix<float64_t>>(iter, "cluster_centers");
 
 		if (iter%(max_iter/10) == 0)
 			io::info("Iteration[{}/{}]: Assignment of {} patterns changed.", iter, max_iter, changed);
@@ -185,10 +185,10 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 bool KMeans::train_machine(std::shared_ptr<Features> data)
 {
 	initialize_training(data);
-	Lloyd_KMeans(mus, k);
+	Lloyd_KMeans(cluster_centers, k);
 	compute_cluster_variances();
-	auto cluster_centres = std::make_shared<DenseFeatures<float64_t>>(mus);
-	distance->replace_lhs(cluster_centres);
+	auto cluster_centres_ = std::make_shared<DenseFeatures<float64_t>>(cluster_centers);
+	distance->replace_lhs(cluster_centres_);
 	return true;
 }
 
