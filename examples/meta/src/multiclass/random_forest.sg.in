@@ -25,6 +25,10 @@ rand_forest.train(features_train)
 MulticlassLabels labels_predict = rand_forest.apply_multiclass(features_test)
 #![train_and_apply]
 
+#![feature_importance]
+RealVector feat_importance = rand_forest.get_real_vector("feature_importances")
+#![feature_importance]
+
 #![evaluate_accuracy]
 Evaluation acc = evaluation("MulticlassAccuracy")
 rand_forest.put("oob_evaluation_metric", acc)

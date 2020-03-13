@@ -29,7 +29,7 @@ Buildbot: https://buildbot.shogun.ml.
  * See [doc/readme/EXAMPLES.md](doc/readme/EXAMPLES.md) for details on creating API examples.
  * See [doc/readme/DEVELOPING.md](doc/readme/DEVELOPING.md) for how to hack Shogun.
  
- * See [API examples](http://shogun.ml/examples) for API examples for all interfaces.
+ * See [API examples](http://shogun.ml/examples) for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for extended developer information.
 
 ## Interfaces
@@ -39,14 +39,14 @@ Shogun is implemented in C++ and offers automatically generated, unified interfa
 
 |    Interface     |     Status                                                |
 |:----------------:|-----------------------------------------------------------|
-|python            | *mature* (no known problems)                              |
-|octave            | *mature* (no known problems)                              |
-|java/scala        | *stable* (no known problems)                              |
-|ruby              | *stable* (no known problems)                              |
-|csharp            | *stable* (no known problems)                              |
-|r                 | Currently disabled due to a [swig bug](https://github.com/swig/swig/issues/1660) |
-|perl              | *pre-alpha* (work in progress quality)                    |
-|js                | *pre-alpha* (work in progress quality)                    |
+|Python            | *mature* (no known problems)                              |
+|Octave            | *mature* (no known problems)                              |
+|Java/Scala        | *stable* (no known problems)                              |
+|Ruby              | *stable* (no known problems)                              |
+|C#                | *stable* (no known problems)                              |
+|R                 | Currently disabled due to a [swig bug](https://github.com/swig/swig/issues/1660) |
+|Perl              | *pre-alpha* (work in progress quality)                    |
+|JS                | *pre-alpha* (work in progress quality)                    |
 
 See [our website](http://shogun.ml/examples) for examples in all languages.
 
@@ -63,7 +63,7 @@ Note that some folders are submodules that can be checked out with
 `git submodule update --init`.
 
 - *src* - source code, separated into C++ source and interfaces
-- *doc* - readmes (doc/reamde, submodule), ipython notebooks, cookbook (api examples), licenses
+- *doc* - readmes (doc/readme, submodule), Jupyter notebooks, cookbook (API examples), licenses
 - *examples* - example files for all interfaces
 - *data* - data sets (submodule, required for examples)
 - *tests* - unit tests and continuous integration of interface examples
@@ -76,4 +76,3 @@ Note that some folders are submodules that can be checked out with
 Shogun is distributed under [BSD 3-clause license](doc/license/LICENSE.md), with
 optional GPL3 components.
 See [doc/licenses](doc/license) for details.
-

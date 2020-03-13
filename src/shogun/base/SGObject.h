@@ -961,6 +961,14 @@ protected:
 	 */
 	void add_callback_function(
 		std::string_view name, std::function<void()> method);
+
+	/** Get the shared_ptr from SGObject and cast it to the Derived class
+	 */
+	template <typename Derived>
+	std::shared_ptr<Derived> shared_from_base()
+	{
+		return std::static_pointer_cast<Derived>(shared_from_this());
+	}
 #endif
 
 public:

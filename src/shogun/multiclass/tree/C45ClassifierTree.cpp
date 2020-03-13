@@ -639,24 +639,22 @@ float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, const
 
 float64_t C45ClassifierTree::entropy(const std::shared_ptr<MulticlassLabels>& labels, SGVector<float64_t> weights)
 {
-	SGVector<float64_t> log_ratios(labels->get_unique_labels().size());
+	auto unique_labels = labels->get_unique_labels();
+	auto labels_vector = labels->get_labels();
+	SGVector<float64_t> log_ratios(unique_labels.size());
 	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
 
-	for (int32_t i=0;i<labels->get_unique_labels().size();i++)
+	for (int32_t i=0;i<unique_labels.size();i++)
 	{
-		int32_t count=0;
 		float64_t weight_count=0.;
-		for (int32_t j=0;j<labels->get_num_labels();j++)
+		for (int32_t j=0;j<labels_vector.vlen;j++)
 		{
-			if (labels->get_unique_labels()[i]==labels->get_label(j))
+			if (unique_labels[i]==labels_vector[j])
 			{
 				weight_count+=weights[j];
-				count++;
 			}
 		}
-
-		log_ratios[i]=weight_count/total_weight;
-		log_ratios[i] = std::log(log_ratios[i]);
+		log_ratios[i] = std::log(weight_count/total_weight);
 	}
 
 	return Statistics::entropy(log_ratios.vector,log_ratios.vlen);
