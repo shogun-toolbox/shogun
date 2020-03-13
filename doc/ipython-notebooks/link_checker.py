@@ -1,8 +1,12 @@
 import json
 import re
-import subprocess
+import urllib.request, urllib.error
 import sys
 #requirement is python >= 3.5
+
+def check_python():
+    if (sys.version_info < (3,5)):
+        raise Exception("Python >= 3.5 required")
 
 def Find(cell_contents):
     text = cell_contents[0]
@@ -24,11 +28,20 @@ def link_finder(file_name):
     return links       
 
 def link_checker(link_address):
-    process = subprocess.Popen(['curl','-s', '-o','/dev/null','-I','-w','%{http_code}',link_address],stdout=subprocess.PIPE, stderr=subprocess.PIPE,universal_newlines=True)
-    stdout, stderr = process.communicate()
-    return (int(stdout))
+    try:
+        urllib.request.urlopen(link_address)
+    except urllib.error.HTTPError as e1:
+        # Return code error (e.g. 404, 501, ...)
+        return e1.code
+    except urllib.error.URLError as e2:
+        # Not an HTTP-specific error (e.g. connection refused)
+        return(e2.reason)
+    else:
+        return(200)
+    
 
 if __name__ == '__main__':
+    check_python()
     # enter name of file
     file_name = sys.argv[1]
 
