@@ -58,6 +58,8 @@ struct C45TreeNodeData
 	/** weight of all samples present in the node during training not belonging to class_label class **/
 	float64_t weight_minus;
 
+	float64_t impurity;
+
 	/** constructor */
 	C45TreeNodeData()
 	{
@@ -66,6 +68,7 @@ struct C45TreeNodeData
 		class_label=-1.0;
 		total_weight=0.0;
 		weight_minus=0.0;
+		impurity = 0.0;
 	}
 };
 

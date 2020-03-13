@@ -146,6 +146,11 @@ public:
 	/** clear feature types of various features */
 	void clear_feature_types();
 
+	/** get feature importance
+	 * @return array of feature importance
+	 */
+	SGVector<float64_t> get_feature_importances() const;
+
 protected:
 
 	/** train machine - build C4.5 Tree from training data
@@ -184,8 +189,11 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */
-	float64_t informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data, SGVector<float64_t> weights,
-									 const std::shared_ptr<MulticlassLabels>& class_labels);
+	float64_t informational_gain_attribute(
+		int32_t attr_no, const std::shared_ptr<Features>& data,
+		SGVector<float64_t> weights,
+		const std::shared_ptr<MulticlassLabels>& class_labels,
+		float64_t& impurity);
 
 	/** computes entropy (aka randomness) in data
 	 *
@@ -206,6 +214,9 @@ private:
 
 	/** initializes members of class */
 	void init();
+
+	/*compute feature importance recursively**/
+	void compute_feature_importance(const std::shared_ptr<node_t>& node);
 
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
@@ -230,6 +241,8 @@ private:
 	/** flag storing whether weights of samples are specified using weights vector **/
 	bool m_weights_set;
 
+	/*stores feature importances**/
+	SGVector<float64_t> m_feature_importances;
 };
 } /* namespace shogun */
 
