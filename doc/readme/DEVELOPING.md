@@ -1,6 +1,6 @@
 # Developing Shogun
 
-This is a very basic checklist on how to get started with Shogun :
+This is a very basic checklist on how to get started with Shogun:
 
 1. Compile from source, see [INSTALL.md](INSTALL.md).
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
@@ -323,4 +323,3 @@ If you have doxygen installed, you can generate the documentation locally via ru
 and then opening `build/doc/doxygen/html/index.html` with the browser.
 
 With the `DOXYGEN_HTML_OUTPUT` cmake flag one can turn off HTML generation of the API documentation (`-DDOXYGEN_GENERATE_HTML=NO`).
-
