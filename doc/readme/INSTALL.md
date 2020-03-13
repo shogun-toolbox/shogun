@@ -156,7 +156,7 @@ You need at least 1GB free disk space. If you compile any interface, roughly 4 G
 
 ## Basics <a name="manual-basics"></a>
 Shogun uses [CMake](https://cmake.org/) for its build. The general workflow is now explained.
-For further details on testing etc, see [DEVELOPING.md](docs/DEVELOPING.md).
+For further details on testing etc, see [DEVELOPING.md](DEVELOPING.md).
 
 Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest development code.
 Potentially update submodules
@@ -286,27 +286,64 @@ On a Linux cluster without root access, using [Anaconda](https://www.continuum.i
 
 ## Windows build <a name="manual-windows"></a>
 
-Please see our [Azure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build.
-It is recommended to use "Visual Studio 16 2019" or "MSBuild".
-You will need to adjust all path names to the Windows style, e.g.
+Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogunml/shogun/_build?definitionId=2) build to get any other information on the build process.
+> It is recommended to use Visual Studio 16 2019" or "MSBuild".
 
-    git clone https://github.com/shogun-toolbox/shogun.git C:\projects\shogun
-    git submodule -q update --init
-    cd C:\projects\shogun
-    md build && cd build
+1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-You need to specify a different generator in cmake (to match your IDE), e.g.
+2. Open the start menu and run _Anaconda Prompt (Miniconda3)_
 
-    cmake -G"Visual Studio 16 2019 Win64" -DCMAKE_BUILD_TYPE=Release -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..  
-The above ```cmake``` has the following arguments:    
-1. ```Visual Studio 16 2019 Win64``` specifies the target platform to be x64.   
-2. ```-DCMAKE_BUILD_TYPE=Release``` specifies a build type and asks compiler to perform optimization and omit debug information.     
-3. ```-DBUILD_META_EXAMPLES=OFF``` specifies to not generate meta examples.   
-4. ```-DENABLE_TESTING=ON``` Enable testing while cmake.   
+3. Find the path of the _Native Tools Command Prompt for VS_ relative to your system and Visual studio (x32/x64, 2017/2019). For example for _x64 Native Tools Command Prompt for VS 2019_ it looks so: `%comspec% /k "X:\Path\To\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"`
 
+4. Execute this path in the _Anaconda Prompt_ to run _Native Tools_ there 
 
-Compiling works as
+5. Put these lines into the _Anaconda Prompt_:
+> rem - Records comments (remarks); @rem - do not print command just it's result (the rem result is empty)
 
-    msbuild "C:\projects\shogun\build\shogun.sln" /verbosity:minimal /t:Clean /p:Configuration=Release /p:Platform=x64
+> Be careful cmake can search out of the build directory to load libraries thus remove other directories that contain the shogun sources
 
-Note: If you use /m in msbuild command without specifying the number, it may occur out of memory errors.
+```Batchfile
+@rem [FILL THIS SECTION WITH THE VALUES YOU WANT
+@rem For example: SET MAIN_DIR=D:\Build
+SET MAIN_DIR=X:\Path\To\Build
+@rem Basically your number of cores
+SET MAX_CPU_COUNT=8
+@rem Take a look at https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#visual-studio-generators
+SET PLATFORM=-G "Visual Studio 16 2019" -A x64
+@rem FILL THIS SECTION WITH THE VALUES YOU WANT]
+
+SET REPO_DIR=%MAIN_DIR%\shogun
+SET VENV_DIR=%MAIN_DIR%\envs\shogun
+SET CLCACHE_DIR=%MAIN_DIR%\clcache
+SET SourcesDirectory=%REPO_DIR%\build
+SET BinariesDirectory=%MAIN_DIR%\binaries
+SET targetPrefix=%BinariesDirectory%\opt
+SET clcacheArtifactName=clcache-vs17
+SET buildConfiguration=Release
+SET SourceBranchName=develop
+
+git clone https://github.com/shogun-toolbox/shogun %REPO_DIR%
+CHDIR /d %REPO_DIR%
+git submodule update --init --force --depth=5
+conda create --quiet --prefix %VENV_DIR% --mkdir --yes python=3.6.* setuptools numpy scipy eigen snappy zlib ctags ply jinja2 gtest mkl-devel swig -c conda-forge
+activate %VENV_DIR%
+
+%REPO_DIR%\.ci\setup_clcache.cmd
+
+CHDIR /d %BinariesDirectory%
+%REPO_DIR%\.ci\get_latest_artifact.py %SourceBranchName% %clcacheArtifactName%
+@rem If there is no tar program in your Windows do:
+@rem conda install -c haasad eidl7zip --yes
+@rem FOR /F "delims=" %i IN ('where .\%clcacheArtifactName%:*.tar*') DO 7za x %i -so | 7za x -aoa -si -ttar -o%CLCACHE_DIR%
+@rem Or simply extract the file whose name is the output of the 'where .\%clcacheArtifactName%:*.tar*' command
+FOR /F "delims=" %i IN ('where .\%clcacheArtifactName%:*.tar*') DO tar --extract --file=%i --directory %CLCACHE_DIR% --gzip
+
+MKDIR %targetPrefix% %SourcesDirectory%
+CHDIR /d %SourcesDirectory%
+@rem It is necessary to have '/' not '\' in the DBLAS_LIBRARIES and DLAPACK_LIBRARIES attributes
+cmake %PLATFORM% -DCMAKE_BUILD_TYPE=%buildConfiguration% -DCMAKE_PREFIX_PATH=%VENV_DIR%\Library -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=%targetPrefix% -DBUILD_META_EXAMPLES=OFF -DBLAS_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib -DLAPACK_LIBRARIES=%VENV_DIR%/Library/lib/mkl_core_dll.lib ..
+
+cmake --build . --config %buildConfiguration% --target INSTALL -- -p:TrackFileAccess=false -p:CLToolExe=clcache.exe -maxcpucount:%MAX_CPU_COUNT%
+```
+
+5. The result will be in the targetPrefix dir (MAIN_DIR\binaries\opt).
