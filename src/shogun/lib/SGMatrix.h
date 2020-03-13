@@ -84,7 +84,11 @@ template<class T> class SGMatrix : public SGReferencedData
 #endif
 		bool on_gpu() const
 		{
+#ifdef HAVE_VIENNACL
 			return gpu_ptr != NULL;
+#else
+			return false;
+#endif
 		}
 
 #ifndef SWIG // SWIG should skip this part
@@ -497,9 +501,10 @@ template<class T> class SGMatrix : public SGReferencedData
 		virtual void free_data();
 
   private:
+#ifdef HAVE_VIENNACL
 		/** Atomic variable of vector on_gpu status */
 		std::atomic<bool> m_on_gpu;
-
+#endif
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
 		 */

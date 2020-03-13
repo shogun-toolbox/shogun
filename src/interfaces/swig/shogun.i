@@ -310,7 +310,7 @@ namespace shogun
 	T get_vector_as_matrix_dispatcher(const std::string& name)
 	{
 		SGVector<X> vec = $self->get<SGVector<X>>(name);
-		T mat(vec.data(), 1, vec.vlen, false);
+		T mat(vec, 1, vec.vlen);
 		return mat;
 	}
 #endif // SWIGJAVA

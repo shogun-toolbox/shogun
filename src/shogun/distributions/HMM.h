@@ -380,7 +380,7 @@ class HMM : public RandomMixin<Distribution>
 		/// Datatype that is used in parrallel computation of viterbi
 		struct S_DIM_THREAD_PARAM
 		{
-			std::shared_ptr<CHMM> hmm;
+			std::shared_ptr<HMM> hmm;
 			int32_t dim;
 			float64_t prob_sum;
 		};
@@ -388,7 +388,7 @@ class HMM : public RandomMixin<Distribution>
 		/// Datatype that is used in parrallel baum welch model estimation
 		struct S_BW_THREAD_PARAM
 		{
-			std::shared_ptr<CHMM> hmm;
+			std::shared_ptr<HMM> hmm;
 			int32_t dim_start;
 			int32_t dim_stop;
 
@@ -452,6 +452,12 @@ class HMM : public RandomMixin<Distribution>
 		 * @param y value to check against x
 		 */
 		bool converged(float64_t x, float64_t y);
+
+#ifdef USE_HMMPARALLEL_STRUCTURES
+		static void bw_dim_prefetch(S_BW_THREAD_PARAM* params);
+		static void bw_single_dim_prefetch(S_DIM_THREAD_PARAM* params);
+		static void vit_dim_prefetch(S_DIM_THREAD_PARAM* params);
+#endif
 
 		/** Train definitions.
 		 * Encapsulates Modelparameters that are constant/shall be learned.
@@ -756,12 +762,6 @@ class HMM : public RandomMixin<Distribution>
 		{
 			PSEUDO=pseudo ;
 		}
-
-#ifdef USE_HMMPARALLEL_STRUCTURES
-		static void* bw_dim_prefetch(void * params);
-		static void* bw_single_dim_prefetch(void * params);
-		static void* vit_dim_prefetch(void * params);
-#endif
 
 #ifdef FIX_POS
 		/** access function to set value in fix_pos_state vector in underlying model
@@ -1240,8 +1240,12 @@ class HMM : public RandomMixin<Distribution>
 		float64_t mod_prob;
 
 		/// true if model probability is up to date
+		#ifdef USE_HMMPARALLEL
+		std::atomic<bool> mod_prob_updated;
+		#else
 		bool mod_prob_updated;
-
+		#endif
+		
 		/// true if path probability is up to date
 		bool all_path_prob_updated;
 
