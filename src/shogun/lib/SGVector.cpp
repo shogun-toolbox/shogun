@@ -74,14 +74,18 @@ template<class T>
 SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vector(v), vlen(len), gpu_ptr(NULL)
 {
+#ifdef HAVE_VIENNACL
 	m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template<class T>
 SGVector<T>::SGVector(T* m, index_t len, index_t offset)
 : SGReferencedData(false), vector(m+offset), vlen(len)
 {
-	m_on_gpu.store(false, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template<class T>
@@ -90,7 +94,9 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 {
 	vector=SG_ALIGNED_MALLOC(T, len, alignment::container_alignment);
 	std::fill_n(vector, len, 0);
-	m_on_gpu.store(false, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template <class T>
@@ -100,7 +106,9 @@ SGVector<T>::SGVector(SGMatrix<T> matrix)
 {
 	ASSERT(!matrix.on_gpu())
 	vector = matrix.data();
+#ifdef HAVE_VIENNACL
 	m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template <class T>
@@ -108,7 +116,9 @@ SGVector<T>::SGVector(GPUMemoryBase<T>* gpu_vector, index_t len)
 	: SGReferencedData(true), vector(NULL), vlen(len),
 	  gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(gpu_vector))
 {
-	m_on_gpu.store(true, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(true, std::memory_order_release);
+#endif
 }
 
 template <class T>
@@ -164,14 +174,18 @@ template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_ptr(NULL)
 {
-	m_on_gpu.store(false, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template <class T>
 SGVector<T>::SGVector(EigenRowVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_ptr(NULL)
 {
-	m_on_gpu.store(false, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template <class T>
@@ -383,8 +397,10 @@ void SGVector<T>::copy_data(const SGReferencedData &orig)
 	gpu_ptr=std::shared_ptr<GPUMemoryBase<T>>(((SGVector*)(&orig))->gpu_ptr);
 	vector=((SGVector*)(&orig))->vector;
 	vlen=((SGVector*)(&orig))->vlen;
-	m_on_gpu.store(((SGVector*)(&orig))->m_on_gpu.load(
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(((SGVector*)(&orig))->m_on_gpu.load(
 		std::memory_order_acquire), std::memory_order_release);
+#endif
 }
 
 template<class T>
@@ -393,7 +409,9 @@ void SGVector<T>::init_data()
 	vector=NULL;
 	vlen=0;
 	gpu_ptr=NULL;
-	m_on_gpu.store(false, std::memory_order_release);
+#ifdef HAVE_VIENNACL
+    m_on_gpu.store(false, std::memory_order_release);
+#endif
 }
 
 template<class T>
