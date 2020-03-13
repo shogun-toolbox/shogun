@@ -2,7 +2,6 @@
 
 This is a very basic checklist on how to get started with Shogun:
 
-
 1. Compile from source, see [INSTALL.md](INSTALL.md).
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
 4. Run the [tests](#testing).
