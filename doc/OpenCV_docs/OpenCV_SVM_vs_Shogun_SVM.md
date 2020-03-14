@@ -1,6 +1,6 @@
 ###Support Vector Machines comparison between Shogun and OpenCV
 
-We will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+We will try to do a one to one comparison between the Shogun's implementation of LibSVM to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
 
 Let's start with the includes!
 
