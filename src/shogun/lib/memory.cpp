@@ -158,6 +158,35 @@ void* sg_aligned_malloc(size_t size, size_t al)
 	return p;
 }
 
+void* sg_aligned_realloc(void* ptr, size_t old_len, size_t len, size_t al)
+{
+	/* the value of size shall be an integral multiple of alignment. */
+	if (std::size_t rem = len & (al - 1))
+		len += al - rem;
+
+#if defined(USE_JEMALLOC)
+	void* p=je_realloc(ptr, len);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_realloc(ptr, len);
+#elif _MSC_VER
+	void* p = _aligned_realloc(ptr, len, al);
+#else
+	// unforunately std::realloc doesn't guarantee that
+	// the new memory area will be following the alignment
+	void* p = sg_aligned_malloc(len, al);
+	if (p)
+	{
+		std::memcpy(p, ptr, old_len);
+		SG_ALIGNED_FREE(ptr);
+	}
+#endif
+
+	if (!p && (len || !ptr))
+		allocation_error(p, len, "aligned_realloc");
+
+	return p;
+}
+
 #ifdef _MSC_VER
 void sg_aligned_free(void* ptr)
 {
@@ -168,22 +197,6 @@ void sg_aligned_free(void* ptr)
 #else
 	_aligned_free(ptr);
 #endif
-}
-
-void* sg_aligned_realloc(void* ptr, size_t len, size_t al)
-{
-#if defined(USE_JEMALLOC)
-	void* p=je_realloc(ptr, len);
-#elif defined(USE_TCMALLOC)
-	void* p=tc_realloc(ptr, len);
-#else
-	void* p=_aligned_realloc(ptr, len, al);
-#endif
-
-	if (!p && (len || !ptr))
-		allocation_error(p, len, "aligned_realloc");
-
-	return p;
 }
 #endif // _MSC_VER
 #endif // HAVE_ALIGNED_MALLOC

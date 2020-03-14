@@ -149,7 +149,7 @@ namespace shogun
 
 			[[nodiscard]] const Shape& get_shape() const { return m_shape; }
 
-			    [[nodiscard]] size_t size_in_bytes() const
+			[[nodiscard]] size_t size_in_bytes() const
 			{
 				return size() * m_type->size();
 			}

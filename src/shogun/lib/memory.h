@@ -50,12 +50,11 @@ void operator delete(void *p, std::align_val_t al);
 void operator delete[](void *p, std::align_val_t al);
 #endif // HAVE_ALIGNED_NEW
 #define SG_ALIGNED_MALLOC(type, len, al) sg_aligned_malloc<type>(size_t(len), al)
+#define SG_ALIGNED_REALLOC(type, ptr, old_len, len, al) sg_aligned_realloc<type>(ptr, size_t(old_len), size_t(len), al)
 #ifdef _MSC_VER
 #define SG_ALIGNED_FREE(ptr) sg_aligned_free(ptr)
-#define SG_ALIGNED_REALLOC(type, ptr, old_len, len, al) sg_aligned_realloc<type>(ptr, size_t(old_len), size_t(len), al)
 #else
 #define SG_ALIGNED_FREE(ptr) sg_generic_free(ptr)
-#define SG_ALIGNED_REALLOC(type, ptr, old_len, len, al) sg_generic_realloc<type>(ptr, size_t(old_len), size_t(len))
 #endif
 #else
 #ifdef _MSC_VER
@@ -146,15 +145,15 @@ T* sg_aligned_malloc(size_t len, size_t al)
 	return (T*) sg_aligned_malloc(sizeof(T)*len, al);
 }
 
-#ifdef _MSC_VER
-SHOGUN_EXPORT void sg_aligned_free(void* ptr);
-
-SHOGUN_EXPORT void* sg_aligned_realloc(void*, size_t len, size_t al);
+SHOGUN_EXPORT void* sg_aligned_realloc(void*, size_t old_len, size_t len, size_t al);
 template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 T* sg_aligned_realloc(T* ptr, size_t old_len, size_t len, size_t al)
 {
-	return (T*) sg_aligned_realloc(ptr, sizeof(T)*len, al);
+	return (T*) sg_aligned_realloc(ptr, sizeof(T)*old_len, sizeof(T)*len, al);
 }
+
+#ifdef _MSC_VER
+SHOGUN_EXPORT void sg_aligned_free(void* ptr);
 #endif // _MSC_VER
 #endif // HAVE_ALIGNED_MALLOC
 
