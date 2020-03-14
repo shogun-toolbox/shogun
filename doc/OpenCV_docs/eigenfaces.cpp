@@ -144,7 +144,7 @@ int main()
     //
     // So in effect we just reduced the dimensions of each of our training images
     // by 12 times.
-    // Just this is the work of PCA in Eigenfaces face recognition algorithm.
+    // This is just the work of PCA in Eigenfaces face recognition algorithm.
 
 
 
