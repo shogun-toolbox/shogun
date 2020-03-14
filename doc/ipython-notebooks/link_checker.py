@@ -44,11 +44,9 @@ if __name__ == '__main__':
     check_python()
     # enter name of file
     file_name = sys.argv[1]
-
     links = link_finder(file_name)
-    number_of_links = len(links)
     
-    for i in range(number_of_links):
-        return_code = link_checker(links[i])
+    for link in links:
+        return_code = link_checker(link)
         if(return_code != 200):
-            print(links[i]) 
+            print(link) 
