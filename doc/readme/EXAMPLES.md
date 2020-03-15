@@ -46,10 +46,6 @@ If you are porting a new example, great! Better yet, add the corresponding data.
 
 Please take inspiration from the existing examples, especially those that were written as part of the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016.
 
-A recent [pull request](https://github.com/shogun-toolbox/shogun/pull/4898), with corresponding data [pull request](https://github.com/shogun-toolbox/shogun-data) could serve as a great example highlighting the mishaps and the general procedure of example porting, use it as a reference.
-
-NOTE: As happened in the above case, please make sure to rebase both the submodule and main directory before making a PR.
-
 Please don't break the build. Always compile and run at least the C++ version of the example.
 Check potential requirements of C++ guards that can make a class used in the example unavailable (`HAVE_LAPACK`, `HAVE_NLOPT`, `USE_GPL_SHOGUN`, etc); potentially add them [here](https://github.com/shogun-toolbox/shogun/blob/develop/cmake/FindMetaExamples.cmake).
 
