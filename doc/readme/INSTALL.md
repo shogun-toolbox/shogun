@@ -330,6 +330,7 @@ activate %VENV_DIR%
 
 %REPO_DIR%\.ci\setup_clcache.cmd
 
+MKDIR %BinariesDirectory%
 CHDIR /d %BinariesDirectory%
 %REPO_DIR%\.ci\get_latest_artifact.py %SourceBranchName% %clcacheArtifactName%
 @rem If there is no tar program in your Windows do:
@@ -346,4 +347,4 @@ cmake %PLATFORM% -DCMAKE_BUILD_TYPE=%buildConfiguration% -DCMAKE_PREFIX_PATH=%VE
 cmake --build . --config %buildConfiguration% --target INSTALL -- -p:TrackFileAccess=false -p:CLToolExe=clcache.exe -maxcpucount:%MAX_CPU_COUNT%
 ```
 
-5. The result will be in the targetPrefix dir (MAIN_DIR\binaries\opt).
+5. Now you can use the Conda environment (located in VENV_DIR) containing shogun library in your Python projects!
