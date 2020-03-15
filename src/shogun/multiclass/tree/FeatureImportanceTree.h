@@ -14,19 +14,19 @@
 namespace shogun
 {
 
-	/** @brief class FeatureImportanceTree, a base class for the tree which need
-	 * computing feature importances. This class is derived from TreeMachine<T>
-	 * and stores the feature importances
+	/** @brief class FeatureImportanceTree, a mixin class for the tree which
+	 * needs computing feature importances. This class is derived from
+	 * TreeMachine<NodeType> and stores the feature importances
 	 *
 	 */
-	template <typename T>
-	class FeatureImportanceTree : public TreeMachine<T>
+	template <typename NodeType>
+	class FeatureImportanceTree : public TreeMachine<NodeType>
 	{
 
 	protected:
 		void compute_feature_importance(
 		    int32_t num_features,
-		    const std::shared_ptr<TreeMachineNode<T>>& node)
+		    const std::shared_ptr<TreeMachineNode<NodeType>>& node)
 		{
 			m_feature_importances = SGVector<float64_t>(num_features);
 			m_feature_importances.zero();
@@ -48,7 +48,7 @@ namespace shogun
 
 	private:
 		void compute_feature_importance_impl(
-		    const std::shared_ptr<TreeMachineNode<T>>& node)
+		    const std::shared_ptr<TreeMachineNode<NodeType>>& node)
 		{
 			const auto& children = node->get_children();
 			m_feature_importances[node->data.attribute_id] +=
