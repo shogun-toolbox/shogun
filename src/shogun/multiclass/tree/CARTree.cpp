@@ -30,10 +30,11 @@
 
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -42,22 +43,23 @@ const float64_t CARTree::MISSING=Math::MAX_REAL_NUMBER;
 const float64_t CARTree::EQ_DELTA=1e-7;
 const float64_t CARTree::MIN_SPLIT_GAIN=1e-7;
 
-CARTree::CARTree()
-: RandomMixin<TreeMachine<CARTreeNodeData>>()
+CARTree::CARTree() : RandomMixin<FeatureImportanceTree<CARTreeNodeData>>()
 {
 	init();
 }
 
 CARTree::CARTree(SGVector<bool> attribute_types, EProblemType prob_type)
-: RandomMixin<TreeMachine<CARTreeNodeData>>()
+    : RandomMixin<FeatureImportanceTree<CARTreeNodeData>>()
 {
 	init();
 	set_feature_types(attribute_types);
 	set_machine_problem_type(prob_type);
 }
 
-CARTree::CARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune)
-: RandomMixin<TreeMachine<CARTreeNodeData>>()
+CARTree::CARTree(
+    SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds,
+    bool cv_prune)
+    : RandomMixin<FeatureImportanceTree<CARTreeNodeData>>()
 {
 	init();
 	set_feature_types(attribute_types);
@@ -283,38 +285,9 @@ bool CARTree::train_machine(std::shared_ptr<Features> data)
 	// compute feature importances and normalize it
 	if (m_root)
 	{
-		m_feature_importances = SGVector<float64_t>(num_features);
-		compute_feature_importance(m_root->as<bnode_t>());
-		float64_t total_num_sample = m_root->data.total_weight;
-		linalg::scale(
-		    m_feature_importances, m_feature_importances, 1 / total_num_sample);
-		auto normalizer = linalg::sum(m_feature_importances);
-		if (normalizer > 0)
-			linalg::scale(
-			    m_feature_importances, m_feature_importances, 1 / normalizer);
+		compute_feature_importance(num_features, m_root);
 	}
 	return true;
-}
-
-void CARTree::compute_feature_importance(const std::shared_ptr<bnode_t>& node)
-{
-	const auto& left = node->left();
-	const auto& right = node->right();
-	if (left && right)
-	{
-		m_feature_importances[node->data.attribute_id] +=
-		    (node->data.impurity * node->data.total_weight -
-		     left->data.impurity * left->data.total_weight -
-		     right->data.impurity * right->data.total_weight);
-		if (left->data.num_leaves > 1)
-		{
-			compute_feature_importance(left);
-		}
-		if (right->data.num_leaves > 1)
-		{
-			compute_feature_importance(right);
-		}
-	}
 }
 
 SGVector<float64_t> CARTree::get_feature_importance()
@@ -1525,7 +1498,8 @@ void CARTree::init()
 	m_sorted_indices=SGMatrix<index_t>();
 
 	SG_ADD(
-	    &m_feature_importances, "feature_importances", "feature importances");
+	    &m_feature_importances, "feature_importances", "feature importances",
+	    ParameterProperties::READONLY);
 
 	SG_ADD(&m_pre_sort, "pre_sort", "presort");
 	SG_ADD(&m_sorted_features, "sorted_features", "sorted feats");

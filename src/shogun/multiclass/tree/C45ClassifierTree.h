@@ -37,6 +37,8 @@
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/C45TreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
+
 
 namespace shogun
 {
@@ -72,7 +74,7 @@ namespace shogun
  *
  * cf. http://tesis-algoritmo-c45.googlecode.com/files/C45.ppt
  */
-class C45ClassifierTree : public TreeMachine<C45TreeNodeData>
+class C45ClassifierTree : public FeatureImportanceTree<C45TreeNodeData>
 {
 public:
 	/** constructor */
@@ -215,8 +217,6 @@ private:
 	/** initializes members of class */
 	void init();
 
-	/*compute feature importance recursively**/
-	void compute_feature_importance(const std::shared_ptr<node_t>& node);
 
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
@@ -241,8 +241,6 @@ private:
 	/** flag storing whether weights of samples are specified using weights vector **/
 	bool m_weights_set;
 
-	/*stores feature importances**/
-	SGVector<float64_t> m_feature_importances;
 };
 } /* namespace shogun */
 

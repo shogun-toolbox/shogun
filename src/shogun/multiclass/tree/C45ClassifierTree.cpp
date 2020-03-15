@@ -34,13 +34,14 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/C45ClassifierTree.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
 
 using namespace shogun;
 
 const float64_t C45ClassifierTree::MISSING=Math::NOT_A_NUMBER;
 
 C45ClassifierTree::C45ClassifierTree()
-: TreeMachine<C45TreeNodeData>()
+    : FeatureImportanceTree<C45TreeNodeData>()
 {
 	init();
 }
@@ -142,43 +143,18 @@ bool C45ClassifierTree::train_machine(std::shared_ptr<Features> data)
 	feature_ids.range_fill();
 
 	set_root(C45train(data, m_weights, multiclass_labels(m_labels), feature_ids, 0));
-	// compute feature importances and normalize it
 	if (m_root)
 	{
-		m_feature_importances = SGVector<float64_t>(num_features);
-		m_feature_importances.zero();
-		compute_feature_importance(m_root);
-		float64_t total_num_sample = m_root->data.total_weight;
-		linalg::scale(
-		    m_feature_importances, m_feature_importances,
-		    1.0 / total_num_sample);
-		float64_t normalizer = linalg::sum(m_feature_importances);
-		if (normalizer > 0)
-			linalg::scale(
-			    m_feature_importances, m_feature_importances, 1.0 / normalizer);
+		compute_feature_importance(num_features, m_root);
 	}
 	return true;
 }
 
-void C45ClassifierTree::compute_feature_importance(
-    const std::shared_ptr<node_t>& node)
-{
-	auto childs = node->get_children();
-	m_feature_importances[node->data.attribute_id] +=
-	    node->data.impurity * node->data.total_weight;
-	for (const auto& child : childs)
-	{
-		m_feature_importances[node->data.attribute_id] -=
-		    child->data.impurity * child->data.total_weight;
-		if (child->data.attribute_id >= 0)
-		{
-			compute_feature_importance(child);
-		}
-	}
-}
-
 SGVector<float64_t> C45ClassifierTree::get_feature_importances() const
 {
+	require(
+	    m_feature_importances.size(),
+	    "get_feature_importance should be called after train");
 	return m_feature_importances;
 }
 
@@ -813,7 +789,8 @@ void C45ClassifierTree::init()
 	m_weights_set=false;
 	m_feature_importances = SGVector<float64_t>();
 	SG_ADD(
-	    &m_feature_importances, "m_feature_importances", "feature importances");
+	    &m_feature_importances, "feature_importances", "feature importances",
+	    ParameterProperties::READONLY);
 	SG_ADD(&m_nominal,"m_nominal", "feature types");
 	SG_ADD(&m_weights,"m_weights", "weights");
 	SG_ADD(&m_certainty,"m_certainty", "certainty");

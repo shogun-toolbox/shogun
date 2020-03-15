@@ -34,10 +34,11 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/CARTreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/multiclass/tree/CARTreeNodeData.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
+#include <shogun/multiclass/tree/TreeMachine.h>
 
 #include <vector>
 
@@ -79,7 +80,7 @@ namespace shogun
  * have gone from the node. \n
  * cf. http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-cart.htm
  */
-class CARTree : public RandomMixin<TreeMachine<CARTreeNodeData>>
+class CARTree : public RandomMixin<FeatureImportanceTree<CARTreeNodeData>>
 {
 public:
 	/** default constructor */
@@ -426,14 +427,6 @@ protected:
 
 	/** initializes members of class */
 	void init();
-
-	/** compute feature importances
-	 * 	this is the implementation from scikit learn
-	 *  cf.
-	 * https://github.com/scikit-learn/scikit-learn/blob/0abd95f742efea826df82458458fcbc0f9dafcb2/sklearn/tree/_tree.pyx#L1056
-	 */
-	void compute_feature_importance(const std::shared_ptr<bnode_t>& node);
-
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
 	static const float64_t MISSING;
@@ -488,9 +481,6 @@ protected:
 
 	/** minimum number of feature vectors required in a node **/
 	int32_t m_min_node_size;
-
-	/**stores feature importances**/
-	SGVector<float64_t> m_feature_importances;
 };
 } /* namespace shogun */
 
