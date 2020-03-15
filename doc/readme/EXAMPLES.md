@@ -35,12 +35,20 @@ Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manuall
 For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py` and `translate.py` in `examples/meta/generator/`.
 
 ## Adding new examples
-It is extremely simple to add a new example: simply create another `*.sg` file.
-We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy-paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).
+It is extremely simple to add a new example: simply create another `*.sg.in` file in the `examples/meta/src/*/` directory.
+For example, if you are porting `kernel-linear.py` then you should create `examples/meta/src/**kernel/linear.sg.in**`. To create the corresponding `.sg` file (which will be located in the build directory) run
+ ```
+ cmake .. && cmake --build . --target meta_examples
+ ```
+Please ensure `BUILD_META_EXAMPLES=ON` is set. We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the shogun's meta language. For further details have a look at [#3555](https://github.com/shogun-toolbox/shogun/issues/3555).
 
-If you are porting a new example, great! Better yet, add the [data](https://github.com/shogun-toolbox/shogun-data) so that we can do integration tests automatically as described in [DEVELOPING.md](DEVELOPING.md#testing).
+If you are porting a new example, great! Better yet, add the corresponding data. After building meta_examples a `*.dat` file is produced, which by default is under the `build/meta/cpp/*/` folder. This file is used for test integration and should be copied to your `data/` submodule under `testsuite/meta/*/` directory. Once that is done send a pull request to the [shogun-data repository](https://github.com/shogun-toolbox/shogun-data). Once that is done, finalize your changes a send a pull request from your main directory. 
 
 Please take inspiration from the existing examples, especially those that were written as part of the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016.
+
+A recent [pull request](https://github.com/shogun-toolbox/shogun/pull/4898), with corresponding data [pull request](https://github.com/shogun-toolbox/shogun-data) could serve as a great example highlighting the mishaps and the general procedure of example porting, use it as a reference.
+
+NOTE: As happened in the above case, please make sure to rebase both the submodule and main directory before making a PR.
 
 Please don't break the build. Always compile and run at least the C++ version of the example.
 Check potential requirements of C++ guards that can make a class used in the example unavailable (`HAVE_LAPACK`, `HAVE_NLOPT`, `USE_GPL_SHOGUN`, etc); potentially add them [here](https://github.com/shogun-toolbox/shogun/blob/develop/cmake/FindMetaExamples.cmake).
