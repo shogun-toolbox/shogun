@@ -52,12 +52,18 @@ struct id3TreeNodeData
 	/** class label of data (-1 for internal nodes) */
 	float64_t class_label;
 
+	/** total weight of training samples passing through this node **/
+	float64_t total_weight;
+
+	float64_t impurity;
 	/** constructor */
 	id3TreeNodeData()
 	{
 		attribute_id=-1;
 		transit_if_feature_value=-1.0;
 		class_label=-1.0;
+		impurity = 0;
+		total_weight = 0.;
 	}
 };
 

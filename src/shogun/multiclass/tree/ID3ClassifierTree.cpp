@@ -34,6 +34,7 @@
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
 #include <shogun/multiclass/tree/ID3ClassifierTree.h>
 
 #include <utility>
@@ -41,7 +42,7 @@
 using namespace shogun;
 
 ID3ClassifierTree::ID3ClassifierTree()
-: TreeMachine<id3TreeNodeData>()
+    : FeatureImportanceTree<id3TreeNodeData>()
 {
 }
 
@@ -78,9 +79,20 @@ bool ID3ClassifierTree::train_machine(std::shared_ptr<Features> data)
 
 	set_root(id3train(data, multiclass_labels(m_labels), feature_ids, 0));
 
+	if (m_root)
+	{
+		compute_feature_importance(num_features, m_root);
+	}
 	return true;
 }
 
+SGVector<float64_t> ID3ClassifierTree::get_feature_importances() const
+{
+	require(
+	    m_feature_importances.size(),
+	    "get_feature_importance should be called after train");
+	return m_feature_importances;
+}
 std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(const std::shared_ptr<Features>& data,
 	const std::shared_ptr<MulticlassLabels>& class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
@@ -127,10 +139,12 @@ std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(co
 	// else get the feature with the highest informational gain
 	float64_t max = 0;
 	int32_t best_feature_index = -1;
+	float64_t impurity = 0.0, max_impurity = 0.0;
 	for (int32_t i=0; i<feats->get_num_features(); i++)
 	{
-		float64_t gain = informational_gain_attribute(i,feats,class_labels);
-
+		float64_t gain =
+		    informational_gain_attribute(i, feats, class_labels, impurity);
+		max_impurity = std::max(impurity, max_impurity);
 		if (gain >= max)
 		{
 			max = gain;
@@ -195,6 +209,8 @@ std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(co
 		auto child = id3train(new_data, new_class_labels, new_feature_id_vector, level+1);
 		child->data.transit_if_feature_value = active_feature_value;
 		node->data.attribute_id = feature_id_vector[best_feature_index];
+		node->data.total_weight = num_vecs;
+		node->data.impurity = impurity;
 		node->add_child(child);
 
 
@@ -206,8 +222,9 @@ std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(co
 	return node;
 }
 
-float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data,
-								const std::shared_ptr<MulticlassLabels>& class_labels)
+float64_t ID3ClassifierTree::informational_gain_attribute(
+    int32_t attr_no, const std::shared_ptr<Features>& data,
+    const std::shared_ptr<MulticlassLabels>& class_labels, float64_t& impurity)
 {
 	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
@@ -254,6 +271,7 @@ float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, const
 	}
 
 	float64_t data_entropy = entropy(class_labels);
+	impurity = gain;
 	gain = data_entropy-gain;
 
 

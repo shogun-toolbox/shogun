@@ -34,11 +34,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/C45TreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/multiclass/tree/C45TreeNodeData.h>
 #include <shogun/multiclass/tree/FeatureImportanceTree.h>
-
+#include <shogun/multiclass/tree/TreeMachine.h>
 
 namespace shogun
 {
@@ -148,7 +147,7 @@ public:
 	/** clear feature types of various features */
 	void clear_feature_types();
 
-	/** get feature importance
+	/**
 	 * @return array of feature importance
 	 */
 	SGVector<float64_t> get_feature_importances() const;
@@ -216,7 +215,6 @@ private:
 
 	/** initializes members of class */
 	void init();
-
 
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */

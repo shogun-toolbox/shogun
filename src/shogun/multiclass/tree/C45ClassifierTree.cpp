@@ -667,17 +667,17 @@ float64_t C45ClassifierTree::entropy(const std::shared_ptr<MulticlassLabels>& la
 	SGVector<float64_t> log_ratios(unique_labels.size());
 	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
 
-	for (int32_t i=0;i<unique_labels.size();i++)
+	for (int32_t i = 0; i < unique_labels.size(); i++)
 	{
 		float64_t weight_count=0.;
-		for (int32_t j=0;j<labels_vector.vlen;j++)
+		for (int32_t j = 0; j < labels_vector.vlen; j++)
 		{
-			if (unique_labels[i]==labels_vector[j])
+			if (unique_labels[i] == labels_vector[j])
 			{
 				weight_count+=weights[j];
 			}
 		}
-		log_ratios[i] = std::log(weight_count/total_weight);
+		log_ratios[i] = std::log(weight_count / total_weight);
 	}
 
 	return Statistics::entropy(log_ratios.vector,log_ratios.vlen);
