@@ -103,6 +103,14 @@ namespace shogun
 					return true;
 				}
 
+				[[nodiscard]] size_t hash() const final
+				{
+					size_t seed = Node::hash();
+					seed = hash_combine(seed, m_transpose_a);
+					seed = hash_combine(seed, m_transpose_b);
+					return seed;
+				}
+
 			protected:
 				element_type check_type_compatible(
 				    const std::shared_ptr<Node>& A,

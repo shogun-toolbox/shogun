@@ -61,6 +61,11 @@ namespace shogun
 				return m_et;
 			}
 
+			[[nodiscard]] size_t hash() const 
+			{
+				return std::hash<element_type>{}(m_et);
+			}
+
 		private:
 			const element_type m_et;
 		};

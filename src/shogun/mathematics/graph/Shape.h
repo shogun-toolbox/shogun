@@ -16,6 +16,7 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/util/zip_iterator.h>
+#include <shogun/mathematics/graph/utils.h>
 
 namespace shogun
 {
@@ -139,6 +140,11 @@ namespace shogun
 			operator<<(std::ostream& os, const Shape& shape)
 			{
 				return os << shape.to_string();
+			}
+
+			[[nodiscard]] size_t hash() const 
+			{
+				return shogun::graph::hash(m_shape);
 			}
 
 		private:

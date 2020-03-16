@@ -8,6 +8,7 @@
 #define SHOGUN_NODES_BINARY_NODE_H_
 
 #include <shogun/mathematics/graph/nodes/Node.h>
+#include <shogun/mathematics/graph/utils.h>
 #include <shogun/util/enumerate.h>
 
 #define IGNORE_IN_CLASSLIST

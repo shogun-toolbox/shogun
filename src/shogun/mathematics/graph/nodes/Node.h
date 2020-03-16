@@ -91,6 +91,15 @@ namespace shogun
 
 				virtual bool requires_column_major_conversion() const = 0;
 
+				[[nodiscard]] virtual size_t hash() const
+				{
+					size_t seed = 0;
+					hash_combine(seed, m_types);
+					hash_combine(seed, m_shapes);
+					hash_combine(seed, m_input_nodes);
+					return seed;
+				}
+
 			protected:
 				std::vector<std::shared_ptr<Node>> m_input_nodes;
 				std::vector<Shape> m_shapes;
