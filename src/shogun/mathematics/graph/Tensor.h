@@ -156,7 +156,7 @@ namespace shogun
 				return get_size_from_shape(m_shape);
 			}
 
-			    [[nodiscard]] std::shared_ptr<NumberType> get_type() const
+		    [[nodiscard]] const std::shared_ptr<NumberType>& get_type() const
 			{
 				return m_type;
 			}
@@ -229,9 +229,9 @@ namespace shogun
 				    size.begin(), size.end(), size_t{1}, std::multiplies{});
 			}
 
-			protected :
-			    // the actual data in memory
-			    std::shared_ptr<Storage> m_storage;
+		protected :
+		    // the actual data in memory
+		    std::shared_ptr<Storage> m_storage;
 			// tensor shape
 			Shape m_shape;
 			// the underlying data type

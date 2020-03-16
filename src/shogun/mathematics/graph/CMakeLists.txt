@@ -1,4 +1,5 @@
 set(SHOGUN_CORE_GRAPH_HEADERS
+	${CMAKE_CURRENT_SOURCE_DIR}/Array.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Graph.h
 	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Shape.h
@@ -198,5 +199,6 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/Exp_test)
 	add_graph_test(Graph_test)
 	add_graph_test(Tensor_test)
+	add_graph_test(Array_test)
 
 ENDIF()
