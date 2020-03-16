@@ -131,12 +131,12 @@ namespace shogun
 
 		public:
 			template <typename T>
-			Array(const T& input) : m_output_tensor(input)
+			Array(const T& input) : m_output_tensor(std::make_shared<Tensor>(input))
 			{
 				m_lazy_expr = std::make_unique<LazyExpr>(m_output_tensor);
 			}
 
-			template <typename T>
+			template <typename T, std::enable_if_t<std::is_rvalue_reference_v<T&&>>* = nullptr>
 			Array(T&& input)
 			    : m_output_tensor(std::make_shared<Tensor>(std::move(input)))
 			{
