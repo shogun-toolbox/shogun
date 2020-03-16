@@ -106,6 +106,17 @@ namespace shogun
 			return sg_graph_backend;
 		}
 
+		/** set the global graph backend
+		 *
+		 * @return the backend enum
+		 */
+		void set_graph_backend(GRAPH_BACKEND backend)
+		{
+			// if (!shogun::graph::available_backends().count(backend))
+				sg_graph_backend = backend;
+			// else
+			// 	error("Backend not available.");
+		}
 
 	private:
 		/** Default constructor

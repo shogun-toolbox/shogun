@@ -39,6 +39,12 @@ namespace shogun
 				m_output = input;
 			}
 
+			LazyExpr(const std::unordered_map<
+			    std::shared_ptr<node::Input>, std::shared_ptr<Tensor>>& inputs, 
+			    std::shared_ptr<node::Node>& output, Protected): m_inputs(inputs), m_output(output)
+			{
+			}
+
 			LazyExpr(Protected)
 			{
 			}
@@ -85,12 +91,9 @@ namespace shogun
 				return m_output;
 			}
 
-			std::unique_ptr<LazyExpr> copy()
+			[[nodiscard]] std::unique_ptr<LazyExpr> copy()
 			{
-				auto result = std::make_unique<LazyExpr>(Protected{});
-				result->m_inputs = m_inputs;
-				result->m_output = m_output;
-				return result;
+				return std::make_unique<LazyExpr>(m_inputs, m_output, Protected{});
 			}
 
 		private:
@@ -122,14 +125,15 @@ namespace shogun
 			struct Protected
 			{
 			};
-			Array(Protected)
-			{
-			}
 
 			std::unique_ptr<LazyExpr> m_lazy_expr;
 			std::shared_ptr<Tensor> m_output_tensor;
 
 		public:
+			Array(Protected)
+			{
+			}
+
 			template <typename T>
 			Array(const T& input) : m_output_tensor(std::make_shared<Tensor>(input))
 			{
