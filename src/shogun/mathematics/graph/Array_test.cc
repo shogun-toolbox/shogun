@@ -31,16 +31,18 @@ TYPED_TEST(GraphTest, array_lvalue)
 	auto intermediate = input1 + input1;
 	auto output = intermediate + input2;
 
-	auto result = output->evaluate()->template as<SGVector<NumericType>>();
-
-	// for (const auto& [expected_i, result_i] :
-	//      zip_iterator(expected_result1, intermediate->eval()))
-	// {
-	// 	EXPECT_EQ(expected_i, result_i);
-	// }
+	auto result1 =
+	    intermediate->evaluate()->template as<SGVector<NumericType>>();
+	auto result2 = output->evaluate()->template as<SGVector<NumericType>>();
 
 	for (const auto& [expected_i, result_i] :
-	     zip_iterator(expected_result2, result))
+	     zip_iterator(expected_result1, result1))
+	{
+		EXPECT_EQ(expected_i, result_i);
+	}
+
+	for (const auto& [expected_i, result_i] :
+	     zip_iterator(expected_result2, result2))
 	{
 		EXPECT_EQ(expected_i, result_i);
 	}

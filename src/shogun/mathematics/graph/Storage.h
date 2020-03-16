@@ -103,12 +103,14 @@ namespace shogun
 					    ptr, size, type, NonOwning{});
 				}
 
-				void
-				realloc(size_t old_size, size_t size, const std::shared_ptr<NumberType>& type)
+				void realloc(
+				    size_t old_size, size_t size,
+				    const std::shared_ptr<NumberType>& type)
 				{
 					void* new_mem = sg_aligned_realloc(
-						m_internal_data.get(), size_in_bytes(old_size, type),
-						size_in_bytes(size, type), alignment::container_alignment);
+					    m_internal_data.get(), size_in_bytes(old_size, type),
+					    size_in_bytes(size, type),
+					    alignment::container_alignment);
 					// sg_aligned_realloc throws ShogunException if it failed
 					m_internal_data.reset(new_mem);
 				}
@@ -265,7 +267,8 @@ namespace shogun
 						// memory
 						if (get_size_from_shape(shape) > size())
 						{
-							m_data->realloc(size(), get_size_from_shape(shape), m_type);
+							m_data->realloc(
+							    size(), get_size_from_shape(shape), m_type);
 						}
 						// otherwise nothing happens, we just own a larger
 						// memory block but only use part of it
@@ -286,7 +289,7 @@ namespace shogun
 
 			[[nodiscard]] void* data() { return m_data->m_internal_data.get(); }
 
-			[[nodiscard]] size_t size() const
+			    [[nodiscard]] size_t size() const
 			{
 				return get_size_from_shape(m_shape);
 			}

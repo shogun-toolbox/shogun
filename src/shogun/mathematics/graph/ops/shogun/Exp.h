@@ -40,9 +40,8 @@ namespace shogun
 					std::transform(
 					    static_cast<const T*>(input),
 					    static_cast<const T*>(input) + size,
-					    static_cast<T*>(output), [](const T& el) {
-						    return std::exp(el);
-					    });
+					    static_cast<T*>(output),
+					    [](const T& el) { return std::exp(el); });
 				}
 			};
 		} // namespace op

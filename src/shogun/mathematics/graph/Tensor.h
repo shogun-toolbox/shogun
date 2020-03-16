@@ -229,7 +229,7 @@ namespace shogun
 				    size.begin(), size.end(), size_t{1}, std::multiplies{});
 			}
 
-		protected :
+		protected:
 		    // the actual data in memory
 		    std::shared_ptr<Storage> m_storage;
 			// tensor shape
