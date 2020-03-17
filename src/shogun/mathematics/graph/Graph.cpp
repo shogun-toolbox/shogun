@@ -37,6 +37,7 @@ void Graph::build(GRAPH_BACKEND backend)
 		    kGraphNames.at(backend));
 
 	build_backend_graph(unordered_nodes);
+	m_current_backend = backend;
 }
 
 unordered_map<shared_ptr<node::Node>, Graph::STATUS>
@@ -96,12 +97,10 @@ Graph::evaluate(const vector<shared_ptr<Tensor>>& tensors)
 void Graph::build_backend_graph(
     unordered_map<shared_ptr<node::Node>, Graph::STATUS>& unordered_nodes)
 {
-	deque<shared_ptr<node::Node>> ordered_nodes;
-
 	// DAG topological sorting algorithm with DFS
 	for (const auto& node : unordered_nodes)
 	{
-		order_graph_visit_(node.first, unordered_nodes, ordered_nodes);
+		order_graph_visit_(node.first, unordered_nodes, m_cached_nodes);
 	}
 
 	// get input operators
@@ -110,7 +109,7 @@ void Graph::build_backend_graph(
 		m_executor->add_input_operator(node);
 	}
 
-	for (const auto& node : ordered_nodes)
+	for (const auto& node : m_cached_nodes)
 	{
 		// node not an input so safe to assume it's an operator
 		if (find(m_inputs.begin(), m_inputs.end(), node) == m_inputs.end())
@@ -121,7 +120,7 @@ void Graph::build_backend_graph(
 void Graph::order_graph_visit_(
     const shared_ptr<node::Node>& node,
     unordered_map<shared_ptr<node::Node>, Graph::STATUS>& all_nodes,
-    deque<shared_ptr<node::Node>>& result)
+    vector<shared_ptr<node::Node>>& result)
 {
 	auto& node_status = all_nodes[node];
 	if (node_status == STATUS::MARKED)
@@ -140,4 +139,14 @@ void Graph::order_graph_visit_(
 	if (node->requires_column_major_conversion())
 		m_executor->set_requires_major_conversion(true);
 	result.push_back(node);
+}
+
+
+size_t Graph::hash() const
+{
+	size_t seed = 0;
+	seed = hash_combine(seed, m_cached_nodes);
+	if (m_executor)
+		seed = hash_combine(seed, m_current_backend);
+	return seed;
 }

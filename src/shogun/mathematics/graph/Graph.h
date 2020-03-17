@@ -43,6 +43,18 @@ namespace shogun
 			void build();
 			void build(GRAPH_BACKEND backend);
 
+			size_t hash() const;
+
+			bool operator==(const Graph& other) const
+			{
+				return hash() == other.hash();
+			}
+
+			bool operator!=(const Graph& other) const
+			{
+				return !(*this == other);
+			}
+
 		private:
 			std::unordered_map<std::shared_ptr<node::Node>, STATUS>
 			check_fully_connected(
@@ -55,12 +67,13 @@ namespace shogun
 			    const std::shared_ptr<node::Node>& node,
 			    std::unordered_map<std::shared_ptr<node::Node>, Graph::STATUS>&
 			        all_nodes,
-			    std::deque<std::shared_ptr<node::Node>>& result);
+			    std::vector<std::shared_ptr<node::Node>>& result);
 
 			std::vector<std::shared_ptr<node::Input>> m_inputs;
 			std::vector<std::shared_ptr<node::Node>> m_outputs;
 
-			std::deque<std::shared_ptr<node::Node>> m_cached_nodes;
+			std::vector<std::shared_ptr<node::Node>> m_cached_nodes;
+			GRAPH_BACKEND m_current_backend;
 
 			std::shared_ptr<GraphExecutor> m_executor;
 		};

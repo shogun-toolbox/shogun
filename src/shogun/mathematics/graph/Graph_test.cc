@@ -19,6 +19,44 @@ using namespace shogun;
 using namespace shogun::graph;
 using namespace std;
 
+TYPED_TEST(GraphTest, abtract_graph_hash)
+{
+	using NumericType = typename TypeParam::c_type;
+
+	if constexpr (std::is_same_v<NumericType, bool>)
+		return;
+	
+	auto input =
+	    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
+	auto input1 = make_shared<node::Input>(Shape{10}, TypeParam::type_id);
+
+	auto intermediate = input + input;
+
+	auto output = intermediate + input1;
+
+	auto graph1 = make_shared<Graph>(
+	    vector{input, input1},
+	    vector<shared_ptr<node::Node>>{intermediate, output});
+
+	auto graph2 = make_shared<Graph>(
+	    vector{input, input1},
+	    vector<shared_ptr<node::Node>>{intermediate, output});
+
+	auto graph3 = make_shared<Graph>(
+	    vector{input, input1},
+	    vector<shared_ptr<node::Node>>{output});
+
+	for (auto&& backend : this->m_backends)
+	{
+		graph1->build(backend);
+		graph2->build(backend);
+		graph3->build(backend);
+
+		EXPECT_EQ(*graph1, *graph2);
+		EXPECT_NE(*graph1, *graph3);
+	}
+}
+
 TYPED_TEST(GraphTest, perceptron_stochastic_gradient_descent)
 {
 #if 0
