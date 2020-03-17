@@ -1,5 +1,4 @@
 FIND_PACKAGE(Jinja2)
-FIND_PACKAGE(Ctags)
 
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
