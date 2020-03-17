@@ -427,7 +427,9 @@ IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
 ENDIF()
 
 # RapidJSON
-find_package(RapidJSON)
+if (NOT DEFINED RapidJSON_FOUND)
+  find_package(RapidJSON)
+endif()
 if (NOT RapidJSON_FOUND)
   include(external/RapidJSON)
 endif()
