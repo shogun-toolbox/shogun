@@ -427,6 +427,7 @@ IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
 ENDIF()
 
 # RapidJSON
+# FIXME: external rapidJSON detection
 if (NOT DEFINED RapidJSON_FOUND)
   find_package(RapidJSON)
 endif()
