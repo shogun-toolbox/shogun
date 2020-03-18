@@ -38,7 +38,7 @@ IF (LAPACK_FOUND)
         endif()
       endif()
     endif()
-  ELSEIF(EXISTS "${LAPACK_LIBRARIES}" AND "${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_.*")
+  ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_.*")
     # in case MKL is available enable Eigen to use it.
     # for more fine grained control and details see:
     # https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html
@@ -122,8 +122,9 @@ IF (LAPACK_FOUND)
           ENDIF()
       ENDIF()
     ENDIF()
-    # if LaPack is detected use the lapack/blas backend in Eigen
-    IF(ENABLE_EIGEN_LAPACK AND HAVE_LAPACK)
+    # if LaPack is detected and Eigen is 3.3 or later
+    # use the lapack/blas backend in Eigen
+    IF(${EIGEN_VERSION} VERSION_GREATER 3.3.0 AND ENABLE_EIGEN_LAPACK AND HAVE_LAPACK)
       SET(EIGEN_USE_BLAS 1)
       MESSAGE(STATUS "Enabling detected BLAS library as backend for Eigen")
 

@@ -1,0 +1,62 @@
+File f_feats = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
+File f_labels = csv_file("@SHOGUN_DATA@/label_train_twoclass.dat")
+
+#![create_features]
+Features features_train = features(f_feats)
+Features combined_features = features("CombinedFeatures")
+combined_features.add("feature_array", features_train)
+combined_features.add("feature_array", features_train)
+combined_features.add("feature_array", features_train)
+Labels labels_train = labels(f_labels)
+#![create_features]
+
+#![create_kernel]
+Kernel poly_kernel = kernel("PolyKernel", degree=2)
+Kernel gauss_kernel_1 = kernel("GaussianKernel", log_width=0.0)
+Kernel gauss_kernel_2 = kernel("GaussianKernel", log_width=1.0)
+#![create_kernel]
+
+#![create_combined_train]
+Kernel combined_kernel = kernel("CombinedKernel") 
+combined_kernel.add("kernel_array", poly_kernel)
+combined_kernel.add("kernel_array", gauss_kernel_1)
+combined_kernel.add("kernel_array", gauss_kernel_2)
+combined_kernel.init(combined_features, combined_features)
+#![create_combined_train]
+
+#![create_classifier]
+Machine libsvm = machine("LibSVM")
+Machine svm = machine("MKLClassification", kernel=combined_kernel, interleaved_optimization=False, svm=as_svm(libsvm))
+#![create_classifier]
+
+#![create_cross_validation]
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=5, seed=2)
+Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
+MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=combined_features, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+#![create_cross_validation]
+
+#![create_observer]
+ParameterObserver mkl_obs = parameter_observer("ParameterObserverCV")
+cross.subscribe(mkl_obs)
+#[!create_observer]
+
+#![evaluate_and_get_result]
+EvaluationResult result = cross.evaluate()
+#![evaluate_and_get_result]
+
+#![get_results]
+real mean = result.get_real("mean")
+real stddev = result.get_real("std_dev")
+#![get_results]
+
+#![get_fold_machine]
+ObservedValue obs_v = mkl_obs.get_observation(0)
+EvaluationResult cross_validation_run = as_evaluation_result(obs_v.get("cross_validation_run"))
+EvaluationResult fold = as_evaluation_result(cross_validation_run.get("folds", 0))
+Machine machine_mkl = as_machine(fold.get("trained_machine"))
+#![get_fold_machine]
+
+#![get_weights]
+Kernel k = as_kernel(machine_mkl.get("kernel"))
+RealVector w = k.get_subkernel_weights()
+#![get_weights]

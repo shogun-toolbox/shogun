@@ -97,7 +97,7 @@ public:
 	 */
 	std::shared_ptr<TreeMachineNode<T>> parent()
 	{
-		return m_parent;
+		return m_parent.lock();
 	}
 
 	/** set children
@@ -153,7 +153,7 @@ public:
 
 protected:
 	/** parent node */
-	std::shared_ptr<TreeMachineNode<T>> m_parent;
+	std::weak_ptr<TreeMachineNode<T>> m_parent;
 
 	/** machine index */
 	int32_t m_machine;

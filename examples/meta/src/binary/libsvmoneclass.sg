@@ -1,0 +1,22 @@
+CSVFile traindat("../../data/fm_train_real.dat")
+CSVFile testdat("../../data/fm_test_real.dat")
+
+#![create_features]
+Features feats_train = features(traindat)
+Features feats_test = features(testdat)
+#![create_features]
+
+#![create_kernel]
+Kernel k = kernel("GaussianKernel", log_width=2.1)
+#![create_kernel]
+
+#![create_classifier]
+Machine svm = machine("LibSVMOneClass", C1=1.0, C2=1.0, kernel=k,  epsilon=0.00001)
+#![create_classifier]
+
+#![train_and_apply]
+svm.train(feats_train)
+Labels predictions = svm.apply(feats_test)
+#![train_and_apply]
+
+RealVector labels = predictions.get_real_vector("labels")

@@ -32,7 +32,6 @@
  */
 #include <shogun/lib/config.h>
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

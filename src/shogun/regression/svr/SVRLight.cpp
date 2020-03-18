@@ -537,8 +537,8 @@ void SVRLight::update_linear_component_mkl(
 	}
 	else // hope the kernel is fast ...
 	{
-		float64_t* w_backup = SG_MALLOC(float64_t, num_kernels);
-		float64_t* w1 = SG_MALLOC(float64_t, num_kernels);
+		SGVector<float64_t> w_backup(num_kernels);
+		SGVector<float64_t> w1(num_kernels);
 
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
@@ -549,7 +549,7 @@ void SVRLight::update_linear_component_mkl(
 		for (int32_t n=0; n<num_kernels; n++)
 		{
 			w1[n]=1.0 ;
-			kernel->set_subkernel_weights(SGVector<float64_t>(w1, num_weights)) ;
+			kernel->set_subkernel_weights(w1) ;
 
 			for(int32_t i=0;i<num;i++)
 			{
@@ -563,10 +563,8 @@ void SVRLight::update_linear_component_mkl(
 		}
 
 		// restore old weights
-		kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
+		kernel->set_subkernel_weights(w_backup);
 
-		SG_FREE(w_backup);
-		SG_FREE(w1);
 	}
 
 	call_mkl_callback(a, label, lin, c, totdoc);
@@ -586,8 +584,8 @@ void SVRLight::update_linear_component_mkl_linadd(
 
 	ASSERT(num_weights==num_kernels)
 
-	float64_t* w_backup=SG_MALLOC(float64_t, num_kernels);
-	float64_t* w1=SG_MALLOC(float64_t, num_kernels);
+	SGVector<float64_t> w_backup(num_kernels);
+	SGVector<float64_t> w1(num_kernels);
 
 	// backup and set to one
 	for (int32_t i=0; i<num_kernels; i++)
@@ -596,7 +594,7 @@ void SVRLight::update_linear_component_mkl_linadd(
 		w1[i]=1.0 ;
 	}
 	// set the kernel weights
-	kernel->set_subkernel_weights(SGVector<float64_t>(w1, num_weights));
+	kernel->set_subkernel_weights(w1);
 
 	// create normal update (with changed alphas only)
 	kernel->clear_normal();
@@ -611,7 +609,7 @@ void SVRLight::update_linear_component_mkl_linadd(
 		kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
 
 	// restore old weights
-	kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
+	kernel->set_subkernel_weights(w_backup);
 
 	call_mkl_callback(a, label, lin, c, totdoc);
 }

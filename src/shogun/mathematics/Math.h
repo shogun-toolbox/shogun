@@ -1185,7 +1185,7 @@ class Math : public SGObject
 				error("Math::qsort_backword_index():: \
 					Not supported for complex128_t");
 			}
-
+#ifdef HAVE_PTHREAD
 		/** Performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
@@ -1222,6 +1222,7 @@ class Math : public SGObject
 		/// helper function for parallel_qsort_index.
 		template <class T1,class T2>
 			static void* parallel_qsort_index(void* p);
+#endif
 
 		/** Finds the smallest element in output and puts that element as the
 		 * first element
@@ -1565,6 +1566,7 @@ class Math : public SGObject
 #endif
 };
 
+#ifdef HAVE_PTHREAD
 //implementations of template functions
 template <class T1,class T2>
 void* Math::parallel_qsort_index(void* p)
@@ -1674,6 +1676,7 @@ void* Math::parallel_qsort_index(void* p)
 
 		return NULL;
 	}
+#endif
 
 	template <class T1,class T2>
 void Math::qsort_index(T1* output, T2* index, uint32_t size)

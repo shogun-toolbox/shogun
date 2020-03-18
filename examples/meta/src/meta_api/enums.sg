@@ -1,7 +1,0 @@
-# enums visible to the interfaces
-File f = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
-Features feats = features(f, enum EPrimitiveType.PT_FLOAT64)
-
-# internal class C++ enums are not visible to the interfaces but can be passed
-# as simple strings
-Machine m = machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC")

@@ -19,10 +19,11 @@ limitations under the License.
 
 #include "histogram.h"
 #include <float.h>
-#include <math.h>
 #include <vector>
 #include <algorithm>
 #include <tflogger/summary.pb.h>
+
+#include <shogun/mathematics/Math.h>
 
 namespace tensorflow {
 namespace histogram {

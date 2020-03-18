@@ -108,8 +108,6 @@ class MKL : public SVM
 		 */
 		inline void set_svm(std::shared_ptr<SVM> s)
 		{
-			
-			
 			svm=s;
 		}
 

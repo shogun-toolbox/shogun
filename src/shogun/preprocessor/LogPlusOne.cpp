@@ -57,10 +57,9 @@ SGMatrix<float64_t> LogPlusOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 /// result in feature matrix
 SGVector<float64_t> LogPlusOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* log_vec = SG_MALLOC(float64_t, vector.vlen);
-
+	SGVector<float64_t> log_vec(vector.vlen);
 	for (int32_t i=0; i<vector.vlen; i++)
 		log_vec[i] = std::log(vector.vector[i] + 1.0);
 
-	return SGVector<float64_t>(log_vec,vector.vlen);
+	return log_vec;
 }

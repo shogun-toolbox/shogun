@@ -351,7 +351,7 @@ std::shared_ptr<Features> SNPFeatures::duplicate() const
 SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 {
 	int32_t nsym=3;
-	float64_t* h= SG_CALLOC(float64_t, size_t(nsym)*string_length/2);
+	SGMatrix<float64_t> h(nsym, string_length/2);
 
 	float64_t* h_normalizer=SG_MALLOC(float64_t, string_length/2);
 	memset(h_normalizer, 0, string_length/2*sizeof(float64_t));
@@ -402,7 +402,7 @@ SGMatrix<float64_t> SNPFeatures::get_histogram(bool normalize)
 	}
 	SG_FREE(h_normalizer);
 
-	return SGMatrix<float64_t>(h, nsym, string_length/2);
+	return h;
 }
 
 SGMatrix<float64_t> SNPFeatures::get_2x3_table(const std::shared_ptr<SNPFeatures>& pos, const std::shared_ptr<SNPFeatures>& neg)
@@ -411,7 +411,7 @@ SGMatrix<float64_t> SNPFeatures::get_2x3_table(const std::shared_ptr<SNPFeatures
 	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length())
 	int32_t len=pos->strings->get_max_vector_length();
 
-	float64_t* table=SG_MALLOC(float64_t, 3*2*len/2);
+	SGMatrix<float64_t> table(2, 3*len/2);
 
 	SGMatrix<float64_t> p_hist=pos->get_histogram(false);
 	SGMatrix<float64_t> n_hist=neg->get_histogram(false);
@@ -419,8 +419,8 @@ SGMatrix<float64_t> SNPFeatures::get_2x3_table(const std::shared_ptr<SNPFeatures
 
 	for (int32_t i=0; i<3*len/2; i++)
 	{
-		table[2*i]=p_hist.matrix[i];
-		table[2*i+1]=n_hist.matrix[i];
+		table.matrix[2*i]=p_hist.matrix[i];
+		table.matrix[2*i+1]=n_hist.matrix[i];
 	}
-	return SGMatrix<float64_t>(table, 2,3*len/2);
+	return table;
 }

@@ -9,7 +9,7 @@ See also [DEVELOPING.md](DEVELOPING.md) for their role in testing.
  * [HTML Cookbook](#cookbook)
 
 # Automatically generated examples <a name="meta_examples"></a>
-In Shogun, writing a single example files covers all interface languages at once, a subset can be seen on [our website](http://shogun.ml/examples).
+In Shogun, writing a single example file covers all interface languages at once, a subset can be seen on [our website](http://shogun.ml/examples).
 
 The listings that can be found in `examples/meta/src/*/*.sg` contain example code in a meta-language that is specific to Shogun.
 During the build, these are parsed and then translated with the (Python) machinery in `examples/meta/generator/*.py`.
@@ -35,10 +35,10 @@ Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manuall
 For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py` and `translate.py` in `examples/meta/generator/`.
 
 ## Adding new examples
-It is extremely simple to add a new example: simple create another `*.sg` file.
-We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).
+It is extremely simple to add a new example: simply create another `*.sg` file.
+We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy-paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).
 
-If you porting an example is great, even better is when it comes with integration testing data of the numerical output, as described in [DEVELOPING.md](DEVELOPING.md#testing).
+If you are porting a new example, great! Better yet, add the [data](https://github.com/shogun-toolbox/shogun-data) so that we can do integration tests automatically as described in [DEVELOPING.md](DEVELOPING.md#testing).
 
 Please take inspiration from the existing examples, especially those that were written as part of the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016.
 
@@ -57,9 +57,9 @@ E.g. for the example `examples/meta/src/multiclass/k_nearest_neighbours.sg`, thi
 
     touch doc/cookbook/source/examples/multiclass/k_nearest_neighbours.rst
 
-Edit the file so that it contains details on API example and references to code snippets.
+Edit the file so that it contains details on the API example and references to code snippets.
 The point is to **not** show the full file listing but only snippets.
-The file should furthermore contain basic math in the form of LaTeX, important references (wikipedia, scientific paper references using BibTeX, other pages, etc).
+The file should furthermore contain basic math in the form of LaTeX, important references (Wikipedia, scientific paper references using BibTeX, other pages, etc).
 Take inspiration from existing pages.
 
 If you are adding a new topic (like "kernels" or "regression") you will also need to update the `index.rst` file in `doc/cookbook/source/`. Follow the template of the existing cookbooks.
@@ -67,8 +67,8 @@ If you are adding a new topic (like "kernels" or "regression") you will also nee
 ### Tips for cookbook pages
 
  * Orient yourself closely to reference examples, especially those written during the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016. 
- * Write proper English. Pay attention to grammar, spelling, and punctuation.
- * Keep the example **specific**. Only talk about the particular algorithm and its interface, avoid general concepts (such as 'supervised learning').
+ * Write a proper English. Pay attention to grammar, spelling, and punctuation.
+ * Keep the example **specific**. Talk only about the particular algorithm and its interface, avoid general concepts (such as 'supervised learning').
  * Keep the example **local**. Only show code snippets that illustrate API usage, avoid showing the full listing.
  * Let the **code** speak for itself. Avoid useless statements that are clear from the code.
     Avoid statements like "we call the `train` method", but rather "we train the model via".
@@ -93,6 +93,12 @@ You can render it with
 
 which is also part of `make doc`.
 The target might not be available if the requirements in `doc/cookbook/requirements.txt` are not satisfied (in particular Sphinx), or if the meta examples are disabled.
+
+In case the `cookbook` target is still missing then inspect the following. 
+
+Find out if the value of `SPHINX_EXECUTABLE` is set by searching for it in CMakeCache.txt which is present in the build directory. If it's not set, then it is the `sphinx-build` that has not been found by the cmake. In this case re-run the cmake script with an explicit path to the `sphinx-build` file. The file can be located by using the command `locate sphinx-build`. Once `sphinx-build` has been located, use the `-DSPHINX_EXECUTABLE="<path/to/sphinx-build>"` cmake flag to specify the `sphinx-build` location. In other words re-run cmake with the following options:
+
+    cmake -DSPHINX_EXECUTABLE="<path/to/sphinx-build>" -DBUILD_META_EXAMPLES=ON [other cmake options] ..
 
 After the cookbook has been rendered, you can view it for example running
 

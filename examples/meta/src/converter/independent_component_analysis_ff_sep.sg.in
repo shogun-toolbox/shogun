@@ -1,0 +1,19 @@
+File f_feats = csv_file("@SHOGUN_DATA@/ica_2_sources.dat")
+
+#![create_features]
+Features feats = features(f_feats)
+#![create_features]
+
+#![set_parameters]
+Transformer ica = transformer("FFSep", max_iter=200, tol=0.00001)
+#![set_parameters]
+
+#![apply_convert]
+ica.fit(feats)
+Features converted = ica.transform(feats)
+#![apply_convert]
+
+#![extract]
+RealMatrix mixing_matrix = ica.get_real_matrix("mixing_matrix")
+RealMatrix unmixed_signal = converted.get_real_matrix("feature_matrix")
+#![extract]

@@ -31,6 +31,7 @@ namespace shogun
 		    T min = 0, T max = std::numeric_limits<T>::max())
 		    : m_min(min), m_max(max)
 		{
+			require(min <= max, "The minimum value ({}) should be always less than or equal the maximum value ({})", min, max);
 		}
 
 		template <typename PRNG>

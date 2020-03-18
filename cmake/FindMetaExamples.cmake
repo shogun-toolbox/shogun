@@ -22,15 +22,18 @@ function(get_excluded_meta_examples)
     is_set(${SHOGUN_CONFIG} HAVE_LAPACK)
     is_set(${SHOGUN_CONFIG} USE_SVMLIGHT)
 
+  # TODO(geektoni): fix this meta example
+  LIST(APPEND EXCLUDED_META_EXAMPLES 
+      evaluation/cross_validation_multiple_kernel_learning_weights_storage.sg.in)
 
 	IF(NOT USE_GPL_SHOGUN)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
-			multiclass/logistic_regression.sg
-      statistical_testing/linear_time_maximum_mean_discrepancy.sg
-      statistical_testing/quadratic_time_maximum_mean_discrepancy.sg
-      gaussian_process/classifier.sg
-      binary/svmlin.sg
-      binary/svmsgd.sg
+			multiclass/logistic_regression.sg.in
+      statistical_testing/linear_time_maximum_mean_discrepancy.sg.in
+      statistical_testing/quadratic_time_maximum_mean_discrepancy.sg.in
+      gaussian_process/classifier.sg.in
+      binary/svmlin.sg.in
+      binary/svmsgd.sg.in
       )
 	ENDIF()
 
@@ -41,11 +44,11 @@ function(get_excluded_meta_examples)
 
 	IF(NOT USE_SVMLIGHT)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
-			regression/multiple_kernel_learning.sg
-			binary/multiple_kernel_learning.sg
-			binary/svmlight.sg
-			binary/svmlight_batch_linadd.sg
-			regression/svrlight.sg
+			regression/multiple_kernel_learning.sg.in
+			binary/multiple_kernel_learning.sg.in
+			binary/svmlight.sg.in
+			binary/svmlight_batch_linadd.sg.in
+			regression/svrlight.sg.in
 		)
 	ENDIF()
   
@@ -62,7 +65,7 @@ endfunction()
 # Remove meta example that cannot be built because of missing dependencies
 function(find_meta_examples)
 
-	FILE(GLOB_RECURSE META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/*.sg)
+	FILE(GLOB_RECURSE META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/*.sg.in)
     get_excluded_meta_examples()
 
     FOREACH(META_EXAMPLE ${EXCLUDED_META_EXAMPLES})
@@ -86,7 +89,7 @@ function(find_excluded_cookbook_pages)
     FOREACH(META_EXAMPLE ${EXCLUDED_META_EXAMPLES})
         # This is made since some meta example does not have
         # a cookbook page.
-        STRING(REPLACE ".sg" ".rst" META_EXAMPLE ${META_EXAMPLE})
+        STRING(REPLACE ".sg.in" ".rst" META_EXAMPLE ${META_EXAMPLE})
         IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/source/examples/${META_EXAMPLE})
             LIST(APPEND EXCLUDED_COOKBOOK_PAGES examples/${META_EXAMPLE})
         ENDIF()

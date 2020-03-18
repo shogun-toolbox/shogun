@@ -81,10 +81,9 @@ SGVector<float64_t> LinearMachine::apply_get_outputs(std::shared_ptr<Features> d
 	int32_t num=features->get_num_vectors();
 	ASSERT(num>0)
 	ASSERT(m_w.vlen==features->get_dim_feature_space())
-
-	float64_t* out=SG_MALLOC(float64_t, num);
-	features->dense_dot_range(out, 0, num, NULL, m_w.vector, m_w.vlen, bias);
-	return SGVector<float64_t>(out,num);
+	SGVector<float64_t> out(num);
+	features->dense_dot_range(out.vector, 0, num, NULL, m_w.vector, m_w.vlen, bias);
+	return out;
 }
 
 SGVector<float64_t> LinearMachine::get_w() const

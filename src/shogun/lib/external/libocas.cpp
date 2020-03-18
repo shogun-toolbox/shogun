@@ -7,7 +7,6 @@
 #include <shogun/lib/config.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
@@ -20,6 +19,7 @@
 #include <shogun/lib/external/libocas.h>
 #include <shogun/lib/external/libocas_common.h>
 #include <shogun/lib/external/libqp.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
