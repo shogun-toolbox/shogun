@@ -53,7 +53,9 @@ namespace shogun
 			const auto& children = node->get_children();
 			m_feature_importances[node->data.attribute_id] +=
 			    node->data.impurity * node->data.total_weight;
+#ifndef _MSC_VER
 #pragma omp parallel for shared(m_feature_importances)
+#endif
 			for (auto i = 0; i < children.size(); i++)
 			{
 				const auto& child = children[i];
