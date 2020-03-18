@@ -27,18 +27,7 @@ namespace shogun
 			class Operator
 			{
 			public:
-				Operator(const std::shared_ptr<node::Node>& node) : m_node(node)
-				{
-					const auto& shapes = m_node->get_shapes();
-					const auto& types = m_node->get_types();
-
-					for (const auto& [shape, type] :
-					     zip_iterator(shapes, types))
-					{
-						m_outputs.push_back(
-						    std::make_shared<Storage>(shape, type));
-					}
-				}
+				Operator(const std::shared_ptr<node::Node>& node);
 
 				virtual ~Operator() = default;
 

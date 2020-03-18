@@ -4,8 +4,8 @@
  * Authors: Gil Hoben
  */
 
-#ifndef SHOGUNSHAPE_H_
-#define SHOGUNSHAPE_H_
+#ifndef SHOGUN_SHAPE_H_
+#define SHOGUN_SHAPE_H_
 
 #include <cstddef>
 #include <limits>
@@ -15,7 +15,6 @@
 #include <vector>
 
 #include <shogun/io/SGIO.h>
-#include <shogun/util/zip_iterator.h>
 
 namespace shogun
 {
@@ -59,17 +58,7 @@ namespace shogun
 				return m_shape[idx];
 			}
 
-			bool operator==(const Shape& other)
-			{
-				for (const auto& [el1, el2] : zip_iterator(*this, other))
-				{
-					if (el1 == Shape::Dynamic || el2 == Shape::Dynamic)
-						continue;
-					if (el1 != el2)
-						return false;
-				}
-				return true;
-			}
+			bool operator==(const Shape& other) const;
 
 			bool partial_compare(size_t idx, shape_type other) const
 			{
