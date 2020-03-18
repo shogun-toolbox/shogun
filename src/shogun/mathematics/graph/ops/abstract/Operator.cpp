@@ -6,6 +6,8 @@
 
 #include "Operator.h"
 
+#include <shogun/util/zip_iterator.h>
+
 using namespace shogun;
 using namespace shogun::graph::op;
 

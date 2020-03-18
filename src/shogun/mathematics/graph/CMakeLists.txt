@@ -5,6 +5,7 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Add.h
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/BinaryNode.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Equal.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/LogicalAnd.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/LogicalOr.h
@@ -26,6 +27,8 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Shape.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Storage.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/BinaryNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Dot.cpp
 	# ${CMAKE_SOURCE_DIR}/src/shogun/features/DataGenerator.cpp
 	# ${CMAKE_SOURCE_DIR}/src/shogun/distributions/Gaussian.cpp
 	# ${CMAKE_SOURCE_DIR}/src/shogun/distributions/Distribution.cpp
@@ -43,6 +46,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/UnaryOperator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/BinaryOperator.h
+		${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/utils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Equal.h
 		${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Exp.h
@@ -64,6 +68,9 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/utils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/Dot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/MatMul.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Cast.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.cpp

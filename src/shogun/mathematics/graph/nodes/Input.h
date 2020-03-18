@@ -10,8 +10,6 @@
 #include <shogun/mathematics/graph/Tensor.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 
-#include <shogun/util/enumerate.h>
-
 #define IGNORE_IN_CLASSLIST
 
 namespace shogun

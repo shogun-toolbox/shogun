@@ -8,7 +8,6 @@
 #define SHOGUN_NODES_BINARY_NODE_H_
 
 #include <shogun/mathematics/graph/nodes/Node.h>
-#include <shogun/util/enumerate.h>
 
 #define IGNORE_IN_CLASSLIST
 
@@ -123,54 +122,7 @@ namespace shogun
 				}
 
 				static Shape same_shape_binary_op(
-				    const Shape& node1_shape, const Shape& node2_shape)
-				{
-					std::vector<Shape::shape_type> output_shape_vector;
-
-					for (const auto& [idx, shape1, shape2] :
-					     enumerate(node1_shape, node2_shape))
-					{
-						if (shape1 == shape2)
-						{
-							output_shape_vector.push_back(shape1);
-						}
-						else if (
-						    shape1 == Shape::Dynamic &&
-						    shape2 == Shape::Dynamic)
-						{
-							output_shape_vector.push_back(Shape::Dynamic);
-						}
-						else if (
-						    shape1 != Shape::Dynamic &&
-						    shape2 != Shape::Dynamic && shape1 != shape2)
-						{
-							// this is a mismatch, it can't possible go well at
-							// runtime
-							error(
-							    "Shape mismatch in dimension {} when comparing "
-							    "{} and {}",
-							    idx, shape1, shape2);
-						}
-						else if (shape1 == Shape::Dynamic)
-						{
-							// shape2 is more restrictive so pick that one
-							output_shape_vector.push_back(shape2);
-						}
-						else if (shape2 == Shape::Dynamic)
-						{
-							// shape1 is more restrictive so pick that one
-							output_shape_vector.push_back(shape1);
-						}
-						else
-						{
-							error("BinaryNode: Unexpected path, contact a dev "
-							      "or raise an "
-							      "issue!");
-						}
-					}
-
-					return Shape{output_shape_vector};
-				}
+				    const Shape& node1_shape, const Shape& node2_shape);
 
 				BinaryShapeCompatibity m_shape_compatibility;
 			};

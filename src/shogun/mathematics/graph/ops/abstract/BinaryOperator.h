@@ -8,8 +8,10 @@
 #define SHOGUN_BINARY_OPERATOR_H_
 
 #include <shogun/mathematics/graph/nodes/BinaryNode.h>
-#include <shogun/mathematics/graph/ops/abstract/Operator.h>
 #include <shogun/mathematics/graph/runtime/shogun/OutputNode.h>
+
+#include "Operator.h"
+#include "utils.h"
 
 namespace shogun
 {
@@ -97,22 +99,7 @@ namespace shogun
 					    node::BaseBinaryNode::BinaryShapeCompatibity::
 					        ArrayArray)
 					{
-						for (auto [idx, shape1, shape2] : enumerate(
-						         input1->get_shape(), input2->get_shape()))
-						{
-							if (shape1 != shape2)
-							{
-								error(
-								    "Runtime shape mismatch in dimension {}. "
-								    "Got "
-								    "{} and {}.",
-								    idx, shape1, shape2);
-							}
-							if (shape1 == Shape::Dynamic)
-							{
-								error("Could not infer runtime shape.");
-							}
-						}
+						assert_dynamic_shape(input1->get_shape(), input2->get_shape());
 						// shapes have to match exactly so can return either one
 						return input1->get_shape();
 					}

@@ -9,6 +9,8 @@
 #include <shogun/mathematics/graph/runtime/RuntimeNode.h>
 #include <shogun/mathematics/graph/runtime/shogun/Input.h>
 
+#include <shogun/util/zip_iterator.h>
+
 using namespace shogun::graph;
 using namespace shogun::graph::detail;
 

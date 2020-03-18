@@ -11,8 +11,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/memory.h>
 
-#include <shogun/util/enumerate.h>
-
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Storage.h>
 #include <shogun/mathematics/graph/Types.h>
