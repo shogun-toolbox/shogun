@@ -12,8 +12,6 @@
 #include <shogun/mathematics/graph/Types.h>
 #include <shogun/mathematics/graph/nodes/Node.h>
 
-#include <shogun/util/zip_iterator.h>
-
 #define IGNORE_IN_CLASSLIST
 
 namespace shogun

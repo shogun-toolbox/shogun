@@ -10,7 +10,6 @@
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Types.h>
-#include <shogun/util/zip_iterator.h>
 
 #include <numeric>
 #include <utility>
@@ -296,64 +295,14 @@ namespace shogun
 			/* Sets the static Shape. There is a guarantee that
 			 * the Shape passed to this function is static.
 			 */
-			void set_static_shape(const Shape& shape)
-			{
-				if (m_shape.size() != shape.size())
-				{
-					error(
-					    "Mismatch in the number of dimensions, expected "
-					    "{}, "
-					    "but got {}",
-					    m_shape.size(), shape.size());
-				}
-
-				for (const auto& [original_shape_dim_i, new_shape_dim_i] :
-				     zip_iterator(m_shape, shape))
-				{
-					if (original_shape_dim_i != new_shape_dim_i)
-					{
-						error(
-						    "Cannot set tensor shape. Shapes {} and {} are "
-						    "incompatible.",
-						    m_shape, shape);
-					}
-				}
-				m_shape = shape;
-			}
+			void set_static_shape(const Shape& shape);
 
 			/* Sets the runtime Shape when static Shape allocation
 			 * was not possible, e.g. the user provided Dynamic
 			 * shapes in the Graph construction. If Storage already
 			 * owns data the checks are skipped.
 			 */
-			void set_shape(const Shape& shape)
-			{
-				if (!shape.is_static())
-					error("Cannot set dynamic shape in storage.");
-				if (m_shape.size() != shape.size())
-				{
-					error(
-					    "Mismatch in the number of dimensions, expected "
-					    "{}, "
-					    "but got {}",
-					    m_shape.size(), shape.size());
-				}
-
-				for (const auto& [original_shape_dim_i, new_shape_dim_i] :
-				     zip_iterator(m_shape, shape))
-				{
-					if (original_shape_dim_i == Shape::Dynamic)
-						continue;
-					if (original_shape_dim_i != new_shape_dim_i)
-					{
-						error(
-						    "Cannot set tensor shape. Shapes {} and {} are "
-						    "incompatible.",
-						    m_shape, shape);
-					}
-				}
-				m_shape = shape;
-			}
+			void set_shape(const Shape& shape);
 
 			/* Sets the runtime Shape when static Shape allocation
 			 * was not possible, e.g. the user provided Dynamic

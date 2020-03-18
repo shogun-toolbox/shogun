@@ -24,6 +24,8 @@ set(SHOGUN_CORE_GRAPH_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Shape.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Storage.cpp
 	# ${CMAKE_SOURCE_DIR}/src/shogun/features/DataGenerator.cpp
 	# ${CMAKE_SOURCE_DIR}/src/shogun/distributions/Gaussian.cpp
 	# ${CMAKE_SOURCE_DIR}/src/shogun/distributions/Distribution.cpp
@@ -61,6 +63,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		)
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Cast.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.cpp
