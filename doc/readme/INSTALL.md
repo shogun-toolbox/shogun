@@ -293,7 +293,7 @@ Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogu
 
 2. Open the start menu, and run _Anaconda Prompt (Miniconda3)_
 
-3. In the Windows Start menu, find the path of the _Native Tools Command Prompt for VS_ shortcut that is relative to your system architecture and Visual Studio version (x32/x64, 2017/2019/..). For example, for _x64 Native Tools Command Prompt for VS 2019_, it looks so: `%comspec% /k "X:\Path\To\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"`. If it is not enough information, look at [link 1](https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line) and [link 2](https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs)
+3. In the Windows Start menu, find the path of the _Native Tools Command Prompt for VS_ shortcut that is relative to your system architecture and Visual Studio version (x32/x64, 2017/2019/..). For example, for _x64 Native Tools Command Prompt for VS 2019_, it looks so: `%comspec% /k "X:\Path\To\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"`. For detailed information check out [link 1](https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line) and [link 2](https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs)
 
 4. Execute this path in the _Anaconda Prompt_ to run _Native Tools_ there 
 
