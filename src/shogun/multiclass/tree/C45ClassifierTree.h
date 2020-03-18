@@ -34,9 +34,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/C45TreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/multiclass/tree/C45TreeNodeData.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
+#include <shogun/multiclass/tree/TreeMachine.h>
 
 namespace shogun
 {
@@ -72,7 +73,7 @@ namespace shogun
  *
  * cf. http://tesis-algoritmo-c45.googlecode.com/files/C45.ppt
  */
-class C45ClassifierTree : public TreeMachine<C45TreeNodeData>
+class C45ClassifierTree : public FeatureImportanceTree<C45TreeNodeData>
 {
 public:
 	/** constructor */
@@ -146,6 +147,11 @@ public:
 	/** clear feature types of various features */
 	void clear_feature_types();
 
+	/**
+	 * @return array of feature importance
+	 */
+	SGVector<float64_t> get_feature_importances() const;
+
 protected:
 
 	/** train machine - build C4.5 Tree from training data
@@ -184,8 +190,11 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */
-	float64_t informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data, SGVector<float64_t> weights,
-									 const std::shared_ptr<MulticlassLabels>& class_labels);
+	float64_t informational_gain_attribute(
+		int32_t attr_no, const std::shared_ptr<Features>& data,
+		SGVector<float64_t> weights,
+		const std::shared_ptr<MulticlassLabels>& class_labels,
+		float64_t& impurity);
 
 	/** computes entropy (aka randomness) in data
 	 *
