@@ -15,6 +15,9 @@
 %shared_ptr(shogun::RandomMixin<shogun::TreeMachine<shogun::CARTreeNodeData>, std::mt19937_64>)
 %shared_ptr(shogun::TreeMachine<shogun::CARTreeNodeData>)
 %shared_ptr(shogun::TreeMachine<shogun::CHAIDTreeNodeData>)
+%shared_ptr(shogun::FeatureImportanceTree<shogun::C45TreeNodeData>)
+%shared_ptr(shogun::FeatureImportanceTree<shogun::id3TreeNodeData>)
+%shared_ptr(shogun::RandomMixin<shogun::FeatureImportanceTree<shogun::CARTreeNodeData>, std::mt19937_64>)
 
 %shared_ptr(shogun::BalancedConditionalProbabilityTree)
 %shared_ptr(shogun::ConditionalProbabilityTree)
