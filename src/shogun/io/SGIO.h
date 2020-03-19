@@ -282,8 +282,8 @@ namespace shogun
 		private:
 			/** Prints a formatted message */
 			void message_(
-			    EMessageType prio, const SourceLocation& loc,
-			    const fmt::string_view& msg) const;
+			    EMessageType prio, const SourceLocation& loc;
+			    const fmt::string_view)& msg const;
 
 			/** if progress bar shall be shown */
 			bool show_progress;
