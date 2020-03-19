@@ -20,6 +20,10 @@
 <script>
 jQuery(document).ready(function ($) {
     $('ul[id^=tabs]').tab();
+    $('.highlight').mouseup(function() {
+      var copyText = window.getSelection().toString();
+      document.execCommand("copy");
+    });
 });
 </script>
 
