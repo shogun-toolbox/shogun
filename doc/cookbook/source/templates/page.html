@@ -23,6 +23,9 @@ jQuery(document).ready(function ($) {
     $('.highlight').mouseup(function() {
       var copyText = window.getSelection().toString();
       document.execCommand("copy");
+      if(copyText){
+        alert("Copied!");
+      }
     });
 });
 </script>
