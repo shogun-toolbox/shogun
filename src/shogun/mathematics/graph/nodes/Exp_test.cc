@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/graph/Graph.h>
-#include <shogun/mathematics/graph/nodes/Input.h>
 #include <shogun/mathematics/graph/nodes/Exp.h>
+#include <shogun/mathematics/graph/nodes/Input.h>
 
 #include "../test/GraphTest.h"
 
@@ -14,17 +14,18 @@ TYPED_TEST(GraphTest, exp)
 {
 	using NumericType = typename TypeParam::c_type;
 
-	if constexpr (!std::is_same_v<NumericType, bool>) 
+	if constexpr (!std::is_same_v<NumericType, bool>)
 	{
 		SGVector<NumericType> X{0, 1, 10};
 
 		SGVector<NumericType> expected_result(X.size());
 
-		std::transform(X.begin(), X.end(), expected_result.begin(), 
-			[](const NumericType& el) {return std::exp(el);});
+		std::transform(
+		    X.begin(), X.end(), expected_result.begin(),
+		    [](const NumericType& el) { return std::exp(el); });
 
-		auto input = make_shared<node::Input>(
-		    Shape{Shape::Dynamic}, TypeParam::type_id);
+		auto input =
+		    make_shared<node::Input>(Shape{Shape::Dynamic}, TypeParam::type_id);
 
 		auto output = make_shared<node::Exp>(input);
 
