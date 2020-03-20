@@ -94,8 +94,8 @@ bool KernelDensity::train(std::shared_ptr<Features> data)
 SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<Features>& test, int32_t leaf_size)
 {
 	require(test,"data not supplied");
-	require(test->get_feature_type == 10 && test->get_feature_class == 11,"Expecting DenseFeatures<float64_t>");
-	std::shared_ptr<DenseFeatures<float64_t>> dense_feat = std::static_pointer_cast<DenseFeatures<float64_t>>(test);
+	std::shared_ptr<DenseFeatures<float64_t>> dense_feat =std::dynamic_pointer_cast<DenseFeatures<float64_t>>(test);
+	require(dense_feat,"Expected DenseFeatures<float64_t> type");
 	
 	if ((m_eval==EM_KDTREE_SINGLE) || (m_eval==EM_BALLTREE_SINGLE))
 		return tree->log_kernel_density(dense_feat->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
