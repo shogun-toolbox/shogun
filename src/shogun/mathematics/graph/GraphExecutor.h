@@ -14,9 +14,6 @@
 #include <shogun/mathematics/graph/shogun-engine_export.h>
 
 #include <memory>
-#include <regex>
-#include <set>
-#include <unordered_map>
 #include <vector>
 
 #define IGNORE_IN_CLASSLIST
@@ -25,13 +22,6 @@ namespace shogun
 {
 	namespace graph
 	{
-
-		static const std::unordered_map<GRAPH_BACKEND, std::string_view>
-		    kGraphNames = {{GRAPH_BACKEND::SHOGUN, "SHOGUN"},
-		                   {GRAPH_BACKEND::NGRAPH, "NGRAPH"},
-		                   {GRAPH_BACKEND::XLA, "XLA"},
-		                   {GRAPH_BACKEND::TVM, "TVM"}};
-
 		IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT GraphExecutor
 		{
 		public:
@@ -56,26 +46,12 @@ namespace shogun
 			bool m_requires_major_conversion = false;
 		};
 
-		static constexpr std::string_view kShogunExecutorName =
-		    R"###(.+shogun-[a-z]+-executor\..+)###";
-
-		using CreateExecutor = std::function<MetaClass<GraphExecutor>()>;
-		using ExecutorFactory =
-		    std::unordered_map<GRAPH_BACKEND, CreateExecutor>;
-
-		SHOGUN_ENGINE_EXPORT const ExecutorFactory& backend_list();
-
 		/** new operator implementation instance
 		 * @param backend_name
 		 * @param generic
 		 */
 		SHOGUN_ENGINE_EXPORT std::shared_ptr<GraphExecutor>
 		create(GRAPH_BACKEND backend_type);
-
-		/** Returns all available object names
-		 *
-		 */
-		SHOGUN_ENGINE_EXPORT std::set<GRAPH_BACKEND> available_backends();
 
 #define BEGIN_EXECUTOR_MANIFEST(DESCRIPTION)                                   \
 	extern "C" ::shogun::Manifest shogunManifest()                             \

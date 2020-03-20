@@ -14,17 +14,9 @@
 #include <shogun/base/Version.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/fs/FileSystemRegistry.h>
+#include <shogun/mathematics/graph/GraphEnv.h>
 
 #include <memory>
-
-enum class GRAPH_BACKEND
-{
-	SHOGUN = 0,
-	NGRAPH = 1,
-	XLA = 2,
-	TVM = 3 // the wishlist goes on...
-};
-
 
 namespace shogun
 {
@@ -101,21 +93,18 @@ namespace shogun
 		 *
 		 * @return the backend enum
 		 */
-		GRAPH_BACKEND graph_backend()
+		graph::GRAPH_BACKEND graph_backend()
 		{
-			return sg_graph_backend;
+			return graph::GraphEnv::instance()->get_backend();
 		}
 
 		/** set the global graph backend
 		 *
 		 * @return the backend enum
 		 */
-		void set_graph_backend(GRAPH_BACKEND backend)
+		void set_graph_backend(graph::GRAPH_BACKEND backend)
 		{
-			// if (!shogun::graph::available_backends().count(backend))
-				sg_graph_backend = backend;
-			// else
-			// 	error("Backend not available.");
+			graph::GraphEnv::instance()->set_backend(backend);
 		}
 
 	private:
@@ -130,7 +119,6 @@ namespace shogun
 		std::unique_ptr<io::SGIO> sg_io;
 		std::unique_ptr<Signal> sg_signal;
 		std::unique_ptr<SGLinalg> sg_linalg;
-		GRAPH_BACKEND sg_graph_backend;
 		float64_t sg_fequals_epsilon;
 		bool sg_fequals_tolerant;
 	};

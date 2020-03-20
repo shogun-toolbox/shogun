@@ -22,12 +22,15 @@ Graph::Graph(
 
 void Graph::build()
 {
-	auto* env = ShogunEnv::instance();
-	build(env->graph_backend());
+	auto* env = GraphEnv::instance();
+	build(env->get_backend());
 }
 
 void Graph::build(GRAPH_BACKEND backend)
 {
+	auto* env = GraphEnv::instance();
+	std::lock_guard<std::mutex> lock(env->m_env_mutex);
+
 	auto unordered_nodes = check_fully_connected(m_inputs, m_outputs);
 
 	m_executor = create(backend);

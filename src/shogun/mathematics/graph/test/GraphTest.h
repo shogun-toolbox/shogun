@@ -6,14 +6,14 @@
 
 #include <gtest/gtest.h>
 
-#include <shogun/mathematics/graph/GraphExecutor.h>
+#include <shogun/mathematics/graph/GraphEnv.h>
 #include <shogun/util/zip_iterator.h>
 
 template <typename T>
 class GraphTest : public ::testing::Test
 {
 protected:
-	GraphTest() : m_backends(shogun::graph::available_backends())
+	GraphTest() : m_backends(shogun::graph::GraphEnv::instance()->available_backends())
 	{
 	}
 
@@ -52,7 +52,7 @@ protected:
 		}
 	}
 
-	std::set<GRAPH_BACKEND> m_backends;
+	std::set<shogun::graph::GRAPH_BACKEND> m_backends;
 };
 
 using GraphTypes = ::testing::Types<

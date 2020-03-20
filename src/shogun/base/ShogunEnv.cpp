@@ -43,7 +43,6 @@ ShogunEnv::ShogunEnv()
 
 	sg_fequals_epsilon = 0.0;
 	sg_fequals_tolerant = false;
-	sg_graph_backend = GRAPH_BACKEND::SHOGUN;
 
 	// Set up signal handler
 	std::signal(SIGINT, sg_signal->handler);
