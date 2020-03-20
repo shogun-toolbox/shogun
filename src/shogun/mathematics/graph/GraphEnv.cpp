@@ -13,9 +13,15 @@
 
 using namespace shogun::graph;
 
+GraphEnv* GraphEnv::instance()
+{
+	static GraphEnv result{};
+	return &result;
+}
 
 GRAPH_BACKEND GraphEnv::get_backend() const
 {
+	std::shared_lock lock(m_env_mutex);
 	return m_backend;
 }
 
@@ -24,7 +30,7 @@ void GraphEnv::set_backend(const GRAPH_BACKEND backend)
 	if (available_backends().count(backend))
 	{
 		// mutex is locked here to avoid having graphs with mixed backend ops
-		std::lock_guard<std::mutex> lock(m_env_mutex);
+		std::unique_lock lock(m_env_mutex);
 		m_backend = backend;
 	}
 	else

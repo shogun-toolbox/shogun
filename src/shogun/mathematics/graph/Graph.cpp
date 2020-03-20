@@ -29,7 +29,7 @@ void Graph::build()
 void Graph::build(GRAPH_BACKEND backend)
 {
 	auto* env = GraphEnv::instance();
-	std::lock_guard<std::mutex> lock(env->m_env_mutex);
+	std::unique_lock lock(env->m_env_mutex);
 
 	auto unordered_nodes = check_fully_connected(m_inputs, m_outputs);
 
