@@ -91,12 +91,14 @@ bool KernelDensity::train(std::shared_ptr<Features> data)
 	return true;
 }
 
-SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<DenseFeatures<float64_t>>& test, int32_t leaf_size)
+SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<Features>& test, int32_t leaf_size)
 {
 	require(test,"data not supplied");
-
+	require(test->get_feature_type == 10 && test->get_feature_class == 11,"Expecting DenseFeatures<float64_t>");
+	std::shared_ptr<DenseFeatures<float64_t>> dense_feat = std::static_pointer_cast<DenseFeatures<float64_t>>(test);
+	
 	if ((m_eval==EM_KDTREE_SINGLE) || (m_eval==EM_BALLTREE_SINGLE))
-		return tree->log_kernel_density(test->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
+		return tree->log_kernel_density(dense_feat->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
 
 	std::shared_ptr<CNbodyTree> query_tree=NULL;
 	if (m_eval==EM_KDTREE_DUAL)
@@ -106,7 +108,7 @@ SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<DenseFe
 	else
 		error("Evaluation mode not identified");
 
-	query_tree->build_tree(test);
+	query_tree->build_tree(dense_feat);
 	std::shared_ptr<BinaryTreeMachineNode<NbodyTreeNodeData>> qroot=NULL;
 	auto root=query_tree->get_root();
 	if (root)
@@ -115,7 +117,7 @@ SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<DenseFe
 		error("Query tree root not found!");
 
 	SGVector<index_t> qid=query_tree->get_rearranged_vector_ids();
-	SGVector<float64_t> ret=tree->log_kernel_density_dual(test->get_feature_matrix(),qid,qroot,m_kernel_type,m_bandwidth,m_atol,m_rtol);
+	SGVector<float64_t> ret=tree->log_kernel_density_dual(dense_feat->get_feature_matrix(),qid,qroot,m_kernel_type,m_bandwidth,m_atol,m_rtol);
 
 
 
