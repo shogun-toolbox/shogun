@@ -18,7 +18,7 @@ namespace shogun
 		namespace node
 		{
 
-			IGNORE_IN_CLASSLIST class Dot : public Node
+			IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT Dot : public Node
 			{
 				friend class MatMul;
 

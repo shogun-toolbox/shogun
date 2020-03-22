@@ -9,6 +9,7 @@
 #include <shogun/util/zip_iterator.h>
 
 using namespace shogun;
+using namespace shogun::graph;
 using namespace shogun::graph::op;
 
 Operator::Operator(const std::shared_ptr<node::Node>& node) : m_node(node)
