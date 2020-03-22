@@ -9,6 +9,7 @@
 
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
+#include <shogun/mathematics/graph/CPUArch.h>
 
 namespace shogun
 {
@@ -16,6 +17,19 @@ namespace shogun
 	{
 		namespace op
 		{
+
+			template <typename T>
+			void add_kernel_implementation_avx512f(
+			    void* input1, void* input2, void* output, const size_t size);
+
+			template <typename T>
+			void add_kernel_implementation_avx(
+			    void* input1, void* input2, void* output, const size_t size);
+
+			template <typename T>
+			void add_kernel_implementation_sse2(
+			    void* input1, void* input2, void* output, const size_t size);
+
 			IGNORE_IN_CLASSLIST class AddShogun
 			    : public ShogunBinaryOperator<AddShogun>
 			{
@@ -37,11 +51,19 @@ namespace shogun
 				void kernel_implementation(
 				    void* input1, void* input2, void* output, const size_t size)
 				{
-					std::transform(
-					    static_cast<const T*>(input1),
-					    static_cast<const T*>(input1) + size,
-					    static_cast<const T*>(input2), static_cast<T*>(output),
-					    std::plus<T>());
+					auto* CPU_arch = CPUArch::instance();
+					if (CPU_arch->has_avx512f())
+						add_kernel_implementation_avx512f<T>(input1, input2, output, size);
+					else if (CPU_arch->has_avx())
+						add_kernel_implementation_avx<T>(input1, input2, output, size);
+					else if (CPU_arch->has_sse2())
+						add_kernel_implementation_sse2<T>(input1, input2, output, size);
+					else
+						std::transform(
+						    static_cast<const T*>(input1),
+						    static_cast<const T*>(input1) + size,
+						    static_cast<const T*>(input2), static_cast<T*>(output),
+						    std::plus<T>());
 				}
 
 				template <typename T>

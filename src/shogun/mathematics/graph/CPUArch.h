@@ -8,12 +8,13 @@
 #define SHOGUN_GRAPH_CPU_H_
 
 #include <type_traits>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 namespace shogun
 {
 	namespace graph
 	{
-		class CPUArch
+		class SHOGUN_ENGINE_EXPORT CPUArch
 		{
 			enum class SIMD
 			{

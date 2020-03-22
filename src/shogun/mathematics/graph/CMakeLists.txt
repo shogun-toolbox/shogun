@@ -68,6 +68,19 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 		${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.h
 		${PROJECT_SOURCE_DIR}/src/shogun/io/SGIO.h
 		)
+
+set (SHOGUN_GRAPH_IMPLEMENTATION_AVX512F
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_avx512f.cpp
+	)
+
+set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_avx.cpp
+	)
+
+set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_sse2.cpp
+	)
+
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ShogunGraph.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/Operator.cpp
@@ -125,6 +138,17 @@ set(NGRAPH_IMPLEMENTATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/ngraph/Subtract.cpp
  	)
 
+FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
+IF(NOT EIGEN3_FOUND)
+  include(external/Eigen3)
+  set(EIGEN_INCLUDE_DIR $<INSTALL_INTERFACE:include/shogun/third_party/eigen>)
+ELSE()
+  # eigen3 bug related to aliasing operators and self-storing.
+  IF(${EIGEN_VERSION} VERSION_GREATER 3.2.90 AND ${EIGEN_VERSION} VERSION_LESS 3.3.0)
+      MESSAGE(WARNING "The system Eigen3 version ${EIGEN_VERSION} contains a lot of bugs, which could cause some models failing!")
+  ENDIF()
+ENDIF()
+
 add_library(shogun-engine SHARED ${SHOGUN_GRAPH_HEADERS}
 	${SHOGUN_GRAPH_SOURCES}
 	${SHOGUN_CORE_GRAPH_SOURCES}
@@ -169,6 +193,24 @@ add_executor(shogun-vanilla-executor
 	IMPLEMENTATION_HEADERS ${SHOGUN_GRAPH_IMPLEMENTATION_HEADERS}
 	IMPLEMENTATION_SOURCES ${SHOGUN_GRAPH_IMPLEMENTATION_SOURCES}
 	)
+
+add_library(shogun-vanilla-executor-avx512f STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_AVX512F})
+target_include_directories(shogun-vanilla-executor-avx512f PRIVATE ${EIGEN_INCLUDE_DIR})
+target_compile_options(shogun-vanilla-executor-avx512f PRIVATE -mavx512f)
+set_property(TARGET shogun-vanilla-executor-avx512f PROPERTY POSITION_INDEPENDENT_CODE ON)
+add_library(shogun-vanilla-executor-avx STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_AVX})
+target_include_directories(shogun-vanilla-executor-avx PRIVATE ${EIGEN_INCLUDE_DIR})
+target_compile_options(shogun-vanilla-executor-avx PRIVATE -mavx)
+set_property(TARGET shogun-vanilla-executor-avx PROPERTY POSITION_INDEPENDENT_CODE ON)
+add_library(shogun-vanilla-executor-sse2 STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_SSE2})
+target_include_directories(shogun-vanilla-executor-sse2 PRIVATE ${EIGEN_INCLUDE_DIR})
+target_compile_options(shogun-vanilla-executor-sse2 PRIVATE -msse2)
+set_property(TARGET shogun-vanilla-executor-sse2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse2)
+target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx)
+target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx512f)
+
 
 find_package(NGraph)
 if (NGraph_FOUND)
