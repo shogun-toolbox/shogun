@@ -25,14 +25,17 @@ namespace shogun
 				SSE4_2 = 1u << 4,
 				AVX = 1u << 5,
 				AVX2 = 1u << 6,
-				AVX512F = 1u << 7 // TODO add all possible AVX512 instructions -> AVX512VL, AVX512BW, etc..
+				AVX512F = 1u << 7 // TODO add all possible AVX512 instructions
+				                  // -> AVX512VL, AVX512BW, etc..
 			};
 
-			inline SIMD& enable_simd(SIMD& lhs, const SIMD rhs) {
-			    using underlying = typename std::underlying_type<SIMD>::type;
-			    lhs = static_cast<SIMD>(
-			        static_cast<underlying>(lhs) | static_cast<underlying>(rhs));
-			    return lhs;
+			inline SIMD& enable_simd(SIMD& lhs, const SIMD rhs)
+			{
+				using underlying = typename std::underlying_type<SIMD>::type;
+				lhs = static_cast<SIMD>(
+				    static_cast<underlying>(lhs) |
+				    static_cast<underlying>(rhs));
+				return lhs;
 			}
 
 			SIMD instructions;
@@ -41,60 +44,58 @@ namespace shogun
 
 			bool has(const SIMD instruction) const noexcept
 			{
-			    using underlying = typename std::underlying_type<SIMD>::type;
-    			return static_cast<bool>(
-    				static_cast<underlying>(instructions) & 
-    				static_cast<underlying>(instruction));
+				using underlying = typename std::underlying_type<SIMD>::type;
+				return static_cast<bool>(
+				    static_cast<underlying>(instructions) &
+				    static_cast<underlying>(instruction));
 			}
 
 		public:
-				~CPUArch()=default;
+			~CPUArch() = default;
 
-				static CPUArch* instance();
+			static CPUArch* instance();
 
-				const bool has_sse() const noexcept
-				{
-					return has(SIMD::SSE);
-				}
+			const bool has_sse() const noexcept
+			{
+				return has(SIMD::SSE);
+			}
 
-				const bool has_sse2() const noexcept
-				{ 
-					return has(SIMD::SSE2);
-				}
+			const bool has_sse2() const noexcept
+			{
+				return has(SIMD::SSE2);
+			}
 
-				const bool has_sse3() const noexcept
-				{
-					return has(SIMD::SSE);
-				}
+			const bool has_sse3() const noexcept
+			{
+				return has(SIMD::SSE);
+			}
 
-				const bool has_sse4_1() const noexcept
-				{
-					return has(SIMD::SSE4_1);
-				}
+			const bool has_sse4_1() const noexcept
+			{
+				return has(SIMD::SSE4_1);
+			}
 
-				const bool has_sse4_2() const noexcept
-				{
-					return has(SIMD::SSE4_2);
-				}
+			const bool has_sse4_2() const noexcept
+			{
+				return has(SIMD::SSE4_2);
+			}
 
-				const bool has_avx() const noexcept
-				{
-					return has(SIMD::AVX);
-				}
+			const bool has_avx() const noexcept
+			{
+				return has(SIMD::AVX);
+			}
 
-				const bool has_avx2() const noexcept
-				{
-					return has(SIMD::AVX2);
-				}
+			const bool has_avx2() const noexcept
+			{
+				return has(SIMD::AVX2);
+			}
 
-				const bool has_avx512f() const noexcept
-				{
-					return has(SIMD::AVX512F);
-				}
+			const bool has_avx512f() const noexcept
+			{
+				return has(SIMD::AVX512F);
+			}
 		};
-		
 	}
 }
-
 
 #endif
