@@ -365,6 +365,8 @@ CPUArch::CPUArch() : instructions(SIMD::NONE)
 		enable_simd(instructions, SIMD::SSE2);
 	if (__builtin_cpu_supports("sse3"))
 		enable_simd(instructions, SIMD::SSE3);
+	if (__builtin_cpu_supports("ssse3"))
+		enable_simd(instructions, SIMD::SSSE3);
 	if (__builtin_cpu_supports("sse4.1"))
 		enable_simd(instructions, SIMD::SSE4_1);
 	if (__builtin_cpu_supports("sse4.2"))
@@ -382,6 +384,8 @@ CPUArch::CPUArch() : instructions(SIMD::NONE)
 		enable_simd(instructions, SIMD::SSE2);
 	if (InstructionSet::SSE3)
 		enable_simd(instructions, SIMD::SSE3);
+	if (InstructionSet::SSSE3)
+		enable_simd(instructions, SIMD::SSSE3);
 	if (InstructionSet::SSE41)
 		enable_simd(instructions, SIMD::SSE4_1);
 	if (InstructionSet::SSE42)
@@ -394,17 +398,18 @@ CPUArch::CPUArch() : instructions(SIMD::NONE)
 		enable_simd(instructions, SIMD::AVX512F);
 #else
 	io::warn("There is no support for runtime CPU architecture detection with "
-	         "the provided compiler. Defaulting to SSE2 instructions.")
-	    enable_simd(instructions, SIMD::SSE2);
+	         "the provided compiler. Defaulting to SSE2 instructions.");
+	enable_simd(instructions, SIMD::SSE2);
 #endif
-	io::info("Found SSE:     {}", has_sse());
-	io::info("Found SSE2:    {}", has_sse2());
-	io::info("Found SSE3:    {}", has_sse3());
-	io::info("Found SSE4.1:  {}", has_sse4_1());
-	io::info("Found SSE4.2:  {}", has_sse4_2());
-	io::info("Found AVX:     {}", has_avx());
-	io::info("Found AVX2:    {}", has_avx2());
-	io::info("Found AVX512F: {}", has_avx512f());
+	io::info("Supports SSE:     {}", has_sse());
+	io::info("Supports SSE2:    {}", has_sse2());
+	io::info("Supports SSE3:    {}", has_sse3());
+	io::info("Supports SSSE3:   {}", has_ssse3());
+	io::info("Supports SSE4.1:  {}", has_sse4_1());
+	io::info("Supports SSE4.2:  {}", has_sse4_2());
+	io::info("Supports AVX:     {}", has_avx());
+	io::info("Supports AVX2:    {}", has_avx2());
+	io::info("Supports AVX512F: {}", has_avx512f());
 }
 
 CPUArch* CPUArch::instance()

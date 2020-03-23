@@ -112,6 +112,7 @@ namespace shogun
 	case NUMBER_TYPE::type_id:                                                 \
 		dot_product_dispatch<NUMBER_TYPE::c_type>(A, B, Out);                  \
 		break;
+					// predux (SSSE3), ptranspose, pmul (SSE4.1)
 
 					switch (*A->get_type())
 					{

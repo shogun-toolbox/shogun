@@ -22,11 +22,12 @@ namespace shogun
 				SSE = 1u << 0,
 				SSE2 = 1u << 1,
 				SSE3 = 1u << 2,
-				SSE4_1 = 1u << 3,
-				SSE4_2 = 1u << 4,
-				AVX = 1u << 5,
-				AVX2 = 1u << 6,
-				AVX512F = 1u << 7 // TODO add all possible AVX512 instructions
+				SSSE3 = 1u << 3,
+				SSE4_1 = 1u << 4,
+				SSE4_2 = 1u << 5,
+				AVX = 1u << 6,
+				AVX2 = 1u << 7,
+				AVX512F = 1u << 8 // TODO add all possible AVX512 instructions
 				                  // -> AVX512VL, AVX512BW, etc..
 			};
 
@@ -39,10 +40,6 @@ namespace shogun
 				return lhs;
 			}
 
-			SIMD instructions;
-
-			CPUArch();
-
 			bool has(const SIMD instruction) const noexcept
 			{
 				using underlying = typename std::underlying_type<SIMD>::type;
@@ -50,6 +47,10 @@ namespace shogun
 				    static_cast<underlying>(instructions) &
 				    static_cast<underlying>(instruction));
 			}
+
+			CPUArch();
+
+			SIMD instructions;
 
 		public:
 			~CPUArch() = default;
@@ -68,7 +69,12 @@ namespace shogun
 
 			const bool has_sse3() const noexcept
 			{
-				return has(SIMD::SSE);
+				return has(SIMD::SSE3);
+			}
+
+			const bool has_ssse3() const noexcept
+			{
+				return has(SIMD::SSSE3);
 			}
 
 			const bool has_sse4_1() const noexcept

@@ -71,14 +71,28 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_HEADERS
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_AVX512F
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_avx512f.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_avx512f.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_avx512f.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_avx512f.cpp
 	)
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_avx.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_avx.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_avx.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_avx.cpp
 	)
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_sse2.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_sse2.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_sse2.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_sse2.cpp
+	)
+
+set(SHOGUN_GRAPH_IMPLEMENTATION_SSE4_1
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_sse4_1.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_sse4_1.cpp
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
@@ -206,8 +220,13 @@ add_library(shogun-vanilla-executor-sse2 STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_SS
 target_include_directories(shogun-vanilla-executor-sse2 PRIVATE ${EIGEN_INCLUDE_DIR})
 target_compile_options(shogun-vanilla-executor-sse2 PRIVATE -msse2)
 set_property(TARGET shogun-vanilla-executor-sse2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+add_library(shogun-vanilla-executor-sse41 STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_SSE4_1})
+target_include_directories(shogun-vanilla-executor-sse41 PRIVATE ${EIGEN_INCLUDE_DIR})
+target_compile_options(shogun-vanilla-executor-sse41 PRIVATE -msse4.1)
+set_property(TARGET shogun-vanilla-executor-sse41 PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse2)
+target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse41)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx512f)
 
