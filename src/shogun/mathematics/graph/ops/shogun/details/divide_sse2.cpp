@@ -4,7 +4,7 @@
  * Authors: Gil Hoben
  */
 
-#include <Eigen/Core>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace shogun::graph::op {
 	template <typename T>
@@ -15,11 +15,11 @@ namespace shogun::graph::op {
 	void divide_kernel_implementation_sse2(
 	    void* input1, void* input2, void* output, const size_t size)
 	{
-		Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>> A(static_cast<T*>(input1), size);
-		Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>> B(static_cast<T*>(input2), size);
-		Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>> Out(static_cast<T*>(output), size);
+		Eigen::TensorMap<Eigen::Tensor<T, 1>> A(static_cast<T*>(input1), size);
+		Eigen::TensorMap<Eigen::Tensor<T, 1>> B(static_cast<T*>(input2), size);
+		Eigen::TensorMap<Eigen::Tensor<T, 1>> Out(static_cast<T*>(output), size);
 
-		Out = A.array() / B.array();
+		Out.device(Eigen::DefaultDevice{}) = A / B;
 	}
 
 	template <>
