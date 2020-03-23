@@ -8,6 +8,7 @@
 #define SHOGUN_NODES_BINARY_NODE_H_
 
 #include <shogun/mathematics/graph/nodes/Node.h>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 #define IGNORE_IN_CLASSLIST
 
@@ -20,7 +21,7 @@ namespace shogun
 			class BinaryNode;
 			class LogicalBinaryNode;
 
-			IGNORE_IN_CLASSLIST class BaseBinaryNode : public Node
+			IGNORE_IN_CLASSLIST class SHOGUN_ENGINE_EXPORT BaseBinaryNode : public Node
 			{
 
 				friend class BinaryNode;

@@ -10,6 +10,7 @@
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/graph/Shape.h>
 #include <shogun/mathematics/graph/Types.h>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 #include <numeric>
 #include <utility>
@@ -29,7 +30,7 @@ namespace shogun
 		 * up shapes and so on.
 		 *
 		 */
-		class Storage
+		class SHOGUN_ENGINE_EXPORT Storage
 		{
 			/* Managed storage. Its only job is to keep track of memory
 			 * and how to delete and allocate it.

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/graph/shogun-engine_export.h>
 
 namespace shogun
 {
@@ -22,7 +23,7 @@ namespace shogun
 	{
 		class Tensor;
 
-		class Shape
+		class SHOGUN_ENGINE_EXPORT Shape
 		{
 		public:
 			using shape_type = int64_t;
