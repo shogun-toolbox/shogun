@@ -230,6 +230,7 @@ target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse41)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx512f)
 
+target_compile_options(shogun-vanilla-executor PRIVATE -mavx)
 
 find_package(NGraph)
 if (NGraph_FOUND)
