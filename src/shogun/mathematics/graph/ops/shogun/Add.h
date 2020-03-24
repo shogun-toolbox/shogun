@@ -10,7 +10,7 @@
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 #include <shogun/mathematics/graph/CPUArch.h>
-#include <Eigen/Core>
+#include "Packet.h"
 
 namespace shogun
 {
@@ -57,25 +57,25 @@ namespace shogun
 						add_kernel_implementation_avx512f<T>(input1, input2, output, size);
 					else if (CPU_arch->has_avx())
 					{
+						constexpr size_t register_capacity = static_cast<size_t>(RegisterType::AVX) / sizeof(T);
 						size_t i = 0;
-						if (size > 32/sizeof(T))
+						if (size > register_capacity)
 						{
-							size_t remainder = size % (32/sizeof(T));
-							for (;i<size-remainder; i+=32/sizeof(T))
+							size_t remainder = size % register_capacity;
+							for (;i<size-remainder; i+=register_capacity)
 							{
-								if constexpr(std::is_same_v<float, T>)
+								const auto packet1 = Packet(static_cast<const T*>(input1)+i, RegisterType::AVX);
+								const auto packet2 = Packet(static_cast<const T*>(input2)+i, RegisterType::AVX);
+								if constexpr(std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, int32_t>)
 								{
-									const auto packet1 = Eigen::internal::ploadu<Eigen::internal::Packet8f>(static_cast<const T*>(input1)+i);
-									const auto packet2 = Eigen::internal::ploadu<Eigen::internal::Packet8f>(static_cast<const T*>(input2)+i);
-									Eigen::internal::Packet8f output_packet;
+									Packet output_packet = Packet(RegisterType::AVX);
 									add_kernel_implementation_avx<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
-									Eigen::internal::pstoreu((static_cast<float*>(output)+i), output_packet);
+									output_packet.store(static_cast<T*>(output)+i);	
 								}
 								else
 								{
-									add_kernel_implementation_avx<T>((void*)(static_cast<const T*>(input1)+i), 
-										(void*)(static_cast<const T*>(input2)+i), 
-										(void*)(static_cast<T*>(output)+i));
+									Packet output_packet = Packet(static_cast<T*>(output)+i, RegisterType::AVX);
+									add_kernel_implementation_avx<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
 								}
 							}
 						}

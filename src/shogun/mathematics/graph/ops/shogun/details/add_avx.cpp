@@ -4,42 +4,73 @@
  * Authors: Gil Hoben
  */
 
-// #include <unsupported/Eigen/CXX11/Tensor>
-
 #include <algorithm>
 #include <functional>
-#include <immintrin.h>
+#include <Eigen/Core>
+#include "PacketType.h"
+
+using namespace Eigen::internal;
 
 namespace shogun::graph::op {
-	template <typename T1, typename T2=T1>
-	void add_kernel_implementation_avx(
-	    const T2* input1, const T2* input2, T2* output);
 
-	template <typename T1, typename T2>
-	void add_kernel_implementation_avx(
-	    const T2* input1, const T2* input2, T2* output)
+	struct Packet
 	{
-		if constexpr (std::is_same_v<T1, float>)
-			*static_cast<__m256*>(output) = _mm256_add_ps(*static_cast<const __m256*>(input1), *static_cast<const __m256*>(input2));
-		else
-		{
-			std::transform(
-			    static_cast<const T2*>(input1),
-			    static_cast<const T2*>(input1) + 32/sizeof(T2),
-			    static_cast<const T2*>(input2), static_cast<T2*>(output),
-			    std::plus<T2>());
-		}
+		aligned_vector m_data;
+		const size_t m_size;
+	};
+
+	template <typename T>
+	void add_kernel_implementation_avx(
+	    void* input1, void* input2, void* output);
+
+	template <typename T>
+	void add_kernel_implementation_avx(
+	    void* input1, void* input2, void* output)
+	{
+		std::transform(
+		    std::get<T*>(static_cast<const Packet*>(input1)->m_data),
+		    std::get<T*>(static_cast<const Packet*>(input1)->m_data) + 32/sizeof(T),
+		    std::get<T*>(static_cast<const Packet*>(input2)->m_data), 
+		    std::get<T*>(static_cast<const Packet*>(output)->m_data),
+		    std::plus<T>());
 	}
 
-	template void add_kernel_implementation_avx<bool>(const bool*, const bool*, bool*);
-	template void add_kernel_implementation_avx<int8_t>(const int8_t*, const int8_t*, int8_t*);
-	template void add_kernel_implementation_avx<int16_t>(const int16_t*, const int16_t*, int16_t*);
-	template void add_kernel_implementation_avx<int32_t>(const int32_t*, const int32_t*, int32_t*);
-	template void add_kernel_implementation_avx<int64_t>(const int64_t*, const int64_t*, int64_t*);
-	template void add_kernel_implementation_avx<uint8_t>(const uint8_t*, const uint8_t*, uint8_t*);
-	template void add_kernel_implementation_avx<uint16_t>(const uint16_t*, const uint16_t*, uint16_t*);
-	template void add_kernel_implementation_avx<uint32_t>(const uint32_t*, const uint32_t*, uint32_t*);
-	template void add_kernel_implementation_avx<uint64_t>(const uint64_t*, const uint64_t*, uint64_t*);
-	template void add_kernel_implementation_avx<float>(const void*, const void*, void*);
-	template void add_kernel_implementation_avx<double>(const double*, const double*, double*);
+	template<>
+	void add_kernel_implementation_avx<float>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = padd(
+			std::get<Packet8f>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet8f>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	template<>
+	void add_kernel_implementation_avx<double>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = padd(
+			std::get<Packet4d>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet4d>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	template<>
+	void add_kernel_implementation_avx<int32_t>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = padd(
+			std::get<Packet8i>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet8i>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	template void add_kernel_implementation_avx<bool>(void*, void*, void*);
+	template void add_kernel_implementation_avx<int8_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<int16_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<int32_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<int64_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<uint8_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<uint16_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<uint32_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<uint64_t>(void*, void*, void*);
+	template void add_kernel_implementation_avx<float>(void*, void*, void*);
+	template void add_kernel_implementation_avx<double>(void*, void*, void*);
 }

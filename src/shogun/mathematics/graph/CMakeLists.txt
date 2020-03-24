@@ -74,6 +74,8 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_AVX512F
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_avx512f.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_avx512f.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_avx512f.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_avx512f.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_avx512f.cpp
 	)
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
@@ -81,6 +83,8 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_avx.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_avx.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_avx.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_avx.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_avx.cpp
 	)
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
@@ -88,6 +92,9 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_sse2.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_sse2.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_sse2.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_sse.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_sse.cpp
+
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_SSE4_1
@@ -211,6 +218,7 @@ add_executor(shogun-vanilla-executor
 add_library(shogun-vanilla-executor-avx512f STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_AVX512F})
 target_include_directories(shogun-vanilla-executor-avx512f PRIVATE ${EIGEN_INCLUDE_DIR})
 target_compile_options(shogun-vanilla-executor-avx512f PRIVATE -mavx512f)
+target_compile_definitions(shogun-vanilla-executor-avx512f PRIVATE EIGEN_ENABLE_AVX512)
 set_property(TARGET shogun-vanilla-executor-avx512f PROPERTY POSITION_INDEPENDENT_CODE ON)
 add_library(shogun-vanilla-executor-avx STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_AVX})
 target_include_directories(shogun-vanilla-executor-avx PRIVATE ${EIGEN_INCLUDE_DIR})
@@ -229,8 +237,6 @@ target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse2)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse41)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx512f)
-
-target_compile_options(shogun-vanilla-executor PRIVATE -mavx)
 
 find_package(NGraph)
 if (NGraph_FOUND)
