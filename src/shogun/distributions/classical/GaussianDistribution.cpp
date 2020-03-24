@@ -34,7 +34,7 @@ GaussianDistribution::GaussianDistribution(SGVector<float64_t> mean,
 
 	if (!cov_is_factor)
 	{
-		Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
+		Map<MatrixXd, Eigen::Aligned16> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
 		m_L=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
 		Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
