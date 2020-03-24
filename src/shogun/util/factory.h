@@ -107,7 +107,7 @@ namespace shogun
 		require(file, "No file provided.");
 		std::shared_ptr<Features> result = nullptr;
 
-		if(strcmp( file->get_name(), "LibSVMFile") == 0)
+		if(std::type_index(typeid(*file)) == std::type_index(typeid(LibSVMFile)))
 		{
 			switch (primitive_type)
 			{
