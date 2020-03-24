@@ -134,7 +134,7 @@ bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 			ASSERT(loss_i - linalg::dot(m_w, psi_i) >= -1e-12);
 
 			// 4) update w_s and ell_s
-			w_s.add(psi_i);
+			linalg::add(w_s, psi_i, w_s);
 			ell_s += loss_i;
 
 

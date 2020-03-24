@@ -98,29 +98,6 @@ TEST(SGVectorTest,setget)
 	EXPECT_EQ(v[3], 0);
 }
 
-TEST(SGVectorTest,add)
-{
-	const int32_t seed = 17;
-
-	SGVector<float64_t> a(10);
-	SGVector<float64_t> b(10);
-
-	std::mt19937_64 prng(seed);
-	random::fill_array(a, 0.0, 1024.0, prng);
-	random::fill_array(b, 0.0, 1024.0, prng);
-	float64_t* b_clone = SGVector<float64_t>::clone_vector(b.vector, b.vlen);
-	SGVector<float64_t> c(b_clone, 10);
-
-	c.add(a);
-	for (int i=0; i < c.vlen; ++i)
-		EXPECT_EQ(c[i], a[i]+b[i]);
-
-	c = a + a;
-	EXPECT_EQ(c.vlen, 10);
-	for (int i=0; i < c.vlen; ++i)
-		EXPECT_EQ(c[i], 2*a[i]);
-}
-
 TEST(SGVectorTest,norm)
 {
 	std::mt19937_64 prng(17);
@@ -193,14 +170,6 @@ TEST(SGVectorTest,complex128_tests)
 	SGVector<complex128_t> a(10);
 	a.set_const(complex128_t(5.0, 6.0));
 	SGVector<complex128_t> b=a.clone();
-
-	// test ::operator+ and []
-	a=a+b;
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
-	}
 
 	// test ::misc
 	SGVector<complex128_t>::vec1_plus_scalar_times_vec2(a.vector,
