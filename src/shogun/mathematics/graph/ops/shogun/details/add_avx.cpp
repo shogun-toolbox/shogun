@@ -53,15 +53,6 @@ namespace shogun::graph::op {
 			std::get<Packet4d>(static_cast<const Packet*>(input2)->m_data));
 	}
 
-	template<>
-	void add_kernel_implementation_avx<int32_t>(
-		void* input1, void* input2, void* output)
-	{
-		static_cast<Packet*>(output)->m_data = padd(
-			std::get<Packet8i>(static_cast<const Packet*>(input1)->m_data), 
-			std::get<Packet8i>(static_cast<const Packet*>(input2)->m_data));
-	}
-
 	template void add_kernel_implementation_avx<bool>(void*, void*, void*);
 	template void add_kernel_implementation_avx<int8_t>(void*, void*, void*);
 	template void add_kernel_implementation_avx<int16_t>(void*, void*, void*);

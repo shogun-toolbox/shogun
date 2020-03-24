@@ -28,6 +28,10 @@ namespace shogun
 			    void* input1, void* input2, void* output);
 
 			template <typename T>
+			void add_kernel_implementation_avx2(
+			    void* input1, void* input2, void* output);
+
+			template <typename T>
 			void add_kernel_implementation_sse2(
 			    void* input1, void* input2, void* output, const size_t size);
 
@@ -55,7 +59,7 @@ namespace shogun
 					auto* CPU_arch = CPUArch::instance();
 					if (CPU_arch->has_avx512f())
 						add_kernel_implementation_avx512f<T>(input1, input2, output, size);
-					else if (CPU_arch->has_avx())
+					else if (CPU_arch->has_avx2())
 					{
 						constexpr size_t register_capacity = static_cast<size_t>(RegisterType::AVX) / sizeof(T);
 						size_t i = 0;
@@ -67,6 +71,36 @@ namespace shogun
 								const auto packet1 = Packet(static_cast<const T*>(input1)+i, RegisterType::AVX);
 								const auto packet2 = Packet(static_cast<const T*>(input2)+i, RegisterType::AVX);
 								if constexpr(std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, int32_t>)
+								{
+									Packet output_packet = Packet(RegisterType::AVX);
+									add_kernel_implementation_avx2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+									output_packet.store(static_cast<T*>(output)+i);	
+								}
+								else
+								{
+									Packet output_packet = Packet(static_cast<T*>(output)+i, RegisterType::AVX);
+									add_kernel_implementation_avx2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+								}
+							}
+						}
+						while(i < size)
+						{
+							*(static_cast<T*>(output)+i) = *(static_cast<const T*>(input1)+i) + *(static_cast<const T*>(input2)+i); 
+							i++;
+						}
+					}
+					else if (CPU_arch->has_avx())
+					{
+						constexpr size_t register_capacity = static_cast<size_t>(RegisterType::AVX) / sizeof(T);
+						size_t i = 0;
+						if (size > register_capacity)
+						{
+							size_t remainder = size % register_capacity;
+							for (;i<size-remainder; i+=register_capacity)
+							{
+								const auto packet1 = Packet(static_cast<const T*>(input1)+i, RegisterType::AVX);
+								const auto packet2 = Packet(static_cast<const T*>(input2)+i, RegisterType::AVX);
+								if constexpr(std::is_same_v<T, float> || std::is_same_v<T, double>)
 								{
 									Packet output_packet = Packet(RegisterType::AVX);
 									add_kernel_implementation_avx<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);

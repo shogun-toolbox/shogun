@@ -87,6 +87,10 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_avx.cpp
 	)
 
+set (SHOGUN_GRAPH_IMPLEMENTATION_AVX2
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_avx2.cpp
+	)
+
 set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_sse2.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_sse2.cpp
@@ -220,14 +224,22 @@ target_include_directories(shogun-vanilla-executor-avx512f PRIVATE ${EIGEN_INCLU
 target_compile_options(shogun-vanilla-executor-avx512f PRIVATE -mavx512f)
 target_compile_definitions(shogun-vanilla-executor-avx512f PRIVATE EIGEN_ENABLE_AVX512)
 set_property(TARGET shogun-vanilla-executor-avx512f PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 add_library(shogun-vanilla-executor-avx STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_AVX})
 target_include_directories(shogun-vanilla-executor-avx PRIVATE ${EIGEN_INCLUDE_DIR})
 target_compile_options(shogun-vanilla-executor-avx PRIVATE -mavx)
 set_property(TARGET shogun-vanilla-executor-avx PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+add_library(shogun-vanilla-executor-avx2 STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_AVX2})
+target_include_directories(shogun-vanilla-executor-avx2 PRIVATE ${EIGEN_INCLUDE_DIR})
+target_compile_options(shogun-vanilla-executor-avx2 PRIVATE -mavx2)
+set_property(TARGET shogun-vanilla-executor-avx2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 add_library(shogun-vanilla-executor-sse2 STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_SSE2})
 target_include_directories(shogun-vanilla-executor-sse2 PRIVATE ${EIGEN_INCLUDE_DIR})
 target_compile_options(shogun-vanilla-executor-sse2 PRIVATE -msse2)
 set_property(TARGET shogun-vanilla-executor-sse2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 add_library(shogun-vanilla-executor-sse41 STATIC ${SHOGUN_GRAPH_IMPLEMENTATION_SSE4_1})
 target_include_directories(shogun-vanilla-executor-sse41 PRIVATE ${EIGEN_INCLUDE_DIR})
 target_compile_options(shogun-vanilla-executor-sse41 PRIVATE -msse4.1)
@@ -236,6 +248,7 @@ set_property(TARGET shogun-vanilla-executor-sse41 PROPERTY POSITION_INDEPENDENT_
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse2)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-sse41)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx)
+target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx2)
 target_link_libraries(shogun-vanilla-executor shogun-vanilla-executor-avx512f)
 
 find_package(NGraph)
