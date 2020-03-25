@@ -40,12 +40,25 @@ namespace shogun
 				return lhs;
 			}
 
+			inline SIMD& disable_simd(SIMD& lhs, const SIMD rhs)
+			{
+				using underlying = typename std::underlying_type<SIMD>::type;
+				auto tmp = static_cast<underlying>(rhs);
+				lhs = static_cast<SIMD>(static_cast<underlying>(lhs) & (~tmp));
+				return lhs;
+			}
+
 			bool has(const SIMD instruction) const noexcept
 			{
 				using underlying = typename std::underlying_type<SIMD>::type;
 				return static_cast<bool>(
 				    static_cast<underlying>(instructions) &
 				    static_cast<underlying>(instruction));
+			}
+
+			void disable(const SIMD instruction) noexcept
+			{
+				disable_simd(instructions, instruction);
 			}
 
 			CPUArch();
@@ -62,9 +75,19 @@ namespace shogun
 				return has(SIMD::SSE);
 			}
 
+			void disable_sse() noexcept
+			{
+				disable(SIMD::SSE);
+			}
+
 			const bool has_sse2() const noexcept
 			{
 				return has(SIMD::SSE2);
+			}
+
+			void disable_sse2() noexcept
+			{
+				disable(SIMD::SSE2);
 			}
 
 			const bool has_sse3() const noexcept
@@ -72,9 +95,19 @@ namespace shogun
 				return has(SIMD::SSE3);
 			}
 
+			void disable_sse3() noexcept
+			{
+				disable(SIMD::SSE3);
+			}
+
 			const bool has_ssse3() const noexcept
 			{
 				return has(SIMD::SSSE3);
+			}
+
+			void disable_ssse3() noexcept
+			{
+				disable(SIMD::SSSE3);
 			}
 
 			const bool has_sse4_1() const noexcept
@@ -82,9 +115,19 @@ namespace shogun
 				return has(SIMD::SSE4_1);
 			}
 
+			void disable_sse4_1() noexcept
+			{
+				disable(SIMD::SSE4_1);
+			}
+
 			const bool has_sse4_2() const noexcept
 			{
 				return has(SIMD::SSE4_2);
+			}
+
+			void disable_sse4_2() noexcept
+			{
+				disable(SIMD::SSE4_2);
 			}
 
 			const bool has_avx() const noexcept
@@ -92,15 +135,31 @@ namespace shogun
 				return has(SIMD::AVX);
 			}
 
+			void disable_avx() noexcept
+			{
+				disable(SIMD::AVX);
+			}
+
 			const bool has_avx2() const noexcept
 			{
 				return has(SIMD::AVX2);
+			}
+
+			void disable_avx2() noexcept
+			{
+				disable(SIMD::AVX2);
 			}
 
 			const bool has_avx512f() const noexcept
 			{
 				return has(SIMD::AVX512F);
 			}
+
+			void disable_avx512f() noexcept
+			{
+				disable(SIMD::AVX512F);
+			}
+
 		};
 	}
 }

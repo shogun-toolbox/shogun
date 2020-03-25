@@ -17,25 +17,18 @@ namespace shogun::graph::op {
 	template <typename T>
 	aligned_vector load_avx(void* data)
 	{
-		return static_cast<T*>(data);
-	}
-
-	template <>
-	aligned_vector load_avx<float>(void* data)
-	{	
-		return ploadu<Packet8f>(static_cast<const float*>(data));
-	}
-
-	template <>
-	aligned_vector load_avx<double>(void* data)
-	{
-		return ploadu<Packet4d>(static_cast<const double*>(data));
-	}
-
-	template <>
-	aligned_vector load_avx<int>(void* data)
-	{
-		return ploadu<Packet8i>(static_cast<const int*>(data));
+		if constexpr(std::is_same_v<T, bool>)
+			return static_cast<bool*>(data);
+		else
+		{
+			using vector_type = typename alignedvector_from_builtintype<T, AVX_BYTESIZE>::type;
+			if constexpr(std::is_same_v<T, int32_t>)
+				return ploadu<vector_type>(static_cast<const T*>(data));
+			if constexpr(std::is_integral_v<T>)
+				return _mm256_loadu_si256(static_cast<const vector_type*>(data));
+			else
+				return ploadu<vector_type>(static_cast<const T*>(data));
+		}
 	}
 
 	template aligned_vector load_avx<bool>(void*);

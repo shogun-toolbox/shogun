@@ -6,35 +6,28 @@
 
 #include <Eigen/Core>
 #include "PacketType.h"
+#include <iostream>
 
 using namespace Eigen::internal;
 
 namespace shogun::graph::op {
+
 	template <typename T>
 	void store_avx(const aligned_vector& input, void* output);
 
 	template <typename T>
 	void store_avx(const aligned_vector& data, void* output)
 	{
-		output = (void*)std::get<T*>(data);
-	}
-
-	template <>
-	void store_avx<float>(const aligned_vector& data, void* output)
-	{
-		pstoreu(static_cast<float*>(output), std::get<Packet8f>(data));
-	}
-
-	template <>
-	void store_avx<double>(const aligned_vector& data, void* output)
-	{
-		pstoreu(static_cast<double*>(output), std::get<Packet4d>(data));
-	}
-
-	template <>
-	void store_avx<int>(const aligned_vector& data, void* output)
-	{
-		pstoreu(static_cast<int*>(output), std::get<Packet8i>(data));
+		if constexpr(std::is_same_v<T, bool>)
+			output = (void*)std::get<bool*>(data);
+		else
+		{
+			using vector_type = typename alignedvector_from_builtintype<T, AVX_BYTESIZE>::type;
+			if constexpr(std::is_integral_v<T>)
+				_mm256_storeu_si256(static_cast<vector_type*>(output), std::get<vector_type>(data));
+			else
+				pstoreu(static_cast<T*>(output), std::get<vector_type>(data));
+		}
 	}
 
 	template void store_avx<bool>(const aligned_vector&, void*);
