@@ -16,6 +16,7 @@ namespace shogun
 	{
 		class SHOGUN_ENGINE_EXPORT CPUArch
 		{
+		public:
 			enum class SIMD
 			{
 				NONE = 0,
@@ -30,7 +31,7 @@ namespace shogun
 				AVX512F = 1u << 8 // TODO add all possible AVX512 instructions
 				                  // -> AVX512VL, AVX512BW, etc..
 			};
-
+		private:
 			inline SIMD& enable_simd(SIMD& lhs, const SIMD rhs)
 			{
 				using underlying = typename std::underlying_type<SIMD>::type;

@@ -8,6 +8,7 @@
 #define SHOGUN_PACKET_SHOGUN_H_
 
 #include "details/PacketType.h"
+#include <shogun/mathematics/graph/CPUArch.h>
 
 namespace shogun
 {
@@ -35,10 +36,33 @@ namespace shogun
 
 			enum class RegisterType
 			{
+				// what value should a scalar have?
+				SCALAR = 0,
 				SSE = 16,
 				AVX = 32,
 				AVX512 = 64
 			};
+
+			RegisterType get_register_type_from_instructions(CPUArch::SIMD instruction)
+			{
+				switch(instruction)
+				{
+					case CPUArch::SIMD::SSE:
+					case CPUArch::SIMD::SSE2:
+					case CPUArch::SIMD::SSE3:
+					case CPUArch::SIMD::SSSE3:
+					case CPUArch::SIMD::SSE4_1:
+					case CPUArch::SIMD::SSE4_2:
+						return RegisterType::SSE;
+					case CPUArch::SIMD::AVX:
+					case CPUArch::SIMD::AVX2:
+						return RegisterType::AVX;
+					case CPUArch::SIMD::AVX512F:
+						return RegisterType::AVX512;
+					case CPUArch::SIMD::NONE:
+						return RegisterType::SCALAR;
+				}
+			}
 
 			struct Packet
 			{
@@ -90,6 +114,8 @@ namespace shogun
 				aligned_vector m_data;
 				const RegisterType m_register_type;
 			};
+
+			using BinaryPacketFunction = std::function<void(const Packet&, const Packet&, const Packet&)>;
 		}
 	}
 }
