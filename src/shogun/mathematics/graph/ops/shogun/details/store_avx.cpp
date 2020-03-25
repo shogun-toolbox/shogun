@@ -6,7 +6,6 @@
 
 #include <Eigen/Core>
 #include "PacketType.h"
-#include <iostream>
 
 using namespace Eigen::internal;
 

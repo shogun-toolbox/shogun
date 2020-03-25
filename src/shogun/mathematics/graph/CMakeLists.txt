@@ -74,8 +74,8 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_AVX512F
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/divide_avx512f.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_avx512f.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_avx512f.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_avx512f.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_avx512f.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_avx512.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_avx512.cpp
 	)
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
@@ -89,6 +89,8 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_AVX
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_AVX2
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/add_avx2.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_avx.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_avx.cpp
 	)
 
 set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
@@ -104,6 +106,8 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
 set(SHOGUN_GRAPH_IMPLEMENTATION_SSE4_1
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/multiply_sse4_1.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_sse4_1.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_sse.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_sse.cpp
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES

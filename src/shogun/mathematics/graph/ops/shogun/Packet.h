@@ -15,23 +15,23 @@ namespace shogun
 	{
 		namespace op
 		{
-			// template <typename T>
-			// aligned_vector load_sse(void* input1);
+			template <typename T>
+			aligned_vector load_sse(void* input1);
 
 			template <typename T>
 			aligned_vector load_avx(void* input1);
 
-			// template <typename T>
-			// aligned_vector load_avx512f(void* input1);
+			template <typename T>
+			aligned_vector load_avx512(void* input1);
 
-			// template <typename T>
-			// void store_sse(const aligned_vector& input1, void* output);
+			template <typename T>
+			void store_sse(const aligned_vector& input1, void* output);
 
 			template <typename T>
 			void store_avx(const aligned_vector& input1, void* output);
 
-			// template <typename T>
-			// void store_avx512f(const aligned_vector& input1, void* output);
+			template <typename T>
+			void store_avx512(const aligned_vector& input1, void* output);
 
 			enum class RegisterType
 			{
@@ -49,14 +49,14 @@ namespace shogun
 				{
 					switch(register_type)
 					{
-						// case RegisterType::SSE:
-						// 	m_data = load_sse<T>((void*)data);
-						// 	break;
+						case RegisterType::SSE:
+							m_data = load_sse<T>((void*)data);
+							break;
 						case RegisterType::AVX:
 							m_data = load_avx<T>((void*)data);
 							break;
-						// case RegisterType::AVX512:
-						// 	m_data = load_avx512f<T>((void*)data);
+						case RegisterType::AVX512:
+							m_data = load_avx512<T>((void*)data);
 					}
 				}
 
@@ -71,14 +71,14 @@ namespace shogun
 				{
 					switch(m_register_type)
 					{
-						// case RegisterType::SSE:
-						// 	store_sse<T>(m_data, output);
-						// 	break;
+						case RegisterType::SSE:
+							store_sse<T>(m_data, output);
+							break;
 						case RegisterType::AVX:
 							store_avx<T>(m_data, output);
 							break;
-						// case RegisterType::AVX512:
-						// 	store_avx512f<T>(m_data, output);
+						case RegisterType::AVX512:
+							store_avx512<T>(m_data, output);
 					}
 				}
 

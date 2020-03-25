@@ -39,7 +39,7 @@ steps:
   env:
     CCACHE_DIR: $(ccacheDir)
 
-- script: ctest --output-on-failure
+- script: ctest --output-on-failure -j 2
   displayName: Test
   workingDirectory: build
 
