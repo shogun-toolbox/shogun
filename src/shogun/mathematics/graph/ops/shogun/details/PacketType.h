@@ -24,6 +24,38 @@ namespace shogun
 			static constexpr size_t AVX_BYTESIZE    = 32;
 			static constexpr size_t AVX512_BYTESIZE = 64;
 
+			enum class RegisterType
+			{
+				// what value should a scalar have?
+				SCALAR = 0,
+				SSE = SSE_BYTESIZE,
+				AVX = AVX_BYTESIZE,
+				AVX512 = AVX512_BYTESIZE
+			};
+
+			// forward declare Packet
+			struct Packet
+			{
+				Packet() = delete;
+				Packet(const Packet&) = delete;
+				Packet(Packet&&) = delete;
+
+				template <typename T>
+				Packet(const T* data, const RegisterType register_type);
+
+				Packet(const RegisterType register_type);
+
+				~Packet() = default;
+
+				template <typename T>
+				void store(T* output);
+
+				const size_t byte_size() const noexcept;
+				
+				aligned_vector m_data;
+				const RegisterType m_register_type;
+			};
+
 			template <typename T, size_t register_size>
 			struct alignedvector_from_builtintype
 			{};

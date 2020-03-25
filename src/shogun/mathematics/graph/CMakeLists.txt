@@ -102,7 +102,6 @@ set (SHOGUN_GRAPH_IMPLEMENTATION_SSE2
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/subtract_sse2.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/load_sse.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/details/store_sse.cpp
-
 	)
 
 set(SHOGUN_GRAPH_IMPLEMENTATION_SSE4_1
@@ -117,6 +116,7 @@ set(SHOGUN_GRAPH_IMPLEMENTATION_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/abstract/utils.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/Dot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/MatMul.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ops/shogun/Packet.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Add.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Cast.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runtime/shogun/Divide.cpp

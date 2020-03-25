@@ -10,6 +10,8 @@
 #include "details/PacketType.h"
 #include <shogun/mathematics/graph/CPUArch.h>
 
+#include <functional>
+
 namespace shogun
 {
 	namespace graph
@@ -34,15 +36,6 @@ namespace shogun
 			template <typename T>
 			void store_avx512(const aligned_vector& input1, void* output);
 
-			enum class RegisterType
-			{
-				// what value should a scalar have?
-				SCALAR = 0,
-				SSE = 16,
-				AVX = 32,
-				AVX512 = 64
-			};
-
 			inline RegisterType get_register_type_from_instructions(CPUArch::SIMD instruction)
 			{
 				switch(instruction)
@@ -64,65 +57,6 @@ namespace shogun
 				}
 				return RegisterType::SCALAR;
 			}
-
-			struct Packet
-			{
-				Packet() = delete;
-				Packet(const Packet&) = delete;
-				Packet(Packet&&) = delete;
-
-				template <typename T>
-				Packet(const T* data, const RegisterType register_type): m_register_type(register_type)
-				{
-					switch(register_type)
-					{
-						case RegisterType::SSE:
-							m_data = load_sse<T>((void*)data);
-							break;
-						case RegisterType::AVX:
-							m_data = load_avx<T>((void*)data);
-							break;
-						case RegisterType::AVX512:
-							m_data = load_avx512<T>((void*)data);
-							break;
-						case RegisterType::SCALAR:
-							error("Not Implemented");
-					}
-				}
-
-				Packet(const RegisterType register_type): m_data(nullptr), m_register_type(register_type)
-				{
-				}
-
-				~Packet() = default;
-
-				template <typename T>
-				void store(T* output)
-				{
-					switch(m_register_type)
-					{
-						case RegisterType::SSE:
-							store_sse<T>(m_data, output);
-							break;
-						case RegisterType::AVX:
-							store_avx<T>(m_data, output);
-							break;
-						case RegisterType::AVX512:
-							store_avx512<T>(m_data, output);
-							break;
-						case RegisterType::SCALAR:
-							error("Not Implemented");
-					}
-				}
-
-				const size_t byte_size() const noexcept
-				{
-					return static_cast<size_t>(m_register_type);
-				}
-				
-				aligned_vector m_data;
-				const RegisterType m_register_type;
-			};
 
 			using BinaryPacketFunction = std::function<void(const Packet&, const Packet&, const Packet&)>;
 		}

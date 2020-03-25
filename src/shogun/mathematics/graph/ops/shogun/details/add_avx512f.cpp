@@ -12,13 +12,7 @@
 using namespace Eigen::internal;
 
 namespace shogun::graph::op {
-
-	struct Packet
-	{
-		aligned_vector m_data;
-		const size_t m_size;
-	};
-
+	
 	template <typename T>
 	void add_kernel_implementation_avx512f(
 	    void* input1, void* input2, void* output);
