@@ -1,9 +1,8 @@
-// /*
-//  * This software is distributed under BSD 3-clause license (see LICENSE
-//  file).
-//  *
-//  * Authors: Gil Hoben
-//  */
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben
+ */
 
 #ifndef SHOGUN_SUBTRACT_SHOGUN_H_
 #define SHOGUN_SUBTRACT_SHOGUN_H_
@@ -11,6 +10,7 @@
 #include <shogun/mathematics/graph/nodes/Subtract.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 #include <shogun/mathematics/graph/CPUArch.h>
+#include "Packet.h"
 
 namespace shogun
 {
@@ -21,20 +21,19 @@ namespace shogun
 
 			template <typename T>
 			void subtract_kernel_implementation_avx512f(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
 			template <typename T>
 			void subtract_kernel_implementation_avx(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
+
+			template <typename T>
+			void subtract_kernel_implementation_avx2(
+			    void* input1, void* input2, void* output);
 
 			template <typename T>
 			void subtract_kernel_implementation_sse2(
-			    void* input1, void* input2, void* output, const size_t size);
-
-			// uses _mm_min_epi32
-			template <typename T>
-			void subtract_kernel_implementation_sse41(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
 			IGNORE_IN_CLASSLIST class SubtractShogun
 			    : public ShogunBinaryOperator<SubtractShogun>
@@ -54,31 +53,94 @@ namespace shogun
 
 			protected:
 				template <typename T>
-				void kernel_implementation(
-				    void* input1, void* input2, void* output, const size_t size)
+				std::tuple<BinaryPacketFunction, RegisterType> kernel_implementation_packet() const
 				{
 					auto* CPU_arch = CPUArch::instance();
 					if (CPU_arch->has_avx512f())
-						subtract_kernel_implementation_avx512f<T>(input1, input2, output, size);
-					else if (CPU_arch->has_avx())
-						subtract_kernel_implementation_avx<T>(input1, input2, output, size);
-					else if (CPU_arch->has_sse4_1() && std::is_same_v<int32_t, T>)
 					{
-						// only lookup for int32 implementation at compile time
-						if constexpr(std::is_same_v<int32_t, T>)
-						{
-							// _mm_min_epi32
-							subtract_kernel_implementation_sse41<T>(input1, input2, output, size);
-						}
+						auto k = [](const Packet& packet1, const Packet& packet2, const Packet& output_packet){
+							subtract_kernel_implementation_avx512f<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX512F));
+					}
+					else if (CPU_arch->has_avx2())
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, const Packet& output_packet){
+							subtract_kernel_implementation_avx2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX));
+					}
+					else if (CPU_arch->has_avx())
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, const Packet& output_packet){
+							subtract_kernel_implementation_avx<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX));
 					}
 					else if (CPU_arch->has_sse2())
-						subtract_kernel_implementation_sse2<T>(input1, input2, output, size);
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, const Packet& output_packet){
+							subtract_kernel_implementation_sse2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::SSE2));
+					}
 					else
+					{
+						// still have to implement GenericPackets, i.e. represent a scalar
+						auto k = [](const Packet& packet1, const Packet& packet2, const Packet& output_packet){
+							// std::transform(
+							//     std::get<T*>(packet1.m_data),
+							//     std::get<T*>(packet1.m_data) + size,
+							//     std::get<T*>(packet2), std::get<T*>(output_packet),
+							//     std::plus<T>());
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::NONE));
+					}
+				}
+
+				template <typename T>
+				void kernel_implementation(
+				    void* input1, void* input2, void* output, const size_t size)
+				{
+					const auto [kernel, register_type] = kernel_implementation_packet<T>();
+					if (register_type != RegisterType::SCALAR)
+					{
+						const size_t register_capacity = static_cast<size_t>(register_type) / sizeof(T);
+						size_t i = 0;
+						if (size > register_capacity)
+						{
+							size_t remainder = size % register_capacity;
+							for (;i<size-remainder; i+=register_capacity)
+							{
+								const auto packet1 = Packet(static_cast<const T*>(input1)+i, register_type);
+								const auto packet2 = Packet(static_cast<const T*>(input2)+i, register_type);
+								if constexpr(!std::is_same_v<T, bool>)
+								{
+									Packet output_packet = Packet(register_type);
+									kernel(packet1, packet2, output_packet);
+									output_packet.store(static_cast<T*>(output)+i);	
+								}
+								else
+								{
+									Packet output_packet = Packet(static_cast<T*>(output)+i, register_type);
+									kernel(packet1, packet2, output_packet);
+								}
+							}
+						}
+						while(i < size)
+						{
+							*(static_cast<T*>(output)+i) = *(static_cast<const T*>(input1)+i) - *(static_cast<const T*>(input2)+i); 
+							i++;
+						}
+					}
+					else
+					{
 						std::transform(
-						    static_cast<const T*>(input1),
-						    static_cast<const T*>(input1) + size,
-						    static_cast<const T*>(input2), static_cast<T*>(output),
-						    std::minus<T>());
+							    static_cast<const T*>(input1),
+							    static_cast<const T*>(input1) + size,
+							    static_cast<const T*>(input2), static_cast<T*>(output),
+							    std::minus<T>());
+					}
 				}
 
 				template <typename T>

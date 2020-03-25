@@ -22,7 +22,7 @@ namespace shogun
 				Executor();
 				~Executor();
 
-				void operator(const std::vector<?>& inputs, ?& output)
+				void operator(const std::vector<std::shared_ptr<Tensor>>& inputs, std::shared_ptr<Tensor>& output)
 				{
 					execute_loop();
 				}
@@ -48,7 +48,7 @@ namespace shogun
 					}					
 				}
 
-				void execute_inner_loop_vectorized(const Packet& packet1, const Packet& packet2, void* output)
+				void execute_inner_loop_vectorized()
 				{
 					for (const auto& op: m_operations)
 					{

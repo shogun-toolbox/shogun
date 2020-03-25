@@ -12,7 +12,6 @@
 #include <shogun/mathematics/graph/CPUArch.h>
 #include "Packet.h"
 
-#include <tuple>
 
 namespace shogun
 {

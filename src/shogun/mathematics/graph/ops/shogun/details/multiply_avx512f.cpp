@@ -4,43 +4,111 @@
  * Authors: Gil Hoben
  */
 
-#include <unsupported/Eigen/CXX11/Tensor>
+#include <algorithm>
+#include <functional>
+#include <Eigen/Core>
+#include "PacketType.h"
+
+using namespace Eigen::internal;
 
 namespace shogun::graph::op {
-	template <typename T>
-	void multiply_kernel_implementation_avx512f(
-	    void* input1, void* input2, void* output, const size_t size);
 
-	template <typename T>
-	void multiply_kernel_implementation_avx512f(
-	    void* input1, void* input2, void* output, const size_t size)
+	struct Packet
 	{
-		Eigen::TensorMap<Eigen::Tensor<T, 1>> A(static_cast<T*>(input1), size);
-		Eigen::TensorMap<Eigen::Tensor<T, 1>> B(static_cast<T*>(input2), size);
-		Eigen::TensorMap<Eigen::Tensor<T, 1>> Out(static_cast<T*>(output), size);
+		aligned_vector m_data;
+		const size_t m_size;
+	};
 
-		Out.device(Eigen::DefaultDevice{}) = A * B;
+	template <typename T>
+	void multiply_kernel_implementation_avx512f(
+	    void* input1, void* input2, void* output);
+
+	template <typename T>
+	void multiply_kernel_implementation_avx512f(
+	    void* input1, void* input2, void* output)
+	{
+		using vector_type = typename alignedvector_from_builtintype<T, AVX512_BYTESIZE>::type;
+		const auto& vec1 = std::get<vector_type>(static_cast<const Packet*>(input1)->m_data);
+		const auto& vec2 = std::get<vector_type>(static_cast<const Packet*>(input2)->m_data);
+		vector_type result;
+
+		std::transform(
+		    reinterpret_cast<const T*>(&vec1),
+		    reinterpret_cast<const T*>(&vec1) + AVX512_BYTESIZE/sizeof(T),
+		    reinterpret_cast<const T*>(&vec2),
+		    reinterpret_cast<T*>(&result),
+		    std::multiplies<T>());
+
+		static_cast<Packet*>(output)->m_data = result;
 	}
 
 	template <>
 	void multiply_kernel_implementation_avx512f<bool>(
-	    void* input1, void* input2, void* output, const size_t size)
+	    void* input1, void* input2, void* output)
 	{
-		std::transform(
-		    static_cast<const bool*>(input1),
-		    static_cast<const bool*>(input1) + size,
-		    static_cast<const bool*>(input2), static_cast<bool*>(output),
-		    std::multiplies<bool>());
+		const auto& vec1 = std::get<bool*>(static_cast<const Packet*>(input1)->m_data);
+		const auto& vec2 = std::get<bool*>(static_cast<const Packet*>(input2)->m_data);
+		auto& out = std::get<bool*>(static_cast<const Packet*>(output)->m_data);
+
+		std::transform(vec1, vec1 + AVX512_BYTESIZE/sizeof(bool), vec2, out, std::multiplies<bool>());
 	}
 
-	template void multiply_kernel_implementation_avx512f<int8_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<int16_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<int32_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<int64_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<uint8_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<uint16_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<uint32_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<uint64_t>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<float>(void*, void*, void*, const size_t);
-	template void multiply_kernel_implementation_avx512f<double>(void*, void*, void*, const size_t);
+	template<>
+	void multiply_kernel_implementation_avx512f<float>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = pmul(
+			std::get<Packet16f>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet16f>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	template<>
+	void multiply_kernel_implementation_avx512f<double>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = pmul(
+			std::get<Packet8d>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet8d>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	// requires AVX512BW
+	// template<>
+	// void multiply_kernel_implementation_avx512f<int16_t>(
+	// 	void* input1, void* input2, void* output)
+	// {
+	// 	static_cast<Packet*>(output)->m_data = _mm512_mullo_epi16(
+	// 		std::get<Packet16i>(static_cast<const Packet*>(input1)->m_data), 
+	// 		std::get<Packet16i>(static_cast<const Packet*>(input2)->m_data));
+	// }
+
+	template<>
+	void multiply_kernel_implementation_avx512f<int32_t>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = _mm512_mullo_epi32(
+			std::get<Packet16i>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet16i>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	// requires AVX512DQ
+	// template<>
+	// void multiply_kernel_implementation_avx512f<int64_t>(
+	// 	void* input1, void* input2, void* output)
+	// {
+	// 	static_cast<Packet*>(output)->m_data = _mm512_mullo_epi64(
+	// 		std::get<Packet16i>(static_cast<const Packet*>(input1)->m_data), 
+	// 		std::get<Packet16i>(static_cast<const Packet*>(input2)->m_data));
+	// }
+
+	template void multiply_kernel_implementation_avx512f<bool>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<int8_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<int16_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<int32_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<int64_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<uint8_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<uint16_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<uint32_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<uint64_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<float>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx512f<double>(void*, void*, void*);
 }

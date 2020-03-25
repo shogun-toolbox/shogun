@@ -43,7 +43,7 @@ namespace shogun
 				AVX512 = 64
 			};
 
-			RegisterType get_register_type_from_instructions(CPUArch::SIMD instruction)
+			inline RegisterType get_register_type_from_instructions(CPUArch::SIMD instruction)
 			{
 				switch(instruction)
 				{
@@ -62,11 +62,14 @@ namespace shogun
 					case CPUArch::SIMD::NONE:
 						return RegisterType::SCALAR;
 				}
+				return RegisterType::SCALAR;
 			}
 
 			struct Packet
 			{
 				Packet() = delete;
+				Packet(const Packet&) = delete;
+				Packet(Packet&&) = delete;
 
 				template <typename T>
 				Packet(const T* data, const RegisterType register_type): m_register_type(register_type)
@@ -81,6 +84,9 @@ namespace shogun
 							break;
 						case RegisterType::AVX512:
 							m_data = load_avx512<T>((void*)data);
+							break;
+						case RegisterType::SCALAR:
+							error("Not Implemented");
 					}
 				}
 
@@ -103,6 +109,9 @@ namespace shogun
 							break;
 						case RegisterType::AVX512:
 							store_avx512<T>(m_data, output);
+							break;
+						case RegisterType::SCALAR:
+							error("Not Implemented");
 					}
 				}
 

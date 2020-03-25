@@ -20,11 +20,11 @@ namespace shogun::graph::op {
 	};
 
 	template <typename T>
-	void multiply_kernel_implementation_avx(
+	void multiply_kernel_implementation_avx2(
 	    void* input1, void* input2, void* output);
 
 	template <typename T>
-	void multiply_kernel_implementation_avx(
+	void multiply_kernel_implementation_avx2(
 	    void* input1, void* input2, void* output)
 	{
 		using vector_type = typename alignedvector_from_builtintype<T, AVX_BYTESIZE>::type;
@@ -43,7 +43,7 @@ namespace shogun::graph::op {
 	}
 
 	template <>
-	void multiply_kernel_implementation_avx<bool>(
+	void multiply_kernel_implementation_avx2<bool>(
 	    void* input1, void* input2, void* output)
 	{
 		const auto& vec1 = std::get<bool*>(static_cast<const Packet*>(input1)->m_data);
@@ -54,7 +54,7 @@ namespace shogun::graph::op {
 	}
 
 	template<>
-	void multiply_kernel_implementation_avx<float>(
+	void multiply_kernel_implementation_avx2<float>(
 		void* input1, void* input2, void* output)
 	{
 		static_cast<Packet*>(output)->m_data = pmul(
@@ -63,7 +63,7 @@ namespace shogun::graph::op {
 	}
 
 	template<>
-	void multiply_kernel_implementation_avx<double>(
+	void multiply_kernel_implementation_avx2<double>(
 		void* input1, void* input2, void* output)
 	{
 		static_cast<Packet*>(output)->m_data = pmul(
@@ -71,15 +71,33 @@ namespace shogun::graph::op {
 			std::get<Packet4d>(static_cast<const Packet*>(input2)->m_data));
 	}
 
-	template void multiply_kernel_implementation_avx<bool>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<int8_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<int16_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<int32_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<int64_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<uint8_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<uint16_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<uint32_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<uint64_t>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<float>(void*, void*, void*);
-	template void multiply_kernel_implementation_avx<double>(void*, void*, void*);
+	template<>
+	void multiply_kernel_implementation_avx2<int16_t>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = _mm256_mullo_epi16(
+			std::get<Packet8i>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet8i>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	template<>
+	void multiply_kernel_implementation_avx2<int32_t>(
+		void* input1, void* input2, void* output)
+	{
+		static_cast<Packet*>(output)->m_data = _mm256_mullo_epi32(
+			std::get<Packet8i>(static_cast<const Packet*>(input1)->m_data), 
+			std::get<Packet8i>(static_cast<const Packet*>(input2)->m_data));
+	}
+
+	template void multiply_kernel_implementation_avx2<bool>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<int8_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<int16_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<int32_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<int64_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<uint8_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<uint16_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<uint32_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<uint64_t>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<float>(void*, void*, void*);
+	template void multiply_kernel_implementation_avx2<double>(void*, void*, void*);
 }
