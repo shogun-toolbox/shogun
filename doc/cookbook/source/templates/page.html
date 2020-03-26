@@ -20,6 +20,25 @@
 <script>
 jQuery(document).ready(function ($) {
     $('ul[id^=tabs]').tab();
+    $('.highlight').mouseup(function() {
+	    var timeout;
+	    var copyText = document.getSelection().toString();
+      if(copyText){
+        clearTimeout(timeout);
+        document.execCommand("copy");
+        $(this).tooltip("show");
+	    }    
+      var selected = this;
+      timeout = setTimeout(function() {
+      $(selected).tooltip("hide");
+      }, 1000);
+    });
+
+    $('.highlight').tooltip({
+	    trigger:'manual',
+      placement:'bottom',
+      title:'Copied!',
+    });
 });
 </script>
 

@@ -138,7 +138,7 @@ std::shared_ptr<MulticlassLabels> QDA::apply_multiclass(std::shared_ptr<Features
 			vec = rf->get_feature_vector(i);
 			ASSERT(vec.vector)
 
-			Map< VectorXd > Evec(vec, vec.vlen);
+			SGVector<float64_t>::EigenVectorXtMap Evec = vec;
 			Map< VectorXd > Em_means_col(m_means.get_column_vector(k), m_dim);
 
 			X.row(i) = Evec - Em_means_col;
@@ -146,7 +146,7 @@ std::shared_ptr<MulticlassLabels> QDA::apply_multiclass(std::shared_ptr<Features
 			rf->free_feature_vector(vec, i);
 		}
 
-		Map<MatrixXd> Em_M(m_M.slice(m_dim * k, m_dim * (k + 1)));
+		SGMatrix<float64_t>::EigenMatrixXtMap Em_M = m_M.slice(m_dim * k, m_dim * (k + 1));
 		A = X*Em_M;
 
 		for (int i = 0; i < num_vecs; i++)
@@ -263,7 +263,7 @@ bool QDA::train_machine(std::shared_ptr<Features> data)
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i]);
 			ASSERT(vec.vector)
 
-			Map< VectorXd > Evec(vec, vec.vlen);
+			SGVector<float64_t>::EigenVectorXtMap Evec = vec;
 			Em_means += Evec;
 			buffer.row(i) = Evec;
 

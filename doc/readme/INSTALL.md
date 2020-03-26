@@ -291,9 +291,9 @@ Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogu
 
 1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-2. Open the start menu and run _Anaconda Prompt (Miniconda3)_
+2. Open the start menu, and run _Anaconda Prompt (Miniconda3)_
 
-3. Find the path of the _Native Tools Command Prompt for VS_ relative to your system and Visual studio (x32/x64, 2017/2019). For example for _x64 Native Tools Command Prompt for VS 2019_ it looks so: `%comspec% /k "X:\Path\To\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"`
+3. In the Windows Start menu, find the path of the _Native Tools Command Prompt for VS_ shortcut that is relative to your system architecture and Visual Studio version (x32/x64, 2017/2019/..). For example, for _x64 Native Tools Command Prompt for VS 2019_, it looks so: `%comspec% /k "X:\Path\To\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"`. For detailed information check out [link 1](https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line) and [link 2](https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs)
 
 4. Execute this path in the _Anaconda Prompt_ to run _Native Tools_ there 
 
@@ -330,6 +330,7 @@ activate %VENV_DIR%
 
 %REPO_DIR%\.ci\setup_clcache.cmd
 
+MKDIR %BinariesDirectory%
 CHDIR /d %BinariesDirectory%
 %REPO_DIR%\.ci\get_latest_artifact.py %SourceBranchName% %clcacheArtifactName%
 @rem If there is no tar program in your Windows do:
@@ -346,4 +347,4 @@ cmake %PLATFORM% -DCMAKE_BUILD_TYPE=%buildConfiguration% -DCMAKE_PREFIX_PATH=%VE
 cmake --build . --config %buildConfiguration% --target INSTALL -- -p:TrackFileAccess=false -p:CLToolExe=clcache.exe -maxcpucount:%MAX_CPU_COUNT%
 ```
 
-5. The result will be in the targetPrefix dir (MAIN_DIR\binaries\opt).
+5. Now you can use the Conda environment (located in VENV_DIR) containing shogun library in your Python projects!

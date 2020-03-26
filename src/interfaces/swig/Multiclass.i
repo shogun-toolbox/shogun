@@ -15,6 +15,9 @@
 %shared_ptr(shogun::RandomMixin<shogun::TreeMachine<shogun::CARTreeNodeData>, std::mt19937_64>)
 %shared_ptr(shogun::TreeMachine<shogun::CARTreeNodeData>)
 %shared_ptr(shogun::TreeMachine<shogun::CHAIDTreeNodeData>)
+%shared_ptr(shogun::FeatureImportanceTree<shogun::C45TreeNodeData>)
+%shared_ptr(shogun::FeatureImportanceTree<shogun::id3TreeNodeData>)
+%shared_ptr(shogun::RandomMixin<shogun::FeatureImportanceTree<shogun::CARTreeNodeData>, std::mt19937_64>)
 
 %shared_ptr(shogun::BalancedConditionalProbabilityTree)
 %shared_ptr(shogun::ConditionalProbabilityTree)
@@ -80,6 +83,7 @@ SHARED_RANDOM_INTERFACE(shogun::ECOCEncoder)
 %include <shogun/multiclass/tree/TreeMachine.h>
 %include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
 %include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
+%include <shogun/multiclass/tree/FeatureImportanceTree.h>
 namespace shogun
 {
     %template(TreeMachineWithConditionalProbabilityTreeNodeData) TreeMachine<ConditionalProbabilityTreeNodeData>;
@@ -95,14 +99,17 @@ RANDOM_INTERFACE(ConditionalProbabilityTree)
 
 %include <shogun/multiclass/tree/ID3TreeNodeData.h>
 %template(TreeMachineWithID3TreeNodeData) shogun::TreeMachine<shogun::id3TreeNodeData>;
+%template(FeatureImportanceTreeWithID3TreeNodeData) shogun::FeatureImportanceTree<shogun::id3TreeNodeData>;
 %include <shogun/multiclass/tree/ID3ClassifierTree.h>
 %include <shogun/multiclass/tree/C45TreeNodeData.h>
 %template(TreeMachineWithC45TreeNodeData) shogun::TreeMachine<shogun::C45TreeNodeData>;
+%template(FeatureImportanceTreeWithC45TreeNodeData) shogun::FeatureImportanceTree<shogun::C45TreeNodeData>;
 %include <shogun/multiclass/tree/C45ClassifierTree.h>
 %include <shogun/multiclass/tree/CARTreeNodeData.h>
 %template(TreeMachineWithCARTreeNodeData) shogun::TreeMachine<shogun::CARTreeNodeData>;
 %template(SeedableTreeMachine) shogun::Seedable<shogun::TreeMachine<shogun::CARTreeNodeData>>;
 %template(RandomMixinTreeMachine) shogun::RandomMixin<shogun::TreeMachine<shogun::CARTreeNodeData>, std::mt19937_64>;
+%template(RandomMixinFeatureImportanceTree) shogun::RandomMixin<shogun::FeatureImportanceTree<shogun::CARTreeNodeData>, std::mt19937_64>;
 %include <shogun/multiclass/tree/CARTree.h>
 %include <shogun/multiclass/tree/CHAIDTreeNodeData.h>
 %template(TreeMachineWithCHAIDTreeNodeData) shogun::TreeMachine<shogun::CHAIDTreeNodeData>;

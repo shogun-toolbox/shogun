@@ -30,9 +30,9 @@ Make sure you read up on how to compile C/C++ code.
 Compilation requires the Shogun headers path, i.e. the path where for example `shogun/base/init.h` is located.
 This is either in `path/to/src/shogun/` or in `path/to/shogun-install/include/shogun/` and is specified  via the `-I` flag.
 Linking requires the `-lshogun` flag, which either needs the `LD_LIBRARY_PATH` or `DYLD_LIBRARY_PATH` set up as described above, or preferably passed via the `-L` flag.
-Compiling and linking code with `gcc` works as
+Compiling and linking code with `g++` works as
 
-    gcc path/to/native_example.cpp -o native_example -I/path/to/headers -lshogun -L/path/to/libshogun.*
+    g++ path/to/native_example.cpp -o native_example -std=c++17 -I/path/to/headers -lshogun -L/path/to/libshogun.*
 
 Running it:
 
@@ -58,6 +58,7 @@ Running an example:
 
 ### Ruby
 This needs `shogun.rb` to be visible, which is either in `path/to/build/src/interfaces/ruby_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/site_ruby`
+
     export RUBYLIB="path/to/shogun.rb:$RUBYLIB"
 
 Running an example:
@@ -66,6 +67,7 @@ Running an example:
 
 ### R
 This needs `shogun.R` to be visible, which is either in `path/to/build/src/interfaces/r_modular/` or in something similar to `path/to/shogun-install/lib/R/site-library`
+
     export R_LIBS_USER="path/to/shogun.R:$R_LIBS_USER"
 
 Running an example:

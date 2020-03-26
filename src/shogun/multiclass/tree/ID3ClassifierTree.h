@@ -34,10 +34,12 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/ID3TreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
+#include <shogun/multiclass/tree/ID3TreeNodeData.h>
+#include <shogun/multiclass/tree/TreeMachine.h>
 
 namespace shogun
 {
@@ -71,7 +73,7 @@ namespace shogun
  * end ID3;
  *
  */
-class ID3ClassifierTree : public TreeMachine<id3TreeNodeData>
+class ID3ClassifierTree : public FeatureImportanceTree<id3TreeNodeData>
 {
 public:
 	/** constructor */
@@ -111,6 +113,8 @@ public:
 	 */
 	bool prune_tree(std::shared_ptr<DenseFeatures<float64_t>> validation_data, std::shared_ptr<MulticlassLabels> validation_labels, float64_t epsilon=0.f);
 
+	SGVector<float64_t> get_feature_importances() const;
+
 protected:
 
 	/** train machine - build ID3 Tree from training data
@@ -137,7 +141,10 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */
-	float64_t informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data, const std::shared_ptr<MulticlassLabels>& class_labels);
+	float64_t informational_gain_attribute(
+		int32_t attr_no, const std::shared_ptr<Features>& data,
+		const std::shared_ptr<MulticlassLabels>& class_labels,
+		float64_t& impurity);
 
 	/** computes entropy (aka randomness) in data
 	 *

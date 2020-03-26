@@ -32,14 +32,16 @@
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/C45ClassifierTree.h>
+#include <shogun/multiclass/tree/FeatureImportanceTree.h>
 
 using namespace shogun;
 
 const float64_t C45ClassifierTree::MISSING=Math::NOT_A_NUMBER;
 
 C45ClassifierTree::C45ClassifierTree()
-: TreeMachine<C45TreeNodeData>()
+    : FeatureImportanceTree<C45TreeNodeData>()
 {
 	init();
 }
@@ -141,8 +143,19 @@ bool C45ClassifierTree::train_machine(std::shared_ptr<Features> data)
 	feature_ids.range_fill();
 
 	set_root(C45train(data, m_weights, multiclass_labels(m_labels), feature_ids, 0));
-
+	if (m_root)
+	{
+		compute_feature_importance(num_features, m_root);
+	}
 	return true;
+}
+
+SGVector<float64_t> C45ClassifierTree::get_feature_importances() const
+{
+	require(
+	    m_feature_importances.size(),
+	    "get_feature_importance should be called after train");
+	return m_feature_importances;
 }
 
 std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(const std::shared_ptr<Features>& data, SGVector<float64_t> weights,
@@ -225,13 +238,17 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 
 	// else get the feature with the highest informational gain. threshold is used for continuous features only.
 	float64_t max=0;
+	float64_t impurity = 0.0;
+	float64_t max_impurity = 0.0;
 	int32_t best_feature_index=-1;
 	float64_t threshold=0.;
 	for (int32_t i=0; i<feats->get_num_features(); i++)
 	{
 		if (m_nominal[feature_id_vector[i]])
 		{
-			float64_t gain=informational_gain_attribute(i,feats,weights,class_labels);
+			float64_t gain = informational_gain_attribute(
+			    i, feats, weights, class_labels, impurity);
+			max_impurity = std::max(max_impurity, impurity);
 			if (gain>=max)
 			{
 				max=gain;
@@ -268,7 +285,9 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 					}
 
 					auto temp_feats=std::make_shared<DenseFeatures<float64_t>>(temp_feat_mat);
-					float64_t gain=informational_gain_attribute(0,temp_feats,weights,class_labels);
+					float64_t gain = informational_gain_attribute(
+					    0, temp_feats, weights, class_labels, impurity);
+					max_impurity = std::max(max_impurity, impurity);
 					if (gain>max)
 					{
 						threshold=z;
@@ -396,6 +415,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 		// recursion over child nodes
 		auto child=C45train(new_data,new_weights,new_class_labels,new_feature_id_vector,level+1);
 		node->data.attribute_id=feature_id_vector[best_feature_index];
+		node->data.impurity = max_impurity;
 		if (m_nominal[feature_id_vector[best_feature_index]])
 			child->data.transit_if_feature_value=active_feature_value;
 		else
@@ -538,8 +558,10 @@ void C45ClassifierTree::prune_tree_from_current_node(const std::shared_ptr<Dense
 
 }
 
-float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, const std::shared_ptr<Features>& data,
-				SGVector<float64_t> weights, const std::shared_ptr<MulticlassLabels>& class_labels)
+float64_t C45ClassifierTree::informational_gain_attribute(
+    int32_t attr_no, const std::shared_ptr<Features>& data,
+    SGVector<float64_t> weights,
+    const std::shared_ptr<MulticlassLabels>& class_labels, float64_t& impurity)
 {
 	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
@@ -626,6 +648,7 @@ float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, const
 	}
 
 	float64_t data_entropy=entropy(gain_labels,gain_weights);
+	impurity = gain;
 	gain = data_entropy-gain;
 
 	if (num_missing!=0)
@@ -644,17 +667,17 @@ float64_t C45ClassifierTree::entropy(const std::shared_ptr<MulticlassLabels>& la
 	SGVector<float64_t> log_ratios(unique_labels.size());
 	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
 
-	for (int32_t i=0;i<unique_labels.size();i++)
+	for (int32_t i = 0; i < unique_labels.size(); i++)
 	{
 		float64_t weight_count=0.;
-		for (int32_t j=0;j<labels_vector.vlen;j++)
+		for (int32_t j = 0; j < labels_vector.vlen; j++)
 		{
-			if (unique_labels[i]==labels_vector[j])
+			if (unique_labels[i] == labels_vector[j])
 			{
 				weight_count+=weights[j];
 			}
 		}
-		log_ratios[i] = std::log(weight_count/total_weight);
+		log_ratios[i] = std::log(weight_count / total_weight);
 	}
 
 	return Statistics::entropy(log_ratios.vector,log_ratios.vlen);
@@ -764,7 +787,10 @@ void C45ClassifierTree::init()
 	m_certainty=SGVector<float64_t>();
 	m_types_set=false;
 	m_weights_set=false;
-
+	m_feature_importances = SGVector<float64_t>();
+	SG_ADD(
+	    &m_feature_importances, "feature_importances", "feature importances",
+	    ParameterProperties::READONLY);
 	SG_ADD(&m_nominal,"m_nominal", "feature types");
 	SG_ADD(&m_weights,"m_weights", "weights");
 	SG_ADD(&m_certainty,"m_certainty", "certainty");
