@@ -1,2 +1,29 @@
 In this example a mean squared error (MSE) is being computed
 for the pair of random vectors of length N.
+
+Mean Squared Error using scikit learn
+
+from sklearn.metrics import mean_squared_error 
+
+# Given values 
+Y_true = [1,1,2,2,4] # Y_true = Y (original values) 
+
+# calculated values 
+Y_pred = [0.6,1.29,1.99,2.69,3.4] # Y_pred = Y' 
+
+# Calculation of Mean Squared Error (MSE) 
+mean_squared_error(Y_true,Y_pred) 
+
+
+Mean squared eerror using Numpy module
+
+import numpy as np 
+  
+# Given values 
+Y_true = [1,1,2,2,4]  # Y_true = Y (original values) 
+  
+# Calculated values 
+Y_pred = [0.6,1.29,1.99,2.69,3.4]  # Y_pred = Y' 
+  
+# Mean Squared Error 
+MSE = np.square(np.subtract(Y_true,Y_pred)).mean() 
