@@ -3,20 +3,20 @@
 
 Unified and efficient Machine Learning since 1999.
 
-Latest release:
+Latest release :
 
 [![Release](https://img.shields.io/github/release/shogun-toolbox/shogun.svg)](https://github.com/shogun-toolbox/shogun/releases/latest)
 
-Cite Shogun:
+Cite Shogun :
 
 [![DOI](https://zenodo.org/badge/1555094.svg)](https://zenodo.org/badge/latestdoi/1555094)
 
-Develop branch build status:
+Develop branch build status :
 
 [![Build status](https://dev.azure.com/shogunml/shogun/_apis/build/status/shogun-CI)](https://dev.azure.com/shogunml/shogun/_build/latest?definitionId=-1)
 [![codecov](https://codecov.io/gh/shogun-toolbox/shogun/branch/develop/graph/badge.svg)](https://codecov.io/gh/shogun-toolbox/shogun)
 
-Donate to Shogun via NumFocus:
+Donate to Shogun via NumFocus :
 
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
 
@@ -35,7 +35,7 @@ Buildbot: https://buildbot.shogun.ml.
 ## Interfaces
 -------------
 
-Shogun is implemented in C++ and offers automatically generated, unified interfaces to Python, Octave, Java / Scala, Ruby, C#, R, Lua. We are currently working on adding more languages including JavaScript, D, and Matlab.
+Shogun is implemented in C++ and offers automatically generated, unified interfaces to Python, Octave, Java/Scala, Ruby, C#, R, Lua. We are currently working on adding more languages including JavaScript, D, and MatLab.
 
 |    Interface     |     Status                                                |
 |:----------------:|-----------------------------------------------------------|
