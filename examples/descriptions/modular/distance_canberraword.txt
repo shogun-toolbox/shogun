@@ -1,1 +1,102 @@
 This example shows how to compute the Canberra Word Distance.
+
+Function dist_Canberra (InputMatrix : t2dVariantArrayDouble; Var OutputMatrix : t2dVariantArrayDouble) : Boolean;
+// The function dist_CalcCanberraMatrix calculates the Canberra dissimilarity
+// matrix between several cases, which are expected in the rows. The variables are
+// expected in the columns. Function returns FALSE if at least one cell can not be
+// calculated. The result matrix is returned in OutputMatrix.
+Var  InputCols        : Integer;
+     InputRows        : Integer;
+     OutputMatrixSize : Integer;
+     RunnerY          : Integer;
+     RunnerX          : Integer;
+     Numerator        : Double;
+     Denominator      : Double;
+     i                : Integer;
+     FirstVal         : Double;
+     Summed           : Double;
+     NoOfValues       : Integer;
+     SecondVal        : Double;
+     Dissimilarity    : Double;
+Begin
+
+  // if one dimension is zero
+  If Not mtx_IsRectangular (InputMatrix, InputRows, InputCols) THen
+  Begin
+    // create an empty matrix, return FALSE and exit
+    mtx_Create (OutputMatrix, 1, 1, 0, 'Erroneous Canberra distance matrix');
+    dist_Canberra := False;
+    Exit;
+  end;
+
+  // create an output matrix of required size
+  mtx_Create (OutputMatrix, InputRows, InputRows, NaN, 'Canberra distance matrix');
+
+  //copy the respective titles
+  For RunnerY := Low (InputMatrix.RowTitle) to High (InputMatrix.RowTitle) do
+  Begin
+    // names for rows and columns are the same in this triangualary matrix
+    OutputMatrix.RowTitle [RunnerY] := InputMatrix.RowTitle [RunnerY];
+    OutputMatrix.ColTitle [RunnerY] := InputMatrix.RowTitle [RunnerY];
+  end;
+
+
+  // let's expect the best case ...
+  dist_Canberra := True;
+
+  // compare every object
+  For RunnerY := Low (OutputMatrix.Cells) to High (OutputMatrix.Cells) do
+  Begin
+    // with every other
+    For RunnerX := Low (OutputMatrix.Cells) to RunnerY do
+    Begin
+      NoOfValues  := 0;
+      Summed      := 0;
+
+      // include all variables in analysis
+      For i := 0 to High (InputMatrix.Cells [0]) do
+      Begin
+        FirstVal  := InputMatrix.Cells [RunnerX, i];
+        SecondVal := InputMatrix.Cells [RunnerY, i];
+
+        // no 'Not A Number' at all?
+        If Not (IsNAN (FirstVal) Or IsNAN (SecondVal)) THen
+        Begin
+          Numerator   := Abs (FirstVal - SecondVal);
+          Denominator := Abs (FirstVal) + Abs (SecondVal);
+
+          If Denominator <> 0 THen
+          Begin
+            // increase number of variable pairs and add the term
+            Inc (NoOfValues);
+            Summed := Summed + (Numerator / Denominator);
+          end
+          Else
+          Begin
+            // can not calculate as denominator is zero
+            dist_Canberra := False;
+          end;
+        end
+        Else
+        Begin
+          // can not calculate as invalid numbers were found
+          dist_Canberra := False;
+        end;
+      end;
+
+      // at least one valid pair of variables found?
+      If NoOfValues > 0 THen
+      Begin
+        Dissimilarity := Summed;
+      end
+      Else
+      Begin
+        Dissimilarity := NAN;
+      end;
+
+      // set the value on both sides of the diagonal or diagonal itself
+      OutputMatrix.Cells [RunnerX, RunnerY] := Dissimilarity;
+      OutputMatrix.Cells [RunnerY, RunnerX] := Dissimilarity;
+    end;
+  end;
+end;
