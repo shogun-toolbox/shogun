@@ -38,8 +38,8 @@ bool EuclideanDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Featur
 	require(l->has_property(FP_DOT), "Left hand side features must support dot property!");
 	require(r->has_property(FP_DOT), "Right hand side features must support dot property!");
 
-	auto casted_l=std::dynamic_pointer_cast<DotFeatures>(l);
-	auto casted_r=std::dynamic_pointer_cast<DotFeatures>(r);
+	auto casted_l=std::static_pointer_cast<DotFeatures>(l);
+	auto casted_r=std::static_pointer_cast<DotFeatures>(r);
 
 	require(casted_l->get_dim_feature_space()==casted_r->get_dim_feature_space(),
 		"Number of dimension mismatch (l:{} vs. r:{})!",

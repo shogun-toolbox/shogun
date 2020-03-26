@@ -566,7 +566,7 @@ TEST(SGMatrixTest, to_eigen3)
  	for (int32_t i=0; i<nrows*ncols; i++)
  		sg_mat[i] = i;
 
-	Eigen::Map<Eigen::MatrixXd> eigen_mat = sg_mat;
+	SGMatrix<float64_t>::EigenMatrixXtMap eigen_mat = sg_mat;
 
 	for (int32_t i=0; i<nrows*ncols; i++)
 		EXPECT_EQ(sg_mat[i], eigen_mat(i));
