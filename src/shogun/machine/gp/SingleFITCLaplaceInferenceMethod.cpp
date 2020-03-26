@@ -70,14 +70,14 @@ public:
 	virtual double operator() (double x)
 	{
 		//time complexity O(m*n)
-		Map<VectorXd> eigen_f(f->vector, f->vlen);
-		Map<VectorXd> eigen_m(m->vector, m->vlen);
-		Map<VectorXd> eigen_alpha(alpha->vector, alpha->vlen);
+		SGVector<double>::EigenVectorXtMap eigen_f = *f;
+		SGVector<double>::EigenVectorXtMap eigen_m = *m;
+		SGVector<double>::EigenVectorXtMap eigen_alpha = *alpha;
 
 		//alpha = alpha + s*dalpha;
 		eigen_alpha=start_alpha+x*dalpha;
 		SGVector<float64_t> tmp=inf->compute_mvmK(*alpha);
-		Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+		SGVector<double>::EigenVectorXtMap eigen_tmp = tmp;
 		//f = mvmK(alpha,V,d0)+m;
 		eigen_f=eigen_tmp+eigen_m;
 
@@ -205,14 +205,14 @@ float64_t SingleFITCLaplaceNewtonOptimizer::minimize()
 {
 	require(m_obj,"Object not set");
 	//time complexity O(m^2*n);
-	Map<MatrixXd> eigen_kuu((m_obj->m_kuu).matrix, (m_obj->m_kuu).num_rows, (m_obj->m_kuu).num_cols);
-	Map<MatrixXd> eigen_V((m_obj->m_V).matrix, (m_obj->m_V).num_rows, (m_obj->m_V).num_cols);
-	Map<VectorXd> eigen_dg((m_obj->m_dg).vector, (m_obj->m_dg).vlen);
-	Map<MatrixXd> eigen_R0((m_obj->m_chol_R0).matrix, (m_obj->m_chol_R0).num_rows, (m_obj->m_chol_R0).num_cols);
-	Map<VectorXd> eigen_mu(m_obj->m_mu, (m_obj->m_mu).vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_kuu = (m_obj->m_kuu);
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = (m_obj->m_V);
+	SGVector<double>::EigenVectorXtMap eigen_dg = (m_obj->m_dg);
+	SGMatrix<double>::EigenMatrixXtMap eigen_R0 = (m_obj->m_chol_R0);
+	SGVector<double>::EigenVectorXtMap eigen_mu = (m_obj->m_mu);
 
 	SGVector<float64_t> mean=m_obj->m_mean->get_mean_vector(m_obj->m_features);
-	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mean = mean;
 
 	float64_t Psi_Old=Math::INFTY;
 	float64_t Psi_New=m_obj->m_Psi;
@@ -222,7 +222,7 @@ float64_t SingleFITCLaplaceNewtonOptimizer::minimize()
 	m_obj->m_W.scale(-1.0);
 
 	//n-by-1 vector
-	Map<VectorXd> eigen_al((m_obj->m_al).vector, (m_obj->m_al).vlen);
+	SGVector<double>::EigenVectorXtMap eigen_al = (m_obj->m_al);
 
 	// get first derivative of log probability function
 	m_obj->m_dlp=m_obj->m_model->get_log_probability_derivative_f(m_obj->m_labels, m_obj->m_mu, 1);
@@ -233,8 +233,8 @@ float64_t SingleFITCLaplaceNewtonOptimizer::minimize()
 	while (Psi_Old-Psi_New>m_tolerance && iter<m_iter)
 	{
 		//time complexity O(m^2*n)
-		Map<VectorXd> eigen_W((m_obj->m_W).vector, (m_obj->m_W).vlen);
-		Map<VectorXd> eigen_dlp((m_obj->m_dlp).vector, (m_obj->m_dlp).vlen);
+		SGVector<double>::EigenVectorXtMap eigen_W = (m_obj->m_W);
+		SGVector<double>::EigenVectorXtMap eigen_dlp = (m_obj->m_dlp);
 
 		Psi_Old = Psi_New;
 		iter++;
@@ -265,12 +265,12 @@ float64_t SingleFITCLaplaceNewtonOptimizer::minimize()
 		VectorXd eigen_t=eigen_W.cwiseProduct(dd);
 		//m-by-m matrix
 		SGMatrix<float64_t> tmp( (m_obj->m_V).num_rows, (m_obj->m_V).num_rows);
-		Map<MatrixXd> eigen_tmp(tmp.matrix, tmp.num_rows, tmp.num_cols);
+		SGMatrix<double>::EigenMatrixXtMap eigen_tmp = tmp;
 		//eye(nu)+(V.*repmat((W.*dd)',nu,1))*V'
 		eigen_tmp=eigen_V*eigen_t.asDiagonal()*eigen_V.transpose()+MatrixXd::Identity(tmp.num_rows,tmp.num_rows);
 		tmp=m_obj->get_chol_inv(tmp);
 		//chol_inv(eye(nu)+(V.*repmat((W.*dd)',nu,1))*V')
-		Map<MatrixXd> eigen_tmp2(tmp.matrix, tmp.num_rows, tmp.num_cols);
+		SGMatrix<double>::EigenMatrixXtMap eigen_tmp2 = tmp;
 		//RV = chol_inv(eye(nu)+(V.*repmat((W.*dd)',nu,1))*V')*V;
 		// m-by-n matrix
 		MatrixXd eigen_RV=eigen_tmp2*eigen_V;
@@ -381,12 +381,12 @@ SingleFITCLaplaceInferenceMethod::~SingleFITCLaplaceInferenceMethod()
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::compute_mvmZ(SGVector<float64_t> x)
 {
 	//time complexity O(m*n)
-	Map<MatrixXd> eigen_Rvdd(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
-	Map<VectorXd> eigen_x(x.vector, x.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Rvdd = m_Rvdd;
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
+	SGVector<double>::EigenVectorXtMap eigen_x = x;
 
 	SGVector<float64_t> res(x.vlen);
-	Map<VectorXd> eigen_res(res.vector, res.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_res = res;
 
 	//Zx = t.*x - RVdd'*(RVdd*x);
 	eigen_res=eigen_x.cwiseProduct(eigen_t)-eigen_Rvdd.transpose()*(eigen_Rvdd*eigen_x);
@@ -396,12 +396,12 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::compute_mvmZ(SGVector<floa
 SGVector<float64_t> SingleFITCLaplaceInferenceMethod::compute_mvmK(SGVector<float64_t> al)
 {
 	//time complexity O(m*n)
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-	Map<VectorXd> eigen_al(al.vector, al.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
+	SGVector<double>::EigenVectorXtMap eigen_dg = m_dg;
+	SGVector<double>::EigenVectorXtMap eigen_al = al;
 
 	SGVector<float64_t> res(al.vlen);
-	Map<VectorXd> eigen_res(res.vector, res.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_res = res;
 
 	//Kal = V'*(V*al) + d0.*al;
 	eigen_res= eigen_V.transpose()*(eigen_V*eigen_al)+eigen_dg.cwiseProduct(eigen_al);
@@ -423,12 +423,12 @@ SGMatrix<float64_t> SingleFITCLaplaceInferenceMethod::get_chol_inv(SGMatrix<floa
 	//time complexity O(m^3), where mtx is a m-by-m matrix
 	require(mtx.num_rows==mtx.num_cols, "Matrix must be square");
 
-	Map<MatrixXd> eigen_mtx(mtx.matrix, mtx.num_rows, mtx.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_mtx = mtx;
 	LLT<MatrixXd> chol(eigen_mtx.colwise().reverse().rowwise().reverse().matrix());
 	//tmp=chol(rot180(A))'
 	MatrixXd tmp=chol.matrixL();
 	SGMatrix<float64_t> res(mtx.num_rows, mtx.num_cols);
-	Map<MatrixXd> eigen_res(res.matrix, res.num_rows, res.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_res = res;
 	//chol_inv = @(A) rot180(chol(rot180(A))')\eye(nu);                 % chol(inv(A))
 	eigen_res=tmp.colwise().reverse().rowwise().reverse().matrix().triangularView<Upper>(
 		).solve(MatrixXd::Identity(mtx.num_rows, mtx.num_cols));
@@ -447,22 +447,22 @@ float64_t SingleFITCLaplaceInferenceMethod::get_negative_log_marginal_likelihood
 		return Math::INFTY;
 	}
 	//time complexity O(m^2*n)
-	Map<VectorXd> eigen_alpha(m_al.vector, m_al.vlen);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_al;
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mean = mean;
 	// get log likelihood
 	float64_t lp=SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels,
 		m_mu));
 
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	Map<VectorXd>eigen_t(m_t.vector, m_t.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
 	MatrixXd A=eigen_V*eigen_t.asDiagonal()*eigen_V.transpose()+MatrixXd::Identity(m_V.num_rows,m_V.num_rows);
 	LLT<MatrixXd> chol(A);
 	A=chol.matrixU();
 
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_dg = m_dg;
+	SGVector<double>::EigenVectorXtMap eigen_W = m_W;
 
 	//nlZ = alpha'*(f-m)/2 - sum(lp) - sum(log(dd))/2 + sum(log(diag(chol(A))));
 	float64_t result=eigen_alpha.dot(eigen_mu-eigen_mean)/2.0-lp+
@@ -479,39 +479,39 @@ void SingleFITCLaplaceInferenceMethod::update_init()
 {
 	//time complexity O(m^2*n)
 	//m-by-m matrix
-	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_kuu = m_kuu;
 	//m-by-n matrix
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_ktru = m_ktru;
 
-	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_ktrtr_diag = m_ktrtr_diag;
 
 	SGMatrix<float64_t> cor_kuu(m_kuu.num_rows, m_kuu.num_cols);
-	Map<MatrixXd> eigen_cor_kuu(cor_kuu.matrix, cor_kuu.num_rows, cor_kuu.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_cor_kuu = cor_kuu;
 	eigen_cor_kuu = eigen_kuu * std::exp(m_log_scale * 2.0) +
 		            std::exp(m_log_ind_noise) *
 		                MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols);
 	//R0 = chol_inv(Kuu+snu2*eye(nu)); m-by-m matrix
 	m_chol_R0=get_chol_inv(cor_kuu);
-	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_R0 = m_chol_R0;
 
 	//V = R0*Ku;  m-by-n matrix
 	m_V=SGMatrix<float64_t>(m_chol_R0.num_cols, m_ktru.num_cols);
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
 
 	eigen_V = eigen_R0 * (eigen_ktru * std::exp(m_log_scale * 2.0));
 	m_dg=SGVector<float64_t>(m_ktrtr_diag.vlen);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_dg = m_dg;
 	//d0 = diagK-sum(V.*V,1)';
 	eigen_dg = eigen_ktrtr_diag * std::exp(m_log_scale * 2.0) -
 		       (eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
 
 	// get mean vector and create eigen representation of it
 	m_mean_f=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mean = m_mean_f;
 
 	// create shogun and eigen representation of function vector
 	m_mu=SGVector<float64_t>(m_mean_f.vlen);
-	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
 
 	float64_t Psi_New;
 	float64_t Psi_Def;
@@ -529,11 +529,11 @@ void SingleFITCLaplaceInferenceMethod::update_init()
 	}
 	else
 	{
-		Map<VectorXd> eigen_alpha(m_al.vector, m_al.vlen);
+		SGVector<double>::EigenVectorXtMap eigen_alpha = m_al;
 
 		// compute f = K * alpha + m
 		SGVector<float64_t> tmp=compute_mvmK(m_al);
-		Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+		SGVector<double>::EigenVectorXtMap eigen_tmp = tmp;
 		eigen_mu=eigen_tmp+eigen_mean;
 
 		Psi_New=eigen_alpha.dot(eigen_tmp)/2.0-
@@ -586,20 +586,20 @@ void SingleFITCLaplaceInferenceMethod::update_alpha()
 
 	}
 
-	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
-	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mean = m_mean_f;
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
+	SGMatrix<double>::EigenMatrixXtMap eigen_R0 = m_chol_R0;
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
+	SGVector<double>::EigenVectorXtMap eigen_al = m_al;
 
 
 	// compute f = K * alpha + m
 	SGVector<float64_t> tmp=compute_mvmK(m_al);
-	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_tmp = tmp;
 	eigen_mu=eigen_tmp+eigen_mean;
 
 	m_alpha=SGVector<float64_t>(m_chol_R0.num_cols);
-	Map<VectorXd> eigen_post_alpha(m_alpha.vector, m_alpha.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_post_alpha = m_alpha;
 	//post.alpha = R0'*(V*alpha);
 	//m-by-1 vector
 	eigen_post_alpha=eigen_R0.transpose()*(eigen_V*eigen_al);
@@ -608,9 +608,9 @@ void SingleFITCLaplaceInferenceMethod::update_alpha()
 void SingleFITCLaplaceInferenceMethod::update_chol()
 {
 	//time complexity O(m^2*n)
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	SGVector<double>::EigenVectorXtMap eigen_dg = m_dg;
+	SGMatrix<double>::EigenMatrixXtMap eigen_R0 = m_chol_R0;
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
 
 	// get log probability derivatives
 	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
@@ -621,9 +621,9 @@ void SingleFITCLaplaceInferenceMethod::update_chol()
 	m_W=m_d2lp.clone();
 	m_W.scale(-1.0);
 
-	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_W = m_W;
 	m_sW=SGVector<float64_t>(m_W.vlen);
-	Map<VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_sW = m_sW;
 
 	VectorXd Wd0_1=eigen_W.cwiseProduct(eigen_dg)+MatrixXd::Ones(eigen_W.rows(),1);
 
@@ -642,7 +642,7 @@ void SingleFITCLaplaceInferenceMethod::update_chol()
 	}
 
 	m_t=SGVector<float64_t>(m_W.vlen);
-	Map<VectorXd>eigen_t(m_t.vector, m_t.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
 
 	//dd = 1./(1+d0.*W);
 	VectorXd dd=MatrixXd::Ones(Wd0_1.rows(),1).cwiseQuotient(Wd0_1);
@@ -650,7 +650,7 @@ void SingleFITCLaplaceInferenceMethod::update_chol()
 
 	//m-by-m matrix
 	SGMatrix<float64_t> A(m_V.num_rows, m_V.num_rows);
-	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_A = A;
 	//A = eye(nu)+(V.*repmat((W.*dd)',nu,1))*V';
 	eigen_A=eigen_V*eigen_t.asDiagonal()*eigen_V.transpose()+MatrixXd::Identity(A.num_rows,A.num_rows);
 
@@ -662,18 +662,18 @@ void SingleFITCLaplaceInferenceMethod::update_chol()
 
 	//m-by-m matrix
 	m_L=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 
 	//post.L = -B*R0tV';
 	eigen_L=-B*R0tV.transpose();
 
 	SGMatrix<float64_t> tmp=get_chol_inv(A);
-	Map<MatrixXd> eigen_tmp(tmp.matrix, tmp.num_rows, tmp.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_tmp = tmp;
 	//RV = chol_inv(A)*V; m-by-n matrix
 	MatrixXd eigen_RV=eigen_tmp*eigen_V;
 	//RVdd m-by-n matrix
 	m_Rvdd=SGMatrix<float64_t>(m_V.num_rows, m_V.num_cols);
-	Map<MatrixXd> eigen_Rvdd(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Rvdd = m_Rvdd;
 	//RVdd = RV.*repmat((W.*dd)',nu,1);
 	eigen_Rvdd=eigen_RV*eigen_t.asDiagonal();
 
@@ -693,9 +693,9 @@ void SingleFITCLaplaceInferenceMethod::update_chol()
 		eigen_L+=B*lu.inverse()*B.transpose();
 	}
 
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_ktru = m_ktru;
 	m_g=SGVector<float64_t>(m_dg.vlen);
-	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_g = m_g;
 	//g = d/2 + sum(((R*R0)*P).^2,1)'/2
 	eigen_g = ((eigen_dg.cwiseProduct(dd)).array() +
 		       ((eigen_tmp * eigen_R0) *
@@ -711,14 +711,14 @@ void SingleFITCLaplaceInferenceMethod::update_chol()
 void SingleFITCLaplaceInferenceMethod::update_deriv()
 {
 	//time complexity O(m^2*n)
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_ktru = m_ktru;
+	SGMatrix<double>::EigenMatrixXtMap eigen_R0 = m_chol_R0;
+	SGVector<double>::EigenVectorXtMap eigen_al = m_al;
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
 	// create shogun and eigen representation of B
 	// m-by-n matrix
 	m_B=SGMatrix<float64_t>(m_ktru.num_rows, m_ktru.num_cols);
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_B = m_B;
 
 	//B = (R0'*R0)*Ku
 	eigen_B=eigen_R0.transpose()*eigen_V;
@@ -726,14 +726,14 @@ void SingleFITCLaplaceInferenceMethod::update_deriv()
 	// create shogun and eigen representation of w
 	m_w=SGVector<float64_t>(m_B.num_rows);
 	//w = B*al;
-	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_w = m_w;
 	eigen_w=eigen_B*eigen_al;
 
 	// create shogun and eigen representation of the vector dfhat
-	Map<VectorXd> eigen_d3lp(m_d3lp.vector, m_d3lp.vlen);
-	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_d3lp = m_d3lp;
+	SGVector<double>::EigenVectorXtMap eigen_g = m_g;
 	m_dfhat=SGVector<float64_t>(m_g.vlen);
-	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_dfhat = m_dfhat;
 
 	// compute derivative of nlZ wrt fhat
 	// dfhat = g.*d3lp;
@@ -744,22 +744,22 @@ float64_t SingleFITCLaplaceInferenceMethod::get_derivative_related_cov(SGVector<
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)
 {
 	//time complexity O(m^2*n)
-	Map<MatrixXd> eigen_R0tV(m_B.matrix, m_B.num_rows, m_B.num_cols);
-	Map<VectorXd> eigen_ddiagKi(ddiagKi.vector, ddiagKi.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_R0tV = m_B;
+	SGVector<double>::EigenVectorXtMap eigen_ddiagKi = ddiagKi;
 	//m-by-m matrix
-	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_dKuui = dKuui;
 	//m-by-n matrix
-	Map<MatrixXd> eigen_dKui(dKui.matrix, dKui.num_rows, dKui.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_dKui = dKui;
 
 	// compute R=2*dKui-dKuui*B
 	SGMatrix<float64_t> dA(dKui.num_rows, dKui.num_cols);
-	Map<MatrixXd> eigen_dA(dA.matrix, dA.num_rows, dA.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_dA = dA;
 	//dA = 2*dKu'-R0tV'*dKuu;
 	//dA' = 2*dKu-dKuu'*R0tV;
 	eigen_dA=2*eigen_dKui-eigen_dKuui*eigen_R0tV;
 
 	SGVector<float64_t> v(ddiagKi.vlen);
-	Map<VectorXd> eigen_v(v.vector, v.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_v = v;
 	//w = sum(dA.*R0tV',2);
 	//w' = sum(dA'.*R0tV,1);
 	//v = ddiagK-w;
@@ -769,16 +769,16 @@ float64_t SingleFITCLaplaceInferenceMethod::get_derivative_related_cov(SGVector<
 	float64_t result=SingleFITCInference::get_derivative_related_cov(ddiagKi, dKuui, dKui, v, dA);
 
 	//implicit term
-	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
-	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_dlp = m_dlp;
+	SGVector<double>::EigenVectorXtMap eigen_dfhat = m_dfhat;
 
 	SGVector<float64_t> b(v.vlen);
-	Map<VectorXd> eigen_b(b.vector, b.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_b = b;
 	//b = dA*(R0tV*dlp) + v.*dlp;
 	eigen_b=eigen_dA.transpose()*(eigen_R0tV*eigen_dlp)+eigen_v.cwiseProduct(eigen_dlp);
 	//KZb = mvmK(mvmZ(b,RVdd,t),V,d0);
 	SGVector<float64_t> KZb=compute_mvmK(compute_mvmZ(b));
-	Map<VectorXd> eigen_KZb(KZb.vector, KZb.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_KZb = KZb;
 	//dnlZ.cov(i) = dnlZ.cov(i) - dfhat'*( b-KZb );
 	result-=eigen_dfhat.dot(eigen_b-eigen_KZb);
 	return result;
@@ -832,9 +832,9 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inferen
 	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
 
 	// create eigen representation of kernel matrices
-	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows, deriv_uu.num_cols);
-	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
+	SGVector<double>::EigenVectorXtMap ddiagKi = deriv_trtr;
+	SGMatrix<double>::EigenMatrixXtMap dKuui = deriv_uu;
+	SGMatrix<double>::EigenMatrixXtMap dKui = deriv_tru;
 
 	// compute derivatives wrt scale for each kernel matrix
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
@@ -858,11 +858,11 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_likelih
 			m_mu, param);
 
 	// create eigen representation of the derivatives
-	Map<VectorXd> eigen_lp_dhyp(lp_dhyp.vector, lp_dhyp.vlen);
-	Map<VectorXd> eigen_dlp_dhyp(dlp_dhyp.vector, dlp_dhyp.vlen);
-	Map<VectorXd> eigen_d2lp_dhyp(d2lp_dhyp.vector, d2lp_dhyp.vlen);
-	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
-	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_lp_dhyp = lp_dhyp;
+	SGVector<double>::EigenVectorXtMap eigen_dlp_dhyp = dlp_dhyp;
+	SGVector<double>::EigenVectorXtMap eigen_d2lp_dhyp = d2lp_dhyp;
+	SGVector<double>::EigenVectorXtMap eigen_g = m_g;
+	SGVector<double>::EigenVectorXtMap eigen_dfhat = m_dfhat;
 
 	//explicit term
 	//dnlZ.lik(i) = -g'*d2lp_dhyp - sum(lp_dhyp);
@@ -908,11 +908,9 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		deriv_tru=m_kernel->get_parameter_gradient(param, i);
 
 		// create eigen representation of derivatives
-		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-		Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows,
-				deriv_uu.num_cols);
-		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
-				deriv_tru.num_cols);
+		SGVector<double>::EigenVectorXtMap ddiagKi = deriv_trtr;
+		SGMatrix<double>::EigenMatrixXtMap dKuui = deriv_uu;
+		SGMatrix<double>::EigenMatrixXtMap dKui = deriv_tru;
 
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 		result[i] *= std::exp(m_log_scale * 2.0);
@@ -941,10 +939,10 @@ float64_t SingleFITCLaplaceInferenceMethod::get_derivative_related_mean(SGVector
 float64_t SingleFITCLaplaceInferenceMethod::get_derivative_implicit_term_helper(SGVector<float64_t> d)
 {
 	//time complexity O(m*n)
-	Map<VectorXd> eigen_d(d.vector, d.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_d = d;
 	SGVector<float64_t> tmp=compute_mvmK(compute_mvmZ(d));
-	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
-	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_tmp = tmp;
+	SGVector<double>::EigenVectorXtMap eigen_dfhat = m_dfhat;
 	return eigen_dfhat.dot(eigen_d-eigen_tmp);
 }
 
@@ -989,17 +987,17 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducin
 	//where the paramter \f$\Lambda\f$ of the ARD kerenl is a \f$d\f$-by-\f$p\f$ matrix,
 	//For an ARD kernel with KL_SCALE and KL_DIAG, the time complexity is O(max((p*n*m),(m^2*n)))
 	//efficiently compute the implicit term and explicit term at one shot
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-	Map<MatrixXd> eigen_Rvdd(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	SGVector<double>::EigenVectorXtMap eigen_al = m_al;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Rvdd = m_Rvdd;
 	//w=B*al
-	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
-	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
-	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_w = m_w;
+	SGMatrix<double>::EigenMatrixXtMap eigen_B = m_B;
+	SGVector<double>::EigenVectorXtMap eigen_dlp = m_dlp;
+	SGVector<double>::EigenVectorXtMap eigen_dfhat = m_dfhat;
 
 	//q = dfhat - mvmZ(mvmK(dfhat,V,d0),RVdd,t);
 	SGVector<float64_t> q=compute_mvmZ(compute_mvmK(m_dfhat));
-	Map<VectorXd> eigen_q(q.vector, q.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_q = q;
 	eigen_q=eigen_dfhat-eigen_q;
 
 	//explicit term
@@ -1009,11 +1007,11 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducin
 	//-v_2=-2*dlp.*q
 	//neg_v = -(diag_dK+ 2*dlp.*q);
 	SGVector<float64_t> neg_v=get_derivative_related_cov_diagonal();
-	Map<VectorXd> eigen_neg_v(neg_v.vector, neg_v.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_neg_v = neg_v;
 	eigen_neg_v-=2*eigen_dlp.cwiseProduct(eigen_q);
 
 	SGMatrix<float64_t> BdK(m_B.num_rows, m_B.num_cols);
-	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_BdK = BdK;
 	//explicit
 	//BdK = (B*alpha)*alpha' + (B*RVdd')*RVdd - B.*repmat(v_1',nu,1),
 	//implicit
@@ -1035,8 +1033,8 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducin
 	SGVector<float64_t> result=SingleFITCInference::get_derivative_wrt_inducing_noise(param);
 
 	//implicit term
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
-	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_B = m_B;
+	SGVector<double>::EigenVectorXtMap eigen_dlp = m_dlp;
 
 	//snu = sqrt(snu2);
 	//T = chol_inv(Kuu + snu2*eye(nu)); T = T'*(T*(snu*Ku));
@@ -1045,7 +1043,7 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducin
 
 	//b = (t1.*dlp-T'*(T*dlp))*2;
 	SGVector<float64_t> b(eigen_t1.rows());
-	Map<VectorXd> eigen_b(b.vector, b.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_b = b;
 	float64_t factor = 2.0 * std::exp(m_log_ind_noise);
 	eigen_b=(eigen_t1.cwiseProduct(eigen_dlp)-eigen_B.transpose()*(eigen_B*eigen_dlp))*factor;
 
@@ -1061,21 +1059,21 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_posterior_mean()
 	compute_gradient();
 
 	SGVector<float64_t> res(m_mu.vlen);
-	Map<VectorXd> eigen_res(res.vector, res.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_res = res;
 
 	/*
 	//true posterior mean with equivalent FITC prior approximated by Newton method
 	//time complexity O(n)
-	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mean = mean;
 	eigen_res=eigen_mu-eigen_mean;
 	*/
 
 	//FITC (further) approximated posterior mean with Netwon method
 	//time complexity of the following operation is O(m*n)
-	Map<VectorXd> eigen_post_alpha(m_alpha.vector, m_alpha.vlen);
-	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	SGVector<double>::EigenVectorXtMap eigen_post_alpha = m_alpha;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Ktru = m_ktru;
 	eigen_res =
 		std::exp(m_log_scale * 2.0) * eigen_Ktru.adjoint() * eigen_post_alpha;
 
@@ -1088,14 +1086,13 @@ SGMatrix<float64_t> SingleFITCLaplaceInferenceMethod::get_posterior_covariance()
 	//time complexity of the following operations is O(m*n^2)
 	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
 	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,
-			m_Sigma.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Sigma = m_Sigma;
 
 	//FITC (further) approximated posterior covariance with Netwon method
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Ktru = m_ktru;
+	SGVector<double>::EigenVectorXtMap eigen_dg = m_dg;
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
 
 	MatrixXd diagonal_part=eigen_dg.asDiagonal();
 	//FITC equivalent prior
@@ -1106,9 +1103,9 @@ SGMatrix<float64_t> SingleFITCLaplaceInferenceMethod::get_posterior_covariance()
 
 	/*
 	//true posterior mean with equivalent FITC prior approximated by Newton method
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
-	Map<MatrixXd> eigen_Rvdd(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
-	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Rvdd = m_Rvdd;
+	SGVector<double>::EigenVectorXtMap eigen_W = m_W;
 	MatrixXd tmp1=eigen_Rvdd*prior;
 	eigen_Sigma=prior+tmp.transpose()*tmp;
 
@@ -1125,13 +1122,13 @@ SGMatrix<float64_t> SingleFITCLaplaceInferenceMethod::get_posterior_covariance()
 float64_t SingleFITCLaplaceInferenceMethod::get_psi_wrt_alpha()
 {
 	//time complexity O(m*n)
-	Map<VectorXd> eigen_alpha(m_al, m_al.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_al;
 	SGVector<float64_t> f(m_al.vlen);
-	Map<VectorXd> eigen_f(f.vector, f.vlen);
-	Map<VectorXd> eigen_mean_f(m_mean_f.vector,m_mean_f.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_f = f;
+	SGVector<double>::EigenVectorXtMap eigen_mean_f = m_mean_f;
 	/* f = K * alpha + mean_f given alpha*/
 	SGVector<float64_t> tmp=compute_mvmK(m_al);
-	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_tmp = tmp;
 	eigen_f=eigen_tmp+eigen_mean_f;
 
 	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
@@ -1144,31 +1141,29 @@ float64_t SingleFITCLaplaceInferenceMethod::get_psi_wrt_alpha()
 void SingleFITCLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
 {
 	//time complexity O(m*n)
-	Map<VectorXd> eigen_alpha(m_al, m_al.vlen);
-	Map<VectorXd> eigen_gradient(gradient.vector, gradient.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_al;
+	SGVector<double>::EigenVectorXtMap eigen_gradient = gradient;
 	SGVector<float64_t> f(m_al.vlen);
-	Map<VectorXd> eigen_f(f.vector, f.vlen);
-	Map<MatrixXd> kernel(m_ktrtr.matrix,
-		m_ktrtr.num_rows,
-		m_ktrtr.num_cols);
-	Map<VectorXd> eigen_mean_f(m_mean_f.vector, m_mean_f.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_f = f;
+	SGMatrix<double>::EigenMatrixXtMap kernel = m_ktrtr;
+	SGVector<double>::EigenVectorXtMap eigen_mean_f = m_mean_f;
 
 	/* f = K * alpha + mean_f given alpha*/
 	SGVector<float64_t> tmp=compute_mvmK(m_al);
-	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_tmp = tmp;
 	eigen_f=eigen_tmp+eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
 		m_model->get_log_probability_derivative_f(m_labels, f, 1);
 
-	Map<VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_dlp_f = dlp_f;
 
 	/* g_alpha = K * (alpha - dlp_f)*/
 	SGVector<float64_t> tmp2(m_al.vlen);
-	Map<VectorXd> eigen_tmp2(tmp2.vector, tmp2.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_tmp2 = tmp2;
 	eigen_tmp2=eigen_alpha-eigen_dlp_f;
 	tmp2=compute_mvmK(tmp2);
-	Map<VectorXd> eigen_tmp3(tmp2.vector, tmp2.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_tmp3 = tmp2;
 	eigen_gradient=eigen_tmp3;
 }
 
