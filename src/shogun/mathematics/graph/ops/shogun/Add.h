@@ -10,6 +10,8 @@
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 #include <shogun/mathematics/graph/CPUArch.h>
+#include "Packet.h"
+
 
 namespace shogun
 {
@@ -17,18 +19,21 @@ namespace shogun
 	{
 		namespace op
 		{
-
 			template <typename T>
 			void add_kernel_implementation_avx512f(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
 			template <typename T>
 			void add_kernel_implementation_avx(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
+
+			template <typename T>
+			void add_kernel_implementation_avx2(
+			    void* input1, void* input2, void* output);
 
 			template <typename T>
 			void add_kernel_implementation_sse2(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
 			IGNORE_IN_CLASSLIST class AddShogun
 			    : public ShogunBinaryOperator<AddShogun>
@@ -47,23 +52,52 @@ namespace shogun
 				}
 
 			protected:
+
 				template <typename T>
-				void kernel_implementation(
-				    void* input1, void* input2, void* output, const size_t size)
+				BinaryPacketFunction kernel_serial_implementation() const
+				{
+					return [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+						output_packet.m_data = static_cast<T>(std::get<T>(packet1.m_data) + std::get<T>(packet2.m_data));
+					};
+				}				
+
+				template <typename T>
+				std::tuple<BinaryPacketFunction, RegisterType> kernel_implementation_packet() const
 				{
 					auto* CPU_arch = CPUArch::instance();
 					if (CPU_arch->has_avx512f())
-						add_kernel_implementation_avx512f<T>(input1, input2, output, size);
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							add_kernel_implementation_avx512f<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX512F));
+					}
+					else if (CPU_arch->has_avx2())
+					{
+						auto k =  [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							add_kernel_implementation_avx2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX2));
+					}
 					else if (CPU_arch->has_avx())
-						add_kernel_implementation_avx<T>(input1, input2, output, size);
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							add_kernel_implementation_avx<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX));
+					}
 					else if (CPU_arch->has_sse2())
-						add_kernel_implementation_sse2<T>(input1, input2, output, size);
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							add_kernel_implementation_sse2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::SSE2));
+					}
 					else
-						std::transform(
-						    static_cast<const T*>(input1),
-						    static_cast<const T*>(input1) + size,
-						    static_cast<const T*>(input2), static_cast<T*>(output),
-						    std::plus<T>());
+					{
+						auto k = kernel_serial_implementation<T>();
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::NONE));
+					}
 				}
 
 				template <typename T>

@@ -3,6 +3,7 @@
 #include <shogun/mathematics/UniformIntDistribution.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/mathematics/graph/Graph.h>
+#include <shogun/mathematics/graph/CPUArch.h>
 #include <shogun/mathematics/graph/nodes/Add.h>
 #include <shogun/mathematics/graph/nodes/Input.h>
 

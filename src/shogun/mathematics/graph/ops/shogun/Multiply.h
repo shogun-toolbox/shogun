@@ -10,6 +10,7 @@
 #include <shogun/mathematics/graph/nodes/Multiply.h>
 #include <shogun/mathematics/graph/ops/abstract/BinaryOperator.h>
 #include <shogun/mathematics/graph/CPUArch.h>
+#include "Packet.h"
 
 namespace shogun
 {
@@ -20,20 +21,23 @@ namespace shogun
 
 			template <typename T>
 			void multiply_kernel_implementation_avx512f(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
 			template <typename T>
 			void multiply_kernel_implementation_avx(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
+
+			template <typename T>
+			void multiply_kernel_implementation_avx2(
+			    void* input1, void* input2, void* output);
 
 			template <typename T>
 			void multiply_kernel_implementation_sse2(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
-			// uses _mm_mullo_epi32
 			template <typename T>
 			void multiply_kernel_implementation_sse41(
-			    void* input1, void* input2, void* output, const size_t size);
+			    void* input1, void* input2, void* output);
 
 			IGNORE_IN_CLASSLIST class MultiplyShogun
 			    : public ShogunBinaryOperator<MultiplyShogun>
@@ -52,32 +56,59 @@ namespace shogun
 				}
 
 			protected:
+
 				template <typename T>
-				void kernel_implementation(
-				    void* input1, void* input2, void* output, const size_t size)
+				BinaryPacketFunction kernel_serial_implementation() const
+				{
+					return [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+						output_packet.m_data = static_cast<T>(std::get<T>(packet1.m_data) * std::get<T>(packet2.m_data));
+					};
+				}
+
+				template <typename T>
+				std::tuple<BinaryPacketFunction, RegisterType> kernel_implementation_packet() const
 				{
 					auto* CPU_arch = CPUArch::instance();
 					if (CPU_arch->has_avx512f())
-						multiply_kernel_implementation_avx512f<T>(input1, input2, output, size);
-					else if (CPU_arch->has_avx())
-						multiply_kernel_implementation_avx<T>(input1, input2, output, size);
-					else if (CPU_arch->has_sse4_1() && std::is_same_v<int32_t, T>)
 					{
-						// only lookup for int32 implementation at compile time
-						if constexpr(std::is_same_v<int32_t, T>)
-						{
-							// _mm_mullo_epi32
-							multiply_kernel_implementation_sse41<T>(input1, input2, output, size);
-						}
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							multiply_kernel_implementation_avx512f<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX512F));
+					}
+					else if (CPU_arch->has_avx2())
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							multiply_kernel_implementation_avx2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX));
+					}
+					else if (CPU_arch->has_avx())
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							multiply_kernel_implementation_avx<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::AVX));
+					}
+					else if (CPU_arch->has_sse4_1())
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							multiply_kernel_implementation_sse41<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::SSE4_1));
 					}
 					else if (CPU_arch->has_sse2())
-						multiply_kernel_implementation_sse2<T>(input1, input2, output, size);
+					{
+						auto k = [](const Packet& packet1, const Packet& packet2, Packet& output_packet){
+							multiply_kernel_implementation_sse2<T>((void*)&packet1, (void*)&packet2, (void*)&output_packet);
+						};
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::SSE2));
+					}
 					else
-						std::transform(
-						    static_cast<const T*>(input1),
-						    static_cast<const T*>(input1) + size,
-						    static_cast<const T*>(input2), static_cast<T*>(output),
-						    std::multiplies<T>());
+					{
+						auto k = kernel_serial_implementation<T>();
+						return std::make_tuple(k, get_register_type_from_instructions(CPUArch::SIMD::NONE));
+					}
 				}
 
 				template <typename T>
