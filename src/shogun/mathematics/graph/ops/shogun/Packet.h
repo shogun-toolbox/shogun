@@ -58,7 +58,7 @@ namespace shogun
 				return RegisterType::SCALAR;
 			}
 
-			using BinaryPacketFunction = std::function<void(const Packet&, const Packet&, const Packet&)>;
+			using BinaryPacketFunction = std::function<void(const Packet&, const Packet&, Packet&)>;
 		}
 	}
 }

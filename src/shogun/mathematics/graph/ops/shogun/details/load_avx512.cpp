@@ -17,16 +17,11 @@ namespace shogun::graph::op {
 	template <typename T>
 	aligned_vector load_avx512(void* data)
 	{
-		if constexpr(std::is_same_v<T, bool>)
-			return static_cast<bool*>(data);
+		using vector_type = typename alignedvector_from_builtintype<T, AVX512_BYTESIZE>::type;
+		if constexpr(std::is_integral_v<T>)
+			return _mm512_loadu_si512(static_cast<const vector_type*>(data));
 		else
-		{
-			using vector_type = typename alignedvector_from_builtintype<T, AVX512_BYTESIZE>::type;
-			if constexpr(std::is_integral_v<T>)
-				return _mm512_loadu_si512(static_cast<const vector_type*>(data));
-			else
-				return ploadu<vector_type>(static_cast<const T*>(data));
-		}
+			return ploadu<vector_type>(static_cast<const T*>(data));
 	}
 
 	template aligned_vector load_avx512<bool>(void*);

@@ -18,7 +18,8 @@ namespace shogun
 		namespace op
 		{
 			using aligned_vector = std::variant<__m128, __m128d, __m128i, __m256, __m256d, __m256i, 
-				__m512, __m512d, __m512i, bool*, std::nullptr_t>;
+				__m512, __m512d, __m512i, bool, int8_t, uint8_t, int16_t, uint16_t, 
+				int32_t, uint32_t, int64_t, uint64_t, float, double, std::nullptr_t>;
 
 			static constexpr size_t SSE_BYTESIZE    = 16;
 			static constexpr size_t AVX_BYTESIZE    = 32;
@@ -59,6 +60,13 @@ namespace shogun
 			template <typename T, size_t register_size>
 			struct alignedvector_from_builtintype
 			{};
+
+			// unoptimal, but simple
+			template <>
+			struct alignedvector_from_builtintype<bool, 16>
+			{
+				using type = __m128i;
+			};
 
 			template <>
 			struct alignedvector_from_builtintype<int8_t, 16>
@@ -121,6 +129,14 @@ namespace shogun
 			};
 		
 			//=====================================================
+
+			// unoptimal, but simple
+			template <>
+			struct alignedvector_from_builtintype<bool, 32>
+			{
+				using type = __m256i;
+			};
+
 			template <>
 			struct alignedvector_from_builtintype<int8_t, 32>
 			{
@@ -181,6 +197,14 @@ namespace shogun
 				using type = __m256d;
 			};
 			//==================================================
+
+			// unoptimal, but simple
+			template <>
+			struct alignedvector_from_builtintype<bool, 64>
+			{
+				using type = __m512i;
+			};
+
 			template <>
 			struct alignedvector_from_builtintype<int8_t, 64>
 			{

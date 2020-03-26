@@ -12,7 +12,7 @@
 using namespace Eigen::internal;
 
 namespace shogun::graph::op {
-	
+
 	template <typename T>
 	void add_kernel_implementation_avx512f(
 	    void* input1, void* input2, void* output);
@@ -34,17 +34,6 @@ namespace shogun::graph::op {
 		    std::plus<T>());
 
 		static_cast<Packet*>(output)->m_data = result;
-	}
-
-	template <>
-	void add_kernel_implementation_avx512f<bool>(
-	    void* input1, void* input2, void* output)
-	{
-		const auto& vec1 = std::get<bool*>(static_cast<const Packet*>(input1)->m_data);
-		const auto& vec2 = std::get<bool*>(static_cast<const Packet*>(input2)->m_data);
-		auto& out = std::get<bool*>(static_cast<const Packet*>(output)->m_data);
-
-		std::transform(vec1, vec1 + AVX512_BYTESIZE/sizeof(bool), vec2, out, std::plus<bool>());
 	}
 
 	template<>

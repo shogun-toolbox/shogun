@@ -17,16 +17,11 @@ namespace shogun::graph::op {
 	template <typename T>
 	void store_avx(const aligned_vector& data, void* output)
 	{
-		if constexpr(std::is_same_v<T, bool>)
-			output = (void*)std::get<bool*>(data);
+		using vector_type = typename alignedvector_from_builtintype<T, AVX_BYTESIZE>::type;
+		if constexpr(std::is_integral_v<T>)
+			_mm256_storeu_si256(static_cast<vector_type*>(output), std::get<vector_type>(data));
 		else
-		{
-			using vector_type = typename alignedvector_from_builtintype<T, AVX_BYTESIZE>::type;
-			if constexpr(std::is_integral_v<T>)
-				_mm256_storeu_si256(static_cast<vector_type*>(output), std::get<vector_type>(data));
-			else
-				pstoreu(static_cast<T*>(output), std::get<vector_type>(data));
-		}
+			pstoreu(static_cast<T*>(output), std::get<vector_type>(data));
 	}
 
 	template void store_avx<bool>(const aligned_vector&, void*);

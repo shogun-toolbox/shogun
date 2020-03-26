@@ -36,17 +36,6 @@ namespace shogun::graph::op {
 		static_cast<Packet*>(output)->m_data = result;
 	}
 
-	template <>
-	void multiply_kernel_implementation_avx2<bool>(
-	    void* input1, void* input2, void* output)
-	{
-		const auto& vec1 = std::get<bool*>(static_cast<const Packet*>(input1)->m_data);
-		const auto& vec2 = std::get<bool*>(static_cast<const Packet*>(input2)->m_data);
-		auto& out = std::get<bool*>(static_cast<const Packet*>(output)->m_data);
-
-		std::transform(vec1, vec1 + AVX_BYTESIZE/sizeof(bool), vec2, out, std::multiplies<bool>());
-	}
-
 	template<>
 	void multiply_kernel_implementation_avx2<float>(
 		void* input1, void* input2, void* output)

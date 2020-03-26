@@ -26,7 +26,7 @@ Packet::Packet(const T* data, const RegisterType register_type): m_register_type
 			m_data = load_avx512<T>((void*)data);
 			break;
 		case RegisterType::SCALAR:
-			error("Not Implemented");
+			m_data = *data;
 	}
 }
 
@@ -49,7 +49,10 @@ void Packet::store(T* output)
 			store_avx512<T>(m_data, output);
 			break;
 		case RegisterType::SCALAR:
-			error("Not Implemented");
+		{
+			// copies value from stack to array
+			*output = std::get<T>(m_data);
+		}
 	}
 }
 
