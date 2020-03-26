@@ -324,5 +324,5 @@ void KMeansBase::init()
 	    &cluster_centers, "cluster_centers", "Cluster centers",
 	    ParameterProperties::MODEL);
 
-	// watch_method("cluster_centers", &KMeansBase::get_cluster_centers);
+	
 }
