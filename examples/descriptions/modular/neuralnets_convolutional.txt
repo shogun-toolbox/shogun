@@ -1,1 +1,48 @@
 This examples shows how to create and train a convolutional neural network
+
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.layers import MaxPooling2D
+from keras.layers import Convolution2D
+from keras.layers import Sequential
+
+cl= Sequential() #cnn classifier
+
+#first layer
+cl.add(Convolution2D(32,3,3, input_shape=(64,64,3),activation='relu'))
+cl.add(MaxPooling2D(pool_size=(2,2)))
+
+#second layer
+cl.add(Convolution2D(64,3,3,activation='relu'))
+cl.add(MaxPooling2D(pool_size=(2,2)))
+
+cl.add(Flatten())
+cl.add(Dense(output_dim = 128,activation = 'relu'))
+cl.add(Dense(output_dim = 1,activation = 'sigmoid')) # softmax func for multiple output i.e more than 1
+
+cl.compile(optimizer = 'adam' , loss = 'binary crossentropy',metrics = ['accuracy'])
+
+from keras.preprocessing.image import ImageDataGenerator
+
+train_datagen = ImageDataGenerator(rescale=1./255,
+                                    shear_range=0.2,
+                                    zoom_range=0.2,
+                                    horizontal_flip=True)
+
+test_datagen = ImageDataGenerator(rescale=1./255)
+
+train_set = train_datagen.flow_from_directory('data/train', # dataset
+                                              target_size=(64,64),
+                                              batch_size=32,
+                                              class_mode='binary')
+
+test_set = test_datagen.flow_from_directory('data/test',
+                                            target_size=(64,64),
+                                            batch_size=32,
+                                            class_mode='binary')
+
+cl.fit_generator(train_set,
+                 samples_per_epoch=8000,
+                 nb_epoch=25,
+                 validation_data=test_set,
+                 nb_val_samples=2000)
