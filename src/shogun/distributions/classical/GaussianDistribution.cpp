@@ -116,6 +116,7 @@ SGVector<float64_t> GaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> s
 
 	/* determinant is product of diagonal elements of triangular matrix */
 	float64_t log_det_part=0;
+	//Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 	VectorXd diag=eigen_L.diagonal();
 	log_det_part=-diag.array().log().sum();
