@@ -3,3 +3,21 @@ is used to cluster a given toy data set. Starting with each object being
 assigned to its own cluster clusters are iteratively merged. Here the clusters
 are merged that have the closest (minimum distance, here set via the Euclidean
 distance object) two elements.
+
+from scipy.cluster.hierarchy import dendrogram,linkage
+from matplotlib import pyplot as plt
+linked = linkage(X,'single')
+
+labelList = range(1,11)
+
+plt.figure(figsize=(10,10)
+dendogram(linked,orientation = 'top',labels=labelList,distance_sort='descending',show_leaf_counts=True) #dendogram display
+plt.show()
+
+from sklearn.cluster import Agglomerative Clustering
+
+clustering = AgglomerativeClustering(n_clusters=2,affinity='euclidean',linkage='ward')
+cluster.fit_predict(X)
+
+plt.figure(figsize=(10,10))# displaying the clusters 
+plt.scatter(X[:1],X[:2], c= cluster.labels_, cmap='rainbow')
