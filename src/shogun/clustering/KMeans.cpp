@@ -133,9 +133,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 					}
 					else
 					{
-						/*  cluster_centers(:,j)=zeros(dim,1) ; */
-						for (j=0; j<dim; j++)
-							centers(j, cluster_assignments_i)=0;
+						centers.get_column(cluster_assignments_i).zero();
 					}
 
 				}
