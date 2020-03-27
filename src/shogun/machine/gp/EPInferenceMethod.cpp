@@ -271,10 +271,9 @@ void EPInferenceMethod::update()
 			float64_t ds2=m_ttau[i]-ttau_old;
 
 			// create eigen representation of Sigma, tnu and mu
-			Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,
-					m_Sigma.num_cols);
-			Map<VectorXd> eigen_tnu(m_tnu.vector, m_tnu.vlen);
-			Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+			SGMatrix<double>::EigenMatrixXtMap eigen_Sigma = m_Sigma;
+			SGVector<double>::EigenVectorXtMap eigen_tnu = m_tnu;
+			SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
 
 			VectorXd eigen_si=eigen_Sigma.col(i);
 
@@ -319,14 +318,14 @@ void EPInferenceMethod::update()
 void EPInferenceMethod::update_alpha()
 {
 	// create eigen representations kernel matrix, L^T, sqrt(ttau) and tnu
-	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<VectorXd> eigen_tnu(m_tnu.vector, m_tnu.vlen);
-	Map<VectorXd> eigen_sttau(m_sttau.vector, m_sttau.vlen);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_K = m_ktrtr;
+	SGVector<double>::EigenVectorXtMap eigen_tnu = m_tnu;
+	SGVector<double>::EigenVectorXtMap eigen_sttau = m_sttau;
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 
 	// create shogun and eigen representation of the alpha vector
 	CREATE_SGVECTOR(m_alpha, m_tnu.vlen, float64_t);
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_alpha;
 
 	// solve LL^T * v = tS^(1/2) * K * tnu
 	VectorXd eigen_v = eigen_L.triangularView<Upper>().adjoint().solve(
@@ -343,13 +342,13 @@ void EPInferenceMethod::update_alpha()
 void EPInferenceMethod::update_chol()
 {
 	// create eigen representations of kernel matrix and sqrt(ttau)
-	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<VectorXd> eigen_sttau(m_sttau.vector, m_sttau.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_K = m_ktrtr;
+	SGVector<double>::EigenVectorXtMap eigen_sttau = m_sttau;
 
 	// create shogun and eigen representation of the upper triangular factor
 	// (L^T) of the Cholesky decomposition of the matrix B
 	CREATE_SGMATRIX(m_L, m_ktrtr.num_rows, m_ktrtr.num_cols, float64_t);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 
 	// compute upper triangular factor L^T of the Cholesky decomposion of the
 	// matrix: B = tS^(1/2) * K * tS^(1/2) + I
@@ -364,14 +363,14 @@ void EPInferenceMethod::update_chol()
 void EPInferenceMethod::update_approx_cov()
 {
 	// create eigen representations of kernel matrix, L^T matrix and sqrt(ttau)
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<VectorXd> eigen_sttau(m_sttau.vector, m_sttau.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
+	SGMatrix<double>::EigenMatrixXtMap eigen_K = m_ktrtr;
+	SGVector<double>::EigenVectorXtMap eigen_sttau = m_sttau;
 
 	// create shogun and eigen representation of the approximate covariance
 	// matrix
 	CREATE_SGMATRIX(m_Sigma, m_ktrtr.num_rows, m_ktrtr.num_cols, float64_t);
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Sigma = m_Sigma;
 
 	// compute V = L^(-1) * tS^(1/2) * K, using upper triangular factor L^T
 	MatrixXd eigen_V = eigen_L.triangularView<Upper>().adjoint().solve(
@@ -388,12 +387,12 @@ void EPInferenceMethod::update_approx_cov()
 void EPInferenceMethod::update_approx_mean()
 {
 	// create eigen representation of posterior covariance matrix and tnu
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
-	Map<VectorXd> eigen_tnu(m_tnu.vector, m_tnu.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Sigma = m_Sigma;
+	SGVector<double>::EigenVectorXtMap eigen_tnu = m_tnu;
 
 	// create shogun and eigen representation of the approximate mean vector
 	CREATE_SGVECTOR(m_mu, m_tnu.vlen, float64_t);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
 
 	// compute mean vector of the approximate posterior: mu = Sigma * tnu
 	eigen_mu=eigen_Sigma*eigen_tnu;
@@ -402,15 +401,15 @@ void EPInferenceMethod::update_approx_mean()
 void EPInferenceMethod::update_negative_ml()
 {
 	// create eigen representation of Sigma, L, mu, tnu, ttau
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
-	Map<VectorXd> eigen_tnu(m_tnu.vector, m_tnu.vlen);
-	Map<VectorXd> eigen_ttau(m_ttau.vector, m_ttau.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Sigma = m_Sigma;
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
+	SGVector<double>::EigenVectorXtMap eigen_tnu = m_tnu;
+	SGVector<double>::EigenVectorXtMap eigen_ttau = m_ttau;
 
 	// get and create eigen representation of the mean vector
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_m(m.vector, m.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_m = m;
 
 	// compute vector of cavity parameter tau_n
 	VectorXd eigen_tau_n=(VectorXd::Ones(m_ttau.vlen)).cwiseQuotient(
@@ -422,13 +421,13 @@ void EPInferenceMethod::update_negative_ml()
 
 	// compute cavity mean: mu_n=nu_n/tau_n
 	SGVector<float64_t> mu_n(m_ttau.vlen);
-	Map<VectorXd> eigen_mu_n(mu_n.vector, mu_n.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mu_n = mu_n;
 
 	eigen_mu_n=eigen_nu_n.cwiseQuotient(eigen_tau_n);
 
 	// compute cavity variance: s2_n=1.0/tau_n
 	SGVector<float64_t> s2_n(m_ttau.vlen);
-	Map<VectorXd> eigen_s2_n(s2_n.vector, s2_n.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_s2_n = s2_n;
 
 	eigen_s2_n=(VectorXd::Ones(m_ttau.vlen)).cwiseQuotient(eigen_tau_n);
 
@@ -458,13 +457,13 @@ void EPInferenceMethod::update_negative_ml()
 void EPInferenceMethod::update_deriv()
 {
 	// create eigen representation of L, sstau, alpha
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	Map<VectorXd> eigen_sttau(m_sttau.vector, m_sttau.vlen);
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
+	SGVector<double>::EigenVectorXtMap eigen_sttau = m_sttau;
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_alpha;
 
 	// create shogun and eigen representation of F
 	m_F=SGMatrix<float64_t>(m_L.num_rows, m_L.num_cols);
-	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_F = m_F;
 
 	// solve L*L^T * V = diag(sqrt(ttau))
 	MatrixXd V=eigen_L.triangularView<Upper>().adjoint().solve(
@@ -482,8 +481,8 @@ SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_inference_method(
 			"the nagative log marginal likelihood wrt {}.{} parameter",
 			get_name(), param.first);
 
-	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_K = m_ktrtr;
+	SGMatrix<double>::EigenMatrixXtMap eigen_F = m_F;
 
 	SGVector<float64_t> result(1);
 
@@ -505,7 +504,7 @@ SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_kernel(
 		Parameters::const_reference param)
 {
 	// create eigen representation of the matrix Q
-	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_F = m_F;
 
 	SGVector<float64_t> result;
 	auto visitor = std::make_unique<ShapeVisitor>();
@@ -522,7 +521,7 @@ SGVector<float64_t> EPInferenceMethod::get_derivative_wrt_kernel(
 		else
 			dK=m_kernel->get_parameter_gradient(param, i);
 
-		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
+		SGMatrix<double>::EigenMatrixXtMap eigen_dK = dK;
 
 		// compute derivative wrt kernel parameter: dnlZ=-sum(F.*dK*scale^2)/2.0
 		result[i]=-(eigen_F.cwiseProduct(eigen_dK)).sum();
