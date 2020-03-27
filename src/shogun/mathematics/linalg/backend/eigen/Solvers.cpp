@@ -97,7 +97,8 @@ SGVector<T> LinalgBackendEigen::cholesky_solver_impl(
 
 	if (lower == false)
 	{
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Upper>
 		    tlv(L_eig);
 
@@ -105,8 +106,8 @@ SGVector<T> LinalgBackendEigen::cholesky_solver_impl(
 	}
 	else
 	{
-
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Lower>
 		    tlv(L_eig);
 		x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
@@ -134,11 +135,13 @@ SGVector<T> LinalgBackendEigen::ldlt_solver_impl(
 
 	// result = L^-1 (P b)
 	if (lower)
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Lower>(L_eig)
 		    .solveInPlace(result_eig);
 	else
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Upper>(L_eig)
 		    .transpose()
 		    .solveInPlace(result_eig);
@@ -157,12 +160,14 @@ SGVector<T> LinalgBackendEigen::ldlt_solver_impl(
 
 	// result = U^-1 (D^-1 L^-1 P b)
 	if (lower)
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Lower>(L_eig)
 		    .transpose()
 		    .solveInPlace(result_eig);
 	else
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Upper>(L_eig)
 		    .solveInPlace(result_eig);
 
@@ -211,14 +216,16 @@ SGMatrix<T> LinalgBackendEigen::triangular_solver_impl(
 
 	if (lower == false)
 	{
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Upper>
 		    tlv(L_eig);
 		x_eig = tlv.solve(b_eig);
 	}
 	else
 	{
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Lower>
 		    tlv(L_eig);
 		x_eig = tlv.solve(b_eig);
@@ -238,14 +245,16 @@ SGVector<T> LinalgBackendEigen::triangular_solver_impl(
 
 	if (lower == false)
 	{
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Upper>
 		    tlv(L_eig);
 		x_eig = tlv.solve(b_eig);
 	}
 	else
 	{
-		Eigen::TriangularView<typename SGMatrix<T>::EigenMatrixXtMap,
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
 		                      Eigen::Lower>
 		    tlv(L_eig);
 		x_eig = tlv.solve(b_eig);
