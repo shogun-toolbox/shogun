@@ -106,14 +106,14 @@ void KLLowerTriangularInference::update_init()
 	MatrixXd Kernel_L=ldlt.matrixL();
 	m_Kernel_LsD=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	m_Kernel_LsD.zero();
-	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Kernel_LsD = m_Kernel_LsD;
 	eigen_Kernel_LsD.triangularView<Lower>()=Kernel_L*Kernel_D.array().sqrt().matrix().asDiagonal();
 	m_log_det_Kernel=2.0*eigen_Kernel_LsD.diagonal().array().abs().log().sum();
 
 	m_Kernel_P=SGVector<index_t>(m_ktrtr.num_rows);
 	for (index_t i=0; i<m_Kernel_P.vlen; i++)
 		m_Kernel_P[i]=i;
-	Map<VectorXi> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
+	SGVector<int>::EigenVectorXtMap eigen_Kernel_P = m_Kernel_P;
 	eigen_Kernel_P=ldlt.transpositionsP()*eigen_Kernel_P;
 
 	m_mean_vec=m_mean->get_mean_vector(m_features);
@@ -121,8 +121,8 @@ void KLLowerTriangularInference::update_init()
 
 MatrixXd KLLowerTriangularInference::solve_inverse(const MatrixXd& eigen_A)
 {
-	Map<VectorXi> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
-	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);
+	SGVector<int>::EigenVectorXtMap eigen_Kernel_P = m_Kernel_P;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Kernel_LsD = m_Kernel_LsD;
 
 	//re-construct the Permutation Matrix
 	PermutationMatrix<Dynamic> P(m_Kernel_P.vlen);
@@ -148,10 +148,10 @@ MatrixXd KLLowerTriangularInference::solve_inverse(const MatrixXd& eigen_A)
 
 float64_t KLLowerTriangularInference::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
-	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
-	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_dK = dK;
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_alpha;
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
+	SGMatrix<double>::EigenMatrixXtMap eigen_InvK_Sigma = m_InvK_Sigma;
 
 	//dnlZ(j)=0.5*sum(sum(dK.*(K\((eye(n)- (invK_V+alpha*m'))')),2),1);
 	MatrixXd tmp1=eigen_InvK_Sigma+eigen_alpha*(eigen_mu.transpose());
@@ -173,8 +173,8 @@ void KLLowerTriangularInference::update_chol()
 	update_InvK_Sigma();
 
 	m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
+	SGMatrix<double>::EigenMatrixXtMap eigen_InvK_Sigma = m_InvK_Sigma;
 	MatrixXd tmp2=(eigen_InvK_Sigma-MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols)).transpose();
 
 	eigen_L=solve_inverse(tmp2);
