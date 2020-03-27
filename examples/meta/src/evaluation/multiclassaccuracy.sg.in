@@ -1,0 +1,12 @@
+File ground_truth = csv_file("@SHOGUN_DATA@/label_train_multiclass.dat")
+File predicted = csv_file("@SHOGUN_DATA@/label_train_multiclass.dat")
+
+#![create_features]
+MulticlassLabels ground_truth_labels = labels(ground_truth)
+MulticlassLabels predicted_labels = labels(predicted)
+#![create_features]
+
+#![evaluate_accuracy]
+Evaluation evaluator = evaluation("MulticlassAccuracy")
+real accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
+#![evaluate_accuracy]
