@@ -50,8 +50,8 @@ template<class T> class SGVector : public SGReferencedData
 		typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
 		typedef Eigen::Matrix<T,1,-1,0x1,1,-1> EigenRowVectorXt;
 
-		typedef Eigen::Map<EigenVectorXt,Eigen::Aligned16,Eigen::Stride<0,0> > EigenVectorXtMap;
-		typedef Eigen::Map<EigenRowVectorXt,Eigen::Aligned16,Eigen::Stride<0,0> > EigenRowVectorXtMap;
+		typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
+		typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
 
 		/** The scalar type of the vector */
 		typedef T Scalar;
