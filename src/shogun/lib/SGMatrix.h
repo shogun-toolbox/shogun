@@ -44,7 +44,7 @@ template<class T> class SGMatrix : public SGReferencedData
 
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
-		typedef Eigen::Map<EigenMatrixXt,16,Eigen::Stride<0,0> > EigenMatrixXtMap;
+		typedef Eigen::Map<EigenMatrixXt,Eigen::Aligned16,Eigen::Stride<0,0> > EigenMatrixXtMap;
 
 		/** The scalar type of the matrix */
 		typedef T Scalar;
