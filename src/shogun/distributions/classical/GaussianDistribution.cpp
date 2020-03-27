@@ -34,9 +34,9 @@ GaussianDistribution::GaussianDistribution(SGVector<float64_t> mean,
 
 	if (!cov_is_factor)
 	{
-		Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
+		SGMatrix<double>::EigenMatrixXtMap eigen_cov = cov;
 		m_L=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
-		Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+		SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 
 		/* compute cholesky */
 		LLT<MatrixXd> llt(eigen_cov);
@@ -91,9 +91,8 @@ SGMatrix<float64_t> GaussianDistribution::sample(int32_t num_samples,
 	}
 
 	/* map into desired Gaussian covariance */
-	Map<MatrixXd> eigen_samples(samples.matrix, samples.num_rows,
-			samples.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_samples = samples;
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 	eigen_samples=eigen_L*eigen_samples;
 
 	/* add mean */
@@ -117,7 +116,7 @@ SGVector<float64_t> GaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> s
 
 	/* determinant is product of diagonal elements of triangular matrix */
 	float64_t log_det_part=0;
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_L = m_L;
 	VectorXd diag=eigen_L.diagonal();
 	log_det_part=-diag.array().log().sum();
 
@@ -126,8 +125,7 @@ SGVector<float64_t> GaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> s
 	SGVector<double>::EigenVectorXtMap eigen_mean = m_mean;
 	/* substract mean from samples (create copy) */
 	SGMatrix<float64_t> centred(m_dimension, num_samples);
-	Map<MatrixXd> eigen_centred(centred.matrix, centred.num_rows,
-			centred.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_centred = centred;
 	for (index_t dim=0; dim<m_dimension; ++dim)
 	{
 		for (index_t sample_idx=0; sample_idx<num_samples; ++sample_idx)

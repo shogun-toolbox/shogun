@@ -328,7 +328,7 @@ TEST(SGVectorTest, to_eigen3_column_vector)
 	for (int32_t i=0; i<n; i++)
 		sg_vec[i] = i;
 
-	Eigen::Map<Eigen::VectorXd> eigen_vec = sg_vec;
+	SGVector<float64_t>::EigenVectorXtMap eigen_vec = sg_vec;
 
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(sg_vec[i], eigen_vec[i]);
@@ -356,7 +356,7 @@ TEST(SGVectorTest, to_eigen3_row_vector)
 	for (int32_t i=0; i<n; i++)
 		sg_vec[i] = i;
 
-	Eigen::Map<Eigen::RowVectorXd> eigen_vec = sg_vec;
+	SGVector<float64_t>::EigenRowVectorXtMap eigen_vec = sg_vec;
 
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(sg_vec[i], eigen_vec[i]);
