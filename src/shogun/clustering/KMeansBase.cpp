@@ -10,11 +10,11 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomNamespace.h>
-
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <utility>
 
 using namespace shogun;
@@ -75,9 +75,7 @@ void KMeansBase::set_random_centers()
 		const int32_t cluster_center_i=temp[i];
 		SGVector<float64_t> vec=lhs->get_feature_vector(cluster_center_i);
 
-		for (int32_t j=0; j<dimensions; j++)
-			cluster_centers(j, i) = vec[j];
-
+		linalg::add_col_vec(cluster_centers, i, vec, cluster_centers, 0.0, 1.0);
 		lhs->free_feature_vector(vec, cluster_center_i);
 	}
 
@@ -167,8 +165,6 @@ void KMeansBase::initialize_training(const std::shared_ptr<Features>& data)
 	R=SGVector<float64_t>(k);
 
 	cluster_centers = SGMatrix<float64_t>(dimensions, k);
-	/* cluster_centers=zeros(dimensions, k) ; */
-	memset(cluster_centers.matrix, 0, sizeof(float64_t) * centers_size);
 
 	if (initial_centers.matrix)
 	{
@@ -303,6 +299,7 @@ void KMeansBase::init()
 	dimensions = 0;
 	fixed_centers = false;
 	use_kmeanspp = false;
+	initial_centers = SGMatrix<float64_t>();
 	SG_ADD(
 	    &max_iter, "max_iter", "Maximum number of iterations",
 	    ParameterProperties::HYPER);
@@ -320,9 +317,11 @@ void KMeansBase::init()
 	SG_ADD(
 	    &use_kmeanspp, "kmeanspp", "Whether to use kmeans++",
 	    ParameterProperties::HYPER | ParameterProperties::SETTING);
+	watch_method("cluster_centers", &KMeansBase::get_cluster_centers);
 	SG_ADD(
-	    &cluster_centers, "cluster_centers", "Cluster centers",
-	    ParameterProperties::MODEL);
-
-	
+	    &initial_centers, "initial_centers", "Initial centers",
+	    ParameterProperties::HYPER);
+	// add this to check initial centers
+	add_callback_function(
+	    "initial_centers", [&]() { set_initial_centers(initial_centers); });
 }

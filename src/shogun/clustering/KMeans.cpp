@@ -149,7 +149,6 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		/* Update Step : Calculate new means */
 		if (!fixed_centers)
 		{
-			/* cluster_centers=zeros(dim, num_centers) ; */
 			centers.zero();
 
 			for (int32_t i=0; i<lhs_size; i++)
