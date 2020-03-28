@@ -1,9 +1,9 @@
-File ground_truth = csv_file("@SHOGUN_DATA@/label_train_multiclass.dat")
-File predicted = csv_file("@SHOGUN_DATA@/label_train_multiclass.dat")
+File ground_truth = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File predicted = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
 
 #![create_features]
-MulticlassLabels ground_truth_labels = labels(ground_truth)
-MulticlassLabels predicted_labels = labels(predicted)
+Labels ground_truth_labels = labels(ground_truth)
+Labels predicted_labels = labels(predicted)
 #![create_features]
 
 #![evaluate_accuracy]
