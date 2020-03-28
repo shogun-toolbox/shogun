@@ -298,7 +298,7 @@ Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogu
 4. Execute this path in the _Anaconda Prompt_ to run _Native Tools_ there 
 
 5. Put these lines into the _Anaconda Prompt_:
-> rem - Records comments (remarks); @rem - do not print command just it's result (the rem result is empty)
+> rem - Records comments (remarks); @rem - do not print command just its result (the rem result is empty)
 
 > Be careful cmake can search out of the build directory to load libraries thus remove other directories that contain the shogun sources
 
