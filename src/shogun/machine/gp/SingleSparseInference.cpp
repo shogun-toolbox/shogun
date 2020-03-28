@@ -214,9 +214,9 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_inference_method(
 	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
 
 	// create eigen representation of kernel matrices
-	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows, deriv_uu.num_cols);
-	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
+	SGVector<double>::EigenVectorXtMap ddiagKi = deriv_trtr;
+	SGMatrix<double>::EigenMatrixXtMap dKuui = deriv_uu;
+	SGMatrix<double>::EigenMatrixXtMap dKui = deriv_tru;
 
 	// compute derivatives wrt scale for each kernel matrix
 	SGVector<float64_t> result(1);
@@ -256,11 +256,9 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_kernel(
 		m_lock.unlock();
 
 		// create eigen representation of derivatives
-		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-		Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows,
-				deriv_uu.num_cols);
-		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
-				deriv_tru.num_cols);
+		SGVector<double>::EigenVectorXtMap ddiagKi = deriv_trtr;
+		SGMatrix<double>::EigenMatrixXtMap dKuui = deriv_uu;
+		SGMatrix<double>::EigenMatrixXtMap dKui = deriv_tru;
 
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 		result[i] *= std::exp(m_log_scale * 2.0);

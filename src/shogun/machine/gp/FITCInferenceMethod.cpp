@@ -131,11 +131,10 @@ float64_t FITCInferenceMethod::get_negative_log_marginal_likelihood()
 	//time complexity of the following operations is O(m*n)
 
 	// create eigen representations of chol_utr, dg, r, be
-	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
-			m_chol_utr.num_cols);
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
-	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
-	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_chol_utr = m_chol_utr;
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
+	SGVector<double>::EigenVectorXtMap eigen_r = m_r;
+	SGVector<double>::EigenVectorXtMap eigen_be = m_be;
 
 	// compute negative log marginal likelihood:
 	// nlZ=sum(log(diag(utr)))+(sum(log(dg))+r'*r-be'*be+n*log(2*pi))/2
@@ -158,10 +157,10 @@ void FITCInferenceMethod::update_chol()
 
 	// eigen3 representation of covariance matrix of inducing features (m_kuu)
 	// and training features (m_ktru)
-	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_kuu = m_kuu;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Ktru = m_ktru;
 
-	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_ktrtr_diag = m_ktrtr_diag;
 
 	// solve Luu' * Luu = Kuu + m_ind_noise * I
 	//Luu  = chol(Kuu+snu2*eye(nu));                         % Kuu + snu2*I = Luu'*Luu
@@ -173,23 +172,22 @@ void FITCInferenceMethod::update_chol()
 	// create shogun and eigen3 representation of cholesky of covariance of
 	// inducing features Luu (m_chol_uu and eigen_chol_uu)
 	m_chol_uu=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
-	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
-		m_chol_uu.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_chol_uu = m_chol_uu;
 	eigen_chol_uu=Luu.matrixU();
 
 	// solve Luu' * V = Ktru
 	//V  = Luu'\Ku;                                     % V = inv(Luu')*Ku => V'*V = Q
 
 	m_V=SGMatrix<float64_t>(m_chol_uu.num_cols, m_ktru.num_cols);
-	Map<MatrixXd> V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap V = m_V;
 	V = eigen_chol_uu.triangularView<Upper>().adjoint().solve(
-	    eigen_ktru * std::exp(m_log_scale * 2.0));
+	    eigen_Ktru * std::exp(m_log_scale * 2.0));
 
 	// create shogun and eigen3 representation of
 	// dg = diag(K) + sn2 - diag(Q)
 	// t = 1/dg
 	m_t=SGVector<float64_t>(m_ktrtr_diag.vlen);
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
 
 	//g_sn2 = diagK + sn2 - sum(V.*V,1)';          % g + sn2 = diag(K) + sn2 - diag(Q)
 	eigen_t = eigen_ktrtr_diag * std::exp(m_log_scale * 2.0) +
@@ -205,15 +203,14 @@ void FITCInferenceMethod::update_chol()
 	// create shogun and eigen3 representation of cholesky of covariance of
 	// training features Luu (m_chol_utr and eigen_chol_utr)
 	m_chol_utr=SGMatrix<float64_t>(Lu.rows(), Lu.cols());
-	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
-		m_chol_utr.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_chol_utr = m_chol_utr;
 	eigen_chol_utr=Lu.matrixU();
 
 	// create eigen representation of labels and mean vectors
 	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_y = y;
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_m(m.vector, m.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_m = m;
 
 	// compute sgrt_dg = sqrt(dg)
 	VectorXd sqrt_t=eigen_t.array().sqrt();
@@ -222,13 +219,13 @@ void FITCInferenceMethod::update_chol()
 	// noise and means (m_r)
 	//r  = (y-m)./sqrt(g_sn2);
 	m_r=SGVector<float64_t>(y.vlen);
-	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_r = m_r;
 	eigen_r=(eigen_y-eigen_m).cwiseProduct(sqrt_t);
 
 	// compute be
 	//be = Lu'\(V*(r./sqrt(g_sn2)));
 	m_be=SGVector<float64_t>(m_chol_utr.num_cols);
-	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_be = m_be;
 	eigen_be=eigen_chol_utr.triangularView<Upper>().adjoint().solve(
 		V*eigen_r.cwiseProduct(sqrt_t));
 
@@ -239,7 +236,7 @@ void FITCInferenceMethod::update_chol()
 	// create shogun and eigen3 representation of posterior cholesky
 	MatrixXd eigen_prod=eigen_chol_utr*eigen_chol_uu;
 	m_L=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
-	Map<MatrixXd> eigen_chol(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_chol = m_L;
 
 	//post.L  = solve_chol(Lu*Luu,eye(nu)) - iKuu;
 	eigen_chol=eigen_prod.triangularView<Upper>().adjoint().solve(
@@ -250,16 +247,14 @@ void FITCInferenceMethod::update_chol()
 void FITCInferenceMethod::update_alpha()
 {
 	//time complexity O(m^2) since triangular.solve is O(m^2)
-	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
-		m_chol_uu.num_cols);
-	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
-		m_chol_utr.num_cols);
-	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_chol_uu = m_chol_uu;
+	SGMatrix<double>::EigenMatrixXtMap eigen_chol_utr = m_chol_utr;
+	SGVector<double>::EigenVectorXtMap eigen_be = m_be;
 
 	// create shogun and eigen representations of alpha
 	// and solve Luu * Lu * alpha = be
 	m_alpha=SGVector<float64_t>(m_chol_uu.num_rows);
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_alpha;
 
 	//post.alpha = Luu\(Lu\be);
 	eigen_alpha=eigen_chol_utr.triangularView<Upper>().solve(eigen_be);
@@ -271,28 +266,26 @@ void FITCInferenceMethod::update_deriv()
 	//time complexits O(m^2*n)
 
 	// create eigen representation of Ktru, Lu, Luu, dg, be
-	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	Map<MatrixXd> eigen_Lu(m_chol_utr.matrix, m_chol_utr.num_rows,
-			m_chol_utr.num_cols);
-	Map<MatrixXd> eigen_Luu(m_chol_uu.matrix, m_chol_uu.num_rows,
-			m_chol_uu.num_cols);
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
-	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Ktru = m_ktru;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Lu = m_chol_utr;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Luu = m_chol_uu;
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
+	SGVector<double>::EigenVectorXtMap eigen_be = m_be;
 
 	// get and create eigen representation of labels
 	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_y = y;
 
 	// get and create eigen representation of mean vector
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_m(m.vector, m.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_m = m;
 
 	// compute V=inv(Luu')*Ku
-	Map<MatrixXd> V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap V = m_V;
 
 	// create shogun and eigen representation of al
 	m_al=SGVector<float64_t>(m.vlen);
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_al = m_al;
 
 	// compute al=(Kt+sn2*eye(n))\y
 	//r  = (y-m)./sqrt(g_sn2);
@@ -307,20 +300,20 @@ void FITCInferenceMethod::update_deriv()
 
 	// create shogun and eigen representation of B
 	m_B=SGMatrix<float64_t>(iKuu.rows(), eigen_Ktru.cols());
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_B = m_B;
 
 	//B = iKuu*Ku; w = B*al;
 	eigen_B = iKuu * eigen_Ktru * std::exp(m_log_scale * 2.0);
 
 	// create shogun and eigen representation of w
 	m_w=SGVector<float64_t>(m_B.num_rows);
-	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_w = m_w;
 
 	eigen_w=eigen_B*eigen_al;
 
 	// create shogun and eigen representation of W
 	m_Rvdd=SGMatrix<float64_t>(m_chol_utr.num_cols, m_t.vlen);
-	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_W = m_Rvdd;
 
 	// compute W=Lu'\(V./repmat(g_sn2',nu,1))
 	//W = Lu'\(V./repmat(g_sn2',nu,1));
@@ -334,16 +327,16 @@ SGVector<float64_t> FITCInferenceMethod::get_posterior_mean()
 	compute_gradient();
 
 	m_mu=SGVector<float64_t>(m_al.vlen);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_mu = m_mu;
 
 	/*
 	//true posterior mean with equivalent FITC prior
 	//time complexity of the following operations is O(n)
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_al = m_al;
 	SGVector<float64_t> y=((RegressionLabels*) m_labels)->get_labels();
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_y = y;
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_m(m.vector, m.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_m = m;
 	auto lik=GaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
@@ -351,8 +344,8 @@ SGVector<float64_t> FITCInferenceMethod::get_posterior_mean()
 	*/
 
 	//FITC approximated posterior mean
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	SGVector<double>::EigenVectorXtMap eigen_alpha = m_alpha;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Ktru = m_ktru;
 	//time complexity of the following operation is O(m*n)
 	eigen_mu = std::exp(m_log_scale * 2.0) * eigen_Ktru.adjoint() * eigen_alpha;
 
@@ -366,18 +359,16 @@ SGMatrix<float64_t> FITCInferenceMethod::get_posterior_covariance()
 	//time complexity of the following operations is O(m*n^2)
 	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
 	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,
-			m_Sigma.num_cols);
-	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	Map<MatrixXd> eigen_Lu(m_chol_utr.matrix, m_chol_utr.num_rows,
-			m_chol_utr.num_cols);
+	SGMatrix<double>::EigenMatrixXtMap eigen_Sigma = m_Sigma;
+	SGMatrix<double>::EigenMatrixXtMap eigen_V = m_V;
+	SGMatrix<double>::EigenMatrixXtMap eigen_Lu = m_chol_utr;
 
 	/*
 	//true posterior mean with equivalent FITC prior
 	auto lik=GaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
 	VectorXd diag_part=Math::sq(sigma)*eigen_t;
 	// diag(sigma2/dg)*V'*(Lu\eye(n))
 	MatrixXd part1=diag_part.asDiagonal()*eigen_V.adjoint()*
@@ -390,7 +381,7 @@ SGMatrix<float64_t> FITCInferenceMethod::get_posterior_covariance()
 
 	//FITC approximated posterior covariance
 	//TO DO we only need tha diagonal elements of m_ktrtr
-	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
+	SGVector<double>::EigenVectorXtMap eigen_ktrtr_diag = m_ktrtr_diag;
 	MatrixXd part1=eigen_V.adjoint()*(eigen_Lu.triangularView<Upper>().solve(MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols)));
 	eigen_Sigma=part1*part1.adjoint();
@@ -410,11 +401,11 @@ SGVector<float64_t> FITCInferenceMethod::get_derivative_wrt_likelihood_model(
 			m_model->get_name(), param.first);
 
 	// create eigen representation of dg, al, w, W and B
-	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
-	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+	SGVector<double>::EigenVectorXtMap eigen_t = m_t;
+	SGVector<double>::EigenVectorXtMap eigen_al = m_al;
+	SGVector<double>::EigenVectorXtMap eigen_w = m_w;
+	SGMatrix<double>::EigenMatrixXtMap eigen_W = m_Rvdd;
+	SGMatrix<double>::EigenMatrixXtMap eigen_B = m_B;
 
 	// get the sigma variable from the Gaussian likelihood model
 	auto lik = m_model->as<GaussianLikelihood>();
