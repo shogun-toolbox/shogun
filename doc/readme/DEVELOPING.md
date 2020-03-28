@@ -6,7 +6,7 @@ This is a very basic checklist on how to get started with Shogun:
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
 4. Run the [tests](#testing).
 
-To avoid spending a lot of our time on explaining the same basic things, please **excessively** use the internet for any questions on the commands and tools needed.
+To avoid spending a lot of our time explaining the same basic things, please **excessively** use the internet for any questions on the commands and tools needed.
 
 
 If you feel that this readme is missing something, please send a patch! :)
