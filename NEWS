@@ -28,7 +28,7 @@
                 [Viktor Gal]
                 - Added a time-series cross-validation splitting strategy
                 [Sahil Chaddha]
-                - Drop obsolute VW codes [Saloni Nigam]
+                - Drop obsolete VW codes [Saloni Nigam]
                 - Add shogun::variant that is using mpark variant or
                 std::variant depending what is available [Wuwei Lin]
                 - Add benchmarking framework [Viktor Gal]
@@ -381,7 +381,7 @@
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Linear Time MMD two-sample test now works on streaming-features, which
-		  allows to perform tests on infinite amounts of data. A block size may
+		  allows us to perform tests on infinite amounts of data. A block size may
 		  be specified for fast processing. The below features were also added.
 		  By Heiko Strathmann.
 		- It is now possible to ask streaming features to produce an instance
@@ -391,7 +391,7 @@
 		- New concept of artificial data generator classes: Based on streaming
 		  features. First implemented instances are CMeanShiftDataGenerator and
 		  CGaussianBlobsDataGenerator.
-		  Use above new concepts to get non-streaming data if desired.
+		  Use the above new concepts to get non-streaming data if desired.
 		- Accelerated projected gradient multiclass logistic regression classifier
 		  by Sergey Lisitsyn.
 		- New CCSOSVM based structured output solver by Viktor Gal
@@ -403,8 +403,8 @@
 		- Alpha version of Perl modular interface developed by Christian Montanari.
 		- New framework for unit-tests based on googletest and googlemock by
 		  Viktor Gal. A (growing) number of unit-tests from now on ensures basic
-		  funcionality of our framework. Since the examples do not have to take
-		  this role anymore, they should become more ilustrative in the future.
+		  functionality of our framework. Since the examples do not have to take
+		  this role anymore, they should become more illustrative in the future.
 		- Changed the core of dimension reduction algorithms to the Tapkee library.
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted.
@@ -418,7 +418,7 @@
 		  (thanks to @bianjiang).
 		- Fixed a bug that caused kernel machines to return non-sense when using
           custom kernel matrices with subsets attached to them.
-		- Fix for parameter dictionary creationg causing dereferencing null pointers
+		- Fix for parameter dictionary creation causing dereferencing null pointers
 		  with gaussian processes parameter selection.
 		- Fixed a bug in exact GP regression that caused wrong results.
 		- Fixed a bug in exact GP regression that produced memory errors/crashes.
@@ -441,7 +441,7 @@
 	* Features:
 		- This release contains first release of Efficient Dimensionality Reduction Toolkit (EDRT).
 		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now).
-		- EDRT algorithms are now available using static interfaces such as matlab and octave.
+		- EDRT algorithms are now available using static interfaces such as MATLAB and octave.
 		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal).
 		- New 'multiclass' module for multiclass classification algorithms, generic linear
 		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
@@ -452,7 +452,7 @@
 		  logistic regression and L1/L2 multitask group logistic regression by Sergey Lisitsyn.
 		- Group and tree-guided logistic regression for binary and multiclass problems by Sergey Lisitsyn.
 		- Mahalanobis distance, QDA, Stochastic Proximity Embedding,
-		  generic OvO multiclass machine and CoverTree & KNN integation (thanks to Fernando J. Iglesias Garcia).
+		  generic OvO multiclass machine and CoverTree & KNN integration (thanks to Fernando J. Iglesias Garcia).
 		- Structured output learning framework by Fernando J. Iglesias Garcia.
 		- Hidden markov support vector machine structured output model by Fernando J. Iglesias Garcia.
 		- Implementations of three Bundle method for risk minimization (BMRM) variants by Michal Uricar.
@@ -463,7 +463,7 @@
 		  independence tests using MMD and HSIC by Heiko Strathmann.
 		- New graphical python modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
-		- New data-locking concept by Heiko Strathmann which allows to tell machines that data
+		- New data-locking concept by Heiko Strathmann which allows telling machines that data
 		  is not going to change during training/testing until unlocked.
 		  KernelMachines now make use of that by not recomputing kernel matrix in cross-validation.
 		- Cross-validation for KernelMachines is now parallelized.
@@ -1147,7 +1147,7 @@
 
 	* some autodetection magic in ./configure
 	* fixed a serious bug occuring with shrinking & SVM light (target epsilon
-			was not achieved as we erreanously terminated optimization)
+			was not achieved as we erroneously terminated optimization)
 	* fixed a serious bug when using charfeatures (or strings) w/ mxGetString
 	in matlab interface (the mxGetString function has the undocumented
 			`feature' of returning locale dependent results!)
@@ -1161,7 +1161,7 @@
 
 	* incorporated MINDY support
 	* new alphabet class, all string features now have a defined
-	alphabet plus mapping function
+	  alphabet plus mapping function
 	* RAW (i.e. 8bit) alphabet added
 	* fixes for CommStringUlongKernel (was buggy when strings have different
 			lengths)
