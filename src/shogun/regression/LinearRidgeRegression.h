@@ -106,7 +106,7 @@ namespace shogun
 
 	protected:
 		template <typename T>
-		bool train_machine_templated(std::shared_ptr<const DenseFeatures<T>> feats);
+		bool train_machine_templated(const std::shared_ptr<DenseFeatures<T>>& feats);
 
 	private:
 		void init();

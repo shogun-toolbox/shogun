@@ -33,12 +33,6 @@ MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shar
 	m_labels = std::move(labels);
 	m_splitting_strategy = std::move(splitting_strategy);
 	m_evaluation_criterion = std::move(evaluation_criterion);
-
-
-
-
-
-
 }
 
 MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
@@ -51,20 +45,10 @@ MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shar
 	m_labels = std::move(labels);
 	m_splitting_strategy = std::move(splitting_strategy);
 	m_evaluation_criterion = std::move(evaluation_criterion);
-
-
-
-
-
 }
 
 MachineEvaluation::~MachineEvaluation()
 {
-
-
-
-
-
 }
 
 void MachineEvaluation::init()
@@ -113,7 +97,6 @@ std::shared_ptr<EvaluationResult> MachineEvaluation::evaluate() const
 
 std::shared_ptr<Machine> MachineEvaluation::get_machine() const
 {
-
 	return m_machine;
 }
 

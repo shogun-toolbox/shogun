@@ -68,7 +68,7 @@ LDA::~LDA()
 }
 
 template <typename ST, typename U>
-bool LDA::train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data)
+bool LDA::train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();

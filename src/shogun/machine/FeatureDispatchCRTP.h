@@ -35,7 +35,7 @@ namespace shogun
 	protected:
 		virtual bool train_dense(std::shared_ptr<Features> data)
 		{
-			auto this_casted = this->template as<P>();
+			auto* this_casted = static_cast<P*>(this);
 			switch (data->get_feature_type())
 			{
 			case F_DREAL:

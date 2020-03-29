@@ -39,12 +39,13 @@ void LinearRidgeRegression::init()
 
 	SG_ADD(&m_tau, "tau", "Regularization parameter", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_use_bias, "use_bias", "Whether or not to fit an offset term");
+	    &m_use_bias, "use_bias", "Whether or not to fit an offset term", 
+	    ParameterProperties::SETTING);
 }
 
 template <typename T>
 bool LinearRidgeRegression::train_machine_templated(
-    std::shared_ptr<const DenseFeatures<T>> feats)
+    const std::shared_ptr<DenseFeatures<T>>& feats)
 {
 	auto N = feats->get_num_vectors();
 	auto D = feats->get_num_features();
@@ -78,7 +79,7 @@ bool LinearRidgeRegression::train_machine_templated(
 	else
 	{
 		if (m_use_bias)
-			not_implemented(SOURCE_LOCATION);
+			error("LinearRidgeRegression with bias has not been implemented yet.");
 
 		SGMatrix<T> gram = feats->gram();
 		linalg::add_ridge(gram, tau);

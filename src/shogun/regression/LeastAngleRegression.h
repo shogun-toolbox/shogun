@@ -173,7 +173,7 @@ protected:
 	*/
 	template <typename ST, typename U = typename std::enable_if_t<
 		                       std::is_floating_point<ST>::value>>
-	bool train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data);
+	bool train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data);
 
 private:
 	/** Initialize and register parameters */

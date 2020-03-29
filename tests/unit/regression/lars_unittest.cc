@@ -125,10 +125,6 @@ TEST(LeastAngleRegression, lasso_n_greater_than_d)
 	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
 	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
 	EXPECT_NEAR(active1[2],0.092594219621,epsilon);
-
-
-
-
 }
 
 TEST(LeastAngleRegression, lasso_n_less_than_d)
@@ -160,10 +156,6 @@ TEST(LeastAngleRegression, lasso_n_less_than_d)
 	EXPECT_NEAR(active2[2],0.000000000000,epsilon);
 	EXPECT_NEAR(active2[3],2.578863294056,epsilon);
 	EXPECT_NEAR(active2[4],2.539637062702,epsilon);
-
-
-
-
 }
 
 TEST(LeastAngleRegression, lars_n_greater_than_d)
@@ -196,10 +188,6 @@ TEST(LeastAngleRegression, lars_n_greater_than_d)
 	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
 	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
 	EXPECT_NEAR(active1[2],0.092594219621,epsilon);
-
-
-
-
 }
 
 TEST(LeastAngleRegression, lars_n_less_than_d)
@@ -231,10 +219,6 @@ TEST(LeastAngleRegression, lars_n_less_than_d)
 	EXPECT_NEAR(active2[2],0.000000000000,epsilon);
 	EXPECT_NEAR(active2[3],2.578863294056,epsilon);
 	EXPECT_NEAR(active2[4],2.539637062702,epsilon);
-
-
-
-
 }
 
 template <typename ST>
