@@ -1,12 +1,10 @@
-File ground_truth = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
-File predicted = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
 
-#![create_features]
-Labels ground_truth_labels = labels(ground_truth)
-Labels predicted_labels = labels(predicted)
-#![create_features]
+#![create_labels]
+Labels labels_true = labels(f_labels_train)
+#![create_labels]
 
 #![evaluate_accuracy]
 Evaluation evaluator = evaluation("MulticlassAccuracy")
-real accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
+real accuracy = evaluator.evaluate(labels_true,labels_true)
 #![evaluate_accuracy]
