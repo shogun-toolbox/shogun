@@ -42,7 +42,7 @@ For example, if you are porting `kernel-linear.py` then you should create `examp
  ```
 Please ensure `BUILD_META_EXAMPLES=ON` is set. We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the shogun's meta language. For further details have a look at [#3555](https://github.com/shogun-toolbox/shogun/issues/3555).
 
-If you are porting a new example, great! Better yet, add the corresponding data. After building meta_examples a `*.dat` file is produced, which by default is under the `build/meta/cpp/*/` folder. This file is used for test integration and should be copied to your `data/` submodule under `testsuite/meta/*/` directory. Once that is done send a pull request to the [shogun-data repository](https://github.com/shogun-toolbox/shogun-data). Once that is done, finalize your changes a send a pull request from your main directory. 
+If you are porting a new example, great! Better yet, add the corresponding data. Check [DEVELOPMENT.md](DEVELOPING.md###Integration_testing_of_results) under "Integration testing of results" to learn how to add integration data after porting meta example.
 
 Please take inspiration from the existing examples, especially those that were written as part of the [Google Summer of Code](https://github.com/shogun-toolbox/shogun/wiki/GSoC-follow-up-blog-posts) 2016.
 
