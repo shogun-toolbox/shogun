@@ -57,7 +57,7 @@ The Python (2) bindings can be installed as
 
     sudo apt-get install python-shogun
 
-In addition to the latest stable release, we offer [nightly builds](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/nightly) of our development branch.
+In addition to the shogun_6.1.3 release, we offer [nightly builds](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/nightly) of our development branch.
 
 ### Debian <a name="debian"></a>
 Latest packages for Debian `jessie` and `stretch` are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
