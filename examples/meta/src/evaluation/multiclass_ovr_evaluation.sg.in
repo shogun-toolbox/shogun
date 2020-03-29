@@ -1,15 +1,13 @@
-File traindat = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
-File label_traindat = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
+File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
 
 #![create_features]
-Features feats_train = features(traindat)
-Labels ground_truth_labels = labels(label_traindat)
+Features feats_train = features(f_feats_train)
+Labels labels_true = labels(f_labels_train)
 #![create_features]
 
 #![create_classifier]
-Machine svm= machine("MulticlassLibLinear", C=1.0, labels=ground_truth_labels, seed=1)
-Parallel p = svm.get_global_parallel()
-p.set_num_threads(1)
+Machine svm= machine("MulticlassLibLinear", C=1.0, labels=labels_true, seed=1)
 #![create_classifier]
 
 #![train_and_apply]
@@ -21,9 +19,9 @@ RealVector labels = predicted_labels.get_real_vector("labels")
 #![evaluate_accuracy]
 Evaluation binary_evaluator = evaluation("ROCEvaluation")
 Evaluation ROCEvaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
-real mean_roc = ROCEvaluator.evaluate(predicted_labels,ground_truth_labels)
+real mean_roc = ROCEvaluator.evaluate(predicted_labels,labels_true)
 
 Evaluation binary_evaluator2 = evaluation("ContingencyTableEvaluation", type="ACCURACY")
 Evaluation ContingencyTableEvaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
-real mean_accuracy = ContingencyTableEvaluator.evaluate(predicted_labels,ground_truth_labels)
+real mean_accuracy = ContingencyTableEvaluator.evaluate(predicted_labels,labels_true)
 #![evaluate_accuracy]
