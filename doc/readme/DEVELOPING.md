@@ -93,7 +93,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
     Make sure you don't waste your (and our) time by not respecting these basic rules.
  * All tests pass (your pull request causes [automatic checks](#buildfarm)).
     We will not look at the patch otherwise.
- * The PR is small in terms of lines changes.
+ * The PR is small in terms of line changes.
  * The PR is clean and addresses **one** issue.
  * The number of commits is minimal (i.e. one), the message is neat and clear.
  * For C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).
