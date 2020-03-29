@@ -195,21 +195,21 @@ TEST(CARTree, classify_nominal)
 
 	int feats_num = test_feats->get_num_vectors();
 	SGVector<int32_t> idx(feats_num);
-	for(int i=0;i<feats_num;i++){
-		idx[i]=i;
+	for (int i = 0; i < feats_num; i++)
+	{
+		idx[i] = i;
 	}
-	//construct DenseSubSamplesFeatures from DensesFeatures
-	auto test_sub_feats = std::make_shared<DenseSubSamplesFeatures<float64_t>>(test_feats,idx);
-	auto sub_result=c->apply(test_sub_feats)->as<MulticlassLabels>();
-	SGVector<float64_t> sub_res_vector=sub_result->get_labels(); 
+	// construct DenseSubSamplesFeatures from DensesFeatures
+	auto test_sub_feats =
+	    std::make_shared<DenseSubSamplesFeatures<float64_t>>(test_feats, idx);
+	auto sub_result = c->apply(test_sub_feats)->as<MulticlassLabels>();
+	SGVector<float64_t> sub_res_vector = sub_result->get_labels();
 
-	EXPECT_EQ(1.0,sub_res_vector[0]);
-	EXPECT_EQ(0.0,sub_res_vector[1]);
-	EXPECT_EQ(0.0,sub_res_vector[2]);
-	EXPECT_EQ(1.0,sub_res_vector[3]);
-	EXPECT_EQ(1.0,sub_res_vector[4]);
-
-
+	EXPECT_EQ(1.0, sub_res_vector[0]);
+	EXPECT_EQ(0.0, sub_res_vector[1]);
+	EXPECT_EQ(0.0, sub_res_vector[2]);
+	EXPECT_EQ(1.0, sub_res_vector[3]);
+	EXPECT_EQ(1.0, sub_res_vector[4]);
 }
 
 TEST(CARTree, comparable_with_sklearn)

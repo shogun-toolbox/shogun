@@ -119,7 +119,8 @@ std::shared_ptr<MulticlassLabels> CARTree::apply_multiclass(std::shared_ptr<Feat
 		SGMatrix<float64_t> feature_matrix(num_feat, num_vec);
 		for (size_t i = 0; i < num_vec; i++)
 		{
-			SGVector<float64_t> v = subfeat_data->get_computed_dot_feature_vector(i);
+			SGVector<float64_t> v =
+			    subfeat_data->get_computed_dot_feature_vector(i);
 			ASSERT(num_feat == v.vlen)
 			for (size_t j = 0; j < num_feat; j++)
 				feature_matrix.matrix[i * num_feat + j] = v.vector[j];
