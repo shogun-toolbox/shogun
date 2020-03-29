@@ -121,9 +121,7 @@ std::shared_ptr<MulticlassLabels> CARTree::apply_multiclass(std::shared_ptr<Feat
 		{
 			SGVector<float64_t> v =
 			    subfeat_data->get_computed_dot_feature_vector(i);
-			ASSERT(num_feat == v.vlen)
-			for (size_t j = 0; j < num_feat; j++)
-				feature_matrix.matrix[i * num_feat + j] = v.vector[j];
+			linalg::add_col_vec(feature_matrix, i, v, feature_matrix, 0, 1);
 		}
 		return apply_from_current_node(
 		           std::make_shared<DenseFeatures<float64_t>>(feature_matrix),

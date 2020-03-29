@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
 
 #include <random>
@@ -195,11 +196,7 @@ TEST(CARTree, classify_nominal)
 
 	int feats_num = test_feats->get_num_vectors();
 	SGVector<int32_t> idx(feats_num);
-	for (int i = 0; i < feats_num; i++)
-	{
-		idx[i] = i;
-	}
-	// construct DenseSubSamplesFeatures from DensesFeatures
+	linalg::range_fill(idx);
 	auto test_sub_feats =
 	    std::make_shared<DenseSubSamplesFeatures<float64_t>>(test_feats, idx);
 	auto sub_result = c->apply(test_sub_feats)->as<MulticlassLabels>();
