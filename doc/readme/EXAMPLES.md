@@ -86,7 +86,7 @@ In addition to the latest release [here](http://shogun.ml/examples), we automati
 Furthermore, if you send a PR, our [buildbot](http://buildbot.shogun-toolbox.org/builders/cookbook%20-%20PR) will automatically upload a preview of the cookbooks to a temporary location.
 This is to make our life easier when reviewing the PR.
 
-To make our life even more easy, you should look at the cookbook before sending a PR.
+To make our life even easier, you should look at the cookbook before sending a PR.
 You can render it with
 
     make cookbook

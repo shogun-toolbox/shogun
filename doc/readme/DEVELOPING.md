@@ -6,7 +6,7 @@ This is a very basic checklist on how to get started with Shogun:
 2. Run the API examples, see [INTERFACES.md](INTERFACES.md), or create your own, see [EXAMPLES.md](EXAMPLES.md)
 4. Run the [tests](#testing).
 
-To avoid spending a lot of our time on explaining the same basic things, please **excessively** use the internet for any questions on the commands and tools needed.
+To avoid spending a lot of our time explaining the same basic things, please **excessively** use the internet for any questions on the commands and tools needed.
 
 
 If you feel that this readme is missing something, please send a patch! :)
@@ -93,7 +93,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
     Make sure you don't waste your (and our) time by not respecting these basic rules.
  * All tests pass (your pull request causes [automatic checks](#buildfarm)).
     We will not look at the patch otherwise.
- * The PR is small in terms of lines changes.
+ * The PR is small in terms of line changes.
  * The PR is clean and addresses **one** issue.
  * The number of commits is minimal (i.e. one), the message is neat and clear.
  * For C++ code: it is covered by [tests](#testing), it doesn't leak memory, its [API](#api) is documented, [code style](https://github.com/shogun-toolbox/shogun/wiki/Code-style).

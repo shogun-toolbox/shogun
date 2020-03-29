@@ -279,7 +279,7 @@ Under Linux, where you want to use Python 3, which is not the system's default:
 
     cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.3 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_PACKAGES_PATH=/usr/local/lib/python3.3/dist-packages -DINTERFACE_PYTHON=ON ..
 
-On a Linux cluster without root access, using [Anaconda](https://www.continuum.io/downloads) (note you will need to activate your environment everytime you want to run Shogun):
+On a Linux cluster without root access, using [Anaconda](https://www.continuum.io/downloads) (note you will need to activate your environment every time you want to run Shogun):
 
     source path/to/anaconda/bin/activate
     cmake -DCMAKE_INSTALL_PREFIX=path/to/shogun/install/dir -DPYTHON_INCLUDE_DIR=path/to/anaconda/include/python2.7/ -DPYTHON_LIBRARY=path/to/anaconda/lib/libpython2.7.so  -DPYTHON_EXECUTABLE=path/to/anaconda/bin/python -DINTERFACE_PYTHON=ON ..
@@ -298,7 +298,7 @@ Please see any of our Windows py3X [Azure Pipelines](https://dev.azure.com/shogu
 4. Execute this path in the _Anaconda Prompt_ to run _Native Tools_ there 
 
 5. Put these lines into the _Anaconda Prompt_:
-> rem - Records comments (remarks); @rem - do not print command just it's result (the rem result is empty)
+> rem - Records comments (remarks); @rem - do not print command just its result (the rem result is empty)
 
 > Be careful cmake can search out of the build directory to load libraries thus remove other directories that contain the shogun sources
 
