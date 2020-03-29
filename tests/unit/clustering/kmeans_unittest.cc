@@ -21,7 +21,7 @@ void check_consistency_observable(
 {
 	auto total_observations = observer->get<int32_t>("num_observations");
 	auto observation = observer->get_observation(total_observations - 1);
-	auto centers = observation->get<SGMatrix<float64_t>>("mus");
+	auto centers = observation->get<SGMatrix<float64_t>>("cluster_centers");
 
 	EXPECT_TRUE(
 	    centers.equals(kmeans->get<SGMatrix<float64_t>>("cluster_centers")));
@@ -50,8 +50,8 @@ TEST(KMeans, manual_center_initialization_test)
 	auto features=std::make_shared<DenseFeatures<float64_t>>(rect);
 
 	auto distance=std::make_shared<EuclideanDistance>(features, features);
-	auto clustering=std::make_shared<KMeans>(2, distance,initial_centers);
-
+	auto clustering = std::make_shared<KMeans>(2, distance);
+	clustering->put<SGMatrix<float64_t>>("initial_centers", initial_centers);
 	auto observer = std::make_shared<ParameterObserverLogger>();
 	clustering->subscribe(observer);
 
