@@ -97,6 +97,24 @@ steps:
     containerCommand: 'ctest --output-on-failure -j 2'
     detached: false
 
+- ${{ if eq(parameters.swig, 'true') }}:
+  - task: docker@0
+    displayName: Test Jupyter Notebooks
+    condition: eq(variables['interfaceName'], 'python')
+    inputs:
+      action: 'Run an image'
+      imageName: $(imageName)
+      volumes: |
+        $(build.sourcesDirectory):/src
+        $(build.binariesDirectory):/build
+      envVars: |
+        PYTHONPATH=/build/src/interfaces/python:$PYTHONPATH
+        LD_LIBRARY_PATH=/build/src/shogun:$LD_LIBRARY_PATH
+      workDir: '/src/doc/ipython-notebooks'
+      containerCommand: |
+        /bin/bash -c "export PYTHONPATH=/build/src/interfaces/python:$PYTHONPATH; pip3 install jupyter; find . -type f \( -name '*.ipynb' ! -name 'template.ipynb' \) | xargs -P 2 -I{} jupyter nbconvert --ExecuteProcessor.timeout=1200 --to notebook --execute '{}'"
+      detached: false
+
 - ${{ if ne(parameters.swig, 'true') }}:
   - template: ./archive-deploy.yml
     parameters:
