@@ -130,14 +130,13 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		SGVector<float64_t> R;
 
 		/** Initial centers supplied */
-		SGMatrix<float64_t> mus_initial;
+		SGMatrix<float64_t> initial_centers;
 
 		/** Flag to check if kmeans++ has to be used */
 		bool use_kmeanspp;
 
 		/** Cluster centers */
-		SGMatrix<float64_t> mus;
-
+		SGMatrix<float64_t> cluster_centers;
 };
 }
 #endif

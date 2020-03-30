@@ -1,0 +1,19 @@
+File traindat = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
+File testdat = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+
+#![create_features]
+Features feats_train = features(traindat)
+Features feats_test = features(testdat)
+#![create_features]
+
+#![create_kernel]
+Distance euclidean_distance = distance("EuclideanDistance")
+Kernel exponential_kernel = kernel("ExponentialKernel",width=1.0,distance=euclidean_distance,cache_size=10)
+exponential_kernel.init(feats_train,feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix K_train_train = exponential_kernel.get_kernel_matrix()
+exponential_kernel.init(feats_train,feats_test)
+RealMatrix K_train_test = exponential_kernel.get_kernel_matrix()
+#![get_kernel_features]

@@ -11,7 +11,7 @@ See also [DEVELOPING.md](DEVELOPING.md) for their role in testing.
 # Automatically generated examples <a name="meta_examples"></a>
 In Shogun, writing a single example file covers all interface languages at once, a subset can be seen on [our website](http://shogun.ml/examples).
 
-The listings that can be found in `examples/meta/src/*/*.sg` contain example code in a meta-language that is specific to Shogun.
+The listings that can be found in `examples/meta/src/*/*.sg.in` contain example code in a meta-language that is specific to Shogun.
 During the build, these are parsed and then translated with the (Python) machinery in `examples/meta/generator/*.py`.
 The output is a code listing for each target language defined in `examples/meta/src/generator/targets/*.json`.
 The process can be invoked with
@@ -35,7 +35,7 @@ Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manuall
 For details, see `CMakeLists.txt` in `examples/meta/` for details, `generate.py` and `translate.py` in `examples/meta/generator/`.
 
 ## Adding new examples
-It is extremely simple to add a new example: simply create another `*.sg` file.
+It is extremely simple to add a new example: simply create another `*.sg.in` file.
 We are currently porting all existing Python examples in the deprecated folder `examples/undocumented/python_modular` to the new system -- a copy-paste [entrance task](https://github.com/shogun-toolbox/shogun/issues/3555).
 
 If you are porting a new example, great! Better yet, add the [data](https://github.com/shogun-toolbox/shogun-data) so that we can do integration tests automatically as described in [DEVELOPING.md](DEVELOPING.md#testing).
@@ -53,7 +53,7 @@ The pages are rendered with [our own plugin](https://github.com/shogun-toolbox/s
 
 ## Adding a page
 To add an entry for an existing example, create a markdown `*.rst` file with matching filename and directory.
-E.g. for the example `examples/meta/src/multiclass/k_nearest_neighbours.sg`, this would be
+E.g. for the example `examples/meta/src/multiclass/k_nearest_neighbours.sg.in`, this would be
 
     touch doc/cookbook/source/examples/multiclass/k_nearest_neighbours.rst
 

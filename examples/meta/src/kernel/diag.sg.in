@@ -1,0 +1,18 @@
+File traindat = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
+File testdat = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+
+#![create_features]
+Features feats_train = features(traindat)
+Features feats_test = features(testdat)
+#![create_features]
+
+#![create_kernel]
+Kernel diag_kernel = kernel("DiagKernel",diag=23.00)
+diag_kernel.init(feats_train,feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix K_train_train = diag_kernel.get_kernel_matrix()
+diag_kernel.init(feats_train,feats_test)
+RealMatrix K_train_test = diag_kernel.get_kernel_matrix()
+#![get_kernel_features]
