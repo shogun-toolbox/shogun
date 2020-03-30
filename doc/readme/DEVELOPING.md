@@ -69,7 +69,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
 
         ./scripts/check_format.sh "feature/BRANCH_NAME" "develop"
 
-    The script will provide you with the necessary information to fix potential style errors. All of this is done by using [clang-format](https://clang.llvm.org/docs/ClangFormat.html). Make sure to have it installed on your local machine, or the above script won't work. Update the commit once you have fixed the errors.
+    The script will provide you with the necessary information to fix potential style errors.All     of this is done by using [clang-format](https://clang.llvm.org/docs/ClangFormat.html).Make sure to have it installed on your local machine, or the above script won't work. Update the commit once you have fixed the errors.
 9. [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) against shogun's develop branch.
     This might cause rebase errors, which you need to [solve](https://help.github.com/articles/resolving-merge-conflicts-after-a-git-rebase/)
 
