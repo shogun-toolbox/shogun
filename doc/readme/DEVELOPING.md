@@ -69,9 +69,7 @@ Shogun has a custom script called `check_format.sh` which can be used to verify 
 
         ./scripts/check_format.sh "feature/BRANCH_NAME" "develop"
 
-    The script will provide you with the necessary information to fix potential style errors. All of this is done by
-    using [clang-format](https://clang.llvm.org/docs/ClangFormat.html). Make sure to have it installed
-    on your local machine, or the above script won't work. Update the commit once you have fixed the errors.
+    The script will provide you with the necessary information to fix potential style errors. All of this is done by using [clang-format](https://clang.llvm.org/docs/ClangFormat.html). Make sure to have it installed on your local machine, or the above script won't work. Update the commit once you have fixed the errors.
 9. [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) against shogun's develop branch.
     This might cause rebase errors, which you need to [solve](https://help.github.com/articles/resolving-merge-conflicts-after-a-git-rebase/)
 
@@ -156,9 +154,9 @@ For example
 
 #### Adding tests
 We aim to write clear, minimal, yet exhaustive tests of the basic building blocks in Shogun.
-Whenever you send us C++ code, we will ask for a unit test of it.
+Whenever you send us the C++ code, we will ask for a unit test of it.
 
-We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency etc.
+We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency, etc.
 Read on [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
 
 Take inspiration from existing tests when writing new ones.
@@ -248,7 +246,7 @@ We aim to provide an easy way to benchmark modules in Shogun. Hence, whenever yo
 consider writing benchmarks for it.
 
 To add a benchmark to a class, simply create a file with `_benchmark.cc` suffix, next to the implementation.
-For example, for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
+For example, for the `RandomFourierDotFeatures` class, the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
 On top of this, you need to explicitly specify in CMakeLists.txt that you have added a new benchmarking file.
 The `ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` to add a
 benchmark implementation.
@@ -325,3 +323,4 @@ If you have doxygen installed, you can generate the documentation locally via ru
 and then opening `build/doc/doxygen/html/index.html` with the browser.
 
 With the `DOXYGEN_HTML_OUTPUT` cmake flag one can turn off HTML generation of the API documentation (`-DDOXYGEN_GENERATE_HTML=NO`).
+
