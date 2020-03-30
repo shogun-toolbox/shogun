@@ -170,6 +170,14 @@ TEST(SGVectorTest,complex128_tests)
 	SGVector<complex128_t> a(10);
 	a.set_const(complex128_t(5.0, 6.0));
 	SGVector<complex128_t> b=a.clone();
+	
+	// test ::operator+ and []
+	a=linalg::add(a,b);
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+	}
 
 	// test ::misc
 	SGVector<complex128_t>::vec1_plus_scalar_times_vec2(a.vector,
