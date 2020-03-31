@@ -5,6 +5,7 @@ set(SHOGUN_CORE_GRAPH_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/GraphExecutor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Shape.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Tensor.h
+	${CMAKE_CURRENT_SOURCE_DIR}/TensorMap.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/Add.h
 	${CMAKE_CURRENT_SOURCE_DIR}/nodes/BinaryNode.h
@@ -287,6 +288,7 @@ IF (ENABLE_TESTING)
 	add_graph_test(nodes/Exp_test)
 	add_graph_test(Graph_test)
 	add_graph_test(Tensor_test)
+	add_graph_test(TensorMap_test)
 	add_graph_test(Array_test)
 
 ENDIF()

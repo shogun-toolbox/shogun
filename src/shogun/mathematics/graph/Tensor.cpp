@@ -16,8 +16,3 @@ std::string Tensor::to_string() const
 	return fmt::format(
 	    "Tensor(shape={}, type={})", m_shape, m_type->to_string());
 }
-
-template Tensor::Tensor(const SGVector<float32_t>&);
-template Tensor::Tensor(const SGVector<float64_t>&);
-template Tensor::Tensor(const SGMatrix<float32_t>&);
-template Tensor::Tensor(const SGMatrix<float64_t>&);

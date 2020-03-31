@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/graph/GraphExecutor.h>
+#include <shogun/mathematics/graph/TensorMap.h>
 #include <shogun/util/zip_iterator.h>
 
 template <typename T>
@@ -28,10 +29,11 @@ protected:
 		{
 			graph->build(backend);
 
+			std::vector<std::shared_ptr<shogun::graph::Tensor>> input =
+				{std::make_shared<shogun::graph::TensorMap<typename T::c_type>>(X1.data(), shogun::graph::Shape{X1.vlen}),
+				std::make_shared<shogun::graph::TensorMap<typename T::c_type>>(X2.data(), shogun::graph::Shape{X2.vlen})};
 			std::vector<std::shared_ptr<shogun::graph::Tensor>> result =
-			    graph->evaluate(
-			        std::vector{std::make_shared<shogun::graph::Tensor>(X1),
-			                    std::make_shared<shogun::graph::Tensor>(X2)});
+			    graph->evaluate(input);
 
 			auto result1 =
 			    result[0]->template as<shogun::SGVector<typename T::c_type>>();

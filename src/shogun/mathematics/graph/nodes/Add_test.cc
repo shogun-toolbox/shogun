@@ -75,9 +75,9 @@ TYPED_TEST(GraphTest, vector_scalar_add)
 		graph->build(backend);
 
 		std::vector<std::shared_ptr<shogun::graph::Tensor>> result =
-		    graph->evaluate(
-		        std::vector{std::make_shared<shogun::graph::Tensor>(X1),
-		                    std::make_shared<shogun::graph::Tensor>(X2)});
+		    graph->evaluate({
+				std::make_shared<shogun::graph::TensorMap<NumericType>>(X1.data(), Shape{X1.vlen}),
+		        std::make_shared<shogun::graph::Tensor>(X2)});
 
 		auto result1 = result[0]->as<shogun::SGVector<NumericType>>();
 
@@ -117,9 +117,9 @@ TYPED_TEST(GraphTest, scalar_vector_add)
 		graph->build(backend);
 
 		std::vector<std::shared_ptr<shogun::graph::Tensor>> result =
-		    graph->evaluate(
-		        std::vector{std::make_shared<shogun::graph::Tensor>(X1),
-		                    std::make_shared<shogun::graph::Tensor>(X2)});
+		    graph->evaluate({
+				std::make_shared<shogun::graph::Tensor>(X1),
+				std::make_shared<shogun::graph::TensorMap<NumericType>>(X2.data(), Shape{X2.vlen})});
 
 		auto result1 = result[0]->as<shogun::SGVector<NumericType>>();
 
@@ -189,8 +189,9 @@ TYPED_TEST(GraphTest, matrix_add)
 	{
 		graph->build(backend);
 
-		vector<shared_ptr<Tensor>> result = graph->evaluate(
-		    vector{make_shared<Tensor>(X1), make_shared<Tensor>(X2)});
+		vector<shared_ptr<Tensor>> result = graph->evaluate({
+			make_shared<TensorMap<NumericType>>(X1.data(), Shape{X1.num_rows, X1.num_cols}),
+			make_shared<TensorMap<NumericType>>(X2.data(), Shape{X2.num_rows, X2.num_cols})});
 
 		auto result1 = result[0]->as<SGMatrix<NumericType>>();
 		auto result2 = result[1]->as<SGMatrix<NumericType>>();
