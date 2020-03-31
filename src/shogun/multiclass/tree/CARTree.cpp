@@ -114,14 +114,16 @@ std::shared_ptr<MulticlassLabels> CARTree::apply_multiclass(std::shared_ptr<Feat
 	if (auto subfeat_data =
 	        std::dynamic_pointer_cast<DenseSubSamplesFeatures<float64_t>>(data))
 	{
-		auto num_feat = subfeat_data->get_dim_feature_space();
+		size_t num_feat = subfeat_data->get_dim_feature_space();
 		auto num_vec = subfeat_data->get_num_vectors();
 		SGMatrix<float64_t> feature_matrix(num_feat, num_vec);
 		for (size_t i = 0; i < num_vec; i++)
 		{
 			SGVector<float64_t> v =
 			    subfeat_data->get_computed_dot_feature_vector(i);
-			linalg::add_col_vec(feature_matrix, i, v, feature_matrix, 0, 1);
+			sg_memcpy(
+			    feature_matrix.data() + i * num_feat, v.data(),
+			    num_feat * sizeof(float64_t));
 		}
 		return apply_from_current_node(
 		           std::make_shared<DenseFeatures<float64_t>>(feature_matrix),
