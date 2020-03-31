@@ -6,6 +6,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
+#include <cmath>
 
 using namespace shogun;
 using namespace linalg;
@@ -15,7 +16,7 @@ using namespace Eigen;
 template <typename T>
 constexpr T get_epsilon()
 {
-	return std::numeric_limits<T>::epsilon() * 100;
+	return std::numeric_limits<T>::epsilon() * 100.0;
 }
 template <>
 constexpr floatmax_t get_epsilon()
@@ -39,6 +40,10 @@ template <typename T>
 class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
 {
 };
+template <typename T>
+class LinalgBackendEigenComplexTypesTest : public ::testing::Test
+{
+};
 
 SG_TYPED_TEST_CASE(
     LinalgBackendEigenAllTypesTest, sg_all_primitive_types, bool, complex128_t);
@@ -46,8 +51,10 @@ SG_TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, sg_non_complex_types);
 SG_TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, sg_real_types);
 SG_TYPED_TEST_CASE(
     LinalgBackendEigenNonIntegerTypesTest, sg_non_integer_types, complex128_t);
+SG_TYPED_TEST_CASE(
+    LinalgBackendEigenComplexTypesTest, sg_all_primitive_types, bool);
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
+TYPED_TEST(LinalgBackendEigenComplexTypesTest, SGVector_add)
 {
 	const TypeParam alpha = 1;
 	const TypeParam beta = 2;
@@ -64,8 +71,12 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
 	auto result = add(A, B, alpha, beta);
 
 	for (index_t i = 0; i < 9; ++i)
+	{
 		EXPECT_NEAR(
-		    alpha * A[i] + beta * B[i], result[i], get_epsilon<TypeParam>());
+	    	std::real(alpha * A[i] + beta * B[i]), std::real(result[i]), std::real(get_epsilon<TypeParam>()));
+		EXPECT_NEAR(
+	    	std::imag(alpha * A[i] + beta * B[i]), std::imag(result[i]), std::imag(get_epsilon<TypeParam>()));
+	}
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_add)
