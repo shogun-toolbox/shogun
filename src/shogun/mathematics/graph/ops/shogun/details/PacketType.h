@@ -17,13 +17,14 @@ namespace shogun
 	{
 		namespace op
 		{
-			using aligned_vector = std::variant<__m128, __m128d, __m128i, __m256, __m256d, __m256i, 
-				__m512, __m512d, __m512i, bool, int8_t, uint8_t, int16_t, uint16_t, 
+			using aligned_vector = std::variant<__m128, __m128d, __m128i, __m256, __m256d, __m256i,
+				__m512, __m512d, __m512i, bool, int8_t, uint8_t, int16_t, uint16_t,
 				int32_t, uint32_t, int64_t, uint64_t, float, double, std::nullptr_t>;
 
 			static constexpr size_t SSE_BYTESIZE    = 16;
 			static constexpr size_t AVX_BYTESIZE    = 32;
 			static constexpr size_t AVX512_BYTESIZE = 64;
+			static constexpr size_t MAX_ALIGNMENT	= AVX512_BYTESIZE;
 
 			enum class RegisterType
 			{
@@ -35,7 +36,7 @@ namespace shogun
 			};
 
 			// forward declare Packet
-			struct Packet
+			struct alignas(MAX_ALIGNMENT) Packet
 			{
 				Packet() = delete;
 				Packet(const Packet&) = delete;
@@ -52,7 +53,7 @@ namespace shogun
 				void store(T* output);
 
 				const size_t byte_size() const noexcept;
-				
+
 				aligned_vector m_data;
 				const RegisterType m_register_type;
 			};
@@ -127,7 +128,7 @@ namespace shogun
 			{
 				using type = __m128d;
 			};
-		
+
 			//=====================================================
 
 			// unoptimal, but simple
@@ -266,6 +267,6 @@ namespace shogun
 			};
 		}
 	}
-}		
+}
 
 #endif
