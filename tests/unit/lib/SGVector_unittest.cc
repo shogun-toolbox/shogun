@@ -176,8 +176,8 @@ TEST(SGVectorTest,complex128_tests)
 		complex128_t(0.0, 0.0), b.vector, a.vlen);
 	for (index_t i=0; i<a.vlen; ++i)
 	{
-		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+		EXPECT_NEAR(a[i].real(), 5.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 6.0, 1E-14);
 	}
 
 	complex128_t sum=SGVector<complex128_t>::sum_abs(a.vector, 1);
