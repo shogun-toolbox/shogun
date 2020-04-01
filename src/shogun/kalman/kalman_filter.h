@@ -1,6 +1,6 @@
 #ifndef KALMAN_FILTER_H_
 #define KALMAN_FILTER_H_
-#include "Eigen/Dense"
+#include <shogun/mathematics/eigen3.h>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
