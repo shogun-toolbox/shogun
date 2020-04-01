@@ -7,7 +7,7 @@ Labels labels_true = labels(f_labels_train)
 #![create_features]
 
 #![create_classifier]
-Machine svm= machine("MulticlassLibLinear", C=1.0, labels=labels_true, seed=1)
+Machine svm= machine("MulticlassLibLinear", C=1.0, labels=labels_true)
 #![create_classifier]
 
 #![train_and_apply]
@@ -17,11 +17,7 @@ RealVector labels = predicted_labels.get_real_vector("labels")
 #![train_and_apply]
 
 #![evaluate_accuracy]
-Evaluation binary_evaluator = evaluation("ROCEvaluation")
-Evaluation ROCEvaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
-real mean_roc = ROCEvaluator.evaluate(predicted_labels,labels_true)
-
-Evaluation binary_evaluator2 = evaluation("ContingencyTableEvaluation", type="ACCURACY")
+Evaluation binary_evaluator = evaluation("ContingencyTableEvaluation", type="ACCURACY")
 Evaluation ContingencyTableEvaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
 real mean_accuracy = ContingencyTableEvaluator.evaluate(predicted_labels,labels_true)
 #![evaluate_accuracy]
