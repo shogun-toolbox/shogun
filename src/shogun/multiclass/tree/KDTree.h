@@ -40,7 +40,7 @@ namespace shogun
 {
 
 /** @brief This class implements KD-Tree.
- * cf. http://www.autonlab.org/autonweb/14665/version/2/part/5/data/moore-tutorial.pdf
+ * cf. https://web.archive.org/web/20140327060654if_/http://www.autonlab.org:80/autonweb/14665/version/2/part/5/data/moore-tutorial.pdf
  */
 class KDTree : public CNbodyTree
 {
