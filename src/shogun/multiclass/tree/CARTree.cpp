@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <algorithm>
+#include <iterator>
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomNamespace.h>
@@ -119,10 +121,9 @@ std::shared_ptr<MulticlassLabels> CARTree::apply_multiclass(std::shared_ptr<Feat
 		SGMatrix<float64_t> feature_matrix(num_feat, num_vec);
 		for (size_t i = 0; i < num_vec; i++)
 		{
-			SGVector<float64_t> v =
-			    subfeat_data->get_computed_dot_feature_vector(i);
+			const auto& v = subfeat_data->get_computed_dot_feature_vector(i);
 			sg_memcpy(
-			    feature_matrix.data() + i * num_feat, v.data(),
+			    feature_matrix.get_column_vector(i), v.data(),
 			    num_feat * sizeof(float64_t));
 		}
 		return apply_from_current_node(
