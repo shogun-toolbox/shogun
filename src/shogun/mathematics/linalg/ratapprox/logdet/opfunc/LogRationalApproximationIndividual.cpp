@@ -127,7 +127,7 @@ LogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 		v *= m_weights[i];
 		v = -v;
 		// aggregate the result
-		agg += vec;
+		linalg::add(agg, vec, agg);
 	}
 	float64_t result =
 		linalg::dot(sample, m_linear_operator->apply(agg.get_imag()));

@@ -55,6 +55,8 @@ namespace shogun
 	    Type beta, Container<Type>& result) const;
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
+		BACKEND_GENERIC_IN_PLACE_ADD(complex128_t, SGVector);
+		BACKEND_GENERIC_IN_PLACE_ADD(complex128_t, SGMatrix);
 #undef BACKEND_GENERIC_IN_PLACE_ADD
 
 /** Implementation of @see LinalgBackendBase::add_col_vec */

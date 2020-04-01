@@ -371,12 +371,6 @@ template<class T> class SGVector : public SGReferencedData
 			return vector[index];
 		}
 
-		/** Add vector to current vector
-		 *
-		 * @param x add vector x to current vector
-		 */
-		void add(const SGVector<T> x);
-
 		/** Add sparse vector to current vector
 		 *
 		 * @param x add sparse vector x to current vector
@@ -388,23 +382,6 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param x add vector x to current vector
 		 */
 		void add(const T x);
-
-		/** Addition operator */
-		SGVector<T> operator+ (SGVector<T> x);
-
-		/** Inplace addition operator */
-		SGVector<T> operator+= (SGVector<T> x)
-		{
-			add(x);
-			return *this;
-		}
-
-		/** Inplace addition operator for sparse vector */
-		SGVector<T> operator+= (SGSparseVector<T>& x)
-		{
-			add(x);
-			return *this;
-		}
 
 		/** Equals method up to precision for vectors (element-wise)
 		 * @param other vector to compare with

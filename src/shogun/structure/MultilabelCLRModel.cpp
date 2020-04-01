@@ -72,7 +72,7 @@ SGVector<float64_t> MultilabelCLRModel::get_joint_feature_vector(
 	// for the calibrated/virtual label as
 	// labels_coeff = \sum_{i \in P}{l(i) - l(v)} + \sum_{j \in N}{l(v) - l(j)}
 	// where $v$ is the calibrated/virtual label
-	label_coeffs += MultilabelSOLabels::to_dense(y, num_classes + 1, 1, -1);
+	linalg::add(label_coeffs, MultilabelSOLabels::to_dense(y, num_classes + 1, 1, -1), label_coeffs);
 	label_coeffs[num_classes] = num_neg_labels - num_pos_labels;
 
 	auto dot_feats = m_features->as<DotFeatures>();

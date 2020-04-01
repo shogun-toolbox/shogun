@@ -98,29 +98,6 @@ TEST(SGVectorTest,setget)
 	EXPECT_EQ(v[3], 0);
 }
 
-TEST(SGVectorTest,add)
-{
-	const int32_t seed = 17;
-
-	SGVector<float64_t> a(10);
-	SGVector<float64_t> b(10);
-
-	std::mt19937_64 prng(seed);
-	random::fill_array(a, 0.0, 1024.0, prng);
-	random::fill_array(b, 0.0, 1024.0, prng);
-	float64_t* b_clone = SGVector<float64_t>::clone_vector(b.vector, b.vlen);
-	SGVector<float64_t> c(b_clone, 10);
-
-	c.add(a);
-	for (int i=0; i < c.vlen; ++i)
-		EXPECT_EQ(c[i], a[i]+b[i]);
-
-	c = a + a;
-	EXPECT_EQ(c.vlen, 10);
-	for (int i=0; i < c.vlen; ++i)
-		EXPECT_EQ(c[i], 2*a[i]);
-}
-
 TEST(SGVectorTest,norm)
 {
 	std::mt19937_64 prng(17);
@@ -191,48 +168,40 @@ TEST(SGVectorTest,misc)
 TEST(SGVectorTest,complex128_tests)
 {
 	SGVector<complex128_t> a(10);
-	a.set_const(complex128_t(5.0, 6.0));
-	SGVector<complex128_t> b=a.clone();
-
-	// test ::operator+ and []
-	a=a+b;
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
-	}
+	a.set_const(complex128_t(5.0, 6.0));//5+6i
+	SGVector<complex128_t> b=a.clone();//5+6i
 
 	// test ::misc
 	SGVector<complex128_t>::vec1_plus_scalar_times_vec2(a.vector,
-		complex128_t(0.0, 0.0), b.vector, a.vlen);
+		complex128_t(0.0, 0.0), b.vector, a.vlen);// a = 5+6i, b = 5+6i
 	for (index_t i=0; i<a.vlen; ++i)
 	{
-		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+		EXPECT_NEAR(a[i].real(), 5.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 6.0, 1E-14);
 	}
 
 	complex128_t sum=SGVector<complex128_t>::sum_abs(a.vector, 1);
-	EXPECT_NEAR(sum.real(), 15.62049935181330878825, 1E-14);
+	EXPECT_NEAR(sum.real(), 7.810249675906654394125, 1E-14);
 	EXPECT_NEAR(sum.imag(), 0.0, 1E-14);
 
-	SGVector<index_t> res=a.find(complex128_t(10.0, 12.0));
+	SGVector<index_t> res=a.find(complex128_t(5.0, 6.0));
 	for (index_t i=0; i<res.vlen; ++i)
 		EXPECT_EQ(res[i], i);
 
 	a.scale(complex128_t(1.0));
 	for (index_t i=0; i<a.vlen; ++i)
 	{
-		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+		EXPECT_NEAR(a[i].real(), 5.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 6.0, 1E-14);
 	}
 
 	// tests ::norm
 	float64_t norm1=SGVector<complex128_t>::onenorm(a.vector, 1);
-	EXPECT_NEAR(norm1, 15.62049935181330795331, 1E-14);
+	EXPECT_NEAR(norm1, 7.810249675906654394125, 1E-14);
 
 	complex128_t norm2=SGVector<complex128_t>::twonorm(a.vector, 1);
-	EXPECT_NEAR(norm2.real(), 10.0, 1E-14);
-	EXPECT_NEAR(norm2.imag(), 12.0, 1E-14);
+	EXPECT_NEAR(norm2.real(), 5.0, 1E-14);
+	EXPECT_NEAR(norm2.imag(), 6.0, 1E-14);
 
 	// tests ::get_real and ::get_imag
 	a.set_const(complex128_t(1.0, 2.0));

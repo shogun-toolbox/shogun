@@ -338,30 +338,6 @@ SGVector<T> SGVector<T>::slice(index_t l, index_t h) const
 	return SGVector<T>(vector, h - l, l);
 }
 
-/** addition operator */
-template<class T>
-SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
-{
-	assert_on_cpu();
-	require(x.vector && vector, "Addition possible for only non-null vectors.");
-	require(x.vlen == vlen, "Length of the two vectors to be added should be same. [V({}) + V({})]", vlen, x.vlen);
-
-	SGVector<T> result=clone();
-	result.add(x);
-	return result;
-}
-
-template<class T>
-void SGVector<T>::add(const SGVector<T> x)
-{
-	assert_on_cpu();
-	require(x.vector && vector, "Addition possible for only non-null vectors.");
-	require(x.vlen == vlen, "Length of the two vectors to be added should be same. [V({}) + V({})]", vlen, x.vlen);
-
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]+=x.vector[i];
-}
-
 template<class T>
 void SGVector<T>::add(const T x)
 {

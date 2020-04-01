@@ -8,6 +8,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -111,7 +112,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		gen->get_next_example();
-		avg.add(gen->get_vector());
+		linalg::add(avg, gen->get_vector(), avg);
 		gen->release_example();
 	}
 
