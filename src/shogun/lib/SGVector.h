@@ -377,12 +377,6 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void add(const SGSparseVector<T>& x);
 
-		/** Add scalar to current vector
-		 *
-		 * @param x add vector x to current vector
-		 */
-		void add(const T x);
-
 		/** Equals method up to precision for vectors (element-wise)
 		 * @param other vector to compare with
 		 * @return false if any element differs or if sizes are different,
@@ -414,7 +408,6 @@ template<class T> class SGVector : public SGReferencedData
 					target[i]=v1[i]*v2[i];
 			}
 
-
 		/// target=alpha*vec1 + beta*vec2
 		static inline void add(
 			T* target, T alpha, const T* v1, T beta, const T* v2,
@@ -422,13 +415,6 @@ template<class T> class SGVector : public SGReferencedData
 		{
 			for (int32_t i=0; i<len; i++)
 				target[i]=alpha*v1[i]+beta*v2[i];
-		}
-
-		/// Add scalar to vector inplace
-		static inline void add_scalar(T alpha, T* vec, int32_t len)
-		{
-			for (int32_t i=0; i<len; i++)
-				vec[i]+=alpha;
 		}
 
 		/// Scale vector inplace

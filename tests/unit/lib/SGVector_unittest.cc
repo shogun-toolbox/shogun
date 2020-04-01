@@ -150,19 +150,11 @@ TEST(SGVectorTest,misc)
 	for (int32_t i = 0; i < a.vlen; ++i)
 		EXPECT_EQ(c[i],1.5*a[i]+1.3*a[i]);
 
-	/* tests ::add_scalar */
-	SGVector<float64_t>::scale_vector(-1.0,a.vector, a.vlen);
 	float64_t* a_clone = SGVector<float64_t>::clone_vector(a.vector, a.vlen);
-	SGVector<float64_t> b(a_clone, 10);
-	SGVector<float64_t>::add_scalar(1.1, b.vector, b.vlen);
-	for (int32_t i = 0; i < b.vlen; ++i)
-		EXPECT_EQ(b[i],a[i]+1.1);
-
-	float64_t* b_clone = SGVector<float64_t>::clone_vector(b.vector, b.vlen);
-	SGVector<float64_t> d(b_clone, b.vlen);
-	SGVector<float64_t>::vec1_plus_scalar_times_vec2(d.vector, 1.3, d.vector, b.vlen);
+	SGVector<float64_t> d(a_clone, a.vlen);
+	SGVector<float64_t>::vec1_plus_scalar_times_vec2(d.vector, 1.3, d.vector, a.vlen);
 	for (int32_t i = 0; i < d.vlen; ++i)
-		EXPECT_DOUBLE_EQ(d[i],b[i]+1.3*b[i]);
+		EXPECT_DOUBLE_EQ(d[i],a[i]+1.3*a[i]);
 }
 
 TEST(SGVectorTest,complex128_tests)

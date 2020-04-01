@@ -339,15 +339,6 @@ SGVector<T> SGVector<T>::slice(index_t l, index_t h) const
 }
 
 template<class T>
-void SGVector<T>::add(const T x)
-{
-	assert_on_cpu();
-	require(vector, "Addition possible for only non-null vectors.");
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]+=x;
-}
-
-template<class T>
 void SGVector<T>::add(const SGSparseVector<T>& x)
 {
 	assert_on_cpu();
