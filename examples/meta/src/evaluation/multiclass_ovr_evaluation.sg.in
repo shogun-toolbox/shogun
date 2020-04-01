@@ -18,6 +18,6 @@ RealVector labels = predicted_labels.get_real_vector("labels")
 
 #![evaluate_accuracy]
 Evaluation binary_evaluator = evaluation("ContingencyTableEvaluation", type="ACCURACY")
-Evaluation ContingencyTableEvaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
-real mean_accuracy = ContingencyTableEvaluator.evaluate(predicted_labels,labels_true)
+Evaluation contingency_table_evaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
+real mean_accuracy = contingency_table_evaluator.evaluate(predicted_labels,labels_true)
 #![evaluate_accuracy]
