@@ -32,9 +32,11 @@
 #ifndef _CARTREE_H__
 #define _CARTREE_H__
 
+#include <memory>
 #include <shogun/lib/config.h>
 
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DenseSubSamplesFeatures.h>
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/multiclass/tree/CARTreeNodeData.h>
 #include <shogun/multiclass/tree/FeatureImportanceTree.h>
