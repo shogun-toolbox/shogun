@@ -1,7 +1,6 @@
 from shogun import MulticlassLabels
 from shogun import MCLDA
-from pylab import pcolor, contour, colorbar, connect, show, plot, axis
-
+import matplotlib.pyplot as plt
 import numpy as np
 from shogun import features
 
@@ -13,15 +12,15 @@ size = 100
 mean_pos = [-1, 4]
 cov_pos  = [[1,40], [50, -2]]
 
-x_pos, y_pos = np.random.multivariate_normal(mean_pos, cov_pos, 500).T
-plot(x_pos, y_pos, 'bo');
+x_pos, y_pos = np.random.multivariate_normal(mean_pos, cov_pos, N).T
+plt.plot(x_pos, y_pos, 'bo')
 
 # negative examples
 mean_neg = [0, -3]
 cov_neg  = [[100,50], [20, 3]]
 
-x_neg, y_neg = np.random.multivariate_normal(mean_neg, cov_neg, 500).T
-plot(x_neg, y_neg, 'ro');
+x_neg, y_neg = np.random.multivariate_normal(mean_neg, cov_neg, N).T
+plt.plot(x_neg, y_neg, 'ro')
 
 # train qda
 labels = MulticlassLabels( np.concatenate([np.zeros(N), np.ones(N)]) )
@@ -53,11 +52,7 @@ dense_labels = lda.apply(dense).get_labels()
 
 z = dense_labels.reshape((size, size))
 
-pcolor(x, y, z)
-contour(x, y, z, linewidths = 1, colors = 'black', hold = True)
+plt.pcolor(x, y, z)
+plt.contour(x, y, z, linewidths=1, colors='black')
 
-axis([x1_min, x1_max, x2_min, x2_max])
-
-connect('key_press_event', util.quit)
-
-show()
+plt.show()
