@@ -31,5 +31,6 @@ multiclass_machine.train(features_train)
 Labels labels_predict = multiclass_machine.apply(features_test)
 #![train_and_apply]
 
-# integration testing variables
+#![extract_labels]
 RealVector output = labels_predict.get_real_vector("labels")
+#![extract_labels]
