@@ -1,9 +1,9 @@
-from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect
+import matplotlib.pyplot as plt
 from shogun import *
 import util
 
-util.set_title('LDA')
-util.DISTANCE=0.5
+plt.title('LDA')
+util.DISTANCE = 0.5
 
 gamma=0.1
 
@@ -24,9 +24,8 @@ lda.train()
 # compute output plot iso-lines
 x, y, z=util.compute_output_plot_isolines(lda)
 
-c=pcolor(x, y, z)
-contour(x, y, z, linewidths=1, colors='black', hold=True)
-colorbar(c)
+c = plt.pcolor(x, y, z)
+plt.contour(x, y, z, linewidths=1, colors='black', hold=True)
+plt.colorbar(c)
 
-connect('key_press_event', util.quit)
-show()
+plt.show()
