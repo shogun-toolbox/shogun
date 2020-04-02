@@ -77,7 +77,7 @@ SGVector<float64_t> ConstMean::get_parameter_derivative(std::shared_ptr<const Fe
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param.first.c_str());
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGVector<float64_t>();
 	}
 }

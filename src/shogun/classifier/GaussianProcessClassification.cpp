@@ -219,8 +219,6 @@ SGVector<float64_t> GaussianProcessClassification::get_probabilities(
 
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
-
-
 	// evaluate log probabilities
 	SGVector<float64_t> p=lik->get_predictive_log_probabilities(mu, s2);
 

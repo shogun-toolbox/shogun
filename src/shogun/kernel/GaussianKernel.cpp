@@ -108,7 +108,7 @@ SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(Parameters::const_ref
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param.first.c_str());
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGMatrix<float64_t>();
 	}
 }
