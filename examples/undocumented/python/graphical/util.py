@@ -1,14 +1,9 @@
 """ Utilities for matplotlib examples """
 
 import pylab
-from numpy import ones, array, double, meshgrid, linspace, concatenate, ravel, pi, sinc
+import numpy as np
 from numpy.random import randn, rand
-from shogun import (
-	BinaryLabels,
-	RegressionLabels,
-	SparseRealFeatures,
-	features,
-)
+import shogun as sg
 
 QUITKEY='q'
 NUM_EXAMPLES=100
@@ -41,22 +36,22 @@ def get_realdata(positive=True):
 
 
 def get_realfeatures(pos, neg):
-	arr=array((pos, neg))
-	features_ = concatenate(arr, axis=1)
-	return features(features_)
+	arr=np.array((pos, neg))
+	features_ = np.concatenate(arr, axis=1)
+	return sg.features(features_)
 
 
 def get_labels(raw=False, type='binary'):
-	data = concatenate(array(
-		(-ones(NUM_EXAMPLES, dtype=double), ones(NUM_EXAMPLES, dtype=double))
+	data = np.concatenate(np.array(
+		(-np.ones(NUM_EXAMPLES, dtype=np.double), np.ones(NUM_EXAMPLES, dtype=np.double))
 	))
 	if raw:
 		return data
 	else:
 		if type == 'binary':
-			return BinaryLabels(data)
+			return sg.BinaryLabels(data)
 		if type == 'regression':
-			return RegressionLabels(data)
+			return sg.RegressionLabels(data)
 		return None
 
 
@@ -67,17 +62,17 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 		x1_min=min(1.2*neg[0,:])
 		x2_min=min(1.2*neg[1,:])
 		x2_max=max(1.2*pos[1,:])
-		x1=linspace(x1_min, x1_max, size)
-		x2=linspace(x2_min, x2_max, size)
+		x1=np.linspace(x1_min, x1_max, size)
+		x2=np.linspace(x2_min, x2_max, size)
 	else:
-		x1=linspace(-5, 5, size)
-		x2=linspace(-5, 5, size)
+		x1=np.linspace(-5, 5, size)
+		x2=np.linspace(-5, 5, size)
 
-	x, y=meshgrid(x1, x2)
+	x, y=np.meshgrid(x1, x2)
 
-	dense=features(array((ravel(x), ravel(y))))
+	dense=sg.features(np.array((np.ravel(x), np.ravel(y))))
 	if sparse:
-		test=SparseRealFeatures()
+		test=sg.SparseRealFeatures()
 		test.obtain_from_simple(dense)
 	else:
 		test=dense
@@ -100,7 +95,7 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 def get_sinedata():
 	x=4*rand(1, NUM_EXAMPLES)-DISTANCE
 	x.sort()
-	y=sinc(pi*x)+0.1*randn(1, NUM_EXAMPLES)
+	y=np.sinc(np.pi*x)+0.1*randn(1, NUM_EXAMPLES)
 
 	return x, y
 
@@ -108,7 +103,7 @@ def get_sinedata():
 def compute_output_plot_isolines_sine(classifier, kernel, train, regression=False):
 	x=4*rand(1, 500)-2
 	x.sort()
-	test=features(x)
+	test=sg.features(x)
 	kernel.init(train, test)
 
 	if regression:

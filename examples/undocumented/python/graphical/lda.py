@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from shogun import *
+import shogun as sg
 import util
 
 plt.title('LDA')
@@ -18,7 +18,7 @@ plt.plot(neg[0, :], neg[1, :], "b.")
 # train lda
 labels = util.get_labels()
 features = util.get_realfeatures(pos, neg)
-lda = LDA(gamma, features, labels)
+lda = sg.LDA(gamma, features, labels)
 lda.train()
 
 # compute output plot iso-lines
