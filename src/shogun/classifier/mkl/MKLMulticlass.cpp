@@ -23,9 +23,7 @@ MKLMulticlass::MKLMulticlass()
 	svm=NULL;
 	lpw=NULL;
 
-	mkl_eps=0.01;
-	max_num_mkl_iters=999;
-	pnorm=1;
+	init();
 }
 
 MKLMulticlass::MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
@@ -34,9 +32,20 @@ MKLMulticlass::MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared
 	svm=NULL;
 	lpw=NULL;
 
+	init();
+}
+
+void MKLMulticlass::init()
+{
 	mkl_eps=0.01;
 	max_num_mkl_iters=999;
 	pnorm=1;
+
+	SG_ADD(&mkl_eps, "mkl_eps", "MKL Epsilon");
+	SG_ADD(&max_num_mkl_iters, "max_num_mkl_iters", "MKL max number of iterations");
+	SG_ADD(
+	    &pnorm, "mkl_norm", "MKL norm", ParameterProperties::NONE | ParameterProperties::CONSTRAIN,
+	    SG_CONSTRAINT(greater_than_or_equal(1.0)));
 }
 
 
@@ -70,9 +79,7 @@ void MKLMulticlass::initsvm()
       error("MKLMulticlass::initsvm(): the set labels is NULL");
 	}
 
-
 	svm=std::make_shared<GMNPSVM>();
-
 
    svm->set_C(get_C());
    svm->set_epsilon(get_epsilon());

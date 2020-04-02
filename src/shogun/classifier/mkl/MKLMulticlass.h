@@ -201,6 +201,9 @@ protected:
    float64_t curalphaterm;
    /** alpha term above from previous iteration */
    float64_t oldalphaterm;
+
+  private:
+    void init();
 };
 
 }

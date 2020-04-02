@@ -98,7 +98,7 @@ SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<Feature
 	require(dense_feat,"Expected DenseFeatures<float64_t> type");
 
 	auto dense_feat = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(test);
-	require(dense_feat, "Expected Features to be of type DenseFeatures.");
+	require(dense_feat, "Expected dense real features.");
 	
 	if ((m_eval==EM_KDTREE_SINGLE) || (m_eval==EM_BALLTREE_SINGLE))
 		return tree->log_kernel_density(dense_feat->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
