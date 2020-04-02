@@ -1,10 +1,14 @@
 """ Utilities for matplotlib examples """
 
 import pylab
-from numpy import ones, array, double, meshgrid, reshape, linspace, \
-	concatenate, ravel, pi, sinc
+from numpy import ones, array, double, meshgrid, linspace, concatenate, ravel, pi, sinc
 from numpy.random import randn, rand
-from shogun import BinaryLabels, RegressionLabels, RealFeatures, SparseRealFeatures
+from shogun import (
+	BinaryLabels,
+	RegressionLabels,
+	SparseRealFeatures,
+	features,
+)
 
 QUITKEY='q'
 NUM_EXAMPLES=100
@@ -38,8 +42,8 @@ def get_realdata(positive=True):
 
 def get_realfeatures(pos, neg):
 	arr=array((pos, neg))
-	features = concatenate(arr, axis=1)
-	return RealFeatures(features)
+	features_ = concatenate(arr, axis=1)
+	return features(features_)
 
 
 def get_labels(raw=False, type='binary'):
@@ -71,7 +75,7 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 
 	x, y=meshgrid(x1, x2)
 
-	dense=RealFeatures(array((ravel(x), ravel(y))))
+	dense=features(array((ravel(x), ravel(y))))
 	if sparse:
 		test=SparseRealFeatures()
 		test.obtain_from_simple(dense)
@@ -104,7 +108,7 @@ def get_sinedata():
 def compute_output_plot_isolines_sine(classifier, kernel, train, regression=False):
 	x=4*rand(1, 500)-2
 	x.sort()
-	test=RealFeatures(x)
+	test=features(x)
 	kernel.init(train, test)
 
 	if regression:

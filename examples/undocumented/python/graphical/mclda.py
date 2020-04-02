@@ -1,10 +1,9 @@
-from shogun import RealFeatures
 from shogun import MulticlassLabels
 from shogun import MCLDA
 from pylab import pcolor, contour, colorbar, connect, show, plot, axis
 
 import numpy as np
-import util
+from shogun import features
 
 N = 500
 size = 100
@@ -28,11 +27,12 @@ plot(x_neg, y_neg, 'ro');
 labels = MulticlassLabels( np.concatenate([np.zeros(N), np.ones(N)]) )
 pos = np.array([x_pos, y_pos])
 neg = np.array([x_neg, y_neg])
-features = RealFeatures( np.array(np.concatenate([pos, neg], 1)) )
+
+features_ = features(np.array(np.concatenate([pos, neg], 1)))
 
 lda = MCLDA()
 lda.set_labels(labels)
-lda.train(features)
+lda.train(features_)
 
 # compute output plot iso-lines
 xs = np.array(np.concatenate([x_pos, x_neg]))
@@ -48,7 +48,7 @@ x2 = np.linspace(x2_min, x2_max, size)
 
 x, y = np.meshgrid(x1, x2)
 
-dense = RealFeatures( np.array((np.ravel(x), np.ravel(y))) )
+dense = features(np.array((np.ravel(x), np.ravel(y))))
 dense_labels = lda.apply(dense).get_labels()
 
 z = dense_labels.reshape((size, size))
