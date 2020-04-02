@@ -1,7 +1,6 @@
 CSVFile f_feats_train("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
 CSVFile f_feats_test("@SHOGUN_DATA@/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
-CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -15,7 +14,7 @@ Kernel kernel_gaussian = kernel("GaussianKernel", log_width=2.1)
 #![create_kernel]
 
 #![choose_strategy]
-MulticlassStrategy one_vs_rest=multiclass_strategy("MulticlassOneVsRestStrategy")
+MulticlassStrategy one_versus_rest=multiclass_strategy("MulticlassOneVsRestStrategy")
 #![choose_strategy]
 
 #![create_classifier]
@@ -23,7 +22,7 @@ Machine classifier = machine("LibSVM", epsilon=0.00001)
 #![create_classifier]
 
 #![create_machine]
-Machine multiclass_machine =  machine("KernelMulticlassMachine", multiclass_strategy=one_vs_rest, kernel=kernel_gaussian, machine= classifier, labels=labels_train)
+Machine multiclass_machine =  machine("KernelMulticlassMachine", multiclass_strategy=one_versus_rest, kernel=kernel_gaussian, machine= classifier, labels=labels_train)
 #![create_machine]
 
 #![train_and_apply]
