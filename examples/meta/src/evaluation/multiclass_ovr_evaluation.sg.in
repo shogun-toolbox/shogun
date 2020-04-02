@@ -3,21 +3,21 @@ File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_labels
 
 #![create_features]
 Features feats_train = features(f_feats_train)
-Labels labels_true = labels(f_labels_train)
+Labels labels_train = labels(f_labels_train)
 #![create_features]
 
 #![create_classifier]
-Machine svm= machine("MulticlassLibLinear", C=1.0, labels=labels_true)
+Machine svm= machine("MulticlassLibLinear", C=1.0, labels=labels_train)
 #![create_classifier]
 
 #![train_and_apply]
 svm.train(feats_train)
-Labels predicted_labels = svm.apply()
-RealVector labels = predicted_labels.get_real_vector("labels")
+Labels labels_predicted = svm.apply()
+RealVector labels = labels_predicted.get_real_vector("labels")
 #![train_and_apply]
 
 #![evaluate_accuracy]
 Evaluation binary_evaluator = evaluation("ContingencyTableEvaluation", type="ACCURACY")
 Evaluation contingency_table_evaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
-real mean_accuracy = contingency_table_evaluator.evaluate(predicted_labels,labels_true)
+real mean_accuracy = contingency_table_evaluator.evaluate(labels_predicted,labels_train)
 #![evaluate_accuracy]
