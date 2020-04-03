@@ -46,7 +46,7 @@ enum ESPEStrategy
  * times the value of "m_num_updates".
  *
  * In order to avoid problems with memory in case a large number of features vectors is
- * to be embedded, the distance matrix is never computed explicitily. This has the
+ * to be embedded, the distance matrix is never computed explicitly. This has the
  * drawback that it is likely that the same distances are computed several times during
  * the process.
  *
@@ -112,13 +112,13 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 
 		/** setter for number of updates per iteration
 		 *
-		 * @param nupdates number of updates per SPE iteration
+		 * @param num_updates number of updates per SPE iteration
 		 */
 		void set_num_updates(int32_t num_updates);
 
 		/** getter for number of updates per iteration
 		 *
-		 * @return nupdates value
+		 * @return num_updates value
 		 */
 		int32_t get_num_updates() const;
 
@@ -159,7 +159,7 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		/** regularization parameter */
 		float64_t m_tolerance;
 
-		/** number of apdates per SPE iteration */
+		/** number of updates per SPE iteration */
 		int32_t m_num_updates;
 
 		/** maximum number of iterations */
