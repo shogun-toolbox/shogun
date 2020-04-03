@@ -3,40 +3,40 @@
 # Authors: Roman Votyakov
 import matplotlib.pyplot as plt
 import numpy as np
-from itertools import *
+import itertools
+
 
 def generate_toy_data(n_train=100, mean_a=np.asarray([0, 0]), std_dev_a=1.0, mean_b=3, std_dev_b=0.5):
-
     # positive examples are distributed normally
-    X1 = (np.random.randn(n_train, 2)*std_dev_a+mean_a).T
+    X1 = (np.random.randn(n_train, 2) * std_dev_a + mean_a).T
 
     # negative examples have a "ring"-like form
-    r = np.random.randn(n_train)*std_dev_b+mean_b
-    angle = np.random.randn(n_train)*2*np.pi
-    X2 = np.array([r*np.cos(angle)+mean_a[0], r*np.sin(angle)+mean_a[1]])
+    r = np.random.randn(n_train) * std_dev_b + mean_b
+    angle = np.random.randn(n_train) * 2 * np.pi
+    X2 = np.array([r * np.cos(angle) + mean_a[0], r * np.sin(angle) + mean_a[1]])
 
     # stack positive and negative examples in a single array
-    X_train = np.hstack((X1,X2))
+    X_train = np.hstack((X1, X2))
 
     # label positive examples with +1, negative with -1
-    y_train = np.zeros(n_train*2)
+    y_train = np.zeros(n_train * 2)
     y_train[:n_train] = 1
     y_train[n_train:] = -1
 
     return [X_train, y_train]
 
+
 def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     import shogun as sg
-    import numpy as np
 
     # convert training data into Shogun representation
     train_features = sg.features(X_train)
     train_labels = sg.BinaryLabels(y_train)
 
     # generate all pairs in 2d range of testing data
-    x1 = np.linspace(X_train[0,:].min()-1, X_train[0,:].max()+1, n_test)
-    x2 = np.linspace(X_train[1,:].min()-1, X_train[1,:].max()+1, n_test)
-    X_test = np.asarray(list(product(x1, x2))).T
+    x1 = np.linspace(X_train[0,:].min() - 1, X_train[0,:].max() + 1, n_test)
+    x2 = np.linspace(X_train[1,:].min() - 1, X_train[1,:].max() + 1, n_test)
+    X_test = np.asarray(list(itertools.product(x1, x2))).T
 
     # convert testing features into Shogun representation
     test_features = sg.features(X_test)
@@ -73,7 +73,6 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     p_test = gp.get_probabilities(test_features)
 
     # create figure
-    plt.figure()
     plt.title('Training examples, predictive probability and decision boundary')
 
     # plot training data
@@ -81,7 +80,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     plt.plot(X_train[0, np.argwhere(y_train == -1)], X_train[1, np.argwhere(y_train == -1)], 'bo')
 
     # plot decision boundary
-    plt.contour(x1, x2, np.reshape(p_test, (n_test, n_test)), levels=[0.5], colors=('black'))
+    plt.contour(x1, x2, np.reshape(p_test, (n_test, n_test)), levels=[0.5], colors='black')
 
     # plot probabilities
     plt.pcolor(x1, x2, np.reshape(p_test, (n_test, n_test)))
@@ -92,6 +91,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     # show figure
     plt.show()
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     [X_train, y_train] = generate_toy_data()
     gaussian_process_binary_classification_laplace(X_train, y_train)
