@@ -12,6 +12,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/KNN.h>
+#include <shogun/multiclass/tree/KDTree.h>
 
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
@@ -104,7 +105,7 @@ bool KNN::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-SGMatrix<index_t> KNN::nearest_neighbors()
+SGMatrix<index_t> KNN::nearest_neighbors(KNN_SOLVER knn_solver/*=KNN_BRUTE*/)
 {
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
@@ -123,33 +124,72 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 	distance->precompute_lhs();
 	distance->precompute_rhs();
 
-	//for each test example
-	for (auto i : SG_PROGRESS(range(n)))
+	switch (knn_solver)
 	{
-		COMPUTATION_CONTROLLERS
-		//lhs idx 0..num train examples-1 (i.e., all train examples) and rhs idx i
-		distances_lhs(dists,0,m_train_labels.vlen-1,i);
+	case KNN_BRUTE:
+	{
+		//for each test example
+		for (auto i : SG_PROGRESS(range(n)))
+		{
+			COMPUTATION_CONTROLLERS
+			//lhs idx 0..num train examples-1 (i.e., all train examples) and rhs idx i
+			distances_lhs(dists,0,m_train_labels.vlen-1,i);
 
-		//fill in an array with 0..num train examples-1
-		for (int32_t j=0; j<m_train_labels.vlen; j++)
-			train_idxs[j]=j;
+			//fill in an array with 0..num train examples-1
+			for (int32_t j=0; j<m_train_labels.vlen; j++)
+				train_idxs[j]=j;
 
-		//sort the distance vector between test example i and all train examples
-		Math::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
+			//sort the distance vector between test example i and all train examples
+			Math::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
 
 #ifdef DEBUG_KNN
-		io::print("\nQuick sort query {}\n", i);
-		for (int32_t j=0; j<m_k; j++)
-			io::print("{} ", train_idxs[j]);
-		io::print("\n");
+			io::print("\nQuick sort query {}\n", i);
+			for (int32_t j=0; j<m_k; j++)
+				io::print("{} ", train_idxs[j]);
+			io::print("\n");
 #endif
 
-		//fill in the output the indices of the nearest neighbors
-		for (int32_t j=0; j<m_k; j++)
-			NN(j,i) = train_idxs[j];
+			//fill in the output the indices of the nearest neighbors
+			for (int32_t j=0; j<m_k; j++)
+				NN(j,i) = train_idxs[j];
+		}
+
+		distance->reset_precompute();
+
+		break;
+	}
+	case KNN_KDTREE:
+	{
+		solver = std::make_shared<KDTREEKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
+		//auto output=std::make_shared<MulticlassLabels>(num_lab);
+		auto lhs = distance->get_lhs();
+		auto kd_tree = std::make_shared<KDTree>(m_leaf_size);
+		kd_tree->build_tree(lhs->as<DenseFeatures<float64_t>>());
+
+		auto query = distance->get_rhs();
+		kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
+		//SGMatrix<index_t> NN = kd_tree->get_knn_indices();
+
+		break;
+	}
+	/*case KNN_COVER_TREE:
+	{
+#ifdef USE_GPL_SHOGUN
+		solver = std::make_shared<CoverTreeKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
+
+		break;
+#else
+		gpl_only(SOURCE_LOCATION);
+#endif // USE_GPL_SHOGUN
+	}
+	case KNN_LSH:
+	{
+		solver = std::make_shared<LSHKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
+
+		break;
+	}*/
 	}
 
-	distance->reset_precompute();
 
 	return NN;
 }
