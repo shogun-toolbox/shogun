@@ -18,6 +18,7 @@
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/SparseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/LibSVMFile.h>
@@ -106,25 +107,51 @@ namespace shogun
 		require(file, "No file provided.");
 		std::shared_ptr<Features> result = nullptr;
 
-		switch (primitive_type)
+		if(std::type_index(typeid(*file)) == std::type_index(typeid(LibSVMFile)))
 		{
-		case PT_FLOAT64:
-			result = std::make_shared<DenseFeatures<float64_t>>();
-			break;
-		case PT_FLOAT32:
-			result = std::make_shared<DenseFeatures<float32_t>>();
-			break;
-		case PT_FLOATMAX:
-			result = std::make_shared<DenseFeatures<floatmax_t>>();
-			break;
-		case PT_UINT8:
-			result = std::make_shared<DenseFeatures<uint8_t>>();
-			break;
-		case PT_UINT16:
-			result = std::make_shared<DenseFeatures<uint16_t>>();
-			break;
-		default:
-			not_implemented(SOURCE_LOCATION);
+			switch (primitive_type)
+			{
+			case PT_FLOAT64:
+				result = std::make_shared<SparseFeatures<float64_t>>();
+				break;
+			case PT_FLOAT32:
+				result = std::make_shared<SparseFeatures<float32_t>>();
+				break;
+			case PT_FLOATMAX:
+				result = std::make_shared<SparseFeatures<floatmax_t>>();
+				break;
+			case PT_UINT8:
+				result = std::make_shared<SparseFeatures<uint8_t>>();
+				break;
+			case PT_UINT16:
+				result = std::make_shared<SparseFeatures<uint16_t>>();
+				break;
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
+		}
+		else
+		{
+			switch (primitive_type)
+			{
+			case PT_FLOAT64:
+				result = std::make_shared<DenseFeatures<float64_t>>();
+				break;
+			case PT_FLOAT32:
+				result = std::make_shared<DenseFeatures<float32_t>>();
+				break;
+			case PT_FLOATMAX:
+				result = std::make_shared<DenseFeatures<floatmax_t>>();
+				break;
+			case PT_UINT8:
+				result = std::make_shared<DenseFeatures<uint8_t>>();
+				break;
+			case PT_UINT16:
+				result = std::make_shared<DenseFeatures<uint16_t>>();
+				break;
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
 		}
 		result->load(file);
 		return result;
