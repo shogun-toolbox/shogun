@@ -66,15 +66,15 @@ namespace shogun
 		StochasticProximityEmbedding();
 
 		/** destructor */
-		virtual ~StochasticProximityEmbedding();
+		~StochasticProximityEmbedding() override;
 
 		/** apply to features
 		 *
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		virtual std::shared_ptr<Features>
-		transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features>
+		transform(std::shared_ptr<Features> features, bool inplace) override;
 
 		/** setter for number of neighbors k in local strategy
 		 *
@@ -128,7 +128,7 @@ namespace shogun
 		 *
 		 * @param max_iteration the maximum number of iterations
 		 */
-		void set_max_iteration(const int32_t max_iteration);
+		void set_max_iteration(int32_t max_iteration);
 
 		/** getter for the maximum number of iterations
 		 *
@@ -137,7 +137,7 @@ namespace shogun
 		int32_t get_max_iteration() const;
 
 		/** get name */
-		virtual const char* get_name() const;
+		const char* get_name() const override;
 
 	private:
 		/** default init */
@@ -148,7 +148,7 @@ namespace shogun
 		 * @return new features in the embedded space
 		 */
 		virtual std::shared_ptr<DenseFeatures<float64_t>>
-		embed_distance(std::shared_ptr<Distance> distance);
+		embed_distance(const std::shared_ptr<Distance>& distance);
 
 	private:
 		/** SPE strategy */

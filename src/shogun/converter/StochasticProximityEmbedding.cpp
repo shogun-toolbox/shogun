@@ -7,7 +7,6 @@
 
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
@@ -37,8 +36,7 @@ void StochasticProximityEmbedding::init()
 }
 
 StochasticProximityEmbedding::~StochasticProximityEmbedding()
-{
-}
+= default;
 
 void StochasticProximityEmbedding::set_k(int32_t k)
 {
@@ -138,7 +136,7 @@ std::shared_ptr<Features> StochasticProximityEmbedding::transform(
 }
 
 std::shared_ptr<DenseFeatures<float64_t>>
-StochasticProximityEmbedding::embed_distance(std::shared_ptr<Distance> distance)
+StochasticProximityEmbedding::embed_distance(const std::shared_ptr<Distance>& distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
