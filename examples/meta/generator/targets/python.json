@@ -5,14 +5,13 @@
         "IncludeInterfacedClasses": true, 
         "IncludeEnums": true,
         "IncludeGlobalFunctions": true,
-        "DependencyListElement": "from shogun import $typeName",
-        "DependencyListElementEnum": "from shogun import $value",
+        "DependencyListElement": "import shogun as sg",
         "DependencyListSeparator": "\n"
     },
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = $typeName($arguments$kwargs)",
+        "Construct": "$name = sg.$typeName($arguments$kwargs)",
         "Copy": "$name = $expr",
         "KeywordArguments": {
             "List": "$elements",
@@ -81,10 +80,10 @@
             "get_option": "$object.get($arguments)",
             "get_string": "$object.get($arguments)"
         },
-        "StaticCall": "$typeName.$method($arguments)",
-        "GlobalCall": "$method($arguments$kwargs)",
+        "StaticCall": "sg.$typeName.$method($arguments)",
+        "GlobalCall": "sg.$method($arguments$kwargs)",
         "Identifier": "$identifier",
-        "Enum":"$value"
+        "Enum":"sg.$value"
     },
     "Element": {
         "Access": {
