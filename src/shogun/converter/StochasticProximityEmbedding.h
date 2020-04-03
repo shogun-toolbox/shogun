@@ -41,9 +41,9 @@ enum ESPEStrategy
  * to form the second set.
  *
  * The parameter K for K-Nearest Neighbors in SPE_LOCAL corresponds to the class member
- * "m_k". Each of the two sets used on every iteration is formed by "m_nupdates" feature
+ * "m_k". Each of the two sets used on every iteration is formed by "m_num_updates" feature
  * vectors. Therefore, the number of feature vectors given must be always at least two
- * times the value of "m_nupdates".
+ * times the value of "m_num_updates".
  *
  * In order to avoid problems with memory in case a large number of features vectors is
  * to be embedded, the distance matrix is never computed explicitily. This has the
@@ -102,25 +102,25 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		 *
 		 * @param tolerance regularization value
 		 */
-		void set_tolerance(float32_t tolerance);
+		void set_tolerance(float64_t tolerance);
 
 		/** getter for regularization parameter
 		 *
 		 * @return regularization value
 		 */
-		int32_t get_tolerance() const;
+        float64_t get_tolerance() const;
 
 		/** setter for number of updates per iteration
 		 *
 		 * @param nupdates number of updates per SPE iteration
 		 */
-		void set_nupdates(int32_t nupdates);
+		void set_num_updates(int32_t num_updates);
 
 		/** getter for number of updates per iteration
 		 *
 		 * @return nupdates value
 		 */
-		int32_t get_nupdates() const;
+		int32_t get_num_updates() const;
 
 		/** setter for the maximum number of iterations
 		 *
@@ -157,10 +157,10 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		int32_t m_k;
 
 		/** regularization parameter */
-		float32_t m_tolerance;
+		float64_t m_tolerance;
 
 		/** number of apdates per SPE iteration */
-		int32_t m_nupdates;
+		int32_t m_num_updates;
 
 		/** maximum number of iterations */
 		int32_t m_max_iteration;

@@ -17,7 +17,7 @@ StochasticProximityEmbedding::StochasticProximityEmbedding() :
 {
 	// Initialize to default values
 	m_k         = 12;
-	m_nupdates  = 100;
+	m_num_updates = 100;
 	m_strategy  = SPE_GLOBAL;
 	m_tolerance = 1e-5;
 	m_max_iteration  = 0;
@@ -29,7 +29,8 @@ void StochasticProximityEmbedding::init()
 {
 	SG_ADD(&m_k, "m_k", "Number of neighbors");
 	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter");
-	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations");
+    SG_ADD(&m_num_updates, "m_num_updates", "SPE number of updates");
+	SG_ADD(&m_max_iteration, "max_iteration", "Maximum number of iterations");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_strategy, "m_strategy", "SPE strategy",
 	    ParameterProperties::NONE, SG_OPTIONS(SPE_GLOBAL, SPE_LOCAL));
@@ -62,7 +63,7 @@ ESPEStrategy StochasticProximityEmbedding::get_strategy() const
 	return m_strategy;
 }
 
-void StochasticProximityEmbedding::set_tolerance(float32_t tolerance)
+void StochasticProximityEmbedding::set_tolerance(float64_t tolerance)
 {
 	if ( tolerance <= 0 )
 		error("Tolerance regularization parameter must be greater "
@@ -71,22 +72,22 @@ void StochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 	m_tolerance = tolerance;
 }
 
-int32_t StochasticProximityEmbedding::get_tolerance() const
+float64_t StochasticProximityEmbedding::get_tolerance() const
 {
 	return m_tolerance;
 }
 
-void StochasticProximityEmbedding::set_nupdates(int32_t nupdates)
+void StochasticProximityEmbedding::set_num_updates(int32_t num_updates)
 {
-	if ( nupdates <= 0 )
+	if ( num_updates <= 0 )
 		error("The number of updates must be greater than 0");
 
-	m_nupdates = nupdates;
+	m_num_updates = num_updates;
 }
 
-int32_t StochasticProximityEmbedding::get_nupdates() const
+int32_t StochasticProximityEmbedding::get_num_updates() const
 {
-	return m_nupdates;
+	return m_num_updates;
 }
 
 void StochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
@@ -121,9 +122,9 @@ StochasticProximityEmbedding::transform(std::shared_ptr<Features> features, bool
 		error("The number of neighbors ({}) must be less than "
 		         "the number of vectors ({})", m_k, N);
 
-	if ( 2*m_nupdates > N )
+	if ( 2* m_num_updates > N )
 		error("The number of vectors ({}) must be at least two times "
-			 "the number of updates ({})", N, m_nupdates);
+			 "the number of updates ({})", N, m_num_updates);
 
 	m_distance->init(simple_features, simple_features);
 	auto embedding = embed_distance(m_distance);
@@ -139,7 +140,7 @@ std::shared_ptr<DenseFeatures< float64_t >> StochasticProximityEmbedding::embed_
 	parameters.n_neighbors = m_k;
 	parameters.method = SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
-	parameters.spe_num_updates = m_nupdates;
+	parameters.spe_num_updates = m_num_updates;
 	parameters.spe_tolerance = m_tolerance;
 	parameters.distance = distance.get();
 	parameters.spe_global_strategy = (m_strategy==SPE_GLOBAL);
