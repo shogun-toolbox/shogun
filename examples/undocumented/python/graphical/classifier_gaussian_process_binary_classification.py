@@ -32,7 +32,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
 
     # convert training data into Shogun representation
     train_features = sg.features(X_train)
-    train_labels = sg.BinaryLabels(y_train)
+    train_labels = sg.labels(y_train)
 
     # generate all pairs in 2d range of testing data
     x1 = np.linspace(X_train[0, :].min() - 1, X_train[0, :].max() + 1, n_test)
@@ -67,6 +67,9 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     inf = sg.EPInferenceMethod(kernel, train_features, mean, train_labels, lik)
 
     # create and train GP classifier, which uses Laplace approximation
+    # gp = sg.machine('GaussianProcessClassification')
+    # gp.put('inference_method', inf)
+    # gp.put('labels', train_labels)
     gp = sg.GaussianProcessClassification(inf)
     gp.train()
 

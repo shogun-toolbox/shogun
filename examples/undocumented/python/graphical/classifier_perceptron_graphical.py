@@ -13,7 +13,7 @@ def classifier_perceptron_graphical(n=100, distance=5, learn_rate=1, max_iter=10
     _DIM = 2
 
     # To get the nice message that the perceptron has converged
-    dummy = sg.BinaryLabels()
+    # dummy = sg.BinaryLabels()
     # dummy.io.set_loglevel(sg.MSG_INFO)
 
     np.random.seed(seed)
@@ -26,7 +26,7 @@ def classifier_perceptron_graphical(n=100, distance=5, learn_rate=1, max_iter=10
 
     fm_train_real = np.hstack((X, Y))
     feats_train = sg.features(fm_train_real)
-    labels = sg.BinaryLabels(label_train_twoclass)
+    labels = sg.labels(label_train_twoclass)
 
     perceptron = sg.machine('Perceptron', labels=labels, learn_rate=learn_rate, max_iterations=max_iter)
     perceptron.put('initialize_hyperplane', False)
