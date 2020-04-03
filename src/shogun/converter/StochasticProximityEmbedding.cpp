@@ -6,21 +6,21 @@
  */
 
 #include <shogun/converter/StochasticProximityEmbedding.h>
-#include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/config.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 
-StochasticProximityEmbedding::StochasticProximityEmbedding() :
-	EmbeddingConverter()
+StochasticProximityEmbedding::StochasticProximityEmbedding()
+    : EmbeddingConverter()
 {
 	// Initialize to default values
-	m_k         = 12;
+	m_k = 12;
 	m_num_updates = 100;
-	m_strategy  = SPE_GLOBAL;
+	m_strategy = SPE_GLOBAL;
 	m_tolerance = 1e-5;
-	m_max_iteration  = 0;
+	m_max_iteration = 0;
 
 	init();
 }
@@ -29,7 +29,7 @@ void StochasticProximityEmbedding::init()
 {
 	SG_ADD(&m_k, "m_k", "Number of neighbors");
 	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter");
-    SG_ADD(&m_num_updates, "m_num_updates", "SPE number of updates");
+	SG_ADD(&m_num_updates, "m_num_updates", "SPE number of updates");
 	SG_ADD(&m_max_iteration, "max_iteration", "Maximum number of iterations");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_strategy, "m_strategy", "SPE strategy",
@@ -42,7 +42,7 @@ StochasticProximityEmbedding::~StochasticProximityEmbedding()
 
 void StochasticProximityEmbedding::set_k(int32_t k)
 {
-	if ( k <= 0 )
+	if (k <= 0)
 		error("Number of neighbors k must be greater than 0");
 
 	m_k = k;
@@ -65,9 +65,9 @@ ESPEStrategy StochasticProximityEmbedding::get_strategy() const
 
 void StochasticProximityEmbedding::set_tolerance(float64_t tolerance)
 {
-	if ( tolerance <= 0 )
+	if (tolerance <= 0)
 		error("Tolerance regularization parameter must be greater "
-			 "than 0");
+		      "than 0");
 
 	m_tolerance = tolerance;
 }
@@ -79,7 +79,7 @@ float64_t StochasticProximityEmbedding::get_tolerance() const
 
 void StochasticProximityEmbedding::set_num_updates(int32_t num_updates)
 {
-	if ( num_updates <= 0 )
+	if (num_updates <= 0)
 		error("The number of updates must be greater than 0");
 
 	m_num_updates = num_updates;
@@ -90,7 +90,8 @@ int32_t StochasticProximityEmbedding::get_num_updates() const
 	return m_num_updates;
 }
 
-void StochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
+void StochasticProximityEmbedding::set_max_iteration(
+    const int32_t max_iteration)
 {
 	m_max_iteration = max_iteration;
 }
@@ -100,41 +101,44 @@ int32_t StochasticProximityEmbedding::get_max_iteration() const
 	return m_max_iteration;
 }
 
-const char * StochasticProximityEmbedding::get_name() const
+const char* StochasticProximityEmbedding::get_name() const
 {
 	return "StochasticProximityEmbedding";
 }
 
-std::shared_ptr<Features>
-StochasticProximityEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
+std::shared_ptr<Features> StochasticProximityEmbedding::transform(
+    std::shared_ptr<Features> features, bool inplace)
 {
-	if ( !features )
+	if (!features)
 		error("Features are required to apply SPE");
 
 	// Shorthand for the DenseFeatures
 	auto simple_features =
-		std::static_pointer_cast<DenseFeatures<float64_t>>(features);
-
+	    std::static_pointer_cast<DenseFeatures<float64_t>>(features);
 
 	// Get and check the number of vectors
 	int32_t N = simple_features->get_num_vectors();
-	if ( m_strategy == SPE_LOCAL && m_k >= N )
-		error("The number of neighbors ({}) must be less than "
-		         "the number of vectors ({})", m_k, N);
+	if (m_strategy == SPE_LOCAL && m_k >= N)
+		error(
+		    "The number of neighbors ({}) must be less than "
+		    "the number of vectors ({})",
+		    m_k, N);
 
-	if ( 2* m_num_updates > N )
-		error("The number of vectors ({}) must be at least two times "
-			 "the number of updates ({})", N, m_num_updates);
+	if (2 * m_num_updates > N)
+		error(
+		    "The number of vectors ({}) must be at least two times "
+		    "the number of updates ({})",
+		    N, m_num_updates);
 
 	m_distance->init(simple_features, simple_features);
 	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
-
 	return embedding;
 }
 
-std::shared_ptr<DenseFeatures< float64_t >> StochasticProximityEmbedding::embed_distance(std::shared_ptr<Distance> distance)
+std::shared_ptr<DenseFeatures<float64_t>>
+StochasticProximityEmbedding::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
@@ -143,8 +147,7 @@ std::shared_ptr<DenseFeatures< float64_t >> StochasticProximityEmbedding::embed_
 	parameters.spe_num_updates = m_num_updates;
 	parameters.spe_tolerance = m_tolerance;
 	parameters.distance = distance.get();
-	parameters.spe_global_strategy = (m_strategy==SPE_GLOBAL);
+	parameters.spe_global_strategy = (m_strategy == SPE_GLOBAL);
 	parameters.max_iteration = m_max_iteration;
 	return tapkee_embed(parameters);
 }
-
