@@ -11,6 +11,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/loss/HingeLoss.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <utility>
 
@@ -118,7 +119,7 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 	float64_t* Bc=SG_MALLOC(float64_t, w.vlen);
 	SGVector<float64_t>::fill_vector(Bc, w.vlen, 1/lambda);
 
-	float64_t* result=SG_MALLOC(float64_t, w.vlen);
+	SGVector<float64_t> result(w);
 	float64_t* B=SG_MALLOC(float64_t, w.vlen);
 
 	//Calibrate
@@ -150,8 +151,8 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 				{
 					SGVector<float64_t> w_1=w.clone();
 					float64_t loss_1=-loss->first_derivative(z,1);
-					SGVector<float64_t>::vector_multiply(result,Bc,v.vector,w.vlen);
-					SGVector<float64_t>::add(w.vector,eta*loss_1*y,result,1.0,w.vector,w.vlen);
+					SGVector<float64_t>::vector_multiply(result.vector,Bc,v.vector,w.vlen);
+					linalg::add(result, w, w, eta*loss_1*y, 1.0);
 					float64_t z2 = y * features->dot(i, w);
 					float64_t diffloss = -loss->first_derivative(z2,1) - loss_1;
 					if(diffloss)
@@ -169,22 +170,21 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 			{
 				if(--count<=0)
 				{
-					SGVector<float64_t>::vector_multiply(result,Bc,w.vector,w.vlen);
-					SGVector<float64_t>::add(w.vector,-skip*lambda*eta,result,1.0,w.vector,w.vlen);
+					SGVector<float64_t>::vector_multiply(result.vector,Bc,w.vector,w.vlen);
+					linalg::add(result, w, w, -skip*lambda*eta, 1.0);
 					count = skip;
 					updateB=true;
 				}
 
 				if (z < 1 || is_log_loss)
 				{
-					SGVector<float64_t>::vector_multiply(result,Bc,v.vector,w.vlen);
-					SGVector<float64_t>::add(w.vector,eta*-loss->first_derivative(z,1)*y,result,1.0,w.vector,w.vlen);
+					SGVector<float64_t>::vector_multiply(result.vector,Bc,v.vector,w.vlen);
+					linalg::add(result, w, w, eta*-loss->first_derivative(z,1)*y, 1.0);
 				}
 			}
 			t++;
 		}
 	}
-	SG_FREE(result);
 	SG_FREE(B);
 
 	set_w(w);

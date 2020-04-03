@@ -145,11 +145,6 @@ TEST(SGVectorTest,misc)
 	for (int32_t i = 0; i < c.vlen; ++i)
 		EXPECT_EQ(c[i], a[i]*a[i]);
 
-	/* test ::add(...) */
-	SGVector<float64_t>::add(c.vector, 1.5, a.vector, 1.3, a.vector, a.vlen);
-	for (int32_t i = 0; i < a.vlen; ++i)
-		EXPECT_EQ(c[i],1.5*a[i]+1.3*a[i]);
-
 	float64_t* a_clone = SGVector<float64_t>::clone_vector(a.vector, a.vlen);
 	SGVector<float64_t> d(a_clone, a.vlen);
 	SGVector<float64_t>::vec1_plus_scalar_times_vec2(d.vector, 1.3, d.vector, a.vlen);

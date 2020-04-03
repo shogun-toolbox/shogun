@@ -10,6 +10,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -120,9 +121,7 @@ bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
 
 			if (result->psi_computed)
 			{
-				SGVector<float64_t>::add(psi_i.vector,
-					1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector,
-					psi_i.vlen);
+				linalg::add(result->psi_truth, result->psi_pred, psi_i, 1.0, -1.0);
 			}
 			else if(result->psi_computed_sparse)
 			{
@@ -143,15 +142,13 @@ bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
 			float64_t gamma = 1.0 / (k+1.0);
 
 			// 5) finally update the weights
-			SGVector<float64_t>::add(m_w.vector,
-				1.0-gamma, m_w.vector, gamma*N, w_s.vector, m_w.vlen);
+			linalg::add(m_w, w_s, m_w, 1.0-gamma, gamma*N);
 
 			// 6) Optionally, update the weighted average
 			if (m_do_weighted_averaging)
 			{
 				float64_t rho = 2.0 / (k+2.0);
-				SGVector<float64_t>::add(w_avg.vector,
-					1.0-rho, w_avg.vector, rho, m_w.vector, w_avg.vlen);
+				linalg::add(w_avg, m_w, w_avg, 1.0-rho, rho);
 			}
 
 			k += 1;

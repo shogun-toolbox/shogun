@@ -239,8 +239,7 @@ std::shared_ptr<ResultSet> HMSVMModel::argmax(
 		ASSERT(loss_matrix.num_rows == E.num_rows &&
 		       loss_matrix.num_cols == E.num_cols);
 
-		SGVector< float64_t >::add(E.matrix, 1.0, E.matrix,
-				1.0, loss_matrix.matrix, E.num_rows*E.num_cols);
+		linalg::add(E, loss_matrix, E, 1.0, 1.0);
 
 		// Decrement the reference count corresponding to get_label above
 

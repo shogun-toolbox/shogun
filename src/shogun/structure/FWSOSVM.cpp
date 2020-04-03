@@ -113,9 +113,7 @@ bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 			SGVector<float64_t> psi_i(M);
 			if (result->psi_computed)
 			{
-				SGVector<float64_t>::add(psi_i.vector,
-					1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector,
-					psi_i.vlen);
+				linalg::add(result->psi_truth, result->psi_pred, psi_i, 1.0, -1.0);
 			}
 			else if(result->psi_computed_sparse)
 			{
@@ -146,7 +144,7 @@ bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 
 		// 5) duality gap
 		SGVector<float64_t> w_diff = m_w.clone();
-		SGVector<float64_t>::add(w_diff.vector, 1.0, m_w.vector, -1.0, w_s.vector, w_s.vlen);
+		linalg::add(m_w, w_s, w_diff, 1.0, -1.0);
 		float64_t dual_gap = m_lambda * linalg::dot(m_w, w_diff) - m_ell + ell_s;
 
 		// Debug: compute primal and dual objectives and training error
@@ -187,7 +185,7 @@ bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 		}
 
 		// 8) finally update w and ell
-		SGVector<float64_t>::add(m_w.vector, 1.0-gamma, m_w.vector, gamma, w_s.vector, m_w.vlen);
+		linalg::add(m_w, w_s, m_w, 1.0-gamma, gamma);
 		m_ell = (1.0-gamma) * m_ell + gamma * ell_s;
 
 	} // end pi

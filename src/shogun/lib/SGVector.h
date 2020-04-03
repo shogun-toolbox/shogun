@@ -408,15 +408,6 @@ template<class T> class SGVector : public SGReferencedData
 					target[i]=v1[i]*v2[i];
 			}
 
-		/// target=alpha*vec1 + beta*vec2
-		static inline void add(
-			T* target, T alpha, const T* v1, T beta, const T* v2,
-			int32_t len)
-		{
-			for (int32_t i=0; i<len; i++)
-				target[i]=alpha*v1[i]+beta*v2[i];
-		}
-
 		/// Scale vector inplace
 		static void scale_vector(T alpha, T* vec, int32_t len);
 

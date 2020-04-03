@@ -648,6 +648,7 @@ static int32_t line_search_backtracking(
     dgtest = param->ftol * dginit;
     const index_t max_iter = 20;
 
+    SGVector<float64_t> x_wrap(x, n, false);
     for (;;) {
         sg_memcpy(x, xp.vector, n*sizeof(float64_t));
         if (cd->proc_adjust_step)
@@ -659,7 +660,7 @@ static int32_t line_search_backtracking(
                 return LBFGSERR_INVALID_VALUE;
         }
 
-        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        linalg::add(x_wrap, s, x_wrap, 1.0, *stp);
         float64_t decay=0.5;
         index_t iter=0;
 
@@ -672,7 +673,7 @@ static int32_t line_search_backtracking(
                 *stp*=decay;
             else
                 break;
-            SGVector<float64_t>::add(x, 1, x, -1.0*(*stp), s, n);
+            linalg::add(x_wrap, s, x_wrap, 1.0, -1.0*(*stp));
             iter++;
             if (iter>max_iter)
                 return LBFGSERR_INVALID_VALUE;
@@ -862,6 +863,7 @@ static int32_t line_search_morethuente(
     fx = fy = finit;
     dgx = dgy = dginit;
 
+    SGVector<float64_t> x_wrap(x, n, false);
     for (;;) {
         /*
             Set the minimum and maximum steps to correspond to the
@@ -895,7 +897,8 @@ static int32_t line_search_morethuente(
         if (cd->proc_adjust_step)
             *stp=cd->proc_adjust_step(cd->instance, x, s.vector, cd->n, *stp);
 
-        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        linalg::add(x_wrap, s, x_wrap, 1.0, *stp);
+        x_wrap = linalg::add((shogun::SGVector<float64_t>)x_wrap, (shogun::SGVector<float64_t>)s, 1.0, *stp);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g.vector, cd->n, *stp);
