@@ -94,9 +94,6 @@ bool KernelDensity::train(std::shared_ptr<Features> data)
 SGVector<float64_t> KernelDensity::get_log_density(const std::shared_ptr<Features>& test, int32_t leaf_size)
 {
 	require(test,"data not supplied");
-	auto dense_feat =std::dynamic_pointer_cast<DenseFeatures<float64_t>>(test);
-	require(dense_feat,"Expected DenseFeatures<float64_t> type");
-
 	auto dense_feat = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(test);
 	require(dense_feat, "Expected dense real features.");
 	
