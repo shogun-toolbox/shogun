@@ -160,36 +160,17 @@ SGMatrix<index_t> KNN::nearest_neighbors(KNN_SOLVER knn_solver/*=KNN_BRUTE*/)
 	}
 	case KNN_KDTREE:
 	{
-		solver = std::make_shared<KDTREEKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
-		//auto output=std::make_shared<MulticlassLabels>(num_lab);
 		auto lhs = distance->get_lhs();
 		auto kd_tree = std::make_shared<KDTree>(m_leaf_size);
 		kd_tree->build_tree(lhs->as<DenseFeatures<float64_t>>());
 
 		auto query = distance->get_rhs();
 		kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
-		//SGMatrix<index_t> NN = kd_tree->get_knn_indices();
+		NN = kd_tree->get_knn_indices();
 
 		break;
 	}
-	/*case KNN_COVER_TREE:
-	{
-#ifdef USE_GPL_SHOGUN
-		solver = std::make_shared<CoverTreeKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
-
-		break;
-#else
-		gpl_only(SOURCE_LOCATION);
-#endif // USE_GPL_SHOGUN
 	}
-	case KNN_LSH:
-	{
-		solver = std::make_shared<LSHKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
-
-		break;
-	}*/
-	}
-
 
 	return NN;
 }
