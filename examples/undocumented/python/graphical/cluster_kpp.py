@@ -7,55 +7,52 @@ Therefore, the ideal cluster centers for k=2 are the global minima ie (5,0) (5,1
 
 Written (W) 2014 Parijat Mazumdar
 """
-from pylab import figure,clf,plot,linspace,pi,show
-from numpy import array,ones,zeros,cos,sin,concatenate
-from numpy.random import randn
+import matplotlib.pyplot as plt
+import numpy as np
+import shogun as sg
 
-from shogun import *
+k = 2
+num = 500
+d1 = np.concatenate((np.random.randn(1, num), 10. * np.random.randn(1, num)), 0)
+d2 = np.concatenate((np.random.randn(1, num), 10. * np.random.randn(1, num)), 0) + np.array([[10.], [0.]])
+d3 = np.concatenate((np.random.randn(1, num), 10. * np.random.randn(1, num)), 0) + np.array([[0.], [100.]])
+d4 = np.concatenate((np.random.randn(1, num), 10. * np.random.randn(1, num)), 0) + np.array([[10.], [100.]])
 
-k=2
-num=500
-d1=concatenate((randn(1,num),10.*randn(1,num)),0)
-d2=concatenate((randn(1,num),10.*randn(1,num)),0)+array([[10.],[0.]])
-d3=concatenate((randn(1,num),10.*randn(1,num)),0)+array([[0.],[100.]])
-d4=concatenate((randn(1,num),10.*randn(1,num)),0)+array([[10.],[100.]])
+traindata = np.concatenate((d1, d2, d3, d4), 1)
+feat_train = sg.features(traindata)
+distance = sg.distance('EuclideanDistance')
+distance.init(feat_train, feat_train)
 
-traindata=concatenate((d1,d2,d3,d4),1)
-feat_train=RealFeatures(traindata)
-distance=EuclideanDistance(feat_train,feat_train)
-
-kmeans=KMeans(k, distance, True)
+kmeans = sg.machine('KMeans', k=k, distance=distance, kmeanspp=True)
 kmeans.train()
-centerspp=kmeans.get_cluster_centers()
-radipp=kmeans.get_radiuses()
+centerspp = kmeans.get('cluster_centers')
+radipp = kmeans.get('radiuses')
 
-kmeans.set_use_kmeanspp(False)
+kmeans = sg.machine('KMeans', k=k, distance=distance)
 kmeans.train()
-centers=kmeans.get_cluster_centers()
-radi=kmeans.get_radiuses()
+centers = kmeans.get('cluster_centers')
+radi = kmeans.get('radiuses')
 
-figure('KMeans with KMeans++')
-clf()
-plot(d1[0],d1[1],'rx')
-plot(d2[0],d2[1],'bx',hold=True)
-plot(d3[0],d3[1],'gx',hold=True)
-plot(d4[0],d4[1],'cx',hold=True)
+plt.figure('KMeans with KMeans++')
+plt.plot(d1[0], d1[1], 'rx')
+plt.plot(d2[0], d2[1], 'bx')
+plt.plot(d3[0], d3[1], 'gx')
+plt.plot(d4[0], d4[1], 'cx')
 
-plot(centerspp[0,:], centerspp[1,:], 'ko',hold=True)
-for i in xrange(k):
-	t = linspace(0, 2*pi, 100)
-	plot(radipp[i]*cos(t)+centerspp[0,i],radipp[i]*sin(t)+centerspp[1,i],'k-', hold=True)
+plt.plot(centerspp[0, :], centerspp[1, :], 'ko')
+for i in range(k):
+    t = np.linspace(0, 2 * np.pi, 100)
+    plt.plot(radipp[i] * np.cos(t) + centerspp[0, i], radipp[i] * np.sin(t) + centerspp[1, i], 'k-')
 
-figure('KMeans w/o KMeans++')
-clf()
-plot(d1[0],d1[1],'rx')
-plot(d2[0],d2[1],'bx',hold=True)
-plot(d3[0],d3[1],'gx',hold=True)
-plot(d4[0],d4[1],'cx',hold=True)
+plt.figure('KMeans without KMeans++')
+plt.plot(d1[0], d1[1], 'rx')
+plt.plot(d2[0], d2[1], 'bx')
+plt.plot(d3[0], d3[1], 'gx')
+plt.plot(d4[0], d4[1], 'cx')
 
-plot(centers[0,:], centers[1,:], 'ko',hold=True)
-for i in xrange(k):
-	t = linspace(0, 2*pi, 100)
-	plot(radi[i]*cos(t)+centers[0,i],radi[i]*sin(t)+centers[1,i],'k-', hold=True)
+plt.plot(centers[0, :], centers[1, :], 'ko')
+for i in range(k):
+    t = np.linspace(0, 2 * np.pi, 100)
+    plt.plot(radi[i] * np.cos(t) + centers[0, i], radi[i] * np.sin(t) + centers[1, i], 'k-')
 
-show()
+plt.show()

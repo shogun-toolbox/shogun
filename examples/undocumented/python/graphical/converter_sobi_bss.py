@@ -7,12 +7,9 @@ http://scikit-learn.org/
 Kevin Hughes 2013
 """
 
-
+import matplotlib.pyplot as plt
 import numpy as np
-import pylab as pl
-
-from shogun  import RealFeatures
-from shogun import SOBI
+import shogun as sg
 
 # Generate sample data
 np.random.seed(0)
@@ -33,25 +30,26 @@ S = S.T
 A = np.array([[1, 0.5], [0.5, 1]])
 
 # Mix Signals
-X = np.dot(A,S)
-mixed_signals = RealFeatures(X)
+X = np.dot(A, S)
+mixed_signals = sg.features(X)
 
 # Separating
-sobi = SOBI()
-signals = sobi.apply(mixed_signals)
-S_ = signals.get_feature_matrix()
-A_ = sobi.get_mixing_matrix();
+sobi = sg.transformer('SOBI')
+sobi.fit(mixed_signals)
+signals = sobi.transform(mixed_signals)
+S_ = signals.get('feature_matrix')
+A_ = sobi.get('mixing_matrix')
 
 # Plot results
-pl.figure()
-pl.subplot(3, 1, 1)
-pl.plot(S.T)
-pl.title('True Sources')
-pl.subplot(3, 1, 2)
-pl.plot(X.T)
-pl.title('Mixed Sources')
-pl.subplot(3, 1, 3)
-pl.plot(S_.T)
-pl.title('Estimated Sources')
-pl.subplots_adjust(0.09, 0.04, 0.94, 0.94, 0.26, 0.36)
-pl.show()
+plt.figure()
+plt.subplot(3, 1, 1)
+plt.plot(S.T)
+plt.title('True Sources')
+plt.subplot(3, 1, 2)
+plt.plot(X.T)
+plt.title('Mixed Sources')
+plt.subplot(3, 1, 3)
+plt.plot(S_.T)
+plt.title('Estimated Sources')
+plt.subplots_adjust(0.09, 0.04, 0.94, 0.94, 0.26, 0.36)
+plt.show()

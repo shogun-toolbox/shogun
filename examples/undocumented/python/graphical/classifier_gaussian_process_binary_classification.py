@@ -1,9 +1,10 @@
 # This software is distributed under BSD 3-clause license (see LICENSE file).
 #
 # Authors: Roman Votyakov
+import itertools
+
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools
 
 
 def generate_toy_data(n_train=100, mean_a=np.asarray([0, 0]), std_dev_a=1.0, mean_b=3, std_dev_b=0.5):
@@ -34,15 +35,15 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     train_labels = sg.BinaryLabels(y_train)
 
     # generate all pairs in 2d range of testing data
-    x1 = np.linspace(X_train[0,:].min() - 1, X_train[0,:].max() + 1, n_test)
-    x2 = np.linspace(X_train[1,:].min() - 1, X_train[1,:].max() + 1, n_test)
+    x1 = np.linspace(X_train[0, :].min() - 1, X_train[0, :].max() + 1, n_test)
+    x2 = np.linspace(X_train[1, :].min() - 1, X_train[1, :].max() + 1, n_test)
     X_test = np.asarray(list(itertools.product(x1, x2))).T
 
     # convert testing features into Shogun representation
     test_features = sg.features(X_test)
 
     # create Gaussian kernel with width = 2.0
-    kernel = sg.kernel("GaussianKernel", log_width=np.log(2.0))
+    kernel = sg.kernel('GaussianKernel', log_width=np.log(2.0))
 
     # create zero mean function
     mean = sg.ZeroMean()
@@ -93,5 +94,5 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
 
 
 if __name__ == '__main__':
-    [X_train, y_train] = generate_toy_data()
+    X_train, y_train = generate_toy_data()
     gaussian_process_binary_classification_laplace(X_train, y_train)

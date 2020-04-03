@@ -5,110 +5,113 @@ import numpy as np
 from numpy.random import randn, rand
 import shogun as sg
 
-QUITKEY='q'
-NUM_EXAMPLES=100
-DISTANCE=2
+QUITKEY = 'q'
+NUM_EXAMPLES = 100
+DISTANCE = 2
 
-def quit (event):
-	if event.key==QUITKEY or event.key==QUITKEY.upper():
-		pylab.close()
 
-def set_title (title):
-	quitmsg=" (press '"+QUITKEY+"' to quit)"
-	complete=title+quitmsg
-	manager=pylab.get_current_fig_manager()
+def quit(event):
+    if event.key == QUITKEY or event.key == QUITKEY.upper():
+        pylab.close()
 
-	# now we have to wrap the toolkit
-	if hasattr(manager, 'window'):
-		if hasattr(manager.window, 'setCaption'): # QT
-			manager.window.setCaption(complete)
-		if hasattr(manager.window, 'set_title'): # GTK
-			manager.window.set_title(complete)
-		elif hasattr(manager.window, 'title'): # TK
-			manager.window.title(complete)
+
+def set_title(title):
+    quitmsg = " (press '" + QUITKEY + "' to quit)"
+    complete = title + quitmsg
+    manager = pylab.get_current_fig_manager()
+
+    # now we have to wrap the toolkit
+    if hasattr(manager, 'window'):
+        if hasattr(manager.window, 'setCaption'):  # QT
+            manager.window.setCaption(complete)
+        if hasattr(manager.window, 'set_title'):  # GTK
+            manager.window.set_title(complete)
+        elif hasattr(manager.window, 'title'):  # TK
+            manager.window.title(complete)
 
 
 def get_realdata(positive=True):
-	if positive:
-		return randn(2, NUM_EXAMPLES)+DISTANCE
-	else:
-		return randn(2, NUM_EXAMPLES)-DISTANCE
+    if positive:
+        return randn(2, NUM_EXAMPLES) + DISTANCE
+    else:
+        return randn(2, NUM_EXAMPLES) - DISTANCE
 
 
 def get_realfeatures(pos, neg):
-	arr=np.array((pos, neg))
-	features_ = np.concatenate(arr, axis=1)
-	return sg.features(features_)
+    arr = np.array((pos, neg))
+    features = np.concatenate(arr, axis=1)
+    return sg.features(features)
 
 
 def get_labels(raw=False, type='binary'):
-	data = np.concatenate(np.array(
-		(-np.ones(NUM_EXAMPLES, dtype=np.double), np.ones(NUM_EXAMPLES, dtype=np.double))
-	))
-	if raw:
-		return data
-	else:
-		if type == 'binary':
-			return sg.BinaryLabels(data)
-		if type == 'regression':
-			return sg.RegressionLabels(data)
-		return None
+    data = np.concatenate(np.array(
+        (-np.ones(NUM_EXAMPLES, dtype=np.double), np.ones(NUM_EXAMPLES, dtype=np.double))
+    ))
+    if raw:
+        return data
+    else:
+        if type == 'binary':
+            return sg.BinaryLabels(data)
+        if type == 'regression':
+            return sg.RegressionLabels(data)
+        return None
 
 
-def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=False, pos=None, neg=None, regression=False):
-	size=100
-	if pos is not None and neg is not None:
-		x1_max=max(1.2*pos[0,:])
-		x1_min=min(1.2*neg[0,:])
-		x2_min=min(1.2*neg[1,:])
-		x2_max=max(1.2*pos[1,:])
-		x1=np.linspace(x1_min, x1_max, size)
-		x2=np.linspace(x2_min, x2_max, size)
-	else:
-		x1=np.linspace(-5, 5, size)
-		x2=np.linspace(-5, 5, size)
+def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=False, pos=None, neg=None,
+                                 regression=False):
+    size = 100
+    if pos is not None and neg is not None:
+        x1_max = max(1.2 * pos[0, :])
+        x1_min = min(1.2 * neg[0, :])
+        x2_min = min(1.2 * neg[1, :])
+        x2_max = max(1.2 * pos[1, :])
+        x1 = np.linspace(x1_min, x1_max, size)
+        x2 = np.linspace(x2_min, x2_max, size)
+    else:
+        x1 = np.linspace(-5, 5, size)
+        x2 = np.linspace(-5, 5, size)
 
-	x, y=np.meshgrid(x1, x2)
+    x, y = np.meshgrid(x1, x2)
 
-	dense=sg.features(np.array((np.ravel(x), np.ravel(y))))
-	if sparse:
-		test=sg.SparseRealFeatures()
-		test.obtain_from_simple(dense)
-	else:
-		test=dense
+    dense = sg.features(np.array((np.ravel(x), np.ravel(y))))
+    if sparse:
+        test = sg.SparseRealFeatures()
+        test.obtain_from_simple(dense)
+    else:
+        test = dense
 
-	if kernel and train:
-		kernel.init(train, test)
-	else:
-		classifier.set_features(test)
+    if kernel and train:
+        kernel.init(train, test)
+    else:
+        classifier.put('features', test)
 
-	labels = None
-	if regression:
-		labels=classifier.apply().get_labels()
-	else:
-		labels=classifier.apply().get_values()
-	z=labels.reshape((size, size))
+    labels = None
+    if regression:
+        labels = classifier.apply().get_labels()
+    else:
+        labels = classifier.apply().get_values()
+    z = labels.reshape((size, size))
 
-	return x, y, z
+    return x, y, z
 
 
 def get_sinedata():
-	x=4*rand(1, NUM_EXAMPLES)-DISTANCE
-	x.sort()
-	y=np.sinc(np.pi*x)+0.1*randn(1, NUM_EXAMPLES)
+    x = 4 * rand(1, NUM_EXAMPLES) - DISTANCE
+    x.sort()
+    y = np.sinc(np.pi * x) + 0.1 * randn(1, NUM_EXAMPLES)
 
-	return x, y
+    return x, y
 
 
 def compute_output_plot_isolines_sine(classifier, kernel, train, regression=False):
-	x=4*rand(1, 500)-2
-	x.sort()
-	test=sg.features(x)
-	kernel.init(train, test)
+    x = 4 * rand(1, 500) - 2
+    x.sort()
+    test = sg.features(x)
+    kernel.init(train, test)
 
-	if regression:
-		y=classifier.apply().get_labels()
-	else:
-		y=classifier.apply().get_values()
+    if regression:
+        y = classifier.apply().get_labels()
+    else:
+        y = classifier.apply().get_values()
 
-	return x, y
+    return x, y
