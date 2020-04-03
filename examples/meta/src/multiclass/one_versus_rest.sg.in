@@ -17,7 +17,7 @@ MulticlassStrategy one_versus_rest=multiclass_strategy("MulticlassOneVsRestStrat
 #![choose_strategy]
 
 #![create_classifier]
-Machine classifier = machine("LibSVM", epsilon=0.00001)
+Machine classifier = machine("LibSVM")
 #![create_classifier]
 
 #![create_machine]
