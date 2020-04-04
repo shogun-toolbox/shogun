@@ -85,7 +85,7 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
     if regression:
         labels = classifier.apply().get('labels')
     else:
-        labels = classifier.apply().get('values')
+        labels = classifier.apply().get('current_values')
     z = labels.reshape((size, size))
 
     return x, y, z
