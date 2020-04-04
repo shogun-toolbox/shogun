@@ -50,12 +50,7 @@ plt.title('Original 3D Helix')
 features = sg.features(X)
 
 # Create Stochastic Proximity Embedding converter instance
-converter = sg.transformer('StochasticProximityEmbedding')
-
-# Set target dimensionality
-converter.put('target_dim', 2)
-# Set strategy
-converter.put('m_strategy', 'SPE_GLOBAL')
+converter = sg.transformer('StochasticProximityEmbedding', target_dim=2, m_strategy='SPE_GLOBAL')
 
 # Compute SPE embedding
 embedding = converter.transform(features)

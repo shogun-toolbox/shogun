@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import latex_plot_inits
 
 parameter_list = [[20, 5, 1, 1000, 1, None, 5], [100, 5, 1, 1000, 1, None, 10]]
 
@@ -24,8 +23,8 @@ def classifier_perceptron_graphical(n=100, distance=5, learn_rate=1, max_iter=10
     feats_train = sg.features(fm_train_real)
     labels = sg.labels(label_train_twoclass)
 
-    perceptron = sg.machine('Perceptron', labels=labels, learn_rate=learn_rate, max_iterations=max_iter)
-    perceptron.put('initialize_hyperplane', False)
+    perceptron = sg.machine('Perceptron', labels=labels, learn_rate=learn_rate, max_iterations=max_iter,
+                            initialize_hyperplane=False)
 
     # Find limits for visualization
     x_min = min(np.min(X[0, :]), np.min(Y[0, :]))

@@ -67,9 +67,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     inf = sg.EPInferenceMethod(kernel, train_features, mean, train_labels, lik)
 
     # create and train GP classifier, which uses Laplace approximation
-    # gp = sg.machine('GaussianProcessClassification')
-    # gp.put('inference_method', inf)
-    # gp.put('labels', train_labels)
+    # gp = sg.machine('GaussianProcessClassification', inference_method=inf, labels=train_labels)
     gp = sg.GaussianProcessClassification(inf)
     gp.train()
 
