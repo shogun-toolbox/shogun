@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import shogun as sg
 import util
 
-plt.title('KernelRidgeRegression on Sine')
+plt.figure('KernelRidgeRegression on Sine')
 
 X, Y = util.get_sinedata()
 width = 1

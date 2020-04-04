@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import shogun as sg
 import util
 
-plt.title('KernelRidgeRegression')
+plt.figure('KernelRidgeRegression')
 
 width = 2
 

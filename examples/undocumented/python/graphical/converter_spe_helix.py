@@ -71,7 +71,7 @@ plt.title('SPE with global strategy')
 
 # Compute a second SPE embedding with local strategy
 converter.put('m_strategy', 'SPE_LOCAL')
-converter.put('m_k', 400)
+converter.put('m_k', 20)
 embedding = converter.transform(features)
 
 X = embedding.get('feature_matrix')
