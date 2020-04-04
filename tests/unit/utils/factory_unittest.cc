@@ -13,11 +13,19 @@ TEST(Factory, kernel)
 	auto obj = kernel("GaussianKernel");
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(obj->as<GaussianKernel>() != nullptr);
+
+	auto obj2 = create<Kernel>("GaussianKernel");
+	EXPECT_TRUE(obj2 != nullptr);
+	EXPECT_TRUE(obj2->as<GaussianKernel>() != nullptr);
 }
 
 TEST(Factory, machine)
 {
 	auto obj = machine("LibSVM");
+	EXPECT_TRUE(obj != nullptr);
+	EXPECT_TRUE(obj->as<LibSVM>() != nullptr);
+
+	auto obj2 = create<Machine>("LibSVM");
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(obj->as<LibSVM>() != nullptr);
 }
@@ -28,6 +36,10 @@ TEST(Factory, features_from_matrix)
 	auto obj = features(mat);
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(obj->as<DenseFeatures<float64_t>>() != nullptr);
+
+	auto obj2 = create<Features>(mat);
+	EXPECT_TRUE(obj2 != nullptr);
+	EXPECT_TRUE(obj2->as<DenseFeatures<float64_t>>() != nullptr);
 }
 
 // FIXME

@@ -103,7 +103,8 @@ namespace shogun
 	template <class T>
 	std::shared_ptr<Features> features(SGMatrix<T> mat)
 	{
-		return std::make_shared<DenseFeatures<T>>(mat);
+		return std::make_shared<DenseFeatures<typename decltype(mat)::Scalar>>(
+		    mat);
 	}
 
 	std::shared_ptr<Features> features(std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
@@ -336,6 +337,64 @@ namespace shogun
 	std::shared_ptr<PipelineBuilder> pipeline()
 	{
 		return std::make_shared<PipelineBuilder>();
+	}
+
+	class StringsFeatures;
+	class FeatureSubset;
+
+	template <
+	    typename TypeName, typename... Args,
+	    std::enable_if_t<
+	        traits::is_any_of_v<
+	            TypeName, Features, StringsFeatures, FeatureSubset,
+	            FeatureSubset, CSVFile, LibSVMFile, PipelineBuilder, Kernel>,
+	        TypeName>* = nullptr>
+	std::shared_ptr<TypeName> create(Args&&... args)
+	{
+		if constexpr (std::is_same_v<TypeName, Features>)
+		{
+			return features(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TypeName, StringsFeatures>)
+		{
+			return string_features(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TypeName, FeatureSubset>)
+		{
+			return features_subset(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TypeName, FeatureSubset>)
+		{
+			return labels(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TypeName, CSVFile>)
+		{
+			return csv_file(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TypeName, LibSVMFile>)
+		{
+			return libsvm_file(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<TypeName, PipelineBuilder>)
+		{
+			return pipeline();
+		}
+		else if constexpr (std::is_same_v<TypeName, Kernel>)
+		{
+			return kernel(std::forward<Args>(args)...);
+		}
+	}
+
+	template <
+	    typename TypeName,
+	    std::enable_if_t<
+	        !traits::is_any_of_v<
+	            TypeName, Features, StringsFeatures, FeatureSubset,
+	            FeatureSubset, CSVFile, LibSVMFile, PipelineBuilder, Kernel>,
+	        TypeName>* = nullptr>
+	std::shared_ptr<TypeName> create(const std::string& name)
+	{
+		return create_object<TypeName>(name.c_str());
 	}
 } // namespace shogun
 #endif // FACTORY_H_
