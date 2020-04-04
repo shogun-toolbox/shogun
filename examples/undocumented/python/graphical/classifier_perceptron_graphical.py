@@ -12,10 +12,6 @@ def classifier_perceptron_graphical(n=100, distance=5, learn_rate=1, max_iter=10
     # 2D data
     _DIM = 2
 
-    # To get the nice message that the perceptron has converged
-    # dummy = sg.BinaryLabels()
-    # dummy.io.set_loglevel(sg.MSG_INFO)
-
     np.random.seed(seed)
 
     # Produce some (probably) linearly separable training data by hand

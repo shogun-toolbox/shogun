@@ -26,8 +26,8 @@ neg = np.array([x_neg, y_neg])
 
 features = sg.features(np.array(np.concatenate([pos, neg], 1)))
 
-lda = sg.MCLDA()
-lda.set_labels(labels)
+lda = sg.machine('MCLDA')
+lda.put('labels', labels)
 lda.train(features)
 
 # compute output plot iso-lines
@@ -45,7 +45,7 @@ x2 = np.linspace(x2_min, x2_max, size)
 x, y = np.meshgrid(x1, x2)
 
 dense = sg.features(np.array((np.ravel(x), np.ravel(y))))
-dense_labels = lda.apply(dense).get_labels()
+dense_labels = lda.apply(dense).get('labels')
 
 z = dense_labels.reshape((size, size))
 

@@ -43,18 +43,14 @@ def get_realfeatures(pos, neg):
     return sg.features(features)
 
 
-def get_labels(raw=False, type='binary'):
+def get_labels(raw=False):
     data = np.concatenate(np.array(
         (-np.ones(NUM_EXAMPLES, dtype=np.double), np.ones(NUM_EXAMPLES, dtype=np.double))
     ))
     if raw:
         return data
     else:
-        if type == 'binary':
-            return sg.BinaryLabels(data)
-        if type == 'regression':
-            return sg.RegressionLabels(data)
-        return None
+        return sg.labels(data)
 
 
 def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=False, pos=None, neg=None,
@@ -87,9 +83,9 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 
     labels = None
     if regression:
-        labels = classifier.apply().get_labels()
+        labels = classifier.apply().get('labels')
     else:
-        labels = classifier.apply().get_values()
+        labels = classifier.apply().get('values')
     z = labels.reshape((size, size))
 
     return x, y, z
@@ -110,8 +106,8 @@ def compute_output_plot_isolines_sine(classifier, kernel, train, regression=Fals
     kernel.init(train, test)
 
     if regression:
-        y = classifier.apply().get_labels()
+        y = classifier.apply().get('labels')
     else:
-        y = classifier.apply().get_values()
+        y = classifier.apply().get('values')
 
     return x, y
