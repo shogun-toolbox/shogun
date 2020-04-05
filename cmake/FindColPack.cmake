@@ -29,7 +29,7 @@ find_library(COLPACK_LIBRARIES NAMES ColPack
                    /opt/local/lib64
                    "c:\\libs\\ColPack\\lib64"
             HINTS $ENV{COLPACK_DIR}/lib
-            PATH_SUFFIXES ColPack)
+            PATH_SUFFIXES ${CMAKE_LIBRARY_ARCHITECTURE} x86_64-linux-gnu ColPack)
 
 get_filename_component(COLPACK_LIBRARY_DIR ${COLPACK_LIBRARIES} PATH CACHE)
 
