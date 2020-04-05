@@ -18,8 +18,8 @@
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/SparseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
+#include <shogun/features/SparseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/io/SGIO.h>
@@ -112,7 +112,8 @@ namespace shogun
 		require(file, "No file provided.");
 		std::shared_ptr<Features> result = nullptr;
 
-		if(std::type_index(typeid(*file)) == std::type_index(typeid(LibSVMFile)))
+		if (std::type_index(typeid(*file)) ==
+		    std::type_index(typeid(LibSVMFile)))
 		{
 			switch (primitive_type)
 			{
@@ -320,12 +321,12 @@ namespace shogun
 		return result;
 	}
 
-	std::shared_ptr<File> csv_file(std::string fname, char rw = 'r')
+	std::shared_ptr<CSVFile> csv_file(std::string fname, char rw = 'r')
 	{
 		return std::make_shared<CSVFile>(fname.c_str(), rw);
 	}
 
-	std::shared_ptr<File> libsvm_file(std::string fname, char rw = 'r')
+	std::shared_ptr<LibSVMFile> libsvm_file(std::string fname, char rw = 'r')
 	{
 		return std::make_shared<LibSVMFile>(fname.c_str(), rw);
 	}
@@ -342,13 +343,7 @@ namespace shogun
 	class StringsFeatures;
 	class FeatureSubset;
 
-	template <
-	    typename TypeName, typename... Args,
-	    std::enable_if_t<
-	        traits::is_any_of_v<
-	            TypeName, Features, StringsFeatures, FeatureSubset,
-	            FeatureSubset, CSVFile, LibSVMFile, PipelineBuilder, Kernel>,
-	        TypeName>* = nullptr>
+	template <typename TypeName, typename... Args>
 	std::shared_ptr<TypeName> create(Args&&... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
@@ -383,18 +378,16 @@ namespace shogun
 		{
 			return kernel(std::forward<Args>(args)...);
 		}
+		else
+		{
+			static_assert(
+			    (sizeof...(Args) == 1) ||
+			        (std::is_constructible_v<Args, std::string> && ...),
+			    "The create function should accept a string");
+			return create_object<TypeName>(
+			    (std::string{std::forward<Args>(args)}.c_str())...);
+		}
 	}
 
-	template <
-	    typename TypeName,
-	    std::enable_if_t<
-	        !traits::is_any_of_v<
-	            TypeName, Features, StringsFeatures, FeatureSubset,
-	            FeatureSubset, CSVFile, LibSVMFile, PipelineBuilder, Kernel>,
-	        TypeName>* = nullptr>
-	std::shared_ptr<TypeName> create(const std::string& name)
-	{
-		return create_object<TypeName>(name.c_str());
-	}
 } // namespace shogun
 #endif // FACTORY_H_

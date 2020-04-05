@@ -72,7 +72,7 @@
             "get_string": "$object$$get($arguments)"
         },
         "StaticCall": "$typeName$$$method($arguments)",
-        "GlobalCall": "$method($arguments)",
+        "GlobalCall": {"Default": "$method($arguments)"},
         "Identifier": "$identifier",
         "Enum":"\"$value\""
     },

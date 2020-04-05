@@ -99,7 +99,7 @@
             "Default": "$object.$method($arguments)"
         },
         "StaticCall": "$typeName.$method($arguments)",
-        "GlobalCall": "shogun.$method($arguments)",
+        "GlobalCall": { "Default": "shogun.$method($arguments)"},
         "Identifier": "$identifier",
         "Enum":"$typeName.$value"
     },

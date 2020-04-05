@@ -120,7 +120,13 @@
             "get_string": "$object->get<std::string>($arguments)"
         },
         "StaticCall": "$typeName::$method($arguments)",
-        "GlobalCall": "$method($arguments)",
+        "GlobalCall": {
+            "Default": "$method($arguments)",
+            "create_features": "create<Features>($arguments)",
+            "create_distance": "create<Distance>($arguments)",
+            "create_machine": "create<Machine>($arguments)",
+            "create_csv": "create<CSVFile>($arguments)"
+        },
         "Identifier": "$identifier",
         "Enum":"$typeName::$value"
     },
