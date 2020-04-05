@@ -47,7 +47,6 @@ RandomForest::RandomForest(int32_t rand_numfeats, int32_t num_bags)
 {
 	init();
 
-
 	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
@@ -58,8 +57,6 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 : BaggingMachine()
 {
 	init();
-
-
 	m_features=std::move(features);
 	set_labels(std::move(labels));
 
@@ -73,7 +70,6 @@ RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<L
 : BaggingMachine()
 {
 	init();
-
 
 	m_features=std::move(features);
 	set_labels(std::move(labels));
@@ -171,8 +167,6 @@ bool RandomForest::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
-
-
 		m_features = data;
 	}
 	

@@ -64,8 +64,6 @@ void C45ClassifierTree::prune_tree(const std::shared_ptr<Features>& validation_d
 	auto current=get_root();
 	prune_tree_from_current_node(validation_data->as<DenseFeatures<float64_t>>(),
 			validation_labels->as<MulticlassLabels>(),current,epsilon);
-
-
 }
 
 SGVector<float64_t> C45ClassifierTree::get_certainty_vector() const
@@ -796,5 +794,8 @@ void C45ClassifierTree::init()
 	SG_ADD(&m_certainty,"m_certainty", "certainty");
 	SG_ADD(&m_weights_set,"m_weights_set", "weights set");
 	SG_ADD(&m_types_set,"m_types_set", "feature types set");
+
+	add_callback_function(
+	    "m_nominal", [&]() { set_feature_types(m_nominal); });
 }
 
