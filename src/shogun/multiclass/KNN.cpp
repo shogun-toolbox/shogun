@@ -64,6 +64,7 @@ void KNN::init()
 	    (machine_int_t*)&m_knn_solver, "knn_solver", "Algorithm to solve knn",
 	    ParameterProperties::NONE,
 	    SG_OPTIONS(KNN_BRUTE, KNN_KDTREE, KNN_COVER_TREE, KNN_LSH));
+	watch_method("nearest_neighbors", &KNN::nearest_neighbors);
 }
 
 KNN::~KNN()

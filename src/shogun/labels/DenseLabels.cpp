@@ -51,6 +51,7 @@ DenseLabels::~DenseLabels()
 void DenseLabels::init()
 {
 	SG_ADD(&m_labels, "labels", "The labels.");
+	watch_method("num_labels", &DenseLabels::get_num_labels);
 }
 
 void DenseLabels::set_to_one()

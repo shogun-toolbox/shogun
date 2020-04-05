@@ -50,6 +50,7 @@ MulticlassLabels::~MulticlassLabels()
 void MulticlassLabels::init()
 {
 	m_multiclass_confidences=SGMatrix<float64_t>();
+	watch_method("num_classes", &MulticlassLabels::get_num_classes);
 }
 
 void MulticlassLabels::set_multiclass_confidences(int32_t i,

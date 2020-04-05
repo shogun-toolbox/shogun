@@ -188,7 +188,7 @@ SGVector<float64_t> ProbingSampler::sample(index_t idx) const
 			"number of samples to draw ({})", idx, m_num_samples);
 
 	SGVector<float64_t> s(m_dimension);
-	s.set_const(0.0);
+	s.zero();
 
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<m_dimension; ++i)

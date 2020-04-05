@@ -13,7 +13,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/distance/CustomMahalanobisDistance.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/lib/SGMatrix.h>
 
 namespace shogun
@@ -41,7 +41,7 @@ class LMNN : public SGObject
 		 * @param labels labels of the features
 		 * @param k number of target neighbours per example
 		 */
-		LMNN(std::shared_ptr<Features> features, const std::shared_ptr<MulticlassLabels>& labels, int32_t k);
+		LMNN(std::shared_ptr<Features> features, const std::shared_ptr<Labels>& labels, int32_t k);
 
 		/** destructor */
 		virtual ~LMNN();
