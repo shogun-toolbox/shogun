@@ -64,9 +64,6 @@ RBM::RBM(int32_t num_hidden, int32_t num_visible,
 
 RBM::~RBM()
 {
-
-
-
 }
 
 void RBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
@@ -105,14 +102,18 @@ void RBM::set_batch_size(int32_t batch_size)
 	reset_chain();
 }
 
-void RBM::train(std::shared_ptr<DenseFeatures<float64_t>> features)
+void RBM::train(std::shared_ptr<Features> features)
 {
 	require(features != NULL, "Invalid (NULL) feature pointer");
-	require(features->get_num_features()==m_num_visible,
-		"Number of features ({}) must match the RBM's number of visible units "
-		"({})", features->get_num_features(), m_num_visible);
 
-	SGMatrix<float64_t> inputs = features->get_feature_matrix();
+	auto dense_features = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(features);
+
+	require(dense_features, "Input features must be of type DenseFeatures<float64_t>.");
+	require(dense_features->get_num_features()==m_num_visible,
+		"Number of features ({}) must match the RBM's number of visible units "
+		"({})", dense_features->get_num_features(), m_num_visible);
+
+	SGMatrix<float64_t> inputs = dense_features->get_feature_matrix();
 
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;

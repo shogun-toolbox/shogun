@@ -239,7 +239,6 @@ bool NeuralNetwork::train_machine(std::shared_ptr<Features> data)
 		initialize_neural_network(m_sigma);
 	}
 
-
 	require(m_max_num_epochs>=0,
 		"Maximum number of epochs ({}) must be >= 0", m_max_num_epochs);
 
@@ -777,7 +776,7 @@ void NeuralNetwork::init()
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
-	m_auto_quick_initialize = false;
+	m_auto_quick_initialize = true;
 	m_sigma = 0.01f;
 	m_layers.clear();
 

@@ -147,7 +147,7 @@ void DeepBeliefNetwork::set_batch_size(int32_t batch_size)
 	reset_chain();
 }
 
-void DeepBeliefNetwork::pre_train(std::shared_ptr<DenseFeatures< float64_t >> features)
+void DeepBeliefNetwork::pre_train(std::shared_ptr<Features> features)
 {
 	for (int32_t k=0; k<m_num_layers-1; k++)
 	{
@@ -158,8 +158,10 @@ void DeepBeliefNetwork::pre_train(std::shared_ptr<DenseFeatures< float64_t >> fe
 }
 
 void DeepBeliefNetwork::pre_train(int32_t index,
-	std::shared_ptr<DenseFeatures< float64_t >> features)
+	std::shared_ptr<Features> features)
 {
+	auto dense_features = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(features);
+	require(dense_features, "Input features must be of type DenseFeatures<float64_t>.");
 	auto rbm = std::make_shared<RBM>(m_layer_sizes[index + 1]);
 	if (index == 0)
 		rbm->add_visible_group(m_layer_sizes[index], m_visible_units_type);
@@ -208,14 +210,18 @@ void DeepBeliefNetwork::pre_train(int32_t index,
 		dbn_w[i] = rbm_w[i];
 }
 
-void DeepBeliefNetwork::train(std::shared_ptr<DenseFeatures<float64_t>> features)
+void DeepBeliefNetwork::train(std::shared_ptr<Features> features)
 {
 	require(features != NULL, "Invalid (NULL) feature pointer");
-	require(features->get_num_features()==m_layer_sizes[0],
-		"Number of features ({}) must match the DBN's number of visible units "
-		"({})", features->get_num_features(), m_layer_sizes[0]);
+	
+	auto dense_features = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(features);
+	require(dense_features, "Input features must be of type DenseFeatures<float64_t>.");
 
-	SGMatrix<float64_t> inputs = features->get_feature_matrix();
+	require(dense_features->get_num_features()==m_layer_sizes[0],
+		"Number of features ({}) must match the DBN's number of visible units "
+		"({})", dense_features->get_num_features(), m_layer_sizes[0]);
+
+	SGMatrix<float64_t> inputs = dense_features->get_feature_matrix();
 
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
@@ -315,15 +321,18 @@ void DeepBeliefNetwork::train(std::shared_ptr<DenseFeatures<float64_t>> features
 }
 
 std::shared_ptr<DenseFeatures< float64_t >> DeepBeliefNetwork::transform(
-	std::shared_ptr<DenseFeatures< float64_t >> features, int32_t i)
+	std::shared_ptr<Features> features, int32_t i)
 {
+	auto dense_features = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(features);
+	require(dense_features, "Input features must be of type DenseFeatures<float64_t>.");
+
 	if (i==-1)
 		i = m_num_layers-1;
 
-	SGMatrix<float64_t> transformed_feature_matrix = features->get_feature_matrix();
+	SGMatrix<float64_t> transformed_feature_matrix = dense_features->get_feature_matrix();
 	for (int32_t h=1; h<=i; h++)
 	{
-		SGMatrix<float64_t> m(m_layer_sizes[h], features->get_num_vectors());
+		SGMatrix<float64_t> m(m_layer_sizes[h], dense_features->get_num_vectors());
 		up_step(h, m_params, transformed_feature_matrix, m, false);
 		transformed_feature_matrix = m;
 	}
