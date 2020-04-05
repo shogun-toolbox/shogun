@@ -99,7 +99,7 @@ class KNN : public DistanceMachine
 		 * among the nearest neighbors, the closest are in the first row, and the furthest
 		 * in the last one
 		 */
-		SGMatrix<index_t> nearest_neighbors(KNN_SOLVER knn_solver=KNN_BRUTE);
+		SGMatrix<index_t> nearest_neighbors();
 
 		/** classify objects
 		 *

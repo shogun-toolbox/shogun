@@ -105,14 +105,10 @@ bool KNN::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-SGMatrix<index_t> KNN::nearest_neighbors(KNN_SOLVER knn_solver/*=KNN_BRUTE*/)
+SGMatrix<index_t> KNN::nearest_neighbors()
 {
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
-
-	require(
-	    n >= m_k,
-	    "K ({}) must not be larger than the number of examples ({}).", m_k, n);
 
 	//distances to train data
 	SGVector<float64_t> dists(m_train_labels.vlen);
@@ -124,7 +120,7 @@ SGMatrix<index_t> KNN::nearest_neighbors(KNN_SOLVER knn_solver/*=KNN_BRUTE*/)
 	distance->precompute_lhs();
 	distance->precompute_rhs();
 
-	switch (knn_solver)
+	switch (m_knn_solver)
 	{
 	case KNN_BRUTE:
 	{
@@ -136,26 +132,20 @@ SGMatrix<index_t> KNN::nearest_neighbors(KNN_SOLVER knn_solver/*=KNN_BRUTE*/)
 			distances_lhs(dists,0,m_train_labels.vlen-1,i);
 
 			//fill in an array with 0..num train examples-1
-			for (int32_t j=0; j<m_train_labels.vlen; j++)
-				train_idxs[j]=j;
+			train_idxs.range_fill(0);
 
 			//sort the distance vector between test example i and all train examples
 			Math::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
 
-#ifdef DEBUG_KNN
-			io::print("\nQuick sort query {}\n", i);
-			for (int32_t j=0; j<m_k; j++)
-				io::print("{} ", train_idxs[j]);
-			io::print("\n");
-#endif
+			SG_DEBUG("\nQuick sort query {}", i);
+			SG_DEBUG("{}", train_idxs.to_string());
+			SG_DEBUG("");
 
 			//fill in the output the indices of the nearest neighbors
-			for (int32_t j=0; j<m_k; j++)
-				NN(j,i) = train_idxs[j];
+			sg_memcpy(&NN.matrix[m_k * i], train_idxs.vector, sizeof(index_t) * m_k);
 		}
 
 		distance->reset_precompute();
-
 		break;
 	}
 	case KNN_KDTREE:

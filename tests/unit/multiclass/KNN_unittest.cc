@@ -226,3 +226,89 @@ TEST(KNN, classify_multiple_kdtree)
 
 
 }
+
+
+TEST(KNN, nearest_neighbours_brute)
+{
+	int32_t feats = 2;
+
+	SGVector< float64_t > lab(5);
+	lab[0] = 0.0; lab[1] = 0.0; lab[2] = 1.0; lab[3] = 1.0; lab[4] = 0.0;
+
+	SGMatrix< float64_t > feat(feats, 5);
+	feat(0,0) = 2.0; feat(0,1) = 3.0; feat(0,2) = 6.0; feat(0,3) = 7.0; feat(0,4) = 3.5;
+	feat(1,0) = 1.0; feat(1,1) = 1.0; feat(1,2) = 1.0; feat(1,3) = 1.0; feat(1,4) = 2.0;
+	
+	SGVector<index_t> train (4);
+	SGVector<index_t> test (1);
+	train[0] = 0; train[1] = 1; train[2] = 2; train[3] = 3;
+	test[0] = 4;
+
+	auto labels = std::make_shared<MulticlassLabels>(lab);
+	auto features = std::make_shared<DenseFeatures< float64_t >>(feat);
+	auto features_test = features->clone()->as<DotFeatures>();
+	auto labels_test = labels->clone()->as<MulticlassLabels>();
+
+	int32_t k=3;
+	auto distance = std::make_shared<EuclideanDistance>();
+	auto knn=std::make_shared<KNN> (k, distance, labels, KNN_BRUTE);
+
+	features->add_subset(train);
+	labels->add_subset(train);
+	knn->train(features);
+
+	features_test->add_subset(test);
+	labels_test->add_subset(test);
+
+	auto dist = std::make_shared<EuclideanDistance>(features, features_test);
+	knn->set_distance(dist);
+
+	SGMatrix<index_t> NN = knn->nearest_neighbors();
+	
+	EXPECT_EQ(feat(0, NN(0,0)), 3.0); EXPECT_EQ(feat(1, NN(0,0)), 1.0);
+	EXPECT_EQ(feat(0, NN(1,0)), 2.0); EXPECT_EQ(feat(1, NN(1,0)), 1.0);
+	EXPECT_EQ(feat(0, NN(2,0)), 6.0); EXPECT_EQ(feat(1, NN(2,0)), 1.0);
+}
+
+
+TEST(KNN, nearest_neighbours_kdtree)
+{
+	int32_t feats = 2;
+
+	SGVector< float64_t > lab(5);
+	lab[0] = 0.0; lab[1] = 0.0; lab[2] = 1.0; lab[3] = 1.0; lab[4] = 0.0;
+
+	SGMatrix< float64_t > feat(feats, 5);
+	feat(0,0) = 2.0; feat(0,1) = 3.0; feat(0,2) = 6.0; feat(0,3) = 7.0; feat(0,4) = 3.5;
+	feat(1,0) = 1.0; feat(1,1) = 1.0; feat(1,2) = 1.0; feat(1,3) = 1.0; feat(1,4) = 2.0;
+	
+	SGVector<index_t> train (4);
+	SGVector<index_t> test (1);
+	train[0] = 0; train[1] = 1; train[2] = 2; train[3] = 3;
+	test[0] = 4;
+
+	auto labels = std::make_shared<MulticlassLabels>(lab);
+	auto features = std::make_shared<DenseFeatures< float64_t >>(feat);
+	auto features_test = features->clone()->as<DotFeatures>();
+	auto labels_test = labels->clone()->as<MulticlassLabels>();
+
+	int32_t k=3;
+	auto distance = std::make_shared<EuclideanDistance>();
+	auto knn=std::make_shared<KNN> (k, distance, labels, KNN_KDTREE);
+
+	features->add_subset(train);
+	labels->add_subset(train);
+	knn->train(features);
+
+	features_test->add_subset(test);
+	labels_test->add_subset(test);
+
+	auto dist = std::make_shared<EuclideanDistance>(features, features_test);
+	knn->set_distance(dist);
+
+	SGMatrix<index_t> NN = knn->nearest_neighbors();
+	
+	EXPECT_EQ(feat(0, NN(0,0)), 3.0); EXPECT_EQ(feat(1, NN(0,0)), 1.0);
+	EXPECT_EQ(feat(0, NN(1,0)), 2.0); EXPECT_EQ(feat(1, NN(1,0)), 1.0);
+	EXPECT_EQ(feat(0, NN(2,0)), 6.0); EXPECT_EQ(feat(1, NN(2,0)), 1.0);
+}
