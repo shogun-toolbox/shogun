@@ -7,7 +7,7 @@
 #  COLPACK_LIBRARIES    - Which libraries are available
 
 # Look for the header files
-FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPack/ColPackHeaders.h
+FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPackHeaders.h
           PATHS /usr/include
                /usr/local/include
                /usr/local/include
@@ -46,6 +46,3 @@ mark_as_advanced (
   COLPACK_LIBRARY_DIR
   COLPACK_INCLUDE_DIR
 )
-
-
-

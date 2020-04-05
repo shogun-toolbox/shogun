@@ -7,7 +7,7 @@
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_COLPACK
-#include <ColPack/ColPackHeaders.h>
+#include <ColPackHeaders.h>
 
 #include <vector>
 #include <string>
