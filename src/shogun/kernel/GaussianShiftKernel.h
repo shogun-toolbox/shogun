@@ -71,24 +71,24 @@ class GaussianShiftKernel: public GaussianKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 		{
 			return GaussianKernel::init(l,r);
 		}
 
-		virtual ~GaussianShiftKernel();
+		~GaussianShiftKernel() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type GAUSSIANSHIFT
 		 */
-		virtual EKernelType get_kernel_type() { return K_GAUSSIANSHIFT; }
+		EKernelType get_kernel_type() override { return K_GAUSSIANSHIFT; }
 
 		/** return the kernel's name
 		 *
 		 * @return name GaussianShift
 		 */
-		virtual const char* get_name() const { return "GaussianShiftKernel"; }
+		const char* get_name() const override { return "GaussianShiftKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -99,7 +99,7 @@ class GaussianShiftKernel: public GaussianKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

@@ -220,11 +220,11 @@ class LibSVMKernel;
 class LibSVMKernel: public QMatrix {
 public:
 	LibSVMKernel(int32_t l, svm_node * const * x, const svm_parameter& param);
-	virtual ~LibSVMKernel();
+	~LibSVMKernel() override;
 
 	virtual Qfloat *get_Q(int32_t column, int32_t len) const = 0;
-	virtual Qfloat *get_QD() const = 0;
-	virtual void swap_index(int32_t i, int32_t j) const	// no so const...
+	Qfloat *get_QD() const override = 0;
+	void swap_index(int32_t i, int32_t j) const override	// no so const...
 	{
 		Math::swap(x[i],x[j]);
 		if(x_square) Math::swap(x_square[i],x_square[j]);
@@ -1031,12 +1031,12 @@ public:
 	}
 private:
 	SolutionInfo *si;
-	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
-	float64_t calculate_rho();
+	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap) override;
+	float64_t calculate_rho() override;
 	bool be_shrunk(
 		int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
 		float64_t Gmax4);
-	void do_shrinking();
+	void do_shrinking() override;
 };
 
 // return 1 if already optimal, return 0 otherwise
@@ -1295,7 +1295,7 @@ public:
 		}
 	}
 
-	Qfloat *get_Q(int32_t i, int32_t len) const
+	Qfloat *get_Q(int32_t i, int32_t len) const override
 	{
 		Qfloat *data;
 		int32_t start;
@@ -1322,12 +1322,12 @@ public:
 			return -Q;
 	}
 
-	Qfloat *get_QD() const
+	Qfloat *get_QD() const override
 	{
 		return QD;
 	}
 
-	void swap_index(int32_t i, int32_t j) const
+	void swap_index(int32_t i, int32_t j) const override
 	{
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
@@ -1335,7 +1335,7 @@ public:
 		Math::swap(QD[i],QD[j]);
 	}
 
-	~SVC_QMC()
+	~SVC_QMC() override
 	{
 		SG_FREE(y);
 		delete cache;
@@ -1375,8 +1375,8 @@ public:
 
 private:
 	SolutionInfo *si;
-	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
-	float64_t calculate_rho();
+	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap) override;
+	float64_t calculate_rho() override;
 	bool be_shrunk(
 		int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
 		float64_t Gmax4);
@@ -1696,7 +1696,7 @@ public:
 		Math::swap(QD[i],QD[j]);
 	}
 
-	~SVC_Q()
+	~SVC_Q() override
 	{
 		SG_FREE(y);
 		delete cache;
@@ -1721,7 +1721,7 @@ public:
 			QD[i]= (Qfloat)kernel_function(i,i);
 	}
 
-	Qfloat *get_Q(int32_t i, int32_t len) const
+	Qfloat *get_Q(int32_t i, int32_t len) const override
 	{
 		Qfloat *data;
 		int32_t start;
@@ -1743,7 +1743,7 @@ public:
 		Math::swap(QD[i],QD[j]);
 	}
 
-	~ONE_CLASS_Q()
+	~ONE_CLASS_Q() override
 	{
 		delete cache;
 		SG_FREE(QD);
@@ -1806,7 +1806,7 @@ public:
 		return QD;
 	}
 
-	~SVR_Q()
+	~SVR_Q() override
 	{
 		delete cache;
 		SG_FREE(sign);

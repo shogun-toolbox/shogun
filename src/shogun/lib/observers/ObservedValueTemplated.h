@@ -58,7 +58,7 @@ namespace shogun
 		/**
 		 * Destructor
 		 */
-		~ObservedValueTemplated(){};
+		~ObservedValueTemplated() override{};
 
 	private:
 		/**

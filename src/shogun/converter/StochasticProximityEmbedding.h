@@ -65,14 +65,14 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		StochasticProximityEmbedding();
 
 		/** destructor */
-		virtual ~StochasticProximityEmbedding();
+		~StochasticProximityEmbedding() override;
 
 		/** apply to features
 		 *
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		/** setter for number of neighbors k in local strategy
 		 *
@@ -135,7 +135,7 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		int32_t get_max_iteration() const;
 
 		/** get name */
-		virtual const char* get_name() const;
+		const char* get_name() const override;
 
 	private:
 

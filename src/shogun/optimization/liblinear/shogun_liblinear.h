@@ -115,34 +115,34 @@ public:
 	 * @param Cn Cn
 	 */
 	l2loss_svm_fun(const liblinear_problem *prob, float64_t Cp, float64_t Cn);
-	~l2loss_svm_fun();
+	~l2loss_svm_fun() override;
 
 	/** fun
 	 *
 	 * @param w w
 	 * @return something floaty
 	 */
-	float64_t fun(float64_t *w);
+	float64_t fun(float64_t *w) override;
 
 	/** grad
 	 *
 	 * @param w w
 	 * @param g g
 	 */
-	void grad(float64_t *w, float64_t *g);
+	void grad(float64_t *w, float64_t *g) override;
 
 	/** Hv
 	 *
 	 * @param s s
 	 * @param Hs Hs
 	 */
-	void Hv(float64_t *s, float64_t *Hs);
+	void Hv(float64_t *s, float64_t *Hs) override;
 
 	/** get number of variables
 	 *
 	 * @return number of variables
 	 */
-	int32_t get_nr_variable();
+	int32_t get_nr_variable() override;
 
 private:
 	void Xv(float64_t *v, float64_t *Xv);
@@ -168,30 +168,30 @@ public:
 	 * @param Cn Cn
 	 */
 	l2r_lr_fun(const liblinear_problem *prob, float64_t* C);
-	~l2r_lr_fun();
+	~l2r_lr_fun() override;
 
 	/** fun
 	 *
 	 * @param w w
 	 * @return something floaty
 	 */
-	float64_t fun(float64_t *w);
+	float64_t fun(float64_t *w) override;
 
 	/** grad
 	 *
 	 * @param w w
 	 * @param g g
 	 */
-	void grad(float64_t *w, float64_t *g);
+	void grad(float64_t *w, float64_t *g) override;
 
 	/** Hv
 	 *
 	 * @param s s
 	 * @param Hs Hs
 	 */
-	void Hv(float64_t *s, float64_t *Hs);
+	void Hv(float64_t *s, float64_t *Hs) override;
 
-	int32_t get_nr_variable();
+	int32_t get_nr_variable() override;
 
 private:
 	void Xv(float64_t *v, float64_t *Xv);
@@ -207,13 +207,13 @@ class l2r_l2_svc_fun : public function
 {
 public:
 	l2r_l2_svc_fun(const liblinear_problem *prob, float64_t* Cs);
-	~l2r_l2_svc_fun();
+	~l2r_l2_svc_fun() override;
 
-	double fun(double *w);
-	void grad(double *w, double *g);
-	void Hv(double *s, double *Hs);
+	double fun(double *w) override;
+	void grad(double *w, double *g) override;
+	void Hv(double *s, double *Hs) override;
 
-	int get_nr_variable();
+	int get_nr_variable() override;
 
 protected:
 	void Xv(double *v, double *Xv);
@@ -233,8 +233,8 @@ class l2r_l2_svr_fun: public l2r_l2_svc_fun
 public:
 	l2r_l2_svr_fun(const liblinear_problem *prob, double *Cs, double p);
 
-	double fun(double *w);
-	void grad(double *w, double *g);
+	double fun(double *w) override;
+	void grad(double *w, double *g) override;
 
 private:
 	double m_p;

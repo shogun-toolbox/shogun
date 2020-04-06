@@ -65,7 +65,7 @@ class CustomKernel: public Kernel
 		/**
 		 *
 		 */
-		virtual ~CustomKernel();
+		~CustomKernel() override;
 
 		/** initialize kernel with dummy features
 		 *
@@ -89,10 +89,10 @@ class CustomKernel: public Kernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** only cleanup stuff specific to Custom kernel */
 		void cleanup_custom();
@@ -101,13 +101,13 @@ class CustomKernel: public Kernel
 		 *
 		 * @return kernel type CUSTOM
 		 */
-		virtual EKernelType get_kernel_type() { return K_CUSTOM; }
+		EKernelType get_kernel_type() override { return K_CUSTOM; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		virtual EFeatureType get_feature_type() { return F_ANY; }
+		EFeatureType get_feature_type() override { return F_ANY; }
 
 		/** return feature class the kernel can deal with
 		 *
@@ -332,8 +332,8 @@ class CustomKernel: public Kernel
 		 * \f]
 		 * where \f$i,j\in[0,\text{block-size}-1]\f$
 		 */
-		virtual float64_t sum_symmetric_block(index_t block_begin,
-				index_t block_size, bool no_diag=true);
+		float64_t sum_symmetric_block(index_t block_begin,
+				index_t block_size, bool no_diag=true) override;
 
 		/**
 		 * Overrides the sum_block method of Kernel to compute the
@@ -356,9 +356,9 @@ class CustomKernel: public Kernel
 		 * where \f$i\in[0,\text{block-size-row}-1]\f$ and
 		 * \f$j\in[0,\text{block-size-col}-1]\f$
 		 */
-		virtual float64_t sum_block(index_t block_begin_row,
+		float64_t sum_block(index_t block_begin_row,
 				index_t block_begin_col, index_t block_size_row,
-				index_t block_size_col, bool no_diag=false);
+				index_t block_size_col, bool no_diag=false) override;
 
 		/**
 		 * Overrides the row_wise_sum_symmetric_block method of Kernel to compute the
@@ -400,8 +400,8 @@ class CustomKernel: public Kernel
 		 * \f]
 		 * where \f$i,j\in[0,\text{block-size}-1]\f$
 		 */
-		virtual SGMatrix<float64_t> row_wise_sum_squared_sum_symmetric_block(
-				index_t block_begin, index_t block_size, bool no_diag=true);
+		SGMatrix<float64_t> row_wise_sum_squared_sum_symmetric_block(
+				index_t block_begin, index_t block_size, bool no_diag=true) override;
 
 		/**
 		 * Overrides the row_wise_sum_block method of Kernel to compute the sum
@@ -431,10 +431,10 @@ class CustomKernel: public Kernel
 		 * where \f$i\in[0,\text{block-size-row}-1]\f$ and
 		 * \f$j\in[0,\text{block-size-col}-1]\f$
 		 */
-		virtual SGVector<float64_t> row_col_wise_sum_block(
+		SGVector<float64_t> row_col_wise_sum_block(
 				index_t block_begin_row, index_t block_begin_col,
 				index_t block_size_row, index_t block_size_col,
-				bool no_diag=false);
+				bool no_diag=false) override;
 
 		/** Adds a row subset of indices on top of the current subsets (possibly
 		 * subset of subset). Every call causes a new active index vector

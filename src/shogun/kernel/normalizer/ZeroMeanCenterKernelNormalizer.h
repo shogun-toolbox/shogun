@@ -55,7 +55,7 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~ZeroMeanCenterKernelNormalizer()
+		~ZeroMeanCenterKernelNormalizer() override
 		{
 			SG_FREE(ktrain_row_means);
 			SG_FREE(ktest_row_means);
@@ -63,7 +63,7 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer
 		 * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
 			int32_t num_lhs=k->get_num_vec_lhs();
@@ -102,8 +102,8 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-				float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+				float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			value += (-ktrain_row_means[idx_lhs] - ktest_row_means[idx_rhs] + ktrain_mean);
 			return value;
@@ -148,7 +148,7 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "ZeroMeanCenterKernelNormalizer"; }
+		const char* get_name() const override { return "ZeroMeanCenterKernelNormalizer"; }
 
 	protected:
 		/** train row means */

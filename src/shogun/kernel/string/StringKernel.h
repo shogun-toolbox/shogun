@@ -48,7 +48,7 @@ template <class ST> class StringKernel : public Kernel
 		 *  @param r features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 		{
 			Kernel::init(l,r);
 
@@ -64,20 +64,20 @@ template <class ST> class StringKernel : public Kernel
 		 *
 		 * @return feature class STRING
 		 */
-		virtual EFeatureClass get_feature_class() { return C_STRING; }
+		EFeatureClass get_feature_class() override { return C_STRING; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const {
+		const char* get_name() const override {
 			return "StringKernel"; }
 
 		/** return what type of kernel we are, e.g.

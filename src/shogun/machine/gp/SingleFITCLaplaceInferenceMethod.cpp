@@ -100,7 +100,7 @@ class SingleFITCLaplaceInferenceMethodCostFunction: public FirstOrderCostFunctio
 {
 public:
 	SingleFITCLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleFITCLaplaceInferenceMethodCostFunction() { clean(); }
+	~SingleFITCLaplaceInferenceMethodCostFunction() override { clean(); }
 	void set_target(const std::shared_ptr<SingleFITCLaplaceInferenceMethod >&obj)
 	{
 		require(obj, "Obj must set");
@@ -117,7 +117,7 @@ public:
 
 	}
 
-	virtual float64_t get_cost()
+	float64_t get_cost() override
 	{
 		require(m_obj,"Object not set");
 		return m_obj->get_psi_wrt_alpha();
@@ -136,13 +136,13 @@ public:
 		m_derivatives = SGVector<float64_t>((m_obj->m_al).vlen);
 		return m_obj->m_al;
 	}
-	virtual SGVector<float64_t> get_gradient()
+	SGVector<float64_t> get_gradient() override
 	{
 		require(m_obj,"Object not set");
 		m_obj->get_gradient_wrt_alpha(m_derivatives);
 		return m_derivatives;
 	}
-	virtual const char* get_name() const { return "SingleFITCLaplaceInferenceMethodCostFunction"; }
+	const char* get_name() const override { return "SingleFITCLaplaceInferenceMethodCostFunction"; }
 private:
 	void init()
 	{

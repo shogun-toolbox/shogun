@@ -69,8 +69,8 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs) const
+	float64_t normalize(float64_t value, int32_t idx_lhs,
+			int32_t idx_rhs) const override
 	{
 
 		//lookup tasks
@@ -111,7 +111,7 @@ public:
 
 
 	/** default destructor */
-	virtual ~MultitaskKernelPlifNormalizer()
+	~MultitaskKernelPlifNormalizer() override
 	{
 	}
 
@@ -276,7 +276,7 @@ public:
 	/**
 	 *  @param idx index of MKL weight to get
 	 */
-	float64_t get_beta(int32_t idx) const
+	float64_t get_beta(int32_t idx) const override
 	{
 
 		return betas[idx];
@@ -287,7 +287,7 @@ public:
 	 *  @param idx index of MKL weight to set
 	 *  @param weight MKL weight to set
 	 */
-	void set_beta(int32_t idx, float64_t weight)
+	void set_beta(int32_t idx, float64_t weight) override
 	{
 
 		betas[idx] = weight;
@@ -324,7 +324,7 @@ public:
 protected:
 	/** register the parameters
 	 */
-	virtual void register_params()
+	void register_params() override
 	{
 		/*SG_ADD(&num_tasks, "num_tasks", "the number of tasks")*/;
 		/*SG_ADD(&num_betas, "num_betas", "the number of weights")*/;

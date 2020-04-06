@@ -38,21 +38,21 @@ template <class ST> class StringPreprocessor : public Preprocessor
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		/// apply preproc on single feature vector
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;
 
 		/// return that we are string features (just fixed size matrices)
-		virtual EFeatureClass get_feature_class() { return C_STRING; }
+		EFeatureClass get_feature_class() override { return C_STRING; }
 		/// return feature type
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/// return the name of the preprocessor
-		virtual const char* get_name() const { return "UNKNOWN"; }
+		const char* get_name() const override { return "UNKNOWN"; }
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
+		EPreprocessorType get_type() const override { return P_UNKNOWN; }
 
 	protected:
 		/** apply the preprocessor to string list in place.

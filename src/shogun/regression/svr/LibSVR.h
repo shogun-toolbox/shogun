@@ -84,16 +84,16 @@ class LibSVR : public SVM
 		LibSVR(float64_t C, float64_t svr_param, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab,
 				LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR);
 
-		virtual ~LibSVR();
+		~LibSVR() override;
 
 		/** get classifier type
 		 *
 		 * @return classifie type LIBSVR
 		 */
-		virtual EMachineType get_classifier_type();
+		EMachineType get_classifier_type() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LibSVR"; }
+		const char* get_name() const override { return "LibSVR"; }
 
 	private:
 		void register_params();
@@ -107,7 +107,7 @@ class LibSVR : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 	protected:
 		/** solver type */
 		LIBSVR_SOLVER_TYPE solver_type;

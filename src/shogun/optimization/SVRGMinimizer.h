@@ -56,19 +56,19 @@ public:
 	SVRGMinimizer(const std::shared_ptr<FirstOrderSAGCostFunction >&fun);
 
 	/** Destructor */
-	virtual ~SVRGMinimizer();
+	~SVRGMinimizer() override;
 
 	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
 	/** returns the name of the class
 	 *
 	 * @return name SVRGMinimizer
 	 */
-	virtual const char* get_name() const { return "SVRGMinimizer"; }
+	const char* get_name() const override { return "SVRGMinimizer"; }
 
 
 	/** Set the number to go through data using SGDMinimizer to initialize variables before SVRG minimization
@@ -114,7 +114,7 @@ public:
 
 protected:
 	/**  init the minimization process */
-	virtual void init_minimization();
+	void init_minimization() override;
 
 	/** the number to go through data  using SGD before SVRG update */
 	int32_t m_num_sgd_passes;

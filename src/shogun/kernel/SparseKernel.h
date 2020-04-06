@@ -44,7 +44,7 @@ template <class ST> class SparseKernel : public Kernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 		{
 			Kernel::init(l,r);
 
@@ -68,20 +68,20 @@ template <class ST> class SparseKernel : public Kernel
 		 *
 		 * @return feature class SPARSE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+		EFeatureClass get_feature_class() override { return C_SPARSE; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const {
+		const char* get_name() const override {
 			return "SparseKernel"; }
 
 		/** return what type of kernel we are, e.g.

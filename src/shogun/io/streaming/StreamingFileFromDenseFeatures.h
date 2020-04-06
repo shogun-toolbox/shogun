@@ -44,7 +44,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingFileFromDenseFeatures();
+	~StreamingFileFromDenseFeatures() override;
 
 	/**
 	 * This function will be called for reading vectors from the

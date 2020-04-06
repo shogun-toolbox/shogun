@@ -62,13 +62,13 @@ class NumericalVGLikelihood : public VariationalGaussianLikelihood
 public:
 	NumericalVGLikelihood();
 
-	virtual ~NumericalVGLikelihood();
+	~NumericalVGLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name NumericalVGLikelihood
 	 */
-	virtual const char* get_name() const { return "NumericalVGLikelihood"; }
+	const char* get_name() const override { return "NumericalVGLikelihood"; }
 
 	/** set the variational Gaussian distribution given data and parameters
 	 *
@@ -78,8 +78,8 @@ public:
 	 * @return true if variational parameters are valid
 	 *
 	 */
-	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
+	bool set_variational_distribution(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) override;
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using numerical integration
@@ -91,7 +91,7 @@ public:
 	 *
 	 * @return expection
 	 */
-	virtual SGVector<float64_t> get_variational_expection();
+	SGVector<float64_t> get_variational_expection() override;
 
 #ifndef SWIG
 	/** get derivative of the variational expection of log LogitLikelihood
@@ -105,7 +105,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
+	SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const override;
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
 	 * hyperparameter
@@ -115,7 +115,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+	SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const override;
 #endif
 
 	/** set the number of Gaussian Hermite point used to compute variational expection

@@ -72,7 +72,7 @@ class GMNPLib: public SGObject
 			float64_t* vector_y, const std::shared_ptr<Kernel>& kernel, int32_t num_data,
 			int32_t num_virtual_data, int32_t num_classes, float64_t reg_const);
 
-		virtual ~GMNPLib();
+		~GMNPLib() override;
 
 		/** --------------------------------------------------------------
 		  GMNP solver based on improved MDM algorithm 1.
@@ -127,7 +127,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		float64_t kernel_fce( int32_t a, int32_t b );
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GMNPLib"; }
+		const char* get_name() const override { return "GMNPLib"; }
 
 	protected:
 		/** diag H */

@@ -74,7 +74,7 @@ namespace shogun
 		/**
 		 * Virtual destructor
 		 */
-		virtual ~ParameterObserver();
+		~ParameterObserver() override;
 
 		/**
 		 * Filter function, check if the parameter name supplied is what
@@ -132,7 +132,7 @@ namespace shogun
 		 * Get the name of this class
 		 * @return name as a string
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "ParameterObserver";
 		}

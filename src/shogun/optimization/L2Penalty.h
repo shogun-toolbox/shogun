@@ -50,13 +50,13 @@ public:
 	L2Penalty():Penalty() {}
 
 	/* Destructor */
-	virtual ~L2Penalty() {}
+	~L2Penalty() override {}
 
 	/** returns the name of the class
 	 *
 	 * @return name L2Penalty
 	 */
-	virtual const char* get_name() const { return "L2Penalty"; }
+	const char* get_name() const override { return "L2Penalty"; }
 
 	/** Given the value of a target variable,
 	 * this method returns the penalty of the variable 
@@ -64,7 +64,7 @@ public:
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
-	virtual float64_t get_penalty(float64_t variable) {return 0.5*variable*variable;}
+	float64_t get_penalty(float64_t variable) override {return 0.5*variable*variable;}
 
 	/** Return the gradient of the penalty wrt a target variable
 	 * Note that the penalized gradient=unpenalized gradient+penalty_gradient
@@ -78,8 +78,8 @@ public:
 	 * @param gradient_of_variable unregularized/unpenalized gradient of the variable
 	 * @return the gradient of the penalty wrt the variable
 	 */
-	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable) {return variable;}
+	float64_t get_penalty_gradient(float64_t variable,
+		float64_t gradient_of_variable) override {return variable;}
 
 };
 

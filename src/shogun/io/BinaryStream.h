@@ -68,7 +68,7 @@ public:
 
 
 	/** destructor */
-	virtual ~BinaryStream()
+	~BinaryStream() override
 	{
 		close_stream();
 	}
@@ -212,7 +212,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char * get_name() const
+	const char * get_name() const override
 	{
 		return "BinaryStream";
 	}

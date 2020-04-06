@@ -17,12 +17,12 @@ class FileSystem : public ::testing::Test
 {
 public:
 	io::FileSystemRegistry* fs_registry;
-	virtual void SetUp()
+	void SetUp() override
 	{
 		fs_registry = env();
 	}
 
-	virtual void TearDown() {}
+	void TearDown() override {}
 };
 
 TEST_F(FileSystem, file_operations)

@@ -41,7 +41,7 @@ class LinearKernel: public DotKernel
 		 */
 		LinearKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r);
 
-		virtual ~LinearKernel();
+		~LinearKernel() override;
 
 		/** initialize kernel
 		 *
@@ -49,22 +49,22 @@ class LinearKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type LINEAR
 		 */
-		virtual EKernelType get_kernel_type() { return K_LINEAR; }
+		EKernelType get_kernel_type() override { return K_LINEAR; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Lineaer
 		 */
-		virtual const char* get_name() const { return "LinearKernel"; }
+		const char* get_name() const override { return "LinearKernel"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as
 		 * phi(x) = x do scalar product in input space
@@ -74,8 +74,8 @@ class LinearKernel: public DotKernel
 		 * @param alphas alphas
 		 * @return if optimization was successful
 		 */
-		virtual bool init_optimization(
-			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
+		bool init_optimization(
+			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas) override;
 
 		/** init optimization
 		 * @param km
@@ -86,16 +86,16 @@ class LinearKernel: public DotKernel
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization();
+		bool delete_optimization() override;
 
 		/** compute optimized
 		*
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		float64_t compute_optimized(int32_t idx) override;
 
-		virtual void clear_normal()
+		void clear_normal() override
 		{
 			normal = SGVector<float64_t>((std::static_pointer_cast<DotFeatures>(lhs))->get_dim_feature_space());
 			normal.zero();
@@ -107,7 +107,7 @@ class LinearKernel: public DotKernel
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		void add_to_normal(int32_t idx, float64_t weight) override;
 
 		/** get normal vector
 		 *

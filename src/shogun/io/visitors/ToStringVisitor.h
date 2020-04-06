@@ -27,56 +27,56 @@ namespace shogun {
 		ToStringVisitor(std::stringstream *ss) : AnyVisitor(), m_stream(ss), m_buffer() {
 		}
 
-		virtual void on(bool *v);
+		void on(bool *v) override;
 
-		virtual void on(std::vector<bool>::reference *v);
+		void on(std::vector<bool>::reference *v) override;
 
-		virtual void on(int8_t *v);
+		void on(int8_t *v) override;
 
-		virtual void on(int16_t *v);
+		void on(int16_t *v) override;
 
-		virtual void on(int32_t *v);
+		void on(int32_t *v) override;
 
-		virtual void on(int64_t *v);
+		void on(int64_t *v) override;
 
-		virtual void on(float32_t *v);
-		virtual void on(float64_t *v);
-		virtual void on(floatmax_t *v);
+		void on(float32_t *v) override;
+		void on(float64_t *v) override;
+		void on(floatmax_t *v) override;
 
-		virtual void on(std::string *v);
+		void on(std::string *v) override;
 
-		virtual void on(std::shared_ptr<SGObject>* v);
+		void on(std::shared_ptr<SGObject>* v) override;
 
-		virtual void on(char *string);
+		void on(char *string) override;
 
-		virtual void on(uint8_t *uint8);
+		void on(uint8_t *uint8) override;
 
-		virtual void on(uint16_t *uint16);
+		void on(uint16_t *uint16) override;
 
-		virtual void on(uint32_t *uint32);
+		void on(uint32_t *uint32) override;
 
-		virtual void on(uint64_t *uint64);
+		void on(uint64_t *uint64) override;
 
-		virtual void on(complex128_t *complex128);
+		void on(complex128_t *complex128) override;
 
-		virtual void enter_matrix(index_t *rows, index_t *cols);
+		void enter_matrix(index_t *rows, index_t *cols) override;
 
-		virtual void enter_vector(index_t *size);
+		void enter_vector(index_t *size) override;
 
-		virtual void enter_std_vector(size_t *size);
+		void enter_std_vector(size_t *size) override;
 
-		virtual void enter_map(size_t *size);
+		void enter_map(size_t *size) override;
 
-		virtual void exit_matrix(index_t *rows, index_t *cols);
+		void exit_matrix(index_t *rows, index_t *cols) override;
 
-		virtual void exit_vector(index_t *size);
+		void exit_vector(index_t *size) override;
 
-		virtual void exit_std_vector(size_t *size);
+		void exit_std_vector(size_t *size) override;
 
-		virtual void exit_map(size_t *size);
+		void exit_map(size_t *size) override;
 
-		virtual void enter_matrix_row(index_t *rows, index_t *cols);
-		virtual void exit_matrix_row(index_t *rows, index_t *cols);
+		void enter_matrix_row(index_t *rows, index_t *cols) override;
+		void exit_matrix_row(index_t *rows, index_t *cols) override;
 
 	private:
 		std::stringstream &stream() {

@@ -66,7 +66,7 @@ public:
 	IndependenceTest();
 
 	/** Destructor */
-	virtual ~IndependenceTest();
+	~IndependenceTest() override;
 
 	/**
 	 * Method that sets the kernel to be used for performing the test for the
@@ -105,7 +105,7 @@ public:
 	virtual SGVector<float64_t> sample_null()=0;
 
 	/** @return The name of the class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 protected:
 	internal::KernelManager& get_kernel_mgr();
 	const internal::KernelManager& get_kernel_mgr() const;

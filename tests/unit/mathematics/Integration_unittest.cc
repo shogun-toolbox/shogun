@@ -155,7 +155,7 @@ public:
 	 * @return f(x)=Gamma((nu+1)/2)/(Gamma(nu/2)*sqrt(nu*pi*sigma^2))*
 	 * (1+1/nu*(x-mu)^2/sigma^2)^(-(nu+1)/2)
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		float64_t lZ = Statistics::lgamma(m_nu / 2.0 + 0.5) -
 		               Statistics::lgamma(m_nu / 2.0) -
@@ -214,7 +214,7 @@ public:
 		m_g=std::move(g);
 	}
 
-	virtual ~ProductFunction()
+	~ProductFunction() override
 	{
 		
 		
@@ -226,7 +226,7 @@ public:
 	 *
 	 * @return h(x)=f(x)*g(x)
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return (*m_f)(x)*(*m_g)(x);
 	}
@@ -260,7 +260,7 @@ public:
 		m_sigma=sigma;
 	}
 
-	virtual ~TransformFunction() {  }
+	~TransformFunction() override {  }
 
 	/** set mean
 	 *
@@ -280,7 +280,7 @@ public:
 	 *
 	 * @return f(x)=(1/sqrt(pi))*f(sqrt(2*sigma^2)*x+mu)
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return (1.0 / std::sqrt(Math::PI)) *
 		       ((*m_f)(std::sqrt(2.0) * m_sigma * x + m_mu));

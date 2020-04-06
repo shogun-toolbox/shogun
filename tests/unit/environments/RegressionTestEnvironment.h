@@ -55,7 +55,7 @@ private:
 	std::shared_ptr<RegressionLabels> labels_train, labels_test;
 
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		std::mt19937_64 prng(57);
 
@@ -82,7 +82,7 @@ public:
 
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 	}
 

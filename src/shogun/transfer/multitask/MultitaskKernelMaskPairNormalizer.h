@@ -52,13 +52,13 @@ public:
 
 
 	/** default destructor */
-	virtual ~MultitaskKernelMaskPairNormalizer()
+	~MultitaskKernelMaskPairNormalizer() override
 	{
 	}
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
 		ASSERT(k)
 		int32_t num_lhs = k->get_num_vec_lhs();

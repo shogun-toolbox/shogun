@@ -58,7 +58,7 @@ class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
 friend class KLDualInferenceMethodMinimizer;
 public:
 	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~KLDualInferenceMethodCostFunction() {  }
+	~KLDualInferenceMethodCostFunction() override {  }
 	void set_target(const std::shared_ptr<KLDualInferenceMethod >&obj)
 	{
 		require(obj, "Obj must set");
@@ -77,7 +77,7 @@ public:
 		}
 		m_obj=NULL;
 	}
-	virtual float64_t get_cost()
+	float64_t get_cost() override
 	{
 		require(m_obj,"Object not set");
 		bool status=m_obj->precompute();
@@ -88,19 +88,19 @@ public:
 		}
 		return Math::NOT_A_NUMBER;
 	}
-	virtual SGVector<float64_t> obtain_variable_reference()
+	SGVector<float64_t> obtain_variable_reference() override
 	{
 		require(m_obj,"Object not set");
 		m_derivatives = SGVector<float64_t>((m_obj->m_W).vlen);
 		return m_obj->m_W;
 	}
-	virtual SGVector<float64_t> get_gradient()
+	SGVector<float64_t> get_gradient() override
 	{
 		require(m_obj,"Object not set");
 		m_obj->get_gradient_of_dual_objective_wrt_parameters(m_derivatives);
 		return m_derivatives;
 	}
-	virtual const char* get_name() const { return "KLDualInferenceMethodCostFunction"; }
+	const char* get_name() const override { return "KLDualInferenceMethodCostFunction"; }
 private:
 	SGVector<float64_t> m_derivatives;
 	void init()

@@ -53,7 +53,7 @@ class Gaussian : public RandomMixin<Distribution>
 		 * @param cov_type covariance type (full, diagonal or shperical)
 		 */
 		Gaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
-		virtual ~Gaussian();
+		~Gaussian() override;
 
 		/** Compute the constant part */
 		void init();
@@ -64,20 +64,20 @@ class Gaussian : public RandomMixin<Distribution>
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** get number of parameters in model
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters();
+		int32_t get_num_model_parameters() override;
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic) if num_param < m_dim returns
 		 * an element from the mean, else return an element from the covariance
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param);
+		float64_t get_log_model_parameter(int32_t num_param) override;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -85,8 +85,8 @@ class Gaussian : public RandomMixin<Distribution>
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+		float64_t get_log_derivative(
+			int32_t num_param, int32_t num_example) override;
 
 		/** compute log likelihood for example
 		 *
@@ -95,7 +95,7 @@ class Gaussian : public RandomMixin<Distribution>
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		float64_t get_log_likelihood_example(int32_t num_example) override;
 
 		/** update parameters in the em maximization step for mixture model of which
 		 * this distribution is a part
@@ -103,7 +103,7 @@ class Gaussian : public RandomMixin<Distribution>
 		 * @param alpha_k "belongingness" values of various data points
 		 * @return sum of values in alpha_k
 		 */
-		virtual float64_t update_params_em(const SGVector<float64_t> alpha_k);
+		float64_t update_params_em(const SGVector<float64_t> alpha_k) override;
 
 		/** compute PDF
 		 *
@@ -217,7 +217,7 @@ class Gaussian : public RandomMixin<Distribution>
 		static std::shared_ptr<Gaussian> obtain_from_generic(const std::shared_ptr<Distribution>& distribution);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Gaussian"; }
+		const char* get_name() const override { return "Gaussian"; }
 
 	private:
 		/** Initialize parameters for serialization */

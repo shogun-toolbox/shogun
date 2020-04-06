@@ -37,7 +37,7 @@ class QDiag : public RandomMixin<ApproxJointDiagonalizer>
 		}
 
 		/** destructor */
-		virtual ~QDiag()
+		~QDiag() override
 		{
 		}
 
@@ -73,10 +73,10 @@ class QDiag : public RandomMixin<ApproxJointDiagonalizer>
 		 * @param itermax maximum number of iterations
 		 * @return V the matrix that best diagonalizes C
 		 */
-		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
+		SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 						   double eps=Math::MACHINE_EPSILON,
-						   int itermax=200)
+						   int itermax=200) override
 		{
 			int N = C.dims[0];
 			if(V0.num_rows != N || V0.num_cols != N)
@@ -87,7 +87,7 @@ class QDiag : public RandomMixin<ApproxJointDiagonalizer>
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "QDiag"; }
+		const char* get_name() const override { return "QDiag"; }
 	
 	private:
 		static SGMatrix<float64_t> diagonalize_impl(SGNDArray<float64_t>& C,

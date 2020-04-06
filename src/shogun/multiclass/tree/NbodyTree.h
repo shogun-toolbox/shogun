@@ -59,12 +59,12 @@ public:
 	CNbodyTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 
 	/** Destructor */
-	virtual ~CNbodyTree() { };
+	~CNbodyTree() override { };
 
 	/** get name
 	 * @return class of the tree
 	 */
-	virtual const char* get_name() const { return "NbodyTree"; }
+	const char* get_name() const override { return "NbodyTree"; }
 
 	/** get final rearranged vector indices
 	 * @return vector indices rearranged corresponding to the built tree

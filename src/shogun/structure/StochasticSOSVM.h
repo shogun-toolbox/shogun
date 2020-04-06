@@ -44,16 +44,16 @@ public:
 		bool do_weighted_averaging = true, bool verbose = false);
 
 	/** destructor */
-	~StochasticSOSVM();
+	~StochasticSOSVM() override;
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "StochasticSOSVM"; }
+	const char* get_name() const override { return "StochasticSOSVM"; }
 
 	/** get classifier type
 	 *
 	 * @return classifier type CT_STOCHASTICSOSVM
 	 */
-	virtual EMachineType get_classifier_type();
+	EMachineType get_classifier_type() override;
 
 	/** @return lambda */
 	float64_t get_lambda() const;
@@ -88,7 +88,7 @@ protected:
 	 * @param data training data
 	 * @return whether the training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 private:
 	/** register and initialize parameters */

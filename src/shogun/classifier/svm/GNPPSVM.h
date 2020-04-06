@@ -29,16 +29,16 @@ class GNPPSVM : public SVM
 		 */
 		GNPPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
-		virtual ~GNPPSVM();
+		~GNPPSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type GNPPSVM
 		 */
-		virtual EMachineType get_classifier_type() { return CT_GNPPSVM; }
+		EMachineType get_classifier_type() override { return CT_GNPPSVM; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GNPPSVM"; }
+		const char* get_name() const override { return "GNPPSVM"; }
 
 	protected:
 		/** train SVM classifier
@@ -49,7 +49,7 @@ class GNPPSVM : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 };
 }
 #endif

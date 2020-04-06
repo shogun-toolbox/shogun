@@ -35,19 +35,19 @@ class SVMLightOneClass: public SVMLight
 		SVMLightOneClass(float64_t C, std::shared_ptr<Kernel> k);
 
 		/** default destructor */
-		virtual ~SVMLightOneClass() { }
+		~SVMLightOneClass() override { }
 
 		/** get classifier type
 		 *
 		 * @return classifier type LIGHTONECLASS
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LIGHTONECLASS; }
+		EMachineType get_classifier_type() override { return CT_LIGHTONECLASS; }
 
 		/** Returns the name of the SGSerializable instance.
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "SVMLightOneClass"; }
+		const char* get_name() const override { return "SVMLightOneClass"; }
 
 	protected:
 		/** train one class svm
@@ -58,7 +58,7 @@ class SVMLightOneClass: public SVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 };
 }
 #endif //USE_SVMLIGHT

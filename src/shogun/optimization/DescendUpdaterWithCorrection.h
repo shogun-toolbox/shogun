@@ -52,7 +52,7 @@ class DescendUpdaterWithCorrection: public DescendUpdater
 {
 public:
 	/*  Destructor */
-	virtual ~DescendUpdaterWithCorrection();
+	~DescendUpdaterWithCorrection() override;
 
 	/** Update the target variable based on the given negative descend direction
 	 *
@@ -63,8 +63,8 @@ public:
 	 * @param raw_negative_descend_direction the negative descend direction given the current value
 	 * @param learning_rate learning rate
 	 */
-	virtual void update_variable(SGVector<float64_t> variable_reference,
-		SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate);
+	void update_variable(SGVector<float64_t> variable_reference,
+		SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate) override;
 	
 	/** Set the type of descend correction
 	 *

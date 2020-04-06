@@ -45,7 +45,7 @@ namespace shogun
 class FirstOrderBoundConstraintsCostFunction: public FirstOrderCostFunction
 {
 public:
-	virtual ~FirstOrderBoundConstraintsCostFunction() {};
+	~FirstOrderBoundConstraintsCostFunction() override {};
 
 	/** Get the lower bound of variables 
 	 * 

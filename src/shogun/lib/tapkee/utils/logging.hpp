@@ -54,7 +54,7 @@ class DefaultLoggerImplementation : public LoggerImplementation
 {
 public:
 	DefaultLoggerImplementation() : sout(&std::cout), serr(&std::cerr) {}
-	virtual ~DefaultLoggerImplementation() {}
+	~DefaultLoggerImplementation() override {}
 	LEVEL_HANDLERS_DEFAULT_IMPL(serr,info);
 	LEVEL_HANDLERS_DEFAULT_IMPL(serr,warning);
 	LEVEL_HANDLERS_DEFAULT_IMPL(serr,debug);

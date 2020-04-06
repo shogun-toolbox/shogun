@@ -41,13 +41,13 @@ namespace shogun
 			 */
 			LatentSVM(std::shared_ptr<LatentModel> model, float64_t C);
 
-			virtual ~LatentSVM();
+			~LatentSVM() override;
 
 			/** apply linear machine to all examples
 			 *
 			 * @return resulting labels
 			 */
-			virtual std::shared_ptr<LatentLabels> apply_latent();
+			std::shared_ptr<LatentLabels> apply_latent() override;
 
 			using LinearLatentMachine::apply_latent;
 
@@ -55,7 +55,7 @@ namespace shogun
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LatentSVM"; }
+			const char* get_name() const override { return "LatentSVM"; }
 
 		protected:
 			/** inner loop of the latent machine
@@ -67,7 +67,7 @@ namespace shogun
 			 * @param cooling_eps epsilon
 			 * @return primal objective value
 			 */
-			virtual float64_t do_inner_loop(float64_t cooling_eps);
+			float64_t do_inner_loop(float64_t cooling_eps) override;
 	};
 }
 

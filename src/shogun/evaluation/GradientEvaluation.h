@@ -38,13 +38,13 @@ public:
 		std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
 		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock=true);
 
-	virtual ~GradientEvaluation();
+	~GradientEvaluation() override;
 
 	/** returns the name of the machine evaluation
 	 *
 	 *  @return name GradientEvaluation
 	 */
-	virtual const char* get_name() const { return "GradientEvaluation"; }
+	const char* get_name() const override { return "GradientEvaluation"; }
 
 	/** set differentiable function
 	*
@@ -69,13 +69,13 @@ public:
 
 private:
 	/** initialses and registers parameters */
-	void init();
+	void init() override;
 
 	/** evaluates differentiable function for value and derivative.
 	 *
 	 * @return GradientResult containing value and gradient
 	 */
-	virtual std::shared_ptr<EvaluationResult> evaluate_impl() const;
+	std::shared_ptr<EvaluationResult> evaluate_impl() const override;
 
 	/** updates parameter dictionary of differentiable function */
 	void update_parameter_dictionary() const;

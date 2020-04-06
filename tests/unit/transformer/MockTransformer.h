@@ -15,7 +15,7 @@ namespace shogun
 
 		MOCK_CONST_METHOD0(train_require_labels, bool());
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MockTransformer";
 		}

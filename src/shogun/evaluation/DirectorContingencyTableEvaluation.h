@@ -31,12 +31,12 @@ public:
 	}
 
 	/** destructor */
-	virtual ~DirectorContingencyTableEvaluation()
+	~DirectorContingencyTableEvaluation() override
 	{
 	}
 
 	/** Evaluate */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override
 	{
 		return ContingencyTableEvaluation::evaluate(predicted, ground_truth);
 	}
@@ -44,7 +44,7 @@ public:
 	/** Computes custom score, not implemented
 	 * @return custom score value
 	 */
-	virtual float64_t get_custom_score()
+	float64_t get_custom_score() override
 	{
 		not_implemented(SOURCE_LOCATION);
 		return 0.0;
@@ -60,7 +60,7 @@ public:
 	}
 
 	/** get name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DirectorContingencyTableEvaluation";
 	}

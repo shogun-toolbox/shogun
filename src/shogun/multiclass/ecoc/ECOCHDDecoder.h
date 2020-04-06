@@ -23,23 +23,23 @@ public:
     ECOCHDDecoder() {}
 
     /** destructor */
-    virtual ~ECOCHDDecoder() {}
+    ~ECOCHDDecoder() override {}
 
     /** get name */
-    virtual const char* get_name() const
+    const char* get_name() const override
     {
         return "ECOCHDDecoder";
     }
 
 protected:
     /** whether to turn the output into binary before decoding */
-    virtual bool binary_decoding()
+    bool binary_decoding() override
     {
         return true;
     }
 
     /** compute distance */
-    virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code)
+    float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code) override
     {
         return ECOCUtil::hamming_distance(outputs.vector, code, outputs.vlen);
     }

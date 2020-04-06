@@ -52,7 +52,7 @@ public:
 	}
 
 	/*  Destructor */
-	virtual ~MomentumCorrection() {};
+	~MomentumCorrection() override {};
 
 	/**  Is the m_previous_descend_direction initialized?
 	 *

@@ -80,13 +80,13 @@ public:
 	RandomFourierDotFeatures(const RandomFourierDotFeatures& orig);
 
 	/** duplicate */
-	virtual std::shared_ptr<Features> duplicate() const;
+	std::shared_ptr<Features> duplicate() const override;
 
 	/** destructor */
-	virtual ~RandomFourierDotFeatures();
+	~RandomFourierDotFeatures() override;
 
 	/** @return object name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 protected:
 
@@ -97,13 +97,13 @@ protected:
 	 * @param par_idx the idx of the parameter vector
 	 * @return the (optionally) modified result
 	 */
-	virtual float64_t post_dot(float64_t dot_result, index_t par_idx) const;
+	float64_t post_dot(float64_t dot_result, index_t par_idx) const override;
 
 	/** Generates a random parameter vector, subclasses must override this
 	 *
 	 * @return a random parameter vector
 	 */
-	virtual SGVector<float64_t> generate_random_parameter_vector();
+	SGVector<float64_t> generate_random_parameter_vector() override;
 
 private:
 	void init(KernelName kernel_name, const SGVector<float64_t>& params);

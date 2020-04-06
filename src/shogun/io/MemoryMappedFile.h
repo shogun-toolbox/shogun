@@ -138,7 +138,7 @@ template <class T> class MemoryMappedFile : public SGObject
 		}
 
 		/** destructor */
-		virtual ~MemoryMappedFile()
+		~MemoryMappedFile() override
 		{
 #ifdef _MSC_VER
 			UnmapViewOfFile(address);
@@ -309,7 +309,7 @@ template <class T> class MemoryMappedFile : public SGObject
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MemoryMappedFile"; }
+		const char* get_name() const override { return "MemoryMappedFile"; }
 
 	protected:
 		/** file descriptor */

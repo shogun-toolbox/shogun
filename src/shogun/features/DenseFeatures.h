@@ -103,9 +103,9 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual std::shared_ptr<Features> duplicate() const;
+	std::shared_ptr<Features> duplicate() const override;
 
-	virtual ~DenseFeatures();
+	~DenseFeatures() override;
 
 	/** free feature matrix
 	 *
@@ -229,7 +229,7 @@ public:
 	 *
 	 * @return number of feature vectors
 	 */
-	virtual int32_t get_num_vectors() const;
+	int32_t get_num_vectors() const override;
 
 	/** get number of features (of possible subset)
 	 *
@@ -261,13 +261,13 @@ public:
 	 *
 	 * @return feature class DENSE
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	EFeatureClass get_feature_class() const override;
 
 	/** get feature type
 	 *
 	 * @return templated feature type
 	 */
-	virtual EFeatureType get_feature_type() const;
+	EFeatureType get_feature_type() const override;
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -276,7 +276,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	int32_t get_dim_feature_space() const override;
 
 	/** compute dot product between vector1 and vector2,
 	 * appointed by their indices
@@ -287,8 +287,8 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
-			int32_t vec_idx2) const;
+	float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
+			int32_t vec_idx2) const override;
 
 	/** Computes the sum of all feature vectors
 	 * @return Sum of all feature vectors
@@ -344,8 +344,8 @@ public:
 	 * @param vec_idx1 index of first vector
 	 * @param vec2 dense vector
 	 */
-	virtual float64_t
-	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const;
+	float64_t
+	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -357,27 +357,27 @@ public:
 	 * @param vec2_len length of real valued vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-			float64_t* vec2, int32_t vec2_len, bool abs_val = false) const;
+	void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+			float64_t* vec2, int32_t vec2_len, bool abs_val = false) const override;
 
 	/** get number of non-zero features in vector
 	 *
 	 * @param num which vector
 	 * @return number of non-zero features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector(int32_t num) const;
+	int32_t get_nnz_features_for_vector(int32_t num) const override;
 
 	/** load features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	virtual void load(std::shared_ptr<File> loader);
+	void load(std::shared_ptr<File> loader) override;
 
 	/** save features to file
 	 *
 	 * @param saver File object via which to save data
 	 */
-	virtual void save(std::shared_ptr<File> saver);
+	void save(std::shared_ptr<File> saver) override;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** iterator for dense features */
@@ -408,7 +408,7 @@ public:
 	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
-	virtual void* get_feature_iterator(int32_t vector_index);
+	void* get_feature_iterator(int32_t vector_index) override;
 
 	/** iterate over the non-zero features
 	 *
@@ -422,15 +422,15 @@ public:
 	 * @param iterator as returned by get_first_feature
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(int32_t& index, float64_t& value,
-			void* iterator);
+	bool get_next_feature(int32_t& index, float64_t& value,
+			void* iterator) override;
 
 	/** clean up iterator
 	 * call this function with the iterator returned by get_first_feature
 	 *
 	 * @param iterator as returned by get_first_feature
 	 */
-	virtual void free_feature_iterator(void* iterator);
+	void free_feature_iterator(void* iterator) override;
 
 	/** Creates a new Features instance containing copies of the elements
 	 * which are specified by the provided indices.
@@ -440,7 +440,7 @@ public:
 	 * @param indices indices of feature elements to copy
 	 * @return new Features instance with copies of feature data
 	 */
-	virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
+	std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const override;
 
 	/** Creates a new Features instance containing only the dimensions
 	 * of the feature vector which are specified by the provided indices.
@@ -452,7 +452,7 @@ public:
 	 * @param dims indices of feature dimensions to copy
 	 * @return new Features instance with copies of specified features
 	 */
-	virtual std::shared_ptr<Features> copy_dimension_subset(SGVector<index_t> dims) const;
+	std::shared_ptr<Features> copy_dimension_subset(SGVector<index_t> dims) const override;
 
 	/** checks if the contents of this DenseFeatures object are the same to
 	 * the contents of rhs
@@ -471,7 +471,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	std::shared_ptr<Features> create_merged_copy(const std::vector<std::shared_ptr<Features>>& other) const;
+	std::shared_ptr<Features> create_merged_copy(const std::vector<std::shared_ptr<Features>>& other) const override;
 
 	/** Convenience method for method with same name and list as parameter.
 	 *
@@ -479,7 +479,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const;
+	std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const override;
 
 /** helper method used to specialize a base class instance
  *
@@ -490,11 +490,11 @@ public:
 	static std::shared_ptr<DenseFeatures> obtain_from_generic(std::shared_ptr<Features> base_features);
 
 #ifndef SWIG // SWIG should skip this part
-	virtual std::shared_ptr<Features> shallow_subset_copy();
+	std::shared_ptr<Features> shallow_subset_copy() override;
 #endif
 
 	/** @return object name */
-	virtual const char* get_name() const { return "DenseFeatures"; }
+	const char* get_name() const override { return "DenseFeatures"; }
 
 protected:
 	/** compute feature vector for sample num

@@ -25,7 +25,7 @@ public:
 	/** default constructor */
 	GradientCriterion() : Evaluation() { m_direction=ED_MINIMIZE; }
 
-	virtual ~GradientCriterion() { }
+	~GradientCriterion() override { }
 
 	/** evaluate labels (not really used in this class).
 	 *
@@ -34,13 +34,13 @@ public:
 	 *
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override
 	{
 		return 0.0;
 	}
 
 	/** @return whether criterion has to be maximized or minimized */
-	virtual EEvaluationDirection get_evaluation_direction() const
+	EEvaluationDirection get_evaluation_direction() const override
 	{
 		return m_direction;
 	}
@@ -58,7 +58,7 @@ public:
 	 *
 	 * @return name GradientCriterion
 	 */
-	virtual const char* get_name() const { return "GradientCriterion"; }
+	const char* get_name() const override { return "GradientCriterion"; }
 
 private:
 	/** evaluation direction */

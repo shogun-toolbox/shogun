@@ -67,22 +67,22 @@ namespace shogun
 			                      float64_t gamma = 1.0, uint64_t order = 1, float64_t period = -1);
 
 			/** destructor */
-			virtual ~HomogeneousKernelMap();
+			~HomogeneousKernelMap() override;
 
 			/** cleanup */
-			virtual void cleanup();
+			void cleanup() override;
 
 			/** applies to feature vector
 			 * @param vector features vector
 			 * @return transformed feature vector
 			 */
-			virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+			SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 			/** @return object name */
-			virtual const char* get_name() const { return "HomogeneousKernelMap"; }
+			const char* get_name() const override { return "HomogeneousKernelMap"; }
 
 			/** @return a type of preprocessor */
-			virtual EPreprocessorType get_type() const { return P_HOMOGENEOUSKERNELMAP; }
+			EPreprocessorType get_type() const override { return P_HOMOGENEOUSKERNELMAP; }
 
 			/** sets kernel type
 			 * @param k type of homogeneous kernel
@@ -130,8 +130,8 @@ namespace shogun
 			float64_t get_period() const;
 
 		protected:
-		    virtual SGMatrix<float64_t>
-		    apply_to_matrix(SGMatrix<float64_t> matrix);
+		    SGMatrix<float64_t>
+		    apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 		private:
 			void init ();

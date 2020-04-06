@@ -37,7 +37,7 @@ public:
 	CGMShiftedFamilySolver(bool store_residuals);
 
 	/** destructor */
-	virtual ~CGMShiftedFamilySolver();
+	~CGMShiftedFamilySolver() override;
 
 	/**
 	 * solve method for solving linear systems assuming no shift
@@ -46,8 +46,8 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(std::shared_ptr<LinearOperator<float64_t>> A,
-		SGVector<float64_t> b);
+	SGVector<float64_t> solve(std::shared_ptr<LinearOperator<float64_t>> A,
+		SGVector<float64_t> b) override;
 
 	/**
 	 * method that solves the shifted family of linear systems, multiples
@@ -60,13 +60,13 @@ public:
 	 * @param weights the weights to be multiplied with each solution for each
 	 * shift
 	 */
-	virtual SGVector<complex128_t> solve_shifted_weighted(
+	SGVector<complex128_t> solve_shifted_weighted(
 		std::shared_ptr<LinearOperator<float64_t>> A, SGVector<float64_t> b,
 		SGVector<complex128_t> shifts, SGVector<complex128_t> weights,
-		bool negate = false);
+		bool negate = false) override;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "CGMShiftedFamilySolver";
 	}

@@ -43,13 +43,13 @@ class GaussianCompactKernel: public GaussianKernel
                                float64_t width, int32_t size=10);
 
         /* destructor */
-        virtual ~GaussianCompactKernel();
+        ~GaussianCompactKernel() override;
 
         /** return what type of kernel we are
          *
          * @return kernel type GAUSSIAN
          */
-        virtual EKernelType get_kernel_type()
+        EKernelType get_kernel_type() override
         {
             return K_GAUSSIANCOMPACT;
         }
@@ -58,7 +58,7 @@ class GaussianCompactKernel: public GaussianKernel
          *
          * @return name GaussianCompactKernel
          */
-        virtual const char* get_name() const
+        const char* get_name() const override
         {
             return "GaussianCompactKernel";
         }
@@ -72,7 +72,7 @@ class GaussianCompactKernel: public GaussianKernel
          * @param idx_b index b
          * @return computed kernel function at indices a,b
          */
-        virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+        float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 };
 }

@@ -16,7 +16,7 @@ namespace shogun
 		{
 		public:
 			Deserializer();
-			virtual ~Deserializer();
+			~Deserializer() override;
 			virtual void attach(std::shared_ptr<io::InputStream> stream);
 			virtual std::shared_ptr<SGObject> read_object() = 0;
 			virtual void read(std::shared_ptr<SGObject> _this) = 0;

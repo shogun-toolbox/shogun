@@ -28,21 +28,21 @@ public:
     ECOCAEDDecoder() {}
 
     /** destructor */
-    virtual ~ECOCAEDDecoder() {}
+    ~ECOCAEDDecoder() override {}
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCAEDDecoder"; }
+    const char* get_name() const override { return "ECOCAEDDecoder"; }
 
 
 protected:
     /** whether to turn the output into binary before decoding */
-    virtual bool binary_decoding()
+    bool binary_decoding() override
     {
         return false;
     }
 
     /** compute distance */
-    virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code)
+    float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code) override
     {
         float64_t dist = 0;
         for (int32_t i=0; i < outputs.vlen; ++i)

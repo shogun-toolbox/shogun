@@ -63,7 +63,7 @@ class RidgeKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~RidgeKernelNormalizer()
+		~RidgeKernelNormalizer() override
 		{
 		}
 
@@ -100,8 +100,8 @@ class RidgeKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			if (idx_lhs==idx_rhs)
 				return value+ridge;
@@ -130,7 +130,7 @@ class RidgeKernelNormalizer : public KernelNormalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "RidgeKernelNormalizer"; }
+		const char* get_name() const override { return "RidgeKernelNormalizer"; }
 
 	protected:
 		/// the constant ridge to be added to the kernel diagonal

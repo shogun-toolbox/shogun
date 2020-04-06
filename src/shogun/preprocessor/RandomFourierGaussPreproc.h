@@ -53,7 +53,7 @@ public:
 	/** default destructor
 	 * takes care for float64_t* randomcoeff_additive,float64_t* randomcoeff_multiplicative;
 	 */
-	~RandomFourierGaussPreproc();
+	~RandomFourierGaussPreproc() override;
 
 
 	/** alternative processing routine, inherited from base class
@@ -61,17 +61,17 @@ public:
 	 * @return processed feature vector
 	 * in order to work this routine requires the steps described above under cases (1) or two (2) before calling this routine
 	 */
-	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+	SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 	/** inherited from base class
 	 * @return C_DENSE
 	 */
-	virtual EFeatureType get_feature_type();
+	EFeatureType get_feature_type() override;
 
 	/** inherited from base class
 	 * @return F_DREAL
 	 */
-	virtual EFeatureClass get_feature_class();
+	EFeatureClass get_feature_class() override;
 
 	/** fit to features
 	 * calls set_dim_input_space(const int32_t dim); with the proper value
@@ -84,7 +84,7 @@ public:
 	 * @return true if new random coefficients were generated, false if old ones
 	 * from a call to set_randomcoefficients(...) are kept
 	 */
-	virtual void fit(std::shared_ptr<Features> f);
+	void fit(std::shared_ptr<Features> f) override;
 
 	/**  setter for kernel width
 	 * @param width kernel width to be set
@@ -162,13 +162,13 @@ public:
 	/** inherited from base class
 	 * does nothing
 	 */
-	void cleanup();
+	void cleanup() override;
 
 	/// return the name of the preprocessor
-	virtual const char* get_name() const { return "RandomFourierGaussPreproc"; }
+	const char* get_name() const override { return "RandomFourierGaussPreproc"; }
 
 	/// return a type of preprocessor
-	virtual EPreprocessorType get_type() const { return P_RANDOMFOURIERGAUSS; }
+	EPreprocessorType get_type() const override { return P_RANDOMFOURIERGAUSS; }
 
 protected:
 	/** default processing routine, inherited from base class
@@ -177,7 +177,7 @@ protected:
 	 * class in case (2) (see description above) this routine requires only
 	 * steps 2a) and 2b), the rest is determined automatically
 	 */
-	virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+	SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 	/**
 	 * helper for copy constructor and assignment operator=

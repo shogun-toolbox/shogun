@@ -32,7 +32,7 @@ public:
 	ProbabilityDistribution(int32_t dimension);
 
 	/** Destructor */
-	virtual ~ProbabilityDistribution();
+	~ProbabilityDistribution() override;
 
 	/** Samples from the distribution multiple times
 	 *

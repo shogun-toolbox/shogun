@@ -17,7 +17,7 @@ namespace shogun
 		{
 		public:
 			InputStream();
-			virtual ~InputStream();
+			~InputStream() override;
 
 			virtual std::error_condition read(std::string* buffer, int64_t size) = 0;
 			virtual std::error_condition skip(int64_t bytes) = 0;

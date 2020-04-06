@@ -41,15 +41,15 @@ public:
 	                       int32_t dim);
 
 	/** destructor */
-	virtual ~HashedMultilabelModel();
+	~HashedMultilabelModel() override;
 
 	/** create empty StructuredLabels object */
-	virtual std::shared_ptr<StructuredLabels > structured_labels_factory(int32_t num_examples = 0);
+	std::shared_ptr<StructuredLabels > structured_labels_factory(int32_t num_examples = 0) override;
 
 	/** @return the dimensionality of the joint features space, i.e, the
 	 *          dimension of the weight vector \f$w\f$.
 	 */
-	virtual int32_t get_dim() const;
+	int32_t get_dim() const override;
 
 	/** get joint feature vector
 	 *
@@ -62,8 +62,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                std::shared_ptr<StructuredData > y);
+	SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
+	                std::shared_ptr<StructuredData > y) override;
 
 	/** get joint feature vector
 	 *
@@ -76,8 +76,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGSparseVector<float64_t> get_sparse_joint_feature_vector(int32_t feat_idx,
-	                std::shared_ptr<StructuredData > y);
+	SGSparseVector<float64_t> get_sparse_joint_feature_vector(int32_t feat_idx,
+	                std::shared_ptr<StructuredData > y) override;
 
 	/** obtain the argmax of
 	 *
@@ -93,8 +93,8 @@ public:
 	 *
 	 * @return structure with the predicted results
 	 */
-	virtual std::shared_ptr<ResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
-	                            bool const training = true);
+	std::shared_ptr<ResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
+	                            bool const training = true) override;
 
 	/** compute
 	 *
@@ -107,7 +107,7 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2);
+	float64_t delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2) override;
 
 	/** set misclassification cost for false positive and false negative
 	 *
@@ -128,7 +128,7 @@ public:
 	 * @param ub upper bounds for w
 	 * @param C regularization matrix, w'Cw
 	 */
-	virtual void init_primal_opt(
+	void init_primal_opt(
 	        float64_t regularization,
 	        SGMatrix<float64_t> &A,
 	        SGVector<float64_t> a,
@@ -136,7 +136,7 @@ public:
 	        SGVector<float64_t> &b,
 	        SGVector<float64_t> &lb,
 	        SGVector<float64_t> &ub,
-	        SGMatrix<float64_t> &C);
+	        SGMatrix<float64_t> &C) override;
 
 	/** set seeds used for hashing features of *each* class
 	 *
@@ -145,7 +145,7 @@ public:
 	virtual void set_seeds(SGVector<uint32_t> seeds);
 
 	/** @return name of the SGSerializable */
-	virtual const char * get_name() const
+	const char * get_name() const override
 	{
 		return "HashedMultilabelModel";
 	}

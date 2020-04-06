@@ -48,13 +48,13 @@ public:
 	ConstLearningRate():LearningRate() { init(); }
 
 	/**  Destructor */
-	virtual ~ConstLearningRate() {}
+	~ConstLearningRate() override {}
 
 	/** returns the name of the class
 	 *
 	 * @return name ConstLearningRate
 	 */
-	virtual const char* get_name() const { return "ConstLearningRate"; }
+	const char* get_name() const override { return "ConstLearningRate"; }
 
 
 	/** Set the const learning rate
@@ -71,7 +71,7 @@ public:
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate(int32_t iter_counter);
+	float64_t get_learning_rate(int32_t iter_counter) override;
 
 protected:
 

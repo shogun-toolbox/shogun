@@ -46,7 +46,7 @@ public:
 	AttributeFeatures();
 
 	/** destructor */
-	virtual ~AttributeFeatures();
+	~AttributeFeatures() override;
 
 	/** return the feature object matching attribute name
 	 *
@@ -85,7 +85,7 @@ public:
 	int32_t get_num_attributes();
 
 	/** @return object name */
-	virtual const char* get_name() const { return "AttributeFeatures"; }
+	const char* get_name() const override { return "AttributeFeatures"; }
 
 	/** duplicate feature object
 	 *

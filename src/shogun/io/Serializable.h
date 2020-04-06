@@ -86,7 +86,7 @@ public:
 	virtual T get_value() const { return m_value; }
 
 	/** @return name of the SGObject, without C prefix */
-	virtual const char* get_name() const { return "Serializable"; }
+	const char* get_name() const override { return "Serializable"; }
 
 private:
 	void init()
@@ -140,8 +140,8 @@ public:
 		init();
 		m_value = value;
 	}
-	virtual ~StdVectorSerializable() {}
-	virtual const char* get_name() const { return "StdVectorSerializable"; }
+	~StdVectorSerializable() override {}
+	const char* get_name() const override { return "StdVectorSerializable"; }
 
 protected:
 	void init()

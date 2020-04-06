@@ -70,7 +70,7 @@ namespace shogun
 		 * @param lab labels
 		 */
 		LinearRidgeRegression(float64_t tau, const std::shared_ptr<DenseFeatures<float64_t>>& data, std::shared_ptr<Labels> lab);
-		virtual ~LinearRidgeRegression() {}
+		~LinearRidgeRegression() override {}
 
 		/** set regularization constant
 		 *
@@ -96,13 +96,13 @@ namespace shogun
 		 *
 		 * @return classifier type LinearRidgeRegression
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_LINEARRIDGEREGRESSION;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LinearRidgeRegression"; }
+		const char* get_name() const override { return "LinearRidgeRegression"; }
 
 	protected:
 		template <typename T>

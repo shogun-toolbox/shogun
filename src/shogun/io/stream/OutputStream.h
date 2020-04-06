@@ -15,7 +15,7 @@ namespace shogun
 		{
 		public:
 			OutputStream();
-			virtual ~OutputStream();
+			~OutputStream() override;
 
 			virtual std::error_condition close() = 0;
 			virtual std::error_condition flush() = 0;

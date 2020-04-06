@@ -35,7 +35,7 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~TanimotoKernelNormalizer()
+		~TanimotoKernelNormalizer() override
 		{
 			SG_FREE(diag_lhs);
 			SG_FREE(diag_rhs);
@@ -43,7 +43,7 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
 			int32_t num_lhs=k->get_num_vec_lhs();
@@ -73,8 +73,8 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return value/(diag_sum-value);

@@ -81,7 +81,7 @@ namespace shogun
 		LibLinear(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab);
 
 		/** destructor */
-		virtual ~LibLinear();
+		~LibLinear() override;
 
 		/**
 		 * @return the currently used liblinear solver
@@ -104,7 +104,7 @@ namespace shogun
 		 *
 		 * @return the classifier type
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_LIBLINEAR;
 		}
@@ -175,7 +175,7 @@ namespace shogun
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LibLinear";
 		}
@@ -221,7 +221,7 @@ namespace shogun
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 	private:
 		/** set up parameters */

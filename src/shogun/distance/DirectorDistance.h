@@ -31,7 +31,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		}
 
 		/** destructor */
-		virtual ~DirectorDistance()
+		~DirectorDistance() override
 		{
 			cleanup();
 		}
@@ -73,7 +73,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		 *  halts
 		 *  @return distance value or upper_bound
 		 */
-		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+		float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound) override
 		{
 			return Distance::distance(idx_a, idx_b);
 		}
@@ -107,7 +107,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		int32_t get_num_vec_lhs() override
 		{
 			return Distance::get_num_vec_lhs();
 		}
@@ -116,7 +116,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		int32_t get_num_vec_rhs() override
 		{
 			return Distance::get_num_vec_rhs();
 		}
@@ -143,7 +143,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			if (!external_features)
 				return Distance::has_features();

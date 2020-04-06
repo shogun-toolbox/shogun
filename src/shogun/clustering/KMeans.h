@@ -62,10 +62,10 @@ class KMeans : public KMeansBase
 		 */
 		KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
 
-		virtual ~KMeans();
+		~KMeans() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KMeans"; }		
+		const char* get_name() const override { return "KMeans"; }
 
 	private:
 
@@ -77,7 +77,7 @@ class KMeans : public KMeansBase
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** Lloyd's KMeans training method
 		 */

@@ -42,7 +42,7 @@ class ConstKernel: public Kernel
 		 */
 		ConstKernel(std::shared_ptr<Features> l, std::shared_ptr<Features >r, float64_t c);
 
-		virtual ~ConstKernel();
+		~ConstKernel() override;
 
 		/** initialize kernel
 		 *
@@ -50,19 +50,19 @@ class ConstKernel: public Kernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type CONST
 		 */
-		virtual EKernelType get_kernel_type() { return K_CONST; }
+		EKernelType get_kernel_type() override { return K_CONST; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		virtual EFeatureType get_feature_type()
+		EFeatureType get_feature_type() override
 		{
 			return F_ANY;
 		}
@@ -71,7 +71,7 @@ class ConstKernel: public Kernel
 		 *
 		 * @return feature class ANY
 		 */
-		virtual EFeatureClass get_feature_class()
+		EFeatureClass get_feature_class() override
 		{
 			return C_ANY;
 		}
@@ -80,7 +80,7 @@ class ConstKernel: public Kernel
 		 *
 		 * @return name Const
 		 */
-		virtual const char* get_name() const { return "ConstKernel"; }
+		const char* get_name() const override { return "ConstKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -89,7 +89,7 @@ class ConstKernel: public Kernel
 		 * @param col dummy col
 		 * @return computed kernel function (const value)
 		 */
-		virtual float64_t compute(int32_t row, int32_t col)
+		float64_t compute(int32_t row, int32_t col) override
 		{
 			return const_value;
 		}

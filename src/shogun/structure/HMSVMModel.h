@@ -41,13 +41,13 @@ class HMSVMModel : public StructuredModel
 		HMSVMModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels, EStateModelType smt, int32_t num_obs=0, bool use_plifs=false);
 
 		/** destructor */
-		virtual ~HMSVMModel();
+		~HMSVMModel() override;
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const;
+		int32_t get_dim() const override;
 
 		/**
 		 * get joint feature vector
@@ -61,7 +61,7 @@ class HMSVMModel : public StructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y);
+		SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y) override;
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -76,7 +76,7 @@ class HMSVMModel : public StructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) override;
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -85,7 +85,7 @@ class HMSVMModel : public StructuredModel
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
+		float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2) override;
 
 		/** initialize the optimization problem
 		 *
@@ -99,18 +99,18 @@ class HMSVMModel : public StructuredModel
 		 * @param ub upper bound for the weight vector
 		 * @param C  regularization matrix, w'Cw
 		 */
-		virtual void init_primal_opt(
+		void init_primal_opt(
 				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > & lb, SGVector< float64_t > & ub,
-				SGMatrix < float64_t > & C);
+				SGMatrix < float64_t > & C) override;
 
 		/**
 		 * method to be called from a SO machine before training
 		 * to ensure that the training data is valid
 		 */
-		virtual bool check_training_setup() const;
+		bool check_training_setup() const override;
 
 		/**
 		 * get the number of auxiliary variables to introduce in the
@@ -120,7 +120,7 @@ class HMSVMModel : public StructuredModel
 		 *
 		 * @return the number of auxiliary variables
 		 */
-		virtual int32_t get_num_aux() const;
+		int32_t get_num_aux() const override;
 
 		/**
 		 * get the number of auxiliary constraints to introduce in the
@@ -129,7 +129,7 @@ class HMSVMModel : public StructuredModel
 		 *
 		 * @return the number of auxiliary constraints
 		 */
-		virtual int32_t get_num_aux_con() const;
+		int32_t get_num_aux_con() const override;
 
 		/** setter for use_plifs
 		 *
@@ -142,7 +142,7 @@ class HMSVMModel : public StructuredModel
 		 * decoding. In case PLiFs are used, it also initializes the matrix of PLiFs and
 		 * automatically selects the supporting points based on the feature values
 		 */
-		virtual void init_training();
+		void init_training() override;
 
 		/** get transmission weights
 		 *
@@ -166,7 +166,7 @@ class HMSVMModel : public StructuredModel
 		 *
 		 * @return name Gaussian
 		 */
-		virtual const char* get_name() const { return "HMSVMModel"; }
+		const char* get_name() const override { return "HMSVMModel"; }
 
 	private:
 		/* internal initialization */

@@ -65,13 +65,13 @@ class LogitVGPiecewiseBoundLikelihood : public VariationalGaussianLikelihood
 public:
 	LogitVGPiecewiseBoundLikelihood();
 
-	virtual ~LogitVGPiecewiseBoundLikelihood();
+	~LogitVGPiecewiseBoundLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name LogitVGPiecewiseBoundLikelihood
 	 */
-	virtual const char* get_name() const { return "LogitVGPiecewiseBoundLikelihood"; }
+	const char* get_name() const override { return "LogitVGPiecewiseBoundLikelihood"; }
 
 	/** set the variational piecewise bound for logit likelihood
 	 *
@@ -87,7 +87,7 @@ public:
 	 * @return true if variational parameters are valid
 	 *
 	 */
-	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
+	bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) override;
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using piecewise bound
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @return expection
 	 */
-	virtual SGVector<float64_t> get_variational_expection();
+	SGVector<float64_t> get_variational_expection() override;
 
 #ifndef SWIG
 	/** get derivative of the variational expection of log LogitLikelihood
@@ -113,7 +113,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
+	SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const override;
 #endif
 
 	/** return whether likelihood function supports
@@ -122,7 +122,7 @@ public:
 	 *
 	 * @return boolean
 	 */
-	virtual bool supports_derivative_wrt_hyperparameter() const { return false; }
+	bool supports_derivative_wrt_hyperparameter() const override { return false; }
 
 #ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
@@ -133,7 +133,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+	SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const override;
 #endif
 
 	/** initialize the default bound for this class */
@@ -142,7 +142,7 @@ public:
 protected:
 
 	/** The function used to initialize m_likelihood*/
-	virtual void init_likelihood();
+	void init_likelihood() override;
 
 private:
 	/** initialize private data members for this class */

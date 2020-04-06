@@ -37,13 +37,13 @@ public:
 	RelaxedTree();
 
 	/** destructor */
-	virtual ~RelaxedTree();
+	~RelaxedTree() override;
 
 	/** get name */
-	virtual const char* get_name() const { return "RelaxedTree"; }
+	const char* get_name() const override { return "RelaxedTree"; }
 
 	/** apply machine to data in means of multiclass classification problem */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** set features
 	 * @param feats features
@@ -69,7 +69,7 @@ public:
 	 *
 	 * @param lab labels
 	 */
-	virtual void set_labels(std::shared_ptr<Labels> lab)
+	void set_labels(std::shared_ptr<Labels> lab) override
 	{
 		auto mlab = multiclass_labels(lab);
 		require(lab, "requires MulticlassLabes");
@@ -175,7 +175,7 @@ public:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train(std::shared_ptr<Features> data=NULL)
+	bool train(std::shared_ptr<Features> data=NULL) override
 	{
 		return Machine::train(data);
 	}
@@ -189,7 +189,7 @@ protected:
 	 * external source. This is because preparation have to be done
 	 * before calling this (mainly setup the kernel for submachines).
 	 */
-	float64_t apply_one(int32_t idx);
+	float64_t apply_one(int32_t idx) override;
 
 	/** train machine
 	 *
@@ -197,7 +197,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data);
+	bool train_machine(std::shared_ptr<Features> data) override;
 
 	/** train node */
 	std::shared_ptr<bnode_t> train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);

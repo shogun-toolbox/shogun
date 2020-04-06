@@ -66,7 +66,7 @@ class DynamicObjectArray : public SGObject
 			init();
 		}
 
-		virtual ~DynamicObjectArray() { }
+		~DynamicObjectArray() override { }
 
 		/** get array size (including granularity buffer)
 		 *
@@ -324,7 +324,7 @@ class DynamicObjectArray : public SGObject
 #endif // SWIG
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{ return "DynamicObjectArray"; }
 
 		/** Can (optionally) be overridden to pre-initialize some member

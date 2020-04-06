@@ -34,16 +34,16 @@ public:
 	TaskTree(std::shared_ptr<Task> root_task);
 
 	/** destructor */
-	virtual ~TaskTree();
+	~TaskTree() override;
 
 	/** get tasks indices */
-	virtual SGVector<index_t>* get_tasks_indices() const;
+	SGVector<index_t>* get_tasks_indices() const override;
 
 	/** get number of leaf tasks in the tree
 	 *
 	 * @return number of leaf tasks in the tree
 	 */
-	virtual int32_t get_num_tasks() const;
+	int32_t get_num_tasks() const override;
 
 	/** returns information about task
 	 * in SLEP "ind_t" format
@@ -68,13 +68,13 @@ public:
 	 *
 	 * @return name of the object
 	 */
-	const char* get_name() const { return "TaskTree"; };
+	const char* get_name() const override { return "TaskTree"; };
 
 	/** get relation type
 	 *
 	 * @return TASK_TREE
 	 */
-	ETaskRelationType get_relation_type() const { return TASK_TREE; }
+	ETaskRelationType get_relation_type() const override { return TASK_TREE; }
 
 protected:
 

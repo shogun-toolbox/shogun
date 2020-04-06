@@ -41,7 +41,7 @@ class ProductKernel : public Kernel
 		 */
 		ProductKernel(int32_t size=10);
 
-		virtual ~ProductKernel();
+		~ProductKernel() override;
 
 		/** initialize kernel
 		 *
@@ -49,34 +49,34 @@ class ProductKernel : public Kernel
 		 * @param rhs features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
+		bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type PRODUCT
 		 */
-		virtual EKernelType get_kernel_type() { return K_PRODUCT; }
+		EKernelType get_kernel_type() override { return K_PRODUCT; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type UNKNOWN
 		 */
-		virtual EFeatureType get_feature_type() { return F_UNKNOWN; }
+		EFeatureType get_feature_type() override { return F_UNKNOWN; }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class COMBINED
 		 */
-		virtual EFeatureClass get_feature_class() { return C_COMBINED; }
+		EFeatureClass get_feature_class() override { return C_COMBINED; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Product
 		 */
-		virtual const char* get_name() const { return "ProductKernel"; }
+		const char* get_name() const override { return "ProductKernel"; }
 
 		/** list kernels */
 		void list_kernels();
@@ -153,7 +153,7 @@ class ProductKernel : public Kernel
 		 *
 		 * @return number of subkernels
 		 */
-		inline int32_t get_num_subkernels()
+		inline int32_t get_num_subkernels() override
 		{
 			return kernel_array.size();
 		}
@@ -162,19 +162,19 @@ class ProductKernel : public Kernel
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			return initialized;
 		}
 
 		/** remove lhs from kernel */
-		virtual void remove_lhs();
+		void remove_lhs() override;
 
 		/** remove rhs from kernel */
 		virtual void remove_rhs();
 
 		/** remove lhs and rhs from kernel */
-		virtual void remove_lhs_and_rhs();
+		void remove_lhs_and_rhs() override;
 
 		/** precompute all sub-kernels */
 		bool precompute_subkernels();

@@ -31,12 +31,12 @@ class MKLClassification : public MKL
 
 		/** Destructor
 		 */
-		virtual ~MKLClassification();
+		~MKLClassification() override;
 
 		/** compute beta independent term from objective, e.g., in 2-class MKL
 		 * sum_i alpha_i etc
 		 */
-		virtual float64_t compute_sum_alpha();
+		float64_t compute_sum_alpha() override;
 
 		/**
 		 * Helper method used to specialize a base class instance.
@@ -49,19 +49,19 @@ class MKLClassification : public MKL
 		static std::shared_ptr<MKLClassification> obtain_from_generic(const std::shared_ptr<Machine>& machine);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MKLClassification"; }
+		const char* get_name() const override { return "MKLClassification"; }
 
 	protected:
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case
 		 */
-		virtual void init_training();
+		void init_training() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type MKL_CLASSIFICATION
 		 */
-		virtual EMachineType get_classifier_type() { return CT_MKLCLASSIFICATION; }
+		EMachineType get_classifier_type() override { return CT_MKLCLASSIFICATION; }
 };
 }
 #endif //__MKLCLASSIFICATION_H__

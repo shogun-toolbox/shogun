@@ -44,7 +44,7 @@ class ThresholdRejectionStrategy : public RejectionStrategy
 		ThresholdRejectionStrategy(float64_t threshold) :
 			RejectionStrategy(), m_threshold(threshold) { };
 
-		virtual ~ThresholdRejectionStrategy() {};
+		~ThresholdRejectionStrategy() override {};
 
 		/** get name */
 		virtual const char* get_name() const
@@ -127,7 +127,7 @@ class DixonQTestRejectionStrategy : public RejectionStrategy
 			else error("Given significance level is not supported");
 		}
 
-		virtual ~DixonQTestRejectionStrategy()
+		~DixonQTestRejectionStrategy() override
 		{
 		}
 

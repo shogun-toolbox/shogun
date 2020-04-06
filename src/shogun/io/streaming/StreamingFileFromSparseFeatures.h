@@ -44,7 +44,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingFileFromSparseFeatures();
+	~StreamingFileFromSparseFeatures() override;
 
 	/**
 	 * This function will be called for reading vectors from the
@@ -72,13 +72,13 @@ public:
 	 * example in the SparseFeatures object.
 	 *
 	 */
-	void reset_stream()
+	void reset_stream() override
 	{
 		vector_num = 0;
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "StreamingFileFromSparseFeatures";
 

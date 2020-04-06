@@ -45,13 +45,13 @@ public:
    MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
    /** Class default Destructor */
-   virtual ~MKLMulticlass();
+   ~MKLMulticlass() override;
 
    /** get classifier type
     *
     * @return classifier type GMNPMKL
     */
-   virtual inline EMachineType get_classifier_type()
+   inline EMachineType get_classifier_type() override
    { return CT_MKLMULTICLASS; }
 
    /** returns MKL weights for the different kernels
@@ -155,10 +155,10 @@ protected:
     *
     * @return whether training was successful
     */
-   virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+   bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
    /** @return object name */
-    virtual const char* get_name() const { return "MKLMulticlass"; }
+    const char* get_name() const override { return "MKLMulticlass"; }
 
 protected:
    /** the Multiclass svm for fixed MKL weights

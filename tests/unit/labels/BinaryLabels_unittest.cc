@@ -27,7 +27,7 @@ public:
 	const int32_t n = 4;
 	float64_t threshold = 0.5;
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		probabilities = {0.1, 0.4, 06, 0.9};
 
@@ -38,7 +38,7 @@ public:
 		    [t](float64_t a) { return a > t ? 1 : -1; });
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 	}
 };

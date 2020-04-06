@@ -150,7 +150,7 @@ public:
 	FeatureSelection();
 
 	/** Destructor */
-	virtual ~FeatureSelection();
+	~FeatureSelection() override;
 
 	/** Generic interface for applying the feature selection preprocessor.
 	 * Acts as a wrapper which decides which actual method to call based on the
@@ -159,13 +159,13 @@ public:
 	 * @param features the input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** Apply inverse transformation. This method is not supported by feature
 	 * selection preprocessors.
 	 */
-	virtual std::shared_ptr<Features>
-	inverse_transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features>
+	inverse_transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/**
 	 * Abstract method that is defined in the subclasses to compute the
@@ -197,13 +197,13 @@ public:
 	SGVector<index_t> get_selected_feats();
 
 	/** @return the feature class, shogun::C_ANY */
-	virtual EFeatureClass get_feature_class();
+	EFeatureClass get_feature_class() override;
 
 	/** @return feature type */
-	virtual EFeatureType get_feature_type();
+	EFeatureType get_feature_type() override;
 
 	/** @return the preprocessor type */
-	virtual EPreprocessorType get_type() const;
+	EPreprocessorType get_type() const override;
 
 	/** @param target_dim the target dimension to achieve */
 	void set_target_dim(index_t target_dim);
@@ -261,10 +261,10 @@ public:
 	std::shared_ptr<Labels> get_labels() const;
 
 	/** performs cleanup */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** @return the class name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "FeatureSelection";
 	}

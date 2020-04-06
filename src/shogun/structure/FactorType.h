@@ -37,10 +37,10 @@ public:
 	FactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
-	virtual ~FactorType();
+	~FactorType() override;
 
 	/** @return name of class */
-	virtual const char* get_name() const { return "FactorType"; }
+	const char* get_name() const override { return "FactorType"; }
 
 	/** @return get factor type id */
 	virtual int32_t get_type_id() const;
@@ -130,13 +130,13 @@ public:
 	TableFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
-	virtual ~TableFactorType();
+	~TableFactorType() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "TableFactorType"; }
+	const char* get_name() const override { return "TableFactorType"; }
 
 	/** @return this is the table implementation but memory inefficient */
-	virtual bool is_table() const { return true; }
+	bool is_table() const override { return true; }
 
 	/** infer variable state from a given index of energy table
 	 *

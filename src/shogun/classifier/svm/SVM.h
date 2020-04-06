@@ -64,7 +64,7 @@ class SVM : public KernelMachine
 		 */
 		SVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
-		virtual ~SVM();
+		~SVM() override;
 
 		/** set default values for members a SVM object
 		*/
@@ -243,7 +243,7 @@ class SVM : public KernelMachine
 				(std::shared_ptr<MKL> mkl, const float64_t* sumw, const float64_t suma));
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SVM"; }
+		const char* get_name() const override { return "SVM"; }
 
 	protected:
 

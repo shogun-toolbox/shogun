@@ -199,7 +199,7 @@ public:
 		m_g=std::move(g);
 	}
 
-	virtual ~ProductFunction()
+	~ProductFunction() override
 	{
 
 
@@ -211,7 +211,7 @@ public:
 	 *
 	 * @return h(x)=f(x)*g(x)
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return (*m_f)(x)*(*m_g)(x);
 	}
@@ -230,7 +230,7 @@ public:
 	/** default constructor */
 	LinearFunction() { }
 
-	virtual ~LinearFunction() { }
+	~LinearFunction() override { }
 
 	/** returns value of the function at given point
 	 *
@@ -238,7 +238,7 @@ public:
 	 *
 	 * @return f(x)=x
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return x;
 	}
@@ -251,7 +251,7 @@ public:
 	/** default constructor */
 	QuadraticFunction() { }
 
-	virtual ~QuadraticFunction() { }
+	~QuadraticFunction() override { }
 
 	/** returns value of the function at given point
 	 *
@@ -259,7 +259,7 @@ public:
 	 *
 	 * @return f(x)=x^2
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return Math::sq(x);
 	}

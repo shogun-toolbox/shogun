@@ -27,7 +27,7 @@ public:
 		m_total_variables=0;
 	}
 
-	virtual ~GradientResult()
+	~GradientResult() override
 	{
 
 
@@ -37,10 +37,10 @@ public:
 	 *
 	 *  @return name GradientResult
 	 */
-	virtual const char* get_name() const { return "GradientResult"; }
+	const char* get_name() const override { return "GradientResult"; }
 
 	/** prints the function value and gradient contained in the object */
-	virtual void print_result()
+	void print_result() override
 	{
 		require(!m_gradient.empty(), "Gradient map should not be NULL");
 		require(!m_parameter_dictionary.empty(), "Parameter dictionary should not be "

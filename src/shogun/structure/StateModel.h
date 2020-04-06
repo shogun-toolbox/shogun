@@ -31,7 +31,7 @@ class StateModel : public SGObject
 		StateModel();
 
 		/** destructor */
-		virtual ~StateModel();
+		~StateModel() override;
 
 		/** @return number of states */
 		int32_t get_num_states() const;
@@ -205,7 +205,7 @@ class StateModel : public SGObject
 		SGVector< float64_t > get_stop_states() const;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "StateModel"; }
+		const char* get_name() const override { return "StateModel"; }
 
 	private:
 		/** internal initialization */

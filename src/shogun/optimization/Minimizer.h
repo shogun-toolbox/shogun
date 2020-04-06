@@ -49,7 +49,7 @@ public:
 	 */
 	virtual float64_t minimize()=0;
 
-	virtual ~Minimizer() {}
+	~Minimizer() override {}
 };
 
 }

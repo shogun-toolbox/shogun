@@ -24,12 +24,12 @@ public:
 	std::shared_ptr<BinaryLabels> ground_truth;
 	std::mt19937_64 prng;
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		prng = std::mt19937_64(17);
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 
 

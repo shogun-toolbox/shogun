@@ -54,7 +54,7 @@ namespace shogun
 			init();
 		}
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
+		std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
 		{
 			auto clone = std::dynamic_pointer_cast<this_t>(Parent::clone());
 			clone->m_prng = m_prng;

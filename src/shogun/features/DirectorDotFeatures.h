@@ -32,7 +32,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		{
 		}
 
-		virtual ~DirectorDotFeatures() { }
+		~DirectorDotFeatures() override { }
 
 		/** get number of examples/vectors, possibly corresponding to the current subset
 		 *
@@ -40,7 +40,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @return number of examples/vectors (possibly of subset, if implemented)
 		 */
-		virtual int32_t get_num_vectors() const
+		int32_t get_num_vectors() const override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return 0;
@@ -78,7 +78,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 dense vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override
+		float64_t dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return 0;
@@ -183,7 +183,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 * @param iterator as returned by get_feature_iterator
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
+		bool get_next_feature(int32_t& index, float64_t& value, void* iterator) override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return false;
@@ -194,7 +194,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @param iterator as returned by get_feature_iterator
 		 */
-		virtual void free_feature_iterator(void* iterator)
+		void free_feature_iterator(void* iterator) override
 		{
 			not_implemented(SOURCE_LOCATION);
 		}
@@ -234,7 +234,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual ::std::shared_ptr<Features> duplicate() const
+		::std::shared_ptr<Features> duplicate() const override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return NULL;
@@ -265,7 +265,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual void del_preprocessor(int32_t num)
+		void del_preprocessor(int32_t num) override
 		{
 			Features::del_preprocessor(num);
 		}

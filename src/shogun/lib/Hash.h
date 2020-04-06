@@ -29,7 +29,7 @@ class Hash : public SGObject
 		/** default constructor */
 		Hash() {}
 		/** default destructor */
-		virtual ~Hash() {}
+		~Hash() override {}
 
 		/** crc32 checksumming
 		 *
@@ -98,7 +98,7 @@ class Hash : public SGObject
 		static uint32_t MurmurHashString(substring s, uint32_t h);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Hash"; }
+		const char* get_name() const override { return "Hash"; }
 
 	protected:
 

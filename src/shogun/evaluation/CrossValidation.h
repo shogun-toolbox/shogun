@@ -44,13 +44,13 @@ namespace shogun
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "CrossValidationResult";
 		}
 
 		/** print result */
-		virtual void print_result()
+		void print_result() override
 		{
 			io::print("{}+-{}\n", mean, std_dev);
 		}
@@ -154,26 +154,26 @@ namespace shogun
 		    std::shared_ptr<Evaluation> evaluation_criterion);
 
 		/** destructor */
-		virtual ~CrossValidation();
+		~CrossValidation() override;
 
 		/** setter for the number of runs to use for evaluation */
 		void set_num_runs(int32_t num_runs);
 
 		/** @return name of the SGSerializable */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "CrossValidation";
 		}
 
 	private:
-		void init();
+		void init() override;
 
 	protected:
 		/**
 		 * Does the actual evaluation.
 		 * @return the cross-validation result
 		 */
-		virtual std::shared_ptr<EvaluationResult> evaluate_impl() const override;
+		std::shared_ptr<EvaluationResult> evaluate_impl() const override;
 
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then

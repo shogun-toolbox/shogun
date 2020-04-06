@@ -59,27 +59,27 @@ class CircularKernel: public Kernel
 	 * @param r features of right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/**
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type() { return K_CIRCULAR; }
+	EKernelType get_kernel_type() override { return K_CIRCULAR; }
 
 	/**
 	 * @return type of features
 	 */
-	virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	EFeatureType get_feature_type() override { return distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	EFeatureClass get_feature_class() override { return distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const { return "CircularKernel"; }
+	const char* get_name() const override { return "CircularKernel"; }
 
 	/** set the kernel's sigma
 	 *
@@ -99,7 +99,7 @@ class CircularKernel: public Kernel
 		return sigma;
 	}
 
-	virtual ~CircularKernel();
+	~CircularKernel() override;
 
 	/** Can (optionally) be overridden to post-initialize some
 	 *  member variables which are not PARAMETER::ADD'ed.  Make
@@ -120,7 +120,7 @@ class CircularKernel: public Kernel
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 private:
 	void init();

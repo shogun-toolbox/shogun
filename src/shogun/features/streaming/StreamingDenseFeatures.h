@@ -63,7 +63,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	~StreamingDenseFeatures();
+	~StreamingDenseFeatures() override;
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -74,7 +74,7 @@ public:
 	 * The parser uses the function set by this while reading
 	 * unlabelled examples.
 	 */
-	virtual void set_vector_reader();
+	void set_vector_reader() override;
 
 	/**
 	 * Sets the read function (in case the examples are labelled)
@@ -85,14 +85,14 @@ public:
 	 * The parser uses the function set by this while reading
 	 * labelled examples.
 	 */
-	virtual void set_vector_and_label_reader();
+	void set_vector_and_label_reader() override;
 
 	/**
 	 * Starts the parsing thread.
 	 *
 	 * To be called before trying to use any feature vectors from this object.
 	 */
-	virtual void start_parser();
+	void start_parser() override;
 
 	/**
 	 * Ends the parsing thread.
@@ -105,7 +105,7 @@ public:
 	 * Reset a file back to the first example
 	 * if possible.
 	 */
-	virtual void reset_stream();
+	void reset_stream() override;
 
 	/**
 	 * Instructs the parser to return the next example.
@@ -115,7 +115,7 @@ public:
 	 * @return True on success, false if there are no more
 	 * examples, or an error occurred.
 	 */
-	virtual bool get_next_example();
+	bool get_next_example() override;
 
 	/**
 	 * Return the current feature vector as an SGVector<T>.
@@ -131,7 +131,7 @@ public:
 	 *
 	 * @return The label as a float64_t.
 	 */
-	virtual float64_t get_label();
+	float64_t get_label() override;
 
 	/**
 	 * Release the current example, indicating to the parser that
@@ -139,7 +139,7 @@ public:
 	 *
 	 * The parser is then free to throw away that example.
 	 */
-	virtual void release_example();
+	void release_example() override;
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -148,7 +148,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	int32_t get_dim_feature_space() const override;
 
 	/**
 	 * Dot product using the current vector and another vector, passed as arg.
@@ -169,7 +169,7 @@ public:
 	 *
 	 * @return Dot product.
 	 */
-	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures >df);
+	float32_t dot(std::shared_ptr<StreamingDotFeatures >df) override;
 
 	/**
 	 * Dot product with another dense vector.
@@ -178,7 +178,7 @@ public:
 	 * @param vec2_len length of vector
 	 * @return Dot product as a float32_t.
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len);
+	float32_t dense_dot(const float32_t* vec2, int32_t vec2_len) override;
 
 	/**
 	 * Dot product with another float64_t type dense vector.
@@ -198,8 +198,8 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			int32_t vec2_len, bool abs_val=false);
+	void add_to_dense_vec(float32_t alpha, float32_t* vec2,
+			int32_t vec2_len, bool abs_val=false) override;
 
 	/**
 	 * Add alpha*current_vector to another float64_t type dense vector.
@@ -217,14 +217,14 @@ public:
 	 *
 	 * @return number of non-zero features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector();
+	int32_t get_nnz_features_for_vector() override;
 
 	/**
 	 * Return the number of features in the current example.
 	 *
 	 * @return number of features as int
 	 */
-	int32_t get_num_features();
+	int32_t get_num_features() override;
 
 	/**
 	 * Return the feature type, depending on T.
@@ -238,7 +238,7 @@ public:
 	 *
 	 * @return C_STREAMING_DENSE
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	EFeatureClass get_feature_class() const override;
 
 	/**
 	 * Return the name.
@@ -255,7 +255,7 @@ public:
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	int32_t get_num_vectors() const override;
 
 	/** Returns a new CDebseFeatures instance which contains num_elements elements
 	 * from the underlying stream. The object is not SG_REF'ed.
@@ -264,7 +264,7 @@ public:
 	 * @return Features object of underlying type, might contain less data if
 	 * the stream did end (warning is written)
 	 */
-	virtual std::shared_ptr<Features> get_streamed_features(index_t num_elements);
+	std::shared_ptr<Features> get_streamed_features(index_t num_elements) override;
 
 private:
 	/**

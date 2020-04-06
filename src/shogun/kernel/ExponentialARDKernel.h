@@ -66,31 +66,31 @@ public:
 	/** default constructor */
 	ExponentialARDKernel();
 
-	virtual ~ExponentialARDKernel();
+	~ExponentialARDKernel() override;
 
 	/** return what type of kernel we are
 	 *
 	 * @return kernel type ExponentialARD
 	 */
-	virtual EKernelType get_kernel_type() { return K_EXPONENTIALARD; }
+	EKernelType get_kernel_type() override { return K_EXPONENTIALARD; }
 
 	/** return the kernel's name
 	 *
 	 * @return name 
 	 */
-	virtual const char* get_name() const { return "ExponentialARDKernel"; }
+	const char* get_name() const override { return "ExponentialARDKernel"; }
 
 	/** return feature class the kernel can deal with
 	 *
 	 * @return feature class DENSE
 	 */
-	virtual EFeatureClass get_feature_class() { return C_DENSE; }
+	EFeatureClass get_feature_class() override { return C_DENSE; }
 
 	/** return feature type the kernel can deal with
 	 *
 	 * @return float64_t feature type
 	 */
-	virtual EFeatureType get_feature_type() { return F_DREAL; }
+	EFeatureType get_feature_type() override { return F_DREAL; }
 
 private:
 	void init();
@@ -139,7 +139,7 @@ protected:
 	 * @return computed kernel function at indices a,b
 	 * kernel(idx_a, idx_b)=exp(-distance(idx_a, idx_b))
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+	float64_t compute(int32_t idx_a, int32_t idx_b) override
 	{
 		return std::exp(-distance(idx_a, idx_b));
 	}
@@ -167,7 +167,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 
 	/** return current feature/dimension weights in matrix form

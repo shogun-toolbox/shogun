@@ -44,7 +44,7 @@ class SplineKernel: public DotKernel
 		 */
 		SplineKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r);
 
-		virtual ~SplineKernel();
+		~SplineKernel() override;
 
 		/** initialize kernel
 		 *
@@ -52,25 +52,25 @@ class SplineKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type SPLINE
 		 */
-		virtual EKernelType get_kernel_type() { return K_SPLINE; }
+		EKernelType get_kernel_type() override { return K_SPLINE; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Spline
 		 */
-		virtual const char* get_name() const { return "SplineKernel"; }
+		const char* get_name() const override { return "SplineKernel"; }
 
 	protected:
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 }
 #endif /* _SPLINEKERNEL_H__ */

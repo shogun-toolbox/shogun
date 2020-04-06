@@ -76,11 +76,11 @@ public:
 	Preprocessor() : Transformer(){};
 
 	/** destructor */
-	virtual ~Preprocessor()
+	~Preprocessor() override
 	{
 	}
 
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace) = 0;
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace) override = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;

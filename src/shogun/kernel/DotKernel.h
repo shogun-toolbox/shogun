@@ -58,7 +58,7 @@ class DotKernel : public Kernel
 		 *  @param r features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 		{
 			Kernel::init(l,r);
 			init_auto_params();
@@ -94,7 +94,7 @@ class DotKernel : public Kernel
 		 *
 		 * @return feature class ANY
 		 */
-		virtual EFeatureClass get_feature_class() { return C_ANY; }
+		EFeatureClass get_feature_class() override { return C_ANY; }
 
 		/** return feature type the kernel can deal with
 		 *
@@ -102,14 +102,14 @@ class DotKernel : public Kernel
 		 *
 		 * @return ANY feature type
 		 */
-		virtual EFeatureType get_feature_type() { return F_ANY; }
+		EFeatureType get_feature_type() override { return F_ANY; }
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "DotKernel"; }
+		const char* get_name() const override { return "DotKernel"; }
 
 		/** return what type of kernel we are, e.g.
 		 * Linear,Polynomial, Gaussian,...
@@ -129,7 +129,7 @@ class DotKernel : public Kernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		float64_t compute(int32_t idx_a, int32_t idx_b) override
 		{
 			return (std::static_pointer_cast<DotFeatures>(lhs))->dot(idx_a, (std::static_pointer_cast<DotFeatures>(rhs)), idx_b);
 		}

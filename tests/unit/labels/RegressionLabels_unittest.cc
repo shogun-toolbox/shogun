@@ -18,13 +18,13 @@ public:
 
 	const int32_t n = 4;
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		labels_regression = {1, -1.5, 20.6, 0.9};
 		scores = {2, 3, 4, 5};
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 	}
 };

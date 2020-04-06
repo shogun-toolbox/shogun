@@ -38,7 +38,7 @@ class Jade: public ICAConverter
 		Jade();
 
 		/** destructor */
-		virtual ~Jade();
+		~Jade() override;
 
 		/** getter for cumulant_matrix
 		 * @return cumulant_matrix
@@ -46,14 +46,14 @@ class Jade: public ICAConverter
 		SGMatrix<float64_t> get_cumulant_matrix() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Jade"; };
+		const char* get_name() const override { return "Jade"; };
 
 	protected:
 
 		/** init */
 		void init();
 
-		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
+		void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) override;
 
 	private:
 

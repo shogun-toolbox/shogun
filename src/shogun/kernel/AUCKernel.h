@@ -45,7 +45,7 @@ namespace shogun
 		AUCKernel(int32_t size, std::shared_ptr<Kernel> subkernel, std::shared_ptr<Labels> labels);
 
 		/** destructor */
-		virtual ~AUCKernel();
+		~AUCKernel() override;
 
 		/** initialize kernel based on current labeling and subkernel
 		 *
@@ -60,13 +60,13 @@ namespace shogun
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type AUC
 		 */
-		virtual EKernelType get_kernel_type()
+		EKernelType get_kernel_type() override
 		{
 			return K_AUC;
 		}
@@ -75,7 +75,7 @@ namespace shogun
 		 *
 		 * @return name AUC
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "AUCKernel";
 		}
@@ -84,7 +84,7 @@ namespace shogun
 		 *
 		 * @return feature class SIMPLE
 		 */
-		virtual EFeatureClass get_feature_class()
+		EFeatureClass get_feature_class() override
 		{
 			return C_DENSE;
 		}
@@ -93,7 +93,7 @@ namespace shogun
 		 *
 		 * @return word feature type
 		 */
-		virtual EFeatureType get_feature_type()
+		EFeatureType get_feature_type() override
 		{
 			return F_WORD;
 		}
@@ -107,7 +107,7 @@ namespace shogun
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** the subkernel */

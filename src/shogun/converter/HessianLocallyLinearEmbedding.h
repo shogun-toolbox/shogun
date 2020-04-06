@@ -42,13 +42,13 @@ public:
 	HessianLocallyLinearEmbedding();
 
 	/** destructor */
-	virtual ~HessianLocallyLinearEmbedding();
+	~HessianLocallyLinearEmbedding() override;
 
 	/** get name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 	/** transform */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 };
 }
 

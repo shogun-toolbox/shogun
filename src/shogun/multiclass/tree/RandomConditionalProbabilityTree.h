@@ -25,10 +25,10 @@ public:
 	RandomConditionalProbabilityTree() : m_uniform_real_dist(0.0, 1.0) {}
 
     /** destructor */
-	virtual ~RandomConditionalProbabilityTree() {}
+	~RandomConditionalProbabilityTree() override {}
 
     /** get name */
-    virtual const char* get_name() const { return "RandomConditionalProbabilityTree"; }
+    const char* get_name() const override { return "RandomConditionalProbabilityTree"; }
 
 protected:
 	/** decide which subtree to go, when training the tree structure.
@@ -36,7 +36,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex);
+	bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex) override;
 
 private:
 	UniformRealDistribution<float64_t> m_uniform_real_dist;

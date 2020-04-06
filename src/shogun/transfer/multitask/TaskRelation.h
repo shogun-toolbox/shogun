@@ -35,7 +35,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~TaskRelation()
+	~TaskRelation() override
 	{
 	}
 
@@ -43,7 +43,7 @@ public:
 	 *
 	 * @return name of the object
 	 */
-	virtual const char* get_name() const { return "TaskRelation"; };
+	const char* get_name() const override { return "TaskRelation"; };
 
 	/** get relation type (not implemented)
 	 *

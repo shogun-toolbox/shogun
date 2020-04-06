@@ -49,7 +49,7 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 	{
 	}
 
-	virtual ~MatrixProjectionImplementation()
+	~MatrixProjectionImplementation() override
 	{
 	}
 

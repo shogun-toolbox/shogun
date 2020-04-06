@@ -28,19 +28,19 @@ public:
 	PRCEvaluation();
 
 	/** destructor */
-	virtual ~PRCEvaluation();
+	~PRCEvaluation() override;
 
 	/** get name */
-	virtual const char* get_name() const { return "PRCEvaluation"; };
+	const char* get_name() const override { return "PRCEvaluation"; };
 
 	/** evaluate PRC and auPRC
 	 * @param predicted labels
 	 * @param ground_truth labels assumed to be correct
 	 * @return auPRC
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
-	inline EEvaluationDirection get_evaluation_direction() const
+	inline EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MAXIMIZE;
 	}

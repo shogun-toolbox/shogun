@@ -31,7 +31,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		}
 
 		/* destructor */
-		virtual ~DirectorLinearMachine()
+		~DirectorLinearMachine() override
 		{
 
 		}
@@ -44,7 +44,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL)
+		bool train(std::shared_ptr<Features> data=NULL) override
 		{
 			return LinearMachine::train(data);
 		}
@@ -79,19 +79,19 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<Labels> apply(std::shared_ptr<Features> data=NULL)
+		std::shared_ptr<Labels> apply(std::shared_ptr<Features> data=NULL) override
 		{
 			return LinearMachine::apply(data);
 		}
 
 		/** apply machine to data in means of binary classification problem */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL)
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override
 		{
 			return LinearMachine::apply_binary(data);
 		}
 
 		/** apply machine to data in means of regression problem */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL)
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override
 		{
 			return LinearMachine::apply_regression(data);
 		}
@@ -117,7 +117,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @return labels
 		 */
-		virtual std::shared_ptr<Labels> get_labels()
+		std::shared_ptr<Labels> get_labels() override
 		{
 			return LinearMachine::get_labels();
 		}

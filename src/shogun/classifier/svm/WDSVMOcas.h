@@ -47,13 +47,13 @@ class WDSVMOcas : public Machine
 		WDSVMOcas(
 			float64_t C, int32_t d, int32_t from_d,
 			std::shared_ptr<StringFeatures<uint8_t>> traindat, std::shared_ptr<Labels> trainlab);
-		virtual ~WDSVMOcas();
+		~WDSVMOcas() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type WDSVMOCAS
 		 */
-		virtual EMachineType get_classifier_type() { return CT_WDSVMOCAS; }
+		EMachineType get_classifier_type() override { return CT_WDSVMOCAS; }
 
 		/** set C
 		 *
@@ -155,7 +155,7 @@ class WDSVMOcas : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 		/** classify objects
 		 * for regression problems
@@ -163,14 +163,14 @@ class WDSVMOcas : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 		/** classify one example
 		 *
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		virtual float64_t apply_one(int32_t num)
+		float64_t apply_one(int32_t num) override
 		{
 			ASSERT(features)
 			if (!wd_weights)

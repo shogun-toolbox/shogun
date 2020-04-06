@@ -34,7 +34,7 @@ public:
 	EmbeddingConverter();
 
 	/** destructor */
-	virtual ~EmbeddingConverter();
+	~EmbeddingConverter() override;
 
 	/** Apply transformation to features. In-place mode is not supported for
 	 * Tapkee converters.
@@ -73,7 +73,7 @@ public:
 	 */
 	std::shared_ptr<Kernel> get_kernel() const;
 
-	virtual const char* get_name() const { return "EmbeddingConverter"; };
+	const char* get_name() const override { return "EmbeddingConverter"; };
 
 protected:
 

@@ -64,7 +64,7 @@ public:
 	KernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
 	KernelSelectionStrategy(const KernelSelectionStrategy& other)=delete;
 	KernelSelectionStrategy& operator=(const KernelSelectionStrategy& other)=delete;
-	virtual ~KernelSelectionStrategy();
+	~KernelSelectionStrategy() override;
 
 	KernelSelectionStrategy& use_method(EKernelSelectionMethod method);
 	KernelSelectionStrategy& use_num_runs(index_t num_runs);
@@ -80,7 +80,7 @@ public:
 
 	void add_kernel(std::shared_ptr<Kernel> kernel);
 	std::shared_ptr<Kernel> select_kernel(std::shared_ptr<MMD> estimator);
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 	void erase_intermediate_results();
 
 	SGMatrix<float64_t> get_measure_matrix();

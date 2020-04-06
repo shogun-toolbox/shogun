@@ -48,7 +48,7 @@ public:
             float64_t pzero=0.5, float64_t pposone=0.25, float64_t pnegone=0.25);
 
     /** destructor */
-    virtual ~ECOCRandomSparseEncoder() {}
+    ~ECOCRandomSparseEncoder() override {}
 
     /** set probability
      * @param pzero probability of zero
@@ -58,7 +58,7 @@ public:
     void set_probability(float64_t pzero, float64_t pposone, float64_t pnegone);
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCRandomSparseEncoder"; }
+    const char* get_name() const override { return "ECOCRandomSparseEncoder"; }
 
     /** get default code length
      * @param num_classes number of classes
@@ -78,7 +78,7 @@ public:
 	/** init codebook.
 	 * @param num_classes number of classes in this problem
 	 */
-	virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
+	SGMatrix<int32_t> create_codebook(int32_t num_classes) override;
 
 protected:
     /** maximum number of iterations */

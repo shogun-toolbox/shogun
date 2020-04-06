@@ -76,7 +76,7 @@ public:
 		int32_t maxlen, float64_t lambda);
 
 	/** destructor */
-	virtual ~SubsequenceStringKernel();
+	~SubsequenceStringKernel() override;
 
 	/**
 	 * initialize kernel
@@ -85,25 +85,25 @@ public:
 	 * @param rhs features of right-hand side
 	 * @return true if initialization was successful, false otherwise
 	 */
-	virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
+	bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs) override;
 
 	/** clean up kernel */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** @return the kernel type */
-	virtual EKernelType get_kernel_type()
+	EKernelType get_kernel_type() override
 	{
 		return K_POLYMATCH;
 	}
 
 	/** @return name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "SubsequenceStringKernel";
 	}
 
 	/** register the parameters */
-	virtual void register_params();
+	void register_params() override;
 
 	/**
 	 * compute kernel function for features a and b.
@@ -127,7 +127,7 @@ public:
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 protected:
 	/** maximum length of common subsequences */

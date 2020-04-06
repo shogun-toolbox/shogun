@@ -42,7 +42,7 @@ public:
 	 * @param features the sparse input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace) override;
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
@@ -50,19 +50,19 @@ public:
 	apply_to_sparse_feature_vector(SGSparseVector<ST>* f, int32_t& len) = 0;
 
 	/// return that we are simple minded features (just fixed size matrices)
-	virtual EFeatureClass get_feature_class()
+	EFeatureClass get_feature_class() override
 	{
 		return C_SPARSE;
 	}
 
 	/// return the name of the preprocessor
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "UNKNOWN";
 	}
 
 	/// return a type of preprocessor
-	virtual EPreprocessorType get_type() const
+	EPreprocessorType get_type() const override
 	{
 		return P_UNKNOWN;
 	}

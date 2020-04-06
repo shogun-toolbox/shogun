@@ -34,7 +34,7 @@ class ShogunNotImplementedException: public ShogunException
 
 		/** destructor
 		 */
-        virtual ~ShogunNotImplementedException();
+        ~ShogunNotImplementedException() override;
 
 
 	private:

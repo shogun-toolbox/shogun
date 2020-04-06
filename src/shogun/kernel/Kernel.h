@@ -188,7 +188,7 @@ class Kernel : public SGObject
 		 */
 		Kernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, int32_t size);
 
-		virtual ~Kernel();
+		~Kernel() override;
 
 		/** get kernel function for lhs feature vector a
 		 * and rhs feature vector b

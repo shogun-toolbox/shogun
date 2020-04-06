@@ -18,7 +18,7 @@ namespace shogun
 			~JsonSerializer() override;
 			virtual void write(const std::shared_ptr<SGObject>& object) noexcept(false);
 
-			virtual const char* get_name() const
+			const char* get_name() const override
 			{
 				return "JsonSerializer";
 			}

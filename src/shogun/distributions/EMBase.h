@@ -49,10 +49,10 @@ template <class T> class EMBase : public SGObject
 		EMBase() : SGObject() { };
 
 		/** destructor */
-		virtual ~EMBase() { };
+		~EMBase() override { };
 
 		/** returns the name of the class */
-		virtual const char* get_name() const { return "EMBase"; }
+		const char* get_name() const override { return "EMBase"; }
 
 		/** expectation step
 		 *

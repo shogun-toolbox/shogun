@@ -61,14 +61,14 @@ public:
 		int32_t skips = 0);
 
 	/** Destructor */
-	virtual ~HashedDocConverter();
+	~HashedDocConverter() override;
 
 	/** Hashes each string contained in features
 	 *
 	 * @param features the strings to be hashed. Must be an instance of CStringFeatures.
 	 * @return a SparseFeatures object containing the hashes of the strings.
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** Hashes the tokens contained in document
 	 *
@@ -99,7 +99,7 @@ public:
 			SGVector<index_t>& ngram_hashes, int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip);
 
 	/** @return object name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 	/** specify whether hashed vector should be normalized or not
 	 *

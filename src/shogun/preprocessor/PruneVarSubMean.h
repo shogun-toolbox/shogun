@@ -33,26 +33,26 @@ class PruneVarSubMean : public DensePreprocessor<float64_t>
 		PruneVarSubMean(bool divide=true);
 
 		/** destructor */
-		virtual ~PruneVarSubMean();
+		~PruneVarSubMean() override;
 
 		/// Fit preprocessor into features
-		virtual void fit(std::shared_ptr<Features> features);
+		void fit(std::shared_ptr<Features> features) override;
 
 		/// cleanup
-		virtual void cleanup();
+		void cleanup() override;
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "PruneVarSubMean"; }
+		const char* get_name() const override { return "PruneVarSubMean"; }
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type() const { return P_PRUNEVARSUBMEAN; }
+		EPreprocessorType get_type() const override { return P_PRUNEVARSUBMEAN; }
 
 	protected:
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 	private:
 		void init();

@@ -47,13 +47,13 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 		/** destructor */
-		virtual ~LinearMulticlassMachine()
+		~LinearMulticlassMachine() override
 		{
 
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LinearMulticlassMachine";
 		}
@@ -84,7 +84,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 	protected:
 
 		/** init machine for train with setting features */
-		virtual bool init_machine_for_train(std::shared_ptr<Features> data)
+		bool init_machine_for_train(std::shared_ptr<Features> data) override
 		{
 			if (!m_machine)
 				error("No machine given in Multiclass constructor");
@@ -98,7 +98,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 		/** init machines for applying with setting features */
-		virtual bool init_machines_for_apply(std::shared_ptr<Features> data)
+		bool init_machines_for_apply(std::shared_ptr<Features> data) override
 		{
 			if (data)
 				set_features(data->as<DotFeatures>());
@@ -115,7 +115,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 		/** check features availability */
-		virtual bool is_ready()
+		bool is_ready() override
 		{
 			if (m_features)
 				return true;
@@ -130,7 +130,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 		/** get number of rhs feature vectors */
-		virtual int32_t get_num_rhs_vectors() const
+		int32_t get_num_rhs_vectors() const override
 		{
 			return m_features->get_num_vectors();
 		}
@@ -139,7 +139,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		 *
 		 * @param subset subset instance to set
 		 */
-		virtual void add_machine_subset(SGVector<index_t> subset)
+		void add_machine_subset(SGVector<index_t> subset) override
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
@@ -147,7 +147,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 		/** deletes any subset set to the features of the machine */
-		virtual void remove_machine_subset()
+		void remove_machine_subset() override
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */

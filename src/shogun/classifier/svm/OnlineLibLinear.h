@@ -62,7 +62,7 @@ public:
 		OnlineLibLinear(const std::shared_ptr<OnlineLibLinear >&mch);
 
 		/** Destructor */
-		virtual ~OnlineLibLinear();
+		~OnlineLibLinear() override;
 
 		/**
 		 * Set C1 and C2 constants
@@ -101,13 +101,13 @@ public:
 		virtual bool get_bias_enabled() { return use_bias; }
 
 		/** @return Object name */
-		virtual const char* get_name() const { return "OnlineLibLinear"; }
+		const char* get_name() const override { return "OnlineLibLinear"; }
 
 		/** start training */
-		virtual void start_train();
+		void start_train() override;
 
 		/** stop training */
-		virtual void stop_train();
+		void stop_train() override;
 
 		/** train on one example
 		 * @param feature the feature object containing the current example. Note that get_next_example
@@ -118,7 +118,7 @@ public:
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example
 		 */
-		virtual void train_example(std::shared_ptr<StreamingDotFeatures >feature, float64_t label);
+		void train_example(std::shared_ptr<StreamingDotFeatures >feature, float64_t label) override;
 
 private:
 		/** Set up parameters */

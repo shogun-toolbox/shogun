@@ -23,19 +23,19 @@ namespace shogun
 
 		ParameterObserverLogger(std::vector<std::string>& parameters);
 
-		virtual ~ParameterObserverLogger();
+		~ParameterObserverLogger() override;
 
-		virtual void on_error(std::exception_ptr ptr);
+		void on_error(std::exception_ptr ptr) override;
 
-		virtual void on_complete();
+		void on_complete() override;
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "ParameterObserverLogger";
 		};
 
 	protected:
-		virtual void on_next_impl(const TimedObservedValue& value);
+		void on_next_impl(const TimedObservedValue& value) override;
 	};
 }
 

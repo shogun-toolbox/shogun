@@ -151,7 +151,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		SGMatrix(SGMatrix&& orig) noexcept;
 
 		/** Empty destructor */
-		virtual ~SGMatrix();
+		~SGMatrix() override;
 
 #ifndef SWIG // SWIG should skip this parts
 		/** Get a column vector
@@ -492,13 +492,13 @@ template<class T> class SGMatrix : public SGReferencedData
 
 	protected:
 		/** overridden to copy data */
-		virtual void copy_data(const SGReferencedData &orig);
+		void copy_data(const SGReferencedData &orig) override;
 
 		/** overridden to initialize empty data */
-		virtual void init_data();
+		void init_data() override;
 
 		/** overridden to free data */
-		virtual void free_data();
+		void free_data() override;
 
   private:
 #ifdef HAVE_VIENNACL

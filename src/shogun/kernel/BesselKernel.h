@@ -62,7 +62,7 @@ class BesselKernel: public DistanceKernel
 		/**
 		 * clean up kernel
 		 */
-		virtual ~BesselKernel();
+		~BesselKernel() override;
 
 		/** initialize kernel
 		 *
@@ -70,16 +70,16 @@ class BesselKernel: public DistanceKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type Bessel
 		 */
-		virtual EKernelType get_kernel_type()
+		EKernelType get_kernel_type() override
 		{
 			return K_BESSEL;
 		}
@@ -87,7 +87,7 @@ class BesselKernel: public DistanceKernel
 		/**
 		 * @return type of features
 		 */
-		virtual EFeatureType get_feature_type()
+		EFeatureType get_feature_type() override
 		{
 			return distance->get_feature_type();
 		}
@@ -95,7 +95,7 @@ class BesselKernel: public DistanceKernel
 		/**
 		 * @return class of features
 		 */
-		virtual EFeatureClass get_feature_class()
+		EFeatureClass get_feature_class() override
 		{
 			return distance->get_feature_class();
 		}
@@ -104,7 +104,7 @@ class BesselKernel: public DistanceKernel
 		 *
 		 * @return name Bessel
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "BesselKernel";
 		}
@@ -131,7 +131,7 @@ class BesselKernel: public DistanceKernel
 		 *
 		 * @param tau kernel width
 		 */
-		virtual void set_width(float64_t tau)
+		void set_width(float64_t tau) override
 		{
 			width = tau;
 		}
@@ -140,7 +140,7 @@ class BesselKernel: public DistanceKernel
 		 *
 		 * @return kernel width
 		 */
-		virtual float64_t get_width() const
+		float64_t get_width() const override
 		{
 			return width;
 		}
@@ -164,7 +164,7 @@ class BesselKernel: public DistanceKernel
 		}
 
 	protected:
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

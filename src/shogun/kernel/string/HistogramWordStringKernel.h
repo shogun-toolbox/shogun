@@ -43,7 +43,7 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
 			std::shared_ptr<PluginEstimate> pie);
 
-		virtual ~HistogramWordStringKernel();
+		~HistogramWordStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -51,22 +51,22 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type HISTOGRAM
 		 */
-		virtual EKernelType get_kernel_type() { return K_HISTOGRAM; }
+		EKernelType get_kernel_type() override { return K_HISTOGRAM; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Histogram
 		 */
-		virtual const char* get_name() const { return "HistogramWordStringKernel" ; }
+		const char* get_name() const override { return "HistogramWordStringKernel" ; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -77,7 +77,7 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 		/** compute index
 		 *

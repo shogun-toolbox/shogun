@@ -39,13 +39,13 @@ class MulticlassMachine : public BaseMulticlassMachine
 		MulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels);
 
 		/** destructor */
-		virtual ~MulticlassMachine();
+		~MulticlassMachine() override;
 
 		/** set labels
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab);
+		void set_labels(std::shared_ptr<Labels> lab) override;
 
 		/** set machine
 		 *
@@ -90,7 +90,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 		/** classify all examples with multiple output
 		 *

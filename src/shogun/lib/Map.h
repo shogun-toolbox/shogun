@@ -80,13 +80,13 @@ public:
 	}
 
 	/** Default destructor */
-	virtual ~CMap()
+	~CMap() override
 	{
 		destroy_map();
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "Map"; }
+	const char* get_name() const override { return "Map"; }
 
 	/** Add an element to the map
 	 *

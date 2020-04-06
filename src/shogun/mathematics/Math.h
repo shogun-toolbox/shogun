@@ -112,7 +112,7 @@ class Math : public SGObject
 		Math();
 
 		///Destructor - frees logtable
-		virtual ~Math();
+		~Math() override;
 		//@}
 
 #ifndef SWIG // SWIG should skip this part
@@ -1519,7 +1519,7 @@ class Math : public SGObject
 				//@}
 
 				/** @return object name */
-				virtual const char* get_name() const { return "Math"; }
+				const char* get_name() const override { return "Math"; }
 	public:
 				/**@name constants*/
 				//@{

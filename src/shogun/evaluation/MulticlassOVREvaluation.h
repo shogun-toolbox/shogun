@@ -34,14 +34,14 @@ public:
 	MulticlassOVREvaluation(const std::shared_ptr<BinaryClassEvaluation>& binary_evaluation);
 
 	/** destructor */
-	virtual ~MulticlassOVREvaluation();
+	~MulticlassOVREvaluation() override;
 
 	/** evaluate accuracy
 	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct
 	 * @return mean of OvR binary evaluations
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
 	/** returns last results per class */
 	SGVector<float64_t> get_last_results()
@@ -59,13 +59,13 @@ public:
 	}
 
 	/** returns evaluation direction */
-	virtual EEvaluationDirection get_evaluation_direction() const
+	EEvaluationDirection get_evaluation_direction() const override
 	{
 		return m_binary_evaluation->get_evaluation_direction();
 	}
 
 	/** get name */
-	virtual const char* get_name() const { return "MulticlassOVREvaluation"; }
+	const char* get_name() const override { return "MulticlassOVREvaluation"; }
 
 protected:
 

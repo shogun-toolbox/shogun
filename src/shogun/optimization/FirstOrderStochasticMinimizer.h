@@ -89,17 +89,17 @@ public:
 	 *
 	 * @return name FirstOrderStochasticMinimizer
 	 */
-	virtual const char* get_name() const { return "FirstOrderStochasticMinimizer"; }
+	const char* get_name() const override { return "FirstOrderStochasticMinimizer"; }
 
 	/** Destructor
 	 */
-	virtual ~FirstOrderStochasticMinimizer();
+	~FirstOrderStochasticMinimizer() override;
 
 	/** Does minimizer support batch update
 	 * 
 	 * @return whether minimizer supports batch update
 	 */
-	virtual bool supports_batch_update() const {return false;}
+	bool supports_batch_update() const override {return false;}
 
 	/** Set a gradient updater
 	 *

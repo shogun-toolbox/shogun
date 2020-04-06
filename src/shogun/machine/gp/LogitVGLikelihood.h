@@ -59,13 +59,13 @@ class LogitVGLikelihood : public NumericalVGLikelihood
 public:
 	LogitVGLikelihood();
 
-	virtual ~LogitVGLikelihood();
+	~LogitVGLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name LogitVGLikelihood
 	 */
-	virtual const char* get_name() const { return "LogitVGLikelihood"; }
+	const char* get_name() const override { return "LogitVGLikelihood"; }
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -73,12 +73,12 @@ public:
 	 *
 	 * @return boolean
 	 */
-	virtual bool supports_derivative_wrt_hyperparameter() const { return false; }
+	bool supports_derivative_wrt_hyperparameter() const override { return false; }
 
 protected:
 
 	/** The function used to initialize m_likelihood*/
-	virtual void init_likelihood();
+	void init_likelihood() override;
 
 private:
 	void init();

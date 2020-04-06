@@ -87,19 +87,19 @@ public:
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
 			std::shared_ptr<Features> inducing_features);
 
-	virtual ~SparseInference();
+	~SparseInference() override;
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type Sparse
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_SPARSE; }
+	EInferenceType get_inference_type() const override { return INF_SPARSE; }
 
 	/** returns the name of the inference method
 	 *
 	 * @return name SparseBase
 	 */
-	virtual const char* get_name() const { return "SparseBaseInferenceMethod"; }
+	const char* get_name() const override { return "SparseBaseInferenceMethod"; }
 
 	/** set inducing features
 	 *
@@ -135,7 +135,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** get Cholesky decomposition matrix
 	 *
@@ -148,7 +148,7 @@ public:
 	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
 	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
-	virtual SGMatrix<float64_t> get_cholesky();
+	SGMatrix<float64_t> get_cholesky() override;
 
 	/** update all matrices */
 	virtual void update()=0;
@@ -229,10 +229,10 @@ protected:
 	virtual void check_features();
 
 	/** check if members of object are valid for inference */
-	virtual void check_members() const;
+	void check_members() const override;
 
 	/** update train kernel matrix */
-	virtual void update_train_kernel();
+	void update_train_kernel() override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class

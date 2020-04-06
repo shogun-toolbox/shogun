@@ -56,7 +56,7 @@ class LibLinearRegression : public RandomMixin<LinearMachine>
 		LibLinearRegression(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~LibLinearRegression();
+		~LibLinearRegression() override;
 
 		/** returns regression type */
 		inline LIBLINEAR_REGRESSION_TYPE get_liblinear_regression_type()
@@ -71,7 +71,7 @@ class LibLinearRegression : public RandomMixin<LinearMachine>
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LibLinearRegression";
 		}
@@ -148,7 +148,7 @@ class LibLinearRegression : public RandomMixin<LinearMachine>
 protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 private:
 		/** solve svr with l1 or l2 loss */

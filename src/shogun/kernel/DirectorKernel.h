@@ -47,7 +47,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		/** default constructor
 		 *
 		 */
-		virtual ~DirectorKernel()
+		~DirectorKernel() override
 		{
 			cleanup();
 		}
@@ -58,7 +58,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 		{
 			if (env()->get_num_threads()!=1)
 			{
@@ -72,7 +72,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(std::shared_ptr<KernelNormalizer> normalizer)
+		bool set_normalizer(std::shared_ptr<KernelNormalizer> normalizer) override
 		{
 			return Kernel::set_normalizer(normalizer);
 		}
@@ -89,7 +89,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		/** initialize the current kernel normalizer
 		 *  @return if init was successful
 		 */
-		virtual bool init_normalizer()
+		bool init_normalizer() override
 		{
 			return Kernel::init_normalizer();
 		}
@@ -100,7 +100,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * overload to add further cleanup but make sure Kernel::cleanup() is
 		 * called
 		 */
-		virtual void cleanup()
+		void cleanup() override
 		{
 			Kernel::cleanup();
 		}
@@ -116,7 +116,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return the jth column of the kernel matrix
 		 */
-		virtual SGVector<float64_t> get_kernel_col(int32_t j)
+		SGVector<float64_t> get_kernel_col(int32_t j) override
 		{
 			return Kernel::get_kernel_col(j);
 		}
@@ -186,13 +186,13 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		}
 
 		/** remove lhs from kernel */
-		virtual void remove_lhs()
+		void remove_lhs() override
 		{
 			Kernel::remove_lhs();
 		}
 
 		/** remove rhs from kernel */
-		virtual void remove_rhs()
+		void remove_rhs() override
 		{
 			Kernel::remove_rhs();
 		}
@@ -201,19 +201,19 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return kernel type DIRECTOR
 		 */
-		virtual EKernelType get_kernel_type() { return K_DIRECTOR; }
+		EKernelType get_kernel_type() override { return K_DIRECTOR; }
 
 		 /** return what type of features kernel can deal with
 		  *
 		  * @return feature type ANY
 		  */
-		virtual EFeatureType get_feature_type() { return F_ANY; }
+		EFeatureType get_feature_type() override { return F_ANY; }
 
 		 /** return what class of features kernel can deal with
 		  *
 		  * @return feature class ANY
 		  */
-		virtual EFeatureClass get_feature_class() { return C_ANY; }
+		EFeatureClass get_feature_class() override { return C_ANY; }
 
 		/** return the kernel's name
 		 *

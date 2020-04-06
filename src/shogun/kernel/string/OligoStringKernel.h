@@ -57,7 +57,7 @@ class OligoStringKernel : public StringKernel<char>
 				int32_t k, float64_t width);
 
 		/** Destructor */
-		virtual ~OligoStringKernel();
+		~OligoStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -65,26 +65,26 @@ class OligoStringKernel : public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type OLIGO
 		 */
-		virtual EKernelType get_kernel_type() { return K_OLIGO; }
+		EKernelType get_kernel_type() override { return K_OLIGO; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Oligo
 		 */
-		virtual const char* get_name() const { return "OligoStringKernel"; }
+		const char* get_name() const override { return "OligoStringKernel"; }
 
 
-		virtual float64_t compute(int32_t x, int32_t y);
+		float64_t compute(int32_t x, int32_t y) override;
 
 		/** clean up your kernel
 		 */
-		virtual void cleanup();
+		void cleanup() override;
 
 	protected:
 		/**

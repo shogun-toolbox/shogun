@@ -45,7 +45,7 @@ class JensenShannonKernel: public DotKernel
 			const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			int32_t size=10);
 
-		virtual ~JensenShannonKernel();
+		~JensenShannonKernel() override;
 
 		/** initialize kernel
 		 *
@@ -53,19 +53,19 @@ class JensenShannonKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type JENSENSHANNON
 		 */
-		virtual EKernelType get_kernel_type() { return K_JENSENSHANNON; }
+		EKernelType get_kernel_type() override { return K_JENSENSHANNON; }
 
 		/** return the kernel's name
 		 *
 		 * @return name JensenShannonKernel
 		 */
-		virtual const char* get_name() const { return "JensenShannonKernel"; }
+		const char* get_name() const override { return "JensenShannonKernel"; }
 
 	protected:
 
@@ -77,7 +77,7 @@ class JensenShannonKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 };
 }

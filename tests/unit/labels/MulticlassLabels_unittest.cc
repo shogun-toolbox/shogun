@@ -20,7 +20,7 @@ public:
 	SGVector<float64_t> labels_true;
 	const index_t n = 3;
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		probabilities = SGMatrix<float64_t>(n, n);
 		probabilities(0, 0) = 0.6;
@@ -36,7 +36,7 @@ public:
 		labels_true = {0, 2, 1};
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 	}
 };

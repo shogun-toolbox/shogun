@@ -31,7 +31,7 @@ class DistanceMachine : public Machine
 		DistanceMachine();
 
 		/** destructor */
-		virtual ~DistanceMachine();
+		~DistanceMachine() override;
 
 		/** set distance
 		 *
@@ -72,7 +72,7 @@ class DistanceMachine : public Machine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "DistanceMachine"; }
+		const char* get_name() const override { return "DistanceMachine"; }
 
 		/** Classify all provided features.
 		 * Cluster index with smallest distance to to be classified element is
@@ -81,7 +81,7 @@ class DistanceMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 		/** Apply machine to one example.
 		 * Cluster index with smallest distance to to be classified element is
@@ -90,7 +90,7 @@ class DistanceMachine : public Machine
 		 * @param num which example to apply machine to
 		 * @return cluster label nearest to example
 		 */
-		virtual float64_t apply_one(int32_t num);
+		float64_t apply_one(int32_t num) override;
 
 	private:
 		void init();

@@ -125,7 +125,7 @@ public:
 	MMD();
 
 	/** Destructor */
-	virtual ~MMD();
+	~MMD() override;
 
 	/**
 	 * Method that sets the specific kernel selection strategy based on the
@@ -193,14 +193,14 @@ public:
 	 *
 	 * @return test statistic for the given data/parameters/methods
 	 */
-	virtual float64_t compute_statistic() = 0;
+	float64_t compute_statistic() override = 0;
 
 	/**
 	 * Interface for computing the samples under the null-hypothesis.
 	 *
 	 * @return vector of all statistics
 	 */
-	virtual SGVector<float64_t> sample_null() = 0;
+	SGVector<float64_t> sample_null() override = 0;
 
 	/** Method that releases the pre-computed kernel that is used in the computation. */
 	void cleanup();
@@ -236,7 +236,7 @@ public:
 	ENullApproximationMethod get_null_approximation_method() const;
 
 	/** @return The name of this class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 protected:
 	virtual float64_t normalize_statistic(float64_t statistic) const = 0;
 private:

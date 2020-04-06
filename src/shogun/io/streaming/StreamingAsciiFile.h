@@ -43,7 +43,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingAsciiFile();
+	~StreamingAsciiFile() override;
 
 	/** set delimiting character
 	 *
@@ -101,7 +101,7 @@ public:
 #endif // #ifndef SWIG // SWIG should skip this
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "StreamingAsciiFile";
 

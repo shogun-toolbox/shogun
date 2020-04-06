@@ -45,7 +45,7 @@ class DiscreteDistribution : public Distribution
 		DiscreteDistribution() : Distribution() {	};
 
 		/* destructor */
-		~DiscreteDistribution() {	};
+		~DiscreteDistribution() override {	};
 
 		/** learn distribution
 		 *

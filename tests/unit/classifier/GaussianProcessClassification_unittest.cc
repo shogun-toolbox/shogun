@@ -71,7 +71,7 @@ using namespace shogun;
 class GaussianProcessClassificationTest : public ::testing::Test
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		// create some easy random classification data
 		index_t i = 0;
@@ -140,7 +140,7 @@ public:
 		
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 	}
 	const index_t m = 25;
@@ -156,7 +156,7 @@ class GaussianProcessClassificationUsingSingleLaplaceWithLBFGS
     : public GaussianProcessClassificationTest
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		GaussianProcessClassificationTest::SetUp();
 
@@ -177,7 +177,7 @@ public:
 		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
-	virtual void TearDown()
+	void TearDown() override
 	{
 		GaussianProcessClassificationTest::TearDown();
 		
@@ -197,7 +197,7 @@ class GaussianProcessClassificationUsingKLCovariance
     : public GaussianProcessClassificationTest
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		GaussianProcessClassificationTest::SetUp();
 
@@ -211,7 +211,7 @@ public:
 		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
-	virtual void TearDown()
+	void TearDown() override
 	{
 		GaussianProcessClassificationTest::TearDown();
 		
@@ -225,7 +225,7 @@ class GaussianProcessClassificationUsingKLCholesky
     : public GaussianProcessClassificationTest
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		GaussianProcessClassificationTest::SetUp();
 
@@ -239,7 +239,7 @@ public:
 		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
-	virtual void TearDown()
+	void TearDown() override
 	{
 		GaussianProcessClassificationTest::TearDown();
 		
@@ -253,7 +253,7 @@ class GaussianProcessClassificationUsingKLDiagonal
     : public GaussianProcessClassificationTest
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		GaussianProcessClassificationTest::SetUp();
 
@@ -267,7 +267,7 @@ public:
 		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
-	virtual void TearDown()
+	void TearDown() override
 	{
 		GaussianProcessClassificationTest::TearDown();
 		
@@ -281,7 +281,7 @@ class GaussianProcessClassificationUsingKLDual
     : public GaussianProcessClassificationTest
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		GaussianProcessClassificationTest::SetUp();
 
@@ -295,7 +295,7 @@ public:
 		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
-	virtual void TearDown()
+	void TearDown() override
 	{
 		GaussianProcessClassificationTest::TearDown();
 
@@ -344,7 +344,7 @@ class GaussianProcessClassificationUsingSingleFITCLaplace
     : public ::testing::Test
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		SGMatrix<float64_t> feat_train(dim, n);
 		SGMatrix<float64_t> lat_feat_train(dim, m);
@@ -438,7 +438,7 @@ public:
 		gpc->train();
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 		
 	}

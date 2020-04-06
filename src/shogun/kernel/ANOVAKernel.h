@@ -52,34 +52,34 @@ public:
 	ANOVAKernel(
 		const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, int32_t d, int32_t cache);
 
-	virtual ~ANOVAKernel();
+	~ANOVAKernel() override;
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/**
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type() { return K_ANOVA; }
+	EKernelType get_kernel_type() override { return K_ANOVA; }
 
 	/**
 	 * @return type of features
 	 */
-	virtual EFeatureType get_feature_type() { return F_DREAL; }
+	EFeatureType get_feature_type() override { return F_DREAL; }
 
 	/**
 	 * @return class of features
 	 */
-	virtual EFeatureClass get_feature_class() { return C_DENSE; }
+	EFeatureClass get_feature_class() override { return C_DENSE; }
 
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const { return "ANOVAKernel"; }
+	const char* get_name() const override { return "ANOVAKernel"; }
 
 	/** getter for degree parameter
 	 *  @return kernel parameter cardinality
@@ -119,10 +119,10 @@ protected:
 	 * @param idx_b right-side index
 	 * @return kernel value
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	/** register params */
-	void register_params();
+	void register_params() override;
 
 private:
 	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len);

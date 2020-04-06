@@ -31,7 +31,7 @@ public:
 	BinaryClassEvaluation() : Evaluation() {};
 
 	/** destructor */
-	virtual ~BinaryClassEvaluation() {};
+	~BinaryClassEvaluation() override {};
 
 	/** evaluate labels
 	 * @param predicted labels for evaluating

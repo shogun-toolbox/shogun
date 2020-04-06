@@ -19,7 +19,7 @@ protected:
 	DynamicArrayFixture()
 	{
 	}
-	virtual void SetUp()
+	void SetUp() override
 	{
 		m_array = SG_MALLOC(T, 5);
 		for (int32_t i = 0; i < 5; i++)
@@ -28,11 +28,11 @@ protected:
 		}
 		wrapper_array = std::make_shared<DynamicArray<T>>(m_array, 5);
 	}
-	virtual void TearDown()
+	void TearDown() override
 	{
 
 	}
-	virtual ~DynamicArrayFixture()
+	~DynamicArrayFixture() override
 	{
 	}
 

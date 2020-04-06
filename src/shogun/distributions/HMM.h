@@ -499,7 +499,7 @@ class HMM : public RandomMixin<Distribution>
 		HMM(const std::shared_ptr<HMM>& h);
 
 		/// Destructor - Cleanup
-		virtual ~HMM();
+		~HMM() override;
 
 		/** learn distribution
 		 *
@@ -509,11 +509,11 @@ class HMM : public RandomMixin<Distribution>
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
-		virtual int32_t get_num_model_parameters() { return N*(N+M+2); }
-		virtual float64_t get_log_model_parameter(int32_t num_param);
-		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
-		virtual float64_t get_log_likelihood_example(int32_t num_example)
+		bool train(std::shared_ptr<Features> data=NULL) override;
+		int32_t get_num_model_parameters() override { return N*(N+M+2); }
+		float64_t get_log_model_parameter(int32_t num_param) override;
+		float64_t get_log_derivative(int32_t num_param, int32_t num_example) override;
+		float64_t get_log_likelihood_example(int32_t num_example) override
 		{
 			return model_probability(num_example);
 		}
@@ -1179,7 +1179,7 @@ class HMM : public RandomMixin<Distribution>
 		//@}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "HMM"; }
+		const char* get_name() const override { return "HMM"; }
 
 	protected:
 		/**@name model specific variables.

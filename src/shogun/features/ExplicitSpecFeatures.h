@@ -39,13 +39,13 @@ class ExplicitSpecFeatures : public DotFeatures
 		ExplicitSpecFeatures(const ExplicitSpecFeatures & orig);
 
 		/** destructor */
-		virtual ~ExplicitSpecFeatures();
+		~ExplicitSpecFeatures() override;
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -54,7 +54,7 @@ class ExplicitSpecFeatures : public DotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		virtual int32_t get_dim_feature_space() const;
+		int32_t get_dim_feature_space() const override;
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
@@ -63,14 +63,14 @@ class ExplicitSpecFeatures : public DotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
+		float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const override;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 dense vector
 		 */
-		virtual float64_t
+		float64_t
 		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 		/** add vector 1 multiplied with alpha to dense vector2
@@ -81,8 +81,8 @@ class ExplicitSpecFeatures : public DotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-				float64_t* vec2, int32_t vec2_len, bool abs_val=false) const;
+		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false) const override;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -112,7 +112,7 @@ class ExplicitSpecFeatures : public DotFeatures
 		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index);
+		void* get_feature_iterator(int32_t vector_index) override;
 
 		/** iterate over the non-zero features
 		 *
@@ -124,42 +124,42 @@ class ExplicitSpecFeatures : public DotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
+		bool get_next_feature(int32_t& index, float64_t& value, void* iterator) override;
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator);
+		void free_feature_iterator(void* iterator) override;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num which vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num) const;
+		int32_t get_nnz_features_for_vector(int32_t num) const override;
 
 		/** get feature type
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type() const;
+		EFeatureType get_feature_type() const override;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** get number of strings
 		 *
 		 * @return number of strings
 		 */
-		virtual int32_t get_num_vectors() const;
+		int32_t get_num_vectors() const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "ExplicitSpecFeatures"; }
+		const char* get_name() const override { return "ExplicitSpecFeatures"; }
 
 	protected:
 		/** obtain the k-spectrum from a list of strings

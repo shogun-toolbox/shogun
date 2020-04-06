@@ -12,7 +12,7 @@ namespace shogun {
 			MOCK_METHOD1(train_machine, bool(std::shared_ptr<Features>));
 			MOCK_CONST_METHOD1(clone, std::shared_ptr<SGObject>(ParameterProperties));
 
-			virtual const char* get_name() const { return "MockMachine"; }
+			const char* get_name() const override { return "MockMachine"; }
 	};
 
 }  // namespace shogun

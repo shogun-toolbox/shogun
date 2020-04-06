@@ -18,122 +18,122 @@ namespace shogun
 		{
 		}
 
-			virtual void on(bool*) final
+			void on(bool*) final
 			{
 				++m_size;
 			}
-			virtual void on(std::vector<bool>::reference*) final
+			void on(std::vector<bool>::reference*) final
 			{
 				++m_size;
 			}
-			virtual void on(char*) final
+			void on(char*) final
 			{
 				++m_size;
 			}
-			virtual void on(int8_t*) final
+			void on(int8_t*) final
 			{
 				++m_size;
 			}
-			virtual void on(uint8_t*) final
+			void on(uint8_t*) final
 			{
 				++m_size;
 			}
-			virtual void on(int16_t*) final
+			void on(int16_t*) final
 			{
 				++m_size;			
 			}
-			virtual void on(uint16_t*) final
+			void on(uint16_t*) final
 			{
 				++m_size;
 			}
-			virtual void on(int32_t*) final
+			void on(int32_t*) final
 			{
 				++m_size;
 			}	
 
-			virtual void on(uint32_t*) final
+			void on(uint32_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(int64_t*) final
+			void on(int64_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(uint64_t*) final
+			void on(uint64_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(float32_t*) final
+			void on(float32_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(float64_t*) final
+			void on(float64_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(floatmax_t*) final
+			void on(floatmax_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(complex128_t*) final
+			void on(complex128_t*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(std::shared_ptr<SGObject>*) final
+			void on(std::shared_ptr<SGObject>*) final
 			{
 				++m_size;
 			}
 
-			virtual void on(std::string*) final
+			void on(std::string*) final
 			{
 				++m_size;
 			}
 
-			virtual void enter_matrix(index_t* rows, index_t* cols)
+			void enter_matrix(index_t* rows, index_t* cols) override
 			{
 				m_dims = {*rows, *cols};
 			}
 
-			virtual void enter_vector(index_t* size)
+			void enter_vector(index_t* size) override
 			{
 				m_dims = {*size};
 			}
-			virtual void enter_std_vector(size_t* size)
+			void enter_std_vector(size_t* size) override
 			{
 				m_dims = {utils::safe_convert<index_t>(*size)};
 			}
-			virtual void enter_map(size_t* size)
+			void enter_map(size_t* size) override
 			{
 			}
 
-			virtual void enter_matrix_row(index_t* rows, index_t* cols)
+			void enter_matrix_row(index_t* rows, index_t* cols) override
 			{
 			}
 
-			virtual void exit_matrix_row(index_t* rows, index_t* cols)
+			void exit_matrix_row(index_t* rows, index_t* cols) override
 			{
 			}
 
-			virtual void exit_matrix(index_t* rows, index_t* cols)
+			void exit_matrix(index_t* rows, index_t* cols) override
 			{
 			}
 
-			virtual void exit_vector(index_t* size)
+			void exit_vector(index_t* size) override
 			{
 			}
 
-			virtual void exit_std_vector(size_t* size)
+			void exit_std_vector(size_t* size) override
 			{
 			}
 
-			virtual void exit_map(size_t* size)
+			void exit_map(size_t* size) override
 			{
 			}
 

@@ -23,10 +23,10 @@ public:
 	ClusteringAccuracy(): ClusteringEvaluation() {}
 
 	/** destructor */
-	virtual ~ClusteringAccuracy() {}
+	~ClusteringAccuracy() override {}
 
 	/** @return whether criterium has to be maximized or minimized */
-	virtual EEvaluationDirection get_evaluation_direction() const
+	EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MINIMIZE;
 	}
@@ -36,7 +36,7 @@ public:
 	 *
 	 *  @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "ClusteringAccuracy";
 	}
@@ -49,7 +49,7 @@ protected:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate_impl(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate_impl(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 };
 
 } // namespace shogun

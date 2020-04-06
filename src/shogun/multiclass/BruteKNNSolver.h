@@ -26,7 +26,7 @@ class BruteKNNSolver : public KNNSolver
 		}
 
 		/** deconstructor */
-		virtual ~BruteKNNSolver() { /* nothing to do */ }
+		~BruteKNNSolver() override { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -39,12 +39,12 @@ class BruteKNNSolver : public KNNSolver
 		 */
 		BruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN);
 
-		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const override;
 
-		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const override;
 
 		/** @return object name */
-		const char* get_name() const { return "BruteKNNSolver"; }
+		const char* get_name() const override { return "BruteKNNSolver"; }
 
 	private:
 		void init()

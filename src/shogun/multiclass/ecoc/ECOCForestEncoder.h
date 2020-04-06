@@ -31,10 +31,10 @@ public:
     ECOCForestEncoder();
 
     /** destructor */
-    virtual ~ECOCForestEncoder() {}
+    ~ECOCForestEncoder() override {}
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCForestEncoder"; }
+    const char* get_name() const override { return "ECOCForestEncoder"; }
 
     /** get number of trees */
     int32_t get_num_trees() const { return m_num_trees; }

@@ -36,33 +36,33 @@ public:
 	MulticlassOneVsOneStrategy(EProbHeuristicType prob_heuris);
 
 	/** destructor */
-	virtual ~MulticlassOneVsOneStrategy() {}
+	~MulticlassOneVsOneStrategy() override {}
 
 	/** start training */
-	virtual void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels);
+	void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels) override;
 
 	/** has more training phase */
-	virtual bool train_has_more();
+	bool train_has_more() override;
 
 	/** prepare for the next training phase.
 	 * @return the subset that should be applied before training.
 	 */
-	virtual SGVector<int32_t> train_prepare_next();
+	SGVector<int32_t> train_prepare_next() override;
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
-	virtual int32_t decide_label(SGVector<float64_t> outputs);
+	int32_t decide_label(SGVector<float64_t> outputs) override;
 
 	/** get number of machines used in this strategy.
 	 */
-	virtual int32_t get_num_machines()
+	int32_t get_num_machines() override
 	{
 		return m_num_classes*(m_num_classes-1)/2;
 	}
 
 	/** get name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MulticlassOneVsOneStrategy";
 	};
@@ -71,7 +71,7 @@ public:
 	 * @param outputs a vector of output from each machine (in that order)
 	 * which will be resized to length of num_classes if heuristic is set
 	 */
-	virtual void rescale_outputs(SGVector<float64_t> outputs);
+	void rescale_outputs(SGVector<float64_t> outputs) override;
 
 	/** set the number of classes, since the number of machines totally
 	 * depends on the number of classes, which will also be set.

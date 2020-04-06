@@ -25,12 +25,12 @@ public:
 	std::shared_ptr<MulticlassLabels> labels_train;
 
 	SGVector<bool> ft;
-	virtual void SetUp()
+	void SetUp() override
 	{
 		load_toy_data();
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 	}
 

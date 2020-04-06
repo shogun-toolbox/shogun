@@ -54,7 +54,7 @@ public:
 	TwoDistributionTest();
 
 	/** Destrutor */
-	virtual ~TwoDistributionTest();
+	~TwoDistributionTest() override;
 
 	/**
 	 * Method that initializes the samples from \f$\mathbf{P}\f$. This method
@@ -150,7 +150,7 @@ public:
 	virtual SGVector<float64_t> sample_null()=0;
 
 	/** @return The name of the class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 };
 
 }

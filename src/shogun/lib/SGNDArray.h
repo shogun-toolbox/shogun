@@ -54,7 +54,7 @@ template<class T> class SGNDArray : public SGReferencedData
 		SGNDArray(const SGNDArray &orig);
 
 		/** empty destructor */
-		virtual ~SGNDArray();
+		~SGNDArray() override;
 
 		/** @return the cloned N-d array */
 		SGNDArray<T> clone() const;
@@ -155,13 +155,13 @@ template<class T> class SGNDArray : public SGReferencedData
 	protected:
 
 		/** copy data */
-		virtual void copy_data(const SGReferencedData &orig);
+		void copy_data(const SGReferencedData &orig) override;
 
 		/** init data */
-		virtual void init_data();
+		void init_data() override;
 
 		/** free data */
-		virtual void free_data();
+		void free_data() override;
 
 	public:
 

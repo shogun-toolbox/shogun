@@ -44,7 +44,7 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		}
 
 		/* destructor */
-		virtual ~DirectorKernelMachine()
+		~DirectorKernelMachine() override
 		{
 
 		}
@@ -57,7 +57,7 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL)
+		bool train(std::shared_ptr<Features> data=NULL) override
 		{
 			return KernelMachine::train(data);
 		}
@@ -80,13 +80,13 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		}
 
 		/** apply machine to data in means of binary classification problem */
-		virtual ::std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL)
+		::std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override
 		{
 			return KernelMachine::apply_binary(data);
 		}
 
 		/** apply machine to data in means of regression problem */
-		virtual ::std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL)
+		::std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override
 		{
 			return KernelMachine::apply_regression(data);
 		}
@@ -117,7 +117,7 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 *
 		 * @return labels
 		 */
-		virtual std::shared_ptr<Labels> get_labels()
+		std::shared_ptr<Labels> get_labels() override
 		{
 			return KernelMachine::get_labels();
 		}

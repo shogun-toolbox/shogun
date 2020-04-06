@@ -57,16 +57,16 @@ public:
 	 *
 	 * @return kernel type GAUSSIANARD
 	 */
-	virtual EKernelType get_kernel_type() { return K_GAUSSIANARDSPARSE; }
+	EKernelType get_kernel_type() override { return K_GAUSSIANARDSPARSE; }
 
 	/** return the kernel's name
 	 *
 	 * @return name GaussianARDSparseKernel
 	 */
-	virtual const char* get_name() const { return "GaussianARDSparseKernel"; }
+	const char* get_name() const override { return "GaussianARDSparseKernel"; }
 
 	/** destructor */
-	virtual ~GaussianARDSparseKernel();
+	~GaussianARDSparseKernel() override;
 
 private:
 	void initialize_sparse_kernel();
@@ -102,8 +102,8 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
-		index_t index=-1);
+	SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
+		index_t index=-1) override;
 
 	/** return diagonal part of derivative with respect to specified parameter
 	 *
@@ -112,8 +112,8 @@ public:
 	 *
 	 * @return diagonal part of gradient with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
-		Parameters::const_reference param, index_t index=-1);
+	SGVector<float64_t> get_parameter_gradient_diagonal(
+		Parameters::const_reference param, index_t index=-1) override;
 };
 }
 

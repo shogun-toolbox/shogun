@@ -52,7 +52,7 @@ class KernelDistance: public Distance
 			std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t width, std::shared_ptr<Kernel> k);
 
 		/** destructor */
-		virtual ~KernelDistance();
+		~KernelDistance() override;
 
 		/** initialize kernel
 		 *
@@ -60,35 +60,35 @@ class KernelDistance: public Distance
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return distance type DISTANCE
 		 */
-		virtual EDistanceType get_distance_type() { return D_UNKNOWN; }
+		EDistanceType get_distance_type() override { return D_UNKNOWN; }
 		/** return feature type the distance can deal with
 		 *
 		 * @return feature type of distance used
 		 */
-		virtual EFeatureType get_feature_type() { return kernel->get_feature_type(); }
+		EFeatureType get_feature_type() override { return kernel->get_feature_type(); }
 
 		/** return feature class the distance can deal with
 		 *
 		 * @return feature class of distance used
 		 */
-		virtual EFeatureClass get_feature_class() { return kernel->get_feature_class(); }
+		EFeatureClass get_feature_class() override { return kernel->get_feature_class(); }
 
 		/** return the distances's name
 		 *
 		 * @return name Distance
 		 */
-		virtual const char* get_name() const { return "KernelDistance"; }
+		const char* get_name() const override { return "KernelDistance"; }
 
 		/** clean up kernel
 		 *
 		 */
-		virtual void cleanup() { if (kernel) kernel->cleanup(); }
+		void cleanup() override { if (kernel) kernel->cleanup(); }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -99,7 +99,7 @@ class KernelDistance: public Distance
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

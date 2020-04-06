@@ -18,7 +18,7 @@ using ::testing::InSequence;
 class PipelineTest : public ::testing::Test
 {
 protected:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		ON_CALL(*transformer1, train_require_labels())
 		    .WillByDefault(Return(false));

@@ -58,7 +58,7 @@ class KernelNormalizer : public SGObject
 		}
 
 		/** default destructor */
-		virtual ~KernelNormalizer() { }
+		~KernelNormalizer() override { }
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */

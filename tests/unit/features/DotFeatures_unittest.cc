@@ -13,7 +13,7 @@ using namespace shogun;
 class DotFeaturesTest : public ::testing::Test
 {
 protected:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		SGMatrix<float64_t> data_a(dims, num_a);
 		data_a(0, 0) = 1.01611997;
@@ -73,7 +73,7 @@ protected:
 		ref_cov_ab(2, 2) = 0.72460503;
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 
 

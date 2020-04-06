@@ -54,10 +54,10 @@ public:
 	MulticlassStrategy(EProbHeuristicType prob_heuris);
 
 	/** destructor */
-	virtual ~MulticlassStrategy() {}
+	~MulticlassStrategy() override {}
 
 	/** get name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MulticlassStrategy";
 	};

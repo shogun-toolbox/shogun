@@ -25,7 +25,7 @@ void generate_knn_data(SGMatrix<float64_t>& feat, SGVector<float64_t>& lab,
 class KNNTest : public ::testing::Test
 {
 protected:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		std::mt19937_64 prng(37);
 

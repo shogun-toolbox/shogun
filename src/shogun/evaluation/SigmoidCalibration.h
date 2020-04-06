@@ -31,10 +31,10 @@ namespace shogun
 		SigmoidCalibration();
 
 		/** Destructor. */
-		virtual ~SigmoidCalibration();
+		~SigmoidCalibration() override;
 
 		/** Get name. */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "SigmoidCalibration";
 		}
@@ -44,15 +44,15 @@ namespace shogun
 		* @param targets The true labels corresponding to the predictions
 		* @return Indicates whether the calibration was succesful
 		**/
-		virtual bool
-		fit_binary(std::shared_ptr<BinaryLabels> predictions, std::shared_ptr<BinaryLabels> targets);
+		bool
+		fit_binary(std::shared_ptr<BinaryLabels> predictions, std::shared_ptr<BinaryLabels> targets) override;
 
 		/** Calibrate binary predictions based on parameters learned by calling
 		*fit.
 		* @param predictions The predictions outputted by the machine
 		* @return Calibrated binary labels
 		**/
-		virtual std::shared_ptr<BinaryLabels> calibrate_binary(std::shared_ptr<BinaryLabels> predictions);
+		std::shared_ptr<BinaryLabels> calibrate_binary(std::shared_ptr<BinaryLabels> predictions) override;
 
 		/** Fit calibration parameters for multiclass labels. Fits sigmoid
 		* parameters for each class seperately.
@@ -60,8 +60,8 @@ namespace shogun
 		* @param targets The true labels corresponding to the predictions
 		* @return Indicates whether the calibration was succesful
 		**/
-		virtual bool fit_multiclass(
-		    std::shared_ptr<MulticlassLabels> predictions, std::shared_ptr<MulticlassLabels> targets);
+		bool fit_multiclass(
+		    std::shared_ptr<MulticlassLabels> predictions, std::shared_ptr<MulticlassLabels> targets) override;
 
 		/** Calibrate multiclass predictions based on parameters learned by
 		*calling fit.
@@ -69,8 +69,8 @@ namespace shogun
 		* @param predictions The predictions outputted by the machine
 		* @return Calibrated binary labels
 		**/
-		virtual std::shared_ptr<MulticlassLabels>
-		calibrate_multiclass(std::shared_ptr<MulticlassLabels> predictions);
+		std::shared_ptr<MulticlassLabels>
+		calibrate_multiclass(std::shared_ptr<MulticlassLabels> predictions) override;
 
 		/** Set maximum number of iterations
 		* @param maxiter maximum number of iterations

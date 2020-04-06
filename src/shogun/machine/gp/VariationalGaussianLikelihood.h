@@ -52,7 +52,7 @@ public:
 	/** default constructor */
 	VariationalGaussianLikelihood();
 
-	virtual ~VariationalGaussianLikelihood() {};
+	~VariationalGaussianLikelihood() override {};
 
 	/** set the variational distribution given data and parameters
 	 *

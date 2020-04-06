@@ -50,7 +50,7 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~SqrtDiagKernelNormalizer()
+		~SqrtDiagKernelNormalizer() override
 		{
 			SG_FREE(sqrtdiag_lhs);
 			SG_FREE(sqrtdiag_rhs);
@@ -88,8 +88,8 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			float64_t sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
 			return value/sqrt_both;

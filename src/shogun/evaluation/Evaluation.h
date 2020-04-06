@@ -41,7 +41,7 @@ public:
 	Evaluation() : SGObject() { };
 
 	/** destructor */
-	virtual ~Evaluation() { };
+	~Evaluation() override { };
 
 	/** evaluate labels
 	 *

@@ -28,7 +28,7 @@ class TwoStateModel : public StateModel
 		TwoStateModel();
 
 		/** destructor */
-		virtual ~TwoStateModel();
+		~TwoStateModel() override;
 
 		/**
 		 * computes a loss matrix with m_num_states rows and number of columns
@@ -40,7 +40,7 @@ class TwoStateModel : public StateModel
 		 *
 		 * @return the loss matrix
 		 */
-		virtual SGMatrix< float64_t > loss_matrix(std::shared_ptr<Sequence> label_seq);
+		SGMatrix< float64_t > loss_matrix(std::shared_ptr<Sequence> label_seq) override;
 
 		/**
 		 * computes the loss between two sequences of labels using the Hamming loss
@@ -51,7 +51,7 @@ class TwoStateModel : public StateModel
 		 *
 		 * @return the Hamming loss
 		 */
-		virtual float64_t loss(std::shared_ptr<Sequence> label_seq_lhs, std::shared_ptr<Sequence> label_seq_rhs);
+		float64_t loss(std::shared_ptr<Sequence> label_seq_lhs, std::shared_ptr<Sequence> label_seq_rhs) override;
 
 		/**
 		 * arranges the emission parameterss of the weight vector into a vector
@@ -64,8 +64,8 @@ class TwoStateModel : public StateModel
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
-				SGVector< float64_t > w, int32_t num_feats, int32_t num_obs);
+		void reshape_emission_params(SGVector< float64_t >& emission_weights,
+				SGVector< float64_t > w, int32_t num_feats, int32_t num_obs) override;
 
 		/**
 		 * arranges the emission parameters of the weight vector into a matrix
@@ -77,8 +77,8 @@ class TwoStateModel : public StateModel
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(const std::vector<std::shared_ptr<Plif>>& plif_matrix,
-			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes);
+		void reshape_emission_params(const std::vector<std::shared_ptr<Plif>>& plif_matrix,
+			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes) override;
 
 		/**
 		 * arranges the transmission parameters of the weight vector into a matrix
@@ -88,9 +88,9 @@ class TwoStateModel : public StateModel
 		 * @param transmission_weights transmission parameters outputted
 		 * @param w the weight vector
 		 */
-		virtual void reshape_transmission_params(
+		void reshape_transmission_params(
 				SGMatrix< float64_t >& transmission_weights,
-				SGVector< float64_t > w);
+				SGVector< float64_t > w) override;
 
 		/** translates label sequence to state sequence
 		 *
@@ -98,7 +98,7 @@ class TwoStateModel : public StateModel
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< int32_t > labels_to_states(std::shared_ptr<Sequence> label_seq) const;
+		SGVector< int32_t > labels_to_states(std::shared_ptr<Sequence> label_seq) const override;
 
 		/** translates state sequence to label sequence
 		 *
@@ -106,7 +106,7 @@ class TwoStateModel : public StateModel
 		 *
 		 * @return label sequence
 		 */
-		virtual std::shared_ptr<Sequence> states_to_labels(SGVector< int32_t > state_seq) const;
+		std::shared_ptr<Sequence> states_to_labels(SGVector< int32_t > state_seq) const override;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -120,10 +120,10 @@ class TwoStateModel : public StateModel
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void weights_to_vector(SGVector< float64_t >& psi,
+		void weights_to_vector(SGVector< float64_t >& psi,
 				SGMatrix< float64_t > transmission_weights,
 				SGVector< float64_t > emission_weights,
-				int32_t num_feats, int32_t num_obs) const;
+				int32_t num_feats, int32_t num_obs) const override;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -137,8 +137,8 @@ class TwoStateModel : public StateModel
 		 *
 		 * @return psi output vector
 		 */
-		virtual SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const;
+		SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
+				SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const override;
 
 		/**
 		 * specify monotonicity constraints for feature scoring functions. The
@@ -152,8 +152,8 @@ class TwoStateModel : public StateModel
 		 * @return vector with monotonicity constraints of length num_feats times
 		 * num_learnt_states
 		 */
-		virtual SGVector< int32_t > get_monotonicity(int32_t num_free_states,
-				int32_t num_feats) const;
+		SGVector< int32_t > get_monotonicity(int32_t num_free_states,
+				int32_t num_feats) const override;
 
 		/**
 		 * generates simulated data. The features are generated from the label
@@ -189,7 +189,7 @@ class TwoStateModel : public StateModel
 			int32_t num_noise_features, int32_t seed=-1);
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "TwoStateModel"; }
+		const char* get_name() const override { return "TwoStateModel"; }
 };
 
 } /* namespace shogun */

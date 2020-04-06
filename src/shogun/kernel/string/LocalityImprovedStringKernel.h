@@ -52,7 +52,7 @@ class LocalityImprovedStringKernel: public StringKernel<char>
 			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			int32_t length, int32_t inner_degree, int32_t outer_degree);
 
-		virtual ~LocalityImprovedStringKernel();
+		~LocalityImprovedStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -60,19 +60,19 @@ class LocalityImprovedStringKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type LOCALITYIMPROVED
 		 */
-		virtual EKernelType get_kernel_type() { return K_LOCALITYIMPROVED; }
+		EKernelType get_kernel_type() override { return K_LOCALITYIMPROVED; }
 
 		/** return the kernel's name
 		 *
 		 * @return name LocalityImprovedStringKernel
 		 */
-		virtual const char* get_name() const { return "LocalityImprovedStringKernel"; }
+		const char* get_name() const override { return "LocalityImprovedStringKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -83,7 +83,7 @@ class LocalityImprovedStringKernel: public StringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

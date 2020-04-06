@@ -36,13 +36,13 @@ namespace shogun
 		/** default constructor */
 		AveragedPerceptron();
 
-		virtual ~AveragedPerceptron();
+		~AveragedPerceptron() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type AVERAGEDPERCEPTRON
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_AVERAGEDPERCEPTRON;
 		}
@@ -60,7 +60,7 @@ namespace shogun
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "AveragedPerceptron";
 		}
@@ -69,8 +69,8 @@ namespace shogun
 		/** registers and initializes parameters */
 		void init();
 
-		virtual void init_model(std::shared_ptr<Features> data);
-		virtual void iteration();
+		void init_model(std::shared_ptr<Features> data) override;
+		void iteration() override;
 
 	protected:
 		/** learning rate */

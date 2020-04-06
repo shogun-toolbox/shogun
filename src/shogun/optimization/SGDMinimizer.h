@@ -54,24 +54,24 @@ public:
 	SGDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun);
 
 	/** Destructor */
-	virtual ~SGDMinimizer();
+	~SGDMinimizer() override;
 
 	/** returns the name of the class
 	 *
 	 * @return name SGDMinimizer
 	 */
-	virtual const char* get_name() const { return "SGDMinimizer"; }
+	const char* get_name() const override { return "SGDMinimizer"; }
 
 
 	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
 protected:
 	/*  init the minimization process */
-	virtual void init_minimization();
+	void init_minimization() override;
 
 private:
 	  /* Init */

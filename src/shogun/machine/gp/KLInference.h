@@ -90,17 +90,17 @@ public:
 	KLInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~KLInference();
+	~KLInference() override;
 
 	/** return what type of inference we are
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_KL; }
+	EInferenceType get_inference_type() const override { return INF_KL; }
 
 	/** returns the name of the inference method
 	 *
 	 * @return name KLInference
 	 */
-	virtual const char* get_name() const { return "KLInference"; }
+	const char* get_name() const override { return "KLInference"; }
 
 	/** get negative log marginal likelihood
 	 *
@@ -113,7 +113,7 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
 	 * \f$\theta\f$ represent hyperparameters.
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood();
+	float64_t get_negative_log_marginal_likelihood() override;
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -126,7 +126,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_mean();
+	SGVector<float64_t> get_posterior_mean() override;
 
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
 	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
@@ -146,13 +146,13 @@ public:
 	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_covariance();
+	SGMatrix<float64_t> get_posterior_covariance() override;
 
 	/**
 	 * @return whether combination of KL approximation inference method and
 	 * given likelihood function supports regression
 	 */
-	virtual bool supports_regression() const
+	bool supports_regression() const override
 	{
 		check_members();
 		return m_model->supports_regression();
@@ -162,7 +162,7 @@ public:
 	 * @return whether combination of KL approximation inference method and
 	 * given likelihood function supports binary classification
 	 */
-	virtual bool supports_binary() const
+	bool supports_binary() const override
 	{
 		check_members();
 		return m_model->supports_binary();
@@ -172,10 +172,10 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	virtual void set_model(std::shared_ptr<LikelihoodModel> mod);
+	void set_model(std::shared_ptr<LikelihoodModel> mod) override;
 
 	/** update all matrices except gradients */
-	virtual void update();
+	void update() override;
 
 	/** get Cholesky decomposition matrix
 	 *
@@ -192,7 +192,7 @@ public:
 	 * In this case, L will still be used to compute required matrix for prediction
 	 * see GaussianProcessMachine::get_posterior_variances()
 	 */
-	virtual SGMatrix<float64_t> get_cholesky();
+	SGMatrix<float64_t> get_cholesky() override;
 
 	/** set noise factor to ensure Kernel matrix to be positive definite
 	 * by adding non-negative noise to diagonal elements of Kernel matrix
@@ -231,11 +231,11 @@ public:
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
+	void register_minimizer(std::shared_ptr<Minimizer> minimizer) override;
 protected:
 
 	/** update gradients */
-	virtual void compute_gradient();
+	void compute_gradient() override;
 
 	/** The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not*/
 	float64_t m_min_coeff_kernel;
@@ -297,8 +297,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -307,8 +307,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -317,8 +317,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -327,8 +327,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override;
 
 	/** the helper function to compute
 	 * the negative log marginal likelihood

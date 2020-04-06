@@ -45,7 +45,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		*/
 		KMeansBase(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
 		
-		virtual ~KMeansBase();
+		~KMeansBase() override;
 
 
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
@@ -54,7 +54,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		 *
 		 * @return classifier type KMEANS
 		 */
-		virtual EMachineType get_classifier_type() { return CT_KMEANS; }
+		EMachineType get_classifier_type() override { return CT_KMEANS; }
 
 		/** load distance machine from file
 		 *
@@ -77,7 +77,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		SGMatrix<float64_t> get_cluster_centers() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KMeansBase"; }
+		const char* get_name() const override { return "KMeansBase"; }
 
 		/** set the initial cluster centers
 		 *
@@ -85,7 +85,7 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		 */
 		virtual void set_initial_centers(SGMatrix<float64_t> centers);
 
-		virtual bool train_require_labels() const
+		bool train_require_labels() const override
 		{
 			return false;
 		}

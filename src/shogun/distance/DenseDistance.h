@@ -29,26 +29,26 @@ template <class ST> class DenseDistance : public Distance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** get feature class the distance can deal with
 		 *
 		 * @return feature class DENSE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		EFeatureClass get_feature_class() override { return C_DENSE; }
 
 		/** get feature type the distance can deal with
 		 *
 		 * @return template-specific feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const {
+		const char* get_name() const override {
 			return "DenseDistance"; }
 
 		/** get distance type we are

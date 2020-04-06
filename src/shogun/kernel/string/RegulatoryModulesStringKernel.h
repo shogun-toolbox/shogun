@@ -53,7 +53,7 @@ class RegulatoryModulesStringKernel: public StringKernel<char>
 			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
 		/** default destructor */
-		virtual ~RegulatoryModulesStringKernel();
+		~RegulatoryModulesStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -61,19 +61,19 @@ class RegulatoryModulesStringKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type
 		 */
-		virtual EKernelType get_kernel_type() { return K_REGULATORYMODULES; }
+		EKernelType get_kernel_type() override { return K_REGULATORYMODULES; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Regulatory Modules
 		 */
-		virtual const char* get_name() const { return "RegulatoryModulesStringKernel"; }
+		const char* get_name() const override { return "RegulatoryModulesStringKernel"; }
 
 		/** set motif positions
 		 *
@@ -92,7 +92,7 @@ class RegulatoryModulesStringKernel: public StringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 		/** compute WDS kernel for features a and b
 		 *

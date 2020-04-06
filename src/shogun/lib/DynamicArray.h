@@ -136,7 +136,7 @@ template <class T> class DynamicArray :public SGObject
 			init();
 		}
 
-		virtual ~DynamicArray() { m_array.clear(); }
+		~DynamicArray() override { m_array.clear(); }
 
 		/** get array size (including granularity buffer)
 		 *
@@ -617,7 +617,7 @@ template <class T> class DynamicArray :public SGObject
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "DynamicArray";
 		}
@@ -630,13 +630,13 @@ template <class T> class DynamicArray :public SGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_pre() noexcept(false)
+		void save_serializable_pre() noexcept(false)
 		{
 			SGObject::save_serializable_pre();
 			m_array.shrink_to_fit();
 		}
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp) const override
+		std::shared_ptr<SGObject> clone(ParameterProperties pp) const override
 		{
 			return SGObject::clone(pp)->template as<DynamicArray>();
 		}

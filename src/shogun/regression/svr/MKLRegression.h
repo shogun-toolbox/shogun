@@ -35,33 +35,33 @@ class MKLRegression : public MKL
 
 		/** Destructor
 		 */
-		virtual ~MKLRegression();
+		~MKLRegression() override;
 
 		/** compute beta independent term from objective, e.g., in 2-class MKL
 		 * sum_i alpha_i etc
 		 */
-		virtual float64_t compute_sum_alpha();
+		float64_t compute_sum_alpha() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MKLRegression"; }
+		const char* get_name() const override { return "MKLRegression"; }
 
 	protected:
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case
 		 */
-		virtual void init_training();
+		void init_training() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type MKL_REGRESSION
 		 */
-		virtual EMachineType get_classifier_type() { return CT_MKLREGRESSION; }
+		EMachineType get_classifier_type() override { return CT_MKLREGRESSION; }
 
 		/** compute mkl dual objective
 		 *
 		 * @return computed dual objective
 		 */
-		virtual float64_t compute_mkl_dual_objective();
+		float64_t compute_mkl_dual_objective() override;
 };
 }
 #endif //__MKLREGRESSION_H__

@@ -39,7 +39,7 @@ public:
         node_id = 0;
     }
 
-    virtual ~Node()
+    ~Node() override
     {
     }
 
@@ -95,7 +95,7 @@ public:
     }
 
     /** @return object name */
-    virtual const char *get_name() const
+    const char *get_name() const override
     {
         return "Node";
     }
@@ -405,7 +405,7 @@ public:
 
 
 	/** default destructor */
-	virtual ~MultitaskKernelTreeNormalizer()
+	~MultitaskKernelTreeNormalizer() override
 	{
 	}
 

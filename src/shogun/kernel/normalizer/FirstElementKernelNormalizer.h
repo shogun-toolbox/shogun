@@ -35,13 +35,13 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~FirstElementKernelNormalizer()
+		~FirstElementKernelNormalizer() override
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			auto old_lhs=k->lhs;
 			auto old_rhs=k->rhs;
@@ -61,8 +61,8 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			return value/scale;
 		}
@@ -71,7 +71,7 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+		float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 		{
 			return value/sqrt(scale);
 		}
@@ -80,13 +80,13 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+		float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 		{
 			return value/sqrt(scale);
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FirstElementKernelNormalizer"; }
+		const char* get_name() const override { return "FirstElementKernelNormalizer"; }
 
 	protected:
 		/// scale constant obtained from k(0,0)

@@ -47,12 +47,12 @@ public:
 	LocallyLinearEmbedding();
 
 	/** destructor */
-	virtual ~LocallyLinearEmbedding();
+	~LocallyLinearEmbedding() override;
 
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** setter for k parameter
 	 * @param k k value
@@ -85,7 +85,7 @@ public:
 	float64_t get_nullspace_shift() const;
 
 	/** get name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 	/// HELPERS
 protected:

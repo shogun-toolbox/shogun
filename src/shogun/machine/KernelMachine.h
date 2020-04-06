@@ -63,7 +63,7 @@ class KernelMachine : public Machine
 		KernelMachine(const std::shared_ptr<KernelMachine>& machine);
 
 		/** destructor */
-		virtual ~KernelMachine();
+		~KernelMachine() override;
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -219,7 +219,7 @@ class KernelMachine : public Machine
 		 * @param num which example to apply to
 		 * @return classified value
 		 */
-		virtual float64_t apply_one(int32_t num);
+		float64_t apply_one(int32_t num) override;
 
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.

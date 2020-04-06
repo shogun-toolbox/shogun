@@ -38,7 +38,7 @@ class LinearStringKernel: public StringKernel<char>
 		 */
 		LinearStringKernel(const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r);
 
-		virtual ~LinearStringKernel();
+		~LinearStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -46,16 +46,16 @@ class LinearStringKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type LINEAR
 		 */
-		virtual EKernelType get_kernel_type()
+		EKernelType get_kernel_type() override
 		{
 			return K_LINEAR;
 		}
@@ -64,7 +64,7 @@ class LinearStringKernel: public StringKernel<char>
 		 *
 		 * @return name Linear
 		 */
-		virtual const char* get_name() const { return "LinearStringKernel"; }
+		const char* get_name() const override { return "LinearStringKernel"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as phi(x) = x
 		 * do scalar product in input space
@@ -74,31 +74,31 @@ class LinearStringKernel: public StringKernel<char>
 		 * @param alphas alphas
 		 * @return if optimization was successful
 		 */
-		virtual bool init_optimization(
-			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
+		bool init_optimization(
+			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas) override;
 
 		/** delete optimization
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization();
+		bool delete_optimization() override;
 
 		/** compute optimized
 		*
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		float64_t compute_optimized(int32_t idx) override;
 
 		/** clear normal */
-		virtual void clear_normal();
+		void clear_normal() override;
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		void add_to_normal(int32_t idx, float64_t weight) override;
 
 	protected:
 		/** compute kernel function for features a and b
@@ -109,7 +109,7 @@ class LinearStringKernel: public StringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */

@@ -37,10 +37,10 @@ public:
 	SOSVMHelper(int32_t bufsize);
 
 	/** destructor */
-	virtual ~SOSVMHelper();
+	~SOSVMHelper() override;
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "SOSVMHelper"; }
+	const char* get_name() const override { return "SOSVMHelper"; }
 
 	/** Computes the primal objective of n-slack structured SVM
 	 * \f$ \frac{\lambda}{2} \|w\|^2 + \frac{1}{n} \sum_i \max_y (L_i(y) - w^T\Psi_i(y)) \f$

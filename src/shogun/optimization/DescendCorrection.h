@@ -62,7 +62,7 @@ public:
 	}
 
 	/*  Destructor */
-	virtual ~DescendCorrection() {};
+	~DescendCorrection() override {};
 
 	/**  Set the weight used in descend correction
 	 *

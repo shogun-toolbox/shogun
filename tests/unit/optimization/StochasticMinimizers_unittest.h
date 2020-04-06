@@ -44,16 +44,16 @@ class RegressionForTestCostFunction: public FirstOrderSAGCostFunction
 {
 public:
 	RegressionForTestCostFunction();
-	virtual ~RegressionForTestCostFunction();
+	~RegressionForTestCostFunction() override;
 	void set_target(const std::shared_ptr<CRegressionExample>& obj);
-	virtual float64_t get_cost();
-	virtual SGVector<float64_t> obtain_variable_reference();
-	virtual SGVector<float64_t> get_gradient();
-	virtual SGVector<float64_t> get_average_gradient();
-	virtual int32_t get_sample_size();
-	virtual void begin_sample();
-	virtual bool next_sample();
-	virtual const char* get_name() const { return "RegressionForTestCostFunction"; }
+	float64_t get_cost() override;
+	SGVector<float64_t> obtain_variable_reference() override;
+	SGVector<float64_t> get_gradient() override;
+	SGVector<float64_t> get_average_gradient() override;
+	int32_t get_sample_size() override;
+	void begin_sample() override;
+	bool next_sample() override;
+	const char* get_name() const override { return "RegressionForTestCostFunction"; }
 private:
 	index_t m_idx;
 	void init();
@@ -64,17 +64,17 @@ class ClassificationForTestCostFunction: public FirstOrderSAGCostFunction
 {
 public:
 	ClassificationForTestCostFunction();
-	virtual ~ClassificationForTestCostFunction(){}
+	~ClassificationForTestCostFunction() override{}
 	virtual void set_data(SGMatrix<float64_t> features, SGVector<float64_t> labels);
-	virtual float64_t get_cost();
+	float64_t get_cost() override;
 	virtual void set_sample_sequences(SGVector<int32_t> index, index_t num_sequences);
-	virtual SGVector<float64_t> obtain_variable_reference();
-	virtual SGVector<float64_t> get_gradient();
-	virtual void begin_sample();
-	virtual bool next_sample();
-	virtual int32_t get_sample_size();
-	virtual SGVector<float64_t> get_average_gradient();
-	virtual const char* get_name() const { return "ClassificationForTestCostFunction"; }
+	SGVector<float64_t> obtain_variable_reference() override;
+	SGVector<float64_t> get_gradient() override;
+	void begin_sample() override;
+	bool next_sample() override;
+	int32_t get_sample_size() override;
+	SGVector<float64_t> get_average_gradient() override;
+	const char* get_name() const override { return "ClassificationForTestCostFunction"; }
 protected:
 	index_t m_sample_idx;
 	SGVector<int32_t> m_sample_sequences;
@@ -92,10 +92,10 @@ class ClassificationForTestCostFunction2: public ClassificationForTestCostFuncti
 public:
 	ClassificationForTestCostFunction2()
 		:ClassificationForTestCostFunction(){};
-	virtual ~ClassificationForTestCostFunction2(){};
-	virtual void begin_sample();
-	virtual bool next_sample();
-	virtual const char* get_name() const { return "ClassificationForTestCostFunction2"; }
+	~ClassificationForTestCostFunction2() override{};
+	void begin_sample() override;
+	bool next_sample() override;
+	const char* get_name() const override { return "ClassificationForTestCostFunction2"; }
 };
 
 class CRegressionExample: public SGObject
@@ -103,7 +103,7 @@ class CRegressionExample: public SGObject
 friend class RegressionForTestCostFunction;
 public:
 	CRegressionExample();
-	virtual ~CRegressionExample(){}
+	~CRegressionExample() override{}
 	float64_t get_cost();
 	virtual const char* get_name() const {return "RegressionExample";}
 	void set_x(SGMatrix<float64_t> x){m_x=x;}

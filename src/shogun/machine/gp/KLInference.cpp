@@ -51,14 +51,14 @@ class KLInferenceCostFunction: public FirstOrderCostFunction
 {
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }
-        virtual ~KLInferenceCostFunction() {  }
+        ~KLInferenceCostFunction() override {  }
         void set_target(const std::shared_ptr<KLInference>&obj)
         {
 			require(obj,"Obj must set");
 			m_obj=obj;
 	    }
 
-        virtual float64_t get_cost()
+        float64_t get_cost() override
         {
                 require(m_obj,"Object not set");
                 bool status = m_obj->precompute();
@@ -68,20 +68,20 @@ public:
                 return nlml;
 
         }
-        virtual SGVector<float64_t> obtain_variable_reference()
+        SGVector<float64_t> obtain_variable_reference() override
         {
                 require(m_obj,"Object not set");
                 m_derivatives = SGVector<float64_t>((m_obj->m_alpha).vlen);
                 return m_obj->m_alpha;
         }
-        virtual SGVector<float64_t> get_gradient()
+        SGVector<float64_t> get_gradient() override
         {
                 require(m_obj,"Object not set");
 		m_obj->get_gradient_of_nlml_wrt_parameters(m_derivatives);
                 return m_derivatives;
         }
 
-	virtual const char* get_name() const { return "KLInferenceCostFunction"; }
+	const char* get_name() const override { return "KLInferenceCostFunction"; }
 private:
         SGVector<float64_t> m_derivatives;
         void init()

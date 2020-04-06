@@ -35,22 +35,22 @@ class DummyFeatures : public Features
 		DummyFeatures(const DummyFeatures &orig);
 
 		/** destructor */
-		virtual ~DummyFeatures();
+		~DummyFeatures() override;
 
 		/** get number of feature vectors */
-		virtual int32_t get_num_vectors() const;
+		int32_t get_num_vectors() const override;
 
 		/** duplicate features */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** get feature type (ANY) */
-		inline EFeatureType get_feature_type() const;
+		inline EFeatureType get_feature_type() const override;
 
 		/** get feature class (ANY) */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "DummyFeatures"; }
+		const char* get_name() const override { return "DummyFeatures"; }
 
 	private:
 		void init();

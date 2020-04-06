@@ -33,7 +33,7 @@ class GNPPLib: public SGObject
    * @param reg_const reg const
    */
   GNPPLib(float64_t* vector_y, const std::shared_ptr<Kernel>& kernel, int32_t num_data, float64_t reg_const);
-  virtual ~GNPPLib();
+  ~GNPPLib() override;
 
   /** --------------------------------------------------------------
      QP solver based on MDM algorithm.
@@ -78,7 +78,7 @@ class GNPPLib: public SGObject
                 int32_t verb);
 
   /** @return object name */
-  virtual const char* get_name() const { return "GNPPLib"; }
+  const char* get_name() const override { return "GNPPLib"; }
 
  protected:
   /** get col

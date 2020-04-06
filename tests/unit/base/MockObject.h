@@ -27,12 +27,12 @@ namespace shogun
 			return "CloneEqualsMockParameter";
 		}
 
-		virtual std::shared_ptr<SGObject> create_empty() const override
+		std::shared_ptr<SGObject> create_empty() const override
 		{
 			return std::make_shared<CloneEqualsMockParameter>();
 		}
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
+		std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
 		{
 			auto clone = SGObject::clone(pp);
 			auto casted = clone->template as<CloneEqualsMockParameter>();
@@ -60,7 +60,7 @@ namespace shogun
 			init_raw_matrix();
 		}
 
-		~CloneEqualsMock()
+		~CloneEqualsMock() override
 		{
 			free_single();
 			free_raw_vector();
@@ -192,7 +192,7 @@ namespace shogun
 			return "CloneEqualsMock";
 		}
 
-		virtual std::shared_ptr<SGObject> create_empty() const override
+		std::shared_ptr<SGObject> create_empty() const override
 		{
 			return std::make_shared<CloneEqualsMock>();
 		}
@@ -234,7 +234,7 @@ namespace shogun
 			init_params();
 		}
 
-		virtual ~MockObject()
+		~MockObject() override
 		{
 		}
 
@@ -283,7 +283,7 @@ namespace shogun
 			watch_method("some_method", &MockObject::some_method);
 		}
 
-		virtual std::shared_ptr<SGObject> create_empty() const
+		std::shared_ptr<SGObject> create_empty() const override
 		{
 			return std::make_shared<MockObject>();
 		};

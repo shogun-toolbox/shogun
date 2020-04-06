@@ -129,19 +129,19 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		    float64_t gamma, const std::shared_ptr<DenseFeatures<float64_t>>& traindat,
 		    std::shared_ptr<Labels> trainlab, ELDAMethod method = AUTO_LDA,
 		    bool bdc_svd = true);
-		virtual ~LDA();
+		~LDA() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type LDA
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_LDA;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LDA"; }
+		const char* get_name() const override { return "LDA"; }
 
 	protected:
 		/** train LDA classifier

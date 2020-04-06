@@ -19,21 +19,21 @@ class FailurePrinter : public TestEventListener {
 public:
 	explicit FailurePrinter(TestEventListener* listener) : TestEventListener() {_listener = listener;}
 
-	virtual ~FailurePrinter() {}
+	~FailurePrinter() override {}
 
-	virtual void OnTestProgramStart(const UnitTest& unit_test) {}
-	virtual void OnTestIterationStart(const UnitTest& unit_test, int iteration) {}
-	virtual void OnEnvironmentsSetUpStart(const UnitTest& unit_test) {}
-	virtual void OnEnvironmentsSetUpEnd(const UnitTest& unit_test) {}
-	virtual void OnTestCaseStart(const TestCase& test_case) {}
-	virtual void OnTestStart(const TestInfo& test_info) {}
-	virtual void OnTestPartResult(const TestPartResult& result);
-	virtual void OnTestEnd(const TestInfo& test_info);
-	virtual void OnTestCaseEnd(const TestCase& test_case) {}
-	virtual void OnEnvironmentsTearDownStart(const UnitTest& unit_test) { }
-	virtual void OnEnvironmentsTearDownEnd(const UnitTest& unit_test) { }
-	virtual void OnTestIterationEnd(const UnitTest& unit_test, int iteration) { _listener->OnTestIterationEnd(unit_test, iteration); }
-	virtual void OnTestProgramEnd(const UnitTest& unit_test) { }
+	void OnTestProgramStart(const UnitTest& unit_test) override {}
+	void OnTestIterationStart(const UnitTest& unit_test, int iteration) override {}
+	void OnEnvironmentsSetUpStart(const UnitTest& unit_test) override {}
+	void OnEnvironmentsSetUpEnd(const UnitTest& unit_test) override {}
+	void OnTestCaseStart(const TestCase& test_case) override {}
+	void OnTestStart(const TestInfo& test_info) override {}
+	void OnTestPartResult(const TestPartResult& result) override;
+	void OnTestEnd(const TestInfo& test_info) override;
+	void OnTestCaseEnd(const TestCase& test_case) override {}
+	void OnEnvironmentsTearDownStart(const UnitTest& unit_test) override { }
+	void OnEnvironmentsTearDownEnd(const UnitTest& unit_test) override { }
+	void OnTestIterationEnd(const UnitTest& unit_test, int iteration) override { _listener->OnTestIterationEnd(unit_test, iteration); }
+	void OnTestProgramEnd(const UnitTest& unit_test) override { }
 
 protected:
 	TestEventListener* _listener;

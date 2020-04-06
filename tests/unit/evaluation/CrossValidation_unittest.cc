@@ -35,7 +35,7 @@ template <class T>
 class CrossValidationTests : public ::testing::Test
 {
 protected:
-	void SetUp()
+	void SetUp() override
 	{
 	}
 
@@ -79,7 +79,7 @@ protected:
 		cv->set_num_runs(3);
 	}
 
-	void TearDown()
+	void TearDown() override
 	{
 	}
 

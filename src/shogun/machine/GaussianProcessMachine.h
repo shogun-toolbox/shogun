@@ -69,13 +69,13 @@ public:
 	 */
 	GaussianProcessMachine(std::shared_ptr<Inference> method);
 
-	virtual ~GaussianProcessMachine();
+	~GaussianProcessMachine() override;
 
 	/** returns name of the machine
 	 *
 	 * @return name GaussianProcessMachine
 	 */
-	virtual const char* get_name() const { return "GaussianProcessMachine"; }
+	const char* get_name() const override { return "GaussianProcessMachine"; }
 
 	/** returns a mean \f$\mu\f$ of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
@@ -122,7 +122,7 @@ public:
 	 *
 	 * @param lab labels to set
 	 */
-	virtual void set_labels(std::shared_ptr<Labels> lab)
+	void set_labels(std::shared_ptr<Labels> lab) override
 	{
 		Machine::set_labels(lab);
 		m_method->set_labels(lab);

@@ -15,7 +15,7 @@ public:
     }
 
     /** destructor */
-    virtual ~CReverseLinearKernel()
+    ~CReverseLinearKernel() override
     {
     }
 
@@ -65,7 +65,7 @@ public:
      *
      * @return name "Reverse Linear"
      */
-    inline virtual const char* get_name() const
+    inline const char* get_name() const override
     {
         return "ReverseLinear";
     }
@@ -79,7 +79,7 @@ protected:
      * @param idx_b index b
      * @return computed kernel function at indices a,b
      */
-    virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+    float64_t compute(int32_t idx_a, int32_t idx_b) override
     {
         int32_t alen, blen;
         bool afree, bfree;

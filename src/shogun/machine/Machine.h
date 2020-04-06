@@ -141,7 +141,7 @@ class Machine : public StoppableSGObject
 		Machine();
 
 		/** destructor */
-		virtual ~Machine();
+		~Machine() override;
 
 		/** train machine
 		 *

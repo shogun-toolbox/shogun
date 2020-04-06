@@ -36,9 +36,9 @@ class StructuredLabels : public Labels
 		StructuredLabels(int32_t num_labels);
 
 		/** destructor */
-		virtual ~StructuredLabels() override;
+		~StructuredLabels() override;
 
-		virtual bool is_valid() const override;
+		bool is_valid() const override;
 
 		/** check if labeling is valid
 		 *
@@ -46,7 +46,7 @@ class StructuredLabels : public Labels
 		 *
 		 * @return if labeling is valid
 		 */
-		virtual void ensure_valid(const char* context = NULL) override;
+		void ensure_valid(const char* context = NULL) override;
 
 		/**
 		 * add a new label to the vector of labels, effectively
@@ -90,16 +90,16 @@ class StructuredLabels : public Labels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const override;
+		int32_t get_num_labels() const override;
 
 		/** @return object name */
-		virtual const char* get_name() const override { return "StructuredLabels"; }
+		const char* get_name() const override { return "StructuredLabels"; }
 
 		/** get label type
 		 *
 		 * @return label type LT_STRUCTURED
 		 */
-		virtual ELabelType get_label_type() const override { return LT_STRUCTURED; }
+		ELabelType get_label_type() const override { return LT_STRUCTURED; }
 
 		/** get structured data type the labels are composed of
 		 *

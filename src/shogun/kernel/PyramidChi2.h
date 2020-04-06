@@ -81,22 +81,22 @@ public:
 	 * @param l features lhs
 	 * @param r reatures rhs
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 
-	virtual ~PyramidChi2();
+	~PyramidChi2() override;
 
 	/** cleanup */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** return what type of kernel we are Linear,Polynomial, Gaussian,... */
-	virtual EKernelType get_kernel_type()
+	EKernelType get_kernel_type() override
 	{
 		return K_PYRAMIDCHI2;
 	}
 
 	/** return the name of a kernel */
-	virtual const char* get_name() const { return "PyramidChi2"; }
+	const char* get_name() const override { return "PyramidChi2"; }
 
 
 	/** sets parameters, see also constructor
@@ -124,7 +124,7 @@ protected:
 	 * @param idx_b index of feature vector b
 	 * @return computed kernel function
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 protected:
 

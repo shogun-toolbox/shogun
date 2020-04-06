@@ -59,7 +59,7 @@ public:
 	GaussianKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t width, int32_t size=10);
 
 	/** destructor */
-	virtual ~GaussianKernel();
+	~GaussianKernel() override;
 
 	/** @param kernel is casted to GaussianKernel, error if not possible
 	 * is SG_REF'ed
@@ -68,7 +68,7 @@ public:
 	static std::shared_ptr<GaussianKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 	/** Make a shallow copy of the kernel */
-	virtual std::shared_ptr<SGObject> shallow_copy() const;
+	std::shared_ptr<SGObject> shallow_copy() const override;
 
 	/** initialize kernel
 	 *
@@ -76,28 +76,28 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/** clean up kernel */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** return what type of kernel we are
 	 *
 	 * @return kernel type GAUSSIAN
 	 */
-	virtual EKernelType get_kernel_type()
+	EKernelType get_kernel_type() override
 	{
 		return K_GAUSSIAN;
 	}
 
 	/** @return feature type of distance used */
-	virtual EFeatureType get_feature_type()
+	EFeatureType get_feature_type() override
 	{
 		return F_ANY;
 	}
 
 	/** @return feature class of distance used */
-	virtual EFeatureClass get_feature_class()
+	EFeatureClass get_feature_class() override
 	{
 		return C_ANY;
 	}
@@ -106,7 +106,7 @@ public:
 	 *
 	 * @return name Gaussian
 	 */
-	virtual const char* get_name() const { return "GaussianKernel"; }
+	const char* get_name() const override { return "GaussianKernel"; }
 
 	/** set the kernel's width
 	 *
@@ -130,7 +130,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param, index_t index=-1);
+	SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param, index_t index=-1) override;
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 * variables which are not PARAMETER::ADD'ed. Make sure that at first
@@ -149,7 +149,7 @@ protected:
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	/** compute the distance between features a and b
 	 * idx_{a,b} denote the index of the feature vectors
@@ -165,11 +165,11 @@ protected:
 	 * 	distance({\bf x},{\bf y})= \frac{||{\bf x}-{\bf y}||^2}{\tau}
 	 * \f]
 	 */
-	virtual float64_t distance(int32_t idx_a, int32_t idx_b) const;
+	float64_t distance(int32_t idx_a, int32_t idx_b) const override;
 
 private:
 	/** register parameters and initialize with defaults */
-	void register_params();
+	void register_params() override;
 
 protected:
 	/** width */

@@ -116,25 +116,25 @@ class MulticlassLabels;
 		    float64_t thresh = 0.01, float64_t gamma = 0, bool bdc_svd = true);
 
 		/** destructor */
-		virtual ~FisherLDA();
+		~FisherLDA() override;
 
-		virtual void fit(std::shared_ptr<Features> features);
+		void fit(std::shared_ptr<Features> features) override;
 
 		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
 		 */
-		virtual void fit(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels);
+		void fit(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels) override;
 
 		/** cleanup */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** apply preprocessor to feature vector
 		 * @param vector features on which the learned transformation has to be applied.
 		 * @return processed feature vector with reduced dimensions.
 		 */
-		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 		/** @return get transformation matrix which contains the required number of eigenvectors
 		*/
@@ -149,12 +149,12 @@ class MulticlassLabels;
 		SGVector<float64_t> get_mean();
 
 		/** @return object name */
-		virtual const char* get_name() const {return "FisherLDA";}
+		const char* get_name() const override {return "FisherLDA";}
 
 		/** @return a type of preprocessor */
-		virtual EPreprocessorType get_type() const {return P_FISHERLDA;}
+		EPreprocessorType get_type() const override {return P_FISHERLDA;}
 
-		virtual bool train_require_labels() const
+		bool train_require_labels() const override
 		{
 			return true;
 		}
@@ -170,7 +170,7 @@ class MulticlassLabels;
 		 * matrix.
 		 * @return processed feature matrix with reduced dimensions.
 		 */
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 		/**
 		 * Train the preprocessor with the canonical variates method.

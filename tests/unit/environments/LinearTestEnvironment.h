@@ -20,7 +20,7 @@ using ::testing::Environment;
 class LinearTestEnvironment : public ::testing::Environment
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		std::mt19937_64 prng(125);
 		SGVector<float64_t> coefficients(1);

@@ -74,7 +74,7 @@ public:
 	std::shared_ptr<LikelihoodModel> lik;
 	std::shared_ptr<Labels> lab;
 
-	virtual double operator() (double x)
+	double operator() (double x) override
 	{
 		const index_t C=multiclass_labels(lab)->get_num_classes();
 		const index_t n=multiclass_labels(lab)->get_num_labels();

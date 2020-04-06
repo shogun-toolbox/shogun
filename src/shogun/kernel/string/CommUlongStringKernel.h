@@ -68,7 +68,7 @@ class CommUlongStringKernel: public StringKernel<uint64_t>
 			bool use_sign=false,
 			int32_t size=10);
 
-		virtual ~CommUlongStringKernel();
+		~CommUlongStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -76,22 +76,22 @@ class CommUlongStringKernel: public StringKernel<uint64_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type COMMULONGSTRING
 		 */
-		virtual EKernelType get_kernel_type() { return K_COMMULONGSTRING; }
+		EKernelType get_kernel_type() override { return K_COMMULONGSTRING; }
 
 		/** return the kernel's name
 		 *
 		 * @return name CommUlongString
 		 */
-		virtual const char* get_name() const { return "CommUlongStringKernel"; }
+		const char* get_name() const override { return "CommUlongStringKernel"; }
 
 		/** initialize optimization
 		 *
@@ -100,21 +100,21 @@ class CommUlongStringKernel: public StringKernel<uint64_t>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t* IDX, float64_t* weights);
+		bool init_optimization(
+			int32_t count, int32_t* IDX, float64_t* weights) override;
 
 		/** delete optimization
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization();
+		bool delete_optimization() override;
 
 		/** compute optimized
 		*
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		float64_t compute_optimized(int32_t idx) override;
 
 		/** merge dictionaries
 		 *
@@ -158,22 +158,22 @@ class CommUlongStringKernel: public StringKernel<uint64_t>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		void add_to_normal(int32_t idx, float64_t weight) override;
 
 		/** clear normal */
-		virtual void clear_normal();
+		void clear_normal() override;
 
 		/** remove lhs from kernel */
-		virtual void remove_lhs();
+		void remove_lhs() override;
 
 		/** remove rhs from kernel */
-		virtual void remove_rhs();
+		void remove_rhs() override;
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type ULONG
 		 */
-		virtual EFeatureType get_feature_type() { return F_ULONG; }
+		EFeatureType get_feature_type() override { return F_ULONG; }
 
 		/** get dictionary
 		 *
@@ -200,7 +200,7 @@ class CommUlongStringKernel: public StringKernel<uint64_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** dictionary */

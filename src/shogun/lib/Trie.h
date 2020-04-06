@@ -165,7 +165,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 
 		/** copy constructor */
 		CTrie(const CTrie & to_copy);
-		virtual ~CTrie();
+		~CTrie() override;
 
 		/** overload operator = */
 		const CTrie & operator=(const CTrie & to_copy);

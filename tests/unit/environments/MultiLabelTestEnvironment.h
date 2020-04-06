@@ -43,7 +43,7 @@ using ::testing::Environment;
 class MultiLabelTestEnvironment : public ::testing::Environment
 {
 public:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		std::mt19937_64 prng(17);
 		mMulticlassFixture = std::shared_ptr<GaussianCheckerboard>(

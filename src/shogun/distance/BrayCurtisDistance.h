@@ -37,7 +37,7 @@ class BrayCurtisDistance: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 */
 		BrayCurtisDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
-		virtual ~BrayCurtisDistance();
+		~BrayCurtisDistance() override;
 
 		/** init distance
 		 *
@@ -45,28 +45,28 @@ class BrayCurtisDistance: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type BRAYCURTIS
 		 */
-		virtual EDistanceType get_distance_type() { return D_BRAYCURTIS; }
+		EDistanceType get_distance_type() override { return D_BRAYCURTIS; }
 
 		/** get name of the distance
 		 *
 		 * @return name Bray-Curtis distance
 		 */
-		virtual const char* get_name() const { return "BrayCurtisDistance"; }
+		const char* get_name() const override { return "BrayCurtisDistance"; }
 
 	protected:
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 } // namespace shogun
 #endif /* _BRAYCURTISDISTANCE_H___ */

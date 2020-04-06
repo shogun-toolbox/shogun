@@ -82,13 +82,13 @@ public:
 	KLLowerTriangularInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~KLLowerTriangularInference();
+	~KLLowerTriangularInference() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name KLLowerTriangularInference
 	 */
-	virtual const char* get_name() const { return "KLLowerTriangularInference"; }
+	const char* get_name() const override { return "KLLowerTriangularInference"; }
 
 	/** get diagonal vector
 	 *
@@ -96,16 +96,16 @@ public:
 	 *
 	 * Note that this vector is not avaliable for the KL method
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 protected:
 	/** update cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
@@ -118,10 +118,10 @@ protected:
 	 * @param dK the gradient wrt hyperparameter related to cov
 	 */
 
-	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
+	float64_t get_derivative_related_cov(SGMatrix<float64_t> dK) override;
 
 	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
+	void update_approx_cov() override;
 
 	/** The K^{-1}Sigma matrix */
 	SGMatrix<float64_t> m_InvK_Sigma;
@@ -149,7 +149,7 @@ protected:
 	/** correct the kernel matrix and factorizated the corrected Kernel matrix
 	 * for update
 	 */
-	virtual void update_init();
+	void update_init() override;
 
 	/** compute posterior Sigma matrix*/
 	virtual void update_Sigma()=0;

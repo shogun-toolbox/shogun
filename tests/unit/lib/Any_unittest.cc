@@ -87,7 +87,7 @@ public:
 class Object : public SGObject
 {
 public:
-	virtual const char* get_name() const override
+	const char* get_name() const override
 	{
 		return "Object";
 	}

@@ -51,7 +51,7 @@ public:
 	/** constructor */
 	MeanFunction() { }
 
-	virtual ~MeanFunction() { }
+	~MeanFunction() override { }
 
 	/** returns the mean of the specified data
 	 *

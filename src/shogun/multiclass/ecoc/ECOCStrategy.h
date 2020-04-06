@@ -27,33 +27,33 @@ public:
     ECOCStrategy(std::shared_ptr<ECOCEncoder >encoder, std::shared_ptr<ECOCDecoder >decoder);
 
     /** destructor */
-    virtual ~ECOCStrategy();
+    ~ECOCStrategy() override;
 
     /** get name */
-    virtual const char* get_name() const
+    const char* get_name() const override
     {
         return "ECOCStrategy";
     }
 
     /** start training */
-    virtual void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels);
+    void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels) override;
 
     /** has more training phase */
-    virtual bool train_has_more();
+    bool train_has_more() override;
 
     /** prepare for the next training phase.
      * @return The subset that should be applied. Return NULL when no subset is needed.
      */
-    virtual SGVector<int32_t> train_prepare_next();
+    SGVector<int32_t> train_prepare_next() override;
 
     /** decide the final label.
      * @param outputs a vector of output from each machine (in that order)
      */
-    virtual int32_t decide_label(SGVector<float64_t> outputs);
+    int32_t decide_label(SGVector<float64_t> outputs) override;
 
     /** get number of machines used in this strategy.
      */
-    virtual int32_t get_num_machines();
+    int32_t get_num_machines() override;
 
 protected:
     /** ECOC encoder */

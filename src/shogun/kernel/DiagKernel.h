@@ -42,7 +42,7 @@ class DiagKernel: public Kernel
 		 */
 		DiagKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t diag=1.0);
 
-		virtual ~DiagKernel();
+		~DiagKernel() override;
 
 		/** initialize kernel
 		 *
@@ -50,13 +50,13 @@ class DiagKernel: public Kernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		virtual EFeatureType get_feature_type()
+		EFeatureType get_feature_type() override
 		{
 			return F_ANY;
 		}
@@ -65,7 +65,7 @@ class DiagKernel: public Kernel
 		 *
 		 * @return feature class ANY
 		 */
-		virtual EFeatureClass get_feature_class()
+		EFeatureClass get_feature_class() override
 		{
 			return C_ANY;
 		}
@@ -74,13 +74,13 @@ class DiagKernel: public Kernel
 		 *
 		 * @return kernel type CUSTOM
 		 */
-		virtual EKernelType get_kernel_type() { return K_DIAG; }
+		EKernelType get_kernel_type() override { return K_DIAG; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Custom
 		 */
-		virtual const char* get_name() const { return "DiagKernel"; }
+		const char* get_name() const override { return "DiagKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -91,7 +91,7 @@ class DiagKernel: public Kernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		float64_t compute(int32_t idx_a, int32_t idx_b) override
 		{
 			if (idx_a==idx_b)
 				return diag;

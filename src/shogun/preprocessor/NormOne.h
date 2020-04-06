@@ -35,10 +35,10 @@ class NormOne : public DensePreprocessor<float64_t>
 		NormOne();
 
 		/** destructor */
-		virtual ~NormOne();
+		~NormOne() override;
 
 		/// cleanup
-		virtual void cleanup();
+		void cleanup() override;
 		/// initialize preprocessor from file
 		virtual bool load(FILE* f);
 		/// save preprocessor init-data to file
@@ -46,16 +46,16 @@ class NormOne : public DensePreprocessor<float64_t>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "NormOne"; }
+		const char* get_name() const override { return "NormOne"; }
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type() const { return P_NORMONE; }
+		EPreprocessorType get_type() const override { return P_NORMONE; }
 
 	protected:
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 };
 }
 #endif

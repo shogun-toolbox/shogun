@@ -39,7 +39,7 @@ public:
 		watch_param("obj4", &obj4);
 	}
 
-	~OneLevelNested()
+	~OneLevelNested() override
 	{
 	}
 
@@ -65,7 +65,7 @@ public:
 		watch_param("obj4", &obj4);
 	}
 
-	~OneLevelNestedNonRandom()
+	~OneLevelNestedNonRandom() override
 	{
 	}
 
@@ -91,7 +91,7 @@ public:
 		watch_param("obj4", &obj4);
 	}
 
-	~TwoLevelNested()
+	~TwoLevelNested() override
 	{
 	}
 

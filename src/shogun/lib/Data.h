@@ -24,13 +24,13 @@ namespace shogun
 			/** default ctor */
 			Data();
 
-			virtual ~Data();
+			~Data() override;
 
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "Data"; }
+			const char* get_name() const override { return "Data"; }
 	};
 }
 

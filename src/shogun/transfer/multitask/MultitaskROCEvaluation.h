@@ -39,7 +39,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~MultitaskROCEvaluation()
+	~MultitaskROCEvaluation() override
 	{
 		SG_FREE(m_tasks_indices);
 	}
@@ -64,20 +64,20 @@ public:
 	 *
 	 * @param indices indices
 	 */
-	virtual void set_indices(SGVector<index_t> indices);
+	void set_indices(SGVector<index_t> indices) override;
 
 	/** get name */
-	virtual const char* get_name() const { return "MultitaskROCEvaluation"; };
+	const char* get_name() const override { return "MultitaskROCEvaluation"; };
 
 	/** evaluate ROC and auROC
 	 * @param predicted labels
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
 	/** get evaluation direction */
-	virtual EEvaluationDirection get_evaluation_direction() const
+	EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MAXIMIZE;
 	}

@@ -57,7 +57,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~LossFunction() {};
+	~LossFunction() override {};
 
 	/**
 	 * Get loss for an example
@@ -161,7 +161,7 @@ public:
 	 *
 	 * @return LossFunction
 	 */
-	virtual const char* get_name() const { return "LossFunction"; }
+	const char* get_name() const override { return "LossFunction"; }
 };
 }
 #endif // _LOSSFUNCTION_H__

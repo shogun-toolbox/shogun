@@ -18,7 +18,7 @@ public:
 	{
 		m_expected_feature_type = f;
 	}
-	~DenseRealMockMachine()
+	~DenseRealMockMachine() override
 	{
 	}
 	template <typename T>
@@ -28,7 +28,7 @@ public:
 			return true;
 		return false;
 	}
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DenseRealMockMachine";
 	}
@@ -45,7 +45,7 @@ public:
 	{
 		m_expected_feature_type = f;
 	}
-	~StringMockMachine()
+	~StringMockMachine() override
 	{
 	}
 	template <typename T>
@@ -55,7 +55,7 @@ public:
 			return true;
 		return false;
 	}
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "StringMockMachine";
 	}

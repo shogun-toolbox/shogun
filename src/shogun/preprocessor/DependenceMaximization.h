@@ -74,7 +74,7 @@ public:
 	CDependenceMaximization();
 
 	/** Destructor */
-	virtual ~CDependenceMaximization();
+	~CDependenceMaximization() override;
 
 	/**
 	 * Method that computes the measures using test statistic computed by
@@ -86,7 +86,7 @@ public:
 	 * the measure on
 	 * @return the measure based on which features are selected
 	 */
-	virtual float64_t compute_measures(std::shared_ptr<Features> features, index_t idx);
+	float64_t compute_measures(std::shared_ptr<Features> features, index_t idx) override;
 
 	/**
 	 * Method which handles the removal of features based on removal policy.
@@ -101,10 +101,10 @@ public:
 	 * the lowest rank which corresponds to smallest measure.
 	 * @return the feature object after removal of features based on the policy
 	 */
-	virtual std::shared_ptr<Features> remove_feats(std::shared_ptr<Features> features, SGVector<index_t> ranks);
+	std::shared_ptr<Features> remove_feats(std::shared_ptr<Features> features, SGVector<index_t> ranks) override;
 
 	/** @param policy feature removal policy */
-	virtual void set_policy(EFeatureRemovalPolicy policy);
+	void set_policy(EFeatureRemovalPolicy policy) override;
 
 	/**
 	 * Abstract method which is overridden in the subclasses to set accepted
@@ -122,10 +122,10 @@ public:
 	 *
 	 * @param labels the labels
 	 */
-	virtual void set_labels(std::shared_ptr<Labels> labels);
+	void set_labels(std::shared_ptr<Labels> labels) override;
 
 	/** @return the class name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DependenceMaximization";
 	}

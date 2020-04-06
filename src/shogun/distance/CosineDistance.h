@@ -42,7 +42,7 @@ class CosineDistance: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 */
 		CosineDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
-		virtual ~CosineDistance();
+		~CosineDistance() override;
 
 		/** init distance
 		 *
@@ -50,28 +50,28 @@ class CosineDistance: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type COSINE
 		 */
-		virtual EDistanceType get_distance_type() { return D_COSINE; }
+		EDistanceType get_distance_type() override { return D_COSINE; }
 
 		/** get name of the distance
 		 *
 		 * @return name Cosine distance
 		 */
-		virtual const char* get_name() const { return "CosineDistance"; }
+		const char* get_name() const override { return "CosineDistance"; }
 
 	protected:
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 
 } // namespace shogun

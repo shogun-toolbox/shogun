@@ -29,7 +29,7 @@ public:
 	/** Class default Destructor
 	 *
 	 */
-   virtual ~MKLMulticlassGLPK();
+   ~MKLMulticlassGLPK() override;
 
 	/** initializes GLPK LP sover
 	 *
@@ -37,7 +37,7 @@ public:
 	 *
 	 *
 	 */
-	virtual void setup(const int32_t numkernels2);
+	void setup(const int32_t numkernels2) override;
 
 	/** adds a constraint to the LP arising in L1 MKL based on two parameters
 	 *
@@ -47,18 +47,18 @@ public:
     * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
 	 *
 	 */
-	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas);
+	void addconstraint(const ::std::vector<float64_t> & normw2,
+			const float64_t sumofpositivealphas) override;
 
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
 	 *
 	 */
-	virtual void computeweights(std::vector<float64_t> & weights2);
+	void computeweights(std::vector<float64_t> & weights2) override;
 
 	/** @return object name */
-	virtual const char* get_name() const { return "MKLMulticlassGLPK"; }
+	const char* get_name() const override { return "MKLMulticlassGLPK"; }
 
 protected:
 	/** Class Copy Constructor

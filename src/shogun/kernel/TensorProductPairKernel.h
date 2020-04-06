@@ -53,7 +53,7 @@ class TensorProductPairKernel: public DotKernel
 		 */
 		TensorProductPairKernel(const std::shared_ptr<DenseFeatures<int32_t>>& l, const std::shared_ptr<DenseFeatures<int32_t>>& r, std::shared_ptr<Kernel> subkernel);
 
-		virtual ~TensorProductPairKernel();
+		~TensorProductPairKernel() override;
 
 		/** initialize kernel
 		 *
@@ -61,35 +61,35 @@ class TensorProductPairKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type TPPK
 		 */
-		virtual EKernelType get_kernel_type() { return K_TPPK; }
+		EKernelType get_kernel_type() override { return K_TPPK; }
 
 		/* register the parameters
 		 */
-		virtual void register_params();
+		void register_params() override;
 
 		/** return the kernel's name
 		 *
 		 * @return name TPPK
 		 */
-		virtual const char* get_name() const { return "TensorProductPairKernel"; }
+		const char* get_name() const override { return "TensorProductPairKernel"; }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class SIMPLE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		EFeatureClass get_feature_class() override { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return int32_t feature type
 		 */
-		virtual EFeatureType get_feature_type() { return F_INT; }
+		EFeatureType get_feature_type() override { return F_INT; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -100,7 +100,7 @@ class TensorProductPairKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** the subkernel */

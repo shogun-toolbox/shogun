@@ -33,10 +33,10 @@ class MulticlassOCAS : public LinearMulticlassMachine
 		MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~MulticlassOCAS();
+		~MulticlassOCAS() override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MulticlassOCAS";
 		}
@@ -109,7 +109,7 @@ class MulticlassOCAS : public LinearMulticlassMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 		/** update W */
 		static float64_t msvm_update_W(float64_t t, void* user_data);

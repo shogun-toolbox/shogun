@@ -101,7 +101,7 @@ public:
 		const std::vector<std::shared_ptr<NeuralLayer>>& layers,
 		float64_t sigma = 0.01);
 
-	virtual ~DeepAutoencoder() {}
+	~DeepAutoencoder() override {}
 
 	/** Pre-trains the deep autoencoder as a stack of autoencoders
 	 *
@@ -132,8 +132,8 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual std::shared_ptr<DenseFeatures<float64_t>> transform(
-		std::shared_ptr<DenseFeatures<float64_t>> data);
+	std::shared_ptr<DenseFeatures<float64_t>> transform(
+		std::shared_ptr<DenseFeatures<float64_t>> data) override;
 
 	/** Forward propagates the data through the autoencoder and returns the
 	 * activations of the last layer
@@ -142,8 +142,8 @@ public:
 	 *
 	 * @return Reconstructed features
 	 */
-	virtual std::shared_ptr<DenseFeatures<float64_t>> reconstruct(
-		std::shared_ptr<DenseFeatures<float64_t>> data);
+	std::shared_ptr<DenseFeatures<float64_t>> reconstruct(
+		std::shared_ptr<DenseFeatures<float64_t>> data) override;
 
 	/** Converts the autoencoder into a neural network for supervised finetuning.
 	 *
@@ -169,9 +169,9 @@ public:
 	 *
 	 * @param coeff Contraction coefficient
 	 */
-	virtual void set_contraction_coefficient(float64_t coeff);
+	void set_contraction_coefficient(float64_t coeff) override;
 
-	virtual const char* get_name() const { return "DeepAutoencoder"; }
+	const char* get_name() const override { return "DeepAutoencoder"; }
 
 protected:
 	/** Computes the error between the output layer's activations and the given
@@ -180,7 +180,7 @@ protected:
 	 * @param targets desired values for the network's output, matrix of size
 	 * num_neurons_output_layer*batch_size
 	 */
-	virtual float64_t compute_error(SGMatrix<float64_t> targets);
+	float64_t compute_error(SGMatrix<float64_t> targets) override;
 
 private:
 	void init();

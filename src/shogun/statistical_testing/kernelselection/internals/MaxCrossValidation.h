@@ -51,14 +51,14 @@ class MaxCrossValidation : public KernelSelection
 public:
 	MaxCrossValidation(KernelManager&, std::shared_ptr<MMD>, const index_t&, const index_t&, const float64_t&, PRNG&);
 	MaxCrossValidation(const MaxCrossValidation<PRNG>& other)=delete;
-	~MaxCrossValidation();
+	~MaxCrossValidation() override;
 	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
-	virtual std::shared_ptr<shogun::Kernel> select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector() override;
-	virtual SGMatrix<float64_t> get_measure_matrix() override;
+	std::shared_ptr<shogun::Kernel> select_kernel() override;
+	SGVector<float64_t> get_measure_vector() override;
+	SGMatrix<float64_t> get_measure_matrix() override;
 protected:
-	virtual void init_measures() override;
-	virtual void compute_measures() override;
+	void init_measures() override;
+	void compute_measures() override;
 	const index_t num_runs;
 	const index_t num_folds;
 	const float64_t alpha;

@@ -51,12 +51,12 @@ public:
 	std::shared_ptr<MulticlassLabels> weather_labels_train;
 	SGVector<bool> weather_ft;
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		load_toy_data();
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 
 

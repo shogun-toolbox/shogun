@@ -42,18 +42,18 @@ class LinearTimeMMD : public StreamingMMD
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 	LinearTimeMMD();
-	virtual ~LinearTimeMMD();
+	~LinearTimeMMD() override;
 
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 
-	virtual float64_t compute_p_value(float64_t statistic);
-	virtual float64_t compute_threshold(float64_t alpha);
+	float64_t compute_p_value(float64_t statistic) override;
+	float64_t compute_threshold(float64_t alpha) override;
 
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 private:
-	virtual const operation get_direct_estimation_method() const;
-	virtual float64_t normalize_statistic(float64_t statistic) const;
-	virtual const float64_t normalize_variance(float64_t variance) const;
+	const operation get_direct_estimation_method() const override;
+	float64_t normalize_statistic(float64_t statistic) const override;
+	const float64_t normalize_variance(float64_t variance) const override;
 	const float64_t gaussian_variance(float64_t variance) const;
 };
 

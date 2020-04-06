@@ -95,7 +95,7 @@ class Distance : public SGObject
 		 * @return if init was successful
 		 */
 		Distance(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
-		virtual ~Distance();
+		~Distance() override;
 
 		/** get distance function for lhs feature vector a
 		  * and rhs feature vector b

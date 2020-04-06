@@ -95,7 +95,7 @@ protected:
 		test_labels = std::make_shared<RegressionLabels>(tlab);
 	}
 
-	virtual void SetUp()
+	void SetUp() override
 	{
 		prng.seed(835);
 		load_sinusoid_samples();

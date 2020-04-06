@@ -38,10 +38,10 @@ namespace shogun
 		 */
 		BaggingMachine(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels);
 
-		virtual ~BaggingMachine() = default;
+		~BaggingMachine() override = default;
 
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
 		/**
@@ -107,7 +107,7 @@ namespace shogun
 		 *
 		 * @return classifier type CT_BAGGING
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_BAGGING;
 		}

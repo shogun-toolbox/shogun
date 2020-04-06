@@ -24,7 +24,7 @@ public:
 	ClusteringEvaluation();
 
 	/** destructor */
-	virtual ~ClusteringEvaluation() {}
+	~ClusteringEvaluation() override {}
 
 	/** permute the order of the predicted labels to match the ground_truth as good as possible.
 	 *
@@ -40,7 +40,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 protected:
 	/** implementation of label evaluation
 	 * @param predicted labels for evaluating
