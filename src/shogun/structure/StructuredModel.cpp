@@ -45,7 +45,7 @@ StructuredModel::StructuredModel() : SGObject()
 }
 
 StructuredModel::StructuredModel(
-		std::shared_ptr<Features>         features,
+		std::shared_ptr<Features> features,
 		std::shared_ptr<StructuredLabels> labels)
 : SGObject()
 {
@@ -57,8 +57,6 @@ StructuredModel::StructuredModel(
 
 StructuredModel::~StructuredModel()
 {
-
-
 }
 
 void StructuredModel::init_primal_opt(
@@ -76,8 +74,6 @@ void StructuredModel::init_primal_opt(
 
 void StructuredModel::set_labels(std::shared_ptr<StructuredLabels> labels)
 {
-
-
 	m_labels = std::move(labels);
 }
 
@@ -161,8 +157,8 @@ float64_t StructuredModel::delta_loss(std::shared_ptr<StructuredData> y1, std::s
 
 void StructuredModel::init()
 {
-	SG_ADD((std::shared_ptr<Labels>*) &m_labels, "m_labels", "Structured labels");
-	SG_ADD((std::shared_ptr<Features>*) &m_features, "m_features", "Feature vectors");
+	SG_ADD((std::shared_ptr<Labels>*) &m_labels, "labels", "Structured labels");
+	SG_ADD((std::shared_ptr<Features>*) &m_features, "features", "Feature vectors");
 
 	m_features = NULL;
 	m_labels   = NULL;

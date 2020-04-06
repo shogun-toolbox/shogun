@@ -270,7 +270,7 @@ void TreeMaxProduct::bottom_up_pass()
 			int32_t var_id = m_msg_order[mi]->parent;
 
 			auto fac = facs[fac_id];
-			auto ftype = fac->get_factor_type();
+			auto ftype = fac->get_factor_type()->as<TableFactorType>();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
 
@@ -400,7 +400,7 @@ void TreeMaxProduct::top_down_pass()
 			int32_t var_id = m_msg_order[mi]->parent;
 
 			auto fac = facs[fac_id];
-			auto ftype = fac->get_factor_type();
+			auto ftype = fac->get_factor_type()->as<TableFactorType>();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
 
@@ -488,7 +488,8 @@ void TreeMaxProduct::top_down_pass()
 			int32_t fac_id = m_msg_order[mi]->parent;
 
 			auto fac = facs[fac_id];
-			auto ftype = fac->get_factor_type();
+			auto ftype = fac->get_factor_type()->as<TableFactorType>();
+
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
 

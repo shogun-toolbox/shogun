@@ -16,12 +16,14 @@ Factor::Factor() : SGObject()
 	init();
 }
 
-Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
+Factor::Factor(const std::shared_ptr<FactorType>& ftype,
 	SGVector<int32_t> var_index,
 	SGVector<float64_t> data) : SGObject()
 {
+	auto table_factor = std::dynamic_pointer_cast<TableFactorType>(ftype);
+	require(table_factor, "Expected type of class TableFactorType");
 	init();
-	m_factor_type = ftype;
+	m_factor_type = table_factor;
 	m_var_index = var_index;
 	m_data = data;
 	m_is_data_dep = true;
@@ -32,19 +34,19 @@ Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
 	if (m_data.size() == 0)
 		m_is_data_dep = false;
 
-	if (ftype->is_table() && m_is_data_dep)
-		m_energies.resize_vector(ftype->get_num_assignments());
-
-
-
+	if (table_factor->is_table() && m_is_data_dep)
+		m_energies.resize_vector(table_factor->get_num_assignments());
 }
 
-Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
+Factor::Factor(const std::shared_ptr<FactorType>& ftype,
 	SGVector<int32_t> var_index,
 	SGSparseVector<float64_t> data_sparse) : SGObject()
 {
+	auto table_factor = std::dynamic_pointer_cast<TableFactorType>(ftype);
+	require(table_factor, "Expected type of class TableFactorType");
+
 	init();
-	m_factor_type = ftype;
+	m_factor_type = table_factor;
 	m_var_index = var_index;
 	m_data_sparse = data_sparse;
 	m_is_data_dep = true;
@@ -55,19 +57,19 @@ Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
 	if (m_data_sparse.num_feat_entries == 0)
 		m_is_data_dep = false;
 
-	if (ftype->is_table() && m_is_data_dep)
-		m_energies.resize_vector(ftype->get_num_assignments());
-
-
-
+	if (table_factor->is_table() && m_is_data_dep)
+		m_energies.resize_vector(table_factor->get_num_assignments());
 }
 
-Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
+Factor::Factor(const std::shared_ptr<FactorType>& ftype,
 	SGVector<int32_t> var_index,
 	std::shared_ptr<FactorDataSource> data_source) : SGObject()
 {
+	auto table_factor = std::dynamic_pointer_cast<TableFactorType>(ftype);
+	require(table_factor, "Expected type of class TableFactorType");
+
 	init();
-	m_factor_type = ftype;
+	m_factor_type = table_factor;
 	m_var_index = var_index;
 	m_data_source = std::move(data_source);
 	m_is_data_dep = true;
@@ -76,29 +78,25 @@ Factor::Factor(const std::shared_ptr<TableFactorType>& ftype,
 	ASSERT(m_factor_type->get_cardinalities().size() == m_var_index.size());
 	ASSERT(m_data_source != NULL);
 
-	if (ftype->is_table())
-		m_energies.resize_vector(ftype->get_num_assignments());
-
-
-
+	if (table_factor->is_table())
+		m_energies.resize_vector(table_factor->get_num_assignments());
 }
 
 Factor::~Factor()
 {
-
-
 }
 
-std::shared_ptr<TableFactorType> Factor::get_factor_type() const
+std::shared_ptr<FactorType> Factor::get_factor_type() const
 {
-
 	return m_factor_type;
 }
 
-void Factor::set_factor_type(std::shared_ptr<TableFactorType> ftype)
+void Factor::set_factor_type(std::shared_ptr<FactorType> ftype)
 {
-	m_factor_type = std::move(ftype);
+	auto table_factor = std::dynamic_pointer_cast<TableFactorType>(ftype);
+	require(table_factor, "Expected type of class TableFactorType");
 
+	m_factor_type = std::move(table_factor);
 }
 
 const SGVector<int32_t> Factor::get_variables() const
@@ -200,7 +198,7 @@ void Factor::set_energy(int32_t ei, float64_t value)
 
 float64_t Factor::evaluate_energy(const SGVector<int32_t> state) const
 {
-	int32_t index = m_factor_type->index_from_universe_assignment(state, m_var_index);
+	int32_t index = m_factor_type->as<TableFactorType>()->index_from_universe_assignment(state, m_var_index);
 	return get_energy(index);
 }
 
@@ -212,15 +210,15 @@ void Factor::compute_energies()
 	// For some factor types the size of the energy table is determined only
 	// after an initialization step from training data.
 	if (m_energies.size() == 0)
-		m_energies.resize_vector(m_factor_type->get_num_assignments());
+		m_energies.resize_vector(m_factor_type->as<TableFactorType>()->get_num_assignments());
 
 	const SGVector<float64_t> H = get_data();
 	const SGSparseVector<float64_t> H_sparse = get_data_sparse();
 
 	if (H_sparse.num_feat_entries == 0)
-		m_factor_type->compute_energies(H, m_energies);
+		m_factor_type->as<TableFactorType>()->compute_energies(H, m_energies);
 	else
-		m_factor_type->compute_energies(H_sparse, m_energies);
+		m_factor_type->as<TableFactorType>()->compute_energies(H_sparse, m_energies);
 }
 
 void Factor::compute_gradients(
@@ -232,9 +230,9 @@ void Factor::compute_gradients(
 	const SGSparseVector<float64_t> H_sparse = get_data_sparse();
 
 	if (H_sparse.num_feat_entries == 0)
-		m_factor_type->compute_gradients(H, marginals, parameter_gradient, mult);
+		m_factor_type->as<TableFactorType>()->compute_gradients(H, marginals, parameter_gradient, mult);
 	else
-		m_factor_type->compute_gradients(H_sparse, marginals, parameter_gradient, mult);
+		m_factor_type->as<TableFactorType>()->compute_gradients(H_sparse, marginals, parameter_gradient, mult);
 }
 
 void Factor::init()

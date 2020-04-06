@@ -112,6 +112,7 @@ protected:
 	SGVector<float64_t> m_w;
 };
 
+#ifndef SWIG
 /** @brief Class TableFactorType the way that store assignments of variables
  * and energies in a table or a multi-array
  */
@@ -218,6 +219,7 @@ public:
 		SGVector<float64_t>& parameter_gradient, double mult) const;
 
 };
+#endif
 
 }
 

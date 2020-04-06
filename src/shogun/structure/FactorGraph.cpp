@@ -263,7 +263,7 @@ void FactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float6
 			SGVector<float64_t> energies = fac->get_energies();
 			for (int32_t ei = 0; ei < energies.size(); ei++)
 			{
-				auto ftype = fac->get_factor_type();
+				auto ftype = fac->get_factor_type()->as<TableFactorType>();
 				int32_t vstate = ftype->state_from_index(ei, vi);
 
 

@@ -33,20 +33,32 @@ FactorGraphModel::FactorGraphModel(std::shared_ptr<Features> features, std::shar
 
 FactorGraphModel::~FactorGraphModel()
 {
-
 }
 
 void FactorGraphModel::init()
 {
 	SG_ADD(&m_factor_types, "factor_types", "Array of factor types");
+
+	// initialize the latest type added with parameter .add();
+	add_callback_function("factor_types", [&](){
+		add_map(m_factor_types.back());
+		fparams_to_w();
+		if (m_verbose)
+		{
+			m_w_map.display_vector("add_factor_type(): m_w_map");
+		}
+	});
+
 	SG_ADD(&m_w_cache, "w_cache", "Cache of global parameters");
 	SG_ADD(&m_w_map, "w_map", "Parameter mapping");
+	SG_ADD_OPTIONS((machine_int_t*)&m_inf_type, "inf_type", "MAP inference type",
+		ParameterProperties::SETTING,
+		SG_OPTIONS(TREE_MAX_PROD, LOOPY_MAX_PROD, LP_RELAXATION,
+			TRWS_MAX_PROD, GRAPH_CUT, GEMP_LP));
 
 	m_inf_type = TREE_MAX_PROD;
 	m_factor_types.clear();
 	m_verbose = false;
-
-
 }
 
 void FactorGraphModel::add_factor_type(const std::shared_ptr<FactorType>& ftype)
@@ -65,22 +77,9 @@ void FactorGraphModel::add_factor_type(const std::shared_ptr<FactorType>& ftype)
 
 			return;
 		}
-
-
 	}
 
-	SGVector<int32_t> w_map_cp = m_w_map.clone();
-	m_w_map.resize_vector(w_map_cp.size() + ftype->get_w_dim());
-
-	for (int32_t mi = 0; mi < w_map_cp.size(); mi++)
-	{
-		m_w_map[mi] = w_map_cp[mi];
-	}
-	// add new mapping in the end
-	for (int32_t mi = w_map_cp.size(); mi < m_w_map.size(); mi++)
-	{
-		m_w_map[mi] = id;
-	}
+	add_map(ftype);
 
 	// push factor type
 	m_factor_types.push_back(ftype);
@@ -91,6 +90,22 @@ void FactorGraphModel::add_factor_type(const std::shared_ptr<FactorType>& ftype)
 	if (m_verbose)
 	{
 		m_w_map.display_vector("add_factor_type(): m_w_map");
+	}
+}
+
+void FactorGraphModel::add_map(const std::shared_ptr<FactorType>& ftype)
+{
+	SGVector<int32_t> w_map_cp = m_w_map.clone();
+	m_w_map.resize_vector(w_map_cp.size() + ftype->get_w_dim());
+
+	for (int32_t mi = 0; mi < w_map_cp.size(); mi++)
+	{
+		m_w_map[mi] = w_map_cp[mi];
+	}
+	// add new mapping in the end
+	for (int32_t mi = w_map_cp.size(); mi < m_w_map.size(); mi++)
+	{
+		m_w_map[mi] = ftype->get_type_id();
 	}
 }
 
@@ -108,8 +123,6 @@ void FactorGraphModel::del_factor_type(const int32_t ftype_id)
 			m_factor_types.erase(fi);
 			break;
 		}
-
-
 	}
 
 	ASSERT(w_dim != 0);
@@ -131,7 +144,6 @@ void FactorGraphModel::del_factor_type(const int32_t ftype_id)
 
 std::vector<std::shared_ptr<FactorType>> FactorGraphModel::get_factor_types() const
 {
-
 	return m_factor_types;
 }
 
@@ -141,8 +153,6 @@ std::shared_ptr<FactorType> FactorGraphModel::get_factor_type(const int32_t ftyp
 	{
 		if (ftype_id == ftype->get_type_id())
 			return ftype;
-
-
 	}
 
 	return NULL;
@@ -180,8 +190,6 @@ SGVector<float64_t> FactorGraphModel::fparams_to_w()
 
 		for (int32_t wi = 0; wi < w_dim; wi++)
 			m_w_cache[fw_map[wi]] = fw[wi];
-
-
 	}
 
 	ASSERT(offset == m_w_cache.size());
@@ -248,17 +256,13 @@ SGVector< float64_t > FactorGraphModel::get_joint_feature_vector(int32_t feat_id
 
 		ASSERT(w_map.size() == dat_size * ftype->get_num_assignments());
 
-		int32_t ei = ftype->index_from_universe_assignment(states, fac->get_variables());
+		int32_t ei = ftype->as<TableFactorType>()->index_from_universe_assignment(states, fac->get_variables());
 		for (int32_t di = 0; di < dat_size; di++)
 			psi[w_map[ei*dat_size + di]] += dat[di];
-
-
-
 	}
 
 	// negation (-E(x,y) = <w,phi(x,y)>)
 	psi.scale(-1.0);
-
 
 	return psi;
 }
@@ -302,12 +306,18 @@ std::shared_ptr<ResultSet> FactorGraphModel::argmax(SGVector<float64_t> w, int32
 
 	// y_truth
 	auto y_truth = m_labels->get_label(feat_idx)->as<FactorGraphObservation>();
+	io::info("Got y_truth: {}, feat_idx: {}", y_truth->to_string(), feat_idx);
 
 	SGVector<int32_t> states_gt = y_truth->get_data();
+	io::info("Got states_gt: {}", states_gt.to_string());
 
 	// E(x_i, y_i; w)
 	ret->psi_truth = get_joint_feature_vector(feat_idx, y_truth);
+	io::info("Got psi_truth.");
+
 	float64_t energy_gt = fg->evaluate_energy(states_gt);
+	io::info("Got energy_gt.");
+
 	ret->score = energy_gt;
 
 	// - min_y [ E(x_i, y; w) - delta(y_i, y) ]
@@ -329,6 +339,7 @@ std::shared_ptr<ResultSet> FactorGraphModel::argmax(SGVector<float64_t> w, int32
 	auto y_star = infer_met.get_structured_outputs();
 	SGVector<int32_t> states_star = y_star->get_data();
 
+	io::info("Argmax: ", y_star->to_string());
 	ret->argmax = y_star;
 	ret->psi_pred = get_joint_feature_vector(feat_idx, y_star);
 	float64_t l_energy_pred = fg->evaluate_energy(states_star);

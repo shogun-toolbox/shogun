@@ -54,6 +54,7 @@ std::shared_ptr<StructuredLabels> LinearStructuredOutputMachine::apply_structure
 	}
 
 	int num_input_vectors = model_features->get_num_vectors();
+	io::info("num_input_vectors={}", num_input_vectors);
 	std::shared_ptr<StructuredLabels> out;
 	out = m_model->structured_labels_factory(num_input_vectors);
 
@@ -61,15 +62,15 @@ std::shared_ptr<StructuredLabels> LinearStructuredOutputMachine::apply_structure
 	{
 		auto result = m_model->argmax(m_w, i, false);
 		out->add_label(result->argmax);
-
-
 	}
+
+	io::info("{}", out->to_string());
 
 	return out;
 }
 
 void LinearStructuredOutputMachine::register_parameters()
 {
-	SG_ADD(&m_w, "m_w", "Weight vector", ParameterProperties::MODEL);
+	SG_ADD(&m_w, "w", "Weight vector", ParameterProperties::MODEL);
 }
 

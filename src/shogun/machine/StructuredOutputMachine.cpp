@@ -27,35 +27,28 @@ StructuredOutputMachine::StructuredOutputMachine(
 		const std::shared_ptr<StructuredLabels>& labs)
 : Machine(), m_model(std::move(model)), m_surrogate_loss(NULL)
 {
-
 	set_labels(labs);
 	register_parameters();
 }
 
 StructuredOutputMachine::~StructuredOutputMachine()
 {
-
-
-
 }
 
 void StructuredOutputMachine::set_model(std::shared_ptr<StructuredModel> model)
 {
-
-
 	m_model = std::move(model);
 }
 
 std::shared_ptr<StructuredModel> StructuredOutputMachine::get_model() const
 {
-
 	return m_model;
 }
 
 void StructuredOutputMachine::register_parameters()
 {
-	SG_ADD((std::shared_ptr<SGObject>*)&m_model, "m_model", "Structured model");
-	SG_ADD(&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss");
+	SG_ADD(&m_model, "model", "Structured model");
+	SG_ADD(&m_surrogate_loss, "surrogate_loss", "Surrogate loss");
 	SG_ADD(&m_verbose, "verbose", "Verbosity flag");
 	SG_ADD((std::shared_ptr<SGObject>*)&m_helper, "helper", "Training helper");
 
@@ -82,14 +75,11 @@ std::shared_ptr<Features> StructuredOutputMachine::get_features() const
 
 void StructuredOutputMachine::set_surrogate_loss(std::shared_ptr<LossFunction> loss)
 {
-
-
 	m_surrogate_loss = std::move(loss);
 }
 
 std::shared_ptr<LossFunction> StructuredOutputMachine::get_surrogate_loss() const
 {
-
 	return m_surrogate_loss;
 }
 
@@ -188,7 +178,6 @@ std::shared_ptr<SOSVMHelper> StructuredOutputMachine::get_helper() const
 		error("{}::get_helper(): no helper has been created!"
 			"Please set verbose before training!", get_name());
 	}
-
 
 	return m_helper;
 }

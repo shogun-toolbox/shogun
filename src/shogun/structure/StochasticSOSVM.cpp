@@ -77,7 +77,8 @@ bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
 	// Number of training examples
 	int32_t N = m_labels->as<StructuredLabels>()->get_num_labels();
 
-	SG_DEBUG("M={}, N ={}.", M, N);
+	require(M > 0, "StochasticSOSVM underlying model has not been initialized properly."
+		"Expected number of dimensions to be greater than 0.");
 
 	// Initialize the weight vector
 	m_w = SGVector<float64_t>(M);
