@@ -103,6 +103,15 @@ public:
 
 	virtual ~DeepAutoencoder() {}
 
+	/** Trains the DeepAutoencoder by calling pre_train if specified,
+	 * followed by a call to Autoencoder::train.
+	 *
+	 * @param data Training examples
+	 *
+	 * @return True if training succeeded, false otherwise
+	 */
+	virtual bool train(std::shared_ptr<Features> data);
+
 	/** Pre-trains the deep autoencoder as a stack of autoencoders
 	 *
 	 * If the deep autoencoder has N layers, it is treated as a stack of (N-1)/2
@@ -144,6 +153,10 @@ public:
 	 */
 	virtual std::shared_ptr<DenseFeatures<float64_t>> reconstruct(
 		std::shared_ptr<DenseFeatures<float64_t>> data);
+
+	/** Helper function to initialize DeepAutoencoder
+	 */
+	virtual void initialize_neural_network(float64_t sigma = 0.01f);
 
 	/** Converts the autoencoder into a neural network for supervised finetuning.
 	 *
@@ -255,6 +268,9 @@ public:
 	 * Default value is -1 for all layers
 	 */
 	SGVector<float64_t> pt_gd_error_damping_coeff;
+
+	/** Whether to pretrain with relevant parameters */
+	bool m_do_pretrain;
 
 protected:
 	/** Standard deviation of the gaussian used to initialize the

@@ -2,8 +2,6 @@
 %shared_ptr(shogun::ConvolutionalFeatureMap)
 %shared_ptr(shogun::RBM)
 %shared_ptr(shogun::DeepBeliefNetwork)
-%shared_ptr(shogun::Autoencoder)
-%shared_ptr(shogun::DeepAutoencoder)
 %shared_ptr(shogun::NeuralLayers)
 
 /* Include Class Headers to make them visible from within the target language */
@@ -13,5 +11,4 @@ RANDOM_INTERFACE(Machine)
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 %include <shogun/neuralnets/RBM.h>
 %include <shogun/neuralnets/DeepBeliefNetwork.h>
-%include <shogun/neuralnets/Autoencoder.h>
-%include <shogun/neuralnets/DeepAutoencoder.h>
+%include <shogun/neuralnets/Helpers.h>

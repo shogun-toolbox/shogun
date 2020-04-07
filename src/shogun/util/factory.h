@@ -38,6 +38,8 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/transformer/Transformer.h>
+#include <shogun/structure/FactorType.h>
+#include <shogun/structure/StructuredModel.h>
 
 namespace shogun
 {
