@@ -59,28 +59,24 @@ ParameterObserver::~ParameterObserver()
 bool ParameterObserver::filter(const std::string& param)
 {
 	// If there are no specified parameters, then watch everything
-	if (m_observed_parameters.size() == 0)
-		return true;
-
-	auto res = std::find(
-	    m_observed_parameters.begin(), m_observed_parameters.end(), param);
-
-	return res != m_observed_parameters.end();
+	return std::find(
+	           m_observed_parameters.begin(), m_observed_parameters.end(),
+	           param) != m_observed_parameters.end() ||
+	       m_observed_parameters.empty();
 }
 
 bool ParameterObserver::filter(const AnyParameterProperties& property)
 {
 
-	// If there are no specified parameters, then watch everything
-	if (m_observed_properties.size() == 0)
-		return true;
-
-	bool res = false;
-	for (auto p : m_observed_properties)
-		res |= property.has_property(p) || (p == ParameterProperties::ALL &&
-		    property.compare_mask(ParameterProperties::NONE));
-
-	return res;
+	// If there is no specified property, then watch everything
+	return std::any_of(
+	           m_observed_properties.begin(), m_observed_properties.end(),
+	           [&property](ParameterProperties& p) {
+		           return property.has_property(p) ||
+		                  (p == ParameterProperties::ALL &&
+		                   property.compare_mask(ParameterProperties::NONE));
+	           }) ||
+	       m_observed_properties.empty();
 }
 
 index_t ParameterObserver::get_num_observations() const

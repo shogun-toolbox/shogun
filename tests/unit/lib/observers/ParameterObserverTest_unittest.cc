@@ -34,13 +34,13 @@ public:
 		    "Name of the observed value", ParameterProperties::READONLY);
 		AnyParameterProperties p2(
 		    "Name of the observed value", ParameterProperties::AUTO);
-        AnyParameterProperties p3(
-            "Name of the observed value", ParameterProperties::NONE);
+		AnyParameterProperties p3(
+		    "Name of the observed value", ParameterProperties::NONE);
 
 		observe<int32_t>(1, "test", 1, p);
 		observe<int32_t>(1, "a", 1, p);
 		observe<int32_t>(1, "b", 1, p2);
-        observe<int32_t>(1, "None", 1, p3);
+		observe<int32_t>(1, "None", 1, p3);
 	}
 };
 
@@ -131,12 +131,13 @@ TEST_F(ParameterObserverTest, filter_found_property_and_name)
 
 TEST_F(ParameterObserverTest, filter_all_property)
 {
-    std::vector<ParameterProperties> test_all_property = {ParameterProperties::ALL};
-    std::shared_ptr<ParameterObserver> observer(
-        new ParameterObserverLogger(test_all_property));
-    emitter.subscribe(observer);
-    emitter.emit_value();
+	std::vector<ParameterProperties> test_all_property = {
+	    ParameterProperties::ALL};
+	std::shared_ptr<ParameterObserver> observer(
+	    new ParameterObserverLogger(test_all_property));
+	emitter.subscribe(observer);
+	emitter.emit_value();
 
-    EXPECT_EQ(observer->get<int32_t>("num_observations"), 4);
-    emitter.unsubscribe(observer);
+	EXPECT_EQ(observer->get<int32_t>("num_observations"), 4);
+	emitter.unsubscribe(observer);
 }
