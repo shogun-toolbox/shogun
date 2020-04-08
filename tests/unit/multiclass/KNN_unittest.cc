@@ -251,7 +251,7 @@ TEST(KNN, nearest_neighbours_brute)
 	auto features_test = view(features, test);	 //{3.5}
 
 	auto dist = std::make_shared<EuclideanDistance>(features_train, features_test);
-	knn->set_distance(dist);
+	knn->put("distance", (std::shared_ptr<shogun::Distance>)dist);
 
 	SGMatrix<index_t> NN = knn->nearest_neighbors();
 	
@@ -283,7 +283,7 @@ TEST(KNN, nearest_neighbours_kdtree)
 	auto features_test = view(features, test);	 //{3.5}
 
 	auto dist = std::make_shared<EuclideanDistance>(features_train, features_test);
-	knn->set_distance(dist);
+	knn->put("distance", (std::shared_ptr<shogun::Distance>)dist);
 
 	SGMatrix<index_t> NN = knn->nearest_neighbors();
 	

@@ -146,7 +146,7 @@ SGMatrix<index_t> KNN::nearest_neighbors()
     		} 
   
     		// Sorting the pair array. 
-   			 sort(pairt, pairt + m_train_labels.vlen); 
+   			sort(pairt, pairt + m_train_labels.vlen); 
       
     		// Modifying original arrays 
     		for (int j = 0; j < m_train_labels.vlen; j++)  
