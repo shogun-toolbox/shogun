@@ -19,15 +19,18 @@ ParameterObserverTensorBoard::ParameterObserverTensorBoard()
 }
 
 ParameterObserverTensorBoard::ParameterObserverTensorBoard(
-    std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties)
+    std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
     : ParameterObserver(parameters, properties), m_writer("shogun")
 {
 	m_writer.init();
 }
 
 ParameterObserverTensorBoard::ParameterObserverTensorBoard(
-    const std::string& filename, std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties)
-    : ParameterObserver(filename, parameters, properties), m_writer(filename.c_str())
+    const std::string& filename, std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(filename, parameters, properties),
+      m_writer(filename.c_str())
 {
 	m_writer.init();
 }
@@ -38,13 +41,17 @@ ParameterObserverTensorBoard::~ParameterObserverTensorBoard()
 	m_writer.close();
 }
 
-ParameterObserverTensorBoard::ParameterObserverTensorBoard(std::vector<std::string> &parameters) : ParameterObserver(
-		parameters), m_writer("shogun") {
+ParameterObserverTensorBoard::ParameterObserverTensorBoard(
+    std::vector<std::string>& parameters)
+    : ParameterObserver(parameters), m_writer("shogun")
+{
 	m_writer.init();
 }
 
-ParameterObserverTensorBoard::ParameterObserverTensorBoard(std::vector<ParameterProperties> &properties)
-		: ParameterObserver(properties), m_writer("shogun") {
+ParameterObserverTensorBoard::ParameterObserverTensorBoard(
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(properties), m_writer("shogun")
+{
 	m_writer.init();
 }
 

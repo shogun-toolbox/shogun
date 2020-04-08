@@ -52,18 +52,17 @@ namespace shogun
 	public:
 		ParameterObserverCV();
 
-        ParameterObserverCV(std::vector<std::string> &parameters);
+		ParameterObserverCV(std::vector<std::string>& parameters);
 
-		ParameterObserverCV(std::vector<ParameterProperties> &properties);
+		ParameterObserverCV(std::vector<ParameterProperties>& properties);
 
-        ParameterObserverCV(
-            std::vector<std::string>& parameters,
-            std::vector<ParameterProperties>& properties);
+		ParameterObserverCV(
+		    std::vector<std::string>& parameters,
+		    std::vector<ParameterProperties>& properties);
 
-        ParameterObserverCV(
-		    const std::string& filename,
-            std::vector<std::string>& parameters,
-            std::vector<ParameterProperties>& properties);
+		ParameterObserverCV(
+		    const std::string& filename, std::vector<std::string>& parameters,
+		    std::vector<ParameterProperties>& properties);
 
 		virtual ~ParameterObserverCV();
 		virtual void on_error(std::exception_ptr ptr);

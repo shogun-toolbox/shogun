@@ -43,31 +43,34 @@
 
 using namespace shogun;
 
-ParameterObserverCV::ParameterObserverCV()
-    : ParameterObserver()
+ParameterObserverCV::ParameterObserverCV() : ParameterObserver()
 {
 }
 
 ParameterObserverCV::ParameterObserverCV(
-    std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties, bool verbose)
+    std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties, bool verbose)
     : ParameterObserver(parameters, properties)
 {
 }
 
 ParameterObserverCV::ParameterObserverCV(
-    const std::string& filename, std::vector<std::string>& parameters,std::vector<ParameterProperties>& properties, bool verbose)
+    const std::string& filename, std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties, bool verbose)
     : ParameterObserver(filename, parameters, properties)
 {
 }
 
-ParameterObserverCV::ParameterObserverCV(std::vector<std::string> &parameters, bool verbose)
-		: ParameterObserver(parameters) {
-
+ParameterObserverCV::ParameterObserverCV(
+    std::vector<std::string>& parameters, bool verbose)
+    : ParameterObserver(parameters)
+{
 }
 
-ParameterObserverCV::ParameterObserverCV(std::vector<ParameterProperties> &properties, bool verbose)
-		: ParameterObserver(properties) {
-
+ParameterObserverCV::ParameterObserverCV(
+    std::vector<ParameterProperties>& properties, bool verbose)
+    : ParameterObserver(properties)
+{
 }
 
 ParameterObserverCV::~ParameterObserverCV()

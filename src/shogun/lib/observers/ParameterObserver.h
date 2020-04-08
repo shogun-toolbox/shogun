@@ -42,13 +42,13 @@ namespace shogun
 		 */
 		ParameterObserver(std::vector<ParameterProperties>& properties);
 
-
 		/**
 		 * Constructor
 		 * @param parameters list of parameters which we want to watch over
 		 */
-		ParameterObserver(std::vector<std::string>& parameters,
-						  std::vector<ParameterProperties>& properties);
+		ParameterObserver(
+		    std::vector<std::string>& parameters,
+		    std::vector<ParameterProperties>& properties);
 
 		/**
 		 * Constructor
@@ -57,10 +57,8 @@ namespace shogun
 		 * @param properties list of properties which we want to watch over
 		 */
 		ParameterObserver(
-		    const std::string& filename,
-			std::vector<std::string>& parameters,
-			std::vector<ParameterProperties>& properties
-		);
+		    const std::string& filename, std::vector<std::string>& parameters,
+		    std::vector<ParameterProperties>& properties);
 
 		/**
 		 * Virtual destructor

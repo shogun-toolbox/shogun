@@ -23,8 +23,9 @@ ParameterObserver::ParameterObserver()
 	    "num_observations", &ParameterObserver::get_num_observations);
 }
 
-ParameterObserver::ParameterObserver(std::vector<std::string>& parameters,
-									 std::vector<ParameterProperties>& properties)
+ParameterObserver::ParameterObserver(
+    std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
     : ParameterObserver()
 {
 	m_observed_parameters = parameters;
@@ -32,22 +33,21 @@ ParameterObserver::ParameterObserver(std::vector<std::string>& parameters,
 }
 
 ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
-: ParameterObserver()
+    : ParameterObserver()
 {
-    m_observed_parameters = parameters;
-}
-
-ParameterObserver::ParameterObserver(std::vector<ParameterProperties>& properties)
-: ParameterObserver()
-{
-    m_observed_properties = properties;
+	m_observed_parameters = parameters;
 }
 
 ParameterObserver::ParameterObserver(
-		const std::string& filename,
-		std::vector<std::string>& parameters,
-		std::vector<ParameterProperties>& properties
-)
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver()
+{
+	m_observed_properties = properties;
+}
+
+ParameterObserver::ParameterObserver(
+    const std::string& filename, std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
     : ParameterObserver(parameters, properties)
 {
 }
@@ -62,20 +62,20 @@ bool ParameterObserver::filter(const std::string& param)
 	if (m_observed_parameters.size() == 0)
 		return true;
 
-	auto res = std::find(m_observed_parameters.begin(),
-						 m_observed_parameters.end(),
-						 param);
+	auto res = std::find(
+	    m_observed_parameters.begin(), m_observed_parameters.end(), param);
 
 	return res != m_observed_parameters.end();
 }
 
-bool ParameterObserver::filter(const AnyParameterProperties &property) {
+bool ParameterObserver::filter(const AnyParameterProperties& property)
+{
 
 	// If there are no specified parameters, then watch everything
 	if (m_observed_properties.size() == 0)
 		return true;
 
-	bool res=false;
+	bool res = false;
 	for (auto p : m_observed_properties)
 		res |= property.has_property(p);
 

@@ -12,8 +12,7 @@
 
 using namespace shogun;
 
-ParameterObserverLogger::ParameterObserverLogger()
-: ParameterObserver()
+ParameterObserverLogger::ParameterObserverLogger() : ParameterObserver()
 {
 }
 
@@ -51,26 +50,28 @@ void ParameterObserverLogger::on_next_impl(const TimedObservedValue& value)
 			stream.str().c_str());
 }
 
-ParameterObserverLogger::ParameterObserverLogger(const std::string &filename,
-												   std::vector<std::string> &parameters,
-												   std::vector<ParameterProperties> &properties)
-		: ParameterObserver(filename, parameters, properties)
+ParameterObserverLogger::ParameterObserverLogger(
+    const std::string& filename, std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(filename, parameters, properties)
 {
-
 }
 
-ParameterObserverLogger::ParameterObserverLogger(std::vector<std::string> &parameters,
-												   std::vector<ParameterProperties> &properties) : ParameterObserver(
-		parameters, properties) {
-
+ParameterObserverLogger::ParameterObserverLogger(
+    std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(parameters, properties)
+{
 }
 
-ParameterObserverLogger::ParameterObserverLogger(std::vector<std::string> &parameters) : ParameterObserver(
-		parameters) {
-
+ParameterObserverLogger::ParameterObserverLogger(
+    std::vector<std::string>& parameters)
+    : ParameterObserver(parameters)
+{
 }
 
-ParameterObserverLogger::ParameterObserverLogger(std::vector<ParameterProperties> &properties) : ParameterObserver(
-		properties) {
-
+ParameterObserverLogger::ParameterObserverLogger(
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(properties)
+{
 }
