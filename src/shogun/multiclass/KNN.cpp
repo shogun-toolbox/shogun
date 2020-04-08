@@ -17,6 +17,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <utility>
+#include <algorithm>
 
 //#define DEBUG_KNN
 
@@ -134,15 +135,34 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 			//fill in an array with 0..num train examples-1
 			train_idxs.range_fill(0);
 
-			//sort the distance vector between test example i and all train examples
-			Math::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
+			std::pair<float64_t, index_t> pairt[m_train_labels.vlen]; 
+  
+    		// Storing the respective array 
+    		// elements in pairs. 
+    		for (int j = 0; j < m_train_labels.vlen; j++)  
+    		{ 
+        		pairt[j].first = dists[j]; 
+        		pairt[j].second = train_idxs[j]; 
+    		} 
+  
+    		// Sorting the pair array. 
+   			 sort(pairt, pairt + m_train_labels.vlen); 
+      
+    		// Modifying original arrays 
+    		for (int j = 0; j < m_train_labels.vlen; j++)  
+    		{ 
+        		dists[j] = pairt[j].first; 
+        		train_idxs[j] = pairt[j].second; 
+    		} 
 
 			SG_DEBUG("\nQuick sort query {}", i);
 			SG_DEBUG("{}", train_idxs.to_string());
 			SG_DEBUG("");
 
+			SGVector<index_t> nearest_k_train_idxs(train_idxs.vector, m_k, 0);
+
 			//fill in the output the indices of the nearest neighbors
-			sg_memcpy(&NN.matrix[m_k * i], train_idxs.vector, sizeof(index_t) * m_k);
+			NN.set_column(i, nearest_k_train_idxs);
 		}
 
 		distance->reset_precompute();
