@@ -77,7 +77,8 @@ bool ParameterObserver::filter(const AnyParameterProperties& property)
 
 	bool res = false;
 	for (auto p : m_observed_properties)
-		res |= property.has_property(p);
+		res |= property.has_property(p) || (p == ParameterProperties::ALL &&
+		    property.compare_mask(ParameterProperties::NONE));
 
 	return res;
 }
