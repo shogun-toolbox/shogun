@@ -137,23 +137,23 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 
 			std::pair<float64_t, index_t> pairt[m_train_labels.vlen]; 
   
-    		// Storing the respective array 
-    		// elements in pairs. 
-    		for (int j = 0; j < m_train_labels.vlen; j++)  
-    		{ 
-        		pairt[j].first = dists[j]; 
-        		pairt[j].second = train_idxs[j]; 
-    		} 
-  
-    		// Sorting the pair array. 
-   			sort(pairt, pairt + m_train_labels.vlen); 
-      
-    		// Modifying original arrays 
-    		for (int j = 0; j < m_train_labels.vlen; j++)  
-    		{ 
-        		dists[j] = pairt[j].first; 
-        		train_idxs[j] = pairt[j].second; 
-    		} 
+			// Storing the respective array 
+			// elements in pairs. 
+			for (int j = 0; j < m_train_labels.vlen; j++)  
+			{ 
+				pairt[j].first = dists[j]; 
+				pairt[j].second = train_idxs[j]; 
+			} 
+
+			// Sorting the pair array. 
+			sort(pairt, pairt + m_train_labels.vlen); 
+
+			// Modifying original arrays 
+			for (int j = 0; j < m_train_labels.vlen; j++)  
+			{ 
+				dists[j] = pairt[j].first; 
+				train_idxs[j] = pairt[j].second; 
+			} 
 
 			SG_DEBUG("\nQuick sort query {}", i);
 			SG_DEBUG("{}", train_idxs.to_string());
