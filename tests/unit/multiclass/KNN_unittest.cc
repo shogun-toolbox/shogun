@@ -229,28 +229,49 @@ TEST(KNN, classify_multiple_kdtree)
 }
 
 
-TEST(KNN, nearest_neighbours_brute)
-{
-	SGVector<float64_t> lab({0.0, 0.0, 1.0, 1.0, 0.0});
-	SGMatrix<float64_t> feat({{2.0}, {3.0}, {6.0}, {7.0}, {3.5}});
+class NearestNeighbourParameterizedTestFixture :public ::testing::TestWithParam<KNN_SOLVER> {
+protected:
+	virtual void SetUp(){
+		lab = SGVector<float64_t>({0.0, 0.0, 1.0, 1.0, 0.0});
+		feat = SGMatrix<float64_t>({{2.0}, {3.0}, {6.0}, {7.0}, {3.5}});
 
-	SGVector<index_t> train ({0, 1, 2, 3});
-	SGVector<index_t> test ({4});
+		SGVector<index_t> train ({0, 1, 2, 3});
+		SGVector<index_t> test ({4});
 
-	auto labels = std::make_shared<MulticlassLabels>(lab);
-	auto features = std::make_shared<DenseFeatures<float64_t> >(feat);
+		labels = std::make_shared<MulticlassLabels>(lab);
+		features = std::make_shared<DenseFeatures<float64_t> >(feat);
 
-	int32_t k=3;
-	auto distance = std::make_shared<EuclideanDistance>();
-	
-	auto features_train = view(features, train); //{2.0}, {3.0}, {6.0}, {7.0}
-	auto labels_train = view(labels, train);	 //0.0, 0.0, 1.0, 1.0
-	auto knn=std::make_shared<KNN> (k, distance, labels_train, KNN_BRUTE);
+		features_train = view(features, train); //{2.0}, {3.0}, {6.0}, {7.0}
+		labels_train = view(labels, train);	 //0.0, 0.0, 1.0, 1.0
+		features_test = view(features, test);	 //{3.5}
+		
+		distance = std::make_shared<EuclideanDistance>();
+		dist = std::make_shared<EuclideanDistance>(features_train, features_test);
+	}
+
+	virtual void TearDown()
+	{
+	}
+
+	SGVector<float64_t> lab;
+	SGMatrix<float64_t> feat;
+
+	std::shared_ptr<MulticlassLabels> labels;
+	std::shared_ptr<MulticlassLabels> labels_train;
+	std::shared_ptr<DenseFeatures<float64_t>> features;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train;
+	std::shared_ptr<DenseFeatures<float64_t>> features_test;
+	std::shared_ptr<EuclideanDistance> distance;
+	std::shared_ptr<EuclideanDistance> dist;
+
+	const int32_t k=3; 
+};
+
+TEST_P(NearestNeighbourParameterizedTestFixture, CheckNearestNeighbours) {
+    KNN_SOLVER solver = GetParam();
+    
+	auto knn=std::make_shared<KNN> (k, distance, labels_train, solver);
 	knn->train(features_train);
-
-	auto features_test = view(features, test);	 //{3.5}
-
-	auto dist = std::make_shared<EuclideanDistance>(features_train, features_test);
 	knn->put("distance", (std::shared_ptr<shogun::Distance>)dist);
 
 	SGMatrix<index_t> NN = knn->nearest_neighbors();
@@ -260,34 +281,9 @@ TEST(KNN, nearest_neighbours_brute)
 	EXPECT_DOUBLE_EQ(feat(0, NN(2,0)), 6.0);	 //6.0 is third-closest to 3.5
 }
 
-
-TEST(KNN, nearest_neighbours_kdtree)
-{
-	SGVector<float64_t> lab({0.0, 0.0, 1.0, 1.0, 0.0});
-	SGMatrix<float64_t> feat({{2.0}, {3.0}, {6.0}, {7.0}, {3.5}});
-
-	SGVector<index_t> train ({0, 1, 2, 3});
-	SGVector<index_t> test ({4});
-
-	auto labels = std::make_shared<MulticlassLabels>(lab);
-	auto features = std::make_shared<DenseFeatures<float64_t> >(feat);
-
-	int32_t k=3;
-	auto distance = std::make_shared<EuclideanDistance>();
-	
-	auto features_train = view(features, train); //{2.0}, {3.0}, {6.0}, {7.0}
-	auto labels_train = view(labels, train);	 //0.0, 0.0, 1.0, 1.0
-	auto knn=std::make_shared<KNN> (k, distance, labels_train, KNN_KDTREE);
-	knn->train(features_train);
-
-	auto features_test = view(features, test);	 //{3.5}
-
-	auto dist = std::make_shared<EuclideanDistance>(features_train, features_test);
-	knn->put("distance", (std::shared_ptr<shogun::Distance>)dist);
-
-	SGMatrix<index_t> NN = knn->nearest_neighbors();
-	
-	EXPECT_DOUBLE_EQ(feat(0, NN(0,0)), 3.0);	 //3.0 is closest to 3.5
-	EXPECT_DOUBLE_EQ(feat(0, NN(1,0)), 2.0);	 //2.0 is second-closest to 3.5
-	EXPECT_DOUBLE_EQ(feat(0, NN(2,0)), 6.0);	 //6.0 is third-closest to 3.5
-}
+INSTANTIATE_TEST_CASE_P(
+        NearestNeighbourTests,
+        NearestNeighbourParameterizedTestFixture,
+        ::testing::Values(
+                KNN_BRUTE, KNN_KDTREE
+        ));
