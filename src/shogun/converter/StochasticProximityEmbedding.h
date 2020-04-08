@@ -66,15 +66,15 @@ namespace shogun
 		StochasticProximityEmbedding();
 
 		/** destructor */
-		~StochasticProximityEmbedding() override;
+		virtual ~StochasticProximityEmbedding();
 
 		/** apply to features
 		 *
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		std::shared_ptr<Features>
-		transform(std::shared_ptr<Features> features, bool inplace) override;
+		virtual std::shared_ptr<Features>
+		transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/** setter for number of neighbors k in local strategy
 		 *
@@ -137,7 +137,7 @@ namespace shogun
 		int32_t get_max_iteration() const;
 
 		/** get name */
-		const char* get_name() const override;
+		virtual const char* get_name() const;
 
 	private:
 		/** default init */

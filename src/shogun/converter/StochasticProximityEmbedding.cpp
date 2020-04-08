@@ -36,7 +36,8 @@ void StochasticProximityEmbedding::init()
 }
 
 StochasticProximityEmbedding::~StochasticProximityEmbedding()
-= default;
+{
+}
 
 void StochasticProximityEmbedding::set_k(int32_t k)
 {
