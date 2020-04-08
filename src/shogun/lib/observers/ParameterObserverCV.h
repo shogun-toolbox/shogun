@@ -50,22 +50,20 @@ namespace shogun
 	{
 
 	public:
-		ParameterObserverCV(bool verbose = false);
+		ParameterObserverCV();
 
-        ParameterObserverCV(std::vector<std::string> &parameters, bool verbose = false);
+        ParameterObserverCV(std::vector<std::string> &parameters);
 
-		ParameterObserverCV(std::vector<ParameterProperties> &properties,bool verbose = false);
+		ParameterObserverCV(std::vector<ParameterProperties> &properties);
 
         ParameterObserverCV(
             std::vector<std::string>& parameters,
-            std::vector<ParameterProperties>& properties,
-            bool verbose = false);
+            std::vector<ParameterProperties>& properties);
 
         ParameterObserverCV(
 		    const std::string& filename,
             std::vector<std::string>& parameters,
-            std::vector<ParameterProperties>& properties,
-            bool verbose = false);
+            std::vector<ParameterProperties>& properties);
 
 		virtual ~ParameterObserverCV();
 		virtual void on_error(std::exception_ptr ptr);
@@ -95,11 +93,6 @@ namespace shogun
 
 	protected:
 		virtual void on_next_impl(const TimedObservedValue& value);
-
-		/**
-		 * enable printing of information
-		 */
-		bool m_verbose;
 	};
 }
 

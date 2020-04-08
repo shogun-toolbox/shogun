@@ -43,30 +43,30 @@
 
 using namespace shogun;
 
-ParameterObserverCV::ParameterObserverCV(bool verbose)
-    : ParameterObserver(), m_verbose(verbose)
+ParameterObserverCV::ParameterObserverCV()
+    : ParameterObserver()
 {
 }
 
 ParameterObserverCV::ParameterObserverCV(
     std::vector<std::string>& parameters, std::vector<ParameterProperties>& properties, bool verbose)
-    : ParameterObserver(parameters, properties), m_verbose(verbose)
+    : ParameterObserver(parameters, properties)
 {
 }
 
 ParameterObserverCV::ParameterObserverCV(
     const std::string& filename, std::vector<std::string>& parameters,std::vector<ParameterProperties>& properties, bool verbose)
-    : ParameterObserver(filename, parameters, properties), m_verbose(verbose)
+    : ParameterObserver(filename, parameters, properties)
 {
 }
 
 ParameterObserverCV::ParameterObserverCV(std::vector<std::string> &parameters, bool verbose)
-		: ParameterObserver(parameters), m_verbose(verbose) {
+		: ParameterObserver(parameters) {
 
 }
 
 ParameterObserverCV::ParameterObserverCV(std::vector<ParameterProperties> &properties, bool verbose)
-		: ParameterObserver(properties), m_verbose(verbose) {
+		: ParameterObserver(properties) {
 
 }
 
@@ -82,8 +82,7 @@ void ParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 		        value.first->get(value.first->get<std::string>("name"))->as<CrossValidationStorage>();
 
 		/* Print information on screen if enabled*/
-		if (m_verbose)
-			print_observed_value(recalled_value);
+		print_observed_value(recalled_value);
 	}
 	catch (ShogunException& e)
 	{
