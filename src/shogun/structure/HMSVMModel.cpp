@@ -30,8 +30,9 @@ HMSVMModel::HMSVMModel(std::shared_ptr<Features> features, std::shared_ptr<Struc
 	m_num_obs = num_obs;
 	m_num_plif_nodes = 20;
 	m_use_plifs = use_plifs;
+	m_state_model_type = smt;
 
-	switch (smt)
+	switch (m_state_model_type)
 	{
 		case SMT_TWO_STATE:
 			m_state_model = std::make_shared<TwoStateModel>();
@@ -44,8 +45,6 @@ HMSVMModel::HMSVMModel(std::shared_ptr<Features> features, std::shared_ptr<Struc
 
 HMSVMModel::~HMSVMModel()
 {
-
-
 }
 
 int32_t HMSVMModel::get_dim() const
@@ -491,6 +490,22 @@ void HMSVMModel::init()
 			"Emission weights used in Viterbi");
 	SG_ADD(&m_num_plif_nodes, "m_num_plif_nodes", "The number of points per PLiF"); // FIXME It would actually make sense to do MS for this parameter
 	SG_ADD(&m_use_plifs, "m_use_plifs", "Whether to use plifs");
+	SG_ADD(&m_num_obs, "num_obs", "The cardinality of the space of observations");
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_state_model_type, "state_model_type", "Type of state model",
+	    ParameterProperties::SETTING,
+	    SG_OPTIONS(SMT_UNKNOWN, SMT_TWO_STATE));
+	add_callback_function("state_model_type", [&](){
+		switch (m_state_model_type)
+		{
+			case SMT_TWO_STATE:
+				m_state_model = std::make_shared<TwoStateModel>();
+				break;
+			case SMT_UNKNOWN:
+			default:
+				error("The EStateModelType given is not valid");
+		}
+	});
 
 	m_num_obs = 0;
 	m_num_aux = 0;
@@ -603,6 +618,5 @@ SGVector< float64_t > HMSVMModel::get_emission_weights() const
 
 std::shared_ptr<StateModel> HMSVMModel::get_state_model() const
 {
-
 	return m_state_model;
 }

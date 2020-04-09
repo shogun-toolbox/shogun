@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import numpy
+import numpy as np
 import scipy
 
 from scipy import io
@@ -10,34 +10,31 @@ parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
 	import shogun as sg
-	from shogun import RealMatrixFeatures, SequenceLabels, HMSVMModel, Sequence, TwoStateModel
-	from shogun import SMT_TWO_STATE
 
 	try:
-		from shogun import PrimalMosekSOSVM
-	except ImportError:
+		_ = sg.machine("PrimalMosekSOSVM")
+	except:
 		print("Mosek not available")
 		return
 
 	labels_array = m_data_dict['label'][0]
 
-	idxs = numpy.nonzero(labels_array == -1)
+	idxs = np.nonzero(labels_array == -1)
 	labels_array[idxs] = 0
 
-	labels = SequenceLabels(labels_array, 250, 500, 2)
-	features = RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
+	labels = sg.SequenceLabels(labels_array, 250, 500, 2)
+	features = sg.RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
 
 	num_obs = 4	# given by the data file used
-	model = HMSVMModel(features, labels, SMT_TWO_STATE, num_obs)
+	model = sg.structured_model("HMSVMModel", features=features, labels=labels, 
+								state_model_type=SMT_TWO_STATE, num_obs=num_obs)
 
-	sosvm = PrimalMosekSOSVM(model, labels)
+	sosvm = sg.machine("PrimalMosekSOSVM", model=model, labels=labels)
 	sosvm.train()
-	#print(sosvm.get_w())
 
 	predicted = sosvm.apply()
 	evaluator = sg.evaluation("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, labels)
-	#print('Accuracy = %.4f' % acc)
 
 if __name__ == '__main__':
 	print("Discrete HMSVM Mosek")

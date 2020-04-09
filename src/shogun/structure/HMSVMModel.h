@@ -182,6 +182,9 @@ class HMSVMModel : public StructuredModel
 		/** the state model */
 		std::shared_ptr<StateModel> m_state_model;
 
+		/** the state model type */
+		EStateModelType m_state_model_type;
+
 		/** transition weights used in Viterbi */
 		SGMatrix< float64_t > m_transmission_weights;
 
@@ -196,7 +199,6 @@ class HMSVMModel : public StructuredModel
 
 		/** whether to use PLiFs. Otherwise, the observations must be discrete and finite */
 		bool m_use_plifs;
-
 }; /* class CHMSVMModel */
 
 } /* namespace shogun */

@@ -112,7 +112,7 @@ steps:
         LD_LIBRARY_PATH=/build/src/shogun:$LD_LIBRARY_PATH
       workDir: '/src/doc/ipython-notebooks'
       containerCommand: |
-        /bin/bash -c "export PYTHONPATH=/build/src/interfaces/python:$PYTHONPATH; pip3 install wheel; pip3 install Pillow scikit-learn networkx opencv-contrib-python jupyter; find . -type f \( -name '*.ipynb' ! -name 'template.ipynb' \) | xargs -P 2 -I{} jupyter nbconvert --ExecuteProcessor.timeout=1200 --to notebook --execute '{}'"
+        /bin/bash -c "export PYTHONPATH=/build/src/interfaces/python:$PYTHONPATH; pip3 install wheel; pip3 install Pillow scikit-learn networkx opencv-python opencv-contrib-python jupyter; /src/scripts/test_notebooks.sh . $(grep -c ^processor /proc/cpuinfo)"
       detached: false
 
 - ${{ if ne(parameters.swig, 'true') }}:

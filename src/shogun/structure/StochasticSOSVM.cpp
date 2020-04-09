@@ -40,7 +40,8 @@ StochasticSOSVM::StochasticSOSVM(
 
 void StochasticSOSVM::init()
 {
-	SG_ADD(&m_lambda, "lambda", "Regularization constant");
+	// some languages, e.g. Python, reserve lambda as a keyword
+	SG_ADD(&m_lambda, "m_lambda", "Regularization constant");
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
 	SG_ADD(&m_do_weighted_averaging, "do_weighted_averaging", "Do weighted averaging");
 	SG_ADD(&m_debug_multiplier, "debug_multiplier", "Debug multiplier");

@@ -38,7 +38,8 @@ FWSOSVM::FWSOSVM(
 
 void FWSOSVM::init()
 {
-	SG_ADD(&m_lambda, "lambda", "Regularization constant");
+	// some languages, e.g. Python, reserve lambda as a keyword
+	SG_ADD(&m_lambda, "m_lambda", "Regularization constant");
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
 	SG_ADD(&m_do_line_search, "do_line_search", "Do line search");
 	SG_ADD(&m_gap_threshold, "gap_threshold", "Gap threshold");
