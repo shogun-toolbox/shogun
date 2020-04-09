@@ -22,5 +22,5 @@ RealVector r = kmeans.get_real_vector("radiuses")
 #![extract_centers_and_radius]
 
 #![create_instance_mb]
-Machine kmeans_mini_batch = machine("KMeansMiniBatch", k=2, distance=d, batch_size=4, max_iter=100)
+Machine kmeans_mini_batch = create_machine("KMeansMiniBatch", k=2, distance=d, batch_size=4, max_iter=100)
 #![create_instance_mb]

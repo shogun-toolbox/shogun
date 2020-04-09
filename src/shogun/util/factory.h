@@ -340,11 +340,16 @@ namespace shogun
 		return std::make_shared<PipelineBuilder>();
 	}
 
+	// The function of those two class is to distinguish between string_feature
+	// and features_subset
 	class StringsFeatures;
 	class FeatureSubset;
 
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args&&... args)
+	std::shared_ptr<std::conditional_t<
+	    traits::is_any_of_v<TypeName, StringsFeatures, FeatureSubset>, Features,
+	    TypeName>>
+	create(Args... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -358,7 +363,7 @@ namespace shogun
 		{
 			return features_subset(std::forward<Args>(args)...);
 		}
-		else if constexpr (std::is_same_v<TypeName, FeatureSubset>)
+		else if constexpr (std::is_same_v<TypeName, Labels>)
 		{
 			return labels(std::forward<Args>(args)...);
 		}
@@ -383,10 +388,63 @@ namespace shogun
 			static_assert(
 			    (sizeof...(Args) == 1) ||
 			        (std::is_constructible_v<Args, std::string> && ...),
-			    "The create function should accept a string");
+			    "The create function requires a string argument.");
 			return create_object<TypeName>(
 			    (std::string{std::forward<Args>(args)}.c_str())...);
 		}
+	}
+
+	// The SWIG now only support one template parameter in variadic template, so
+	// we have to write those create_ wrapper function
+	std::shared_ptr<Features> create_features(
+	    std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return create<Features>(file, primitive_type);
+	}
+
+	template <typename T>
+	std::shared_ptr<Features> create_features(SGMatrix<T> mat)
+	{
+		return create<Features>(mat);
+	}
+
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		return create<StringsFeatures>(file, alphabet_type, primitive_type);
+	}
+
+	template <typename T>
+	std::shared_ptr<Labels> create_labels(SGVector<T> labels)
+	{
+		return create<Labels>(labels);
+	}
+
+	std::shared_ptr<Labels> create_labels(std::shared_ptr<File> file)
+	{
+		return create<Labels>(file);
+	}
+
+	std::shared_ptr<Features> create_features_subset(
+	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
+	    EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return create<FeatureSubset>(base_features, indices, primitive_type);
+	}
+
+	std::shared_ptr<File> create_csv(std::string fname, char rw = 'r')
+	{
+		return create<CSVFile>(fname, rw);
+	}
+
+	std::shared_ptr<File> create_libsvm(std::string fname, char rw = 'r')
+	{
+		return create<LibSVMFile>(fname, rw);
+	}
+	std::shared_ptr<PipelineBuilder> create_pipeline()
+	{
+		return pipeline();
 	}
 
 } // namespace shogun

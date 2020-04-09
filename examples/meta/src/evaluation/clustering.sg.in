@@ -1,31 +1,31 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/optdigits_10class_feats.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/optdigits_10class_labels.dat")
-File f_labels_centroids = csv_file("@SHOGUN_DATA@/10class_continuous_labels.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/optdigits_10class_feats.dat")
+File f_labels_train = create_csv("@SHOGUN_DATA@/optdigits_10class_labels.dat")
+File f_labels_centroids = create_csv("@SHOGUN_DATA@/10class_continuous_labels.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Labels labels_train = labels(f_labels_train)
+Features features_train = create_features(f_feats_train)
+Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![run_clustering]
-Distance d = distance("EuclideanDistance", lhs=features_train, rhs=features_train)
-Machine kmeans = machine("KMeans", k=10, distance=d, seed=200)
+Distance d = create_distance("EuclideanDistance", lhs=features_train, rhs=features_train)
+Machine kmeans = create_machine("KMeans", k=10, distance=d, seed=200)
 kmeans.train()
 RealMatrix centers = kmeans.get_real_matrix("cluster_centers")
 #![run_clustering]
 
 #![assign_labels]
-Labels labels_centroids = labels(f_labels_centroids)
-Features fea_centroids = features(centers)
-Distance d2 = distance("EuclideanDistance", lhs=fea_centroids, rhs=fea_centroids)
-Machine knn = machine("KNN", k=1, distance=d2, labels=labels_centroids)
+Labels labels_centroids = create_labels(f_labels_centroids)
+Features fea_centroids = create_features(centers)
+Distance d2 = create_distance("EuclideanDistance", lhs=fea_centroids, rhs=fea_centroids)
+Machine knn = create_machine("KNN", k=1, distance=d2, labels=labels_centroids)
 knn.train()
 Labels gnd_hat = knn.apply(features_train)
 #![assign_labels]
 
 #![measure_accuracy]
-Evaluation accuracy_eval = evaluation("ClusteringAccuracy")
+Evaluation accuracy_eval = create_evaluation("ClusteringAccuracy")
 real accuracy = accuracy_eval.evaluate(gnd_hat, labels_train)
-Evaluation mi_eval = evaluation("ClusteringMutualInformation")
+Evaluation mi_eval = create_evaluation("ClusteringMutualInformation")
 real mutual_info = mi_eval.evaluate(gnd_hat, labels_train)
 #![measure_accuracy]
