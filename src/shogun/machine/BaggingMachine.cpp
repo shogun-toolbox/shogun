@@ -18,6 +18,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MeanSquaredError.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 
 #include <utility>
 
@@ -218,7 +219,7 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 
 		// observe some variables
         auto oob_error = this->get_oob_error();
-        this->observe<Machine*>(i, "trained_machine", "Trained machine for this bag", c);
+        this->observe<std::shared_ptr<Machine>>(i, "trained_machine", "Trained machine for this bag", c);
         this->observe<float64_t>(i, "oob_error", "Out-of-bag Error", oob_error);
 		}
 

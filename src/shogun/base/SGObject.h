@@ -1103,7 +1103,7 @@ protected:
 	 * Observe a parameter value, given a pointer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(std::shared_ptr<ObservedValue> value) const;
+	void observe(const std::shared_ptr<ObservedValue> & value) const;
 
 	/**
 	 * Observe a parameter value given custom properties for the Any.

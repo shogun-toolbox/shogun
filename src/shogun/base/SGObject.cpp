@@ -491,7 +491,7 @@ void SGObject::unsubscribe(const std::shared_ptr<ParameterObserver>& obs)
 	obs->put("subscription_id", static_cast<int64_t>(-1));
 }
 
-void SGObject::observe(std::shared_ptr<ObservedValue> value) const
+void SGObject::observe(const std::shared_ptr<ObservedValue>& value) const
 {
 	m_subscriber_params->on_next(value);
 }
