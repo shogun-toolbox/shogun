@@ -71,9 +71,9 @@ namespace shogun
 		 * @param param the param name
 		 * @return true if param is found inside of m_parameters list
 		 */
-		virtual bool filter(const std::string& param);
+		virtual bool observes(const std::string& param);
 
-		virtual bool filter(const AnyParameterProperties& property);
+		virtual bool observes(const AnyParameterProperties& property);
 
 		/**
 		 * Return a single observation from the received ones (not SG_REF).

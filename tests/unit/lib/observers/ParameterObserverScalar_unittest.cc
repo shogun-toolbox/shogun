@@ -19,22 +19,22 @@ using namespace shogun;
 TEST(ParameterObserverScalar, filter_empty)
 {
 	ParameterObserverScalar tmp;
-	EXPECT_TRUE(tmp.filter("a"));
+	EXPECT_TRUE(tmp.observes("a"));
 }
 
 TEST(ParameterObserverScalar, filter_found)
 {
 	ParameterObserverScalar tmp{test_params};
-	EXPECT_TRUE(tmp.filter("a"));
-	EXPECT_TRUE(tmp.filter("b"));
-	EXPECT_TRUE(tmp.filter("c"));
-	EXPECT_TRUE(tmp.filter("d"));
+	EXPECT_TRUE(tmp.observes("a"));
+	EXPECT_TRUE(tmp.observes("b"));
+	EXPECT_TRUE(tmp.observes("c"));
+	EXPECT_TRUE(tmp.observes("d"));
 }
 
 TEST(ParameterObserverScalar, filter_not_found)
 {
 	ParameterObserverScalar tmp{test_params};
-	EXPECT_FALSE(tmp.filter("k"));
+	EXPECT_FALSE(tmp.observes("k"));
 }
 
 #endif // HAVE_TFLOGGER

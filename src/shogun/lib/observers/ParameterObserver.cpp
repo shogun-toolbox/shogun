@@ -56,7 +56,7 @@ ParameterObserver::~ParameterObserver()
 {
 }
 
-bool ParameterObserver::filter(const std::string& param)
+bool ParameterObserver::observes(const std::string& param)
 {
 	// If there are no specified parameters, then watch everything
 	return std::find(
@@ -65,7 +65,7 @@ bool ParameterObserver::filter(const std::string& param)
 	       m_observed_parameters.empty();
 }
 
-bool ParameterObserver::filter(const AnyParameterProperties& property)
+bool ParameterObserver::observes(const AnyParameterProperties& property)
 {
 
 	// If there is no specified property, then watch everything
