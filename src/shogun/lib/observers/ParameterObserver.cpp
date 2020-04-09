@@ -5,7 +5,6 @@
  *
  */
 
-#include "ParameterObserver.h"
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/observers/ParameterObserver.h>
