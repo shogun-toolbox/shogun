@@ -125,8 +125,6 @@
             "create_features": "create<Features>($arguments)",
             "create_distance": "create<Distance>($arguments)",
             "create_machine": "create<Machine>($arguments)",
-            "create_string_features": "create<StringsFeatures>($arguments)",
-            "create_feature_subset": "create<FeatureSubset>($arguments)",
             "create_labels": "create<Labels>($arguments)",
             "create_csv": "create<CSVFile>($arguments)",
             "create_libsvmfile": "create<LibSVMFile>($arguments)",

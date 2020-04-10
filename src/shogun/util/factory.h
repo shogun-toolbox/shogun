@@ -340,28 +340,12 @@ namespace shogun
 		return std::make_shared<PipelineBuilder>();
 	}
 
-	// The function of those two class is to distinguish between string_feature
-	// and features_subset
-	class StringsFeatures;
-	class FeatureSubset;
-
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<std::conditional_t<
-	    traits::is_any_of_v<TypeName, StringsFeatures, FeatureSubset>, Features,
-	    TypeName>>
-	create(Args... args)
+	std::shared_ptr<TypeName> create(Args... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
 			return features(std::forward<Args>(args)...);
-		}
-		else if constexpr (std::is_same_v<TypeName, StringsFeatures>)
-		{
-			return string_features(std::forward<Args>(args)...);
-		}
-		else if constexpr (std::is_same_v<TypeName, FeatureSubset>)
-		{
-			return features_subset(std::forward<Args>(args)...);
 		}
 		else if constexpr (std::is_same_v<TypeName, Labels>)
 		{
@@ -412,7 +396,7 @@ namespace shogun
 	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 	    EPrimitiveType primitive_type = PT_CHAR)
 	{
-		return create<StringsFeatures>(file, alphabet_type, primitive_type);
+		return string_features(file, alphabet_type, primitive_type);
 	}
 
 	template <typename T>
@@ -430,7 +414,7 @@ namespace shogun
 	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
 	    EPrimitiveType primitive_type = PT_FLOAT64)
 	{
-		return create<FeatureSubset>(base_features, indices, primitive_type);
+		return features_subset(base_features, indices, primitive_type);
 	}
 
 	std::shared_ptr<File> create_csv(std::string fname, char rw = 'r')
