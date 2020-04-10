@@ -1029,25 +1029,23 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %pythoncode %{
 import sys
 
-_FACTORIES = ["distance",
-              "evaluation",
-              "kernel",
-              "machine",
-              "multiclass_strategy",
-              "ecoc_encoder",
-              "ecoc_decoder",
-              "transformer",
-              "layer",
-              "splitting_strategy",
-              "machine_evaluation",
-              "features",
-              "differentiable",
-              "gp_inference",
-              "gp_mean",
-              "gp_likelihood",
-              "loss",
-              "structured_model",
-              "factor_type"
+_FACTORIES = ["create_distance",
+              "create_evaluation",
+              "create_kernel",
+              "create_machine",
+              "create_multiclass_strategy",
+              "create_ecoc_encoder",
+              "create_ecoc_decoder",
+              "create_transformer",
+              "create_layer",
+              "create_splitting_strategy",
+              "create_machine_evaluation",
+              "create_features",
+              "create_differentiable",
+              "create_gp_inference",
+              "create_gp_mean",
+              "create_gp_likelihood",
+              "create_loss",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):

@@ -24,7 +24,6 @@
 %template(create_layer) shogun::create<shogun::NeuralLayer, std::string>;
 %template(create_splitting_strategy) shogun::create<shogun::SplittingStrategy, std::string>;
 %template(create_machine_evaluation) shogun::create<shogun::MachineEvaluation, std::string>;
-%template(create_svm) shogun::create<shogun::SVM, std::string>;
 %template(create_gp_likelihood) shogun::create<shogun::LikelihoodModel, std::string>;
 %template(create_gp_mean) shogun::create<shogun::MeanFunction, std::string>;
 %template(create_gp_inference) shogun::create<shogun::Inference, std::string>;
