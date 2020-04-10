@@ -47,7 +47,7 @@ class ThresholdRejectionStrategy : public RejectionStrategy
 		~ThresholdRejectionStrategy() override {};
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "ThresholdRejectionStrategy";
 		}
@@ -132,7 +132,7 @@ class DixonQTestRejectionStrategy : public RejectionStrategy
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "DixonQTestRejectionStrategy";
 		}

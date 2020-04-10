@@ -42,7 +42,7 @@ public:
 	std::shared_ptr<LikelihoodModel> lik;
 	std::shared_ptr<Labels> lab;
 
-	virtual double operator() (double x)
+	double operator() (double x) override
 	{
 		Map<VectorXd> eigen_f(f->vector, f->vlen);
 		Map<VectorXd> eigen_m(m->vector, m->vlen);

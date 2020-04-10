@@ -114,7 +114,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 *
 		 * @return name WeightedDegree
 		 */
-		virtual const char* get_name() const {
+		const char* get_name() const override {
 			return "WeightedDegreeStringKernel";
 		}
 

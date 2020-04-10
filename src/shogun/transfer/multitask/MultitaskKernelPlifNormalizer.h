@@ -299,7 +299,7 @@ public:
 	/**
 	 *  @return number of kernel weights (support points)
 	 */
-	int32_t get_num_betas() const noexcept
+	int32_t get_num_betas() const noexcept override
 	{
 
 		return num_betas;
@@ -308,7 +308,7 @@ public:
 
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MultitaskKernelPlifNormalizer";
 	}

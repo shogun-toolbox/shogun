@@ -113,13 +113,13 @@ class CustomKernel: public Kernel
 		 *
 		 * @return feature class ANY
 		 */
-		virtual EFeatureClass get_feature_class() { return C_ANY; }
+		EFeatureClass get_feature_class() override { return C_ANY; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Custom
 		 */
-		virtual const char* get_name() const { return "CustomKernel"; }
+		const char* get_name() const override { return "CustomKernel"; }
 
 		/** set kernel matrix (only elements from upper triangle)
 		 * from elements of upper triangle (concat'd), including the
@@ -376,8 +376,8 @@ class CustomKernel: public Kernel
 		 * \f]
 		 * where \f$i,j\in[0,\text{block-size}-1]\f$
 		 */
-		virtual SGVector<float64_t> row_wise_sum_symmetric_block(index_t
-				block_begin, index_t block_size, bool no_diag=true);
+		SGVector<float64_t> row_wise_sum_symmetric_block(index_t
+				block_begin, index_t block_size, bool no_diag=true) override;
 
 		/**
 		 * Overrides the row_wise_sum_squared_sum_symmetric_block method of
@@ -510,7 +510,7 @@ class CustomKernel: public Kernel
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		int32_t get_num_vec_lhs() override
 		{
 			return m_row_subset_stack->has_subsets()
 					? m_row_subset_stack->get_size() : num_lhs;
@@ -522,7 +522,7 @@ class CustomKernel: public Kernel
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		int32_t get_num_vec_rhs() override
 		{
 			return m_col_subset_stack->has_subsets()
 					? m_col_subset_stack->get_size() : num_rhs;
@@ -534,7 +534,7 @@ class CustomKernel: public Kernel
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			return (get_num_vec_lhs()>0) && (get_num_vec_rhs()>0);
 		}
@@ -570,7 +570,7 @@ class CustomKernel: public Kernel
 		 * @param col col
 		 * @return computed kernel function
 		 */
-		virtual float64_t compute(int32_t row, int32_t col)
+		float64_t compute(int32_t row, int32_t col) override
 		{
 			require(kmatrix.matrix, "{}::compute({}, {}): No kenrel matrix "
 					"set!", get_name(), row, col);

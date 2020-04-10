@@ -49,7 +49,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		virtual float64_t distance(int32_t idx_a, int32_t idx_b)
+		float64_t distance(int32_t idx_a, int32_t idx_b) override
 		{
 			if (idx_a < 0 || idx_b <0)
 				return 0;
@@ -87,7 +87,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		 * @param rhs features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs)
+		bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs) override
 		{
 			if (env()->get_num_threads()!=1)
 			{
@@ -98,7 +98,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		}
 
 		/** cleanup distance */
-		virtual void cleanup()
+		void cleanup() override
 		{
 
 		}
@@ -152,19 +152,19 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		}
 
 		/** remove lhs and rhs from distance */
-		virtual void remove_lhs_and_rhs()
+		void remove_lhs_and_rhs() override
 		{
 			Distance::remove_lhs_and_rhs();
 		}
 
 		/// takes all necessary steps if the lhs is removed from distance matrix
-		virtual void remove_lhs()
+		void remove_lhs() override
 		{
 			Distance::remove_lhs();
 		}
 
 		/// takes all necessary steps if the rhs is removed from distance matrix
-		virtual void remove_rhs()
+		void remove_rhs() override
 		{
 			Distance::remove_rhs();
 		}
@@ -173,32 +173,32 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		 *
 		 * @return distance type DIRECTOR
 		 */
-		virtual EDistanceType get_distance_type() { return D_DIRECTOR; }
+		EDistanceType get_distance_type() override { return D_DIRECTOR; }
 
 		/** get feature type the distance can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		virtual EFeatureType get_feature_type() { return F_ANY; }
+		EFeatureType get_feature_type() override { return F_ANY; }
 
 		/** get feature class the distance can deal with
 		 *
 		 * @return feature class ANY
 		 */
-		virtual EFeatureClass get_feature_class() { return C_ANY; }
+		EFeatureClass get_feature_class() override { return C_ANY; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Director
 		 */
-		virtual const char* get_name() const { return "DirectorDistance"; }
+		const char* get_name() const override { return "DirectorDistance"; }
 
 		/** FIXME: precompute matrix should be dropped, handling
 		 * should be via customdistance
 		 *
 		 * @param flag if precompute_matrix
 		 */
-		virtual void set_precompute_matrix(bool flag)
+		void set_precompute_matrix(bool flag) override
 		{
 			Distance::set_precompute_matrix(flag);
 		}
@@ -207,7 +207,7 @@ IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t x, int32_t y)
+		float64_t compute(int32_t x, int32_t y) override
 		{
 			return distance_function(x, y);
 		}

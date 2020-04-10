@@ -56,7 +56,7 @@ public:
 	 *
 	 * @return f(x)=3*x^2
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return 3*x*x;
 	}
@@ -97,7 +97,7 @@ public:
 	 *
 	 * @return f(x)=(1/sqrt(2*PI*sigma^2))*exp(-(x-mu)^2/(2*sigma^2))
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return (1.0 / (std::sqrt(2 * Math::PI) * m_sigma)) *
 		       std::exp(-Math::sq(x - m_mu) / (2.0 * Math::sq(m_sigma)));
@@ -189,7 +189,7 @@ public:
 	 *
 	 * @return f(x)=1/(1+exp(-x))
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return 1.0 / (1.0 + std::exp(-x));
 	}

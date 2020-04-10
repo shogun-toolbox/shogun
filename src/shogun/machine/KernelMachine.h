@@ -70,7 +70,7 @@ class KernelMachine : public Machine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "KernelMachine"; }
+		const char* get_name() const override { return "KernelMachine"; }
 
 		/** set kernel
 		 *
@@ -204,7 +204,7 @@ class KernelMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 		/** apply kernel machine to data
 		 * for binary classification task
@@ -212,7 +212,7 @@ class KernelMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 		/** apply kernel machine to one example
 		 *

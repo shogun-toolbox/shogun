@@ -152,8 +152,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-		Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_inducing_noise(
+		Parameters::const_reference param) override =0;
 
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
@@ -218,7 +218,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param) override =0;
 
 	/** whether the kernel supports to get the gradient wrt inducing points or not*/
 	bool m_fully_sparse;

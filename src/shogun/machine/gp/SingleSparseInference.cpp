@@ -68,7 +68,7 @@ public:
 			require(m_obj->m_fully_sparse,"Can not compute gradient");
 		}
 	}
-        virtual float64_t get_cost()
+        float64_t get_cost() override
 	{
 		require(m_obj,"Object not set");
 		float64_t nlz=m_obj->get_negative_log_marginal_likelihood();

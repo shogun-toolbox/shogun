@@ -126,7 +126,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return the ith row of the kernel matrix
 		 */
-		virtual SGVector<float64_t> get_kernel_row(int32_t i)
+		SGVector<float64_t> get_kernel_row(int32_t i) override
 		{
 			return Kernel::get_kernel_row(i);
 		}
@@ -135,7 +135,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		int32_t get_num_vec_lhs() override
 		{
 			return Kernel::get_num_vec_lhs();
 		}
@@ -144,7 +144,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		int32_t get_num_vec_rhs() override
 		{
 			return Kernel::get_num_vec_rhs();
 		}
@@ -171,7 +171,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			if (!external_features)
 				return Kernel::has_features();
@@ -180,7 +180,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		}
 
 		/** remove lhs and rhs from kernel */
-		virtual void remove_lhs_and_rhs()
+		void remove_lhs_and_rhs() override
 		{
 			Kernel::remove_lhs_and_rhs();
 		}
@@ -219,12 +219,12 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return name Director
 		 */
-		virtual const char* get_name() const { return "DirectorKernel"; }
+		const char* get_name() const override { return "DirectorKernel"; }
 
 		/** for optimizable kernels, i.e. kernels where the weight
 		 * vector can be computed explicitly (if it fits into memory)
 		 */
-		virtual void clear_normal()
+		void clear_normal() override
 		{
 			Kernel::clear_normal();
 		}
@@ -234,7 +234,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * @param vector_idx index
 		 * @param weight weight
 		 */
-		virtual void add_to_normal(int32_t vector_idx, float64_t weight)
+		void add_to_normal(int32_t vector_idx, float64_t weight) override
 		{
 			Kernel::add_to_normal(vector_idx, weight);
 		}
@@ -243,7 +243,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @param t optimization type to set
 		 */
-		virtual void set_optimization_type(EOptimizationType t)
+		void set_optimization_type(EOptimizationType t) override
 		{
 			Kernel::set_optimization_type(t);
 		}
@@ -255,8 +255,8 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t *weights)
+		bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t *weights) override
 		{
 			return Kernel::init_optimization(count, IDX, weights);
 		}
@@ -265,7 +265,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization()
+		bool delete_optimization() override
 		{
 			return Kernel::delete_optimization();
 		}
@@ -275,7 +275,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * @param vector_idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual float64_t compute_optimized(int32_t vector_idx)
+		float64_t compute_optimized(int32_t vector_idx) override
 		{
 			return Kernel::compute_optimized(vector_idx);
 		}
@@ -288,10 +288,10 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * alphas arguments are the number of support vectors, their indices
 		 * and weights
 		 */
-		virtual void compute_batch(
+		void compute_batch(
 			int32_t num_vec, int32_t* vec_idx, float64_t* target,
 			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
-			float64_t factor=1.0)
+			float64_t factor=1.0) override
 		{
 			Kernel::compute_batch(num_vec, vec_idx, target, num_suppvec, IDX, alphas, factor);
 		}
@@ -300,7 +300,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @return number of subkernels
 		 */
-		virtual int32_t get_num_subkernels()
+		int32_t get_num_subkernels() override
 		{
 			return Kernel::get_num_subkernels();
 		}
@@ -310,8 +310,8 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * @param vector_idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(
-			int32_t vector_idx, float64_t * subkernel_contrib)
+		void compute_by_subkernel(
+			int32_t vector_idx, float64_t * subkernel_contrib) override
 		{
 			Kernel::compute_by_subkernel(vector_idx, subkernel_contrib);
 		}
@@ -321,7 +321,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		virtual const float64_t* get_subkernel_weights(int32_t& num_weights)
+		const float64_t* get_subkernel_weights(int32_t& num_weights) override
 		{
 			return Kernel::get_subkernel_weights(num_weights);
 		}
@@ -330,7 +330,7 @@ IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 		 *
 		 * @param weights new subkernel weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> weights)
+		void set_subkernel_weights(SGVector<float64_t> weights) override
 		{
 			Kernel::set_subkernel_weights(weights);
 		}
@@ -396,12 +396,12 @@ protected:
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		float64_t compute(int32_t idx_a, int32_t idx_b) override
 		{
 			return kernel_function(idx_a, idx_b);
 		}
 
-		virtual void register_params()
+		void register_params() override
 		{
 			Kernel::register_params();
 		}

@@ -42,7 +42,7 @@ namespace shogun
 
 		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 		/**
 		 * Set number of bags/machine to create
@@ -121,13 +121,13 @@ namespace shogun
 		float64_t get_oob_error() const;
 
 		/** name **/
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "BaggingMachine";
 		}
 
 	protected:
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/**
 		 * sets parameters of Machine - useful in Random Forest

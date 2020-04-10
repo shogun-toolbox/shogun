@@ -102,7 +102,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 * @param vec_idx
 		 * @return label
 		 */
-		virtual float64_t apply_one(int32_t vec_idx);
+		float64_t apply_one(int32_t vec_idx) override;
 
 		/** get the type of multiclass'ness
 		 *
@@ -133,7 +133,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MulticlassMachine";
 		}
@@ -160,7 +160,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		void clear_machines();
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 		/** abstract init machine for training method */
 		virtual bool init_machine_for_train(std::shared_ptr<Features> data) = 0;

@@ -318,7 +318,7 @@ protected:
 	 * @param dmu \f$\frac{\partial {\mu_{n}}}{\partial {\lambda}}\f$
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual float64_t get_derivative_related_mean(SGVector<float64_t> dmu);
+	float64_t get_derivative_related_mean(SGVector<float64_t> dmu) override;
 
 	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood implicit derivatives
@@ -394,7 +394,7 @@ class SingleFITCLaplaceNewtonOptimizer: public Minimizer
 public:
 	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
-	virtual const char* get_name() const { return "SingleFITCLaplaceNewtonOptimizer"; }
+	const char* get_name() const override { return "SingleFITCLaplaceNewtonOptimizer"; }
 
 	~SingleFITCLaplaceNewtonOptimizer() override {  }
 

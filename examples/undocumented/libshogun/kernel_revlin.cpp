@@ -56,7 +56,7 @@ public:
      * @return kernel type UNKNOWN (as it is not part
      *			officially part of shogun)
      */
-    virtual EKernelType get_kernel_type()
+    EKernelType get_kernel_type() override
     {
         return K_UNKNOWN;
     }

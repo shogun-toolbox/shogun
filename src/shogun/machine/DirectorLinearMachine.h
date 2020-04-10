@@ -59,7 +59,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(std::shared_ptr<DotFeatures> feat)
+		void set_features(std::shared_ptr<DotFeatures> feat) override
 		{
 			LinearMachine::set_features(feat);
 		}
@@ -68,7 +68,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @return features
 		 */
-		virtual std::shared_ptr<DotFeatures> get_features()
+		std::shared_ptr<DotFeatures> get_features() override
 		{
 			return LinearMachine::get_features();
 		}
@@ -99,7 +99,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		/** apply machine to data in means of multiclass classification problem */
 		using LinearMachine::apply_multiclass;
 
-		virtual float64_t apply_one(int32_t vec_idx)
+		float64_t apply_one(int32_t vec_idx) override
 		{
 			return LinearMachine::apply_one(vec_idx);
 		}
@@ -108,7 +108,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab)
+		void set_labels(std::shared_ptr<Labels> lab) override
 		{
 			LinearMachine::set_labels(lab);
 		}
@@ -126,15 +126,15 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @return classifier type NONE
 		 */
-		virtual EMachineType get_classifier_type() { return CT_DIRECTORLINEAR; }
+		EMachineType get_classifier_type() override { return CT_DIRECTORLINEAR; }
 
 		//TODO change to pure virtual
-		virtual EProblemType get_machine_problem_type() const
+		EProblemType get_machine_problem_type() const override
 		{
 			return LinearMachine::get_machine_problem_type();
 		}
 
-		virtual const char* get_name() const { return "DirectorLinearMachine"; }
+		const char* get_name() const override { return "DirectorLinearMachine"; }
 
 	protected:
 		/** train machine

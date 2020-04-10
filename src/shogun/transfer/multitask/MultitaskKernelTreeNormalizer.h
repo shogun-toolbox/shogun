@@ -435,7 +435,7 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+	float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 	{
 		//lookup tasks
 		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
@@ -456,7 +456,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+	float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 	{
 		error("normalize_lhs not implemented");
 		return 0;
@@ -466,7 +466,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+	float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 	{
 		error("normalize_rhs not implemented");
 		return 0;
@@ -510,7 +510,7 @@ public:
 	}
 
 	/** @return number of parameters/weights */
-	int32_t get_num_betas() const noexcept
+	int32_t get_num_betas() const noexcept override
 	{
 
 		return taxonomy.get_num_nodes();
@@ -520,7 +520,7 @@ public:
 	/**
 	 * @param idx id of weight
 	 * @return weight of node with given id */
-	float64_t get_beta(int32_t idx) const
+	float64_t get_beta(int32_t idx) const override
 	{
 
 		return taxonomy.get_node_weight(idx);
@@ -530,7 +530,7 @@ public:
 	/**
 	 * @param idx id of weight
 	 * @param weight weight of node with given id */
-	void set_beta(int32_t idx, float64_t weight)
+	void set_beta(int32_t idx, float64_t weight) override
 	{
 
 		taxonomy.set_node_weight(idx, weight);
@@ -572,7 +572,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MultitaskKernelTreeNormalizer";
 	}

@@ -384,7 +384,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @param weights new subkernel weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> weights);
+		void set_subkernel_weights(SGVector<float64_t> weights) override;
 
 		/** set optimization type
 		 *
@@ -413,7 +413,7 @@ class CombinedKernel : public Kernel
 		 * @return gradient with respect to parameter
 		 */
 		SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
-				index_t index=-1);
+				index_t index=-1) override;
 #endif
 
 		/** Get the Kernel array
@@ -449,7 +449,7 @@ class CombinedKernel : public Kernel
 		 * @param y y
 		 * @return computed kernel function
 		 */
-		virtual float64_t compute(int32_t x, int32_t y);
+		float64_t compute(int32_t x, int32_t y) override;
 
 		/** adjust the variables num_lhs, num_rhs and initialized
 		 * based on the kernel to be appended/inserted

@@ -151,7 +151,7 @@ public:
 	 *
 	 * @param label sparse label to add
 	 */
-	virtual void add_label(std::shared_ptr<StructuredData > label);
+	void add_label(std::shared_ptr<StructuredData > label) override;
 
 	/** get sparse assigment for j-th label
 	 *
@@ -163,13 +163,13 @@ public:
 	 *
 	 * @param j label index
 	 */
-	virtual std::shared_ptr<StructuredData > get_label(int32_t j);
+	std::shared_ptr<StructuredData > get_label(int32_t j) override;
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR
 	 *
 	 * @param context optional message to convey the context
 	 */
-	virtual void ensure_valid(const char * context = NULL);
+	void ensure_valid(const char * context = NULL) override;
 
 	/** Convert sparse labels to dense. The dense vector would be {d_true;
 	 * d_false}^dense_dim. Indices in sparse would be marked "d_true",

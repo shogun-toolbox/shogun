@@ -54,7 +54,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		virtual int32_t get_dim_feature_space() const
+		int32_t get_dim_feature_space() const override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return 0;
@@ -67,7 +67,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
+		float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return 0;
@@ -152,7 +152,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 * @param num which vector
 		 * @return number of sparse features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num) const
+		int32_t get_nnz_features_for_vector(int32_t num) const override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return 0;
@@ -167,7 +167,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index)
+		void* get_feature_iterator(int32_t vector_index) override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return NULL;
@@ -223,7 +223,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type() const
+		EFeatureType get_feature_type() const override
 		{
 			return F_ANY;
 		}
@@ -246,7 +246,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @return feature class like STRING, SIMPLE, SPARSE...
 		 */
-		virtual EFeatureClass get_feature_class() const
+		EFeatureClass get_feature_class() const override
 		{
 			return C_DIRECTOR_DOT;
 		}
@@ -255,7 +255,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @param p preprocessor to set
 		 */
-		virtual void add_preprocessor(std::shared_ptr<Preprocessor> p)
+		void add_preprocessor(std::shared_ptr<Preprocessor> p) override
 		{
 			Features::add_preprocessor(p);
 		}
@@ -278,7 +278,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 * @param num_vectors new number of vectors
 		 * @return if reshaping was successful
 		 */
-		virtual bool reshape(int32_t num_features, int32_t num_vectors)
+		bool reshape(int32_t num_features, int32_t num_vectors) override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return false;
@@ -288,7 +288,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		virtual void load(std::shared_ptr<File> loader)
+		void load(std::shared_ptr<File> loader) override
 		{
 			Features::load(loader);
 		}
@@ -297,7 +297,7 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @param writer File object via which data shall be saved
 		 */
-		virtual void save(std::shared_ptr<File> writer)
+		void save(std::shared_ptr<File> writer) override
 		{
 			Features::save(writer);
 		}
@@ -307,27 +307,27 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 *
 		 * @param subset subset of indices to add
 		 * */
-		virtual void add_subset(SGVector<index_t> subset)
+		void add_subset(SGVector<index_t> subset) override
 		{
 			Features::add_subset(subset);
 		}
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
-		virtual void remove_subset()
+		void remove_subset() override
 		{
 			Features::remove_subset();
 		}
 
 		/** removes all subsets
 		 * Calls subset_changed_post() afterwards */
-		virtual void remove_all_subsets()
+		void remove_all_subsets() override
 		{
 			Features::remove_all_subsets();
 		}
 
 		/** method may be overwritten to update things that depend on subset */
-		virtual void subset_changed_post()
+		void subset_changed_post() override
 		{
 			Features::subset_changed_post();
 		}
@@ -341,13 +341,13 @@ IGNORE_IN_CLASSLIST class DirectorDotFeatures : public DotFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new Features instance with copies of feature data
 		 */
-		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const
+		std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const override
 		{
 			return Features::copy_subset(indices);
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "DirectorDotFeatures"; }
+		const char* get_name() const override { return "DirectorDotFeatures"; }
 };
 }
 #endif // USE_SWIG_DIRECTORS

@@ -105,7 +105,7 @@ public:
 	CRegressionExample();
 	~CRegressionExample() override{}
 	float64_t get_cost();
-	virtual const char* get_name() const {return "RegressionExample";}
+	const char* get_name() const override {return "RegressionExample";}
 	void set_x(SGMatrix<float64_t> x){m_x=x;}
 	void set_y(SGVector<float64_t> y){m_y=y;}
 	void set_init_w(SGVector<float64_t> w){m_w=w;}

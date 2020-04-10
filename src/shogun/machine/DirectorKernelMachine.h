@@ -74,7 +74,7 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual ::std::shared_ptr<Labels> apply(std::shared_ptr<Features> data=NULL)
+		::std::shared_ptr<Labels> apply(std::shared_ptr<Features> data=NULL) override
 		{
 			return KernelMachine::apply(data);
 		}
@@ -99,7 +99,7 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 * @param num which example to apply to
 		 * @return classified value
 		 */
-		virtual float64_t apply_one(int32_t num)
+		float64_t apply_one(int32_t num) override
 		{
 			return KernelMachine::apply_one(num);
 		}
@@ -108,7 +108,7 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab)
+		void set_labels(std::shared_ptr<Labels> lab) override
 		{
 			KernelMachine::set_labels(lab);
 		}
@@ -126,15 +126,15 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 *
 		 * @return classifier type NONE
 		 */
-		virtual EMachineType get_classifier_type() { return CT_DIRECTORKERNEL; }
+		EMachineType get_classifier_type() override { return CT_DIRECTORKERNEL; }
 
 		//TODO change to pure virtual
-		virtual EProblemType get_machine_problem_type() const
+		EProblemType get_machine_problem_type() const override
 		{
 			return KernelMachine::get_machine_problem_type();
 		}
 
-		virtual const char* get_name() const { return "DirectorKernelMachine"; }
+		const char* get_name() const override { return "DirectorKernelMachine"; }
 
 	protected:
 		/** train machine

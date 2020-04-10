@@ -220,7 +220,7 @@ protected:
 	 *
 	 * @return negative log marginal likelihood
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood_helper();
+	float64_t get_negative_log_marginal_likelihood_helper() override;
 
 	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
@@ -230,7 +230,7 @@ protected:
 	 *
 	 * @return true if precomputed parameters are valid
 	 */
-	virtual bool precompute();
+	bool precompute() override;
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function

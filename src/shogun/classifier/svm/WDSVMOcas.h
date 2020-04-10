@@ -300,7 +300,7 @@ class WDSVMOcas : public Machine
 
 
 		/** @return object name */
-		virtual const char* get_name() const { return "WDSVMOcas"; }
+		const char* get_name() const override { return "WDSVMOcas"; }
 
 	protected:
 		/** train classifier
@@ -311,7 +311,7 @@ class WDSVMOcas : public Machine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	protected:
 		/** features */

@@ -58,7 +58,7 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
 			num_sqrtdiag_lhs=k->get_num_vec_lhs();
@@ -99,7 +99,7 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+		float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 		{
 			return value/sqrtdiag_lhs[idx_lhs];
 		}
@@ -108,13 +108,13 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+		float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 		{
 			return value/sqrtdiag_rhs[idx_rhs];
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SqrtDiagKernelNormalizer"; }
+		const char* get_name() const override { return "SqrtDiagKernelNormalizer"; }
 
     protected:
 		/**

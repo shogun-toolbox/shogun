@@ -328,7 +328,7 @@ class CustomDistance: public Distance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		int32_t get_num_vec_lhs() override
 		{
 			return num_rows;
 		}
@@ -337,7 +337,7 @@ class CustomDistance: public Distance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		int32_t get_num_vec_rhs() override
 		{
 			return num_cols;
 		}
@@ -346,7 +346,7 @@ class CustomDistance: public Distance
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			return (num_rows>0) && (num_cols>0);
 		}

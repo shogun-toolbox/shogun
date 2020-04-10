@@ -124,7 +124,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 		/** construct linear machine from given linear machine */
-		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const
+		std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const override
 		{
 			return std::make_shared<LinearMachine>(machine->as<LinearMachine>());
 		}

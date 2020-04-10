@@ -229,7 +229,7 @@ class Machine : public StoppableSGObject
 			return PT_BINARY;
 		}
 
-		virtual const char* get_name() const { return "Machine"; }
+		const char* get_name() const override { return "Machine"; }
 
 		/** returns whether machine require labels for training */
 		virtual bool train_require_labels() const

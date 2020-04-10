@@ -46,10 +46,10 @@ class LSHKNNSolver : public KNNSolver
 
 		std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const override;
 
-		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const override;
 
 		/** @return object name */
-		const char* get_name() const { return "LSHKNNSolver"; }
+		const char* get_name() const override { return "LSHKNNSolver"; }
 
 	private:
 		void init()

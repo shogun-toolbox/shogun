@@ -99,7 +99,7 @@ public:
 	 *
 	 * Waits for the thread to join.
 	 */
-	virtual void end_parser();
+	void end_parser() override;
 
 	/**
 	 * Reset a file back to the first example
@@ -231,7 +231,7 @@ public:
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual EFeatureType get_feature_type() const;
+	EFeatureType get_feature_type() const override;
 
 	/**
 	 * Return the feature class
@@ -245,7 +245,7 @@ public:
 	 *
 	 * @return StreamingDenseFeatures
 	 */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "StreamingDenseFeatures";
 	}

@@ -73,7 +73,7 @@ public:
 	 *
 	 * @return StochasticGBMachine
 	 */
-	virtual const char* get_name() const { return "StochasticGBMachine"; }
+	const char* get_name() const override { return "StochasticGBMachine"; }
 
 	/** set machine
 	 *
@@ -148,7 +148,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	/** compute gamma values
 	 *

@@ -67,7 +67,7 @@ public:
 	std::shared_ptr<Labels> lab;
 	std::shared_ptr<SingleFITCLaplaceInferenceMethod >inf;
 
-	virtual double operator() (double x)
+	double operator() (double x) override
 	{
 		//time complexity O(m*n)
 		Map<VectorXd> eigen_f(f->vector, f->vlen);
@@ -130,7 +130,7 @@ public:
 		}
 		m_obj=NULL;
 	}
-	virtual SGVector<float64_t> obtain_variable_reference()
+	SGVector<float64_t> obtain_variable_reference() override
 	{
 		require(m_obj,"Object not set");
 		m_derivatives = SGVector<float64_t>((m_obj->m_al).vlen);

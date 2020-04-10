@@ -57,7 +57,7 @@ protected:
 
 	}
 
-	virtual void TearDown()
+	void TearDown() override
 	{
 
 
