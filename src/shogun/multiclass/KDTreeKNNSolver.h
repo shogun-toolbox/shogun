@@ -11,6 +11,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/multiclass/KNNSolver.h>
+#include <shogun/multiclass/tree/KDTree.h>
 
 namespace shogun
 {
@@ -48,6 +49,10 @@ class KDTREEKNNSolver : public KNNSolver
 
 		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
 
+		virtual bool compute_nearest_neighbours();
+
+		virtual bool train_KNN(std::shared_ptr<Distance> knn_distance);
+
 		/** @return object name */
 		const char* get_name() const { return "KDTREEKNNSolver"; }
 
@@ -60,6 +65,9 @@ class KDTREEKNNSolver : public KNNSolver
 	protected:
 		// leaf size of K-D tree
 		int32_t m_leaf_size;
+
+		//instance of K-D tree
+		std::shared_ptr<shogun::KDTree> m_kd_tree;
 };
 }
 

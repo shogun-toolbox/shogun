@@ -13,6 +13,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/multiclass/tree/KDTree.h>
+#include <shogun/multiclass/KNNSolver.h>
 
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
@@ -103,6 +104,9 @@ bool KNN::train_machine(std::shared_ptr<Features> data)
 	io::info("m_num_classes: {} ({:+d} to {:+d}) num_train: {}", m_num_classes,
 			min_class, max_class, m_train_labels.vlen);
 
+	init_solver(m_knn_solver);
+	solver->train_KNN(distance);
+
 	return true;
 }
 
@@ -141,7 +145,7 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 				pairt[j].second = train_idxs[j];
 			}
 
-			std::sort(pairt, pairt + m_train_labels.vlen);
+			sort(pairt, pairt + m_train_labels.vlen);
 
 			for (int j = 0; j < m_train_labels.vlen; j++)
 			{
@@ -163,13 +167,16 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 	}
 	case KNN_KDTREE:
 	{
-		auto lhs = distance->get_lhs();
-		auto kd_tree = std::make_shared<KDTree>(m_leaf_size);
-		kd_tree->build_tree(lhs->as<DenseFeatures<float64_t>>());
+		//auto lhs = distance->get_lhs();
+		//auto kd_tree = std::make_shared<KDTree>(m_leaf_size);
+		//kd_tree->build_tree(lhs->as<DenseFeatures<float64_t>>());
 
-		auto query = distance->get_rhs();
-		kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
-		NN = kd_tree->get_knn_indices();
+		//auto query = distance->get_rhs();
+		//std::shared_ptr<shogun::KDTree> kd_tree = solver->get_kd_tree();
+		//kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
+		
+		solver->compute_nearest_neighbours();
+		NN = solver->get_nearest_neighbours();
 
 		break;
 	}
@@ -202,7 +209,7 @@ std::shared_ptr<MulticlassLabels> KNN::apply_multiclass(std::shared_ptr<Features
 	//histogram of classes and returned output
 	SGVector<float64_t> classes(m_num_classes);
 
-	init_solver(m_knn_solver);
+	//init_solver(m_knn_solver);
 
 	return solver->classify_objects(distance, num_lab, train_lab, classes);
 }

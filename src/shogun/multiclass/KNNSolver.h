@@ -12,6 +12,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
+#include <shogun/multiclass/tree/KDTree.h>
 
 namespace shogun
 {
@@ -83,8 +84,14 @@ class KNNSolver : public DistanceMachine
 		 */
 		 virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const = 0;
 
+		virtual bool train_KNN(std::shared_ptr<Distance> knn_distance) const;
+
+		virtual bool compute_nearest_neighbours();
+
 		/** @return object name */
 		virtual const char* get_name() const { return "KNNSolver"; }
+
+		virtual SGMatrix<index_t> get_nearest_neighbours() const { return m_NN; }
 
 	private:
 		void init();
@@ -104,6 +111,11 @@ class KNNSolver : public DistanceMachine
  
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
+
+		//nearest neighbours matrix
+		SGMatrix<index_t> m_NN;
+
+		std::shared_ptr<shogun::Distance> m_knn_distance;
 };
 
 }
