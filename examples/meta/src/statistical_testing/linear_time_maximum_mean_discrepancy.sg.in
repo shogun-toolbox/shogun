@@ -41,15 +41,15 @@ mmd.set_train_test_ratio(1)
 
 #![select_kernel_single]
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER)
-mmd.select_create_kernel()
-Kernel learnt_kernel_single = as_create_kernel(mmd.get("kernel"))
+mmd.select_kernel()
+Kernel learnt_kernel_single = as_kernel(mmd.get("kernel"))
 real width = learnt_kernel_single.get_real("log_width")
 #![select_kernel_single]
 
 #![select_kernel_combined]
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER, True)
-mmd.select_create_kernel()
-Kernel learnt_kernel_combined = as_create_kernel(mmd.get("kernel"))
+mmd.select_kernel()
+Kernel learnt_kernel_combined = as_kernel(mmd.get("kernel"))
 RealVector weights = learnt_kernel_combined.get_real_vector("subkernel_log_weights")
 #![select_kernel_combined]
 

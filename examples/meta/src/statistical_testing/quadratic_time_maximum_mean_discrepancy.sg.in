@@ -11,7 +11,7 @@ QuadraticTimeMMD mmd()
 mmd.set_p(features_p)
 mmd.set_q(features_q)
 Kernel k = create_kernel("GaussianKernel", log_width = 1.0)
-mmd.set_create_kernel(k)
+mmd.set_kernel(k)
 real alpha = 0.05
 #![create_instance]
 
@@ -31,16 +31,16 @@ real p_value = mmd.compute_p_value(statistic)
 Kernel kernel1 = create_kernel("GaussianKernel", log_width = -1.0)
 Kernel kernel2 = create_kernel("GaussianKernel", log_width = 0.0)
 Kernel kernel3 = create_kernel("GaussianKernel", log_width = 1.0)
-mmd.add_create_kernel(kernel1)
-mmd.add_create_kernel(kernel2)
-mmd.add_create_kernel(kernel3)
+mmd.add_kernel(kernel1)
+mmd.add_kernel(kernel2)
+mmd.add_kernel(kernel3)
 #![add_kernels]
 
 #![multi_kernel]
-MultiKernelQuadraticTimeMMD mk = mmd.multicreate_kernel()
-mk.add_create_kernel(kernel1)
-mk.add_create_kernel(kernel2)
-mk.add_create_kernel(kernel2)
+MultiKernelQuadraticTimeMMD mk = mmd.multikernel()
+mk.add_kernel(kernel1)
+mk.add_kernel(kernel2)
+mk.add_kernel(kernel2)
 
 RealVector mk_statistic = mk.compute_statistic()
 RealVector mk_p_value = mk.compute_p_value()
@@ -55,15 +55,15 @@ mmd.set_train_test_ratio(1)
 int num_runs = 1
 int num_folds = 3
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_CROSS_VALIDATION, num_runs, num_folds, alpha)
-mmd.select_create_kernel()
-Kernel learnt_kernel_single = as_create_kernel(mmd.get("kernel"))
+mmd.select_kernel()
+Kernel learnt_kernel_single = as_kernel(mmd.get("kernel"))
 real width = learnt_kernel_single.get_real("log_width")
 #![select_kernel_single]
 
 #![select_kernel_combined]
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_MMD, True)
-mmd.select_create_kernel()
-Kernel learnt_kernel_combined = as_create_kernel(mmd.get("kernel"))
+mmd.select_kernel()
+Kernel learnt_kernel_combined = as_kernel(mmd.get("kernel"))
 RealVector weights = learnt_kernel_combined.get_real_vector("subkernel_log_weights")
 #![select_kernel_combined]
 
