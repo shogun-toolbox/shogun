@@ -239,7 +239,6 @@ bool NeuralNetwork::train_machine(std::shared_ptr<Features> data)
 		initialize_neural_network(m_sigma);
 	}
 
-
 	require(m_max_num_epochs>=0,
 		"Maximum number of epochs ({}) must be >= 0", m_max_num_epochs);
 
@@ -720,7 +719,7 @@ void NeuralNetwork::set_labels(std::shared_ptr<Labels> lab)
 	Machine::set_labels(lab);
 }
 
-SGVector<float64_t>* NeuralNetwork::get_layer_parameters(int32_t i)
+SGVector<float64_t>* NeuralNetwork::get_layer_parameters(int32_t i) const
 {
 	require(i<m_num_layers && i >= 0, "Layer index ({}) out of range", i);
 
@@ -731,26 +730,34 @@ SGVector<float64_t>* NeuralNetwork::get_layer_parameters(int32_t i)
 	return p;
 }
 
-std::shared_ptr<NeuralLayer> NeuralNetwork::get_layer(int32_t i)
+std::vector<SGVector<float64_t>> NeuralNetwork::get_layer_parameters() const
+{
+	std::vector<SGVector<float64_t>> result;
+	result.resize(m_num_layers);
+	for (const auto& idx: range(m_num_layers))
+		result.push_back(*get_layer_parameters(idx));
+	return result;
+}
+
+std::shared_ptr<NeuralLayer> NeuralNetwork::get_layer(int32_t i) const
 {
 	return m_layers[i];
 }
 
 template <class T>
-SGVector<T> NeuralNetwork::get_section(SGVector<T> v, int32_t i)
+SGVector<T> NeuralNetwork::get_section(SGVector<T> v, int32_t i) const
 {
 	return SGVector<T>(v.vector+m_index_offsets[i],
 		get_layer(i)->get_num_parameters(), false);
 }
 
-int32_t NeuralNetwork::get_num_outputs()
+int32_t NeuralNetwork::get_num_outputs() const
 {
 	return get_layer(m_num_layers-1)->get_num_neurons();
 }
 
-const std::vector<std::shared_ptr<NeuralLayer>>& NeuralNetwork::get_layers()
+const std::vector<std::shared_ptr<NeuralLayer>>& NeuralNetwork::get_layers() const
 {
-
 	return m_layers;
 }
 
@@ -777,7 +784,7 @@ void NeuralNetwork::init()
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
-	m_auto_quick_initialize = false;
+	m_auto_quick_initialize = true;
 	m_sigma = 0.01f;
 	m_layers.clear();
 
@@ -825,4 +832,6 @@ void NeuralNetwork::init()
 	    "auto_quick_initialize");
 	SG_ADD(&m_is_training, "is_training", "is_training");
 	SG_ADD(&m_sigma, "sigma", "sigma");
+
+	watch_method("layer_parameters", &NeuralNetwork::get_layer_parameters);
 }

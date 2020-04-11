@@ -127,7 +127,7 @@ public:
 	 * @param features Input features. Should have as many features as the
 	 * number of visible units in the DBN
 	 */
-	virtual void pre_train(std::shared_ptr<DenseFeatures<float64_t>> features);
+	virtual void pre_train(std::shared_ptr<Features> features);
 
 	/** Pre-trains a single RBM
 	 *
@@ -135,7 +135,7 @@ public:
 	 * @param features Input features. Should have as many features as the total
 	 * number of visible units in the DBN
 	 */
-	virtual void pre_train(int32_t index, std::shared_ptr<DenseFeatures<float64_t>> features);
+	virtual void pre_train(int32_t index, std::shared_ptr<Features> features);
 
 	/** Trains the DBN using the variant of the wake-sleep algorithm described
 	 * in [A Fast Learning Algorithm for Deep Belief Nets, Hinton, 2006].
@@ -143,7 +143,7 @@ public:
 	 * @param features Input features. Should have as many features as the total
 	 * number of visible units in the DBN
 	 */
-	virtual void train(std::shared_ptr<DenseFeatures<float64_t>> features);
+	virtual void train(std::shared_ptr<Features> features);
 
 	/** Applies the DBN as a features transformation
 	 *
@@ -158,7 +158,7 @@ public:
 	 * @return Mean activations of the \f$ i^{th} \f$ hidden layer
 	 */
 	virtual std::shared_ptr<DenseFeatures<float64_t>> transform(
-		std::shared_ptr<DenseFeatures<float64_t>> features, int32_t i=-1);
+		std::shared_ptr<Features> features, int32_t i=-1);
 
 	/** Draws samples from the marginal distribution of the visible units. The
 	 * sampling starts from the values DBN's internal state and result of the

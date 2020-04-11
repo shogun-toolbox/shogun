@@ -49,10 +49,35 @@ void FactorType::init()
 {
 	SG_ADD(&m_type_id, "type_id", "Factor type name");
 	SG_ADD(&m_cards, "cards", "Cardinalities");
+	add_callback_function("cards", [&](){
+		init_card();
+	});
+
 	SG_ADD(&m_cumprod_cards, "cumprod_cards", "Cumulative product of cardinalities");
+
 	SG_ADD(&m_num_assignments, "num_assignments", "Number of variable configurations");
+	add_callback_function("num_assignments", [&](){
+		if (m_w.size() == 0)
+			m_data_size = m_num_assignments;
+		else
+		{
+			ASSERT(m_w.size() % m_num_assignments == 0);
+			m_data_size = m_w.size() / m_num_assignments;
+		}
+	});
+
 	SG_ADD(&m_w, "w", "Factor parameters");
-	SG_ADD(&m_data_size, "data_size", "Size of data vector");
+	add_callback_function("w", [&](){
+		if (m_w.size() == 0)
+			m_data_size = m_num_assignments;
+		else
+		{
+			ASSERT(m_w.size() % m_num_assignments == 0);
+			m_data_size = m_w.size() / m_num_assignments;
+		}
+	});
+	
+	SG_ADD(&m_data_size, "data_size", "Size of data vector", ParameterProperties::READONLY);
 
 	m_type_id = 0;
 	m_data_size = 0;

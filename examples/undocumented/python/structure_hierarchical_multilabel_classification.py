@@ -7,8 +7,6 @@ multi-label classification. The data used:
     http://kt.ijs.si/DragiKocev/PhD/resources/doku.php?id=hmc_classification#imageclef07d
 """
 
-from shogun import MultilabelSOLabels, HierarchicalMultilabelModel
-from shogun import StochasticSOSVM
 import shogun as sg
 import numpy as np
 import time
@@ -68,7 +66,7 @@ def get_data(data, shogun_labels):
     num_samples = len(data)
     # considering the root label
     num_classes = len(shogun_labels) + 1
-    labels = MultilabelSOLabels(num_samples, num_classes)
+    labels = sg.MultilabelSOLabels(num_samples, num_classes)
 
     for i, data_sample in enumerate(data):
         feats, labs = get_data_sample(data_sample, shogun_labels)
@@ -107,21 +105,24 @@ def structure_hierarchical_multilabel_classification(train_file_name,
     train_features, train_labels, train_taxonomy = get_features_labels(
         train_file)
 
-    model = HierarchicalMultilabelModel(train_features, train_labels,
-                                        train_taxonomy)
-    sgd = StochasticSOSVM(model, train_labels)
-    t1 = time.time()
-    sgd.train()
-    print('>>> Took %f time for training' % (time.time() - t1))
+    # TODO: fix HierarchicalMultilabelModel initialisation
+    model = sg.structured_model("HierarchicalMultilabelModel",
+                                features=train_features, 
+                                labels=train_labels,
+                                taxonomy=train_taxonomy)
+    sgd = sg.machine("StochasticSOSVM", model=model, labels=train_labels)
+    # t1 = time.time()
+    # sgd.train()
+    # print('>>> Took %f time for training' % (time.time() - t1))
 
-    test_features, test_labels, test_taxonomy = get_features_labels(test_file)
-    assert(test_taxonomy.all() == train_taxonomy.all())
+    # test_features, test_labels, test_taxonomy = get_features_labels(test_file)
+    # assert(test_taxonomy.all() == train_taxonomy.all())
 
-    evaluator = sg.evaluation("StructuredAccuracy")
-    outlabel = sgd.apply(test_features)
+    # evaluator = sg.evaluation("StructuredAccuracy")
+    # outlabel = sgd.apply(test_features)
 
-    print('>>> Accuracy of classification = %f' % evaluator.evaluate(
-        outlabel, test_labels))
+    # print('>>> Accuracy of classification = %f' % evaluator.evaluate(
+    #     outlabel, test_labels))
 
 if __name__ == '__main__':
     print('Hierarchical Multilabel Classification')

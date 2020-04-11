@@ -3,11 +3,7 @@
 import numpy as np
 import itertools
 
-from shogun import Factor, TableFactorType, FactorGraph
-from shogun import FactorGraphObservation, FactorGraphLabels, FactorGraphFeatures
-from shogun import FactorGraphModel, GRAPH_CUT
-from shogun import GraphCut
-from shogun import StochasticSOSVM
+import shogun as sg
 
 def generate_data(num_train_samples, len_label, len_feat):
     """ Generate synthetic dataset
@@ -63,17 +59,18 @@ def define_factor_types(num_vars, len_feat, edge_table):
     cards_u = np.array([n_stats], np.int32)
     w_u = np.zeros(n_stats*len_feat)
     for i in range(num_vars):
-        v_factor_types[i] = TableFactorType(i, cards_u, w_u)
+        v_factor_types[i] = sg.factor_type("TableFactorType",type_id=i, cards=cards_u, w=w_u)
 
     # pair-wise factors
     cards_pw = np.array([n_stats, n_stats], np.int32)
     w_pw = np.zeros(n_stats*n_stats)
     for j in range(n_edges):
-        v_factor_types[j + num_vars] = TableFactorType(j + num_vars, cards_pw, w_pw)
+        v_factor_types[j + num_vars] = sg.factor_type("TableFactorType", type_id=j + num_vars, 
+            cards=cards_pw, w=w_pw)
 
     return v_factor_types
 
-def build_factor_graph_model(labels, feats, factor_types, edge_table, infer_alg = GRAPH_CUT):
+def build_factor_graph_model(labels, feats, factor_types, edge_table, infer_alg = sg.GRAPH_CUT):
     """ Build factor graph model
 
         Args:
@@ -94,25 +91,25 @@ def build_factor_graph_model(labels, feats, factor_types, edge_table, infer_alg 
     num_edges = edge_table.shape[0]
     n_stats = 2
 
-    feats_fg = FactorGraphFeatures(num_train_samples)
-    labels_fg = FactorGraphLabels(num_train_samples)
+    feats_fg = sg.FactorGraphFeatures(num_train_samples)
+    labels_fg = sg.FactorGraphLabels(num_train_samples)
 
     for i in range(num_train_samples):
         cardinaities = np.array([n_stats]*num_vars, np.int32)
-        fg = FactorGraph(cardinaities)
+        fg = sg.FactorGraph(cardinaities)
 
         # add unary factors
         for u in range(num_vars):
             data_u = np.array(feats[i,:], np.float64)
             inds_u = np.array([u], np.int32)
-            factor_u = Factor(factor_types[u], inds_u, data_u)
+            factor_u = sg.Factor(factor_types[u], inds_u, data_u)
             fg.add_factor(factor_u)
 
         # add pairwise factors
         for v in range(num_edges):
             data_p = np.array([1.0])
             inds_p = np.array(edge_table[v, :], np.int32)
-            factor_p = Factor(factor_types[v + num_vars], inds_p, data_p)
+            factor_p = sg.Factor(factor_types[v + num_vars], inds_p, data_p)
             fg.add_factor(factor_p)
 
         # add factor graph
@@ -120,7 +117,7 @@ def build_factor_graph_model(labels, feats, factor_types, edge_table, infer_alg 
 
         # add corresponding label
         loss_weights = np.array([1.0/num_vars]*num_vars)
-        fg_obs = FactorGraphObservation(labels[i,:], loss_weights)
+        fg_obs = sg.FactorGraphObservation(labels[i,:], loss_weights)
         labels_fg.add_label(fg_obs)
 
     return (labels_fg, feats_fg)
@@ -139,14 +136,15 @@ def evaluation(labels_pr, labels_gt, model):
     num_train_samples = labels_pr.get_num_labels()
     acc_loss = 0.0
     ave_loss = 0.0
-    for i in range(num_train_samples):
-        y_pred = labels_pr.get_label(i)
-        y_truth = labels_gt.get_label(i)
-        acc_loss = acc_loss + model.delta_loss(y_truth, y_pred)
+    # FIXME: expose FactorGraphObservation
+    # for i in range(num_train_samples):
+    #     y_pred = labels_pr.get("label")[i]
+    #     y_truth = labels_gt.get("label")[i]
+    #     acc_loss = acc_loss + model.delta_loss(y_truth, y_pred)
 
-    ave_loss = acc_loss / num_train_samples
+    # ave_loss = acc_loss / num_train_samples
 
-    return ave_loss
+    # return ave_loss
 
 def graphcuts_sosvm(num_train_samples = 10, len_label = 5, len_feat = 20, num_test_samples = 5):
     """ Graph cuts as approximate inference in structured output SVM framework.
@@ -169,45 +167,45 @@ def graphcuts_sosvm(num_train_samples = 10, len_label = 5, len_feat = 20, num_te
     factor_types = define_factor_types(len_label, len_feat, full)
 
     # create features and labels for factor graph mode
-    (labels_fg, feats_fg) = build_factor_graph_model(labels_train, feats_train, factor_types, full, GRAPH_CUT)
+    (labels_fg, feats_fg) = build_factor_graph_model(labels_train, feats_train, factor_types, full, sg.GRAPH_CUT)
 
     # create model and register factor types
-    model = FactorGraphModel(feats_fg, labels_fg, GRAPH_CUT)
+    model = sg.structured_model("FactorGraphModel", features=feats_fg, labels=labels_fg, 
+                                inf_type="GRAPH_CUT")
 
     for i in range(len(factor_types)):
-        model.add_factor_type(factor_types[i])
+        model.add("factor_types", factor_types[i])
 
     # Training
     # the 3rd parameter is do_weighted_averaging, by turning this on,
     # a possibly faster convergence rate may be achieved.
     # the 4th parameter controls outputs of verbose training information
-    sgd = StochasticSOSVM(model, labels_fg, True, True)
-    sgd.set_num_iter(150)
-    sgd.set_lambda(0.0001)
+    sgd = sg.machine("StochasticSOSVM", model=model, labels=labels_fg, do_weighted_averaging=True,
+                     num_iter=150, m_lambda=0.0001)
 
     # train
     t0 = time.time()
     sgd.train()
     t1 = time.time()
-    w_sgd = sgd.get_w()
+    w_sgd = sgd.get("w")
     #print "SGD took", t1 - t0, "seconds."
 
     # training error
     labels_pr = sgd.apply()
-    ave_loss = evaluation(labels_pr, labels_fg, model)
+    # ave_loss = evaluation(labels_pr, labels_fg, model)
     #print('SGD: Average training error is %.4f' % ave_loss)
 
     # testing error
     # generate synthetic testing dataset
     (labels_test, feats_test) = generate_data(num_test_samples, len_label, len_feat)
     # create features and labels for factor graph mode
-    (labels_fg_test, feats_fg_test) = build_factor_graph_model(labels_test, feats_test, factor_types, full, GRAPH_CUT)
+    (labels_fg_test, feats_fg_test) = build_factor_graph_model(labels_test, feats_test, factor_types, full, sg.GRAPH_CUT)
     # set features and labels to sgd
-    sgd.set_features(feats_fg_test)
-    sgd.set_labels(labels_fg_test)
+    sgd.get("model").put("features", feats_fg_test)
+    sgd.get("model").put("labels", labels_fg_test)
     # test
     labels_pr = sgd.apply()
-    ave_loss = evaluation(labels_pr, labels_fg_test, model)
+    # ave_loss = evaluation(labels_pr, labels_fg_test, model)
     #print('SGD: Average testing error is %.4f' % ave_loss)
 
 def graphcuts_general():
@@ -217,7 +215,7 @@ def graphcuts_general():
     num_nodes = 5
     num_edges = 6
 
-    g = GraphCut(num_nodes, num_edges)
+    g = sg.GraphCut(num_nodes, num_edges)
 
     # add termainal-connected edges
     # i.e., SOURCE->node_i and node_i->SINK

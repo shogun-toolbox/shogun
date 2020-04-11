@@ -73,7 +73,6 @@ CARTree::CARTree(
 
 CARTree::~CARTree()
 {
-
 }
 
 void CARTree::set_labels(std::shared_ptr<Labels> lab)
@@ -84,8 +83,6 @@ void CARTree::set_labels(std::shared_ptr<Labels> lab)
 		set_machine_problem_type(PT_REGRESSION);
 	else
 		error("label type supplied is not supported");
-
-
 
 	m_labels=lab;
 }
@@ -171,15 +168,12 @@ void CARTree::prune_using_test_dataset(const std::shared_ptr<DenseFeatures<float
 			min_index=i;
 			min_error=error;
 		}
-
-
 	}
 
 	auto root=pruned_trees[min_index];
 	if (root == nullptr)
 		error("{} element is NULL",min_index);
 	this->set_root(root);
-
 }
 
 void CARTree::set_weights(SGVector<float64_t> w)
@@ -1495,12 +1489,7 @@ void CARTree::form_t1(const std::shared_ptr<bnode_t>& node)
 			node->data.num_leaves=1;
 			// set no children
 			node->set_children({});
-
-
 		}
-
-
-
 	}
 }
 

@@ -159,6 +159,11 @@ private:
 	/** register and initialize parameters */
 	void init();
 
+	/** helper function to add a new m_w_map when a new
+	 * factor type is added
+	 */ 
+	void add_map(const std::shared_ptr<FactorType>& ftype);
+
 protected:
 	/** array of factor types */
 	std::vector<std::shared_ptr<FactorType>> m_factor_types;

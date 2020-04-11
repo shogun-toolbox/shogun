@@ -404,15 +404,8 @@ void KernelMachine::store_model_features()
 	/* set new lhs to kernel */
 	kernel->init(sv_features, rhs);
 
-	/* unref rhs */
-
-
-	/* was SG_REF'ed by copy_subset */
-
-
 	/* now sv indices are just the identity */
 	m_svs.range_fill();
-
 }
 
 float64_t KernelMachine::apply_one(int32_t num)
@@ -450,5 +443,6 @@ void KernelMachine::init()
 	SG_ADD(&m_bias, "m_bias", "Bias term.", ParameterProperties::MODEL);
 	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.", ParameterProperties::MODEL);
 	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", ParameterProperties::MODEL);
+	watch_method("store_model_features", &KernelMachine::store_model_features);
 }
 

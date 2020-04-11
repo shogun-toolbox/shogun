@@ -146,7 +146,7 @@ SGMatrix<float64_t> PeriodicKernel::get_parameter_gradient(
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param.first.c_str());
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGMatrix<float64_t>();
 	}
 }

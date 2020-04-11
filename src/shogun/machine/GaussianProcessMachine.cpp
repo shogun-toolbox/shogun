@@ -105,10 +105,6 @@ SGVector<float64_t> GaussianProcessMachine::get_posterior_means(const std::share
 	// compute Ks=Ks*scale^2
 	eigen_Ks*=Math::sq(m_method->get_scale());
 
-	// cleanup
-
-
-
 	// get alpha and create eigen representation of it
 	SGVector<float64_t> alpha=m_method->get_alpha();
 	Map<VectorXd> eigen_alpha(alpha.vector, alpha.vlen);
@@ -175,10 +171,6 @@ SGVector<float64_t> GaussianProcessMachine::get_posterior_variances(
 
 	// compute Ks=Ks*scale^2
 	eigen_Ks*=Math::sq(m_method->get_scale());
-
-	// cleanup
-
-
 
 	// get shogun representation of cholesky and create eigen representation
 	SGMatrix<float64_t> L=m_method->get_cholesky();

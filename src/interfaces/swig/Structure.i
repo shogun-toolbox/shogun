@@ -19,10 +19,8 @@
 
 %shared_ptr(shogun::StructuredModel)
 %shared_ptr(shogun::ResultSet)
-%shared_ptr(shogun::MulticlassModel)
 %shared_ptr(shogun::MulticlassSOLabels)
 %shared_ptr(shogun::RealNumber)
-%shared_ptr(shogun::HMSVMModel)
 %shared_ptr(shogun::SequenceLabels)
 %shared_ptr(shogun::Sequence)
 %shared_ptr(shogun::StateModel)
@@ -30,13 +28,8 @@
 %shared_ptr(shogun::DirectorStructuredModel)
 %shared_ptr(shogun::MultilabelSOLabels)
 %shared_ptr(shogun::SparseMultilabel)
-%shared_ptr(shogun::MultilabelModel)
-%shared_ptr(shogun::HashedMultilabelModel)
-%shared_ptr(shogun::MultilabelCLRModel)
-%shared_ptr(shogun::HierarchicalMultilabelModel)
 
 %shared_ptr(shogun::FactorType)
-%shared_ptr(shogun::TableFactorType)
 %shared_ptr(shogun::FactorDataSource)
 %shared_ptr(shogun::Factor)
 %shared_ptr(shogun::DisjointSet)
@@ -50,20 +43,6 @@
 %shared_ptr(shogun::FactorGraphModel)
 
 %shared_ptr(shogun::SOSVMHelper)
-%shared_ptr(shogun::StructuredOutputMachine)
-%shared_ptr(shogun::LinearStructuredOutputMachine)
-SHARED_RANDOM_INTERFACE(shogun::LinearStructuredOutputMachine)
-%shared_ptr(shogun::KernelStructuredOutputMachine)
-
-#ifdef USE_GPL_SHOGUN
-%shared_ptr(shogun::DualLibQPBMSOSVM)
-#ifdef USE_MOSEK
-%shared_ptr(shogun::PrimalMosekSOSVM)
-#endif /* USE_MOSEK */
-#endif //USE_GPL_SHOGUN
-
-%shared_ptr(shogun::StochasticSOSVM)
-%shared_ptr(shogun::FWSOSVM)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
@@ -78,19 +57,13 @@ SHARED_RANDOM_INTERFACE(shogun::LinearStructuredOutputMachine)
 %include <shogun/structure/BmrmStatistics.h>
 #endif //USE_GPL_SHOGUN
 %include <shogun/structure/StructuredModel.h>
-%include <shogun/structure/MulticlassModel.h>
 %include <shogun/structure/MulticlassSOLabels.h>
-%include <shogun/structure/HMSVMModel.h>
 %include <shogun/structure/SequenceLabels.h>
 %include <shogun/structure/StateModelTypes.h>
 %include <shogun/structure/StateModel.h>
 %include <shogun/structure/TwoStateModel.h>
 %include <shogun/structure/DirectorStructuredModel.h>
 %include <shogun/structure/MultilabelSOLabels.h>
-%include <shogun/structure/MultilabelModel.h>
-%include <shogun/structure/HashedMultilabelModel.h>
-%include <shogun/structure/MultilabelCLRModel.h>
-%include <shogun/structure/HierarchicalMultilabelModel.h>
 
 %include <shogun/structure/FactorType.h>
 %include <shogun/structure/Factor.h>
@@ -103,19 +76,3 @@ SHARED_RANDOM_INTERFACE(shogun::LinearStructuredOutputMachine)
 %include <shogun/structure/FactorGraphModel.h>
 
 %include <shogun/structure/SOSVMHelper.h>
-%include <shogun/machine/StructuredOutputMachine.h>
-%include <shogun/machine/LinearStructuredOutputMachine.h>
-RANDOM_INTERFACE(LinearStructuredOutputMachine)
-
-%include <shogun/machine/KernelStructuredOutputMachine.h>
-
-#ifdef USE_GPL_SHOGUN
-%include <shogun/structure/DualLibQPBMSOSVM.h>
-
-#ifdef USE_MOSEK
-%include <shogun/structure/PrimalMosekSOSVM.h>
-#endif /* USE_MOSEK */
-#endif //USE_GPL_SHOGUN
-
-%include <shogun/structure/StochasticSOSVM.h>
-%include <shogun/structure/FWSOSVM.h>

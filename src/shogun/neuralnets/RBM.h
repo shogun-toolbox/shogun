@@ -172,7 +172,7 @@ public:
 	 * @param features Input features. Should have as many features as there
 	 * are visible units in the RBM.
 	 */
-	virtual void train(std::shared_ptr<DenseFeatures<float64_t>> features);
+	virtual void train(std::shared_ptr<Features> features);
 
 	/** Draws samples from the marginal distribution of the visible units using
 	 * Gibbs sampling. The sampling starts from the values in the RBM's

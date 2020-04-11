@@ -124,6 +124,29 @@ namespace shogun
 	};
 
 	/**
+	 * Checks if a value is less than or equal to val.
+	 *
+	 * @tparam T the type of val
+	 */
+	template <typename T>
+	struct less_than_or_equal : generic_checker<T>
+	{
+	public:
+		less_than_or_equal(T val) : generic_checker<T>(val){};
+
+		std::string error_msg() const override
+		{
+			return "less than " + std::to_string(this->m_val);
+		}
+
+	protected:
+		bool check(T val) const override
+		{
+			return val <= this->m_val;
+		}
+	};
+
+	/**
 	 * Checks if a value is greater than val.
 	 *
 	 * @tparam T the type of val
@@ -142,6 +165,29 @@ namespace shogun
 		bool check(T val) const override
 		{
 			return val > this->m_val;
+		}
+	};
+
+	/**
+	 * Checks if a value is greater than or equal to val.
+	 *
+	 * @tparam T the type of val
+	 */
+	template <typename T>
+	struct greater_than_or_equal : generic_checker<T>
+	{
+	public:
+		greater_than_or_equal(T val) : generic_checker<T>(val){};
+
+		std::string error_msg() const override
+		{
+			return "less than " + std::to_string(this->m_val);
+		}
+
+	protected:
+		bool check(T val) const override
+		{
+			return val >= this->m_val;
 		}
 	};
 

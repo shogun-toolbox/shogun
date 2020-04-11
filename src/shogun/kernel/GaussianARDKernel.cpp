@@ -238,7 +238,7 @@ SGVector<float64_t> GaussianARDKernel::get_parameter_gradient_diagonal(
 		return derivative;
 	}
 
-	error("Can't compute derivative wrt {} parameter", param.first.c_str());
+	error("Can't compute derivative wrt {} parameter", param.first);
 	return SGVector<float64_t>();
 }
 
@@ -256,7 +256,7 @@ float64_t GaussianARDKernel::get_parameter_gradient_helper(
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param.first.c_str());
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return 0.0;
 	}
 }
@@ -292,7 +292,7 @@ SGMatrix<float64_t> GaussianARDKernel::get_parameter_gradient(
 	}
 	else
 	{
-		error("Can't compute derivative wrt {} parameter", param.first.c_str());
+		error("Can't compute derivative wrt {} parameter", param.first);
 		return SGMatrix<float64_t>();
 	}
 }

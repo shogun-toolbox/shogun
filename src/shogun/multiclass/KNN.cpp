@@ -64,6 +64,8 @@ void KNN::init()
 	    (machine_int_t*)&m_knn_solver, "knn_solver", "Algorithm to solve knn",
 	    ParameterProperties::NONE,
 	    SG_OPTIONS(KNN_BRUTE, KNN_KDTREE, KNN_COVER_TREE, KNN_LSH));
+	watch_method("nearest_neighbors", &KNN::nearest_neighbors);
+	watch_method("classify_for_multiple_k", &KNN::classify_for_multiple_k);
 }
 
 KNN::~KNN()
@@ -252,8 +254,6 @@ SGMatrix<int32_t> KNN::classify_for_multiple_k()
 	init_solver(m_knn_solver);
 
 	SGVector<int32_t> output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
-
-
 
 	return SGMatrix<int32_t>(output,num_lab,m_k);
 }

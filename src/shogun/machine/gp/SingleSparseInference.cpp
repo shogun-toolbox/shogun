@@ -85,7 +85,8 @@ public:
 	{
 		require(m_obj,"Object not set");
 		m_obj->compute_gradient();
-		auto param=m_obj->get_params().find("inducing_features");
+		const auto& params = m_obj->get_params();
+		const auto& param = params.find("inducing_features");
 		SGVector<float64_t> derivatives=m_obj->get_derivative_wrt_inducing_features(*param);
 		return derivatives;
 	}
@@ -111,6 +112,7 @@ private:
 	}
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
+}
 
 SingleSparseInference::SingleSparseInference() : SparseInference()
 {
@@ -320,8 +322,6 @@ void SingleSparseInference::enable_optimizing_inducing_features(bool is_optmizat
 	{
 		if (minimizer!=m_inducing_minimizer)
 		{
-
-
 			m_inducing_minimizer=minimizer;
 		}
 	}
@@ -364,7 +364,5 @@ void SingleSparseInference::optimize_inducing_features()
 	m_inducing_minimizer->set_cost_function(cost_fun);
 	m_inducing_minimizer->minimize();
 	m_inducing_minimizer->unset_cost_function(false);
-
-}
 
 }

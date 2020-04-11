@@ -7,7 +7,7 @@
 #  COLPACK_LIBRARIES    - Which libraries are available
 
 # Look for the header files
-FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPack/ColPackHeaders.h
+FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPackHeaders.h
           PATHS /usr/include
                /usr/local/include
                /usr/local/include
@@ -29,7 +29,7 @@ find_library(COLPACK_LIBRARIES NAMES ColPack
                    /opt/local/lib64
                    "c:\\libs\\ColPack\\lib64"
             HINTS $ENV{COLPACK_DIR}/lib
-            PATH_SUFFIXES ColPack)
+            PATH_SUFFIXES ${CMAKE_LIBRARY_ARCHITECTURE} x86_64-linux-gnu ColPack)
 
 get_filename_component(COLPACK_LIBRARY_DIR ${COLPACK_LIBRARIES} PATH CACHE)
 
@@ -46,6 +46,3 @@ mark_as_advanced (
   COLPACK_LIBRARY_DIR
   COLPACK_INCLUDE_DIR
 )
-
-
-

@@ -95,7 +95,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data dense data, can be empty
 	 */
-	Factor(const std::shared_ptr<TableFactorType>& ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
+	Factor(const std::shared_ptr<FactorType>& ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
 
 	/** Constructor
 	 *
@@ -103,7 +103,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_sparse sparse data, can be empty
 	 */
-	Factor(const std::shared_ptr<TableFactorType>& ftype, SGVector<int32_t> var_index,
+	Factor(const std::shared_ptr<FactorType>& ftype, SGVector<int32_t> var_index,
 		SGSparseVector<float64_t> data_sparse);
 
 	/** Constructor
@@ -112,7 +112,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_source common data for many factors
 	 */
-	Factor(const std::shared_ptr<TableFactorType>& ftype, SGVector<int32_t> var_index,
+	Factor(const std::shared_ptr<FactorType>& ftype, SGVector<int32_t> var_index,
 		std::shared_ptr<FactorDataSource> data_source);
 
 	/** deconstructor */
@@ -122,13 +122,13 @@ public:
 	virtual const char* get_name() const { return "Factor"; }
 
 	/** @return factor type pointer */
-	std::shared_ptr<TableFactorType> get_factor_type() const;
+	std::shared_ptr<FactorType> get_factor_type() const;
 
 	/** set factor type
 	 *
 	 * @param ftype factor type
 	 */
-	void set_factor_type(std::shared_ptr<TableFactorType> ftype);
+	void set_factor_type(std::shared_ptr<FactorType> ftype);
 
 	/** @return adjacent variables */
 	const SGVector<int32_t> get_variables() const;
@@ -212,7 +212,7 @@ public:
 
 protected:
 	/** factor type */
-	std::shared_ptr<TableFactorType> m_factor_type;
+	std::shared_ptr<FactorType> m_factor_type;
 
 	/** variable indices */
 	SGVector<int32_t> m_var_index;

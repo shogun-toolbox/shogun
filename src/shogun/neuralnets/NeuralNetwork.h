@@ -217,22 +217,28 @@ public:
 	 *
 	 * @param i index of the layer
 	 */
-	SGVector<float64_t>* get_layer_parameters(int32_t i);
+	SGVector<float64_t>* get_layer_parameters(int32_t i) const;
+
+	/** returns a copy of all the layer's parameters array
+	 *
+	 * @param i index of the layer
+	 */
+	std::vector<SGVector<float64_t>> get_layer_parameters() const;
 
 	/** returns the totat number of parameters in the network */
-	int32_t get_num_parameters() { return m_total_num_parameters; }
+	int32_t get_num_parameters() const { return m_total_num_parameters; }
 
 	/** return the network's parameter array */
-	SGVector<float64_t> get_parameters() { return m_params; }
+	SGVector<float64_t> get_parameters() const { return m_params; }
 
 	/** returns the number of inputs the network takes*/
-	int32_t get_num_inputs() { return m_num_inputs; }
+	int32_t get_num_inputs() const { return m_num_inputs; }
 
 	/** returns the number of neurons in the output layer */
-	int32_t get_num_outputs();
+	int32_t get_num_outputs() const;
 
 	/** Returns an array holding the network's layers */
-	const std::vector<std::shared_ptr<NeuralLayer>>& get_layers();
+	const std::vector<std::shared_ptr<NeuralLayer>>& get_layers() const;
 
 	virtual const char* get_name() const { return "NeuralNetwork";}
 
@@ -545,7 +551,7 @@ protected:
 	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const;
 
 	/** returns a pointer to layer i in the network */
-	std::shared_ptr<NeuralLayer> get_layer(int32_t i);
+	std::shared_ptr<NeuralLayer> get_layer(int32_t i) const;
 
 	/** Ensures the given features are suitable for use with the network and
 	 * returns their feature matrix
@@ -583,7 +589,7 @@ private:
 
 	/** Returns the section of vector v that belongs to layer i */
 	template<class T>
-	SGVector<T> get_section(SGVector<T> v, int32_t i);
+	SGVector<T> get_section(SGVector<T> v, int32_t i) const;
 
 protected:
 	/** number of neurons in the input layer */

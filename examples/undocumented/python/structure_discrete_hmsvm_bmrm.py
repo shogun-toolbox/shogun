@@ -10,26 +10,26 @@ parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	import shogun as sg
-	from shogun import RealMatrixFeatures, SequenceLabels, HMSVMModel, Sequence, TwoStateModel
-	from shogun import SMT_TWO_STATE
+
 	try:
-		from shogun import DualLibQPBMSOSVM
-	except ImportError:
+		_ = sg.machine("DualLibQPBMSOSVM")
+	except:
 		print("DualLibQPBMSOSVM not available")
-		exit(0)
+		return
 
 	labels_array = m_data_dict['label'][0]
 
 	idxs = numpy.nonzero(labels_array == -1)
 	labels_array[idxs] = 0
 
-	labels = SequenceLabels(labels_array, 250, 500, 2)
-	features = RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
+	labels = sg.SequenceLabels(labels_array, 250, 500, 2)
+	features = sg.RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
 
 	num_obs = 4	# given by the data file used
-	model = HMSVMModel(features, labels, SMT_TWO_STATE, num_obs)
+	model = sg.structured_model("HMSVMModel", features=features, labels=labels, 
+								state_model_type="SMT_TWO_STATE", num_obs=num_obs)
 
-	sosvm = DualLibQPBMSOSVM(model, labels, 5000.0)
+	sosvm = sg.machine("DualLibQPBMSOSVM", model=model, labels=labels, m_lambda=5000.0)
 	sosvm.train()
 	#print sosvm.get_w()
 

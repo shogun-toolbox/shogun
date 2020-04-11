@@ -22,7 +22,7 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(std::shared_ptr<DenseFeatures<T>> data)
+	bool train_machine_templated(const std::shared_ptr<DenseFeatures<T>>& data)
 	{
 		if (data->get_feature_type() == m_expected_feature_type)
 			return true;
@@ -49,7 +49,7 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(std::shared_ptr<StringFeatures<T>> data)
+	bool train_machine_templated(const std::shared_ptr<StringFeatures<T>>& data)
 	{
 		if (data->get_feature_type() == m_expected_feature_type)
 			return true;

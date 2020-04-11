@@ -57,7 +57,11 @@ DeepAutoencoder::DeepAutoencoder(
 	init();
 	m_sigma = sigma;
 	quick_connect();
+	initialize_neural_network(m_sigma);
+}
 
+void DeepAutoencoder::initialize_neural_network(float64_t sigma)
+{
 	int32_t num_encoding_layers = (m_num_layers-1)/2;
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
@@ -67,7 +71,7 @@ DeepAutoencoder::DeepAutoencoder(
 			get_layer(i)->autoencoder_position = NLAP_DECODING;
 	}
 
-	initialize_neural_network(m_sigma);
+	NeuralNetwork::initialize_neural_network(sigma);
 
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
@@ -78,8 +82,30 @@ DeepAutoencoder::DeepAutoencoder(
 	}
 }
 
+bool DeepAutoencoder::train(std::shared_ptr<Features> data)
+{
+	bool pretrained = false;
+	if (m_do_pretrain)
+	{
+		pre_train(data);
+		pretrained = true;
+	}
+	// auto initialise if required even when user chooses not to pretrain
+	auto auto_init = m_auto_quick_initialize;
+	m_auto_quick_initialize = pretrained | m_auto_quick_initialize;
+	auto result = Autoencoder::train(data);
+	m_auto_quick_initialize = auto_init;
+	return result;
+}
+
 void DeepAutoencoder::pre_train(std::shared_ptr<Features> data)
 {
+	if (m_auto_quick_initialize)
+	{
+		quick_connect();
+		initialize_neural_network(m_sigma);
+	}
+
 	SGMatrix<float64_t> data_matrix = features_to_matrix(std::move(data));
 
 	int32_t num_encoding_layers = (m_num_layers-1)/2;
@@ -109,9 +135,6 @@ void DeepAutoencoder::pre_train(std::shared_ptr<Features> data)
 			ae = std::make_shared<Autoencoder>(get_layer(i-1)->get_num_neurons(),
 				ae_encoding_layer, ae_decoding_layer, m_sigma);
 		}
-
-
-
 
 		ae->set_noise_type(EAENoiseType(pt_noise_type[i-1]));
 		ae->set_noise_parameter(pt_noise_parameter[i-1]);
@@ -149,7 +172,6 @@ void DeepAutoencoder::pre_train(std::shared_ptr<Features> data)
 			else
 				decoding_layer_params[j-encoding_layer_params.vlen] = ae_params[j];
 		}
-
 	}
 
 	set_batch_size(1);
@@ -269,6 +291,8 @@ void DeepAutoencoder::init()
 	pt_gd_error_damping_coeff = SGVector<float64_t>((m_num_layers-1)/2);
 	pt_gd_error_damping_coeff.set_const(-1);
 
+	m_do_pretrain = false;
+
 	SG_ADD(&pt_noise_type, "pt_noise_type",
 		"Pre-training Noise Type");
 	SG_ADD(&pt_noise_parameter, "pt_noise_parameter",
@@ -295,6 +319,8 @@ void DeepAutoencoder::init()
 	    "Pre-training L2 regularization coeff");
 	SG_ADD(&pt_l1_coefficient, "pt_l1_coefficient",
 	    "Pre-training L1 regularization coeff");
+	SG_ADD(&m_do_pretrain, "do_pretrain",
+	    "Whether to pretrain with relevant parameters");
 
 	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma");
 }

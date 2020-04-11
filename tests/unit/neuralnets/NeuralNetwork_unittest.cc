@@ -80,7 +80,6 @@ TEST(NeuralNetwork, backpropagation_linear)
 	network->set_l1_coefficient(0.03);
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-
 }
 
 /** Tests neural layers builder
@@ -112,8 +111,6 @@ TEST(NeuralNetwork, neural_layers_builder)
 	network->set_l1_coefficient(0.03);
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-
-
 }
 
 
@@ -283,8 +280,7 @@ TEST(NeuralNetwork, binary_classification)
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
-	network->quick_connect();
-	network->initialize_neural_network(0.1);
+	network->put("sigma", 0.1);
 
 	network->set_epsilon(1e-8);
 
@@ -300,8 +296,6 @@ TEST(NeuralNetwork, binary_classification)
 	EXPECT_NEAR(predictions->get_value(1), 1, 1e-8);
 	EXPECT_NEAR(predictions->get_value(2), 1, 1e-8);
 	EXPECT_NEAR(predictions->get_value(3), 0, 1e-8);
-
-
 }
 
 /** tests a neural network on the multiclass XOR problem (the binary xor problem
@@ -341,8 +335,7 @@ TEST(NeuralNetwork, multiclass_classification)
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
-	network->quick_connect();
-	network->initialize_neural_network(0.1);
+	network->put("sigma", 0.1);
 
 	network->set_epsilon(1e-8);
 
@@ -360,8 +353,6 @@ TEST(NeuralNetwork, multiclass_classification)
 		EXPECT_NEAR(confidences[0], 1.0-targets_vector[i], 1e-8);
 		EXPECT_NEAR(confidences[1], targets_vector[i], 1e-8);
 	}
-
-
 }
 
 /** tests a neural network on a very simple regression problem */
@@ -391,8 +382,7 @@ TEST(NeuralNetwork, regression)
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
-	network->quick_connect();
-	network->initialize_neural_network(1e-6);
+	network->put("sigma", 1e-6);
 
 	network->set_epsilon(1e-6);
 
@@ -403,8 +393,6 @@ TEST(NeuralNetwork, regression)
 
 	for (int32_t i=0; i<N; i++)
 		EXPECT_NEAR(predictions->get_label(i), labels->get_label(i), 0.5);
-
-
 }
 
 /** tests a neural network (trained using gradient descent) on the binary XOR
@@ -444,8 +432,7 @@ TEST(NeuralNetwork, gradient_descent)
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->put("seed", seed);
-	network->quick_connect();
-	network->initialize_neural_network(0.1);
+	network->put("sigma", 0.1);
 
 	network->set_optimization_method(NNOM_GRADIENT_DESCENT);
 	network->set_gd_learning_rate(10.0);
@@ -459,6 +446,4 @@ TEST(NeuralNetwork, gradient_descent)
 
 	for (int32_t i=0; i<4; i++)
 		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
-
-
 }

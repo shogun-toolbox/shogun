@@ -104,7 +104,7 @@ void LeastAngleRegression::plane_rot(ST x0, ST x1,
 }
 
 template <typename ST, typename U>
-bool LeastAngleRegression::train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data)
+bool LeastAngleRegression::train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data)
 {
 	std::vector<SGVector<ST>> m_beta_path_t;
 
@@ -429,9 +429,9 @@ SGMatrix<ST> LeastAngleRegression::cholesky_delete(SGMatrix<ST>& R, int32_t i_ki
 	return nR;
 }
 
-template bool LeastAngleRegression::train_machine_templated<floatmax_t>(std::shared_ptr<DenseFeatures<floatmax_t>> data);
-template bool LeastAngleRegression::train_machine_templated<float64_t>(std::shared_ptr<DenseFeatures<float64_t>> data);
-template bool LeastAngleRegression::train_machine_templated<float32_t>(std::shared_ptr<DenseFeatures<float32_t>> data);
+template bool LeastAngleRegression::train_machine_templated<floatmax_t>(const std::shared_ptr<DenseFeatures<floatmax_t>>& data);
+template bool LeastAngleRegression::train_machine_templated<float64_t>(const std::shared_ptr<DenseFeatures<float64_t>>& data);
+template bool LeastAngleRegression::train_machine_templated<float32_t>(const std::shared_ptr<DenseFeatures<float32_t>>& data);
 template SGMatrix<float32_t> LeastAngleRegression::cholesky_insert(const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active, SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
 template SGMatrix<float64_t> LeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
 template SGMatrix<floatmax_t> LeastAngleRegression::cholesky_insert(const SGMatrix<floatmax_t>& X, const SGMatrix<floatmax_t>& X_active, SGMatrix<floatmax_t>& R, int32_t i_max_corr, int32_t num_active);

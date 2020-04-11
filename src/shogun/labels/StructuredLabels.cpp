@@ -82,7 +82,7 @@ int32_t StructuredLabels::get_num_labels() const
 
 void StructuredLabels::init()
 {
-	SG_ADD(&m_labels, "m_labels", "The labels");
+	SG_ADD(&m_labels, "labels", "The labels");
 
 	m_labels.clear();
 	m_sdt = SDT_UNKNOWN;

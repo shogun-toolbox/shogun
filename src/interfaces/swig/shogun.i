@@ -385,6 +385,7 @@ PUT_ADD(Kernel)
 PUT_ADD(Distance)
 PUT_ADD(Features)
 PUT_ADD(Labels)
+PUT_ADD(NeuralLayer)
 PUT_ADD(ECOCEncoder)
 PUT_ADD(ECOCDecoder)
 PUT_ADD(MulticlassStrategy)
@@ -399,6 +400,8 @@ PUT_ADD(MeanFunction)
 PUT_ADD(LikelihoodModel)
 PUT_ADD(Tokenizer)
 PUT_ADD(LossFunction)
+PUT_ADD(StructuredModel)
+PUT_ADD(FactorType)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;

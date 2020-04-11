@@ -38,6 +38,8 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/neuralnets/NeuralLayer.h>
 #include <shogun/transformer/Transformer.h>
+#include <shogun/structure/FactorType.h>
+#include <shogun/structure/StructuredModel.h>
 
 namespace shogun
 {
@@ -85,6 +87,8 @@ namespace shogun
 	BASE_CLASS_FACTORY(SplittingStrategy, splitting_strategy)
 	BASE_CLASS_FACTORY(MachineEvaluation, machine_evaluation)
 	BASE_CLASS_FACTORY(SVM, svm)
+	BASE_CLASS_FACTORY(StructuredModel, structured_model)
+	BASE_CLASS_FACTORY(FactorType, factor_type)
 	BASE_CLASS_FACTORY(Features, features)
 	BASE_CLASS_FACTORY(LikelihoodModel, gp_likelihood)
 	BASE_CLASS_FACTORY(MeanFunction, gp_mean)

@@ -154,7 +154,7 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 */
 		template <typename ST, typename U = typename std::enable_if_t<
 		                           std::is_floating_point<ST>::value>>
-		bool train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data);
+		bool train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data);
 
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
