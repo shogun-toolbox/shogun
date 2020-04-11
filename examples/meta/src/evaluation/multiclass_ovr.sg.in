@@ -1,13 +1,13 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+File f_labels_train = create_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
 
 #![create_features]
-Features feats_train = features(f_feats_train)
-Labels labels_train = labels(f_labels_train)
+Features feats_train = create_features(f_feats_train)
+Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_classifier]
-Machine svm= machine("MulticlassLibLinear", C=1.0, labels=labels_train)
+Machine svm= create_machine("MulticlassLibLinear", C=1.0, labels=labels_train)
 #![create_classifier]
 
 #![train_and_apply]
@@ -17,7 +17,7 @@ RealVector labels = labels_predicted.get_real_vector("labels")
 #![train_and_apply]
 
 #![evaluate_accuracy]
-Evaluation binary_evaluator = evaluation("ContingencyTableEvaluation", type="ACCURACY")
-Evaluation contingency_table_evaluator = evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
+Evaluation binary_evaluator = create_evaluation("ContingencyTableEvaluation", type="ACCURACY")
+Evaluation contingency_table_evaluator = create_evaluation("MulticlassOVREvaluation", binary_evaluation=binary_evaluator)
 real mean_accuracy = contingency_table_evaluator.evaluate(labels_predicted,labels_train)
 #![evaluate_accuracy]

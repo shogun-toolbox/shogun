@@ -1,22 +1,22 @@
 RealMatrix real_matrix(2,2)
 
-Machine lib_svm = machine("LibSVM")
+Machine lib_svm = create_machine("LibSVM")
 SVM svm_from_machine = as_svm(lib_svm)
-Machine lda = machine("LDA")
-Kernel kernel_gaussian = kernel("GaussianKernel")
-Kernel kernel_linear = kernel("LinearKernel")
+Machine lda = create_machine("LDA")
+Kernel kernel_gaussian = create_kernel("GaussianKernel")
+Kernel kernel_linear = create_kernel("LinearKernel")
 Kernel kernel_from_any_other_object = as_kernel(kernel_gaussian)
-Kernel kernel_custom_from_matrix = kernel(real_matrix)
+Kernel kernel_custom_from_matrix = create_kernel(real_matrix)
 
-Features features_from_matrix = features(real_matrix)
+Features features_from_matrix = create_features(real_matrix)
 
 IntVector dims(2)
 dims[0] = 0
 dims[1] = 1
-Features features_with_subset = features_subset(features_from_matrix, dims)
+Features features_with_subset = create_features_subset(features_from_matrix, dims)
 
-File features_file = csv_file("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
-Features features_from_file = features(features_file)
+File features_file = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
+Features features_from_file = create_features(features_file)
 
-File labels_file = csv_file("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_train.dat")
-Labels labels_from_file = labels(labels_file)
+File labels_file = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_train.dat")
+Labels labels_from_file = create_labels(labels_file)

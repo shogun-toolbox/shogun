@@ -1,11 +1,11 @@
-File f_feats = csv_file("@SHOGUN_DATA@/ica_2_sources.dat")
+File f_feats = create_csv("@SHOGUN_DATA@/ica_2_sources.dat")
 
 #![create_features]
-Features feats = features(f_feats)
+Features feats = create_features(f_feats)
 #![create_features]
 
 #![set_parameters]
-Transformer ica = transformer("SOBI", max_iter=200, tol=0.00001)
+Transformer ica = create_transformer("SOBI", max_iter=200, tol=0.00001)
 #![set_parameters]
 
 #![apply_convert]

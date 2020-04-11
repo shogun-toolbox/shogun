@@ -10,22 +10,14 @@ using namespace shogun;
 
 TEST(Factory, kernel)
 {
-	auto obj = kernel("GaussianKernel");
+	auto obj = create<Kernel>("GaussianKernel");
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(obj->as<GaussianKernel>() != nullptr);
-
-	auto obj2 = create<Kernel>("GaussianKernel");
-	EXPECT_TRUE(obj2 != nullptr);
-	EXPECT_TRUE(obj2->as<GaussianKernel>() != nullptr);
 }
 
 TEST(Factory, machine)
 {
-	auto obj = machine("LibSVM");
-	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(obj->as<LibSVM>() != nullptr);
-
-	auto obj2 = create<Machine>("LibSVM");
+	auto obj = create<Machine>("LibSVM");
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(obj->as<LibSVM>() != nullptr);
 }
@@ -33,13 +25,10 @@ TEST(Factory, machine)
 TEST(Factory, features_from_matrix)
 {
 	SGMatrix<float64_t> mat(2, 3);
-	auto obj = features(mat);
+
+	auto obj = create<Features>(mat);
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(obj->as<DenseFeatures<float64_t>>() != nullptr);
-
-	auto obj2 = create<Features>(mat);
-	EXPECT_TRUE(obj2 != nullptr);
-	EXPECT_TRUE(obj2->as<DenseFeatures<float64_t>>() != nullptr);
 }
 
 // FIXME
@@ -66,7 +55,7 @@ TEST(Factory, DISABLED_string_features_from_file)
 	file_save->close();
 
 	auto file_load = std::make_shared<CSVFile>(filename.c_str(), 'r');
-	auto obj = string_features(file_load, DNA, PT_CHAR);
+	auto obj = create_string_features(file_load, DNA, PT_CHAR);
 	file_load->close();
 
 	EXPECT_TRUE(obj.get() != nullptr);
@@ -96,7 +85,7 @@ void test_label_factory_spawns_correct_type(
 	file_save->close();
 
 	auto file_load = std::make_shared<CSVFile>(filename.c_str(), 'r');
-	std::shared_ptr<Labels> obj= labels(file_load);
+	std::shared_ptr<Labels> obj= create<Labels>(file_load);
 	file_load->close();
 
 	EXPECT_TRUE(obj != nullptr);

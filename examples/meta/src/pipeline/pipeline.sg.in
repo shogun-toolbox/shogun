@@ -1,17 +1,17 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
 
 #![create_features]
-Features feats_train = features(f_feats_train)
+Features feats_train = create_features(f_feats_train)
 #![create_features]
 
 #![create_transformers]
-Transformer subMean = transformer("PruneVarSubMean")
-Transformer pca = transformer("PCA")
+Transformer subMean = create_transformer("PruneVarSubMean")
+Transformer pca = create_transformer("PCA")
 #![create_transformers]
 
 #![create_machine]
-Distance d = distance("EuclideanDistance", lhs=feats_train, rhs=feats_train)
-Machine kmeans = machine("KMeans", distance=d, k=2, seed=1)
+Distance d = create_distance("EuclideanDistance", lhs=feats_train, rhs=feats_train)
+Machine kmeans = create_machine("KMeans", distance=d, k=2, seed=1)
 #![create_machine]
 
 #![create_pipeline]

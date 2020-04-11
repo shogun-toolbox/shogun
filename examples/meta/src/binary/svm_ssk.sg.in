@@ -1,20 +1,20 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/fm_train_dna.dat")
-File f_feats_test = csv_file("@SHOGUN_DATA@/fm_test_dna.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/label_train_dna.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/fm_train_dna.dat")
+File f_feats_test = create_csv("@SHOGUN_DATA@/fm_test_dna.dat")
+File f_labels_train = create_csv("@SHOGUN_DATA@/label_train_dna.dat")
 
 #![create_features]
-Features feats_train = string_features(f_feats_train, enum EAlphabet.DNA)
-Features feats_test = string_features(f_feats_test, enum EAlphabet.DNA)
-Labels labels_train = labels(f_labels_train)
+Features feats_train = create_string_features(f_feats_train, enum EAlphabet.DNA)
+Features feats_test = create_string_features(f_feats_test, enum EAlphabet.DNA)
+Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_kernel]
-Kernel svm_kernel = kernel("SubsequenceStringKernel", m_maxlen=5, m_lambda=0.9)
+Kernel svm_kernel = create_kernel("SubsequenceStringKernel", m_maxlen=5, m_lambda=0.9)
 svm_kernel.init(feats_train, feats_train)
 #![create_kernel]
 
 #![create_classifier]
-Machine svm = machine("LibSVM", kernel=svm_kernel, labels=labels_train, C1=1.0, C2=1.0)
+Machine svm = create_machine("LibSVM", kernel=svm_kernel, labels=labels_train, C1=1.0, C2=1.0)
 #![create_classifier]
 
 #![train_and_apply]
@@ -25,7 +25,7 @@ Labels labels_test_predict = svm.apply(feats_test)
 #![train_and_apply]
 
 #![measure_train_error]
-Evaluation evaluator = evaluation("ErrorRateMeasure")
+Evaluation evaluator = create_evaluation("ErrorRateMeasure")
 real train_error = evaluator.evaluate(labels_train_predict, labels_train)
 #![measure_train_error]
 

@@ -1,13 +1,13 @@
-File f_feats_a = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File f_feats_b = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+File f_feats_a = create_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File f_feats_b = create_csv("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
-Features features_a = features(f_feats_a)
-Features features_b = features(f_feats_b)
+Features features_a = create_features(f_feats_a)
+Features features_b = create_features(f_feats_b)
 #![create_features]
 
 #![create_instance]
-Distance d = distance("ChiSquareDistance", lhs=features_a, rhs=features_a)
+Distance d = create_distance("ChiSquareDistance", lhs=features_a, rhs=features_a)
 #![create_instance]
 
 #![extract_distance]

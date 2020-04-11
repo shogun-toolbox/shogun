@@ -1,7 +1,7 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
+Features features_train = create_features(f_feats_train)
 #![create_features]
 
 #![create_gmm_instance]
@@ -11,7 +11,7 @@ gmm.put("seed", 100)
 #![create_gmm_instance]
 
 #![add_observer]
-ParameterObserver obs = parameter_observer("ParameterObserverLogger")
+ParameterObserver obs = create_parameter_observer("ParameterObserverLogger")
 gmm.subscribe(obs)
 #![add_observer]
 
@@ -23,7 +23,7 @@ RealVector output = gmm.sample()
 
 #![training_smem]
 gmm.unsubscribe(obs)
-ParameterObserver obs_smem = parameter_observer("ParameterObserverLogger")
+ParameterObserver obs_smem = create_parameter_observer("ParameterObserverLogger")
 gmm.subscribe(obs_smem)
 gmm.train_smem()
 #![training_smem]

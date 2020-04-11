@@ -1,13 +1,13 @@
-File data_train = csv_file("@SHOGUN_DATA@/fm_train_hist.dat")
-File data_test = csv_file("@SHOGUN_DATA@/fm_test_hist.dat")
+File data_train = create_csv("@SHOGUN_DATA@/fm_train_hist.dat")
+File data_test = create_csv("@SHOGUN_DATA@/fm_test_hist.dat")
 
 #![create_features]
-Features feats_train = features(data_train)
-Features feats_test = features(data_test)
+Features feats_train = create_features(data_train)
+Features feats_test = create_features(data_test)
 #![create_features]
 
 #![create_preprocessor]
-Transformer preproc = transformer("LogPlusOne")
+Transformer preproc = create_transformer("LogPlusOne")
 #![create_preprocessor]
 
 #![transform_features]

@@ -4,8 +4,8 @@ CSVFile f_labels_train("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.d
 CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
 MulticlassLabels labels_train(f_labels_train)
 MulticlassLabels labels_test(f_labels_test)
 #![create_features]
@@ -17,7 +17,7 @@ ft[1] = False
 #![set_attribute_types]
 
 #![create_instance]
-Machine classifier = machine("CARTree", nominal = ft,mode = enum EProblemType.PT_MULTICLASS, folds=5, apply_cv_pruning=True, seed=1)
+Machine classifier = create_machine("CARTree", nominal = ft,mode = enum EProblemType.PT_MULTICLASS, folds=5, apply_cv_pruning=True, seed=1)
 
 classifier.set_labels(labels_train)
 #![create_instance]
@@ -32,7 +32,7 @@ RealVector feat_importance = classifier.get_real_vector("feature_importances")
 #![feature_importance]
 
 #![evaluate_accuracy]
-Evaluation eval = evaluation("MulticlassAccuracy")
+Evaluation eval = create_evaluation("MulticlassAccuracy")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

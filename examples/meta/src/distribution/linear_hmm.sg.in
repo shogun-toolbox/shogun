@@ -1,12 +1,12 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/fm_train_dna.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/fm_train_dna.dat")
 
  #![create_features]
-Features char_feats = string_features(f_feats_train, enum EAlphabet.DNA)
-Features embedded_feats = string_features(char_feats, 2, 3, 0, False)
+Features char_feats = create_string_features(f_feats_train, enum EAlphabet.DNA)
+Features embedded_feats = create_string_features(char_feats, 2, 3, 0, False)
 #![create_features]
 
 #![create_distribution]
-Distribution linear_hmm = distribution("LinearHMM")
+Distribution linear_hmm = create_distribution("LinearHMM")
 linear_hmm.set_features(embedded_feats)
 #![create_distribution]
 

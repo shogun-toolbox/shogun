@@ -1,7 +1,7 @@
-Machine knn = machine("KNN")
+Machine knn = create_machine("KNN")
 knn.put("k", 2)
 
-Kernel k = kernel("GaussianKernel")
+Kernel k = create_kernel("GaussianKernel")
 k.put("log_width", 2.1)
 k.put("log_width", 2.0)
 real log_width = k.get_real("log_width")
@@ -22,14 +22,14 @@ matrix[1,0] = 0.2
 matrix[1,1] = 0.4
 
 # TODO: replace this with another class that has matrix parameters as features are immutable
-#Features feats = features("DenseFeatures", enum EPrimitiveType.PT_FLOAT64, feature_matrix=matrix)
+#Features feats = create_features("DenseFeatures", enum EPrimitiveType.PT_FLOAT64, feature_matrix=matrix)
 #RealMatrix matrix2 = feats.get_real_matrix("feature_matrix")
 #feats.put("feature_matrix", matrix2)
 
-Distance dist = distance("EuclideanDistance")
+Distance dist = create_distance("EuclideanDistance")
 knn.put("distance", dist)
 
-Machine svm = machine("LibSVM")
+Machine svm = create_machine("LibSVM")
 svm.put("kernel", k)
 Kernel k2 = as_kernel(svm.get("kernel"))
 svm.put("kernel", k2)
@@ -41,10 +41,10 @@ svm.put("libsvm_solver_type", "LIBSVM_C_SVC")
 string option = svm.get_option("libsvm_solver_type")
 
 CSVFile f_feats("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
-Features feats = features(f_feats)
-Kernel k3 = kernel("PolyKernel", degree=2)
-Kernel k4 = kernel("GaussianKernel", log_width=2.0)
-Kernel combined_kernel = kernel("CombinedKernel")
+Features feats = create_features(f_feats)
+Kernel k3 = create_kernel("PolyKernel", degree=2)
+Kernel k4 = create_kernel("GaussianKernel", log_width=2.0)
+Kernel combined_kernel = create_kernel("CombinedKernel")
 combined_kernel.add("kernel_array", k3)
 combined_kernel.add("kernel_array", k4)
 combined_kernel.init(feats, feats)

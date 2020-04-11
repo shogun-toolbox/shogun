@@ -1,13 +1,13 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
-File f_feats_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
-File f_labels_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Labels labels_train = labels(f_labels_train)
-Features features_test = features(f_feats_test)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Labels labels_train = create_labels(f_labels_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![set_parameters]
@@ -16,13 +16,13 @@ real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
-Machine svm = machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, C2=C, liblinear_solver_type="L2R_L2LOSS_SVC", seed=2)
+Machine svm = create_machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, C2=C, liblinear_solver_type="L2R_L2LOSS_SVC", seed=2)
 #![create_instance]
 
 #![create_cross_validation]
-SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2, seed=2)
-Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
-MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=features_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+SplittingStrategy strategy = create_splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2, seed=2)
+Evaluation evaluation_criterion = create_evaluation("AccuracyMeasure")
+MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=svm, features=features_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
@@ -37,27 +37,27 @@ Labels labels_predict = svm.apply(features_test)
 real accuracy_test = evaluation_criterion.evaluate(labels_predict, labels_test)
 #![get_results_test_data]
 
-File reg_feats_train = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
-File reg_feats_test = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
-File reg_lab_train = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
-File reg_lab_test = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
+File reg_feats_train = create_csv("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
+File reg_feats_test = create_csv("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
+File reg_lab_train = create_csv("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
+File reg_lab_test = create_csv("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
 
 #![create_features_REGRESSION]
-Features reg_features_train = features(reg_feats_train)
-Labels reg_labels_train = labels(reg_lab_train)
-Features reg_features_test = features(reg_feats_test)
-Labels reg_labels_test = labels(reg_lab_test)
+Features reg_features_train = create_features(reg_feats_train)
+Labels reg_labels_train = create_labels(reg_lab_train)
+Features reg_features_test = create_features(reg_feats_test)
+Labels reg_labels_test = create_labels(reg_lab_test)
 #![create_features_REGRESSION]
 
 #![create_machine_REGRESSION]
 real tau = 0.001
-Machine lrr = machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
+Machine lrr = create_machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
 #![create_instance_REGRESSION]
 
 #![create_cross_validation_REGRESSION]
-Evaluation MSE_evaluation = evaluation("MeanSquaredError")
-SplittingStrategy splitting = splitting_strategy("CrossValidationSplitting", labels=reg_labels_train, num_subsets=2, seed=2)
-MachineEvaluation cross_validation = machine_evaluation("CrossValidation", machine=lrr, features=reg_features_train, labels=reg_labels_train, splitting_strategy=splitting, evaluation_criterion=MSE_evaluation, num_runs=2)
+Evaluation MSE_evaluation = create_evaluation("MeanSquaredError")
+SplittingStrategy splitting = create_splitting_strategy("CrossValidationSplitting", labels=reg_labels_train, num_subsets=2, seed=2)
+MachineEvaluation cross_validation = create_machine_evaluation("CrossValidation", machine=lrr, features=reg_features_train, labels=reg_labels_train, splitting_strategy=splitting, evaluation_criterion=MSE_evaluation, num_runs=2)
 #![create_cross_validation_REGRESSION]
 
 #![evaluate_and_get_result_REGRESSION]

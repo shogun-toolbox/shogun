@@ -1,13 +1,13 @@
-File traindat = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File testdat = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+File traindat = create_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File testdat = create_csv("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
-Features feats_train = features(traindat)
-Features feats_test = features(testdat)
+Features feats_train = create_features(traindat)
+Features feats_test = create_features(testdat)
 #![create_features]
 
 #![create_kernel]
-Kernel gaussian_shift_kernel = kernel("GaussianShiftKernel", log_width=1.8, max_shift=2, shift_step=1)
+Kernel gaussian_shift_kernel = create_kernel("GaussianShiftKernel", log_width=1.8, max_shift=2, shift_step=1)
 gaussian_shift_kernel.init(feats_train, feats_train)
 #![create_kernel]
 

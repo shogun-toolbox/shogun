@@ -1,3 +1,3 @@
 # member function call
-Kernel k = kernel("GaussianKernel")
+Kernel k = create_kernel("GaussianKernel")
 k.get_name()

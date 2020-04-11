@@ -1,17 +1,17 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
-File f_feats_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_test.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_train.dat")
-File f_labels_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_test.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
+File f_feats_test = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_test.dat")
+File f_labels_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_train.dat")
+File f_labels_test = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
-Labels labels_train = labels(f_labels_train)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_kernel]
-Kernel k_obj = kernel("GaussianKernel", log_width=1.0)
+Kernel k_obj = create_kernel("GaussianKernel", log_width=1.0)
 k_obj.init(features_train, features_train)
 RealMatrix km_train = k_obj.get_kernel_matrix()
 k_obj.init(features_train, features_test)
@@ -19,12 +19,12 @@ RealMatrix km_test = k_obj.get_kernel_matrix()
 #![create_kernel]
 
 #![create_custom_kernel]
-Kernel k_train = kernel(km_train)
-Kernel k_test = kernel(km_test)
+Kernel k_train = create_kernel(km_train)
+Kernel k_test = create_kernel(km_test)
 #![create_custom_kernel]
 
 #![create_machine]
-Machine svm = machine("LibSVM", C1=1.0, C2=1.0, kernel=k_train, labels=labels_train, epsilon=0.001)
+Machine svm = create_machine("LibSVM", C1=1.0, C2=1.0, kernel=k_train, labels=labels_train, epsilon=0.001)
 #![create_machine]
 
 #![train_and_apply]
@@ -35,7 +35,7 @@ RealVector labels = labels_predict.get_real_vector("labels")
 #![train_and_apply]
 
 #![evaluate_accuracy]
-Evaluation eval = evaluation("AccuracyMeasure")
+Evaluation eval = create_evaluation("AccuracyMeasure")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

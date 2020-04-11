@@ -1,18 +1,18 @@
-File data_train = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File data_test = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+File data_train = create_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File data_test = create_csv("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
-Features feats_train = features(data_train)
-Features feats_test = features(data_test)
+Features feats_train = create_features(data_train)
+Features feats_test = create_features(data_test)
 #![create_features]
 
 #![create_kernel]
-Kernel gaussiankernel = kernel("GaussianKernel", log_width=2.0)
+Kernel gaussiankernel = create_kernel("GaussianKernel", log_width=2.0)
 gaussiankernel.init(feats_train, feats_train)
 #![create_kernel]
 
 #![create_preprocessor]
-Transformer preproc = transformer("KernelPCA")
+Transformer preproc = create_transformer("KernelPCA")
 preproc.put("kernel", gaussiankernel)
 preproc.put("target_dim", 2)
 preproc.fit(feats_train)

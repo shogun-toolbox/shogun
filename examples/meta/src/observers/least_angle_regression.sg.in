@@ -1,18 +1,18 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
-File f_feats_test = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
-File f_labels_test = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
+File f_feats_train = create_csv("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
+File f_feats_test = create_csv("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
+File f_labels_train = create_csv("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
+File f_labels_test = create_csv("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
-Labels labels_train = labels(f_labels_train)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![preprocess_features]
-Transformer SubMean = transformer("PruneVarSubMean")
-Transformer Normalize = transformer("NormOne")
+Transformer SubMean = create_transformer("PruneVarSubMean")
+Transformer Normalize = create_transformer("NormOne")
 SubMean.fit(features_train)
 Features pruned_features_train = SubMean.transform(features_train)
 Features pruned_features_test = SubMean.transform(features_test)
@@ -22,11 +22,11 @@ Features normalized_features_test = Normalize.transform(pruned_features_test)
 #![preprocess_features]
 
 #![create_instance]
-Machine lars = machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=0.01)
+Machine lars = create_machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=0.01)
 #![create_instance]
 
 #![create_observer]
-ParameterObserver logger = parameter_observer("ParameterObserverLogger")
+ParameterObserver logger = create_parameter_observer("ParameterObserverLogger")
 lars.subscribe(logger)
 #![create_observer]
 

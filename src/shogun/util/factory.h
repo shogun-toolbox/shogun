@@ -44,36 +44,10 @@
 namespace shogun
 {
 
-	std::shared_ptr<Distance> distance(const std::string& name);
-	std::shared_ptr<Evaluation> evaluation(const std::string& name);
-	std::shared_ptr<Kernel> kernel(const std::string& name);
-	std::shared_ptr<Machine> machine(const std::string& name);
-	std::shared_ptr<MulticlassStrategy> multiclass_strategy(const std::string& name);
-	std::shared_ptr<ECOCEncoder> ecoc_encoder(const std::string& name);
-	std::shared_ptr<ECOCDecoder> ecoc_decoder(const std::string& name);
-	std::shared_ptr<Transformer> transformer(const std::string& name);
-	std::shared_ptr<NeuralLayer> layer(const std::string& name);
-	std::shared_ptr<SplittingStrategy> splitting_strategy(const std::string& name);
-	std::shared_ptr<MachineEvaluation> machine_evaluation(const std::string& name);
-	std::shared_ptr<SVM> svm(const std::string& name);
-	std::shared_ptr<Features> features(const std::string& name);
-	std::shared_ptr<LikelihoodModel> gp_likelihood(const std::string& name);
-	std::shared_ptr<MeanFunction> gp_mean(const std::string& name);
-	std::shared_ptr<DifferentiableFunction> differentiable(const std::string& name);
-	std::shared_ptr<Inference> gp_inference(const std::string& name);
-	std::shared_ptr<LossFunction> loss(const std::string& name);
-	std::shared_ptr<ParameterObserver> parameter_observer(const std::string& name);
-	std::shared_ptr<Distribution> distribution(const std::string& name);
-	std::shared_ptr<CombinationRule> combination_rule(const std::string& name);
-
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
-	std::shared_ptr<T> factory_name(const std::string& name)                   \
+	std::shared_ptr<T> as_##factory_name(std::shared_ptr<SGObject> obj)        \
 	{                                                                          \
-		return create_object<T>(name.c_str());                                 \
-	}                                                                          \
-	std::shared_ptr<T> as_## factory_name(std::shared_ptr<SGObject> obj)      \
-	{                                                                          \
-		return obj->as<T>();                             					   \
+		return obj->as<T>();                                                   \
 	}
 	BASE_CLASS_FACTORY(Evaluation, evaluation)
 	BASE_CLASS_FACTORY(Distance, distance)
@@ -100,163 +74,184 @@ namespace shogun
 	BASE_CLASS_FACTORY(Distribution, distribution)
 	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
 
-	template <class T>
-	std::shared_ptr<Features> features(SGMatrix<T> mat)
+	namespace details
 	{
-		return std::make_shared<DenseFeatures<typename decltype(mat)::Scalar>>(
-		    mat);
-	}
 
-	std::shared_ptr<Features> features(std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
-	{
-		require(file, "No file provided.");
-		std::shared_ptr<Features> result = nullptr;
-
-		if (std::type_index(typeid(*file)) ==
-		    std::type_index(typeid(LibSVMFile)))
+		std::shared_ptr<Features> features(const std::string& name)
 		{
-			switch (primitive_type)
+			return create_object<Features>(name.c_str());
+		}
+
+		std::shared_ptr<Kernel> kernel(const std::string& name)
+		{
+			return create_object<Kernel>(name.c_str());
+		}
+		template <class T>
+		std::shared_ptr<Features> features(SGMatrix<T> mat)
+		{
+			return std::make_shared<
+			    DenseFeatures<typename decltype(mat)::Scalar>>(mat);
+		}
+
+		std::shared_ptr<Features> features(
+		    std::shared_ptr<File> file,
+		    EPrimitiveType primitive_type = PT_FLOAT64)
+		{
+			require(file, "No file provided.");
+			std::shared_ptr<Features> result = nullptr;
+
+			if (std::type_index(typeid(*file)) ==
+			    std::type_index(typeid(LibSVMFile)))
 			{
-			case PT_FLOAT64:
-				result = std::make_shared<SparseFeatures<float64_t>>();
-				break;
-			case PT_FLOAT32:
-				result = std::make_shared<SparseFeatures<float32_t>>();
-				break;
-			case PT_FLOATMAX:
-				result = std::make_shared<SparseFeatures<floatmax_t>>();
-				break;
-			case PT_UINT8:
-				result = std::make_shared<SparseFeatures<uint8_t>>();
-				break;
-			case PT_UINT16:
-				result = std::make_shared<SparseFeatures<uint16_t>>();
-				break;
-			default:
-				not_implemented(SOURCE_LOCATION);
+				switch (primitive_type)
+				{
+				case PT_FLOAT64:
+					result = std::make_shared<SparseFeatures<float64_t>>();
+					break;
+				case PT_FLOAT32:
+					result = std::make_shared<SparseFeatures<float32_t>>();
+					break;
+				case PT_FLOATMAX:
+					result = std::make_shared<SparseFeatures<floatmax_t>>();
+					break;
+				case PT_UINT8:
+					result = std::make_shared<SparseFeatures<uint8_t>>();
+					break;
+				case PT_UINT16:
+					result = std::make_shared<SparseFeatures<uint16_t>>();
+					break;
+				default:
+					not_implemented(SOURCE_LOCATION);
+				}
 			}
-		}
-		else
-		{
-			switch (primitive_type)
+			else
 			{
-			case PT_FLOAT64:
-				result = std::make_shared<DenseFeatures<float64_t>>();
-				break;
-			case PT_FLOAT32:
-				result = std::make_shared<DenseFeatures<float32_t>>();
-				break;
-			case PT_FLOATMAX:
-				result = std::make_shared<DenseFeatures<floatmax_t>>();
-				break;
-			case PT_UINT8:
-				result = std::make_shared<DenseFeatures<uint8_t>>();
-				break;
-			case PT_UINT16:
-				result = std::make_shared<DenseFeatures<uint16_t>>();
-				break;
-			default:
-				not_implemented(SOURCE_LOCATION);
+				switch (primitive_type)
+				{
+				case PT_FLOAT64:
+					result = std::make_shared<DenseFeatures<float64_t>>();
+					break;
+				case PT_FLOAT32:
+					result = std::make_shared<DenseFeatures<float32_t>>();
+					break;
+				case PT_FLOATMAX:
+					result = std::make_shared<DenseFeatures<floatmax_t>>();
+					break;
+				case PT_UINT8:
+					result = std::make_shared<DenseFeatures<uint8_t>>();
+					break;
+				case PT_UINT16:
+					result = std::make_shared<DenseFeatures<uint16_t>>();
+					break;
+				default:
+					not_implemented(SOURCE_LOCATION);
+				}
 			}
-		}
-		result->load(file);
-		return result;
-	}
-
-	std::shared_ptr<Features> string_features(
-	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
-	{
-		require(file, "No file provided.");
-
-		switch (primitive_type)
-		{
-		case PT_CHAR:
-		{
-			return std::make_shared<StringFeatures<char>>(file, alphabet_type);
-		}
-		default:
-			not_implemented(SOURCE_LOCATION);
-		}
-
-		return nullptr;
-	}
-
-	/** Create embedded string features from string char features.
-	 * The new features has the same alphabet as the original features. Data of
-	 * the new features is obtained by calling CStringFeatures::obtain_from_char
-	 * with the given features and other arguments of this factory method.
-	 *
-	 * @param features StringCharFeatures
-	 * @param start start
-	 * @param p_order order
-	 * @param gap gap
-	 * @param rev reverse
-	 * @param primitive_type primitive type of the string features
-	 * @return new instance of string features
-	 */
-	std::shared_ptr<Features> string_features(
-	    std::shared_ptr<Features> features, int32_t start, int32_t p_order, int32_t gap,
-	    bool rev, EPrimitiveType primitive_type = PT_UINT16)
-	{
-
-		require<std::invalid_argument>(features, "No features provided.");
-		require<std::invalid_argument>(
-		    features->get_feature_class() == C_STRING &&
-		        features->get_feature_type() == F_CHAR,
-		    "Given features must be char-based StringFeatures, "
-		    "provided ({}) have feature class ({}), feature type "
-		    "({}) and class name.",
-		    features->get_name(), features->get_feature_class(),
-		    features->get_feature_type());
-
-		auto string_features = std::dynamic_pointer_cast<StringFeatures<char>>(features);
-
-		switch (primitive_type)
-		{
-		case PT_UINT16:
-		{
-			auto result =
-			    std::make_shared<StringFeatures<uint16_t>>(string_features->get_alphabet());
-			bool success = result->obtain_from_char(
-			    string_features, start, p_order, gap, rev);
-			require(success, "Failed to obtain from string char features.");
+			result->load(file);
 			return result;
 		}
-		default:
-			not_implemented(SOURCE_LOCATION);
-		}
 
-		return nullptr;
-	}
-
-	/** Factory for CDenseSubsetFeatures.
-	 * TODO: Should be removed once the concept of feature views has arrived
-	 */
-	std::shared_ptr<Features> features_subset(std::shared_ptr<Features> base_features, SGVector<index_t> indices,
-			EPrimitiveType primitive_type = PT_FLOAT64)
-	{
-		require(base_features, "No base features provided.");
-
-		switch (primitive_type)
+		std::shared_ptr<Features> string_features(
+		    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
+		    EPrimitiveType primitive_type = PT_CHAR)
 		{
-		case PT_FLOAT64:
-			return std::make_shared<DenseSubsetFeatures<float64_t>>(
-				std::dynamic_pointer_cast<DenseFeatures<float64_t>>(base_features), indices);
-			break;
-		default:
-			not_implemented(SOURCE_LOCATION);
+			require(file, "No file provided.");
+
+			switch (primitive_type)
+			{
+			case PT_CHAR:
+			{
+				return std::make_shared<StringFeatures<char>>(
+				    file, alphabet_type);
+			}
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
+
+			return nullptr;
 		}
 
-		return nullptr;
-	}
+		/** Create embedded string features from string char features.
+		 * The new features has the same alphabet as the original features. Data
+		 * of the new features is obtained by calling
+		 * CStringFeatures::obtain_from_char with the given features and other
+		 * arguments of this factory method.
+		 *
+		 * @param features StringCharFeatures
+		 * @param start start
+		 * @param p_order order
+		 * @param gap gap
+		 * @param rev reverse
+		 * @param primitive_type primitive type of the string features
+		 * @return new instance of string features
+		 */
+		std::shared_ptr<Features> string_features(
+		    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
+		    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
+		{
 
-	template <typename T, typename T2 = typename std::enable_if_t<
-	                          std::is_floating_point<T>::value>>
-	std::shared_ptr<Kernel> kernel(SGMatrix<T> kernel_matrix)
-	{
-		return std::make_shared<CustomKernel>(kernel_matrix);
-	}
+			require<std::invalid_argument>(features, "No features provided.");
+			require<std::invalid_argument>(
+			    features->get_feature_class() == C_STRING &&
+			        features->get_feature_type() == F_CHAR,
+			    "Given features must be char-based StringFeatures, "
+			    "provided ({}) have feature class ({}), feature type "
+			    "({}) and class name.",
+			    features->get_name(), features->get_feature_class(),
+			    features->get_feature_type());
+
+			auto string_features =
+			    std::dynamic_pointer_cast<StringFeatures<char>>(features);
+
+			switch (primitive_type)
+			{
+			case PT_UINT16:
+			{
+				auto result = std::make_shared<StringFeatures<uint16_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string char features.");
+				return result;
+			}
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
+
+			return nullptr;
+		}
+
+		/** Factory for CDenseSubsetFeatures.
+		 * TODO: Should be removed once the concept of feature views has arrived
+		 */
+		std::shared_ptr<Features> features_subset(
+		    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
+		    EPrimitiveType primitive_type = PT_FLOAT64)
+		{
+			require(base_features, "No base features provided.");
+
+			switch (primitive_type)
+			{
+			case PT_FLOAT64:
+				return std::make_shared<DenseSubsetFeatures<float64_t>>(
+				    std::dynamic_pointer_cast<DenseFeatures<float64_t>>(
+				        base_features),
+				    indices);
+				break;
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
+
+			return nullptr;
+		}
+
+		template <
+		    typename T, typename T2 = typename std::enable_if_t<
+		                    std::is_floating_point<T>::value>>
+		std::shared_ptr<Kernel> kernel(SGMatrix<T> kernel_matrix)
+		{
+			return std::make_shared<CustomKernel>(kernel_matrix);
+		}
 
 #ifndef SWIG // SWIG should skip this part
 	template <typename LT,
@@ -339,33 +334,33 @@ namespace shogun
 	{
 		return std::make_shared<PipelineBuilder>();
 	}
-
+	} // namespace details
 	template <typename TypeName, typename... Args>
 	std::shared_ptr<TypeName> create(Args... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
-			return features(std::forward<Args>(args)...);
+			return details::features(std::forward<Args>(args)...);
 		}
 		else if constexpr (std::is_same_v<TypeName, Labels>)
 		{
-			return labels(std::forward<Args>(args)...);
+			return details::labels(std::forward<Args>(args)...);
 		}
 		else if constexpr (std::is_same_v<TypeName, CSVFile>)
 		{
-			return csv_file(std::forward<Args>(args)...);
+			return details::csv_file(std::forward<Args>(args)...);
 		}
 		else if constexpr (std::is_same_v<TypeName, LibSVMFile>)
 		{
-			return libsvm_file(std::forward<Args>(args)...);
+			return details::libsvm_file(std::forward<Args>(args)...);
 		}
 		else if constexpr (std::is_same_v<TypeName, PipelineBuilder>)
 		{
-			return pipeline();
+			return details::pipeline();
 		}
 		else if constexpr (std::is_same_v<TypeName, Kernel>)
 		{
-			return kernel(std::forward<Args>(args)...);
+			return details::kernel(std::forward<Args>(args)...);
 		}
 		else
 		{
@@ -396,7 +391,7 @@ namespace shogun
 	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 	    EPrimitiveType primitive_type = PT_CHAR)
 	{
-		return string_features(file, alphabet_type, primitive_type);
+		return details::string_features(file, alphabet_type, primitive_type);
 	}
 
 	template <typename T>
@@ -414,9 +409,16 @@ namespace shogun
 	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
 	    EPrimitiveType primitive_type = PT_FLOAT64)
 	{
-		return features_subset(base_features, indices, primitive_type);
+		return details::features_subset(base_features, indices, primitive_type);
 	}
 
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
+	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
+	{
+		return details::string_features(
+		    features, p_order, gap, rev, primitive_type);
+	}
 	std::shared_ptr<File> create_csv(std::string fname, char rw = 'r')
 	{
 		return create<CSVFile>(fname, rw);
@@ -428,8 +430,14 @@ namespace shogun
 	}
 	std::shared_ptr<PipelineBuilder> create_pipeline()
 	{
-		return pipeline();
+		return details::pipeline();
 	}
-
+	template <
+	    typename T, typename T2 = typename std::enable_if_t<
+	                    std::is_floating_point<T>::value>>
+	std::shared_ptr<Kernel> create_kernel(SGMatrix<T> kernel_matrix)
+	{
+		return details::kernel(kernel_matrix);
+	}
 } // namespace shogun
 #endif // FACTORY_H_

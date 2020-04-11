@@ -3,7 +3,7 @@
 %}
 %include <shogun/util/factory.h>
 %include <std_string.i>
-%template(features) shogun::features<float64_t>;
+
 %template(create_features) shogun::create_features<float64_t>;
 
 #ifndef SWIGJAVA // FIXME: Java only uses DoubleMatrix atm, remove guard once that is resolved
@@ -11,8 +11,6 @@
 %template(create_features) shogun::create_features<uint16_t>;
 %template(create_features) shogun::create_features<int64_t>;
 
-%template(features) shogun::features<uint16_t>;
-%template(features) shogun::features<int64_t>;
 #endif //SWIGJAVA
 
 %template(create_svm) shogun::create<shogun::SVM,std::string>;
@@ -37,5 +35,3 @@
 %template(create_kernel) shogun::create<shogun::Kernel, std::string>;
 %template(create_machine) shogun::create<shogun::Machine, std::string>;
 %template(create_labels) shogun::create_labels<float64_t>;
-
-%template(labels) shogun::labels<float64_t>;

@@ -1,21 +1,21 @@
-File f_feats_train=csv_file("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
-File f_feats_test=csv_file("@SHOGUN_DATA@/regression_1d_sinc_features_test.dat")
-File f_labels_train=csv_file("@SHOGUN_DATA@/regression_1d_sinc_labels_train.dat")
-File f_labels_test=csv_file("@SHOGUN_DATA@/regression_1d_sinc_labels_test.dat")
+File f_feats_train=create_csv("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
+File f_feats_test=create_csv("@SHOGUN_DATA@/regression_1d_sinc_features_test.dat")
+File f_labels_train=create_csv("@SHOGUN_DATA@/regression_1d_sinc_labels_train.dat")
+File f_labels_test=create_csv("@SHOGUN_DATA@/regression_1d_sinc_labels_test.dat")
 
 #![create_features]
-Features features_train=features(f_feats_train)
-Features features_test=features(f_feats_test)
-Labels labels_train=labels(f_labels_train)
-Labels labels_test=labels(f_labels_test)
+Features features_train=create_features(f_feats_train)
+Features features_test=create_features(f_feats_test)
+Labels labels_train=create_labels(f_labels_train)
+Labels labels_test=create_labels(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel]
-Kernel k=kernel("GaussianKernel", log_width=1.0)
+Kernel k=create_kernel("GaussianKernel", log_width=1.0)
 #![create_appropriate_kernel]
 
 #![create_instance]
-Machine svr=machine("LibSVR", C1=1.0, C2=1.0, tube_epsilon=0.1, kernel=k, labels=labels_train)
+Machine svr=create_machine("LibSVR", C1=1.0, C2=1.0, tube_epsilon=0.1, kernel=k, labels=labels_train)
 # , solver_type=enum LIBSVR_SOLVER_TYPE.LIBSVR_EPSILON_SVR)
 #![create_instance]
 
@@ -30,7 +30,7 @@ RealVector alpha = svr.get_real_vector("m_alpha")
 #![extract_alpha]
 
 #![evaluate_error]
-Evaluation eval = evaluation("MeanSquaredError")
+Evaluation eval = create_evaluation("MeanSquaredError")
 real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
