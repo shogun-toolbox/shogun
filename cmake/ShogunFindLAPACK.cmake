@@ -6,7 +6,9 @@ IF (LAPACK_FOUND)
   SET(HAVE_LAPACK 1)
 
   # find out the type of Lapack/BLAS implementation we are dealing with
-  IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
+  # it seems like findLAPACK includes in LAPACK_LIBRARIES all the libraries 
+  # that need to be linked: "Accelerate.framework;-lm;-ldl"
+  IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework(;-l[a-z]+)*$")
     # Accelerate.framework we found for LaPack/BLAS
     SET(HAVE_MVEC 1)
     SET(HAVE_CATLAS 1)
