@@ -39,6 +39,9 @@ for file in $files; do
 	done
 	process_notebook $file &
 done
+while (( ${num_jobs@P} > 0 )); do
+	wait -n
+done
 
 if [ ${#failed_notebooks[@]} -gt 0 ]; then
 	for file in "${failed_notebooks[@]}"; do
