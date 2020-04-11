@@ -16,3 +16,5 @@ RealVector histogram_array = histogram.get_real_vector("histogram")
 RealVector out_likelihood = histogram.get_log_likelihood()
 real out_sample = histogram.get_log_likelihood_sample()
 #![train_and_extract_values]
+
+

@@ -417,7 +417,7 @@ namespace shogun
 	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 	{
 		return details::string_features(
-		    features, p_order, gap, rev, primitive_type);
+		    features, start, p_order, gap, rev, primitive_type);
 	}
 	std::shared_ptr<File> create_csv(std::string fname, char rw = 'r')
 	{
