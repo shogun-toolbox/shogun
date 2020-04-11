@@ -50,8 +50,10 @@ enum EEvaluationMode
 
 /** @brief This class implements the kernel density estimation technique. Kernel density estimation is a non-parametric
  * way to estimate an unknown pdf. The pdf at a query point given finite training samples is calculated using the
- * following formula : \\
- * \f$pdf(x')= \frac{1}{nh} \sum_{i=1}^n K(\frac{||x-x_i||}{h})\f$ \\
+ * following formula:
+ * \f[
+ * pdf(x')= \frac{1}{nh} \sum_{i=1}^n K(\frac{||x-x_i||}{h})
+ * \f]
  * K() in the above formula is called the kernel function and is controlled by the parameter h called kernel bandwidth.
  * Presently, this class supports only Gaussian kernel which can be used with either Euclidean distance or Manhattan
  * distance. This class makes use of 2 tree structures KD-tree and Ball tree for fast calculation. KD-trees are

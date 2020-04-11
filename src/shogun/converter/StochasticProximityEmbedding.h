@@ -7,60 +7,61 @@
 
 #ifndef STOCHASTICPROXIMITYEMBEDDING_H_
 #define STOCHASTICPROXIMITYEMBEDDING_H_
-#include <shogun/lib/config.h>
 #include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {
 
-/** Stochastic Proximity Embedding (SPE) strategy */
-enum ESPEStrategy
-{
-	SPE_GLOBAL,
-	SPE_LOCAL,
-};
+	/** Stochastic Proximity Embedding (SPE) strategy */
+	enum ESPEStrategy
+	{
+		SPE_GLOBAL,
+		SPE_LOCAL,
+	};
 
-/** @brief class StochasticProximityEmbedding used to construct embeddings of data using
- * the Stochastic Proximity algorithm.
- *
- * Agrafiotis, D. K. (2002)
- * Stochastic Proximity Embedding
- * Retrieved from:
- * http://www.dimitris-agrafiotis.com/Papers/jcc20078.pdf
- *
- * This class provides two different strategies for the computation of the embedding.
- * In each iteration, both strategies choose two sets of feature vectors whose
- * representation in the embedded space is updated. The first set is randomly chosen
- * in both strategies. However, the second set is obtained differently depending on
- * the strategy used. In the SPE_GLOBAL strategy, the second set is still
- * chosen at random. On the other hand, if SPE_LOCAL is used, first of all, the
- * K-Nearest Neighbors  of each of the feature vectors in the first set is obtained
- * and secondly, a number of feature vectors among these K-Nearest Neighbors is chosen
- * to form the second set.
- *
- * The parameter K for K-Nearest Neighbors in SPE_LOCAL corresponds to the class member
- * "m_k". Each of the two sets used on every iteration is formed by "m_nupdates" feature
- * vectors. Therefore, the number of feature vectors given must be always at least two
- * times the value of "m_nupdates".
- *
- * In order to avoid problems with memory in case a large number of features vectors is
- * to be embedded, the distance matrix is never computed explicitily. This has the
- * drawback that it is likely that the same distances are computed several times during
- * the process.
- *
- * Uses implementation from the Tapkee library.
- *
- * Only EuclideanDistance distance is supported for the moment.
- *
- */
+	/** @brief class StochasticProximityEmbedding used to construct embeddings
+	 * of data using the Stochastic Proximity algorithm.
+	 *
+	 * Agrafiotis, D. K. (2002)
+	 * Stochastic Proximity Embedding
+	 * Retrieved from:
+	 * http://www.dimitris-agrafiotis.com/Papers/jcc20078.pdf
+	 *
+	 * This class provides two different strategies for the computation of the
+	 * embedding. In each iteration, both strategies choose two sets of feature
+	 * vectors whose representation in the embedded space is updated. The first
+	 * set is randomly chosen in both strategies. However, the second set is
+	 * obtained differently depending on the strategy used. In the SPE_GLOBAL
+	 * strategy, the second set is still chosen at random. On the other hand, if
+	 * SPE_LOCAL is used, first of all, the K-Nearest Neighbors  of each of the
+	 * feature vectors in the first set is obtained and secondly, a number of
+	 * feature vectors among these K-Nearest Neighbors is chosen to form the
+	 * second set.
+	 *
+	 * The parameter K for K-Nearest Neighbors in SPE_LOCAL corresponds to the
+	 * class member "m_k". Each of the two sets used on every iteration is
+	 * formed by "m_num_updates" feature vectors. Therefore, the number of
+	 * feature vectors given must be always at least two times the value of
+	 * "m_num_updates".
+	 *
+	 * In order to avoid problems with memory in case a large number of features
+	 * vectors is to be embedded, the distance matrix is never computed
+	 * explicitly. This has the drawback that it is likely that the same
+	 * distances are computed several times during the process.
+	 *
+	 * Uses implementation from the Tapkee library.
+	 *
+	 * Only EuclideanDistance distance is supported for the moment.
+	 *
+	 */
 
-class StochasticProximityEmbedding : public EmbeddingConverter
-{
+	class StochasticProximityEmbedding : public EmbeddingConverter
+	{
 
 	public:
-
 		/** constructor */
 		StochasticProximityEmbedding();
 
@@ -72,7 +73,8 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+		virtual std::shared_ptr<Features>
+		transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/** setter for number of neighbors k in local strategy
 		 *
@@ -102,31 +104,31 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		 *
 		 * @param tolerance regularization value
 		 */
-		void set_tolerance(float32_t tolerance);
+		void set_tolerance(float64_t tolerance);
 
 		/** getter for regularization parameter
 		 *
 		 * @return regularization value
 		 */
-		int32_t get_tolerance() const;
+		float64_t get_tolerance() const;
 
 		/** setter for number of updates per iteration
 		 *
-		 * @param nupdates number of updates per SPE iteration
+		 * @param num_updates number of updates per SPE iteration
 		 */
-		void set_nupdates(int32_t nupdates);
+		void set_num_updates(int32_t num_updates);
 
 		/** getter for number of updates per iteration
 		 *
-		 * @return nupdates value
+		 * @return num_updates value
 		 */
-		int32_t get_nupdates() const;
+		int32_t get_num_updates() const;
 
 		/** setter for the maximum number of iterations
 		 *
 		 * @param max_iteration the maximum number of iterations
 		 */
-		void set_max_iteration(const int32_t max_iteration);
+		void set_max_iteration(int32_t max_iteration);
 
 		/** getter for the maximum number of iterations
 		 *
@@ -138,7 +140,6 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		virtual const char* get_name() const;
 
 	private:
-
 		/** default init */
 		void init();
 
@@ -146,10 +147,10 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		 * @param distance TODO Euclidean works fine, check with others
 		 * @return new features in the embedded space
 		 */
-		virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
+		virtual std::shared_ptr<DenseFeatures<float64_t>>
+		embed_distance(const std::shared_ptr<Distance>& distance);
 
 	private:
-
 		/** SPE strategy */
 		ESPEStrategy m_strategy;
 
@@ -157,17 +158,15 @@ class StochasticProximityEmbedding : public EmbeddingConverter
 		int32_t m_k;
 
 		/** regularization parameter */
-		float32_t m_tolerance;
+		float64_t m_tolerance;
 
-		/** number of apdates per SPE iteration */
-		int32_t m_nupdates;
+		/** number of updates per SPE iteration */
+		int32_t m_num_updates;
 
 		/** maximum number of iterations */
 		int32_t m_max_iteration;
-
-};
+	};
 
 } /* namespace shogun */
-
 
 #endif /* STOCHASTICPROXIMITYEMBEDDING_H_ */
