@@ -60,7 +60,7 @@ namespace shogun
 		 * @param alpha alpha
 		 * @param lambda lambda
 		 */
-		GLM(std::shared_ptr<DescendUpdater>,
+		GLM(const std::shared_ptr<DescendUpdater>& descend_updater,
 		    Family family = POISSON_DISTRIBUTION, LinkFunction Link_fn = LOG,
 		    float64_t alpha = 0.5, float64_t lambda = 0.1);
 

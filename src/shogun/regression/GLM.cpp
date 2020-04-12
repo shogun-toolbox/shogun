@@ -26,7 +26,7 @@ void GLM::init()
 	    ParameterProperties::SETTING);
 }
 GLM::GLM(
-    std::shared_ptr<DescendUpdater> descend_updater, Family family,
+    const std::shared_ptr<DescendUpdater>& descend_updater, Family family,
     LinkFunction Link_fn, float64_t alpha, float64_t lambda)
     : LinearMachine()
 {
