@@ -19,7 +19,7 @@ def structure_plif_hmsvm_bmrm (num_examples, example_length, num_features, num_n
 	#print sosvm.get_w()
 
 	predicted = sosvm.apply(model.get_features())
-	evaluator = sg.evaluation("StructuredAccuracy")
+	evaluator = sg.create_evaluation("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, model.get_labels())
 	#print('Accuracy = %.4f' % acc)
 

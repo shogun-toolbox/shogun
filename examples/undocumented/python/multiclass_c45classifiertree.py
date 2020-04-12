@@ -20,9 +20,9 @@ def multiclass_c45classifiertree(train=traindat,test=testdat,labels=label_traind
 	import shogun as sg
 
 	# wrap features and labels into Shogun objects
-	feats_train=sg.features(sg.csv_file(train))
-	feats_test=sg.features(sg.csv_file(test))
-	train_labels=MulticlassLabels(sg.csv_file(labels))
+	feats_train=sg.create_features(sg.create_csv(train))
+	feats_test=sg.create_features(sg.create_csv(test))
+	train_labels=MulticlassLabels(sg.create_csv(labels))
 
 	# divide train dataset into training and validation subsets in the ratio 2/3 to 1/3
 	subset=int32(random.permutation(feats_train.get_num_vectors()))

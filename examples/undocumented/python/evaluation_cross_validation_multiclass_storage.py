@@ -33,7 +33,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     Math.init_random(1)
 
     # training data, combined features all on same data
-    features=sg.features(traindat)
+    features=sg.create_features(traindat)
     comb_features=CombinedFeatures()
     comb_features.append_feature_obj(features)
     comb_features.append_feature_obj(features)
@@ -41,10 +41,10 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     labels=MulticlassLabels(label_traindat)
 
     # kernel, different Gaussians combined
-    kernel=sg.kernel("CombinedKernel")
-    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(0.1)))
-    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(1)))
-    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(2)))
+    kernel=sg.create_kernel("CombinedKernel")
+    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=np.log(0.1)))
+    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=np.log(1)))
+    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=np.log(2)))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
     svm=MKLMulticlass(1.0,kernel,labels);

@@ -24,8 +24,8 @@ def multiclass_id3classifiertree(train=train_data,labels=train_labels,test=test_
 		return
 
 	# wrap features and labels into Shogun objects
-	feats_train=sg.features(train)
-	feats_test=sg.features(test)
+	feats_train=sg.create_features(train)
+	feats_test=sg.create_features(test)
 	feats_labels=MulticlassLabels(labels)
 
 	# ID3 Tree formation

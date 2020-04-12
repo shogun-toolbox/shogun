@@ -16,7 +16,7 @@ def kernel_comm_ulong_string (fm_train_dna=traindat,fm_test_dna=testdat, order=3
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringUlongFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc = sg.transformer("SortUlongString")
+	preproc = sg.create_transformer("SortUlongString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
@@ -28,7 +28,7 @@ def kernel_comm_ulong_string (fm_train_dna=traindat,fm_test_dna=testdat, order=3
 
 	use_sign=False
 
-	kernel=sg.kernel("CommUlongStringKernel", use_sign=use_sign)
+	kernel=sg.create_kernel("CommUlongStringKernel", use_sign=use_sign)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

@@ -8,7 +8,7 @@ parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 
 def features_string_hashed_wd (A=matrix,order=3,start_order=1,hash_bits=2):
     import shogun as sg
-    a=sg.features(A)
+    a=sg.create_features(A)
     from numpy import array, uint8
     from shogun import HashedWDFeatures, StringByteFeatures, RAWDNA
     from shogun import MSG_DEBUG

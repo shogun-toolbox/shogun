@@ -16,7 +16,7 @@ def evaluation_thresholds (index):
 	pred=BinaryLabels(output)
 	truth=BinaryLabels(label)
 
-	evaluator=sg.evaluation("ROCEvaluation")
+	evaluator=sg.create_evaluation("ROCEvaluation")
 	evaluator.evaluate(pred, truth)
 
 	[fp,tp]=evaluator.get("ROC")

@@ -10,7 +10,7 @@ parameter_list = [(matrix,bins)]
 def features_binned_dot (matrix, bins):
 	from shogun import BinnedDotFeatures
 	import shogun as sg
-	rf=sg.features(matrix)
+	rf=sg.create_features(matrix)
 
 	#print(rf.get_feature_matrix())
 

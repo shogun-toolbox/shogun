@@ -12,7 +12,7 @@ def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	import shogun as sg
 
 	try:
-		_ = sg.machine("DualLibQPBMSOSVM")
+		_ = sg.create_machine("DualLibQPBMSOSVM")
 	except:
 		print("DualLibQPBMSOSVM not available")
 		return
@@ -29,12 +29,12 @@ def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	model = sg.structured_model("HMSVMModel", features=features, labels=labels, 
 								state_model_type="SMT_TWO_STATE", num_obs=num_obs)
 
-	sosvm = sg.machine("DualLibQPBMSOSVM", model=model, labels=labels, m_lambda=5000.0)
+	sosvm = sg.create_machine("DualLibQPBMSOSVM", model=model, labels=labels, m_lambda=5000.0)
 	sosvm.train()
 	#print sosvm.get_w()
 
 	predicted = sosvm.apply(features)
-	evaluator = sg.evaluation("StructuredAccuracy")
+	evaluator = sg.create_evaluation("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, labels)
 	#print('Accuracy = %.4f' % acc)
 

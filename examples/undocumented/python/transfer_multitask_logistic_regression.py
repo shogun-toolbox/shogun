@@ -19,7 +19,7 @@ def transfer_multitask_logistic_regression (fm_train=traindat,fm_test=testdat,la
 		exit()
 	import shogun as sg
 
-	features = sg.features(hstack((traindat,traindat)))
+	features = sg.create_features(hstack((traindat,traindat)))
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
 	n_vectors = features.get_num_vectors()

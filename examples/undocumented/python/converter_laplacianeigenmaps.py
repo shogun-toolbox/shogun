@@ -11,7 +11,7 @@ def converter_laplacianeigenmaps (data_fname,k):
 			print("LaplacianEigenmaps not available")
 			exit(0)
 			
-		features = sg.features(sg.csv_file(data_fname))
+		features = sg.create_features(sg.create_csv(data_fname))
 
 		converter = LaplacianEigenmaps()
 		converter.set_target_dim(1)

@@ -8,10 +8,10 @@ def kernel_linear (train_fname=traindat,test_fname=testdat,scale=1.2):
 	import shogun as sg
 	from shogun import AvgDiagKernelNormalizer
 
-	feats_train=sg.features(sg.csv_file(train_fname))
-	feats_test=sg.features(sg.csv_file(test_fname))
+	feats_train=sg.create_features(sg.create_csv(train_fname))
+	feats_test=sg.create_features(sg.create_csv(test_fname))
 
-	kernel=sg.kernel("LinearKernel")
+	kernel=sg.create_kernel("LinearKernel")
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 

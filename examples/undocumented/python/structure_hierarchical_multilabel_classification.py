@@ -76,7 +76,7 @@ def get_data(data, shogun_labels):
             features = feats
         labels.set_sparse_label(i, labs)
 
-    return sg.features(features), labels
+    return sg.create_features(features), labels
 
 
 def get_features_labels(input_file):
@@ -106,11 +106,11 @@ def structure_hierarchical_multilabel_classification(train_file_name,
         train_file)
 
     # TODO: fix HierarchicalMultilabelModel initialisation
-    model = sg.structured_model("HierarchicalMultilabelModel",
+    model = sg.create_structured_model("HierarchicalMultilabelModel",
                                 features=train_features, 
                                 labels=train_labels,
                                 taxonomy=train_taxonomy)
-    sgd = sg.machine("StochasticSOSVM", model=model, labels=train_labels)
+    sgd = sg.create_machine("StochasticSOSVM", model=model, labels=train_labels)
     # t1 = time.time()
     # sgd.train()
     # print('>>> Took %f time for training' % (time.time() - t1))

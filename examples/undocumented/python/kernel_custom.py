@@ -13,7 +13,7 @@ def kernel_custom (dim=7):
 
 	seed(17)
 	data=rand(dim, dim)
-	feats=sg.features(data)
+	feats=sg.create_features(data)
 	symdata=data+data.T
 	lowertriangle=array([symdata[(x,y)] for x in range(symdata.shape[1])
 		for y in range(symdata.shape[0]) if y<=x])

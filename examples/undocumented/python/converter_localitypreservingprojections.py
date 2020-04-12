@@ -6,7 +6,7 @@ def converter_localitypreservingprojections (data_fname,k):
 	from shogun import CSVFile
 	from shogun import LocalityPreservingProjections
 
-	features = sg.features(CSVFile(data_fname))
+	features = sg.create_features(CSVFile(data_fname))
 	converter = LocalityPreservingProjections()
 	converter.set_target_dim(1)
 	converter.set_k(k)

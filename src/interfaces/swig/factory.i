@@ -33,5 +33,10 @@
 %template(create_combination_rule) shogun::create<shogun::CombinationRule, std::string>;
 %template(create_distance) shogun::create<shogun::Distance, std::string>;
 %template(create_kernel) shogun::create<shogun::Kernel, std::string>;
+%template(create_feature) shogun::create<shogun::Features, std::string>;
 %template(create_machine) shogun::create<shogun::Machine, std::string>;
+%template(create_structured_model) shogun::create<shogun::StructuredModel, std::string>;
+%template(create_factor_type) shogun::create<shogun::FactorType, std::string>;
+
+
 %template(create_labels) shogun::create_labels<float64_t>;
