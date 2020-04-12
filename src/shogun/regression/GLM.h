@@ -17,80 +17,89 @@ http://glm-tools.github.io/pyglmnet/api.html
 #include <shogun/features/Features.h>
 #include <shogun/machine/FeatureDispatchCRTP.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/optimization/DescendUpdaterWithCorrection.h>
+#include <shogun/optimization/DescendUpdater.h>
 #include <shogun/regression/Regression.h>
 
 namespace shogun
 {
-enum Family
-{
-	normal,
-	exponential,
-	gamma,
-	binomial,
-	gaussian,
-	poisson
-};
-enum LinkFunction
-{
-	log,
-	logit,
-	identity,
-	inverse
-};
-/** @brief Class GLM implements Generalized Linear Models, such as poisson, gamma, binomial
- */
-class GLM : public LinearMachine
-{
+	enum Family
+	{
+		NORMAL_DISTRIBUTION,
+		EXPONENTIAL_DISTRIBUTION,
+		GAMMA_DISTRIBUTION,
+		BINOMIAL_DISTRIBUTION,
+		GAUSS_DISTRIBUTION,
+		POISSON_DISTRIBUTION
+	};
+	enum LinkFunction
+	{
+		LOG,
+		LOGIT,
+		IDENTITY,
+		INVERSE
+	};
+	/** @brief Class GLM implements Generalized Linear Models, such as poisson,
+	 * gamma, binomial
+	 */
+	class GLM : public LinearMachine
+	{
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
-
 		/** Default constructor */
 		GLM();
 
-		/** default constructor
-	 	*
-	 	* @param descend_updater chosen Descend Updater algorithm
-	 	* @param Linkfn the link function check https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-	 	* @param Family the family check https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-	 	* @param alpha alpha
-	 	* @param lambda lambda
-	 	*/
-		GLM(
-			DescendUpdaterWithCorrection* descend_updater, Family family= poisson, LinkFunction Link_fn= log, 
-			float64_t alpha= 0.5, float64_t lambda= 0.1);
+		/** Constructor
+		 *
+		 * @param descend_updater chosen Descend Updater algorithm
+		 * @param Linkfn the link function check
+		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
+		 * @param Family the family check
+		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
+		 * @param alpha alpha
+		 * @param lambda lambda
+		 */
+		GLM(std::shared_ptr<DescendUpdater>,
+		    Family family = POISSON_DISTRIBUTION, LinkFunction Link_fn = LOG,
+		    float64_t alpha = 0.5, float64_t lambda = 0.1);
 
 		/** standard constructor
-		* @param data features
-		* @param labs labels
-		* @param learn_rate Learning rate
-	 	* @param Linkfn the link function check https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-	 	* @param Family the distribution/family check https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-	 	* @param alpha alpha
-	 	* @param lambda lambda
-		*/
-		
+		 * @param data features
+		 * @param labs labels
+		 * @param learn_rate Learning rate
+		 * @param Linkfn the link function check
+		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
+		 * @param Family the distribution/family check
+		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
+		 * @param alpha alpha
+		 * @param lambda lambda
+		 */
+
 		/** default destructor */
-		virtual ~GLM() {}
+		virtual ~GLM()
+		{
+		}
 
 		/** train model
 		 *
-		 * @param data training data 
+		 * @param data training data
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(Features* data=NULL) {return true;};
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL)
+		{
+			return true;
+		};
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GLM"; }
-
-
+		virtual const char* get_name() const
+		{
+			return "GLM";
+		}
 
 	protected:
-
-		DescendUpdaterWithCorrection* m_descend_updater;
+		std::shared_ptr<DescendUpdater> m_descend_updater;
 		float64_t m_alpha;
 		float64_t m_lambda;
 		Family m_family;
@@ -98,7 +107,6 @@ class GLM : public LinearMachine
 
 	private:
 		void init();
-
-};
-}
+	};
+} // namespace shogun
 #endif /* _GLM_H_ */
