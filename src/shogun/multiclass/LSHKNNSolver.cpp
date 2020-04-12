@@ -94,7 +94,7 @@ std::shared_ptr<MulticlassLabels> LSHKNNSolver::classify_objects(FeatureType* lh
 	return output;
 }
 
-std::shared_ptr<MulticlassLabels> LSHKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+std::shared_ptr<MulticlassLabels> LSHKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes)
 {
 	auto lhs = knn_distance->get_lhs();
 	auto rhs = knn_distance->get_rhs();
@@ -116,8 +116,22 @@ std::shared_ptr<MulticlassLabels> LSHKNNSolver::classify_objects(std::shared_ptr
 	}
 }
 
-SGVector<int32_t> LSHKNNSolver::classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
+SGVector<int32_t> LSHKNNSolver::classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
+}
+
+bool LSHKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)
+{
+	//TODO complete this
+	
+	return true;
+}
+
+bool LSHKNNSolver::compute_nearest_neighbours()
+{
+	//TODO complete this
+
+	return true;
 }

@@ -16,7 +16,7 @@ KNNSolver(k, q, num_classes, min_label, train_labels)
 	nn=NN;
 }
 
-std::shared_ptr<MulticlassLabels> BruteKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+std::shared_ptr<MulticlassLabels> BruteKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes)
 {
 	auto output=std::make_shared<MulticlassLabels>(num_lab);
 	//get the k nearest neighbors of each example
@@ -40,7 +40,7 @@ std::shared_ptr<MulticlassLabels> BruteKNNSolver::classify_objects(std::shared_p
 	return output;
 }
 
-SGVector<int32_t> BruteKNNSolver::classify_objects_k(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
+SGVector<int32_t> BruteKNNSolver::classify_objects_k(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes)
 {
 	SGVector<int32_t> output(m_k*num_lab);
 
@@ -57,4 +57,18 @@ SGVector<int32_t> BruteKNNSolver::classify_objects_k(std::shared_ptr<Distance> k
 	}
 
 	return output;
+}
+
+bool BruteKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)
+{
+	//TODO complete this
+	
+	return true;
+}
+
+bool BruteKNNSolver::compute_nearest_neighbours()
+{
+	//TODO complete this
+
+	return true;
 }

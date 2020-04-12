@@ -19,6 +19,7 @@
 
 #include <utility>
 #include <algorithm>
+#include <iostream>
 
 //#define DEBUG_KNN
 
@@ -27,12 +28,15 @@ using namespace shogun;
 KNN::KNN()
 : DistanceMachine()
 {
+	std::cout<<"entered KNN::KNN() : DistanceMachine()\n";
 	init();
+	std::cout<<"exiting KNN::KNN() : DistanceMachine()\n";
 }
 
 KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver)
 : DistanceMachine()
 {
+	std::cout<<"entered KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver) : DistanceMachine()\n";
 	init();
 
 	m_k=k;
@@ -44,10 +48,12 @@ KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<La
 	set_labels(trainlab);
 	m_train_labels.vlen=trainlab->get_num_labels();
 	m_knn_solver=knn_solver;
+	std::cout<<"exiting KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver) : DistanceMachine()\n";
 }
 
 void KNN::init()
 {
+	std::cout<<"entered KNN::init()\n";
 	m_k=3;
 	m_q=1.0;
 	m_num_classes=0;
@@ -67,6 +73,7 @@ void KNN::init()
 	    (machine_int_t*)&m_knn_solver, "knn_solver", "Algorithm to solve knn",
 	    ParameterProperties::NONE,
 	    SG_OPTIONS(KNN_BRUTE, KNN_KDTREE, KNN_COVER_TREE, KNN_LSH));
+	std::cout<<"exiting KNN::init()\n";
 }
 
 KNN::~KNN()
@@ -75,6 +82,7 @@ KNN::~KNN()
 
 bool KNN::train_machine(std::shared_ptr<Features> data)
 {
+	std::cout<<"entered KNN::train_machine(std::shared_ptr<Features> data)\n";
 	require(m_labels, "No training labels provided.");
 	require(distance, "No training distance provided.");
 
@@ -107,11 +115,13 @@ bool KNN::train_machine(std::shared_ptr<Features> data)
 	init_solver(m_knn_solver);
 	solver->train_KNN(distance);
 
+	std::cout<<"exiting KNN::train_machine(std::shared_ptr<Features> data)\n";
 	return true;
 }
 
 SGMatrix<index_t> KNN::nearest_neighbors()
 {
+	std::cout<<"entered KNN::nearest_neighbors()";
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
 
@@ -124,7 +134,8 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 
 	distance->precompute_lhs();
 	distance->precompute_rhs();
-
+	std::cout<<"n is "<<n<<'\n';
+	std::cout<<"k is "<<m_k<<'\n';
 	switch (m_knn_solver)
 	{
 	case KNN_BRUTE:
@@ -137,6 +148,13 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 			train_idxs.range_fill(0);
 
 			std::pair<float64_t, index_t> pairt[m_train_labels.vlen];
+
+			
+			std::cout<<"i is "<<i<<'\n';
+			//std::cout<<" before sorting dists is "<<'\n';
+			dists.display_vector("before sorting dists");
+			//std::cout<<"before sorting train_idxs is "<<'\n';
+			train_idxs.display_vector("before sorting train_idxs");
 
 			// Storing the respective array elements in pairs.
 			for (int j = 0; j < m_train_labels.vlen; j++)
@@ -156,8 +174,17 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 			SG_DEBUG("\nQuick sort query {}", i);
 			SG_DEBUG("{}", train_idxs.to_string());
 
+			
+			//std::cout<<"after sorting dists is "<<'\n';
+			dists.display_vector("after sorting dists");
+			//std::cout<<"after sorting train_idxs is "<<'\n';
+			train_idxs.display_vector("after sorting train_idxs is");
+
 			//only considering the first k elements
 			SGVector<index_t> nearest_k_train_idxs(train_idxs.vector, m_k, false);
+
+			//std::cout<<"nearest_k_train_idxs is "<<'\n';
+			nearest_k_train_idxs.display_vector("nearest_k_train_idxs");
 
 			NN.set_column(i, nearest_k_train_idxs);
 		}
@@ -181,12 +208,14 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 		break;
 	}
 	}
-
+	std::cout<<"exiting KNN::nearest_neighbors()\n";
+	NN.display_matrix();
 	return NN;
 }
 
 std::shared_ptr<MulticlassLabels> KNN::apply_multiclass(std::shared_ptr<Features> data)
 {
+	std::cout<<"entered KNN::apply_multiclass(std::shared_ptr<Features> data)\n";
 	if (data)
 		init_distance(data);
 
@@ -210,12 +239,13 @@ std::shared_ptr<MulticlassLabels> KNN::apply_multiclass(std::shared_ptr<Features
 	SGVector<float64_t> classes(m_num_classes);
 
 	//init_solver(m_knn_solver);
-
+	std::cout<<"exiting KNN::apply_multiclass(std::shared_ptr<Features> data)\n";
 	return solver->classify_objects(distance, num_lab, train_lab, classes);
 }
 
 std::shared_ptr<MulticlassLabels> KNN::classify_NN()
 {
+	std::cout<<"entered KNN::classify_NN()\n";
 	require(distance, "Distance not set.");
 	require(m_num_classes > 0, "Machine not trained.");
 
@@ -256,12 +286,13 @@ std::shared_ptr<MulticlassLabels> KNN::classify_NN()
 	}
 
 	distance->reset_precompute();
-
+	std::cout<<"exiting KNN::classify_NN()\n";
 	return output;
 }
 
 SGMatrix<int32_t> KNN::classify_for_multiple_k()
 {
+	std::cout<<"entered KNN::classify_for_multiple_k()\n";
 	require(distance, "Distance not set.");
 	require(m_num_classes > 0, "Machine not trained.");
 
@@ -285,12 +316,13 @@ SGMatrix<int32_t> KNN::classify_for_multiple_k()
 	SGVector<int32_t> output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
 
 
-
+	std::cout<<"exiting KNN::classify_for_multiple_k()\n";
 	return SGMatrix<int32_t>(output,num_lab,m_k);
 }
 
 void KNN::init_distance(std::shared_ptr<Features> data)
 {
+	std::cout<<"entered KNN::init_distance(std::shared_ptr<Features> data)\n";
 	require(distance, "Distance not set.");
 	auto lhs=distance->get_lhs();
 	if (!lhs || !lhs->get_num_vectors())
@@ -298,24 +330,30 @@ void KNN::init_distance(std::shared_ptr<Features> data)
 		error("No vectors on left hand side");
 	}
 	distance->init(lhs, std::move(data));
+	std::cout<<"exiting KNN::init_distance(std::shared_ptr<Features> data)\n";
 }
 
 bool KNN::load(FILE* srcfile)
 {
+	std::cout<<"entered KNN::load(FILE* srcfile)\n";
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
+	std::cout<<"exiting KNN::load(FILE* srcfile)\n";
 	return false;
 }
 
 bool KNN::save(FILE* dstfile)
 {
+	std::cout<<"entered KNN::save(FILE* dstfile)\n";
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
+	std::cout<<"exiting KNN::save(FILE* dstfile)\n";
 	return false;
 }
 
 void KNN::init_solver(KNN_SOLVER knn_solver)
 {
+	std::cout<<"entered KNN::init_solver(KNN_SOLVER knn_solver)\n";
 	switch (knn_solver)
 	{
 	case KNN_BRUTE:
@@ -348,4 +386,5 @@ void KNN::init_solver(KNN_SOLVER knn_solver)
 		break;
 	}
 	}
+	std::cout<<"exiting KNN::init_solver(KNN_SOLVER knn_solver)\n";
 }

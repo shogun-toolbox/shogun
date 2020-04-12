@@ -8,11 +8,14 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/multiclass/KNNSolver.h>
 
+#include <iostream>
+
 using namespace shogun;
 
 KNNSolver::KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels)
 : DistanceMachine()
 {
+	std::cout<<"entered KNNSolver::KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels)\n";
 	init();
 
 	m_k=k;
@@ -20,19 +23,23 @@ KNNSolver::KNNSolver(const int32_t k, const float64_t q, const int32_t num_class
 	m_num_classes=num_classes;
 	m_min_label=min_label;
 	m_train_labels=train_labels;
+	std::cout<<"exiting KNNSolver::KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels)\n";
 }
 
 void KNNSolver::init()
 {
+	std::cout<<"entered KNNSolver::init()\n";
 	m_k=3;
 	m_q=1.0;
 	m_num_classes=0;
 	m_min_label=0;
 	m_train_labels=0;
+	std::cout<<"exiting KNNSolver::init()\n";
 }
 
 int32_t KNNSolver::choose_class(float64_t* classes, const int32_t* train_lab) const
 {
+	std::cout<<"entered KNNSolver::choose_class(float64_t* classes, const int32_t* train_lab) const\n";
 	memset(classes, 0, sizeof(float64_t)*m_num_classes);
 
 	float64_t multiplier = m_q;
@@ -54,12 +61,13 @@ int32_t KNNSolver::choose_class(float64_t* classes, const int32_t* train_lab) co
 			out_max= classes[j];
 		}
 	}
-
+	std::cout<<"exiting KNNSolver::choose_class(float64_t* classes, const int32_t* train_lab) const\n";
 	return out_idx;
 }
 
 void KNNSolver::choose_class_for_multiple_k(int32_t* output, int32_t* classes, const int32_t* train_lab, const int32_t step) const
 {
+	std::cout<<"entered KNNSolver::choose_class_for_multiple_k(int32_t* output, int32_t* classes, const int32_t* train_lab, const int32_t step) const\n";
 	//compute histogram of class outputs of the first k nearest neighbours
 	memset(classes, 0, sizeof(int32_t)*m_num_classes);
 
@@ -82,4 +90,5 @@ void KNNSolver::choose_class_for_multiple_k(int32_t* output, int32_t* classes, c
 
 		output[j*step]=out_idx+m_min_label;
 	}
+	std::cout<<"exiting KNNSolver::choose_class_for_multiple_k(int32_t* output, int32_t* classes, const int32_t* train_lab, const int32_t step) const\n";
 }
