@@ -3,12 +3,7 @@
  *
  * Authors: Ahmed Khalifa
  */
-/*
-References:
-https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-https://www.statsmodels.org/stable/generated/statsmodels.genmod.generalized_linear_model.GLM.html#statsmodels.genmod.generalized_linear_model.GLM
-http://glm-tools.github.io/pyglmnet/api.html
-*/
+
 #ifndef _GENERALIZEDLINEARMODEL_H__
 #define _GENERALIZEDLINEARMODEL_H__
 
@@ -22,7 +17,7 @@ http://glm-tools.github.io/pyglmnet/api.html
 
 namespace shogun
 {
-	enum Family
+	enum DistributionFamily
 	{
 		NORMAL_DISTRIBUTION,
 		EXPONENTIAL_DISTRIBUTION,
@@ -47,44 +42,25 @@ namespace shogun
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
-		/** Default constructor */
 		GLM();
-
+		SGVector<float64_t>
+		log_likelihood(SGVector<float64_t> features, float64_t label);
 		/** Constructor
 		 *
 		 * @param descend_updater chosen Descend Updater algorithm
-		 * @param Linkfn the link function check
-		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-		 * @param Family the family check
-		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-		 * @param alpha alpha
-		 * @param lambda lambda
+		 * @param link_fn the link function
+		 * @param Family the family
+		 * @param alpha Weighting parameter between L1 and L2 Penalty
+		 * @param lambda Regularization parameter lambda
 		 */
 		GLM(const std::shared_ptr<DescendUpdater>& descend_updater,
-		    Family family = POISSON_DISTRIBUTION, LinkFunction Link_fn = LOG,
-		    float64_t alpha = 0.5, float64_t lambda = 0.1);
+		    DistributionFamily family, LinkFunction link_fn, float64_t alpha,
+		    float64_t lambda);
 
-		/** standard constructor
-		 * @param data features
-		 * @param labs labels
-		 * @param learn_rate Learning rate
-		 * @param Linkfn the link function check
-		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-		 * @param Family the distribution/family check
-		 * https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family
-		 * @param alpha alpha
-		 * @param lambda lambda
-		 */
-
-		/** default destructor */
-		virtual ~GLM()
-		{
-		}
+		virtual ~GLM(){};
 
 		/** train model
-		 *
 		 * @param data training data
-		 *
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(std::shared_ptr<Features> data = NULL)
@@ -99,11 +75,12 @@ namespace shogun
 		}
 
 	protected:
-		std::shared_ptr<DescendUpdater> m_descend_updater;
-		float64_t m_alpha;
-		float64_t m_lambda;
-		Family m_family;
-		LinkFunction m_linkfn;
+		std::shared_ptr<DescendUpdater>
+		    m_descend_updater; // TODO: Choose Default value
+		float64_t m_alpha = 0.5;
+		float64_t m_lambda = 0.1;
+		DistributionFamily m_family = POISSON_DISTRIBUTION;
+		LinkFunction m_link_fn = LOG;
 
 	private:
 		void init();
