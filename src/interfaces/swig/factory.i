@@ -37,6 +37,4 @@
 %template(create_machine) shogun::create<shogun::Machine, std::string>;
 %template(create_structured_model) shogun::create<shogun::StructuredModel, std::string>;
 %template(create_factor_type) shogun::create<shogun::FactorType, std::string>;
-
-
 %template(create_labels) shogun::create_labels<float64_t>;

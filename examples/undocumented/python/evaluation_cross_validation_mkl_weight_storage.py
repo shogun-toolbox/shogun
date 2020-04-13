@@ -51,7 +51,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     evaluation_criterium=sg.create_evaluation("ContingencyTableEvaluation", type="ACCURACY")
 
     # cross-validation instance
-    cross_validation = machine_evaluation(
+    cross_validation = create_machine_evaluation(
         "CrossValidation", machine=svm, features=comb_features,
         labels=labels, splitting_strategy=splitting_strategy,
         evaluation_criterion=evaluation_criterium, num_runs=3)

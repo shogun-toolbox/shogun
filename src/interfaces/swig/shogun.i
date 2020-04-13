@@ -404,7 +404,7 @@ PUT_ADD(StructuredModel)
 PUT_ADD(FactorType)
 
 %template(create_kernel) create_kernel<float64_t, float64_t>;
-%template(create_features) create_features<float64_t>;
+
 
 
 } // namespace shogun
