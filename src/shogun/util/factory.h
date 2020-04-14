@@ -378,8 +378,31 @@ namespace shogun
 		}
 	}
 
-// The SWIG now only support one template parameter in variadic template, so
-// we have to write those create_ wrapper function
+	// The SWIG now only support one template parameter in variadic template, so
+	// we have to write those create_ wrapper function
+
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		return details::string_features(file, alphabet_type, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_features_subset(
+	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
+	    EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return details::features_subset(base_features, indices, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
+	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
+	{
+		return details::string_features(
+		    features, start, p_order, gap, rev, primitive_type);
+	}
+
 #ifdef SWIG
 	template <typename T>
 	std::shared_ptr<Features> create_features(SGMatrix<T> mat)
@@ -407,32 +430,12 @@ namespace shogun
 		return create<Features>(file, primitive_type);
 	}
 
-	std::shared_ptr<Features> create_string_features(
-	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
-	{
-		return details::string_features(file, alphabet_type, primitive_type);
-	}
 
 	std::shared_ptr<Labels> create_labels(std::shared_ptr<File> file)
 	{
 		return create<Labels>(file);
 	}
 
-	std::shared_ptr<Features> create_features_subset(
-	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
-	    EPrimitiveType primitive_type = PT_FLOAT64)
-	{
-		return details::features_subset(base_features, indices, primitive_type);
-	}
-
-	std::shared_ptr<Features> create_string_features(
-	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
-	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
-	{
-		return details::string_features(
-		    features, start, p_order, gap, rev, primitive_type);
-	}
 	std::shared_ptr<File> create_csv(std::string fname, char rw = 'r')
 	{
 		return create<CSVFile>(fname, rw);
