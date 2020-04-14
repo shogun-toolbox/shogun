@@ -43,8 +43,9 @@ namespace shogun
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		GLM();
-		SGVector<float64_t>
-		log_likelihood(SGVector<float64_t> features, float64_t label);
+		SGVector<float64_t> log_likelihood(
+		    const std::shared_ptr<DenseFeatures<float64_t>> features,
+		    std::shared_ptr<Labels> label);
 		/** Constructor
 		 *
 		 * @param descend_updater chosen Descend Updater algorithm

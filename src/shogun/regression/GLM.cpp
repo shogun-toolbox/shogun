@@ -1,7 +1,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/regression/GLM.h>
@@ -12,14 +12,41 @@ GLM::GLM() : LinearMachine()
 {
 	init();
 }
-SGVector<float64_t>
-log_likelihood(SGVector<float64_t> features, float64_t label)
+SGVector<float64_t> log_likelihood(
+    const std::shared_ptr<DenseFeatures<float64_t>> features,
+    std::shared_ptr<Labels> label)
 {
-	ASSERT(features.size() > 0)
-	// Assume weights is the same as the feature vector
-	SGVector<float64_t> weights = SGMatrix(features.clone());
-	// Assume b0 to be the element in the beginning of the feature vector
-	float64_t b0 = features.get_element(0);
+	int32_t vector_count = features->get_num_vectors();
+	int32_t feature_count = features->get_num_features();
+	ASSERT(vector_count > 0 && label->get_num_labels() == vector_count)
+	// Array of Lambdas
+	SGVector<float64_t> lambda(vector_count);
+	for (int32_t i = 0; i < vector_count; i++)
+	{
+		SGVector<float64_t> feature_vector = features->get_feature_vector(i);
+		// Assume beta is the same as the feature vector
+		SGVector<float64_t> beta = feature_vector.clone();
+		// Assume beta0 is the same as the first element in the feature vector
+		float64_t b0 = feature_vector.get_element(0);
+		SGVector<float64_t> result(feature_count);
+		SGVector<float64_t>::vector_multiply(
+		    result, feature_vector, beta, feature_vector.vlen);
+		float64_t res = SGVector<float64_t>::sum(result);
+		lambda.set_element(log(1 + std::exp(b0 + res)), i);
+	}
+	SGVector<float64_t> likelihood(vector_count);
+
+	for (int32_t i = 0; i < vector_count; i++)
+	{
+		float64_t y_i = label->get_value(i);
+		likelihood.set_element(
+		    y_i * log(lambda.get_element(i)) - lambda.get_element(i), i);
+	}
+	SGVector<float64_t> likelihood_clone = likelihood.clone();
+	for (int32_t i = 0; i < vector_count; i++)
+		likelihood.set_element(
+		    SGVector<float64_t>::sum(likelihood_clone, i), i);
+	return likelihood;
 }
 void GLM::init()
 {
