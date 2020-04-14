@@ -5,23 +5,30 @@
  * Authors: Tej Sukhatme
  */
 
-// #ifndef _LINEARCLASSIFIER_H__
-// #define _LINEARCLASSIFIER_H__
 
-// #include <shogun/lib/config.h>
+#include <shogun/lib/config.h>
 
-// #include <shogun/lib/common.h>
+#include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
-// #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 
 namespace shogun
 {
+    enum GLM_DISTRIBUTION
+	{
+        //TODO GAUSSIAN,
+        //TODO BINOMIAL,
+        //TODO GAMMA,
+        //TODO SOFTPLUS,
+        //TODO PROBIT,
+        POISSON
+	};
 
-// class BinaryLabels;
-// class DotFeatures;
-// class Features;
-// class RegressionLabels;
+class DotFeatures;
+class Features;
+class RegressionLabels;
 
 /** @brief Class for estimating regularized generalized linear models (GLM).
  *   The regularized GLM minimizes the penalized negative log likelihood:
@@ -53,100 +60,156 @@ namespace shogun
  * */
 class GeneralizedLinearMachine : public Machine
 {
-// 	public:
-// 		/** default constructor */
-// 		LinearMachine();
+ 	public:
+ 		/** default constructor */
+ 		GeneralizedLinearMachine();
 
-// 		/** destructor */
-// 		virtual ~LinearMachine();
+ 		/** destructor */
+ 		virtual ~GeneralizedLinearMachine();
 
-// 		/** copy constructor */
-// 		LinearMachine(const std::shared_ptr<LinearMachine>& machine);
+ 		/** copy constructor */
+ 		GeneralizedLinearMachine(const std::shared_ptr<GeneralizedLinearMachine>& machine);
 
-// 		/** get w
-// 		 *
-// 		 * @return weight vector
-// 		 */
-// 		virtual SGVector<float64_t> get_w() const;
+		/** get w
+		 *
+		 * @return weight vector
+		 */
+		virtual SGVector<float64_t> get_w() const;
 
-// 		/** set w
-// 		 *
-// 		 * @param src_w new w
-// 		 */
-// 		virtual void set_w(const SGVector<float64_t> src_w);
+		/** set w
+		 *
+		 * @param src_w new w
+		 */
+		virtual void set_w(const SGVector<float64_t> src_w);
 
-// 		/** set bias
-// 		 *
-// 		 * @param b new bias
-// 		 */
-// 		virtual void set_bias(float64_t b);
+		/** set bias
+		 *
+		 * @param b new bias
+		 */
+		virtual void set_bias(float64_t b);
 
-// 		/** get bias
-// 		 *
-// 		 * @return bias
-// 		 */
-// 		virtual float64_t get_bias() const;
+		/** get bias
+		 *
+		 * @return bias
+		 */
+		virtual float64_t get_bias() const;
 
-// 		/** set features
-// 		 *
-// 		 * @param feat features to set
-// 		 */
-// 		virtual void set_features(std::shared_ptr<DotFeatures> feat);
+ 		/** set features
+ 		 *
+ 		 * @param feat features to set
+ 		 */
+ 		virtual void set_features(std::shared_ptr<DotFeatures> feat);
 
-// 		/** apply linear machine to data
-// 		 * for binary classification problem
-// 		 *
-// 		 * @param data (test)data to be classified
-// 		 * @return classified labels
-// 		 */
-// 		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		/**
+		* A specialization of the train_machine method
+		* @param feats training data
+		*/
+		virtual bool train_machine(std::shared_ptr<const DenseFeatures<float64_t>> feats);
 
-// 		/** apply linear machine to data
-// 		 * for regression problem
-// 		 *
-// 		 * @param data (test)data to be classified
-// 		 * @return classified labels
-// 		 */
-// 		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		/** apply linear machine to data
+		 * for regression problem
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
-// 		/** applies to one vector */
-// 		virtual float64_t apply_one(int32_t vec_idx);
+ 		/** get features
+ 		 *
+ 		 * @return features
+ 		 */
+ 		virtual std::shared_ptr<DotFeatures> get_features();
 
-// 		/** get features
-// 		 *
-// 		 * @return features
-// 		 */
-// 		virtual std::shared_ptr<DotFeatures> get_features();
+ 		/** Returns the name of the SGSerializable instance.  It MUST BE
+ 		 *  the CLASS NAME without the prefixed `C'.
+ 		 *
+ 		 * @return name of the SGSerializable
+ 		 */
+ 		virtual const char* get_name() const { return "GeneralizedLinearMachine"; }
 
-// 		/** Returns the name of the SGSerializable instance.  It MUST BE
-// 		 *  the CLASS NAME without the prefixed `C'.
-// 		 *
-// 		 * @return name of the SGSerializable
-// 		 */
-// 		virtual const char* get_name() const { return "LinearMachine"; }
+	protected:
 
-// 	protected:
+		/** apply get outputs
+		 *
+		 * @param data features to compute outputs
+		 * @return outputs
+		 */
+		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
 
-// 		/** apply get outputs
-// 		 *
-// 		 * @param data features to compute outputs
-// 		 * @return outputs
-// 		 */
-// 		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
+		/**Conditional intensity function.*/
+		virtual SGVector<float64_t> conditional_intensity(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t bias);
 
-// 	private:
+		/** predict for one vector */
+		virtual SGVector<float64_t> predict(SGMatrix<float64_t> X);
 
-// 		void init();
+		/** fit model */
+		virtual bool fit(SGMatrix<float64_t> X, SGVector<float64_t> y);
 
-// 	protected:
-// 		/** w */
-// 		SGVector<float64_t> m_w;
+		/** compute gradient of weights */
+		virtual SGVector<float64_t> compute_grad_L2_loss_w(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t bias);
 
-// 		/** bias */
-// 		float64_t bias;
+		/** compute gradient of bias */
+		virtual float64_t compute_grad_L2_loss_bias(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t bias);
 
-// 		/** features */
-// 		std::shared_ptr<DotFeatures> features;
+		/** compute z */
+		virtual SGVector<float64_t> compute_z(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t bias);
+
+		/** conditional non-linear function */
+		virtual SGVector<float64_t> non_linearity(SGVector<float64_t> z);
+
+		/** compute gradient of non-linearity */
+		virtual SGVector<float64_t> gradient_non_linearity(SGVector<float64_t> z);
+
+		virtual SGVector<float64_t> apply_proximal_operator(SGVector<float64_t> w, float64_t threshold);
+
+	private:
+
+		void init();
+
+	protected:
+		/** w */
+		SGVector<float64_t> m_w;
+
+		/** bias */
+		float64_t m_bias;
+
+ 		/** features */
+		std::shared_ptr<DotFeatures> features;
+
+		/** Distribution type */
+		GLM_DISTRIBUTION distribution;
+
+		/** specifies if a constant (a.k.a. bias or intercept) should be added to the decision function.
+         * default: true */
+		bool m_fit_intercept;
+
+		/** a threshold parameter that linearizes the exp() function above eta.
+		 * default: 2.0 */
+		float64_t m_eta;
+
+		/** maximum number of iterations for the solver.
+		 * default: 1000 */
+		int m_max_iter;
+		
+		/** learning rate for gradient descent.
+		 * default: 2e-1 */
+		float64_t m_learning_rate;
+
+		/** regularization parameter :math:`\\lambda` of penalty term.
+		 * default: 0.1 */
+		float64_t m_lambda;
+
+		/** the (n_features, n_features) Tikhonov matrix.
+		 * default: None, in which case Tau is identity and the L2 penalty is ridge-like */
+		SGMatrix<float64_t> m_tau;
+
+		/** the weighting between L1 penalty and L2 penalty term of the loss function.
+		 * default: 0.5 */
+		float64_t m_alpha;
+
+		/** convergence threshold or stopping criteria. Optimization loop will stop when relative change in parameter norm is below the threshold.
+		 * default: 1e-6 */
+		float64_t m_tolerance;
 };
 }
 // #endif
