@@ -12,6 +12,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/machine/FeatureDispatchCRTP.h>
 #include <shogun/machine/LinearMachine.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/optimization/DescendUpdater.h>
 #include <shogun/regression/Regression.h>
 
@@ -44,8 +45,8 @@ namespace shogun
 
 		GLM();
 		SGVector<float64_t> log_likelihood(
-		    const std::shared_ptr<DenseFeatures<float64_t>> features,
-		    std::shared_ptr<Labels> label);
+		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
+		    const std::shared_ptr<Labels>& label);
 		/** Constructor
 		 *
 		 * @param descend_updater chosen Descend Updater algorithm
