@@ -56,7 +56,7 @@ namespace shogun
 		 * @param lambda Regularization parameter lambda
 		 */
 		GLM(const std::shared_ptr<DescendUpdater>& descend_updater,
-		    DistributionFamily family, LinkFunction link_fn, float64_t alpha,
+		    DistributionFamily family, LinkFunction link_fn, float64_t tau,
 		    float64_t lambda);
 
 		virtual ~GLM(){};
@@ -79,10 +79,10 @@ namespace shogun
 	protected:
 		std::shared_ptr<DescendUpdater>
 		    m_descend_updater; // TODO: Choose Default value
-		float64_t m_alpha = 0.5;
 		float64_t m_lambda = 0.1;
 		DistributionFamily m_family = POISSON_DISTRIBUTION;
 		LinkFunction m_link_fn = LOG;
+		float64_t m_tau = 1e-6;
 
 	private:
 		void init();
