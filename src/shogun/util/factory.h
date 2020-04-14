@@ -37,9 +37,9 @@
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/neuralnets/NeuralLayer.h>
-#include <shogun/transformer/Transformer.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/StructuredModel.h>
+#include <shogun/transformer/Transformer.h>
 
 namespace shogun
 {
@@ -335,8 +335,13 @@ namespace shogun
 		return std::make_shared<PipelineBuilder>();
 	}
 	} // namespace details
+#ifdef SWIG
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args... args)
+	std::shared_ptr<TypeName> create(Args ... args)
+#else
+	template <typename TypeName, typename... Args>
+	std::shared_ptr<TypeName> create(Args&&... args)
+#endif
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -373,18 +378,33 @@ namespace shogun
 		}
 	}
 
-	// The SWIG now only support one template parameter in variadic template, so
-	// we have to write those create_ wrapper function
-	std::shared_ptr<Features> create_features(
-	    std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
-	{
-		return create<Features>(file, primitive_type);
-	}
-
+// The SWIG now only support one template parameter in variadic template, so
+// we have to write those create_ wrapper function
+#ifdef SWIG
 	template <typename T>
 	std::shared_ptr<Features> create_features(SGMatrix<T> mat)
 	{
 		return create<Features>(mat);
+	}
+
+	template <
+	    typename T, typename T2 = typename std::enable_if_t<
+	                    std::is_floating_point<T>::value>>
+	std::shared_ptr<Kernel> create_kernel(SGMatrix<T> kernel_matrix)
+	{
+		return details::kernel(kernel_matrix);
+	}
+
+	template <typename T>
+	std::shared_ptr<Labels> create_labels(SGVector<T> labels)
+	{
+		return create<Labels>(labels);
+	}
+	
+	std::shared_ptr<Features> create_features(
+	    std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return create<Features>(file, primitive_type);
 	}
 
 	std::shared_ptr<Features> create_string_features(
@@ -392,12 +412,6 @@ namespace shogun
 	    EPrimitiveType primitive_type = PT_CHAR)
 	{
 		return details::string_features(file, alphabet_type, primitive_type);
-	}
-
-	template <typename T>
-	std::shared_ptr<Labels> create_labels(SGVector<T> labels)
-	{
-		return create<Labels>(labels);
 	}
 
 	std::shared_ptr<Labels> create_labels(std::shared_ptr<File> file)
@@ -432,12 +446,6 @@ namespace shogun
 	{
 		return details::pipeline();
 	}
-	template <
-	    typename T, typename T2 = typename std::enable_if_t<
-	                    std::is_floating_point<T>::value>>
-	std::shared_ptr<Kernel> create_kernel(SGMatrix<T> kernel_matrix)
-	{
-		return details::kernel(kernel_matrix);
-	}
+#endif
 } // namespace shogun
 #endif // FACTORY_H_
