@@ -35,9 +35,8 @@ class BruteKNNSolver : public KNNSolver
 		 * @param num_classes m_num_classes
 		 * @param min_label m_min_label
 		 * @param train_labels m_train_labels
-		 * @param NN nn
 		 */
-		BruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN);
+		BruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels);
 
 		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes);
 
@@ -45,7 +44,7 @@ class BruteKNNSolver : public KNNSolver
 
 		virtual bool train_KNN(std::shared_ptr<Distance> knn_distance);
 
-		virtual bool compute_nearest_neighbours();
+		virtual bool compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance);
 
 		/** @return object name */
 		const char* get_name() const { return "BruteKNNSolver"; }
@@ -53,12 +52,12 @@ class BruteKNNSolver : public KNNSolver
 	private:
 		void init()
 		{
-			nn=SGMatrix<index_t>(3, 0);
+			m_NN=SGMatrix<index_t>(3, 0);
 		}
 
 	protected:
 		/** The nearest neighbors martix */
-		SGMatrix<index_t> nn;
+		//SGMatrix<index_t> nn;
 
 };
 

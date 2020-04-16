@@ -86,7 +86,7 @@ class KNNSolver : public DistanceMachine
 
 		virtual bool train_KNN(std::shared_ptr<Distance> knn_distance) = 0;
 
-		virtual bool compute_nearest_neighbours() = 0;
+		virtual bool compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance) = 0;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KNNSolver"; }
@@ -115,7 +115,7 @@ class KNNSolver : public DistanceMachine
 		//nearest neighbours matrix
 		SGMatrix<index_t> m_NN;
 
-		std::shared_ptr<shogun::Distance> m_knn_distance;
+		//std::shared_ptr<shogun::Distance> m_knn_distance;
 };
 
 }

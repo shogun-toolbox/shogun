@@ -129,7 +129,7 @@ bool LSHKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)
 	return true;
 }
 
-bool LSHKNNSolver::compute_nearest_neighbours()
+bool LSHKNNSolver::compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance)
 {
 	//TODO complete this
 

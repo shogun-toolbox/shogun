@@ -49,7 +49,7 @@ class KDTREEKNNSolver : public KNNSolver
 
 		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes);
 
-		virtual bool compute_nearest_neighbours();
+		virtual bool compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance);
 
 		virtual bool train_KNN(std::shared_ptr<Distance> knn_distance);
 

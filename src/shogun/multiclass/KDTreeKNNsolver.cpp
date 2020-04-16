@@ -32,7 +32,7 @@ std::shared_ptr<MulticlassLabels> KDTREEKNNSolver::classify_objects(std::shared_
 	//auto query = knn_distance->get_rhs();
 	//m_kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
 	//SGMatrix<index_t> NN = m_kd_tree->get_knn_indices();
-	compute_nearest_neighbours();
+	compute_nearest_neighbours(knn_distance);
 	for (int32_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
@@ -63,7 +63,7 @@ SGVector<int32_t> KDTREEKNNSolver::classify_objects_k(std::shared_ptr<Distance> 
 	//auto data = knn_distance->get_rhs();
 	//m_kd_tree->query_knn(data->as<DenseFeatures<float64_t>>(), m_k);
 	//SGMatrix<index_t> NN = m_kd_tree->get_knn_indices();
-	compute_nearest_neighbours();
+	compute_nearest_neighbours(knn_distance);
 	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
@@ -83,18 +83,18 @@ SGVector<int32_t> KDTREEKNNSolver::classify_objects_k(std::shared_ptr<Distance> 
 bool KDTREEKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)
 {
 	std::cout<<"entered KDTREEKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)\n";
-	m_knn_distance = knn_distance;
+	//m_knn_distance = knn_distance;
 	m_kd_tree = std::make_shared<KDTree>(m_leaf_size);
-	auto lhs = m_knn_distance->get_lhs();
+	auto lhs = knn_distance->get_lhs();
 	m_kd_tree->build_tree(lhs->as<DenseFeatures<float64_t>>());
 	std::cout<<"exiting KDTREEKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)\n";
 	return true;
 }
 
-bool KDTREEKNNSolver::compute_nearest_neighbours()
+bool KDTREEKNNSolver::compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance)
 {
 	std::cout<<"entered KDTREEKNNSolver::compute_nearest_neighbours()\n";
-	auto query = m_knn_distance->get_rhs();
+	auto query = knn_distance->get_rhs();
 	m_kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
 	m_NN = m_kd_tree->get_knn_indices();
 	std::cout<<"exiting KDTREEKNNSolver::compute_nearest_neighbours()\n";

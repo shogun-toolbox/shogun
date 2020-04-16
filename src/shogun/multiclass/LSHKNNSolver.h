@@ -50,7 +50,7 @@ class LSHKNNSolver : public KNNSolver
 
 		virtual bool train_KNN(std::shared_ptr<Distance> knn_distance);
 
-		virtual bool compute_nearest_neighbours();
+		virtual bool compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance);
 
 		/** @return object name */
 		const char* get_name() const { return "LSHKNNSolver"; }

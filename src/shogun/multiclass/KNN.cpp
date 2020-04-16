@@ -123,24 +123,26 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 {
 	std::cout<<"entered KNN::nearest_neighbors()";
 	//number of examples to which kNN is applied
-	int32_t n=distance->get_num_vec_rhs();
+	/* int32_t n=distance->get_num_vec_rhs();
+	std::cout<<"Number of vectors RHS is :"<< n << '\n'; */
 
 	//distances to train data
-	SGVector<float64_t> dists(m_train_labels.vlen);
+//	SGVector<float64_t> dists(m_train_labels.vlen);
 	//indices to train data
-	SGVector<index_t> train_idxs(m_train_labels.vlen);
+//	SGVector<index_t> train_idxs(m_train_labels.vlen);
 	//pre-allocation of the nearest neighbors
-	SGMatrix<index_t> NN(m_k, n);
+	SGMatrix<index_t> NN;
 
 	distance->precompute_lhs();
 	distance->precompute_rhs();
-	std::cout<<"n is "<<n<<'\n';
+	//std::cout<<"n is "<<n<<'\n';
 	std::cout<<"k is "<<m_k<<'\n';
 	switch (m_knn_solver)
 	{
 	case KNN_BRUTE:
 	{
-		for (auto i : SG_PROGRESS(range(n)))
+		std::cout<<"ENTERING CASE: KNN_BRUTE"<<'\n';
+		/* for (auto i : SG_PROGRESS(range(n)))
 		{
 			COMPUTATION_CONTROLLERS
 			distances_lhs(dists,0,m_train_labels.vlen-1,i);
@@ -189,7 +191,9 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 			NN.set_column(i, nearest_k_train_idxs);
 		}
 
-		distance->reset_precompute();
+		distance->reset_precompute(); */
+		solver->compute_nearest_neighbours(distance);
+		NN = solver->get_nearest_neighbours();
 		break;
 	}
 	case KNN_KDTREE:
@@ -202,7 +206,7 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 		//std::shared_ptr<shogun::KDTree> kd_tree = solver->get_kd_tree();
 		//kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
 		
-		solver->compute_nearest_neighbours();
+		solver->compute_nearest_neighbours(distance);
 		NN = solver->get_nearest_neighbours();
 
 		break;
@@ -311,7 +315,7 @@ SGMatrix<int32_t> KNN::classify_for_multiple_k()
 
 	io::info("{} test examples", num_lab);
 
-	init_solver(m_knn_solver);
+	//init_solver(m_knn_solver);
 
 	SGVector<int32_t> output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
 
@@ -358,9 +362,9 @@ void KNN::init_solver(KNN_SOLVER knn_solver)
 	{
 	case KNN_BRUTE:
 	{
-		SGMatrix<index_t> NN = nearest_neighbors();
-		solver = std::make_shared<BruteKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, NN);
-
+		//SGMatrix<index_t> NN = nearest_neighbors();
+		solver = std::make_shared<BruteKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
+		std::cout<<"solver created\n";
 		break;
 	}
 	case KNN_KDTREE:
