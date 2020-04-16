@@ -335,13 +335,14 @@ namespace shogun
 		return std::make_shared<PipelineBuilder>();
 	}
 	} // namespace details
-#ifdef SWIG
+	// fix me
+	//#ifdef SWIG
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args ... args)
-#else
-	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args&&... args)
-#endif
+	std::shared_ptr<TypeName> create(Args... args)
+	//#else
+	// template <typename TypeName, typename... Args>
+	// std::shared_ptr<TypeName> create(Args&&... args)
+	//#endif
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -402,8 +403,8 @@ namespace shogun
 		return details::string_features(
 		    features, start, p_order, gap, rev, primitive_type);
 	}
-
-#ifdef SWIG
+	// fix me
+	//#ifdef SWIG
 	template <typename T>
 	std::shared_ptr<Features> create_features(SGMatrix<T> mat)
 	{
@@ -423,13 +424,12 @@ namespace shogun
 	{
 		return create<Labels>(labels);
 	}
-	
+
 	std::shared_ptr<Features> create_features(
 	    std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
 	{
 		return create<Features>(file, primitive_type);
 	}
-
 
 	std::shared_ptr<Labels> create_labels(std::shared_ptr<File> file)
 	{
@@ -449,6 +449,6 @@ namespace shogun
 	{
 		return details::pipeline();
 	}
-#endif
+	//#endif
 } // namespace shogun
 #endif // FACTORY_H_
