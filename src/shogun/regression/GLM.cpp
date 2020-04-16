@@ -4,6 +4,8 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
+
 #include <shogun/regression/GLM.h>
 #include <utility>
 using namespace shogun;
@@ -19,7 +21,7 @@ SGVector<float64_t> GLM::log_likelihood(
 	auto vector_count = features->get_num_vectors();
 	auto feature_count = features->get_num_features();
 	ASSERT(vector_count > 0 && label->get_num_labels() == vector_count)
-	// Array of Lambdas
+
 	SGVector<float64_t> lambda(vector_count);
 	SGVector<float64_t> beta = LinearMachine::get_w();
 	float64_t beta0 = LinearMachine::get_bias();
@@ -42,6 +44,34 @@ SGVector<float64_t> GLM::log_likelihood(
 	for (auto i = 0; i < vector_count; i++)
 		likelihood.set_element(linalg::sum(likelihood_clone.slice(0, i)), i);
 	return likelihood;
+}
+
+SGVector<float64_t> GLM::log_likelihood_derivative(
+    const std::shared_ptr<DenseFeatures<float64_t>>& features,
+    const std::shared_ptr<Labels>& label)
+{
+	auto vector_count = features->get_num_vectors();
+	auto feature_count = features->get_num_features();
+	ASSERT(vector_count > 0 && label->get_num_labels() == vector_count)
+	SGVector<float64_t> result(vector_count + 1);
+	SGVector<float64_t> beta = LinearMachine::get_w();
+	float64_t beta0 = LinearMachine::get_bias();
+	SGMatrix<float64_t> z = linalg::add_scalar(
+	    linalg::matrix_prod(
+	        SGMatrix(beta, 1, beta.vlen), features->get_feature_matrix()),
+	    beta0); // Z is 1xN Matrix where N is the number of vectors
+	SGMatrix<float64_t> s(z.num_rows, z.num_cols);
+	linalg::logistic(z, s);
+	SGVector<float64_t> q(vector_count);
+	for (auto i = 0; i < vector_count; i++)
+	{
+		q.set_element(log(1 + std::exp(z.get_element(0, i))), i);
+	}
+	float64_t beta0_grad =
+	    linalg::sum(s) +
+	    linalg::sum(linalg::dot(label->get_values(), SGVector(s)));
+	result.set_element(beta0_grad, 0);
+	return result;
 }
 void GLM::init()
 {

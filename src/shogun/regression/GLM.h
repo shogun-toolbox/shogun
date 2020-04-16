@@ -47,6 +47,9 @@ namespace shogun
 		SGVector<float64_t> log_likelihood(
 		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
 		    const std::shared_ptr<Labels>& label);
+		SGVector<float64_t> log_likelihood_derivative(
+		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
+		    const std::shared_ptr<Labels>& label);
 		/** Constructor
 		 *
 		 * @param descend_updater chosen Descend Updater algorithm
