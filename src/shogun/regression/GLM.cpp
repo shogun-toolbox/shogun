@@ -46,11 +46,8 @@ SGVector<float64_t> GLM::log_likelihood(
 void GLM::init()
 {
 	SG_ADD(
-	    &m_tau, "tau", "Regularization parameter",
+	    &m_tau, "tau", "L2 Regularization parameter",
 	    ParameterProperties::SETTING);
-	SG_ADD(
-	    &m_lambda, "lambda", "Regularization parameter lambda",
-	    ParameterProperties::HYPER);
 	SG_ADD(
 	    (std::shared_ptr<SGObject>*)&m_descend_updater, "descend_updater",
 	    "Descend Updater used for updating weights",
@@ -64,12 +61,10 @@ void GLM::init()
 }
 GLM::GLM(
     const std::shared_ptr<DescendUpdater>& descend_updater,
-    DistributionFamily family, LinkFunction link_fn, float64_t tau,
-    float64_t lambda)
+    DistributionFamily family, LinkFunction link_fn, float64_t tau)
     : LinearMachine()
 {
 	m_tau = tau;
-	m_lambda = lambda;
 	m_link_fn = link_fn;
 	m_descend_updater = descend_updater;
 	m_family = family;

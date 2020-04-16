@@ -52,12 +52,10 @@ namespace shogun
 		 * @param descend_updater chosen Descend Updater algorithm
 		 * @param link_fn the link function
 		 * @param Family the family
-		 * @param alpha Weighting parameter between L1 and L2 Penalty
-		 * @param lambda Regularization parameter lambda
+		 * @param tau L2-Regularization parameter
 		 */
 		GLM(const std::shared_ptr<DescendUpdater>& descend_updater,
-		    DistributionFamily family, LinkFunction link_fn, float64_t tau,
-		    float64_t lambda);
+		    DistributionFamily family, LinkFunction link_fn, float64_t tau);
 
 		virtual ~GLM(){};
 
@@ -79,7 +77,6 @@ namespace shogun
 	protected:
 		std::shared_ptr<DescendUpdater>
 		    m_descend_updater; // TODO: Choose Default value
-		float64_t m_lambda = 0.1;
 		DistributionFamily m_family = POISSON_DISTRIBUTION;
 		LinkFunction m_link_fn = LOG;
 		float64_t m_tau = 1e-6;
