@@ -44,7 +44,7 @@ namespace shogun
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		GLM();
-		SGVector<float64_t> log_likelihood(
+		float64_t log_likelihood(
 		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
 		    const std::shared_ptr<Labels>& label);
 		SGVector<float64_t> log_likelihood_derivative(
