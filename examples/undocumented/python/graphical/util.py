@@ -40,7 +40,7 @@ def get_realdata(positive=True):
 def get_realfeatures(pos, neg):
     arr = np.array((pos, neg))
     features = np.concatenate(arr, axis=1)
-    return sg.features(features)
+    return sg.create_features(features)
 
 
 def get_labels(raw=False):
@@ -50,7 +50,7 @@ def get_labels(raw=False):
     if raw:
         return data
     else:
-        return sg.labels(data)
+        return sg.create_labels(data)
 
 
 def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=False, pos=None, neg=None,
@@ -69,7 +69,7 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 
     x, y = np.meshgrid(x1, x2)
 
-    dense = sg.features(np.array((np.ravel(x), np.ravel(y))))
+    dense = sg.create_features(np.array((np.ravel(x), np.ravel(y))))
     if sparse:
         test = sg.SparseRealFeatures()
         test.obtain_from_simple(dense)
@@ -102,7 +102,7 @@ def get_sinedata():
 def compute_output_plot_isolines_sine(classifier, kernel, train, regression=False):
     x = 4 * rand(1, 500) - 2
     x.sort()
-    test = sg.features(x)
+    test = sg.create_features(x)
     kernel.init(train, test)
 
     if regression:

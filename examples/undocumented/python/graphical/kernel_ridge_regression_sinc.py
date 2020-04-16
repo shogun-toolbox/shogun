@@ -7,11 +7,11 @@ plt.figure('KernelRidgeRegression on Sine')
 X, Y = util.get_sinedata()
 width = 1
 
-feat = sg.features(X)
-lab = sg.labels(Y.flatten())
-gk = sg.kernel('GaussianKernel', log_width=width)
+feat = sg.create_features(X)
+lab = sg.create_labels(Y.flatten())
+gk = sg.create_kernel('GaussianKernel', log_width=width)
 gk.init(feat, feat)
-krr = sg.machine('KernelRidgeRegression', labels=lab, kernel=gk, tau=1e-3)
+krr = sg.create_machine('KernelRidgeRegression', labels=lab, kernel=gk, tau=1e-3)
 krr.train()
 
 plt.scatter(X, Y,  label='train data', color='tab:red')

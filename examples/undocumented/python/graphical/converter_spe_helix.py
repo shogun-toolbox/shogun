@@ -47,10 +47,10 @@ plt.plot(X[0, y2], X[1, y2], X[2, y2], 'go')
 plt.title('Original 3D Helix')
 
 # Create features instance
-features = sg.features(X)
+features = sg.create_features(X)
 
 # Create Stochastic Proximity Embedding converter instance
-converter = sg.transformer('StochasticProximityEmbedding', target_dim=2, m_strategy='SPE_GLOBAL')
+converter = sg.create_transformer('StochasticProximityEmbedding', target_dim=2, m_strategy='SPE_GLOBAL')
 
 # Compute SPE embedding
 embedding = converter.transform(features)
@@ -79,7 +79,7 @@ plt.plot(X[0, y2], X[1, y2], 'go')
 plt.title('SPE with local strategy')
 
 # Compute Isomap embedding (for comparison)
-converter = sg.transformer('Isomap')
+converter = sg.create_transformer('Isomap')
 converter.put('target_dim', 2)
 converter.put('k', 6)
 
