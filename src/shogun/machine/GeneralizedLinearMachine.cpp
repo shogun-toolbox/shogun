@@ -1,5 +1,4 @@
 /*
- * STILL A WORK IN PROGRESS
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Tej Sukhatme
@@ -12,7 +11,7 @@
 #include <shogun/machine/GeneralizedLinearMachine.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 // #include <utility>
-#include <math.h>
+#include <cmath>
 #include <random>
 
 using namespace shogun;
@@ -22,9 +21,8 @@ GeneralizedLinearMachine::GeneralizedLinearMachine(): Machine()
 	init();
 }
 
-GeneralizedLinearMachine::GeneralizedLinearMachine(const std::shared_ptr<GeneralizedLinearMachine>& machine) : Machine()
+GeneralizedLinearMachine::GeneralizedLinearMachine(const std::shared_ptr<GeneralizedLinearMachine>& machine) : GeneralizedLinearMachine()
 {
-	init();
 	require(machine, "No machine provided.");
 
 	auto w = machine->get_w();
@@ -186,14 +184,14 @@ SGVector<float64_t> GeneralizedLinearMachine::non_linearity(SGVector<float64_t> 
 		float64_t bias = 0;
 
 		if(m_fit_intercept)
-			bias = (1 - m_eta) * exp(m_eta);
+			bias = (1 - m_eta) * std::exp(m_eta);
 
 		for (int i = 0; i < z.vlen; i++)
 		{
 			if(z[i]>m_eta)
-				result[i] = z[i] * exp(m_eta) + bias;
+				result[i] = z[i] * std::exp(m_eta) + bias;
 			else
-				result[i] = exp(z[i]);
+				result[i] = std::exp(z[i]);
 		}
 		break;
 	
@@ -214,9 +212,9 @@ SGVector<float64_t> GeneralizedLinearMachine::gradient_non_linearity(SGVector<fl
 		{
 			if(z[i]>m_eta)
 				
-				result[i] = exp(m_eta);
+				result[i] = std::exp(m_eta);
 			else
-				result[i] = exp(z[i]);
+				result[i] = std::exp(z[i]);
 		}
 		break;
 	
