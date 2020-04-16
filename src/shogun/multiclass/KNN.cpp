@@ -122,93 +122,20 @@ bool KNN::train_machine(std::shared_ptr<Features> data)
 SGMatrix<index_t> KNN::nearest_neighbors()
 {
 	std::cout<<"entered KNN::nearest_neighbors()";
-	//number of examples to which kNN is applied
-	/* int32_t n=distance->get_num_vec_rhs();
-	std::cout<<"Number of vectors RHS is :"<< n << '\n'; */
 
-	//distances to train data
-//	SGVector<float64_t> dists(m_train_labels.vlen);
-	//indices to train data
-//	SGVector<index_t> train_idxs(m_train_labels.vlen);
 	//pre-allocation of the nearest neighbors
 	SGMatrix<index_t> NN;
 
 	distance->precompute_lhs();
 	distance->precompute_rhs();
-	//std::cout<<"n is "<<n<<'\n';
-	std::cout<<"k is "<<m_k<<'\n';
+
 	switch (m_knn_solver)
 	{
 	case KNN_BRUTE:
-	{
-		std::cout<<"ENTERING CASE: KNN_BRUTE"<<'\n';
-		/* for (auto i : SG_PROGRESS(range(n)))
-		{
-			COMPUTATION_CONTROLLERS
-			distances_lhs(dists,0,m_train_labels.vlen-1,i);
-
-			train_idxs.range_fill(0);
-
-			std::pair<float64_t, index_t> pairt[m_train_labels.vlen];
-
-			
-			std::cout<<"i is "<<i<<'\n';
-			//std::cout<<" before sorting dists is "<<'\n';
-			dists.display_vector("before sorting dists");
-			//std::cout<<"before sorting train_idxs is "<<'\n';
-			train_idxs.display_vector("before sorting train_idxs");
-
-			// Storing the respective array elements in pairs.
-			for (int j = 0; j < m_train_labels.vlen; j++)
-			{
-				pairt[j].first = dists[j];
-				pairt[j].second = train_idxs[j];
-			}
-
-			sort(pairt, pairt + m_train_labels.vlen);
-
-			for (int j = 0; j < m_train_labels.vlen; j++)
-			{
-				dists[j] = pairt[j].first;
-				train_idxs[j] = pairt[j].second;
-			}
-
-			SG_DEBUG("\nQuick sort query {}", i);
-			SG_DEBUG("{}", train_idxs.to_string());
-
-			
-			//std::cout<<"after sorting dists is "<<'\n';
-			dists.display_vector("after sorting dists");
-			//std::cout<<"after sorting train_idxs is "<<'\n';
-			train_idxs.display_vector("after sorting train_idxs is");
-
-			//only considering the first k elements
-			SGVector<index_t> nearest_k_train_idxs(train_idxs.vector, m_k, false);
-
-			//std::cout<<"nearest_k_train_idxs is "<<'\n';
-			nearest_k_train_idxs.display_vector("nearest_k_train_idxs");
-
-			NN.set_column(i, nearest_k_train_idxs);
-		}
-
-		distance->reset_precompute(); */
-		solver->compute_nearest_neighbours(distance);
-		NN = solver->get_nearest_neighbours();
-		break;
-	}
 	case KNN_KDTREE:
 	{
-		//auto lhs = distance->get_lhs();
-		//auto kd_tree = std::make_shared<KDTree>(m_leaf_size);
-		//kd_tree->build_tree(lhs->as<DenseFeatures<float64_t>>());
-
-		//auto query = distance->get_rhs();
-		//std::shared_ptr<shogun::KDTree> kd_tree = solver->get_kd_tree();
-		//kd_tree->query_knn(query->as<DenseFeatures<float64_t>>(), m_k);
-		
 		solver->compute_nearest_neighbours(distance);
 		NN = solver->get_nearest_neighbours();
-
 		break;
 	}
 	}
@@ -315,8 +242,6 @@ SGMatrix<int32_t> KNN::classify_for_multiple_k()
 
 	io::info("{} test examples", num_lab);
 
-	//init_solver(m_knn_solver);
-
 	SGVector<int32_t> output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
 
 
@@ -362,9 +287,8 @@ void KNN::init_solver(KNN_SOLVER knn_solver)
 	{
 	case KNN_BRUTE:
 	{
-		//SGMatrix<index_t> NN = nearest_neighbors();
 		solver = std::make_shared<BruteKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
-		std::cout<<"solver created\n";
+
 		break;
 	}
 	case KNN_KDTREE:

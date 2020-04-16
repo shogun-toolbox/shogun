@@ -114,8 +114,6 @@ class KNNSolver : public DistanceMachine
 
 		//nearest neighbours matrix
 		SGMatrix<index_t> m_NN;
-
-		//std::shared_ptr<shogun::Distance> m_knn_distance;
 };
 
 }

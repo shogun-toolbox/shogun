@@ -19,14 +19,13 @@ KNNSolver(k, q, num_classes, min_label, train_labels)
 {
 	std::cout<<"entered BruteKNNSolver::constructor\n";
 	init();
-	//nn=NN;
 }
 
 std::shared_ptr<MulticlassLabels> BruteKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes)
 {
 	auto output=std::make_shared<MulticlassLabels>(num_lab);
+	
 	//get the k nearest neighbors of each example
-	//SGMatrix<index_t> NN = this->nn;
 	compute_nearest_neighbours(knn_distance);
 
 	//from the indices to the nearest neighbors, compute the class labels
@@ -52,7 +51,6 @@ SGVector<int32_t> BruteKNNSolver::classify_objects_k(std::shared_ptr<Distance> k
 	SGVector<int32_t> output(m_k*num_lab);
 
 	//get the k nearest neighbors of each example
-	//SGMatrix<index_t> NN = this->nn;
 	compute_nearest_neighbours(knn_distance);
 
 	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
@@ -77,6 +75,7 @@ bool BruteKNNSolver::train_KNN(std::shared_ptr<Distance> knn_distance)
 bool BruteKNNSolver::compute_nearest_neighbours(std::shared_ptr<Distance> knn_distance)
 {
 	std::cout<<"entered BruteKNNSolver::compute_nearest_neighbours()\n";
+	
 	//number of examples to which kNN is applied
 	int32_t n = knn_distance->get_num_vec_rhs();
 
@@ -98,9 +97,7 @@ bool BruteKNNSolver::compute_nearest_neighbours(std::shared_ptr<Distance> knn_di
 		std::pair<float64_t, index_t> pairt[m_train_labels.vlen];
 	
 		std::cout<<"i is "<<i<<'\n';
-		//std::cout<<" before sorting dists is "<<'\n';
 		dists.display_vector("before sorting dists");
-		//std::cout<<"before sorting train_idxs is "<<'\n';
 		train_idxs.display_vector("before sorting train_idxs");
 
 		// Storing the respective array elements in pairs.
@@ -122,15 +119,12 @@ bool BruteKNNSolver::compute_nearest_neighbours(std::shared_ptr<Distance> knn_di
 		SG_DEBUG("{}", train_idxs.to_string());
 
 			
-		//std::cout<<"after sorting dists is "<<'\n';
 		dists.display_vector("after sorting dists");
-		//std::cout<<"after sorting train_idxs is "<<'\n';
 		train_idxs.display_vector("after sorting train_idxs is");
 
 		//only considering the first k elements
 		SGVector<index_t> nearest_k_train_idxs(train_idxs.vector, m_k, false);
 
-		//std::cout<<"nearest_k_train_idxs is "<<'\n';
 		nearest_k_train_idxs.display_vector("nearest_k_train_idxs");
 
 		m_NN.set_column(i, nearest_k_train_idxs);
