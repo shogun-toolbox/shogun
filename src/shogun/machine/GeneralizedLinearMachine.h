@@ -9,6 +9,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/machine/LinearMachine.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 
@@ -57,7 +58,7 @@ class RegressionLabels;
  *	:math:`\\beta` belongs to its own group.
  *
  * */
-class GeneralizedLinearMachine : public Machine
+class GeneralizedLinearMachine : public LinearMachine
 {
  	public:
  		/** default constructor */
@@ -65,45 +66,6 @@ class GeneralizedLinearMachine : public Machine
 
  		/** destructor */
  		virtual ~GeneralizedLinearMachine();
-
- 		/** copy constructor */
- 		GeneralizedLinearMachine(const std::shared_ptr<GeneralizedLinearMachine>& machine);
-
-		/** get w
-		 *
-		 * @return weight vector
-		 */
-		virtual SGVector<float64_t> get_w() const;
-
-		/** set w
-		 *
-		 * @param src_w new w
-		 */
-		virtual void set_w(const SGVector<float64_t> src_w);
-
-		/** set bias
-		 *
-		 * @param b new bias
-		 */
-		virtual void set_bias(float64_t b);
-
-		/** get bias
-		 *
-		 * @return bias
-		 */
-		virtual float64_t get_bias() const;
-
- 		/** set features
- 		 *
- 		 * @param feat features to set
- 		 */
- 		virtual void set_features(std::shared_ptr<DotFeatures> feat);
-
-		/**
-		* A specialization of the train_machine method
-		* @param feats training data
-		*/
-		virtual bool train_machine(std::shared_ptr<const DenseFeatures<float64_t>> feats);
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -113,12 +75,6 @@ class GeneralizedLinearMachine : public Machine
 		 */
 		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
- 		/** get features
- 		 *
- 		 * @return features
- 		 */
- 		virtual std::shared_ptr<DotFeatures> get_features();
-
  		/** Returns the name of the SGSerializable instance.  It MUST BE
  		 *  the CLASS NAME without the prefixed `C'.
  		 *
@@ -127,6 +83,12 @@ class GeneralizedLinearMachine : public Machine
  		virtual const char* get_name() const { return "GeneralizedLinearMachine"; }
 
 	protected:
+
+		/**
+		* A specialization of the train_machine method
+		* @param feats training data
+		*/
+		virtual bool train_machine(std::shared_ptr<const DenseFeatures<float64_t>> feats);
 
 		/** apply get outputs
 		 *
@@ -166,49 +128,34 @@ class GeneralizedLinearMachine : public Machine
 		void init();
 
 	protected:
-		/** w */
-		SGVector<float64_t> m_w;
-
-		/** bias */
-		float64_t m_bias;
-
- 		/** features */
-		std::shared_ptr<DotFeatures> features;
 
 		/** Distribution type */
 		GLM_DISTRIBUTION distribution;
 
-		/** specifies if a constant (a.k.a. bias or intercept) should be added to the decision function.
-         * default: true */
-		bool m_fit_intercept;
+		/** specifies if a constant (a.k.a. bias or intercept) should be added to the decision function. */
+		bool m_fit_intercept = true;
 
-		/** a threshold parameter that linearizes the exp() function above eta.
-		 * default: 2.0 */
-		float64_t m_eta;
+		/** a threshold parameter that linearizes the exp() function above eta. */
+		float64_t m_eta = 2.0;
 
-		/** maximum number of iterations for the solver.
-		 * default: 1000 */
-		int m_max_iter;
+		/** maximum number of iterations for the solver. */
+		int m_max_iter = 1000;
 		
-		/** learning rate for gradient descent.
-		 * default: 2e-1 */
-		float64_t m_learning_rate;
+		/** learning rate for gradient descent. */
+		float64_t m_learning_rate = 2e-1;
 
-		/** regularization parameter :math:`\\lambda` of penalty term.
-		 * default: 0.1 */
-		float64_t m_lambda;
+		/** regularization parameter :math:`\\lambda` of penalty term. */
+		float64_t m_lambda = 0.1;
 
 		/** the (n_features, n_features) Tikhonov matrix.
-		 * default: None, in which case Tau is identity and the L2 penalty is ridge-like */
-		SGMatrix<float64_t> m_tau;
+		 * default: NULL, in which case Tau is identity and the L2 penalty is ridge-like */
+		SGMatrix<float64_t> m_tau = NULL;
 
-		/** the weighting between L1 penalty and L2 penalty term of the loss function.
-		 * default: 0.5 */
-		float64_t m_alpha;
+		/** the weighting between L1 penalty and L2 penalty term of the loss function. */
+		float64_t m_alpha = 0.5;
 
-		/** convergence threshold or stopping criteria. Optimization loop will stop when relative change in parameter norm is below the threshold.
-		 * default: 1e-6 */
-		float64_t m_tolerance;
+		/** convergence threshold or stopping criteria. Optimization loop will stop when relative change in parameter norm is below the threshold. */
+		float64_t m_tolerance = 1e-6;
 };
 }
 // #endif
