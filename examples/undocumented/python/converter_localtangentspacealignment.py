@@ -11,7 +11,7 @@ def converter_localtangentspacealignment (data_fname,k):
 			print("LocalTangentSpaceAlignment not available")
 			exit(0)
 			
-		features = sg.create_features(sg.create_csv(data_fname))
+		features = sg.create_features(sg.read_csv(data_fname))
 
 		converter = LocalTangentSpaceAlignment()
 		converter.set_target_dim(1)

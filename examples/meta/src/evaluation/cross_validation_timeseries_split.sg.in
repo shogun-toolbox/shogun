@@ -1,4 +1,4 @@
-File f_labels = create_csv("@SHOGUN_DATA@/label_train_regression.dat")
+File f_labels = read_csv("@SHOGUN_DATA@/label_train_regression.dat")
 
 #![create labels]
 Labels reg_labels = create_labels(f_labels)

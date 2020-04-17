@@ -92,7 +92,7 @@ parameter_list = [[samples,labels,w_all,ftype_all]]
 
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
 	try:
-		_ = sg.machine("DualLibQPBMSOSVM")
+		_ = sg.create_machine("DualLibQPBMSOSVM")
 	except:
 		print("DualLibQPBMSOSVM not available")
 		return

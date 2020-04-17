@@ -1,5 +1,5 @@
-File f_features_a = create_csv("@SHOGUN_DATA@/fm_train_real.dat")
-File f_features_b = create_csv("@SHOGUN_DATA@/fm_test_real.dat")
+File f_features_a = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File f_features_b = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
 Features features_a = create_features(f_features_a)

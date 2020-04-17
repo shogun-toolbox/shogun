@@ -15,8 +15,8 @@ dims[0] = 0
 dims[1] = 1
 Features features_with_subset = create_features_subset(features_from_matrix, dims)
 
-File features_file = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
+File features_file = read_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
 Features features_from_file = create_features(features_file)
 
-File labels_file = create_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_train.dat")
+File labels_file = read_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_labels_train.dat")
 Labels labels_from_file = create_labels(labels_file)

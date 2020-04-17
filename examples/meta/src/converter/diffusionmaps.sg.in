@@ -1,4 +1,4 @@
-File f_feats = create_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File f_feats = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
 
 #![create_features]
 Features feats = create_features(f_feats)

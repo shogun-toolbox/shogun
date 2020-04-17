@@ -11,7 +11,7 @@ def converter_hessianlocallylinearembedding (data_fname,k):
 			print("HessianLocallyLinearEmbedding not available")
 			exit(0)
 
-		features = sg.create_features(sg.create_csv(data))
+		features = sg.create_features(sg.read_csv(data))
 
 		converter = HessianLocallyLinearEmbedding()
 		converter.set_target_dim(1)

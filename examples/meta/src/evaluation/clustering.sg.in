@@ -1,6 +1,6 @@
-File f_feats_train = create_csv("@SHOGUN_DATA@/optdigits_10class_feats.dat")
-File f_labels_train = create_csv("@SHOGUN_DATA@/optdigits_10class_labels.dat")
-File f_labels_centroids = create_csv("@SHOGUN_DATA@/10class_continuous_labels.dat")
+File f_feats_train = read_csv("@SHOGUN_DATA@/optdigits_10class_feats.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/optdigits_10class_labels.dat")
+File f_labels_centroids = read_csv("@SHOGUN_DATA@/10class_continuous_labels.dat")
 
 #![create_features]
 Features features_train = create_features(f_feats_train)

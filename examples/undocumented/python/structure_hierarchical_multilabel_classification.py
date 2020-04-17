@@ -118,7 +118,7 @@ def structure_hierarchical_multilabel_classification(train_file_name,
     # test_features, test_labels, test_taxonomy = get_features_labels(test_file)
     # assert(test_taxonomy.all() == train_taxonomy.all())
 
-    # evaluator = sg.evaluation("StructuredAccuracy")
+    # evaluator = sg.create_evaluation("StructuredAccuracy")
     # outlabel = sgd.apply(test_features)
 
     # print('>>> Accuracy of classification = %f' % evaluator.evaluate(

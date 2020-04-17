@@ -9,14 +9,14 @@ def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
 	import shogun as sg
 
-	charfeat=StringCharFeatures(sg.create_csv(train_fname), DNA)
+	charfeat=StringCharFeatures(sg.read_csv(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
-	charfeat=StringCharFeatures(sg.create_csv(test_fname), DNA)
+	charfeat=StringCharFeatures(sg.read_csv(test_fname), DNA)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)

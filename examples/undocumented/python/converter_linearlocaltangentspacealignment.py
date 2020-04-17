@@ -11,7 +11,7 @@ def converter_linearlocaltangentspacealignment (data_fname,k):
 			exit(0)
 		import shogun as sg
 			
-		features = sg.create_features(sg.create_csv(data_fname))
+		features = sg.create_features(sg.read_csv(data_fname))
 
 		converter = LinearLocalTangentSpaceAlignment()
 		converter.set_target_dim(1)

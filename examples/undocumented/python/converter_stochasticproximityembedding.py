@@ -7,7 +7,7 @@ def converter_stochasticproximityembedding (data_fname, k):
 		import shogun as sg
 		from shogun import StochasticProximityEmbedding, SPE_GLOBAL, SPE_LOCAL
 
-		features = sg.create_features(sg.create_csv(data_fname))
+		features = sg.create_features(sg.read_csv(data_fname))
 
 		converter = StochasticProximityEmbedding()
 		converter.set_target_dim(1)

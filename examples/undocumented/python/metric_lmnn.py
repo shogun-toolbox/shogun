@@ -14,9 +14,9 @@ def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_
 	import shogun as sg
 
 	# wrap features and labels into Shogun objects
-	feats_train=sg.create_features(sg.create_csv(train_fname))
-	feats_test=sg.create_features(sg.create_csv(test_fname))
-	labels=MulticlassLabels(sg.create_csv(label_train_fname))
+	feats_train=sg.create_features(sg.read_csv(train_fname))
+	feats_test=sg.create_features(sg.read_csv(test_fname))
+	labels=MulticlassLabels(sg.read_csv(label_train_fname))
 
 	# LMNN
 	lmnn=LMNN(feats_train,labels,k)

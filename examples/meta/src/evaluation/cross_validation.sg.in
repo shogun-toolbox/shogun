@@ -1,7 +1,7 @@
-File f_feats_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
-File f_feats_test = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
-File f_labels_train = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
-File f_labels_test = create_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
+File f_feats_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
 Features features_train = create_features(f_feats_train)
@@ -37,10 +37,10 @@ Labels labels_predict = svm.apply(features_test)
 real accuracy_test = evaluation_criterion.evaluate(labels_predict, labels_test)
 #![get_results_test_data]
 
-File reg_feats_train = create_csv("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
-File reg_feats_test = create_csv("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
-File reg_lab_train = create_csv("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
-File reg_lab_test = create_csv("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
+File reg_feats_train = read_csv("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
+File reg_feats_test = read_csv("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
+File reg_lab_train = read_csv("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
+File reg_lab_test = read_csv("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
 
 #![create_features_REGRESSION]
 Features reg_features_train = create_features(reg_feats_train)

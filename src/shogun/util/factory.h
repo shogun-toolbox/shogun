@@ -436,7 +436,7 @@ namespace shogun
 		return create<Labels>(file);
 	}
 
-	std::shared_ptr<File> create_csv(std::string fname, char rw = 'r')
+	std::shared_ptr<File> read_csv(std::string fname, char rw = 'r')
 	{
 		return create<CSVFile>(fname, rw);
 	}

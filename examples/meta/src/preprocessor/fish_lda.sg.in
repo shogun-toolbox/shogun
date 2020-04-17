@@ -1,5 +1,5 @@
-File data_train = create_csv("@SHOGUN_DATA@/fm_train_real.dat")
-File data_labels = create_csv("@SHOGUN_DATA@/label_train_multiclass.dat")
+File data_train = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File data_labels = read_csv("@SHOGUN_DATA@/label_train_multiclass.dat")
 
 #![create_features]
 Features feats_train = create_features(data_train)
