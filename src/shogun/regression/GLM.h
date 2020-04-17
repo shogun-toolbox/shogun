@@ -55,12 +55,17 @@ namespace shogun
 		GLM(const std::shared_ptr<DescendUpdater>& descend_updater,
 		    DistributionFamily family, LinkFunction link_fn, float64_t tau);
 
-		virtual ~GLM() override{};
+		~GLM() override{};
 
 		/** train model
 		 * @param data training data
 		 * @return whether training was successful
 		 */
+		/** @return object name */
+		const char* get_name() const override
+		{
+			return "GLM";
+		}
 
 	protected:
 		std::shared_ptr<DescendUpdater>
@@ -77,17 +82,10 @@ namespace shogun
 		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
 		    const std::shared_ptr<Labels>& label);
 
-		virtual bool
-		train_machine(std::shared_ptr<Features> data = NULL) override
+		bool train_machine(std::shared_ptr<Features> data = NULL) override
 		{
 			return true;
 		};
-
-		/** @return object name */
-		virtual const char* get_name() const override
-		{
-			return "GLM";
-		}
 
 	private:
 		void init();
