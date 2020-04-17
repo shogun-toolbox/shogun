@@ -1,12 +1,13 @@
 #include <shogun/lib/config.h>
 
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
-
 #include <shogun/regression/GLM.h>
+
 #include <utility>
 using namespace shogun;
 
@@ -25,18 +26,21 @@ float64_t GLM::log_likelihood(
 	SGVector<float64_t> lambda(vector_count);
 	SGVector<float64_t> beta = LinearMachine::get_w();
 	float64_t beta0 = LinearMachine::get_bias();
+	auto feature_matrix = features->get_feature_matrix();
+	auto res =
+	    linalg::matrix_prod(SGMatrix(beta, 1, beta.vlen), feature_matrix);
+	linalg::add_scalar(res, beta0);
+	auto exponent = linalg::exponent(res);
 	for (auto i = 0; i < vector_count; i++)
 	{
-		SGVector<float64_t> feature_vector = features->get_feature_vector(i);
-		float64_t res = linalg::dot(feature_vector, beta);
-		lambda.set_element(log(1 + std::exp(beta0 + res)), i);
+		lambda[i] = log(1 + exponent[i]);
 	}
 	SGVector<float64_t> likelihood(vector_count);
 	SGVector<float64_t> labels = label->get_values();
 	SGVector<float64_t> log_lambda(vector_count);
 
 	for (auto i = 0; i < vector_count; i++)
-		log_lambda.set_element(log(lambda.get_element(i)), i);
+		log_lambda[i] = log(lambda[i]);
 
 	likelihood = linalg::add(
 	    linalg::element_prod(labels, log_lambda), lambda, 1.0, -1.0);
@@ -61,14 +65,16 @@ SGVector<float64_t> GLM::log_likelihood_derivative(
 	SGMatrix<float64_t> s(z.num_rows, z.num_cols);
 	linalg::logistic(z, s);
 	SGVector<float64_t> q(vector_count);
+	linalg::add_scalar(z, beta0);
+	auto exponent = linalg::exponent(z);
 	for (auto i = 0; i < vector_count; i++)
 	{
-		q.set_element(log(1 + std::exp(z.get_element(0, i))), i);
+		q[i] = log(1 + exponent[i]);
 	}
 	float64_t beta0_grad =
 	    linalg::sum(s) -
 	    linalg::sum(linalg::element_prod(label->get_values(), SGVector(s)));
-	result.set_element(beta0_grad, 0);
+	result[0] = beta0_grad;
 	return result;
 }
 void GLM::init()
