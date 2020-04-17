@@ -23,6 +23,16 @@ namespace shogun
 
 		ParameterObserverLogger(std::vector<std::string>& parameters);
 
+		ParameterObserverLogger(std::vector<ParameterProperties>& properties);
+
+		ParameterObserverLogger(
+		    std::vector<std::string>& parameters,
+		    std::vector<ParameterProperties>& properties);
+
+		ParameterObserverLogger(
+		    const std::string& filename, std::vector<std::string>& parameters,
+		    std::vector<ParameterProperties>& properties);
+
 		virtual ~ParameterObserverLogger();
 
 		virtual void on_error(std::exception_ptr ptr);

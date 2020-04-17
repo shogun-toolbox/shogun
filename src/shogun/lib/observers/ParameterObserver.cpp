@@ -1,37 +1,10 @@
 /*
-* BSD 3-Clause License
-*
-* Copyright (c) 2017, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* * Redistributions of source code must retain the above copyright notice, this
-*   list of conditions and the following disclaimer.
-*
-* * Redistributions in binary form must reproduce the above copyright notice,
-*   this list of conditions and the following disclaimer in the documentation
-*   and/or other materials provided with the distribution.
-*
-* * Neither the name of the copyright holder nor the names of its
-*   contributors may be used to endorse or promote products derived from
-*   this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-* Written (W) 2017 Giovanni De Toni
-*
-*/
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Giovanni De Toni
+ *
+ */
+
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/lib/observers/ParameterObserver.h>
@@ -49,6 +22,15 @@ ParameterObserver::ParameterObserver()
 	    "num_observations", &ParameterObserver::get_num_observations);
 }
 
+ParameterObserver::ParameterObserver(
+    std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver()
+{
+	m_observed_parameters = parameters;
+	m_observed_properties = properties;
+}
+
 ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
     : ParameterObserver()
 {
@@ -56,8 +38,16 @@ ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
 }
 
 ParameterObserver::ParameterObserver(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserver(parameters)
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver()
+{
+	m_observed_properties = properties;
+}
+
+ParameterObserver::ParameterObserver(
+    const std::string& filename, std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(parameters, properties)
 {
 }
 
@@ -65,16 +55,27 @@ ParameterObserver::~ParameterObserver()
 {
 }
 
-bool ParameterObserver::filter(const std::string& param)
+bool ParameterObserver::observes(const std::string& param)
 {
 	// If there are no specified parameters, then watch everything
-	if (m_observed_parameters.size() == 0)
-		return true;
+	return std::find(
+	           m_observed_parameters.begin(), m_observed_parameters.end(),
+	           param) != m_observed_parameters.end() ||
+	       m_observed_parameters.empty();
+}
 
-	for (auto v : m_observed_parameters)
-		if (v == param)
-			return true;
-	return false;
+bool ParameterObserver::observes(const AnyParameterProperties& property)
+{
+
+	// If there is no specified property, then watch everything
+	return std::any_of(
+	           m_observed_properties.begin(), m_observed_properties.end(),
+	           [&property](ParameterProperties& p) {
+		           return property.has_property(p) ||
+		                  (p == ParameterProperties::ALL &&
+		                   property.compare_mask(ParameterProperties::NONE));
+	           }) ||
+	       m_observed_properties.empty();
 }
 
 index_t ParameterObserver::get_num_observations() const

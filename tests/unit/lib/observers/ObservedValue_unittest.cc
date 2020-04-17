@@ -1,7 +1,9 @@
 /*
-* Written (W) 2019 Giovanni De Toni
-*/
-
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Giovanni De Toni
+ *
+ */
 #include "sg_gtest_utilities.h"
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>

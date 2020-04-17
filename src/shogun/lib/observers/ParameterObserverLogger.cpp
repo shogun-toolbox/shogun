@@ -12,13 +12,7 @@
 
 using namespace shogun;
 
-ParameterObserverLogger::ParameterObserverLogger()
-{
-}
-
-ParameterObserverLogger::ParameterObserverLogger(
-    std::vector<std::string>& parameters)
-    : ParameterObserver(parameters)
+ParameterObserverLogger::ParameterObserverLogger() : ParameterObserver()
 {
 }
 
@@ -54,4 +48,30 @@ void ParameterObserverLogger::on_next_impl(const TimedObservedValue& value)
 			"[%lu] \"{}\" = {}\n",
 			convert_to_millis(value.second), name.c_str(),
 			stream.str().c_str());
+}
+
+ParameterObserverLogger::ParameterObserverLogger(
+    const std::string& filename, std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(filename, parameters, properties)
+{
+}
+
+ParameterObserverLogger::ParameterObserverLogger(
+    std::vector<std::string>& parameters,
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(parameters, properties)
+{
+}
+
+ParameterObserverLogger::ParameterObserverLogger(
+    std::vector<std::string>& parameters)
+    : ParameterObserver(parameters)
+{
+}
+
+ParameterObserverLogger::ParameterObserverLogger(
+    std::vector<ParameterProperties>& properties)
+    : ParameterObserver(properties)
+{
 }
