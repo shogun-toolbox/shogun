@@ -24,8 +24,8 @@ float64_t GLM::log_likelihood(
 	ASSERT(vector_count > 0 && label->get_num_labels() == vector_count)
 
 	SGVector<float64_t> lambda(vector_count);
-	SGVector<float64_t> beta = LinearMachine::get_w();
-	float64_t beta0 = LinearMachine::get_bias();
+	auto beta = get_w();
+	auto beta0 = get_bias();
 	auto feature_matrix = features->get_feature_matrix();
 	auto res =
 	    linalg::matrix_prod(SGMatrix(beta, 1, beta.vlen), feature_matrix);
@@ -36,7 +36,7 @@ float64_t GLM::log_likelihood(
 		lambda[i] = log(1 + exponent[i]);
 	}
 	SGVector<float64_t> likelihood(vector_count);
-	SGVector<float64_t> labels = label->get_values();
+	auto labels = label->get_values();
 	SGVector<float64_t> log_lambda(vector_count);
 
 	for (auto i = 0; i < vector_count; i++)
@@ -55,9 +55,9 @@ SGVector<float64_t> GLM::log_likelihood_derivative(
 	auto feature_count = features->get_num_features();
 	ASSERT(vector_count > 0 && label->get_num_labels() == vector_count)
 	SGVector<float64_t> result(vector_count + 1);
-	SGVector<float64_t> beta = LinearMachine::get_w();
-	float64_t beta0 = LinearMachine::get_bias();
-	SGMatrix<float64_t> z = linalg::matrix_prod(
+	auto beta = get_w();
+	auto beta0 = get_bias();
+	auto z = linalg::matrix_prod(
 	    SGMatrix<float64_t>(beta, 1, beta.vlen),
 	    features->get_feature_matrix()); // Z is 1xN Matrix where N is the
 	                                     // number of vectors
@@ -96,11 +96,10 @@ void GLM::init()
 GLM::GLM(
     const std::shared_ptr<DescendUpdater>& descend_updater,
     DistributionFamily family, LinkFunction link_fn, float64_t tau)
-    : LinearMachine()
+    : GLM()
 {
 	m_tau = tau;
 	m_link_fn = link_fn;
 	m_descend_updater = descend_updater;
 	m_family = family;
-	init();
 }

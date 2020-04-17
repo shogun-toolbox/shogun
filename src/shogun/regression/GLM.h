@@ -44,12 +44,7 @@ namespace shogun
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		GLM();
-		float64_t log_likelihood(
-		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
-		    const std::shared_ptr<Labels>& label);
-		SGVector<float64_t> log_likelihood_derivative(
-		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
-		    const std::shared_ptr<Labels>& label);
+
 		/** Constructor
 		 *
 		 * @param descend_updater chosen Descend Updater algorithm
@@ -60,22 +55,12 @@ namespace shogun
 		GLM(const std::shared_ptr<DescendUpdater>& descend_updater,
 		    DistributionFamily family, LinkFunction link_fn, float64_t tau);
 
-		virtual ~GLM(){};
+		virtual ~GLM() override{};
 
 		/** train model
 		 * @param data training data
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL)
-		{
-			return true;
-		};
-
-		/** @return object name */
-		virtual const char* get_name() const
-		{
-			return "GLM";
-		}
 
 	protected:
 		std::shared_ptr<DescendUpdater>
@@ -84,8 +69,28 @@ namespace shogun
 		LinkFunction m_link_fn = LOG;
 		float64_t m_tau = 1e-6;
 
+		float64_t log_likelihood(
+		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
+		    const std::shared_ptr<Labels>& label);
+
+		SGVector<float64_t> log_likelihood_derivative(
+		    const std::shared_ptr<DenseFeatures<float64_t>>& features,
+		    const std::shared_ptr<Labels>& label);
+
+		virtual bool
+		train_machine(std::shared_ptr<Features> data = NULL) override
+		{
+			return true;
+		};
+
+		/** @return object name */
+		virtual const char* get_name() const override
+		{
+			return "GLM";
+		}
+
 	private:
 		void init();
 	};
 } // namespace shogun
-#endif /* _GLM_H_ */
+#endif // _GENERALIZEDLINEARMODEL_H__
