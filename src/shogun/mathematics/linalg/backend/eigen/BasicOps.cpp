@@ -514,6 +514,7 @@ void element_div_eigen(
 		result = A.array() / B.array();
 }
 
+template <typename T>
 void LinalgBackendEigen::element_div_impl(
     const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
     bool transpose_A, bool transpose_B) const
