@@ -1009,9 +1009,9 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_log)
 	auto result = linalg::log(a);
 
 	EXPECT_NEAR(result[0], 0.0, get_epsilon<TypeParam>());
-	EXPECT_NEAR(result[1], 0.30102999566, get_epsilon<TypeParam>());
-	EXPECT_NEAR(result[2], 0.47712125472, get_epsilon<TypeParam>());
-	EXPECT_NEAR(result[3], 0.60205999132, get_epsilon<TypeParam>());
+	EXPECT_NEAR(result[1], 0.69314718056, get_epsilon<TypeParam>());
+	EXPECT_NEAR(result[2], 1.0986122887, get_epsilon<TypeParam>());
+	EXPECT_NEAR(result[3], 1.3862943611, get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_log)
@@ -1020,9 +1020,9 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_log)
 	auto result = linalg::log(a);
 
 	EXPECT_NEAR(result[0], 0.0, get_epsilon<TypeParam>());
-	EXPECT_NEAR(result[1], 0.30102999566, get_epsilon<TypeParam>());
-	EXPECT_NEAR(result[2], 0.47712125472, get_epsilon<TypeParam>());
-	EXPECT_NEAR(result[3], 0.60205999132, get_epsilon<TypeParam>());
+	EXPECT_NEAR(result[1], 0.69314718056, get_epsilon<TypeParam>());
+	EXPECT_NEAR(result[2], 1.0986122887, get_epsilon<TypeParam>());
+	EXPECT_NEAR(result[3], 1.3862943611, get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_exponent)
