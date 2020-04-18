@@ -17,23 +17,27 @@
 
 using namespace shogun;
 
-GLM::GLM(): IterativeMachine<LinearMachine>()
+GLM::GLM(GLM_DISTRIBUTION distr, float64_t alpha, float64_t lambda, float64_t learning_rate, int32_t max_iterations, float64_t tolerance, float64_t eta): IterativeMachine<LinearMachine>()
 {
 	init();
+	distribution=distr;
+	m_alpha=alpha;
+	m_lambda=lambda;
+	m_learning_rate=learning_rate;
+	m_max_iterations=max_iterations;
+	m_tolerance=tolerance;
+	m_eta=eta;
 }
 
 void GLM::init()
 {
 	bias = 0;
-	LinearMachine::features = NULL;
-	m_w = NULL;
 
 	distribution= POISSON;
 	m_alpha=0.5;
-	m_tau=NULL;
 	m_lambda=0.1;
 	m_learning_rate=2e-1;
-	m_max_iter=1000;
+	m_max_iterations=1000;
 	m_tolerance=1e-6;
 	m_eta=2.0;
 }
@@ -58,144 +62,6 @@ std::shared_ptr<RegressionLabels> GLM::apply_regression(std::shared_ptr<Features
 	LinearMachine::features->dense_dot_range(out.vector, 0, num, NULL, m_w.vector, m_w.vlen, bias);
 	SGVector<float64_t> result = non_linearity(out);
 	return std::make_shared<RegressionLabels>(result);
-}
-
-SGVector<float64_t> GLM::conditional_intensity(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t l_bias)
-{
-	SGVector<float64_t> z = compute_z(X, w, l_bias);
-	SGVector<float64_t> result = non_linearity(z);
-	return result;
-}
-
-SGVector<float64_t> GLM::compute_z(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t l_bias)
-{
-	SGVector<float64_t> z = linalg::matrix_prod(X, w, false);
-	return z;
-}
-
-SGVector<float64_t> GLM::non_linearity(SGVector<float64_t> z)
-{
-	SGVector<float64_t> result;
-	switch (distribution)
-	{
-	case POISSON:
-		result = SGVector<float64_t>(z);
-		float64_t l_bias = 0;
-
-		if(m_compute_bias)
-			l_bias = (1 - m_eta) * std::exp(m_eta);
-
-		for (int i = 0; i < z.vlen; i++)
-		{
-			if(z[i]>m_eta)
-				result[i] = z[i] * std::exp(m_eta) + l_bias;
-			else
-				result[i] = std::exp(z[i]);
-		}
-		break;
-	
-	default:
-		break;
-	}
-	return result;
-}
-
-SGVector<float64_t> GLM::gradient_non_linearity(SGVector<float64_t> z)
-{
-	SGVector<float64_t> result;
-	switch (distribution)
-	{
-	case POISSON:
-		result = SGVector<float64_t>(z);
-		for (int i = 0; i < z.vlen; i++)
-		{
-			if(z[i]>m_eta)
-				
-				result[i] = std::exp(m_eta);
-			else
-				result[i] = std::exp(z[i]);
-		}
-		break;
-	
-	default:
-		error("Not a valid distribution type");
-		break;
-	}
-	return result;
-}
-
-SGVector<float64_t> GLM::compute_grad_L2_loss_w(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t l_bias)
-{
-	auto n_samples = y.vlen;
-	auto n_features = X.num_rows;
-	if(m_tau == NULL)
-		m_tau = SGMatrix<float64_t>::create_identity_matrix(w.vlen, 1.0);
-	SGMatrix<float64_t> inv_cov = linalg::matrix_prod(m_tau, m_tau, true, false);
-	
-	SGVector<float64_t> z = compute_z(X, w, l_bias);
-	SGVector<float64_t> mu = non_linearity(z);
-	SGVector<float64_t> grad_mu = gradient_non_linearity(z);
-
-	SGVector<float64_t> grad_w(w.vlen);
-	switch (distribution)
-	{
-	case POISSON:
-		//PYTHON CODE
-		//grad_w = ((np.dot(grad_mu.T, X) -
-        //              np.dot((y * grad_mu / mu).T, X)).T)
-		break;
-	
-	default:
-		error("Not a valid distribution type");
-		break;
-	}
-	for (int i = 0; i < grad_w.vlen; i++)
-		grad_w[i] /= n_samples;
-	
-	linalg::add(grad_w, linalg::matrix_prod(inv_cov, w, false), 1.0, m_lambda * (1 - m_alpha));
-
-	return grad_w;
-}
-
-float64_t GLM::compute_grad_L2_loss_bias(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t l_bias)
-{
-	auto n_samples = y.vlen;
-	SGVector<float64_t> z = compute_z(X, w, l_bias);
-	SGVector<float64_t> mu = non_linearity(z);
-	SGVector<float64_t> grad_mu = gradient_non_linearity(z);
-
-	float64_t grad_bias = 0;
-	switch (distribution)
-	{
-	case POISSON:
-		for (int i = 0; i < grad_mu.vlen; i++)
-		{
-			grad_bias += grad_mu[i];
-			grad_bias -= y[i] * grad_mu[i] / mu[i];
-		}
-		break;
-	
-	default:
-		error("Not a valid distribution type");
-		break;
-	}
-	grad_bias /= n_samples;
-
-	return grad_bias;
-}
-
-SGVector<float64_t> GLM::apply_proximal_operator(SGVector<float64_t> w, float64_t threshold)
-{
-	SGVector<float64_t> result(w);
-	for (int i = 0; i < w.vlen; i++)
-	{
-		result[i] = 0;
-		if(w[i]>0 && abs(w[i])>threshold)
-			result[i] = abs(w[i]) - threshold;
-		else if(w[i]>0 && abs(w[i])>threshold)
-			result[i] = -1* (abs(w[i]) - threshold);
-	}
-	return result;
 }
 
 void GLM::init_model(std::shared_ptr<Features> data)
@@ -237,4 +103,152 @@ void GLM::iteration()
 	float64_t norm_update = linalg::norm(linalg::add(m_w, w_old, 1.0, -1.0));
 	if(m_current_iteration > 0 && (norm_update / linalg::norm(m_w)) < m_tolerance)
 		m_complete = true;
+}
+
+void GLM::set_tau(SGMatrix<float64_t> tau)
+{
+	m_tau = tau;
+}
+
+SGMatrix<float64_t> GLM::get_tau()
+{
+	return m_tau;
+}
+
+const SGVector<float64_t> GLM::conditional_intensity(const SGMatrix<float64_t> X, const SGVector<float64_t> w,const float64_t l_bias)
+{
+	SGVector<float64_t> z = compute_z(X, w, l_bias);
+	SGVector<float64_t> result = non_linearity(z);
+	return result;
+}
+
+const SGVector<float64_t> GLM::compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t l_bias)
+{
+	SGVector<float64_t> z = linalg::matrix_prod(X, w, false);
+	return z;
+}
+
+const SGVector<float64_t> GLM::non_linearity(const SGVector<float64_t> z)
+{
+	SGVector<float64_t> result;
+	switch (distribution)
+	{
+	case POISSON:
+		result = SGVector<float64_t>(z);
+		float64_t l_bias = 0;
+
+		if(LinearMachine::m_compute_bias)
+			l_bias = (1 - m_eta) * std::exp(m_eta);
+
+		for (int i = 0; i < z.vlen; i++)
+		{
+			if(z[i]>m_eta)
+				result[i] = z[i] * std::exp(m_eta) + l_bias;
+			else
+				result[i] = std::exp(z[i]);
+		}
+		break;
+	
+	default:
+		error("Not a valid distribution type");
+		break;
+	}
+	return result;
+}
+
+const SGVector<float64_t> GLM::gradient_non_linearity(const SGVector<float64_t> z)
+{
+	SGVector<float64_t> result;
+	switch (distribution)
+	{
+	case POISSON:
+		result = SGVector<float64_t>(z);
+		for (int i = 0; i < z.vlen; i++)
+		{
+			if(z[i]>m_eta)
+				
+				result[i] = std::exp(m_eta);
+			else
+				result[i] = std::exp(z[i]);
+		}
+		break;
+	
+	default:
+		error("Not a valid distribution type");
+		break;
+	}
+	return result;
+}
+
+const SGVector<float64_t> GLM::compute_grad_L2_loss_w(const SGMatrix<float64_t> X, const SGVector<float64_t> y, const SGVector<float64_t> w, const float64_t l_bias)
+{
+	auto n_samples = y.vlen;
+	auto n_features = X.num_rows;
+	if(!m_tau.data())
+		m_tau = SGMatrix<float64_t>::create_identity_matrix(w.vlen, 1.0);
+	SGMatrix<float64_t> inv_cov = linalg::matrix_prod(m_tau, m_tau, true, false);
+	
+	SGVector<float64_t> z = compute_z(X, w, l_bias);
+	SGVector<float64_t> mu = non_linearity(z);
+	SGVector<float64_t> grad_mu = gradient_non_linearity(z);
+
+	SGVector<float64_t> grad_w(w.vlen);
+	switch (distribution)
+	{
+	case POISSON:
+		SGVector<float64_t> a = y * grad_mu / mu;
+		linalg::transpose_matrix(linalg::add(linalg::matrix_prod(SGMatrix(grad_mu), X, true, false)), (linalg::matrix_prod(SGMatrix(a), X, true, false)), 1, -1);
+		break;
+	
+	default:
+		error("Not a valid distribution type");
+		break;
+	}
+	for (int i = 0; i < grad_w.vlen; i++)
+		grad_w[i] /= n_samples;
+	
+	linalg::add(grad_w, linalg::matrix_prod(inv_cov, w, false), 1.0, m_lambda * (1 - m_alpha));
+
+	return grad_w;
+}
+
+const float64_t GLM::compute_grad_L2_loss_bias(const SGMatrix<float64_t> X, const SGVector<float64_t> y, const SGVector<float64_t> w, const float64_t l_bias)
+{
+	auto n_samples = y.vlen;
+	SGVector<float64_t> z = compute_z(X, w, l_bias);
+	SGVector<float64_t> mu = non_linearity(z);
+	SGVector<float64_t> grad_mu = gradient_non_linearity(z);
+
+	float64_t grad_bias = 0;
+	switch (distribution)
+	{
+	case POISSON:
+		for (int i = 0; i < grad_mu.vlen; i++)
+		{
+			grad_bias += grad_mu[i];
+			grad_bias -= y[i] * grad_mu[i] / mu[i];
+		}
+		break;
+	
+	default:
+		error("Not a valid distribution type");
+		break;
+	}
+	grad_bias /= n_samples;
+
+	return grad_bias;
+}
+
+const SGVector<float64_t> GLM::apply_proximal_operator(const SGVector<float64_t> w, const float64_t threshold)
+{
+	SGVector<float64_t> result(w);
+	for (int i = 0; i < w.vlen; i++)
+	{
+		result[i] = 0;
+		if(w[i]>0 && abs(w[i])>threshold)
+			result[i] = abs(w[i]) - threshold;
+		else if(w[i]<0 && abs(w[i])>threshold)
+			result[i] = -1* (abs(w[i]) - threshold);
+	}
+	return result;
 }

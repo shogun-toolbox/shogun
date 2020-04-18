@@ -62,7 +62,7 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 {
  	public:
  		/** default constructor */
- 		GLM();
+ 		GLM(GLM_DISTRIBUTION distribution=POISSON, float64_t alpha=0.5, float64_t lambda=0.1, float64_t learning_rate=2e-1, int32_t max_iterations=1000, float64_t tolerance=1e-6, float64_t eta=2.0);
 
  		/** destructor */
  		virtual ~GLM();
@@ -80,37 +80,42 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
  		 *
  		 * @return name of the SGSerializable
  		 */
- 		virtual const char* get_name() const { return "GeneralizedLinearMachine"; }
+ 		virtual const char* get_name() const { return "GLM"; }
+
+		virtual void set_tau(SGMatrix<float64_t> tau);
+
+		virtual SGMatrix<float64_t> get_tau();
 
 	protected:
 
-		virtual void init_model(std::shared_ptr<Features> data);
+		virtual void init_model(std::shared_ptr<Features> data) override;
 		
-		virtual void iteration();
+		virtual void iteration() override;
 
 	private:
 
 		void init();
 		
 		/**Conditional intensity function.*/
-		virtual SGVector<float64_t> conditional_intensity(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t bias);
+		virtual const SGVector<float64_t> conditional_intensity(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias);
 
 		/** compute gradient of weights */
-		virtual SGVector<float64_t> compute_grad_L2_loss_w(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t bias);
+		virtual const SGVector<float64_t> compute_grad_L2_loss_w(const SGMatrix<float64_t> X, const SGVector<float64_t> y, const SGVector<float64_t> w, const float64_t bias);
 
 		/** compute gradient of bias */
-		virtual float64_t compute_grad_L2_loss_bias(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t bias);
+		virtual const float64_t compute_grad_L2_loss_bias(const SGMatrix<float64_t> X, const SGVector<float64_t> y, const SGVector<float64_t> w, const float64_t bias);
 
 		/** compute z */
-		virtual SGVector<float64_t> compute_z(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t bias);
+		virtual const SGVector<float64_t> compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias);
 
 		/** conditional non-linear function */
-		virtual SGVector<float64_t> non_linearity(SGVector<float64_t> z);
+		virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z);
 
 		/** compute gradient of non-linearity */
-		virtual SGVector<float64_t> gradient_non_linearity(SGVector<float64_t> z);
+		virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z);
 
-		virtual SGVector<float64_t> apply_proximal_operator(SGVector<float64_t> w, float64_t threshold);
+		/** performs soft thresholding */
+		virtual const SGVector<float64_t> apply_proximal_operator(const SGVector<float64_t> w, const float64_t threshold);
 
 	protected:
 
@@ -119,9 +124,6 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 
 		/** a threshold parameter that linearizes the exp() function above eta. */
 		float64_t m_eta = 2.0;
-
-		/** maximum number of iterations for the solver. */
-		int m_max_iter = 1000;
 		
 		/** learning rate for gradient descent. */
 		float64_t m_learning_rate = 2e-1;
