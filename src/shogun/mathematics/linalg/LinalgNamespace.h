@@ -1174,6 +1174,24 @@ namespace shogun
 			return result;
 		}
 
+		/** Performs the operation B = log(A)
+		 *
+		 * This version returns the result in a newly created vector or matrix.
+		 *
+		 * @param a Log vector or matrix
+		 * @return The result of the operation
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> log(const Container<T>& a)
+		{
+			Container<T> result;
+			result = a.clone();
+
+			infer_backend(a)->log(a, result);
+
+			return result;
+		}
+
 		/**
 		 * Method that writes the identity into a square matrix.
 		 *
