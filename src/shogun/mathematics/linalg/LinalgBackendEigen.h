@@ -237,6 +237,14 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGMatrix)
 #undef BACKEND_GENERIC_EXPONENT
 
+/** Implementation of @see linalg::log */
+#define BACKEND_GENERIC_LOG(Type, Container)                              \
+	virtual void log(const Container<Type>& a, Container<Type>& result)   \
+	    const
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGMatrix)
+#undef BACKEND_GENERIC_LOG
+
 /** Implementation of @see LinalgBackendBase::identity */
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
 	virtual void identity(Container<Type>& identity_matrix) const;
@@ -671,6 +679,14 @@ namespace shogun
 		/** Eigen3 matrix exponent method */
 		template <typename T>
 		void exponent_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+		
+		/** Eigen3 vector log method */
+		template <typename T>
+		void log_impl(const SGVector<T>& a, SGVector<T>& result) const;
+
+		/** Eigen3 matrix log method */
+		template <typename T>
+		void log_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 set matrix to identity method */
 		template <typename T>

@@ -420,6 +420,21 @@ namespace shogun
 #undef BACKEND_GENERIC_EXPONENT
 
 /**
+ * Wrapper method of in-place log method.
+ *
+ * @see linalg::log
+ */
+#define BACKEND_GENERIC_LOG(Type, Container)                              \
+	virtual void log(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGMatrix)
+#undef BACKEND_GENERIC_LOG
+
+/**
  * Wrapper method of set matrix to identity.
  *
  * @see linalg::identity
