@@ -1156,6 +1156,187 @@ namespace shogun
 			return result;
 		}
 
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division
+		 * on matrix blocks.
+		 *
+		 * This version returns the result in-place.
+		 * User should pass an appropriately pre-allocated memory matrix.
+		 *
+		 * This operation works with CPU backends only.
+		 *
+		 * @param A First matrix block
+		 * @param B Second matrix block
+		 * @param result Result matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
+		 */
+		template <typename T>
+		void element_div(
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
+		    SGMatrix<T>& result, bool transpose_A = false,
+		    bool transpose_B = false)
+		{
+			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
+			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
+
+			require(
+			    (num_rows == transpose_B ? B.m_col_size : B.m_row_size) &&
+			        (num_cols == transpose_B ? B.m_row_size : B.m_col_size),
+			    "Dimension mismatch! A({} x {}) vs B({} x {})", A.m_row_size,
+			    A.m_col_size, B.m_row_size, B.m_col_size);
+
+			require(
+			    num_rows == result.num_rows && num_cols == result.num_cols,
+			    "Dimension mismatch! A({} x {}) vs result({} x {})",
+			    A.m_row_size, A.m_col_size, result.num_rows, result.num_cols);
+
+			require(
+			    !result.on_gpu(),
+			    "Cannot operate with matrix result on_gpu ({}) \
+	 		as matrix blocks are on CPU.",
+			    result.on_gpu());
+
+			env()->linalg()->get_cpu_backend()->element_div(
+			    A, B, result, transpose_A, transpose_B);
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division
+		 * on matrix blocks.
+		 *
+		 * This version returns the result in a newly created matrix.
+		 *
+		 * @param A First matrix block
+		 * @param B Second matrix block
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGMatrix<T> element_div(
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
+		    bool transpose_A = false, bool transpose_B = false)
+		{
+			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
+			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
+
+			SGMatrix<T> result(num_rows, num_cols);
+
+			element_div(A, B, result, transpose_A, transpose_B);
+
+			return result;
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in-place.
+		 * User should pass an appropriately pre-allocated memory matrix
+		 * Or pass one of the operands arguments (A or B) as a result
+		 *
+		 * @param a First matrix
+		 * @param b Second matrix
+		 * @param result Result matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
+		 */
+		template <typename T>
+		void element_div(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
+		    bool transpose_A = false, bool transpose_B = false)
+		{
+			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
+			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
+
+			require(
+			    (num_rows == transpose_B ? B.num_cols : B.num_rows) &&
+			        (num_cols == transpose_B ? B.num_rows : B.num_cols),
+			    "Dimension mismatch! A({} x {}) vs B({} x {})", A.num_rows,
+			    A.num_cols, B.num_rows, B.num_cols);
+
+			require(
+			    num_rows == result.num_rows && num_cols == result.num_cols,
+			    "Dimension mismatch! A({} x {}) vs result({} x {})",
+			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
+
+			infer_backend(A, B, result)
+			    ->element_div(A, B, result, transpose_A, transpose_B);
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in a newly created matrix.
+		 *
+		 * @param A First matrix
+		 * @param B Second matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGMatrix<T> element_div(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B,
+		    bool transpose_A = false, bool transpose_B = false)
+		{
+			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
+			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
+
+			SGMatrix<T> result(num_rows, num_cols);
+
+			if (A.on_gpu())
+				to_gpu(result);
+			element_div(A, B, result, transpose_A, transpose_B);
+
+			return result;
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		void element_div(
+		    const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result)
+		{
+			require(
+			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})",
+			    a.vlen, b.vlen);
+			require(
+			    a.vlen == result.vlen,
+			    "Dimension mismatch! A({}) vs result({})", a.vlen,
+			    result.vlen);
+
+			infer_backend(a, b)->element_div(a, b, result);
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGVector<T> element_div(const SGVector<T>& a, const SGVector<T>& b)
+		{
+			require(
+			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})",
+			    a.vlen, b.vlen);
+
+			SGVector<T> result = a.clone();
+			element_div(a, b, result);
+
+			return result;
+		}
 		/** Performs the operation B = exp(A)
 		 *
 		 * This version returns the result in a newly created vector or matrix.
