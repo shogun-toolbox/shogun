@@ -10,9 +10,9 @@
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-
+#include <shogun/machine/IterativeMachine.h>
+#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/distributions/Distribution.h>
 
 namespace shogun
 {
@@ -58,14 +58,14 @@ class RegressionLabels;
  *	:math:`\\beta` belongs to its own group.
  *
  * */
-class GeneralizedLinearMachine : public LinearMachine
+class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribution>
 {
  	public:
  		/** default constructor */
- 		GeneralizedLinearMachine();
+ 		GLM();
 
  		/** destructor */
- 		virtual ~GeneralizedLinearMachine();
+ 		virtual ~GLM();
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -73,7 +73,7 @@ class GeneralizedLinearMachine : public LinearMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
  		/** Returns the name of the SGSerializable instance.  It MUST BE
  		 *  the CLASS NAME without the prefixed `C'.
@@ -84,27 +84,16 @@ class GeneralizedLinearMachine : public LinearMachine
 
 	protected:
 
-		/**
-		* A specialization of the train_machine method
-		* @param feats training data
-		*/
-		virtual bool train_machine(std::shared_ptr<const DenseFeatures<float64_t>> feats);
+		virtual void init_model(std::shared_ptr<Features> data);
+		
+		virtual void iteration();
 
-		/** apply get outputs
-		 *
-		 * @param data features to compute outputs
-		 * @return outputs
-		 */
-		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
+	private:
 
+		void init();
+		
 		/**Conditional intensity function.*/
 		virtual SGVector<float64_t> conditional_intensity(SGMatrix<float64_t> X, SGVector<float64_t> w, float64_t bias);
-
-		/** predict for one vector */
-		virtual SGVector<float64_t> predict(SGMatrix<float64_t> X);
-
-		/** fit model */
-		virtual bool fit(SGMatrix<float64_t> X, SGVector<float64_t> y);
 
 		/** compute gradient of weights */
 		virtual SGVector<float64_t> compute_grad_L2_loss_w(SGMatrix<float64_t> X, SGVector<float64_t> y, SGVector<float64_t> w, float64_t bias);
@@ -123,17 +112,10 @@ class GeneralizedLinearMachine : public LinearMachine
 
 		virtual SGVector<float64_t> apply_proximal_operator(SGVector<float64_t> w, float64_t threshold);
 
-	private:
-
-		void init();
-
 	protected:
 
 		/** Distribution type */
 		GLM_DISTRIBUTION distribution;
-
-		/** specifies if a constant (a.k.a. bias or intercept) should be added to the decision function. */
-		bool m_fit_intercept = true;
 
 		/** a threshold parameter that linearizes the exp() function above eta. */
 		float64_t m_eta = 2.0;
@@ -149,7 +131,7 @@ class GeneralizedLinearMachine : public LinearMachine
 
 		/** the (n_features, n_features) Tikhonov matrix.
 		 * default: NULL, in which case Tau is identity and the L2 penalty is ridge-like */
-		SGMatrix<float64_t> m_tau = NULL;
+		SGMatrix<float64_t> m_tau;
 
 		/** the weighting between L1 penalty and L2 penalty term of the loss function. */
 		float64_t m_alpha = 0.5;
