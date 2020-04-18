@@ -1002,6 +1002,183 @@ TYPED_TEST(
 	for (index_t i = 0; i < len; ++i)
 		EXPECT_NEAR(c[i] * b[i], a[i], get_epsilon<TypeParam>());
 }
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
+{
+	const auto m = 2;
+	SGMatrix<TypeParam> A(m, m);
+	SGMatrix<TypeParam> B(m, m);
+
+	for (auto i : range(m * m))
+	{
+		A[i] = i;
+		B[i] = i + 1;
+	}
+
+	auto result = element_div(A, B);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
+
+	result = element_div(A, B, true, false);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(j, i) / B(i, j), get_epsilon<TypeParam>());
+
+	result = element_div(A, B, false, true);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(i, j) / B(j, i), get_epsilon<TypeParam>());
+
+	result = element_div(A, B, true, true);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(j, i) / B(j, i), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division_in_place)
+{
+	const auto m = 2;
+	SGMatrix<TypeParam> A(m, m);
+	SGMatrix<TypeParam> B(m, m);
+	SGMatrix<TypeParam> result(m, m);
+
+	for (auto i : range(m * m))
+	{
+		A[i] = i;
+		B[i] = i + 1;
+	}
+
+	element_div(A, B, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
+
+	element_div(A, B, result, true, false);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(j, i) / B(i, j), get_epsilon<TypeParam>());
+
+	element_div(A, B, result, false, true);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(i, j) / B(j, i), get_epsilon<TypeParam>());
+
+	element_div(A, B, result, true, true);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(j, i) / B(j, i), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
+{
+	const index_t nrows = 2;
+	const index_t ncols = 3;
+
+	SGMatrix<TypeParam> A(nrows, ncols);
+	SGMatrix<TypeParam> B(ncols, nrows);
+
+	for (auto i : range(nrows))
+		for (auto j : range(ncols))
+		{
+			A(i, j) = i * 10 + j + 1;
+			B(j, i) = i + j + 1;
+		}
+
+	const auto m = 2;
+	auto A_block = linalg::block(A, 0, 0, m, m);
+	auto B_block = linalg::block(B, 0, 0, m, m);
+	auto result = element_div(A_block, B_block);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
+
+	result = element_div(A_block, B_block, true, false);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(j, i) / B(i, j), get_epsilon<TypeParam>());
+
+	result = element_div(A_block, B_block, false, true);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(i, j) / B(j, i), get_epsilon<TypeParam>());
+
+	result = element_div(A_block, B_block, true, true);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(
+			    result(i, j), A(j, i) / B(j, i), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
+{
+	const index_t len = 4;
+	SGVector<TypeParam> a(len);
+	SGVector<TypeParam> b(len);
+	SGVector<TypeParam> c(len);
+
+	for (index_t i = 0; i < len; ++i)
+	{
+		a[i] = i;
+		b[i] = i + 1;
+	}
+
+	c = element_div(a, b);
+
+	for (index_t i = 0; i < len; ++i)
+		EXPECT_NEAR(a[i] / b[i], c[i], get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGVector_elementwise_division_in_place)
+{
+	const index_t len = 4;
+	SGVector<TypeParam> a(len);
+	SGVector<TypeParam> b(len);
+	SGVector<TypeParam> c(len);
+
+	for (index_t i = 0; i < len; ++i)
+	{
+		a[i] = i;
+		b[i] = i + 1;
+		c[i] = i;
+	}
+
+	element_div(a, b, a);
+	for (index_t i = 0; i < len; ++i)
+		EXPECT_NEAR(c[i] / b[i], a[i], get_epsilon<TypeParam>());
+}
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_log)
 {
