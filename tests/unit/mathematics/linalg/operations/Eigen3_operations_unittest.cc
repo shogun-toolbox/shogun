@@ -1005,11 +1005,11 @@ TYPED_TEST(
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_log)
 {
-	SGVector<TypeParam> a{{1.0, 2.0, 3.0}};
+	SGVector<TypeParam> a{1.0, 2.0, 3.0};
 	auto result = linalg::log(a);
 
 	for (index_t i = 0; i < 3; i++)
-		EXPECT_NEAR(result[i], std::log(i+1), get_epsilon<TypeParam>());
+		EXPECT_NEAR(result[i], std::log(a[i]), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_log)
@@ -1018,7 +1018,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_log)
 	auto result = linalg::log(a);
 
 	for (index_t i = 0; i < 3; i++)
-		EXPECT_NEAR(result[i], std::log(i+1), get_epsilon<TypeParam>());
+		EXPECT_NEAR(result[i], std::log(a[i]), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_exponent)
