@@ -242,7 +242,7 @@ namespace shogun
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV(Type, Container)          \
 	virtual void element_div(                                                 \
 	    const Container<Type>& a, const Container<Type>& b,                    \
-	    Container<Type>& result, bool transpose_A, bool transpose_B) const;
+	    Container<Type>& result) const;
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
@@ -251,8 +251,7 @@ namespace shogun
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV(Type, Container)           \
 	virtual void element_div(                                                 \
 	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
-	    bool transpose_A, bool transpose_B) const;
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result) const;
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV
@@ -719,15 +718,13 @@ namespace shogun
 		/** Eigen3 matrix in-place elementwise division method */
 		template <typename T>
 		void element_div_impl(
-		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
-		    bool transpose_A, bool transpose_B) const;
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const;
 
 		/** Eigen3 matrix block in-place elementwise division method */
 		template <typename T>
 		void element_div_impl(
 		    const linalg::Block<SGMatrix<T>>& a,
-		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result,
-		    bool transpose_A, bool transpose_B) const;
+		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector in-place elementwise division method */
 		template <typename T>

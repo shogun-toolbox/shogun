@@ -1021,26 +1021,6 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
 			EXPECT_NEAR(
 			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
 
-	result = element_div(A, B, true, false);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(j, i) / B(i, j), get_epsilon<TypeParam>());
-
-	result = element_div(A, B, false, true);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(i, j) / B(j, i), get_epsilon<TypeParam>());
-
-	result = element_div(A, B, true, true);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(j, i) / B(j, i), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(
@@ -1063,23 +1043,6 @@ TYPED_TEST(
 			EXPECT_NEAR(
 			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
 
-	element_div(A, B, result, true, false);
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(j, i) / B(i, j), get_epsilon<TypeParam>());
-
-	element_div(A, B, result, false, true);
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(i, j) / B(j, i), get_epsilon<TypeParam>());
-
-	element_div(A, B, result, true, true);
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(j, i) / B(j, i), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
@@ -1110,35 +1073,6 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
 			EXPECT_NEAR(
 			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
 
-	result = element_div(A_block, B_block, true, false);
-
-	ASSERT_EQ(result.num_rows, m);
-	ASSERT_EQ(result.num_cols, m);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(j, i) / B(i, j), get_epsilon<TypeParam>());
-
-	result = element_div(A_block, B_block, false, true);
-
-	ASSERT_EQ(result.num_rows, m);
-	ASSERT_EQ(result.num_cols, m);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(i, j) / B(j, i), get_epsilon<TypeParam>());
-
-	result = element_div(A_block, B_block, true, true);
-
-	ASSERT_EQ(result.num_rows, m);
-	ASSERT_EQ(result.num_cols, m);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(j, i) / B(j, i), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)

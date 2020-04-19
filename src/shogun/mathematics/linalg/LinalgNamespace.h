@@ -1168,26 +1168,21 @@ namespace shogun
 		 * @param A First matrix block
 		 * @param B Second matrix block
 		 * @param result Result matrix
-		 * @param transpose_A whether to transpose matrix A
-		 * @param transpose_B whether to transpose matrix B
 		 */
 		template <typename T>
 		void element_div(
 		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
-		    SGMatrix<T>& result, bool transpose_A = false,
-		    bool transpose_B = false)
+		    SGMatrix<T>& result)
 		{
-			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
-			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
 
 			require(
-			    (num_rows == transpose_B ? B.m_col_size : B.m_row_size) &&
-			        (num_cols == transpose_B ? B.m_row_size : B.m_col_size),
+			    (A.m_row_size == B.m_row_size  &&
+				A.m_col_size ==  B.m_col_size),
 			    "Dimension mismatch! A({} x {}) vs B({} x {})", A.m_row_size,
 			    A.m_col_size, B.m_row_size, B.m_col_size);
 
 			require(
-			    num_rows == result.num_rows && num_cols == result.num_cols,
+			    A.m_row_size == result.num_rows && A.m_col_size == result.num_cols,
 			    "Dimension mismatch! A({} x {}) vs result({} x {})",
 			    A.m_row_size, A.m_col_size, result.num_rows, result.num_cols);
 
@@ -1198,7 +1193,7 @@ namespace shogun
 			    result.on_gpu());
 
 			env()->linalg()->get_cpu_backend()->element_div(
-			    A, B, result, transpose_A, transpose_B);
+			    A, B, result);
 		}
 
 		/** Performs the operation C = A ./ B where "./" denotes elementwise
@@ -1209,21 +1204,16 @@ namespace shogun
 		 *
 		 * @param A First matrix block
 		 * @param B Second matrix block
-		 * @param transpose_A whether to transpose matrix A
-		 * @param transpose_B whether to transpose matrix B
 		 * @return The result of the operation
 		 */
 		template <typename T>
 		SGMatrix<T> element_div(
-		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
-		    bool transpose_A = false, bool transpose_B = false)
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B)
 		{
-			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
-			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
 
-			SGMatrix<T> result(num_rows, num_cols);
+			SGMatrix<T> result(A.m_row_size, A.m_col_size);
 
-			element_div(A, B, result, transpose_A, transpose_B);
+			element_div(A, B, result);
 
 			return result;
 		}
@@ -1238,30 +1228,24 @@ namespace shogun
 		 * @param a First matrix
 		 * @param b Second matrix
 		 * @param result Result matrix
-		 * @param transpose_A whether to transpose matrix A
-		 * @param transpose_B whether to transpose matrix B
 		 */
 		template <typename T>
 		void element_div(
-		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
-		    bool transpose_A = false, bool transpose_B = false)
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result)
 		{
-			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
-			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
-
 			require(
-			    (num_rows == transpose_B ? B.num_cols : B.num_rows) &&
-			        (num_cols == transpose_B ? B.num_rows : B.num_cols),
+			    (A.num_rows == B.num_rows  &&
+				A.num_cols ==  B.num_cols),
 			    "Dimension mismatch! A({} x {}) vs B({} x {})", A.num_rows,
 			    A.num_cols, B.num_rows, B.num_cols);
 
 			require(
-			    num_rows == result.num_rows && num_cols == result.num_cols,
+			    A.num_rows == result.num_rows && A.num_cols == result.num_cols,
 			    "Dimension mismatch! A({} x {}) vs result({} x {})",
 			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
 
 			infer_backend(A, B, result)
-			    ->element_div(A, B, result, transpose_A, transpose_B);
+			    ->element_div(A, B, result);
 		}
 
 		/** Performs the operation C = A ./ B where "./" denotes elementwise
@@ -1271,23 +1255,17 @@ namespace shogun
 		 *
 		 * @param A First matrix
 		 * @param B Second matrix
-		 * @param transpose_A whether to transpose matrix A
-		 * @param transpose_B whether to transpose matrix B
 		 * @return The result of the operation
 		 */
 		template <typename T>
 		SGMatrix<T> element_div(
-		    const SGMatrix<T>& A, const SGMatrix<T>& B,
-		    bool transpose_A = false, bool transpose_B = false)
+		    const SGMatrix<T>& A, const SGMatrix<T>& B)
 		{
-			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
-			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
-
-			SGMatrix<T> result(num_rows, num_cols);
+			SGMatrix<T> result(A.num_rows, A.num_cols);
 
 			if (A.on_gpu())
 				to_gpu(result);
-			element_div(A, B, result, transpose_A, transpose_B);
+			element_div(A, B, result);
 
 			return result;
 		}

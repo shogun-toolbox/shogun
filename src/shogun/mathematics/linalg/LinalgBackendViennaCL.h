@@ -119,9 +119,9 @@ namespace shogun
 	/** Implementation of @see LinalgBackendBase::element_div */
 	#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV(Type, Container) \
 	virtual void element_div(const Container<Type>& a, const Container<Type>& b,\
-		Container<Type>& result, bool transpose_A, bool transpose_B) const \
+		Container<Type>& result) const \
 	{  \
-		element_div_impl(a, b, result, transpose_A, transpose_B); \
+		element_div_impl(a, b, result); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
@@ -412,40 +412,16 @@ namespace shogun
 		/** ViennaCL matrix in-place elementwise division method */
 		template <typename T>
 		void element_div_impl(
-		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
-		    bool transpose_A, bool transpose_B) const
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
 
-			if (transpose_A && transpose_B)
-				result_gpu->data_matrix(result.num_rows, result.num_cols) =
-				    viennacl::linalg::element_div(
-				        viennacl::trans(
-				            a_gpu->data_matrix(a.num_rows, a.num_cols)),
-				        viennacl::trans(
-				            b_gpu->data_matrix(b.num_rows, b.num_cols)));
-
-			else if (transpose_A)
-				result_gpu->data_matrix(result.num_rows, result.num_cols) =
-				    viennacl::linalg::element_div(
-				        viennacl::trans(
-				            a_gpu->data_matrix(a.num_rows, a.num_cols)),
-				        b_gpu->data_matrix(b.num_rows, b.num_cols));
-
-			else if (transpose_B)
-				result_gpu->data_matrix(result.num_rows, result.num_cols) =
-				    viennacl::linalg::element_div(
-				        a_gpu->data_matrix(a.num_rows, a.num_cols),
-				        viennacl::trans(
-				            b_gpu->data_matrix(b.num_rows, b.num_cols)));
-
-			else
-				result_gpu->data_matrix(result.num_rows, result.num_cols) =
-				    viennacl::linalg::element_div(
-				        a_gpu->data_matrix(a.num_rows, a.num_cols),
-				        b_gpu->data_matrix(b.num_rows, b.num_cols));
+			result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				viennacl::linalg::element_div(
+				    a_gpu->data_matrix(a.num_rows, a.num_cols),
+				    b_gpu->data_matrix(b.num_rows, b.num_cols));
 		}
 		
 		/** ViennaCL logistic method. Calculates f(x) = 1/(1+exp(-x)) */

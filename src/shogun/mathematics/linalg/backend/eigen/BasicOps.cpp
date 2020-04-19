@@ -186,9 +186,9 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_DIV, SGVector)
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV(Type, Container)          \
 	void LinalgBackendEigen::element_div(                                     \
 	    const Container<Type>& a, const Container<Type>& b,                    \
-	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
+	    Container<Type>& result) const     \
 	{                                                                          \
-		element_div_impl(a, b, result, transpose_A, transpose_B);             \
+		element_div_impl(a, b, result);             \
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
@@ -196,10 +196,9 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV(Type, Container)           \
 	void LinalgBackendEigen::element_div(                                     \
 	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
-	    bool transpose_A, bool transpose_B) const                              \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result) const                              \
 	{                                                                          \
-		element_div_impl(a, b, result, transpose_A, transpose_B);             \
+		element_div_impl(a, b, result);             \
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV
@@ -501,35 +500,26 @@ void LinalgBackendEigen::element_prod_impl(
 template <typename MatrixType>
 void element_div_eigen(
     const MatrixType& A, const MatrixType& B,
-    typename SGMatrix<typename MatrixType::Scalar>::EigenMatrixXtMap& result,
-    bool transpose_A, bool transpose_B)
+    typename SGMatrix<typename MatrixType::Scalar>::EigenMatrixXtMap& result)
 {
-	if (transpose_A && transpose_B)
-		result = A.transpose().array() / B.transpose().array();
-	else if (transpose_A)
-		result = A.transpose().array() / B.array();
-	else if (transpose_B)
-		result = A.array() / B.transpose().array();
-	else
-		result = A.array() / B.array();
+	result = A.array() / B.array();
 }
 
 template <typename T>
 void LinalgBackendEigen::element_div_impl(
-    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
-    bool transpose_A, bool transpose_B) const
+    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
-	element_div_eigen(a_eig, b_eig, result_eig, transpose_A, transpose_B);
+	element_div_eigen(a_eig, b_eig, result_eig);
 }
 
 template <typename T>
 void LinalgBackendEigen::element_div_impl(
     const linalg::Block<SGMatrix<T>>& a, const linalg::Block<SGMatrix<T>>& b,
-    SGMatrix<T>& result, bool transpose_A, bool transpose_B) const
+    SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a.m_matrix;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b.m_matrix;
@@ -540,7 +530,7 @@ void LinalgBackendEigen::element_div_impl(
 	Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> b_block =
 	    b_eig.block(b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
 
-	element_div_eigen(a_block, b_block, result_eig, transpose_A, transpose_B);
+	element_div_eigen(a_block, b_block, result_eig);
 }
 
 template <typename T>

@@ -428,7 +428,7 @@ namespace shogun
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV(Type, Container)          \
 	virtual void element_div(                                                 \
 	    const Container<Type>& a, const Container<Type>& b,                    \
-	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
+	    Container<Type>& result) const     \
 	{                                                                          \
 		not_implemented(SOURCE_LOCATION);;                                                    \
 	}
@@ -444,8 +444,7 @@ namespace shogun
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV(Type, Container)           \
 	virtual void element_div(                                                 \
 	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
-	    bool transpose_A, bool transpose_B) const                              \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result) const                              \
 	{                                                                          \
 		not_implemented(SOURCE_LOCATION);;                                                    \
 	}
