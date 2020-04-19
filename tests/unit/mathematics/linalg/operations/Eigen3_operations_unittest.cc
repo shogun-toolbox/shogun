@@ -1021,6 +1021,17 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
 			EXPECT_NEAR(
 			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
 
+	SGMatrix<TypeParam> C(m+1, m);
+	SGMatrix<TypeParam> D(m, m+1);
+	SGMatrix<TypeParam> E(m+1, m+1);
+
+	EXPECT_THROW(element_div(C, A), ShogunException);
+	EXPECT_THROW(element_div(D, A), ShogunException);
+	EXPECT_THROW(element_div(E, A), ShogunException);
+
+	EXPECT_THROW(element_div(A, C), ShogunException);
+	EXPECT_THROW(element_div(A, D), ShogunException);
+	EXPECT_THROW(element_div(A, E), ShogunException);
 }
 
 TYPED_TEST(
@@ -1036,13 +1047,28 @@ TYPED_TEST(
 		A[i] = i;
 		B[i] = i + 1;
 	}
-
+	
 	element_div(A, B, result);
 	for (auto i : range(m))
 		for (auto j : range(m))
 			EXPECT_NEAR(
 			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
+	
+	SGMatrix<TypeParam> C(m+1, m);
+	SGMatrix<TypeParam> D(m, m+1);
+	SGMatrix<TypeParam> E(m+1, m+1);
 
+	EXPECT_THROW(element_div(A, B, C), ShogunException);
+	EXPECT_THROW(element_div(A, B, D), ShogunException);
+	EXPECT_THROW(element_div(A, B, E), ShogunException);
+
+	EXPECT_THROW(element_div(A, C, B), ShogunException);
+	EXPECT_THROW(element_div(A, D, B), ShogunException);
+	EXPECT_THROW(element_div(A, E, B), ShogunException);
+
+	EXPECT_THROW(element_div(C, A, B), ShogunException);
+	EXPECT_THROW(element_div(D, A, B), ShogunException);
+	EXPECT_THROW(element_div(E, A, B), ShogunException);
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
@@ -1073,6 +1099,13 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
 			EXPECT_NEAR(
 			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
 
+	auto C_block = linalg::block(B, 0, 0, m, m+1);
+	EXPECT_THROW(element_div(A_block, C_block),ShogunException);
+	C_block = linalg::block(B, 0, 0, m+1, m);
+	EXPECT_THROW(element_div(A_block, C_block),ShogunException);
+	C_block = linalg::block(B, m-1, 0, m, m+1);
+	EXPECT_THROW(element_div(A_block, C_block),ShogunException);
+
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
@@ -1092,6 +1125,10 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
 
 	for (index_t i = 0; i < len; ++i)
 		EXPECT_NEAR(a[i] / b[i], c[i], get_epsilon<TypeParam>());
+
+	SGVector<TypeParam> d(len-1);
+	EXPECT_THROW(element_div(a, d), ShogunException);
+	EXPECT_THROW(element_div(d, a), ShogunException);
 }
 
 TYPED_TEST(
@@ -1112,6 +1149,11 @@ TYPED_TEST(
 	element_div(a, b, a);
 	for (index_t i = 0; i < len; ++i)
 		EXPECT_NEAR(c[i] / b[i], a[i], get_epsilon<TypeParam>());
+
+	SGVector<TypeParam> d(len-1);
+	EXPECT_THROW(element_div(a, a, d), ShogunException);
+	EXPECT_THROW(element_div(a, d, a), ShogunException);
+	EXPECT_THROW(element_div(d, a, a), ShogunException);
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_log)
