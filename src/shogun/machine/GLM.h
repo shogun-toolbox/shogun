@@ -92,6 +92,8 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 		
 		virtual void iteration() override;
 
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+
 	private:
 
 		void init();

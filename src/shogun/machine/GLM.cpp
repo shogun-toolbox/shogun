@@ -13,6 +13,9 @@
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/optimization/ElasticNetPenalty.h>
+#include <shogun/optimization/SGDMinimizer.h>
+#include <shogun/optimization/GradientDescendUpdater.h>
+#include <shogun/optimization/ConstLearningRate.h>
 // #include <utility>
 #include <cmath>
 
@@ -231,4 +234,29 @@ const float64_t GLM::compute_grad_L2_loss_bias(const SGMatrix<float64_t> X, cons
 	grad_bias /= n_samples;
 
 	return grad_bias;
+}
+
+bool GLM::train_machine(std::shared_ptr<Features> data = NULL)
+{
+	std::shared_ptr<SGDMinimizer> minimizer;
+
+	minimizer->set_cost_function(std::shared_ptr<FirstOrderCostFunction>);
+
+	std::shared_ptr<GradientDescendUpdater> gradient_updater;
+	minimizer->set_gradient_updater(gradient_updater);
+
+	minimizer->set_number_passes(10000);
+
+	std::shared_ptr<ConstLearningRate> learning_rate;
+	learning_rate->set_const_learning_rate(m_learning_rate);
+	minimizer->set_learning_rate(learning_rate);
+	
+	
+	minimizer->set_penalty_weight(m_lambda);
+
+	std::shared_ptr<ElasticNetPenalty> penalty;
+	penalty->set_l1_ratio(m_alpha);
+	minimizer->set_penalty_type(penalty);
+
+	minimizer->minimize();//returns min cost
 }
