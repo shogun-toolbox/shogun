@@ -1063,10 +1063,12 @@ TYPED_TEST(
 	EXPECT_THROW(element_div(D, A, B), ShogunException);
 	EXPECT_THROW(element_div(E, A, B), ShogunException);
 
+	if constexpr (std::is_floating_point<TypeParam>::value){
 	B.zero();
 	element_div(A, B, result);
 	typename SGMatrix<TypeParam>::EigenMatrixXtMap result_eig = result;
-    EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+    	EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+	}
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
@@ -1121,11 +1123,12 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
 	for (const auto& [result, el1, el2]: zip_iterator(c,b,a))
     		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
+	if constexpr (std::is_floating_point<TypeParam>::value){
 	b.zero();
 	c = element_div(a, b);
 	typename SGVector<TypeParam>::EigenRowVectorXtMap result_eig = c;
-    EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
-
+    	EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+	}
 	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, d), ShogunException);
 	EXPECT_THROW(element_div(d, a), ShogunException);
