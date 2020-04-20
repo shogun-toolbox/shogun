@@ -6,6 +6,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
+#include <shogun/util/zip_iterator.h>
 #include <cmath>
 
 using namespace shogun;
@@ -1008,18 +1009,13 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
 	SGMatrix<TypeParam> A(m, m);
 	SGMatrix<TypeParam> B(m, m);
 
-	for (auto i : range(m * m))
-	{
-		A[i] = i;
-		B[i] = i + 1;
-	}
+	std::iota(A.matrix, A.matrix + m*2, 0);
+	std::iota(B.matrix, B.matrix + m*2, 1);
 
 	auto result = element_div(A, B);
 
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
+	for (const auto& [result, el1, el2]: zip_iterator(result ,B , A))
+    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
 	SGMatrix<TypeParam> C(m+1, m);
 	SGMatrix<TypeParam> D(m, m+1);
@@ -1042,18 +1038,14 @@ TYPED_TEST(
 	SGMatrix<TypeParam> B(m, m);
 	SGMatrix<TypeParam> result(m, m);
 
-	for (auto i : range(m * m))
-	{
-		A[i] = i;
-		B[i] = i + 1;
-	}
+	std::iota(A.matrix, A.matrix + m*2, 0);
+	std::iota(B.matrix, B.matrix + m*2, 1);
 	
 	element_div(A, B, result);
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
-	
+
+	for (const auto& [result, el1, el2]: zip_iterator(result ,B , A))
+    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
 	SGMatrix<TypeParam> C(m+1, m);
 	SGMatrix<TypeParam> D(m, m+1);
 	SGMatrix<TypeParam> E(m+1, m+1);
@@ -1115,18 +1107,15 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
 	SGVector<TypeParam> b(len);
 	SGVector<TypeParam> c(len);
 
-	for (index_t i = 0; i < len; ++i)
-	{
-		a[i] = i;
-		b[i] = i + 1;
-	}
+	a.range_fill();
+	b.range_fill(1);
 
 	c = element_div(a, b);
 
-	for (index_t i = 0; i < len; ++i)
-		EXPECT_NEAR(a[i] / b[i], c[i], get_epsilon<TypeParam>());
+	for (const auto& [result, el1, el2]: zip_iterator(c,b,a))
+    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
-	SGVector<TypeParam> d(len-1);
+	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, d), ShogunException);
 	EXPECT_THROW(element_div(d, a), ShogunException);
 }
@@ -1139,18 +1128,16 @@ TYPED_TEST(
 	SGVector<TypeParam> b(len);
 	SGVector<TypeParam> c(len);
 
-	for (index_t i = 0; i < len; ++i)
-	{
-		a[i] = i;
-		b[i] = i + 1;
-		c[i] = i;
-	}
-
+	a.range_fill();
+	b.range_fill(1);
+	c.range_fill();
+	
 	element_div(a, b, a);
-	for (index_t i = 0; i < len; ++i)
-		EXPECT_NEAR(c[i] / b[i], a[i], get_epsilon<TypeParam>());
 
-	SGVector<TypeParam> d(len-1);
+	for (const auto& [result, el1, el2]: zip_iterator(a,b,c))
+    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
+	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, a, d), ShogunException);
 	EXPECT_THROW(element_div(a, d, a), ShogunException);
 	EXPECT_THROW(element_div(d, a, a), ShogunException);
