@@ -399,7 +399,7 @@ namespace shogun
 				        a_gpu->data_matrix(a.num_rows, a.num_cols),
 				        b_gpu->data_matrix(b.num_rows, b.num_cols));
 		}
-		
+
 		/** ViennaCL logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>
 		void logistic_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const

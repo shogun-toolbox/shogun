@@ -4,6 +4,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
 #include <shogun/util/zip_iterator.h>
@@ -1009,8 +1010,8 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
 	SGMatrix<TypeParam> A(m, m);
 	SGMatrix<TypeParam> B(m, m);
 
-	std::iota(A.matrix, A.matrix + m*2, 0);
-	std::iota(B.matrix, B.matrix + m*2, 1);
+	std::iota(A.matrix, A.matrix + A.size(), 0);
+	std::iota(B.matrix, B.matrix + B.size(), 1);
 
 	auto result = element_div(A, B);
 
@@ -1038,8 +1039,8 @@ TYPED_TEST(
 	SGMatrix<TypeParam> B(m, m);
 	SGMatrix<TypeParam> result(m, m);
 
-	std::iota(A.matrix, A.matrix + m*2, 0);
-	std::iota(B.matrix, B.matrix + m*2, 1);
+	std::iota(A.matrix, A.matrix + A.size(), 0);
+	std::iota(B.matrix, B.matrix + B.size(), 1);
 	
 	element_div(A, B, result);
 
@@ -1061,6 +1062,11 @@ TYPED_TEST(
 	EXPECT_THROW(element_div(C, A, B), ShogunException);
 	EXPECT_THROW(element_div(D, A, B), ShogunException);
 	EXPECT_THROW(element_div(E, A, B), ShogunException);
+
+	B.zero();
+	element_div(A, B, result);
+	typename SGMatrix<TypeParam>::EigenMatrixXtMap result_eig = result;
+    EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
@@ -1114,6 +1120,11 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
 
 	for (const auto& [result, el1, el2]: zip_iterator(c,b,a))
     		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
+	b.zero();
+	c = element_div(a, b);
+	typename SGVector<TypeParam>::EigenRowVectorXtMap result_eig = c;
+    EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
 
 	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, d), ShogunException);
