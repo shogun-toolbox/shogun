@@ -114,9 +114,6 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 		/** compute gradient of non-linearity */
 		virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z);
 
-		/** performs soft thresholding */
-		virtual const SGVector<float64_t> apply_proximal_operator(const SGVector<float64_t> w, const float64_t threshold);
-
 	protected:
 
 		/** Distribution type */
@@ -130,10 +127,6 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 
 		/** regularization parameter :math:`\\lambda` of penalty term. */
 		float64_t m_lambda = 0.1;
-
-		/** the (n_features, n_features) Tikhonov matrix.
-		 * default: NULL, in which case Tau is identity and the L2 penalty is ridge-like */
-		SGMatrix<float64_t> m_tau;
 
 		/** the weighting between L1 penalty and L2 penalty term of the loss function. */
 		float64_t m_alpha = 0.5;

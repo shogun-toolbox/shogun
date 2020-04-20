@@ -12,6 +12,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/optimization/ElasticNetPenalty.h>
 // #include <utility>
 #include <cmath>
 
@@ -85,11 +86,19 @@ void GLM::init_model(std::shared_ptr<Features> data)
 
 void GLM::iteration()
 {
+	std::shared_ptr<ElasticNetPenalty> penalty;
+	penalty->set_l1_ratio(m_alpha);
+
 	SGMatrix<float64_t> X = LinearMachine::features->get_computed_dot_feature_matrix();
 	SGVector<float64_t> y = m_labels->get_values();
 	SGVector<float64_t> w_old(m_w);
 	SGVector<float64_t> gradient_w = compute_grad_L2_loss_w(X, y, m_w, bias);
 	float64_t gradient_bias = compute_grad_L2_loss_bias(X, y, m_w, bias);
+
+	for (int i = 0; i < m_w.vlen; i++)
+	{
+		m_w[i] += m_lambda * penalty->get_penalty_gradient(m_w[i], 0.0);
+	}
 
 	//Update
 	m_w = linalg::add(m_w, gradient_w, 1.0, -1*m_learning_rate);
@@ -97,22 +106,12 @@ void GLM::iteration()
 		bias = bias - m_learning_rate * gradient_bias;
 	
 	//Apply proximal operator
-	m_w = apply_proximal_operator(m_w, m_lambda * m_alpha);
+	penalty->update_variable_for_proximity(m_w, m_lambda * m_alpha);
 
 	//Convergence by relative parameter change tolerance
 	float64_t norm_update = linalg::norm(linalg::add(m_w, w_old, 1.0, -1.0));
 	if(m_current_iteration > 0 && (norm_update / linalg::norm(m_w)) < m_tolerance)
 		m_complete = true;
-}
-
-void GLM::set_tau(SGMatrix<float64_t> tau)
-{
-	m_tau = tau;
-}
-
-SGMatrix<float64_t> GLM::get_tau()
-{
-	return m_tau;
 }
 
 const SGVector<float64_t> GLM::conditional_intensity(const SGMatrix<float64_t> X, const SGVector<float64_t> w,const float64_t l_bias)
@@ -184,9 +183,6 @@ const SGVector<float64_t> GLM::compute_grad_L2_loss_w(const SGMatrix<float64_t> 
 {
 	auto n_samples = y.vlen;
 	auto n_features = X.num_rows;
-	if(!m_tau.data())
-		m_tau = SGMatrix<float64_t>::create_identity_matrix(w.vlen, 1.0);
-	SGMatrix<float64_t> inv_cov = linalg::matrix_prod(m_tau, m_tau, true, false);
 	
 	SGVector<float64_t> z = compute_z(X, w, l_bias);
 	SGVector<float64_t> mu = non_linearity(z);
@@ -207,8 +203,6 @@ const SGVector<float64_t> GLM::compute_grad_L2_loss_w(const SGMatrix<float64_t> 
 	for (int i = 0; i < grad_w.vlen; i++)
 		grad_w[i] /= n_samples;
 	
-	linalg::add(grad_w, linalg::matrix_prod(inv_cov, w, false), 1.0, m_lambda * (1 - m_alpha));
-
 	return grad_w;
 }
 
@@ -237,18 +231,4 @@ const float64_t GLM::compute_grad_L2_loss_bias(const SGMatrix<float64_t> X, cons
 	grad_bias /= n_samples;
 
 	return grad_bias;
-}
-
-const SGVector<float64_t> GLM::apply_proximal_operator(const SGVector<float64_t> w, const float64_t threshold)
-{
-	SGVector<float64_t> result(w);
-	for (int i = 0; i < w.vlen; i++)
-	{
-		result[i] = 0;
-		if(w[i]>0 && abs(w[i])>threshold)
-			result[i] = abs(w[i]) - threshold;
-		else if(w[i]<0 && abs(w[i])>threshold)
-			result[i] = -1* (abs(w[i]) - threshold);
-	}
-	return result;
 }
