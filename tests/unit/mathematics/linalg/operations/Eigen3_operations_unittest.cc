@@ -1015,7 +1015,7 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
 	auto result = element_div(A, B);
 
 	for (const auto& [result, el1, el2]: zip_iterator(result ,B , A))
-    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
 	SGMatrix<TypeParam> C(m+1, m);
 	SGMatrix<TypeParam> D(m, m+1);
@@ -1044,7 +1044,7 @@ TYPED_TEST(
 	element_div(A, B, result);
 
 	for (const auto& [result, el1, el2]: zip_iterator(result ,B , A))
-    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
 	SGMatrix<TypeParam> C(m+1, m);
 	SGMatrix<TypeParam> D(m, m+1);
@@ -1113,7 +1113,7 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
 	c = element_div(a, b);
 
 	for (const auto& [result, el1, el2]: zip_iterator(c,b,a))
-    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
 	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, d), ShogunException);
@@ -1135,7 +1135,7 @@ TYPED_TEST(
 	element_div(a, b, a);
 
 	for (const auto& [result, el1, el2]: zip_iterator(a,b,c))
-    	EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
 
 	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, a, d), ShogunException);
