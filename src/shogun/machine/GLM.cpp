@@ -260,3 +260,174 @@ bool GLM::train_machine(std::shared_ptr<Features> data = NULL)
 
 	minimizer->minimize();//returns min cost
 }
+
+class GLMCostFunction: public FirstOrderStochasticCostFunction
+{
+public:
+	GLMCostFunction():FirstOrderStochasticCostFunction() {  init(); }
+	virtual ~GLMCostFunction() {  }
+
+	void set_target(const std::shared_ptr<GLM>&obj)
+	{
+		require(obj, "Obj must set");
+		if(m_obj != obj)
+			m_obj=obj;
+	}
+
+	void unset_target()
+	{
+		m_obj=NULL;
+	}
+
+	/** Get the cost given current target variables 
+	 *
+	 * For least squares, that is the value of \f$f(w)\f$.
+	 *
+	 * @return cost
+	 */
+	virtual float64_t get_cost()
+	{
+		//TODO
+	}
+
+	virtual SGVector<float64_t> obtain_variable_reference()
+	{
+		require(m_obj,"Object not set");
+		m_derivatives = SGVector<float64_t>((m_obj->m_w).vlen);
+		return m_obj->m_w;
+	}
+
+	/** Get the SAMPLE gradient value wrt target variables 
+	 *
+	 * WARNING
+	 * This method does return 
+	 * \f$ \frac{\partial f_i(w) }{\partial w} \f$,
+	 * instead of
+	 * \f$\sum_i{ \frac{\partial f_i(w) }{\partial w} }\f$
+	 *
+	 * For least squares cost function, that is the value of
+	 * \f$\frac{\partial f_i(w) }{\partial w}\f$ given \f$w\f$ is known
+	 * where the index \f$i\f$ is obtained by next_sample() 
+	 *
+	 * @return sample gradient of variables
+	 */
+	virtual SGVector<float64_t> get_gradient()
+	{
+		SGMatrix<float64_t> X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
+		SGVector<float64_t> y = m_obj->m_labels->get_values();
+		SGVector<float64_t> w_old(m_obj->m_w);
+
+		auto n_samples = y.vlen;
+		auto n_features = X.num_rows;
+	
+		SGVector<float64_t> z = compute_z(X, m_obj->m_w, m_obj->bias);
+		SGVector<float64_t> mu = non_linearity(z);
+		SGVector<float64_t> grad_mu = gradient_non_linearity(z);
+
+		SGVector<float64_t> grad_w(m_obj->m_w.vlen);
+		SGVector<float64_t> a;
+		switch (m_obj->distribution)
+		{
+		case POISSON:
+			a = y * grad_mu / mu;
+			linalg::transpose_matrix(linalg::add(linalg::matrix_prod(SGMatrix(grad_mu), X, true, false)), (linalg::matrix_prod(SGMatrix(a), X, true, false)), 1, -1);
+			break;
+	
+		default:
+			error("Not a valid distribution type");
+			break;
+		}
+		for (int i = 0; i < grad_w.vlen; i++)
+			grad_w[i] /= n_samples;
+	
+		return grad_w;
+	}
+
+	/** Initialize to generate a sample sequence
+	 *
+	 */
+	virtual void begin_sample()
+	{
+		//TODO
+	}
+
+	/** Get next sample
+	 *
+	 * @return false if reach the end of the sample sequence
+	 * */
+	virtual bool next_sample()
+	{
+		//TODO
+	}
+
+	virtual const char* get_name() const { return "KLDualInferenceMethodCostFunction"; }
+
+private:
+	void init() {	}
+
+	/** compute z */
+	virtual const SGVector<float64_t> compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias)
+	{
+		SGVector<float64_t> z = linalg::matrix_prod(X, w, false);
+		return z;
+	}
+
+	/** conditional non-linear function */
+	virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z)
+	{
+		SGVector<float64_t> result;
+		switch (m_obj->distribution)
+		{
+		case POISSON:
+			result = SGVector<float64_t>(z);
+			float64_t l_bias = 0;
+
+			if(m_obj->LinearMachine::m_compute_bias)
+				l_bias = (1 - m_obj->m_eta) * std::exp(m_obj->m_eta);
+
+			for (int i = 0; i < z.vlen; i++)
+			{
+				if(z[i]>m_obj->m_eta)
+					result[i] = z[i] * std::exp(m_obj->m_eta) + l_bias;
+				else
+					result[i] = std::exp(z[i]);
+			}
+			break;
+	
+		default:
+			error("Not a valid distribution type");
+			break;
+		}
+		return result;
+	}
+
+	/** compute gradient of non-linearity */
+	virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z)
+	{
+		SGVector<float64_t> result;
+		switch (m_obj->distribution)
+		{
+		case POISSON:
+			result = SGVector<float64_t>(z);
+			for (int i = 0; i < z.vlen; i++)
+			{
+				if(z[i]>m_obj->m_eta)
+				
+					result[i] = std::exp(m_obj->m_eta);
+				else
+					result[i] = std::exp(z[i]);
+			}
+			break;
+	
+		default:
+			error("Not a valid distribution type");
+			break;
+		}
+		return result;
+	}
+
+	SGVector<float64_t> m_derivatives;
+
+	std::shared_ptr<GLM>m_obj;
+
+};
