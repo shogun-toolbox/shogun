@@ -1021,6 +1021,42 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_log)
 		EXPECT_NEAR(result[i], std::log(a[i]), get_epsilon<TypeParam>());
 }
 
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_sin)
+{
+	SGVector<TypeParam> a{1.0, 2.0, 3.0};
+	auto result = linalg::sin(a);
+
+	for (index_t i = 0; i < a.vlen; i++)
+		EXPECT_NEAR(result[i], std::sin(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_sin)
+{	
+	SGMatrix<TypeParam> a{{1.0, 2.0, 3.0}};
+	auto result = linalg::sin(a);
+
+	for (index_t i = 0; i < a.num_cols * a.num_rows; i++)
+		EXPECT_NEAR(result[i], std::sin(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_cos)
+{
+	SGVector<TypeParam> a{1.0, 2.0, 3.0};
+	auto result = linalg::cos(a);
+
+	for (index_t i = 0; i < a.vlen; i++)
+		EXPECT_NEAR(result[i], std::cos(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_cos)
+{	
+	SGMatrix<TypeParam> a{{1.0, 2.0, 3.0}};
+	auto result = linalg::cos(a);
+
+	for (index_t i = 0; i < a.num_cols * a.num_rows; i++)
+		EXPECT_NEAR(result[i], std::cos(a[i]), get_epsilon<TypeParam>());
+}
+
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_exponent)
 {
 	const index_t len = 4;

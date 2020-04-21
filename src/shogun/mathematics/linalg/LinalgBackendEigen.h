@@ -245,6 +245,22 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGMatrix)
 #undef BACKEND_GENERIC_LOG
 
+/** Implementation of @see linalg::sin */
+#define BACKEND_GENERIC_SIN(Type, Container)                              \
+	virtual void sin(const Container<Type>& a, Container<Type>& result)   \
+	    const
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGMatrix)
+#undef BACKEND_GENERIC_SIN
+
+/** Implementation of @see linalg::cos */
+#define BACKEND_GENERIC_COS(Type, Container)                              \
+	virtual void cos(const Container<Type>& a, Container<Type>& result)   \
+	    const
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGMatrix)
+#undef BACKEND_GENERIC_COS
+
 /** Implementation of @see LinalgBackendBase::identity */
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
 	virtual void identity(Container<Type>& identity_matrix) const;
@@ -687,6 +703,22 @@ namespace shogun
 		/** Eigen3 matrix log method */
 		template <typename T>
 		void log_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+
+		/** Eigen3 matrix sin method */
+		template <typename T>
+		void sin_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+
+		/** Eigen3 vector sin method */
+		template <typename T>
+		void sin_impl(const SGVector<T>& a, SGVector<T>& result) const;
+
+		/** Eigen3 matrix cos method */
+		template <typename T>
+		void cos_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+
+		/** Eigen3 vector cos method */
+		template <typename T>
+		void cos_impl(const SGVector<T>& a, SGVector<T>& result) const;
 
 		/** Eigen3 set matrix to identity method */
 		template <typename T>

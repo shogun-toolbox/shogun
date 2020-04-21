@@ -1192,6 +1192,42 @@ namespace shogun
 			return result;
 		}
 
+		/** Performs the operation B = sin(A)
+		 *
+		 * This version returns the result in a newly created vector or matrix.
+		 *
+		 * @param a Sin vector or matrix
+		 * @return The result of the operation
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> sin(const Container<T>& a)
+		{
+			Container<T> result;
+			result = a.clone();
+
+			infer_backend(a)->sin(a, result);
+
+			return result;
+		}
+
+		/** Performs the operation B = cos(A)
+		 *
+		 * This version returns the result in a newly created vector or matrix.
+		 *
+		 * @param a Cos vector or matrix
+		 * @return The result of the operation
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> cos(const Container<T>& a)
+		{
+			Container<T> result;
+			result = a.clone();
+
+			infer_backend(a)->cos(a, result);
+
+			return result;
+		}
+
 		/**
 		 * Method that writes the identity into a square matrix.
 		 *
