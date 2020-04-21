@@ -240,6 +240,8 @@ bool GLM::train_machine(std::shared_ptr<Features> data = NULL)
 {
 	std::shared_ptr<SGDMinimizer> minimizer;
 
+	std::shared_ptr<GLMCostFunction> cost_function;
+	cost_function->set_target(std::make_shared<GLM> (this));
 	minimizer->set_cost_function(std::shared_ptr<FirstOrderCostFunction>);
 
 	std::shared_ptr<GradientDescendUpdater> gradient_updater;
@@ -261,6 +263,9 @@ bool GLM::train_machine(std::shared_ptr<Features> data = NULL)
 	minimizer->minimize();//returns min cost
 }
 
+
+
+
 class GLMCostFunction: public FirstOrderStochasticCostFunction
 {
 public:
@@ -279,12 +284,6 @@ public:
 		m_obj=NULL;
 	}
 
-	/** Get the cost given current target variables 
-	 *
-	 * For least squares, that is the value of \f$f(w)\f$.
-	 *
-	 * @return cost
-	 */
 	virtual float64_t get_cost()
 	{
 		//TODO
@@ -297,20 +296,6 @@ public:
 		return m_obj->m_w;
 	}
 
-	/** Get the SAMPLE gradient value wrt target variables 
-	 *
-	 * WARNING
-	 * This method does return 
-	 * \f$ \frac{\partial f_i(w) }{\partial w} \f$,
-	 * instead of
-	 * \f$\sum_i{ \frac{\partial f_i(w) }{\partial w} }\f$
-	 *
-	 * For least squares cost function, that is the value of
-	 * \f$\frac{\partial f_i(w) }{\partial w}\f$ given \f$w\f$ is known
-	 * where the index \f$i\f$ is obtained by next_sample() 
-	 *
-	 * @return sample gradient of variables
-	 */
 	virtual SGVector<float64_t> get_gradient()
 	{
 		SGMatrix<float64_t> X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
@@ -343,18 +328,11 @@ public:
 		return grad_w;
 	}
 
-	/** Initialize to generate a sample sequence
-	 *
-	 */
 	virtual void begin_sample()
 	{
 		//TODO
 	}
 
-	/** Get next sample
-	 *
-	 * @return false if reach the end of the sample sequence
-	 * */
 	virtual bool next_sample()
 	{
 		//TODO
@@ -365,14 +343,12 @@ public:
 private:
 	void init() {	}
 
-	/** compute z */
 	virtual const SGVector<float64_t> compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias)
 	{
 		SGVector<float64_t> z = linalg::matrix_prod(X, w, false);
 		return z;
 	}
 
-	/** conditional non-linear function */
 	virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z)
 	{
 		SGVector<float64_t> result;
@@ -401,7 +377,6 @@ private:
 		return result;
 	}
 
-	/** compute gradient of non-linearity */
 	virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z)
 	{
 		SGVector<float64_t> result;
