@@ -211,7 +211,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGMatrix)
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGVector)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGMatrix)
-#undef BACKEND_GENERIC_LOG
+#undef BACKEND_GENERIC_COS
 
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	void LinalgBackendEigen::matrix_prod(                                      \
