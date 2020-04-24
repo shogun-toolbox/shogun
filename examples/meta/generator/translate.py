@@ -432,7 +432,7 @@ class Translator:
         # hack since ctags cannot find include paths for preprocessor
         # macros generated names that use the concat (##) operator
         # which is used from factory.h to generated methods: as_svm, etc
-        if translatedType.startswith("as_") or translatedType.startswith("create_") :
+        if translatedType.startswith("as_") or translatedType.startswith("create_") or  translatedType.startswith("read_")  :
             return "shogun/util/factory.h"
 
         raise TranslationFailure('Failed to obtain include path for %s' %

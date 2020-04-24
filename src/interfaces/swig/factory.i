@@ -4,6 +4,54 @@
 %include <shogun/util/factory.h>
 %include <std_string.i>
 
+%inline%{
+namespace shogun{
+	template <typename T>
+	std::shared_ptr<Features> create_features(SGMatrix<T> mat)
+	{
+		return create<Features>(mat);
+	}
+
+	std::shared_ptr<Features> create_features(
+	    std::shared_ptr<File> file, EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return create<Features>(file, primitive_type);
+	}
+
+    template <
+	    typename T, typename T2 = typename std::enable_if_t<
+	                    std::is_floating_point<T>::value>>
+	std::shared_ptr<Kernel> create_kernel(SGMatrix<T> kernel_matrix)
+	{
+		return details::kernel(kernel_matrix);
+	}
+
+	template <typename T>
+	std::shared_ptr<Labels> create_labels(SGVector<T> labels)
+	{
+		return create<Labels>(labels);
+	}
+
+	std::shared_ptr<Labels> create_labels(std::shared_ptr<File> file)
+	{
+		return create<Labels>(file);
+	}
+
+	std::shared_ptr<File> read_csv(std::string fname, char rw = 'r')
+	{
+		return create<CSVFile>(fname, rw);
+	}
+
+	std::shared_ptr<File> read_libsvm(std::string fname, char rw = 'r')
+	{
+		return create<LibSVMFile>(fname, rw);
+	}
+	std::shared_ptr<PipelineBuilder> create_pipeline()
+	{
+		return details::pipeline();
+	}    
+}
+%}
 %template(create_features) shogun::create_features<float64_t>;
 
 #ifndef SWIGJAVA // FIXME: Java only uses DoubleMatrix atm, remove guard once that is resolved
@@ -33,7 +81,7 @@
 %template(create_combination_rule) shogun::create<shogun::CombinationRule, std::string>;
 %template(create_distance) shogun::create<shogun::Distance, std::string>;
 %template(create_kernel) shogun::create<shogun::Kernel, std::string>;
-%template(create_feature) shogun::create<shogun::Features, std::string>;
+%template(create_features) shogun::create<shogun::Features, std::string>;
 %template(create_machine) shogun::create<shogun::Machine, std::string>;
 %template(create_structured_model) shogun::create<shogun::StructuredModel, std::string>;
 %template(create_factor_type) shogun::create<shogun::FactorType, std::string>;

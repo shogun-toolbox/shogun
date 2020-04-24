@@ -127,7 +127,7 @@
             "create_machine": "create<Machine>($arguments)",
             "create_labels": "create<Labels>($arguments)",
             "read_csv": "create<CSVFile>($arguments)",
-            "create_libsvmfile": "create<LibSVMFile>($arguments)",
+            "read_libsvm": "create<LibSVMFile>($arguments)",
             "create_pipeline": "create<PipelineBuilder>($arguments)",
             "create_kernel": "create<Kernel>($arguments)",
             "create_evaluation": "create<Evaluation>($arguments)",
