@@ -99,8 +99,12 @@ SparseInference::SparseInference(std::shared_ptr<Kernel> kern, std::shared_ptr<F
 
 void SparseInference::init()
 {
-	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
-			ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	SG_ADD(
+	    &_m_inducing_features, "inducing_features", "inducing features",
+	    ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	add_callback_function("inducing_features", [&]() {
+		set_inducing_features(_m_inducing_features);
+	});
 	SG_ADD(&m_log_ind_noise, "log_inducing_noise", "noise about inducing potins in log domain",
 		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior");

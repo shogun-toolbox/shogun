@@ -80,7 +80,8 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_mean_vector(const std::shared_ptr<Features>& data) override;
 
 	/** returns a vector of the posterior predictive variances
 	 *
@@ -88,7 +89,8 @@ public:
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_variance_vector(const std::shared_ptr<Features>& data) override;
 
 	/** returns probabilities \f$p(y_*=1)\f$ for each (test) feature \f$x_*\f$
 	 *
@@ -96,7 +98,8 @@ public:
 	 *
 	 * @return vector of probabilities
 	 */
-	SGVector<float64_t> get_probabilities(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_probabilities(const std::shared_ptr<Features>& data) override;
 
 	/** get classifier type
 	 *

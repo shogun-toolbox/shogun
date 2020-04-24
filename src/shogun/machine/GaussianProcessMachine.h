@@ -127,6 +127,27 @@ public:
 		Machine::set_labels(lab);
 		m_method->set_labels(lab);
 	}
+
+	virtual SGVector<float64_t>
+	get_mean_vector(const std::shared_ptr<Features>& data)
+	{
+		not_implemented(SOURCE_LOCATION);
+	}
+
+	virtual SGVector<float64_t>
+	get_variance_vector(const std::shared_ptr<Features>& data)
+	{
+		not_implemented(SOURCE_LOCATION);
+	}
+
+	// the get_probabilities should only be used in the
+	// GaussianProcessClassification
+	virtual SGVector<float64_t>
+	get_probabilities(const std::shared_ptr<Features>& data)
+	{
+		not_implemented(SOURCE_LOCATION);
+	}
+
 private:
 	void init();
 

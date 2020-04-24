@@ -28,6 +28,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/loss/LossFunction.h>
+#include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
 #include <shogun/machine/gp/Inference.h>
@@ -73,6 +74,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(EvaluationResult, evaluation_result)
 	BASE_CLASS_FACTORY(Distribution, distribution)
 	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
+	BASE_CLASS_FACTORY(GaussianProcessMachine, gaussian_process)
 
 	namespace details
 	{

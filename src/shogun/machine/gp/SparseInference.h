@@ -303,6 +303,10 @@ protected:
 	/** inducing features for approximation */
 	SGMatrix<float64_t> m_inducing_features;
 
+	/**inducing features for approximation, should be same as
+	 * m_inducing_features*/
+	std::shared_ptr<Features> _m_inducing_features;
+
 	/** noise of the inducing variables */
 	float64_t m_log_ind_noise;
 

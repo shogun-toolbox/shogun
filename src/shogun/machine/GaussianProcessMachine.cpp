@@ -66,6 +66,8 @@ void GaussianProcessMachine::init()
 
 	SG_ADD(&m_method, "inference_method", "Inference method",
 	    ParameterProperties::HYPER);
+	add_callback_function(
+	    "inference_method", [&]() { set_labels(m_method->get_labels()); });
 	SG_ADD(&m_compute_variance, "compute_variance", "Whether predictive variance is computed in predictions");
 }
 

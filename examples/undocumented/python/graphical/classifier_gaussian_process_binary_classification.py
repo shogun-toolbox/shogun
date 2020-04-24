@@ -46,7 +46,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     kernel = sg.create_kernel('GaussianKernel', log_width=np.log(2.0))
 
     # create zero mean function
-    mean = sg.ZeroMean()
+    mean =  sg.gp_mean("ZeroMean")
 
     # you can easily switch between probit and logit likelihood models
     # by uncommenting/commenting the following lines:
@@ -55,7 +55,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     # lik = ProbitLikelihood()
 
     # create logit likelihood model
-    lik = sg.LogitLikelihood()
+    lik = sg.gp_likelihood("LogitLikelihood")
 
     # you can easily switch between Laplace and EP approximation by
     # uncommenting/commenting the following lines:
@@ -64,11 +64,10 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     # inf = SingleLaplacianInferenceMethod(kernel, train_features, mean, train_labels, lik)
 
     # specify EP approximation inference method
-    inf = sg.EPInferenceMethod(kernel, train_features, mean, train_labels, lik)
-
+    inf = sg.gp_inference("MultiLaplaceInferenceMethod", kernel=kernel, features=train_features, mean_function=mean, labels=train_labels, likelihood_model=lik)
     # create and train GP classifier, which uses Laplace approximation
-    # gp = sg.create_machine('GaussianProcessClassification', inference_method=inf, labels=train_labels)
-    gp = sg.GaussianProcessClassification(inf)
+    # gp = sg.machine('GaussianProcessClassification', inference_method=inf, labels=train_labels)
+    gp = sg.gaussian_process("GaussianProcessClassification", inference_method=inf)
     gp.train()
 
     # get probabilities p(y*=1|x*) for each testing feature x*
