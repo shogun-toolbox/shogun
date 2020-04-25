@@ -345,8 +345,9 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_inducing_features(
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	Map<MatrixXd> eigen_Tnm(m_Tnm.matrix, m_Tnm.num_rows, m_Tnm.num_cols);
 
-	int32_t dim=m_inducing_features.num_rows;
-	int32_t num_samples=m_inducing_features.num_cols;
+	auto inducing_feat = m_inducing_features->as<DotFeatures>();
+	int32_t dim = inducing_feat->get_dim_feature_space();
+	int32_t num_samples = inducing_feat->get_num_vectors();
 	SGVector<float64_t>deriv_lat(dim*num_samples);
 	deriv_lat.zero();
 

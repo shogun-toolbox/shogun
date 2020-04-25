@@ -108,10 +108,7 @@ public:
 	virtual void set_inducing_features(std::shared_ptr<Features> feat)
 	{
 		require(feat,"Input inducing features must be not empty");
-		auto lat_type=std::dynamic_pointer_cast<DotFeatures>(feat);
-		require(lat_type, "Inducing features ({}) must be"
-			" DotFeatures or one of its subclasses", feat->get_name());
-		m_inducing_features=lat_type->get_computed_dot_feature_matrix();
+		m_inducing_features = feat;
 	}
 
 	/** get inducing features
@@ -120,9 +117,7 @@ public:
 	 */
 	virtual std::shared_ptr<Features> get_inducing_features()
 	{
-		SGMatrix<float64_t> out(m_inducing_features.matrix,
-			m_inducing_features.num_rows,m_inducing_features.num_cols,false);
-		return std::make_shared<DenseFeatures<float64_t>>(out);
+		return m_inducing_features;
 	}
 
 	/** get alpha vector
@@ -301,11 +296,7 @@ protected:
 			Parameters::const_reference param)=0;
 
 	/** inducing features for approximation */
-	SGMatrix<float64_t> m_inducing_features;
-
-	/**inducing features for approximation, should be same as
-	 * m_inducing_features*/
-	std::shared_ptr<Features> _m_inducing_features;
+	std::shared_ptr<Features> m_inducing_features;
 
 	/** noise of the inducing variables */
 	float64_t m_log_ind_noise;

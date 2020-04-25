@@ -140,8 +140,6 @@ public:
 		not_implemented(SOURCE_LOCATION);
 	}
 
-	// the get_probabilities should only be used in the
-	// GaussianProcessClassification
 	virtual SGVector<float64_t>
 	get_probabilities(const std::shared_ptr<Features>& data)
 	{
