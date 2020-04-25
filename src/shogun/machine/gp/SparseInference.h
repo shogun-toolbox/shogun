@@ -117,7 +117,8 @@ public:
 	 */
 	virtual std::shared_ptr<Features> get_inducing_features()
 	{
-		return m_inducing_features;
+		auto inducing_feat = m_inducing_features->as<DotFeatures>();
+		return std::make_shared<DenseFeatures<float64_t>>(inducing_feat);
 	}
 
 	/** get alpha vector
