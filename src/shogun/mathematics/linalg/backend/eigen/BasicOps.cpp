@@ -193,16 +193,6 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_DIV, SGVector)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
 
-#define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV(Type, Container)           \
-	void LinalgBackendEigen::element_div(                                     \
-	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result) const                              \
-	{                                                                          \
-		element_div_impl(a, b, result);             \
-	}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV, SGMatrix)
-#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV
-
 #define BACKEND_GENERIC_EXPONENT(Type, Container)                              \
 	void LinalgBackendEigen::exponent(                                         \
 	    const Container<Type>& a, Container<Type>& result) const               \
@@ -514,23 +504,6 @@ void LinalgBackendEigen::element_div_impl(
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 	element_div_eigen(a_eig, b_eig, result_eig);
-}
-
-template <typename T>
-void LinalgBackendEigen::element_div_impl(
-    const linalg::Block<SGMatrix<T>>& a, const linalg::Block<SGMatrix<T>>& b,
-    SGMatrix<T>& result) const
-{
-	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a.m_matrix;
-	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b.m_matrix;
-	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-	Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> a_block =
-	    a_eig.block(a.m_row_begin, a.m_col_begin, a.m_row_size, a.m_col_size);
-	Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> b_block =
-	    b_eig.block(b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
-
-	element_div_eigen(a_block, b_block, result_eig);
 }
 
 template <typename T>

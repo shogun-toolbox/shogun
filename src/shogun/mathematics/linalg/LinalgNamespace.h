@@ -1160,46 +1160,6 @@ namespace shogun
 		 * division
 		 * on matrix blocks.
 		 *
-		 * This version returns the result in-place.
-		 * User should pass an appropriately pre-allocated memory matrix.
-		 *
-		 * This operation works with CPU backends only.
-		 *
-		 * @param A First matrix block
-		 * @param B Second matrix block
-		 * @param result Result matrix
-		 */
-		template <typename T>
-		void element_div(
-		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
-		    SGMatrix<T>& result)
-		{
-
-			require(
-			    (A.m_row_size == B.m_row_size  &&
-				A.m_col_size ==  B.m_col_size),
-			    "Dimension mismatch! A({} x {}) vs B({} x {})", A.m_row_size,
-			    A.m_col_size, B.m_row_size, B.m_col_size);
-
-			require(
-			    A.m_row_size == result.num_rows && A.m_col_size == result.num_cols,
-			    "Dimension mismatch! A({} x {}) vs result({} x {})",
-			    A.m_row_size, A.m_col_size, result.num_rows, result.num_cols);
-
-			require(
-			    !result.on_gpu(),
-			    "Cannot operate with matrix result on_gpu ({}) \
-	 		as matrix blocks are on CPU.",
-			    result.on_gpu());
-
-			env()->linalg()->get_cpu_backend()->element_div(
-			    A, B, result);
-		}
-
-		/** Performs the operation C = A ./ B where "./" denotes elementwise
-		 * division
-		 * on matrix blocks.
-		 *
 		 * This version returns the result in a newly created matrix.
 		 *
 		 * @param A First matrix block

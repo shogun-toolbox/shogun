@@ -247,15 +247,6 @@ namespace shogun
 		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
 
-/** Implementation of @see LinalgBackendBase::element_div */
-#define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV(Type, Container)           \
-	virtual void element_div(                                                 \
-	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result) const;
-		DEFINE_FOR_ALL_PTYPE(
-		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV, SGMatrix)
-#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV
-
 /** Implementation of @see linalg::exponent */
 #define BACKEND_GENERIC_EXPONENT(Type, Container)                              \
 	virtual void exponent(const Container<Type>& a, Container<Type>& result)   \
@@ -719,12 +710,6 @@ namespace shogun
 		template <typename T>
 		void element_div_impl(
 		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const;
-
-		/** Eigen3 matrix block in-place elementwise division method */
-		template <typename T>
-		void element_div_impl(
-		    const linalg::Block<SGMatrix<T>>& a,
-		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector in-place elementwise division method */
 		template <typename T>

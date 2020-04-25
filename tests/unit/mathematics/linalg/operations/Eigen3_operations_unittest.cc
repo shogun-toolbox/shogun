@@ -1067,45 +1067,8 @@ TYPED_TEST(
 	B.zero();
 	element_div(A, B, result);
 	typename SGMatrix<TypeParam>::EigenMatrixXtMap result_eig = result;
-    	EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+    		EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
 	}
-}
-
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_block_elementwise_division)
-{
-	const index_t nrows = 2;
-	const index_t ncols = 3;
-
-	SGMatrix<TypeParam> A(nrows, ncols);
-	SGMatrix<TypeParam> B(ncols, nrows);
-
-	for (auto i : range(nrows))
-		for (auto j : range(ncols))
-		{
-			A(i, j) = i * 10 + j + 1;
-			B(j, i) = i + j + 1;
-		}
-
-	const auto m = 2;
-	auto A_block = linalg::block(A, 0, 0, m, m);
-	auto B_block = linalg::block(B, 0, 0, m, m);
-	auto result = element_div(A_block, B_block);
-
-	ASSERT_EQ(result.num_rows, m);
-	ASSERT_EQ(result.num_cols, m);
-
-	for (auto i : range(m))
-		for (auto j : range(m))
-			EXPECT_NEAR(
-			    result(i, j), A(i, j) / B(i, j), get_epsilon<TypeParam>());
-
-	auto C_block = linalg::block(B, 0, 0, m, m+1);
-	EXPECT_THROW(element_div(A_block, C_block),ShogunException);
-	C_block = linalg::block(B, 0, 0, m+1, m);
-	EXPECT_THROW(element_div(A_block, C_block),ShogunException);
-	C_block = linalg::block(B, m-1, 0, m, m+1);
-	EXPECT_THROW(element_div(A_block, C_block),ShogunException);
-
 }
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
@@ -1127,7 +1090,7 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
 	b.zero();
 	c = element_div(a, b);
 	typename SGVector<TypeParam>::EigenRowVectorXtMap result_eig = c;
-    	EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+    		EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
 	}
 	SGVector<TypeParam> d(len + 1);
 	EXPECT_THROW(element_div(a, d), ShogunException);

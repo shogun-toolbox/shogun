@@ -437,23 +437,6 @@ namespace shogun
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
 
 /**
- * Wrapper method of in-place matrix block elementwise division.
- *
- * @see linalg::element_div
- */
-#define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV(Type, Container)           \
-	virtual void element_div(                                                 \
-	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result) const                              \
-	{                                                                          \
-		not_implemented(SOURCE_LOCATION);;                                                    \
-	}
-		DEFINE_FOR_ALL_PTYPE(
-		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV, SGMatrix)
-
-#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_DIV
-
-/**
  * Wrapper method of in-place exponent method.
  *
  * @see linalg::exponent
