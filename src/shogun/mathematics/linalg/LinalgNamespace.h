@@ -1157,28 +1157,6 @@ namespace shogun
 		}
 
 		/** Performs the operation C = A ./ B where "./" denotes elementwise
-		 * division
-		 * on matrix blocks.
-		 *
-		 * This version returns the result in a newly created matrix.
-		 *
-		 * @param A First matrix block
-		 * @param B Second matrix block
-		 * @return The result of the operation
-		 */
-		template <typename T>
-		SGMatrix<T> element_div(
-		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B)
-		{
-
-			SGMatrix<T> result(A.m_row_size, A.m_col_size);
-
-			element_div(A, B, result);
-
-			return result;
-		}
-
-		/** Performs the operation C = A ./ B where "./" denotes elementwise
 		 * division.
 		 *
 		 * This version returns the result in-place.
