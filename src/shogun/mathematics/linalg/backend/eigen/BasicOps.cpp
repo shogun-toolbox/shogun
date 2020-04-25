@@ -193,6 +193,26 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGVector)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGMatrix)
 #undef BACKEND_GENERIC_LOG
 
+#define BACKEND_GENERIC_SIN(Type, Container)                                   \
+	void LinalgBackendEigen::sin(                                              \
+	    const Container<Type>& a, Container<Type>& result) const               \
+	{                                                                          \
+		sin_impl(a,result);                                              \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGVector)
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGMatrix)
+#undef BACKEND_GENERIC_SIN
+
+#define BACKEND_GENERIC_COS(Type, Container)                                   \
+	void LinalgBackendEigen::cos(                                              \
+	    const Container<Type>& a, Container<Type>& result) const               \
+	{                                                                          \
+		cos_impl(a,result);                                              \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGVector)
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGMatrix)
+#undef BACKEND_GENERIC_COS
+
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	void LinalgBackendEigen::matrix_prod(                                      \
 	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
@@ -480,6 +500,42 @@ void LinalgBackendEigen::log_impl(
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 	result_eig = a_eig.array().log();
+}
+
+template <typename T>
+void LinalgBackendEigen::sin_impl(
+    const SGVector<T>& a, SGVector<T>& result) const
+{
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<T>::EigenVectorXtMap result_eig = result;
+	result_eig = a_eig.array().sin();
+}
+
+template <typename T>
+void LinalgBackendEigen::sin_impl(
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	result_eig = a_eig.array().sin();
+}
+
+template <typename T>
+void LinalgBackendEigen::cos_impl(
+    const SGVector<T>& a, SGVector<T>& result) const
+{
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<T>::EigenVectorXtMap result_eig = result;
+	result_eig = a_eig.array().cos();
+}
+
+template <typename T>
+void LinalgBackendEigen::cos_impl(
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	result_eig = a_eig.array().cos();
 }
 
 template <typename T>

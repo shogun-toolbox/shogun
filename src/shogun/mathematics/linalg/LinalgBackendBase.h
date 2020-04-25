@@ -435,6 +435,36 @@ namespace shogun
 #undef BACKEND_GENERIC_LOG
 
 /**
+ * Wrapper method of in-place sin method.
+ *
+ * @see linalg::sin
+ */
+#define BACKEND_GENERIC_SIN(Type, Container)                              \
+	virtual void sin(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGMatrix)
+#undef BACKEND_GENERIC_SIN
+
+/**
+ * Wrapper method of in-place cos method.
+ *
+ * @see linalg::cos
+ */
+#define BACKEND_GENERIC_COS(Type, Container)                              \
+	virtual void cos(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGMatrix)
+#undef BACKEND_GENERIC_COS
+
+/**
  * Wrapper method of set matrix to identity.
  *
  * @see linalg::identity
