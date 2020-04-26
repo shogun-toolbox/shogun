@@ -61,11 +61,13 @@ class RegressionLabels;
 class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribution>
 {
  	public:
+		friend class GLMCostFunction;
+
  		/** default constructor */
  		GLM(GLM_DISTRIBUTION distribution=POISSON, float64_t alpha=0.5, float64_t lambda=0.1, float64_t learning_rate=2e-1, int32_t max_iterations=1000, float64_t tolerance=1e-6, float64_t eta=2.0);
 
  		/** destructor */
- 		virtual ~GLM();
+ 		virtual ~GLM(){}
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -92,40 +94,13 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 		
 		virtual void iteration() override;
 
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
-
-	private:
-
-		void init();
-		
-		/**Conditional intensity function.*/
-		virtual const SGVector<float64_t> conditional_intensity(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias);
-
-		/** compute gradient of weights */
-		virtual const SGVector<float64_t> compute_grad_L2_loss_w(const SGMatrix<float64_t> X, const SGVector<float64_t> y, const SGVector<float64_t> w, const float64_t bias);
-
-		/** compute gradient of bias */
-		virtual const float64_t compute_grad_L2_loss_bias(const SGMatrix<float64_t> X, const SGVector<float64_t> y, const SGVector<float64_t> w, const float64_t bias);
-
-		/** compute z */
-		virtual const SGVector<float64_t> compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias);
-
-		/** conditional non-linear function */
-		virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z);
-
-		/** compute gradient of non-linearity */
-		virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z);
-
 	protected:
 
 		/** Distribution type */
-		GLM_DISTRIBUTION distribution;
+		GLM_DISTRIBUTION distribution = POISSON;
 
 		/** a threshold parameter that linearizes the exp() function above eta. */
 		float64_t m_eta = 2.0;
-		
-		/** learning rate for gradient descent. */
-		float64_t m_learning_rate = 2e-1;
 
 		/** regularization parameter :math:`\\lambda` of penalty term. */
 		float64_t m_lambda = 0.1;
@@ -135,6 +110,14 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 
 		/** convergence threshold or stopping criteria. Optimization loop will stop when relative change in parameter norm is below the threshold. */
 		float64_t m_tolerance = 1e-6;
+
+		std::shared_ptr<GLMCostFunction> m_cost_function;
+
+		std::shared_ptr<GradientDescendUpdater> m_gradient_updater;
+
+		std::shared_ptr<ConstLearningRate> m_learning_rate;
+
+		std::shared_ptr<ElasticNetPenalty> m_penalty;
 };
 }
 // #endif
