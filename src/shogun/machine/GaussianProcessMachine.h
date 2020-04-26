@@ -41,7 +41,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/gp/Inference.h>
-
+#include <shogun/mathematics/Seedable.h>
 
 namespace shogun
 {
@@ -156,6 +156,8 @@ protected:
 	 * values are stored in the current_values vector of the predicted labels
 	 */
 	bool m_compute_variance;
+
+	int32_t m_seed;
 };
 }
 #endif /* _GAUSSIANPROCESSMACHINE_H_ */

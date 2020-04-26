@@ -15,7 +15,6 @@ Labels labels_test = labels(f_labels_test)
 Kernel k = create_kernel("GaussianKernel", log_width=0.0)
 k.init(features_train, features_train)
 MeanFunction mean_function = gp_mean("ZeroMean")
-
 #![create_kernel_and_mean_function]
 
 #![create_inference]
@@ -27,11 +26,11 @@ Features inducing_features = create_features(f_feats_inducing)
 inducing_features.add_subset(inducing_points)
 
 LikelihoodModel gauss_likelihood = gp_likelihood("GaussianLikelihood")
-Inference inference_method = gp_inference("FITCInferenceMethod", kernel=k, features=features_train, mean_function=mean_function, labels=labels_train, likelihood_model=gauss_likelihood,inducing_features=inducing_features)
+Inference inference_method = gp_inference("FITCInferenceMethod", kernel=k, features=features_train, mean_function=mean_function, labels=labels_train, likelihood_model=gauss_likelihood, inducing_features=inducing_features)
 #![create_inference]
 
 #![create_instance]
-GaussianProcessMachine gp_regression = gaussian_process("GaussianProcessRegression",inference_method=inference_method)
+GaussianProcessMachine gp_regression = gaussian_process("GaussianProcessRegression", inference_method=inference_method)
 #![create_instance]
 
 #![train_and_apply]

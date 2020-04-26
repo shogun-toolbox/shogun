@@ -69,6 +69,20 @@ void GaussianProcessMachine::init()
 	add_callback_function(
 	    "inference_method", [&]() { set_labels(m_method->get_labels()); });
 	SG_ADD(&m_compute_variance, "compute_variance", "Whether predictive variance is computed in predictions");
+	SG_ADD(&m_seed, "seed", "seed", ParameterProperties::SETTING);
+	add_callback_function("seed", [&]() {
+		require(m_method, "Inference method should not be NULL");
+		auto model = m_method->get_model();
+		if (model->has("seed"))
+		{
+			model->put("seed", m_seed);
+			m_method->set_model(model);
+		}
+		else
+		{
+			error("likelihood {} is not Seedable", model->get_name());
+		}
+	});
 }
 
 GaussianProcessMachine::~GaussianProcessMachine()

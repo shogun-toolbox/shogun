@@ -99,7 +99,7 @@ void SparseInference::init()
 {
 	SG_ADD(
 	    &m_inducing_features, "inducing_features", "inducing features",
-	    ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	    ParameterProperties::MODEL | ParameterProperties::GRADIENT);
 	SG_ADD(&m_log_ind_noise, "log_inducing_noise", "noise about inducing potins in log domain",
 		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior");
@@ -107,7 +107,6 @@ void SparseInference::init()
 	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr");
 
 	m_log_ind_noise = std::log(1e-10);
-	m_inducing_features = nullptr;
 }
 
 void SparseInference::set_inducing_noise(float64_t noise)
@@ -129,9 +128,7 @@ void SparseInference::check_members() const
 {
 	Inference::check_members();
 
-	require(
-	    m_inducing_features != nullptr,
-	    "Inducing features should not be empty");
+	require(m_inducing_features, "Inducing features not set");
 }
 
 SGVector<float64_t> SparseInference::get_alpha()
