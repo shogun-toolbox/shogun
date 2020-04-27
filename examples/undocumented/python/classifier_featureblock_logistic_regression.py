@@ -19,7 +19,7 @@ def classifier_featureblock_logistic_regression (fm_train=traindat,fm_test=testd
 		print("FeatureBlockLogisticRegression not available")
 		exit(0)
 
-	features = sg.features(hstack((traindat,traindat)))
+	features = sg.create_features(hstack((traindat,traindat)))
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
 	n_features = features.get("num_features")

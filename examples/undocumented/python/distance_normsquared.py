@@ -8,10 +8,10 @@ parameter_list = [[traindat,testdat],[traindat,testdat]]
 def distance_normsquared (train_fname=traindat,test_fname=testdat):
 	from shogun import CSVFile
 
-	feats_train=sg.features(CSVFile(train_fname))
-	feats_test=sg.features(CSVFile(test_fname))
+	feats_train=sg.create_features(CSVFile(train_fname))
+	feats_test=sg.create_features(CSVFile(test_fname))
 
-	distance = sg.distance('EuclideanDistance', disable_sqrt=True)
+	distance = sg.create_distance('EuclideanDistance', disable_sqrt=True)
 	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()

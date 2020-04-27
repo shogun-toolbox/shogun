@@ -14,13 +14,13 @@ def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=tr
 	from shogun import StringCharFeatures, CombinedFeatures, DNA
 	import shogun as sg
 
-	kernel=sg.kernel("CombinedKernel")
+	kernel=sg.create_kernel("CombinedKernel")
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 
-	subkfeats_train=sg.features(fm_train_real)
-	subkfeats_test=sg.features(fm_test_real)
-	subkernel=sg.kernel("GaussianKernel", log_width=1.1)
+	subkfeats_train=sg.create_features(fm_train_real)
+	subkfeats_test=sg.create_features(fm_test_real)
+	subkernel=sg.create_kernel("GaussianKernel", log_width=1.1)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.add("kernel_array", subkernel)

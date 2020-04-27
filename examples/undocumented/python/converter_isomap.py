@@ -6,7 +6,7 @@ def converter_isomap (data_fname):
 	from shogun import CSVFile
 	from shogun import Isomap
 		
-	features = sg.features(CSVFile(data))
+	features = sg.create_features(CSVFile(data))
 
 	converter = Isomap()
 	converter.set_k(20)

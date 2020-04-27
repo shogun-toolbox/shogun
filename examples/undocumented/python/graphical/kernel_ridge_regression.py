@@ -17,9 +17,9 @@ plt.plot(neg[0, :], neg[1, :], 'b.')
 # train krr
 labels = util.get_labels()
 train = util.get_realfeatures(pos, neg)
-gk = sg.kernel('GaussianKernel', log_width=width)
+gk = sg.create_kernel('GaussianKernel', log_width=width)
 gk.init(train, train)
-krr = sg.machine('KernelRidgeRegression', labels=labels, kernel=gk, tau=1e-3)
+krr = sg.create_machine('KernelRidgeRegression', labels=labels, kernel=gk, tau=1e-3)
 krr.train()
 
 # compute output plot iso-lines

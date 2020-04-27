@@ -7,14 +7,13 @@ testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
 def kernel_multiquadric (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
-	from shogun import kernel, distance, CSVFile
+	import shogun as sg
+	feats_train=sg.create_features(sg.read_csv(train_fname))
+	feats_test=sg.create_features(sg.read_csv(test_fname))
 
-	feats_train=sg.features(CSVFile(train_fname))
-	feats_test=sg.features(CSVFile(test_fname))
+	distance = sg.create_distance('EuclideanDistance')
 
-	distance = sg.distance('EuclideanDistance')
-
-	kernel = sg.kernel('MultiquadricKernel', coef=shift_coef,
+	kernel = sg.create_kernel('MultiquadricKernel', coef=shift_coef,
 			   distance=distance)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

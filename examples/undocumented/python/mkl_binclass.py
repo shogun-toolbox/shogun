@@ -8,8 +8,8 @@ lm=LoadMatrix()
 
 #only run example if SVMLight is included as LibSVM solver crashes in MKLClassification
 try:
-	from shogun import machine
-	machine("SVMLight")
+	from shogun import create_machine
+	create_machine("SVMLight")
 except SystemError:
 	print("SVMLight not available")
 	exit(0)
@@ -29,23 +29,23 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     # set up and train
 
     # create some poly train/test matrix
-    tfeats = sg.features(fm_train_real)
-    tkernel = sg.kernel("PolyKernel", cache_size=10, degree=3)
+    tfeats = sg.create_features(fm_train_real)
+    tkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=3)
     tkernel.init(tfeats, tfeats)
     K_train = tkernel.get_kernel_matrix()
 
-    pfeats = sg.features(fm_test_real)
+    pfeats = sg.create_features(fm_test_real)
     tkernel.init(tfeats, pfeats)
     K_test = tkernel.get_kernel_matrix()
 
     # create combined train features
     feats_train = CombinedFeatures()
-    feats_train.append_feature_obj(sg.features(fm_train_real))
+    feats_train.append_feature_obj(sg.create_features(fm_train_real))
 
     # and corresponding combined kernel
-    kernel = sg.kernel("CombinedKernel")
+    kernel = sg.create_kernel("CombinedKernel")
     kernel.add("kernel_array", CustomKernel(K_train))
-    kernel.add("kernel_array", sg.kernel("PolyKernel", cache_size=10,
+    kernel.add("kernel_array", sg.create_kernel("PolyKernel", cache_size=10,
                                    degree=2))
     kernel.init(feats_train, feats_train)
 
@@ -74,12 +74,12 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
 
     # create combined test features
     feats_pred = CombinedFeatures()
-    feats_pred.append_feature_obj(sg.features(fm_test_real))
+    feats_pred.append_feature_obj(sg.create_features(fm_test_real))
 
     # and corresponding combined kernel
-    kernel = sg.kernel("CombinedKernel")
+    kernel = sg.create_kernel("CombinedKernel")
     kernel.add("kernel_array", CustomKernel(K_test))
-    kernel.add("kernel_array", sg.kernel("PolyKernel", cache_size=10, degree=2))
+    kernel.add("kernel_array", sg.create_kernel("PolyKernel", cache_size=10, degree=2))
     kernel.init(feats_train, feats_pred)
 
     # and classify

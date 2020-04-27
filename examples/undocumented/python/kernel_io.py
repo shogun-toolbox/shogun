@@ -9,10 +9,10 @@ def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
 	from tempfile import NamedTemporaryFile
 	import shogun as sg
 
-	feats_train=sg.features(CSVFile(train_fname))
-	feats_test=sg.features(CSVFile(test_fname))
+	feats_train=sg.create_features(CSVFile(train_fname))
+	feats_test=sg.create_features(CSVFile(test_fname))
 
-	kernel=sg.kernel("GaussianKernel", log_width=width)
+	kernel=sg.create_kernel("GaussianKernel", log_width=width)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 	tmp_train_csv = NamedTemporaryFile(suffix='train.csv')

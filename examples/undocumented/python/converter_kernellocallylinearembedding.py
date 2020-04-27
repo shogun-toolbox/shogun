@@ -12,7 +12,7 @@ def converter_kernellocallylinearembedding (data_fname,k):
 			print("KernelLocallyLinearEmbedding not available")
 			exit(0)
 			
-		features = sg.features(sg.csv_file(data_fname))
+		features = sg.create_features(sg.read_csv(data_fname))
 
 		kernel = LinearKernel()
 

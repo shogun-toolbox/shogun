@@ -9,12 +9,12 @@ def classifier_multilabeloutputliblinear (fm_train_real=traindat,fm_test_real=te
 	from shogun import MulticlassLabels, MultilabelLabels
 	import shogun as sg
 	
-	feats_train=sg.features(fm_train_real)
-	feats_test=sg.features(fm_test_real)
+	feats_train=sg.create_features(fm_train_real)
+	feats_test=sg.create_features(fm_test_real)
 
 	labels=MulticlassLabels(label_train_multiclass)
 
-	classifier = sg.machine("MulticlassLibLinear", C=C, labels=labels)
+	classifier = sg.create_machine("MulticlassLibLinear", C=C, labels=labels)
 	classifier.train(feats_train)
 
 	# TODO: figure out the new style API for the below call, disabling for now

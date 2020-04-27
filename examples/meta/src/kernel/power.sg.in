@@ -1,14 +1,14 @@
-File traindat = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File testdat = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+File traindat = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File testdat = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
-Features feats_train = features(traindat)
-Features feats_test = features(testdat)
+Features feats_train = create_features(traindat)
+Features feats_test = create_features(testdat)
 #![create_features]
 
 #![create_kernel]
-Distance euclidean_distance = distance("EuclideanDistance")
-Kernel power_kernel = kernel("PowerKernel", degree=3.0, distance=euclidean_distance)
+Distance euclidean_distance = create_distance("EuclideanDistance")
+Kernel power_kernel = create_kernel("PowerKernel", degree=3.0, distance=euclidean_distance)
 power_kernel.init(feats_train, feats_train)
 #![create_kernel]
 

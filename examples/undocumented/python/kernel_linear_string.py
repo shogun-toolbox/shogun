@@ -14,7 +14,7 @@ def kernel_linear_string (fm_train_dna=traindat,fm_test_dna=testdat):
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
 
-	kernel=sg.kernel("LinearStringKernel")
+	kernel=sg.create_kernel("LinearStringKernel")
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

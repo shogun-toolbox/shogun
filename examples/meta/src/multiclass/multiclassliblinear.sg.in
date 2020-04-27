@@ -1,15 +1,15 @@
-File fm_train_real = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File fm_test_real = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
-File label_train_multiclass = csv_file("@SHOGUN_DATA@/label_train_multiclass.dat")
+File fm_train_real = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File fm_test_real = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
+File label_train_multiclass = read_csv("@SHOGUN_DATA@/label_train_multiclass.dat")
 
 #![create_features]
-Features feats_train = features(fm_train_real)
-Features feats_test = features(fm_test_real)
-Labels labels_train = labels(label_train_multiclass)
+Features feats_train = create_features(fm_train_real)
+Features feats_test = create_features(fm_test_real)
+Labels labels_train = create_labels(label_train_multiclass)
 #![create_features]
 
 #![create_machine]
-Machine classifier = machine("MulticlassLibLinear", C=1.0, labels=labels_train)
+Machine classifier = create_machine("MulticlassLibLinear", C=1.0, labels=labels_train)
 #![create_machine]
 
 #![train_and_apply]
@@ -19,7 +19,7 @@ Labels labels_test_predict = classifier.apply(feats_test)
 #![train_and_apply]
 
 #![measure_train_accuracy]
-Evaluation evaluator = evaluation("MulticlassAccuracy")
+Evaluation evaluator = create_evaluation("MulticlassAccuracy")
 real accuracy = evaluator.evaluate(labels_train_predict, labels_train)
 #![measure_train_accuracy]
 

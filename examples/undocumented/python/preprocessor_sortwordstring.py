@@ -16,7 +16,7 @@ def preprocessor_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,order
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc = sg.transformer("SortWordString")
+	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
@@ -25,7 +25,7 @@ def preprocessor_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,order
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
-	kernel=sg.kernel("CommWordStringKernel", use_sign=use_sign)
+	kernel=sg.create_kernel("CommWordStringKernel", use_sign=use_sign)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

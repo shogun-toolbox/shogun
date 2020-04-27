@@ -56,14 +56,14 @@ def variational_classifier(kl_inference,train_fname=traindat,test_fname=testdat,
 	label_fname=label_binary_traindat,kernel_log_sigma=0,kernel_log_scale=0,noise_factor=1e-5,
 	min_coeff_kernel=1e-2,max_attempt=0):
 	from math import exp
-	features_train=sg.features(CSVFile(train_fname))
+	features_train=sg.create_features(CSVFile(train_fname))
 	labels_train=BinaryLabels(CSVFile(label_fname))
 
 	likelihood=LogitDVGLikelihood()
 	error_eval=ErrorRateMeasure()
 	mean_func=ConstMean()
 	kernel_sigma=2*exp(2*kernel_log_sigma);
-	kernel_func=sg.kernel("GaussianKernel", log_width=np.log(kernel_sigma))
+	kernel_func=sg.create_kernel("GaussianKernel", log_width=np.log(kernel_sigma))
 
 	inf=kl_inference(kernel_func, features_train, mean_func, labels_train, likelihood)
 	try:

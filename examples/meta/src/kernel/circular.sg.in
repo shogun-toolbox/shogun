@@ -1,15 +1,15 @@
-File traindat = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File testdat = csv_file("@SHOGUN_DATA@/fm_test_real.dat")
+File traindat = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File testdat = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
-Features feats_train = features(traindat)
-Features feats_test = features(testdat)
+Features feats_train = create_features(traindat)
+Features feats_test = create_features(testdat)
 #![create_features]
 
 #![create_kernel]
-Distance d = distance("EuclideanDistance")
+Distance d = create_distance("EuclideanDistance")
 d.init(feats_train, feats_train)
-Kernel circular_kernel = kernel("CircularKernel", sigma=1.0, distance=d)
+Kernel circular_kernel = create_kernel("CircularKernel", sigma=1.0, distance=d)
 circular_kernel.init(feats_train, feats_train)
 #![create_kernel]
 

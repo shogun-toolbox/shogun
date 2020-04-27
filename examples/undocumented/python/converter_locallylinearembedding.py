@@ -10,9 +10,9 @@ parameter_list = [[data, 20], [data, 30]]
 def converter_locallylinearembeeding (data, k):
 	import shogun as sg
 
-	features = sg.features(data)
+	features = sg.create_features(data)
 
-	converter = sg.transformer('LocallyLinearEmbedding', k=k)
+	converter = sg.create_transformer('LocallyLinearEmbedding', k=k)
 
 	converter.fit(features)
 	features = converter.transform(features)

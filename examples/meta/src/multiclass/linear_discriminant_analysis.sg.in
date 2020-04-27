@@ -4,14 +4,14 @@ CSVFile f_labels_train("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.d
 CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
-Labels labels_train = labels(f_labels_train)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine mc_lda = machine("MCLDA", labels=labels_train, m_tolerance=0.0001, m_store_cov=True)
+Machine mc_lda = create_machine("MCLDA", labels=labels_train, m_tolerance=0.0001, m_store_cov=True)
 #![create_instance]
 
 #![train_and_apply]
@@ -25,7 +25,7 @@ RealMatrix c = mc_lda.get_real_matrix("m_cov")
 #![extract_mean_and_cov]
 
 #![evaluate_accuracy]
-Evaluation eval = evaluation("MulticlassAccuracy")
+Evaluation eval = create_evaluation("MulticlassAccuracy")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

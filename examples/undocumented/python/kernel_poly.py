@@ -8,10 +8,10 @@ def kernel_poly (train_fname=traindat,test_fname=testdat,degree=4,c=0.0):
 	from shogun import CSVFile
 	import shogun as sg
 
-	feats_train=sg.features(CSVFile(train_fname))
-	feats_test=sg.features(CSVFile(test_fname))
+	feats_train=sg.create_features(CSVFile(train_fname))
+	feats_test=sg.create_features(CSVFile(test_fname))
 
-	kernel = sg.kernel("PolyKernel", degree=degree, c=c)
+	kernel = sg.create_kernel("PolyKernel", degree=degree, c=c)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

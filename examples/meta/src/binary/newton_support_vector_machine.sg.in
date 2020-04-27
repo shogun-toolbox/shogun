@@ -1,17 +1,17 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
-File f_feats_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
-File f_labels_test = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
+File f_feats_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
-Labels labels_train = labels(f_labels_train)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine svm = machine("NewtonSVM", labels=labels_train)
+Machine svm = create_machine("NewtonSVM", labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
@@ -25,7 +25,7 @@ real b = svm.get_real("bias")
 #![extract_weights_bias]
 
 #![evaluate_accuracy]
-Evaluation eval = evaluation("AccuracyMeasure")
+Evaluation eval = create_evaluation("AccuracyMeasure")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

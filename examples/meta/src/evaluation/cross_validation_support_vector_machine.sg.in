@@ -1,14 +1,14 @@
-File f_feats = csv_file("@SHOGUN_DATA@/fm_train_real.dat")
-File f_labels = csv_file("@SHOGUN_DATA@/label_train_twoclass.dat")
+File f_feats = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File f_labels = read_csv("@SHOGUN_DATA@/label_train_twoclass.dat")
 
-Features feats = features(f_feats)
-Labels labs = labels(f_labels)
+Features feats = create_features(f_feats)
+Labels labs = create_labels(f_labels)
 
-Machine svm = machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC")
+Machine svm = create_machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC")
 
-SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labs, num_subsets=5)
-Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
-MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+SplittingStrategy strategy = create_splitting_strategy("StratifiedCrossValidationSplitting", labels=labs, num_subsets=5)
+Evaluation evaluation_criterion = create_evaluation("AccuracyMeasure")
+MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 
 EvaluationResult result = cross.evaluate()
 

@@ -16,27 +16,27 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 	from shogun import MKLMulticlass
 	import shogun as sg
 
-	kernel = sg.kernel("CombinedKernel")
+	kernel = sg.create_kernel("CombinedKernel")
 	feats_train = CombinedFeatures()
 	feats_test = CombinedFeatures()
 
-	subkfeats_train = sg.features(fm_train_real)
-	subkfeats_test = sg.features(fm_test_real)
-	subkernel = sg.kernel("GaussianKernel", log_width=width)
+	subkfeats_train = sg.create_features(fm_train_real)
+	subkfeats_test = sg.create_features(fm_test_real)
+	subkernel = sg.create_kernel("GaussianKernel", log_width=width)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.add("kernel_array", subkernel)
 
-	subkfeats_train = sg.features(fm_train_real)
-	subkfeats_test = sg.features(fm_test_real)
-	subkernel = sg.kernel("LinearKernel")
+	subkfeats_train = sg.create_features(fm_train_real)
+	subkfeats_test = sg.create_features(fm_test_real)
+	subkernel = sg.create_kernel("LinearKernel")
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.add("kernel_array", subkernel)
 
-	subkfeats_train = sg.features(fm_train_real)
-	subkfeats_test = sg.features(fm_test_real)
-	subkernel = sg.kernel("PolyKernel", cache_size=10, degree=2)
+	subkfeats_train = sg.create_features(fm_train_real)
+	subkfeats_test = sg.create_features(fm_test_real)
+	subkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=2)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.add("kernel_array", subkernel)

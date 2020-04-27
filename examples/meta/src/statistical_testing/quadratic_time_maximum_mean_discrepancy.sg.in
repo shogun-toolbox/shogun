@@ -2,15 +2,15 @@ CSVFile f_features_p("@SHOGUN_DATA@/two_sample_test_gaussian.dat")
 CSVFile f_features_q("@SHOGUN_DATA@/two_sample_test_laplace.dat")
 
 #![create_features]
-Features features_p = features(f_features_p)
-Features features_q = features(f_features_q)
+Features features_p = create_features(f_features_p)
+Features features_q = create_features(f_features_q)
 #![create_features]
 
 #![create_instance]
 QuadraticTimeMMD mmd()
 mmd.set_p(features_p)
 mmd.set_q(features_q)
-Kernel k = kernel("GaussianKernel", log_width = 1.0)
+Kernel k = create_kernel("GaussianKernel", log_width = 1.0)
 mmd.set_kernel(k)
 real alpha = 0.05
 #![create_instance]
@@ -28,9 +28,9 @@ real p_value = mmd.compute_p_value(statistic)
 #![perform_test]
 
 #![add_kernels]
-Kernel kernel1 = kernel("GaussianKernel", log_width = -1.0)
-Kernel kernel2 = kernel("GaussianKernel", log_width = 0.0)
-Kernel kernel3 = kernel("GaussianKernel", log_width = 1.0)
+Kernel kernel1 = create_kernel("GaussianKernel", log_width = -1.0)
+Kernel kernel2 = create_kernel("GaussianKernel", log_width = 0.0)
+Kernel kernel3 = create_kernel("GaussianKernel", log_width = 1.0)
 mmd.add_kernel(kernel1)
 mmd.add_kernel(kernel2)
 mmd.add_kernel(kernel3)

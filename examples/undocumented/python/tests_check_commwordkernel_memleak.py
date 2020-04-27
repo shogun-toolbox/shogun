@@ -65,7 +65,7 @@ def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 		trainudat=StringWordFeatures(traindat.get_alphabet());
 		trainudat.obtain_from_char(traindat, order-1, order, gap, reverse)
 		#trainudat.io.set_loglevel(MSG_DEBUG)
-		pre = sg.transformer("SortWordString")
+		pre = sg.create_transformer("SortWordString")
 		#pre.io.set_loglevel(MSG_DEBUG)
 		pre.fit(trainudat)
 		trainudat = pre.transform(trainudat)

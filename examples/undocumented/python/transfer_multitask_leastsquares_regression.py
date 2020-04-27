@@ -19,7 +19,7 @@ def transfer_multitask_leastsquares_regression (fm_train=traindat,fm_test=testda
 		exit(0)
 	import shogun as sg
 
-	features = sg.features(traindat)
+	features = sg.create_features(traindat)
 	labels = RegressionLabels(label_train)
 
 	n_vectors = features.get_num_vectors()

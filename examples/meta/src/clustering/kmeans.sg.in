@@ -1,15 +1,15 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
+Features features_train = create_features(f_feats_train)
 #![create_features]
 
 #![choose_distance]
-Distance d = distance("EuclideanDistance", lhs=features_train, rhs=features_train)
+Distance d = create_distance("EuclideanDistance", lhs=features_train, rhs=features_train)
 #![choose_distance]
 
 #![create_instance_lloyd]
-Machine kmeans = machine("KMeans", k=2, distance=d, seed=1)
+Machine kmeans = create_machine("KMeans", k=2, distance=d, seed=1)
 #![create_instance_lloyd]
 
 #![train_dataset]
@@ -22,5 +22,5 @@ RealVector r = kmeans.get_real_vector("radiuses")
 #![extract_centers_and_radius]
 
 #![create_instance_mb]
-Machine kmeans_mini_batch = machine("KMeansMiniBatch", k=2, distance=d, batch_size=4, max_iter=100)
+Machine kmeans_mini_batch = create_machine("KMeansMiniBatch", k=2, distance=d, batch_size=4, max_iter=100)
 #![create_instance_mb]

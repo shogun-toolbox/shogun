@@ -432,7 +432,7 @@ class Translator:
         # hack since ctags cannot find include paths for preprocessor
         # macros generated names that use the concat (##) operator
         # which is used from factory.h to generated methods: as_svm, etc
-        if translatedType.startswith("as_"):
+        if translatedType.startswith("as_") or translatedType.startswith("create_") or  translatedType.startswith("read_")  :
             return "shogun/util/factory.h"
 
         raise TranslationFailure('Failed to obtain include path for %s' %
@@ -666,7 +666,6 @@ class Translator:
 
         if object not in self.variableTypes:
             raise TranslationFailure("Variable {} not initialised".format(object))
-
         template = Template(self.targetDict["Expr"]["MethodCall"]["Default"])
         if method in self.targetDict["Expr"]["MethodCall"]:
             template = Template(self.targetDict["Expr"]["MethodCall"][method])
@@ -697,10 +696,13 @@ class Translator:
     def translateGlobalCall(self, globalCall, returnKwargs):
         """ Translates a method call expression
         Args:
-            staticCall: object like [identifierAST, argumentListAST]
+            globalCall: object like [identifierAST, argumentListAST]
         """
-        template = Template(self.targetDict["Expr"]["GlobalCall"])
+
         method = globalCall[0]["Identifier"]
+        template = Template(self.targetDict["Expr"]["GlobalCall"]["Default"])
+        if method in self.targetDict["Expr"]["GlobalCall"]:
+            template = Template(self.targetDict["Expr"]["GlobalCall"][method])
         argsList = None
         try:
             argsList = globalCall[1]

@@ -21,11 +21,11 @@ def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5
 		fm_train[int(label_train[i]),i]+=distance
 		fm_test[int(label_test[i]),i]+=distance
 
-	feats_train=sg.features(fm_train)
-	feats_test=sg.features(fm_test)
+	feats_train=sg.create_features(fm_train)
+	feats_test=sg.create_features(fm_test)
 
 	width=2.1
-	kernel=sg.kernel("GaussianKernel", log_width=width)
+	kernel=sg.create_kernel("GaussianKernel", log_width=width)
 
 	epsilon=1e-5
 	labels=MulticlassLabels(label_train)

@@ -403,8 +403,8 @@ PUT_ADD(LossFunction)
 PUT_ADD(StructuredModel)
 PUT_ADD(FactorType)
 
-%template(kernel) kernel<float64_t, float64_t>;
-%template(features) features<float64_t>;
+%template(create_kernel) create_kernel<float64_t, float64_t>;
+
 
 
 } // namespace shogun

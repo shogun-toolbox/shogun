@@ -1,21 +1,21 @@
-File f_feats_train    = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
-File f_feats_test     = csv_file("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
-File f_labels_train   = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
-File f_labels_test    = csv_file("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
+File f_feats_train    = read_csv("@SHOGUN_DATA@/regression_1d_linear_features_train.dat")
+File f_feats_test     = read_csv("@SHOGUN_DATA@/regression_1d_linear_features_test.dat")
+File f_labels_train   = read_csv("@SHOGUN_DATA@/regression_1d_linear_labels_train.dat")
+File f_labels_test    = read_csv("@SHOGUN_DATA@/regression_1d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
-Labels labels_train = labels(f_labels_train)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_combination_rule]
-CombinationRule mean_rule = combination_rule("MeanRule")
+CombinationRule mean_rule = create_combination_rule("MeanRule")
 #![create_combination_rule]
 
 #![create_instance]
-Machine rand_forest = machine("RandomForest", labels=labels_train, num_bags=5, seed=1, combination_rule=mean_rule)
+Machine rand_forest = create_machine("RandomForest", labels=labels_train, num_bags=5, seed=1, combination_rule=mean_rule)
 #![create_instance]
 
 #![train_and_apply]
@@ -24,7 +24,7 @@ RegressionLabels labels_predict = rand_forest.apply_regression(features_test)
 #![train_and_apply]
 
 #![evaluate_error]
-Evaluation mse = evaluation("MeanSquaredError")
+Evaluation mse = create_evaluation("MeanSquaredError")
 rand_forest.put("oob_evaluation_metric", mse)
 real oob = rand_forest.get_real("oob_error")
 real mserror = mse.evaluate(labels_predict, labels_test)

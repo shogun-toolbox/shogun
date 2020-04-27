@@ -10,10 +10,10 @@ parameter_list=[[traindat,testdat],[traindat,testdat]]
 def kernel_spline (fm_train_real=traindat,fm_test_real=testdat):
 	import shogun as sg
 
-	feats_train=sg.features(fm_train_real)
-	feats_test=sg.features(fm_test_real)
+	feats_train=sg.create_features(fm_train_real)
+	feats_test=sg.create_features(fm_test_real)
 
-	kernel=sg.kernel("SplineKernel")
+	kernel=sg.create_kernel("SplineKernel")
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

@@ -15,7 +15,7 @@ def kernel_sparse_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.1)
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
 
-	kernel=sg.kernel("LinearKernel")
+	kernel=sg.create_kernel("LinearKernel")
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

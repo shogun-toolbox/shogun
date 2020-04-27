@@ -7,7 +7,7 @@ def converter_factoranalysis(data_fname):
 		import numpy
 		from shogun import FactorAnalysis, EuclideanDistance, CSVFile
 
-		features = sg.features(CSVFile(data_fname))
+		features = sg.create_features(CSVFile(data_fname))
 
 		converter = FactorAnalysis()
 		converter.set_target_dim(2)

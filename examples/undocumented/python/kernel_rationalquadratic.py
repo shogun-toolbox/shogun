@@ -8,12 +8,12 @@ parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 def kernel_rationalquadratic (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
 	from shogun import CSVFile
 
-	feats_train=sg.features(CSVFile(train_fname))
-	feats_test=sg.features(CSVFile(test_fname))
+	feats_train=sg.create_features(CSVFile(train_fname))
+	feats_test=sg.create_features(CSVFile(test_fname))
 
-	distance = sg.distance('EuclideanDistance')
+	distance = sg.create_distance('EuclideanDistance')
 
-	kernel = sg.kernel('RationalQuadraticKernel', coef=shift_coef,
+	kernel = sg.create_kernel('RationalQuadraticKernel', coef=shift_coef,
 			   distance=distance)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

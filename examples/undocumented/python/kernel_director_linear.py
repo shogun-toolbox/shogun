@@ -25,12 +25,12 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 	from shogun import AvgDiagKernelNormalizer
 	from shogun import Time
 
-	feats_train=sg.features(fm_train_real)
+	feats_train=sg.create_features(fm_train_real)
 	#feats_train.io.set_loglevel(0)
 	feats_train.get_global_parallel().set_num_threads(1)
-	feats_test=sg.features(fm_test_real)
+	feats_test=sg.create_features(fm_test_real)
 
-	kernel=sg.kernel("LinearKernel")
+	kernel=sg.create_kernel("LinearKernel")
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 

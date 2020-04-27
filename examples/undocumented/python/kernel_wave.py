@@ -10,12 +10,12 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 10.0]]
 
 def kernel_wave (fm_train_real=traindat,fm_test_real=testdat, theta=1.0):
-	feats_train=sg.features(fm_train_real)
-	feats_test=sg.features(fm_test_real)
+	feats_train=sg.create_features(fm_train_real)
+	feats_test=sg.create_features(fm_test_real)
 
-	distance = sg.distance('EuclideanDistance')
+	distance = sg.create_distance('EuclideanDistance')
 
-	kernel = sg.kernel('WaveKernel', theta=theta, distance=distance)
+	kernel = sg.create_kernel('WaveKernel', theta=theta, distance=distance)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
