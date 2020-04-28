@@ -35,17 +35,12 @@ RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(
 
 SGMatrix<float64_t> RandomKitchenSinksDotFeatures::generate_random_coefficients()
 {
-	SGVector<float64_t> vec = generate_random_parameter_vector();
-	SGMatrix<float64_t> random_params(vec.vlen, num_samples);
-	for (index_t dim=0; dim<random_params.num_rows; dim++)
-		random_params(dim, 0) = vec[dim];
+	auto num_dim = get_num_params();
+	SGMatrix<float64_t> random_params(num_dim,num_samples);
 
-	for (index_t sample=1; sample<num_samples; sample++)
-	{
-		vec = generate_random_parameter_vector();
-		for (index_t dim=0; dim<random_params.num_rows; dim++)
-			random_params(dim, sample) = vec[dim];
-	}
+	for(auto sample : range(num_samples))
+		generate_random_params(random_params.get_column(sample));
+	
 	return random_params;
 }
 

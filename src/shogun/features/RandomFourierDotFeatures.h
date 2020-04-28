@@ -103,7 +103,10 @@ protected:
 	 *
 	 * @return a random parameter vector
 	 */
-	virtual SGVector<float64_t> generate_random_parameter_vector();
+	virtual void generate_random_params(SGVector<float64_t> vec);
+
+	/** @return number of parameters per input dimension */
+	virtual int32_t get_num_params() const;
 
 private:
 	void init(KernelName kernel_name, const SGVector<float64_t>& params);

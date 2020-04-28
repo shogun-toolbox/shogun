@@ -12,7 +12,7 @@ using namespace shogun;
 TEST(RandomFourierDotFeatures, dot_test)
 {
 	int32_t num_dims = 50;
-	int32_t vecs = 5;
+	int32_t num_vecs = 5;
 	int32_t D = 100;
 
 	SGMatrix<float64_t> w(num_dims+1,D);
@@ -24,8 +24,8 @@ TEST(RandomFourierDotFeatures, dot_test)
 		w(num_dims,i) = 1;
 	}
 
-	SGMatrix<int32_t> data(num_dims, vecs);
-	for (index_t i=0; i<vecs; i++)
+	SGMatrix<int32_t> data(num_dims, num_vecs);
+	for (index_t i=0; i<num_vecs; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			data(j,i) = i+j;
@@ -37,10 +37,10 @@ TEST(RandomFourierDotFeatures, dot_test)
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
-	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
-	for (index_t i=0; i<vecs; i++)
+	SGMatrix<float64_t> cross_dot_matrix(num_vecs, num_vecs);
+	for (index_t i=0; i<num_vecs; i++)
 	{
-		for (index_t j=0; j<vecs; j++)
+		for (index_t j=0; j<num_vecs; j++)
 		{
 			cross_dot_matrix(i,j) = r_feats->dot(i,r_feats,j);
 		}
@@ -74,7 +74,7 @@ TEST(RandomFourierDotFeatures, dot_test)
 TEST(RandomFourierDotFeatures, dense_dot_test)
 {
 	int32_t num_dims = 50;
-	int32_t vecs = 5;
+	int32_t num_vecs = 5;
 	int32_t D = 100;
 
 	SGMatrix<float64_t> w(num_dims+1,D);
@@ -86,8 +86,8 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 		w(num_dims,i) = 1;
 	}
 
-	SGMatrix<int32_t> data(num_dims, vecs);
-	for (index_t i=0; i<vecs; i++)
+	SGMatrix<int32_t> data(num_dims, num_vecs);
+	for (index_t i=0; i<num_vecs; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			data(j,i) = i+j;
@@ -99,10 +99,10 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
-	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
-	for (index_t i=0; i<vecs; i++)
+	SGMatrix<float64_t> cross_dot_matrix(num_vecs, num_vecs);
+	for (index_t i=0; i<num_vecs; i++)
 	{
-		for (index_t j=0; j<vecs; j++)
+		for (index_t j=0; j<num_vecs; j++)
 		{
 			cross_dot_matrix(i,j) = r_feats->dot(i,r_feats,j);
 		}
@@ -125,7 +125,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 TEST(RandomFourierDotFeatures, add_to_dense_test)
 {
 	int32_t num_dims = 50;
-	int32_t vecs = 5;
+	int32_t num_vecs = 5;
 	int32_t D = 100;
 
 	SGMatrix<float64_t> w(num_dims+1,D);
@@ -137,8 +137,8 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 		w(num_dims,i) = 1;
 	}
 
-	SGMatrix<int32_t> data(num_dims, vecs);
-	for (index_t i=0; i<vecs; i++)
+	SGMatrix<int32_t> data(num_dims, num_vecs);
+	for (index_t i=0; i<num_vecs; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			data(j,i) = i+j;
@@ -150,10 +150,10 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
-	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
-	for (index_t i=0; i<vecs; i++)
+	SGMatrix<float64_t> cross_dot_matrix(num_vecs, num_vecs);
+	for (index_t i=0; i<num_vecs; i++)
 	{
-		for (index_t j=0; j<vecs; j++)
+		for (index_t j=0; j<num_vecs; j++)
 		{
 			cross_dot_matrix(i,j) = r_feats->dot(i,r_feats,j);
 		}
@@ -175,4 +175,25 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	}
 
 }
+
+TEST(RandomFourierDotFeatures, num_dims_embedding)
+{
+	int32_t num_dims = 50;
+	int32_t num_vecs = 5;
+	int32_t D = 100;
+
+	SGMatrix<float64_t> data(num_dims, num_vecs, false);
+	auto d_feats = std::make_shared<DenseFeatures<float64_t>>(data);
+	SGVector<float64_t> params(1);
+	params[0] = 8;
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
+	    d_feats, D, GAUSSIAN, params);
+
+	auto rows = r_feats->get_dim_feature_space();
+	auto cols = r_feats->get_num_vectors();
+
+	EXPECT_EQ(rows, D);
+	EXPECT_EQ(cols, num_vecs);
+}
+
 
