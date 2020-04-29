@@ -1,5 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
+ * 
+ * Both the documentation and the code is heavily inspired by pyGLMnet.: https://github.com/glm-tools/pyglmnet/
  *
  * Authors: Tej Sukhatme
  */
@@ -32,30 +34,9 @@ class RegressionLabels;
 
 /** @brief Class for estimating regularized generalized linear models (GLM).
  *   The regularized GLM minimizes the penalized negative log likelihood:
- *      .. math::
  *
- *		\\min_{\\beta_0, \\beta} \\frac{1}{N}
- *		\\sum_{i = 1}^N \\mathcal{L} (y_i, \\beta_0 + \\beta^T x_i)
- *		+ \\lambda [ \\frac{1}{2}(1 - \\alpha) \\mathcal{P}_2 +
- *						\\alpha \\mathcal{P}_1 ]
- *
- *	where :math:`\\mathcal{P}_2` and :math:`\\mathcal{P}_1` are the generalized
- *	L2 (Tikhonov) and generalized L1 (Group Lasso) penalties, given by:
- *
- *	.. math::
- *
- *		\\mathcal{P}_2 = \\|\\Gamma \\beta \\|_2^2 \\
- *		\\mathcal{P}_1 = \\sum_g \\|\\beta_{j,g}\\|_2
- *
- *	where :math:`\\Gamma` is the Tikhonov matrix: a square factorization
- *	of the inverse covariance matrix and :math:`\\beta_{j,g}` is the
- *	:math:`j` th coefficient of group :math:`g`.
- *
- *	The generalized L2 penalty defaults to the ridge penalty when
- *	:math:`\\Gamma` is identity.
- *
- *	The generalized L1 penalty defaults to the lasso penalty when each
- *	:math:`\\beta` belongs to its own group.
+ *  This used Elastic-net penalty which defaults to the ridge penalty when
+ *  alpha = 0 and defaults to the lasso penalty when alpha = 1.
  *
  * */
 class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
