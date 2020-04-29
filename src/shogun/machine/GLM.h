@@ -58,16 +58,18 @@ class RegressionLabels;
  *	:math:`\\beta` belongs to its own group.
  *
  * */
-class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribution>
+class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 {
  	public:
 		friend class GLMCostFunction;
+
+		GLM();
 
  		/** default constructor */
  		GLM(GLM_DISTRIBUTION distribution=POISSON, float64_t alpha=0.5, float64_t lambda=0.1, float64_t learning_rate=2e-1, int32_t max_iterations=1000, float64_t tolerance=1e-6, float64_t eta=2.0);
 
  		/** destructor */
- 		virtual ~GLM(){}
+ 		~GLM() override {}
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -75,24 +77,24 @@ class GLM : public IterativeMachine<LinearMachine>, public RandomMixin<Distribut
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
  		/** Returns the name of the SGSerializable instance.  It MUST BE
  		 *  the CLASS NAME without the prefixed `C'.
  		 *
  		 * @return name of the SGSerializable
  		 */
- 		virtual const char* get_name() const { return "GLM"; }
+ 		const char* get_name() const override { return "GLM"; }
 
-		virtual void set_tau(SGMatrix<float64_t> tau);
+		void set_tau(SGMatrix<float64_t> tau);
 
-		virtual SGMatrix<float64_t> get_tau();
+		SGMatrix<float64_t> get_tau();
 
 	protected:
 
-		virtual void init_model(std::shared_ptr<Features> data) override;
+		void init_model(const std::shared_ptr<Features>& data) override;
 		
-		virtual void iteration() override;
+		void iteration() override;
 
 	protected:
 

@@ -6,6 +6,7 @@
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/GLM.h>
@@ -21,7 +22,18 @@
 
 using namespace shogun;
 
+GLM::GLM()
+{
+	SG_ADD(&distribution, "distribution_type", "variable to store name of distribution type", ParameterProperties::HYPER);
+	SG_ADD(&m_eta, "eta", "threshold parameter that linearizes the exp() function above eta", ParameterProperties::HYPER);
+	SG_ADD(&m_lambda, "lambda", "regularization parameter of penalty term", ParameterProperties::HYPER);
+	SG_ADD(&m_alpha, "alpha", "weighting between L1 penalty and L2 penalty term of the loss function", ParameterProperties::HYPER);
+	SG_ADD(&m_tolerance, "tolerance", "convergence threshold or stopping criteria", ParameterProperties::HYPER);
+	
+}
+
 GLM::GLM(GLM_DISTRIBUTION distr, float64_t alpha, float64_t lambda, float64_t learning_rate, int32_t max_iterations, float64_t tolerance, float64_t eta): IterativeMachine<LinearMachine>()
+: GLM()
 {
 	distribution=distr;
 	m_alpha=alpha;
@@ -30,7 +42,6 @@ GLM::GLM(GLM_DISTRIBUTION distr, float64_t alpha, float64_t lambda, float64_t le
 	m_tolerance=tolerance;
 	m_eta=eta;
 
-	m_learning_rate->set_const_learning_rate(2e-1);
 	m_learning_rate->set_const_learning_rate(learning_rate);
 	
 	m_cost_function->set_target(std::make_shared<GLM> (this));
@@ -45,56 +56,61 @@ std::shared_ptr<RegressionLabels> GLM::apply_regression(std::shared_ptr<Features
 	if (!LinearMachine::features)
 		return std::make_shared<RegressionLabels>(SGVector<float64_t>());
 
-	int32_t num=LinearMachine::features->get_num_vectors();
+	auto num = LinearMachine::features->get_num_vectors();
 	ASSERT(num>0)
 	ASSERT(m_w.vlen==features->get_dim_feature_space())
 	SGVector<float64_t> out(num);
 	LinearMachine::features->dense_dot_range(out.vector, 0, num, NULL, m_w.vector, m_w.vlen, bias);
-	SGVector<float64_t> result = m_cost_function->non_linearity(out);
+	auto result = m_cost_function->non_linearity(out);
 	return std::make_shared<RegressionLabels>(result);
 }
 
-void GLM::init_model(std::shared_ptr<Features> data)
+void GLM::init_model(const std::shared_ptr<Features>& data)
 {
+	ASSERT(m_labels)
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			error("Specified features are not of type CDotFeatures");
+		LinearMachine::set_features(std::static_pointer_cast<DotFeatures>(data));
+	}
+	ASSERT(features)
 
-	LinearMachine::set_features(std::static_pointer_cast<DotFeatures>(data));
 	NormalDistribution<float64_t> normal_dist;
 	auto n_features = LinearMachine::features->get_dim_feature_space();
 	
 	if (m_compute_bias && bias == 0)
 		bias = 1 / (n_features + 1) * normal_dist(m_prng);
 
-	if(!m_w.data())
+	if(m_w.size() > 0)
 	{
 		m_w = SGVector<float64_t>(n_features);
-		for (int i = 0; i < n_features; i++)
-			m_w = 1 / (n_features + 1) * normal_dist(m_prng);
+		for (auto& weight : m_w)
+			weight = 1 / (n_features + 1) * normal_dist(m_prng);
 	}
 }
 
 void GLM::iteration()
 {
-	float64_t learning_rate = m_learning_rate->get_learning_rate(m_current_iteration);
+	auto learning_rate = m_learning_rate->get_learning_rate(m_current_iteration);
 	SGVector<float64_t> w_old(m_w);
-	SGVector<float64_t> gradient_w = m_cost_function->get_gradient();
-	float64_t gradient_bias = m_cost_function->get_gradient_bias();
+	auto gradient_w = m_cost_function->get_gradient();
+	auto gradient_bias = m_cost_function->get_gradient_bias();
 
-	for (int i = 0; i < m_w.vlen; i++)
-	{
-		m_w[i] += m_lambda * m_penalty->get_penalty_gradient(m_w[i], 0.0);
-	}
+	for (auto& weight : m_w)
+		weight += m_lambda * m_penalty->get_penalty_gradient(weight, 0.0);
 
 	//Update
 	m_gradient_updater->update_variable(m_w, gradient_w, learning_rate);
 	m_w = linalg::add(m_w, gradient_w, 1.0, -1 * learning_rate);
 	if(m_compute_bias)
-		bias = bias - learning_rate * gradient_bias;
+		bias -= learning_rate * gradient_bias;
 	
 	//Apply proximal operator
 	m_penalty->update_variable_for_proximity(m_w, m_lambda * m_alpha);
 
 	//Convergence by relative parameter change tolerance
-	float64_t norm_update = linalg::norm(linalg::add(m_w, w_old, 1.0, -1.0));
+	auto norm_update = linalg::norm(linalg::add(m_w, w_old, 1.0, -1.0));
 	if(m_current_iteration > 0 && (norm_update / linalg::norm(m_w)) < m_tolerance)
 		m_complete = true;
 }
@@ -131,23 +147,25 @@ public:
 
 	virtual SGVector<float64_t> get_gradient()
 	{
-		SGMatrix<float64_t> X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
-		SGVector<float64_t> y = m_obj->m_labels->get_values();
+		auto X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
+		auto y = m_obj->m_labels->get_values();
 		SGVector<float64_t> w_old(m_obj->m_w);
 
 		auto n_samples = y.vlen;
 		auto n_features = X.num_rows;
 	
-		SGVector<float64_t> z = compute_z(X, m_obj->m_w, m_obj->bias);
-		SGVector<float64_t> mu = non_linearity(z);
-		SGVector<float64_t> grad_mu = gradient_non_linearity(z);
+		auto z = compute_z(X, m_obj->m_w, m_obj->bias);
+		auto mu = non_linearity(z);
+		auto grad_mu = gradient_non_linearity(z);
 
 		SGVector<float64_t> grad_w(m_obj->m_w.vlen);
 		SGVector<float64_t> a;
 		switch (m_obj->distribution)
 		{
 		case POISSON:
-			a = y * grad_mu / mu;
+			a = linalg::element_prod(y, grad_mu);
+			for(int i = 0; i<y.vlen; i++)
+				a[i] /= mu[i];
 			linalg::transpose_matrix(linalg::add(linalg::matrix_prod(SGMatrix(grad_mu), X, true, false), (linalg::matrix_prod(SGMatrix(a), X, true, false)), 1.0, -1.0));
 			break;
 	
@@ -155,21 +173,20 @@ public:
 			error("Distribution type {} not implemented.", m_obj->distribution);
 			break;
 		}
-		for (int i = 0; i < grad_w.vlen; i++)
-			grad_w[i] /= n_samples;
-	
+
+		grad_w = linalg::scale(grad_w, 1.0/n_samples);	
 		return grad_w;
 	}
 
 	virtual float64_t get_gradient_bias()
 	{
-		SGMatrix<float64_t> X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
-		SGVector<float64_t> y = m_obj->m_labels->get_values();
+		auto X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
+		auto y = m_obj->m_labels->get_values();
 
 		auto n_samples = y.vlen;
-		SGVector<float64_t> z = compute_z(X, m_obj->m_w, m_obj->bias);
-		SGVector<float64_t> mu = non_linearity(z);
-		SGVector<float64_t> grad_mu = gradient_non_linearity(z);
+		auto z = compute_z(X, m_obj->m_w, m_obj->bias);
+		auto mu = non_linearity(z);
+		auto grad_mu = gradient_non_linearity(z);
 
 		float64_t grad_bias = 0;
 		switch (m_obj->distribution)
@@ -197,8 +214,7 @@ private:
 
 	virtual const SGVector<float64_t> compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias)
 	{
-		SGVector<float64_t> z = linalg::matrix_prod(X, w, false);
-		return z;
+		return linalg::matrix_prod(X, w, false);
 	}
 
 	virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z)
@@ -239,13 +255,12 @@ private:
 			for (int i = 0; i < z.vlen; i++)
 			{
 				if(z[i]>m_obj->m_eta)
-				
 					result[i] = std::exp(m_obj->m_eta);
 				else
 					result[i] = std::exp(z[i]);
 			}
 			break;
-	
+
 		default:
 			error("Distribution type {} not implemented.", m_obj->distribution);
 			break;
@@ -254,5 +269,4 @@ private:
 	}
 
 	std::shared_ptr<GLM>m_obj;
-
 };
