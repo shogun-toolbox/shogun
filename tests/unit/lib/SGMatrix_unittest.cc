@@ -808,8 +808,7 @@ TEST(SGMatrixTest, column_iterator)
 	for (auto vec : mat.columns())
 		linalg::add_scalar(vec, 1.0);
 
-	auto range = std::distance(begin_col,end_col);
-	while (range-- > 0)
-		EXPECT_EQ(*mat.get_column(range), *mat_copy.get_column(range) + 1.0);
+	for (auto col_idx = 0; col_idx < mat.num_cols; col_idx++)
+		EXPECT_EQ(*mat.get_column(col_idx), *mat_copy.get_column(col_idx) + 1.0);
 }
 
