@@ -83,7 +83,7 @@ float64_t RandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_i
 	return std::cos(dot_result) * constant;
 }
 
-void RandomFourierDotFeatures::generate_random_params(SGVector<float64_t> vec)
+void RandomFourierDotFeatures::generate_random_params(SGVector<float64_t>& vec)
 {
 	NormalDistribution<float64_t> normal_dist;
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 2 * Math::PI);

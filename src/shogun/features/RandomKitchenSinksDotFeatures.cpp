@@ -38,9 +38,12 @@ SGMatrix<float64_t> RandomKitchenSinksDotFeatures::generate_random_coefficients(
 	auto num_dim = get_num_params();
 	SGMatrix<float64_t> random_params(num_dim,num_samples);
 
-	for(auto sample : range(num_samples))
-		generate_random_params(random_params.get_column(sample));
-	
+	for (auto sample : range(num_samples))
+	{
+		auto vec = random_params.get_column(sample);
+		generate_random_params(vec);
+	};
+
 	return random_params;
 }
 
