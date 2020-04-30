@@ -41,7 +41,15 @@ template<class T> class SGMatrix : public SGReferencedData
 	public:
 		typedef RandomIterator<T> iterator;
 		typedef ConstRandomIterator<T> const_iterator;
+#ifndef SWIG	
+	public:
+		class column_iterator;
+		class const_column_iterator;
 
+	private:
+		template<class MatrixType>
+		struct column_struct;
+#endif
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
 		typedef Eigen::Map<EigenMatrixXt,0,Eigen::Stride<0,0> > EigenMatrixXtMap;
@@ -258,6 +266,24 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Returns a const iterator to the element following the last element of the container. */
 		const_iterator end() const noexcept { return const_iterator(matrix + (num_rows * num_cols)); }
 
+		/** Returns an iterator to the first column of the container. */
+		column_iterator begin_column() noexcept { return column_iterator(*this); }
+
+		/** Returns an iterator to the column following the last column of the container. */
+		column_iterator end_column() noexcept { return column_iterator(*this,num_cols); }
+
+		/** Returns a const iterator to the first column of the container. */
+		const_column_iterator begin_column() const noexcept { return const_column_iterator(*this); }
+
+		/** Returns a const iterator to the column following the last column of the container. */
+		const_column_iterator end_column() const noexcept { return const_column_iterator(*this,num_cols); }
+
+		/** Returns a helper struct to help iterate over columns*/
+		auto columns() noexcept { return column_struct<decltype(*this)>(*this); }
+
+		/** Returns a helper struct to help const iterate over columns*/
+		auto columns() const noexcept { return column_struct<decltype(*this)>(*this); }
+			
 #endif // SWIG should skip this part
 
 		/** Get element at index
@@ -527,5 +553,264 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** GPU Matrix structure. Stores pointer to the data on GPU. */
 		std::shared_ptr<GPUMemoryBase<T>> gpu_ptr;
 };
+#ifndef SWIG 
+    template<typename T>
+	class SGMatrix<T>::column_iterator
+	{
+	public:
+		// Iterator traits
+		using difference_type = index_t;
+		using value_type = SGVector<T>;
+		using pointer = SGVector<T>*;
+		using reference = SGVector<T>&;
+		using iterator_category = std::random_access_iterator_tag;
+
+		column_iterator(SGMatrix<T> mat, index_t idx = 0)
+			: m_mat(mat), m_col_idx(idx)
+		{
+		}
+		column_iterator(const column_iterator& other)
+			: m_mat(other.m_mat), m_col_idx(other.m_col_idx)
+		{
+		}
+
+		column_iterator& operator++()
+		{
+			++m_col_idx;
+			return *this;
+		}
+		column_iterator operator++(int)
+		{
+			column_iterator retval(*this);
+			++(*this);
+			return retval;
+		}
+		column_iterator& operator--()
+		{
+			--m_col_idx;
+			return *this;
+		}
+		column_iterator operator--(int)
+		{
+			column_iterator retval(*this);
+			--(*this);
+			return retval;
+		}
+
+		bool operator==(const column_iterator& other) const
+		{
+			return m_mat == other.m_mat && m_col_idx == other.m_col_idx;
+		}
+		bool operator!=(const column_iterator& other) const
+		{
+			return !(*this == other);
+		}
+
+		value_type operator*()
+		{
+			return m_mat.get_column(m_col_idx);
+		}
+
+		column_iterator& operator+=(difference_type d)
+		{
+			m_col_idx += d;
+			return *this;
+		}
+		column_iterator& operator-=(difference_type d)
+		{
+			m_col_idx -= d;
+			return *this;
+		}
+
+		column_iterator operator+(difference_type d) const
+		{
+			return column_iterator(m_mat, m_col_idx + d);
+		}
+		column_iterator operator-(difference_type d) const
+		{
+			return column_iterator(m_mat, m_col_idx - d);
+		}
+
+		value_type operator[](difference_type d) const
+		{
+			return *column_iterator(m_mat, m_col_idx + d);
+		}
+
+		bool operator<(const column_iterator& other) const
+		{
+			return m_col_idx < other.m_col_idx;
+		}
+		bool operator>(const column_iterator& other) const
+		{
+			return m_col_idx > other.m_col_idx;
+		}
+		bool operator<=(const column_iterator& other) const
+		{
+			return m_col_idx <= other.m_col_idx;
+		}
+		bool operator>=(const column_iterator& other) const
+		{
+			return m_col_idx >= other.m_col_idx;
+		}
+
+		difference_type operator-(const column_iterator& other) const
+		{
+			return m_col_idx - other.m_col_idx;
+		}
+
+	private:
+		SGMatrix<T> m_mat;
+		difference_type m_col_idx;
+	};
+	template<typename T>
+	class SGMatrix<T>::const_column_iterator
+	{
+	public:
+		// Iterator traits
+		using difference_type = index_t;
+		using value_type = const SGVector<T>;
+		using pointer = const SGVector<T>*;
+		using reference = const SGVector<T>&;
+		using iterator_category = std::random_access_iterator_tag;
+
+		const_column_iterator(const SGMatrix<T> mat, index_t idx = 0)
+			: m_mat(mat), m_col_idx(idx)
+		{
+		}
+		const_column_iterator(const const_column_iterator& other)
+			: m_mat(other.m_mat), m_col_idx(other.m_col_idx)
+		{
+		}
+
+		const_column_iterator& operator++()
+		{
+			++m_col_idx;
+			return *this;
+		}
+		const_column_iterator operator++(int)
+		{
+			const_column_iterator retval(*this);
+			++(*this);
+			return retval;
+		}
+		const_column_iterator& operator--()
+		{
+			--m_col_idx;
+			return *this;
+		}
+		const_column_iterator operator--(int)
+		{
+			const_column_iterator retval(*this);
+			--(*this);
+			return retval;
+		}
+
+		bool operator==(const const_column_iterator& other) const
+		{
+			return m_mat == other.m_mat && m_col_idx == other.m_col_idx;
+		}
+		bool operator!=(const const_column_iterator& other) const
+		{
+			return !(*this == other);
+		}
+
+		value_type operator*()
+		{
+			return m_mat.get_column(m_col_idx);
+		}
+
+		const_column_iterator& operator+=(difference_type d)
+		{
+			m_col_idx += d;
+			return *this;
+		}
+		const_column_iterator& operator-=(difference_type d)
+		{
+			m_col_idx -= d;
+			return *this;
+		}
+
+		const_column_iterator operator+(difference_type d) const
+		{
+			return const_column_iterator(m_mat, m_col_idx + d);
+		}
+		const_column_iterator operator-(difference_type d) const
+		{
+			return const_column_iterator(m_mat, m_col_idx - d);
+		}
+
+		value_type operator[](difference_type d) const
+		{
+			return *const_column_iterator(m_mat, m_col_idx + d);
+		}
+
+		bool operator<(const const_column_iterator& other) const
+		{
+			return m_col_idx < other.m_col_idx;
+		}
+		bool operator>(const const_column_iterator& other) const
+		{
+			return m_col_idx > other.m_col_idx;
+		}
+		bool operator<=(const const_column_iterator& other) const
+		{
+			return m_col_idx <= other.m_col_idx;
+		}
+		bool operator>=(const const_column_iterator& other) const
+		{
+			return m_col_idx >= other.m_col_idx;
+		}
+
+		difference_type operator-(const const_column_iterator& other) const
+		{
+			return m_col_idx - other.m_col_idx;
+		}
+
+	private:
+		const SGMatrix<T> m_mat;
+		difference_type m_col_idx;
+	};
+	template<typename T>
+	template<class MatrixType>
+	struct SGMatrix<T>::column_struct
+	{
+		column_struct(MatrixType mat):m_mat(mat)
+		{
+		}
+
+		auto begin()
+		{
+			return m_mat.begin_column();
+		}
+
+		auto end()
+		{
+			return m_mat.end_column();
+		}	
+
+		auto begin() const
+		{
+			return m_mat.begin_column();
+		}
+
+		auto end() const
+		{
+			return m_mat.end_column();
+		}	
+
+		auto cbegin() const
+		{
+			return m_mat.begin_column();
+		}
+
+		auto cend() const
+		{
+			return m_mat.end_column();
+		}	
+
+	private:
+		MatrixType m_mat;
+	};
+#endif
 }
 #endif // __SGMATRIX_H__
