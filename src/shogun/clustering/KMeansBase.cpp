@@ -130,6 +130,44 @@ void KMeansBase::compute_cluster_variances()
 	}
 }
 
+SGMatrix<float64_t> KMeansBase::compute_std_dev() const
+{
+	require(cluster_centers.size() > 0, "KMeans is not trained!");
+
+	SGMatrix<float64_t> points = distance->get_rhs()
+	                                 ->as<DenseFeatures<float64_t>>()
+	                                 ->get_feature_matrix();
+	SGVector<float64_t> cluster_assignments = const_cast<KMeansBase*>(this)
+	                                              ->apply()
+	                                              ->as<MulticlassLabels>()
+	                                              ->get_labels();
+
+	SGVector<int32_t> counts(k);
+	SGMatrix<float64_t> means = cluster_centers.clone();
+	SGMatrix<float64_t> squares_sums(dimensions, k);
+
+	for (int32_t point_number : range(cluster_assignments.vlen))
+	{
+		auto cluster_number = (int32_t) cluster_assignments[point_number];
+		auto point = points.get_column(point_number);
+		auto& count = counts[cluster_number];
+		auto mean = means.get_column(cluster_number);
+		auto squares_sum = squares_sums.get_column(cluster_number);
+
+		count += 1;
+		auto delta1 = linalg::add(point, mean, 1., -1.);
+		linalg::add(mean, linalg::scale(delta1, 1. / count), mean);
+		auto delta2 = linalg::add(point, mean, 1., -1.);
+		linalg::add(
+		    squares_sum, linalg::element_prod(delta1, delta2), squares_sum);
+	}
+
+	linalg::scale(squares_sums, squares_sums, 1. / (points.num_cols - 1));
+	for (float64_t& x : squares_sums)
+		x = std::sqrt(x);
+	return squares_sums;
+}
+
 void KMeansBase::initialize_training(const std::shared_ptr<Features>& data)
 {
 	require(distance, "Distance is not provided");
@@ -153,7 +191,6 @@ void KMeansBase::initialize_training(const std::shared_ptr<Features>& data)
 	require(lhs, "Lhs features of distance not provided");
 	int32_t lhs_size=lhs->get_num_vectors();
 	dimensions=lhs->get_num_features();
-	const int32_t centers_size=dimensions*k;
 
 	require(lhs_size>0, "Lhs features should not be empty");
 	require(dimensions>0, "Lhs features should have more than zero dimensions");
@@ -318,6 +355,7 @@ void KMeansBase::init()
 	    &use_kmeanspp, "kmeanspp", "Whether to use kmeans++",
 	    ParameterProperties::HYPER | ParameterProperties::SETTING);
 	watch_method("cluster_centers", &KMeansBase::get_cluster_centers);
+	watch_method("std_dev", &KMeansBase::compute_std_dev);
 	SG_ADD(
 	    &initial_centers, "initial_centers", "Initial centers",
 	    ParameterProperties::HYPER);

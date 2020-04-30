@@ -56,12 +56,14 @@ void KMeansMiniBatch::minibatch_KMeans()
 	auto lhs=
 		distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	auto rhs_mus = std::make_shared<DenseFeatures<float64_t>>(cluster_centers);
-	auto rhs_cache=distance->replace_rhs(rhs_mus);
+	auto rhs_cache = distance->get_rhs();
+	distance->replace_rhs(rhs_mus);
 	int32_t XSize=lhs->get_num_vectors();
-	int32_t dims=lhs->get_num_features();
 
 	SGVector<float64_t> v=SGVector<float64_t>(k);
 	v.zero();
+
+    distance->precompute_lhs();
 
 	for (auto i : SG_PROGRESS(range(max_iter)))
 	{
@@ -124,6 +126,9 @@ bool KMeansMiniBatch::train_machine(std::shared_ptr<Features> data)
 	initialize_training(data);
 	minibatch_KMeans();
 	compute_cluster_variances();
+    auto cluster_centres =
+        std::make_shared<DenseFeatures<float64_t>>(cluster_centers);
+    distance->replace_lhs(cluster_centres);
 	return true;
 }
 

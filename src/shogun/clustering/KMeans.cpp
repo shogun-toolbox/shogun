@@ -42,8 +42,7 @@ KMeans::~KMeans()
 
 void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 {
-	auto lhs =
-		std::dynamic_pointer_cast<DenseFeatures<float64_t>>(distance->get_lhs());
+	auto lhs = distance->get_lhs()->as<DenseFeatures<float64_t>>();
 
 	int32_t lhs_size=lhs->get_num_vectors();
 	int32_t dim=lhs->get_num_features();
@@ -173,10 +172,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		if (iter%(max_iter/10) == 0)
 			io::info("Iteration[{}/{}]: Assignment of {} patterns changed.", iter, max_iter, changed);
 	}
-	distance->reset_precompute();
-	distance->replace_rhs(rhs_cache);
-
-
+    distance->replace_rhs(rhs_cache);
 }
 
 bool KMeans::train_machine(std::shared_ptr<Features> data)

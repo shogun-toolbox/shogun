@@ -76,6 +76,12 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 		 */
 		SGMatrix<float64_t> get_cluster_centers() const;
 
+		/** get cluster standard deviations
+		 *
+		 * @return cluster deviations or throws an error if no ones are there (not trained yet)
+		 */
+		SGMatrix<float64_t> compute_std_dev() const;
+
 		/** @return object name */
 		virtual const char* get_name() const { return "KMeansBase"; }
 

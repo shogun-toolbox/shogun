@@ -16,9 +16,10 @@ Machine kmeans = machine("KMeans", k=2, distance=d, seed=1)
 kmeans.train()
 #![train_dataset]
 
-#![extract_centers_and_radius]
+#![extract_centers_radiuses_stds]
 RealMatrix c = kmeans.get_real_matrix("cluster_centers")
 RealVector r = kmeans.get_real_vector("radiuses")
+RealMatrix s = kmeans.get_real_matrix("std_dev")
 #![extract_centers_and_radius]
 
 #![create_instance_mb]
