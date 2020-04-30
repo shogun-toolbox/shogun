@@ -264,6 +264,16 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE
 
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT(Type, Container)          \
+	void LinalgBackendEigen::sqrt(                                             \
+	    const Container<Type>& a, Container<Type>& result) const               \
+	{                                                                          \
+		sqrt_impl(a,result);                                                   \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT, SGVector)
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT
+
 #undef DEFINE_FOR_ALL_PTYPE
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
@@ -656,4 +666,22 @@ void LinalgBackendEigen::scale_impl(
 	typename SGVector<T>::EigenRowVectorXtMap alphas_eig = alphas;
 
 	result_eig = a_eig.array().rowwise() * alphas_eig.array();
+}
+
+template <typename T>
+void LinalgBackendEigen::sqrt_impl(
+	const SGMatrix<T>& a, SGMatrix<T>& result) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	result_eig = a_eig.array().sqrt();
+}
+
+template <typename T>
+void LinalgBackendEigen::sqrt_impl(
+    const SGVector<T>& a, SGVector<T>& result) const
+{
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<T>::EigenVectorXtMap result_eig = result;
+	result_eig = a_eig.array().sqrt();
 }

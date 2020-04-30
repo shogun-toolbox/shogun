@@ -2466,6 +2466,24 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_rank_update)
 	EXPECT_NEAR((A_eig - A_eig).norm(), 0, get_epsilon<TypeParam>());
 }
 
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_sqrt)
+{
+	SGVector<TypeParam> a{1.0, 2.0, 3.0};
+	auto result = linalg::sqrt(a);
+
+	for (index_t i = 0; i < a.vlen; ++i)
+	EXPECT_NEAR(result[i], std::sqrt(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_sqrt)
+{
+	SGMatrix<TypeParam> a{{1.0, 2.0, 3.0}};
+	auto result = linalg::sqrt(a);
+
+	for (index_t i = 0; i < a.num_cols * a.num_rows; ++i)
+	EXPECT_NEAR(result[i], std::sqrt(a[i]), get_epsilon<TypeParam>());
+}
+
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_squared_error)
 {
 	SGMatrix<TypeParam> A(4, 3);
