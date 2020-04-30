@@ -126,9 +126,9 @@ bool KMeansMiniBatch::train_machine(std::shared_ptr<Features> data)
 	initialize_training(data);
 	minibatch_KMeans();
 	compute_cluster_variances();
-    auto cluster_centres =
-        std::make_shared<DenseFeatures<float64_t>>(cluster_centers);
-    distance->replace_lhs(cluster_centres);
+	auto cluster_centres =
+		std::make_shared<DenseFeatures<float64_t>>(cluster_centers);
+	distance->replace_lhs(cluster_centres);
 	return true;
 }
 

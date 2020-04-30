@@ -148,8 +148,9 @@ SGMatrix<float64_t> KMeansBase::compute_std_dev() const
 
 	for (int32_t point_number : range(cluster_assignments.vlen))
 	{
-		auto cluster_number = (int32_t) cluster_assignments[point_number];
-		auto point = points.get_column(point_number);
+		auto cluster_number =
+		    static_cast<int32_t>(cluster_assignments[point_number]);
+		const auto& point = points.get_column(point_number);
 		auto& count = counts[cluster_number];
 		auto mean = means.get_column(cluster_number);
 		auto squares_sum = squares_sums.get_column(cluster_number);
