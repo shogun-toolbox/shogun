@@ -93,7 +93,7 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		virtual void init_model(std::shared_ptr<Features> data);
+		virtual void init_model(const std::shared_ptr<Features>& data);
 		virtual void iteration();
 
 	private:

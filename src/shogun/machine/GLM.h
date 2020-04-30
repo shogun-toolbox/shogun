@@ -48,11 +48,11 @@ class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 {
  	public:
 		friend class GLMCostFunction;
-
+		
+		/** default constructor */
 		GLM();
 
- 		/** default constructor */
- 		GLM(GLM_DISTRIBUTION distribution=POISSON, float64_t alpha=0.5, float64_t lambda=0.1, float64_t learning_rate=2e-1, int32_t max_iterations=1000, float64_t tolerance=1e-6, float64_t eta=2.0);
+ 		GLM(GLM_DISTRIBUTION distribution, float64_t alpha, float64_t lambda, float64_t learning_rate, int32_t max_iterations, float64_t tolerance, float64_t eta);
 
  		/** destructor */
  		~GLM() override {}
