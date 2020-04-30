@@ -36,6 +36,7 @@ namespace shogun
 class DotFeatures;
 class Features;
 class RegressionLabels;
+class GLMCostFunction;
 
 /** @brief Class for estimating regularized generalized linear models (GLM).
  *   The regularized GLM minimizes the penalized negative log likelihood:
@@ -82,10 +83,6 @@ class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 		
 		void iteration() override;
 
-	private:
-
-		SGVector<float64_t> non_linearity(const SGVector<float64_t> z);
-
 	protected:
 
 		/** Distribution type */
@@ -111,7 +108,7 @@ class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 
 		std::shared_ptr<ElasticNetPenalty> m_penalty;
 
-
+		std::shared_ptr<GLMCostFunction> m_cost_function;
 };
 
 class GLMCostFunction: public FirstOrderCostFunction

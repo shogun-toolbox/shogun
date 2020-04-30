@@ -48,6 +48,8 @@ GLM::GLM(GLM_DISTRIBUTION distr, float64_t alpha, float64_t lambda, float64_t le
 	m_learning_rate->set_const_learning_rate(learning_rate);
 
 	m_penalty->set_l1_ratio(m_alpha);
+
+	m_cost_function->set_target(shared_from_this()->as<GLM>());
 }
 
 std::shared_ptr<RegressionLabels> GLM::apply_regression(std::shared_ptr<Features> data)
@@ -62,7 +64,7 @@ std::shared_ptr<RegressionLabels> GLM::apply_regression(std::shared_ptr<Features
 	ASSERT(m_w.vlen==features->get_dim_feature_space())
 	SGVector<float64_t> out(num);
 	LinearMachine::features->dense_dot_range(out.vector, 0, num, NULL, m_w.vector, m_w.vlen, bias);
-	auto result = non_linearity(out);
+	auto result = m_cost_function->non_linearity(out);
 	return std::make_shared<RegressionLabels>(result);
 }
 
@@ -93,8 +95,8 @@ void GLM::init_model(const std::shared_ptr<Features>& data)
 
 void GLM::iteration()
 {
-	std::shared_ptr<GLMCostFunction> m_cost_function;
-	m_cost_function->set_target(shared_from_this()->as<GLM>());
+	//std::shared_ptr<GLMCostFunction> m_cost_function;
+	
 	auto learning_rate = m_learning_rate->get_learning_rate(m_current_iteration);
 	SGVector<float64_t> w_old(m_w);
 	auto gradient_w = m_cost_function->get_gradient();
@@ -117,32 +119,3 @@ void GLM::iteration()
 	if(m_current_iteration > 0 && (norm_update / linalg::norm(m_w)) < m_tolerance)
 		m_complete = true;
 }
-
-SGVector<float64_t> GLM::non_linearity(const SGVector<float64_t> z)
-{
-	SGVector<float64_t> result;
-	float64_t l_bias = 0;
-
-	switch (distribution)
-	{
-	case POISSON:
-		result = SGVector<float64_t>(z);
-			if(m_compute_bias)
-			l_bias = (1 - m_eta) * std::exp(m_eta);
-			for (int i = 0; i < z.vlen; i++)
-		{
-			if(z[i]>m_eta)
-				result[i] = z[i] * std::exp(m_eta) + l_bias;
-			else
-				result[i] = std::exp(z[i]);
-		}
-		break;
-	
-	default:
-		error("Distribution type {} not implemented.", distribution);
-		break;
-	}
-	return result;
-}
-
-
