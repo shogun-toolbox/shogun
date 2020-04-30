@@ -1156,6 +1156,103 @@ namespace shogun
 			return result;
 		}
 
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in-place.
+		 * User should pass an appropriately pre-allocated memory matrix
+		 * Or pass one of the operands arguments (A or B) as a result
+		 *
+		 * @param a First matrix
+		 * @param b Second matrix
+		 * @param result Result matrix
+		 */
+		template <typename T>
+		void element_div(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result)
+		{
+			require(
+			    (A.num_rows == B.num_rows  &&
+				A.num_cols ==  B.num_cols),
+			    "Dimension mismatch! A({} x {}) vs B({} x {})", A.num_rows,
+			    A.num_cols, B.num_rows, B.num_cols);
+
+			require(
+			    A.num_rows == result.num_rows && A.num_cols == result.num_cols,
+			    "Dimension mismatch! A({} x {}) vs result({} x {})",
+			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
+
+			infer_backend(A, B, result)
+			    ->element_div(A, B, result);
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in a newly created matrix.
+		 *
+		 * @param A First matrix
+		 * @param B Second matrix
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGMatrix<T> element_div(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B)
+		{
+			SGMatrix<T> result(A.num_rows, A.num_cols);
+
+			if (A.on_gpu())
+				to_gpu(result);
+			element_div(A, B, result);
+
+			return result;
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		void element_div(
+		    const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result)
+		{
+			require(
+			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})",
+			    a.vlen, b.vlen);
+			require(
+			    a.vlen == result.vlen,
+			    "Dimension mismatch! A({}) vs result({})", a.vlen,
+			    result.vlen);
+
+			infer_backend(a, b)->element_div(a, b, result);
+		}
+
+		/** Performs the operation C = A ./ B where "./" denotes elementwise
+		 * division.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGVector<T> element_div(const SGVector<T>& a, const SGVector<T>& b)
+		{
+			require(
+			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})",
+			    a.vlen, b.vlen);
+
+			SGVector<T> result = a.clone();
+			element_div(a, b, result);
+
+			return result;
+		}
 		/** Performs the operation B = exp(A)
 		 *
 		 * This version returns the result in a newly created vector or matrix.
@@ -1188,6 +1285,42 @@ namespace shogun
 			result = a.clone();
 
 			infer_backend(a)->log(a, result);
+
+			return result;
+		}
+
+		/** Performs the operation B = sin(A)
+		 *
+		 * This version returns the result in a newly created vector or matrix.
+		 *
+		 * @param a Sin vector or matrix
+		 * @return The result of the operation
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> sin(const Container<T>& a)
+		{
+			Container<T> result;
+			result = a.clone();
+
+			infer_backend(a)->sin(a, result);
+
+			return result;
+		}
+
+		/** Performs the operation B = cos(A)
+		 *
+		 * This version returns the result in a newly created vector or matrix.
+		 *
+		 * @param a Cos vector or matrix
+		 * @return The result of the operation
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> cos(const Container<T>& a)
+		{
+			Container<T> result;
+			result = a.clone();
+
+			infer_backend(a)->cos(a, result);
 
 			return result;
 		}

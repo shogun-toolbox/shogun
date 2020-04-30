@@ -405,6 +405,38 @@ namespace shogun
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
 /**
+ * Wrapper method of in-place vector elementwise division.
+ *
+ * @see linalg::element_div
+ */
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_DIV(Type, Container)          \
+	virtual void element_div(                                                 \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result) const                                         \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_DIV, SGVector)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_DIV
+
+/**
+ * Wrapper method of in-place matrix elementwise division.
+ *
+ * @see linalg::element_div
+ */
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV(Type, Container)          \
+	virtual void element_div(                                                 \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result) const     \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_DIV
+
+/**
  * Wrapper method of in-place exponent method.
  *
  * @see linalg::exponent
@@ -433,6 +465,36 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOG, SGMatrix)
 #undef BACKEND_GENERIC_LOG
+
+/**
+ * Wrapper method of in-place sin method.
+ *
+ * @see linalg::sin
+ */
+#define BACKEND_GENERIC_SIN(Type, Container)                              \
+	virtual void sin(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SIN, SGMatrix)
+#undef BACKEND_GENERIC_SIN
+
+/**
+ * Wrapper method of in-place cos method.
+ *
+ * @see linalg::cos
+ */
+#define BACKEND_GENERIC_COS(Type, Container)                              \
+	virtual void cos(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COS, SGMatrix)
+#undef BACKEND_GENERIC_COS
 
 /**
  * Wrapper method of set matrix to identity.

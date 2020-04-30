@@ -19,17 +19,17 @@ def multiclass_randomforest(train=traindat,test=testdat,labels=label_traindat,ft
 	import shogun as sg
 
 	# wrap features and labels into Shogun objects
-	feats_train=sg.features(CSVFile(train))
-	feats_test=sg.features(CSVFile(test))
+	feats_train=sg.create_features(CSVFile(train))
+	feats_test=sg.create_features(CSVFile(test))
 	train_labels=MulticlassLabels(CSVFile(labels))
 
 	# Random Forest formation
-	rand_forest=sg.machine("RandomForest", features=feats_train, labels=train_labels,num_bags=20)
+	rand_forest=sg.create_machine("RandomForest", features=feats_train, labels=train_labels,num_bags=20)
 	m = rand_forest.get("machine")
 	m.put("m_randsubset_size", 1)
 	m.put("nominal", ft)
 
-	rand_forest.put("combination_rule", sg.combination_rule("MajorityVote"))
+	rand_forest.put("combination_rule", sg.create_combination_rule("MajorityVote"))
 	rand_forest.get_global_parallel().set_num_threads(1)
 	rand_forest.train()
 

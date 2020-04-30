@@ -66,8 +66,8 @@ def features_director_dot (fm_train_real, fm_test_real,
 	#from shogun import Math_init_random
 	#Math_init_random(17)
 
-	#feats_train=sg.features(fm_train_real)
-	#feats_test=sg.features(fm_test_real)
+	#feats_train=sg.create_features(fm_train_real)
+	#feats_test=sg.create_features(fm_test_real)
 	#labels=BinaryLabels(label_train_twoclass)
 
 	#dfeats_train=NumpyFeatures(fm_train_real)

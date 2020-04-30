@@ -2,12 +2,12 @@ CSVFile f_feats_a("@SHOGUN_DATA@/fm_train_real.dat")
 CSVFile f_feats_b("@SHOGUN_DATA@/fm_test_real.dat")
 
 #![create_features]
-Features features_a = features(f_feats_a)
-Features features_b = features(f_feats_b)
+Features features_a = create_features(f_feats_a)
+Features features_b = create_features(f_feats_b)
 #![create_features]
 
 #![create_instance]
-Distance d = distance("MinkowskiMetric", lhs=features_a, rhs=features_a)
+Distance d = create_distance("MinkowskiMetric", lhs=features_a, rhs=features_a)
 d.put("k", 3.0)
 #![create_instance]
 

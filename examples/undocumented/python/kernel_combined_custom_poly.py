@@ -13,38 +13,38 @@ def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,tra
     from shogun import CSVFile
     import shogun as sg
 
-    kernel = sg.kernel("CombinedKernel")
+    kernel = sg.create_kernel("CombinedKernel")
     feats_train = CombinedFeatures()
 
-    tfeats = sg.features(CSVFile(train_fname))
-    tkernel = sg.kernel("PolyKernel", cache_size=10, degree=3)
+    tfeats = sg.create_features(CSVFile(train_fname))
+    tkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=3)
     tkernel.init(tfeats, tfeats)
     K = tkernel.get_kernel_matrix()
     kernel.add("kernel_array", CustomKernel(K))
 
-    subkfeats_train = sg.features(CSVFile(train_fname))
+    subkfeats_train = sg.create_features(CSVFile(train_fname))
     feats_train.append_feature_obj(subkfeats_train)
-    subkernel = sg.kernel("PolyKernel", cache_size=10, degree=2)
+    subkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=2)
     kernel.add("kernel_array", subkernel)
 
     kernel.init(feats_train, feats_train)
 
     labels = BinaryLabels(CSVFile(train_label_fname))
-    svm = sg.machine("LibSVM", C1=1.0, C2=1.0, kernel=kernel, labels=labels)
+    svm = sg.create_machine("LibSVM", C1=1.0, C2=1.0, kernel=kernel, labels=labels)
     svm.train()
 
-    kernel = sg.kernel("CombinedKernel")
+    kernel = sg.create_kernel("CombinedKernel")
     feats_pred = CombinedFeatures()
 
-    pfeats = sg.features(CSVFile(test_fname))
-    tkernel = sg.kernel("PolyKernel", cache_size=10, degree=3)
+    pfeats = sg.create_features(CSVFile(test_fname))
+    tkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=3)
     tkernel.init(tfeats, pfeats)
     K = tkernel.get_kernel_matrix()
     kernel.add("kernel_array", CustomKernel(K))
 
-    subkfeats_test = sg.features(CSVFile(test_fname))
+    subkfeats_test = sg.create_features(CSVFile(test_fname))
     feats_pred.append_feature_obj(subkfeats_test)
-    subkernel = sg.kernel("PolyKernel", cache_size=10, degree=2)
+    subkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=2)
     kernel.add("kernel_array", subkernel)
     kernel.init(feats_train, feats_pred)
 

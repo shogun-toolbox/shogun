@@ -1,20 +1,20 @@
-File f_feats_train = csv_file("@SHOGUN_DATA@/fm_train_small_dna.dat")
-File f_feats_test = csv_file("@SHOGUN_DATA@/fm_test_small_dna.dat")
-File f_labels_train = csv_file("@SHOGUN_DATA@/label_train_small_dna.dat")
+File f_feats_train = read_csv("@SHOGUN_DATA@/fm_train_small_dna.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/fm_test_small_dna.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/label_train_small_dna.dat")
 
 #![create_features]
-Features feats_train = string_features(f_feats_train, enum EAlphabet.DNA)
-Features feats_test = string_features(f_feats_test, enum EAlphabet.DNA)
-Labels labels_train = labels(f_labels_train)
+Features feats_train = create_string_features(f_feats_train, enum EAlphabet.DNA)
+Features feats_test = create_string_features(f_feats_test, enum EAlphabet.DNA)
+Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_kernel]
-Kernel svm_kernel = kernel("WeightedDegreeStringKernel", degree=3)
+Kernel svm_kernel = create_kernel("WeightedDegreeStringKernel", degree=3)
 svm_kernel.init(feats_train, feats_train)
 #![create_kernel]
 
 #![create_classifier]
-Machine svm = machine("SVMLight", kernel=svm_kernel, labels=labels_train, C1=10.0, C2=10.0, epsilon=0.00001)
+Machine svm = create_machine("SVMLight", kernel=svm_kernel, labels=labels_train, C1=10.0, C2=10.0, epsilon=0.00001)
 svm.put("qpsize", 3)
 Parallel p = svm.get_global_parallel()
 p.set_num_threads(1)

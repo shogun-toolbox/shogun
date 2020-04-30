@@ -23,8 +23,8 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 		fm_train[int(label_train[i]),i]+=distance
 		fm_test[int(label_test[i]),i]+=distance
 
-	feats_train=sg.features(fm_train)
-	feats_test=sg.features(fm_test)
+	feats_train=sg.create_features(fm_train)
+	feats_test=sg.create_features(fm_test)
 
 	labels=MulticlassLabels(label_train)
 

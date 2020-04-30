@@ -36,7 +36,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	import shogun as sg
 
 	labels = MulticlassSOLabels(label_train_multiclass)
-	features = sg.features(fm_train_real.T)
+	features = sg.create_features(fm_train_real.T)
 
 	model = MulticlassModel(features, labels)
 	sosvm = DualLibQPBMSOSVM(model, labels, 1.0)

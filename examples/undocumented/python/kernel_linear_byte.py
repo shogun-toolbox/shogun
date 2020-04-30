@@ -7,10 +7,10 @@ parameter_list=[[traindat,testdat],[traindat,testdat]]
 def kernel_linear_byte (train_fname=traindat,test_fname=testdat):
 	import shogun as sg
 
-	feats_train=sg.features(sg.csv_file(train_fname), sg.PT_UINT8)
-	feats_test=sg.features(sg.csv_file(test_fname), sg.PT_UINT8)
+	feats_train=sg.create_features(sg.read_csv(train_fname), sg.PT_UINT8)
+	feats_test=sg.create_features(sg.read_csv(test_fname), sg.PT_UINT8)
 
-	kernel=sg.kernel("LinearKernel")
+	kernel=sg.create_kernel("LinearKernel")
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

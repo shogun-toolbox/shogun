@@ -7,9 +7,9 @@ from numpy import *
 
 def run_clustering(data, k):
 
-	distance = sg.distance('EuclideanDistance')
+	distance = sg.create_distance('EuclideanDistance')
 	distance.init(data, data)
-	kmeans=sg.machine("KMeans", k=k, distance=distance, seed=1)
+	kmeans=sg.create_machine("KMeans", k=k, distance=distance, seed=1)
 
 	#print("Running clustering...")
 	kmeans.train()
@@ -18,14 +18,14 @@ def run_clustering(data, k):
 
 def assign_labels(data, centroids, ncenters):
 	from shogun import MulticlassLabels
-	from shogun import machine
+	import shogun as sg
 	from numpy import arange
 
 	labels = MulticlassLabels(arange(0.,ncenters))
-	fea_centroids = sg.features(centroids)
-	distance = sg.distance('EuclideanDistance')
+	fea_centroids = sg.create_features(centroids)
+	distance = sg.create_distance('EuclideanDistance')
 	distance.init(fea_centroids, fea_centroids)
-	knn = machine("KNN", k=1, distance=distance, labels=labels)
+	knn = sg.create_machine("KNN", k=1, distance=distance, labels=labels)
 	knn.train()
 	return knn.apply(data)
 

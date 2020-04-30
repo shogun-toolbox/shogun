@@ -14,10 +14,10 @@ traindat = np.concatenate((np.concatenate(
 
 trainlab = np.concatenate((np.ones(num), 2 * np.ones(num), 3 * np.ones(num), 4 * np.ones(num)))
 
-feats_train = sg.features(traindat)
-distance = sg.distance('EuclideanDistance')
+feats_train = sg.create_features(traindat)
+distance = sg.create_distance('EuclideanDistance')
 distance.init(feats_train, feats_train)
-kmeans = sg.machine('KMeans', k=k, distance=distance)
+kmeans = sg.create_machine('KMeans', k=k, distance=distance)
 kmeans.train()
 
 centers = kmeans.get('cluster_centers')

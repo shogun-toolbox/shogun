@@ -10,14 +10,14 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 
 def kernel_tstudent (fm_train_real=traindat,fm_test_real=testdat, degree=2.0):
-	from shogun import kernel, distance
+	import shogun as sg
 
-	feats_train=sg.features(fm_train_real)
-	feats_test=sg.features(fm_test_real)
+	feats_train=sg.create_features(fm_train_real)
+	feats_test=sg.create_features(fm_test_real)
 
-	distance = sg.distance('EuclideanDistance')
+	distance = sg.create_distance('EuclideanDistance')
 
-	kernel = sg.kernel('TStudentKernel', degree=degree, distance=distance)
+	kernel = sg.create_kernel('TStudentKernel', degree=degree, distance=distance)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

@@ -16,7 +16,7 @@ def distance_canberraword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc = sg.transformer("SortWordString")
+	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
@@ -26,7 +26,7 @@ def distance_canberraword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
-	distance = sg.distance("CanberraWordDistance")
+	distance = sg.create_distance("CanberraWordDistance")
 	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()

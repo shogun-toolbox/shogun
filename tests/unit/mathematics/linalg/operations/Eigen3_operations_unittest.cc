@@ -4,8 +4,10 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
+#include <shogun/util/zip_iterator.h>
 #include <cmath>
 
 using namespace shogun;
@@ -1002,6 +1004,121 @@ TYPED_TEST(
 	for (index_t i = 0; i < len; ++i)
 		EXPECT_NEAR(c[i] * b[i], a[i], get_epsilon<TypeParam>());
 }
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division)
+{
+	const auto m = 2;
+	SGMatrix<TypeParam> A(m, m);
+	SGMatrix<TypeParam> B(m, m);
+
+	std::iota(A.matrix, A.matrix + A.size(), 0);
+	std::iota(B.matrix, B.matrix + B.size(), 1);
+
+	auto result = element_div(A, B);
+
+	for (const auto& [result, el1, el2]: zip_iterator(result ,B , A))
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
+	SGMatrix<TypeParam> C(m+1, m);
+	SGMatrix<TypeParam> D(m, m+1);
+	SGMatrix<TypeParam> E(m+1, m+1);
+
+	EXPECT_THROW(element_div(C, A), ShogunException);
+	EXPECT_THROW(element_div(D, A), ShogunException);
+	EXPECT_THROW(element_div(E, A), ShogunException);
+
+	EXPECT_THROW(element_div(A, C), ShogunException);
+	EXPECT_THROW(element_div(A, D), ShogunException);
+	EXPECT_THROW(element_div(A, E), ShogunException);
+}
+
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_division_in_place)
+{
+	const auto m = 2;
+	SGMatrix<TypeParam> A(m, m);
+	SGMatrix<TypeParam> B(m, m);
+	SGMatrix<TypeParam> result(m, m);
+
+	std::iota(A.matrix, A.matrix + A.size(), 0);
+	std::iota(B.matrix, B.matrix + B.size(), 1);
+	
+	element_div(A, B, result);
+
+	for (const auto& [result, el1, el2]: zip_iterator(result ,B , A))
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
+	SGMatrix<TypeParam> C(m+1, m);
+	SGMatrix<TypeParam> D(m, m+1);
+	SGMatrix<TypeParam> E(m+1, m+1);
+
+	EXPECT_THROW(element_div(A, B, C), ShogunException);
+	EXPECT_THROW(element_div(A, B, D), ShogunException);
+	EXPECT_THROW(element_div(A, B, E), ShogunException);
+
+	EXPECT_THROW(element_div(A, C, B), ShogunException);
+	EXPECT_THROW(element_div(A, D, B), ShogunException);
+	EXPECT_THROW(element_div(A, E, B), ShogunException);
+
+	EXPECT_THROW(element_div(C, A, B), ShogunException);
+	EXPECT_THROW(element_div(D, A, B), ShogunException);
+	EXPECT_THROW(element_div(E, A, B), ShogunException);
+
+	if constexpr (std::is_floating_point<TypeParam>::value){
+		B.zero();
+		element_div(A, B, result);
+		typename SGMatrix<TypeParam>::EigenMatrixXtMap result_eig = result;
+    		EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+	}
+}
+
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_division)
+{
+	const index_t len = 4;
+	SGVector<TypeParam> a(len);
+	SGVector<TypeParam> b(len);
+	SGVector<TypeParam> c(len);
+
+	a.range_fill();
+	b.range_fill(1);
+
+	c = element_div(a, b);
+
+	for (const auto& [result, el1, el2]: zip_iterator(c,b,a))
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
+	if constexpr (std::is_floating_point<TypeParam>::value){
+		b.zero();
+		c = element_div(a, b);
+		typename SGVector<TypeParam>::EigenRowVectorXtMap result_eig = c;
+    		EXPECT_TRUE(result_eig.array().isInf().any() && result_eig.array().isNaN().any());
+	}
+	SGVector<TypeParam> d(len + 1);
+	EXPECT_THROW(element_div(a, d), ShogunException);
+	EXPECT_THROW(element_div(d, a), ShogunException);
+}
+
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGVector_elementwise_division_in_place)
+{
+	const index_t len = 4;
+	SGVector<TypeParam> a(len);
+	SGVector<TypeParam> b(len);
+	SGVector<TypeParam> c(len);
+
+	a.range_fill();
+	b.range_fill(1);
+	c.range_fill();
+	
+	element_div(a, b, a);
+
+	for (const auto& [result, el1, el2]: zip_iterator(a,b,c))
+    		EXPECT_NEAR(el2 / el1, result, get_epsilon<TypeParam>());
+
+	SGVector<TypeParam> d(len + 1);
+	EXPECT_THROW(element_div(a, a, d), ShogunException);
+	EXPECT_THROW(element_div(a, d, a), ShogunException);
+	EXPECT_THROW(element_div(d, a, a), ShogunException);
+}
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_log)
 {
@@ -1019,6 +1136,42 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_log)
 
 	for (index_t i = 0; i < a.num_cols * a.num_rows; i++)
 		EXPECT_NEAR(result[i], std::log(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_sin)
+{
+	SGVector<TypeParam> a{1.0, 2.0, 3.0};
+	auto result = linalg::sin(a);
+
+	for (index_t i = 0; i < a.vlen; i++)
+		EXPECT_NEAR(result[i], std::sin(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_sin)
+{	
+	SGMatrix<TypeParam> a{{1.0, 2.0, 3.0}};
+	auto result = linalg::sin(a);
+
+	for (index_t i = 0; i < a.num_cols * a.num_rows; i++)
+		EXPECT_NEAR(result[i], std::sin(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_cos)
+{
+	SGVector<TypeParam> a{1.0, 2.0, 3.0};
+	auto result = linalg::cos(a);
+
+	for (index_t i = 0; i < a.vlen; i++)
+		EXPECT_NEAR(result[i], std::cos(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_cos)
+{	
+	SGMatrix<TypeParam> a{{1.0, 2.0, 3.0}};
+	auto result = linalg::cos(a);
+
+	for (index_t i = 0; i < a.num_cols * a.num_rows; i++)
+		EXPECT_NEAR(result[i], std::cos(a[i]), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_exponent)

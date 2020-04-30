@@ -7,21 +7,21 @@ parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,4,0,False]]
 
 def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=0,reverse=False):
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
-	from shogun import distance, CSVFile
+	import shogun as sg
 
-	charfeat=StringCharFeatures(CSVFile(train_fname), DNA)
+	charfeat=StringCharFeatures(sg.read_csv(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc = sg.transformer("SortWordString")
+	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
-	charfeat=StringCharFeatures(CSVFile(test_fname), DNA)
+	charfeat=StringCharFeatures(sg.read_csv(test_fname), DNA)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
-	distance = sg.distance('ManhattanWordDistance')
+	distance = sg.create_distance('ManhattanWordDistance')
 	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()

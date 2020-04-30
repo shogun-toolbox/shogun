@@ -159,8 +159,21 @@ namespace shogun
 		struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
 		{
 		};
-		
-		#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+		template <typename T, typename...>
+		struct is_any_of : std::false_type
+		{
+		};
+		template <typename T, typename Head, typename... Tail>
+		struct is_any_of<T, Head, Tail...>
+		    : std::conditional_t<
+		          std::is_same_v<T, Head>, std::true_type,
+		          is_any_of<T, Tail...>>
+		{
+		};
+		template <typename T, typename... Ts>
+		inline constexpr bool is_any_of_v = is_any_of<T, Ts...>::value;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 	} // namespace traits
 } // namespace shogun
 #endif

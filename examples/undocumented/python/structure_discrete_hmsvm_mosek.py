@@ -12,7 +12,7 @@ def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
 	import shogun as sg
 
 	try:
-		_ = sg.machine("PrimalMosekSOSVM")
+		_ = sg.create_machine("PrimalMosekSOSVM")
 	except:
 		print("Mosek not available")
 		return
@@ -29,11 +29,11 @@ def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
 	model = sg.structured_model("HMSVMModel", features=features, labels=labels, 
 								state_model_type=SMT_TWO_STATE, num_obs=num_obs)
 
-	sosvm = sg.machine("PrimalMosekSOSVM", model=model, labels=labels)
+	sosvm = sg.create_machine("PrimalMosekSOSVM", model=model, labels=labels)
 	sosvm.train()
 
 	predicted = sosvm.apply()
-	evaluator = sg.evaluation("StructuredAccuracy")
+	evaluator = sg.create_evaluation("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, labels)
 
 if __name__ == '__main__':

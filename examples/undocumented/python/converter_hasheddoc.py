@@ -24,7 +24,7 @@ def converter_hasheddoc(strings):
 	normalize=True
 
 	#create converter
-	converter = sg.transformer('HashedDocConverter', tokenizer=tokenizer, num_bits=num_bits, should_normalize=normalize)
+	converter = sg.create_transformer('HashedDocConverter', tokenizer=tokenizer, num_bits=num_bits, should_normalize=normalize)
 
 	converted_feats=converter.transform(f)
 

@@ -1,13 +1,13 @@
-File f_labels = csv_file("@SHOGUN_DATA@/label_train_regression.dat")
+File f_labels = read_csv("@SHOGUN_DATA@/label_train_regression.dat")
 
 #![create labels]
-Labels reg_labels = labels(f_labels)
+Labels reg_labels = create_labels(f_labels)
 #![create labels]
 
 #![set parameters]
 int num_subsets = 5
 int min_subset_size = 4
-SplittingStrategy splitting = splitting_strategy("TimeSeriesSplitting", labels=reg_labels, num_subsets=num_subsets, min_subset_size=min_subset_size)
+SplittingStrategy splitting = create_splitting_strategy("TimeSeriesSplitting", labels=reg_labels, num_subsets=num_subsets, min_subset_size=min_subset_size)
 #![set parameters]
 
 #![build subsets]

@@ -81,7 +81,7 @@
             "get_string": "$object.get($arguments)"
         },
         "StaticCall": "sg.$typeName.$method($arguments)",
-        "GlobalCall": "sg.$method($arguments$kwargs)",
+        "GlobalCall": {"Default": "sg.$method($arguments$kwargs)"},
         "Identifier": "$identifier",
         "Enum":"sg.$value"
     },

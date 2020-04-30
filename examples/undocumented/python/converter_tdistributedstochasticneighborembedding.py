@@ -10,7 +10,7 @@ def converter_tdistributedstochasticneighborembedding(data_fname, seed=1):
 
 		# reproducible results
 		Math_init_random(seed)
-		features = sg.features(sg.csv_file(data_fname))
+		features = sg.create_features(sg.read_csv(data_fname))
 
 		converter = TDistributedStochasticNeighborEmbedding()
 		converter.set_target_dim(2)

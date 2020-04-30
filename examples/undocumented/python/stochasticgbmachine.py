@@ -14,16 +14,16 @@ parameter_list = [[traindat,label_traindat,feat_types]]
 def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types):
 
 	# wrap features and labels into Shogun objects
-	feats=sg.features(CSVFile(train))
-	labels=sg.labels(CSVFile(train_labels))
+	feats=sg.create_features(CSVFile(train))
+	labels=sg.create_labels(CSVFile(train_labels))
 
 	# divide into training (90%) and test dataset (10%)
 	p=np.random.permutation(labels.get_num_labels())
 	num=labels.get_num_labels()*0.9
 
-	cart=sg.machine("CARTree", nominal=ft, max_depth=1)
-	loss = sg.loss('SquaredLoss')
-	s=sg.machine("StochasticGBMachine", machine=cart, loss=loss, 
+	cart=sg.create_machine("CARTree", nominal=ft, max_depth=1)
+	loss = sg.create_loss('SquaredLoss')
+	s=sg.create_machine("StochasticGBMachine", machine=cart, loss=loss, 
 		num_iterations=500, learning_rate=0.01)
 
 	# train
