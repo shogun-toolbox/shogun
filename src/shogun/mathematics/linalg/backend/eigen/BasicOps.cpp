@@ -264,15 +264,15 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_COLWISE_SCALE
 
-#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT(Type, Container)          \
+#define BACKEND_GENERIC_IN_PLACE_SQRT(Type, Container)                         \
 	void LinalgBackendEigen::sqrt(                                             \
 	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		sqrt_impl(a,result);                                                   \
 	}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT, SGVector)
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT, SGMatrix)
-#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_SQRT
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SQRT, SGVector)
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SQRT, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_SQRT
 
 #undef DEFINE_FOR_ALL_PTYPE
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
