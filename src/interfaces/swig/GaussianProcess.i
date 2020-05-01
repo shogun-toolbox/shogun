@@ -11,7 +11,7 @@ SHARED_RANDOM_INTERFACE(shogun::Inference)
 %shared_ptr(shogun::LikelihoodModel)
 SHARED_RANDOM_INTERFACE(shogun::LikelihoodModel)
 %shared_ptr(shogun::GaussianProcess)
-
+%shared_ptr(shogun::KLDualInferenceMethodMinimizer)
 
 
 /* These functions return new Objects */
@@ -26,3 +26,4 @@ RANDOM_INTERFACE(LikelihoodModel)
 %include <shogun/machine/gp/Inference.h>
 RANDOM_INTERFACE(Inference)
 %include <shogun/machine/GaussianProcess.h>
+%include <shogun/machine/gp/KLDualInferenceMethod.h> //KLDualInferenceMethodMinimizer
