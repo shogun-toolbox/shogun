@@ -49,7 +49,27 @@ namespace shogun{
 	std::shared_ptr<PipelineBuilder> create_pipeline()
 	{
 		return details::pipeline();
-	}    
+	} 
+	std::shared_ptr<Features> read_string_features(
+	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		return create<StringFeatures<char>>(file, alphabet_type, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_features_subset(
+	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
+	    EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return create<DenseSubsetFeatures<float64_t>>(base_features, indices, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
+	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
+	{
+		return create<StringFeatures<uint16_t>>(features, start, p_order, gap, rev, primitive_type);
+	}   
 }
 %}
 %template(create_features) shogun::create_features<float64_t>;
@@ -85,4 +105,5 @@ namespace shogun{
 %template(create_machine) shogun::create<shogun::Machine, std::string>;
 %template(create_structured_model) shogun::create<shogun::StructuredModel, std::string>;
 %template(create_factor_type) shogun::create<shogun::FactorType, std::string>;
+%template(create_gaussian_process) shogun::create<shogun::GaussianProcess, std::string>;
 %template(create_labels) shogun::create_labels<float64_t>;

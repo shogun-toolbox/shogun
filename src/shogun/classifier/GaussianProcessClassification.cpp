@@ -46,12 +46,13 @@
 using namespace shogun;
 
 GaussianProcessClassification::GaussianProcessClassification()
-	: GaussianProcessMachine()
+    : GaussianProcess()
 {
 }
 
 GaussianProcessClassification::GaussianProcessClassification(
-		const std::shared_ptr<Inference>& method) : GaussianProcessMachine(method)
+    const std::shared_ptr<Inference>& method)
+    : GaussianProcess(method)
 {
 	// set labels
 	m_labels=method->get_labels();

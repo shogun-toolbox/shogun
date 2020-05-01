@@ -190,7 +190,7 @@ public:
 	 *
 	 * Note that in some sub class L is not the Cholesky decomposition
 	 * In this case, L will still be used to compute required matrix for prediction
-	 * see GaussianProcessMachine::get_posterior_variances()
+	 * see GaussianProcess::get_posterior_variances()
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 

@@ -4,21 +4,21 @@ CSVFile f_labels_train("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.d
 CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
 
 #![create_features]
-Features features_train = features(f_feats_train)
-Features features_test = features(f_feats_test)
-Labels labels_train = labels(f_labels_train)
-Labels labels_test = labels(f_labels_test)
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel_and_mean_function]
-Kernel k = kernel("GaussianKernel", log_width=2.0)
-MeanFunction mean_function = gp_mean("ConstMean")
+Kernel k = create_kernel("GaussianKernel", log_width=2.0)
+MeanFunction mean_function = create_gp_mean("ConstMean")
 #![create_appropriate_kernel_and_mean_function]
 
 #![create_instance]
-LikelihoodModel gauss_likelihood = gp_likelihood("SoftMaxLikelihood")
-Inference inference_method = gp_inference("MultiLaplaceInferenceMethod", kernel=k, features=features_train, mean_function=mean_function, labels=labels_train, likelihood_model=gauss_likelihood)
-GaussianProcessMachine gp_classifier = gaussian_process("GaussianProcessClassification", inference_method=inference_method, seed=1)
+LikelihoodModel gauss_likelihood = create_gp_likelihood("SoftMaxLikelihood")
+Inference inference_method = create_gp_inference("MultiLaplaceInferenceMethod", kernel=k, features=features_train, mean_function=mean_function, labels=labels_train, likelihood_model=gauss_likelihood)
+GaussianProcess gp_classifier = create_gaussian_process("GaussianProcessClassification", inference_method=inference_method, seed=1)
 #![create_instance]
 
 #![train_and_apply]

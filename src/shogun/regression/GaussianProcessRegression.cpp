@@ -12,13 +12,13 @@
 
 using namespace shogun;
 
-GaussianProcessRegression::GaussianProcessRegression()
-		: GaussianProcessMachine()
+GaussianProcessRegression::GaussianProcessRegression() : GaussianProcess()
 {
 }
 
-GaussianProcessRegression::GaussianProcessRegression(const std::shared_ptr<Inference>& method)
-		: GaussianProcessMachine(method)
+GaussianProcessRegression::GaussianProcessRegression(
+    const std::shared_ptr<Inference>& method)
+    : GaussianProcess(method)
 {
 	// set labels
 	m_labels=method->get_labels();

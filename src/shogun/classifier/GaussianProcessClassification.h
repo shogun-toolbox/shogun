@@ -40,7 +40,7 @@
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/GaussianProcessMachine.h>
+#include <shogun/machine/GaussianProcess.h>
 #include <shogun/machine/Machine.h>
 
 namespace shogun
@@ -49,7 +49,7 @@ namespace shogun
 /** @brief Class GaussianProcessClassification implements binary and multiclass
  * classification based on Gaussian Processes.
  */
-class GaussianProcessClassification : public GaussianProcessMachine
+class GaussianProcessClassification : public GaussianProcess
 {
 public:
 	/** problem type */

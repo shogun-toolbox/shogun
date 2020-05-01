@@ -28,7 +28,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/loss/LossFunction.h>
-#include <shogun/machine/GaussianProcessMachine.h>
+#include <shogun/machine/GaussianProcess.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
 #include <shogun/machine/gp/Inference.h>
@@ -74,7 +74,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(EvaluationResult, evaluation_result)
 	BASE_CLASS_FACTORY(Distribution, distribution)
 	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
-	BASE_CLASS_FACTORY(GaussianProcessMachine, gaussian_process)
+	BASE_CLASS_FACTORY(GaussianProcess, gaussian_process)
 
 	namespace details
 	{
@@ -153,7 +153,7 @@ namespace shogun
 			return result;
 		}
 
-		std::shared_ptr<Features> string_features(
+		std::shared_ptr<StringFeatures<char>> string_features(
 		    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 		    EPrimitiveType primitive_type = PT_CHAR)
 		{
@@ -187,7 +187,7 @@ namespace shogun
 		 * @param primitive_type primitive type of the string features
 		 * @return new instance of string features
 		 */
-		std::shared_ptr<Features> string_features(
+		std::shared_ptr<StringFeatures<uint16_t>> string_features(
 		    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
 		    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 		{
@@ -226,7 +226,7 @@ namespace shogun
 		/** Factory for CDenseSubsetFeatures.
 		 * TODO: Should be removed once the concept of feature views has arrived
 		 */
-		std::shared_ptr<Features> features_subset(
+		std::shared_ptr<DenseSubsetFeatures<float64_t>> features_subset(
 		    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
 		    EPrimitiveType primitive_type = PT_FLOAT64)
 		{
@@ -337,14 +337,9 @@ namespace shogun
 		return std::make_shared<PipelineBuilder>();
 	}
 	} // namespace details
-	// fix me
-	//#ifdef SWIG
+
 	template <typename TypeName, typename... Args>
 	std::shared_ptr<TypeName> create(Args... args)
-	//#else
-	// template <typename TypeName, typename... Args>
-	// std::shared_ptr<TypeName> create(Args&&... args)
-	//#endif
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -370,6 +365,17 @@ namespace shogun
 		{
 			return details::kernel(std::forward<Args>(args)...);
 		}
+		else if constexpr (traits::is_any_of_v<
+		                       TypeName, StringFeatures<char>,
+		                       StringFeatures<uint16_t>>)
+		{
+			return details::string_features(std::forward<Args>(args)...);
+		}
+		else if constexpr (std::is_same_v<
+		                       TypeName, DenseSubsetFeatures<float64_t>>)
+		{
+			return details::features_subset(std::forward<Args>(args)...);
+		}
 		else
 		{
 			static_assert(
@@ -381,26 +387,5 @@ namespace shogun
 		}
 	}
 
-	std::shared_ptr<Features> create_string_features(
-	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
-	{
-		return details::string_features(file, alphabet_type, primitive_type);
-	}
-
-	std::shared_ptr<Features> create_features_subset(
-	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
-	    EPrimitiveType primitive_type = PT_FLOAT64)
-	{
-		return details::features_subset(base_features, indices, primitive_type);
-	}
-
-	std::shared_ptr<Features> create_string_features(
-	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
-	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
-	{
-		return details::string_features(
-		    features, start, p_order, gap, rev, primitive_type);
-	}
 } // namespace shogun
 #endif // FACTORY_H_

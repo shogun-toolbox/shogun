@@ -147,7 +147,11 @@
             "create_parameter_observer": "create<ParameterObserver>($arguments)",
             "create_evaluation_result": "create<EvaluationResult>($arguments)",
             "create_distribution": "create<Distribution>($arguments)",
-            "create_combination_rule": "create<CombinationRule>($arguments)"
+            "create_combination_rule": "create<CombinationRule>($arguments)",
+            "create_string_features": "create<StringFeatures<uint16_t>>($arguments)",
+            "create_features_subset": "create<DenseSubsetFeatures<float64_t>>($arguments)",
+            "read_string_features": " create<StringFeatures<char>>($arguments)",
+            "create_gaussian_process": "create<GaussianProcess>($arguments)"
         },
         "Identifier": "$identifier",
         "Enum":"$typeName::$value"

@@ -8,12 +8,11 @@
 #ifndef _GAUSSIANPROCESSREGRESSION_H_
 #define _GAUSSIANPROCESSREGRESSION_H_
 
-
-#include <shogun/lib/config.h>
-#include <shogun/machine/GaussianProcessMachine.h>
-#include <shogun/machine/gp/Inference.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/config.h>
+#include <shogun/machine/GaussianProcess.h>
+#include <shogun/machine/gp/Inference.h>
 
 namespace shogun
 {
@@ -25,7 +24,7 @@ class Labels;
 /** @brief Class GaussianProcessRegression implements regression based on
  * Gaussian Processes.
  */
-class GaussianProcessRegression : public GaussianProcessMachine
+class GaussianProcessRegression : public GaussianProcess
 {
 public:
 	/** problem type */
