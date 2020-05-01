@@ -2468,11 +2468,21 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_rank_update)
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_sqrt)
 {
-	SGVector<TypeParam> a{1.0, 2.0, 3.0};
-	auto result = linalg::sqrt(a);
+	SGVector<TypeParam> data{1.0, 2.0, 3.0};
+	auto result = linalg::sqrt(data);
 
-	for (index_t i = 0; i < a.vlen; ++i)
-	EXPECT_NEAR(result[i], std::sqrt(a[i]), get_epsilon<TypeParam>());
+	for (index_t i = 0; i < data.vlen; ++i)
+	EXPECT_NEAR(result[i], std::sqrt(data[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_sqrt_in_place)
+{
+	SGVector<TypeParam> data{1.0, 2.0, 3.0};
+	SGVector<TypeParam> result(data.vlen);
+	linalg::sqrt(data);
+
+	for (index_t i = 0; i < result.vlen; ++i)
+		EXPECT_NEAR(result[i], std::sqrt(data[i]), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_sqrt)
@@ -2482,6 +2492,16 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_sqrt)
 
 	for (index_t i = 0; i < a.num_cols * a.num_rows; ++i)
 	EXPECT_NEAR(result[i], std::sqrt(a[i]), get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_sqrt_in_place)
+{
+	SGMatrix<TypeParam> data{{1.0, 2.0, 3.0}};
+	SGMatrix<TypeParam> result(data.num_rows, data.num_cols);
+	linalg::sqrt(data, result);
+
+	for (index_t i = 0; i < data.num_cols * data.num_rows; ++i)
+		EXPECT_NEAR(result[i], std::sqrt(data[i]), get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_squared_error)
