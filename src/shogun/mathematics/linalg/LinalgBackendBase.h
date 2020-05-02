@@ -752,6 +752,17 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 #undef BACKEND_GENERIC_SOFTMAX
 
+/** Implementation of @see LinalgBackendBase::sqrt */
+#define BACKEND_GENERIC_IN_PLACE_SQRT(Type, Container)                         \
+	virtual void sqrt(                                                         \
+	    const Container<Type>& a, Container<Type>& result) const               \
+	{                                                                          \
+		not_implemented(SOURCE_LOCATION);;                                     \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SQRT, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SQRT, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_SQRT
+
 /**
  * Wrapper method of squared error method.
  *

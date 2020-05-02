@@ -396,6 +396,14 @@ namespace shogun
 		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 #undef BACKEND_GENERIC_SOFTMAX
 
+/** Implementation of @see LinalgBackendBase::sqrt */
+#define BACKEND_GENERIC_IN_PLACE_SQRT(Type, Container)                         \
+	virtual void sqrt(                                                         \
+	    const Container<Type>& a, Container<Type>& result) const;
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SQRT, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SQRT, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_SQRT
+
 /** Implementation of @see linalg::squared_error */
 #define BACKEND_GENERIC_SQUARED_ERROR(Type, Container)                         \
 	virtual Type squared_error(                                                \
@@ -854,6 +862,14 @@ namespace shogun
 		/** Eigen3 softmax method */
 		template <typename T, template <typename> class Container>
 		void softmax_impl(Container<T>& a) const;
+
+		/** Eigen3 matrix in-place elementwise sqrt method */
+		template <typename T>
+		void sqrt_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+
+		/** Eigen3 vector in-place elementwise sqrt method */
+		template <typename T>
+		void sqrt_impl(const SGVector<T>& a, SGVector<T>& result) const;
 
 		/** Eigen3 squared error method
 		 * The squared error is defined as \f$ E(P,Q) = \frac{1}{2} \sum_{ij}
