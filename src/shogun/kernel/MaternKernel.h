@@ -23,32 +23,29 @@ namespace shogun {
 	 *		\f$\rho\f$ is the kernel width, and
 	 *		\f$\Gamma\f$ is the gamma function
 	 **/
-	class CMaternKernel: public CDistanceKernel 
+	class MaternKernel: public DistanceKernel 
 	{
 		public:
 			/** default constructor */
-			CMaternKernel();
+			MaternKernel();
 
 			/** constructor
 			 *
 			 * @param size cache size
 			 * @param width the kernel width
-			 * @param order the order of the bessel function of the second kind
+			 * @param nu the order of the bessel function of the second kind
 			 * @param dist distance to be used
 			 */
-			CMaternKernel(int32_t size, float64_t width, float64_t order, CDistance* dist);
+			MaternKernel(int32_t size, float64_t width, float64_t nu, const std::shared_ptr<Distance>& dist);
 
 			/** destructor */
-			~CMaternKernel();
-
-			/** cleanup instance */
-			void cleanup();
+			~MaternKernel();
 
 			/** return the kernel's name
 			 *
 			 * @return name
 			 */
-			virtual const char* get_name() const
+			const char* get_name() const override
 			{
 				return "MaternKernel";
 			}
@@ -59,14 +56,23 @@ namespace shogun {
 			 * @param r features of right-hand side
 			 * @return if initializing was successful
 			 */
-			virtual bool init(CFeatures* l, CFeatures* r);
+			bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
-		protected:
-			float64_t compute(int32_t idx_a, int32_t idx_b);
+			/** return derivative with respect to specified parameter
+			 *
+			 * @param param the parameter
+			 * @param index the index of the element if parameter is a vector
+			 *
+			 * @return gradient with respect to parameter
+			 */
+			SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param, index_t index=-1) override;
 
-		private:
-			void init();
+			protected:
+				float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
-			float64_t nu;
+			private:
+				void init();
+
+				float64_t nu = 1.5;
 	};
 }
