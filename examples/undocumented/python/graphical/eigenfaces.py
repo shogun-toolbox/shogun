@@ -68,7 +68,7 @@ class EigenFaces():
         #transform the numpe vector to shogun structure
         features = sg.RealFeatures(images)
         #PCA
-        self.pca = sg.PCA()
+        self.pca = sg.create_transformer("PCA")
         #set dimension
         self.pca.set_target_dim(self._num_components);
         #compute PCA
