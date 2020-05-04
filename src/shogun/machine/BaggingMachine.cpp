@@ -9,16 +9,15 @@
 #include <shogun/base/progress.h>
 #include <shogun/ensemble/CombinationRule.h>
 #include <shogun/ensemble/MeanRule.h>
-#include <shogun/machine/BaggingMachine.h>
-#include <shogun/mathematics/UniformIntDistribution.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MeanSquaredError.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/lib/observers/ObservedValueTemplated.h>
+#include <shogun/machine/BaggingMachine.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <utility>
 
@@ -218,9 +217,11 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 		m_bags.push_back(c);
 
 		// observe some variables
-        auto oob_error = this->get_oob_error();
-        this->observe<std::shared_ptr<Machine>>(i, "trained_machine", "Trained machine for this bag", c);
-        this->observe<float64_t>(i, "oob_error", "Out-of-bag Error", oob_error);
+		// auto oob_error = this->get_oob_error();
+		this->observe<std::shared_ptr<Machine>>(
+			i, "trained_machine", "Trained machine for this bag", c);
+		// this->observe<float64_t>(i, "oob_error", "Out-of-bag Error",
+		// oob_error);
 		}
 
 		pb.print_progress();
@@ -236,7 +237,7 @@ void BaggingMachine::set_machine_parameters(std::shared_ptr<Machine> m, SGVector
 
 void BaggingMachine::register_parameters()
 {
-	SG_ADD(&m_machine, "machine", "Machine used")
+	SG_ADD(&m_features, kFeatures, "Train features for bagging");
 	SG_ADD(
 	    &m_num_bags, kNBags, "Number of bags", ParameterProperties::HYPER);
 	SG_ADD(
@@ -342,7 +343,7 @@ float64_t BaggingMachine::get_oob_error() const
 	}
 
 	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
-    float64_t res = m_oob_evaluation_metric->evaluate(predicted, m_labels);
+	float64_t res = m_oob_evaluation_metric->evaluate(predicted, m_labels);
 	m_labels->remove_subset();
 
 	return res;

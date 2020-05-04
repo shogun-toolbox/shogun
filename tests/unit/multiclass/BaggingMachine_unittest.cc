@@ -83,12 +83,12 @@ TEST_F(BaggingMachineTest, mock_train)
 	auto mm = std::make_shared<NiceMock<MockMachine>>();
 	auto mv = std::make_shared<MajorityVote>();
 
-    env()->set_num_threads(1);
-	bm->put("machine", mm);
+	env()->set_num_threads(1);
+	bm->put<Machine>("machine", mm);
 	bm->put("bag_size", bag_size);
-	bm->put("num_bag", num_bags);
-	bm->put("combination_rule", mv);
-    bm->put("seed", seed);
+	bm->put("num_bags", num_bags);
+	bm->put<CombinationRule>("combination_rule", mv);
+	bm->put("seed", seed);
 
 	ON_CALL(*mm, train_machine(_))
 		.WillByDefault(Return(true));
@@ -122,12 +122,12 @@ TEST_F(BaggingMachineTest, classify_CART)
 
 	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
 
-    env()->set_num_threads(1);
-    c->put("machine", cart);
-    c->put("bag_size", 14);
-    c->put("num_bag", 10);
-    c->put("combination_rule", cv);
-    c->put("seed", seed);
+	env()->set_num_threads(1);
+	c->put<Machine>("machine", cart);
+	c->put("bag_size", 14);
+	c->put("num_bags", 10);
+	c->put<CombinationRule>("combination_rule", cv);
+	c->put("seed", seed);
 
 	c->train(features_train);
 
@@ -153,12 +153,12 @@ TEST_F(BaggingMachineTest, output_binary)
 
 	cart->set_feature_types(ft);
 	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
-    env()->set_num_threads(1);
-    c->put("machine", cart);
-    c->put("bag_size", 14);
-    c->put("num_bag", 10);
-    c->put("combination_rule", cv);
-    c->put("seed", seed);
+	env()->set_num_threads(1);
+	c->put<Machine>("machine", cart);
+	c->put("bag_size", 14);
+	c->put("num_bags", 10);
+	c->put<CombinationRule>("combination_rule", cv);
+	c->put("seed", seed);
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_test);
@@ -188,11 +188,11 @@ TEST_F(BaggingMachineTest, output_multiclass_probs_sum_to_one)
 	cart->set_feature_types(ft);
 	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
 
-    c->put("machine", cart);
-    c->put("bag_size", 14);
-    c->put("num_bag", 10);
-    c->put("combination_rule", cv);
-    c->put("seed", seed);
+	c->put<Machine>("machine", cart);
+	c->put("bag_size", 14);
+	c->put("num_bags", 10);
+	c->put<CombinationRule>("combination_rule", cv);
+	c->put("seed", seed);
 	c->train(features_train);
 
 	auto result = c->apply_multiclass(features_test);
