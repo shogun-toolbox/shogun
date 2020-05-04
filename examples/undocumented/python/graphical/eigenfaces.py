@@ -100,7 +100,7 @@ class EigenFaces():
             test = sg.create_features(np.asmatrix(p,np.float64).T)
             projection = sg.create_features(np.asmatrix(self._projections[sampleIdx],
                                         np.float64).T)
-            dist = sg.EuclideanDistance( test, projection).distance(0,0)
+            dist = sg.create_distance("EuclideanDistance", lhs=test , rhs=projection)
 
             if(dist < minDist ):
                 minDist = dist;
