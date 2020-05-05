@@ -408,6 +408,12 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 }
 
 template <class T>
+SGMatrix<T> SGMatrix<T>::empty_like(const SGMatrix<T>& other)
+{
+	return SGMatrix<T>(other.num_rows, other.num_cols);
+}
+
+template <class T>
 void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 {
 	/* Need assert v.size() */

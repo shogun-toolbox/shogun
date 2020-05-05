@@ -241,6 +241,11 @@ template<class T> class SGVector : public SGReferencedData
 		/** Clone vector */
 		static T* clone_vector(const T* vec, int32_t len);
 
+		/** Constructs a new empty vector with same dimensions as another 
+		 * vector instance 
+		 */
+		static SGVector<T> empty_like(const SGVector<T>&);
+
 		/** Fill vector */
 		static void fill_vector(T* vec, int32_t len, T value);
 

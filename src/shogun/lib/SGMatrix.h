@@ -362,6 +362,11 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Clone matrix */
 		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);
 
+		/** Constructs a new empty matrix with same dimensions as another 
+		 * matrix instance 
+		 */
+		static SGMatrix<T> empty_like(const SGMatrix<T>&);
+
 		/** Create diagonal matrix */
 		static void create_diagonal_matrix(T* matrix, T* v,int32_t size);
 

@@ -435,7 +435,7 @@ namespace shogun
 		add(const Container<T>& a, const Container<T>& b, T alpha = 1,
 		    T beta = 1)
 		{
-			auto result = a.clone();
+			auto result = Container<T>::empty_like(a);
 			add(a, b, result, alpha, beta);
 			return result;
 		}
@@ -1150,7 +1150,7 @@ namespace shogun
 			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})",
 			    a.vlen, b.vlen);
 
-			SGVector<T> result = a.clone();
+			SGVector<T> result = SGVector<T>::empty_like(a);
 			element_prod(a, b, result);
 
 			return result;
@@ -1248,7 +1248,7 @@ namespace shogun
 			    a.vlen == b.vlen, "Dimension mismatch! A({}) vs B({})",
 			    a.vlen, b.vlen);
 
-			SGVector<T> result = a.clone();
+			SGVector<T> result = SGVector<T>::empty_like(a);
 			element_div(a, b, result);
 
 			return result;
@@ -1264,7 +1264,7 @@ namespace shogun
 		Container<T> exponent(const Container<T>& a)
 		{
 			Container<T> result;
-			result = a.clone();
+			result = Container<T>::empty_like(a);
 
 			infer_backend(a)->exponent(a, result);
 
@@ -1282,7 +1282,7 @@ namespace shogun
 		Container<T> log(const Container<T>& a)
 		{
 			Container<T> result;
-			result = a.clone();
+			result = Container<T>::empty_like(a);
 
 			infer_backend(a)->log(a, result);
 
@@ -1300,7 +1300,7 @@ namespace shogun
 		Container<T> sin(const Container<T>& a)
 		{
 			Container<T> result;
-			result = a.clone();
+			result = Container<T>::empty_like(a);
 
 			infer_backend(a)->sin(a, result);
 
@@ -1318,7 +1318,7 @@ namespace shogun
 		Container<T> cos(const Container<T>& a)
 		{
 			Container<T> result;
-			result = a.clone();
+			result = Container<T>::empty_like(a);
 
 			infer_backend(a)->cos(a, result);
 
@@ -1728,7 +1728,7 @@ namespace shogun
 		Container<T> sqrt(const Container<T>& a)
 		{
 			Container<T> result;
-			result = a.clone();
+			result = Container<T>::empty_like(a);
 
 			infer_backend(a)->sqrt(a, result);
 
@@ -1902,7 +1902,7 @@ namespace shogun
 		template <typename T, template <typename> class Container>
 		Container<T> scale(const Container<T>& a, T alpha = 1)
 		{
-			auto result = a.clone();
+			auto result = Container<T>::empty_like(a);
 			scale(a, result, alpha);
 			return result;
 		}

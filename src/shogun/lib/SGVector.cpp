@@ -296,6 +296,12 @@ T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 	return result;
 }
 
+template <class T>
+SGVector<T> SGVector<T>::empty_like(const SGVector<T>& other)
+{
+	return SGVector<T>(other.vlen);
+}
+
 template<class T>
 void SGVector<T>::fill_vector(T* vec, int32_t len, T value)
 {
