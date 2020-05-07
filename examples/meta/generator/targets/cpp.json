@@ -149,7 +149,7 @@
             "create_distribution": "create<Distribution>($arguments)",
             "create_combination_rule": "create<CombinationRule>($arguments)",
             "create_string_features": "create<StringFeatures<uint16_t>>($arguments)",
-            "create_features_subset": "create<DenseSubsetFeatures<float64_t>>($arguments)",
+            "create_subset_features": "create<DenseSubsetFeatures<float64_t>>($arguments)",
             "read_string_features": " create<StringFeatures<char>>($arguments)",
             "create_gaussian_process": "create<GaussianProcess>($arguments)"
         },

@@ -76,20 +76,29 @@ bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 	// check whether given combination of inference method and likelihood
 	// function supports regression
 	require(m_method, "Inference method should not be NULL");
+	if (m_labels)
+	{
+		m_method->set_labels(m_labels);
+	}
+	if (data)
+	{
+		m_method->set_features(data);
+	}
+	if (m_inducing_features)
+	{
+		auto fitc_method = m_method->as<FITCInferenceMethod>();
+		fitc_method->set_inducing_features(m_inducing_features);
+	}
+
 	auto lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
-	if (data)
+	if (m_seed != -1)
 	{
-		// set inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
-		{
-			auto fitc_method = m_method->as<FITCInferenceMethod>();
-			fitc_method->set_inducing_features(data);
-
-		}
-		else
-			m_method->set_features(data);
+		require(
+		    lik->has("seed"), "likelihood {} is not Seedable", lik->get_name());
+		lik->put("seed", m_seed);
+		m_method->set_model(lik);
 	}
 
 	// perform inference

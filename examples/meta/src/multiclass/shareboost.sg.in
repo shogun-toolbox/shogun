@@ -16,7 +16,7 @@ Machine shareboost = create_machine("ShareBoost", labels=labels_train, nonzero_f
 
 #![train_and_apply]
 shareboost.train(features_train)
-Features features_test_sub = create_features_subset(features_test, shareboost.get_int_vector("active_set"))
+Features features_test_sub = create_subset_features(features_test, shareboost.get_int_vector("active_set"))
 MulticlassLabels labels_predict = shareboost.apply_multiclass(features_test_sub)
 #![train_and_apply]
 

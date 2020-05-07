@@ -38,6 +38,7 @@
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/optimization/Minimizer.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/StructuredModel.h>
 #include <shogun/transformer/Transformer.h>

@@ -84,7 +84,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 	/** check whether training labels are valid for regression
 	 *

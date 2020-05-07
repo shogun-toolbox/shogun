@@ -1,33 +1,7 @@
 /*
- * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 Wu Lin
- * Written (W) 2013 Roman Votyakov
- * All rights reserved.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * The views and conclusions contained in the software and documentation are
- * those of the authors and should not be interpreted as representing official
- * policies, either expressed or implied, of the Shogun Development Team.
+ * Authors: Wu Lin, Roman Votyakov
  *
  * Code adapted from
  * Gaussian Process Machine Learning Toolbox
@@ -61,31 +35,18 @@ GaussianProcess::GaussianProcess(std::shared_ptr<Inference> method)
 
 void GaussianProcess::init()
 {
-	m_method = NULL;
 	m_compute_variance = false;
-
+	m_seed = -1;
 	SG_ADD(
 	    &m_method, "inference_method", "Inference method",
 	    ParameterProperties::HYPER);
-	add_callback_function(
-	    "inference_method", [&]() { set_labels(m_method->get_labels()); });
 	SG_ADD(
 	    &m_compute_variance, "compute_variance",
 	    "Whether predictive variance is computed in predictions");
 	SG_ADD(&m_seed, "seed", "seed", ParameterProperties::SETTING);
-	add_callback_function("seed", [&]() {
-		require(m_method, "Inference method should not be NULL");
-		auto model = m_method->get_model();
-		if (model->has("seed"))
-		{
-			model->put("seed", m_seed);
-			m_method->set_model(model);
-		}
-		else
-		{
-			error("likelihood {} is not Seedable", model->get_name());
-		}
-	});
+	SG_ADD(
+	    &m_inducing_features, "inducing_features",
+	    "inducing features for approximation", ParameterProperties::MODEL);
 }
 
 GaussianProcess::~GaussianProcess()

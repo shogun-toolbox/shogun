@@ -6,7 +6,7 @@ Features features_train = create_features(f_feats_train)
 
 #![create_gmm_instance]
 int num_components = 3
-GMM gmm(num_components)
+GMM gmm(num_components, seed = 1)
 gmm.put("seed", 1)
 #![create_gmm_instance]
 

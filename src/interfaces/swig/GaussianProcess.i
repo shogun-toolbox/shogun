@@ -26,4 +26,3 @@ RANDOM_INTERFACE(LikelihoodModel)
 %include <shogun/machine/gp/Inference.h>
 RANDOM_INTERFACE(Inference)
 %include <shogun/machine/GaussianProcess.h>
-%include <shogun/machine/gp/KLDualInferenceMethod.h> //KLDualInferenceMethodMinimizer

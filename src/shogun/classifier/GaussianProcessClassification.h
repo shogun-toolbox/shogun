@@ -72,7 +72,8 @@ public:
 	 *
 	 * @return classified labels (label is either -1 or 1)
 	 */
-	virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+	virtual std::shared_ptr<BinaryLabels>
+	apply_binary(std::shared_ptr<Features> data);
 
 	/** returns a vector of of the posterior predictive means
 	 *
@@ -124,7 +125,8 @@ public:
 	 *
 	 * @return classified labels (label starts from 0)
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	virtual std::shared_ptr<MulticlassLabels>
+	apply_multiclass(std::shared_ptr<Features> data = NULL);
 
 protected:
 	/** train classifier
@@ -133,8 +135,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
-
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 };
 }
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */

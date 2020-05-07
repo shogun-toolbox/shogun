@@ -110,8 +110,6 @@ std::shared_ptr<BinaryLabels> GaussianProcessClassification::apply_binary(
 	require(m_method->supports_binary(), "{} with {} doesn't support "
 			"binary classification\n", m_method->get_name(), lik->get_name());
 
-	// if regression data equals to NULL, then apply classification on training
-	// features
 	if (!data)
 	{
 		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
@@ -140,26 +138,39 @@ bool GaussianProcessClassification::train_machine(std::shared_ptr<Features> data
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	require(m_method, "Inference method should not be NULL");
-	auto lik=m_method->get_model();
-	require(m_method->supports_binary() || m_method->supports_multiclass(), "{} with {} doesn't support "
-			"classification\n", m_method->get_name(), lik->get_name());
-
+	if (m_labels)
+	{
+		m_method->set_labels(m_labels);
+	}
 	if (data)
 	{
-		// set inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC_LAPLACE_SINGLE)
-		{
+		m_method->set_features(data);
+	}
+	auto lik=m_method->get_model();
+
+	if (m_seed != -1)
+	{
+		require(
+		    lik->has("seed"), "likelihood {} is not Seedable", lik->get_name());
+		lik->put("seed", m_seed);
+		m_method->set_model(lik);
+	}
+	// set inducing features for FITC inference method
+	if (m_inducing_features)
+	{
 #ifdef USE_GPL_SHOGUN
 			auto fitc_method = m_method->as<SingleFITCLaplaceInferenceMethod>();
-			fitc_method->set_inducing_features(data);
+		    fitc_method->set_inducing_features(m_inducing_features);
 #else
 			error("Single FITC Laplace inference only supported under GPL.");
 #endif //USE_GPL_SHOGUN
-		}
-		else
-			m_method->set_features(data);
 	}
 
+	require(
+	    m_method->supports_binary() || m_method->supports_multiclass(),
+	    "{} with {} doesn't support "
+	    "classification\n",
+	    m_method->get_name(), lik->get_name());
 	// perform inference
 	m_method->update();
 

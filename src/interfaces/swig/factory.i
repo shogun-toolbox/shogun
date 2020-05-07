@@ -57,7 +57,7 @@ namespace shogun{
 		return create<StringFeatures<char>>(file, alphabet_type, primitive_type);
 	}
 
-	std::shared_ptr<Features> create_features_subset(
+	std::shared_ptr<Features> create_subset_features(
 	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
 	    EPrimitiveType primitive_type = PT_FLOAT64)
 	{
@@ -107,3 +107,5 @@ namespace shogun{
 %template(create_factor_type) shogun::create<shogun::FactorType, std::string>;
 %template(create_gaussian_process) shogun::create<shogun::GaussianProcess, std::string>;
 %template(create_labels) shogun::create_labels<float64_t>;
+%template(create_minimizer) shogun::create<shogun::Minimizer, std::string>;
+%template(create_lbfgs_minimizer) shogun::create<shogun::LBFGSMinimizer, std::string>;

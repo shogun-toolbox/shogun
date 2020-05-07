@@ -26,15 +26,15 @@ Features inducing_features = create_features(f_feats_inducing)
 inducing_features.add_subset(inducing_points)
 
 LikelihoodModel gauss_likelihood = create_gp_likelihood("GaussianLikelihood")
-Inference inference_method = create_gp_inference("FITCInferenceMethod", kernel=k, features=features_train, mean_function=mean_function, labels=labels_train, likelihood_model=gauss_likelihood, inducing_features=inducing_features)
+Inference inference_method = create_gp_inference("FITCInferenceMethod", kernel=k, mean_function=mean_function, likelihood_model=gauss_likelihood)
 #![create_inference]
 
 #![create_instance]
-GaussianProcess gp_regression = create_gaussian_process("GaussianProcessRegression", inference_method=inference_method)
+GaussianProcess gp_regression = create_gaussian_process("GaussianProcessRegression", inference_method=inference_method, labels=labels_train, inducing_features=inducing_features)
 #![create_instance]
 
 #![train_and_apply]
-gp_regression.train()
+gp_regression.train(features_train)
 RegressionLabels labels_predict = gp_regression.apply_regression(features_test)
 #![train_and_apply]
 

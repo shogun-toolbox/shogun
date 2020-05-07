@@ -92,15 +92,8 @@ void Inference::init()
 	SG_ADD(&m_features, "features", "Features");
 	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated");
 
-
-	m_kernel=NULL;
-	m_model=NULL;
-	m_labels=NULL;
-	m_features=NULL;
-	m_mean=NULL;
 	m_log_scale=0.0;
 	m_gradient_update=false;
-	m_minimizer=NULL;
 
 	SG_ADD((std::shared_ptr<SGObject>*)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference");
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation");
