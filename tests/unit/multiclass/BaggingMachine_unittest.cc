@@ -10,6 +10,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/observers/ParameterObserverLogger.h>
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
@@ -214,4 +215,32 @@ TEST_F(BaggingMachineTest, output_multiclass_probs_sum_to_one)
 	}
 
 
+}
+
+TEST_F(BaggingMachineTest, observable_bagging_machine)
+{
+	int32_t seed = 555;
+	auto cart = std::make_shared<CARTree>();
+	auto cv = std::make_shared<MajorityVote>();
+	cart->set_feature_types(ft);
+
+	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
+
+	auto oob_eval = std::make_shared<MulticlassAccuracy>();
+	c->put<Evaluation>("oob_evaluation_metric", oob_eval);
+
+	auto obs = std::make_shared<ParameterObserverLogger>();
+	c->subscribe(obs);
+
+	env()->set_num_threads(1);
+	c->put<Machine>("machine", cart);
+	c->put("bag_size", 14);
+	c->put("num_bags", 10);
+	c->put<CombinationRule>("combination_rule", cv);
+	c->put("seed", seed);
+
+	c->train(features_train);
+
+	EXPECT_EQ(obs->get<int32_t>("num_observations"), 20);
+	c->unsubscribe(obs);
 }
