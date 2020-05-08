@@ -76,6 +76,7 @@ bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 	// check whether given combination of inference method and likelihood
 	// function supports regression
 	require(m_method, "Inference method should not be NULL");
+	random_seed_callback(m_method->get<LikelihoodModel>("likelihood_model").get());
 	if (m_labels)
 	{
 		m_method->set_labels(m_labels);
@@ -93,13 +94,6 @@ bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 	auto lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
-	if (m_seed != -1)
-	{
-		require(
-		    lik->has("seed"), "likelihood {} is not Seedable", lik->get_name());
-		lik->put("seed", m_seed);
-		m_method->set_model(lik);
-	}
 
 	// perform inference
 	m_method->update();

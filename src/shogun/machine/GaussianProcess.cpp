@@ -16,13 +16,14 @@
 #include <shogun/machine/gp/SingleFITCInference.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
 
 #include <utility>
 
 using namespace shogun;
 using namespace Eigen;
 
-GaussianProcess::GaussianProcess()
+GaussianProcess::GaussianProcess(): RandomMixin<Machine>()
 {
 	init();
 }
@@ -36,14 +37,12 @@ GaussianProcess::GaussianProcess(std::shared_ptr<Inference> method)
 void GaussianProcess::init()
 {
 	m_compute_variance = false;
-	m_seed = -1;
 	SG_ADD(
 	    &m_method, "inference_method", "Inference method",
 	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_compute_variance, "compute_variance",
 	    "Whether predictive variance is computed in predictions");
-	SG_ADD(&m_seed, "seed", "seed", ParameterProperties::SETTING);
 	SG_ADD(
 	    &m_inducing_features, "inducing_features",
 	    "inducing features for approximation", ParameterProperties::MODEL);

@@ -50,7 +50,7 @@ namespace shogun{
 	{
 		return details::pipeline();
 	} 
-	std::shared_ptr<Features> read_string_features(
+	std::shared_ptr<Features> create_char_string_features(
 	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 	    EPrimitiveType primitive_type = PT_CHAR)
 	{
@@ -64,7 +64,7 @@ namespace shogun{
 		return create<DenseSubsetFeatures<float64_t>>(base_features, indices, primitive_type);
 	}
 
-	std::shared_ptr<Features> create_string_features(
+	std::shared_ptr<Features> create_int_string_features(
 	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
 	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 	{

@@ -17,6 +17,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/gp/Inference.h>
 #include <shogun/mathematics/Seedable.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -32,7 +33,7 @@ namespace shogun
 	 *
 	 * where \f$m(x)\f$ - mean function, \f$k(x, x')\f$ - covariance function.
 	 */
-	class GaussianProcess : public Machine
+	class GaussianProcess : public RandomMixin<Machine>
 	{
 	public:
 		/** default constructor */
@@ -141,8 +142,6 @@ namespace shogun
 		 * labels
 		 */
 		bool m_compute_variance;
-		/**use in inference method*/
-		int32_t m_seed;
 		/**use in inference method*/
 		std::shared_ptr<Features> m_inducing_features;
 	};
