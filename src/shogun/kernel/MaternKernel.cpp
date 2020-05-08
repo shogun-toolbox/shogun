@@ -6,6 +6,7 @@
 
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/kernel/MaternKernel.h>
+#include <shogun/mathematics/bessel.h>
 
 using namespace shogun;
 
@@ -66,46 +67,37 @@ float64_t MaternKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result;
 	const float64_t dist = ShiftInvariantKernel::distance(idx_a, idx_b);
 
-	// first we can check if we should use one of the approximations which are
-	// cheaper to calculate these formulas were taken from Rasmussen's GPs for
-	// ML
+	// first we check if we should use one of the approximations which are
+	// cheaper to calculate
 	if (Math::fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
 		result = std::exp(-dist / m_width);
 	else if (Math::fequals(
 	             m_nu, 1.5, std::numeric_limits<float64_t>::epsilon()))
 	{
-		float64_t ratio = (std::sqrt(3) * dist) / m_width;
+		const float64_t ratio = (std::sqrt(3) * dist) / m_width;
 		result = (1 + ratio) * std::exp(-ratio);
 	}
 	else if (Math::fequals(
 	             m_nu, 2.5, std::numeric_limits<float64_t>::epsilon()))
 	{
-		float64_t ratio = (std::sqrt(5) * dist) / m_width;
+		const float64_t ratio = (std::sqrt(5) * dist) / m_width;
 		result = (1 + ratio +
 		          ((5 * std::pow(dist, 2)) / (3 * std::pow(m_width, 2)))) *
 		         std::exp(-ratio);
 	}
-	// if none of the above was true we compute the value the expensive way
-	// in theory if nu is large we could calculate this with the squared
-	// exponential covariance function
+	// if none of the above is true we compute the value the expensive way
+	// using the modified bessel function of the second kind
 	else
 	{
-#ifdef _LIBCPP_VERSION
-		error(
-		    "Shogun compiled with libc++ does not support Matern kernels with "
-		    "width other than 0.5, 1.5 and 2.5. The current width is {}.",
-		    m_width);
-#else
 		const float64_t adjusted_dist =
 		    Math::fequals(dist, 0.0, std::numeric_limits<float64_t>::epsilon())
 		        ? std::numeric_limits<float32_t>::epsilon()
 		        : dist;
-		float64_t ratio = std::sqrt(2 * m_nu) * adjusted_dist / m_width;
+		const float64_t ratio = std::sqrt(2 * m_nu) * adjusted_dist / m_width;
 		// bessel function of the second kind
-		float64_t bessel = std::cyl_bessel_k(m_nu, ratio);
+		const float64_t bessel = cyl_bessel_k(m_nu, ratio);
 		result = (std::pow(2, 1 - m_nu) / std::tgamma(m_nu)) *
 		         std::pow(ratio, m_nu) * bessel;
-#endif
 	}
 
 	return result;
@@ -122,7 +114,8 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 		SGMatrix<float64_t> derivative = SGMatrix<float64_t>(num_lhs, num_rhs);
 		std::function<float64_t(float64_t)> gradient_func;
 
-		// the gradients Matern wrt m_width were computed with WolframAlpha
+		// the gradients of Matern kernel wrt m_width were computed with
+		// WolframAlpha
 		if (Math::fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
 		{
 			const float64_t m_width_squared = std::pow(m_width, 2);
@@ -153,30 +146,32 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 		}
 		else
 		{
-#ifdef _LIBCPP_VERSION
-		error(
-		    "Shogun compiled with libc++ does not support Matern kernels with "
-		    "width other than 0.5, 1.5 and 2.5. The current width is {}.",
-		    m_width);
-#else
 			gradient_func = [&](const float64_t& dist) {
-				constexpr float64_t epsilon = 1E-6;
-				auto k = [&](const float64_t& width) {
-					const float64_t adjusted_dist =
-					    Math::fequals(
-					        dist, 0.0,
-					        std::numeric_limits<float64_t>::epsilon())
-					        ? std::numeric_limits<float32_t>::epsilon()
-					        : dist;
-					float64_t ratio =
-					    std::sqrt(2 * m_nu) * adjusted_dist / width;
-					float64_t bessel = std::cyl_bessel_k(m_nu, ratio);
-					return (std::pow(2, 1 - m_nu) / std::tgamma(m_nu)) *
-					       std::pow(ratio, m_nu) * bessel;
-				};
-				return (k(m_width + epsilon) - k(m_width)) / epsilon;
+				if (Math::fequals(
+				        dist, 0.0, std::numeric_limits<float64_t>::epsilon()))
+					return 0.0;
+
+				const auto bessel_input =
+				    (std::sqrt(2) * dist * std::sqrt(m_nu)) / m_width;
+				const auto kv_minus1 = cyl_bessel_k(m_nu - 1, bessel_input);
+				const auto kv = cyl_bessel_k(m_nu, bessel_input);
+				const auto kv_plus1 = cyl_bessel_k(m_nu + 1, bessel_input);
+
+				const auto ratio = (dist * std::sqrt(m_nu) / m_width);
+
+				float64_t part1 = dist * std::pow(2, 1 - (0.5 * m_nu));
+				part1 *= std::pow(m_nu, 1.5);
+				part1 *= std::pow(ratio, m_nu - 1);
+				part1 *= kv;
+
+				float64_t part2 = dist * std::pow(2, 0.5 - (0.5 * m_nu));
+				part2 *= std::sqrt(m_nu);
+				part2 *= std::pow(ratio, m_nu);
+				part2 *= -kv_minus1 - kv_plus1;
+
+				return (-part1 - part2) /
+				       (std::pow(m_width, 2) * std::tgamma(m_nu));
 			};
-#endif
 		}
 
 		for (int k = 0; k < num_rhs; k++)

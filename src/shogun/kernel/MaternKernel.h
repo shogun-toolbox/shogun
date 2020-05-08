@@ -4,6 +4,9 @@
  * Authors: Gil Hoben
  */
 
+#ifndef MATERNKERNEL_H
+#define MATERNKERNEL_H
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/ShiftInvariantKernel.h>
 
@@ -11,7 +14,7 @@ namespace shogun
 {
 
 	/**
-	 * @brief the class Matérn kernel
+	 * @brief The Matérn kernel
 	 *
 	 * It is defined as
 	 * \f[
@@ -19,9 +22,9 @@ namespace shogun
 	 *y)}{\rho}\Bigg)^\nu + N_{\nu}\Bigg(\sqrt{2\nu}\frac{D(x, y)}{\rho}\Bigg)
 	 * \f]
 	 * Where:
-	 * 		\f$N_{\nu}\f$ is the modified Bessel function of the second kind of
-	 *order \f$\nu\f$, \f$\rho\f$ is the kernel width, and \f$\Gamma\f$ is the
-	 *gamma function
+	 * 		\f$N_{\nu}\f$ is the order of the modified Bessel function of the second kind
+	 *		\f$\rho\f$ is the kernel width
+	 *		\f$\Gamma\f$ is the gamma function
 	 **/
 	class MaternKernel : public ShiftInvariantKernel
 	{
@@ -133,3 +136,5 @@ namespace shogun
 		float64_t m_width = 1.0;
 	};
 }
+
+#endif
