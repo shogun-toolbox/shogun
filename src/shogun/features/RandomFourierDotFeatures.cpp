@@ -88,7 +88,7 @@ void RandomFourierDotFeatures::generate_random_params(SGVector<float64_t>& vec)
 	NormalDistribution<float64_t> normal_dist;
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 2 * Math::PI);
 
-	/* we need space for both coefficients and offset */
+	/* Ensure passed vector has appropriate size */
 	ASSERT(vec.vlen == get_num_params());
 
 	switch (kernel)

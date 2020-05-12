@@ -99,10 +99,6 @@ protected:
 	 */
 	virtual float64_t post_dot(float64_t dot_result, index_t par_idx) const;
 
-	/** Generates a random parameter vector, subclasses must override this
-	 *
-	 * @return a random parameter vector
-	 */
 	virtual void generate_random_params(SGVector<float64_t>& vec);
 
 	/** @return number of parameters per input dimension */
