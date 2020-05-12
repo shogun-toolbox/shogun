@@ -226,10 +226,7 @@ protected:
 	 */
 	virtual void generate_random_params(SGVector<float64_t>& vec) = 0;
 	
-	/**  Get number of parameters per sample in the random_coeff matrix
-	 *
-	 * @return dimensionality
-	 */
+	/** @return number of parameters per input dimension */
 	virtual int32_t get_num_params() const = 0;
 private:
 	void init(std::shared_ptr<DotFeatures> dataset, int32_t K);
