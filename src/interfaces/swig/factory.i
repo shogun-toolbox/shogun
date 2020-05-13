@@ -69,7 +69,13 @@ namespace shogun{
 	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 	{
 		return create<StringFeatures<uint16_t>>(features, start, p_order, gap, rev, primitive_type);
-	}   
+	}
+	 
+	template <typename TypeName, typename... Args>
+	std::shared_ptr<TypeName> create_(Args... args)
+	{
+		return create<TypeName>(args...);
+	}  
 }
 %}
 %template(create_features) shogun::create_features<float64_t>;
@@ -81,31 +87,31 @@ namespace shogun{
 
 #endif //SWIGJAVA
 
-%template(create_svm) shogun::create<shogun::SVM,std::string>;
-%template(create_evaluation) shogun::create<shogun::Evaluation, std::string>;
-%template(create_multiclass_strategy) shogun::create<shogun::MulticlassStrategy, std::string>;
-%template(create_ecoc_encoder) shogun::create<shogun::ECOCEncoder, std::string>;
-%template(create_ecoc_decoder) shogun::create<shogun::ECOCDecoder, std::string>;
-%template(create_transformer) shogun::create<shogun::Transformer, std::string>;
-%template(create_layer) shogun::create<shogun::NeuralLayer, std::string>;
-%template(create_splitting_strategy) shogun::create<shogun::SplittingStrategy, std::string>;
-%template(create_machine_evaluation) shogun::create<shogun::MachineEvaluation, std::string>;
-%template(create_gp_likelihood) shogun::create<shogun::LikelihoodModel, std::string>;
-%template(create_gp_mean) shogun::create<shogun::MeanFunction, std::string>;
-%template(create_gp_inference) shogun::create<shogun::Inference, std::string>;
-%template(create_differentiable) shogun::create<shogun::DifferentiableFunction, std::string>;
-%template(create_loss) shogun::create<shogun::LossFunction, std::string>;
-%template(create_parameter_observer) shogun::create<shogun::ParameterObserver, std::string>;
-%template(create_evaluation_result) shogun::create<shogun::EvaluationResult, std::string>;
-%template(create_distribution) shogun::create<shogun::Distribution, std::string>;
-%template(create_combination_rule) shogun::create<shogun::CombinationRule, std::string>;
-%template(create_distance) shogun::create<shogun::Distance, std::string>;
-%template(create_kernel) shogun::create<shogun::Kernel, std::string>;
-%template(create_features) shogun::create<shogun::Features, std::string>;
-%template(create_machine) shogun::create<shogun::Machine, std::string>;
-%template(create_structured_model) shogun::create<shogun::StructuredModel, std::string>;
-%template(create_factor_type) shogun::create<shogun::FactorType, std::string>;
-%template(create_gaussian_process) shogun::create<shogun::GaussianProcess, std::string>;
+%template(create_svm) shogun::create_<shogun::SVM,std::string>;
+%template(create_evaluation) shogun::create_<shogun::Evaluation, std::string>;
+%template(create_multiclass_strategy) shogun::create_<shogun::MulticlassStrategy, std::string>;
+%template(create_ecoc_encoder) shogun::create_<shogun::ECOCEncoder, std::string>;
+%template(create_ecoc_decoder) shogun::create_<shogun::ECOCDecoder, std::string>;
+%template(create_transformer) shogun::create_<shogun::Transformer, std::string>;
+%template(create_layer) shogun::create_<shogun::NeuralLayer, std::string>;
+%template(create_splitting_strategy) shogun::create_<shogun::SplittingStrategy, std::string>;
+%template(create_machine_evaluation) shogun::create_<shogun::MachineEvaluation, std::string>;
+%template(create_gp_likelihood) shogun::create_<shogun::LikelihoodModel, std::string>;
+%template(create_gp_mean) shogun::create_<shogun::MeanFunction, std::string>;
+%template(create_gp_inference) shogun::create_<shogun::Inference, std::string>;
+%template(create_differentiable) shogun::create_<shogun::DifferentiableFunction, std::string>;
+%template(create_loss) shogun::create_<shogun::LossFunction, std::string>;
+%template(create_parameter_observer) shogun::create_<shogun::ParameterObserver, std::string>;
+%template(create_evaluation_result) shogun::create_<shogun::EvaluationResult, std::string>;
+%template(create_distribution) shogun::create_<shogun::Distribution, std::string>;
+%template(create_combination_rule) shogun::create_<shogun::CombinationRule, std::string>;
+%template(create_distance) shogun::create_<shogun::Distance, std::string>;
+%template(create_kernel) shogun::create_<shogun::Kernel, std::string>;
+%template(create_features) shogun::create_<shogun::Features, std::string>;
+%template(create_machine) shogun::create_<shogun::Machine, std::string>;
+%template(create_structured_model) shogun::create_<shogun::StructuredModel, std::string>;
+%template(create_factor_type) shogun::create_<shogun::FactorType, std::string>;
+%template(create_gaussian_process) shogun::create_<shogun::GaussianProcess, std::string>;
 %template(create_labels) shogun::create_labels<float64_t>;
-%template(create_minimizer) shogun::create<shogun::Minimizer, std::string>;
-%template(create_lbfgs_minimizer) shogun::create<shogun::LBFGSMinimizer, std::string>;
+%template(create_minimizer) shogun::create_<shogun::Minimizer, std::string>;
+%template(create_lbfgs_minimizer) shogun::create_<shogun::LBFGSMinimizer, std::string>;

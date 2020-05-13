@@ -339,8 +339,9 @@ namespace shogun
 	}
 	} // namespace details
 
+#ifndef SWIG
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args... args)
+	std::shared_ptr<TypeName> create(Args&&... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -387,6 +388,6 @@ namespace shogun
 			    (std::string{std::forward<Args>(args)}.c_str())...);
 		}
 	}
-
+#endif
 } // namespace shogun
 #endif // FACTORY_H_
