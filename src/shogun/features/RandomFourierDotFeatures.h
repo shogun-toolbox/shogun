@@ -45,10 +45,9 @@ class RandomFourierDotFeatures : public RandomKitchenSinksDotFeatures
 {
 public:
 
-	/** default constructor */
 	RandomFourierDotFeatures();
 
-	/** constructor that creates new random coefficients, basedon the kernel specified and the parameters
+	/** constructor that creates new random coefficients, based on the kernel specified and the parameters
 	 * of the kernel.
 	 *
 	 * @param features the dense features to use as a base
@@ -76,27 +75,19 @@ public:
 	 */
 	RandomFourierDotFeatures(const std::shared_ptr<File>& loader);
 
-	/** copy constructor */
 	RandomFourierDotFeatures(const RandomFourierDotFeatures& orig);
 
-	/** duplicate */
 	virtual std::shared_ptr<Features> duplicate() const;
 
-	/** destructor */
 	virtual ~RandomFourierDotFeatures();
 
-	/** @return object name */
-	virtual const char* get_name() const;
+	virtual const char* get_name() const
+	{
+		return "RandomFourierDotFeatures";
+	}
 
 protected:
 
-	/** subclass must override this to perform any operations
-	 * on the dot result between a feature vector and a parameter vector w
-	 *
-	 * @param dot_result the result of the dot operation
-	 * @param par_idx the idx of the parameter vector
-	 * @return the (optionally) modified result
-	 */
 	virtual float64_t post_dot(float64_t dot_result, index_t par_idx) const;
 
 	virtual void generate_random_params(SGVector<float64_t>& vec);

@@ -72,11 +72,6 @@ std::shared_ptr<Features> RandomFourierDotFeatures::duplicate() const
 	return std::make_shared<RandomFourierDotFeatures>(*this);
 }
 
-const char* RandomFourierDotFeatures::get_name() const
-{
-	return "RandomFourierDotFeatures";
-}
-
 float64_t RandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
 {
 	dot_result += random_coeff(random_coeff.num_rows-1, par_idx);
