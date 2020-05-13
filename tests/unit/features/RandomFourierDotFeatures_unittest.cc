@@ -176,7 +176,7 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 
 }
 
-TEST(RandomFourierDotFeatures, num_dims_embedding)
+TEST(RandomFourierDotFeatures, num_dims_rffs)
 {
 	int32_t num_dims = 50;
 	int32_t num_vecs = 5;
