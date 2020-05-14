@@ -87,14 +87,11 @@ class SigmoidKernel: public DotKernel
 			return tanh(gamma*DotKernel::compute(idx_a,idx_b)+coef0);
 		}
 
-	private:
-		void init();
-
 	protected:
 		/** gamma */
-		float64_t gamma;
+		float64_t gamma = 0.0;
 		/** coefficient 0 */
-		float64_t coef0;
+		float64_t coef0 = 0.0;
 };
 }
 #endif /* _SIGMOIDKERNEL_H__ */
