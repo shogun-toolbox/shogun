@@ -55,8 +55,8 @@ bool ShiftInvariantKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Fea
 {
 	require(m_distance, "The distance instance cannot be NULL!");
 	Kernel::init(l,r);
-	init_auto_params();
 	m_distance->init(l, r);
+	init_auto_params();
 	return init_normalizer();
 }
 

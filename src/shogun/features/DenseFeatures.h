@@ -300,11 +300,6 @@ public:
 	 */
 	SGVector<ST> mean() const;
 
-	/** Computes the median of all feature vectors
-	 * @return Median of all feature vectors
-	 */
-	ST median() const;
-
 	/** Computes the standard deviation of all feature vectors
 	 * @param colwise if true calculates feature wise standard deviation,
 	 * otherwise calculates the matrix standard deviation

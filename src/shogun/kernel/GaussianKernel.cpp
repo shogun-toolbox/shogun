@@ -141,10 +141,9 @@ void GaussianKernel::register_params()
 	dist->set_disable_sqrt(true);
 	m_distance=dist;
 
-
 	SG_ADD(
 	    &m_log_width, "log_width", "Kernel width in log domain",
 	    ParameterProperties::AUTO | ParameterProperties::HYPER |
 	        ParameterProperties::GRADIENT,
-	    std::make_shared<params::GaussianWidthAutoInit>(this));
+	    std::make_shared<params::GaussianWidthAutoInit>(*this));
 }

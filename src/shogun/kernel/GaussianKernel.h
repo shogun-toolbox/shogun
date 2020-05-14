@@ -17,7 +17,9 @@ namespace shogun
 
 class Features;
 class DotFeatures;
-
+namespace params {
+	class GaussianWidthAutoInit;
+}
 /** @brief The well known Gaussian kernel (swiss army knife for SVMs) computed
  * on DotFeatures.
  *
@@ -32,6 +34,7 @@ class DotFeatures;
  */
 class GaussianKernel: public ShiftInvariantKernel
 {
+	friend class params::GaussianWidthAutoInit;
 public:
 	/** default constructor */
 	GaussianKernel();
@@ -118,29 +121,29 @@ public:
 	 *
 	 * @return kernel width
 	 */
-	SG_FORCED_INLINE float64_t get_width() const
+	float64_t get_width() const
 	{
-		return CGaussianKernel::from_log_width(m_log_width);
+		return GaussianKernel::from_log_width(m_log_width);
 	}
 
 	/**
-	 * Converts width to log domain.
+	 * Converts width to log_width.
 	 *
 	 * @param log_width the kernel log width
 	 * @return the kernel width
 	 */
-	SG_FORCED_INLINE static float64_t from_log_width(float64_t log_width) noexcept
+	static float64_t from_log_width(float64_t log_width) noexcept
 	{
 		return std::exp(log_width * 2.0) * 2.0;
 	}
 
 	/**
-	 * Converts width from log domain.
+	 * Converts log_width to width.
 	 *
 	 * @param width the kernel width
 	 * @return the kernel log width
 	 */
-	SG_FORCED_INLINE static float64_t to_log_width(float64_t width) noexcept
+	static float64_t to_log_width(float64_t width) noexcept
 	{
 		return std::log(width / 2.0) / 2.0;
 	}

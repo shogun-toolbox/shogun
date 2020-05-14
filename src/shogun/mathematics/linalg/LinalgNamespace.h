@@ -1753,7 +1753,7 @@ namespace shogun
 		 * composed of real numbers.
 		 *
 		 * @param mat the SGMatrix
-		 * @param featurewise whether to calculate featurewise or for whole
+		 * @param colwise whether to calculate colwise or for whole
 		 * matrix
 		 * @return The standard deviation
 		 */
@@ -1761,26 +1761,26 @@ namespace shogun
 		    typename T, typename std::enable_if_t<
 		                    !std::is_same<T, complex128_t>::value>* = nullptr>
 		SGVector<T>
-		std_deviation(const SGMatrix<T>& mat, bool featurewise = true)
+		std_deviation(const SGMatrix<T>& mat, bool colwise = true)
 		{
 			require(mat.size() > 0, "Vector/Matrix cannot be empty!");
 			return infer_backend(mat)->std_deviation(mat, colwise);
 		}
 
 		/**
-		 * Method that computes the median of matrices
+		 * Method that computes the median of vectors
 		 * composed of real numbers.
 		 *
-		 * @param a SGVector or SGMatrix
+		 * @param a SGVector
 		 * @return The whole matrix median
 		 */
 		template <
-		    typename T, template <typename> class Container,
+		    typename T,
 		    typename std::enable_if_t<!std::is_same<T, complex128_t>::value>* =
 		        nullptr>
-		T median(const Container<T>& a)
+		T median(const SGVector<T>& a)
 		{
-			REQUIRE(a.size() > 0, "Vector/Matrix cannot be empty!\n");
+			require(a.size() > 0, "Vector cannot be empty!\n");
 			T result;
 			auto a_copy = a;
 			int64_t n = a.size() / 2;

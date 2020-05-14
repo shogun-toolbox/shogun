@@ -81,5 +81,5 @@ void PolyKernel::init()
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-	    std::make_shared<params::GammaFeatureNumberInit>(this));
+	    std::make_shared<params::GammaFeatureNumberInit>(*this));
 }

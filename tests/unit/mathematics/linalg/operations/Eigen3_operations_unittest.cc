@@ -1650,24 +1650,6 @@ TYPED_TEST(LinalgBackendEigenRealTypesTest, SGMatrix_std_deviation)
 	    result.get_element(0), 2.581988897471611, get_epsilon<TypeParam>());
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_median)
-{
-	const index_t nrows = 3, ncols = 3;
-	SGMatrix<TypeParam> mat(nrows, ncols);
-	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = i;
-
-	std::random_device rd;
-	std::mt19937 g(rd());
-
-	std::shuffle(mat.begin(), mat.end(), g);
-
-	auto result = median(mat);
-
-	EXPECT_NEAR(
-		result, 4, get_epsilon<TypeParam>());
-}
-
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_median)
 {
 	SGVector<TypeParam> vec(9);
@@ -1683,21 +1665,6 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_median)
 
 	EXPECT_NEAR(
 		result, 4, get_epsilon<TypeParam>());
-}
-
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_median_even)
-{
-	const index_t nrows = 4, ncols = 4;
-	SGMatrix<TypeParam> mat(nrows, ncols);
-	mat.set_column(0, {0,1,2,3});
-	mat.set_column(1, {7,6,5,4});
-	mat.set_column(2, {7,9,10,11});
-	mat.set_column(3, {15,14,13,12});
-
-	auto result = median(mat);
-
-	EXPECT_NEAR(
-		result, 7, get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(
