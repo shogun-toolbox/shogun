@@ -120,6 +120,13 @@ namespace shogun
 		virtual void on_complete() = 0;
 
 		/**
+		 * Check if the observed value is a lambda. If it is, execute it and
+		 * the return it as a proper observation.
+		 * @param value
+		 * @return
+		 */
+
+		/**
 		 * Get the name of this class
 		 * @return name as a string
 		 */

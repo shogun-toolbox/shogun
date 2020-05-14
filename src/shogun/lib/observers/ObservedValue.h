@@ -29,6 +29,17 @@ namespace shogun
 		ObservedValue(const int64_t step, std::string_view name);
 
 		/**
+		 * Copy constructor
+		 * @param other other ObservedValue instance
+		 */
+		ObservedValue(const ObservedValue& other) : SGObject(other)
+		{
+			m_step = other.m_step;
+			m_name = other.m_name;
+			m_any_value = other.m_any_value;
+		}
+
+		/**
 		 * Destructor
 		 */
 		~ObservedValue(){};

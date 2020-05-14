@@ -28,6 +28,23 @@ namespace shogun
 		 * @param value the observed value
 		 */
 		ObservedValueTemplated(
+		    const int64_t step, const std::string_view name, const T value)
+		    : ObservedValue(step, name), m_observed_value(value)
+		{
+			this->watch_param(
+			    name, &m_observed_value,
+			    AnyParameterProperties(
+			        "Unamed observed value", ParameterProperties::READONLY));
+			m_any_value = make_any(m_observed_value);
+		}
+
+		/**
+		 * Constructor
+		 * @param step step
+		 * @param name the observed value's name
+		 * @param value the observed value
+		 */
+		ObservedValueTemplated(
 		    const int64_t step, const std::string_view name,
 		    const std::string_view description, const T value)
 		    : ObservedValue(step, name), m_observed_value(value)
@@ -53,6 +70,12 @@ namespace shogun
 		{
 			this->watch_param(name, &m_observed_value, properties);
 			m_any_value = make_any(m_observed_value);
+		}
+
+		ObservedValueTemplated(const ObservedValueTemplated& other)
+		    : ObservedValue(other)
+		{
+			m_observed_value = other.m_observed_value;
 		}
 
 		/**

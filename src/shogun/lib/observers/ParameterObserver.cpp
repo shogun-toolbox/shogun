@@ -81,4 +81,4 @@ bool ParameterObserver::observes(const AnyParameterProperties& property)
 index_t ParameterObserver::get_num_observations() const
 {
 	return utils::safe_convert<index_t>(m_observations.size());
-};
+}
