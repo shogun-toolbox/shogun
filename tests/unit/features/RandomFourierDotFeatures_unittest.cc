@@ -13,11 +13,11 @@ TEST(RandomFourierDotFeatures, dot_test)
 {
 	int32_t num_dims = 50;
 	int32_t num_vecs = 5;
-	int32_t dim_output = 100;
+	int32_t num_dims_rff = 100;
 
-	SGMatrix<float64_t> w(num_dims+1,dim_output);
+	SGMatrix<float64_t> w(num_dims+1,num_dims_rff);
 
-	for (index_t i=0; i<dim_output; i++)
+	for (index_t i=0; i<num_dims_rff; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
@@ -35,7 +35,7 @@ TEST(RandomFourierDotFeatures, dot_test)
 	SGVector<float64_t> params(1);
 	params[0] = 8;
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
-			d_feats, dim_output, GAUSSIAN, params, w);
+			d_feats, num_dims_rff, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(num_vecs, num_vecs);
 	for (index_t i=0; i<num_vecs; i++)
@@ -75,11 +75,11 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 {
 	int32_t num_dims = 50;
 	int32_t num_vecs = 5;
-	int32_t dim_output = 100;
+	int32_t num_dims_rff = 100;
 
-	SGMatrix<float64_t> w(num_dims+1,dim_output);
+	SGMatrix<float64_t> w(num_dims+1,num_dims_rff);
 
-	for (index_t i=0; i<dim_output; i++)
+	for (index_t i=0; i<num_dims_rff; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
@@ -97,7 +97,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	SGVector<float64_t> params(1);
 	params[0] = 8;
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
-			d_feats, dim_output, GAUSSIAN, params, w);
+			d_feats, num_dims_rff, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(num_vecs, num_vecs);
 	for (index_t i=0; i<num_vecs; i++)
@@ -114,7 +114,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	SGVector<float64_t> precomputed_vec(vec, 5, false);
 	for (index_t i=0; i<5; i++)
 	{
-		SGVector<float64_t> ones(dim_output);
+		SGVector<float64_t> ones(num_dims_rff);
 		SGVector<float64_t>::fill_vector(ones.vector, ones.vlen, 1);
 		float64_t dot = r_feats->dot(i, ones);
 		EXPECT_NEAR(dot, vec[i], e);
@@ -126,11 +126,11 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 {
 	int32_t num_dims = 50;
 	int32_t num_vecs = 5;
-	int32_t dim_output = 100;
+	int32_t num_dims_rff = 100;
 
-	SGMatrix<float64_t> w(num_dims+1,dim_output);
+	SGMatrix<float64_t> w(num_dims+1,num_dims_rff);
 
-	for (index_t i=0; i<dim_output; i++)
+	for (index_t i=0; i<num_dims_rff; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
@@ -148,7 +148,7 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	SGVector<float64_t> params(1);
 	params[0] = 8;
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
-			d_feats, dim_output, GAUSSIAN, params, w);
+			d_feats, num_dims_rff, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(num_vecs, num_vecs);
 	for (index_t i=0; i<num_vecs; i++)
@@ -165,34 +165,34 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	SGVector<float64_t> precomputed_vec(vec, 5, false);
 	for (index_t i=0; i<5; i++)
 	{
-		SGVector<float64_t> zeros(dim_output);
+		SGVector<float64_t> zeros(num_dims_rff);
 		SGVector<float64_t>::fill_vector(zeros.vector, zeros.vlen, 0);
 		r_feats->add_to_dense_vec(1, i, zeros.vector, zeros.vlen, false);
 		float64_t sum = 0;
-		for (index_t j=0; j<dim_output; j++)
+		for (index_t j=0; j<num_dims_rff; j++)
 			sum += zeros[j];
 		EXPECT_NEAR(sum, vec[i], e);
 	}
 
 }
 
-TEST(RandomFourierDotFeatures, num_dims_rffs)
+TEST(RandomFourierDotFeatures, dim_output)
 {
 	int32_t num_dims = 50;
 	int32_t num_vecs = 5;
-	int32_t dim_output = 100;
+	int32_t num_dims_rff = 100;
 
 	SGMatrix<float64_t> data(num_dims, num_vecs, false);
 	auto d_feats = std::make_shared<DenseFeatures<float64_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
 	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
-	    d_feats, dim_output, GAUSSIAN, params);
+	    d_feats, num_dims_rff, GAUSSIAN, params);
 
 	auto rows = r_feats->get_dim_feature_space();
 	auto cols = r_feats->get_num_vectors();
 
-	EXPECT_EQ(rows, dim_output);
+	EXPECT_EQ(rows, num_dims_rff);
 	EXPECT_EQ(cols, num_vecs);
 }
 
