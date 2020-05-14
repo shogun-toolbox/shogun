@@ -72,22 +72,20 @@ std::shared_ptr<Features> RandomFourierDotFeatures::duplicate() const
 	return std::make_shared<RandomFourierDotFeatures>(*this);
 }
 
-const char* RandomFourierDotFeatures::get_name() const
-{
-	return "RandomFourierDotFeatures";
-}
-
 float64_t RandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
 {
 	dot_result += random_coeff(random_coeff.num_rows-1, par_idx);
 	return std::cos(dot_result) * constant;
 }
 
-SGVector<float64_t> RandomFourierDotFeatures::generate_random_parameter_vector()
+void RandomFourierDotFeatures::generate_random_params(SGVector<float64_t>& vec)
 {
 	NormalDistribution<float64_t> normal_dist;
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 2 * Math::PI);
-	SGVector<float64_t> vec(feats->get_dim_feature_space()+1);
+
+	/* Ensure passed vector has appropriate size */
+	ASSERT(vec.vlen == get_num_params());
+
 	switch (kernel)
 	{
 		case GAUSSIAN:
@@ -103,7 +101,12 @@ SGVector<float64_t> RandomFourierDotFeatures::generate_random_parameter_vector()
 		default:
 			error("Unknown kernel");
 	}
-	return vec;
+}
+
+int32_t RandomFourierDotFeatures::get_num_params() const
+{
+	/* returns number of features + offset */
+	return feats->get_dim_feature_space() + 1;
 }
 
 }
