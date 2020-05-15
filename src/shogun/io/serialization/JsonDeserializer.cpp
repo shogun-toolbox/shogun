@@ -136,11 +136,20 @@ public:
 		*v = next_element<std::string>(&ValueType::GetString);
 		SG_DEBUG("reading std::string: {}", v->c_str());
 	}
+	void on(AutoValueEmpty* v) override
+	{
+		const auto& temp = next_element<std::string>(&ValueType::GetString);
+		SG_DEBUG("read empty auto value: {}", temp);
+	}
 	void on(std::shared_ptr<SGObject>* v) override
 	{
 		SG_DEBUG("reading SGObject: ");
 		*v = object_reader(m_value_stack.top(), this);
 		m_value_stack.pop();
+	}
+	void enter_auto_value(bool* is_empty) override 
+	{
+		*is_empty = m_value_stack.top()->IsString();
 	}
 	void enter_matrix(index_t* rows, index_t* cols) override
 	{

@@ -62,7 +62,7 @@ void PolyKernel::cleanup()
 
 float64_t PolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	auto result = m_gamma * DotKernel::compute(idx_a, idx_b) + m_c;
+	auto result = std::get<float64_t>(m_gamma) * DotKernel::compute(idx_a, idx_b) + m_c;
 	return Math::pow(result, degree);
 }
 
@@ -70,7 +70,6 @@ void PolyKernel::init()
 {
 	degree = 0;
 	m_c = 0.0;
-	m_gamma = 1.0;
 	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	SG_ADD(
 	    &degree, "degree", "Degree of polynomial kernel",
@@ -81,5 +80,5 @@ void PolyKernel::init()
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-	    std::make_shared<params::GammaFeatureNumberInit>(*this));
+	    std::make_shared<params::GammaFeatureNumberInit<PolyKernel>>(*this, 1.0));
 }

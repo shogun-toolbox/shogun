@@ -22,7 +22,6 @@
 
 		template <typename Derived, typename InterfaceBaseType>
 		class GetterVisitorInterface: public AnyVisitor {
-
 		public:
 
 			GetterVisitorInterface(InterfaceBaseType& obj) : AnyVisitor(), 
@@ -115,6 +114,15 @@
 			void on(complex128_t *v) final
 			{
 				handle_sg(v);
+			}
+
+			void on(AutoValueEmpty*) final
+			{
+				throw std::bad_optional_access{};
+			}
+
+			void enter_auto_value(bool* is_empty) final
+			{
 			}
 
 			void enter_matrix(index_t *rows, index_t *cols) final

@@ -59,6 +59,8 @@ namespace shogun {
 
 		virtual void on(complex128_t *complex128);
 
+		virtual void on(AutoValueEmpty*);
+
 		virtual void enter_matrix(index_t *rows, index_t *cols);
 
 		virtual void enter_vector(index_t *size);
@@ -66,6 +68,8 @@ namespace shogun {
 		virtual void enter_std_vector(size_t *size);
 
 		virtual void enter_map(size_t *size);
+
+		virtual void enter_auto_value(bool *is_empty);
 
 		virtual void exit_matrix(index_t *rows, index_t *cols);
 

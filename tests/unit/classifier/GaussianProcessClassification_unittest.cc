@@ -128,16 +128,10 @@ public:
 		features_train = std::make_shared<DenseFeatures<float64_t>>(feat_train);
 		labels_train = std::make_shared<BinaryLabels>(lab_train);
 		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test);
-		
-		
-		
 
 		// choose Gaussian kernel with sigma = 2 and zero mean function
 		kernel = std::make_shared<GaussianKernel>(10, 2);
 		mean = std::make_shared<ZeroMean>();
-
-		
-		
 	}
 
 	virtual void TearDown()

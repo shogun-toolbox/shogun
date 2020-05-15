@@ -7,7 +7,7 @@
 #ifndef __AUTO_INIT_FACTORY_H__
 #define __AUTO_INIT_FACTORY_H__
 
-#include <iostream>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/Kernel.h>
@@ -19,6 +19,7 @@ namespace shogun
 {
 	namespace params
 	{
+		template <typename KernelType>
 		class GammaFeatureNumberInit : public AutoInit
 		{
 			static constexpr std::string_view kName = "GammaFeatureNumberInit";
@@ -29,8 +30,8 @@ namespace shogun
 			    "else gamma = 1 / n_features.";
 
 		public:
-			explicit GammaFeatureNumberInit(Kernel& kernel)
-			    : AutoInit(kName, kDescription), m_kernel(kernel)
+			explicit GammaFeatureNumberInit(KernelType& kernel, float64_t alternative_value)
+			    : AutoInit(kName, kDescription), m_kernel(kernel), m_alternative_value(alternative_value)
 			{
 			}
 
@@ -38,30 +39,38 @@ namespace shogun
 
 			Any operator()() const final
 			{
-				auto lhs = m_kernel.get_lhs();
-				switch (lhs->get_feature_class())
-				{
-				case EFeatureClass::C_DENSE:
-				case EFeatureClass::C_SPARSE:
-				{
-					auto dot_features = lhs->as<DotFeatures>();
-					return make_any(
-					    1.0 / (static_cast<float64_t>(
-					               dot_features->get_dim_feature_space()) *
-					           dot_features->get_std(false)[0]));
+				AutoValue<float64_t> result;
+				const auto& gamma_param = m_kernel.m_gamma;
+				if (std::holds_alternative<AutoValueEmpty>(gamma_param)) {
+					const auto& lhs = m_kernel.get_lhs();
+					switch (lhs->get_feature_class())
+						{
+						case EFeatureClass::C_DENSE:
+						case EFeatureClass::C_SPARSE:
+						{
+							auto dot_features = lhs->template as<DotFeatures>();
+							result = 1.0 / (static_cast<float64_t>(
+							               dot_features->get_dim_feature_space()) *
+							           dot_features->get_std(false)[0]);
+						}
+						default:
+						{
+							auto dot_features = lhs->template as<DotFeatures>();
+							result = 1.0 / static_cast<float64_t>(
+							              dot_features->get_dim_feature_space());
+						}
+					}
 				}
-				default:
+				else
 				{
-					auto dot_features = lhs->as<DotFeatures>();
-					return make_any(
-					    1.0 / static_cast<float64_t>(
-					              dot_features->get_dim_feature_space()));
+					result = m_alternative_value;
 				}
-				}
+				return make_any(result);
 			}
 
 		private:
-			Kernel& m_kernel;
+			KernelType& m_kernel;
+			float64_t m_alternative_value;
 			SG_DELETE_COPY_AND_ASSIGN(GammaFeatureNumberInit);
 		};
 
@@ -71,11 +80,12 @@ namespace shogun
 			static constexpr std::string_view kDescription =
 			    "Automatic initialisation of the kernel log width "
 			    "using the median of the pairwise euclidean distance "
-			    "of all the features.";
+			    "of all the data points, and then applying the square root "
+			    "to the median devided by two.";
 
 		public:
-			explicit GaussianWidthAutoInit(GaussianKernel& kernel)
-			    : AutoInit(kName, kDescription), m_kernel(kernel)
+			explicit GaussianWidthAutoInit(GaussianKernel& kernel, float64_t alternative_value)
+			    : AutoInit(kName, kDescription), m_kernel(kernel), m_alternative_value(alternative_value)
 			{
 			}
 
@@ -83,45 +93,52 @@ namespace shogun
 
 			Any operator()() const final
 			{
-				auto lhs = m_kernel.get_lhs();
-				auto rhs = m_kernel.get_rhs();
+				AutoValue<float64_t> width;
+				if (std::holds_alternative<shogun::AutoValueEmpty>(m_kernel.m_log_width)) {
+					
+					const auto& lhs = m_kernel.get_lhs();
+					const auto& rhs = m_kernel.get_rhs();
 
-				switch (lhs->get_feature_class())
-				{
-				case EFeatureClass::C_DENSE:
-				{
-					auto result = SGVector<float64_t>(
-					    (lhs->get_num_vectors() * lhs->get_num_vectors() -
-					     lhs->get_num_vectors()) /
-					    2);
-
-					// copy upper triangular wihout a particular order
-					index_t idx = 0;
-					for (int i = 0; i < rhs->get_num_vectors(); ++i)
+					switch (lhs->get_feature_class())
 					{
-						for (int j = i + 1; j < lhs->get_num_vectors(); ++j)
+					case EFeatureClass::C_DENSE:
+					{
+						auto dist = EuclideanDistance(std::static_pointer_cast<DotFeatures>(lhs), 
+													  std::static_pointer_cast<DotFeatures>(rhs));
+						const auto& distance_matrix = dist.get_distance_matrix<float64_t>();
+
+						auto result = SGVector<float64_t>(
+						    (lhs->get_num_vectors() * lhs->get_num_vectors() -
+						     lhs->get_num_vectors()) /
+						    2);
+
+						// copy upper triangular wihout a particular order
+						index_t idx = 0;
+						for (auto j: range(lhs->get_num_vectors()))
 						{
-							result[idx] = m_kernel.distance(i, j);
-							++idx;
+							for (auto i: range(j + 1, rhs->get_num_vectors()))
+							{
+								result[idx] = distance_matrix(i, j);
+								++idx;
+							}
 						}
+						width = GaussianKernel::to_log_width(linalg::median(result));
+					} break;
+					default:
+						width = GaussianKernel::to_log_width(m_alternative_value);
 					}
-					return make_any(
-					    GaussianKernel::to_log_width(linalg::median(result)));
 				}
-				default:
-				{
-					float64_t default_value =
-					    GaussianKernel::to_log_width(m_kernel.get_width());
-					return make_any(default_value);
-				}
-				}
+				else
+					width = m_kernel.m_log_width;
+				return make_any(width);
 			}
 
 		private:
 			GaussianKernel& m_kernel;
+			float64_t m_alternative_value;
 			SG_DELETE_COPY_AND_ASSIGN(GaussianWidthAutoInit);
 		};
-	}; // namespace params
+	} // namespace params
 } // namespace shogun
 
 #endif // __AUTO_INIT_FACTORY_H__

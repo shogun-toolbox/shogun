@@ -20,6 +20,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include <shogun/base/base_types.h>
@@ -186,11 +187,13 @@ namespace shogun
 		virtual void on(complex128_t*) = 0;
 		virtual void on(std::shared_ptr<SGObject>*) = 0;
 		virtual void on(std::string*) = 0;
+		virtual void on(AutoValueEmpty*) = 0;
 		virtual void enter_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void enter_vector(index_t* size) = 0;
 		virtual void enter_std_vector(size_t* size) = 0;
 		virtual void enter_map(size_t* size) = 0;
 		virtual void enter_matrix_row(index_t* rows, index_t* cols) = 0;
+		virtual void enter_auto_value(bool* is_empty) = 0;
 		virtual void exit_matrix_row(index_t* rows, index_t* cols) = 0;
 		virtual void exit_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void exit_vector(index_t* size) = 0;
@@ -206,6 +209,24 @@ namespace shogun
 				on(std::addressof((*_v)(i, *cols)));
 			}
 			exit_matrix_row(rows, cols);
+		}
+
+		template <typename T>
+		void on(AutoValue<T>* v)
+		{
+			bool is_empty = std::holds_alternative<AutoValueEmpty>(*v);
+			enter_auto_value(std::addressof(is_empty));
+
+			// this is important for deserialisation
+			// we know there is a value, but the variant is not active on T
+			// so we need to set variant to be active in T
+			if (!is_empty && std::holds_alternative<AutoValueEmpty>(*v))
+				*v = T{};
+
+			if (is_empty)
+				on(std::addressof(std::get<AutoValueEmpty>(*v)));
+			else
+				on(std::addressof(std::get<T>(*v)));
 		}
 
 		template <typename T>

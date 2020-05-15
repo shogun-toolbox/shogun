@@ -16,7 +16,10 @@
 namespace shogun
 {
 	class DotFeatures;
-
+	namespace params {
+		template <typename KernelType>
+		class GammaFeatureNumberInit;
+	}
 /** @brief Computes the standard polynomial kernel on DotFeatures
  *
  * Formally, it computes
@@ -32,6 +35,8 @@ namespace shogun
  */
 class PolyKernel: public DotKernel
 {
+	friend params::GammaFeatureNumberInit<PolyKernel>;
+
 	public:
 		/** default constructor  */
 		PolyKernel();
@@ -104,7 +109,7 @@ class PolyKernel: public DotKernel
 		/** parameter trading off the influence of higher-order versus lower-order terms in the polynomial */
 		float64_t m_c;
 		/** gamma scaler */
-		float64_t m_gamma;
+		AutoValue<float64_t> m_gamma = AutoValueEmpty{};
 };
 }
 #endif /* _POLYKERNEL_H__ */

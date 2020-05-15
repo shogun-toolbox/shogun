@@ -123,7 +123,7 @@ public:
 	 */
 	float64_t get_width() const
 	{
-		return GaussianKernel::from_log_width(m_log_width);
+		return GaussianKernel::from_log_width(std::get<float64_t>(m_log_width));
 	}
 
 	/**
@@ -192,13 +192,9 @@ protected:
 	 */
 	virtual float64_t distance(int32_t idx_a, int32_t idx_b) const;
 
-private:
-	/** register parameters and initialize with defaults */
-	void register_params();
-
 protected:
 	/** width */
-	float64_t m_log_width;
+	AutoValue<float64_t> m_log_width = AutoValueEmpty{};
 };
 
 }

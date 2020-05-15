@@ -74,7 +74,13 @@ namespace shogun
 				}
 				void on(float64_t* v) override
 				{
-					m_s.value8b(*v);
+					if (static_cast<T*>(this)->m_auto_value.has_value())
+					{
+						*v = *static_cast<T*>(this)->m_auto_value;
+						static_cast<T*>(this)->m_auto_value.reset();
+					}
+					else
+						m_s.value8b(*v);
 				}
 				void on(floatmax_t* v) override
 				{
@@ -87,6 +93,14 @@ namespace shogun
 				void on(std::string* v) override
 				{
 					m_s.text1b(*v, 48);
+				}
+				void on(AutoValueEmpty* v) override
+				{
+					m_s.value8b(*const_cast<size_t*>(&detail::kNullObjectMagic));
+				}
+				void enter_auto_value(bool* is_empty) override
+				{
+					static_cast<T*>(this)->on_enter_auto_value(m_s, is_empty);
 				}
 				void enter_matrix(index_t* rows, index_t* cols) override
 				{
