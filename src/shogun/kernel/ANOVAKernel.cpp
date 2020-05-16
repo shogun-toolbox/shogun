@@ -7,26 +7,27 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/ANOVAKernel.h>
-#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
-ANOVAKernel::ANOVAKernel(): DotKernel(0), cardinality(1.0)
+ANOVAKernel::ANOVAKernel(): DotKernel(0)
 {
-	register_params();
+	SG_ADD(
+	    &m_cardinality, "cardinality", "Kernel cardinality.",
+	    ParameterProperties::HYPER);
 }
 
-ANOVAKernel::ANOVAKernel(int32_t cache, int32_t d)
-: DotKernel(cache), cardinality(d)
+ANOVAKernel::ANOVAKernel(int32_t size, int32_t d)
+: ANOVAKernel()
 {
-	register_params();
+	set_cache_size(size);
+	m_cardinality = d;
 }
 
 ANOVAKernel::ANOVAKernel(
 	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, int32_t d, int32_t cache)
-  : DotKernel(cache), cardinality(d)
+  : ANOVAKernel(cache, d)
 {
-	register_params();
 	init(l, r);
 }
 
@@ -88,20 +89,14 @@ float64_t ANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void ANOVAKernel::register_params()
-{
-	SG_ADD(&cardinality, "cardinality", "Kernel cardinality.", ParameterProperties::HYPER);
-}
-
-
 float64_t ANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len)
 {
-	int32_t DP_len=(cardinality+1)*(len+1);
+	int32_t DP_len=(m_cardinality+1)*(len+1);
 	float64_t* DP = SG_MALLOC(float64_t, DP_len);
 
 	ASSERT(DP)
-	int32_t d=cardinality;
-	int32_t offs=cardinality+1;
+	int32_t d=m_cardinality;
+	int32_t offs=m_cardinality+1;
 
 	ASSERT(DP_len==(len+1)*offs)
 
@@ -128,15 +123,15 @@ float64_t ANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int3
 
 float64_t ANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len)
 {
-	float64_t* KD = SG_MALLOC(float64_t, cardinality+1);
-	float64_t* KS = SG_MALLOC(float64_t, cardinality+1);
+	float64_t* KD = SG_MALLOC(float64_t, m_cardinality+1);
+	float64_t* KS = SG_MALLOC(float64_t, m_cardinality+1);
 	float64_t* vec_pow = SG_MALLOC(float64_t, len);
 
 	ASSERT(vec_pow)
 	ASSERT(KS)
 	ASSERT(KD)
 
-	int32_t d=cardinality;
+	int32_t d=m_cardinality;
 	for (int32_t i=0; i < len; i++)
 		vec_pow[i] = 1;
 
@@ -171,18 +166,4 @@ float64_t ANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int3
 	SG_FREE(KD);
 
 	return result;
-}
-
-std::shared_ptr<ANOVAKernel> ANOVAKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	if (!kernel)
-		return NULL;
-
-	require(kernel->get_kernel_type()==K_ANOVA, "Provided kernel is "
-				"not of type CANOVAKernel, but type {}!",
-				kernel->get_kernel_type());
-
-	/* since an additional reference is returned */
-
-	return std::static_pointer_cast<ANOVAKernel>(kernel);
 }

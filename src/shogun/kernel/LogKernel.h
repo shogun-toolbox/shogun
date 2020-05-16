@@ -31,7 +31,7 @@ class Distance;
 class LogKernel: public Kernel
 {
 public:
-	/** default constructor */
+
 	LogKernel();
 
 	/** constructor
@@ -49,54 +49,24 @@ public:
 	 */
 	LogKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t degree, std::shared_ptr<Distance> dist);
 
-	/** initialize kernel with features
-	 * @param l features left-side
-	 * @param r features right-side
-	 * @return true if successful
-	 */
 	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
-	/**
-	 * @return kernel type
-	 */
 	virtual EKernelType get_kernel_type() { return K_POWER; }
 
-	/**
-	 * @return type of features
-	 */
 	virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
-	/**
-	 * @return class of features
-	 */
 	virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
-	/**
-	 * @return name of kernel
-	 */
 	virtual const char* get_name() const { return "LogKernel"; }
 
 	virtual ~LogKernel();
 
 protected:
-	/**
-	 * compute kernel for specific feature vectors
-	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
-	 * @param idx_a left-side index
-	 * @param idx_b right-side index
-	 * @return kernel value
-	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-private:
-	void init();
-
 protected:
-	/// distance to be used
 	std::shared_ptr<Distance> m_distance;
-
-	/// degree parameter of kernel
-	float64_t m_degree;
+	float64_t m_degree = 1.8;
 };
 }
 

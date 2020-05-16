@@ -17,22 +17,21 @@ using namespace shogun;
 ConstKernel::ConstKernel()
 : Kernel()
 {
-	init();
+	SG_ADD(&m_const_val, "const_value", "Value for kernel elements.",
+	    ParameterProperties::HYPER);
 }
 
 ConstKernel::ConstKernel(float64_t c)
-: Kernel()
+: ConstKernel()
 {
-	init();
-	const_value=c;
+	m_const_val = c;
 }
 
 ConstKernel::ConstKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t c)
-: Kernel()
+: ConstKernel(c)
 {
-	init();
-	const_value=c;
-	init(std::move(l), std::move(r));
+	Kernel::init(l, r);
+	ASSERT(init_normalizer());
 }
 
 ConstKernel::~ConstKernel()
@@ -45,9 +44,3 @@ bool ConstKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 	return init_normalizer();
 }
 
-void ConstKernel::init()
-{
-	const_value=1.0;
-	SG_ADD(&const_value, "const_value", "Value for kernel elements.",
-	    ParameterProperties::HYPER);
-}
