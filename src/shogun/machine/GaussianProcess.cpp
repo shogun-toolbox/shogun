@@ -13,17 +13,17 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/config.h>
 #include <shogun/machine/GaussianProcess.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/machine/gp/SingleFITCInference.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/machine/gp/LikelihoodModel.h>
 
 #include <utility>
 
 using namespace shogun;
 using namespace Eigen;
 
-GaussianProcess::GaussianProcess(): RandomMixin<Machine>()
+GaussianProcess::GaussianProcess() : RandomMixin<Machine>()
 {
 	init();
 }
@@ -46,6 +46,13 @@ void GaussianProcess::init()
 	SG_ADD(
 	    &m_inducing_features, "inducing_features",
 	    "inducing features for approximation", ParameterProperties::MODEL);
+	add_callback_function("seed", [&]() {
+		if (m_method && !is_set_seed())
+		{
+			random_seed_callback(
+			    m_method->get<LikelihoodModel>("likelihood_model").get());
+		}
+	});
 }
 
 GaussianProcess::~GaussianProcess()

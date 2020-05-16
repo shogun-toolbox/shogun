@@ -138,7 +138,6 @@ bool GaussianProcessClassification::train_machine(std::shared_ptr<Features> data
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	require(m_method, "Inference method should not be NULL");
-	random_seed_callback(m_method->get<LikelihoodModel>("likelihood_model").get());
 	if (m_labels)
 	{
 		m_method->set_labels(m_labels);
@@ -147,7 +146,7 @@ bool GaussianProcessClassification::train_machine(std::shared_ptr<Features> data
 	{
 		m_method->set_features(data);
 	}
-	auto lik=m_method->get_model();
+	auto lik = m_method->get_model();
 	// set inducing features for FITC inference method
 	if (m_inducing_features)
 	{

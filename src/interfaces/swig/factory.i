@@ -70,7 +70,8 @@ namespace shogun{
 	{
 		return create<StringFeatures<uint16_t>>(features, start, p_order, gap, rev, primitive_type);
 	}
-	 
+	// SWIG do not support the perfect forwarding, so use this function 
+	//to wrap the function that have the perfect forwarding 
 	template <typename TypeName, typename... Args>
 	std::shared_ptr<TypeName> create_(Args... args)
 	{
