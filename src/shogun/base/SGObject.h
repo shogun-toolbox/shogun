@@ -130,6 +130,18 @@ SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
  */
 class SGObject: public std::enable_shared_from_this<SGObject>
 {
+	template <typename ReturnType, typename CastType>
+	struct ParameterGetterInterface
+	{
+		ReturnType& m_value;
+	};
+
+	template <typename ValueType>
+	struct ParameterPutInterface
+	{
+		ValueType m_value;
+	};
+	
 public:
 	/** Definition of observed subject */
 	typedef rxcpp::subjects::subject<std::shared_ptr<ObservedValue>> SGSubject;
@@ -298,30 +310,20 @@ public:
 	 */
 	template <typename T,
 		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value) noexcept(false)
+	void put(const Tag<T>& _tag, const T& value)
 	{
 		if (has_parameter(_tag))
 		{
-			auto parameter_value = get_parameter(_tag).get_value();
+			const auto& parameter_value = get_parameter(_tag).get_value();
+
 			if (!parameter_value.cloneable())
 			{
 				error(
 					"Cannot put parameter {}::{}.", get_name(),
 					_tag.name().c_str());
 			}
-			try
-			{
-				any_cast<T>(parameter_value);
-			}
-			catch (const TypeMismatchException& exc)
-			{
-				error(
-					"Cannot put parameter {}::{} of type {}, incompatible "
-					"provided type {}.",
-					get_name(), _tag.name().c_str(), exc.actual().c_str(),
-					exc.expected().c_str());
-			}
-			update_parameter(_tag, make_any(value));
+
+			update_parameter(_tag, value);
 		}
 		else
 		{
@@ -340,7 +342,7 @@ public:
 	 */
 	template <typename T,
 		      typename std::enable_if_t<is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value) noexcept(false)
+	void put(const Tag<T>& _tag, const T& value)
 	{
 	    std::string val_string(value);
 
@@ -351,7 +353,7 @@ public:
 					_tag.name().c_str());
 		}
 
-		auto string_to_enum = m_string_to_enum_map[_tag.name()];
+		auto string_to_enum = m_string_to_enum_map.at(_tag.name());
 
 		if (string_to_enum.find(val_string) == string_to_enum.end())
 		{
@@ -404,7 +406,7 @@ public:
 		Tag<std::vector<std::shared_ptr<T>>> tag_vector(name);
 		auto dispatched = get(tag_vector);
 		dispatched.push_back(value);
-		update_parameter(BaseTag(name), make_any(dispatched), false);
+		update_parameter(BaseTag(name), dispatched, false);
 	}
 
 #ifndef SWIG
@@ -460,9 +462,9 @@ public:
 	 * @return object parameter
 	 */
 #ifdef SWIG
-	std::shared_ptr<SGObject> get(const std::string& name) const noexcept(false);
+	std::shared_ptr<SGObject> get(const std::string& name) const;
 #else
-	std::shared_ptr<SGObject> get(std::string_view name) const noexcept(false);
+	std::shared_ptr<SGObject> get(std::string_view name) const;
 #endif
 
 #ifndef SWIG
@@ -519,68 +521,48 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	template <typename T, typename std::enable_if_t<!is_string<T>::value && !is_sg_base<T>::value>* = nullptr>
-	T get(const Tag<T>& _tag) const noexcept(false)
+	template <typename T>
+	auto get(const Tag<T>& _tag) const
 	{
-		const Any value = get_parameter(_tag).get_value();
-		try
-		{
-			return any_cast<T>(value);
-		}
-		catch (const TypeMismatchException& exc)
+		using ReturnType = std::conditional_t<is_sg_base<T>::value, std::shared_ptr<T>, T>;
+		ReturnType result;
+
+		if (!has_parameter(_tag))
 		{
 			error(
-				"Cannot get parameter {}::{} of type {}, incompatible "
+				"Parameter {}::{} does not exist.", get_name(),
+				_tag.name().c_str());
+		}
+
+		if constexpr (is_string<T>::value)
+		{
+			if (m_string_to_enum_map.count(_tag.name()))
+				return std::string(string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name())));
+		}
+		const auto& param = get_parameter(_tag);
+		const auto& value = param.get_value();
+		try
+		{
+			if (param.get_properties().has_property(ParameterProperties::FUNCTIONAL))
+			{
+				ParameterGetterInterface<ReturnType, std::function<ReturnType()>> visitor{result};
+				value.visit_with(&visitor);
+			}
+			else
+			{
+				ParameterGetterInterface<ReturnType, ReturnType> visitor{result};
+				value.visit_with(&visitor);
+			}
+		}
+		catch (...)
+		{
+			error(
+				"Cannot get parameter {}::{} of type {}, incompatible with "
 				"requested type {}.",
-				get_name(), _tag.name().c_str(), exc.actual().c_str(),
-				exc.expected().c_str());
+				get_name(), _tag.name().c_str(), value.type().c_str(),
+				demangled_type<T>().c_str());
 		}
-		// we won't be there
-		return any_cast<T>(value);
-	}
-
-	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
-	std::shared_ptr<T> get(const Tag<T>& _tag) const noexcept(false)
-	{
-		const Any value = get_parameter(_tag).get_value();
-		try
-		{
-			return any_cast<std::shared_ptr<T>>(value);
-		}
-		catch (const TypeMismatchException& exc)
-		{
-			error(
-				"Cannot get parameter {}::{} of type {}, incompatible "
-				"requested type {} or there are no options for parameter "
-				"{}::{}.",
-				get_name(), _tag.name().c_str(), exc.actual().c_str(),
-				exc.expected().c_str(), get_name(), _tag.name().c_str());
-		}
-		// we won't be there
-		return nullptr;
-	}
-
-	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
-	T get(const Tag<T>& _tag) const noexcept(false)
-	{
-		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
-		{
-			const Any value = get_parameter(_tag).get_value();
-			try
-			{
-				return any_cast<T>(value);
-			}
-			catch (const TypeMismatchException& exc)
-			{
-				error(
-					"Cannot get parameter {}::{} of type {}, incompatible "
-					"requested type {} or there are no options for parameter "
-					"{}::{}.",
-					get_name(), _tag.name().c_str(), exc.actual().c_str(),
-					exc.expected().c_str(), get_name(), _tag.name().c_str());
-			}
-		}
-		return std::string(string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name())));
+		return result;
 	}
 #endif
 
@@ -592,9 +574,9 @@ public:
 	 */
 	template <typename T, class X = typename std::enable_if_t<!is_sg_base<T>::value>>
 #ifdef SWIG
-	T get(const std::string& name) const noexcept(false)
+	T get(const std::string& name) const
 #else
-	T get(std::string_view name) const noexcept(false)
+	T get(std::string_view name) const
 #endif
 	{
 		Tag<T> tag(name);
@@ -607,9 +589,9 @@ public:
 	 * @return value of the parameter corresponding to the input name and type
 	 */
 #ifdef SWIG
-	void run(const std::string& name) const noexcept(false)
+	void run(const std::string& name) const
 #else
-	void run(std::string_view name) const noexcept(false)
+	void run(std::string_view name) const
 #endif
 	{
 		Tag<bool> tag(name);
@@ -622,7 +604,7 @@ public:
 
 #ifndef SWIG
 	template <typename T,  typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
-	std::shared_ptr<T> get(std::string_view name) const noexcept(false)
+	std::shared_ptr<T> get(std::string_view name) const
 	{
 		Tag<T> tag(name);
 		return get(tag);
@@ -734,7 +716,7 @@ public:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void load_serializable_pre() noexcept(false);
+	virtual void load_serializable_pre();
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -743,7 +725,7 @@ public:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void load_serializable_post() noexcept(false);
+	virtual void load_serializable_post();
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -752,7 +734,7 @@ public:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void save_serializable_pre() noexcept(false);
+	virtual void save_serializable_pre();
 
 	/** Can (optionally) be overridden to post-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -761,7 +743,7 @@ public:
 	 *
 	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
-	virtual void save_serializable_post() noexcept(false);
+	virtual void save_serializable_post();
 
 	inline bool get_load_serializable_pre() const
 	{
@@ -784,6 +766,38 @@ public:
 	}
 
 protected:
+	template<typename T>
+	void register_parameter_visitor() const
+	{
+		Any::register_visitor<T, ParameterPutInterface<T>>(
+			[](T* value, auto* visitor)
+			{
+				*value = visitor->m_value;	
+			}
+		);
+		if constexpr (traits::is_functional<T>::value)
+		{
+			if constexpr (!traits::returns_void<T>::value)
+			{
+				using ReturnType = typename T::result_type;
+				Any::register_visitor<T, ParameterGetterInterface<ReturnType, T>>(
+					[](T* value, auto* visitor)
+					{
+						visitor->m_value = value->operator()();
+					}
+				);
+			}
+		}
+		else
+		{
+			Any::register_visitor<T, ParameterGetterInterface<T, T>>(
+				[](T* value, auto* visitor)
+				{
+					visitor->m_value = *value;	
+				}
+			);
+		}
+	}
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by put() and retrieved by
 	 * get().
@@ -824,6 +838,7 @@ protected:
 		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		create_parameter(BaseTag(name), AnyParameter(make_any_ref(value), properties));
+		register_parameter_visitor<T>();
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.
@@ -848,6 +863,7 @@ protected:
 				BaseTag(name),
 				AnyParameter(
 						make_any_ref(value), properties, std::move(auto_init)));
+		register_parameter_visitor<T>();
 	}
 
 #ifndef SWIG
@@ -880,6 +896,7 @@ protected:
 							constrain_function.run(casted_val, result);
 							return result;
 						}));
+		register_parameter_visitor<T1>();
 	}
 #endif
 
@@ -898,6 +915,7 @@ protected:
 	{
 		create_parameter(
 			BaseTag(name), AnyParameter(make_any_ref(value, len), properties));
+		register_parameter_visitor<T>();
 	}
 
 	/** Puts a pointer to some 2d parameter array (i.e. a matrix) into the
@@ -917,6 +935,7 @@ protected:
 	{
 		create_parameter(
 			BaseTag(name), AnyParameter(make_any_ref(value, rows, cols), properties));
+		register_parameter_visitor<T>();
 	}
 
 #ifndef SWIG
@@ -930,10 +949,11 @@ protected:
 	{
 		AnyParameterProperties properties(
 			"Dynamic parameter",
-			ParameterProperties::READONLY);
+			ParameterProperties::READONLY | ParameterProperties::FUNCTIONAL);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(BaseTag(name), AnyParameter(make_any(bind_method), properties));
+		register_parameter_visitor<std::function<T()>>();
 	}
 
 	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
@@ -948,10 +968,12 @@ protected:
 	{
 		AnyParameterProperties properties(
 			"Non-const function",
-			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY);
+			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY |
+			ParameterProperties::FUNCTIONAL);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(BaseTag(name), AnyParameter(make_any(bind_method), properties));
+		register_parameter_visitor<std::function<T()>>();
 	}
 
 	/** Adds a callback function to a parameter identified by its name
@@ -1065,7 +1087,54 @@ private:
 	 * @param _tag name information of parameter
 	 * @param value new value of parameter
 	 */
-	void update_parameter(const BaseTag& _tag, const Any& value, bool do_checks = true);
+	template <typename T>
+	void update_parameter(const BaseTag& _tag, const T& value, bool do_checks = true)
+	{
+		auto& param = get_parameter(_tag);
+		auto& pprop = param.get_properties();
+		auto& parameter_value = param.get_value();
+		if (pprop.has_property(ParameterProperties::READONLY))
+		        require(!do_checks,
+				"{}::{} is marked as read-only and cannot be modified!",
+		          	get_name(), _tag.name().c_str());
+
+		if (pprop.has_property(ParameterProperties::CONSTRAIN))
+		{
+			auto msg = param.get_constrain_function()(make_any(value));
+			if (!msg.empty())
+			{
+				require(!do_checks,
+					"{}::{} cannot be updated because it must be: {}!",
+					get_name(), _tag.name().c_str(), msg.c_str());
+			}
+		}
+		if constexpr (std::is_same_v<T, Any>)
+		{
+			param.set_value(value);
+		}
+		else
+		{
+			ParameterPutInterface<T> visitor{value};
+
+			try 
+			{
+				parameter_value.visit_with(&visitor);			
+			}
+			catch (...)
+			{
+				error(
+					"Cannot put parameter {}::{} of type {}, incompatible with "
+					"provided type {}.",
+					get_name(), _tag.name().c_str(), parameter_value.type().c_str(),
+					demangled_type<T>().c_str());
+			}
+		}
+
+		for (auto& method : param.get_callbacks())
+			method();
+
+		pprop.remove_property(ParameterProperties::AUTO);
+	}
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -1073,7 +1142,15 @@ private:
 	 * @param _tag name information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	AnyParameter get_parameter(const BaseTag& _tag) const;
+	const AnyParameter& get_parameter(const BaseTag& _tag) const;
+
+	/** Getter for a class parameter, identified by a BaseTag.
+	 * Throws an exception if the class does not have such a parameter.
+	 *
+	 * @param _tag name information of parameter
+	 * @return value of the parameter identified by the input tag
+	 */
+	AnyParameter& get_parameter(const BaseTag& _tag);
 
 	/** Getter for a class function, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -1160,6 +1237,7 @@ protected:
 	{
 		auto param = this->get_parameter(BaseTag(name));
 		auto cloned = any_cast<T>(param.get_value());
+		param.get_properties().remove_property(ParameterProperties::FUNCTIONAL);
 		this->observe(
 			step, name, static_cast<T>(clone_utils::clone(cloned)),
 			param.get_properties());

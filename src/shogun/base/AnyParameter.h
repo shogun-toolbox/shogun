@@ -46,6 +46,8 @@ namespace shogun
 
 		CONSTRAIN = 1u << 13,
 
+		FUNCTIONAL = 1u << 14,
+
 		ALL = std::numeric_limits<uint32_t>::max(),
 	};
 
@@ -182,7 +184,12 @@ namespace shogun
 		{
 		}
 
-		Any get_value() const
+		const Any& get_value() const
+		{
+			return m_value;
+		}
+
+		Any& get_value()
 		{
 			return m_value;
 		}

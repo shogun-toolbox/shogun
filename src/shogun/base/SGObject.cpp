@@ -359,35 +359,29 @@ void SGObject::create_parameter(
 	self->create(std::forward<BaseTag>(_tag), std::forward<AnyParameter>(parameter));
 }
 
-void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_checks)
+const AnyParameter& SGObject::get_parameter(const BaseTag& _tag) const
 {
-	auto& param = self->at(_tag);
-	auto& pprop = param.get_properties();
-	if (pprop.has_property(ParameterProperties::READONLY))
-	        require(!do_checks,
-			"{}::{} is marked as read-only and cannot be modified!",
-	          	get_name(), _tag.name().c_str());
-
-	if (pprop.has_property(ParameterProperties::CONSTRAIN))
+	const auto& parameter = self->at(_tag);
+	if (parameter.get_properties().has_property(
+	        ParameterProperties::RUNFUNCTION))
 	{
-		auto msg = self->find(_tag)->second.get_constrain_function()(value);
-		if (!msg.empty())
-		{
-			require(!do_checks,
-				"{}::{} cannot be updated because it must be: {}!",
-				get_name(), _tag.name().c_str(), msg.c_str());
-		}
+		error(
+		    "The parameter {}::{} is registered as a function, "
+		    "use the .run() method instead!\n",
+		    get_name(), _tag.name().c_str());
 	}
-	param.set_value(value);
-	for (auto& method : param.get_callbacks())
-		method();
-
-	pprop.remove_property(ParameterProperties::AUTO);
+	if (parameter.get_value().empty())
+	{
+		error(
+		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
+		    get_name());
+	}
+	return parameter;
 }
 
-AnyParameter SGObject::get_parameter(const BaseTag& _tag) const
+AnyParameter& SGObject::get_parameter(const BaseTag& _tag)
 {
-	const auto& parameter = self->get(_tag);
+	auto& parameter = self->at(_tag);
 	if (parameter.get_properties().has_property(
 	        ParameterProperties::RUNFUNCTION))
 	{

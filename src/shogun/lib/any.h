@@ -1205,19 +1205,15 @@ namespace shogun
 		void visit(AnyVisitor* visitor) const;
 
 		template <class State>
-		void visit_with(State* state = nullptr)
+		void visit_with(State* state = nullptr) const
 		{
 			const auto value_type = std::type_index{policy->type_info()};
 			const auto state_type = std::type_index{typeid(State)};
-			if (policy->is_functional())
-			{
-				throw std::logic_error{
-				    "Visit is not supported for functional Any"};
-			}
 			const auto key = std::make_pair(state_type, value_type);
-			if (Any::visitor_registry.count(key))
+			auto visitor = Any::visitor_registry.find(key);
+			if (visitor != Any::visitor_registry.end())
 			{
-				visitor_registry[key](storage, state);
+				visitor->second(storage, state);
 			}
 			else
 			{
@@ -1229,7 +1225,7 @@ namespace shogun
 		static void register_caster(std::function<To(From)> caster);
 
 		template <class Type, class State>
-		static void register_visitor(std::function<void(Type, State*)> visitor);
+		static void register_visitor(std::function<void(Type*, State*)> visitor);
 
 	private:
 		void set_or_inherit(const Any& other);
@@ -1275,7 +1271,7 @@ namespace shogun
 	}
 
 	template <class Type, class State>
-	void Any::register_visitor(std::function<void(Type, State*)> visitor)
+	void Any::register_visitor(std::function<void(Type*, State*)> visitor)
 	{
 		const auto key = std::make_pair(
 		    std::type_index{typeid(State)}, std::type_index{typeid(Type)});
@@ -1288,7 +1284,7 @@ namespace shogun
 		visitor_registry[key] = [visitor](void* value, void* state) {
 			auto typed_state = static_cast<State*>(state);
 			auto typed_value = static_cast<Type*>(value);
-			visitor(*typed_value, typed_state);
+			visitor(typed_value, typed_state);
 		};
 	}
 
