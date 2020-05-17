@@ -24,7 +24,7 @@ namespace shogun
 class DiagKernel: public Kernel
 {
 	public:
-		/** default constructor  */
+
 		DiagKernel();
 
 		/** constructor
@@ -44,66 +44,24 @@ class DiagKernel: public Kernel
 
 		virtual ~DiagKernel();
 
-		/** initialize kernel
-		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @return if initializing was successful
-		 */
+		virtual EFeatureType get_feature_type(){ return F_ANY; }
+
 		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
-		/** return feature type the kernel can deal with
-		 *
-		 * @return feature type ANY
-		 */
-		virtual EFeatureType get_feature_type()
-		{
-			return F_ANY;
-		}
+		virtual EFeatureClass get_feature_class(){ return C_ANY; }
 
-		/** return feature class the kernel can deal with
-		 *
-		 * @return feature class ANY
-		 */
-		virtual EFeatureClass get_feature_class()
-		{
-			return C_ANY;
-		}
-
-		/** return what type of kernel we are
-		 *
-		 * @return kernel type CUSTOM
-		 */
 		virtual EKernelType get_kernel_type() { return K_DIAG; }
 
-		/** return the kernel's name
-		 *
-		 * @return name Custom
-		 */
 		virtual const char* get_name() const { return "DiagKernel"; }
 
 	protected:
-		/** compute kernel function for features a and b
-		 * idx_{a,b} denote the index of the feature vectors
-		 * in the corresponding feature object
-		 *
-		 * @param idx_a index a
-		 * @param idx_b index b
-		 * @return computed kernel function at indices a,b
-		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-			if (idx_a==idx_b)
-				return diag;
-			else
-				return 0;
+			return idx_a == idx_b ? m_diag : 0;
 		}
-	private:
-		void init();
 
 	protected:
-		/** diagonal */
-		float64_t diag;
+		float64_t m_diag = 1.0;
 };
 }
 #endif /* _DIAGKERNEL_H__ */

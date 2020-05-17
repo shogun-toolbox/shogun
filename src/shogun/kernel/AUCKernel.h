@@ -31,9 +31,8 @@ namespace shogun
 	 */
 	class AUCKernel : public DotKernel
 	{
-		void init();
 	public:
-		/** default constructor  */
+	
 		AUCKernel();
 
 		/** constructor
@@ -44,7 +43,6 @@ namespace shogun
 		 */
 		AUCKernel(int32_t size, std::shared_ptr<Kernel> subkernel, std::shared_ptr<Labels> labels);
 
-		/** destructor */
 		virtual ~AUCKernel();
 
 		/** initialize kernel based on current labeling and subkernel
@@ -54,66 +52,21 @@ namespace shogun
 		 */
 		bool setup_auc_maximization();
 
-		/** initialize kernel
-		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @return if initializing was successful
-		 */
+		virtual EKernelType get_kernel_type() { return K_AUC; }
 		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
-		/** return what type of kernel we are
-		 *
-		 * @return kernel type AUC
-		 */
-		virtual EKernelType get_kernel_type()
-		{
-			return K_AUC;
-		}
+		virtual const char* get_name() const { return "AUCKernel"; }
 
-		/** return the kernel's name
-		 *
-		 * @return name AUC
-		 */
-		virtual const char* get_name() const
-		{
-			return "AUCKernel";
-		}
-
-		/** return feature class the kernel can deal with
-		 *
-		 * @return feature class SIMPLE
-		 */
-		virtual EFeatureClass get_feature_class()
-		{
-			return C_DENSE;
-		}
-
-		/** return feature type the kernel can deal with
-		 *
-		 * @return word feature type
-		 */
-		virtual EFeatureType get_feature_type()
-		{
-			return F_WORD;
-		}
+		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		
+		virtual EFeatureType get_feature_type() { return F_WORD; }
 
 	protected:
-		/** compute kernel function for features a and b
-		 * idx_{a,b} denote the index of the feature vectors
-		 * in the corresponding feature object
-		 *
-		 * @param idx_a index a
-		 * @param idx_b index b
-		 * @return computed kernel function at indices a,b
-		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
-		/** the subkernel */
-		std::shared_ptr<Kernel> subkernel;
-		/** the labels */
-		std::shared_ptr<Labels> labels;
+		std::shared_ptr<Kernel> m_subkernel;
+		std::shared_ptr<Labels> m_labels;
 	};
 } // namespace shogun
 #endif /* _AUCKERNEL_H__ */

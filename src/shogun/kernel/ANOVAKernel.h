@@ -34,7 +34,7 @@ class Distance;
 class ANOVAKernel: public DotKernel
 {
 public:
-	/** default constructor */
+
 	ANOVAKernel();
 
 	/** constructor
@@ -54,42 +54,25 @@ public:
 
 	virtual ~ANOVAKernel();
 
-	/** initialize kernel with features
-	 * @param l features left-side
-	 * @param r features right-side
-	 * @return true if successful
-	 */
 	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
-	/**
-	 * @return kernel type
-	 */
 	virtual EKernelType get_kernel_type() { return K_ANOVA; }
 
-	/**
-	 * @return type of features
-	 */
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-	/**
-	 * @return class of features
-	 */
 	virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
-	/**
-	 * @return name of kernel
-	 */
 	virtual const char* get_name() const { return "ANOVAKernel"; }
 
 	/** getter for degree parameter
 	 *  @return kernel parameter cardinality
 	 */
-	inline int32_t get_cardinality() { return this->cardinality; }
+	int32_t get_cardinality() { return this->m_cardinality; }
 
 	/** setter for degree parameter
 	 *  @param value kernel parameter cardinality
 	 */
-	inline void set_cardinality(int32_t value) { this->cardinality = value; }
+	void set_cardinality(int32_t value) { this->m_cardinality = value; }
 
 	/** compute rec 1
 	 * @param idx_a
@@ -105,32 +88,16 @@ public:
 	 */
 	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 
-	/** Casts the given kernel to CANOVAKernel.
-	 * @param kernel Kernel to cast. Must be CANOVAKernel. Might be NULL
-	 * @return casted CANOVAKernel object, NULL if input was NULL
-	 */
-	static std::shared_ptr<ANOVAKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
-protected:
-
-	/**
-	 * compute kernel for specific feature vectors
-	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
-	 * @param idx_a left-side index
-	 * @param idx_b right-side index
-	 * @return kernel value
-	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
-
-	/** register params */
-	void register_params();
-
 private:
 	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len);
 	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len);
 
 protected:
+	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+
+protected:
 	/// degree parameter of kernel
-	int32_t cardinality;
+	int32_t m_cardinality = 1;
 };
 }
 

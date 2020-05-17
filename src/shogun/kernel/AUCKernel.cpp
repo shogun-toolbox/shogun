@@ -15,23 +15,20 @@
 
 using namespace shogun;
 
-void AUCKernel::init()
+AUCKernel::AUCKernel() : DotKernel(0)
 {
 	SG_ADD(
-	    &subkernel, "subkernel", "The subkernel.", ParameterProperties::HYPER);
-	SG_ADD(&labels, "labels", "The labels.");
+	    &m_subkernel, "subkernel", "The subkernel.", ParameterProperties::HYPER);
+	SG_ADD(&m_labels, "labels", "The labels.");
 	watch_method("setup_auc_maximization", &AUCKernel::setup_auc_maximization);
 }
 
-AUCKernel::AUCKernel() : DotKernel(0), subkernel(nullptr), labels(nullptr)
-{
-	init();
-}
-
 AUCKernel::AUCKernel(int32_t size, std::shared_ptr<Kernel> s, std::shared_ptr<Labels> l)
-    : DotKernel(size), subkernel(std::move(s)), labels(std::move(l))
+    : AUCKernel()
 {
-	init();
+	set_cache_size(size);
+	m_subkernel = std::move(s);
+	m_labels = std::move(l);
 }
 
 AUCKernel::~AUCKernel()
@@ -42,14 +39,14 @@ AUCKernel::~AUCKernel()
 bool AUCKernel::setup_auc_maximization()
 {
 	io::info("setting up AUC maximization");
-	ASSERT(labels)
-	ASSERT(labels->get_label_type() == LT_BINARY)
-	labels->ensure_valid();
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
+	m_labels->ensure_valid();
 
 	// get the original labels
-	SGVector<int32_t> int_labels = binary_labels(labels)->get_int_labels();
+	SGVector<int32_t> int_labels = binary_labels(m_labels)->get_int_labels();
 
-	ASSERT(subkernel->get_num_vec_rhs() == int_labels.vlen)
+	ASSERT(m_subkernel->get_num_vec_rhs() == int_labels.vlen)
 
 	// count positive and negative
 	int32_t num_pos = 0;
@@ -135,16 +132,16 @@ float64_t AUCKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(alen == 2)
 	ASSERT(blen == 2)
 
-	ASSERT(subkernel && subkernel->has_features())
+	ASSERT(m_subkernel && m_subkernel->has_features())
 
 	float64_t k11, k12, k21, k22;
 	int32_t idx_a1 = avec[0], idx_a2 = avec[1], idx_b1 = bvec[0],
 	        idx_b2 = bvec[1];
 
-	k11 = subkernel->kernel(idx_a1, idx_b1);
-	k12 = subkernel->kernel(idx_a1, idx_b2);
-	k21 = subkernel->kernel(idx_a2, idx_b1);
-	k22 = subkernel->kernel(idx_a2, idx_b2);
+	k11 = m_subkernel->kernel(idx_a1, idx_b1);
+	k12 = m_subkernel->kernel(idx_a1, idx_b2);
+	k21 = m_subkernel->kernel(idx_a2, idx_b1);
+	k22 = m_subkernel->kernel(idx_a2, idx_b2);
 
 	float64_t result = k11 + k22 - k21 - k12;
 	lhs->as<DenseFeatures<uint16_t>>()->free_feature_vector(avec, idx_a, afree);

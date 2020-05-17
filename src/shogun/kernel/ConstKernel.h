@@ -25,7 +25,7 @@ namespace shogun
 class ConstKernel: public Kernel
 {
 	public:
-		/** default constructor  */
+		
 		ConstKernel();
 
 		/** constructor
@@ -44,62 +44,21 @@ class ConstKernel: public Kernel
 
 		virtual ~ConstKernel();
 
-		/** initialize kernel
-		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @return if initializing was successful
-		 */
 		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
-		/** return what type of kernel we are
-		 *
-		 * @return kernel type CONST
-		 */
 		virtual EKernelType get_kernel_type() { return K_CONST; }
 
-		/** return feature type the kernel can deal with
-		 *
-		 * @return feature type ANY
-		 */
-		virtual EFeatureType get_feature_type()
-		{
-			return F_ANY;
-		}
+		virtual EFeatureType get_feature_type() { return F_ANY; }
 
-		/** return feature class the kernel can deal with
-		 *
-		 * @return feature class ANY
-		 */
-		virtual EFeatureClass get_feature_class()
-		{
-			return C_ANY;
-		}
+		virtual EFeatureClass get_feature_class() { return C_ANY; }
 
-		/** return the kernel's name
-		 *
-		 * @return name Const
-		 */
 		virtual const char* get_name() const { return "ConstKernel"; }
 
 	protected:
-		/** compute kernel function for features a and b
-		 *
-		 * @param row dummy row
-		 * @param col dummy col
-		 * @return computed kernel function (const value)
-		 */
-		virtual float64_t compute(int32_t row, int32_t col)
-		{
-			return const_value;
-		}
-
-	private:
-		void init();
+		virtual float64_t compute(int32_t row, int32_t col) { return m_const_val; }
 
 	protected:
-		/** const value */
-		float64_t const_value;
+		float64_t m_const_val = 1.0;
 };
 }
 #endif /* _CONSTKERNEL_H__ */
