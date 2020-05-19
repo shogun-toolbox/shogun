@@ -543,7 +543,7 @@ public:
 		const auto& value = param.get_value();
 		try
 		{
-			if (param.get_properties().has_property(ParameterProperties::FUNCTIONAL))
+			if (param.get_properties().has_property(ParameterProperties::CONSTFUNCTION))
 			{
 				ParameterGetterInterface<ReturnType, std::function<ReturnType()>> visitor{result};
 				value.visit_with(&visitor);
@@ -949,7 +949,7 @@ protected:
 	{
 		AnyParameterProperties properties(
 			"Dynamic parameter",
-			ParameterProperties::READONLY | ParameterProperties::FUNCTIONAL);
+			ParameterProperties::READONLY | ParameterProperties::CONSTFUNCTION);
 		std::function<T()> bind_method = [this, method](){
 			return (static_cast<const S*>(this) ->* method)();
 		};
@@ -969,8 +969,7 @@ protected:
 	{
 		AnyParameterProperties properties(
 			"Non-const function",
-			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY |
-			ParameterProperties::FUNCTIONAL);
+			ParameterProperties::READONLY | ParameterProperties::FUNCTION);
 		std::function<T()> bind_method = [this, method](){
 			return (static_cast<S*>(this) ->* method)();
 		};
@@ -1240,7 +1239,8 @@ protected:
 		auto& param = this->get_parameter(BaseTag(name));
 		auto pprop = param.get_properties();
 		auto cloned = any_cast<T>(param.get_value());
-		pprop.remove_property(ParameterProperties::FUNCTIONAL);
+		pprop.remove_property(ParameterProperties::CONSTFUNCTION);
+		pprop.remove_property(ParameterProperties::FUNCTION);
 		this->observe(
 			step, name, static_cast<T>(clone_utils::clone(cloned)),
 			pprop);

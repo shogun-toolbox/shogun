@@ -363,7 +363,7 @@ const AnyParameter& SGObject::get_parameter(const BaseTag& _tag) const
 {
 	const auto& parameter = self->at(_tag);
 	if (parameter.get_properties().has_property(
-	        ParameterProperties::RUNFUNCTION))
+	        ParameterProperties::FUNCTION))
 	{
 		error(
 		    "The parameter {}::{} is registered as a function, "
@@ -383,7 +383,7 @@ AnyParameter& SGObject::get_parameter(const BaseTag& _tag)
 {
 	auto& parameter = self->at(_tag);
 	if (parameter.get_properties().has_property(
-	        ParameterProperties::RUNFUNCTION))
+	        ParameterProperties::FUNCTION))
 	{
 		error(
 		    "The parameter {}::{} is registered as a function, "
@@ -403,7 +403,7 @@ AnyParameter SGObject::get_function(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
 	if (!parameter.get_properties().has_property(
-	        ParameterProperties::RUNFUNCTION))
+	        ParameterProperties::FUNCTION))
 	{
 		error(
 		    "The parameter {}::{} is not registered as a function, "
