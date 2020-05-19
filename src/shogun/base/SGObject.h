@@ -312,25 +312,16 @@ public:
 		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
 	void put(const Tag<T>& _tag, const T& value)
 	{
-		if (has_parameter(_tag))
-		{
-			const auto& parameter_value = get_parameter(_tag).get_value();
+		const auto& parameter_value = get_parameter(_tag).get_value();
 
-			if (!parameter_value.cloneable())
-			{
-				error(
-					"Cannot put parameter {}::{}.", get_name(),
-					_tag.name().c_str());
-			}
-
-			update_parameter(_tag, value);
-		}
-		else
+		if (!parameter_value.cloneable())
 		{
 			error(
-				"Parameter {}::{} does not exist.", get_name(),
+				"Cannot put parameter {}::{}.", get_name(),
 				_tag.name().c_str());
 		}
+
+		update_parameter(_tag, value);
 	}
 
 	/** Setter for a class parameter that has values of type string,
@@ -526,20 +517,15 @@ public:
 	{
 		using ReturnType = std::conditional_t<is_sg_base<T>::value, std::shared_ptr<T>, T>;
 		ReturnType result;
-
-		if (!has_parameter(_tag))
-		{
-			error(
-				"Parameter {}::{} does not exist.", get_name(),
-				_tag.name().c_str());
-		}
+		
+		const auto& param = get_parameter(_tag);
 
 		if constexpr (is_string<T>::value)
 		{
 			if (m_string_to_enum_map.count(_tag.name()))
 				return std::string(string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name())));
 		}
-		const auto& param = get_parameter(_tag);
+		
 		const auto& value = param.get_value();
 		try
 		{
@@ -594,8 +580,8 @@ public:
 	void run(std::string_view name) const
 #endif
 	{
-		Tag<bool> tag(name);
-		auto param = get_function(tag);
+		const auto tag = Tag<bool>(name);
+		const auto& param = get_function(tag);
 		if (!any_cast<bool>(param.get_value()))
 		{
 			error("Failed to run function {}::{}", get_name(), name.data());
@@ -1159,7 +1145,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	AnyParameter get_function(const BaseTag& _tag) const;
+	const AnyParameter& get_function(const BaseTag& _tag) const;
 
 	class Self;
 	std::unique_ptr<Self> self;
@@ -1236,9 +1222,10 @@ protected:
 	template <class T>
 	void observe(const int64_t step, std::string_view name) const
 	{
-		auto& param = this->get_parameter(BaseTag(name));
+		const auto tag = Tag<T>(name);
+		auto& param = this->get_parameter(tag);
 		auto pprop = param.get_properties();
-		auto cloned = any_cast<T>(param.get_value());
+		auto cloned = get(tag);
 		pprop.remove_property(ParameterProperties::CONSTFUNCTION);
 		pprop.remove_property(ParameterProperties::FUNCTION);
 		this->observe(

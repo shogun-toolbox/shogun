@@ -361,7 +361,15 @@ void SGObject::create_parameter(
 
 const AnyParameter& SGObject::get_parameter(const BaseTag& _tag) const
 {
+	if (!has_parameter(_tag))
+	{
+		error(
+			"Parameter {}::{} does not exist.", get_name(),
+			_tag.name().c_str());
+	}
+	
 	const auto& parameter = self->at(_tag);
+	
 	if (parameter.get_properties().has_property(
 	        ParameterProperties::FUNCTION))
 	{
@@ -369,19 +377,21 @@ const AnyParameter& SGObject::get_parameter(const BaseTag& _tag) const
 		    "The parameter {}::{} is registered as a function, "
 		    "use the .run() method instead!\n",
 		    get_name(), _tag.name().c_str());
-	}
-	if (parameter.get_value().empty())
-	{
-		error(
-		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
-		    get_name());
 	}
 	return parameter;
 }
 
 AnyParameter& SGObject::get_parameter(const BaseTag& _tag)
 {
+	if (!has_parameter(_tag))
+	{
+		error(
+			"Parameter {}::{} does not exist.", get_name(),
+			_tag.name().c_str());
+	}
+
 	auto& parameter = self->at(_tag);
+
 	if (parameter.get_properties().has_property(
 	        ParameterProperties::FUNCTION))
 	{
@@ -390,18 +400,20 @@ AnyParameter& SGObject::get_parameter(const BaseTag& _tag)
 		    "use the .run() method instead!\n",
 		    get_name(), _tag.name().c_str());
 	}
-	if (parameter.get_value().empty())
-	{
-		error(
-		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
-		    get_name());
-	}
 	return parameter;
 }
 
-AnyParameter SGObject::get_function(const BaseTag& _tag) const
+const AnyParameter& SGObject::get_function(const BaseTag& _tag) const
 {
-	const auto& parameter = self->get(_tag);
+	if (!has_parameter(_tag))
+	{
+		error(
+			"Parameter {}::{} does not exist.", get_name(),
+			_tag.name().c_str());
+	}
+
+	const auto& parameter = self->at(_tag);
+	
 	if (!parameter.get_properties().has_property(
 	        ParameterProperties::FUNCTION))
 	{
@@ -409,12 +421,6 @@ AnyParameter SGObject::get_function(const BaseTag& _tag) const
 		    "The parameter {}::{} is not registered as a function, "
 		    "use the .get() method instead",
 		    get_name(), _tag.name().c_str());
-	}
-	if (parameter.get_value().empty())
-	{
-		error(
-		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
-		    get_name());
 	}
 	return parameter;
 }
