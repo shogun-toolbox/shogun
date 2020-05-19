@@ -139,7 +139,7 @@ class SGObject: public std::enable_shared_from_this<SGObject>
 	template <typename ValueType>
 	struct ParameterPutInterface
 	{
-		ValueType m_value;
+		const ValueType& m_value;
 	};
 	
 public:
@@ -950,8 +950,9 @@ protected:
 		AnyParameterProperties properties(
 			"Dynamic parameter",
 			ParameterProperties::READONLY | ParameterProperties::FUNCTIONAL);
-		std::function<T()> bind_method =
-			std::bind(method, dynamic_cast<const S*>(this));
+		std::function<T()> bind_method = [this, method](){
+			return (static_cast<const S*>(this) ->* method)();
+		};
 		create_parameter(BaseTag(name), AnyParameter(make_any(bind_method), properties));
 		register_parameter_visitor<std::function<T()>>();
 	}
@@ -970,8 +971,9 @@ protected:
 			"Non-const function",
 			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY |
 			ParameterProperties::FUNCTIONAL);
-		std::function<T()> bind_method =
-			std::bind(method, dynamic_cast<S*>(this));
+		std::function<T()> bind_method = [this, method](){
+			return (static_cast<S*>(this) ->* method)();
+		};
 		create_parameter(BaseTag(name), AnyParameter(make_any(bind_method), properties));
 		register_parameter_visitor<std::function<T()>>();
 	}
@@ -1235,12 +1237,13 @@ protected:
 	template <class T>
 	void observe(const int64_t step, std::string_view name) const
 	{
-		auto param = this->get_parameter(BaseTag(name));
+		auto& param = this->get_parameter(BaseTag(name));
+		auto pprop = param.get_properties();
 		auto cloned = any_cast<T>(param.get_value());
-		param.get_properties().remove_property(ParameterProperties::FUNCTIONAL);
+		pprop.remove_property(ParameterProperties::FUNCTIONAL);
 		this->observe(
 			step, name, static_cast<T>(clone_utils::clone(cloned)),
-			param.get_properties());
+			pprop);
 	}
 
 	/**
