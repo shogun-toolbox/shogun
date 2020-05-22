@@ -31,6 +31,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <optional>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
