@@ -359,68 +359,68 @@ void SGObject::create_parameter(
 	self->create(std::forward<BaseTag>(_tag), std::forward<AnyParameter>(parameter));
 }
 
-void SGObject::update_parameter(const BaseTag& _tag, const Any& value, bool do_checks)
+const AnyParameter& SGObject::get_parameter(const BaseTag& _tag) const
 {
-	auto& param = self->at(_tag);
-	auto& pprop = param.get_properties();
-	if (pprop.has_property(ParameterProperties::READONLY))
-	        require(!do_checks,
-			"{}::{} is marked as read-only and cannot be modified!",
-	          	get_name(), _tag.name().c_str());
-
-	if (pprop.has_property(ParameterProperties::CONSTRAIN))
+	if (!has_parameter(_tag))
 	{
-		auto msg = self->find(_tag)->second.get_constrain_function()(value);
-		if (!msg.empty())
-		{
-			require(!do_checks,
-				"{}::{} cannot be updated because it must be: {}!",
-				get_name(), _tag.name().c_str(), msg.c_str());
-		}
+		error(
+			"Parameter {}::{} does not exist.", get_name(),
+			_tag.name().c_str());
 	}
-	param.set_value(value);
-	for (auto& method : param.get_callbacks())
-		method();
-
-	pprop.remove_property(ParameterProperties::AUTO);
-}
-
-AnyParameter SGObject::get_parameter(const BaseTag& _tag) const
-{
-	const auto& parameter = self->get(_tag);
+	
+	const auto& parameter = self->at(_tag);
+	
 	if (parameter.get_properties().has_property(
-	        ParameterProperties::RUNFUNCTION))
+	        ParameterProperties::FUNCTION))
 	{
 		error(
 		    "The parameter {}::{} is registered as a function, "
 		    "use the .run() method instead!\n",
 		    get_name(), _tag.name().c_str());
 	}
-	if (parameter.get_value().empty())
+	return parameter;
+}
+
+AnyParameter& SGObject::get_parameter(const BaseTag& _tag)
+{
+	if (!has_parameter(_tag))
 	{
 		error(
-		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
-		    get_name());
+			"Parameter {}::{} does not exist.", get_name(),
+			_tag.name().c_str());
+	}
+
+	auto& parameter = self->at(_tag);
+
+	if (parameter.get_properties().has_property(
+	        ParameterProperties::FUNCTION))
+	{
+		error(
+		    "The parameter {}::{} is registered as a function, "
+		    "use the .run() method instead!\n",
+		    get_name(), _tag.name().c_str());
 	}
 	return parameter;
 }
 
-AnyParameter SGObject::get_function(const BaseTag& _tag) const
+const AnyParameter& SGObject::get_function(const BaseTag& _tag) const
 {
-	const auto& parameter = self->get(_tag);
+	if (!has_parameter(_tag))
+	{
+		error(
+			"Parameter {}::{} does not exist.", get_name(),
+			_tag.name().c_str());
+	}
+
+	const auto& parameter = self->at(_tag);
+	
 	if (!parameter.get_properties().has_property(
-	        ParameterProperties::RUNFUNCTION))
+	        ParameterProperties::FUNCTION))
 	{
 		error(
 		    "The parameter {}::{} is not registered as a function, "
 		    "use the .get() method instead",
 		    get_name(), _tag.name().c_str());
-	}
-	if (parameter.get_value().empty())
-	{
-		error(
-		    "There is no parameter called \"{}\" in {}", _tag.name().c_str(),
-		    get_name());
 	}
 	return parameter;
 }

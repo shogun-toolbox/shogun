@@ -39,12 +39,17 @@ namespace shogun
 		// has automatically computed value
 		AUTO = 1u << 10,
 
+		// is const
 		READONLY = 1u << 11,
 
-		// an executable function
-		RUNFUNCTION = 1u << 12,
+		// a class member function with side effects
+		FUNCTION = 1u << 12,
 
-		CONSTRAIN = 1u << 13,
+		// a const class member function
+		CONSTFUNCTION = 1u << 13,
+
+		// parameter is constrained, e.g. has to be positive
+		CONSTRAIN = 1u << 14,
 
 		ALL = std::numeric_limits<uint32_t>::max(),
 	};
@@ -58,7 +63,8 @@ namespace shogun
 	        {ParameterProperties::SETTING, "SETTING"},
 	        {ParameterProperties::AUTO, "AUTO"},
 	        {ParameterProperties::READONLY, "READONLY"},
-	        {ParameterProperties::RUNFUNCTION, "RUNFUNCTION"},
+	        {ParameterProperties::FUNCTION, "FUNCTION"},
+	        {ParameterProperties::CONSTFUNCTION, "CONSTFUNCTION"},
 	        {ParameterProperties::CONSTRAIN, "CONSTRAIN"}};
 
 	enableEnumClassBitmask(ParameterProperties);
@@ -182,7 +188,12 @@ namespace shogun
 		{
 		}
 
-		Any get_value() const
+		const Any& get_value() const
+		{
+			return m_value;
+		}
+
+		Any& get_value()
 		{
 			return m_value;
 		}

@@ -850,7 +850,7 @@ TEST(Any, simple_visit)
 	struct ExtractVisitor
 	{
 	};
-	Any::register_visitor<int, ExtractVisitor>([&] (auto value, auto visitor) { extracted_value = value; });
+	Any::register_visitor<int, ExtractVisitor>([&] (auto* value, auto* visitor) { extracted_value = *value; });
 	auto any = make_any<int>(42);
 	any.visit_with<ExtractVisitor>();
 	EXPECT_EQ(any.as<int>(), extracted_value);
@@ -863,8 +863,8 @@ TEST(Any, stateful_visit)
 	{
 		std::stringstream ss;
 	};
-	Any::register_visitor<std::string, StringStreamVisitor>([&] (auto value, auto visitor) {
-		(visitor->ss) << value;
+	Any::register_visitor<std::string, StringStreamVisitor>([&] (auto* value, auto* visitor) {
+		(visitor->ss) << *value;
 	});
 	auto any = make_any(initial_value);
 	StringStreamVisitor visitor;
