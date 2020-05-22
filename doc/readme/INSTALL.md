@@ -88,7 +88,7 @@ Install the latest stable version as
     brew install shogun
 
 ### Windows <a name="windows"></a>
-Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows). We currently only support binary packages via conda.
+Shogun natively compiles under Windows using MSVC, see the [Windows section](#manual-windows). We currently only support binary packages via conda.
 If you are interested in packaging, documenting, or contributing otherwise, please contact us.
 
 ## Docker images <a name="docker"></a>
