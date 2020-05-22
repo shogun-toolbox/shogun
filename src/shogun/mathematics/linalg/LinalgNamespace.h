@@ -1749,20 +1749,52 @@ namespace shogun
 		}
 
 		/**
-		 * Method that computes the standard deviation of vectors or matrices
+		 * Method that computes the standard deviation of matrices
 		 * composed of real numbers.
 		 *
-		 * @param a SGVector or SGMatrix
-		 * @return The vector mean \f$\bar{a}_i\f$ or matrix mean
-		 * \f$\bar{m}_{i,j}\f$
+		 * @param mat the SGMatrix
+		 * @param colwise whether to calculate colwise or for whole
+		 * matrix
+		 * @return The standard deviation
 		 */
-		template <typename T>
-		typename std::enable_if<
-		    !std::is_same<T, complex128_t>::value, SGVector<float64_t>>::type
+		template <
+		    typename T, typename std::enable_if_t<
+		                    !std::is_same<T, complex128_t>::value>* = nullptr>
+		SGVector<T>
 		std_deviation(const SGMatrix<T>& mat, bool colwise = true)
 		{
 			require(mat.size() > 0, "Vector/Matrix cannot be empty!");
 			return infer_backend(mat)->std_deviation(mat, colwise);
+		}
+
+		/**
+		 * Method that computes the median of vectors
+		 * composed of real numbers.
+		 *
+		 * @param a SGVector
+		 * @return The whole matrix median
+		 */
+		template <
+		    typename T,
+		    typename std::enable_if_t<!std::is_same<T, complex128_t>::value>* =
+		        nullptr>
+		T median(const SGVector<T>& a)
+		{
+			require(a.size() > 0, "Vector cannot be empty!\n");
+			T result;
+			auto a_copy = a;
+			int64_t n = a.size() / 2;
+			std::nth_element(a_copy.begin(), a_copy.begin() + n, a_copy.end());
+			if (a_copy.size() % 2 == 0)
+			{
+				std::nth_element(
+				    a_copy.begin(), a_copy.begin() + n - 1, a_copy.end());
+				result = (a_copy[n] + a_copy[n - 1]) / 2;
+			}
+			else
+				result = a_copy[n];
+
+			return result;
 		}
 
 		/**

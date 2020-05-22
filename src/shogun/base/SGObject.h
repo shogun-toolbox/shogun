@@ -31,6 +31,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <optional>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -534,13 +535,24 @@ public:
 				ParameterGetterInterface<ReturnType, std::function<ReturnType()>> visitor{result};
 				value.visit_with(&visitor);
 			}
+			else if (param.get_properties().has_property(ParameterProperties::AUTO))
+			{
+				ParameterGetterInterface<ReturnType, AutoValue<ReturnType>> visitor{result};
+				value.visit_with(&visitor);
+			}
 			else
 			{
 				ParameterGetterInterface<ReturnType, ReturnType> visitor{result};
 				value.visit_with(&visitor);
 			}
 		}
-		catch (...)
+		catch (const std::bad_optional_access&)
+		{
+			error("The value of parameter {}::{} is automatically inferred during model fitting, "
+				  "and is currently not set. Either set a value with put or call get after model fitting.",
+				  get_name(),_tag.name());
+		}
+		catch (const std::logic_error&)
 		{
 			error(
 				"Cannot get parameter {}::{} of type {}, incompatible with "
@@ -755,12 +767,26 @@ protected:
 	template<typename T>
 	void register_parameter_visitor() const
 	{
-		Any::register_visitor<T, ParameterPutInterface<T>>(
-			[](T* value, auto* visitor)
-			{
-				*value = visitor->m_value;	
-			}
-		);
+		if constexpr (is_auto_value_v<T>)
+		{
+			using ReturnType = traits::get_variant_type_t<0, T>;
+			Any::register_visitor<T, ParameterPutInterface<ReturnType>>(
+				[](T* value, auto* visitor)
+				{
+					*value = visitor->m_value;	
+				}
+			);
+		}
+		else
+		{
+			Any::register_visitor<T, ParameterPutInterface<T>>(
+				[](T* value, auto* visitor)
+				{
+					*value = visitor->m_value;	
+				}
+			);	
+		}
+
 		if constexpr (traits::is_functional<T>::value)
 		{
 			if constexpr (!traits::returns_void<T>::value)
@@ -773,6 +799,19 @@ protected:
 					}
 				);
 			}
+		}
+		else if constexpr (is_auto_value_v<T>)
+		{
+			using ReturnType = traits::get_variant_type_t<0, T>;
+			Any::register_visitor<T, ParameterGetterInterface<ReturnType, T>>(
+				[](T* value, auto* visitor)
+				{
+					if (std::holds_alternative<AutoValueEmpty>(*value))
+						throw std::bad_optional_access{};
+					else
+						visitor->m_value = std::get<ReturnType>(*value);
+				}
+			);
 		}
 		else
 		{
@@ -1119,8 +1158,6 @@ private:
 
 		for (auto& method : param.get_callbacks())
 			method();
-
-		pprop.remove_property(ParameterProperties::AUTO);
 	}
 
 	/** Getter for a class parameter, identified by a BaseTag.

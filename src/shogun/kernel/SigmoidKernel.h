@@ -15,6 +15,10 @@
 
 namespace shogun
 {
+namespace params {
+	template <typename KernelType>
+	class GammaFeatureNumberInit;
+}
 /** @brief The standard Sigmoid kernel computed on dense real valued features.
  *
  * Formally, it is computed as
@@ -25,6 +29,8 @@ namespace shogun
  */
 class SigmoidKernel: public DotKernel
 {
+	friend class params::GammaFeatureNumberInit<SigmoidKernel>;
+
 	public:
 		/** default constructor  */
 		SigmoidKernel();
@@ -84,12 +90,12 @@ class SigmoidKernel: public DotKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-			return tanh(gamma*DotKernel::compute(idx_a,idx_b)+coef0);
+			return tanh(std::get<float64_t>(m_gamma)*DotKernel::compute(idx_a,idx_b)+coef0);
 		}
 
 	protected:
 		/** gamma */
-		float64_t gamma = 0.0;
+		AutoValue<float64_t> m_gamma = AutoValueEmpty{};
 		/** coefficient 0 */
 		float64_t coef0 = 0.0;
 };

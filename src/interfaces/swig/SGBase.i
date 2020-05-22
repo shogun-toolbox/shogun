@@ -364,7 +364,14 @@ INTERFACE_BASETYPE get(const std::string& name) const
         }
 
         auto visitor = VISITOR_NAME(result);
-        find_iter->second->get_value().visit(&visitor);
+        try {
+            find_iter->second->get_value().visit(&visitor);
+        }
+        catch (const std::bad_optional_access&) {
+            error("The value of parameter {}::{} is automatically inferred during model fitting, "
+                  "and is currently not set. Either set a value with put or call get after model fitting.",
+                  $self->get_name(), name);
+        }
         if (!result)
         {
             error("Could not cast parameter {}::{}!", $self->get_name(), name.c_str());

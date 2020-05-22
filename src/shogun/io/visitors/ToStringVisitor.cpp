@@ -67,6 +67,10 @@ void ToStringVisitor::on(complex128_t *complex128) {
 	stream() << *complex128 << m_buffer;
 }
 
+void ToStringVisitor::on(AutoValueEmpty *complex128) {
+	stream() << "auto" << m_buffer;
+}
+
 void ToStringVisitor::enter_matrix(index_t *rows, index_t *cols) {
 	stream() << "Matrix<"<< *rows << "x" << *cols << ">( ";
 	m_buffer = ", ";
@@ -85,6 +89,9 @@ void ToStringVisitor::enter_std_vector(size_t *size) {
 void ToStringVisitor::enter_map(size_t *size) {
 	stream() << "Map<" << *size << ">( ";
 	m_buffer = ", ";
+}
+
+void ToStringVisitor::enter_auto_value(bool* is_empty) {
 }
 
 void ToStringVisitor::on(float32_t *v) {

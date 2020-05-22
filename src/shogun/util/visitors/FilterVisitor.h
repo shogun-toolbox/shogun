@@ -140,6 +140,10 @@ namespace shogun
 			on_impl(v);
 		}
 
+		virtual void on(AutoValueEmpty* v) override
+		{
+		}
+
 		virtual void enter_matrix(index_t* rows, index_t* cols) override
 		{
 		}
@@ -165,6 +169,10 @@ namespace shogun
 		}
 
 		virtual void exit_std_vector(size_t* size) override
+		{
+		}
+
+		virtual void enter_auto_value(bool* is_empty) override
 		{
 		}
 

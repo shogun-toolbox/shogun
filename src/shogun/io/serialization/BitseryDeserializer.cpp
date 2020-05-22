@@ -55,6 +55,25 @@ public:
 		*v = object_reader(s, this);
 	}
 
+	void on_enter_auto_value(S& s, bool* is_empty)
+	{
+		size_t obj_magic;
+		s.value8b(obj_magic);
+		if (obj_magic == detail::kNullObjectMagic)
+		{
+			SG_DEBUG("auto parameter is empty")
+			*is_empty = true;
+		}
+		else
+		{
+			SG_DEBUG("auto parameter has a value")
+			*is_empty = false;
+			m_auto_value = obj_magic;
+		}
+	}
+
+	std::optional<float64_t> m_auto_value;
+
 private:
 	SG_DELETE_COPY_AND_ASSIGN(BitseryReaderVisitor);
 };

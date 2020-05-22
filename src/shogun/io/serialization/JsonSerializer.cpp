@@ -173,6 +173,11 @@ public:
 		SG_DEBUG("writing std::string with value {}", v->c_str());
 		m_json_writer.String(v->c_str());
 	}
+	void on(AutoValueEmpty* v) override
+	{
+		SG_DEBUG("writing empty auto value");
+		m_json_writer.String("auto");
+	}
 	void on(shared_ptr<SGObject>* v) override
 	{
 		if (*v)
@@ -246,6 +251,7 @@ public:
 	}
 
 	void enter_matrix_row(index_t *rows, index_t *cols) override {}
+	void enter_auto_value(bool*) override {}
 	void exit_matrix_row(index_t *rows, index_t *cols) override {}
 	void exit_matrix(index_t* rows, index_t* cols) override {}
 	void exit_vector(index_t* size) override {}

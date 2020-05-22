@@ -148,6 +148,25 @@ namespace shogun
 	template <class T>
 	using remove_shared_ptr_t = typename remove_shared_ptr<T>::type;
 
+	struct AutoValueEmpty
+	{
+		bool operator==(const AutoValueEmpty& other) const
+		{
+			return true;
+		}
+	};
+
+	template <typename T>
+	using AutoValue = std::variant<T, AutoValueEmpty>;
+
+	template <typename T>
+	struct is_auto_value: std::false_type {};
+
+	template <typename T>
+	struct is_auto_value<AutoValue<T>>: std::true_type {};
+
+	template <typename T>
+	inline constexpr bool is_auto_value_v = is_auto_value<T>::value;
 } // namespace shogun
 
 #endif // BASE_TYPES__H

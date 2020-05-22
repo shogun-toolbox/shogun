@@ -752,7 +752,7 @@ SGVector<ST> DenseFeatures<ST>::mean() const
 }
 
 template <typename ST>
-SGVector<float64_t > DenseFeatures<ST>::std(bool colwise) const
+SGVector<ST> DenseFeatures<ST>::std(bool colwise) const
 {
 	ASSERT_FLOATING_POINT
 
