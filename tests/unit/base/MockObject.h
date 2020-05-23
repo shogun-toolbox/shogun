@@ -222,6 +222,30 @@ namespace shogun
 		std::string m_string;
 	};
 
+	class TestAutoInit : public params::AutoInit
+	{
+		static constexpr std::string_view kName = "TestInit";
+		static constexpr std::string_view kDescription =
+		    "Test auto initializer";
+
+	public:
+		explicit TestAutoInit(const SGObject& obj)
+		    : AutoInit(kName, kDescription), m_obj(obj)
+		{
+		}
+
+		~TestAutoInit() override = default;
+
+		Any operator()() const final
+		{
+			return make_any(1);
+		}
+
+	private:
+		const SGObject& m_obj;
+		SG_DELETE_COPY_AND_ASSIGN(TestAutoInit);
+	};
+
 	/** @brief Used to test the tags-parameter framework
 	 * Allows testing of registering new member and avoiding
 	 * non-registered member variables using tags framework.
@@ -276,6 +300,8 @@ namespace shogun
 
 			watch_param(
 			    "watched_object", &m_object, AnyParameterProperties("Object"));
+			SG_ADD(&m_auto_parameter, "auto_parameter", "Mock automatic parameter",
+				ParameterProperties::AUTO, std::make_shared<TestAutoInit>(*this));
 			SG_ADD(
 			    &m_constrained_parameter, "constrained_parameter", "Mock parameter to test constraints.",
                 ParameterProperties::CONSTRAIN, SG_CONSTRAINT(positive<>(), less_than(10)));
@@ -292,6 +318,7 @@ namespace shogun
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
 		int32_t m_constrained_parameter = 1;
+		AutoValue<int32_t> m_auto_parameter = AutoValueEmpty{};
 
 		std::shared_ptr<MockObject> m_object = nullptr;
 	};

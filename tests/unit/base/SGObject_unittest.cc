@@ -575,3 +575,11 @@ TEST(SGObject, constrained_parameter)
     EXPECT_EQ(obj->get<int32_t>("constrained_parameter"), 1);
 }
 
+
+TEST(SGObject, auto_parameter)
+{
+    auto obj = std::make_shared<MockObject>();
+    EXPECT_THROW(obj->get<int32_t>("auto_parameter"), ShogunException);
+    obj->put("auto_parameter", 1);
+    EXPECT_EQ(obj->get<int32_t>("auto_parameter"), 1);
+}

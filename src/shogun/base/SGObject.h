@@ -289,8 +289,12 @@ public:
 		BaseTag tag(name);
 		if (!has_parameter(tag))
 			return false;
-		const Any value = get_parameter(tag).get_value();
-		return value.has_type<T>();
+		const auto& param = get_parameter(tag);
+		const auto& value = param.get_value();
+		if (param.get_properties().has_property(ParameterProperties::AUTO))
+			return value.has_type<AutoValue<T>>();
+		else
+			return value.has_type<T>();
 	}
 
 	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
