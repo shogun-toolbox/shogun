@@ -18,16 +18,23 @@ namespace shogun
 		class AutoInit
 		{
 		public:
-			constexpr AutoInit(std::string_view name, std::string_view description)
-			    : m_name(name), m_description(description)
+			constexpr AutoInit(std::string_view name, std::string_view description,
+				std::string_view display_name)
+			    : m_name(name), m_description(description), m_display_name(display_name)
 			{
 			}
 			virtual ~AutoInit() = default;
 			virtual Any operator()() const = 0;
 
+			constexpr std::string_view display_name() const
+			{
+				return m_display_name;
+			} 
+
 		protected:
 			std::string_view m_name;
 			std::string_view m_description;
+			std::string_view m_display_name;
 		};
 	} // namespace factory
 } // namespace shogun

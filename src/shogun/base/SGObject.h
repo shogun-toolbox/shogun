@@ -552,9 +552,10 @@ public:
 		}
 		catch (const std::bad_optional_access&)
 		{
-			error("The value of parameter {}::{} is automatically inferred during model fitting, "
-				  "and is currently not set. Either set a value with put or call get after model fitting.",
-				  get_name(),_tag.name());
+			const auto& heuristic = param.get_init_function();
+			error("The value of parameter {}::{} is automatically computed using \"{}\" during model training, "
+				  "and is currently not set. Either set a value or read value after training.",
+				  get_name(),_tag.name(), heuristic->display_name());
 		}
 		catch (const std::logic_error&)
 		{
@@ -811,7 +812,12 @@ protected:
 				[](T* value, auto* visitor)
 				{
 					if (std::holds_alternative<AutoValueEmpty>(*value))
+					{
+						// std::bad_optional_access does not support error messages
+						// but this is caught by SGObject::get and throws then
+						// a ShogunException
 						throw std::bad_optional_access{};
+					}
 					else
 						visitor->m_value = std::get<ReturnType>(*value);
 				}

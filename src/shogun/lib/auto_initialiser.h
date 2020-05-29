@@ -23,6 +23,7 @@ namespace shogun
 		class GammaFeatureNumberInit : public AutoInit
 		{
 			static constexpr std::string_view kName = "GammaFeatureNumberInit";
+			static constexpr std::string_view kDisplayName = "Gamma Scaler";
 			static constexpr std::string_view kDescription =
 			    "Automatic initialisation of the gamma dot product scaling "
 			    "parameter. If the standard deviation of the features can be "
@@ -31,7 +32,7 @@ namespace shogun
 
 		public:
 			explicit GammaFeatureNumberInit(KernelType& kernel, float64_t alternative_value)
-			    : AutoInit(kName, kDescription), m_kernel(kernel), m_alternative_value(alternative_value)
+			    : AutoInit(kName, kDescription, kDisplayName), m_kernel(kernel), m_alternative_value(alternative_value)
 			{
 			}
 
@@ -76,7 +77,8 @@ namespace shogun
 
 		class GaussianWidthAutoInit : public AutoInit
 		{
-			static constexpr std::string_view kName = "GaussianWidthInit";
+			static constexpr std::string_view kName = "GaussianWidthAutoInit";
+			static constexpr std::string_view kDisplayName = "Median Heuristic";
 			static constexpr std::string_view kDescription =
 			    "Automatic initialisation of the kernel log width "
 			    "using the median of the pairwise euclidean distance "
@@ -85,7 +87,7 @@ namespace shogun
 
 		public:
 			explicit GaussianWidthAutoInit(GaussianKernel& kernel, float64_t alternative_value)
-			    : AutoInit(kName, kDescription), m_kernel(kernel), m_alternative_value(alternative_value)
+			    : AutoInit(kName, kDescription, kDisplayName), m_kernel(kernel), m_alternative_value(alternative_value)
 			{
 			}
 

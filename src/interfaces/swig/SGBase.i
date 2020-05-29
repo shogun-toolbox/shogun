@@ -368,9 +368,10 @@ INTERFACE_BASETYPE get(const std::string& name) const
             find_iter->second->get_value().visit(&visitor);
         }
         catch (const std::bad_optional_access&) {
-            error("The value of parameter {}::{} is automatically inferred during model fitting, "
-                  "and is currently not set. Either set a value with put or call get after model fitting.",
-                  $self->get_name(), name);
+            const auto& heuristic = find_iter->second->get_init_function();
+            error("The value of parameter {}::{} is automatically computed using \"{}\" during model training, "
+                  "and is currently not set. Either set a value or read value after training.",
+                  $self->get_name(), name, heuristic->display_name());
         }
         if (!result)
         {

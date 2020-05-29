@@ -225,12 +225,13 @@ namespace shogun
 	class TestAutoInit : public params::AutoInit
 	{
 		static constexpr std::string_view kName = "TestInit";
+		static constexpr std::string_view kDisplayName = "Test initializer";
 		static constexpr std::string_view kDescription =
 		    "Test auto initializer";
 
 	public:
 		explicit TestAutoInit(const SGObject& obj)
-		    : AutoInit(kName, kDescription), m_obj(obj)
+		    : AutoInit(kName, kDescription, kDisplayName), m_obj(obj)
 		{
 		}
 
