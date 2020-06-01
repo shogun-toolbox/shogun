@@ -96,6 +96,15 @@ namespace shogun
 				++m_size;
 			}
 
+			void on(AutoValueEmpty*) final
+			{
+				++m_size;
+			}
+
+			void enter_auto_value(bool* is_empty) final
+			{
+			}
+
 			virtual void enter_matrix(index_t* rows, index_t* cols)
 			{
 				m_dims = {*rows, *cols};

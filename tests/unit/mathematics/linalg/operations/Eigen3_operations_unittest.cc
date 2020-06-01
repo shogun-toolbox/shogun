@@ -10,6 +10,8 @@
 #include <shogun/util/zip_iterator.h>
 #include <cmath>
 
+#include <random>
+
 using namespace shogun;
 using namespace linalg;
 using namespace Eigen;
@@ -1621,7 +1623,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_update_mean)
 	    update_mean(mean_increasing, mean_increasing, 0), ShogunException);
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation_colwise)
+TYPED_TEST(LinalgBackendEigenRealTypesTest, SGMatrix_std_deviation_featurewise)
 {
 	const index_t nrows = 3, ncols = 3;
 	SGMatrix<TypeParam> mat(nrows, ncols);
@@ -1635,7 +1637,7 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation_colwise)
 		    result.get_element(i), 2.449489742783178, get_epsilon<TypeParam>());
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation)
+TYPED_TEST(LinalgBackendEigenRealTypesTest, SGMatrix_std_deviation)
 {
 	const index_t nrows = 3, ncols = 3;
 	SGMatrix<TypeParam> mat(nrows, ncols);
@@ -1646,6 +1648,23 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation)
 
 	EXPECT_NEAR(
 	    result.get_element(0), 2.581988897471611, get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_median)
+{
+	SGVector<TypeParam> vec(9);
+	for (index_t i = 0; i < vec.size(); ++i)
+		vec[i] = i;
+
+	std::random_device rd;
+	std::mt19937 g(rd());
+
+	std::shuffle(vec.begin(), vec.end(), g);
+
+	auto result = median(vec);
+
+	EXPECT_NEAR(
+		result, 4, get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(

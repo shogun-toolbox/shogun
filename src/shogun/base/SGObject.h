@@ -31,6 +31,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <optional>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -166,11 +167,6 @@ public:
 	/** destructor */
 	virtual ~SGObject();
 
-	/** A shallow copy.
-	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
-	 */
-	virtual std::shared_ptr<SGObject> shallow_copy() const;
-
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */
@@ -288,8 +284,12 @@ public:
 		BaseTag tag(name);
 		if (!has_parameter(tag))
 			return false;
-		const Any value = get_parameter(tag).get_value();
-		return value.has_type<T>();
+		const auto& param = get_parameter(tag);
+		const auto& value = param.get_value();
+		if (param.get_properties().has_property(ParameterProperties::AUTO))
+			return value.has_type<AutoValue<T>>();
+		else
+			return value.has_type<T>();
 	}
 
 	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
@@ -534,13 +534,25 @@ public:
 				ParameterGetterInterface<ReturnType, std::function<ReturnType()>> visitor{result};
 				value.visit_with(&visitor);
 			}
+			else if (param.get_properties().has_property(ParameterProperties::AUTO))
+			{
+				ParameterGetterInterface<ReturnType, AutoValue<ReturnType>> visitor{result};
+				value.visit_with(&visitor);
+			}
 			else
 			{
 				ParameterGetterInterface<ReturnType, ReturnType> visitor{result};
 				value.visit_with(&visitor);
 			}
 		}
-		catch (...)
+		catch (const std::bad_optional_access&)
+		{
+			const auto& heuristic = param.get_init_function();
+			error("The value of parameter {}::{} is automatically computed using \"{}\" during model training, "
+				  "and is currently not set. Either set a value or read value after training.",
+				  get_name(),_tag.name(), heuristic->display_name());
+		}
+		catch (const std::logic_error&)
 		{
 			error(
 				"Cannot get parameter {}::{} of type {}, incompatible with "
@@ -755,12 +767,26 @@ protected:
 	template<typename T>
 	void register_parameter_visitor() const
 	{
-		Any::register_visitor<T, ParameterPutInterface<T>>(
-			[](T* value, auto* visitor)
-			{
-				*value = visitor->m_value;	
-			}
-		);
+		if constexpr (is_auto_value_v<T>)
+		{
+			using ReturnType = traits::get_variant_type_t<0, T>;
+			Any::register_visitor<T, ParameterPutInterface<ReturnType>>(
+				[](T* value, auto* visitor)
+				{
+					*value = visitor->m_value;	
+				}
+			);
+		}
+		else
+		{
+			Any::register_visitor<T, ParameterPutInterface<T>>(
+				[](T* value, auto* visitor)
+				{
+					*value = visitor->m_value;	
+				}
+			);	
+		}
+
 		if constexpr (traits::is_functional<T>::value)
 		{
 			if constexpr (!traits::returns_void<T>::value)
@@ -773,6 +799,24 @@ protected:
 					}
 				);
 			}
+		}
+		else if constexpr (is_auto_value_v<T>)
+		{
+			using ReturnType = traits::get_variant_type_t<0, T>;
+			Any::register_visitor<T, ParameterGetterInterface<ReturnType, T>>(
+				[](T* value, auto* visitor)
+				{
+					if (std::holds_alternative<AutoValueEmpty>(*value))
+					{
+						// std::bad_optional_access does not support error messages
+						// but this is caught by SGObject::get and throws then
+						// a ShogunException
+						throw std::bad_optional_access{};
+					}
+					else
+						visitor->m_value = std::get<ReturnType>(*value);
+				}
+			);
 		}
 		else
 		{
@@ -1119,8 +1163,6 @@ private:
 
 		for (auto& method : param.get_callbacks())
 			method();
-
-		pprop.remove_property(ParameterProperties::AUTO);
 	}
 
 	/** Getter for a class parameter, identified by a BaseTag.

@@ -68,6 +68,12 @@ public:
 			writer.value8b(detail::kNullObjectMagic);
 		}
 	}
+
+	void on_enter_auto_value(Writer& writer, bool* is_empty)
+	{
+	}
+
+	std::optional<float64_t> m_auto_value;
 };
 
 struct OutputStreamAdapter

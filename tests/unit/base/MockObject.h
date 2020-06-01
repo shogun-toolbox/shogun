@@ -222,6 +222,31 @@ namespace shogun
 		std::string m_string;
 	};
 
+	class TestAutoInit : public params::AutoInit
+	{
+		static constexpr std::string_view kName = "TestInit";
+		static constexpr std::string_view kDisplayName = "Test initializer";
+		static constexpr std::string_view kDescription =
+		    "Test auto initializer";
+
+	public:
+		explicit TestAutoInit(const SGObject& obj)
+		    : AutoInit(kName, kDescription, kDisplayName), m_obj(obj)
+		{
+		}
+
+		~TestAutoInit() override = default;
+
+		Any operator()() const final
+		{
+			return make_any(1);
+		}
+
+	private:
+		const SGObject& m_obj;
+		SG_DELETE_COPY_AND_ASSIGN(TestAutoInit);
+	};
+
 	/** @brief Used to test the tags-parameter framework
 	 * Allows testing of registering new member and avoiding
 	 * non-registered member variables using tags framework.
@@ -267,20 +292,22 @@ namespace shogun
 		void init_params()
 		{
 			float64_t decimal = 0.0;
-			register_param("vector", SGVector<float64_t>());
-			register_param("int", m_integer);
-			register_param("float", decimal);
+			register_param(kVector, SGVector<float64_t>());
+			register_param(kInt, m_integer);
+			register_param(kFloat, decimal);
 
 			watch_param(
-			    "watched_int", &m_watched, AnyParameterProperties("Integer"));
+			    kWatchedInt, &m_watched, AnyParameterProperties("Integer"));
 
 			watch_param(
-			    "watched_object", &m_object, AnyParameterProperties("Object"));
+			    kWatchedObject, &m_object, AnyParameterProperties("Object"));
+			SG_ADD(&m_auto_parameter, kAutoParameter, "Mock automatic parameter",
+				ParameterProperties::AUTO, std::make_shared<TestAutoInit>(*this));
 			SG_ADD(
-			    &m_constrained_parameter, "constrained_parameter", "Mock parameter to test constraints.",
+			    &m_constrained_parameter, kConstrainedParameter, "Mock parameter to test constraints.",
                 ParameterProperties::CONSTRAIN, SG_CONSTRAINT(positive<>(), less_than(10)));
 
-			watch_method("some_method", &MockObject::some_method);
+			watch_method(kSomeMethod, &MockObject::some_method);
 		}
 
 		virtual std::shared_ptr<SGObject> create_empty() const
@@ -292,7 +319,18 @@ namespace shogun
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
 		int32_t m_constrained_parameter = 1;
+		AutoValue<int32_t> m_auto_parameter = AutoValueEmpty{};
 
 		std::shared_ptr<MockObject> m_object = nullptr;
+
+	public:
+		static constexpr std::string_view kVector = "vector";
+		static constexpr std::string_view kInt = "int";
+		static constexpr std::string_view kFloat = "float";
+		static constexpr std::string_view kWatchedObject = "watched_object";
+		static constexpr std::string_view kWatchedInt = "watched_int";
+		static constexpr std::string_view kSomeMethod = "some_method";
+		static constexpr std::string_view kAutoParameter = "auto_parameter";
+		static constexpr std::string_view kConstrainedParameter = "constrained_parameter";
 	};
 } // namespace shogun

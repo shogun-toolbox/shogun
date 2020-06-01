@@ -173,6 +173,17 @@ namespace shogun
 		};
 		template <typename T, typename... Ts>
 		inline constexpr bool is_any_of_v = is_any_of<T, Ts...>::value;
+
+		template<uint32_t idx, typename Ts>
+		struct get_variant_type{};
+
+		template<uint32_t idx, typename ...Ts>
+		struct get_variant_type<idx, std::variant<Ts...>>{
+		    using type = typename std::tuple_element<idx, std::tuple<Ts...>>::type;
+		};
+
+		template<uint32_t idx, typename ...Ts>
+		using get_variant_type_t = typename get_variant_type<idx, Ts...>::type;
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 	} // namespace traits
 } // namespace shogun

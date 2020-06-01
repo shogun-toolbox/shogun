@@ -188,12 +188,6 @@ SGObject::~SGObject()
 	SG_TRACE("SGObject destroyed ({})", fmt::ptr(this));
 }
 
-std::shared_ptr<SGObject> SGObject::shallow_copy() const
-{
-	not_implemented(SOURCE_LOCATION);
-	return NULL;
-}
-
 std::shared_ptr<SGObject> SGObject::deep_copy() const
 {
 	not_implemented(SOURCE_LOCATION);

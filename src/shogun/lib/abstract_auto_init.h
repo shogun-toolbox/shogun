@@ -7,7 +7,7 @@
 #ifndef SHOGUN_ABSTRACT_AUTO_INIT_H
 #define SHOGUN_ABSTRACT_AUTO_INIT_H
 
-#include <string>
+#include <string_view>
 
 namespace shogun
 {
@@ -18,16 +18,23 @@ namespace shogun
 		class AutoInit
 		{
 		public:
-			AutoInit(const std::string& name, const std::string& description)
-			    : m_name(name), m_description(description)
+			constexpr AutoInit(std::string_view name, std::string_view description,
+				std::string_view display_name)
+			    : m_name(name), m_description(description), m_display_name(display_name)
 			{
 			}
 			virtual ~AutoInit() = default;
-			virtual Any operator()() = 0;
+			virtual Any operator()() const = 0;
+
+			constexpr std::string_view display_name() const
+			{
+				return m_display_name;
+			} 
 
 		protected:
-			const std::string m_name;
-			const std::string m_description;
+			std::string_view m_name;
+			std::string_view m_description;
+			std::string_view m_display_name;
 		};
 	} // namespace factory
 } // namespace shogun

@@ -6,37 +6,44 @@
  *          Tonmoy Saikia, Sergey Lisitsyn, Matt Aasted, Sanuj Sharma
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/DotFeatures.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/lib/auto_initialiser.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 GaussianKernel::GaussianKernel() : ShiftInvariantKernel()
 {
-	register_params();
+	set_cache_size(10);
+
+	auto dist=std::make_shared<EuclideanDistance>();
+	dist->set_disable_sqrt(true);
+	m_distance=dist;
+
+	SG_ADD(
+	    &m_log_width, "log_width", "Kernel width in log domain",
+	    ParameterProperties::AUTO | ParameterProperties::HYPER |
+	        ParameterProperties::GRADIENT,
+	    std::make_shared<params::GaussianWidthAutoInit>(*this, 1.0));
 }
 
-GaussianKernel::GaussianKernel(float64_t w) : ShiftInvariantKernel()
+GaussianKernel::GaussianKernel(float64_t w) : GaussianKernel()
 {
-	register_params();
 	set_width(w);
 }
 
-GaussianKernel::GaussianKernel(int32_t size, float64_t w) : ShiftInvariantKernel()
+GaussianKernel::GaussianKernel(int32_t size, float64_t w) : GaussianKernel(w)
 {
-	register_params();
-	set_width(w);
 	set_cache_size(size);
 }
 
-GaussianKernel::GaussianKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t w, int32_t size) : ShiftInvariantKernel()
+GaussianKernel::GaussianKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, float64_t w, int32_t size) : GaussianKernel(size, w)
 {
-	register_params();
-	set_width(w);
 	set_cache_size(size);
+	set_width(w);
 	init(l, r);
 }
 
@@ -51,22 +58,6 @@ std::shared_ptr<GaussianKernel> GaussianKernel::obtain_from_generic(const std::s
 		"Provided kernel ({}) must be of type GaussianKernel!", kernel->get_name());
 
 	return std::static_pointer_cast<GaussianKernel>(kernel);
-}
-
-#include <typeinfo>
-std::shared_ptr<SGObject >GaussianKernel::shallow_copy() const
-{
-	// TODO: remove this after all the classes get shallow_copy properly implemented
-	// this assert is to avoid any subclass of GaussianKernel accidentally called
-	// with the implement here
-	ASSERT(typeid(*this) == typeid(GaussianKernel))
-	auto ker = std::make_shared<GaussianKernel>(cache_size, get_width());
-	if (lhs && rhs)
-	{
-		ker->init(lhs, rhs);
-		ker->m_distance->init(lhs, rhs);
-	}
-	return ker;
 }
 
 void GaussianKernel::cleanup()
@@ -84,7 +75,7 @@ bool GaussianKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features>
 void GaussianKernel::set_width(float64_t w)
 {
 	require(w>0, "width ({}) must be positive",w);
-	m_log_width = std::log(w / 2.0) / 2.0;
+	m_log_width = GaussianKernel::to_log_width(w);
 }
 
 SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(Parameters::const_reference param, index_t index)
@@ -129,17 +120,4 @@ void GaussianKernel::load_serializable_post() noexcept(false)
 float64_t GaussianKernel::distance(int32_t idx_a, int32_t idx_b) const
 {
 	return ShiftInvariantKernel::distance(idx_a, idx_b)/get_width();
-}
-
-void GaussianKernel::register_params()
-{
-	set_width(1.0);
-	set_cache_size(10);
-
-	auto dist=std::make_shared<EuclideanDistance>();
-	dist->set_disable_sqrt(true);
-	m_distance=dist;
-
-
-	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }

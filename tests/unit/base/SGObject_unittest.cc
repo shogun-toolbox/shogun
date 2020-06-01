@@ -446,15 +446,15 @@ TEST(SGObject, tags_set_get_string_sgvector)
 	auto vec = SGVector<float64_t>(1);
 	vec[0] = 1;
 
-	obj->put("vector", vec);
+	obj->put(MockObject::kVector, vec);
 	EXPECT_THROW(obj->put("foo", vec), ShogunException);
 
-	auto retr = obj->get<SGVector<float64_t> >("vector");
+	auto retr = obj->get<SGVector<float64_t> >(MockObject::kVector);
 
 	EXPECT_EQ(retr.vlen, vec.vlen);
 	EXPECT_EQ(vec[0], retr[0]);
-	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
-	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >(MockObject::kVector)), ShogunException);
+	EXPECT_THROW(obj->get<SGVector<int32_t> >(MockObject::kVector), ShogunException);
 }
 
 TEST(SGObject, tags_set_get_tag_sgvector)
@@ -464,17 +464,17 @@ TEST(SGObject, tags_set_get_tag_sgvector)
 	vec[0] = 1;
 	float64_t bar = 1.0;
 
-	obj->put(Tag<SGVector<float64_t>>("vector"), vec);
+	obj->put(Tag<SGVector<float64_t>>(MockObject::kVector), vec);
 	EXPECT_THROW(
 	    obj->put(Tag<SGVector<float64_t>>("foo"), vec), ShogunException);
-	EXPECT_THROW(obj->put(Tag<float64_t>("vector"), bar), ShogunException);
+	EXPECT_THROW(obj->put(Tag<float64_t>(MockObject::kVector), bar), ShogunException);
 
-	auto retr = obj->get<SGVector<float64_t> >("vector");
+	auto retr = obj->get<SGVector<float64_t> >(MockObject::kVector);
 
 	EXPECT_EQ(retr.vlen, vec.vlen);
 	EXPECT_EQ(vec[0], retr[0]);
-	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
-	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >(MockObject::kVector)), ShogunException);
+	EXPECT_THROW(obj->get<SGVector<int32_t> >(MockObject::kVector), ShogunException);
 }
 
 TEST(SGObject, tags_set_get_int)
@@ -482,29 +482,29 @@ TEST(SGObject, tags_set_get_int)
 	auto obj = std::make_shared<MockObject>();
 
 	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
-	obj->put("int", 10);
-	EXPECT_EQ(obj->get(Tag<int32_t>("int")), 10);
-	EXPECT_THROW(obj->get<float64_t>("int"), ShogunException);
-	EXPECT_THROW(obj->get(Tag<float64_t>("int")), ShogunException);
-	EXPECT_EQ(obj->get<int>("int"), 10);
+	obj->put(MockObject::kInt, 10);
+	EXPECT_EQ(obj->get(Tag<int32_t>(MockObject::kInt)), 10);
+	EXPECT_THROW(obj->get<float64_t>(MockObject::kInt), ShogunException);
+	EXPECT_THROW(obj->get(Tag<float64_t>(MockObject::kInt)), ShogunException);
+	EXPECT_EQ(obj->get<int>(MockObject::kInt), 10);
 }
 
 TEST(SGObject, tags_has)
 {
 	auto obj = std::make_shared<MockObject>();
 
-	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
-	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
-	EXPECT_EQ(obj->has("int"), true);
-	EXPECT_EQ(obj->has<float64_t>("int"), false);
-	EXPECT_EQ(obj->has<int32_t>("int"), true);
+	EXPECT_EQ(obj->has(Tag<int32_t>(MockObject::kInt)), true);
+	EXPECT_EQ(obj->has(Tag<float64_t>(MockObject::kInt)), false);
+	EXPECT_EQ(obj->has(MockObject::kInt), true);
+	EXPECT_EQ(obj->has<float64_t>(MockObject::kInt), false);
+	EXPECT_EQ(obj->has<int32_t>(MockObject::kInt), true);
 
-	obj->put("int", 10);
-	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
-	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
-	EXPECT_EQ(obj->has("int"), true);
-	EXPECT_EQ(obj->has<float64_t>("int"), false);
-	EXPECT_EQ(obj->has<int32_t>("int"), true);
+	obj->put(MockObject::kInt, 10);
+	EXPECT_EQ(obj->has(Tag<int32_t>(MockObject::kInt)), true);
+	EXPECT_EQ(obj->has(Tag<float64_t>(MockObject::kInt)), false);
+	EXPECT_EQ(obj->has(MockObject::kInt), true);
+	EXPECT_EQ(obj->has<float64_t>(MockObject::kInt), false);
+	EXPECT_EQ(obj->has<int32_t>(MockObject::kInt), true);
 
 	EXPECT_EQ(obj->has("foo"), false);
 	EXPECT_EQ(obj->has<int32_t>("foo"), false);
@@ -515,19 +515,19 @@ TEST(SGObject, watched_parameter)
 {
 	auto obj = std::make_shared<MockObject>();
 
-	obj->put("watched_int", 89);
-	EXPECT_EQ(obj->get<int32_t>("watched_int"), 89);
-	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+	obj->put(MockObject::kWatchedInt, 89);
+	EXPECT_EQ(obj->get<int32_t>(MockObject::kWatchedInt), 89);
+	EXPECT_EQ(obj->get<int32_t>(MockObject::kWatchedInt), obj->get_watched());
 	obj->set_watched(12);
-	EXPECT_EQ(obj->get<int32_t>("watched_int"), 12);
-	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+	EXPECT_EQ(obj->get<int32_t>(MockObject::kWatchedInt), 12);
+	EXPECT_EQ(obj->get<int32_t>(MockObject::kWatchedInt), obj->get_watched());
 }
 
 TEST(SGObject, watch_method)
 {
 	auto obj = std::make_shared<MockObject>();
-	EXPECT_EQ(obj->get<int>("some_method"), obj->some_method());
-	EXPECT_THROW(obj->put<int>("some_method", 0), ShogunException);
+	EXPECT_EQ(obj->get<int>(MockObject::kSomeMethod), obj->some_method());
+	EXPECT_THROW(obj->put<int>(MockObject::kSomeMethod, 0), ShogunException);
 	EXPECT_NO_THROW(obj->to_string());
 }
 
@@ -568,10 +568,18 @@ TEST(SGObject, unsubscribe_observer_failure)
 TEST(SGObject, constrained_parameter)
 {
     auto obj = std::make_shared<MockObject>();
-    obj->put("constrained_parameter", 1);
-    EXPECT_EQ(obj->get<int32_t>("constrained_parameter"), 1);
-    EXPECT_THROW(obj->put("constrained_parameter", 0), ShogunException);
-    EXPECT_THROW(obj->put("constrained_parameter", 10), ShogunException);
-    EXPECT_EQ(obj->get<int32_t>("constrained_parameter"), 1);
+    obj->put(MockObject::kConstrainedParameter, 1);
+    EXPECT_EQ(obj->get<int32_t>(MockObject::kConstrainedParameter), 1);
+    EXPECT_THROW(obj->put(MockObject::kConstrainedParameter, 0), ShogunException);
+    EXPECT_THROW(obj->put(MockObject::kConstrainedParameter, 10), ShogunException);
+    EXPECT_EQ(obj->get<int32_t>(MockObject::kConstrainedParameter), 1);
 }
 
+
+TEST(SGObject, auto_parameter)
+{
+    auto obj = std::make_shared<MockObject>();
+    EXPECT_THROW(obj->get<int32_t>(MockObject::kAutoParameter), ShogunException);
+    obj->put(MockObject::kAutoParameter, 1);
+    EXPECT_EQ(obj->get<int32_t>(MockObject::kAutoParameter), 1);
+}

@@ -364,7 +364,15 @@ INTERFACE_BASETYPE get(const std::string& name) const
         }
 
         auto visitor = VISITOR_NAME(result);
-        find_iter->second->get_value().visit(&visitor);
+        try {
+            find_iter->second->get_value().visit(&visitor);
+        }
+        catch (const std::bad_optional_access&) {
+            const auto& heuristic = find_iter->second->get_init_function();
+            error("The value of parameter {}::{} is automatically computed using \"{}\" during model training, "
+                  "and is currently not set. Either set a value or read value after training.",
+                  $self->get_name(), name, heuristic->display_name());
+        }
         if (!result)
         {
             error("Could not cast parameter {}::{}!", $self->get_name(), name.c_str());

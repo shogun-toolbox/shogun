@@ -305,7 +305,7 @@ public:
 	 * otherwise calculates the matrix standard deviation
 	 * @return Standard deviation of all feature vectors or of whole matrix
 	 */
-	SGVector<float64_t > std(bool colwise = true) const;
+	SGVector<ST> std(bool colwise = true) const;
 
 	/** Computes the \f$DxD\f$ (uncentered, un-normalized) covariance matrix
 	 *

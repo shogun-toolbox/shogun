@@ -14,9 +14,9 @@ using namespace shogun;
 SigmoidKernel::SigmoidKernel() : DotKernel()
 {
 	SG_ADD(
-	    &gamma, "gamma", "Scaler for the dot product.",
+	    &m_gamma, "gamma", "Scaler for the dot product.",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-	    std::make_shared<params::GammaFeatureNumberInit>(this));
+	    std::make_shared<params::GammaFeatureNumberInit<SigmoidKernel>>(*this, 0.0));
 	SG_ADD(&coef0, "coef0", "Coefficient 0.", ParameterProperties::HYPER);
 }
 
@@ -24,7 +24,7 @@ SigmoidKernel::SigmoidKernel(int32_t size, float64_t g, float64_t c)
     : SigmoidKernel()
 {
 	set_cache_size(size);
-	gamma = g;
+	m_gamma = g;
 	coef0 = c;
 }
 

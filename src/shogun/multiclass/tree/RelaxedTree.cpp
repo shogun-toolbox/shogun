@@ -110,8 +110,6 @@ float64_t RelaxedTree::apply_one(int32_t idx)
 				node = NULL;
 			}
 		}
-
-
 	}
 
 	return klass;
@@ -139,9 +137,7 @@ bool RelaxedTree::train_machine(std::shared_ptr<Features> data)
 	// train root
 	SGVector<int32_t> classes(m_num_classes);
 
-	for (int32_t i=0; i < m_num_classes; ++i)
-		classes[i] = i;
-
+	classes.range_fill();
 
 	m_root = train_node(conf_mat, classes);
 
@@ -300,7 +296,8 @@ SGVector<int32_t> RelaxedTree::train_node_with_initialization(const RelaxedTree:
 		auto feats_train = view(m_feats, subset);
 		auto labels_train = view(binary_labels, subset);
 
-		auto kernel = m_kernel->shallow_copy()->as<Kernel>();
+		auto kernel = make_clone(m_kernel, ParameterProperties::ALL^ParameterProperties::MODEL);
+
 		kernel->init(feats_train, feats_train);
 		svm->set_kernel(kernel);
 		svm->set_labels(labels_train);
