@@ -70,9 +70,6 @@ public:
 	 */
 	static std::shared_ptr<GaussianKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
-	/** Make a shallow copy of the kernel */
-	virtual std::shared_ptr<SGObject> shallow_copy() const;
-
 	/** initialize kernel
 	 *
 	 * @param l features of left-hand side

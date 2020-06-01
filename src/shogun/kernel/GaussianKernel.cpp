@@ -60,30 +60,6 @@ std::shared_ptr<GaussianKernel> GaussianKernel::obtain_from_generic(const std::s
 	return std::static_pointer_cast<GaussianKernel>(kernel);
 }
 
-#include <typeinfo>
-std::shared_ptr<SGObject >GaussianKernel::shallow_copy() const
-{
-	// TODO: remove this after all the classes get shallow_copy properly implemented
-	// this assert is to avoid any subclass of GaussianKernel accidentally called
-	// with the implement here
-	ASSERT(typeid(*this) == typeid(GaussianKernel))
-	std::shared_ptr<GaussianKernel> ker;
-	if (std::holds_alternative<AutoValueEmpty>(m_log_width)) 
-	{
-		ker = std::make_shared<GaussianKernel>();		
-		ker->set_cache_size(cache_size);
-	}
-	else
-		ker = std::make_shared<GaussianKernel>(cache_size, get_width());
-
-	if (lhs && rhs)
-	{
-		ker->init(lhs, rhs);
-		ker->m_distance->init(lhs, rhs);
-	}
-	return ker;
-}
-
 void GaussianKernel::cleanup()
 {
 	Kernel::cleanup();

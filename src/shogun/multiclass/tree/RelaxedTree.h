@@ -50,9 +50,7 @@ public:
 	 */
 	void set_features(std::shared_ptr<DenseFeatures<float64_t> >feats)
 	{
-
-
-		m_feats = feats;
+		m_feats = std::move(feats);
 	}
 
 	/** set kernel
@@ -60,9 +58,7 @@ public:
 	 */
 	virtual void set_kernel(std::shared_ptr<Kernel >kernel)
 	{
-
-
-		m_kernel = kernel;
+		m_kernel = std::move(kernel);
 	}
 
 	/** set labels
@@ -229,9 +225,9 @@ protected:
 	/** svm epsilon */
 	float64_t m_svm_epsilon;
 	/** kernel */
-	std::shared_ptr<Kernel >m_kernel;
+	std::shared_ptr<Kernel> m_kernel;
 	/** features */
-	std::shared_ptr<DenseFeatures<float64_t> >m_feats;
+	std::shared_ptr<DenseFeatures<float64_t>> m_feats;
 	/** machine for confusion matrix computation */
 	std::shared_ptr<Machine> m_machine_for_confusion_matrix;
 	/** number of classes */

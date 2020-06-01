@@ -167,11 +167,6 @@ public:
 	/** destructor */
 	virtual ~SGObject();
 
-	/** A shallow copy.
-	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
-	 */
-	virtual std::shared_ptr<SGObject> shallow_copy() const;
-
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */

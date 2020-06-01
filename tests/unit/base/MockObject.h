@@ -292,22 +292,22 @@ namespace shogun
 		void init_params()
 		{
 			float64_t decimal = 0.0;
-			register_param("vector", SGVector<float64_t>());
-			register_param("int", m_integer);
-			register_param("float", decimal);
+			register_param(kVector, SGVector<float64_t>());
+			register_param(kInt, m_integer);
+			register_param(kFloat, decimal);
 
 			watch_param(
-			    "watched_int", &m_watched, AnyParameterProperties("Integer"));
+			    kWatchedInt, &m_watched, AnyParameterProperties("Integer"));
 
 			watch_param(
-			    "watched_object", &m_object, AnyParameterProperties("Object"));
-			SG_ADD(&m_auto_parameter, "auto_parameter", "Mock automatic parameter",
+			    kWatchedObject, &m_object, AnyParameterProperties("Object"));
+			SG_ADD(&m_auto_parameter, kAutoParameter, "Mock automatic parameter",
 				ParameterProperties::AUTO, std::make_shared<TestAutoInit>(*this));
 			SG_ADD(
-			    &m_constrained_parameter, "constrained_parameter", "Mock parameter to test constraints.",
+			    &m_constrained_parameter, kConstrainedParameter, "Mock parameter to test constraints.",
                 ParameterProperties::CONSTRAIN, SG_CONSTRAINT(positive<>(), less_than(10)));
 
-			watch_method("some_method", &MockObject::some_method);
+			watch_method(kSomeMethod, &MockObject::some_method);
 		}
 
 		virtual std::shared_ptr<SGObject> create_empty() const
@@ -322,5 +322,15 @@ namespace shogun
 		AutoValue<int32_t> m_auto_parameter = AutoValueEmpty{};
 
 		std::shared_ptr<MockObject> m_object = nullptr;
+
+	public:
+		static constexpr std::string_view kVector = "vector";
+		static constexpr std::string_view kInt = "int";
+		static constexpr std::string_view kFloat = "float";
+		static constexpr std::string_view kWatchedObject = "watched_object";
+		static constexpr std::string_view kWatchedInt = "watched_int";
+		static constexpr std::string_view kSomeMethod = "some_method";
+		static constexpr std::string_view kAutoParameter = "auto_parameter";
+		static constexpr std::string_view kConstrainedParameter = "constrained_parameter";
 	};
 } // namespace shogun
