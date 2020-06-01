@@ -8,10 +8,7 @@ extern "C" {
 #include <shogun/mathematics/zbsubs.h>
 }
 
-#include <cmath>
-#include <cstddef>
 #include <numeric>
-#include <stdexcept>
 
 #include <shogun/io/SGIO.h>
 

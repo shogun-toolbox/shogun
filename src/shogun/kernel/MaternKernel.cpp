@@ -23,23 +23,17 @@ MaternKernel::MaternKernel() : ShiftInvariantKernel()
 	    ParameterProperties::HYPER | ParameterProperties::GRADIENT)
 }
 
-MaternKernel::MaternKernel(int32_t size, float64_t w, float64_t order)
+MaternKernel::MaternKernel(float64_t w, float64_t order)
     : MaternKernel()
 {
 	m_nu = order;
 	m_width = w;
-	set_cache_size(size);
-}
-
-MaternKernel::MaternKernel(float64_t w, float64_t order)
-    : MaternKernel(10, w, order)
-{
 }
 
 MaternKernel::MaternKernel(
     const std::shared_ptr<Features>& l, const std::shared_ptr<Features>& r,
-    int32_t size, float64_t w, float64_t order)
-    : MaternKernel(size, w, order)
+    float64_t w, float64_t order)
+    : MaternKernel(w, order)
 {
 	init(l, r);
 }

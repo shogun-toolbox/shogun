@@ -42,25 +42,15 @@ namespace shogun
 
 		/** constructor
 		 *
-		 * @param size cache size
-		 * @param width the kernel width
-		 * @param nu the order of the bessel function of the second kind
-		 * @param dist distance to be used
-		 */
-		MaternKernel(int32_t size, float64_t width, float64_t nu);
-
-		/** constructor
-		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param size cache size
 		 * @param width the kernel width
 		 * @param nu the order of the bessel function of the second kind
 		 * @param dist distance to be used
 		 */
 		MaternKernel(
 		    const std::shared_ptr<Features>& l,
-		    const std::shared_ptr<Features>& r, int32_t size, float64_t width,
+		    const std::shared_ptr<Features>& r, float64_t width,
 		    float64_t nu);
 
 		/** destructor */
@@ -86,6 +76,38 @@ namespace shogun
 		 */
 		bool
 		init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
+
+		/** set the kernel width
+		 *
+		 * @param w kernel width
+		 */
+		void set_width(float64_t w) {
+			m_width = w;
+		}
+
+		/** get the kernel width
+		 *
+		 * @return the width
+		 */
+		float64_t get_width() {
+			return m_width;
+		}
+
+		/** set the order of the modified Bessel function of the second kind 
+		 *
+		 * @param nu order of the modified Bessel function of the second kind 
+		 */
+		void set_nu(float64_t nu) {
+			m_nu = nu;
+		}
+
+		/** get the order of the modified Bessel function of the second kind 
+		 *
+		 * @return the order of the modified Bessel function of the second kind 
+		 */
+		float64_t get_nu() {
+			return m_nu;
+		}
 
 		/** return derivative with respect to specified parameter
 		 *
