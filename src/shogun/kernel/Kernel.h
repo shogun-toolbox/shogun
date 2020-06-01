@@ -112,7 +112,8 @@ enum EKernelType
 	K_GAUSSIANARD = 510,
 	K_GAUSSIANARDSPARSE = 511,
 	K_STREAMING = 520,
-	K_PERIODIC = 530
+	K_PERIODIC = 530,
+	K_MATERN = 540
 };
 
 /** kernel property */
