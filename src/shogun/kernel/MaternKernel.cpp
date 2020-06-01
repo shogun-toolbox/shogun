@@ -112,30 +112,34 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 		// WolframAlpha
 		if (Math::fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
 		{
-			const float64_t m_width_squared = std::pow(m_width, 2);
-			gradient_func = [&](const float64_t& dist) {
-				return (dist * std::exp(-dist / m_width)) / m_width_squared;
+			const float64_t width_squared = std::pow(m_width, 2);
+			gradient_func = [width_squared, width=m_width](const float64_t& dist) {
+				const auto upper = dist * std::exp(-dist / width);
+				const auto lower = width_squared;
+				return upper / lower;
 			};
 		}
 		else if (Math::fequals(
 		             m_nu, 1.5, std::numeric_limits<float64_t>::epsilon()))
 		{
-			const float64_t m_width_cubed = std::pow(m_width, 3);
-			gradient_func = [&](const float64_t& dist) {
-				return (3 * std::pow(dist, 2) *
-				        std::exp(-(std::sqrt(3) * dist) / m_width)) /
-				       m_width_cubed;
+			const float64_t width_cubed = std::pow(m_width, 3);
+			gradient_func = [width_cubed, width=m_width](const float64_t& dist) {
+				const auto upper = 3 * std::pow(dist, 2) *
+				        std::exp(-(std::sqrt(3) * dist) / width);
+				const auto lower = width_cubed;
+				return  upper / lower;
 			};
 		}
 		else if (Math::fequals(
 		             m_nu, 2.5, std::numeric_limits<float64_t>::epsilon()))
 		{
-			const float64_t m_width_power_4 = std::pow(m_width, 4);
-			gradient_func = [&](const float64_t& dist) {
-				return (5 * std::pow(dist, 2) *
-				        std::exp(-(std::sqrt(5) * dist) / m_width) *
-				        (m_width + std::sqrt(5) * dist)) /
-				       (3 * m_width_power_4);
+			const float64_t width_power_4 = std::pow(m_width, 4);
+			gradient_func = [width_power_4, width = m_width](const float64_t& dist) {
+				const auto upper = 5 * std::pow(dist, 2) *
+				        std::exp(-(std::sqrt(5) * dist) / width) *
+				        (width + std::sqrt(5) * dist);
+				const auto lower = 3 * width_power_4;
+				return  upper / lower;
 			};
 		}
 		else
