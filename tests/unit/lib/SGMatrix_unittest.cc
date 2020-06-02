@@ -761,3 +761,54 @@ TEST(SGMatrixTest,iterator)
 	for (auto v: mat)
 		EXPECT_EQ(mat[index++], v);
 }
+
+TEST(SGMatrixTest, column_iterator)
+{
+	constexpr index_t size = 5;
+	SGMatrix<float64_t> mat(size, size);
+	linalg::range_fill(mat, 1.0);
+
+	auto begin_col = mat.begin_column();
+	auto end_col = mat.end_column();
+
+	EXPECT_EQ(mat.num_cols, std::distance(begin_col, end_col));
+	EXPECT_EQ(mat.get_column(0), *begin_col);
+	++begin_col;
+	EXPECT_EQ(mat.get_column(1), *begin_col);
+	--begin_col;
+	EXPECT_EQ(mat.get_column(0), *begin_col++);
+	EXPECT_TRUE(begin_col != end_col);
+	++begin_col;
+	EXPECT_EQ(mat.get_column(2), *begin_col--);
+	--begin_col;
+	EXPECT_EQ(mat.get_column(0), *begin_col);
+	begin_col += 2;
+	EXPECT_EQ(mat.get_column(2), *begin_col);
+	begin_col -= 2;
+	EXPECT_EQ(mat.get_column(0), *begin_col);
+	EXPECT_EQ(mat.get_column(1), begin_col[1]);
+
+	auto new_itr = begin_col + 2;
+	EXPECT_EQ(mat.get_column(2), *new_itr);
+
+	// range-based loop should work as well
+	auto index = 0;
+	for (const auto& i : mat.columns())
+		EXPECT_EQ(i, mat.get_column(index++));
+
+	const SGMatrix<float64_t> const_mat(mat);
+
+	index = 0;
+	for (const auto& i : const_mat.columns())
+		EXPECT_EQ(i, const_mat.get_column(index++));
+
+	// Modifying value of column vector
+	auto mat_copy = mat.clone();
+
+	for (auto vec : mat.columns())
+		linalg::add_scalar(vec, 1.0);
+
+	for (auto col_idx = 0; col_idx < mat.num_cols; col_idx++)
+		EXPECT_EQ(*mat.get_column(col_idx), *mat_copy.get_column(col_idx) + 1.0);
+}
+
