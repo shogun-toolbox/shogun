@@ -15,6 +15,7 @@
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/util/zip_iterator.h>
 
 using namespace shogun;
 
@@ -62,13 +63,10 @@ void Perceptron::iteration()
 	SGVector<float64_t> w = get_w();
 
 	auto labels = binary_labels(m_labels)->get_int_labels();
-	auto iter_train_labels = labels.begin();
 
-	for (const auto& v : DotIterator(features))
+	for (const auto& [v, true_label] : zip_iterator(DotIterator(features), labels))
 	{
-		const auto true_label = *(iter_train_labels++);
-
-		auto predicted_label = v.dot(w) + bias;
+		const auto predicted_label = v.dot(w) + bias;
 
 		if (Math::sign<float64_t>(predicted_label) != true_label)
 		{

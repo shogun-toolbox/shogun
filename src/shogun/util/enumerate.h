@@ -9,7 +9,7 @@ namespace shogun {
 	{
 	public:
 
-		enumerate(Args&... args) : m_container_tuples(args...)
+		enumerate(Args&&... args) : m_container_tuples(std::forward<Args>(args)...)
 		{
 		}
 
@@ -71,6 +71,9 @@ namespace shogun {
 		}
 
 	private:
-		std::tuple<Args&...> m_container_tuples;
+		std::tuple<Args...> m_container_tuples;
 	};
+
+	template <typename ...Args>
+	enumerate(Args&&... args) -> enumerate<Args...>;
 }

@@ -118,10 +118,10 @@ namespace shogun
 			iterator operator++(int);
 
 			/** equality operator */
-			bool operator==(const iterator& rhs);
+			bool operator==(const iterator& rhs) const;
 
 			/** inequality operator */
-			bool operator!=(const iterator& rhs);
+			bool operator!=(const iterator& rhs) const;
 
 		protected:
 			value_type m_feature_vector;
