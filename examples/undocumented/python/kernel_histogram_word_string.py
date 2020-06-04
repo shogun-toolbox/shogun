@@ -9,9 +9,9 @@ parameter_list=[[traindat,testdat,label_traindat,1,1e1, 1e0],[traindat,testdat,l
 
 def kernel_histogram_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,ppseudo_count=1,npseudo_count=1):
 
-	from shogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
-	from shogun import HistogramWordStringKernel, AvgDiagKernelNormalizer
-	from shogun import PluginEstimate#, MSG_DEBUG
+	from shogun import StringCharFeatures, StringWordFeatures, DNA
+	from shogun import AvgDiagKernelNormalizer
+	import shogun as sg
 
 	charfeat=StringCharFeatures(DNA)
 	#charfeat.io.set_loglevel(MSG_DEBUG)
@@ -24,17 +24,15 @@ def kernel_histogram_word_string (fm_train_dna=traindat,fm_test_dna=testdat,labe
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, 0, False)
 
-	pie=PluginEstimate(ppseudo_count,npseudo_count)
-	labels=BinaryLabels(label_train_dna)
-	pie.set_labels(labels)
-	pie.set_features(feats_train)
-	pie.train()
+	labels=sg.create_labels(label_train_dna)
+	pie=sg.create_machine("PluginEstimate", pos_pseudo=ppseudo_count, neg_pseudo=npseudo_count, labels=labels)
+	pie.train(feats_train)
 
-	kernel=HistogramWordStringKernel(feats_train, feats_train, pie)
+	kernel=sg.create_kernel("HistogramWordStringKernel", estimate=pie)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
-	pie.set_features(feats_test)
-	pie.apply().get_labels()
+	pie.apply(feats_test).get("labels")
 	km_test=kernel.get_kernel_matrix()
 	return km_train,km_test,kernel
 

@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-from shogun import CombinedFeatures, BinaryLabels
-from shogun import CustomKernel
-from shogun import MKLClassification
 import shogun as sg
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
 #only run example if SVMLight is included as LibSVM solver crashes in MKLClassification
 try:
-	from shogun import create_machine
-	create_machine("SVMLight")
+	sg.create_machine("SVMLight")
 except SystemError:
 	print("SVMLight not available")
 	exit(0)
@@ -39,29 +35,30 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     K_test = tkernel.get_kernel_matrix()
 
     # create combined train features
-    feats_train = CombinedFeatures()
+    feats_train = sg.CombinedFeatures()
     feats_train.append_feature_obj(sg.create_features(fm_train_real))
 
     # and corresponding combined kernel
     kernel = sg.create_kernel("CombinedKernel")
-    kernel.add("kernel_array", CustomKernel(K_train))
+    kernel.add("kernel_array", sg.CustomKernel(K_train))
     kernel.add("kernel_array", sg.create_kernel("PolyKernel", cache_size=10,
                                    degree=2))
     kernel.init(feats_train, feats_train)
 
     # train mkl
-    labels = BinaryLabels(fm_label_twoclass)
-    mkl = MKLClassification()
+    labels = sg.create_labels(fm_label_twoclass)
+    mkl = sg.create_machine("MKLClassification")
 
     # which norm to use for MKL
-    mkl.set_mkl_norm(1) #2,3
+    mkl.put("mkl_norm", 1) #2,3
 
     # set cost (neg, pos)
-    mkl.set_C(1, 1)
+    mkl.put("C1", 1)
+    mkl.put("C2", 1)
 
     # set kernel and labels
-    mkl.set_kernel(kernel)
-    mkl.set_labels(labels)
+    mkl.put("kernel", kernel)
+    mkl.put("labels", labels)
 
     # train
     mkl.train()
@@ -73,17 +70,17 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     # test
 
     # create combined test features
-    feats_pred = CombinedFeatures()
+    feats_pred = sg.CombinedFeatures()
     feats_pred.append_feature_obj(sg.create_features(fm_test_real))
 
     # and corresponding combined kernel
     kernel = sg.create_kernel("CombinedKernel")
-    kernel.add("kernel_array", CustomKernel(K_test))
+    kernel.add("kernel_array", sg.CustomKernel(K_test))
     kernel.add("kernel_array", sg.create_kernel("PolyKernel", cache_size=10, degree=2))
     kernel.init(feats_train, feats_pred)
 
     # and classify
-    mkl.set_kernel(kernel)
+    mkl.put("kernel", kernel)
     mkl.apply()
     return mkl.apply(),kernel
 

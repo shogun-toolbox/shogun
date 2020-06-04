@@ -274,7 +274,9 @@ void MKL::register_params()
 
 	SG_ADD(&svm, "svm", "wrapper svm", ParameterProperties::SETTING);
 	SG_ADD(&C_mkl, "C_mkl", "C mkl", ParameterProperties::HYPER);
-	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl", ParameterProperties::HYPER);
+	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl", 
+		ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
+	    SG_CONSTRAINT(greater_than_or_equal(1.0)));
 	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter",
 			ParameterProperties::HYPER);
 	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter",
@@ -509,7 +511,6 @@ bool MKL::train_machine(std::shared_ptr<Features> data)
 
 void MKL::set_mkl_norm(float64_t norm)
 {
-
   if (norm<1)
     error("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL");
 

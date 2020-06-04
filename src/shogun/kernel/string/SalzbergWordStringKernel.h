@@ -36,7 +36,7 @@ class SalzbergWordStringKernel: public StringKernel<uint16_t>
 		 * @param pie the plugin estimate
 		 * @param labels optional labels to set prior from
 		 */
-		SalzbergWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie, const std::shared_ptr<Labels>& labels=NULL);
+		SalzbergWordStringKernel(int32_t size, const std::shared_ptr<Machine>& pie, const std::shared_ptr<Labels>& labels=NULL);
 
 		/** constructor
 		 *
@@ -47,7 +47,7 @@ class SalzbergWordStringKernel: public StringKernel<uint16_t>
 		 */
 		SalzbergWordStringKernel(
 			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
-			const std::shared_ptr<PluginEstimate >&pie, const std::shared_ptr<Labels>& labels=NULL);
+			const std::shared_ptr<Machine>& pie, const std::shared_ptr<Labels>& labels=NULL);
 
 		virtual ~SalzbergWordStringKernel();
 

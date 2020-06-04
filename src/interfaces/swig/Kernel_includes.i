@@ -17,7 +17,6 @@
 #include <shogun/kernel/DirectorKernel.h>
 #include <shogun/kernel/string/HistogramWordStringKernel.h>
 #include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
-#include <shogun/kernel/DotKernel.h>
 #include <shogun/kernel/string/LinearStringKernel.h>
 #include <shogun/kernel/string/SparseSpatialSampleStringKernel.h>
 #include <shogun/kernel/string/LocalAlignmentStringKernel.h>

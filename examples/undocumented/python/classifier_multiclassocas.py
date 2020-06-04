@@ -4,12 +4,12 @@ parameter_list = [[10,3,15,2.1,1,1e-5,1],[20,4,15,2.2,2,1e-5,2]]
 
 def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,epsilon=1e-5,seed=1):
 	from shogun import MulticlassLabels
+	import shogun as sg
 	try:
-		from shogun import MulticlassOCAS
+		sg.create_machine("MulticlassOCAS")
 	except ImportError:
 		print("MulticlassOCAS not available")
 		return
-	import shogun as sg
 
 	# reproducible results
 	random.seed(seed)
@@ -26,12 +26,12 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 	feats_train=sg.create_features(fm_train)
 	feats_test=sg.create_features(fm_test)
 
-	labels=MulticlassLabels(label_train)
+	labels=sg.create_labels(label_train)
 
-	classifier = MulticlassOCAS(C,feats_train,labels)
-	classifier.train()
+	classifier = sg.create_machine("MulticlassOCAS", labels=labels, C=C)
+	classifier.train(feats_train)
 
-	out = classifier.apply(feats_test).get_labels()
+	out = classifier.apply(feats_test).get("labels")
 	#print label_test
 	#print out
 	return out,classifier

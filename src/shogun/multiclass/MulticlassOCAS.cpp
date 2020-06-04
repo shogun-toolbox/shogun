@@ -52,11 +52,13 @@ MulticlassOCAS::MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& tra
 
 void MulticlassOCAS::register_parameters()
 {
-	SG_ADD(&m_C, "m_C", "regularization constant", ParameterProperties::HYPER);
-	SG_ADD(&m_epsilon, "m_epsilon", "solver relative tolerance");
-	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations");
-	SG_ADD(&m_method, "m_method", "used solver method");
-	SG_ADD(&m_buf_size, "m_buf_size", "buffer size");
+	SG_ADD(&m_C, "C", "regularization constant", ParameterProperties::HYPER |
+		ParameterProperties::CONSTRAIN,
+	    SG_CONSTRAINT(positive<>()));
+	SG_ADD(&m_epsilon, "epsilon", "solver relative tolerance");
+	SG_ADD(&m_max_iter, "max_iter", "max number of iterations");
+	SG_ADD(&m_method, "method", "used solver method");
+	SG_ADD(&m_buf_size, "buf_size", "buffer size");
 }
 
 MulticlassOCAS::~MulticlassOCAS()

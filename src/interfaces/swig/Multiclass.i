@@ -71,7 +71,6 @@ SHARED_RANDOM_INTERFACE(shogun::ECOCEncoder)
 %shared_ptr(shogun::LaRank)
 %shared_ptr(shogun::ScatterSVM)
 %shared_ptr(shogun::GMNPSVM)
-%shared_ptr(shogun::KNN)
 %shared_ptr(shogun::GaussianNaiveBayes)
 %shared_ptr(shogun::QDA)
 %shared_ptr(shogun::MCLDA)
@@ -153,7 +152,6 @@ RANDOM_INTERFACE(ECOCEncoder)
 #endif // USE_GPL_SHOGUN
 %include <shogun/multiclass/ScatterSVM.h>
 %include <shogun/multiclass/GMNPSVM.h>
-%include <shogun/multiclass/KNN.h>
 %include <shogun/multiclass/GaussianNaiveBayes.h>
 %include <shogun/multiclass/QDA.h>
 %include <shogun/multiclass/MCLDA.h>

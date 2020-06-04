@@ -23,11 +23,15 @@ SalzbergWordStringKernel::SalzbergWordStringKernel()
 	init();
 }
 
-SalzbergWordStringKernel::SalzbergWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie, const std::shared_ptr<Labels>& labels)
-: StringKernel<uint16_t>(size)
+SalzbergWordStringKernel::SalzbergWordStringKernel(int32_t size, const std::shared_ptr<Machine>& pie, 
+	const std::shared_ptr<Labels>& labels)
+: SalzbergWordStringKernel()
 {
-	init();
-	estimate=std::move(pie);
+	auto casted_pie = std::dynamic_pointer_cast<PluginEstimate>(pie);
+	require(casted_pie, "Expected Machine to be PluginEstimate");
+	estimate=std::move(casted_pie);
+
+	set_cache_size(size);
 
 	if (labels)
 		set_prior_probs_from_labels(labels);
@@ -35,15 +39,9 @@ SalzbergWordStringKernel::SalzbergWordStringKernel(int32_t size, std::shared_ptr
 
 SalzbergWordStringKernel::SalzbergWordStringKernel(
 	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
-	const std::shared_ptr<PluginEstimate>& pie, const std::shared_ptr<Labels>& labels)
-: StringKernel<uint16_t>(10),estimate(pie)
+	const std::shared_ptr<Machine>& pie, const std::shared_ptr<Labels>& labels)
+: SalzbergWordStringKernel(10, pie, labels)
 {
-	init();
-	estimate=pie;
-
-	if (labels)
-		set_prior_probs_from_labels(labels);
-
 	init(l, r);
 }
 

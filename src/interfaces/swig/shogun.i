@@ -94,7 +94,6 @@ namespace shogun
 %include "GaussianProcess_includes.i"
 %include "Ensemble_includes.i"
 %include "NeuralNets_includes.i"
-%include "bagging_includes.i"
 
 %shared_ptr(shogun::Machine)
 %shared_ptr(shogun::Kernel)
@@ -134,7 +133,6 @@ namespace shogun
 %include "Kernel.i"
 %include "Distribution.i"
 %include "Classifier.i"
-%include "Regression.i"
 %include "Clustering.i"
 %include "Structure.i"
 %include "Multiclass.i"
@@ -147,7 +145,6 @@ namespace shogun
 %include "GaussianProcess.i"
 %include "Ensemble.i"
 %include "NeuralNets.i"
-%include "bagging.i"
 %include "Machine_extensions.i"
 
 %include "ParameterObserver.i"

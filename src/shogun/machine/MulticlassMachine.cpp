@@ -47,7 +47,6 @@ MulticlassMachine::~MulticlassMachine()
 void MulticlassMachine::set_labels(std::shared_ptr<Labels> lab)
 {
     Machine::set_labels(lab);
-
 }
 
 void MulticlassMachine::register_parameters()

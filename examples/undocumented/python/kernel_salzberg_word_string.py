@@ -10,7 +10,7 @@ def kernel_salzberg_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label
 order=3,gap=0,reverse=False):
 	from shogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
 	from shogun import SalzbergWordStringKernel
-	from shogun import PluginEstimate
+	import shogun as sg
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
@@ -20,18 +20,15 @@ order=3,gap=0,reverse=False):
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
-	pie=PluginEstimate()
-	labels=BinaryLabels(label_train_dna)
-	pie.set_labels(labels)
-	pie.set_features(feats_train)
-	pie.train()
+	labels=sg.create_labels(label_train_dna)
+	pie=sg.create_machine("PluginEstimate", labels=labels)
+	pie.train(feats_train)
 
-	kernel=SalzbergWordStringKernel(feats_train, feats_train, pie, labels)
+	kernel=sg.SalzbergWordStringKernel(feats_train, feats_train, pie, labels)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
-	pie.set_features(feats_test)
-	pie.apply().get_labels()
+	pie.apply(feats_test).get("labels")
 	km_test=kernel.get_kernel_matrix()
 	return km_train,km_test,kernel
 
