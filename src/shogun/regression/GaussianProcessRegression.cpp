@@ -75,7 +75,7 @@ bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
-	require(m_method, "Inference method should not be NULL");
+	require(m_method, "Inference method not set");
 	if (m_labels)
 	{
 		m_method->set_labels(m_labels);

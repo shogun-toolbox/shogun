@@ -501,7 +501,7 @@ TEST_F(GaussianProcessClassificationTest, train)
 {
 	std::shared_ptr<LikelihoodModel> likelihood1 =
 	    std::make_shared<SoftMaxLikelihood>();
-	likelihood1->put("seed", 1);
+	likelihood1->put(random::kSeed, 1);
 	std::shared_ptr<Inference> inf =
 	    std::make_shared<MultiLaplaceInferenceMethod>();
 	std::shared_ptr<Kernel> k = std::make_shared<GaussianKernel>();
@@ -529,56 +529,11 @@ TEST_F(GaussianProcessClassificationTest, train)
 	auto labels_predict2 = gpc2->apply_multiclass(features_test);
 	auto labels2 = labels_predict2->get<SGVector<float64_t>>("labels");
 
-	EXPECT_NEAR(
-	    labels1[0], labels2[0], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[1], labels2[1], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[2], labels2[2], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[3], labels2[3], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[4], labels2[4], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[5], labels2[5], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[6], labels2[6], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[7], labels2[7], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[8], labels2[8], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[9], labels2[9], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[10], labels2[10], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[11], labels2[11], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[12], labels2[12], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[13], labels2[13], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[14], labels2[14], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[15], labels2[15], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[16], labels2[16], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[17], labels2[17], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[18], labels2[18], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[19], labels2[19], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[20], labels2[20], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[21], labels2[21], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[22], labels2[22], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[23], labels2[23], std::numeric_limits<float64_t>::epsilon());
-	EXPECT_NEAR(
-	    labels1[24], labels2[24], std::numeric_limits<float64_t>::epsilon());
+	for (int i = 0; i < 25; i++)
+	{
+		EXPECT_NEAR(
+		    labels1[1], labels2[1], std::numeric_limits<float64_t>::epsilon());
+	}
 }
 
 TEST_F(GaussianProcessClassificationTest, get_variance_vector)
