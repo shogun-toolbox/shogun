@@ -131,7 +131,7 @@ SG_FORCED_INLINE const char* convert_string_to_char(const char* name)
  */
 class SGObject: public std::enable_shared_from_this<SGObject>
 {
-	template <typename ReturnType, typename CastType>
+	template <typename ReturnType>
 	struct ParameterGetterInterface
 	{
 		ReturnType& m_value;
@@ -529,21 +529,8 @@ public:
 		const auto& value = param.get_value();
 		try
 		{
-			if (param.get_properties().has_property(ParameterProperties::CONSTFUNCTION))
-			{
-				ParameterGetterInterface<ReturnType, std::function<ReturnType()>> visitor{result};
-				value.visit_with(&visitor);
-			}
-			else if (param.get_properties().has_property(ParameterProperties::AUTO))
-			{
-				ParameterGetterInterface<ReturnType, AutoValue<ReturnType>> visitor{result};
-				value.visit_with(&visitor);
-			}
-			else
-			{
-				ParameterGetterInterface<ReturnType, ReturnType> visitor{result};
-				value.visit_with(&visitor);
-			}
+			ParameterGetterInterface<ReturnType> visitor{result};
+			value.visit_with(&visitor);
 		}
 		catch (const std::bad_optional_access&)
 		{
@@ -767,24 +754,22 @@ protected:
 	template<typename T>
 	void register_parameter_visitor() const
 	{
-		if constexpr (is_auto_value_v<T>)
+		using Type = std::conditional_t<is_auto_value_v<T>, traits::variant_type_t<0, T>, T>;
+
+		if constexpr (std::is_arithmetic_v<Type> && !std::is_same_v<Type, bool>)
 		{
-			using ReturnType = traits::get_variant_type_t<0, T>;
-			Any::register_visitor<T, ParameterPutInterface<ReturnType>>(
-				[](T* value, auto* visitor)
-				{
-					*value = visitor->m_value;	
-				}
-			);
+			Any::register_visitor<T, ParameterPutInterface<float32_t>>(
+				[](T* value, auto* visitor) { *value = utils::safe_convert<Type>(visitor->m_value);});
+			Any::register_visitor<T, ParameterPutInterface<float64_t>>(
+				[](T* value, auto* visitor) { *value = utils::safe_convert<Type>(visitor->m_value);});
+			Any::register_visitor<T, ParameterPutInterface<int32_t>>(
+				[](T* value, auto* visitor) { *value = utils::safe_convert<Type>(visitor->m_value);});
+			Any::register_visitor<T, ParameterPutInterface<int64_t>>(
+				[](T* value, auto* visitor) { *value = utils::safe_convert<Type>(visitor->m_value);});
 		}
-		else
-		{
-			Any::register_visitor<T, ParameterPutInterface<T>>(
-				[](T* value, auto* visitor)
-				{
-					*value = visitor->m_value;	
-				}
-			);	
+		else {
+			Any::register_visitor<T, ParameterPutInterface<Type>>(
+				[](Type* value, auto* visitor) { *value = visitor->m_value;});			
 		}
 
 		if constexpr (traits::is_functional<T>::value)
@@ -792,20 +777,29 @@ protected:
 			if constexpr (!traits::returns_void<T>::value)
 			{
 				using ReturnType = typename T::result_type;
-				Any::register_visitor<T, ParameterGetterInterface<ReturnType, T>>(
-					[](T* value, auto* visitor)
-					{
-						visitor->m_value = value->operator()();
-					}
-				);
+				if constexpr (std::is_arithmetic_v<ReturnType> && !std::is_same_v<Type, bool>) {
+					Any::register_visitor<T, ParameterGetterInterface<float32_t>>(
+						[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<float32_t>(value->operator()());});
+					Any::register_visitor<T, ParameterGetterInterface<float64_t>>(
+						[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<float64_t>(value->operator()());});
+					Any::register_visitor<T, ParameterGetterInterface<int32_t>>(
+						[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<int32_t>(value->operator()());});
+					Any::register_visitor<T, ParameterGetterInterface<int64_t>>(
+						[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<int64_t>(value->operator()());});
+				}
+				else {
+					Any::register_visitor<T, ParameterGetterInterface<ReturnType>>(
+						[](T* value, auto* visitor) {visitor->m_value = value->operator()();});
+				}
 			}
 		}
 		else if constexpr (is_auto_value_v<T>)
 		{
-			using ReturnType = traits::get_variant_type_t<0, T>;
-			Any::register_visitor<T, ParameterGetterInterface<ReturnType, T>>(
-				[](T* value, auto* visitor)
-				{
+			using ReturnType = traits::variant_type_t<0, T>;
+			static_assert(std::is_arithmetic_v<ReturnType> && !std::is_same_v<Type, bool>, 
+				"Cannot handle non arithmetic types in AutoValue yet");
+			Any::register_visitor<T, ParameterGetterInterface<float32_t>>(
+				[](T* value, auto* visitor) {
 					if (std::holds_alternative<AutoValueEmpty>(*value))
 					{
 						// std::bad_optional_access does not support error messages
@@ -814,18 +808,50 @@ protected:
 						throw std::bad_optional_access{};
 					}
 					else
-						visitor->m_value = std::get<ReturnType>(*value);
-				}
-			);
+						visitor->m_value = utils::safe_convert<float32_t>(std::get<ReturnType>(*value));
+			});
+			Any::register_visitor<T, ParameterGetterInterface<float64_t>>(
+				[](T* value, auto* visitor) {
+					if (std::holds_alternative<AutoValueEmpty>(*value))
+						throw std::bad_optional_access{};
+					else
+						visitor->m_value = utils::safe_convert<float64_t>(std::get<ReturnType>(*value));
+			});
+			Any::register_visitor<T, ParameterGetterInterface<int32_t>>(
+				[](T* value, auto* visitor) {
+					if (std::holds_alternative<AutoValueEmpty>(*value))
+						throw std::bad_optional_access{};
+					else
+						visitor->m_value = utils::safe_convert<int32_t>(std::get<ReturnType>(*value));
+			});
+			Any::register_visitor<T, ParameterGetterInterface<int64_t>>(
+				[](T* value, auto* visitor) {
+					if (std::holds_alternative<AutoValueEmpty>(*value))
+						throw std::bad_optional_access{};
+					else
+						visitor->m_value = utils::safe_convert<int64_t>(std::get<ReturnType>(*value));
+			});
 		}
 		else
 		{
-			Any::register_visitor<T, ParameterGetterInterface<T, T>>(
-				[](T* value, auto* visitor)
-				{
-					visitor->m_value = *value;	
-				}
-			);
+			if constexpr(std::is_arithmetic_v<T> && !std::is_same_v<Type, bool>) {
+				Any::register_visitor<T, ParameterGetterInterface<float32_t>>(
+					[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<float32_t>(*value);});
+				Any::register_visitor<T, ParameterGetterInterface<float64_t>>(
+					[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<float64_t>(*value);});
+				Any::register_visitor<T, ParameterGetterInterface<int32_t>>(
+					[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<int32_t>(*value);});
+				Any::register_visitor<T, ParameterGetterInterface<int64_t>>(
+					[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<int64_t>(*value);});
+			}
+			else {
+				Any::register_visitor<T, ParameterGetterInterface<T>>(
+					[](T* value, auto* visitor)
+					{
+						visitor->m_value = *value;	
+					}
+				);
+			}
 		}
 	}
 	/** Registers a class parameter which is identified by a tag.
@@ -840,6 +866,7 @@ protected:
 	void register_param(Tag<T>& _tag, const T& value)
 	{
 		create_parameter(_tag, AnyParameter(make_any(value)));
+		register_parameter_visitor<T>();
 	}
 
 	/** Registers a class parameter which is identified by a name.
@@ -854,6 +881,7 @@ protected:
 	void register_param(std::string_view name, const T& value)
 	{
 		create_parameter(BaseTag(name), AnyParameter(make_any(value)));
+		register_parameter_visitor<T>();
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.

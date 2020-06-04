@@ -483,9 +483,10 @@ TEST(SGObject, tags_set_get_int)
 
 	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
 	obj->put(MockObject::kInt, 10);
+	EXPECT_NO_THROW(obj->put(MockObject::kInt, 10.0));
 	EXPECT_EQ(obj->get(Tag<int32_t>(MockObject::kInt)), 10);
-	EXPECT_THROW(obj->get<float64_t>(MockObject::kInt), ShogunException);
-	EXPECT_THROW(obj->get(Tag<float64_t>(MockObject::kInt)), ShogunException);
+	EXPECT_EQ(obj->get<float64_t>(MockObject::kInt), 10.0);
+	EXPECT_EQ(obj->get(Tag<float64_t>(MockObject::kInt)), 10.0);
 	EXPECT_EQ(obj->get<int>(MockObject::kInt), 10);
 }
 
