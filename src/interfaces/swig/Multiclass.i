@@ -34,15 +34,8 @@ SHARED_RANDOM_INTERFACE(shogun::ConditionalProbabilityTree)
 %shared_ptr(shogun::ThresholdRejectionStrategy)
 %shared_ptr(shogun::DixonQTestRejectionStrategy)
 %shared_ptr(shogun::MulticlassStrategy)
-%shared_ptr(shogun::MulticlassOneVsRestStrategy)
-%shared_ptr(shogun::MulticlassOneVsOneStrategy)
-%shared_ptr(shogun::MulticlassMachine)
-%shared_ptr(shogun::NativeMulticlassMachine)
 %shared_ptr(shogun::LinearMulticlassMachine)
-%shared_ptr(shogun::KernelMulticlassMachine)
-%shared_ptr(shogun::MulticlassSVM)
-SHARED_RANDOM_INTERFACE(shogun::MulticlassSVM)
-%shared_ptr(shogun::MKLMulticlass)
+
 
 %shared_ptr(shogun::ECOCStrategy)
 %shared_ptr(shogun::ECOCEncoder)
@@ -64,18 +57,8 @@ SHARED_RANDOM_INTERFACE(shogun::ECOCEncoder)
 #ifdef USE_GPL_SHOGUN
 %shared_ptr(shogun::MulticlassTreeGuidedLogisticRegression)
 %shared_ptr(shogun::MulticlassLogisticRegression)
-%shared_ptr(shogun::MulticlassOCAS)
 #endif //USE_GPL_SHOGUN
 %shared_ptr(shogun::MulticlassLibLinear)
-
-%shared_ptr(shogun::LaRank)
-%shared_ptr(shogun::ScatterSVM)
-%shared_ptr(shogun::GMNPSVM)
-%shared_ptr(shogun::GaussianNaiveBayes)
-%shared_ptr(shogun::QDA)
-%shared_ptr(shogun::MCLDA)
-
-%shared_ptr(shogun::ShareBoost)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/BaseMulticlassMachine.h>
@@ -116,15 +99,6 @@ RANDOM_INTERFACE(ConditionalProbabilityTree)
 
 %include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>
-%include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-%include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
-%include <shogun/machine/MulticlassMachine.h>
-%include <shogun/machine/NativeMulticlassMachine.h>
-%include <shogun/machine/LinearMulticlassMachine.h>
-%include <shogun/machine/KernelMulticlassMachine.h>
-%include <shogun/multiclass/MulticlassSVM.h>
-RANDOM_INTERFACE(MulticlassSVM)
-%include <shogun/classifier/mkl/MKLMulticlass.h>
 
 %include <shogun/multiclass/ecoc/ECOCEncoder.h>
 RANDOM_INTERFACE(ECOCEncoder)
@@ -147,12 +121,4 @@ RANDOM_INTERFACE(ECOCEncoder)
 #ifdef USE_GPL_SHOGUN
 %include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 %include <shogun/multiclass/MulticlassLogisticRegression.h>
-%include <shogun/multiclass/MulticlassOCAS.h>
-%include <shogun/multiclass/LaRank.h>
 #endif // USE_GPL_SHOGUN
-%include <shogun/multiclass/ScatterSVM.h>
-%include <shogun/multiclass/GMNPSVM.h>
-%include <shogun/multiclass/GaussianNaiveBayes.h>
-%include <shogun/multiclass/QDA.h>
-%include <shogun/multiclass/MCLDA.h>
-%include <shogun/multiclass/ShareBoost.h>

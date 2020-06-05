@@ -12,8 +12,6 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5]]
 
 def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
 
-	from shogun import ECOCStrategy, LinearMulticlassMachine
-	from shogun import MulticlassLabels
 	import shogun as sg
 
 	def nonabstract_class(name):
@@ -30,11 +28,11 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 
 	fea_train = sg.create_features(fm_train_real)
 	fea_test  = sg.create_features(fm_test_real)
-	gnd_train = MulticlassLabels(label_train_multiclass)
+	gnd_train = sg.create_labels(label_train_multiclass)
 	if label_test_multiclass is None:
 		gnd_test = None
 	else:
-		gnd_test = MulticlassLabels(label_test_multiclass)
+		gnd_test = sg.create_labels(label_test_multiclass)
 
 	base_classifier = sg.create_machine("LibLinear",
 								liblinear_solver_type="L2R_L2LOSS_SVC",
@@ -54,9 +52,10 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 		    encoder.put('labels', gnd_train)
 		    encoder.put('features', fea_train)
 
-		strategy = ECOCStrategy(encoder, decoder)
-		classifier = LinearMulticlassMachine(strategy, fea_train, base_classifier, gnd_train)
-		classifier.train()
+		strategy = sg.ECOCStrategy(encoder, decoder)
+		classifier = sg.create_machine("LinearMulticlassMachine", multiclass_strategy=strategy, 
+										machine=base_classifier, labels=gnd_train)
+		classifier.train(fea_train)
 		label_pred = classifier.apply(fea_test)
 		if gnd_test is not None:
 		    evaluator = sg.create_evaluation("MulticlassAccuracy")
@@ -64,7 +63,7 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 		else:
 		    acc = None
 
-		return (classifier.get_num_machines(), acc)
+		return (len(classifier.get("machines")), acc)
 
 
 	for ier in range(len(encoders)):

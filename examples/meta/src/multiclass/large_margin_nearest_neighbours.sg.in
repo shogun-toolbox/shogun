@@ -6,8 +6,8 @@ CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat
 #![create_features]
 Features features_train = create_features(f_feats_train)
 Features features_test = create_features(f_feats_test)
-MulticlassLabels labels_train(f_labels_train)
-MulticlassLabels labels_test(f_labels_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
@@ -21,7 +21,7 @@ Distance lmnn_distance = lmnn.get_distance()
 #![train_metric]
 
 #![train_and_apply]
-KNN knn(k, lmnn_distance,labels_train)
+Machine knn = create_machine("KNN", k=k, distance=lmnn_distance, labels=labels_train)
 knn.train()
 MulticlassLabels labels_predict = knn.apply_multiclass(features_test)	
 #![train_and_apply]

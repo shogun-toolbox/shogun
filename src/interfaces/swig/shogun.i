@@ -92,7 +92,6 @@ namespace shogun
 %include "Metric_includes.i"
 %include "Minimizer_includes.i"
 %include "GaussianProcess_includes.i"
-%include "Ensemble_includes.i"
 %include "NeuralNets_includes.i"
 
 %shared_ptr(shogun::Machine)
