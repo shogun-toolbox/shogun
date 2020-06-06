@@ -22,7 +22,6 @@ MulticlassMachine::MulticlassMachine()
 : BaseMulticlassMachine(), m_multiclass_strategy(std::make_shared<MulticlassOneVsRestStrategy>()),
 	m_machine(NULL)
 {
-
 	register_parameters();
 }
 
@@ -31,7 +30,6 @@ MulticlassMachine::MulticlassMachine(
 		std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs)
 : BaseMulticlassMachine(), m_multiclass_strategy(std::move(strategy))
 {
-
 	set_labels(std::move(labs));
 
 	m_machine = std::move(machine);
@@ -40,14 +38,11 @@ MulticlassMachine::MulticlassMachine(
 
 MulticlassMachine::~MulticlassMachine()
 {
-
-
 }
 
 void MulticlassMachine::set_labels(std::shared_ptr<Labels> lab)
 {
     Machine::set_labels(lab);
-
 }
 
 void MulticlassMachine::register_parameters()

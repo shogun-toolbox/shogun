@@ -28,7 +28,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 {
 	public:
 		/** default constructor  */
-		LinearMulticlassMachine() : MulticlassMachine(), m_features(NULL)
+		LinearMulticlassMachine() : MulticlassMachine()
 		{
 			SG_ADD(&m_features, "m_features", "Feature object.");
 		}
@@ -40,7 +40,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		 * @param labs labels
 		 */
 		LinearMulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Features> features, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs) :
-			MulticlassMachine(strategy, machine,labs), m_features(NULL)
+			MulticlassMachine(strategy, machine,labs)
 		{
 			set_features(features->as<DotFeatures>());
 			SG_ADD(&m_features, "m_features", "Feature object.");
@@ -49,7 +49,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** destructor */
 		virtual ~LinearMulticlassMachine()
 		{
-
 		}
 
 		/** get name */

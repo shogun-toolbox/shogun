@@ -21,29 +21,25 @@ HistogramWordStringKernel::HistogramWordStringKernel()
 	init();
 }
 
-HistogramWordStringKernel::HistogramWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie)
-: StringKernel<uint16_t>(size)
+HistogramWordStringKernel::HistogramWordStringKernel(int32_t size, const std::shared_ptr<Machine>& pie)
+: HistogramWordStringKernel()
 {
-	init();
-
-	estimate=std::move(pie);
-
+	auto casted_pie = std::dynamic_pointer_cast<PluginEstimate>(pie);
+	require(casted_pie, "Expected Machine to be PluginEstimate");
+	estimate=std::move(casted_pie);
+	set_cache_size(size);
 }
 
 HistogramWordStringKernel::HistogramWordStringKernel(
-	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, std::shared_ptr<PluginEstimate> pie)
-: StringKernel<uint16_t>()
+	const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, 
+	const std::shared_ptr<Machine>& pie)
+: HistogramWordStringKernel(10, pie)
 {
-	init();
-
-	estimate=std::move(pie);
 	init(l, r);
 }
 
 HistogramWordStringKernel::~HistogramWordStringKernel()
 {
-
-
 	SG_FREE(variance);
 	SG_FREE(mean);
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -62,6 +58,7 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 	StringKernel<uint16_t>::init(p_l,p_r);
 	auto l=std::static_pointer_cast<StringFeatures<uint16_t>>(p_l);
 	auto r=std::static_pointer_cast<StringFeatures<uint16_t>>(p_r);
+	auto plugin_estimate = std::static_pointer_cast<PluginEstimate>(estimate);
 	ASSERT(l)
 	ASSERT(r)
 
@@ -123,12 +120,12 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 		num_params=llen*((int32_t) l->get_num_symbols());
 		num_params2=llen*((int32_t) l->get_num_symbols())+rlen*((int32_t) r->get_num_symbols());
 
-		if ((!estimate) || (!estimate->check_models()))
+		if ((!plugin_estimate) || (!plugin_estimate->check_models()))
 		{
 			error("no estimate available");
 			return false ;
 		} ;
-		if (num_params2!=estimate->get_num_params())
+		if (num_params2!=plugin_estimate->get_num_params())
 		{
 			error("number of parameters of estimate and feature representation do not match");
 			return false ;
@@ -155,13 +152,13 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 			bool free_vec;
 			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
-			mean[0]+=estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
+			mean[0]+=plugin_estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
 
 			for (int32_t j=0; j<len; j++)
 			{
 				int32_t idx=compute_index(j, vec[j]);
-				mean[idx]             += estimate->log_derivative_pos_obsolete(vec[j], j)/num_vectors;
-				mean[idx+num_params] += estimate->log_derivative_neg_obsolete(vec[j], j)/num_vectors;
+				mean[idx]             += plugin_estimate->log_derivative_pos_obsolete(vec[j], j)/num_vectors;
+				mean[idx+num_params] += plugin_estimate->log_derivative_neg_obsolete(vec[j], j)/num_vectors;
 			}
 
 			l->free_feature_vector(vec, i, free_vec);
@@ -174,7 +171,7 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 			bool free_vec;
 			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
-			variance[0] += Math::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
+			variance[0] += Math::sq(plugin_estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -188,9 +185,9 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 					}
 					else
 					{
-						variance[idx] += Math::sq(estimate->log_derivative_pos_obsolete(vec[j], j)
+						variance[idx] += Math::sq(plugin_estimate->log_derivative_pos_obsolete(vec[j], j)
 								-mean[idx])/num_vectors;
-						variance[idx+num_params] += Math::sq(estimate->log_derivative_neg_obsolete(vec[j], j)
+						variance[idx+num_params] += Math::sq(plugin_estimate->log_derivative_neg_obsolete(vec[j], j)
 								-mean[idx+num_params])/num_vectors;
 					}
 				}
@@ -225,13 +222,13 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 		for (int32_t j=0; j<alen; j++)
 		{
 			int32_t a_idx = compute_index(j, avec[j]);
-			result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
-			result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
+			result -= plugin_estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
+			result -= plugin_estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 		}
 		ld_mean_lhs[i]=result ;
 
 		// precompute posterior-log-odds
-		plo_lhs[i] = estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
+		plo_lhs[i] = plugin_estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
 		l->free_feature_vector(avec, i, free_avec);
 	} ;
 
@@ -250,13 +247,13 @@ bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_
 			for (int32_t j=0; j<alen; j++)
 			{
 				int32_t a_idx = compute_index(j, avec[j]) ;
-				result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
-				result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
+				result -= plugin_estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
+				result -= plugin_estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 			}
 			ld_mean_rhs[i]=result ;
 
 			// precompute posterior-log-odds
-			plo_rhs[i] = estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
+			plo_rhs[i] = plugin_estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
 			r->free_feature_vector(avec, i, free_avec);
 		} ;
 	} ;
@@ -357,6 +354,7 @@ float64_t HistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool free_avec, free_bvec;
 	uint16_t* avec=std::static_pointer_cast<StringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=std::static_pointer_cast<StringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	auto plugin_estimate = std::static_pointer_cast<PluginEstimate>(estimate);
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
 
@@ -368,9 +366,9 @@ float64_t HistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		if (avec[i]==bvec[i])
 		{
 			int32_t a_idx = compute_index(i, avec[i]) ;
-			float64_t dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
+			float64_t dd = plugin_estimate->log_derivative_pos_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx] ;
-			dd        = estimate->log_derivative_neg_obsolete(avec[i], i) ;
+			dd        = plugin_estimate->log_derivative_neg_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx+num_params] ;
 		} ;
 	}
@@ -436,7 +434,14 @@ void HistogramWordStringKernel::init()
 	/*m_parameters->add_vector(&variance, &num_params2, "variance");*/
 	watch_param("variance", &variance, &num_params2);
 
-	SG_ADD((std::shared_ptr<SGObject>*) &estimate, "estimate", "Plugin Estimate.");
+	SG_ADD(&estimate, "estimate", "Plugin Estimate.");
+
+	add_callback_function("estimate", [this](){
+		if (!std::dynamic_pointer_cast<PluginEstimate>(estimate)) {
+			error("Expected Machine to be PluginEstimate");
+			estimate.reset();
+		}
+	});
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION
@@ -446,11 +451,13 @@ float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 	bool free_avec, free_bvec;
 	uint16_t* avec=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	auto plugin_estimate = std::static_pointer_cast<PluginEstimate>(estimate);
+
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
 
-	float64_t result=(estimate->posterior_log_odds_obsolete(avec, alen)-mean[0])*
-		(estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);
+	float64_t result=(plugin_estimate->posterior_log_odds_obsolete(avec, alen)-mean[0])*
+		(plugin_estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
 	for (int32_t i=0; i<alen; i++)
@@ -460,16 +467,16 @@ float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 
 		if (avec[i]==bvec[i])
 		{
-			float64_t dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
+			float64_t dd = plugin_estimate->log_derivative_pos_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx] ;
-			dd        = estimate->log_derivative_neg_obsolete(avec[i], i) ;
+			dd        = plugin_estimate->log_derivative_neg_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx+num_params] ;
 		} ;
 
-		result -= estimate->log_derivative_pos_obsolete(avec[i], i)*mean[a_idx]/variance[a_idx] ;
-		result -= estimate->log_derivative_pos_obsolete(bvec[i], i)*mean[b_idx]/variance[b_idx] ;
-		result -= estimate->log_derivative_neg_obsolete(avec[i], i)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
-		result -= estimate->log_derivative_neg_obsolete(bvec[i], i)*mean[b_idx+num_params]/variance[b_idx+num_params] ;
+		result -= plugin_estimate->log_derivative_pos_obsolete(avec[i], i)*mean[a_idx]/variance[a_idx] ;
+		result -= plugin_estimate->log_derivative_pos_obsolete(bvec[i], i)*mean[b_idx]/variance[b_idx] ;
+		result -= plugin_estimate->log_derivative_neg_obsolete(avec[i], i)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
+		result -= plugin_estimate->log_derivative_neg_obsolete(bvec[i], i)*mean[b_idx+num_params]/variance[b_idx+num_params] ;
 	}
 
 	if (initialized)

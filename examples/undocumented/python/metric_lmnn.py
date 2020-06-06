@@ -8,7 +8,7 @@ parameter_list = [[traindat,testdat,label_traindat,3]]
 
 def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_traindat,k=3):
 	try:
-		from shogun import MulticlassLabels,LMNN,KNN
+		from shogun import LMNN
 	except ImportError:
 		return
 	import shogun as sg
@@ -16,17 +16,17 @@ def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_
 	# wrap features and labels into Shogun objects
 	feats_train=sg.create_features(sg.read_csv(train_fname))
 	feats_test=sg.create_features(sg.read_csv(test_fname))
-	labels=MulticlassLabels(sg.read_csv(label_train_fname))
+	labels=sg.create_labels(sg.read_csv(label_train_fname))
 
 	# LMNN
-	lmnn=LMNN(feats_train,labels,k)
+	lmnn=sg.LMNN(feats_train,labels,k)
 	lmnn.train()
 	lmnn_distance=lmnn.get_distance()
 
 	# perform classification with KNN
-	knn=KNN(k,lmnn_distance,labels)
+	knn=sg.create_machine("KNN", k=k,distance=lmnn_distance,labels=labels)
 	knn.train()
-	output=knn.apply(feats_test).get_labels()
+	output=knn.apply(feats_test).get("labels")
 
 	return lmnn,output
 

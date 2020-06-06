@@ -13,7 +13,6 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 	width, C, epsilon, num_threads, mkl_epsilon, mkl_norm):
 
 	from shogun import CombinedFeatures, MulticlassLabels
-	from shogun import MKLMulticlass
 	import shogun as sg
 
 	kernel = sg.create_kernel("CombinedKernel")
@@ -45,18 +44,18 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 
 	labels = MulticlassLabels(label_train_multiclass)
 
-	mkl = MKLMulticlass(C, kernel, labels)
+	mkl = sg.create_machine("MKLMulticlass", C=C, kernel=kernel, labels=labels,
+		  					mkl_eps=mkl_epsilon, mkl_norm=mkl_norm)
 
-	mkl.set_epsilon(epsilon);
+	mkl.get("machine").put("epsilon", epsilon)
+
 	mkl.get_global_parallel().set_num_threads(num_threads)
-	mkl.set_mkl_epsilon(mkl_epsilon)
-	mkl.set_mkl_norm(mkl_norm)
 
 	mkl.train()
 
 	kernel.init(feats_train, feats_test)
 
-	out =  mkl.apply().get_labels()
+	out =  mkl.apply().get("labels")
 	return out
 
 if __name__ == '__main__':

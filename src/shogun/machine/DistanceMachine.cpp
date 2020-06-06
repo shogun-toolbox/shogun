@@ -148,14 +148,11 @@ float64_t DistanceMachine::apply_one(int32_t num)
 
 void DistanceMachine::set_distance(std::shared_ptr<Distance> d)
 {
-
-
 	distance=std::move(d);
 }
 
 std::shared_ptr<Distance> DistanceMachine::get_distance() const
 {
-
 	return distance;
 }
 
