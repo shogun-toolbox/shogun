@@ -35,7 +35,7 @@ namespace shogun
 	{
 	public:
 		template <typename... T>
-		Seedable(T... args) : Parent(args...), m_is_seeded(false)
+		Seedable(T... args) : Parent(args...)
 		{
 			init();
 		}
@@ -45,19 +45,12 @@ namespace shogun
 			return "Seedable";
 		}
 
-		bool is_set_seed() const
-		{
-			return m_is_seeded;
-		}
-
 	private:
 		void init()
 		{
 			Parent::watch_param(random::kSeed, &m_seed);
 			Parent::add_callback_function(
 			    random::kSeed, std::bind(seed_callback, this, std::ref(m_seed)));
-			Parent::add_callback_function(
-			    random::kSeed, [&]() { m_is_seeded = true; });
 		}
 
 	protected:
@@ -76,7 +69,6 @@ namespace shogun
 		}
 
 		int32_t m_seed;
-		bool m_is_seeded;
 	};
 
 	static inline void seed_callback(SGObject* obj, int32_t seed)

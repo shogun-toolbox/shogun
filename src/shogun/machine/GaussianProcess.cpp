@@ -47,7 +47,7 @@ void GaussianProcess::init()
 	    &m_inducing_features, "inducing_features",
 	    "inducing features for approximation", ParameterProperties::MODEL);
 	add_callback_function("seed", [&]() {
-		if (m_method && !is_set_seed())
+		if (m_method)
 		{
 			random_seed_callback(
 			    m_method->get<LikelihoodModel>("likelihood_model").get());
