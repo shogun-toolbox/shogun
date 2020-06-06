@@ -65,12 +65,12 @@ namespace shogun
 		return tmp;
 	}
 
-	bool DotIterator::iterator::operator==(const iterator& rhs)
+	bool DotIterator::iterator::operator==(const iterator& rhs) const
 	{
 		return m_feature_vector.m_idx == rhs.m_feature_vector.m_idx;
 	}
 
-	bool DotIterator::iterator::operator!=(const iterator& rhs)
+	bool DotIterator::iterator::operator!=(const iterator& rhs) const
 	{
 		return !(*this == rhs);
 	}

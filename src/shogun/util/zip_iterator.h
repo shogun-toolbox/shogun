@@ -131,7 +131,7 @@ namespace shogun
 	IGNORE_IN_CLASSLIST class zip_iterator
 	{
 	public:
-		zip_iterator(Args&... args) : m_container_tuples(args...)
+		zip_iterator(Args&&... args) : m_container_tuples(std::forward<Args>(args)...)
 		{
 		}
 
@@ -190,8 +190,11 @@ namespace shogun
 		}
 
 	private:
-		std::tuple<Args&...> m_container_tuples;
+		std::tuple<Args...> m_container_tuples;
 	};
+
+	template <typename ...Args>
+	zip_iterator(Args&&... args) -> zip_iterator<Args...>;
 } // namespace shogun
 
 #endif // SHOGUN_ZIP_ITERATOR_H
