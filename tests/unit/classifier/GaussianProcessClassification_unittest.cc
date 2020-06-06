@@ -532,7 +532,7 @@ TEST_F(GaussianProcessClassificationTest, train)
 	for (int i = 0; i < 25; i++)
 	{
 		EXPECT_NEAR(
-		    labels1[1], labels2[1], std::numeric_limits<float64_t>::epsilon());
+		    labels1[i], labels2[i], std::numeric_limits<float64_t>::epsilon());
 	}
 }
 
