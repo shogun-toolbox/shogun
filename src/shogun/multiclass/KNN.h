@@ -80,7 +80,7 @@ class KNN : public DistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
+		KNN(int32_t k, const std::shared_ptr<Distance>& d, KNN_SOLVER knn_solver=KNN_BRUTE);
 
 		virtual ~KNN();
 
@@ -106,7 +106,7 @@ class KNN : public DistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)

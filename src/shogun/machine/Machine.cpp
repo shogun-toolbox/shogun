@@ -71,6 +71,11 @@ bool Machine::train(std::shared_ptr<Features> data)
 	return result;
 }
 
+bool Machine::train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& lab){
+	set_labels(lab);
+	return train(data);
+}
+
 void Machine::set_labels(std::shared_ptr<Labels> lab)
 {
     if (lab != NULL)

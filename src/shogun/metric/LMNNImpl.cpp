@@ -141,7 +141,8 @@ SGMatrix<index_t> LMNNImpl::find_target_nn(const std::shared_ptr<DenseFeatures<f
 		auto features_slice = std::make_shared<DenseFeatures<float64_t>>(slice_mat);
 		auto labels_slice = std::make_shared<MulticlassLabels>(labels_vec);
 
-		auto knn = std::make_shared<KNN>(k+1, std::make_shared<EuclideanDistance>(features_slice, features_slice), labels_slice);
+		auto knn = std::make_shared<KNN>(k+1, std::make_shared<EuclideanDistance>());
+		knn->train(features_slice, labels_slice);
 		SGMatrix<int32_t> target_slice = knn->nearest_neighbors();
 		// sanity check
 		ASSERT(target_slice.num_rows==k+1 && target_slice.num_cols==slice_size)

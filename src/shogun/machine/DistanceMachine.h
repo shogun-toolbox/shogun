@@ -12,7 +12,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
-
+#include <shogun/machine/NonParametricMachine.h>
 
 namespace shogun
 {
@@ -24,7 +24,7 @@ namespace shogun
  *
  * A distance machine is based on a a-priori choosen distance.
  */
-class DistanceMachine : public Machine
+class DistanceMachine : public NonParametricMachine
 {
 	public:
 		/** default constructor */
@@ -81,7 +81,7 @@ class DistanceMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data);
 
 		/** Apply machine to one example.
 		 * Cluster index with smallest distance to to be classified element is

@@ -154,6 +154,15 @@ class Machine : public StoppableSGObject
 		 */
 		virtual bool train(std::shared_ptr<Features> data=NULL);
 
+		/** train machine
+		 *
+		 * @param data training data 
+		 * @param lab training label
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& lab);
+
 		/** apply machine to data
 		 * if data is not specified apply to the current features
 		 *
