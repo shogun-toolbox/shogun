@@ -1048,8 +1048,8 @@ _FACTORIES = ["create_distance",
               "create_loss",
               "create_structured_model",
               "create_factor_type",
-              "create_gaussian_process"
-               
+              "create_gaussian_process",
+              "create_kernel_normalizer",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):

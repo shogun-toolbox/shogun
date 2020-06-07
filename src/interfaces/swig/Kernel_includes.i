@@ -2,21 +2,15 @@
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/normalizer/KernelNormalizer.h>
-#include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
-#include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
 #include <shogun/kernel/string/CommUlongStringKernel.h>
 #include <shogun/kernel/string/CommWordStringKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
 #endif //USE_GPL_SHOGUN
-#include <shogun/kernel/normalizer/DiceKernelNormalizer.h>
-#include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>
-#include <shogun/kernel/normalizer/VarianceKernelNormalizer.h>
 #include <shogun/kernel/string/FixedDegreeStringKernel.h>
 #include <shogun/kernel/DirectorKernel.h>
 #include <shogun/kernel/string/HistogramWordStringKernel.h>
-#include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 #include <shogun/kernel/string/LinearStringKernel.h>
 #include <shogun/kernel/string/SparseSpatialSampleStringKernel.h>
 #include <shogun/kernel/string/LocalAlignmentStringKernel.h>
@@ -31,13 +25,10 @@
 #include <shogun/kernel/string/SalzbergWordStringKernel.h>
 #include <shogun/kernel/string/SimpleLocalityImprovedStringKernel.h>
 #include <shogun/kernel/SparseKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/string/StringKernel.h>
-#include <shogun/kernel/normalizer/TanimotoKernelNormalizer.h>
 #include <shogun/kernel/string/WeightedCommWordStringKernel.h>
 #include <shogun/kernel/string/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/string/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/string/SpectrumMismatchRBFKernel.h>
-#include <shogun/kernel/normalizer/ZeroMeanCenterKernelNormalizer.h>
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
 %}

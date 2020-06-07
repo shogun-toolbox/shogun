@@ -116,3 +116,4 @@ namespace shogun{
 %template(create_labels) shogun::create_labels<float64_t>;
 %template(create_minimizer) shogun::create_<shogun::Minimizer, std::string>;
 %template(create_lbfgs_minimizer) shogun::create_<shogun::LBFGSMinimizer, std::string>;
+%template(create_kernel_normalizer) shogun::create<shogun::KernelNormalizer, std::string>;

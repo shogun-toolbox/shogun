@@ -25,6 +25,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/loss/LossFunction.h>
@@ -54,6 +55,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(Evaluation, evaluation)
 	BASE_CLASS_FACTORY(Distance, distance)
 	BASE_CLASS_FACTORY(Kernel, kernel)
+	BASE_CLASS_FACTORY(Kernel, kernel_normalizer)
 	BASE_CLASS_FACTORY(Machine, machine)
 	BASE_CLASS_FACTORY(MulticlassStrategy, multiclass_strategy)
 	BASE_CLASS_FACTORY(ECOCEncoder, ecoc_encoder)

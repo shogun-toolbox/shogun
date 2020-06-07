@@ -10,7 +10,6 @@ parameter_list=[[traindat,testdat,label_traindat,1,1e1, 1e0],[traindat,testdat,l
 def kernel_histogram_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,ppseudo_count=1,npseudo_count=1):
 
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
-	from shogun import AvgDiagKernelNormalizer
 	import shogun as sg
 
 	charfeat=StringCharFeatures(DNA)

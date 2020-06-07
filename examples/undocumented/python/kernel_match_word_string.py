@@ -9,7 +9,8 @@ traindat,testdat, 3,1.4,10,3,0,False]]
 
 def kernel_match_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 degree=3,scale=1.4,size_cache=10,order=3,gap=0,reverse=False):
-	from shogun import MatchWordStringKernel, AvgDiagKernelNormalizer
+	import shogun as sg
+	from shogun import MatchWordStringKernel
 	from shogun import StringWordFeatures, StringCharFeatures, DNA
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
@@ -21,7 +22,7 @@ degree=3,scale=1.4,size_cache=10,order=3,gap=0,reverse=False):
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
 	kernel=MatchWordStringKernel(size_cache, degree)
-	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	kernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

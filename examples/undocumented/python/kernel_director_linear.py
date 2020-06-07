@@ -22,7 +22,6 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 			return np.dot(seq1, seq2)
 
 
-	from shogun import AvgDiagKernelNormalizer
 	from shogun import Time
 
 	feats_train=sg.create_features(fm_train_real)
@@ -31,11 +30,11 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 	feats_test=sg.create_features(fm_test_real)
 
 	kernel=sg.create_kernel("LinearKernel")
-	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	kernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
 	kernel.init(feats_train, feats_train)
 
 	dkernel=DirectorLinearKernel()
-	dkernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	dkernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
 	dkernel.init(feats_train, feats_train)
 
 	#print  "km_train"

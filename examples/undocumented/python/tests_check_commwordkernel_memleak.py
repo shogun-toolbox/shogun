@@ -3,11 +3,9 @@ import shogun as sg
 parameter_list=[[10,7,0,False]]
 
 def tests_check_commwordkernel_memleak (num, order, gap, reverse):
-	import gc
 	from shogun import Alphabet,StringCharFeatures,StringWordFeatures,DNA
 	from shogun import MSG_DEBUG
-	from shogun import CommWordStringKernel, IdentityKernelNormalizer
-	from numpy import mat
+	from shogun import CommWordStringKernel
 
 	POS=[num*'ACGT', num*'ACGT', num*'ACGT',num*'ACGT', num*'ACGT',
 	num*'ACGT',num*'ACGT', num*'ACGT', num*'ACGT',num*'ACGT', num*'ACGT',
@@ -70,7 +68,7 @@ def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 		pre.fit(trainudat)
 		trainudat = pre.transform(trainudat)
 		spec = CommWordStringKernel(10, False)
-		spec.set_normalizer(IdentityKernelNormalizer())
+		spec.set_normalizer(sg.create_kernel_normalizer("IdentityKernelNormalizer"))
 		spec.init(trainudat, trainudat)
 		K=spec.get_kernel_matrix()
 
