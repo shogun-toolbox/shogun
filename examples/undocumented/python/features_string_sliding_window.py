@@ -6,7 +6,6 @@ parameter_list=[[s]]
 
 def features_string_sliding_window (strings):
 	from shogun import StringCharFeatures, DNA
-	from shogun import DynamicIntArray
 
 	f=StringCharFeatures([strings], DNA)
 
@@ -29,11 +28,7 @@ def features_string_sliding_window (strings):
 	# extract string-windows at position 0,6,16,25 of window size 4
 	# (memory efficient, does not copy strings)
 	f.set_features([s])
-	positions=DynamicIntArray()
-	positions.append_element(0)
-	positions.append_element(6)
-	positions.append_element(16)
-	positions.append_element(25)
+	positions=[0, 6, 16, 25]
 
 	f.obtain_by_position_list(4,positions)
 	#print(f.get_features())

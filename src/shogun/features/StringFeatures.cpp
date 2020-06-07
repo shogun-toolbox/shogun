@@ -9,6 +9,7 @@
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/util/enumerate.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1092,7 +1093,7 @@ template<class ST> int32_t StringFeatures<ST>::obtain_by_sliding_window(int32_t 
 	return num_vectors;
 }
 
-template<class ST> int32_t StringFeatures<ST>::obtain_by_position_list(int32_t window_size, const std::shared_ptr<DynamicArray<int32_t>>& positions,
+template<class ST> int32_t StringFeatures<ST>::obtain_by_position_list(int32_t window_size, const std::vector<int32_t>& positions,
 		int32_t skip)
 {
 	if (m_subset_stack->has_subsets())
@@ -1101,13 +1102,13 @@ template<class ST> int32_t StringFeatures<ST>::obtain_by_position_list(int32_t w
 	int32_t num_vectors = get_num_vectors();
 	int32_t max_string_length = get_max_vector_length();
 
-	ASSERT(positions)
+	ASSERT(!positions.empty())
 	ASSERT(window_size>0)
 	ASSERT(num_vectors==1 || single_string.vector)
 	ASSERT(max_string_length>=window_size ||
 			(single_string.vector && single_string.vlen>=window_size));
 
-	num_vectors= positions->get_num_elements();
+	num_vectors= positions.size();
 	ASSERT(num_vectors>0)
 
 	int32_t len;
@@ -1124,10 +1125,8 @@ template<class ST> int32_t StringFeatures<ST>::obtain_by_position_list(int32_t w
 
 	std::vector<SGVector<ST>> f;
 	f.reserve(num_vectors);
-	for (int32_t i=0; i<num_vectors; i++)
-	{
-		int32_t p=positions->get_element(i);
 
+	for (const auto& [i, p]: enumerate(positions)) {
 		if (p>=0 && p<=len-window_size)
 		{
 			index_t l = p+skip;

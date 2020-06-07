@@ -13,7 +13,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Cache.h>
-#include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/Compressor.h>
 #include <shogun/io/File.h>
 
@@ -23,7 +22,6 @@
 namespace shogun
 {
 class Alphabet;
-template <class T> class DynamicArray;
 class File;
 template <class T> class SGVector;
 
@@ -499,7 +497,7 @@ template <class ST> class StringFeatures : public Features
 		 * @param skip skip
 		 * @return something inty
 		 */
-		int32_t obtain_by_position_list(int32_t window_size, const std::shared_ptr<DynamicArray<int32_t>>& positions,
+		int32_t obtain_by_position_list(int32_t window_size, const std::vector<int32_t>& positions,
 				int32_t skip=0);
 
 		/** obtain string features from char features
