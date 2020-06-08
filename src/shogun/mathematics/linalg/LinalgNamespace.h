@@ -1325,6 +1325,39 @@ namespace shogun
 			return result;
 		}
 
+		/** Performs the operation B = cos(A)
+		 *
+		 * User should pass an appropriately pre-allocated memory matrix
+		 * 
+		 * @param a Input matrix
+		 * @param result Result matrix
+		 */
+		template<typename T>
+		void cos(const SGMatrix<T>& a, SGMatrix<T>& result)
+		{
+			require(
+			    a.num_rows == result.num_rows && a.num_cols == result.num_cols,
+			    "Dimension mismatch! A({} x {}) vs result({} x {})",
+			    a.num_rows, a.num_cols, result.num_rows, result.num_cols);
+			infer_backend(a)->cos(a, result);
+		}
+
+		/** Performs the operation B = cos(A)
+		 *
+		 * User should pass an appropriately pre-allocated memory vector
+		 * 
+		 * @param a Input vector
+		 * @param result Result vector
+		 */
+		template<typename T>
+		void cos(const SGVector<T>&a, SGVector<T>& result)
+		{
+			require(
+			    a.vlen == result.vlen, "Dimension mismatch! A({}) vs result({})",
+			    a.vlen, result.vlen);
+			infer_backend(a)->cos(a, result);
+		}
+
 		/**
 		 * Method that writes the identity into a square matrix.
 		 *
