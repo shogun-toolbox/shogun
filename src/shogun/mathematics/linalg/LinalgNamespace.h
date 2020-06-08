@@ -1327,7 +1327,6 @@ namespace shogun
 
 		/** Performs the operation B = cos(A)
 		 *
-		 * This version returns the result in-place.
 		 * User should pass an appropriately pre-allocated memory matrix
 		 * 
 		 * @param a Input matrix
@@ -1345,7 +1344,6 @@ namespace shogun
 
 		/** Performs the operation B = cos(A)
 		 *
-		 * This version returns the result in-place.
 		 * User should pass an appropriately pre-allocated memory vector
 		 * 
 		 * @param a Input vector
