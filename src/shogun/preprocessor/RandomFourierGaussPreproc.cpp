@@ -79,7 +79,7 @@ SGMatrix<float64_t> RandomFourierGaussPreproc::sample_spectral_density(int32_t d
 {
 	NormalDistribution<float64_t> normal_dist;
 	auto sampled_kernel = SGMatrix<float64_t>(m_dim_output, dim_input_space);
-	const auto width = std::exp(m_log_width * 2.0) * 2.0;
+	const auto width = get_width();
 	const auto std_dev = std::sqrt(2.0 / width);
 	std::generate(
 	    sampled_kernel.begin(), sampled_kernel.end(),
