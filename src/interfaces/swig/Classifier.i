@@ -64,6 +64,7 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
+%include <shogun/machine/NonParametricMachine.h>
 %include <shogun/machine/IterativeMachine.h>
 %include <shogun/machine/FeatureDispatchCRTP.h>
 %include <shogun/machine/KernelMachine.h>

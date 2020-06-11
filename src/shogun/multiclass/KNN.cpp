@@ -153,7 +153,7 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 std::shared_ptr<MulticlassLabels> KNN::apply_multiclass(std::shared_ptr<Features> data)
 {
 	init_distance(data);
-
+	m_features = data;
 	//redirecting to fast (without sorting) classify if k==1
 	if (m_k == 1)
 		return classify_NN();
@@ -201,7 +201,7 @@ std::shared_ptr<MulticlassLabels> KNN::classify_NN()
 		distances_lhs(distances,0,m_train_labels.vlen-1,i);
 		
 		const auto min_dist = std::min_element(distances.begin(), distances.end());
-		int32_t out_idx = std::distance(min_dist, distances.begin());
+		int32_t out_idx = std::distance(distances.begin(), min_dist);
 
 		// label i-th test example with label of nearest neighbor with out_idx index
 		output->set_label(i,m_train_labels.vector[out_idx]+m_min_label);

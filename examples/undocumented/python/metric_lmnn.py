@@ -24,8 +24,8 @@ def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_
 	lmnn_distance=lmnn.get_distance()
 
 	# perform classification with KNN
-	knn=KNN(k,lmnn_distance,labels)
-	knn.train()
+	knn=KNN(k,lmnn_distance)
+	knn.train(feats_train, labels)
 	output=knn.apply(feats_test).get_labels()
 
 	return lmnn,output

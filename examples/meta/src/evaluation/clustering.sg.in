@@ -18,8 +18,8 @@ RealMatrix centers = kmeans.get_real_matrix("cluster_centers")
 Labels labels_centroids = create_labels(f_labels_centroids)
 Features fea_centroids = create_features(centers)
 Distance d2 = create_distance("EuclideanDistance", lhs=fea_centroids, rhs=fea_centroids)
-Machine knn = create_machine("KNN", k=1, distance=d2, labels=labels_centroids)
-knn.train()
+Machine knn = create_machine("KNN", k=1, distance=d2)
+knn.train(fea_centroids, labels_centroids)
 Labels gnd_hat = knn.apply(features_train)
 #![assign_labels]
 
