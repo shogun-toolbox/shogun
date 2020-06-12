@@ -14,7 +14,7 @@ ft[0] = 2
 #![set_feature_types]
 
 #![create_machine]
-Machine chaidree = create_machine("CHAIDTree", dependent_vartype=2, feature_types=ft, num_breakpoints=50)
+Machine chaidtree = create_machine("CHAIDTree", dependent_vartype=2, feature_types=ft, num_breakpoints=50)
 chaidtree.set_labels(labels_train)
 #![create_machine]
 
