@@ -91,10 +91,6 @@ void Inference::init()
 	SG_ADD(&m_labels, "labels", "Labels");
 	SG_ADD(&m_features, "features", "Features");
 	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated");
-
-	m_log_scale=0.0;
-	m_gradient_update=false;
-
 	SG_ADD((std::shared_ptr<SGObject>*)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference");
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation");
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition");

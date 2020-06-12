@@ -480,9 +480,8 @@ protected:
 
 	/** upper triangular factor of Cholesky decomposition */
 	SGMatrix<float64_t> m_L;
-
 	/** kernel scale */
-	float64_t m_log_scale;
+	float64_t m_log_scale = 0.0;
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
@@ -491,7 +490,7 @@ protected:
 	SGMatrix<float64_t> m_E;
 
 	/** Whether gradients are updated */
-	bool m_gradient_update;
+	bool m_gradient_update = false;
 };
 }
 #endif /* CINFERENCE_H_ */
