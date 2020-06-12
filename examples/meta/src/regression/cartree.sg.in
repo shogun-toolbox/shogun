@@ -14,8 +14,7 @@ ft[0] = False
 #![set_attribute_types]
 
 #![create_machine]
-Machine cartree = create_machine("CARTree", nominal=ft, mode=enum EProblemType.PT_REGRESSION, folds=5, apply_cv_pruning=True, seed=1)
-cartree.set_labels(labels_train)
+Machine cartree = create_machine("CARTree", labels=labels_train, nominal=ft, mode=enum EProblemType.PT_REGRESSION, folds=5, apply_cv_pruning=True, seed=1)
 #![create_machine]
 
 #![train_and_apply]
