@@ -35,6 +35,8 @@ class HashedDocDotFeatures: public DotFeatures
 {
 public:
 
+	HashedDocDotFeatures();
+
 	/** constructor
 	 *
 	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
@@ -43,10 +45,9 @@ public:
 	 * @param normalize whether or not to normalize the result of the dot products
 	 * @param n_grams max number of consecutive tokens to hash together (extra features)
 	 * @param skips max number of tokens to skip when combining tokens
-	 * @param size cache size
 	 */
-	HashedDocDotFeatures(int32_t hash_bits=0, std::shared_ptr<StringFeatures<char>> docs=NULL,
-			std::shared_ptr<Tokenizer> tzer=NULL, bool normalize=true, int32_t n_grams=1, int32_t skips=0, int32_t size=0);
+	HashedDocDotFeatures(int32_t hash_bits, const std::shared_ptr<StringFeatures<char>>& docs,
+			const std::shared_ptr<Tokenizer>& tzer, bool normalize, int32_t n_grams, int32_t skips);
 
 	/** copy constructor */
 	HashedDocDotFeatures(const HashedDocDotFeatures& orig);
@@ -182,27 +183,26 @@ public:
 			int32_t num_bits, uint32_t seed);
 
 private:
-	void init(int32_t hash_bits, std::shared_ptr<StringFeatures<char>> docs, std::shared_ptr<Tokenizer> tzer,
-		bool normalize, int32_t n_grams, int32_t skips);
+	void init();
 
 protected:
 	/** the document collection*/
 	std::shared_ptr<StringFeatures<char>> doc_collection;
 
 	/** number of bits of hash */
-	int32_t num_bits;
+	int32_t num_bits = 0;
 
 	/** tokenizer */
 	std::shared_ptr<Tokenizer> tokenizer;
 
 	/** if should normalize the dot product results */
-	bool should_normalize;
+	bool should_normalize = true;
 
 	/** n for ngrams for quadratic features */
-	int32_t ngrams;
+	int32_t ngrams = 1;
 
 	/** tokens to skip when combining tokens */
-	int32_t tokens_to_skip;
+	int32_t tokens_to_skip = 0;
 };
 }
 

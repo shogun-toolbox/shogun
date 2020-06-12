@@ -397,6 +397,7 @@ PUT_ADD(LossFunction)
 PUT_ADD(StructuredModel)
 PUT_ADD(FactorType)
 PUT_ADD(GaussianProcess)
+PUT_ADD(Alphabet)
 
 %template(create_kernel) create_kernel<float64_t, float64_t>;
 

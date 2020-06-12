@@ -79,6 +79,11 @@ namespace shogun
 	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
 	BASE_CLASS_FACTORY(GaussianProcess, gaussian_process)
 
+	std::shared_ptr<Alphabet> as_alphabet(std::shared_ptr<SGObject> obj)
+	{
+			return obj->as<Alphabet>();
+	}
+
 	namespace details
 	{
 
@@ -169,6 +174,39 @@ namespace shogun
 				return std::make_shared<StringFeatures<char>>(
 				    file, alphabet_type);
 			}
+			case PT_UINT16:
+			{
+				return std::make_shared<StringFeatures<uint16_t>>(
+				    file, alphabet_type);
+			}
+			case PT_UINT32:
+			{
+				return std::make_shared<StringFeatures<uint32_t>>(
+				    file, alphabet_type);
+			}
+			case PT_UINT64:
+			{
+				return std::make_shared<StringFeatures<uint64_t>>(
+				    file, alphabet_type);
+			}
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
+
+			return nullptr;
+		}
+
+		std::shared_ptr<Features> string_features(
+		    const std::vector<SGVector<char>>& string_list, EAlphabet alphabet_type = DNA,
+		    EPrimitiveType primitive_type = PT_CHAR)
+		{
+			switch (primitive_type)
+			{
+			case PT_CHAR:
+			{
+				return std::make_shared<StringFeatures<char>>(
+				    string_list, alphabet_type);
+			}
 			default:
 				not_implemented(SOURCE_LOCATION);
 			}
@@ -210,13 +248,40 @@ namespace shogun
 
 			switch (primitive_type)
 			{
+			case PT_UINT8:
+			{
+				auto result = std::make_shared<StringFeatures<uint8_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string uint16 features.");
+				return result;
+			}
 			case PT_UINT16:
 			{
 				auto result = std::make_shared<StringFeatures<uint16_t>>(
 				    string_features->get_alphabet());
 				bool success = result->obtain_from_char(
 				    string_features, start, p_order, gap, rev);
-				require(success, "Failed to obtain from string char features.");
+				require(success, "Failed to obtain from string uint16 features.");
+				return result;
+			}
+			case PT_UINT32:
+			{
+				auto result = std::make_shared<StringFeatures<uint32_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string uint32 features.");
+				return result;
+			}
+			case PT_UINT64:
+			{
+				auto result = std::make_shared<StringFeatures<uint64_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string uint64 features.");
 				return result;
 			}
 			default:
@@ -390,6 +455,35 @@ namespace shogun
 			    (std::string{std::forward<Args>(args)}.c_str())...);
 		}
 	}
-#endif
+
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		return details::string_features(file, alphabet_type, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_string_features(
+	    const std::vector<SGVector<char>>& string_list, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		return details::string_features(string_list, alphabet_type, primitive_type);
+	}
+
+
+	std::shared_ptr<Features> create_features_subset(
+	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
+	    EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		return details::features_subset(base_features, indices, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_string_features(
+	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
+	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
+	{
+		return details::string_features(
+		    features, start, p_order, gap, rev, primitive_type);
+	}
 } // namespace shogun
 #endif // FACTORY_H_

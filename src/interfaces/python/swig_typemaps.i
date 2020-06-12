@@ -440,7 +440,6 @@ template <class type>
 static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, int typecode)
 {
     shogun::SGSparseVector<type>* sfm=sg_matrix.sparse_matrix;
-    auto num_feat=sg_matrix.num_features;
     auto num_vec=sg_matrix.num_vectors;
 
     int64_t nnz=0;

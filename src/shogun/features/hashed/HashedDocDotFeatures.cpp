@@ -12,10 +12,28 @@
 #include <cmath>
 #include <utility>
 
-namespace shogun
+using namespace shogun;
+
+HashedDocDotFeatures::HashedDocDotFeatures(): DotFeatures()
 {
-HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, std::shared_ptr<StringFeatures<char>> docs,
-	std::shared_ptr<Tokenizer> tzer, bool normalize, int32_t n_grams, int32_t skips, int32_t size) : DotFeatures(size)
+	SG_ADD(&num_bits, "num_bits", "Number of bits of hash");
+	SG_ADD(&ngrams, "ngrams", "Number of tokens to combine for quadratic feature support");
+	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip when combining features");
+	SG_ADD((std::shared_ptr<Features>*)&doc_collection, "doc_collection", "Document collection");
+	add_callback_function("doc_collection", [this](){
+		if (doc_collection && !std::dynamic_pointer_cast<StringFeatures<char>>(doc_collection))
+		{
+			error("Expected StringFeatures<char> type");
+			doc_collection = nullptr;
+		}
+	});
+	SG_ADD(&tokenizer, "tokenizer", "Document tokenizer");
+	SG_ADD(&should_normalize, "should_normalize", "Normalize or not the dot products");
+	init();
+}
+
+HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, const std::shared_ptr<StringFeatures<char>>& docs,
+	const std::shared_ptr<Tokenizer>& tzer, bool normalize, int32_t n_grams, int32_t skips) : HashedDocDotFeatures()
 {
 	if (n_grams < 1)
 		n_grams = 1;
@@ -23,58 +41,44 @@ HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, std::shared_ptr<St
 	if ( (n_grams==1 && skips!=0) || (skips<0))
 		skips = 0;
 
-	init(hash_bits, std::move(docs), std::move(tzer), normalize, n_grams, skips);
+	doc_collection = docs;
+	num_bits = hash_bits;
+	tokenizer = tzer;
+	should_normalize = normalize;
+	ngrams = n_grams;
+	tokens_to_skip = skips;
 }
 
 HashedDocDotFeatures::HashedDocDotFeatures(const HashedDocDotFeatures& orig)
-: DotFeatures(orig)
+: DotFeatures(orig), num_bits(orig.num_bits), doc_collection(orig.doc_collection),
+  tokenizer(orig.tokenizer), should_normalize(orig.should_normalize),
+  ngrams(orig.ngrams), tokens_to_skip(orig.tokens_to_skip)
 {
-	init(orig.num_bits, orig.doc_collection, orig.tokenizer, orig.should_normalize,
-			orig.ngrams, orig.tokens_to_skip);
+	init();
 }
 
 HashedDocDotFeatures::HashedDocDotFeatures(const std::shared_ptr<File>& loader)
 {
-	not_implemented(SOURCE_LOCATION);;
+	not_implemented(SOURCE_LOCATION);
 }
 
-void HashedDocDotFeatures::init(int32_t hash_bits, std::shared_ptr<StringFeatures<char>> docs,
-	std::shared_ptr<Tokenizer> tzer, bool normalize, int32_t n_grams, int32_t skips)
+void HashedDocDotFeatures::init()
 {
-	num_bits = hash_bits;
-	ngrams = n_grams;
-	tokens_to_skip = skips;
-	doc_collection = std::move(docs);
-	tokenizer = std::move(tzer);
-	should_normalize = normalize;
-
 	if (!tokenizer)
 	{
 		auto dt = std::make_shared<DelimiterTokenizer>();
 		dt->init_for_whitespace();
 		tokenizer = dt;
 	}
-
-	SG_ADD(&num_bits, "num_bits", "Number of bits of hash");
-	SG_ADD(&ngrams, "ngrams", "Number of tokens to combine for quadratic feature support");
-	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip when combining features");
-	SG_ADD((std::shared_ptr<SGObject>*) &doc_collection, "doc_collection", "Document collection");
-	SG_ADD((std::shared_ptr<SGObject>*) &tokenizer, "tokenizer", "Document tokenizer");
-	SG_ADD(&should_normalize, "should_normalize", "Normalize or not the dot products");
-
-
-
 }
 
 HashedDocDotFeatures::~HashedDocDotFeatures()
 {
-
-
 }
 
 int32_t HashedDocDotFeatures::get_dim_feature_space() const
 {
-	return Math::pow(2, num_bits);
+	return std::pow(2, num_bits);
 }
 
 float64_t HashedDocDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
@@ -95,7 +99,6 @@ float64_t HashedDocDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeature
 
 	doc_collection->free_feature_vector(sv1, vec_idx1);
 	hddf->doc_collection->free_feature_vector(sv2, vec_idx2);
-
 
 	return result;
 }
@@ -248,7 +251,6 @@ void HashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	}
 
 	doc_collection->free_feature_vector(sv, vec_idx1);
-
 }
 
 uint32_t HashedDocDotFeatures::calculate_token_hash(char* token,
@@ -260,7 +262,6 @@ uint32_t HashedDocDotFeatures::calculate_token_hash(char* token,
 
 void HashedDocDotFeatures::set_doc_collection(std::shared_ptr<StringFeatures<char>> docs)
 {
-
 	doc_collection = std::move(docs);
 }
 
@@ -312,5 +313,4 @@ EFeatureClass HashedDocDotFeatures::get_feature_class() const
 int32_t HashedDocDotFeatures::get_num_vectors() const
 {
 	return doc_collection->get_num_vectors();
-}
 }

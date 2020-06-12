@@ -4,7 +4,7 @@ parameter_list=[[100, 250, 10, 2]]
 
 def structure_plif_hmsvm_mosek (num_examples, example_length, num_features, num_noise_features):
 	import shogun as sg
-	from shogun import RealMatrixFeatures, TwoStateModel
+	from shogun import TwoStateModel
 
 	try:
 		from shogun import PrimalMosekSOSVM
