@@ -6,10 +6,9 @@ testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
 def kernel_rationalquadratic (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
-	from shogun import CSVFile
 
-	feats_train=sg.create_features(CSVFile(train_fname))
-	feats_test=sg.create_features(CSVFile(test_fname))
+	feats_train=sg.create_features(sg.read_csv(train_fname))
+	feats_test=sg.create_features(sg.read_csv(test_fname))
 
 	distance = sg.create_distance('EuclideanDistance')
 

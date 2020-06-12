@@ -1,12 +1,10 @@
 #!/usr/bin/env python
+import shogun as sg
 parameter_list=[[]]
 
 def labels_io():
-	from shogun import RegressionLabels, CSVFile
-	lab=RegressionLabels()
-	f=CSVFile("../data/label_train_regression.dat","r")
-	f.set_delimiter(" ")
-	lab.load(f)
+	f=sg.read_csv("../data/label_train_regression.dat","r")
+	lab = sg.create_features(f)
 	#print lab.get_labels()
 	return lab
 

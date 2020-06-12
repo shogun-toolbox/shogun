@@ -9,8 +9,6 @@
 
 %shared_ptr(shogun::File)
 %shared_ptr(shogun::StreamingFile)
-%shared_ptr(shogun::CSVFile)
-%shared_ptr(shogun::LibSVMFile)
 %shared_ptr(shogun::StreamingAsciiFile)
 %shared_ptr(shogun::io::InputStream)
 %shared_ptr(shogun::io::OutputStream)
@@ -167,8 +165,6 @@ namespace shogun
 #endif
 }
 
-%include <shogun/io/CSVFile.h>
-%include <shogun/io/LibSVMFile.h>
 %include <shogun/io/streaming/StreamingAsciiFile.h>
 %include <shogun/io/serialization/Serializer.h>
 %include <shogun/io/serialization/Deserializer.h>

@@ -621,7 +621,7 @@ template<class ST> void SparseFeatures<ST>::load(std::shared_ptr<File> loader)
 	sparse_feature_matrix.load(loader);
 }
 
-template<class ST> SGVector<float64_t> SparseFeatures<ST>::load_with_labels(std::shared_ptr<LibSVMFile> loader)
+template<class ST> SGVector<float64_t> SparseFeatures<ST>::load_with_labels(const std::shared_ptr<File>& loader)
 {
 	remove_all_subsets();
 	ASSERT(loader)
@@ -637,7 +637,7 @@ template<class ST> void SparseFeatures<ST>::save(std::shared_ptr<File> writer)
 	sparse_feature_matrix.save(writer);
 }
 
-template<class ST> void SparseFeatures<ST>::save_with_labels(std::shared_ptr<LibSVMFile> writer, SGVector<float64_t> labels)
+template<class ST> void SparseFeatures<ST>::save_with_labels(const std::shared_ptr<File>& writer, SGVector<float64_t> labels)
 {
 	if (m_subset_stack->has_subsets())
 		error("Not allowed with subset");

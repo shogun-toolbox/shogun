@@ -1,5 +1,5 @@
-LibSVMFile f_feats_a("@SHOGUN_DATA@/fm_train_sparsereal.dat")
-LibSVMFile f_feats_b("@SHOGUN_DATA@/fm_test_sparsereal.dat")
+File f_feats_a = read_libsvm("@SHOGUN_DATA@/fm_train_sparsereal.dat")
+File f_feats_b = read_libsvm("@SHOGUN_DATA@/fm_test_sparsereal.dat")
 
 #![create_features]
 Features features_a = create_features(f_feats_a)

@@ -40,7 +40,7 @@ svm.put("libsvm_solver_type", "LIBSVM_C_SVC")
 #![option is always returned as a string]
 string option = svm.get_option("libsvm_solver_type")
 
-CSVFile f_feats("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
+File f_feats = read_csv("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
 Features feats = create_features(f_feats)
 Kernel k3 = create_kernel("PolyKernel", degree=2)
 Kernel k4 = create_kernel("GaussianKernel", log_width=2.0)

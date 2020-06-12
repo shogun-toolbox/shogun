@@ -1,8 +1,8 @@
-CSVFile f_feats_train("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
-CSVFile f_feats_inducing("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
-CSVFile f_feats_test("@SHOGUN_DATA@/regression_1d_sinc_features_test.dat")
-CSVFile f_labels_train("@SHOGUN_DATA@/regression_1d_sinc_labels_train.dat")
-CSVFile f_labels_test("@SHOGUN_DATA@/regression_1d_sinc_labels_test.dat")
+File f_feats_train = read_csv("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
+File f_feats_inducing = read_csv("@SHOGUN_DATA@/regression_1d_sinc_features_train.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/regression_1d_sinc_features_test.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/regression_1d_sinc_labels_train.dat")
+File f_labels_test = read_csv("@SHOGUN_DATA@/regression_1d_sinc_labels_test.dat")
 
 #![create_features]
 Features features_train = create_features(f_feats_train)
