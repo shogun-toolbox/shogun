@@ -801,8 +801,9 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::get_derivative_wrt_inferen
 	{
 		if(m_Wneg)
 		{
-			int32_t dim=m_inducing_features.num_rows;
-			int32_t num_samples=m_inducing_features.num_cols;
+			auto inducing_feat = m_inducing_features->as<DotFeatures>();
+			int32_t dim = inducing_feat->get_dim_feature_space();
+			int32_t num_samples = inducing_feat->get_num_vectors();
 			len=dim*num_samples;
 		}
 		else if (!m_fully_sparse)

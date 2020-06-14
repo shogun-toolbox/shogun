@@ -8,12 +8,11 @@
 #ifndef _GAUSSIANPROCESSREGRESSION_H_
 #define _GAUSSIANPROCESSREGRESSION_H_
 
-
-#include <shogun/lib/config.h>
-#include <shogun/machine/GaussianProcessMachine.h>
-#include <shogun/machine/gp/Inference.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/config.h>
+#include <shogun/machine/GaussianProcess.h>
+#include <shogun/machine/gp/Inference.h>
 
 namespace shogun
 {
@@ -25,7 +24,7 @@ class Labels;
 /** @brief Class GaussianProcessRegression implements regression based on
  * Gaussian Processes.
  */
-class GaussianProcessRegression : public GaussianProcessMachine
+class GaussianProcessRegression : public GaussianProcess
 {
 public:
 	/** problem type */
@@ -53,13 +52,15 @@ public:
 	 *
 	 * @return predicted mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_mean_vector(const std::shared_ptr<Features>& data) override;
 
 	/** get variance vector
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_variance_vector(const std::shared_ptr<Features>& data) override;
 
 	/** get classifier type
 	 *
@@ -83,7 +84,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 	/** check whether training labels are valid for regression
 	 *

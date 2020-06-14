@@ -7,14 +7,14 @@ CSVFile f_labels_test("@SHOGUN_DATA@/regression_1d_sinc_labels_test.dat")
 #![create_features]
 Features features_train = create_features(f_feats_train)
 Features features_test = create_features(f_feats_test)
-RegressionLabels labels_train(f_labels_train)
-RegressionLabels labels_test(f_labels_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_kernel_and_mean_function]
 Kernel k = create_kernel("GaussianKernel", log_width=0.0)
 k.init(features_train, features_train)
-ZeroMean mean_function()
+MeanFunction mean_function = create_gp_mean("ZeroMean")
 #![create_kernel_and_mean_function]
 
 #![create_inference]
@@ -25,16 +25,16 @@ inducing_points[2]=2
 Features inducing_features = create_features(f_feats_inducing)
 inducing_features.add_subset(inducing_points)
 
-GaussianLikelihood gauss_likelihood()	
-FITCInferenceMethod inference_method(k, features_train, mean_function, labels_train, gauss_likelihood, inducing_features)
+LikelihoodModel gauss_likelihood = create_gp_likelihood("GaussianLikelihood")
+Inference inference_method = create_gp_inference("FITCInferenceMethod", kernel=k, mean_function=mean_function, likelihood_model=gauss_likelihood)
 #![create_inference]
 
 #![create_instance]
-GaussianProcessRegression gp_regression(inference_method)
+GaussianProcess gp_regression = create_gaussian_process("GaussianProcessRegression", inference_method=inference_method, labels=labels_train, inducing_features=inducing_features)
 #![create_instance]
 
 #![train_and_apply]
-gp_regression.train()
+gp_regression.train(features_train)
 RegressionLabels labels_predict = gp_regression.apply_regression(features_test)
 #![train_and_apply]
 
@@ -48,4 +48,4 @@ real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables
-RealVector output = labels_test.get_labels()
+RealVector output = labels_test.get_real_vector("labels")

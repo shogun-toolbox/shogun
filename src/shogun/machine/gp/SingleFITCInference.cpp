@@ -220,9 +220,9 @@ SGVector<float64_t> SingleFITCInference::get_derivative_related_inducing_feature
 	//For an ARD kernel with KL_SCALAR and KL_DIAG, the time complexity is O(p*n*m)
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
-
-	int32_t dim=m_inducing_features.num_rows;
-	int32_t num_samples=m_inducing_features.num_cols;
+	auto inducing_feat = m_inducing_features->as<DotFeatures>();
+	int32_t dim = inducing_feat->get_dim_feature_space();
+	int32_t num_samples = inducing_feat->get_num_vectors();
 	SGVector<float64_t>deriv_lat(dim*num_samples);
 	deriv_lat.zero();
 

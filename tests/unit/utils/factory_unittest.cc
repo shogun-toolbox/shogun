@@ -55,7 +55,7 @@ TEST(Factory, DISABLED_string_features_from_file)
 	file_save->close();
 
 	auto file_load = std::make_shared<CSVFile>(filename.c_str(), 'r');
-	auto obj = create_string_features(file_load, DNA, PT_CHAR);
+	auto obj = create<StringFeatures<char>>(file_load, DNA, PT_CHAR);
 	file_load->close();
 
 	EXPECT_TRUE(obj.get() != nullptr);

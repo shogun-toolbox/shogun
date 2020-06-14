@@ -37,20 +37,21 @@
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 
-#include <shogun/labels/BinaryLabels.h>
+#include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/ZeroMean.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/machine/gp/ConstMean.h>
-#include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
-#include <shogun/classifier/GaussianProcessClassification.h>
-#include <shogun/preprocessor/RescaleFeatures.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/machine/gp/Inference.h>
+#include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
+#include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
+#include <shogun/machine/gp/ZeroMean.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/RescaleFeatures.h>
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
@@ -113,6 +114,8 @@ public:
 		lab_train[8] = 1.0;
 		lab_train[9] = -1.0;
 
+		SGVector<float64_t> mutil_lab_train{1, 0, 0, 0, 0, 1, 0, 1, 1, 0};
+
 		// create test features
 		for (index_t x1 = -2; x1 <= 2; x1++)
 		{
@@ -127,6 +130,9 @@ public:
 		// shogun representation of features and labels
 		features_train = std::make_shared<DenseFeatures<float64_t>>(feat_train);
 		labels_train = std::make_shared<BinaryLabels>(lab_train);
+		multi_labels_train =
+		    std::make_shared<MulticlassLabels>(mutil_lab_train);
+
 		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test);
 
 		// choose Gaussian kernel with sigma = 2 and zero mean function
@@ -141,6 +147,7 @@ public:
 	const index_t n = 10;
 	std::shared_ptr<Features> features_train;
 	std::shared_ptr<BinaryLabels> labels_train;
+	std::shared_ptr<MulticlassLabels> multi_labels_train;
 	std::shared_ptr<Features> features_test;
 	std::shared_ptr<GaussianKernel> kernel;
 	std::shared_ptr<ZeroMean> mean;
@@ -488,6 +495,45 @@ TEST_F(GaussianProcessClassificationTest, get_mean_vector)
 	EXPECT_NEAR(mean_vector[24], 0.041654, 1E-6);
 
 	
+}
+
+TEST_F(GaussianProcessClassificationTest, train)
+{
+	std::shared_ptr<LikelihoodModel> likelihood1 =
+	    std::make_shared<SoftMaxLikelihood>();
+	likelihood1->put(random::kSeed, 1);
+	std::shared_ptr<Inference> inf =
+	    std::make_shared<MultiLaplaceInferenceMethod>();
+	std::shared_ptr<Kernel> k = std::make_shared<GaussianKernel>();
+	std::shared_ptr<MeanFunction> mean = std::make_shared<ZeroMean>();
+	inf->put("kernel", k);
+	inf->put("mean_function", mean);
+	inf->put("likelihood_model", likelihood1);
+	auto gpc1 = std::make_shared<GaussianProcessClassification>(inf);
+	gpc1->set_labels(multi_labels_train);
+	gpc1->train(features_train);
+	auto labels_predict1 = gpc1->apply_multiclass(features_test);
+	auto labels1 = labels_predict1->get<SGVector<float64_t>>("labels");
+
+	std::shared_ptr<LikelihoodModel> likelihood2 =
+	    std::make_shared<SoftMaxLikelihood>();
+	std::shared_ptr<Inference> inf2 =
+	    std::make_shared<MultiLaplaceInferenceMethod>();
+	inf2->put("kernel", k);
+	inf2->put("mean_function", mean);
+	inf2->put("likelihood_model", likelihood2);
+	auto gpc2 = std::make_shared<GaussianProcessClassification>(inf2);
+	gpc2->set_labels(multi_labels_train);
+	gpc2->put("seed", 1);
+	gpc2->train(features_train);
+	auto labels_predict2 = gpc2->apply_multiclass(features_test);
+	auto labels2 = labels_predict2->get<SGVector<float64_t>>("labels");
+
+	for (int i = 0; i < 25; i++)
+	{
+		EXPECT_NEAR(
+		    labels1[i], labels2[i], std::numeric_limits<float64_t>::epsilon());
+	}
 }
 
 TEST_F(GaussianProcessClassificationTest, get_variance_vector)

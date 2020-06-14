@@ -13,7 +13,7 @@ Features features_from_matrix = create_features(real_matrix)
 IntVector dims(2)
 dims[0] = 0
 dims[1] = 1
-Features features_with_subset = create_features_subset(features_from_matrix, dims)
+Features features_with_subset = create_subset_features(features_from_matrix, dims)
 
 File features_file = read_csv("@SHOGUN_DATA@/classifier_binary_2d_nonlinear_features_train.dat")
 Features features_from_file = create_features(features_file)

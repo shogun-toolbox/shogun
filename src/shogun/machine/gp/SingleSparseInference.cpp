@@ -77,9 +77,8 @@ public:
         virtual SGVector<float64_t> obtain_variable_reference()
 	{
 		require(m_obj,"Object not set");
-		SGMatrix<float64_t>& lat_m=m_obj->m_inducing_features;
-		SGVector<float64_t> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
-		return x;
+		auto lat_m = m_obj->m_inducing_features->as<DotFeatures>();
+		return lat_m->get_computed_dot_feature_matrix();
 	}
         virtual SGVector<float64_t> get_gradient()
 	{
@@ -112,7 +111,7 @@ private:
 	}
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
-}
+} // namespace shogun
 
 SingleSparseInference::SingleSparseInference() : SparseInference()
 {
@@ -197,8 +196,9 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_inference_method(
 		SGVector<float64_t> res;
 		if (!m_fully_sparse)
 		{
-			int32_t dim=m_inducing_features.num_rows;
-			int32_t num_samples=m_inducing_features.num_cols;
+			auto inducing_feat = m_inducing_features->as<DotFeatures>();
+			int32_t dim = inducing_feat->get_dim_feature_space();
+			int32_t num_samples = inducing_feat->get_num_vectors();
 			res=SGVector<float64_t>(dim*num_samples);
 			io::warn("Derivative wrt {} cannot be computed since the kernel does not support fully sparse inference",
 				param.first);
@@ -273,18 +273,26 @@ SGVector<float64_t> SingleSparseInference::get_derivative_wrt_kernel(
 
 void SingleSparseInference::check_bound(SGVector<float64_t> bound, const char* name)
 {
+	require(
+	    m_inducing_features != nullptr,
+	    "Inducing features must set before this method is called");
+	auto inducing_feat = m_inducing_features->as<DotFeatures>();
+	int32_t dim = inducing_feat->get_dim_feature_space();
+	int32_t num_samples = inducing_feat->get_num_vectors();
 	if (bound.vlen>1)
 	{
-		require(m_inducing_features.num_rows>0, "Inducing features must set before this method is called");
-		require(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
-			"The length of inducing features ({}x{})",
-			" and the length of bound constraints ({}) are different",
-			m_inducing_features.num_rows,m_inducing_features.num_cols,bound.vlen);
+		require(
+		    dim * num_samples == bound.vlen,
+		    "The length of inducing features ({}x{})",
+		    " and the length of bound constraints ({}) are different", dim,
+		    num_samples, bound.vlen);
 	}
 	else if(bound.vlen==1)
 	{
-		io::warn("All inducing_features ({}x{}) are constrainted by the single value ({}) in the {} bound",
-			m_inducing_features.num_rows,m_inducing_features.num_cols,bound[0],name);
+		io::warn(
+		    "All inducing_features ({}x{}) are constrainted by the single "
+		    "value ({}) in the {} bound",
+		    dim, num_samples, bound[0], name);
 	}
 }
 

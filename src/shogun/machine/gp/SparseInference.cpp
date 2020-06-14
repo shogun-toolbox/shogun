@@ -55,9 +55,7 @@ void SparseInference::check_features()
 void SparseInference::convert_features()
 {
 	auto feat_type=m_features->as<DotFeatures>();
-
-	SGMatrix<float64_t>lat_m(m_inducing_features.matrix,
-		m_inducing_features.num_rows,m_inducing_features.num_cols,false);
+	auto lat_m = m_inducing_features->as<DotFeatures>();
 	auto lat_type=std::make_shared<DenseFeatures<float64_t>>(lat_m);
 
 	require(feat_type, "Input features ({}) must be DotFeatures"
@@ -99,8 +97,9 @@ SparseInference::SparseInference(std::shared_ptr<Kernel> kern, std::shared_ptr<F
 
 void SparseInference::init()
 {
-	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
-			ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	SG_ADD(
+	    &m_inducing_features, "inducing_features", "inducing features",
+	    ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_log_ind_noise, "log_inducing_noise", "noise about inducing potins in log domain",
 		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior");
@@ -108,7 +107,6 @@ void SparseInference::init()
 	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr");
 
 	m_log_ind_noise = std::log(1e-10);
-	m_inducing_features=SGMatrix<float64_t>();
 }
 
 void SparseInference::set_inducing_noise(float64_t noise)
@@ -130,8 +128,7 @@ void SparseInference::check_members() const
 {
 	Inference::check_members();
 
-	require(m_inducing_features.num_rows, "Inducing features should not be empty");
-	require(m_inducing_features.num_cols, "Inducing features should not be empty");
+	require(m_inducing_features, "Inducing features not set");
 }
 
 SGVector<float64_t> SparseInference::get_alpha()

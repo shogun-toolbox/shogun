@@ -40,7 +40,7 @@
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/GaussianProcessMachine.h>
+#include <shogun/machine/GaussianProcess.h>
 #include <shogun/machine/Machine.h>
 
 namespace shogun
@@ -49,7 +49,7 @@ namespace shogun
 /** @brief Class GaussianProcessClassification implements binary and multiclass
  * classification based on Gaussian Processes.
  */
-class GaussianProcessClassification : public GaussianProcessMachine
+class GaussianProcessClassification : public GaussianProcess
 {
 public:
 	/** problem type */
@@ -72,7 +72,8 @@ public:
 	 *
 	 * @return classified labels (label is either -1 or 1)
 	 */
-	virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+	virtual std::shared_ptr<BinaryLabels>
+	apply_binary(std::shared_ptr<Features> data);
 
 	/** returns a vector of of the posterior predictive means
 	 *
@@ -80,7 +81,8 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_mean_vector(const std::shared_ptr<Features>& data) override;
 
 	/** returns a vector of the posterior predictive variances
 	 *
@@ -88,7 +90,8 @@ public:
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_variance_vector(const std::shared_ptr<Features>& data) override;
 
 	/** returns probabilities \f$p(y_*=1)\f$ for each (test) feature \f$x_*\f$
 	 *
@@ -96,7 +99,8 @@ public:
 	 *
 	 * @return vector of probabilities
 	 */
-	SGVector<float64_t> get_probabilities(const std::shared_ptr<Features>& data);
+	SGVector<float64_t>
+	get_probabilities(const std::shared_ptr<Features>& data) override;
 
 	/** get classifier type
 	 *
@@ -121,7 +125,8 @@ public:
 	 *
 	 * @return classified labels (label starts from 0)
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	virtual std::shared_ptr<MulticlassLabels>
+	apply_multiclass(std::shared_ptr<Features> data = NULL);
 
 protected:
 	/** train classifier
@@ -130,8 +135,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
-
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 };
 }
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */

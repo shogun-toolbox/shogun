@@ -12,13 +12,13 @@
 
 using namespace shogun;
 
-GaussianProcessRegression::GaussianProcessRegression()
-		: GaussianProcessMachine()
+GaussianProcessRegression::GaussianProcessRegression() : GaussianProcess()
 {
 }
 
-GaussianProcessRegression::GaussianProcessRegression(const std::shared_ptr<Inference>& method)
-		: GaussianProcessMachine(method)
+GaussianProcessRegression::GaussianProcessRegression(
+    const std::shared_ptr<Inference>& method)
+    : GaussianProcess(method)
 {
 	// set labels
 	m_labels=method->get_labels();
@@ -75,22 +75,27 @@ bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
-	require(m_method, "Inference method should not be NULL");
-	auto lik=m_method->get_model();
-	require(m_method->supports_regression(), "{} with {} doesn't support "
-			"regression",	m_method->get_name(), lik->get_name());
+	require(m_method, "Inference method not set");
+	if (m_labels)
+	{
+		m_method->set_labels(m_labels);
+	}
 	if (data)
 	{
-		// set inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
-		{
-			auto fitc_method = m_method->as<FITCInferenceMethod>();
-			fitc_method->set_inducing_features(data);
-
-		}
-		else
-			m_method->set_features(data);
+		m_method->set_features(data);
 	}
+	if (m_inducing_features)
+	{
+		auto fitc_method = m_method->as<FITCInferenceMethod>();
+		fitc_method->set_inducing_features(m_inducing_features);
+	}
+
+	auto lik = m_method->get_model();
+	require(
+	    m_method->supports_regression(),
+	    "{} with {} doesn't support "
+	    "regression",
+	    m_method->get_name(), lik->get_name());
 
 	// perform inference
 	m_method->update();
