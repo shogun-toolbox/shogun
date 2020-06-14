@@ -50,11 +50,18 @@ namespace shogun{
 	{
 		return details::pipeline();
 	} 
-	std::shared_ptr<Features> create_char_string_features(
+	std::shared_ptr<Features> create_string_features(
 	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 	    EPrimitiveType primitive_type = PT_CHAR)
 	{
-		return create<StringFeatures<char>>(file, alphabet_type, primitive_type);
+		return details::string_features(file, alphabet_type, primitive_type);
+	}
+
+	std::shared_ptr<Features> create_string_features(
+	    const std::vector<SGVector<char>>& string_list, EAlphabet alphabet_type = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		return details::string_features(string_list, alphabet_type, primitive_type);
 	}
 
 	std::shared_ptr<Features> create_subset_features(
@@ -64,11 +71,11 @@ namespace shogun{
 		return create<DenseSubsetFeatures<float64_t>>(base_features, indices, primitive_type);
 	}
 
-	std::shared_ptr<Features> create_int_string_features(
+	std::shared_ptr<Features> create_string_features(
 	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
 	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 	{
-		return create<StringFeatures<uint16_t>>(features, start, p_order, gap, rev, primitive_type);
+		return details::string_features(features, start, p_order, gap, rev, primitive_type);
 	}
 	// SWIG does not support perfect forwarding, so use this function 
 	// to wrap other functions that use perfect forwarding 
@@ -116,4 +123,4 @@ namespace shogun{
 %template(create_labels) shogun::create_labels<float64_t>;
 %template(create_minimizer) shogun::create_<shogun::Minimizer, std::string>;
 %template(create_lbfgs_minimizer) shogun::create_<shogun::LBFGSMinimizer, std::string>;
-%template(create_kernel_normalizer) shogun::create<shogun::KernelNormalizer, std::string>;
+%template(create_kernel_normalizer) shogun::create_<shogun::KernelNormalizer, std::string>;

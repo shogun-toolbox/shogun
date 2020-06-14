@@ -68,7 +68,7 @@
 }
 %enddef
 
-
+TYPEMAP_SGVECTOR(bool, bool, byte)
 TYPEMAP_SGVECTOR(char, signed char, byte)
 TYPEMAP_SGVECTOR(uint8_t, unsigned char, byte)
 TYPEMAP_SGVECTOR(int16_t, short, short)
@@ -156,6 +156,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 }
 %enddef
 
+TYPEMAP_SGMATRIX(bool, bool, byte)
 TYPEMAP_SGMATRIX(char, signed char, byte)
 TYPEMAP_SGMATRIX(uint8_t, unsigned char, byte)
 TYPEMAP_SGMATRIX(int16_t, short, short)

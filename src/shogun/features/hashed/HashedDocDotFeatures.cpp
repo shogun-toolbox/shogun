@@ -49,8 +49,18 @@ HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, const std::shared_
 	tokens_to_skip = skips;
 }
 
+HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, const std::shared_ptr<StringFeatures<char>>& docs,
+	const std::shared_ptr<Tokenizer>& tzer, bool normalize) : HashedDocDotFeatures(hash_bits, docs, tzer, normalize, 1, 0)
+{
+}
+
+HashedDocDotFeatures::HashedDocDotFeatures(int32_t hash_bits, const std::shared_ptr<StringFeatures<char>>& docs,
+	const std::shared_ptr<Tokenizer>& tzer) : HashedDocDotFeatures(hash_bits, docs, tzer, true)
+{
+}
+
 HashedDocDotFeatures::HashedDocDotFeatures(const HashedDocDotFeatures& orig)
-: DotFeatures(orig), num_bits(orig.num_bits), doc_collection(orig.doc_collection),
+: DotFeatures(orig), doc_collection(orig.doc_collection), num_bits(orig.num_bits),
   tokenizer(orig.tokenizer), should_normalize(orig.should_normalize),
   ngrams(orig.ngrams), tokens_to_skip(orig.tokens_to_skip)
 {

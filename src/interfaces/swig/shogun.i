@@ -215,6 +215,7 @@ import org.jblas.*;
 		vec[0] = value;
 		$self->put(tag_float64vec, vec);
 	}
+#elif SWIGR || SWIGOCTAVE
 	else if (Tag<SGVector<bool>> tag_boolvec(name); $self->has(tag_boolvec))
 	{
 		SGVector<bool> vec(1);

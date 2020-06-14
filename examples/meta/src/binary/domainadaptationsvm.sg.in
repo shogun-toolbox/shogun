@@ -3,8 +3,8 @@ File f_feats_test = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
 File f_labels_train = read_csv("@SHOGUN_DATA@/label_train_dna.dat")
 
 #![create_features]
-Features feats_train = create_char_string_features(f_feats_train, enum EAlphabet.DNA)
-Features feats_test = create_char_string_features(f_feats_test, enum EAlphabet.DNA) 
+Features feats_train = create_string_features(f_feats_train, enum EAlphabet.DNA)
+Features feats_test = create_string_features(f_feats_test, enum EAlphabet.DNA) 
 Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 

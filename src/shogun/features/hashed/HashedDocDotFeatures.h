@@ -42,6 +42,25 @@ public:
 	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
 	 * @param docs the document collection
 	 * @param tzer the tokenizer to use on the documents
+	 */
+	HashedDocDotFeatures(int32_t hash_bits, const std::shared_ptr<StringFeatures<char>>& docs,
+			const std::shared_ptr<Tokenizer>& tzer);
+
+	/** constructor
+	 *
+	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
+	 * @param docs the document collection
+	 * @param tzer the tokenizer to use on the documents
+	 * @param normalize whether or not to normalize the result of the dot products
+	 */
+	HashedDocDotFeatures(int32_t hash_bits, const std::shared_ptr<StringFeatures<char>>& docs,
+			const std::shared_ptr<Tokenizer>& tzer, bool normalize);
+
+	/** constructor
+	 *
+	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
+	 * @param docs the document collection
+	 * @param tzer the tokenizer to use on the documents
 	 * @param normalize whether or not to normalize the result of the dot products
 	 * @param n_grams max number of consecutive tokens to hash together (extra features)
 	 * @param skips max number of tokens to skip when combining tokens

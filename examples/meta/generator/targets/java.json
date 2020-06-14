@@ -6,7 +6,7 @@
         "IncludeGlobalFunctions": false,
         "DependencyListElement": "import org.shogun.$typeName;",
         "DependencyListSeparator": "\n",
-        "ExcludeImport": ["StringCharList", "StringWordList"]
+        "ExcludeImport": ["StringCharList", "StringWordList", "RealVector", "RealMatrix", "BoolMatrix", "ByteMatrix", "WordMatrix", "IntMatrix", "LongIntMatrix", "ShortRealMatrix", "BoolVector", "IntVector", "ByteVector", "LongIntVector", "ShortRealVector", "WordVector"]
     },
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
@@ -19,6 +19,7 @@
             "Separator": ";\n",
             "InitialSeperatorWhenArgs>0": false
         },
+        "BoolVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "CharVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "ByteVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "WordVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
@@ -28,6 +29,7 @@
         "ShortRealVector": "FloatMatrix $name = new FloatMatrix(1, $arguments)",
         "RealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "LongRealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
+        "BoolMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "CharMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "ByteMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "WordMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
@@ -39,7 +41,7 @@
         "LongRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)"
     },
     "ListInit": {
-        "BoolVector": "BoolVector $name = new BoolVector({$arguments})",
+        "BoolVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "CharVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "ByteVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "WordVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
@@ -107,14 +109,14 @@
         "Access": {
             "Vector": "$identifier.get($indices)",
             "Matrix": "$identifier.get($indices)",
-            "BoolVector": "$identifier.get_element($indices)",
-            "BoolMatrix": "$identifier.get_element($indices)"
+            "BoolVector": "$identifier.get($indices) == 1.0 ? true : false",
+            "BoolMatrix": "$identifier.get($indices) == 1.0 ? true : false"
         },
         "Assign": {
             "Vector": "$identifier.put($indices, $expr)",
             "Matrix": "$identifier.put($indices, $expr)",
-            "BoolVector": "$identifier.set_element($expr, $indices)",
-            "BoolMatrix": "$identifier.set_element($expr, $indices)"
+            "BoolVector": "$identifier.put($indices, $expr ? 1.0 : 0.0)",
+            "BoolMatrix": "$identifier.put($indices, $expr ? 1.0 : 0.0)"
         },
         "ZeroIndexed": true
     },

@@ -12,6 +12,7 @@
             "InitialSeperatorWhenArgs>0": false
         },
         "string": "$name = $arguments",
+        "BoolVector": "$name = false(1, $arguments)",
         "ByteVector": "$name = zeros(1, $arguments, 'int8')",
         "WordVector": "$name = zeros(1, $arguments, 'int16')",
         "IntVector": "$name = zeros(1, $arguments, 'int32')",
@@ -20,6 +21,7 @@
         "ShortRealVector": "$name = zeros(1, $arguments, 'float32')",
         "RealVector": "$name = zeros(1, $arguments, 'float64')",
         "LongRealVector": "$name = zeros(1, $arguments, 'float64')",
+        "BoolMatrix": "$name = false($arguments)",
         "CharMatrix": "$name = zeros($arguments, 'char')",
         "ByteMatrix": "$name = zeros($arguments, 'int8')",
         "WordMatrix": "$name = zeros($arguments, 'int16')",
@@ -31,6 +33,7 @@
         "LongRealMatrix": "$name = zeros($arguments, 'float64')"
     },
     "ListInit": {
+        "BoolVector": "$name = logical([$arguments])",
         "ByteVector": "$name = int8([$arguments])",
         "WordVector": "$name = int16([$arguments])",
         "IntVector": "$name = int32([$arguments])",
@@ -65,15 +68,11 @@
     "Element": {
         "Access": {
             "Vector": "$identifier($indices)",
-            "Matrix": "$identifier($indices)",
-            "BoolVector": "$identifier.get_element($indices)",
-            "BoolMatrix": "$identifier.get_element($indices)"
+            "Matrix": "$identifier($indices)"
         },
         "Assign": {
             "Vector": "$identifier($indices) = $expr",
-            "Matrix": "$identifier($indices) = $expr",
-            "BoolVector": "$identifier.set_element($expr, $indices)",
-            "BoolMatrix": "$identifier.set_element($expr, $indices)"
+            "Matrix": "$identifier($indices) = $expr"
         },
         "ZeroIndexed": false
     },

@@ -161,7 +161,7 @@ namespace shogun
 			return result;
 		}
 
-		std::shared_ptr<StringFeatures<char>> string_features(
+		std::shared_ptr<Features> string_features(
 		    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 		    EPrimitiveType primitive_type = PT_CHAR)
 		{
@@ -228,7 +228,7 @@ namespace shogun
 		 * @param primitive_type primitive type of the string features
 		 * @return new instance of string features
 		 */
-		std::shared_ptr<StringFeatures<uint16_t>> string_features(
+		std::shared_ptr<Features> string_features(
 		    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
 		    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 		{
@@ -408,7 +408,7 @@ namespace shogun
 
 #ifndef SWIG
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args&&... args)
+	auto create(Args&&... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -436,7 +436,9 @@ namespace shogun
 		}
 		else if constexpr (traits::is_any_of_v<
 		                       TypeName, StringFeatures<char>,
-		                       StringFeatures<uint16_t>>)
+		                       StringFeatures<uint16_t>,
+		                       StringFeatures<uint32_t>,
+		                       StringFeatures<uint64_t>>)
 		{
 			return details::string_features(std::forward<Args>(args)...);
 		}
@@ -455,35 +457,6 @@ namespace shogun
 			    (std::string{std::forward<Args>(args)}.c_str())...);
 		}
 	}
-
-	std::shared_ptr<Features> create_string_features(
-	    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
-	{
-		return details::string_features(file, alphabet_type, primitive_type);
-	}
-
-	std::shared_ptr<Features> create_string_features(
-	    const std::vector<SGVector<char>>& string_list, EAlphabet alphabet_type = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
-	{
-		return details::string_features(string_list, alphabet_type, primitive_type);
-	}
-
-
-	std::shared_ptr<Features> create_features_subset(
-	    std::shared_ptr<Features> base_features, SGVector<index_t> indices,
-	    EPrimitiveType primitive_type = PT_FLOAT64)
-	{
-		return details::features_subset(base_features, indices, primitive_type);
-	}
-
-	std::shared_ptr<Features> create_string_features(
-	    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
-	    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
-	{
-		return details::string_features(
-		    features, start, p_order, gap, rev, primitive_type);
-	}
+#endif
 } // namespace shogun
 #endif // FACTORY_H_
