@@ -99,7 +99,7 @@ void SparseInference::init()
 {
 	SG_ADD(
 	    &m_inducing_features, "inducing_features", "inducing features",
-	    ParameterProperties::MODEL | ParameterProperties::GRADIENT);
+	    ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_log_ind_noise, "log_inducing_noise", "noise about inducing potins in log domain",
 		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior");
