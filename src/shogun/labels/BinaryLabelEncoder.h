@@ -13,7 +13,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/LabelEncoder.h>
 #include <shogun/lib/SGVector.h>
-
+#include <unordered_set>
 namespace shogun
 {
 
@@ -32,13 +32,12 @@ namespace shogun
 		SGVector<float64_t> fit(const std::shared_ptr<Labels>& labs) override
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
-			fit_impl(result_vector);
+			auto result_labels = fit_impl(result_vector);
 			require(
 			    unique_labels.size() == 2,
-			    "BinaryLabel should contain only two elements");
+			    "Binary Labels should contain only two elements");
 
-			return SGVector<float64_t>(
-			    unique_labels.begin(), unique_labels.end());
+			return result_labels;
 		}
 		/** Transform labels to normalized encoding.
 		 *
@@ -50,9 +49,10 @@ namespace shogun
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
 			require(
-			    std::set<float64_t>(result_vector.begin(), result_vector.end())
+			    std::unordered_set<float64_t>(
+			        result_vector.begin(), result_vector.end())
 			            .size() == 2,
-			    "BinaryLabel should contain only two elements");
+			    "Binary Labels should contain only two elements");
 			auto transformed_vec = transform_impl(result_vector);
 
 			std::transform(
@@ -74,7 +74,14 @@ namespace shogun
 		std::shared_ptr<Labels>
 		inverse_transform(const std::shared_ptr<Labels>& labs) override
 		{
-			auto normalized_vector = labs->as<DenseLabels>()->get_labels();
+			auto normalized_labels = labs->as<BinaryLabels>();
+			normalized_labels->ensure_valid();
+			auto normalized_vector = normalized_labels->get_labels();
+			require(
+			    std::unordered_set<float64_t>(
+			        normalized_vector.begin(), normalized_vector.end())
+			            .size() == 2,
+			    "Binary Labels should contain only two elements");
 
 			std::transform(
 			    normalized_vector.begin(), normalized_vector.end(),
@@ -85,14 +92,12 @@ namespace shogun
 				    else
 					    return e;
 			    });
-			require(
-			    std::set<float64_t>(
-			        normalized_vector.begin(), normalized_vector.end())
-			            .size() == 2,
-			    "BinaryLabel should contain only two elements");
-
-			return std::make_shared<BinaryLabels>(
-			    inverse_transform_impl(normalized_vector));
+			auto origin_vec = inverse_transform_impl(normalized_vector);
+			SGVector<int32_t> result_vev(origin_vec.vlen);
+			std::transform(
+			    origin_vec.begin(), origin_vec.end(), result_vev.begin(),
+			    [](auto&& e) { return static_cast<int32_t>(e); });
+			return std::make_shared<BinaryLabels>(result_vev);
 		}
 		/** Fit label encoder and return encoded labels.
 		 *
