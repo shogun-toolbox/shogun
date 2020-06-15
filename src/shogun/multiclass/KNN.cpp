@@ -27,7 +27,7 @@ KNN::KNN()
 	init();
 }
 
-KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver)
+KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, KNN_SOLVER knn_solver)
 : DistanceMachine()
 {
 	init();
@@ -35,11 +35,8 @@ KNN::KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<La
 	m_k=k;
 
 	require(d, "Distance not set.");
-	require(trainlab, "Training labels not set.");
 
 	set_distance(d);
-	set_labels(trainlab);
-	m_train_labels.vlen=trainlab->get_num_labels();
 	m_knn_solver=knn_solver;
 }
 
@@ -76,16 +73,13 @@ bool KNN::train_machine(std::shared_ptr<Features> data)
 {
 	require(m_labels, "No training labels provided.");
 	require(distance, "No training distance provided.");
-
-	if (data)
-	{
-		require(
+	require(
 		    m_labels->get_num_labels() == data->get_num_vectors(),
 		    "Number of training vectors ({}) does not match number of labels "
 		    "({})",
 		    data->get_num_vectors(), m_labels->get_num_labels());
-		distance->init(data, data);
-	}
+	m_features = data;
+	distance->init(data, data);
 
 	SGVector<int32_t> lab=multiclass_labels(m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
@@ -158,9 +152,8 @@ SGMatrix<index_t> KNN::nearest_neighbors()
 
 std::shared_ptr<MulticlassLabels> KNN::apply_multiclass(std::shared_ptr<Features> data)
 {
-	if (data)
-		init_distance(data);
-
+	init_distance(data);
+	m_features = data;
 	//redirecting to fast (without sorting) classify if k==1
 	if (m_k == 1)
 		return classify_NN();
@@ -206,21 +199,9 @@ std::shared_ptr<MulticlassLabels> KNN::classify_NN()
 		COMPUTATION_CONTROLLERS
 		// get distances from i-th test example to 0..num_m_train_labels-1 train examples
 		distances_lhs(distances,0,m_train_labels.vlen-1,i);
-		int32_t j;
-
-		// assuming 0th train examples as nearest to i-th test example
-		int32_t out_idx = 0;
-		float64_t min_dist = distances.vector[0];
-
-		// searching for nearest neighbor by comparing distances
-		for (j=0; j<m_train_labels.vlen; j++)
-		{
-			if (distances.vector[j]<min_dist)
-			{
-				min_dist = distances.vector[j];
-				out_idx = j;
-			}
-		}
+		
+		const auto min_dist = std::min_element(distances.begin(), distances.end());
+		int32_t out_idx = std::distance(distances.begin(), min_dist);
 
 		// label i-th test example with label of nearest neighbor with out_idx index
 		output->set_label(i,m_train_labels.vector[out_idx]+m_min_label);

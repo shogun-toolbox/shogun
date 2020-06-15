@@ -17,6 +17,8 @@ SHARED_RANDOM_INTERFACE(shogun::DistanceMachine)
 %shared_ptr(shogun::GMM)
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/machine/Machine.h>
+%include <shogun/machine/NonParametricMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 RANDOM_INTERFACE(DistanceMachine)
 %include <shogun/clustering/GMM.h>
