@@ -106,7 +106,11 @@ class KNN : public DistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
+<<<<<<< HEAD
 		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
+=======
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data);
+>>>>>>> Add NonParametricMachine class (#5055)
 
 		/// get output for example "vec_idx"
 		float64_t apply_one(int32_t vec_idx) override
