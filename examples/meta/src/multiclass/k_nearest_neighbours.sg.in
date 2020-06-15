@@ -11,7 +11,7 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![choose_distance]
-Distance d = create_distance("EuclideanDistance", lhs=features_train, rhs=features_train)
+Distance d = create_distance("EuclideanDistance")
 #![choose_distance]
 
 #![create_instance]
@@ -20,7 +20,7 @@ Machine knn = create_machine("KNN", k=k, distance=d, labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
-knn.train()
+knn.train(features_train, labels_train)
 MulticlassLabels labels_predict = knn.apply_multiclass(features_test)
 #![train_and_apply]
 
