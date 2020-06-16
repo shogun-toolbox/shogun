@@ -1,0 +1,19 @@
+File traindat = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File testdat = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
+
+#![create_features]
+Features feats_train = create_features(traindat)
+Features feats_test = create_features(testdat)
+#![create_features]
+
+#![create_kernel]
+Distance distance = create_distance("EuclideanDistance")
+Kernel kernel = create_kernel("InverseMultiQuadricKernel", coef=1.0, distance=distance)
+kernel.init(feats_train, feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix km_train = kernel.get_kernel_matrix()
+kernel.init(feats_train, feats_test)
+RealMatrix km_test = kernel.get_kernel_matrix()
+#![get_kernel_features]
