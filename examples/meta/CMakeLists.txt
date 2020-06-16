@@ -6,10 +6,6 @@ IF(NOT PLY_FOUND)
 	message(FATAL_ERROR "Python module ply required for meta examples. Install or set BUILD_META_EXAMPLES=OFF")
 ENDIF()
 
-IF(NOT CTAGS_FOUND)
-	message(FATAL_ERROR "Ctags required for meta examples. Install or set BUILD_META_EXAMPLES=OFF.")
-ENDIF()
-
 SET_SOURCE_FILES_PROPERTIES(${CTAGS_FILE} PROPERTIES GENERATED 1)
 
 # get list of meta examples that can be built

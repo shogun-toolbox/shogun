@@ -53,10 +53,8 @@ ELSE()
     MESSAGE(WARNING "Please install jinja2 for automatic generated tests.")
 ENDIF()
 
-IF(NOT CTAGS_FOUND)
+IF(NOT TARGET ctags)
 	MESSAGE("Please install Ctags for trained models serialization tests.")
-ELSEIF(NOT HAVE_HDF5)
-	MESSAGE("Please install HDF5 for trained models serialization tests.")
 ELSE()
 	ADD_CUSTOM_COMMAND(OUTPUT trained_model_serialization_test.h
 			COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_test.cc.py
