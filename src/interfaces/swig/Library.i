@@ -9,7 +9,6 @@
 #endif
 
 %shared_ptr(shogun::Signal)
-%shared_ptr(shogun::Time)
 %shared_ptr(shogun::Compressor)
 %shared_ptr(shogun::StructuredData)
 %shared_ptr(shogun::DynamicObjectArray)
@@ -39,7 +38,6 @@
 %include <shogun/lib/DelimiterTokenizer.h>
 %include <shogun/lib/NGramTokenizer.h>
 %include <shogun/lib/Signal.h>
-%include <shogun/lib/Time.h>
 %include <shogun/lib/Compressor.h>
 %include <shogun/lib/StructuredDataTypes.h>
 %include <shogun/lib/StructuredData.h>

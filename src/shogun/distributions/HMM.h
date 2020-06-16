@@ -481,7 +481,7 @@ class HMM : public RandomMixin<Distribution>
 		HMM(
 			int32_t N, int32_t M, Model* model, float64_t PSEUDO);
 		HMM(
-			std::shared_ptr<StringFeatures<uint16_t>> obs, int32_t N, int32_t M,
+			const std::shared_ptr<Features>& obs, int32_t N, int32_t M,
 			float64_t PSEUDO);
 		HMM(
 			int32_t N, float64_t* p, float64_t* q, float64_t* a);
@@ -785,15 +785,15 @@ class HMM : public RandomMixin<Distribution>
 		 * sets the observation pointer and initializes observation-dependent caches
 		 * if hmm is given, then the caches of the model hmm are used
 		 */
-		void set_observations(const std::shared_ptr<StringFeatures<uint16_t>>& obs, const std::shared_ptr<HMM>& hmm=NULL);
+		void set_observations(const std::shared_ptr<Features>& obs, const std::shared_ptr<HMM>& hmm=NULL);
 
 		/** set new observations
 		 * only set the observation pointer and drop caches if there were any
 		 */
-		void set_observation_nocache(const std::shared_ptr<StringFeatures<uint16_t>>& obs);
+		void set_observation_nocache(const std::shared_ptr<Features>& obs);
 
 		/// return observation pointer
-		inline std::shared_ptr<StringFeatures<uint16_t>> get_observations()
+		inline std::shared_ptr<Features> get_observations()
 		{
 			return p_observations;
 		}

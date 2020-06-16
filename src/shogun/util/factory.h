@@ -55,7 +55,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(Evaluation, evaluation)
 	BASE_CLASS_FACTORY(Distance, distance)
 	BASE_CLASS_FACTORY(Kernel, kernel)
-	BASE_CLASS_FACTORY(Kernel, kernel_normalizer)
+	BASE_CLASS_FACTORY(KernelNormalizer, kernel_normalizer)
 	BASE_CLASS_FACTORY(Machine, machine)
 	BASE_CLASS_FACTORY(MulticlassStrategy, multiclass_strategy)
 	BASE_CLASS_FACTORY(ECOCEncoder, ecoc_encoder)
@@ -78,11 +78,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(Distribution, distribution)
 	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
 	BASE_CLASS_FACTORY(GaussianProcess, gaussian_process)
-
-	std::shared_ptr<Alphabet> as_alphabet(std::shared_ptr<SGObject> obj)
-	{
-			return obj->as<Alphabet>();
-	}
+	BASE_CLASS_FACTORY(Alphabet, alphabet)
 
 	namespace details
 	{

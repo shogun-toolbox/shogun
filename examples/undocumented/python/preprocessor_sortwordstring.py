@@ -10,19 +10,14 @@ parameter_list = [[traindna,testdna,3,0,False,False],[traindna,testdna,3,0,False
 
 def preprocessor_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
-	from shogun import CommWordStringKernel
-	from shogun import StringCharFeatures, StringWordFeatures, DNA
-
-	charfeat=StringCharFeatures(fm_train_dna, DNA)
-	feats_train=StringWordFeatures(charfeat.get_alphabet())
-	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
-	charfeat=StringCharFeatures(fm_test_dna, DNA)
-	feats_test=StringWordFeatures(charfeat.get_alphabet())
-	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
 	kernel=sg.create_kernel("CommWordStringKernel", use_sign=use_sign)

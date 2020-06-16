@@ -20,7 +20,32 @@ using namespace shogun;
 SalzbergWordStringKernel::SalzbergWordStringKernel()
 : StringKernel<uint16_t>(0)
 {
-	init();
+	estimate=NULL;
+	mean=NULL;
+	variance=NULL;
+
+	sqrtdiag_lhs=NULL;
+	sqrtdiag_rhs=NULL;
+
+	ld_mean_lhs=NULL;
+	ld_mean_rhs=NULL;
+
+	num_params=0;
+	num_symbols=0;
+	sum_m2_s2=0;
+	pos_prior=0.5;
+
+	neg_prior=0.5;
+	initialized=false;
+
+	SG_ADD((std::shared_ptr<Machine>*)&estimate, "plugin_estimate", "the plugin estimate");
+	add_callback_function("plugin_estimate", [this]() {
+		estimate->as<PluginEstimate>();
+	});
+	SG_ADD(&m_labels, "labels", "the labels");
+	add_callback_function("labels", [this]() {
+		set_prior_probs_from_labels(m_labels);
+	});
 }
 
 SalzbergWordStringKernel::SalzbergWordStringKernel(int32_t size, const std::shared_ptr<Machine>& pie, 
@@ -369,25 +394,4 @@ void SalzbergWordStringKernel::set_prior_probs_from_labels(const std::shared_ptr
 	set_prior_probs(
 		(float64_t)num_pos/(num_pos+num_neg),
 		(float64_t)num_neg/(num_pos+num_neg));
-}
-
-void SalzbergWordStringKernel::init()
-{
-	estimate=NULL;
-	mean=NULL;
-	variance=NULL;
-
-	sqrtdiag_lhs=NULL;
-	sqrtdiag_rhs=NULL;
-
-	ld_mean_lhs=NULL;
-	ld_mean_rhs=NULL;
-
-	num_params=0;
-	num_symbols=0;
-	sum_m2_s2=0;
-	pos_prior=0.5;
-
-	neg_prior=0.5;
-	initialized=false;
 }

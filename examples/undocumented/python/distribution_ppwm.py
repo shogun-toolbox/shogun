@@ -12,7 +12,6 @@ def distribution_ppwm (fm_dna=traindna, order=3):
 
 	charfeat=sg.create_string_features(fm_dna, sg.DNA)
 	feats=sg.create_string_features(charfeat, order-1, order, 0, False, sg.PT_UINT8)
-	feats.put("alphabet", sg.as_alphabet(charfeat.get("alphabet")))
 
 	L=20
 	k=3

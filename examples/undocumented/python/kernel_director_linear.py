@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
+import time
 
 traindat = np.random.random_sample((10,10))
 testdat = np.random.random_sample((10,10))
@@ -21,9 +22,6 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 			seq2 = self.get_rhs().get("feature_matrix")[idx_b]
 			return np.dot(seq1, seq2)
 
-
-	from shogun import Time
-
 	feats_train=sg.create_features(fm_train_real)
 	#feats_train.io.set_loglevel(0)
 	feats_train.get_global_parallel().set_num_threads(1)
@@ -38,14 +36,14 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 	dkernel.init(feats_train, feats_train)
 
 	#print  "km_train"
-	t=Time()
+	t=time.perf_counter()
 	km_train=kernel.get_kernel_matrix()
-	#t1=t.cur_time_diff(True)
+	t1=time.perf_counter() - t
 
 	#print  "dkm_train"
-	t=Time()
+	t=time.perf_counter()
 	dkm_train=dkernel.get_kernel_matrix()
-	#t2=t.cur_time_diff(True)
+	t2=time.perf_counter() - t
 
 	#print "km_train", km_train
 	#print "dkm_train", dkm_train

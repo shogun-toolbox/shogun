@@ -41,7 +41,6 @@ SHARED_RANDOM_INTERFACE(shogun::DotFeatures)
 %shared_ptr(shogun::DummyFeatures)
 %shared_ptr(shogun::IndexFeatures)
 %shared_ptr(shogun::AttributeFeatures)
-%shared_ptr(shogun::CombinedFeatures)
 %shared_ptr(shogun::CombinedDotFeatures)
 %shared_ptr(shogun::HashedDocDotFeatures)
 %shared_ptr(shogun::StreamingHashedDocDotFeatures)
@@ -81,13 +80,9 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
 %shared_ptr(shogun::LatentFeatures)
 
 #ifdef USE_BOOL
-    %shared_ptr(shogun::StringFeatures<bool>)
-    %shared_ptr(shogun::StreamingStringFeatures<bool>)
-    %shared_ptr(shogun::StringFileFeatures<bool>)
     %shared_ptr(shogun::SparseFeatures<bool>)
     %shared_ptr(shogun::StreamingSparseFeatures<bool>)
     %shared_ptr(shogun::StreamingDenseFeatures<bool>)
-    %shared_ptr(shogun::DenseSubsetFeatures<bool>)
 #endif
 #ifdef USE_CHAR
     %shared_ptr(shogun::StringFeatures<char>)
@@ -96,7 +91,6 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
     %shared_ptr(shogun::SparseFeatures<char>)
     %shared_ptr(shogun::StreamingSparseFeatures<char>)
     %shared_ptr(shogun::StreamingDenseFeatures<char>)
-    %shared_ptr(shogun::DenseSubsetFeatures<char>)
 #endif
 #ifdef USE_UINT8
     %shared_ptr(shogun::StringFeatures<uint8_t>)
@@ -105,16 +99,11 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
     %shared_ptr(shogun::SparseFeatures<uint8_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<uint8_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<uint8_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<uint8_t>)
 #endif
 #ifdef USE_INT16
-    %shared_ptr(shogun::StringFeatures<int16_t>)
-    %shared_ptr(shogun::StreamingStringFeatures<int16_t>)
-    %shared_ptr(shogun::StringFileFeatures<int16_t>)
     %shared_ptr(shogun::SparseFeatures<int16_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<int16_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<int16_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<int16_t>)
 #endif
 #ifdef USE_UINT16
     %shared_ptr(shogun::StringFeatures<uint16_t>)
@@ -123,34 +112,23 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
     %shared_ptr(shogun::SparseFeatures<uint16_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<uint16_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<uint16_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<uint16_t>)
 #endif
 #ifdef USE_INT32
-    %shared_ptr(shogun::StringFeatures<int32_t>)
-    %shared_ptr(shogun::StreamingStringFeatures<int32_t>)
-    %shared_ptr(shogun::StringFileFeatures<int32_t>)
     %shared_ptr(shogun::SparseFeatures<int32_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<int32_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<int32_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<int32_t>)
 #endif
 #ifdef USE_UINT32
-    %shared_ptr(shogun::StringFeatures<uint32_t>)
     %shared_ptr(shogun::StreamingStringFeatures<uint32_t>)
     %shared_ptr(shogun::StringFileFeatures<uint32_t>)
     %shared_ptr(shogun::SparseFeatures<uint32_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<uint32_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<uint32_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<uint32_t>)
 #endif
 #ifdef USE_INT64
-    %shared_ptr(shogun::StringFeatures<int64_t>)
-    %shared_ptr(shogun::StreamingStringFeatures<int64_t>)
-    %shared_ptr(shogun::StringFileFeatures<int64_t>)
     %shared_ptr(shogun::SparseFeatures<int64_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<int64_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<int64_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<int64_t>)
 #endif
 #ifdef USE_UINT64
     %shared_ptr(shogun::StringFeatures<uint64_t>)
@@ -159,39 +137,27 @@ PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_
     %shared_ptr(shogun::SparseFeatures<uint64_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<uint64_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<uint64_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<uint64_t>)
 #endif
 #ifdef USE_FLOAT32
-    %shared_ptr(shogun::StringFeatures<float32_t>)
-    %shared_ptr(shogun::StreamingStringFeatures<float32_t>)
-    %shared_ptr(shogun::StringFileFeatures<float32_t>)
     %shared_ptr(shogun::SparseFeatures<float32_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<float32_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<float32_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<float32_t>)
 #endif
 #ifdef USE_FLOAT64
-    %shared_ptr(shogun::StringFeatures<float64_t>)
-    %shared_ptr(shogun::StreamingStringFeatures<float64_t>)
-    %shared_ptr(shogun::StringFileFeatures<float64_t>)
     %shared_ptr(shogun::SparseFeatures<float64_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<float64_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<float64_t>)
     %shared_ptr(shogun::DenseFeatures<float64_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<float64_t>)
     %shared_ptr(shogun::MatrixFeatures<float64_t>)
     %shared_ptr(shogun::DenseFeatures<float64_t>);
     %shared_ptr(shogun::Seedable<shogun::StreamingDenseFeatures<float64_t>>);
     %shared_ptr(shogun::RandomMixin<shogun::StreamingDenseFeatures<float64_t>, std::mt19937_64>)
 #endif
 #ifdef USE_FLOATMAX
-    %shared_ptr(shogun::StringFeatures<floatmax_t>)
-    %shared_ptr(shogun::StreamingStringFeatures<floatmax_t>)
     %shared_ptr(shogun::StringFileFeatures<floatmax_t>)
     %shared_ptr(shogun::SparseFeatures<floatmax_t>)
     %shared_ptr(shogun::StreamingSparseFeatures<floatmax_t>)
     %shared_ptr(shogun::StreamingDenseFeatures<floatmax_t>)
-    %shared_ptr(shogun::DenseSubsetFeatures<floatmax_t>)
 #endif
 
 /* Include Class Headers to make them visible from within the target language */
@@ -422,7 +388,6 @@ namespace shogun
 %include <shogun/features/DummyFeatures.h>
 %include <shogun/features/IndexFeatures.h>
 %include <shogun/features/AttributeFeatures.h>
-%include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
 %include <shogun/features/hashed/HashedDocDotFeatures.h>
 %include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>

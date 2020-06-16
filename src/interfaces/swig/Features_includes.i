@@ -16,7 +16,6 @@
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/AttributeFeatures.h>
 #include <shogun/features/Alphabet.h>
-#include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>

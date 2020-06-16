@@ -9,7 +9,7 @@ Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_kernel]
-Kernel svm_kernel = create_kernel("SubsequenceStringKernel", m_maxlen=5, m_lambda=0.9)
+Kernel svm_kernel = create_kernel("SubsequenceStringKernel", maxlen=5, decay=0.9)
 svm_kernel.init(feats_train, feats_train)
 #![create_kernel]
 

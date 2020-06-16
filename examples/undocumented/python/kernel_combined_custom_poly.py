@@ -8,12 +8,12 @@ parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_train
 
 
 def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,train_label_fname=label_traindat):
-    from shogun import CombinedFeatures, BinaryLabels
+    from shogun import BinaryLabels
     from shogun import CustomKernel
     import shogun as sg
 
     kernel = sg.create_kernel("CombinedKernel")
-    feats_train = CombinedFeatures()
+    feats_train = sg.create_features("CombinedFeatures")
 
     tfeats = sg.create_features(sg.read_csv(train_fname))
     tkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=3)
@@ -22,7 +22,7 @@ def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,tra
     kernel.add("kernel_array", CustomKernel(K))
 
     subkfeats_train = sg.create_features(sg.read_csv(train_fname))
-    feats_train.append_feature_obj(subkfeats_train)
+    feats_train.add("feature_array", subkfeats_train)
     subkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=2)
     kernel.add("kernel_array", subkernel)
 
@@ -33,7 +33,7 @@ def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,tra
     svm.train()
 
     kernel = sg.create_kernel("CombinedKernel")
-    feats_pred = CombinedFeatures()
+    feats_pred = sg.create_features("CombinedFeatures")
 
     pfeats = sg.create_features(sg.read_csv(test_fname))
     tkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=3)
@@ -42,7 +42,7 @@ def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,tra
     kernel.add("kernel_array", CustomKernel(K))
 
     subkfeats_test = sg.create_features(sg.read_csv(test_fname))
-    feats_pred.append_feature_obj(subkfeats_test)
+    feats_pred.add("feature_array", subkfeats_test)
     subkernel = sg.create_kernel("PolyKernel", cache_size=10, degree=2)
     kernel.add("kernel_array", subkernel)
     kernel.init(feats_train, feats_pred)

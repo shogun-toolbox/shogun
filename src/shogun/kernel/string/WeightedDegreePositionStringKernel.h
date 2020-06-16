@@ -150,7 +150,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		virtual float64_t compute_optimized(int32_t idx)
 		{
 			ASSERT(get_is_initialized())
-			ASSERT(alphabet)
+			const auto& alphabet = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_alphabet();
 			ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 			return compute_by_tree(idx);
 		}
@@ -181,18 +181,18 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 */
 		virtual void clear_normal()
 		{
-			if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
+			if ((opt_type==FASTBUTMEMHUNGRY) && (tries->get_use_compact_terminal_nodes()))
 			{
-				tries.set_use_compact_terminal_nodes(false) ;
+				tries->set_use_compact_terminal_nodes(false) ;
 				SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY")
 			}
 
 			if (get_is_initialized())
 			{
 				if (opt_type==SLOWBUTMEMEFFICIENT)
-					tries.delete_trees(true);
+					tries->delete_trees(true);
 				else if (opt_type==FASTBUTMEMHUNGRY)
-					tries.delete_trees(false);  // still buggy
+					tries->delete_trees(false);  // still buggy
 				else
 					error("unknown optimization type");
 
@@ -217,7 +217,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 */
 		virtual int32_t get_num_subkernels()
 		{
-			if (position_weights!=NULL)
+			if (position_weights.size() == 0)
 				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;
 			if (length==0)
 				return (int32_t) ceil(1.0*get_degree()/mkl_stepsize);
@@ -250,10 +250,9 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		{
 			num_weights = get_num_subkernels() ;
 
-			SG_FREE(weights_buffer);
-			weights_buffer = SG_MALLOC(float64_t, num_weights);
+			weights_buffer = SGVector<float64_t>(num_weights);
 
-			if (position_weights!=NULL)
+			if (position_weights.size() == 0)
 				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = position_weights[i*mkl_stepsize] ;
 			else
@@ -276,7 +275,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 			if (num_weights!=num_weights2)
 				error("number of weights do not match");
 
-			if (position_weights!=NULL)
+			if (position_weights.size() == 0)
 				for (int32_t i=0; i<num_weights; i++)
 					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
@@ -330,7 +329,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param d degree weights will be stored here
 		 * @param len number of degree weights will be stored here
 		 */
-		inline float64_t *get_degree_weights(int32_t& d, int32_t& len)
+		inline SGVector<float64_t> get_degree_weights(int32_t& d, int32_t& len)
 		{
 			d=degree;
 			len=length;
@@ -342,9 +341,9 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return weights
 		 */
-		inline float64_t *get_weights(int32_t& num_weights)
+		inline SGVector<float64_t> get_weights(int32_t& num_weights)
 		{
-			if (position_weights!=NULL)
+			if (position_weights.size() == 0)
 			{
 				num_weights = seq_length ;
 				return position_weights ;
@@ -361,7 +360,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param len number of position weights will be stored here
 		 * @return position weights
 		 */
-		inline float64_t *get_position_weights(int32_t& len)
+		inline SGVector<float64_t> get_position_weights(int32_t& len)
 		{
 			len=seq_length;
 			return position_weights;
@@ -390,25 +389,21 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param pws new position weights
 		 * @return if setting was successful
 		 */
-		virtual void set_position_weights(SGVector<float64_t> pws);
+		virtual void set_position_weights(const SGVector<float64_t>& pws);
 
 		/** set position weights for left-hand side
 		 *
 		 * @param pws new position weights
-		 * @param len len
-		 * @param num num
-		 * @return if setting was successful
+s		 * @return if setting was successful
 		 */
-		bool set_position_weights_lhs(float64_t* pws, int32_t len, int32_t num);
+		bool set_position_weights_lhs(const SGMatrix<float64_t>& pws);
 
 		/** set position weights for right-hand side
 		 *
 		 * @param pws new position weights
-		 * @param len len
-		 * @param num num
 		 * @return if setting was successful
 		 */
-		bool set_position_weights_rhs(float64_t* pws, int32_t len, int32_t num);
+		bool set_position_weights_rhs(const SGMatrix<float64_t>& pws);
 
 		/** initialize block weights
 		 *
@@ -463,39 +458,6 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @return if initialization was successful
 		 */
 		bool init_block_weights_log();
-
-		/** delete position weights
-		 *
-		 * @return if deleting was successful
-		 */
-		bool delete_position_weights()
-		{
-			SG_FREE(position_weights);
-			position_weights=NULL;
-			return true;
-		}
-
-		/** delete position weights left-hand side
-		 *
-		 * @return if deleting was successful
-		 */
-		bool delete_position_weights_lhs()
-		{
-			SG_FREE(position_weights_lhs);
-			position_weights_lhs=NULL;
-			return true;
-		}
-
-		/** delete position weights right-hand side
-		 *
-		 * @return if deleting was successful
-		 */
-		bool delete_position_weights_rhs()
-		{
-			SG_FREE(position_weights_rhs);
-			position_weights_rhs=NULL;
-			return true;
-		}
 
 		/** compute by tree
 		 *
@@ -694,30 +656,30 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 
 	protected:
 		/** weights */
-		float64_t* weights;
+		SGVector<float64_t> weights;
 		/** degree */
 		int32_t weights_degree;
 		/** length */
 		int32_t weights_length;
 
 		/** position weights */
-		float64_t* position_weights;
+		SGVector<float64_t> position_weights;
 		/** position weights len */
 		int32_t position_weights_len;
 
 		/** position weights left-hand side */
-		float64_t* position_weights_lhs;
+		SGMatrix<float64_t> position_weights_lhs;
 		/** position weights len */
 		int32_t position_weights_lhs_len;
 		/** position weights right-hand side */
-		float64_t* position_weights_rhs;
+		SGMatrix<float64_t> position_weights_rhs;
 		/** position weights len */
 		int32_t position_weights_rhs_len;
 		/** position mask */
-		bool* position_mask;
+		SGVector<bool> position_mask;
 
 		/** weights buffer */
-		float64_t* weights_buffer;
+		SGVector<float64_t> weights_buffer;
 		/** MKL stepsize */
 		int32_t mkl_stepsize;
 
@@ -732,7 +694,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		int32_t seq_length;
 
 		/** shifts */
-		int32_t *shift;
+		SGVector<int32_t> shift;
 		/** length of shifts */
 		int32_t shift_len;
 		/** maximum shift */
@@ -749,9 +711,9 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		int32_t which_degree;
 
 		/** tries */
-		CTrie<DNATrie> tries;
+		std::unique_ptr<CTrie<DNATrie>> tries;
 		/** POIM tries */
-		CTrie<POIMTrie> poim_tries;
+		std::unique_ptr<CTrie<POIMTrie>> poim_tries;
 
 		/** if tree is initialized */
 		bool tree_initialized;
@@ -759,9 +721,9 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		bool use_poim_tries;
 
 		/** temporary memory for the interface to the poim functions */
-		float64_t* m_poim_distrib;
+		SGMatrix<float64_t> m_poim_distrib;
 		/** temporary memory for the interface to the poim functions */
-		float64_t* m_poim;
+		SGVector<float64_t> m_poim;
 
 		/** number of symbols */
 		int32_t m_poim_num_sym;
@@ -769,9 +731,6 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		int32_t m_poim_num_feat;
 		/** total size of poim array */
 		int32_t m_poim_result_len;
-
-		/** alphabet of features */
-		std::shared_ptr<Alphabet> alphabet;
 };
 }
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */

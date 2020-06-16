@@ -18,16 +18,15 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
     from shogun import BinaryLabels
-    from shogun import CombinedFeatures
     import shogun as sg
     import numpy as np
 
     # training data, combined features all on same data
     features=sg.create_features(traindat)
-    comb_features=CombinedFeatures()
-    comb_features.append_feature_obj(features)
-    comb_features.append_feature_obj(features)
-    comb_features.append_feature_obj(features)
+    comb_features=sg.create_features("CombinedFeatures")
+    comb_features.add("feature_array", features)
+    comb_features.add("feature_array", features)
+    comb_features.add("feature_array", features)
     labels=BinaryLabels(label_traindat)
 
     # kernel, different Gaussians combined

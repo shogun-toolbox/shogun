@@ -10,19 +10,11 @@ parameter_list = [[traindna,testdna,4,0,False,False],[traindna,testdna,3,0,False
 
 def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
-	from shogun import CommUlongStringKernel
-	from shogun import StringCharFeatures, StringUlongFeatures, DNA
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse, sg.PT_UINT64)
 
-
-	charfeat=StringCharFeatures(DNA)
-	charfeat.set_features(fm_train_dna)
-	feats_train=StringUlongFeatures(charfeat.get_alphabet())
-	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-
-	charfeat=StringCharFeatures(DNA)
-	charfeat.set_features(fm_test_dna)
-	feats_test=StringUlongFeatures(charfeat.get_alphabet())
-	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse, sg.PT_UINT64)
 
 	preproc = sg.create_transformer("SortUlongString")
 	preproc.fit(feats_train)

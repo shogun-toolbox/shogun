@@ -10,7 +10,6 @@ def distribution_hmm(fm_cube, N, M, pseudo, order, gap, reverse, num_examples):
 
 	charfeat=sg.create_string_features(fm_cube, sg.CUBE)
 	feats=sg.create_string_features(charfeat, order-1, order, gap, reverse)
-	feats.put("alphabet", sg.as_alphabet(charfeat.get("alphabet")))
 
 	# FIXME: add HMM to new parameter framework
 	# hmm=sg.HMM(feats, N, M, pseudo)

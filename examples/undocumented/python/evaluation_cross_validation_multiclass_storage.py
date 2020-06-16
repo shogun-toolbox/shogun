@@ -23,7 +23,6 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from shogun import MulticlassAccuracy, F1Measure
     from shogun import splitting_strategy
     from shogun import MulticlassLabels
-    from shogun import CombinedFeatures
     from shogun import MKLMulticlass
     from shogun import Statistics, MSG_DEBUG, Math
     from shogun import ROCEvaluation
@@ -34,10 +33,10 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
 
     # training data, combined features all on same data
     features=sg.create_features(traindat)
-    comb_features=CombinedFeatures()
-    comb_features.append_feature_obj(features)
-    comb_features.append_feature_obj(features)
-    comb_features.append_feature_obj(features)
+    comb_features=sf.create_features("CombinedFeatures")
+    comb_features.add("feature_array", features)
+    comb_features.add("feature_array", features)
+    comb_features.add("feature_array", features)
     labels=MulticlassLabels(label_traindat)
 
     # kernel, different Gaussians combined

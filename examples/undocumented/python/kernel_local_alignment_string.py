@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import shogun as sg
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
@@ -8,13 +9,11 @@ parameter_list=[[traindat,testdat],[traindat,testdat]]
 
 def kernel_local_alignment_string (fm_train_dna=traindat,fm_test_dna=testdat):
 
-	from shogun import StringCharFeatures, DNA
-	from shogun import LocalAlignmentStringKernel
+	feats_train=sg.create_string_features(fm_train_dna, sg.DNA)
+	feats_test=sg.create_string_features(fm_test_dna, sg.DNA)
 
-	feats_train=StringCharFeatures(fm_train_dna, DNA)
-	feats_test=StringCharFeatures(fm_test_dna, DNA)
-
-	kernel=LocalAlignmentStringKernel(feats_train, feats_train)
+	kernel=sg.create_kernel("LocalAlignmentStringKernel")
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

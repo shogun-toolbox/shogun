@@ -109,7 +109,6 @@ template<class ST> void StringFeatures<ST>::cleanup()
 	auto alpha=std::make_shared<Alphabet>(alphabet->get_alphabet());
 
 	alphabet=alpha;
-
 }
 
 template<class ST> void StringFeatures<ST>::cleanup_feature_vector(int32_t num)
