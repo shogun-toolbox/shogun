@@ -555,24 +555,33 @@ IF(ENABLE_TESTING AND NOT BUILD_DASHBOARD_REPORTS)
 	enable_testing()
 ENDIF()
 
-FIND_PACKAGE(Ctags)
-# TODO: the arg for -R should rather be the where libshogun's headers are residing
-ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
-    COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
-    # classes, enums, functions
-    --c++-kinds=cfgp
-    --fields=+im
-    --exclude=*.cpp
-    --exclude=third_party
-    --exclude=GoogleMock
-    --exclude=rxcpp
-    --exclude=interfaces
-    --exclude=Eigen3
-    --exclude=external
-    --languages=c++
-    -R ${CMAKE_SOURCE_DIR})
+IF (DEFINED CTAGS_FILE)
+    IF (BUILD_META_EXAMPLES)
+        FIND_PACKAGE(Ctags REQUIRED)
+    ELSE()
+        FIND_PACKAGE(Ctags)
+    ENDIF()
 
-ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
+    IF (CTAGS_FOUND)
+        # TODO: the arg for -R should rather be the where libshogun's headers are residing
+        ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
+            COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
+            # classes, enums, functions
+            --c++-kinds=cfgp
+            --fields=+im
+            --exclude=*.cpp
+            --exclude=third_party
+            --exclude=GoogleMock
+            --exclude=rxcpp
+            --exclude=interfaces
+            --exclude=Eigen3
+            --exclude=external
+            --languages=c++
+            -R ${CMAKE_SOURCE_DIR})
+
+       ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
+    ENDIF()
+ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
