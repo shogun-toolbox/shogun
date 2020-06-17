@@ -32,11 +32,14 @@ namespace shogun
 		SGVector<float64_t> fit(const std::shared_ptr<Labels>& labs) override
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
+			check_is_valid(result_vector);
+			if (is_convert_float_to_int(result_vector))
+			{
+				io::warn(
+				    "({}, {}) have been converted to (-1, 1).",
+				    result_vector[0], result_vector[1]);
+			}
 			auto result_labels = fit_impl(result_vector);
-			require(
-			    unique_labels.size() == 2,
-			    "Binary Labels should contain only two elements");
-
 			return result_labels;
 		}
 		/** Transform labels to normalized encoding.
@@ -48,11 +51,7 @@ namespace shogun
 		transform(const std::shared_ptr<Labels>& labs) override
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
-			require(
-			    std::unordered_set<float64_t>(
-			        result_vector.begin(), result_vector.end())
-			            .size() == 2,
-			    "Binary Labels should contain only two elements");
+			check_is_valid(result_vector);
 			auto transformed_vec = transform_impl(result_vector);
 
 			std::transform(
@@ -77,12 +76,7 @@ namespace shogun
 			auto normalized_labels = labs->as<BinaryLabels>();
 			normalized_labels->ensure_valid();
 			auto normalized_vector = normalized_labels->get_labels();
-			require(
-			    std::unordered_set<float64_t>(
-			        normalized_vector.begin(), normalized_vector.end())
-			            .size() == 2,
-			    "Binary Labels should contain only two elements");
-
+			check_is_valid(normalized_vector);
 			std::transform(
 			    normalized_vector.begin(), normalized_vector.end(),
 			    normalized_vector.begin(), [](float64_t e) {
@@ -115,6 +109,32 @@ namespace shogun
 		virtual const char* get_name() const
 		{
 			return "BinaryLabelEncoder";
+		}
+
+	private:
+		void check_is_valid(const SGVector<float64_t>& vec)
+		{
+			const auto unique_set =
+			    std::unordered_set<float64_t>(vec.begin(), vec.end());
+			require(
+			    unique_set.size() == 2,
+			    "Binary labels should contain only two elements, ({}) have "
+			    "been detected.",
+			    fmt::join(unique_set, ", "));
+		}
+
+		bool is_convert_float_to_int(const SGVector<float64_t>& vec) const
+		{
+			SGVector<int32_t> converted(vec.vlen);
+			std::transform(
+			    vec.begin(), vec.end(), converted.begin(),
+			    [](auto&& e) { return static_cast<int32_t>(e); });
+			return std::equal(
+			    vec.begin(), vec.end(), converted.begin(),
+			    [](auto&& e1, auto&& e2) {
+				    return std::abs(e1 - e2) >
+				           std::numeric_limits<float64_t>::epsilon();
+			    });
 		}
 	};
 } // namespace shogun

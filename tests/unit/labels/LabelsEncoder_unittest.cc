@@ -22,11 +22,12 @@ TEST(BinaryLabelEncoder, fit_transform)
 
 	auto result_labels = label_encoder->transform(origin_labels);
 	auto result_vec = result_labels->as<BinaryLabels>()->get_labels();
-	EXPECT_EQ(-1, result_vec[0]);
-	EXPECT_EQ(-1, result_vec[1]);
-	EXPECT_EQ(1, result_vec[2]);
-	EXPECT_EQ(-1, result_vec[3]);
-	EXPECT_EQ(1, result_vec[4]);
+
+	SGVector<int32_t> expected_res{-1, -1, 1, -1, 1};
+	for (int i = 0; i < 5; i++)
+	{
+		EXPECT_EQ(expected_res[i], result_vec[i]);
+	}
 
 	auto inv_result = label_encoder->inverse_transform(result_labels)
 	                      ->as<BinaryLabels>()
@@ -49,11 +50,11 @@ TEST(BinaryLabelEncoder, labels_not_neg1_or_1)
 
 	auto result_labels = label_encoder->transform(origin_labels);
 	auto result_vec = result_labels->as<BinaryLabels>()->get_labels();
-	EXPECT_EQ(-1, result_vec[0]);
-	EXPECT_EQ(1, result_vec[1]);
-	EXPECT_EQ(-1, result_vec[2]);
-	EXPECT_EQ(1, result_vec[3]);
-	EXPECT_EQ(-1, result_vec[4]);
+	SGVector<int32_t> expected_vec{-1, 1, -1, 1, -1};
+	for (int i = 0; i < 5; i++)
+	{
+		EXPECT_EQ(expected_vec[i], result_vec[i]);
+	}
 
 	auto inv_result = label_encoder->inverse_transform(result_labels)
 	                      ->as<DenseLabels>()
@@ -69,12 +70,11 @@ TEST(BinaryLabelEncoder, labels_not_neg1_or_1)
 	auto inv_test = label_encoder->inverse_transform(test_labels)
 	                    ->as<BinaryLabels>()
 	                    ->get_labels();
-	EXPECT_EQ(-100, inv_test[0]);
-	EXPECT_EQ(-100, inv_test[1]);
-	EXPECT_EQ(-100, inv_test[2]);
-	EXPECT_EQ(-100, inv_test[3]);
-	EXPECT_EQ(-100, inv_test[4]);
-	EXPECT_EQ(200, inv_test[5]);
+	SGVector<int32_t> expected_inv_test{-100, -100, -100, -100, -100, 200};
+	for (int i = 0; i < 6; i++)
+	{
+		EXPECT_EQ(expected_inv_test[i], inv_test[i]);
+	}
 }
 
 TEST(BinaryLabelEncoder, more_than_two_labels)
@@ -100,7 +100,7 @@ TEST(BinaryLabelEncoder, more_than_two_labels)
 
 TEST(MulticlassLabelsEncoder, fit_transform)
 {
-    auto eps = std::numeric_limits<float64_t>::epsilon();
+	auto eps = std::numeric_limits<float64_t>::epsilon();
 	auto label_encoder = std::make_shared<MulticlassLabelsEncoder>();
 	SGVector<float64_t> vec{1.0, 2.0, 2.0, 6.0};
 	auto origin_labels = std::make_shared<MulticlassLabels>(vec);
@@ -111,10 +111,11 @@ TEST(MulticlassLabelsEncoder, fit_transform)
 
 	auto result_labels = label_encoder->transform(origin_labels);
 	auto result_vec = result_labels->as<MulticlassLabels>()->get_labels();
-	EXPECT_NEAR(0, result_vec[0], eps);
-	EXPECT_NEAR(1, result_vec[1], eps);
-	EXPECT_NEAR(1, result_vec[2], eps);
-	EXPECT_NEAR(2, result_vec[3], eps);
+	SGVector<float64_t> expected_res{0, 1, 1, 2};
+	for (int i = 0; i < 4; i++)
+	{
+		EXPECT_NEAR(expected_res[i], result_vec[i], eps);
+	}
 
 	auto inv_result = label_encoder->inverse_transform(result_labels)
 	                      ->as<MulticlassLabels>()
@@ -128,23 +129,23 @@ TEST(MulticlassLabelsEncoder, fit_transform)
 
 TEST(MulticlassLabelsEncoder, negative_labels)
 {
-    auto eps = std::numeric_limits<float64_t>::epsilon();
+	auto eps = std::numeric_limits<float64_t>::epsilon();
 	auto label_encoder = std::make_shared<MulticlassLabelsEncoder>();
-	SGVector<float64_t> vec{-100, 200, -2, 6, -2};
+	SGVector<float64_t> vec{-100.1, 200.4, -2.868, 6.98, -2.868};
 	auto origin_labels = std::make_shared<MulticlassLabels>(vec);
 	auto unique_vec = label_encoder->fit(origin_labels);
-	EXPECT_NEAR(-100, unique_vec[0], eps);
-	EXPECT_NEAR(-2, unique_vec[1], eps);
-	EXPECT_NEAR(6, unique_vec[2], eps);
-	EXPECT_NEAR(200, unique_vec[3], eps);
+	EXPECT_NEAR(-100.1, unique_vec[0], eps);
+	EXPECT_NEAR(-2.868, unique_vec[1], eps);
+	EXPECT_NEAR(6.98, unique_vec[2], eps);
+	EXPECT_NEAR(200.4, unique_vec[3], eps);
 
 	auto result_labels = label_encoder->transform(origin_labels);
 	auto result_vec = result_labels->as<MulticlassLabels>()->get_labels();
-	EXPECT_NEAR(0, result_vec[0], eps);
-	EXPECT_NEAR(3, result_vec[1], eps);
-	EXPECT_NEAR(1, result_vec[2], eps);
-	EXPECT_NEAR(2, result_vec[3], eps);
-	EXPECT_NEAR(1, result_vec[4], eps);
+	SGVector<float64_t> expected_res{0, 3, 1, 2, 1};
+	for (int i = 0; i < 5; i++)
+	{
+		EXPECT_NEAR(expected_res[i], result_vec[i], eps);
+	}
 
 	auto inv_result = label_encoder->inverse_transform(result_labels)
 	                      ->as<MulticlassLabels>()
@@ -160,10 +161,10 @@ TEST(MulticlassLabelsEncoder, negative_labels)
 	auto inv_test = label_encoder->inverse_transform(test_labels)
 	                    ->as<MulticlassLabels>()
 	                    ->get_labels();
-	EXPECT_NEAR(-100, inv_test[0], eps);
-	EXPECT_NEAR(-2, inv_test[1], eps);
-	EXPECT_NEAR(6, inv_test[2], eps);
-	EXPECT_NEAR(200, inv_test[3], eps);
-	EXPECT_NEAR(-2, inv_test[4], eps);
-	EXPECT_NEAR(200, inv_test[5], eps);
+	SGVector<float64_t> expected_inv{-100.1, -2.868, 6.98,
+	                                 200.4,  -2.868, 200.4};
+	for (int i = 0; i < 6; i++)
+	{
+		EXPECT_NEAR(expected_inv[i], inv_test[i], eps);
+	}
 }
