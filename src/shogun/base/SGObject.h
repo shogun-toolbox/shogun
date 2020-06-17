@@ -310,7 +310,7 @@ public:
 	 */
 	template <typename T,
 		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value)
+	std::shared_ptr<SGObject>  put(const Tag<T>& _tag, const T& value)
 	{
 		const auto& parameter_value = get_parameter(_tag).get_value();
 
@@ -322,6 +322,7 @@ public:
 		}
 
 		update_parameter(_tag, value);
+        return shared_from_this();
 	}
 
 	/** Setter for a class parameter that has values of type string,
@@ -333,7 +334,7 @@ public:
 	 */
 	template <typename T,
 		      typename std::enable_if_t<is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value)
+	std::shared_ptr<SGObject> put(const Tag<T>& _tag, const T& value)
 	{
 	    std::string val_string(value);
 
@@ -355,7 +356,7 @@ public:
 
 		machine_int_t enum_value = string_to_enum[val_string];
 
-		put(Tag<machine_int_t>(_tag.name()), enum_value);
+		return put(Tag<machine_int_t>(_tag.name()), enum_value);
 	}
 #endif
 
@@ -369,12 +370,12 @@ public:
 		      class X = typename std::enable_if_t<is_sg_base<T>::value>,
 		      class Z = void>
 #ifdef SWIG
-	void put(const std::string& name, std::shared_ptr<T> value)
+	std::shared_ptr<SGObject> put(const std::string& name, std::shared_ptr<T> value)
 #else
-	void put(std::string_view name, std::shared_ptr<T> value)
+	std::shared_ptr<SGObject> put(std::string_view name, std::shared_ptr<T> value)
 #endif
 	{
-		put(Tag<std::shared_ptr<T>>(name), value);
+		return put(Tag<std::shared_ptr<T>>(name), value);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -494,15 +495,15 @@ public:
 		          !std::is_base_of_v<
 		              SGObject, typename std::remove_pointer_t<T>>, T>>
 #ifdef SWIG
-	void put(const std::string& name, T value)
+	std::shared_ptr<SGObject> put(const std::string& name, T value)
 #else
-	void put(std::string_view name, T value)
+	std::shared_ptr<SGObject> put(std::string_view name, T value)
 #endif
 	{
 		if constexpr (std::is_enum<T>::value)
-			put(Tag<machine_int_t>(name), static_cast<machine_int_t>(value));
+			return put(Tag<machine_int_t>(name), static_cast<machine_int_t>(value));
 		else
-			put(Tag<T>(name), value);
+			return put(Tag<T>(name), value);
 	}
 
 #ifndef SWIG
