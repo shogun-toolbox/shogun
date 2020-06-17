@@ -45,7 +45,7 @@ public:
 	 * @param distance distance
 	 * @param trainlab labels for training
 	 */
-	NearestCentroid(const std::shared_ptr<Distance>& distance, const std::shared_ptr<Labels>& trainlab);
+	NearestCentroid(const std::shared_ptr<Distance>& distance);
 
 	/** Destructor
 	 */
@@ -105,13 +105,13 @@ protected:
 	int32_t m_num_classes;
 
 	///	Shrinking parameter
-	float64_t m_shrinking;
+	float64_t m_shrinking = 0;
 
 	///	The centroids of the trained features
 	std::shared_ptr<DenseFeatures<float64_t>> m_centroids;
 
 	///	Tells if the classifier has been trained or not
-	bool m_is_trained;
+	bool m_is_trained = false;
 };
 
 }
