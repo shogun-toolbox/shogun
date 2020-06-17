@@ -17,12 +17,10 @@ namespace shogun{
 
 	NearestCentroid::NearestCentroid() : DistanceMachine()
 	{
-		init();
 	}
 
 	NearestCentroid::NearestCentroid(const std::shared_ptr<Distance>& d) : DistanceMachine()
 	{
-		init();
 		ASSERT(d)
 		set_distance(d);
 	}
@@ -30,12 +28,6 @@ namespace shogun{
 	NearestCentroid::~NearestCentroid()
 	{
 	}
-
-	void NearestCentroid::init()
-	{
-		
-	}
-
 
 	bool NearestCentroid::train_machine(std::shared_ptr<Features> data)
 	{

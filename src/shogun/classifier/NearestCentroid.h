@@ -92,13 +92,6 @@ protected:
 	 */
 	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
-	/** Stores feature data of underlying model.
-	 *
-	 * Sets centroids as lhs
-	 */
-
-private:
-	void init();
 
 protected:
 	///	number of classes (i.e. number of values labels can take)
