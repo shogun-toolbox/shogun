@@ -1,0 +1,18 @@
+File traindat = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
+File testdat = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
+
+#![create_features]
+Features feats_train = create_features(traindat)
+Features feats_test = create_features(testdat)
+#![create_features]
+
+#![create_kernel]
+Kernel kernel = create_kernel("LinearStringKernel", k=3, width=1.2)
+kernel.init(feats_train, feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix km_train = kernel.get_kernel_matrix()
+kernel.init(feats_train, feats_test)
+RealMatrix km_test = kernel.get_kernel_matrix()
+#![get_kernel_features]
