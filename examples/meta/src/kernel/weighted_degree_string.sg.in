@@ -1,0 +1,25 @@
+File traindat = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
+File testdat = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
+
+#![create_features]
+Features feats_train = create_char_string_features(traindat, enum EAlphabet.DNA)
+Features feats_test = create_char_string_features(testdat, enum EAlphabet.DNA)
+#![create_features]
+
+#![create_kernel]
+int degree = 3
+WeightedDegreeStringKernel kernel(degree)
+kernel.init(feats_train, feats_train)
+RealVector weights(3)
+weights[0] = 0.5
+weights[1] = 0.33333333
+weights[2] = 0.16666667
+kernel.set_wd_weights(weights)
+#![create_kernel]
+
+#![get_kernel_matrix]
+RealMatrix km_train=kernel.get_kernel_matrix()
+kernel.init(feats_train, feats_test)
+RealMatrix km_test=kernel.get_kernel_matrix()
+#![get_kernel_matrix]
+
