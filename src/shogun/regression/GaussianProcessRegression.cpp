@@ -39,35 +39,9 @@ std::shared_ptr<RegressionLabels> GaussianProcessRegression::apply_regression(st
 
 
 	std::shared_ptr<RegressionLabels> result;
-
-	// if regression data equals to NULL, then apply regression on training
-	// features
-	if (!data)
-	{
-		std::shared_ptr<Features> feat;
-
-		// use inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
-		{
-			auto fitc_method = m_method->as<FITCInferenceMethod>();
-			feat=fitc_method->get_inducing_features();
-		}
-		else
-			feat=m_method->get_features();
-
-		result=std::make_shared<RegressionLabels>(get_mean_vector(feat));
-		if (m_compute_variance)
-			result->put("current_values", get_variance_vector(feat));
-
-
-	}
-	else
-	{
-		result=std::make_shared<RegressionLabels>(get_mean_vector(data));
-		if (m_compute_variance)
-			result->put("current_values", get_variance_vector(data));
-	}
-
+	result=std::make_shared<RegressionLabels>(get_mean_vector(data));
+	if (m_compute_variance)
+		result->put("current_values", get_variance_vector(data));
 	return result;
 }
 

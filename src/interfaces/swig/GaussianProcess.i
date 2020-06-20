@@ -12,10 +12,10 @@ SHARED_RANDOM_INTERFACE(shogun::Inference)
 SHARED_RANDOM_INTERFACE(shogun::LikelihoodModel)
 %shared_ptr(shogun::GaussianProcess)
 SHARED_RANDOM_INTERFACE(shogun::GaussianProcess)
-
+SHARED_RANDOM_INTERFACE(shogun::NonParametricMachine)
 
 /* These functions return new Objects */
-RANDOM_INTERFACE(Machine)
+RANDOM_INTERFACE(NonParametricMachine)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/gp/LikelihoodModel.h>

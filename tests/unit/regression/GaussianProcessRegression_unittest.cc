@@ -191,23 +191,24 @@ TEST(GaussianProcessRegression, apply_regression_on_training_features)
 	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 0.02 and zero mean function
-	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
-	auto mean=std::make_shared<ZeroMean>();
+	std::shared_ptr<Kernel> kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	std::shared_ptr<MeanFunction> mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	auto liklihood=std::make_shared<GaussianLikelihood>(0.25);
+	std::shared_ptr<LikelihoodModel> liklihood=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	auto inf=std::make_shared<ExactInferenceMethod>(kernel, features_train,
-			mean, labels_train, liklihood);
-
+	auto inf=std::make_shared<ExactInferenceMethod>();
+	inf->put("kernel", kernel);
+	inf->put("mean_function", mean);
+	inf->put("likelihood_model", liklihood);
 	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
 
 	// train model
-	gpr->train();
+	gpr->train(features_train, labels_train);
 
 	// apply regression
-	auto predictions=gpr->apply_regression();
+	auto predictions=gpr->apply_regression(features_train);
 	SGVector<float64_t> prediction_vector=predictions->get_labels();
 
 	// comparison of predictions with result from GPML package:
@@ -445,23 +446,24 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
-	auto mean=std::make_shared<ZeroMean>();
+	std::shared_ptr<Kernel> kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	std::shared_ptr<MeanFunction> mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	auto lik=std::make_shared<GaussianLikelihood>(0.25);
+	std::shared_ptr<LikelihoodModel> lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	auto inf=std::make_shared<ExactInferenceMethod>(kernel, features_train,
-			mean, labels_train, lik);
+	auto inf=std::make_shared<ExactInferenceMethod>();
 	inf->set_scale(0.8);
-
+	inf->put("kernel", kernel);
+	inf->put("mean_function", mean);
+	inf->put("likelihood_model", lik);
 	// create GPR and train
 	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
-	gpr->train();
+	gpr->train(features_train, labels_train);
 
 	// apply regression to train features
-	auto predictions=gpr->apply_regression();
+	auto predictions=gpr->apply_regression(features_train);
 
 	// comparison of predictions with result from GPML package
 	SGVector<float64_t> mu=predictions->get_labels();

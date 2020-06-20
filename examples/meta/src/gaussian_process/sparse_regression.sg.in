@@ -30,11 +30,11 @@ Inference inference_method = create_gp_inference("FITCInferenceMethod", kernel=k
 #![create_inference]
 
 #![create_instance]
-GaussianProcess gp_regression = create_gaussian_process("GaussianProcessRegression", inference_method=inference_method, labels=labels_train, inducing_features=inducing_features)
+GaussianProcess gp_regression = create_gaussian_process("GaussianProcessRegression", inference_method=inference_method, inducing_features=inducing_features)
 #![create_instance]
 
 #![train_and_apply]
-gp_regression.train(features_train)
+gp_regression.train(features_train, labels_train)
 RegressionLabels labels_predict = gp_regression.apply_regression(features_test)
 #![train_and_apply]
 

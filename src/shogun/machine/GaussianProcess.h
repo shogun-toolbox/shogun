@@ -18,6 +18,7 @@
 #include <shogun/machine/gp/Inference.h>
 #include <shogun/mathematics/Seedable.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/machine/NonParametricMachine.h>
 
 namespace shogun
 {
@@ -33,7 +34,7 @@ namespace shogun
 	 *
 	 * where \f$m(x)\f$ - mean function, \f$k(x, x')\f$ - covariance function.
 	 */
-	class GaussianProcess : public RandomMixin<Machine>
+	class GaussianProcess : public RandomMixin<NonParametricMachine>
 	{
 	public:
 		/** default constructor */
