@@ -37,11 +37,9 @@ std::shared_ptr<RegressionLabels> GaussianProcessRegression::apply_regression(st
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
 
-
-	std::shared_ptr<RegressionLabels> result;
-	result=std::make_shared<RegressionLabels>(get_mean_vector(data));
+	auto result=std::make_shared<RegressionLabels>(get_mean_vector(data));
 	if (m_compute_variance)
-		result->put("current_values", get_variance_vector(data));
+		result->set_values(get_variance_vector(data));
 	return result;
 }
 

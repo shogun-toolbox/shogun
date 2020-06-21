@@ -191,11 +191,11 @@ TEST(GaussianProcessRegression, apply_regression_on_training_features)
 	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 0.02 and zero mean function
-	std::shared_ptr<Kernel> kernel=std::make_shared<GaussianKernel>(10, 0.02);
-	std::shared_ptr<MeanFunction> mean=std::make_shared<ZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	std::shared_ptr<LikelihoodModel> liklihood=std::make_shared<GaussianLikelihood>(0.25);
+	auto liklihood=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
 	auto inf=std::make_shared<ExactInferenceMethod>();
@@ -446,11 +446,11 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	std::shared_ptr<Kernel> kernel=std::make_shared<GaussianKernel>(10, 0.02);
-	std::shared_ptr<MeanFunction> mean=std::make_shared<ZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	std::shared_ptr<LikelihoodModel> lik=std::make_shared<GaussianLikelihood>(0.25);
+	auto lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
 	auto inf=std::make_shared<ExactInferenceMethod>();
