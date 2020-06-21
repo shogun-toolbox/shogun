@@ -46,7 +46,7 @@ public:
 	 * @param data (test)data to be classified
 	 * @return classified labels
 	 */
-	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data);
 
 	/** get predicted mean vector
 	 *
@@ -84,7 +84,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data);
 
 	/** check whether training labels are valid for regression
 	 *

@@ -126,7 +126,7 @@ public:
 	 * @return classified labels (label starts from 0)
 	 */
 	virtual std::shared_ptr<MulticlassLabels>
-	apply_multiclass(std::shared_ptr<Features> data = NULL);
+	apply_multiclass(std::shared_ptr<Features> data);
 
 protected:
 	/** train classifier
@@ -135,7 +135,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data);
 };
 }
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */
