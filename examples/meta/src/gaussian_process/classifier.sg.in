@@ -18,11 +18,11 @@ MeanFunction mean_function = create_gp_mean("ConstMean")
 #![create_instance]
 LikelihoodModel gauss_likelihood = create_gp_likelihood("SoftMaxLikelihood")
 Inference inference_method = create_gp_inference("MultiLaplaceInferenceMethod", kernel=k, mean_function=mean_function, likelihood_model=gauss_likelihood)
-GaussianProcess gp_classifier = create_gaussian_process("GaussianProcessClassification", inference_method=inference_method, seed=1, labels=labels_train)
+GaussianProcess gp_classifier = create_gaussian_process("GaussianProcessClassification", inference_method=inference_method, seed=1)
 #![create_instance]
 
 #![train_and_apply]
-gp_classifier.train(features_train)
+gp_classifier.train(features_train, labels_train)
 MulticlassLabels labels_predict = gp_classifier.apply_multiclass(features_test)
 #![train_and_apply]
 
