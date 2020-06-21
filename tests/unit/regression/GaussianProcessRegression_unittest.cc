@@ -199,9 +199,9 @@ TEST(GaussianProcessRegression, apply_regression_on_training_features)
 
 	// specify GP regression with exact inference
 	auto inf=std::make_shared<ExactInferenceMethod>();
-	inf->put("kernel", kernel);
-	inf->put("mean_function", mean);
-	inf->put("likelihood_model", liklihood);
+	inf->set_mean(mean);
+	inf->set_kernel(kernel);
+	inf->set_model(liklihood);
 	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
 
 	// train model
@@ -455,9 +455,9 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	// specify GP regression with exact inference
 	auto inf=std::make_shared<ExactInferenceMethod>();
 	inf->set_scale(0.8);
-	inf->put("kernel", kernel);
-	inf->put("mean_function", mean);
-	inf->put("likelihood_model", lik);
+	inf->set_mean(mean);
+	inf->set_kernel(kernel);
+	inf->set_model(lik);
 	// create GPR and train
 	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
 	gpr->train(features_train, labels_train);
