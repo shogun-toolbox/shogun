@@ -23,7 +23,7 @@
 using namespace shogun;
 using namespace Eigen;
 
-GaussianProcess::GaussianProcess() : RandomMixin<Machine>()
+GaussianProcess::GaussianProcess() : RandomMixin<NonParametricMachine>()
 {
 	init();
 }
