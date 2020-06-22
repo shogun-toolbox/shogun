@@ -38,13 +38,13 @@ struct S_THREAD_PARAM_KERNEL_MACHINE
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-KernelMachine::KernelMachine() : Machine()
+KernelMachine::KernelMachine() : NonParametricMachine()
 {
     init();
 }
 
 KernelMachine::KernelMachine(const std::shared_ptr<Kernel>& k, SGVector<float64_t> alphas,
-        SGVector<int32_t> svs, float64_t b) : Machine()
+        SGVector<int32_t> svs, float64_t b) : NonParametricMachine()
 {
     init();
 
@@ -57,7 +57,7 @@ KernelMachine::KernelMachine(const std::shared_ptr<Kernel>& k, SGVector<float64_
     set_bias(b);
 }
 
-KernelMachine::KernelMachine(const std::shared_ptr<KernelMachine>& machine) : Machine()
+KernelMachine::KernelMachine(const std::shared_ptr<KernelMachine>& machine) : NonParametricMachine()
 {
 	init();
 
