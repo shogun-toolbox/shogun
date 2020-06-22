@@ -24,7 +24,7 @@ SGMatrix<float64_t> createRandomData(const benchmark::State& state)
 	index_t num_vecs = state.range(1);
 
 	SGMatrix<float64_t> mat(num_dims, num_vecs);
-    random::fill_array(mat, uniform, prng);
+	random::fill_array(mat, uniform, prng);
 
 	return mat;
 }
@@ -55,8 +55,7 @@ class FitFixture: public benchmark::Fixture
 	public:
 		void SetUp(const ::benchmark::State& st)
 		{
-			auto mat = createRandomData(st);
-			feats = std::make_shared<DenseFeatures<float64_t>>(mat);
+			mat = createRandomData(st);
 			const index_t target_dim = st.range(2);
 
 			preproc = std::make_shared<RandomFourierGaussPreproc>();
@@ -67,15 +66,15 @@ class FitFixture: public benchmark::Fixture
 		void TearDown(const ::benchmark::State&) {}
 
 		std::shared_ptr<RandomFourierGaussPreproc> preproc;
-		std::shared_ptr<DenseFeatures<float64_t>> feats;
+		SGMatrix<float64_t> mat;
 		const float64_t width = 1.5;
 };
 
 #define ADD_RANDOMFOURIERGAUSS_ARGS(WHAT)	\
 	WHAT->RangeMultiplier(10)->Ranges({{10,100}, {100,10000}, {100,10000}})->Unit(benchmark::kMillisecond);
 
-ADD_RANDOMFOURIERGAUSS_ARGS(PREPROCESSOR_BENCHMARK_TRANSFORM(TransformFixture, RandomFourierGaussPreproc_Transform))
-ADD_RANDOMFOURIERGAUSS_ARGS(PREPROCESSOR_BENCHMARK_FIT(FitFixture, RandomFourierGaussPreproc_Fit))
+ADD_RANDOMFOURIERGAUSS_ARGS(PREPROCESSOR_BENCHMARK_TRANSFORM(TransformFixture, RFGP_Transform))
+ADD_RANDOMFOURIERGAUSS_ARGS(PREPROCESSOR_BENCHMARK_FIT(FitFixture, RFGP_Fit))
 
 }
 

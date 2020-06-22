@@ -29,6 +29,7 @@ BENCHMARK_REGISTER_F(FIXTURE, NAME)
 #define PREPROCESSOR_BENCHMARK_FIT(FIXTURE, NAME)                         \
 BENCHMARK_DEFINE_F(FIXTURE, NAME)(benchmark::State& state)                      \
 {                                                                               \
+    auto feats = std::make_shared<DenseFeatures<float64_t>>(mat);               \
     for(auto _ : state)                                                         \
     {                                                                           \
         preproc->fit(feats);        \
