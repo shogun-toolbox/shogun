@@ -26,5 +26,15 @@ BENCHMARK_DEFINE_F(FIXTURE, NAME)(benchmark::State& state)                      
 }                                                                               \
 BENCHMARK_REGISTER_F(FIXTURE, NAME)
 
+#define PREPROCESSOR_BENCHMARK_FIT(FIXTURE, NAME)                         \
+BENCHMARK_DEFINE_F(FIXTURE, NAME)(benchmark::State& state)                      \
+{                                                                               \
+    for(auto _ : state)                                                         \
+    {                                                                           \
+        preproc->fit(feats);        \
+    }                                                                           \
+}                                                                               \
+BENCHMARK_REGISTER_F(FIXTURE, NAME)
+
 }
 #endif /* */
