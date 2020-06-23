@@ -9,6 +9,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/kernel/string/LinearStringKernel.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 
 using namespace shogun;
 

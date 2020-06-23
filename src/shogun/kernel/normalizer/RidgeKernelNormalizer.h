@@ -69,7 +69,7 @@ class RidgeKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			if (scale<=0)
 			{

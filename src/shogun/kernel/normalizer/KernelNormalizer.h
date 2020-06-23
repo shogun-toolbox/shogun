@@ -21,7 +21,6 @@ enum ENormalizerType
 	N_MULTITASK = 1
 };
 
-class Kernel;
 /** @brief The class Kernel Normalizer defines a function to post-process kernel values.
  *
  * Formally it defines f(.,.,.)

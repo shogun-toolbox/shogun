@@ -58,7 +58,7 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
 			num_sqrtdiag_lhs=k->get_num_vec_lhs();

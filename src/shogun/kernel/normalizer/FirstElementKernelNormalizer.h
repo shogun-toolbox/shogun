@@ -41,7 +41,7 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			auto old_lhs=k->lhs;
 			auto old_rhs=k->rhs;

@@ -61,13 +61,11 @@ public:
 	/** default destructor */
 	virtual ~ScatterKernelNormalizer()
 	{
-
-
 	}
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
 		m_normalizer->init(k);
 		return true;

@@ -119,8 +119,6 @@ public:
 	/** update cache */
 	void update_cache()
 	{
-
-
 		for (int32_t i=0; i!=num_tasks; i++)
 		{
 			for (int32_t j=0; j!=num_tasks; j++)

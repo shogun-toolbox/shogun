@@ -63,9 +63,8 @@ public:
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
-
 		//same as first-element normalizer
 		auto old_lhs=k->lhs;
 		auto old_rhs=k->rhs;
@@ -89,7 +88,7 @@ public:
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
-		//std::cout << "scale: " << scale << std::endl;
+		SG_DEBUG("scale: {}", scale);
 
 		return true;
 	}

@@ -10,7 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
-#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <algorithm>
 #include <string>
 
@@ -33,12 +33,10 @@ public:
 		m_type = N_MULTITASK;
 	}
 
-
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
-
 		//same as first-element normalizer
 		auto old_lhs=k->lhs;
 		auto old_rhs=k->rhs;
@@ -53,7 +51,6 @@ public:
 			scale=1.0;
 		}
 
-
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
 
@@ -63,11 +60,8 @@ public:
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
-
 		return true;
 	}
-
-
 
 	/** normalize only the left hand side vector
 	 * @param value value of a component of the left hand side feature vector
@@ -90,7 +84,6 @@ public:
 	}
 
 public:
-
 
 	/**
 	 *  @param idx index of MKL weight to get
@@ -117,7 +110,6 @@ public:
 	}
 
 protected:
-
 
 	/** scale constant obtained from k(0,0) **/
 	float64_t scale;

@@ -54,7 +54,7 @@ class DiceKernelNormalizer : public KernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
 			num_diag_lhs=k->get_num_vec_lhs();

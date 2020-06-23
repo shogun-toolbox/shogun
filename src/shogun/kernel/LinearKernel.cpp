@@ -9,6 +9,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/kernel/LinearKernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 
 using namespace shogun;
 

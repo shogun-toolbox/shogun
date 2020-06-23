@@ -44,10 +44,8 @@ public:
 									   std::vector<std::pair<int32_t, int32_t> > active_pairs_) :
 									   scale(1.0), normalization_constant(1.0)
 	{
-
 		set_task_vector(task_vector_);
 		active_pairs = active_pairs_;
-
 	}
 
 
@@ -58,7 +56,7 @@ public:
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
 		ASSERT(k)
 		int32_t num_lhs = k->get_num_vec_lhs();
@@ -66,13 +64,11 @@ public:
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
-
 		//same as first-element normalizer
 		auto old_lhs=k->lhs;
 		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
-
 
 		if (std::string(k->get_name()) == "WeightedDegree") {
 			io::info("using first-element normalization");
@@ -85,11 +81,8 @@ public:
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
 
-
 		return true;
 	}
-
-
 
 	/** normalize the kernel value
 	 * @param value kernel value
@@ -98,7 +91,6 @@ public:
 	 */
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 	{
-
 		//lookup tasks
 		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
 		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
