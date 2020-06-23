@@ -24,5 +24,4 @@ Labels labels_predict = chaidtree.apply(feats_test)
 
 #![extract_weights_labels]
 RealVector labels_vector = labels_predict.get_real_vector("labels")
-RealVector weights = chaidtree.get_real_vector("weights")
 #![extract_weights_labels]
