@@ -27,40 +27,37 @@ public:
 	/** default constructor  */
 	MultitaskKernelPlifNormalizer() : MultitaskKernelMklNormalizer()
 	{
-		num_tasks = 0;
-		num_tasksqr = 0;
-		num_betas = 0;
+		/*SG_ADD(&num_tasks, "num_tasks", "the number of tasks")*/;
+		/*SG_ADD(&num_betas, "num_betas", "the number of weights")*/;
+
+		/*m_parameters->add_vector((SGString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");*/
+		/*m_parameters->add_vector((SGString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");*/
+		/*m_parameters->add_vector((SGString<float64_t>**)&betas, &num_betas, "num_betas", "weights");*/
+		/*m_parameters->add_vector((SGString<float64_t>**)&support, &num_betas, "support", "support points");*/
 	}
 
 	/** constructor
 	 */
-	MultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
-		: MultitaskKernelMklNormalizer()
+	MultitaskKernelPlifNormalizer(const std::vector<float64_t>& support_, const std::vector<int32_t>& task_vector)
+		: MultitaskKernelPlifNormalizer()
 	{
-
-		num_betas = static_cast<int>(support_.size());
+		num_betas = support_.size();
 
 		support = support_;
 
 		// init support points values with constant function
-		betas = std::vector<float64_t>(num_betas);
-		for (int i=0; i!=num_betas; i++)
-		{
-			betas[i] = 1;
-		}
+		betas = std::vector<float64_t>(num_betas, 1);
 
 		num_tasks = get_num_unique_tasks(task_vector);
-		num_tasksqr = num_tasks * num_tasks;
 
 		// set both sides equally
 		set_task_vector(task_vector);
 
 		// init distance matrix
-		distance_matrix = std::vector<float64_t>(num_tasksqr);
+		distance_matrix = SGMatrix<float64_t>(num_tasks, num_tasks);
 
 		// init similarity matrix
-		similarity_matrix = std::vector<float64_t>(num_tasksqr);
-
+		similarity_matrix = SGMatrix<float64_t>(num_tasks, num_tasks);
 	}
 
 
@@ -84,9 +81,7 @@ public:
 		//take task similarity into account
 		float64_t similarity = (value/scale) * task_similarity;
 
-
 		return similarity;
-
 	}
 
 	/** helper routine
@@ -94,54 +89,43 @@ public:
 	 * @param vec vector with containing task_id for each example
 	 * @return number of unique task ids
 	 */
-	int32_t get_num_unique_tasks(std::vector<int32_t> vec) const noexcept {
-
+	int32_t get_num_unique_tasks(std::vector<int32_t> vec) const
+	{
 		//sort
 		std::sort(vec.begin(), vec.end());
 
 		//reorder tasks with unique prefix
-		std::vector<int32_t>::iterator endLocation = std::unique(vec.begin(), vec.end());
+		auto endLocation = std::unique(vec.begin(), vec.end());
 
 		//count unique tasks
 		int32_t num_vec = std::distance(vec.begin(), endLocation);
 
 		return num_vec;
-
 	}
-
 
 	/** default destructor */
-	virtual ~MultitaskKernelPlifNormalizer()
-	{
-	}
-
+	virtual ~MultitaskKernelPlifNormalizer() = default;
 
 	/** update cache */
 	void update_cache()
 	{
-		for (int32_t i=0; i!=num_tasks; i++)
+		for (int32_t i=0; i<num_tasks; i++)
 		{
-			for (int32_t j=0; j!=num_tasks; j++)
+			for (int32_t j=0; j<num_tasks; j++)
 			{
-
 				float64_t similarity = compute_task_similarity(i, j);
 				set_task_similarity(i,j,similarity);
-
 			}
-
 		}
 	}
-
 
 	/** derive similarity from distance with plif */
 	float64_t compute_task_similarity(int32_t task_a, int32_t task_b) const
 	{
-
 		float64_t distance = get_task_distance(task_a, task_b);
 		float64_t similarity = -1;
 
 		int32_t upper_bound_idx = -1;
-
 
 		// determine interval
 		for (int i=1; i!=num_betas; i++)
@@ -156,11 +140,10 @@ public:
 		// perform interpolation (constant for beyond upper bound)
 		if (upper_bound_idx == -1)
 		{
-
 			similarity = betas[num_betas-1];
-
-		} else {
-
+		} 
+		else 
+		{
 			int32_t lower_bound_idx = upper_bound_idx - 1;
 			float64_t interval_size = support[upper_bound_idx] - support[lower_bound_idx];
 
@@ -168,11 +151,9 @@ public:
 			float64_t factor_upper = 1 - factor_lower;
 
 			similarity = factor_lower*betas[lower_bound_idx] + factor_upper*betas[upper_bound_idx];
-
 		}
 
 		return similarity;
-
 	}
 
 
@@ -185,7 +166,7 @@ public:
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	virtual void set_task_vector_lhs(std::vector<int32_t> vec)
+	virtual void set_task_vector_lhs(const std::vector<int32_t>& vec)
 	{
 		task_vector_lhs = vec;
 	}
@@ -197,13 +178,13 @@ public:
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	virtual void set_task_vector_rhs(std::vector<int32_t> vec)
+	virtual void set_task_vector_rhs(const std::vector<int32_t>& vec)
 	{
 		task_vector_rhs = vec;
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	virtual void set_task_vector(std::vector<int32_t> vec)
+	virtual void set_task_vector(const std::vector<int32_t>& vec)
 	{
 		task_vector_lhs = vec;
 		task_vector_rhs = vec;
@@ -216,12 +197,10 @@ public:
 	 */
 	float64_t get_task_distance(int32_t task_lhs, int32_t task_rhs) const
 	{
-
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
-		return distance_matrix[task_lhs * num_tasks + task_rhs];
-
+		return distance_matrix(task_lhs, task_rhs);
 	}
 
 	/**
@@ -232,12 +211,10 @@ public:
 	void set_task_distance(int32_t task_lhs, int32_t task_rhs,
 			float64_t distance)
 	{
-
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
-		distance_matrix[task_lhs * num_tasks + task_rhs] = distance;
-
+		distance_matrix(task_lhs, task_rhs) = distance;
 	}
 
 	/**
@@ -247,12 +224,10 @@ public:
 	 */
 	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs) const
 	{
-
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
-		return similarity_matrix[task_lhs * num_tasks + task_rhs];
-
+		return similarity_matrix(task_lhs, task_rhs);
 	}
 
 	/**
@@ -263,12 +238,10 @@ public:
 	void set_task_similarity(int32_t task_lhs, int32_t task_rhs,
 			float64_t similarity)
 	{
-
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
-		similarity_matrix[task_lhs * num_tasks + task_rhs] = similarity;
-
+		similarity_matrix(task_lhs, task_rhs) = similarity;
 	}
 
 	/**
@@ -276,9 +249,7 @@ public:
 	 */
 	float64_t get_beta(int32_t idx) const
 	{
-
 		return betas[idx];
-
 	}
 
 	/**
@@ -287,11 +258,9 @@ public:
 	 */
 	void set_beta(int32_t idx, float64_t weight)
 	{
-
 		betas[idx] = weight;
 
 		update_cache();
-
 	}
 
 	/**
@@ -299,9 +268,7 @@ public:
 	 */
 	int32_t get_num_betas() const noexcept
 	{
-
 		return num_betas;
-
 	}
 
 
@@ -319,24 +286,9 @@ public:
 		   return std::dynamic_pointer_cast<MultitaskKernelPlifNormalizer>(n);
 	}
 
-protected:
-	/** register the parameters
-	 */
-	virtual void register_params()
-	{
-		/*SG_ADD(&num_tasks, "num_tasks", "the number of tasks")*/;
-		/*SG_ADD(&num_betas, "num_betas", "the number of weights")*/;
-
-		/*m_parameters->add_vector((SGString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");*/
-		/*m_parameters->add_vector((SGString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");*/
-		/*m_parameters->add_vector((SGString<float64_t>**)&betas, &num_betas, "num_betas", "weights");*/
-		/*m_parameters->add_vector((SGString<float64_t>**)&support, &num_betas, "support", "support points");*/
-	}
-
+private:
 	/** number of tasks **/
-	int32_t num_tasks;
-	/** square of num_tasks -- for registration purpose**/
-	int32_t num_tasksqr;
+	int32_t num_tasks = 0;
 
 	/** task vector indicating to which task each example on the left hand side belongs **/
 	std::vector<int32_t> task_vector_lhs;
@@ -345,20 +297,19 @@ protected:
 	std::vector<int32_t> task_vector_rhs;
 
 	/** MxM matrix encoding distance between tasks **/
-	std::vector<float64_t> distance_matrix;
+	SGMatrix<float64_t> distance_matrix;
 
 	/** MxM matrix encoding similarity between tasks **/
-	std::vector<float64_t> similarity_matrix;
+	SGMatrix<float64_t> similarity_matrix;
 
 	/** number of weights **/
-	int32_t num_betas;
+	int32_t num_betas = 0;
 
 	/** weights **/
 	std::vector<float64_t> betas;
 
 	/** support points **/
 	std::vector<float64_t> support;
-
 };
 }
 #endif

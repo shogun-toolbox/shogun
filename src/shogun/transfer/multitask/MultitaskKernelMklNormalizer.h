@@ -28,8 +28,9 @@ public:
 
 	/** default constructor
 	 */
-	MultitaskKernelMklNormalizer() : KernelNormalizer(), scale(1.0)
+	MultitaskKernelMklNormalizer() : KernelNormalizer()
 	{
+		SG_ADD(&scale, "scale", "value of first element")
 		m_type = N_MULTITASK;
 	}
 
@@ -96,12 +97,10 @@ public:
 	 */
 	virtual void set_beta(int32_t idx, float64_t weight) = 0;
 
-
 	/**
 	 * @return number of sub-kernel weights for MKL
 	 */
 	virtual int32_t get_num_betas() const noexcept = 0;
-
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -112,8 +111,7 @@ public:
 protected:
 
 	/** scale constant obtained from k(0,0) **/
-	float64_t scale;
-
+	float64_t scale = 1.0;
 };
 }
 #endif

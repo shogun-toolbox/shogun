@@ -32,8 +32,11 @@ public:
 	/** default constructor
 	 */
 	MultitaskKernelMaskPairNormalizer() :
-		KernelNormalizer(), scale(1.0), normalization_constant(1.0)
+		KernelNormalizer()
 	{
+		SG_ADD(&scale, "scale", "value of first element")
+		SG_ADD(&normalization_constant, "normalization_constant", 
+			"outer normalization constant")
 	}
 
 	/** default constructor
@@ -101,9 +104,7 @@ public:
 		//take task similarity into account
 		float64_t similarity = (value/scale) * task_similarity;
 
-
 		return similarity;
-
 	}
 
 	/** normalize only the left hand side vector
@@ -136,14 +137,7 @@ public:
 	/** @param vec task vector with containing task_id for each example */
 	void set_task_vector_lhs(std::vector<int32_t> vec)
 	{
-
-		task_vector_lhs.clear();
-
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
-		{
-			task_vector_lhs.push_back(vec[i]);
-		}
-
+		task_vector_lhs = std::move(vec);
 	}
 
 	/** @return vec task vector with containing task_id for each example on right hand side */
@@ -157,14 +151,7 @@ public:
 	/** @param vec task vector with containing task_id for each example */
 	void set_task_vector_rhs(std::vector<int32_t> vec)
 	{
-
-		task_vector_rhs.clear();
-
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
-		{
-			task_vector_rhs.push_back(vec[i]);
-		}
-
+		task_vector_rhs = std::move(vec);
 	}
 
 	/** @param vec task vector with containing task_id for each example */
@@ -174,7 +161,6 @@ public:
 		set_task_vector_rhs(vec);
 	}
 
-
 	/**
 	 * @param task_lhs task_id on left hand side
 	 * @param task_rhs task_id on right hand side
@@ -182,12 +168,11 @@ public:
 	 */
 	float64_t get_similarity(int32_t task_lhs, int32_t task_rhs) const noexcept
 	{
-
 		float64_t similarity = 0.0;
 
-		for (int32_t i=0; i!=static_cast<int>(active_pairs.size()); i++)
+		for (int32_t i=0; i < active_pairs.size(); i++)
 		{
-			std::pair<int32_t, int32_t> block = active_pairs[i];
+			const auto& block = active_pairs[i];
 
 			// ignore order of pair
 			if ((block.first==task_lhs && block.second==task_rhs) ||
@@ -198,9 +183,7 @@ public:
 			}
 		}
 
-
 		return similarity;
-
 	}
 
 	/** @return vector of active pairs */
@@ -251,10 +234,10 @@ protected:
 	std::vector<int32_t> task_vector_rhs;
 
 	/** value of first element **/
-	float64_t scale;
+	float64_t scale = 1.0;
 
 	/** outer normalization constant **/
-	float64_t normalization_constant;
+	float64_t normalization_constant = 1.0;
 
 };
 }

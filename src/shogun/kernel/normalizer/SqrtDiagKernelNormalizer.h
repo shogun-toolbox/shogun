@@ -27,42 +27,38 @@ namespace shogun
 class SqrtDiagKernelNormalizer : public KernelNormalizer
 {
 	public:
+		SqrtDiagKernelNormalizer(): KernelNormalizer()
+		{
+			SG_ADD(&sqrtdiag_lhs, "sqrtdiag_lhs",
+				"sqrt(K(x,x)) for left hand side examples.")
+
+			SG_ADD(&sqrtdiag_rhs, "sqrtdiag_rhs",
+				"sqrt(K(x,x)) for right hand side examples.")
+
+			SG_ADD(&use_optimized_diagonal_computation,
+					"use_optimized_diagonal_computation",
+					"flat if optimized diagonal computation is used");
+		}
+
 		/** default constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		SqrtDiagKernelNormalizer(bool use_opt_diag=false): KernelNormalizer(),
-			sqrtdiag_lhs(NULL), num_sqrtdiag_lhs(0),
-			sqrtdiag_rhs(NULL), num_sqrtdiag_rhs(0),
-			use_optimized_diagonal_computation(use_opt_diag)
+		SqrtDiagKernelNormalizer(bool use_opt_diag): SqrtDiagKernelNormalizer()
 		{
-			/*m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
-							  "sqrt(K(x,x)) for left hand side examples.");
-			watch_param("sqrtdiag_lhs", &sqrtdiag_lhs, &num_sqrtdiag_lhs);
-
-			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs",
-							  "sqrt(K(x,x)) for right hand side examples.");
-			watch_param("sqrtdiag_rhs", &sqrtdiag_rhs, &num_sqrtdiag_rhs);
-
-			SG_ADD(&use_optimized_diagonal_computation,
-					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used");*/
+			use_optimized_diagonal_computation = use_opt_diag;
 		}
 
 		/** default destructor */
-		virtual ~SqrtDiagKernelNormalizer()
-		{
-			SG_FREE(sqrtdiag_lhs);
-			SG_FREE(sqrtdiag_rhs);
-		}
+		virtual ~SqrtDiagKernelNormalizer() = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
 		bool init(Kernel* k) override
 		{
 			ASSERT(k)
-			num_sqrtdiag_lhs=k->get_num_vec_lhs();
-			num_sqrtdiag_rhs=k->get_num_vec_rhs();
+			const auto& num_sqrtdiag_lhs=k->get_num_vec_lhs();
+			const auto& num_sqrtdiag_rhs=k->get_num_vec_rhs();
 			ASSERT(num_sqrtdiag_lhs>0)
 			ASSERT(num_sqrtdiag_rhs>0)
 
@@ -71,16 +67,16 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
-			bool r1=alloc_and_compute_diag(k, sqrtdiag_lhs, num_sqrtdiag_lhs);
+			sqrtdiag_lhs = alloc_and_compute_diag(k, num_sqrtdiag_lhs);
 
 			k->lhs=old_rhs;
 			k->rhs=old_rhs;
-			bool r2=alloc_and_compute_diag(k, sqrtdiag_rhs, num_sqrtdiag_rhs);
+			sqrtdiag_rhs = alloc_and_compute_diag(k, num_sqrtdiag_rhs);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-			return r1 && r2;
+			return true;
 		}
 
 		/** normalize the kernel value
@@ -121,45 +117,39 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(Kernel* k, float64_t* &v, int32_t num) const
+		SGVector<float64_t> alloc_and_compute_diag(Kernel* k, int32_t num) const
 		{
-			SG_FREE(v);
-			v=SG_MALLOC(float64_t, num);
+			SGVector<float64_t> v(num);
+			std::function<float64_t(const int32_t)> func;
+
+			if (auto* cwk = dynamic_cast<CommWordStringKernel*>(k))
+			{
+				if (use_optimized_diagonal_computation)
+					func = [&cwk] (const int32_t i) {return std::sqrt(cwk->compute_diag(i));};
+				else
+					func = [&cwk] (const int32_t i) { return std::sqrt(cwk->compute_helper(i,i, true)); };
+			}
+			else 
+				func = [&k] (const int32_t i) { return std::sqrt(k->compute(i,i));};
 
 			for (int32_t i=0; i<num; i++)
 			{
-				if (k->get_kernel_type() == K_COMMWORDSTRING)
-				{
-					auto cwk = k->as<CommWordStringKernel>();
-					if (use_optimized_diagonal_computation)
-						v[i]=sqrt(cwk->compute_diag(i));
-					else
-						v[i]=sqrt(cwk->compute_helper(i,i, true));
-				}
-				else
-					v[i]=sqrt(k->compute(i,i));
-
-				if (v[i]==0.0)
-					v[i]=1e-16; /* avoid divide by zero exception */
+				v[i] = func(i);
+				if (v[i] == 0.0)
+					v[i] = std::numeric_limits<float64_t>::min();
 			}
 
-			return (v!=NULL);
+			return v;
 		}
 
 		/** sqrt diagonal left-hand side */
-		float64_t* sqrtdiag_lhs;
-
-		/** num sqrt diagonal left-hand side */
-		int32_t num_sqrtdiag_lhs;
+		SGVector<float64_t> sqrtdiag_lhs;
 
 		/** sqrt diagonal right-hand side */
-		float64_t* sqrtdiag_rhs;
-
-		/** num sqrt diagonal right-hand side */
-		int32_t num_sqrtdiag_rhs;
+		SGVector<float64_t> sqrtdiag_rhs;
 
 		/** f optimized diagonal computation is used */
-		bool use_optimized_diagonal_computation;
+		bool use_optimized_diagonal_computation = false;
 };
 }
 #endif

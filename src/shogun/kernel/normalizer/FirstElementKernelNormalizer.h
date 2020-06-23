@@ -28,16 +28,14 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 	public:
 		/** constructor
 		 */
-		FirstElementKernelNormalizer() : KernelNormalizer(), scale(1.0)
+		FirstElementKernelNormalizer() : KernelNormalizer()
 		{
-			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER)*/;
+			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+				ParameterProperties::HYPER);
 		}
 
 		/** default destructor */
-		virtual ~FirstElementKernelNormalizer()
-		{
-		}
+		virtual ~FirstElementKernelNormalizer() = default;
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
@@ -64,7 +62,7 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		virtual float64_t normalize(
 			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 		{
-			return value/scale;
+			return value / scale;
 		}
 
 		/** normalize only the left hand side vector
@@ -73,7 +71,7 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
 		{
-			return value/sqrt(scale);
+			return value / std::sqrt(scale);
 		}
 
 		/** normalize only the right hand side vector
@@ -82,7 +80,7 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
 		{
-			return value/sqrt(scale);
+			return value / std::sqrt(scale);
 		}
 
 		/** @return object name */
@@ -90,7 +88,7 @@ class FirstElementKernelNormalizer : public KernelNormalizer
 
 	protected:
 		/// scale constant obtained from k(0,0)
-		float64_t scale;
+		float64_t scale = 1.0;
 };
 }
 #endif

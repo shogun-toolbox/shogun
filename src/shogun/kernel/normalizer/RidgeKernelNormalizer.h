@@ -41,6 +41,15 @@ namespace shogun
 class RidgeKernelNormalizer : public KernelNormalizer
 {
 	public:
+
+		RidgeKernelNormalizer()
+			: KernelNormalizer()
+		{
+			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    ParameterProperties::HYPER);
+			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER);
+		}
+
 		/** constructor
 		 *
 		 * @param r ridge parameter
@@ -51,21 +60,15 @@ class RidgeKernelNormalizer : public KernelNormalizer
 		 * - r=1e-10 and c=0.0 will add mean(diag(K))*1e-10 to the diagonal
 		 * - r=0.1 and c=1 will add 0.1 to the diagonal
 		 */
-		RidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
-			: KernelNormalizer()
+		RidgeKernelNormalizer(float64_t r, float64_t c)
+			: RidgeKernelNormalizer()
 		{
-			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER)*/;
-			/*SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER)*/;
-
 			scale=c;
 			ridge=r;
 		}
 
 		/** default destructor */
-		virtual ~RidgeKernelNormalizer()
-		{
-		}
+		virtual ~RidgeKernelNormalizer() = default;
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
@@ -74,7 +77,7 @@ class RidgeKernelNormalizer : public KernelNormalizer
 			if (scale<=0)
 			{
 				ASSERT(k)
-				int32_t num=k->get_num_vec_lhs();
+				const auto& num=k->get_num_vec_lhs();
 				ASSERT(num>0)
 
 				auto old_lhs=k->lhs;
@@ -87,6 +90,7 @@ class RidgeKernelNormalizer : public KernelNormalizer
 					sum+=k->compute(i, i);
 
 				scale=sum/num;
+				
 				k->lhs=old_lhs;
 				k->rhs=old_rhs;
 			}
@@ -134,9 +138,9 @@ class RidgeKernelNormalizer : public KernelNormalizer
 
 	protected:
 		/// the constant ridge to be added to the kernel diagonal
-		float64_t ridge;
+		float64_t ridge = 1e-10;
 		/// scaling parameter (avg of diagonal)
-		float64_t scale;
+		float64_t scale = 0.0;
 };
 }
 #endif // _RIDGEKERNELNORMALIZER_H___

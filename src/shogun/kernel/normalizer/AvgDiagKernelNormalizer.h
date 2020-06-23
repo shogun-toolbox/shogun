@@ -29,23 +29,24 @@ namespace shogun
 class AvgDiagKernelNormalizer : public KernelNormalizer
 {
 	public:
+		AvgDiagKernelNormalizer() : KernelNormalizer()
+		{
+			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			       ParameterProperties::HYPER);
+		}
+
 		/** constructor
 		 *
 		 * @param c scale parameter, if <= 0 scaling will be computed from the
 		 * avg of the kernel diagonal elements
 		 */
-		AvgDiagKernelNormalizer(float64_t c=0.0) : KernelNormalizer()
+		AvgDiagKernelNormalizer(float64_t c) : AvgDiagKernelNormalizer()
 		{
 			scale=c;
-
-			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER)*/;
 		}
 
 		/** default destructor */
-		virtual ~AvgDiagKernelNormalizer()
-		{
-		}
+		virtual ~AvgDiagKernelNormalizer() = default;
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
@@ -108,7 +109,7 @@ class AvgDiagKernelNormalizer : public KernelNormalizer
 
 	protected:
 		/// the constant scaling factor (avg of diagonal or user given const)
-		float64_t scale;
+		float64_t scale = 0.0;
 };
 }
 #endif

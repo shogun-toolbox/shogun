@@ -146,7 +146,7 @@ private:
 	std::shared_ptr<spdlog::sinks::sink> stderr_sink;
 };
 
-SGIO::SGIO() : show_progress(false)
+SGIO::SGIO() : show_progress(false), syntax_highlight(false)
 {
 	init_default_sink();
 	init_default_logger();

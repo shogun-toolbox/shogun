@@ -42,32 +42,23 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 		/** default constructor
 		*/
 		ZeroMeanCenterKernelNormalizer()
-			: KernelNormalizer(), ktrain_row_means(NULL), num_ktrain(0),
-			ktest_row_means(NULL),	num_ktest(0)
 		{
-			/*m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
-					"num_ktrain", "Train row means.")*/;
-			/*watch_param("num_ktrain", &ktrain_row_means, &num_ktrain)*/;
-
-			/*m_parameters->add_vector(&ktest_row_means, &num_ktest,
-					"num_ktest","Test row means.")*/;
-			/*watch_param("num_ktest", &ktest_row_means, &num_ktest)*/;
+			SG_ADD(&ktrain_row_means, "num_ktrain", "Train row means.", 
+				ParameterProperties::MODEL)
+			SG_ADD(&ktrain_row_means, "num_ktest", "Test row means.",
+				ParameterProperties::MODEL)
 		}
 
 		/** default destructor */
-		virtual ~ZeroMeanCenterKernelNormalizer()
-		{
-			SG_FREE(ktrain_row_means);
-			SG_FREE(ktest_row_means);
-		}
+		virtual ~ZeroMeanCenterKernelNormalizer() = default;
 
 		/** initialization of the normalizer
 		 * @param k kernel */
 		bool init(Kernel* k) override
 		{
 			ASSERT(k)
-			int32_t num_lhs=k->get_num_vec_lhs();
-			int32_t num_rhs=k->get_num_vec_rhs();
+			const auto& num_lhs=k->get_num_vec_lhs();
+			const auto& num_rhs=k->get_num_vec_rhs();
 			ASSERT(num_lhs>0)
 			ASSERT(num_rhs>0)
 
@@ -78,23 +69,23 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
 
-			bool r1=alloc_and_compute_row_means(k, ktrain_row_means, num_lhs,num_lhs);
+			ktrain_row_means = alloc_and_compute_row_means(k, num_lhs, num_lhs);
 
 			/* compute mean for each row of the test matrix */
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-			bool r2=alloc_and_compute_row_means(k, ktest_row_means, num_lhs,num_rhs);
+			ktest_row_means = alloc_and_compute_row_means(k, num_lhs, num_rhs);
 
 			/* compute train kernel matrix mean */
 			ktrain_mean=0;
 			for (int32_t i=0;i<num_lhs;i++)
-				ktrain_mean += (ktrain_row_means[i]/num_lhs);
+				ktrain_mean += ktrain_row_means[i] / num_lhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-			return r1 && r2;
+			return true;
 		}
 
 		/** normalize the kernel value
@@ -133,18 +124,16 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 		 * alloc and compute the vector containing the row margins of all rows
 		 * for a kernel matrix.
 		 */
-		bool alloc_and_compute_row_means(Kernel* k, float64_t* &v, int32_t num_lhs, int32_t num_rhs) const
+		SGVector<float64_t> alloc_and_compute_row_means(Kernel* k, int32_t num_lhs, int32_t num_rhs) const
 		{
-			SG_FREE(v);
-			v=SG_MALLOC(float64_t, num_rhs);
+			SGVector<float64_t> v(num_rhs);
 
 			for (int32_t i=0; i<num_rhs; i++)
 			{
-				v[i]=0;
 				for (int32_t j=0; j<num_lhs; j++)
 					v[i] += ( k->compute(j,i)/num_lhs );
 			}
-			return (v!=NULL);
+			return v;
 		}
 
 		/** @return object name */
@@ -152,16 +141,9 @@ class ZeroMeanCenterKernelNormalizer : public KernelNormalizer
 
 	protected:
 		/** train row means */
-		float64_t* ktrain_row_means;
+		SGVector<float64_t> ktrain_row_means;
 
-		/** num k train */
-		int32_t num_ktrain;
-
-		/** test row means */
-		float64_t* ktest_row_means;
-
-		/** num k test */
-		int32_t num_ktest;
+		SGVector<float64_t> ktest_row_means;
 
 		/** train mean */
 		float64_t ktrain_mean;

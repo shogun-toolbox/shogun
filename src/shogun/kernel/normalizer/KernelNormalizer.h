@@ -52,12 +52,13 @@ class KernelNormalizer : public SGObject
 		 */
 		KernelNormalizer() : SGObject()
 		{
-			register_params();
-			m_type = N_REGULAR;
+			SG_ADD_OPTIONS(
+			    (machine_int_t*)&m_type, "m_type", "Normalizer type.",
+			    ParameterProperties::NONE, SG_OPTIONS(N_REGULAR, N_MULTITASK));
 		}
 
 		/** default destructor */
-		virtual ~KernelNormalizer() { }
+		virtual ~KernelNormalizer() = default;
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
@@ -90,16 +91,13 @@ class KernelNormalizer : public SGObject
 			return m_type;
 		}
 
-	protected:
-		/** register the parameters
-		 */
-		virtual void register_params()
-		{
-			SG_ADD_OPTIONS(
-			    (machine_int_t*)&m_type, "m_type", "Normalizer type.",
-			    ParameterProperties::NONE, SG_OPTIONS(N_REGULAR, N_MULTITASK));
+		/** @return object name */
+		virtual const char* get_name() const 
+		{ 
+			return "KernelNormalizer"; 
 		}
 
+	protected:
 		/** setter for normalizer type
 		 *  @param type type of normalizer
 		 */
@@ -109,7 +107,7 @@ class KernelNormalizer : public SGObject
 		}
 
 		/** normalizer type */
-		ENormalizerType m_type;
+		ENormalizerType m_type = N_REGULAR;
 };
 }
 #endif

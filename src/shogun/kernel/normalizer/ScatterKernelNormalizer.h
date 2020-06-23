@@ -26,18 +26,24 @@ public:
 	/** default constructor  */
 	ScatterKernelNormalizer() : KernelNormalizer()
 	{
-		init();
+		SG_ADD(&m_testing_class, "testing_class",
+				"Testing Class.");
+		SG_ADD(&m_const_diag, "const_diag",
+				"Factor to multiply to diagonal elements.", ParameterProperties::HYPER);
+		SG_ADD(&m_const_offdiag, "const_offdiag",
+				"Factor to multiply to off-diagonal elements.", ParameterProperties::HYPER);
+
+		SG_ADD((std::shared_ptr<Labels>*) &m_labels, "m_labels", "Labels");
+		SG_ADD((std::shared_ptr<KernelNormalizer>*) &m_normalizer, "m_normalizer", "Kernel normalizer.",
+		    ParameterProperties::HYPER);
 	}
 
-	/** default constructor
+	/** constructor
 	 */
 	ScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
-			std::shared_ptr<Labels> labels,std::shared_ptr<KernelNormalizer> normalizer=NULL)
-		: KernelNormalizer()
+			const std::shared_ptr<Labels>& labels, const std::shared_ptr<KernelNormalizer>& normalizer=nullptr)
+		: ScatterKernelNormalizer()
 	{
-		init();
-
-		m_testing_class=-1;
 		m_const_diag=const_diag;
 		m_const_offdiag=const_offdiag;
 
@@ -48,9 +54,9 @@ public:
 		labels->ensure_valid();
 
 		if (!normalizer)
-			normalizer=std::make_shared<IdentityKernelNormalizer>();
-
-		m_normalizer=normalizer;
+			m_normalizer=std::make_shared<IdentityKernelNormalizer>();
+		else
+			m_normalizer=normalizer;
 
 		SG_DEBUG("Constructing ScatterKernelNormalizer with const_diag={:g}"
 				" const_offdiag={:g} num_labels={} and normalizer='{}'",
@@ -59,9 +65,7 @@ public:
 	}
 
 	/** default destructor */
-	virtual ~ScatterKernelNormalizer()
-	{
-	}
+	virtual ~ScatterKernelNormalizer() = default;
 
 	/** initialization of the normalizer
 	 * @param k kernel */
@@ -140,35 +144,12 @@ public:
 		return "ScatterKernelNormalizer";
 	}
 
-private:
-	void init()
-	{
-		m_const_diag = 1.0;
-		m_const_offdiag = 1.0;
-
-		m_labels = NULL;
-		m_normalizer = NULL;
-
-		m_testing_class = -1;
-
-		SG_ADD(&m_testing_class, "m_testing_class",
-				"Testing Class.");
-		SG_ADD(&m_const_diag, "m_const_diag",
-				"Factor to multiply to diagonal elements.", ParameterProperties::HYPER);
-		SG_ADD(&m_const_offdiag, "m_const_offdiag",
-				"Factor to multiply to off-diagonal elements.", ParameterProperties::HYPER);
-
-		SG_ADD((std::shared_ptr<SGObject>*) &m_labels, "m_labels", "Labels");
-		SG_ADD((std::shared_ptr<SGObject>*) &m_normalizer, "m_normalizer", "Kernel normalizer.",
-		    ParameterProperties::HYPER);
-	}
-
 protected:
-
 	/** factor to multiply to diagonal elements */
-	float64_t m_const_diag;
+	float64_t m_const_diag = 1.0;
+
 	/** factor to multiply to off-diagonal elements */
-	float64_t m_const_offdiag;
+	float64_t m_const_offdiag = 1.0;
 
 	/** labels **/
 	std::shared_ptr<MulticlassLabels> m_labels;
@@ -177,7 +158,7 @@ protected:
 	std::shared_ptr<KernelNormalizer> m_normalizer;
 
 	/** upon testing which class to test for */
-	int32_t m_testing_class;
+	int32_t m_testing_class = -1;
 };
 }
 #endif

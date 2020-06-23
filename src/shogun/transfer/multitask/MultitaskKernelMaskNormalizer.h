@@ -36,9 +36,11 @@ public:
 
 	/** default constructor
 	 */
-	MultitaskKernelMaskNormalizer() : KernelNormalizer(),
-		scale(1.0), normalization_constant(1.0)
+	MultitaskKernelMaskNormalizer() : KernelNormalizer()
 	{
+		SG_ADD(&scale, "scale", "value of first element")
+		SG_ADD(&normalization_constant, "normalization_constant", 
+			"outer normalization constant")
 	}
 
 	/** default constructor
@@ -52,8 +54,6 @@ public:
 								   std::vector<int32_t> active_tasks_vec)
 		: KernelNormalizer(), scale(1.0), normalization_constant(1.0)
 	{
-
-
 		set_task_vector_lhs(task_lhs);
 		set_task_vector_rhs(task_rhs);
 
@@ -62,14 +62,10 @@ public:
 		{
 			active_tasks.insert(active_tasks_vec[i]);
 		}
-
 	}
-
 
 	/** default destructor */
-	virtual ~MultitaskKernelMaskNormalizer()
-	{
-	}
+	virtual ~MultitaskKernelMaskNormalizer() = default;
 
 	/** initialization of the normalizer
 	 * @param k kernel */
@@ -80,7 +76,6 @@ public:
 		int32_t num_rhs = k->get_num_vec_rhs();
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
-
 
 		//same as first-element normalizer
 		auto old_lhs=k->lhs;
@@ -99,11 +94,8 @@ public:
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
 
-
 		return true;
 	}
-
-
 
 	/** normalize the kernel value
 	 * @param value kernel value
@@ -112,7 +104,6 @@ public:
 	 */
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 	{
-
 		//lookup tasks
 		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
 		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
@@ -123,9 +114,7 @@ public:
 		//take task similarity into account
 		float64_t similarity = (value/scale) * task_similarity;
 
-
 		return similarity;
-
 	}
 
 	/** normalize only the left hand side vector
@@ -156,16 +145,9 @@ public:
 
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_lhs(std::vector<int32_t> vec)
+	void set_task_vector_lhs(const std::vector<int32_t>& vec)
 	{
-
-		task_vector_lhs.clear();
-
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
-		{
-			task_vector_lhs.push_back(vec[i]);
-		}
-
+		task_vector_lhs = std::move(vec);
 	}
 
 	/** @return vec task vector with containing task_id for each example on right hand side */
@@ -175,18 +157,10 @@ public:
 		return task_vector_rhs;
 	}
 
-
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_rhs(std::vector<int32_t> vec)
+	void set_task_vector_rhs(const std::vector<int32_t>& vec)
 	{
-
-		task_vector_rhs.clear();
-
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
-		{
-			task_vector_rhs.push_back(vec[i]);
-		}
-
+		task_vector_rhs = std::move(vec);
 	}
 
 	/** @param vec task vector with containing task_id for each example */
@@ -196,7 +170,6 @@ public:
 		set_task_vector_rhs(vec);
 	}
 
-
 	/**
 	 * @param task_lhs task_id on left hand side
 	 * @param task_rhs task_id on right hand side
@@ -204,7 +177,6 @@ public:
 	 */
 	float64_t get_similarity(int32_t task_lhs, int32_t task_rhs) const noexcept
 	{
-
 		const bool lhs_is_in = active_tasks.find(task_lhs) != active_tasks.end();
 		const bool rhs_is_in = active_tasks.find(task_rhs) != active_tasks.end();
 
@@ -216,7 +188,6 @@ public:
 		}
 
 		return similarity;
-
 	}
 
 	/**
@@ -224,16 +195,7 @@ public:
 	 */
 	std::vector<int32_t> get_active_tasks() const
 	{
-
-		std::vector<int32_t> active_tasks_vec;
-
-		// set active tasks
-		for (std::set<int32_t>::const_iterator it=active_tasks.begin(); it!=active_tasks.end(); it++)
-		{
-			active_tasks_vec.push_back(*it);
-		}
-
-		return active_tasks_vec;
+		return std::vector<int32_t>(active_tasks.begin(), active_tasks.end());
 	}
 
 	/**
@@ -280,11 +242,10 @@ protected:
 	std::vector<int32_t> task_vector_rhs;
 
 	/** value of first element **/
-	float64_t scale;
+	float64_t scale = 1.0;
 
 	/** outer normalization constant **/
-	float64_t normalization_constant;
-
+	float64_t normalization_constant = 1.0;
 };
 }
 #endif
