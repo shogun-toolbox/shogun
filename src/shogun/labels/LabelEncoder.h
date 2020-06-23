@@ -59,6 +59,9 @@ namespace shogun
 			return "LabelEncoder";
 		}
 
+		void set_print_warning(bool print_warning){
+			print_warning = print_warning;
+		}
 	protected:
 		SGVector<float64_t> fit_impl(const SGVector<float64_t>& origin_vector)
 		{
@@ -98,6 +101,22 @@ namespace shogun
 			    });
 			return original_vector;
 		}
+
+		bool can_convert_float_to_int(const SGVector<float64_t>& vec) const
+		{
+			SGVector<int32_t> converted(vec.vlen);
+			std::transform(
+			    vec.begin(), vec.end(), converted.begin(),
+			    [](auto&& e) { return static_cast<int32_t>(e); });
+			return std::equal(
+			    vec.begin(), vec.end(), converted.begin(),
+			    [](auto&& e1, auto&& e2) {
+				    return std::abs(e1 - e2) <
+				           std::numeric_limits<float64_t>::epsilon();
+			    });
+		}
+
+		bool print_warning = true;
 		std::set<float64_t> unique_labels;
 		std::unordered_map<float64_t, float64_t> normalized_to_origin;
 	};

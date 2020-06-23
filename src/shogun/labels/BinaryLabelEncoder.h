@@ -33,7 +33,7 @@ namespace shogun
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
 			check_is_valid(result_vector);
-			if (!can_convert_float_to_int(result_vector))
+			if (print_warning && !can_convert_float_to_int(result_vector))
 			{
 				io::warn(
 				    "({}, {}) have been converted to (-1, 1).",
@@ -122,19 +122,7 @@ namespace shogun
 			    fmt::join(unique_set, ", "));
 		}
 
-		bool can_convert_float_to_int(const SGVector<float64_t>& vec) const
-		{
-			SGVector<int32_t> converted(vec.vlen);
-			std::transform(
-			    vec.begin(), vec.end(), converted.begin(),
-			    [](auto&& e) { return static_cast<int32_t>(e); });
-			return std::equal(
-			    vec.begin(), vec.end(), converted.begin(),
-			    [](auto&& e1, auto&& e2) {
-				    return std::abs(e1 - e2) <
-				           std::numeric_limits<float64_t>::epsilon();
-			    });
-		}
+		
 	};
 } // namespace shogun
 
