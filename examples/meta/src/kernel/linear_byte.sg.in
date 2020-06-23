@@ -1,0 +1,18 @@
+File traindat = read_csv("@SHOGUN_DATA@/fm_train_byte.dat")
+File testdat = read_csv("@SHOGUN_DATA@/fm_test_byte.dat")
+
+#![create_features]
+Features feats_train = create_features(traindat, enum EPrimitiveType.PT_UINT8)
+Features feats_test = create_features(testdat, enum EPrimitiveType.PT_UINT8)
+#![create_features]
+
+#![create_kernel]
+Kernel kernel = create_kernel("LinearKernel")
+kernel.init(feats_train, feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix km_train = kernel.get_kernel_matrix()
+kernel.init(feats_train, feats_test)
+RealMatrix km_test = kernel.get_kernel_matrix()
+#![get_kernel_features]
