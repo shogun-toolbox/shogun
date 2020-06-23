@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Tej Sukhatme
+ * Author: Tej Sukhatme
  */
 
 #include <shogun/features/DotFeatures.h>

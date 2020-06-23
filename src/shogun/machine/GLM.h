@@ -3,7 +3,7 @@
  * 
  * Both the documentation and the code is heavily inspired by pyGLMnet.: https://github.com/glm-tools/pyglmnet/
  *
- * Authors: Tej Sukhatme
+ * Author: Tej Sukhatme
  */
 
 
@@ -41,7 +41,7 @@ class GLMCostFunction;
 /** @brief Class for estimating regularized generalized linear models (GLM).
  *   The regularized GLM minimizes the penalized negative log likelihood:
  *
- *  This used Elastic-net penalty which defaults to the ridge penalty when
+ *  This uses Elastic-net penalty which defaults to the ridge penalty when
  *  alpha = 0 and defaults to the lasso penalty when alpha = 1.
  *
  * */
@@ -79,7 +79,7 @@ class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 
 	protected:
 
-		void init_model(const std::shared_ptr<Features>& data) override;
+		void init_model(const std::shared_ptr<Features>& data);
 		
 		void iteration() override;
 
