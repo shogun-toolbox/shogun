@@ -6,7 +6,7 @@ IF (LAPACK_FOUND)
   SET(HAVE_LAPACK 1)
 
   # find out the type of Lapack/BLAS implementation we are dealing with
-  # it seems like findLAPACK includes in LAPACK_LIBRARIES all the libraries 
+  # it seems like findLAPACK includes in LAPACK_LIBRARIES all the libraries
   # that need to be linked: "Accelerate.framework;-lm;-ldl"
   IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework(;-l[a-z]+)*$")
     # Accelerate.framework we found for LaPack/BLAS
@@ -126,7 +126,7 @@ IF (LAPACK_FOUND)
     ENDIF()
     # if LaPack is detected and Eigen is 3.3 or later
     # use the lapack/blas backend in Eigen
-    IF(${EIGEN_VERSION} VERSION_GREATER 3.3.0 AND ENABLE_EIGEN_LAPACK AND HAVE_LAPACK)
+    IF(${EIGEN3_VERSION_STRING} VERSION_GREATER 3.3.0 AND ENABLE_EIGEN_LAPACK AND HAVE_LAPACK)
       SET(EIGEN_USE_BLAS 1)
       MESSAGE(STATUS "Enabling detected BLAS library as backend for Eigen")
 

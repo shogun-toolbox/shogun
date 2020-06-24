@@ -105,7 +105,7 @@ IF(NOT HAVE_STD_STRING_VIEW)
 ENDIF()
 
 ############# minimum library versions ###################
-SET(EIGEN_VERSION_MINIMUM 3.1.2)
+SET(EIGEN_VERSION_MINIMUM 3.3.0)
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
 
 # Store system's or distribution's C[XX]FLAGS.
