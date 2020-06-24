@@ -158,16 +158,14 @@ public:
 
 	virtual ~Taxonomy()
 	{
-		nodes.clear();
-		name2id.clear();
-		task_histogram.clear();
 	}
 
 	/**
 	 *  @param task_id task identifier
 	 *  @return node with id task_id
 	 */
-	std::shared_ptr<Node> get_node(int32_t task_id) const {
+	std::shared_ptr<Node> get_node(int32_t task_id) const 
+	{
 		return nodes[task_id];
 	}
 
@@ -184,7 +182,8 @@ public:
 	 *  @param child_name name of child
 	 *  @param beta weight of child
 	 */
-	std::shared_ptr<Node> add_node(std::string parent_name, std::string child_name, float64_t beta)
+	std::shared_ptr<Node> add_node(const std::string& parent_name, 
+		const std::string& child_name, float64_t beta)
 	{
 		if (child_name=="")	error("child_name empty");
 		if (parent_name=="") error("parent_name empty");
@@ -214,7 +213,8 @@ public:
 	 *  @param name name of task
 	 *  @return id
 	 */
-	int32_t get_id(std::string name) {
+	int32_t get_id(const std::string& name) 
+	{
 		return name2id[name];
 	}
 
@@ -223,20 +223,19 @@ public:
 	 *  @param node_rhs node of right hand side
 	 *  @return intersection of the two sets of ancestors
 	 */
-	Node::NodeSet intersect_root_path(std::shared_ptr<Node> node_lhs, std::shared_ptr<Node> node_rhs) const
+	Node::NodeSet intersect_root_path(const std::shared_ptr<Node>& node_lhs, 
+		const std::shared_ptr<Node>& node_rhs) const
 	{
-
-		Node::NodeSet root_path_lhs = node_lhs->get_path_root();
-		Node::NodeSet root_path_rhs = node_rhs->get_path_root();
+		const auto& root_path_lhs = node_lhs->get_path_root();
+		const auto& root_path_rhs = node_rhs->get_path_root();
 
 		Node::NodeSet intersection;
 
 		std::set_intersection(root_path_lhs.begin(), root_path_lhs.end(),
 							  root_path_rhs.begin(), root_path_rhs.end(),
 							  std::inserter(intersection, intersection.end()));
-
+		
 		return intersection;
-
 	}
 
 	/**
@@ -246,22 +245,20 @@ public:
 	 */
 	float64_t compute_node_similarity(int32_t task_lhs, int32_t task_rhs) const
 	{
-
 		auto node_lhs = get_node(task_lhs);
 		auto node_rhs = get_node(task_rhs);
 
 		// compute intersection of paths to root
-		Node::NodeSet intersection = intersect_root_path(node_lhs, node_rhs);
+		const auto& intersection = intersect_root_path(node_lhs, node_rhs);
 
 		// sum up weights
 		float64_t gamma = 0;
-		for (Node::NodeSet::const_iterator p = intersection.begin(); p != intersection.end(); ++p) {
-
+		for (Node::NodeSet::const_iterator p = intersection.begin(); p != intersection.end(); ++p)
+		{
 			gamma += (*p)->beta;
 		}
 
 		return gamma;
-
 	}
 
 	/** keep track of how many elements each task has
@@ -271,7 +268,6 @@ public:
 
 		//empty map
 		task_histogram.clear();
-
 
 		//fill map with zeros
 		for (std::vector<int32_t>::const_iterator it=task_vector_lhs.begin(); it!=task_vector_lhs.end(); it++)
@@ -288,15 +284,14 @@ public:
 		//compute fractions
 		for (std::map<int32_t, float64_t>::const_iterator it=task_histogram.begin(); it!=task_histogram.end(); it++)
 		{
-			task_histogram[it->first] = task_histogram[it->first] / float64_t(task_vector_lhs.size());
+			task_histogram[it->first] = task_histogram[it->first] / static_cast<float64_t>(task_vector_lhs.size());
 		}
-
 	}
 
 	/** @return number of nodes */
 	int32_t get_num_nodes() const noexcept
 	{
-		return (int32_t)(nodes.size());
+		return nodes.size();
 	}
 
 	/** @return number of leaves */
@@ -304,7 +299,7 @@ public:
 	{
 		int32_t num_leaves = 0;
 
-		for (int32_t i=0; i!=get_num_nodes(); i++)
+		for (int32_t i=0; i<get_num_nodes(); i++)
 		{
 			if (get_node(i)->is_leaf()==true)
 			{
@@ -339,7 +334,8 @@ public:
 	}
 
 	/** @return mapping from name to id */
-	std::map<std::string, int32_t> get_name2id() const noexcept {
+	std::map<std::string, int32_t> get_name2id() const noexcept 
+	{
 		return name2id;
 	}
 
@@ -348,14 +344,12 @@ public:
 	 *  @param name node name
 	 *  @return id
 	 */
-	int32_t get_id_by_name(std::string name)
+	int32_t get_id_by_name(const std::string& name) const
 	{
-		return name2id[name];
+		return name2id.at(name);
 	}
 
-
 protected:
-
 	/** root */
 	std::shared_ptr<Node> root;
 	/** name 2 id */
@@ -364,7 +358,6 @@ protected:
 	std::vector<std::shared_ptr<Node>> nodes;
 	/** task histogram */
 	std::map<int32_t, float64_t> task_histogram;
-
 };
 
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function based on taxonomy.
@@ -372,7 +365,6 @@ protected:
  */
 class MultitaskKernelTreeNormalizer: public MultitaskKernelMklNormalizer
 {
-
 public:
 
 	/** default constructor
@@ -387,48 +379,38 @@ public:
 	 * @param task_rhs task vector with containing task_id for each example for right hand side
 	 * @param tax taxonomy
 	 */
-	MultitaskKernelTreeNormalizer(std::vector<std::string> task_lhs,
-								   std::vector<std::string> task_rhs,
-								   Taxonomy tax) : MultitaskKernelMklNormalizer()
+	MultitaskKernelTreeNormalizer(const std::vector<std::string>& task_lhs,
+								  const std::vector<std::string>& task_rhs,
+								  Taxonomy tax): MultitaskKernelTreeNormalizer()
 	{
-
 		taxonomy = tax;
 		set_task_vector_lhs(task_lhs);
 		set_task_vector_rhs(task_rhs);
 
 		num_nodes = taxonomy.get_num_nodes();
 
-		dependency_matrix = std::vector<float64_t>(num_nodes * num_nodes);
+		dependency_matrix = SGMatrix<float64_t>(num_nodes, num_nodes);
 
 		update_cache();
 	}
-
 
 	/** default destructor */
 	virtual ~MultitaskKernelTreeNormalizer()
 	{
 	}
 
-
 	/** update cache */
 	void update_cache()
 	{
-
-
 		for (int32_t i=0; i!=num_nodes; i++)
 		{
 			for (int32_t j=0; j!=num_nodes; j++)
 			{
-
 				float64_t similarity = taxonomy.compute_node_similarity(i, j);
 				set_node_similarity(i,j,similarity);
-
 			}
-
 		}
 	}
-
-
 
 	/** normalize the kernel value
 	 * @param value kernel value
@@ -438,16 +420,15 @@ public:
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
 	{
 		//lookup tasks
-		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		const auto& task_idx_lhs = task_vector_lhs[idx_lhs];
+		const auto& task_idx_rhs = task_vector_rhs[idx_rhs];
 
 		//lookup similarity
 		float64_t task_similarity = get_node_similarity(task_idx_lhs, task_idx_rhs);
 		//float64_t task_similarity = taxonomy.compute_node_similarity(task_idx_lhs, task_idx_rhs);
 
 		//take task similarity into account
-		float64_t similarity = (value/scale) * task_similarity;
-
+		float64_t similarity = (value / scale) * task_similarity;
 
 		return similarity;
 	}
@@ -474,12 +455,11 @@ public:
 
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_lhs(std::vector<std::string> vec)
+	void set_task_vector_lhs(const std::vector<std::string>& vec)
 	{
-
 		task_vector_lhs.clear();
 
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
+		for (int32_t i = 0; i < vec.size(); ++i)
 		{
 			task_vector_lhs.push_back(taxonomy.get_id(vec[i]));
 		}
@@ -490,16 +470,14 @@ public:
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_rhs(std::vector<std::string> vec)
+	void set_task_vector_rhs(const std::vector<std::string>& vec)
 	{
-
 		task_vector_rhs.clear();
 
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
+		for (int32_t i = 0; i < vec.size(); ++i)
 		{
 			task_vector_rhs.push_back(taxonomy.get_id(vec[i]));
 		}
-
 	}
 
 	/** @param vec task vector with containing task_id for each example */
@@ -512,9 +490,7 @@ public:
 	/** @return number of parameters/weights */
 	int32_t get_num_betas() const noexcept
 	{
-
 		return taxonomy.get_num_nodes();
-
 	}
 
 	/**
@@ -522,9 +498,7 @@ public:
 	 * @return weight of node with given id */
 	float64_t get_beta(int32_t idx) const
 	{
-
 		return taxonomy.get_node_weight(idx);
-
 	}
 
 	/**
@@ -532,13 +506,10 @@ public:
 	 * @param weight weight of node with given id */
 	void set_beta(int32_t idx, float64_t weight)
 	{
-
 		taxonomy.set_node_weight(idx, weight);
 
 		update_cache();
-
 	}
-
 
 	/**
 	 * @param node_lhs node_id on left hand side
@@ -547,12 +518,10 @@ public:
 	 */
 	float64_t get_node_similarity(int32_t node_lhs, int32_t node_rhs) const
 	{
-
 		ASSERT(node_lhs < num_nodes && node_lhs >= 0)
 		ASSERT(node_rhs < num_nodes && node_rhs >= 0)
 
-		return dependency_matrix[node_lhs * num_nodes + node_rhs];
-
+		return dependency_matrix(node_lhs, node_rhs);
 	}
 
 	/**
@@ -563,12 +532,10 @@ public:
 	void set_node_similarity(int32_t node_lhs, int32_t node_rhs,
 			float64_t similarity)
 	{
-
 		ASSERT(node_lhs < num_nodes && node_lhs >= 0)
 		ASSERT(node_rhs < num_nodes && node_rhs >= 0)
 
-		dependency_matrix[node_lhs * num_nodes + node_rhs] = similarity;
-
+		dependency_matrix(node_lhs, node_rhs) = similarity;
 	}
 
 	/** @return object name */
@@ -599,7 +566,7 @@ protected:
 	std::vector<int32_t> task_vector_rhs;
 
 	/** MxM matrix encoding similarity between tasks **/
-	std::vector<float64_t> dependency_matrix;
+	SGMatrix<float64_t> dependency_matrix;
 };
 }
 #endif

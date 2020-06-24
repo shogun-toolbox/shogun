@@ -19,6 +19,7 @@
 #include <shogun/base/Parallel.h>
 
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 #include <shogun/features/Features.h>
 
@@ -73,6 +74,15 @@ Kernel::~Kernel()
 
 	remove_lhs_and_rhs();
 
+}
+
+float64_t Kernel::kernel(int32_t idx_a, int32_t idx_b)
+{
+	require(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
+		"{}::kernel(): index out of Range: idx_a={}/{} idx_b={}/{}",
+		get_name(), idx_a,num_lhs, idx_b,num_rhs);
+
+	return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 }
 
 #ifdef USE_SVMLIGHT
@@ -133,10 +143,8 @@ bool Kernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 
 bool Kernel::set_normalizer(std::shared_ptr<KernelNormalizer> n)
 {
-
 	if (lhs && rhs)
 		n->init(this);
-
 
 	normalizer=n;
 
@@ -145,7 +153,6 @@ bool Kernel::set_normalizer(std::shared_ptr<KernelNormalizer> n)
 
 std::shared_ptr<KernelNormalizer> Kernel::get_normalizer() const
 {
-
 	return normalizer;
 }
 
@@ -735,6 +742,7 @@ void Kernel::list_kernel()
 		ENUM_CASE(K_GAUSSIANARDSPARSE)
 		ENUM_CASE(K_STREAMING)
 		ENUM_CASE(K_PERIODIC)
+		ENUM_CASE(K_MATERN)
 	}
 
 	switch (get_feature_class())

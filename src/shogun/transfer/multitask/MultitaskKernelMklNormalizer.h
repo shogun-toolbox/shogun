@@ -10,7 +10,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
-#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <algorithm>
 #include <string>
 
@@ -28,17 +28,16 @@ public:
 
 	/** default constructor
 	 */
-	MultitaskKernelMklNormalizer() : KernelNormalizer(), scale(1.0)
+	MultitaskKernelMklNormalizer() : KernelNormalizer()
 	{
+		SG_ADD(&scale, "scale", "value of first element")
 		m_type = N_MULTITASK;
 	}
 
-
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
-
 		//same as first-element normalizer
 		auto old_lhs=k->lhs;
 		auto old_rhs=k->rhs;
@@ -53,7 +52,6 @@ public:
 			scale=1.0;
 		}
 
-
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
 
@@ -63,11 +61,8 @@ public:
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
-
 		return true;
 	}
-
-
 
 	/** normalize only the left hand side vector
 	 * @param value value of a component of the left hand side feature vector
@@ -91,7 +86,6 @@ public:
 
 public:
 
-
 	/**
 	 *  @param idx index of MKL weight to get
 	 */
@@ -103,12 +97,10 @@ public:
 	 */
 	virtual void set_beta(int32_t idx, float64_t weight) = 0;
 
-
 	/**
 	 * @return number of sub-kernel weights for MKL
 	 */
 	virtual int32_t get_num_betas() const noexcept = 0;
-
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -118,10 +110,8 @@ public:
 
 protected:
 
-
 	/** scale constant obtained from k(0,0) **/
-	float64_t scale;
-
+	float64_t scale = 1.0;
 };
 }
 #endif

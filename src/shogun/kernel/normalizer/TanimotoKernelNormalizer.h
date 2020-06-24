@@ -24,30 +24,34 @@ namespace shogun
 class TanimotoKernelNormalizer : public KernelNormalizer
 {
 	public:
+		TanimotoKernelNormalizer()
+			: KernelNormalizer()
+		{
+			SG_ADD(&use_optimized_diagonal_computation,
+				   "use_optimized_diagonal_computation",
+				   "flat if optimized diagonal computation is used");
+		}
+
 		/** default constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		TanimotoKernelNormalizer(bool use_opt_diag=false)
-			: KernelNormalizer(), diag_lhs(NULL), diag_rhs(NULL),
-			use_optimized_diagonal_computation(use_opt_diag)
+		TanimotoKernelNormalizer(bool use_opt_diag)
+			: TanimotoKernelNormalizer()
 		{
+			use_optimized_diagonal_computation = use_opt_diag;
 		}
 
 		/** default destructor */
-		virtual ~TanimotoKernelNormalizer()
-		{
-			SG_FREE(diag_lhs);
-			SG_FREE(diag_rhs);
-		}
+		virtual ~TanimotoKernelNormalizer() = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
-			int32_t num_lhs=k->get_num_vec_lhs();
-			int32_t num_rhs=k->get_num_vec_rhs();
+			const auto& num_lhs=k->get_num_vec_lhs();
+			const auto& num_rhs=k->get_num_vec_rhs();
 			ASSERT(num_lhs>0)
 			ASSERT(num_rhs>0)
 
@@ -56,16 +60,16 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
-			bool r1=alloc_and_compute_diag(k, diag_lhs, num_lhs);
+			diag_lhs = alloc_and_compute_diag(k, num_lhs);
 
 			k->lhs=old_rhs;
 			k->rhs=old_rhs;
-			bool r2=alloc_and_compute_diag(k, diag_rhs, num_rhs);
+			diag_rhs = alloc_and_compute_diag(k, num_rhs);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-			return r1 && r2;
+			return true;
 		}
 
 		/** normalize the kernel value
@@ -113,37 +117,37 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(Kernel* k, float64_t* &v, int32_t num) const
+		SGVector<float64_t> alloc_and_compute_diag(Kernel* k, int32_t num) const
 		{
-			SG_FREE(v);
-			v=SG_MALLOC(float64_t, num);
+			SGVector<float64_t> v(num);
+			std::function<float64_t(const int32_t)> func;
+
+			if (auto* cwsk = dynamic_cast<CommWordStringKernel*>(k))
+			{
+				if (use_optimized_diagonal_computation)
+					func = [&cwsk](const int32_t i) {return cwsk->compute_diag(i);};
+				else
+					func = [&cwsk](const int32_t i) {return cwsk->compute_helper(i,i, true);};
+			}
+			else
+				func = [&k](const int32_t i) {return k->compute(i,i);};
 
 			for (int32_t i=0; i<num; i++)
 			{
-				if (k->get_kernel_type() == K_COMMWORDSTRING)
-				{
-					auto cwsk = k->as<CommWordStringKernel>();
-					if (use_optimized_diagonal_computation)
-						v[i]=cwsk->compute_diag(i);
-					else
-						v[i]=cwsk->compute_helper(i,i, true);
-				}
-				else
-					v[i]=k->compute(i,i);
-
-				if (v[i]==0.0)
-					v[i]=1e-16; /* avoid divide by zero exception */
+				v[i] = func(i);
+				if (v[i] == 0.0)
+					v[i] = std::numeric_limits<float64_t>::min();
 			}
 
-			return (v!=NULL);
+			return v;
 		}
 
 		/** diagonal left-hand side */
-		float64_t* diag_lhs;
+		SGVector<float64_t> diag_lhs;
 		/** diagonal right-hand side */
-		float64_t* diag_rhs;
+		SGVector<float64_t> diag_rhs;
 		/** flat if optimized diagonal computation is used */
-		bool use_optimized_diagonal_computation;
+		bool use_optimized_diagonal_computation = false;
 };
 }
 #endif

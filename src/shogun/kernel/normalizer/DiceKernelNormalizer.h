@@ -24,41 +24,38 @@ namespace shogun
 class DiceKernelNormalizer : public KernelNormalizer
 {
 	public:
-		/** default constructor
+		DiceKernelNormalizer(): KernelNormalizer()
+		{
+			SG_ADD(&diag_rhs, "diag_rhs", "K(x,x) for right hand side examples.",
+				   ParameterProperties::MODEL)
+
+			SG_ADD(&diag_lhs, "diag_lhs", "K(x,x) for left hand side examples.",
+				   ParameterProperties::MODEL)
+
+			SG_ADD(&use_optimized_diagonal_computation,
+				   "use_optimized_diagonal_computation",
+				   "flat if optimized diagonal computation is used");
+		}
+
+		/** constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		DiceKernelNormalizer(bool use_opt_diag=false) : KernelNormalizer(),
-			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
-			use_optimized_diagonal_computation(use_opt_diag)
+		DiceKernelNormalizer(bool use_opt_diag): KernelNormalizer()
 		{
-			/*m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
-							  "K(x,x) for left hand side examples.")*/;
-			/*watch_param("diag_lhs", &diag_lhs, &num_diag_lhs)*/;
-
-			/*m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
-							  "K(x,x) for right hand side examples.")*/;
-			/*watch_param("diag_rhs", &diag_rhs, &num_diag_rhs)*/;
-
-			/*SG_ADD(&use_optimized_diagonal_computation,
-					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used");*/
+			use_optimized_diagonal_computation = use_opt_diag;
 		}
 
 		/** default destructor */
-		virtual ~DiceKernelNormalizer()
-		{
-			SG_FREE(diag_lhs);
-			SG_FREE(diag_rhs);
-		}
+		virtual ~DiceKernelNormalizer() = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
-			num_diag_lhs=k->get_num_vec_lhs();
-			num_diag_rhs=k->get_num_vec_rhs();
+			const auto& num_diag_lhs=k->get_num_vec_lhs();
+			const auto& num_diag_rhs=k->get_num_vec_rhs();
 			ASSERT(num_diag_lhs>0)
 			ASSERT(num_diag_rhs>0)
 
@@ -67,16 +64,16 @@ class DiceKernelNormalizer : public KernelNormalizer
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
-			bool r1=alloc_and_compute_diag(k, diag_lhs, num_diag_lhs);
+			diag_lhs=alloc_and_compute_diag(k, num_diag_lhs);
 
 			k->lhs=old_rhs;
 			k->rhs=old_rhs;
-			bool r2=alloc_and_compute_diag(k, diag_rhs, num_diag_rhs);
+			diag_rhs=alloc_and_compute_diag(k, num_diag_rhs);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-			return r1 && r2;
+			return true;
 		}
 
 		/** normalize the kernel value
@@ -124,43 +121,39 @@ class DiceKernelNormalizer : public KernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(Kernel* k, float64_t* &v, int32_t num) const
+		SGVector<float64_t> alloc_and_compute_diag(Kernel* k, int32_t num) const
 		{
-			SG_FREE(v);
-			v=SG_MALLOC(float64_t, num);
+			SGVector<float64_t> v(num);
+			std::function<float64_t(const int32_t)> func;
+			
+			if (auto* cwsk = dynamic_cast<CommWordStringKernel*>(k))
+			{
+				if (use_optimized_diagonal_computation)
+					func = [&cwsk](const int32_t i) { return cwsk->compute_diag(i); };
+				else
+					func = [&cwsk](const int32_t i) { return cwsk->compute_helper(i,i, true);};
+			}
+			else
+				func = [&k](const int32_t i) { return k->compute(i,i);};
 
 			for (int32_t i=0; i<num; i++)
 			{
-				if (k->get_kernel_type() == K_COMMWORDSTRING)
-				{
-					auto cwsk = k->as<CommWordStringKernel>();
-					if (use_optimized_diagonal_computation)
-						v[i]=cwsk->compute_diag(i);
-					else
-						v[i]=cwsk->compute_helper(i,i, true);
-				}
-				else
-					v[i]=k->compute(i,i);
-
-				if (v[i]==0.0)
-					v[i]=1e-16; /* avoid divide by zero exception */
+				v[i] = func(i);
+				if (v[i] == 0.0)
+					v[i] = std::numeric_limits<float64_t>::min();
 			}
 
-			return (v!=NULL);
+			return v;
 		}
 
 		/** diagonal left-hand side */
-		float64_t* diag_lhs;
-		/** num diag lhs */
-		int32_t num_diag_lhs;
+		SGVector<float64_t> diag_lhs;
 
 		/** diagonal right-hand side */
-		float64_t* diag_rhs;
-		/** num diag rhs */
-		int32_t num_diag_rhs;
+		SGVector<float64_t> diag_rhs;
 
 		/** flat if optimized diagonal computation is used */
-		bool use_optimized_diagonal_computation;
+		bool use_optimized_diagonal_computation = false;
 };
 }
 #endif

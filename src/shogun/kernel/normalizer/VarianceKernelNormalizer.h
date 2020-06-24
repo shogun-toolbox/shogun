@@ -28,24 +28,22 @@ class VarianceKernelNormalizer : public KernelNormalizer
 		/** default constructor
 		 */
 		VarianceKernelNormalizer()
-			: KernelNormalizer(), meandiff(1.0), sqrt_meandiff(1.0)
+			: KernelNormalizer()
 		{
-			/*SG_ADD(&meandiff, "meandiff", "Scaling constant.", ParameterProperties::HYPER)*/;
-			/*SG_ADD(&sqrt_meandiff, "sqrt_meandiff",
-					"Square root of scaling constant.", ParameterProperties::HYPER)*/;
+			SG_ADD(&meandiff, "meandiff", "Scaling constant.", ParameterProperties::HYPER);
+			SG_ADD(&sqrt_meandiff, "sqrt_meandiff",
+				"Square root of scaling constant.", ParameterProperties::HYPER);
 		}
 
 		/** default destructor */
-		virtual ~VarianceKernelNormalizer()
-		{
-		}
+		virtual ~VarianceKernelNormalizer() = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(Kernel* k)
+		bool init(Kernel* k) override
 		{
 			ASSERT(k)
-			int32_t n=k->get_num_vec_lhs();
+			const auto& n=k->get_num_vec_lhs();
 			ASSERT(n>0)
 
 			auto old_lhs=k->lhs;
@@ -63,12 +61,12 @@ class VarianceKernelNormalizer : public KernelNormalizer
 					overall_mean+=k->compute(i, j);
 			}
 			diag_mean/=n;
-			overall_mean/=((float64_t) n)*n;
+			overall_mean/=std::pow(static_cast<float64_t>(n), 2);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-			meandiff=1.0/(diag_mean-overall_mean);
+			meandiff = 1.0 / (diag_mean-overall_mean);
 			sqrt_meandiff = std::sqrt(meandiff);
 
 			return true;
@@ -108,9 +106,9 @@ class VarianceKernelNormalizer : public KernelNormalizer
 
     protected:
 		/** scaling constant */
-		float64_t meandiff;
+		float64_t meandiff = 1.0;
 		/** square root of scaling constant */
-		float64_t sqrt_meandiff;
+		float64_t sqrt_meandiff = 1.0;
 };
 }
 #endif

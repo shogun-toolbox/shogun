@@ -340,3 +340,29 @@ float64_t CommUlongStringKernel::compute_optimized(int32_t i)
 
 	return normalizer->normalize_rhs(result, i);
 }
+
+void CommUlongStringKernel::merge_dictionaries(
+	int32_t& t, int32_t j, int32_t& k, uint64_t* vec, SGVector<uint64_t> dic,
+	SGVector<float64_t> dic_weights, float64_t weight, int32_t vec_idx)
+{
+	while (k<dictionary.vlen && dictionary[k] < vec[j-1])
+	{
+		dic[t]=dictionary[k];
+		dic_weights[t]=dictionary_weights[k];
+		t++;
+		k++;
+	}
+
+	if (k<dictionary.vlen && dictionary[k]==vec[j-1])
+	{
+		dic[t]=vec[j-1];
+		dic_weights[t]=dictionary_weights[k]+normalizer->normalize_lhs(weight, vec_idx);
+		k++;
+	}
+	else
+	{
+		dic[t]=vec[j-1];
+		dic_weights[t]=normalizer->normalize_lhs(weight, vec_idx);
+	}
+	t++;
+}

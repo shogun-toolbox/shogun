@@ -34,18 +34,18 @@ public:
 
 	/** default constructor
 	 */
-	MultitaskKernelNormalizer() : KernelNormalizer(), scale(1.0)
+	MultitaskKernelNormalizer() : KernelNormalizer()
 	{
+		SG_ADD(&scale, "scale", "value of first element")
 	}
 
 	/** default constructor
 	 *
 	 * @param task_vector task vector with containing task_id for each example
 	 */
-	MultitaskKernelNormalizer(std::vector<int32_t> task_vector)
-		: KernelNormalizer(), scale(1.0)
+	MultitaskKernelNormalizer(const std::vector<int32_t>& task_vector)
+		: MultitaskKernelNormalizer()
 	{
-
 		num_tasks = get_num_unique_tasks(task_vector);
 
 		// set both sides equally
@@ -53,19 +53,15 @@ public:
 
 		// init similarity matrix
 		similarity_matrix = std::vector<float64_t>(num_tasks * num_tasks);
-
 	}
 
 	/** default destructor */
-	virtual ~MultitaskKernelNormalizer()
-	{
-	}
+	virtual ~MultitaskKernelNormalizer() = default;
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(Kernel* k)
+	bool init(Kernel* k) override
 	{
-
 		//same as first-element normalizer
 		auto old_lhs=k->lhs;
 		auto old_rhs=k->rhs;
@@ -89,7 +85,7 @@ public:
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
-		//std::cout << "scale: " << scale << std::endl;
+		SG_DEBUG("scale: {}", scale);
 
 		return true;
 	}
@@ -99,19 +95,17 @@ public:
 	 * @param vec vector with containing task_id for each example
 	 * @return number of unique task ids
 	 */
-	int32_t get_num_unique_tasks(std::vector<int32_t> vec) const noexcept {
-
+	int32_t get_num_unique_tasks(std::vector<int32_t> vec) const {
 		//sort
 		std::sort(vec.begin(), vec.end());
 
 		//reorder tasks with unique prefix
-		std::vector<int32_t>::iterator endLocation = std::unique(vec.begin(), vec.end());
+		auto endLocation = std::unique(vec.begin(), vec.end());
 
 		//count unique tasks
 		int32_t num_vec = std::distance(vec.begin(), endLocation);
 
 		return num_vec;
-
 	}
 
 	/** normalize the kernel value
@@ -122,21 +116,18 @@ public:
 	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
 			int32_t idx_rhs) const
 	{
-
 		//lookup tasks
-		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		const auto& task_idx_lhs = task_vector_lhs[idx_lhs];
+		const auto& task_idx_rhs = task_vector_rhs[idx_rhs];
 
 		//lookup similarity
-		float64_t task_similarity = get_task_similarity(task_idx_lhs,
+		const float64_t task_similarity = get_task_similarity(task_idx_lhs,
 				task_idx_rhs);
 
 		//take task similarity into account
-		float64_t similarity = (value/scale) * task_similarity;
-
+		float64_t similarity = (value / scale) * task_similarity;
 
 		return similarity;
-
 	}
 
 	/** normalize only the left hand side vector
@@ -168,7 +159,7 @@ public:
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_lhs(std::vector<int32_t> vec)
+	void set_task_vector_lhs(const std::vector<int32_t>& vec)
 	{
 		task_vector_lhs = vec;
 	}
@@ -180,13 +171,13 @@ public:
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_rhs(std::vector<int32_t> vec)
+	void set_task_vector_rhs(const std::vector<int32_t>& vec)
 	{
 		task_vector_rhs = vec;
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector(std::vector<int32_t> vec)
+	void set_task_vector(const std::vector<int32_t>& vec)
 	{
 		task_vector_lhs = vec;
 		task_vector_rhs = vec;
@@ -199,12 +190,10 @@ public:
 	 */
 	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs) const
 	{
-
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		return similarity_matrix[task_lhs * num_tasks + task_rhs];
-
 	}
 
 	/**
@@ -215,12 +204,10 @@ public:
 	void set_task_similarity(int32_t task_lhs, int32_t task_rhs,
 			float64_t similarity)
 	{
-
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		similarity_matrix[task_lhs * num_tasks + task_rhs] = similarity;
-
 	}
 
 	/** @return object name */
@@ -238,7 +225,6 @@ public:
 		return n->as<MultitaskKernelNormalizer>();
 	}
 
-
 protected:
 
 	/** MxM matrix encoding similarity between tasks **/
@@ -254,7 +240,7 @@ protected:
 	std::vector<int32_t> task_vector_rhs;
 
 	/** scale constant obtained from k(0,0) **/
-	float64_t scale;
+	float64_t scale = 1.0;
 
 };
 }

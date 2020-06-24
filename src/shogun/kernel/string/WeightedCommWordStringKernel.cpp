@@ -8,6 +8,7 @@
 #include <shogun/kernel/string/WeightedCommWordStringKernel.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 
 using namespace shogun;
 
