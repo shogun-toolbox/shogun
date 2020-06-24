@@ -46,8 +46,6 @@ KernelMachine::KernelMachine() : NonParametricMachine()
 KernelMachine::KernelMachine(const std::shared_ptr<Kernel>& k, SGVector<float64_t> alphas,
         SGVector<int32_t> svs, float64_t b) : KernelMachine()
 {
-    init();
-
     int32_t num_sv=svs.vlen;
     ASSERT(num_sv == alphas.vlen)
     create_new_model(num_sv);
@@ -59,8 +57,6 @@ KernelMachine::KernelMachine(const std::shared_ptr<Kernel>& k, SGVector<float64_
 
 KernelMachine::KernelMachine(const std::shared_ptr<KernelMachine>& machine) : KernelMachine()
 {
-	init();
-
 	SGVector<float64_t> alphas = machine->get_alphas().clone();
 	SGVector<int32_t> svs = machine->get_support_vectors().clone();
 	float64_t bias = machine->get_bias();
