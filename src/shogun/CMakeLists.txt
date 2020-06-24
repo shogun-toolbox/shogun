@@ -599,6 +599,7 @@ IF (BUILD_BENCHMARKS)
   ADD_SHOGUN_BENCHMARK(lib/SGMatrix_benchmark)
   ADD_SHOGUN_BENCHMARK(util/PutPerceptron_benchmark)
   ADD_SHOGUN_BENCHMARK(util/ZipIterator_benchmark)
+  ADD_SHOGUN_BENCHMARK(preprocessor/RandomFourierGaussPreproc_benchmark)
 ENDIF()
 
 #############################################
