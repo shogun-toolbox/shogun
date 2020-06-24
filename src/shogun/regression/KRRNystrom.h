@@ -104,7 +104,6 @@ less than number of data points ({})", m_num_rkhs_basis, n);
 	virtual const char* get_name() const override { return "KRRNystrom"; }
 
 protected:
-
 	bool train_machine(std::shared_ptr<Features >data) override;
 
 	/** Train regression using the Nyström method.
