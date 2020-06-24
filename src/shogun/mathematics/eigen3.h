@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soumyajit De, Viktor Gal, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soumyajit De, Viktor Gal, Heiko Strathmann,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -21,26 +21,6 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
-	((EIGEN_MINOR_VERSION == 91) || (EIGEN_MINOR_VERSION == 92)))
-	// Regression has been introduced to eigen develop (3.3alpha1+):
-	// http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1229
-	// until this is not fixed we need to copy the matrix and calculate the log
-	#define EIGEN_WITH_LOG_BUG_1229 1
-#endif
-
-#if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
-	((EIGEN_MINOR_VERSION >= 91)))
-	// Eigen operator bug that was introduced somewhere in 3.3+
-	// TODO put reference and version when it got fixed
-	// c.f. github isse #3486
-	#define EIGEN_WITH_OPERATOR_BUG 1
-#endif
-
-#if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
-	((EIGEN_MINOR_VERSION >= 93)))
-	#define EIGEN_WITH_TRANSPOSITION_BUG 1
-#endif
 namespace shogun
 {
 template<class T> class SGSparseMatrix;

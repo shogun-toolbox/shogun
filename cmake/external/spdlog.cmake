@@ -24,7 +24,6 @@ ExternalProject_Add(
 	-DSPDLOG_BUILD_TESTS=OFF
 	INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${spdlog_SOURCE_DIR}/include ${spdlog_INCLUDE_DIR}
     BUILD_BYPRODUCTS ${spdlog_LIBRARY_NAME}
-    BUILD_ALWAYS 1
 )
 
 file(MAKE_DIRECTORY ${spdlog_INCLUDE_DIR})

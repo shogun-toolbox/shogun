@@ -302,19 +302,15 @@ FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
 IF(NOT EIGEN3_FOUND)
   include(external/Eigen3)
   SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
-    $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
   )
 ELSE()
-  # eigen3 bug related to aliasing operators and self-storing.
-  IF(${EIGEN_VERSION} VERSION_GREATER 3.2.90 AND ${EIGEN_VERSION} VERSION_LESS 3.3.0)
-      MESSAGE(WARNING "The system Eigen3 version ${EIGEN_VERSION} contains a lot of bugs, which could cause some models failing!")
-  ENDIF()
   # https://github.com/shogun-toolbox/shogun/issues/4870
-  IF(${EIGEN_VERSION} VERSION_GREATER 3.3.7)
+  IF(${EIGEN3_VERSION_STRING} VERSION_GREATER 3.3.7)
     MESSAGE(FATAL_ERROR "The system Eigen3 version ${EIGEN_VERSION} isn't supported!")
   ENDIF()
-  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${EIGEN_INCLUDE_DIR})
+  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${EIGEN3_INCLUDE_DIR})
 ENDIF()
 
 # ViennaCL detection
