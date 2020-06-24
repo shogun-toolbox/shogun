@@ -59,9 +59,6 @@ namespace shogun
 			return "LabelEncoder";
 		}
 
-		void set_print_warning(bool print_warning){
-			print_warning = print_warning;
-		}
 	protected:
 		SGVector<float64_t> fit_impl(const SGVector<float64_t>& origin_vector)
 		{
@@ -116,7 +113,6 @@ namespace shogun
 			    });
 		}
 
-		bool print_warning = true;
 		std::set<float64_t> unique_labels;
 		std::unordered_map<float64_t, float64_t> normalized_to_origin;
 	};

@@ -32,11 +32,11 @@ namespace shogun
 		SGVector<float64_t> fit(const std::shared_ptr<Labels>& labs) override
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
-			if (print_warning && !can_convert_float_to_int(result_vector))
+			if (!can_convert_float_to_int(result_vector))
 			{	
 				std::set<float64_t> s(result_vector.begin(), result_vector.end());
 				io::warn(
-				    "{} have been converted to 0...{}", 
+				    "({}) have been converted to (0...{})", 
 						fmt::join(s, ", "),
 							 result_vector.vlen - 1);
 			}

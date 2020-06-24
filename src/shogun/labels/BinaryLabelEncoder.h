@@ -33,7 +33,7 @@ namespace shogun
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
 			check_is_valid(result_vector);
-			if (print_warning && !can_convert_float_to_int(result_vector))
+			if (!can_convert_float_to_int(result_vector))
 			{
 				io::warn(
 				    "({}, {}) have been converted to (-1, 1).",
