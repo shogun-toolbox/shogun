@@ -1392,14 +1392,14 @@ void CHAIDTree::init()
 	m_cont_breakpoints=SGMatrix<float64_t>();
 	m_num_breakpoints=0;
 
-	SG_ADD(&m_weights,"m_weights", "weights", ParameterProperties::READONLY);
-	SG_ADD(&m_weights_set,"m_weights_set", "weights set", ParameterProperties::READONLY);
-	SG_ADD(&m_feature_types,"m_feature_types", "feature types", ParameterProperties::SETTING);
-	SG_ADD(&m_dependent_vartype,"m_dependent_vartype", "dependent variable type", ParameterProperties::SETTING);
-	SG_ADD(&m_max_tree_depth,"m_max_tree_depth", "max tree depth", ParameterProperties::HYPER);
-	SG_ADD(&m_min_node_size,"m_min_node_size", "min node size", ParameterProperties::SETTING);
-	SG_ADD(&m_alpha_merge,"m_alpha_merge", "alpha-merge", ParameterProperties::HYPER);
-	SG_ADD(&m_alpha_split,"m_alpha_split", "alpha-split", ParameterProperties::HYPER);
-	SG_ADD(&m_cont_breakpoints,"m_cont_breakpoints", "breakpoints in continuous attributes", ParameterProperties::SETTING);
-	SG_ADD(&m_num_breakpoints,"m_num_breakpoints", "number of breakpoints", ParameterProperties::HYPER);
+	SG_ADD(&m_weights,"weights", "weights", ParameterProperties::READONLY);
+	SG_ADD(&m_weights_set,"weights_set", "weights set", ParameterProperties::READONLY);
+	SG_ADD(&m_feature_types,"feature_types", "feature types", ParameterProperties::SETTING);
+	SG_ADD(&m_dependent_vartype,"dependent_vartype", "dependent variable type", ParameterProperties::SETTING);
+	SG_ADD(&m_max_tree_depth,"max_tree_depth", "max tree depth", ParameterProperties::HYPER);
+	SG_ADD(&m_min_node_size,"min_node_size", "min node size", ParameterProperties::SETTING);
+	SG_ADD(&m_alpha_merge,"alpha_merge", "alpha-merge", ParameterProperties::HYPER);
+	SG_ADD(&m_alpha_split,"alpha_split", "alpha-split", ParameterProperties::HYPER);
+	SG_ADD(&m_cont_breakpoints,"cont_breakpoints", "breakpoints in continuous attributes", ParameterProperties::SETTING);
+	SG_ADD(&m_num_breakpoints,"num_breakpoints", "number of breakpoints", ParameterProperties::HYPER);
 }
