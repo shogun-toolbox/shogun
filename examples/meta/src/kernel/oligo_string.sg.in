@@ -2,12 +2,12 @@ File traindat = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
 File testdat = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
 
 #![create_features]
-Features feats_train = create_features(traindat)
-Features feats_test = create_features(testdat)
+Features feats_train = create_char_string_features(traindat, enum EAlphabet.DNA)
+Features feats_test = create_char_string_features(testdat, enum EAlphabet.DNA)
 #![create_features]
 
 #![create_kernel]
-Kernel kernel = create_kernel("LinearStringKernel", k=3, width=1.2)
+Kernel kernel = create_kernel("OligoStringKernel",cache_size=10, k=3, width=1.2)
 kernel.init(feats_train, feats_train)
 #![create_kernel]
 
