@@ -196,7 +196,7 @@ import org.jblas.*;
 	}
 	else if ($self->has(tag_float64))
 		$self->put(tag_float64, (float64_t)value);
-#ifdef SWIGR
+#if defined(SWIGR) || defined(SWIGOCTAVE)
 	else if (Tag<SGVector<Type>> tag_tvec(name); $self->has(tag_tvec))
 	{
 		SGVector<Type> vec(1);
