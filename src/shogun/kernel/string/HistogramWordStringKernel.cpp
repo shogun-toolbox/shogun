@@ -434,14 +434,8 @@ void HistogramWordStringKernel::init()
 	/*m_parameters->add_vector(&variance, &num_params2, "variance");*/
 	watch_param("variance", &variance, &num_params2);
 
-	SG_ADD(&estimate, "estimate", "Plugin Estimate.");
-
-	add_callback_function("estimate", [this](){
-		if (!std::dynamic_pointer_cast<PluginEstimate>(estimate)) {
-			error("Expected Machine to be PluginEstimate");
-			estimate.reset();
-		}
-	});
+	SG_ADD(&estimate, "estimate", "Plugin Estimate.", ParameterProperties::CONSTRAIN,
+			SG_CONSTRAINT(dynamic_cast_checker<std::shared_ptr<Machine>, PluginEstimate>()));
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION

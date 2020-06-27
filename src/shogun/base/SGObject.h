@@ -921,10 +921,8 @@ protected:
 				BaseTag(name), AnyParameter(
 						make_any_ref(value), properties,
 						[constrain_function](const auto& val) {
-							std::string result;
 							auto casted_val = any_cast<T1>(val);
-							constrain_function.run(casted_val, result);
-							return result;
+							constrain_function.check(casted_val);
 						}));
 		register_parameter_visitor<T1>();
 	}
@@ -1131,12 +1129,15 @@ private:
 
 		if (pprop.has_property(ParameterProperties::CONSTRAIN))
 		{
-			auto msg = param.get_constrain_function()(make_any(value));
-			if (!msg.empty())
+			try 
+			{
+				param.get_constrain_function()(make_any(value));
+			}
+			catch (const ShogunException& e) 
 			{
 				require(!do_checks,
 					"{}::{} cannot be updated because it must be: {}!",
-					get_name(), _tag.name().c_str(), msg.c_str());
+					get_name(), _tag.name().c_str(), e.what());
 			}
 		}
 		if constexpr (std::is_same_v<T, Any>)

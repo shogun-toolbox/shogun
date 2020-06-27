@@ -168,7 +168,7 @@ namespace shogun
 		}
 		AnyParameter(
 		    Any&& value, const AnyParameterProperties& properties,
-		    std::function<std::string(Any)> constrain_function)
+		    std::function<void(Any)> constrain_function)
 		    : m_value(std::move(value)), m_properties(properties),
 		      m_constrain_function(std::move(constrain_function))
 		{
@@ -218,7 +218,7 @@ namespace shogun
 			return m_init_function;
 		}
 
-		const std::function<std::string(Any)>& get_constrain_function() const
+		const std::function<void(Any)>& get_constrain_function() const
 		    noexcept
 		{
 			return m_constrain_function;
@@ -272,7 +272,7 @@ namespace shogun
 		Any m_value;
 		AnyParameterProperties m_properties;
 		std::shared_ptr<params::AutoInit> m_init_function;
-		std::function<std::string(Any)> m_constrain_function;
+		std::function<void(Any)> m_constrain_function;
 		std::vector<std::function<void()>> m_callback_functions;
 	};
 } // namespace shogun
