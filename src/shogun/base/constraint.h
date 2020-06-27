@@ -103,16 +103,46 @@ namespace shogun
 		virtual bool check(const T& val) const = 0;
 	};
 
-
-	template <typename BaseType, typename DerivedType>
-	struct dynamic_cast_checker: generic_checker<BaseType>
+	template <typename T>
+	struct custom_constraint: generic_checker<T>
 	{
-		dynamic_cast_checker(): generic_checker<BaseType>()
+		template <typename Functor>
+		custom_constraint(Functor&& func): m_func(func) 
 		{
-			static_assert(!std::is_base_of_v<SGObject, BaseType>, 
-				"BaseType must be SGObject derived class");
-			static_assert(!std::is_base_of_v<BaseType, DerivedType>, 
-				"DerivedType must be a class derived from BaseType");
+		}
+
+		std::string error_msg() const override
+		{
+			return msg;
+		}
+
+	protected:
+		bool check(const T& val) const override 
+		{
+			try
+			{
+				m_func(val);
+			}
+			catch (const std::exception& e)
+			{
+				msg = std::string(e.what());
+				return false;
+			}
+
+			return true;
+		}
+
+	private:
+		std::string msg;
+		std::function<void(const T&)> m_func;
+	};
+
+
+	template <typename DerivedType>
+	struct castable: generic_checker<std::shared_ptr<SGObject>>
+	{
+		castable(): generic_checker<std::shared_ptr<SGObject>>()
+		{
 		}
 
 		std::string error_msg() const override
@@ -121,14 +151,9 @@ namespace shogun
 		}
 
 	protected:
-		bool check(const BaseType& ptr) const override 
+		bool check(const std::shared_ptr<SGObject>& ptr) const override 
 		{
-			if constexpr(traits::is_shared_ptr<BaseType>{}) {
-				return static_cast<bool>(std::dynamic_pointer_cast<DerivedType>(ptr));
-			}
-			else {
-				return dynamic_cast<DerivedType*>(ptr) != nullptr;
-			}
+			return static_cast<bool>(std::dynamic_pointer_cast<DerivedType>(ptr));
 		}
 	};
 
@@ -275,12 +300,13 @@ namespace shogun
 		}
 
 		template <typename T>
-		void check(const T& val) const
+		std::optional<std::string> check(const T& val) const
 		{
 			if (!constraint_detail::apply(val, m_funcs))
 			{
-				error("{}", constraint_detail::get_error(m_funcs));
+				return constraint_detail::get_error(m_funcs);
 			}
+			return std::nullopt;
 		}
 
 	private:

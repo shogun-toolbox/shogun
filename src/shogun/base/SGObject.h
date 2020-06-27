@@ -922,7 +922,7 @@ protected:
 						make_any_ref(value), properties,
 						[constrain_function](const auto& val) {
 							auto casted_val = any_cast<T1>(val);
-							constrain_function.check(casted_val);
+							return constrain_function.check(casted_val);
 						}));
 		register_parameter_visitor<T1>();
 	}
@@ -1129,15 +1129,12 @@ private:
 
 		if (pprop.has_property(ParameterProperties::CONSTRAIN))
 		{
-			try 
-			{
-				param.get_constrain_function()(make_any(value));
-			}
-			catch (const ShogunException& e) 
+			const auto& val = param.get_constrain_function()(make_any(value));
+			if (val)
 			{
 				require(!do_checks,
 					"{}::{} cannot be updated because it must be: {}!",
-					get_name(), _tag.name().c_str(), e.what());
+					get_name(), _tag.name().c_str(), *val);
 			}
 		}
 		if constexpr (std::is_same_v<T, Any>)

@@ -31,7 +31,7 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 		 * @param size cache size
 		 * @param pie plugin estimate
 		 */
-		HistogramWordStringKernel(int32_t size, const std::shared_ptr<Machine>& pie);
+		HistogramWordStringKernel(int32_t size, const std::shared_ptr<PluginEstimate>& pie);
 
 		/** constructor
 		 *
@@ -41,7 +41,7 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 		 */
 		HistogramWordStringKernel(
 			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
-			const std::shared_ptr<Machine>& pie);
+			const std::shared_ptr<PluginEstimate>& pie);
 
 		virtual ~HistogramWordStringKernel();
 
@@ -95,7 +95,7 @@ class HistogramWordStringKernel: public StringKernel<uint16_t>
 
 	protected:
 		/** plugin estimate */
-		std::shared_ptr<Machine> estimate;
+		std::shared_ptr<PluginEstimate> estimate;
 
 		/** mean */
 		float64_t* mean;
