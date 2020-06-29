@@ -98,7 +98,7 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 }
 
 WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
-	const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t d)
+	const std::shared_ptr<Features>& l, const std::shared_ptr<Features>& r, int32_t d)
 : StringKernel<char>()
 {
 	init();
@@ -112,7 +112,7 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 	set_wd_weights();
 	ASSERT(weights)
 
-	init(l, r);
+	init(l->as<StringFeatures<char>>(), r->as<StringFeatures<char>>());
 }
 
 
