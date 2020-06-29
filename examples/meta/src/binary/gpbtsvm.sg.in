@@ -9,7 +9,7 @@ Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_machine]
-Kernel gaussian_kernel = create_kernel("GaussianKernel", log_width=2.1)
+Kernel gaussian_kernel = create_kernel("GaussianKernel", width=2.1)
 Machine gpbtsvm = create_machine("GPBTSVM", C1=1.0, C2=1.0, kernel=gaussian_kernel, epsilon=0.00001, labels=labels_train)
 #![create_machine]
 

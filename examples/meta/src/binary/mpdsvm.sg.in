@@ -8,7 +8,7 @@ Features feats_test = create_features(f_feats_test)
 Labels labels_train = create_labels(f_labels_train)
 Labels labels_test = create_labels(f_labels_test)
 
-Kernel gaussian = create_kernel("GaussianKernel", log_width=0.01)
+Kernel gaussian = create_kernel("GaussianKernel", width=1)
 gaussian.init(feats_train, feats_train)
 
 real C=1.0

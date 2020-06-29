@@ -96,7 +96,7 @@ namespace shogun
 			Any operator()() const final
 			{
 				AutoValue<float64_t> width;
-				if (std::holds_alternative<shogun::AutoValueEmpty>(m_kernel.m_log_width)) {
+				if (std::holds_alternative<shogun::AutoValueEmpty>(m_kernel.m_width)) {
 					
 					const auto& lhs = m_kernel.get_lhs();
 					const auto& rhs = m_kernel.get_rhs();
@@ -124,14 +124,14 @@ namespace shogun
 								++idx;
 							}
 						}
-						width = GaussianKernel::to_log_width(linalg::median(result));
+						width = linalg::median(result);
 					} break;
 					default:
-						width = GaussianKernel::to_log_width(m_alternative_value);
+						width = m_alternative_value;
 					}
 				}
 				else
-					width = m_kernel.m_log_width;
+					width = m_kernel.m_width;
 				return make_any(width);
 			}
 

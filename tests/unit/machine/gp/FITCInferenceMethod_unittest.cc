@@ -546,7 +546,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 	float64_t dnlZ_lik=gradient["log_sigma"][0];
 	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];
@@ -625,7 +625,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 	float64_t dnlZ_lik=gradient["log_sigma"][0];
 	float64_t dnlZ_noise=gradient["log_inducing_noise"][0];

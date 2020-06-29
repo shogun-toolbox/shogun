@@ -12,8 +12,8 @@ Labels labels_test = create_labels(f_labels_test)
 
 #![create_kernel]
 Kernel poly_kernel = create_kernel("PolyKernel", degree=2)
-Kernel gauss_kernel_1 = create_kernel("GaussianKernel", log_width=0.0)
-Kernel gauss_kernel_2 = create_kernel("GaussianKernel", log_width=1.0)
+Kernel gauss_kernel_1 = create_kernel("GaussianKernel", width=1.0)
+Kernel gauss_kernel_2 = create_kernel("GaussianKernel", width=2.0)
 #![create_kernel]
 
 #![create_combined_train]

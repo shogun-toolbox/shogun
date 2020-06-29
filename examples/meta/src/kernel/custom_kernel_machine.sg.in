@@ -11,7 +11,7 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_kernel]
-Kernel k_obj = create_kernel("GaussianKernel", log_width=1.0)
+Kernel k_obj = create_kernel("GaussianKernel", width=1.0)
 k_obj.init(features_train, features_train)
 RealMatrix km_train = k_obj.get_kernel_matrix()
 k_obj.init(features_train, features_test)

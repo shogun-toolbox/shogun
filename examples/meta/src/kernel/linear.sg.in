@@ -7,12 +7,14 @@ Features feats_test = create_features(testdat)
 #![create_features]
 
 #![create_kernel]
-Kernel gaussian_kernel = create_kernel("GaussianKernel", width=2.0)
-gaussian_kernel.init(feats_train, feats_train)
+Kernel kernel = create_kernel("LinearKernel")
+AvgDiagKernelNormalizer normalizer(1.2)
+kernel.set_normalizer(normalizer)
+kernel.init(feats_train, feats_train)
 #![create_kernel]
 
 #![get_kernel_features]
-RealMatrix K_train_train = gaussian_kernel.get_kernel_matrix()
-gaussian_kernel.init(feats_train, feats_test)
-RealMatrix K_train_test = gaussian_kernel.get_kernel_matrix()
+RealMatrix km_train = kernel.get_kernel_matrix()
+kernel.init(feats_train, feats_test)
+RealMatrix km_test = kernel.get_kernel_matrix()
 #![get_kernel_features]

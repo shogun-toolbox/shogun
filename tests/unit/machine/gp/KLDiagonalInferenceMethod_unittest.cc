@@ -1170,7 +1170,7 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 	float64_t dnlZ_df=gradient["log_df"][0];
 	float64_t dnlZ_sigma=gradient["log_sigma"][0];
@@ -1250,7 +1250,7 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1321,7 +1321,7 @@ TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	//Reference result is generated from the Matlab code, which can be found at

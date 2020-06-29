@@ -829,7 +829,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_l
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_lik=gradient["log_sigma"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
@@ -890,7 +890,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likeliho
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_df=gradient["log_df"][0];
 	float64_t dnlZ_sigma=gradient["log_sigma"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
@@ -961,7 +961,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
@@ -1026,7 +1026,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
@@ -1087,7 +1087,7 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_lik
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with

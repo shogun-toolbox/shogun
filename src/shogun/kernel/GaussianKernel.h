@@ -120,7 +120,7 @@ public:
 	 */
 	float64_t get_width() const
 	{
-		return GaussianKernel::from_log_width(std::get<float64_t>(m_log_width));
+		return std::get<float64_t>(m_width);
 	}
 
 	/**
@@ -191,7 +191,7 @@ protected:
 
 protected:
 	/** width */
-	AutoValue<float64_t> m_log_width = AutoValueEmpty{};
+	AutoValue<float64_t> m_width = AutoValueEmpty{};
 };
 
 }

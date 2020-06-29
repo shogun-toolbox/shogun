@@ -408,7 +408,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison the result from GPML package with the minfunc function:
@@ -988,7 +988,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison the result from GPML package with the minfunc function:
@@ -1340,7 +1340,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_lik=gradient["log_sigma"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
@@ -1696,7 +1696,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_df=gradient["log_df"][0];
 	float64_t dnlZ_sigma=gradient["log_sigma"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
