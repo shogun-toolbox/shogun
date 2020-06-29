@@ -21,11 +21,13 @@ public:
 	{
 		SGMatrix<float64_t> mat(num_features, num_vectors);
 		linalg::range_fill(mat, 1.0);
+
+		auto gauss = std::make_shared<GaussianKernel>(width);
 		auto features = std::make_shared<DenseFeatures<float64_t>>(mat);
 
 		preproc = std::make_shared<RandomFourierGaussPreproc>();
 		preproc->put(kSeed, seed);
-		preproc->set_width(width);
+		preproc->set_kernel(gauss);
 		preproc->set_dim_output(target_dim);
 		preproc->fit(features);
 	}
@@ -39,7 +41,7 @@ protected:
 	const index_t num_features = 3;
 	const index_t target_dim = 400;
 	const float64_t width = 1.5;
-	const float64_t epsilon = 0.08;
+	const float64_t epsilon = 0.04;
 	std::shared_ptr<RandomFourierGaussPreproc> preproc;
 };
 

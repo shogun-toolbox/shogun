@@ -10,6 +10,7 @@
 #include "shogun/mathematics/linalg/LinalgNamespace.h"
 #include <random>
 #include "shogun/preprocessor/Preprocessor_benchmark.h"
+#include "shogun/kernel/GaussianKernel.h"
 
 namespace shogun
 {
@@ -37,9 +38,10 @@ class TransformFixture: public benchmark::Fixture
 			auto mat = createRandomData(st);
 			auto feats = std::make_shared<DenseFeatures<float64_t>>(mat);
 			const index_t target_dim = st.range(2);
+			auto gauss = std::make_shared<GaussianKernel>(width);
 
 			preproc = std::make_shared<RandomFourierGaussPreproc>();
-			preproc->set_width(width);
+			preproc->set_kernel(gauss);
 			preproc->set_dim_output(target_dim);
 			preproc->fit(feats);
 		}
@@ -58,8 +60,10 @@ class FitFixture: public benchmark::Fixture
 			mat = createRandomData(st);
 			const index_t target_dim = st.range(2);
 
+			auto gauss = std::make_shared<GaussianKernel>(width);
+
 			preproc = std::make_shared<RandomFourierGaussPreproc>();
-			preproc->set_width(width);
+			preproc->set_kernel(gauss);
 			preproc->set_dim_output(target_dim);
 		}
 
