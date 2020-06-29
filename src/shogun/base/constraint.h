@@ -7,11 +7,16 @@
 #ifndef __CONSTRAINT_H__
 #define __CONSTRAINT_H__
 
+#include <shogun/io/SGIO.h>
+#include <shogun/util/traits.h>
+
 #include <string>
 #include <tuple>
 
 namespace shogun
 {
+	class SGObject;
+
 	namespace constraint_detail
 	{
 		template <typename T, typename... Args, std::size_t... Idx>
@@ -86,9 +91,8 @@ namespace shogun
 	template <typename T>
 	struct generic_checker
 	{
-	public:
-		generic_checker(T val) : m_val(val){};
-		bool operator()(T val) const
+		generic_checker() = default;
+		bool operator()(const T& val) const
 		{
 			return check(val);
 		};
@@ -96,8 +100,71 @@ namespace shogun
 		virtual std::string error_msg() const = 0;
 
 	protected:
+		virtual bool check(const T& val) const = 0;
+	};
+
+	template <typename T>
+	struct custom_constraint: generic_checker<T>
+	{
+		template <typename Functor>
+		custom_constraint(Functor&& func): m_func(func) 
+		{
+		}
+
+		std::string error_msg() const override
+		{
+			return msg;
+		}
+
+	protected:
+		bool check(const T& val) const override 
+		{
+			try
+			{
+				m_func(val);
+			}
+			catch (const std::exception& e)
+			{
+				msg = std::string(e.what());
+				return false;
+			}
+
+			return true;
+		}
+
+	private:
+		std::string msg;
+		std::function<void(const T&)> m_func;
+	};
+
+
+	template <typename DerivedType>
+	struct castable: generic_checker<std::shared_ptr<SGObject>>
+	{
+		castable(): generic_checker<std::shared_ptr<SGObject>>()
+		{
+		}
+
+		std::string error_msg() const override
+		{
+			return "of type " + demangled_type<DerivedType>();
+		}
+
+	protected:
+		bool check(const std::shared_ptr<SGObject>& ptr) const override 
+		{
+			return static_cast<bool>(std::dynamic_pointer_cast<DerivedType>(ptr));
+		}
+	};
+
+	template <typename T>
+	struct comparisson_checker: generic_checker<T>
+	{
+		comparisson_checker(T val): generic_checker<T>() {
+			m_val = val;
+		}
+	protected:
 		T m_val;
-		virtual bool check(T val) const = 0;
 	};
 
 	/**
@@ -106,10 +173,9 @@ namespace shogun
 	 * @tparam T the type of val
 	 */
 	template <typename T>
-	struct less_than : generic_checker<T>
+	struct less_than : comparisson_checker<T>
 	{
-	public:
-		less_than(T val) : generic_checker<T>(val){};
+		less_than(T val) : comparisson_checker<T>(val){};
 
 		std::string error_msg() const override
 		{
@@ -117,7 +183,7 @@ namespace shogun
 		}
 
 	protected:
-		bool check(T val) const override
+		bool check(const T& val) const override
 		{
 			return val < this->m_val;
 		}
@@ -129,10 +195,9 @@ namespace shogun
 	 * @tparam T the type of val
 	 */
 	template <typename T>
-	struct less_than_or_equal : generic_checker<T>
+	struct less_than_or_equal : comparisson_checker<T>
 	{
-	public:
-		less_than_or_equal(T val) : generic_checker<T>(val){};
+		less_than_or_equal(T val) : comparisson_checker<T>(val){};
 
 		std::string error_msg() const override
 		{
@@ -140,7 +205,7 @@ namespace shogun
 		}
 
 	protected:
-		bool check(T val) const override
+		bool check(const T& val) const override
 		{
 			return val <= this->m_val;
 		}
@@ -152,17 +217,16 @@ namespace shogun
 	 * @tparam T the type of val
 	 */
 	template <typename T>
-	struct greater_than : generic_checker<T>
+	struct greater_than : comparisson_checker<T>
 	{
-	public:
-		greater_than(T val) : generic_checker<T>(val){};
+		greater_than(T val) : comparisson_checker<T>(val){};
 		std::string error_msg() const override
 		{
 			return "greater than " + std::to_string(this->m_val);
 		}
 
 	protected:
-		bool check(T val) const override
+		bool check(const T& val) const override
 		{
 			return val > this->m_val;
 		}
@@ -174,10 +238,9 @@ namespace shogun
 	 * @tparam T the type of val
 	 */
 	template <typename T>
-	struct greater_than_or_equal : generic_checker<T>
+	struct greater_than_or_equal : comparisson_checker<T>
 	{
-	public:
-		greater_than_or_equal(T val) : generic_checker<T>(val){};
+		greater_than_or_equal(T val) : comparisson_checker<T>(val){};
 
 		std::string error_msg() const override
 		{
@@ -185,7 +248,7 @@ namespace shogun
 		}
 
 	protected:
-		bool check(T val) const override
+		bool check(const T& val) const override
 		{
 			return val >= this->m_val;
 		}
@@ -237,14 +300,13 @@ namespace shogun
 		}
 
 		template <typename T>
-		bool run(T val, std::string& buffer) const
+		std::optional<std::string> check(const T& val) const
 		{
 			if (!constraint_detail::apply(val, m_funcs))
 			{
-				buffer = constraint_detail::get_error(m_funcs);
-				return false;
+				return constraint_detail::get_error(m_funcs);
 			}
-			return true;
+			return std::nullopt;
 		}
 
 	private:
