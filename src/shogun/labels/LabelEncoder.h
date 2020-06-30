@@ -16,7 +16,10 @@
 #include <shogun/lib/SGVector.h>
 namespace shogun
 {
-
+	/** @brief Implements a reversible mapping from any
+	 * form of labels to one of Shogun's target label spaces
+	 * (binary, multi-class, etc).
+	 */
 	class LabelEncoder : public SGObject
 	{
 	public:
@@ -60,11 +63,21 @@ namespace shogun
 		}
 
 	protected:
+		virtual bool check_is_contiguous(
+		    const SGVector<float64_t>& vec, const std::set<float64_t>& labels)
+		{
+			return false;
+		}
 		SGVector<float64_t> fit_impl(const SGVector<float64_t>& origin_vector)
 		{
+			is_fitted = true;
 			std::copy(
 			    origin_vector.begin(), origin_vector.end(),
 			    std::inserter(unique_labels, unique_labels.begin()));
+			if (check_is_contiguous(origin_vector, unique_labels))
+			{
+				is_fitted = false;
+			}
 			return SGVector<float64_t>(
 			    unique_labels.begin(), unique_labels.end());
 		}
@@ -72,15 +85,18 @@ namespace shogun
 		SGVector<float64_t>
 		transform_impl(const SGVector<float64_t>& result_vector)
 		{
+			is_transformed = true;
+			if (!is_fitted && unique_labels.size())
+				return result_vector;
+			require(is_fitted, "Transform expect to be called after fit.");
 			SGVector<float64_t> converted(result_vector.vlen);
 			std::transform(
 			    result_vector.begin(), result_vector.end(), converted.begin(),
 			    [& unique_labels = unique_labels,
-			     &normalized_to_origin =
-			         normalized_to_origin](const auto& old_label) {
+			     &inverse_mapping = inverse_mapping](const auto& old_label) {
 				    auto new_label = std::distance(
 				        unique_labels.begin(), unique_labels.find(old_label));
-				    normalized_to_origin[new_label] = old_label;
+				    inverse_mapping[new_label] = old_label;
 				    return new_label;
 			    });
 			return converted;
@@ -89,12 +105,19 @@ namespace shogun
 		SGVector<float64_t>
 		inverse_transform_impl(const SGVector<float64_t>& result_vector)
 		{
+			require(
+			    is_transformed,
+			    "Inverse transform expect to be called after transform.");
+			if (!is_fitted && unique_labels.size() && is_transformed)
+			{
+				return result_vector;
+			}
 			SGVector<float64_t> original_vector(result_vector.vlen);
 			std::transform(
 			    result_vector.begin(), result_vector.end(),
 			    original_vector.begin(),
-			    [& normalized_to_origin = normalized_to_origin](const auto& e) {
-				    return normalized_to_origin[e];
+			    [& inverse_mapping = inverse_mapping](const auto& e) {
+				    return inverse_mapping[e];
 			    });
 			return original_vector;
 		}
@@ -107,14 +130,16 @@ namespace shogun
 			    [](auto&& e) { return static_cast<int32_t>(e); });
 			return std::equal(
 			    vec.begin(), vec.end(), converted.begin(),
-			    [](auto&& e1, auto&& e2) {
-				    return std::abs(e1 - e2) <
-				           std::numeric_limits<float64_t>::epsilon();
+			    [&](auto&& e1, auto&& e2) {
+				    return Math::fequals(e1, static_cast<float64_t>(e2), eps);
 			    });
 		}
 
 		std::set<float64_t> unique_labels;
-		std::unordered_map<float64_t, float64_t> normalized_to_origin;
+		std::unordered_map<float64_t, float64_t> inverse_mapping;
+		const float64_t eps = std::numeric_limits<float64_t>::epsilon();
+		bool is_fitted = false;
+		bool is_transformed = false;
 	};
 } // namespace shogun
 

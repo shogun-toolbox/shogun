@@ -16,7 +16,9 @@
 #include <unordered_set>
 namespace shogun
 {
-
+	/** @brief Implements a reversible mapping from
+	 * any form of labels to binary labels (+1, -1).
+	 */
 	class BinaryLabelEncoder : public LabelEncoder
 	{
 	public:
@@ -24,29 +26,22 @@ namespace shogun
 
 		~BinaryLabelEncoder() = default;
 
-		/** Fit label encoder
-		 *
-		 * @param Target values.
-		 * @return SGVector which contains unique labels.
-		 */
 		SGVector<float64_t> fit(const std::shared_ptr<Labels>& labs) override
 		{
 			const auto result_vector = labs->as<DenseLabels>()->get_labels();
 			check_is_valid(result_vector);
 			if (!can_convert_float_to_int(result_vector))
 			{
+				std::set<float64_t> s(
+				    result_vector.begin(), result_vector.end());
 				io::warn(
-				    "({}, {}) have been converted to (-1, 1).",
-				    result_vector[0], result_vector[1]);
+				    "({}, {}) have been converted to (-1, 1).", *s.begin(),
+				    *s.end());
 			}
 			auto result_labels = fit_impl(result_vector);
 			return result_labels;
 		}
-		/** Transform labels to normalized encoding.
-		 *
-		 * @param  Target values to be transformed.
-		 * @return Labels transformed to be normalized.
-		 */
+
 		std::shared_ptr<Labels>
 		transform(const std::shared_ptr<Labels>& labs) override
 		{
@@ -57,34 +52,29 @@ namespace shogun
 			std::transform(
 			    transformed_vec.begin(), transformed_vec.end(),
 			    transformed_vec.begin(), [](float64_t e) {
-				    if (std::abs(e - 0.0) <=
-				        std::numeric_limits<float64_t>::epsilon())
-					    return -1.0;
-				    else
-					    return e;
+				    return Math::fequals(
+				               e, 0.0,
+				               std::numeric_limits<float64_t>::epsilon())
+				               ? -1.0
+				               : e;
 			    });
 			return std::make_shared<BinaryLabels>(transformed_vec);
 		}
-		/** Transform labels back to original encoding.
-		 *
-		 * @param normailzed encoding labels
-		 * @return original encoding labels
-		 */
+
 		std::shared_ptr<Labels>
 		inverse_transform(const std::shared_ptr<Labels>& labs) override
 		{
 			auto normalized_labels = labs->as<BinaryLabels>();
 			normalized_labels->ensure_valid();
 			auto normalized_vector = normalized_labels->get_labels();
-			check_is_valid(normalized_vector);
 			std::transform(
 			    normalized_vector.begin(), normalized_vector.end(),
 			    normalized_vector.begin(), [](float64_t e) {
-				    if (std::abs(e + 1.0) <=
-				        std::numeric_limits<float64_t>::epsilon())
-					    return 0.0;
-				    else
-					    return e;
+				    return Math::fequals(
+				               e, -1.0,
+				               std::numeric_limits<float64_t>::epsilon())
+				               ? 0.0
+				               : e;
 			    });
 			auto origin_vec = inverse_transform_impl(normalized_vector);
 			SGVector<int32_t> result_vev(origin_vec.vlen);
@@ -93,11 +83,7 @@ namespace shogun
 			    [](auto&& e) { return static_cast<int32_t>(e); });
 			return std::make_shared<BinaryLabels>(result_vev);
 		}
-		/** Fit label encoder and return encoded labels.
-		 *
-		 * @param Target values.
-		 * @return Labels transformed to be normalized.
-		 */
+
 		std::shared_ptr<Labels>
 		fit_transform(const std::shared_ptr<Labels>& labs) override
 		{
@@ -118,11 +104,10 @@ namespace shogun
 			    std::unordered_set<float64_t>(vec.begin(), vec.end());
 			require(
 			    unique_set.size() == 2,
-			    "Binary labels should contain only two elements, can not interpret ({}) as binary labels",
+			    "Cannot interpret ({}) as binary labels, need exactly two "
+			    "classes.",
 			    fmt::join(unique_set, ", "));
 		}
-
-		
 	};
 } // namespace shogun
 

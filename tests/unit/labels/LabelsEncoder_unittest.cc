@@ -168,3 +168,31 @@ TEST(MulticlassLabelsEncoder, negative_labels)
 		EXPECT_NEAR(expected_inv[i], inv_test[i], eps);
 	}
 }
+
+TEST(MulticlassLabelsEncoder, contiguous_labels)
+{
+	auto eps = std::numeric_limits<float64_t>::epsilon();
+	auto label_encoder = std::make_shared<MulticlassLabelsEncoder>();
+	SGVector<float64_t> vec{0, 1, 2, 3, 4, 5};
+	auto origin_labels = std::make_shared<MulticlassLabels>(vec);
+	auto unique_vec = label_encoder->fit(origin_labels);
+	for (int i = 0; i < 6; i++)
+	{
+		EXPECT_NEAR(vec[i], unique_vec[i], eps);
+	}
+
+	auto result_labels = label_encoder->transform(origin_labels);
+	auto result_vec = result_labels->as<MulticlassLabels>()->get_labels();
+	for (int i = 0; i < 6; i++)
+	{
+		EXPECT_NEAR(vec[i], result_vec[i], eps);
+	}
+
+	auto inv_labels = label_encoder->inverse_transform(result_labels);
+	auto inv_vec = inv_labels->as<MulticlassLabels>()->get_labels();
+
+	for (int i = 0; i < 6; i++)
+	{
+		EXPECT_NEAR(vec[i], inv_vec[i], eps);
+	}
+}
