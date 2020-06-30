@@ -92,14 +92,13 @@ SGMatrix<float64_t> RandomFourierGaussPreproc::sample_spectral_density(int32_t d
 		    [this, &normal_dist, &std_dev]() {
 			    return std_dev * normal_dist(m_prng);
 		    });
-
-		return sampled_kernel;
 	}
 	else
 	{
 		not_implemented(SOURCE_LOCATION);
-		return SGMatrix<float64_t>();
 	}
+	
+	return sampled_kernel;
 }
 
 void RandomFourierGaussPreproc::cleanup()
