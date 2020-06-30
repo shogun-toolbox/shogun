@@ -81,7 +81,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param degree degree
 		 */
 		WeightedDegreePositionStringKernel(
-			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t degree);
+			const std::shared_ptr<Features>& l, const std::shared_ptr<Features>& r, int32_t degree);
 
 		virtual ~WeightedDegreePositionStringKernel();
 
