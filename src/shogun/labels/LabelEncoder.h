@@ -63,21 +63,34 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool check_is_contiguous(
-		    const SGVector<float64_t>& vec, const std::set<float64_t>& labels)
+		virtual bool check_is_contiguous(const SGVector<float64_t>& vec)
 		{
 			return false;
 		}
+
+		void create_mapping(const SGVector<float64_t>& origin_vector)
+		{
+			std::for_each(
+			    origin_vector.begin(), origin_vector.end(),
+			    [this](const auto& old_label) {
+				    auto new_label = std::distance(
+				        unique_labels.begin(), unique_labels.find(old_label));
+				    inverse_mapping[new_label] = old_label;
+				    mapping[old_label] = new_label;
+			    });
+		}
+
 		SGVector<float64_t> fit_impl(const SGVector<float64_t>& origin_vector)
 		{
 			is_fitted = true;
 			std::copy(
 			    origin_vector.begin(), origin_vector.end(),
 			    std::inserter(unique_labels, unique_labels.begin()));
-			if (check_is_contiguous(origin_vector, unique_labels))
+			if (check_is_contiguous(origin_vector))
 			{
 				is_fitted = false;
 			}
+			create_mapping(origin_vector);
 			return SGVector<float64_t>(
 			    unique_labels.begin(), unique_labels.end());
 		}
@@ -85,19 +98,14 @@ namespace shogun
 		SGVector<float64_t>
 		transform_impl(const SGVector<float64_t>& result_vector)
 		{
-			is_transformed = true;
 			if (!is_fitted && unique_labels.size())
 				return result_vector;
 			require(is_fitted, "Transform expect to be called after fit.");
 			SGVector<float64_t> converted(result_vector.vlen);
 			std::transform(
 			    result_vector.begin(), result_vector.end(), converted.begin(),
-			    [& unique_labels = unique_labels,
-			     &inverse_mapping = inverse_mapping](const auto& old_label) {
-				    auto new_label = std::distance(
-				        unique_labels.begin(), unique_labels.find(old_label));
-				    inverse_mapping[new_label] = old_label;
-				    return new_label;
+			    [& mapping = mapping](const auto& old_label) {
+				    return mapping[old_label];
 			    });
 			return converted;
 		}
@@ -105,13 +113,12 @@ namespace shogun
 		SGVector<float64_t>
 		inverse_transform_impl(const SGVector<float64_t>& result_vector)
 		{
-			require(
-			    is_transformed,
-			    "Inverse transform expect to be called after transform.");
-			if (!is_fitted && unique_labels.size() && is_transformed)
+			if (!is_fitted && unique_labels.size())
 			{
 				return result_vector;
 			}
+			require(
+			    is_fitted, "Inverse transform expect to be called after fit.");
 			SGVector<float64_t> original_vector(result_vector.vlen);
 			std::transform(
 			    result_vector.begin(), result_vector.end(),
@@ -136,10 +143,12 @@ namespace shogun
 		}
 
 		std::set<float64_t> unique_labels;
+
+		std::unordered_map<float64_t, float64_t> mapping;
 		std::unordered_map<float64_t, float64_t> inverse_mapping;
-		const float64_t eps = std::numeric_limits<float64_t>::epsilon();
+		static constexpr float64_t eps =
+		    std::numeric_limits<float64_t>::epsilon();
 		bool is_fitted = false;
-		bool is_transformed = false;
 	};
 } // namespace shogun
 

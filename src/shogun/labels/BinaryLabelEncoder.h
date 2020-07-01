@@ -38,8 +38,7 @@ namespace shogun
 				    "({}, {}) have been converted to (-1, 1).", *s.begin(),
 				    *s.end());
 			}
-			auto result_labels = fit_impl(result_vector);
-			return result_labels;
+			return fit_impl(result_vector);
 		}
 
 		std::shared_ptr<Labels>

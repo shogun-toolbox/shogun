@@ -70,9 +70,7 @@ namespace shogun
 		}
 
 	protected:
-		bool check_is_contiguous(
-		    const SGVector<float64_t>& vec,
-		    const std::set<float64_t>& unique_labels) override
+		bool check_is_contiguous(const SGVector<float64_t>& vec) override
 		{
 			if (const auto vlen = unique_labels.size() == vec.size())
 			{
