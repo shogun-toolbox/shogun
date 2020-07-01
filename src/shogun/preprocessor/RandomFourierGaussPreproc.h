@@ -82,7 +82,7 @@ public:
 	protected:
 
 	virtual SGMatrix<float64_t> 
-	sample_spectral_density(int32_t dim_input_space);
+	sample_spectral_density(int32_t dim_input_space) const;
 
 	virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 

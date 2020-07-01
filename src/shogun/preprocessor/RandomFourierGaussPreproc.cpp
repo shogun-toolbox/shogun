@@ -77,7 +77,7 @@ SGMatrix<float64_t> RandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_
 	return projection;	
 }
 
-SGMatrix<float64_t> RandomFourierGaussPreproc::sample_spectral_density(int32_t dim_input_space)
+SGMatrix<float64_t> RandomFourierGaussPreproc::sample_spectral_density(int32_t dim_input_space) const
 {
 
 	SGMatrix<float64_t> sampled_kernel(m_dim_output, dim_input_space);
