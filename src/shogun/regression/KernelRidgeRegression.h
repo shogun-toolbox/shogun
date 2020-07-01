@@ -61,7 +61,7 @@ class KernelRidgeRegression : public KernelMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k);
 
 		/** default destructor */
 		virtual ~KernelRidgeRegression() {}
@@ -113,7 +113,7 @@ class KernelRidgeRegression : public KernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data);
 
 		/** Train regression using Cholesky decomposition.
 		 * Assumes that m_alpha is already allocated.

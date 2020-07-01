@@ -15,7 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
-
+#include <shogun/machine/NonParametricMachine.h>
 
 namespace shogun
 {
@@ -41,7 +41,7 @@ class Features;
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * in a training procedure.
  */
-class KernelMachine : public Machine
+class KernelMachine : public NonParametricMachine
 {
 	public:
 		/** default constructor */
