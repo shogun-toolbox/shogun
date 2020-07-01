@@ -53,7 +53,7 @@ std::shared_ptr<ParameterObserverCV> generate(bool locked = true)
 	/* kernel ridge regression*/
 	float64_t tau = 0.0001;
 	auto krr =
-	    std::make_shared<KernelRidgeRegression>(tau, kernel, labels);
+	    std::make_shared<KernelRidgeRegression>(tau, kernel);
 
 	/* evaluation criterion */
 	auto eval_crit = std::make_shared<MeanSquaredError>();

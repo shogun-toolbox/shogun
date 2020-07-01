@@ -45,8 +45,8 @@ KRRNystrom::KRRNystrom() : RandomMixin<KernelRidgeRegression>()
 	init();
 }
 
-KRRNystrom::KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: RandomMixin<KernelRidgeRegression>(tau, std::move(k), std::move(lab))
+KRRNystrom::KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k)
+: RandomMixin<KernelRidgeRegression>(tau, std::move(k))
 {
 	init();
 

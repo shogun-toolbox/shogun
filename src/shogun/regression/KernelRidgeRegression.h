@@ -61,7 +61,7 @@ class KernelRidgeRegression : public KernelMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k);
 
 		/** default destructor */
 		~KernelRidgeRegression() override {}

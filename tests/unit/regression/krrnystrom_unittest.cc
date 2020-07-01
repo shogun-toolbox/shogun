@@ -84,11 +84,11 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 
 	/* kernel ridge regression and the nystrom approximation */
 	float64_t tau=0.01;
-	auto nystrom=std::make_shared<KRRNystrom>(tau, num_vectors, kernel, labels);
-	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr, labels_krr);
+	auto nystrom=std::make_shared<KRRNystrom>(tau, num_vectors, kernel);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr);
 
-	nystrom->train(features);
-	krr->train(features);
+	nystrom->train(features, labels);
+	krr->train(features, labels_krr);
 
 	SGVector<float64_t> alphas=nystrom->get_alphas();
 	SGVector<float64_t> alphas_krr=krr->get_alphas();
@@ -151,11 +151,11 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 
 	/* kernel ridge regression and the nystrom approximation */
 	float64_t tau=0.01;
-	auto nystrom=std::make_shared<KRRNystrom>(tau, num_basis_rkhs, kernel, labels);
-	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr, labels_krr);
+	auto nystrom=std::make_shared<KRRNystrom>(tau, num_basis_rkhs, kernel);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr);
 
-	nystrom->train(features);
-	krr->train(features);
+	nystrom->train(features, labels);
+	krr->train(features, labels_krr);
 
 	auto result =
 	    nystrom->apply_regression(test_features);
