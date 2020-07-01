@@ -46,7 +46,7 @@ void RandomFourierGaussPreproc::init_basis(int32_t dim_input_space)
 void RandomFourierGaussPreproc::fit(std::shared_ptr<Features> f)
 {
 	auto num_features = f->as<DenseFeatures<float64_t>>()->get_num_features();
-	require(num_features > 0, "Given input space dimension {} must be positive", num_features);
+	require(num_features > 0, "Dimension of provided features {} must be positive", num_features);
 	require(m_kernel, "Kernel not set");
 	
 	init_basis(num_features);
