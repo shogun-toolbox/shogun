@@ -5,8 +5,8 @@
  *          Bjoern Esser, Saurabh Goyal
  */
 
-#ifndef _RANDOMFOURIERGAUSSPREPROC__H__
-#define _RANDOMFOURIERGAUSSPREPROC__H__
+#ifndef _RFFPreprocessor__H__
+#define _RFFPreprocessor__H__
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
@@ -31,12 +31,12 @@ namespace shogun {
 	 * 1177-1184).
 	 *
 	 */
-class RandomFourierGaussPreproc: public RandomMixin<DensePreprocessor<float64_t>> {
+class RFFPreprocessor: public RandomMixin<DensePreprocessor<float64_t>> {
 public:
 
-	RandomFourierGaussPreproc();
+	RFFPreprocessor();
 
-	~RandomFourierGaussPreproc();
+	~RFFPreprocessor();
 
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
@@ -56,7 +56,7 @@ public:
 
 	virtual const char* get_name() const override
 	{
-		return "RandomFourierGaussPreproc";
+		return "RFFPreprocessor";
 	}
 
 	virtual EPreprocessorType get_type() const override
