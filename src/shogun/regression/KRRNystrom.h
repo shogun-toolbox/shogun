@@ -77,7 +77,7 @@ public:
 	 * @param k kernel
 	 * @param lab labels
 	 */
-	KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+	KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k);
 
 	/** Default destructor */
 	~KRRNystrom() override {}
@@ -100,12 +100,12 @@ less than number of data points ({})", m_num_rkhs_basis, n);
 
 	};
 
-	bool train_machine(std::shared_ptr<Features >data) override;
-
 	/** @return object name */
 	const char* get_name() const override { return "KRRNystrom"; }
 
 protected:
+	bool train_machine(std::shared_ptr<Features >data) override;
+
 	/** Train regression using the Nyström method.
 	 *
 	 * @return boolean to indicate success
