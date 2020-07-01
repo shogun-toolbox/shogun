@@ -5,7 +5,7 @@
  *          Sergey Lisitsyn, Bjoern Esser, Sanuj Sharma, Saurabh Goyal
  */
 
-#include <shogun/preprocessor/RFPreprocessor.h>
+#include <shogun/preprocessor/RFFPreprocessor.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/NormalDistribution.h>
@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-RFPreprocessor::RFPreprocessor()
+RFFPreprocessor::RFFPreprocessor()
 {
 	SG_ADD(
 	    &m_dim_output, "dim_output",
@@ -28,11 +28,11 @@ RFPreprocessor::RFPreprocessor()
 	SG_ADD(&m_offset, "offset", "offset vector");
 }
 
-RFPreprocessor::~RFPreprocessor()
+RFFPreprocessor::~RFFPreprocessor()
 {
 }
 
-void RFPreprocessor::init_basis(int32_t dim_input_space)
+void RFFPreprocessor::init_basis(int32_t dim_input_space)
 {
 	io::info("Creating Fourier Basis Matrix {}x{}", m_dim_output, dim_input_space);
 
@@ -43,7 +43,7 @@ void RFPreprocessor::init_basis(int32_t dim_input_space)
 	random::fill_array(m_offset, uniform, m_prng);
 }
 
-void RFPreprocessor::fit(std::shared_ptr<Features> f)
+void RFFPreprocessor::fit(std::shared_ptr<Features> f)
 {
 	auto num_features = f->as<DenseFeatures<float64_t>>()->get_num_features();
 	require(num_features > 0, "Dimension of provided features {} must be positive", num_features);
@@ -53,13 +53,13 @@ void RFPreprocessor::fit(std::shared_ptr<Features> f)
 	m_fitted = true;
 }
 
-SGVector<float64_t> RFPreprocessor::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> RFFPreprocessor::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	return static_cast<SGVector<float64_t>>(
 	    apply_to_matrix(static_cast<SGMatrix<float64_t>>(vector)));
 }
 
-SGMatrix<float64_t> RFPreprocessor::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> RFFPreprocessor::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
@@ -77,7 +77,7 @@ SGMatrix<float64_t> RFPreprocessor::apply_to_matrix(SGMatrix<float64_t> matrix)
 	return projection;	
 }
 
-SGMatrix<float64_t> RFPreprocessor::sample_spectral_density(int32_t dim_input_space) const
+SGMatrix<float64_t> RFFPreprocessor::sample_spectral_density(int32_t dim_input_space) const
 {
 
 	SGMatrix<float64_t> sampled_kernel(m_dim_output, dim_input_space);
@@ -101,7 +101,7 @@ SGMatrix<float64_t> RFPreprocessor::sample_spectral_density(int32_t dim_input_sp
 	return sampled_kernel;
 }
 
-void RFPreprocessor::cleanup()
+void RFFPreprocessor::cleanup()
 {
 
 }
