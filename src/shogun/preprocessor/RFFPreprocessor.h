@@ -61,7 +61,7 @@ public:
 
 	virtual EPreprocessorType get_type() const override
 	{
-		return P_RANDOMFOURIERGAUSS;
+		return P_RFF;
 	}
 
 	SG_FORCED_INLINE int32_t get_dim_output() const

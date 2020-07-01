@@ -74,11 +74,11 @@ class FitFixture: public benchmark::Fixture
 		const float64_t width = 1.5;
 };
 
-#define ADD_RANDOMFOURIERGAUSS_ARGS(WHAT)	\
+#define ADD_RFFPREPROCESSOR_ARGS(WHAT)	\
 	WHAT->RangeMultiplier(10)->Ranges({{10,100}, {100,10000}, {100,10000}})->Unit(benchmark::kMillisecond);
 
-ADD_RANDOMFOURIERGAUSS_ARGS(PREPROCESSOR_BENCHMARK_TRANSFORM(TransformFixture, RFFPreprocessor_Transform))
-ADD_RANDOMFOURIERGAUSS_ARGS(PREPROCESSOR_BENCHMARK_FIT(FitFixture, RFFPreprocessor_Fit))
+ADD_RFFPREPROCESSOR_ARGS(PREPROCESSOR_BENCHMARK_TRANSFORM(TransformFixture, RFFPreprocessor_Transform))
+ADD_RFFPREPROCESSOR_ARGS(PREPROCESSOR_BENCHMARK_FIT(FitFixture, RFFPreprocessor_Fit))
 
 }
 
