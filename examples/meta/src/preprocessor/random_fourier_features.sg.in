@@ -8,7 +8,8 @@ Features feats_test = create_features(data_test)
 #![create_features]
 
 #![create_preprocessor]
-Transformer preproc = create_transformer("RandomFourierGaussPreproc", seed=12345)
+Kernel k = create_kernel("GaussianKernel", log_width=-0.34657359027997264)
+Transformer preproc = create_transformer("RFFPreprocessor", seed=12345, kernel=k)
 preproc.fit(feats_train)
 #![create_preprocessor]
 

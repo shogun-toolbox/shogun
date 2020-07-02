@@ -5,15 +5,14 @@
  *          Bjoern Esser, Saurabh Goyal
  */
 
-#ifndef _RANDOMFOURIERGAUSSPREPROC__H__
-#define _RANDOMFOURIERGAUSSPREPROC__H__
-
-#include <shogun/lib/config.h>
+#ifndef _RFFPreprocessor__H__
+#define _RFFPreprocessor__H__
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/kernel/ShiftInvariantKernel.h>
 
 namespace shogun {
 	/** @brief Preprocessor that approximates Gaussian feature map.
@@ -32,12 +31,12 @@ namespace shogun {
 	 * 1177-1184).
 	 *
 	 */
-class RandomFourierGaussPreproc: public RandomMixin<DensePreprocessor<float64_t>> {
+class RFFPreprocessor: public RandomMixin<DensePreprocessor<float64_t>> {
 public:
 
-	RandomFourierGaussPreproc();
+	RFFPreprocessor();
 
-	~RandomFourierGaussPreproc();
+	~RFFPreprocessor();
 
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
@@ -57,22 +56,12 @@ public:
 
 	virtual const char* get_name() const override
 	{
-		return "RandomFourierGaussPreproc";
+		return "RFFPreprocessor";
 	}
 
 	virtual EPreprocessorType get_type() const override
 	{
-		return P_RANDOMFOURIERGAUSS;
-	}
-
-	SG_FORCED_INLINE float64_t get_width() const
-	{
-		return std::exp(m_log_width * 2.0) * 2.0;
-	}
-
-	void set_width(float64_t width)
-	{
-		m_log_width = std::log(width/2.0) / 2.0;
+		return P_RFF;
 	}
 
 	SG_FORCED_INLINE int32_t get_dim_output() const
@@ -85,20 +74,26 @@ public:
 		m_dim_output = dims;
 	}
 
+	void set_kernel(const std::shared_ptr<ShiftInvariantKernel>& kernel)
+	{
+		m_kernel = kernel;
+	}
+
 	protected:
+
+	virtual SGMatrix<float64_t> 
+	sample_spectral_density(int32_t dim_input_space) const;
 
 	virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
-	virtual SGMatrix<float64_t> sample_spectral_density(int32_t dim_input_space) const;
-
 	/** Helper method which generates random coefficients and stores in the
-	 *  internal members.
+	 *  internal members. This method assumes the kernel has been set.
 	 *
 	 * @param dim_input_space input space dimension
 	 */
 	virtual void init_basis(int32_t dim_input_space);
 
-	float64_t m_log_width = -0.34657359027997264;
+	std::shared_ptr<ShiftInvariantKernel> m_kernel;
 
 	int32_t m_dim_output = 100;
 

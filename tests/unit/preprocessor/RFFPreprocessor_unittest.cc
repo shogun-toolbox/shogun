@@ -9,23 +9,25 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/preprocessor/RandomFourierGaussPreproc.h>
+#include <shogun/preprocessor/RFFPreprocessor.h>
 
 using namespace shogun;
 using namespace random;
 
-class RFGPTest : public ::testing::Test
+class RFFPreprocessorTest : public ::testing::Test
 {
 public:
 	virtual void SetUp()
 	{
 		SGMatrix<float64_t> mat(num_features, num_vectors);
 		linalg::range_fill(mat, 1.0);
+
+		auto gauss = std::make_shared<GaussianKernel>(width);
 		auto features = std::make_shared<DenseFeatures<float64_t>>(mat);
 
-		preproc = std::make_shared<RandomFourierGaussPreproc>();
+		preproc = std::make_shared<RFFPreprocessor>();
 		preproc->put(kSeed, seed);
-		preproc->set_width(width);
+		preproc->set_kernel(gauss);
 		preproc->set_dim_output(target_dim);
 		preproc->fit(features);
 	}
@@ -39,11 +41,11 @@ protected:
 	const index_t num_features = 3;
 	const index_t target_dim = 400;
 	const float64_t width = 1.5;
-	const float64_t epsilon = 0.08;
-	std::shared_ptr<RandomFourierGaussPreproc> preproc;
+	const float64_t epsilon = 0.04;
+	std::shared_ptr<RFFPreprocessor> preproc;
 };
 
-TEST_F(RFGPTest, apply)
+TEST_F(RFFPreprocessorTest, apply)
 {
 	SGMatrix<float64_t> matrix(num_features, 2);
 	linalg::range_fill(matrix, 1.0);
@@ -63,7 +65,7 @@ TEST_F(RFGPTest, apply)
 	EXPECT_NEAR(result_rff, result_kernel, epsilon);
 }
 
-TEST_F(RFGPTest, apply_to_vectors)
+TEST_F(RFFPreprocessorTest, apply_to_vectors)
 {
 	SGVector<float64_t> vec1 = {1.0, 2.0, 3.0};
 	SGVector<float64_t> vec2 = {4.0, 5.0, 6.0};

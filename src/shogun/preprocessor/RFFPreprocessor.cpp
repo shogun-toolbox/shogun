@@ -5,15 +5,15 @@
  *          Sergey Lisitsyn, Bjoern Esser, Sanuj Sharma, Saurabh Goyal
  */
 
-#include <shogun/preprocessor/RandomFourierGaussPreproc.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/RFFPreprocessor.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/NormalDistribution.h>
+#include <shogun/kernel/GaussianKernel.h>
 
 using namespace shogun;
 
-RandomFourierGaussPreproc::RandomFourierGaussPreproc()
+RFFPreprocessor::RFFPreprocessor()
 {
 	SG_ADD(
 	    &m_dim_output, "dim_output",
@@ -21,20 +21,21 @@ RandomFourierGaussPreproc::RandomFourierGaussPreproc()
 	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
 	    SG_CONSTRAINT(positive<>()));
 	SG_ADD(
-	    &m_log_width, "log_width", "Kernel width in log domain",
-	    ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	    (std::shared_ptr<Kernel>*)&m_kernel, "kernel", "Kernel object",
+	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
+		SG_CONSTRAINT(castable<ShiftInvariantKernel>()));
 	SG_ADD(&m_basis, "basis", "Matrix of basis vectors");
 	SG_ADD(&m_offset, "offset", "offset vector");
 }
 
-RandomFourierGaussPreproc::~RandomFourierGaussPreproc()
+RFFPreprocessor::~RFFPreprocessor()
 {
 }
 
-void RandomFourierGaussPreproc::init_basis(int32_t dim_input_space)
+void RFFPreprocessor::init_basis(int32_t dim_input_space)
 {
 	io::info("Creating Fourier Basis Matrix {}x{}", m_dim_output, dim_input_space);
-	
+
 	m_basis = sample_spectral_density(dim_input_space);
 	m_offset = SGVector<float64_t>(m_dim_output);
 
@@ -42,22 +43,23 @@ void RandomFourierGaussPreproc::init_basis(int32_t dim_input_space)
 	random::fill_array(m_offset, uniform, m_prng);
 }
 
-void RandomFourierGaussPreproc::fit(std::shared_ptr<Features> f)
+void RFFPreprocessor::fit(std::shared_ptr<Features> f)
 {
 	auto num_features = f->as<DenseFeatures<float64_t>>()->get_num_features();
-	require(num_features > 0, "Input space dimension must be greater than zero");
+	require(num_features > 0, "Dimension of provided features {} must be positive", num_features);
+	require(m_kernel, "Kernel not set");
 	
 	init_basis(num_features);
 	m_fitted = true;
 }
 
-SGVector<float64_t> RandomFourierGaussPreproc::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> RFFPreprocessor::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	return static_cast<SGVector<float64_t>>(
 	    apply_to_matrix(static_cast<SGMatrix<float64_t>>(vector)));
 }
 
-SGMatrix<float64_t> RandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> RFFPreprocessor::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
@@ -75,22 +77,31 @@ SGMatrix<float64_t> RandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_
 	return projection;	
 }
 
-SGMatrix<float64_t> RandomFourierGaussPreproc::sample_spectral_density(int32_t dim_input_space) const
+SGMatrix<float64_t> RFFPreprocessor::sample_spectral_density(int32_t dim_input_space) const
 {
-	NormalDistribution<float64_t> normal_dist;
-	auto sampled_kernel = SGMatrix<float64_t>(m_dim_output, dim_input_space);
-	const auto width = get_width();
-	const auto std_dev = std::sqrt(2.0 / width);
-	std::generate(
-	    sampled_kernel.begin(), sampled_kernel.end(),
-	    [this, &normal_dist, &std_dev]() {
-		    return std_dev * normal_dist(m_prng);
-	    });
 
+	SGMatrix<float64_t> sampled_kernel(m_dim_output, dim_input_space);
+
+	if (auto kernel = std::dynamic_pointer_cast<GaussianKernel>(m_kernel))
+	{
+		NormalDistribution<float64_t> normal_dist;
+		const auto width = kernel->get_width();
+		const auto std_dev = std::sqrt(2.0 / width);
+		std::generate(
+		    sampled_kernel.begin(), sampled_kernel.end(),
+		    [this, &normal_dist, &std_dev]() {
+			    return std_dev * normal_dist(m_prng);
+		    });
+	}
+	else
+	{
+		not_implemented(SOURCE_LOCATION);
+	}
+	
 	return sampled_kernel;
 }
 
-void RandomFourierGaussPreproc::cleanup()
+void RFFPreprocessor::cleanup()
 {
 
 }
